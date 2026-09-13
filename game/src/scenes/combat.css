@@ -2831,15 +2831,45 @@
    boards under the boss, wider and brighter than any creature's contact
    shadow, and the air behind him catching a little of his own ghost-light.
    Still: the boss's own motion is what moves. */
+/* …in a SHAFT OF MOONLIGHT (round 4): boss-beam.webp, a painted shaft falling
+   from a high window, narrow where it enters under the frame's top rule and
+   wide where it lands, streaked and hung with motes, with the pool it makes
+   on the boards under his shoes. The painting's floor line is at 86% of its
+   height; it is hung --beam-above over his head and its bottom is set so that
+   line lands on the stage's own foot (bottom = 0.163 of everything above it).
+   Plain alpha: a blend inside the creature's stacking context only ever
+   reached the creature. */
 .cb-root[data-arena="boss"] .cb-enemy[data-tier="boss"]:not([data-role="bossPart"]) .cb-enemy__stage::before {
+  --beam-above: clamp(120px, 20vh, 190px);
   content: ''; position: absolute; z-index: -1; pointer-events: none;
-  left: -30%; right: -30%; top: 4%; bottom: -8%;
-  /* plain alpha: a blend inside the creature's own stacking context only ever
-     reached the creature, and cost a render surface for it */
-  background:
-    radial-gradient(46% 16% at 50% 97%, color-mix(in srgb, var(--kit-moon) 24%, transparent), color-mix(in srgb, var(--kit-moon) 7%, transparent) 60%, transparent 100%),
-    radial-gradient(40% 46% at 50% 44%, color-mix(in srgb, var(--spectre-400) 10%, transparent), transparent 100%);
+  left: 50%; width: max(210%, 420px);
+  top: calc(var(--beam-above) * -1);
+  bottom: calc(-16.3% - var(--beam-above) * .163);
+  transform: translateX(-50%);
+  background: url("../../assets/ui/kit/boss-beam.webp") 50% 0 / 100% 100% no-repeat;
 }
+/* …AND THE STAGE IS SET FOR HIM. A boss alone on its board is flanked by a
+   pair of the house's brass wall sconces (sconce.webp, the Kid board's own
+   candle in each), hung on the wall behind him a little above his shoulders,
+   each throwing its warm pool on the plaster: the warm candle against the cold
+   shaft he stands in, and the symmetry of a room laid out to receive someone.
+   They hold still while he lunges (the plate's own counter-offset), sit behind
+   everything he is, and take no pointer. */
+.cb-root[data-arena="boss"] .cb-enemies[data-n="1"] .cb-enemy[data-tier="boss"]:not([data-role="bossPart"])::before,
+.cb-root[data-arena="boss"] .cb-enemies[data-n="1"] .cb-enemy[data-tier="boss"]:not([data-role="bossPart"])::after {
+  --sc-w: clamp(52px, 4.5vw, 74px);
+  --sc-h: calc(var(--sc-w) * 330 / 150);
+  content: ''; position: absolute; z-index: -1; pointer-events: none;
+  top: calc(var(--sc-w) * .1);
+  width: calc(var(--sc-w) * 4.6); height: calc(var(--sc-h) * 1.5);
+  background:
+    url("../../assets/ui/kit/sconce.webp") 50% calc(var(--sc-w) * .7) / var(--sc-w) var(--sc-h) no-repeat,
+    radial-gradient(closest-side, color-mix(in srgb, var(--kit-candle) 30%, transparent), color-mix(in srgb, var(--kit-candle) 10%, transparent) 50%, transparent) 50% 0 / 100% calc(var(--sc-h) * 1.1) no-repeat;
+  transform: translate3d(calc(-50% - var(--e-lx, 0px)), calc(var(--e-ly, 0px) * -1), 0);
+  filter: drop-shadow(0 10px 12px rgba(0, 0, 0, .6));
+}
+.cb-root[data-arena="boss"] .cb-enemies[data-n="1"] .cb-enemy[data-tier="boss"]:not([data-role="bossPart"])::before { left: max(-40%, -120px); }
+.cb-root[data-arena="boss"] .cb-enemies[data-n="1"] .cb-enemy[data-tier="boss"]:not([data-role="bossPart"])::after { left: min(140%, calc(100% + 120px)); }
 .cb-root[data-arena="boss"] .cb-enemy[data-tier="boss"]:not([data-role="bossPart"]) .cb-enemy__pool { width: 104%; height: 40px; bottom: -15px; }
 /* the plate's painted rails stop short of its box: the tube tucks up under it */
 .cb-root[data-arena="boss"] .cb-enemy[data-tier="boss"]:not([data-role="bossPart"]) .cb-enemy__vitals { margin-top: -4px; }

@@ -30,6 +30,9 @@ themselves where the samples already painted it:
   card-backs.webp   a PILE: three painted card backs fanned, aubergine velvet
                     under a gilt double rule, a crescent-moon crest medallion on
                     the top one, a vellum edge where each card's thickness shows.
+  boss-beam.webp    the LIGHT the boss stands in: a shaft of moonlight from a
+                    high window, streaked and hung with motes, and the pool it
+                    makes on the floor where his feet are.
   card-flock.webp   the kit's damask at a fifth of its strength, for the flock
                     worked into a Trick's rules panel in the hand.
   iron-bracket.webp a WROUGHT-IRON wall bracket: a shelf plate on a scrolled
@@ -489,6 +492,65 @@ def iron_bracket():
     save(rgba(down(col, ss), down(alpha.astype(np.float32), ss)), "iron-bracket.webp", 94)
 
 
+# ── the light the master of the wing stands in ─────────────────────────────
+BEAM_W, BEAM_H = 440, 960
+BEAM_FLOOR = 0.86            # where his feet are, as a fraction of the height
+
+
+def boss_beam():
+    """A shaft of moonlight from a high window straight down onto the boss:
+    narrow where it enters at the top, widening to the floor, soft at its
+    edges, streaked where the dust in the air catches it, motes hanging in it,
+    and a pool where it lands. Straight alpha over a cold white that warms a
+    little toward the floor, so it lays light on whatever is behind it."""
+    rng = np.random.default_rng(1313)
+    ss = 2
+    W, H = BEAM_W * ss, BEAM_H * ss
+    yy, xx = np.mgrid[0:H, 0:W].astype(np.float32)
+    y = yy / H
+    x = xx / W
+    t = np.clip(y / BEAM_FLOOR, 0, 1.2)
+    hw = 0.085 + (0.44 - 0.085) * t ** 1.1           # the cone's half-width
+    u = (x - 0.5) / hw                               # -1 .. 1 across the shaft
+    d = np.abs(u)
+    edge = 1 - smooth(0.5, 1.02, d)
+    core = 1 - 0.45 * d ** 2
+    # streaks radiate from the apex: noise along u only, varied slowly down
+    n1 = ndimage.gaussian_filter1d(rng.normal(0, 1, 512).astype(np.float32), 5)
+    n1 = (n1 - n1.min()) / (n1.max() - n1.min())
+    idx = np.clip(((u + 1.2) / 2.4) * 511, 0, 511).astype(np.int32)
+    streak = n1[idx]
+    n2 = ndimage.gaussian_filter1d(rng.normal(0, 1, 512).astype(np.float32), 12)
+    n2 = (n2 - n2.min()) / (n2.max() - n2.min())
+    streak2 = n2[np.clip(((u * 1.7 + 1.9) / 3.8) * 511, 0, 511).astype(np.int32)]
+    # entering from the top, thickest where the air is lit, gone below the floor
+    vfall = smooth(0.0, 0.16, y) * (0.72 + 0.28 * smooth(0.2, BEAM_FLOOR, y)) * (1 - smooth(BEAM_FLOOR + 0.015, BEAM_FLOOR + 0.07, y))
+    I = edge * core * (0.42 + 0.38 * streak + 0.2 * streak2) * vfall * 0.26
+    # the pool where it lands: an ellipse on the boards, brightest at its heart
+    px = (x - 0.5) / 0.40
+    py = (y - (BEAM_FLOOR + 0.004)) / 0.028
+    pool = np.exp(-(px ** 2 + py ** 2) * 1.6) * 0.42 + np.exp(-((x - 0.5) / 0.2) ** 2 - ((y - BEAM_FLOOR) / 0.012) ** 2) * 0.18
+    # motes: small soft specks hanging in the shaft
+    motes = np.zeros((H, W), np.float32)
+    for _ in range(140):
+        my = rng.uniform(0.08, BEAM_FLOOR - 0.02)
+        th = 0.085 + (0.44 - 0.085) * (my / BEAM_FLOOR) ** 1.1
+        mx = 0.5 + rng.uniform(-0.85, 0.85) * th
+        r = rng.uniform(0.6, 1.6) * ss
+        cx, cy = mx * W, my * H
+        x0, x1 = int(cx - 6 * ss), int(cx + 6 * ss)
+        y0, y1 = int(cy - 6 * ss), int(cy + 6 * ss)
+        sub = np.exp(-(((xx[y0:y1, x0:x1] - cx) / r) ** 2 + ((yy[y0:y1, x0:x1] - cy) / r) ** 2))
+        motes[y0:y1, x0:x1] = np.maximum(motes[y0:y1, x0:x1], sub * rng.uniform(0.25, 0.7))
+    A = np.clip(I + pool + motes * edge * 0.8, 0, 0.85)
+    cold = np.array([214, 228, 255], np.float32)
+    warm = np.array([255, 236, 206], np.float32)
+    k = smooth(0.4, BEAM_FLOOR + 0.03, y)[..., None]
+    col = cold * (1 - k * 0.55) + warm * (k * 0.55)
+    col = np.broadcast_to(col, (H, W, 3))
+    save(rgba(down(col, ss), down(A, ss)), "boss-beam.webp", 88)
+
+
 # ── the rules panel's flock ─────────────────────────────────────────────────
 def card_flock():
     """The kit's damask (damask.webp, lavender through an alpha pattern) at a
@@ -502,7 +564,7 @@ def card_flock():
 
 PIECES = {
     "plate": boss_plate, "crest": boss_crest, "roundel": roundel, "coin": nerve_coin,
-    "backs": card_backs, "bracket": iron_bracket, "flock": card_flock,
+    "backs": card_backs, "bracket": iron_bracket, "flock": card_flock, "beam": boss_beam,
 }
 SHEET = ["boss-plate.webp", "boss-crest.webp", "roundel.webp", "nerve-coin.webp", "card-backs.webp", "iron-bracket.webp"]
 
