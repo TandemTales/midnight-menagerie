@@ -126,7 +126,7 @@
   position: absolute; inset: 0; z-index: 3; pointer-events: none;
   background:
     radial-gradient(56% 54% at 50% 48%, transparent 0%, transparent 36%, rgba(38, 22, 12, .26) 66%, rgba(20, 11, 8, .56) 90%, rgba(12, 7, 6, .76) 100%),
-    linear-gradient(to bottom, rgba(10, 7, 12, .36) 0%, rgba(10, 7, 12, .12) 16%, transparent 30%),
+    linear-gradient(to bottom, rgba(10, 7, 12, .22) 0%, rgba(10, 7, 12, .06) 14%, transparent 26%),
     linear-gradient(to top, rgba(10, 7, 12, .6) 0%, rgba(10, 7, 12, .22) 12%, transparent 26%);
 }
 .map-lamp {
@@ -177,15 +177,13 @@
   width: clamp(64px, 5.4vw, 92px);
   left: calc(var(--kit-edge) + 4px); bottom: calc(var(--kit-edge) + 2px);
 }
-.map-props__candle {
-  width: clamp(52px, 4.2vw, 70px);
-  right: calc(var(--kit-edge) + 14px); bottom: calc(var(--kit-edge) + 2px);
-}
+/* the key bar's own candle finial stands at the sheet's right front corner */
+.map-props__candle { display: none; }
 .map-props__light--desk {
   --light-a: 26%;
   width: clamp(360px, 32vw, 520px);
-  left: calc(100% - var(--kit-edge) - 14px - clamp(52px, 4.2vw, 70px) * .54);
-  top: calc(100% - var(--kit-edge) - 2px - clamp(52px, 4.2vw, 70px) * 1.2);
+  left: calc(100% - var(--kit-edge) - 36px);
+  top: calc(100% - var(--map-foot) - 20px);
   animation-delay: -.8s;
 }
 /* and the light they throw down across the sheet */
@@ -585,7 +583,7 @@
   position: absolute; top: calc(100% + 3px + 45px + var(--mn-dy, 0px)); left: 50%;
   transform: translateX(calc(-50% + var(--mn-dx, 0px)));
   display: inline-flex; align-items: center; gap: 8px;
-  font-family: var(--font-display); font-size: 11px; font-weight: 700;
+  font-family: var(--font-display); font-size: 14px; font-weight: 700;
   letter-spacing: .34em; text-indent: .34em; white-space: nowrap;
   color: color-mix(in oklab, var(--threat-200) 70%, var(--kit-gold-hi));
   text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
@@ -770,8 +768,8 @@
 }
 .note--boon { color: var(--spectre-100); }
 .note b {
-  font-family: var(--font-display); font-weight: 700; font-size: 11.5px;
-  letter-spacing: .12em; text-transform: uppercase;
+  font-family: var(--font-display); font-weight: 700; font-size: 12px;
+  letter-spacing: .1em; text-transform: uppercase;
   text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
 }
 .note-ico {
@@ -1065,8 +1063,8 @@
   .lg-h { letter-spacing: .12em; font-size: 11.5px; }
   .map-bar { gap: 6px; padding-inline: 30px 24px; }
   .note { gap: 5px; }
-  .note b { font-size: 11px; letter-spacing: .06em; }
-  .map-atlas { font-size: 11px; letter-spacing: .06em; padding-right: 20px; }
+  .note b { font-size: 11.5px; letter-spacing: .05em; }
+  .map-atlas { font-size: 11.5px; letter-spacing: .05em; padding-right: 20px; }
 }
 /* a wing with three conditions: the conditions give up their icons' air */
 .map-bar:has(.note ~ .note ~ .note) .note b { letter-spacing: .02em; }

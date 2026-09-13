@@ -675,6 +675,20 @@ export class RewardScene extends RoomScene {
     const onResize = () => this._layout();
     window.addEventListener('resize', onResize);
     this._own(() => window.removeEventListener('resize', onResize));
+    /* Fit again whenever a slot or a card changes size, not only when the
+       window does. `ensureCss` gives up waiting on a stylesheet after 1.2 s so
+       a scene never stalls, and on a loaded machine card.css can land after
+       this first fit: the cards were then measured unstyled and hung off their
+       frames until the next resize. */
+    if (typeof ResizeObserver === 'function') {
+      let raf = 0;
+      const ro = new ResizeObserver(() => {
+        cancelAnimationFrame(raf);
+        raf = requestAnimationFrame(() => { if (!this._dead) this._layout(); });
+      });
+      for (const { slot, view } of this._slots) { ro.observe(slot); ro.observe(view.el); }
+      this._own(() => { cancelAnimationFrame(raf); ro.disconnect(); });
+    }
 
     if (this.resolved) this._markTaken(this.picked, false);
     else this._own(bus.on('scene:entered', () => {

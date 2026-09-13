@@ -114,7 +114,7 @@
   --tag-h: clamp(28px, 3.6vh, 34px);
   --row-tag-h: var(--tag-h);
   --shelf-h: clamp(40px, 5.2vh, 50px);
-  --keeper-w: clamp(96px, 8.8vw, 150px);
+  --keeper-w: clamp(104px, 9.6vw, 160px);
   --service-w: clamp(100px, 8.4vw, 146px);
   /* the Trick frames: as tall as the cabinet allows, as wide as seven slots
      sharing the shelf allow, whichever is smaller */
@@ -201,11 +201,12 @@
 .sh-keeper {
   position: relative; z-index: 1;
   flex: none; width: var(--keeper-w);
+  height: calc(var(--face-h) + var(--frame-pad) - 1px + var(--tag-h));
   margin: 0;
-  display: flex; flex-direction: column; align-items: center;
+  display: grid; grid-template-rows: minmax(0, 1fr) auto; justify-items: center; align-items: center;
 }
 .sh-keeper__light {
-  position: absolute; left: 50%; bottom: calc(var(--tag-h) + 20%);
+  position: absolute; left: 50%; top: 42%;
   width: 250%; aspect-ratio: 1; translate: -50% 50%;
   border-radius: 50%; pointer-events: none; z-index: -1;
   background: radial-gradient(closest-side, color-mix(in srgb, var(--kit-candle) 26%, transparent), color-mix(in srgb, var(--kit-candle) 8%, transparent) 50%, transparent);
@@ -213,17 +214,17 @@
 }
 .rm:not(.is-still) .sh-keeper__light { animation: kit-flicker 5.2s ease-in-out infinite; }
 .sh-moth__frame {
+  grid-row: 1; grid-column: 1;
   position: relative; display: block;
   width: 100%; aspect-ratio: 180 / 172;
   background: url("../../assets/ui/kit/button-ornate.webp") 50% 50% / 100% 100% no-repeat;
   filter: drop-shadow(0 6px 8px rgba(0, 0, 0, .85));
-  margin-bottom: calc(var(--frame-pad) * .6);
 }
 .sh-keeper .sh-moth {
-  position: absolute; z-index: 1;
-  left: 50%; top: 0;
+  grid-row: 1; grid-column: 1;
+  position: relative; z-index: 1;
   width: calc(var(--keeper-w) * 98 / 180); height: auto; aspect-ratio: 1;
-  translate: -50% calc(var(--keeper-w) * 172 / 180 * .5 - 50%);
+  translate: 0 calc(var(--keeper-w) * -.012);
   display: block;
   padding: 4% 4% 0;
   border-radius: 50%;
@@ -236,8 +237,9 @@
 }
 /* his name: the Companion tiles' nameplate, on the shelf's front */
 .sh-keeper .sh-moth__name.kit-plate {
+  grid-row: 2;
   --plate-h: var(--tag-h);
-  margin: 0; min-width: 100%;
+  margin: calc(var(--frame-pad) - 1px) 0 0; min-width: 100%;
   padding-inline: calc(var(--plate-h) * .5);
 }
 .sh-moth__name .kit-plate__name {
@@ -525,7 +527,7 @@
   box-shadow: 0 0 0 1px rgba(0, 0, 0, .7);
 }
 .sh-moth__you dt {
-  font-family: var(--font-display); font-weight: 700; font-size: max(10.5px, calc(var(--fs-xs) * .96));
+  font-family: var(--font-display); font-weight: 700; font-size: max(11.5px, calc(var(--fs-xs) * .96));
   letter-spacing: .06em; text-transform: uppercase; color: var(--kit-text-lo);
   text-shadow: 0 -1px 0 rgba(0, 0, 0, .9);
   white-space: nowrap;
@@ -563,7 +565,7 @@
 
 @media (max-width: 1400px) {
   .sh-floor { grid-template-columns: minmax(0, 1.15fr) minmax(0, .8fr) minmax(0, 1.15fr); column-gap: 18px; }
-  .sh-moth__you dt { letter-spacing: .01em; font-size: 10.5px; }
+  .sh-moth__you dt { letter-spacing: 0; font-size: 11px; }
   .sh-moth__line { font-size: 15.5px; }
 }
 
@@ -586,7 +588,7 @@
   .scene--shop .rm-body { padding-top: 2px; }
   .scene--shop .sh-floor { margin-top: 8px; row-gap: 15px; grid-template-rows: minmax(300px, 1fr) auto; }
   .sh-counter--cards.kit-panel { --rib-h: 24px; --medal-k: .84; }
-  .scene--shop .sh-cards { --tag-h: 28px; --shelf-h: 40px; --frame-pad: 8px; --gap: 18px; --keeper-w: 102px; --service-w: 106px; }
+  .scene--shop .sh-cards { --tag-h: 28px; --shelf-h: 40px; --frame-pad: 8px; --gap: 18px; --keeper-w: 108px; --service-w: 106px; }
   .sh-counter--keeps.kit-panel, .sh-counter--snacks.kit-panel, .sh-counter--moth.kit-panel {
     padding: 18px 20px 6px 14px;
   }

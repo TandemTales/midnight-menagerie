@@ -285,7 +285,8 @@ export class ShopScene extends RoomScene {
         cancelAnimationFrame(raf);
         raf = requestAnimationFrame(() => { if (!this._dead) this._layout(); });
       });
-      for (const { slot } of this._cardSlots) ro.observe(slot.querySelector('.sh-card__face'));
+      // the card too: a stylesheet that lands late restyles the card, not its frame
+      for (const { slot, view } of this._cardSlots) { ro.observe(slot.querySelector('.sh-card__face')); ro.observe(view.el); }
       this._own(() => { cancelAnimationFrame(raf); ro.disconnect(); });
     }
     this._syncAffordable();

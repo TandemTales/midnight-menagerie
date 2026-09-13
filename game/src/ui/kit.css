@@ -554,9 +554,9 @@
 /* engraved small caps: cut into the enamel, the light on the lower lip */
 .kit-enamel__label {
   font-family: var(--font-display); font-weight: 700; font-style: normal;
-  font-size: max(10.5px, calc(var(--h) * .3)); line-height: 1.05;
-  letter-spacing: .2em; text-transform: uppercase;
-  padding-left: .2em;                   /* the tracking hangs off the last letter */
+  font-size: max(11.5px, calc(var(--h) * .3)); line-height: 1.05;
+  letter-spacing: .18em; text-transform: uppercase;
+  padding-left: .18em;                  /* the tracking hangs off the last letter */
   color: var(--kit-text-mid);
   text-shadow: 0 -1px 0 rgba(0, 0, 0, .9), 0 1px 0 color-mix(in srgb, var(--kit-lav-hi) 22%, transparent);
 }
@@ -638,7 +638,7 @@
   grid-column: 1 / -1; grid-row: 2; justify-self: center;
   margin-top: -1px;
   font-family: var(--font-body); font-style: italic; font-weight: 400;
-  font-size: var(--fs-xs); letter-spacing: .02em; text-transform: none;
+  font-size: max(12px, var(--fs-xs)); letter-spacing: .02em; text-transform: none;
   color: var(--kit-text-mid);
   text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
 }
@@ -764,7 +764,7 @@
 .kit-btn em {
   font-family: var(--font-body); font-style: italic; font-weight: 400;
   letter-spacing: 0; text-transform: none;
-  font-size: var(--fs-xs);
+  font-size: max(12px, var(--fs-xs));
   color: var(--kit-text-mid);
   text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
 }
@@ -821,7 +821,7 @@ button.kit-medallion:hover, button.kit-medallion:focus-visible,
 .kit-tag > i {
   display: inline-flex; align-items: center;
   font-style: normal; font-family: var(--font-display); font-weight: 700;
-  font-size: 10.5px; letter-spacing: .18em; text-transform: uppercase;
+  font-size: 11.5px; letter-spacing: .16em; text-transform: uppercase;
   color: inherit;
 }
 .kit-tag > i::after {
@@ -1099,7 +1099,7 @@ button.kit-medallion:hover, button.kit-medallion:focus-visible,
 }
 .kit-stats__label {
   font-family: var(--font-display); font-weight: 700;
-  font-size: 10.5px; line-height: 1.2; letter-spacing: .14em; text-transform: uppercase;
+  font-size: 11.5px; line-height: 1.2; letter-spacing: .12em; text-transform: uppercase;
   color: var(--kit-text-lo);
   text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
   text-wrap: balance;

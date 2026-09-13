@@ -90,10 +90,12 @@
    with a scroll in each corner round dark violet enamel (initial.webp) */
 .ev-prose p:first-child::first-letter {
   float: left;
-  margin: 3px 14px 0 0;
-  padding: .2em .3em .18em;
-  line-height: .86;
-  font-family: var(--font-display); font-weight: 700; font-size: 2.55em;
+  /* a box about a line and a half tall: it sits beside a one-line opening
+     without leaving a hole under it, and still drops into a longer one */
+  margin: 1px 12px 0 0;
+  padding: .17em .27em .1em;
+  line-height: .8;
+  font-family: var(--font-display); font-weight: 700; font-size: 2.1em;
   color: var(--kit-gold-hi);
   background: url("../../assets/ui/kit/initial.webp") 50% 50% / 100% 100% no-repeat;
   text-shadow: 0 1px 0 var(--kit-gold-lo), 0 2px 0 #1c1029, 0 0 14px color-mix(in srgb, var(--kit-candle) 40%, transparent);
@@ -183,7 +185,7 @@
 }
 .ev-opt__meta { display: flex; flex-wrap: wrap; gap: 4px 18px; }
 .ev-opt .kit-tag { font-size: max(13px, var(--fs-sm)); }
-.ev-opt .kit-tag > i { font-size: 11px; }
+.ev-opt .kit-tag > i { font-size: 11.5px; }
 /* the stakes are kit tags (ui/kit.css .kit-tag); only their colour is here */
 .ev-tag--risk { color: var(--threat-200); }
 .ev-tag--gain { color: var(--good-300); }
@@ -518,6 +520,16 @@
     gap: clamp(12px, 1.6vh, 22px) 0;
   }
   .ev-rsplate { display: block; max-height: 38vh; justify-self: center; }
+}
+
+/* a 1280x800 panel: the page gives up air, never type */
+@media (max-height: 860px) {
+  .ev-page.kit-panel { padding: 30px 40px 16px; }
+  .ev-prose { padding-bottom: 10px; }
+  .ev-prose p { line-height: 1.5; margin-bottom: .5em; }
+  .ev-options { gap: 8px; padding-top: 4px; }
+  .ev-opt { min-height: 54px; padding-block: 9px 10px; }
+  .scene--event .rm-body { padding-top: 22px; }
 }
 
 /* When event.png is painted it brings its own walls: the placeholder windows

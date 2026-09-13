@@ -221,12 +221,12 @@
 
 .rs-door {
   --pk: .7;
-  --medal-k: .92;
+  --medal-k: .66;
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) auto;
   grid-template-areas: "glyph name read" "glyph blurb read" "glyph note read";
   align-items: center; column-gap: clamp(12px, 1.1vw, 18px); row-gap: 1px;
-  padding: clamp(14px, 1.9vh, 20px) clamp(16px, 1.5vw, 26px) clamp(10px, 1.4vh, 15px);
+  padding: clamp(17px, 2.2vh, 22px) clamp(16px, 1.5vw, 26px) clamp(10px, 1.4vh, 15px);
   text-align: left;
   color: inherit; font: inherit;
   cursor: pointer;
@@ -234,7 +234,7 @@
               transform var(--t-quick) var(--ease-out),
               opacity var(--t-base) var(--ease-out);
 }
-.rs-door[data-medal="moon"] { --medal-k: .6; }
+.rs-door[data-medal="moon"] { --medal-k: .44; }
 .rs-door:hover:not(:disabled), .rs-door:focus-visible {
   transform: translateY(-2px);
   filter: brightness(1.14) drop-shadow(0 0 14px color-mix(in srgb, var(--kit-candle) 32%, transparent));
@@ -393,7 +393,7 @@
 
 /* ── short and narrow boards ──────────────────────────────────────────────── */
 @media (max-height: 860px) {
-  .rs-door { padding-block: 12px 9px; }
+  .rs-door { padding-block: 15px 8px; }
   .rs-door__txt > b { font-size: 15px; letter-spacing: .08em; }
   .rs-door__read.kit-plate { --plate-h: 36px; }
   .rs-choices { gap: 24px; }

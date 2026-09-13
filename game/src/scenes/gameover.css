@@ -307,7 +307,7 @@
 
 .go-lbl {
   font-family: var(--font-display); font-weight: 700;
-  font-size: max(11px, var(--fs-xs)); letter-spacing: .2em; text-transform: uppercase;
+  font-size: max(11.5px, var(--fs-xs)); letter-spacing: .18em; text-transform: uppercase;
   color: var(--kit-text-lo);
   text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
 }
@@ -368,8 +368,8 @@
   --plate-h: 26px;
   min-width: 58px;
   padding-inline: 12px;
-  font-family: var(--font-display); font-weight: 700; font-size: 10.5px;
-  letter-spacing: .14em; text-transform: uppercase;
+  font-family: var(--font-display); font-weight: 700; font-size: 11.5px;
+  letter-spacing: .12em; text-transform: uppercase;
   color: var(--kit-text-mid);
   cursor: pointer;
   transition: filter var(--t-quick) var(--ease-out), color var(--t-quick) var(--ease-out);
@@ -448,7 +448,7 @@
 .go-bp__label { min-width: 0; }
 .go-bp__count { flex: none; margin-left: auto; }
 .go-bp__label, .go-bp__count {
-  font-family: var(--font-display); font-weight: 700; font-size: 10.5px;
+  font-family: var(--font-display); font-weight: 700; font-size: 11.5px;
   letter-spacing: .05em; text-transform: uppercase; color: var(--kit-text-lo);
   text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
 }
@@ -466,7 +466,7 @@
 /* --- blocks and their headings --------------------------------------------- */
 .go-block { display: grid; gap: clamp(5px, .8vh, 9px); min-width: 0; align-content: start; }
 .go-h { margin: 0; font-size: max(11.5px, var(--fs-xs)); }
-.go-h__n { letter-spacing: .02em; font-size: max(12px, var(--fs-xs)); }
+.go-h .go-h__n { letter-spacing: .02em; font-size: max(12.5px, var(--fs-xs)); }
 .go-block--deck { grid-area: deck; }
 .go-pair { display: contents; }
 .go-block--mvp { grid-area: mvp; }
@@ -664,7 +664,9 @@
   .go-head.kit-titleblock--compact { --cart-h: 86px; }
   .go-head .kit-cartouche__title { font-size: 25px; }
   .go-head .kit-titleblock__note { margin-top: 2px; }
-  .go-stage { --go-plate-h: 34px; --go-pic-w: 150px; padding-top: 0; }
+  .go-stage { --go-plate-h: 38px; --go-pic-w: 150px; padding-top: 0; }
+  .go-portrait__plate .kit-plate__name { line-height: 1; }
+  .go-portrait__plate .kit-plate__epithet { line-height: 1.05; }
   .go-stanza { padding-block: 14px 8px; }
   .go-stanza li { line-height: 1.32; font-size: 13px; }
   .go-stanza--pet { margin-top: 16px; padding-block: 12px 5px; }
@@ -687,7 +689,7 @@
   .go-wrap { --gutter: 16px; }
   .go-mvp { grid-template-columns: auto minmax(0, 13ch); gap: 10px; }
   .go-mvp__note { font-size: 12.5px; line-height: 1.32; }
-  .go-stats .kit-stats__label { font-size: 10.5px; letter-spacing: .08em; }
+  .go-stats .kit-stats__label { font-size: 11.5px; letter-spacing: .06em; }
   .go-bp__label, .go-bp__count { letter-spacing: .08em; }
   .go-trick__name { font-size: 12.5px; }
   .go-trick__cost { width: 16px; height: 16px; font-size: 10px; }
@@ -698,7 +700,7 @@
   .go-foot .go-btn { --plate-h: 48px; font-size: var(--fs-sm); }
   .go-foot .go-btn.kit-btn--quiet { --plate-h: 46px; }
   .go-acts { gap: 46px; }
-  .go-bp__label, .go-bp__count { font-size: 10px; letter-spacing: .02em; }
+  .go-bp__label, .go-bp__count { font-size: 11px; letter-spacing: .02em; }
   .go-ledger { grid-template-columns: auto minmax(0, 1.28fr) minmax(0, 1fr); }
 }
 @media (max-width: 1100px) {

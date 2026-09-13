@@ -159,7 +159,7 @@
 .rm-mockflag::after { right: 8px; }
 .rm-mockflag__label {
   font-family: var(--font-display); font-weight: 700; font-style: normal;
-  font-size: 10.5px; line-height: 14px; letter-spacing: .24em; text-transform: uppercase;
+  font-size: 11px; line-height: 14px; letter-spacing: .22em; text-transform: uppercase;
   color: color-mix(in oklab, var(--kit-gold) 55%, var(--kit-text-lo));
   text-shadow: 0 -1px 0 rgba(0, 0, 0, .95), 0 1px 0 color-mix(in srgb, var(--kit-gold-hi) 16%, transparent);
 }
@@ -363,6 +363,9 @@
   height: var(--cloth-h);
   background: url("../../assets/ui/kit/cloth.webp") 50% 0 / auto 100% repeat-x;
   filter: drop-shadow(0 6px 10px rgba(0, 0, 0, .6));
+  /* the runner's ends are lost in the alcove's shadow, where the candles stand */
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, .85) 9%, black 18%, black 82%, rgba(0, 0, 0, .85) 91%, transparent 100%);
+          mask-image: linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, .85) 9%, black 18%, black 82%, rgba(0, 0, 0, .85) 91%, transparent 100%);
 }
 .rw-cards::before {
   content: ''; position: absolute; z-index: -1; pointer-events: none;
@@ -456,7 +459,7 @@
   z-index: 2;
 }
 .rw-slot__rarity .kit-enamel__label {
-  font-size: max(11px, calc(var(--h) * .34)); letter-spacing: .22em;
+  font-size: max(12px, calc(var(--h) * .36)); letter-spacing: .2em;
   color: color-mix(in oklab, var(--rarity-common) 58%, var(--kit-name));
 }
 .rw-slot__rarity[data-rarity="uncommon"] .kit-enamel__label { color: color-mix(in oklab, var(--rarity-uncommon) 70%, var(--kit-name)); }
