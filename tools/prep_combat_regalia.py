@@ -624,6 +624,7 @@ def boss_alcove():
     col = np.clip((rgb - (1 - au) * np.array([8, 6, 11], np.float32)) / au, 0, 255)
     col = np.where((a < 0.35)[..., None], np.minimum(col, rgb * 1.6), col)
     a = a * np.clip((h - 8 - yy) / 64, 0, 1) ** 1.2
+    col = col * 1.08                            # lifted a touch: it hangs in a darker room than the board
     im = Image.fromarray(np.clip(rgba(col, a), 0, 255).astype(np.uint8), "RGBA")
     im = im.resize((int(round(w * ALC_STRETCH)), h), Image.LANCZOS)
     save(np.asarray(im).astype(np.float32), "boss-alcove.webp", 90)

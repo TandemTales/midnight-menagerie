@@ -925,15 +925,21 @@
   padding-right: 6px;
 }
 /* A CREATURE'S CONDITIONS RIDE ITS GAUGE. They sit in the vitals row after the
-   tube, which gives them its length, so a Weak landing never adds a line under
-   the plate; a long list wraps beside the gauge, not under it. */
+   tube, which gives up some of its length for them but never below a gauge you
+   can read (29/29 between its caps), so a Weak landing never adds a line under
+   the plate. The medallions may run a little past the plate's end into the
+   gap between creatures; a list longer than the room beside the gauge wraps
+   UPWARD (wrap-reverse), toward the creature's feet, never toward the hand. */
+.cb-enemy__vitals > .cb-enemy__bar { min-width: max(78px, 52%); }
 .cb-enemy__vitals > .cb-enemy__statuses {
-  flex: none; align-self: center;
-  max-width: 62%;
-  justify-content: flex-start; align-content: center;
-  gap: 7px 12px;
-  margin: 0 0 0 9px; padding: 0 9px 0 0;
+  --roundel: clamp(24px, 1.65vw, 27px);
+  flex: 0 1 auto; min-width: 0; align-self: flex-end;
+  flex-wrap: wrap-reverse;
+  justify-content: flex-start; align-content: flex-start;
+  gap: 5px 9px;
+  margin: 0 -22px 0 8px; padding: 0 0 1px;
 }
+.cb-enemy__vitals > .cb-enemy__statuses > .cb-status { --roundel: inherit; }
 .cb-enemy__vitals > .cb-enemy__statuses:empty { display: none; }
 
 /* target preview on an enemy */
@@ -2417,6 +2423,14 @@
 }
 .cb-num[data-kind="status"] { color: var(--text-hi); font-size: 16px; }
 .cb-num.is-big { -webkit-text-stroke: 4.5px var(--ink-900); }
+/* A NUMBER NEVER OUTLIVES ITS MOMENT. combatfx ages a floater by the clock's
+   dt, which is clamped to a tenth of a second a frame, so on a machine that
+   drops to a few frames a second a 1.2s "+3 Regen" hung over the board for
+   ten. This is a wall-clock ceiling behind it: the number is hidden 2.6s
+   after it was spawned (display none to shown restarts the animation), which
+   a number living its designed life never reaches. */
+.cb-num { animation: cb-num-life 2.6s linear both; }
+@keyframes cb-num-life { 0%, 99% { visibility: visible; } 100% { visibility: hidden; } }
 
 /* ── tooltip content ──────────────────────────────────────────────────────
    The PANEL is `ui/tooltip.js`'s (one tooltip, whole game). These are the
@@ -2826,15 +2840,10 @@
     url("../../assets/ui/kit/cart-star.webp") 100% 50% / var(--star) auto no-repeat;
   filter: drop-shadow(0 0 5px color-mix(in srgb, var(--kit-candle) 45%, transparent));
 }
-/* THE MASTER OF THE WING STANDS IN THE LIGHT. The arena's spot falls from the
-   top of the frame; this is where it lands: a pool of cold stage light on the
-   boards under the boss, wider and brighter than any creature's contact
-   shadow, and the air behind him catching a little of his own ghost-light.
-   Still: the boss's own motion is what moves. */
-/* …in a SHAFT OF MOONLIGHT (round 4): boss-beam.webp, a painted shaft falling
-   from a high window, narrow where it enters under the frame's top rule and
-   wide where it lands, streaked and hung with motes, with the pool it makes
-   on the boards under his shoes. The painting's floor line is at 86% of its
+/* THE MASTER OF THE WING STANDS IN THE LIGHT, a shaft of moonlight (round 4):
+   boss-beam.webp, a painted shaft falling from a high window, narrow where it
+   enters under the frame's top rule and wide where it lands, streaked and hung
+   with motes, with the pool it makes on the boards under his shoes. The painting's floor line is at 86% of its
    height; it is hung --beam-above over his head and its bottom is set so that
    line lands on the stage's own foot (bottom = 0.163 of everything above it).
    Plain alpha: a blend inside the creature's stacking context only ever
@@ -2856,7 +2865,7 @@
    show through; he stands in front of the frame, and his coat may cross it.
    It is a vertical 3-slice, so its rails run to whatever height he stands.
    --al-w is set on the column so the sconces beside it can read it; its
-   height reference is the boss stage's own cap (--e-h, below). The crown's
+   height reference is the boss stage's own cap (its --e-h, above). The crown's
    medallion (row 62 of the painting) is hung on his intent's centre, which
    sits 40px - --ph - --iv/2 from the top of his column (.cb-enemy__above and
    .cb-intent). */
@@ -2875,7 +2884,6 @@
   border-image: url("../../assets/ui/kit/boss-alcove.webp") 205 0 150 0 fill / calc(var(--al-w) * 205 / 437) 0 calc(var(--al-w) * 150 / 437) 0 stretch;
   /* still while he lunges, like his plate */
   transform: translate3d(calc(-50% - var(--e-lx, 0px)), calc(var(--e-ly, 0px) * -1), 0);
-  filter: drop-shadow(0 6px 10px rgba(0, 0, 0, .7)) brightness(1.08);
 }
 /* A pair of the house's brass wall sconces (sconce.webp, the Kid board's own
    candle in each) hang on the wall either side of the frame at his shoulders,
@@ -2903,10 +2911,12 @@
 .cb-root[data-arena="boss"] .cb-enemy[data-tier="boss"]:not([data-role="bossPart"]) .cb-enemy__vitals { margin-top: -4px; }
 /* a boss alone keeps its gauge whole and hangs its conditions off the gauge's
    end, a row of medallions level with the enamel, clear of the hand below */
-.cb-root[data-arena="boss"] .cb-enemy[data-tier="boss"]:not([data-role="bossPart"]) .cb-enemy__vitals > .cb-enemy__statuses {
+.cb-root[data-arena="boss"] .cb-enemies[data-n="1"] .cb-enemy[data-tier="boss"]:not([data-role="bossPart"]) .cb-enemy__vitals > .cb-enemy__statuses {
+  --roundel: clamp(28px, 2.05vw, 33px);
   position: absolute; left: calc(100% + 4px); top: 50%;
   transform: translateY(-50%);
   flex-wrap: nowrap; max-width: none;
+  gap: 7px 12px;
   margin: 0; padding: 0 12px 0 6px;
 }
 /* the trailing letter-space would sit the name left of centre on its plate.
