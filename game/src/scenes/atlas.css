@@ -480,10 +480,16 @@
   color: var(--kit-text-lo);
 }
 
-/* who keeps it, how deep, how far surveyed: one engraved strip */
-.at-dos__facts { margin: 0; padding-block: 10px 9px; }
+/* who keeps it, how deep, how far surveyed: one engraved strip. The keeper's
+   name is the longest ("The Bedframe Beast"), so its column is the widest and
+   it may take two lines; the figures stay on the strip's one baseline. */
+.at-dos__facts { margin: 0; padding-block: 10px 9px; grid-auto-columns: auto; grid-template-columns: minmax(0, 1.55fr) minmax(0, .8fr) minmax(0, 1.15fr); }
 .at-dos__facts dt { font-size: 12px; letter-spacing: .12em; }
-.at-dos__facts dd { margin: 0; font-size: clamp(16px, 1.2vw, 19px); white-space: nowrap; }
+/* labels on one line along the top, figures under them; a second line of the
+   keeper's name hangs below rather than lifting its label */
+.at-dos__facts > div { grid-template-rows: auto auto; align-content: start; }
+.at-dos__facts > div > dt:first-child { align-self: start; }
+.at-dos__facts dd { margin: 0; font-size: clamp(16px, 1.2vw, 19px); line-height: 1.1; text-wrap: balance; }
 .at-dossier[data-seen="0"] .at-dos__boss { font-style: italic; font-size: clamp(14px, 1vw, 16px); color: var(--kit-text-mid); }
 .at-dossier[data-seen="0"] .at-dos__state { color: var(--kit-text-mid); font-style: italic; }
 .at-dossier[data-seen="1"] .at-dos__state { color: var(--kit-gold-hi); }
