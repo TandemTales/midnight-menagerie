@@ -1021,8 +1021,13 @@ export class EnemyView {
             <div class="cb-enemy__fill kit-tube__fill"></div>
             <div class="cb-enemy__hp kit-tube__label"><span class="cb-enemy__hpn"></span><span class="cb-enemy__hpm"></span></div>
           </div>
+          <!-- CONDITIONS BESIDE THE GAUGE, not in a row under it (round 4's
+               brief): a row under the plate was one more line reaching down
+               toward a full hand. On a board of several they ride the gauge's
+               end and the gauge gives them its length; a boss alone hangs them
+               off its end instead (combat.css). -->
+          <div class="cb-enemy__statuses"></div>
         </div>
-        <div class="cb-enemy__statuses"></div>
       </div>
       <div class="cb-enemy__preview" hidden></div>`;
 
@@ -1103,13 +1108,12 @@ export class EnemyView {
        where they can be seen, and he stands a little smaller. */
     if (this._risesForPlate()) {
       if (this._rise) this.el.style.setProperty('--e-rise', '0px');
-      /* A row of conditions is RESERVED under the plate while it has none, so
-         the first Weak that lands does not push the row into the hand, and
-         the boss never changes size mid-fight: its sockets and their stack
-         coins (combat.css .cb-status, --socket) measure about 1.17 sockets. */
-      const socket = Math.min(30, Math.max(26, window.innerWidth * 0.019));
-      const reserve = this.$statuses.childElementCount ? 0 : Math.round(socket * 1.17);
-      const over = this.$plate.getBoundingClientRect().bottom + reserve - limitY;
+      /* No row is reserved for conditions any more: a boss hangs them off
+         the end of its gauge (combat.css, round 4), so the first Weak that
+         lands adds nothing to the plate's height and he never changes size
+         mid-fight. Only the stack coins hanging under the roundels reach
+         below the gauge, by a few px, and the gap below covers them. */
+      const over = this.$plate.getBoundingClientRect().bottom - limitY;
       const rise = over > 0 ? Math.min(Math.round(over), BOSS_RISE_MAX) : 0;
       this._rise = rise;
       this.el.style.setProperty('--e-rise', rise + 'px');
@@ -1222,7 +1226,7 @@ export class EnemyView {
     this.statusData = list;
     for (const s of list) {
       const d = document.createElement('span');
-      d.className = 'cb-status kit-socket';
+      d.className = 'cb-status kit-roundel';
       d.dataset.kind = s.kind || 'buff';
       d.dataset.id = s.id;
       d.dataset.tipStatus = s.id;

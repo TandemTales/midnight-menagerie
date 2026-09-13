@@ -3318,7 +3318,7 @@ export class CombatScene extends Scene {
     this.$statuses.textContent = '';
     for (const s of list) {
       const d = document.createElement('span');
-      d.className = 'cb-status kit-socket';
+      d.className = 'cb-status kit-roundel';
       d.dataset.kind = s.kind || 'buff';
       d.dataset.id = s.id;
       d.tabIndex = 0;
