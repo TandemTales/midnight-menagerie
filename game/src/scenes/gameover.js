@@ -395,8 +395,12 @@ export class GameOverScene extends Scene {
     stage.appendChild(plate);
     beat.appendChild(stage);
 
-    /* --- three stanzas, each a gold-railed panel ------------------------- */
-    const stanzas = el('div', 'go-stanzas');
+    /* --- three stanzas, on ONE gold-railed panel with the star on its rail:
+           what you found, what you lost and how far the survey got, and the
+           pet you did not reach, parted by engraved rules with air between
+           them (round 4: three small boxes of tight bullets read as a form) */
+    const stanzas = el('div', 'go-stanzas kit-panel');
+    stanzas.dataset.medal = 'star';
 
     const found = [];
     if (s.freedThisRun.length) {
@@ -435,8 +439,7 @@ export class GameOverScene extends Scene {
            and ${esc(first)} is already re-packing the backpack.`
         : `<b>${esc(k.pet)}</b> is still in there. ${esc(first)} does not say anything on the walk back.
            ${esc(cap(pr.s))} ${pr.plural ? 'are' : 'is'} working out what to bring next time.`;
-    const pet = el('div', `go-stanza go-stanza--pet kit-panel${s.petHome ? ' is-home' : ''}`);
-    pet.dataset.medal = 'paw';
+    const pet = el('div', `go-stanza go-stanza--pet${s.petHome ? ' is-home' : ''}`);
     pet.innerHTML =
       `<h2 class="go-sh kit-heading">${s.petHome ? 'The pet you reached' : 'The pet you did not reach'}</h2>` +
       `<div class="go-pet">
@@ -492,18 +495,22 @@ export class GameOverScene extends Scene {
   }
 
   _stanza(kind, title, lines, medal) {
-    const n = el('div', `go-stanza go-stanza--${kind} kit-panel`);
-    if (medal) n.dataset.medal = medal;
+    // a section of the one panel (_buildBeat), which wears the medallion on its
+    // rail; `medal` is kept for callers, and names nothing a section draws now
+    void medal;
+    const n = el('div', `go-stanza go-stanza--${kind}`);
     n.innerHTML = `<h2 class="go-sh kit-heading">${esc(title)}</h2><ul>${
       lines.map((l) => `<li>${l}</li>`).join('')}</ul>`;
     return n;
   }
 
   /* ═══ right: the ledger ══════════════════════════════════════════════════
-     Returns three pieces for the board's grid: the ledger panel (how far, the
-     seed, the final Tricks and the Keepsakes), the Trick that worked hardest —
-     which stands on its plinth in the middle of the board, under the two who
-     went in — and the numbers, on one framed strip the width of the board. */
+     Returns four pieces for the board's grid, shared across it rather than
+     crammed into one tall column: the ledger panel on the right (the final
+     Tricks and the Keepsakes); the Trick that worked hardest, standing on its
+     plinth on a shelf in the middle of the board under the two who went in;
+     under IT the record — how far, the Courage left, the wing reached and the
+     seed; and the numbers, on one gilt-rimmed plate the width of the board. */
   _buildLedger() {
     const s = this.summary;
     const { region } = this._cast();
@@ -516,7 +523,7 @@ export class GameOverScene extends Scene {
     /* --- header: HOW FAR, the ledger's one focal number, in the middle; the
            wing it reached and the seed that would run it again on matching
            cartouches in its two corners ------------------------------------- */
-    const who = el('div', 'go-who', `
+    const who = el('div', 'go-who kit-plaque', `
       <div class="go-who__reach go-corner">
         <span class="go-lbl">Reached</span>
         <span class="go-who__wing">${esc(region)} &middot; Wing ${s.wing}</span>
@@ -530,10 +537,10 @@ export class GameOverScene extends Scene {
         <button type="button" class="go-seed__copy kit-plate">Copy</button></span>
         <span class="go-seed__hint">Run this house again, exactly as it was.</span>
       </div>`);
-    led.appendChild(who);
+    // (placed on the board under the Worked Hardest card: see `out` below)
 
-    /* --- the numbers, on one engraved strip framed on its own plaque ------ */
-    const grid = el('div', 'go-stats kit-stats kit-stats--framed');
+    /* --- the numbers, on one gilt-rimmed plate parted by medallions ------ */
+    const grid = el('div', 'go-stats kit-stats kit-stats--plate');
     grid.setAttribute('role', 'group');
     grid.setAttribute('aria-label', 'The numbers');
     const stat = (label, value, sub) =>
@@ -572,9 +579,14 @@ export class GameOverScene extends Scene {
 
     /* --- the card that did the work: on its gilt plinth, mid-board -------- */
     const mvp = el('div', 'go-block go-block--mvp');
-    mvp.innerHTML = `<h2 class="go-h kit-heading kit-heading--ribbon kit-heading--inline">Worked hardest <em class="go-h__n" data-mvp-n></em></h2>
-      <div class="go-mvp"><div class="go-mvp__slot kit-cards"></div>
-      <p class="go-mvp__note"></p></div>`;
+    // A museum piece: the card in its frame on its gilt plinth, standing on a
+    // carved shelf, and beside it on the same shelf its label, WORKED HARDEST
+    // over the line that says why, on a bracketed plaque.
+    mvp.innerHTML = `<div class="go-mvp"><div class="go-mvp__slot kit-cards"></div>
+      <div class="go-mvp__label kit-plaque">
+        <h2 class="go-h go-mvp__h kit-heading">Worked hardest <em class="go-h__n" data-mvp-n></em></h2>
+        <p class="go-mvp__note"></p>
+      </div></div>`;
     this._mvpSlot = mvp.querySelector('.go-mvp__slot');
     this._mvpNote = mvp.querySelector('.go-mvp__note');
     this._mvpN = mvp.querySelector('[data-mvp-n]');
@@ -592,6 +604,7 @@ export class GameOverScene extends Scene {
 
     out.appendChild(led);
     out.appendChild(mvp);
+    out.appendChild(who);
     out.appendChild(grid);
     return out;
   }

@@ -1966,3 +1966,53 @@ button.kit-medallion:hover, button.kit-medallion:focus-visible,
   filter: drop-shadow(0 10px 12px rgba(0, 0, 0, .55));
   pointer-events: none;
 }
+
+/* ── stat plate ─────────────────────────────────────────────────────────────
+   Round 4, POLISH (MINT's rail): `.kit-stats--plate` on a .kit-stats band
+   sets the figures on ONE long gilt-rimmed nameplate, the kit's own plate
+   with its scrolled gilt ends (plate-lit.webp, 9-sliced so only its enamel
+   field stretches), every figure parted from the next by a small round
+   purple enamel medallion in its brass rim with a gilt star set in it
+   (button.webp, star4.svg), and a larger medallion capping each end of the
+   plate. --plate-h sizes it; the end medallions overhang the plate and take
+   no room. For a ledger of counts, never for controls.                     */
+.kit-stats.kit-stats--plate {
+  --plate-h: 62px;
+  --stud: clamp(18px, 1.4vw, 22px);
+  min-height: var(--plate-h);
+  padding: calc(var(--plate-h) * .15) calc(var(--plate-h) * .98) calc(var(--plate-h) * .13);
+  border: 0 solid transparent;
+  border-image: url("../../assets/ui/kit/plate-lit.webp") 12 53 12 46 fill /
+    calc(var(--plate-h) * 12 / 72) calc(var(--plate-h) * 53 / 72) calc(var(--plate-h) * 12 / 72) calc(var(--plate-h) * 46 / 72) stretch;
+  background: none;
+  filter: drop-shadow(0 6px 10px rgba(0, 0, 0, .8));
+}
+/* the end medallions, seated over the plate's scrolled ends */
+.kit-stats.kit-stats--plate::before, .kit-stats.kit-stats--plate::after {
+  content: ''; position: absolute; top: 50%; left: auto; right: auto;
+  width: calc(var(--plate-h) * .78); height: calc(var(--plate-h) * .78);
+  translate: 0 -50%; transform: none;
+  background:
+    url("../../assets/ui/kit/star4.svg") 50% 50% / 42% 42% no-repeat,
+    url("../../assets/ui/kit/button.webp") 50% 50% / 100% 100% no-repeat;
+  -webkit-mask-image: none; mask-image: none;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, .85));
+}
+.kit-stats.kit-stats--plate::before { left: calc(var(--plate-h) * -.18); }
+.kit-stats.kit-stats--plate::after { right: calc(var(--plate-h) * -.18); }
+/* the studs between the figures: round enamel medallions, not lozenges */
+.kit-stats.kit-stats--plate > * + *::before {
+  width: var(--stud); height: var(--stud);
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background:
+    url("../../assets/ui/kit/star4.svg") 50% 50% / 46% 46% no-repeat,
+    url("../../assets/ui/kit/button.webp") 50% 50% / 100% 100% no-repeat;
+  box-shadow: none;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, .85));
+}
+.kit-stats.kit-stats--plate > * { padding: 0 calc(var(--stud) * .5 + 6px); }
+.kit-stats.kit-stats--plate .kit-stats__label { color: var(--kit-text-mid); }
+.kit-stats.kit-stats--plate .kit-stats__value {
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, .9), 0 1px 0 color-mix(in srgb, var(--kit-gold-lo) 80%, transparent), 0 0 12px color-mix(in srgb, var(--kit-candle) 22%, transparent);
+}

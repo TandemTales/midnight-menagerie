@@ -7,16 +7,16 @@
      1. the headline in the wordmark's cartouche, a little way down the board;
      2. the middle of the board, top to bottom, is the memorial — the Kid and
         the Companion side by side in the Kid board's frames on one shelf, the
-        smoking candle between them — and under them the Trick the run leaned
-        on, read at the reward's own scale, standing on a gilt plinth: the
-        board's second focus;
-     3. flanking it, gold-railed panels on the Kid board's suede: what you
-        found, what you lost and how far the survey got, the pet you did not
-        reach on the left; the ledger on the right — HOW FAR in lavender
-        display type with the wing and the seed on cartouches, the final
+        smoking candle between them — under them the Trick the run leaned on,
+        its gilt plinth standing on a carved shelf with its caption on a
+        plaque beside it, and under THAT the record: HOW FAR in lavender
+        display type, the Courage left, the wing and the seed on cartouches;
+     3. flanking it, two gold-railed panels on the Kid board's suede: on the
+        left ONE panel for what you found, what you lost and how far the survey
+        got, and the pet you did not reach; on the right the ledger — the final
         Tricks on nameplates and the Keepsakes on ledger rows;
-     4. every number on one engraved strip framed on its own plaque, the width
-        of the board;
+     4. every number on one gilt-rimmed plate parted by enamel medallions, the
+        width of the board;
      5. the three ways out, each a cartouche with its enamel button.
    =========================================================================== */
 
@@ -128,16 +128,19 @@
   --gutter: clamp(18px, 2vw, 34px);
   --go-light-x: 50vw;            /* where the candle stands, for the panels' light */
   display: grid;
-  grid-template-columns: minmax(0, .74fr) auto minmax(0, 1.3fr);
-  grid-template-rows: auto minmax(0, 1fr) auto;
+  /* shared across the board (round 4): the record stands in the middle under
+     the Worked Hardest shelf, so neither flank is one crammed tall column */
+  grid-template-columns: minmax(0, .8fr) minmax(0, 1.08fr) minmax(0, 1fr);
+  grid-template-rows: auto auto minmax(0, 1fr) auto;
   grid-template-areas:
-    "left  stage ledger"
-    "left  mvp   ledger"
-    "stats stats stats";
+    "left  stage  ledger"
+    "left  mvp    ledger"
+    "left  record ledger"
+    "stats stats  stats";
   column-gap: var(--gutter);
   row-gap: 0;
   min-height: 0;
-  padding: clamp(18px, 2.6vh, 26px) calc(var(--kit-vine-w) + clamp(6px, .8vw, 16px)) 0;
+  padding: clamp(12px, 1.8vh, 18px) calc(var(--kit-vine-w) + clamp(6px, .8vw, 16px)) 0;
 }
 .go-beat { display: contents; }
 .go-beat, .go-ledger { min-height: 0; }
@@ -146,12 +149,12 @@
 .go-stage {
   grid-area: stage;
   --go-plate-h: clamp(38px, 4.8vh, 46px);
-  --go-pic-w: clamp(138px, 10.2vw, 168px);
+  --go-pic-w: clamp(128px, 9.4vw, 152px);
   position: relative;
   display: grid; grid-template-columns: var(--go-pic-w) auto var(--go-pic-w);
   justify-content: center; align-items: end;
   column-gap: clamp(10px, 1.1vw, 20px);
-  padding: 6px clamp(8px, 1vw, 16px) calc(var(--go-plate-h) * .5 + 8px);
+  padding: 0 clamp(8px, 1vw, 16px) calc(var(--go-plate-h) * .5 + 8px);
 }
 /* the shelf they stand on: the carved, parcel-gilt ledge (.kit-ledge's
    painting), its ends lost in the dark */
@@ -260,25 +263,44 @@
   72%      { opacity: .78; }
 }
 
-/* --- the left column: what you found, what you lost, the pet --------------- */
+/* --- the left column: ONE panel — what you found, what you lost, the pet ---
+   The three used to be three small boxes of tight bullets. They are the
+   sections of one gold-railed panel now, the star on its rail, each parted
+   from the next by the boards' engraved rule with a brass lozenge at its
+   middle, and they share the panel's height out as air between them. */
 .go-stanzas {
   grid-area: left;
-  display: flex; flex-direction: column; justify-content: space-between;
-  gap: clamp(24px, 3.2vh, 30px);            /* each panel's medallion rides in here */
-  padding-top: 10px;
-  min-height: 0;
-}
-.go-stanza {
-  --pk: .66;
-  --medal-k: .72;
+  --pk: .7;
+  --medal-k: .8;
   /* the candle is to the right, in the middle of the board: its light falls
-     across each panel from that side, the far corner in the dark */
+     across the panel from that side, the far corner in the dark */
   --lit-x: 104%; --lit-y: 40%; --lit-w: 80%; --lit-h: 170%; --lit-a: 40%;
   --mat-edge: .5;
-  padding: clamp(18px, 2.3vh, 22px) clamp(16px, 1.3vw, 22px) clamp(18px, 2.2vh, 22px);
+  display: flex; flex-direction: column; justify-content: space-evenly;
+  gap: 0;
+  margin-top: 10px;
+  padding: clamp(18px, 2.4vh, 24px) clamp(18px, 1.5vw, 26px) clamp(16px, 2vh, 20px);
+  min-height: 0;
 }
-.go-sh { margin: 0 0 clamp(6px, .9vh, 9px); font-size: max(11.5px, var(--fs-xs)); letter-spacing: .2em; }
-.go-stanza ul { list-style: none; margin: 0; padding: 0 0 0 4px; display: grid; gap: 3px; }
+.go-stanza { position: relative; padding: clamp(10px, 1.6vh, 16px) 2px; }
+.go-stanza + .go-stanza::before {
+  content: ''; position: absolute; left: 8%; right: 8%; top: 0; height: 9px;
+  translate: 0 -50%;
+  background:
+    linear-gradient(135deg, var(--kit-gold-hi), var(--kit-gold) 50%, var(--kit-gold-lo)) 50% 50% / 6px 6px no-repeat,
+    linear-gradient(90deg, transparent 0%, color-mix(in srgb, var(--kit-gold) 62%, transparent) 26%, color-mix(in srgb, var(--kit-gold) 62%, transparent) 45%, transparent 47%, transparent 53%, color-mix(in srgb, var(--kit-gold) 62%, transparent) 55%, color-mix(in srgb, var(--kit-gold) 62%, transparent) 74%, transparent 100%) 0 3px / 100% 1px no-repeat,
+    linear-gradient(90deg, transparent 0%, color-mix(in srgb, var(--kit-gold-lo) 70%, transparent) 26%, color-mix(in srgb, var(--kit-gold-lo) 70%, transparent) 45%, transparent 47%, transparent 53%, color-mix(in srgb, var(--kit-gold-lo) 70%, transparent) 55%, color-mix(in srgb, var(--kit-gold-lo) 70%, transparent) 74%, transparent 100%) 0 6px / 100% 1px no-repeat;
+  filter: drop-shadow(0 1px 0 rgba(0, 0, 0, .8));
+}
+/* the lozenge at the rule's middle, turned on its point */
+.go-stanza + .go-stanza::after {
+  content: ''; position: absolute; left: 50%; top: 0; width: 7px; height: 7px;
+  translate: -50% -50%; rotate: 45deg;
+  background: linear-gradient(135deg, var(--kit-gold-hi), var(--kit-gold) 50%, var(--kit-gold-lo));
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, .75);
+}
+.go-sh { margin: 0 0 clamp(7px, 1.1vh, 11px); font-size: max(11.5px, var(--fs-xs)); letter-spacing: .2em; }
+.go-stanza ul { list-style: none; margin: 0; padding: 0 0 0 4px; display: grid; gap: clamp(3px, .6vh, 6px); }
 .go-stanza li {
   position: relative; padding-left: 16px;
   font-size: max(13.5px, var(--fs-sm)); line-height: 1.38; color: var(--kit-text);
@@ -322,11 +344,12 @@
   align-self: stretch;
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  grid-template-rows: auto auto minmax(0, 1fr);
-  grid-template-areas: "who" "deck" "keep";
-  row-gap: clamp(10px, 1.3vh, 12px);
+  grid-template-rows: auto auto;
+  grid-template-areas: "deck" "keep";
+  align-content: space-evenly;
+  row-gap: clamp(14px, 2vh, 20px);
   margin-top: 10px;
-  padding: clamp(22px, 2.7vh, 26px) clamp(20px, 1.8vw, 30px) clamp(18px, 2.2vh, 20px);
+  padding: clamp(24px, 3vh, 30px) clamp(20px, 1.8vw, 30px) clamp(18px, 2.2vh, 20px);
 }
 
 .go-lbl {
@@ -336,13 +359,20 @@
   text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
 }
 
-/* --- the header: HOW FAR on top, the wing and the seed on its cartouches ---- */
+/* --- the record: HOW FAR and the Courage left on one line, the wing and the
+       seed on their cartouches under it, all in the middle of the board under
+       the Worked Hardest shelf ----------------------------------------------- */
 .go-who {
-  grid-area: who;
+  grid-area: record;
+  align-self: start;
   display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   grid-template-areas: "focal focal" "reach seed";
-  align-items: stretch; column-gap: var(--s-4); row-gap: clamp(8px, 1.2vh, 12px);
-  padding-bottom: 17px;                      /* the seed's hint hangs in here */
+  align-items: stretch; column-gap: clamp(10px, 1vw, 16px); row-gap: clamp(6px, 1vh, 10px);
+  margin-top: clamp(6px, .9vh, 8px);
+  /* an engraved plaque under the shelf, like the label on it: the record is
+     set on something, never on the bare wall; the seed's hint hangs inside it */
+  --lit-x: 50%; --lit-y: -20%; --lit-w: 90%; --lit-h: 120%; --lit-a: 34%;
+  padding: clamp(6px, .9vh, 9px) clamp(12px, 1vw, 16px) calc(clamp(6px, .8vh, 8px) + 15px);
 }
 /* HOW FAR and the Courage gauge share one line, the gauge's note under it */
 .go-who__focal {
@@ -353,7 +383,7 @@
 /* HOW FAR, in the wordmark's lavender, engraved like it (#kit-engrave) */
 .go-who__deep {
   font-family: var(--font-display); font-weight: 700;
-  font-size: clamp(24px, 2vw, 32px); line-height: 1.02; letter-spacing: .07em; text-transform: uppercase;
+  font-size: clamp(22px, 1.8vw, 29px); line-height: 1.02; letter-spacing: .06em; text-transform: uppercase;
   white-space: nowrap;
   color: var(--kit-lav);
   background:
@@ -366,7 +396,7 @@
 }
 /* the wing it reached and the seed: matching enamel cartouches with gilt rims */
 .go-corner {
-  --h: clamp(54px, 6.6vh, 60px);
+  --h: clamp(46px, 5.6vh, 52px);
   display: grid; justify-items: center; align-content: center; gap: 0;
   min-height: var(--h);
   padding: calc(var(--h) * .14) calc(var(--h) * .62) calc(var(--h) * .12);
@@ -417,7 +447,7 @@
 
 /* --- Courage: an engraved gauge under the focal number --------------------- */
 .go-courage {
-  display: grid; grid-template-columns: auto clamp(70px, 5vw, 90px) auto;
+  display: grid; grid-template-columns: auto clamp(60px, 4.4vw, 80px) auto;
   grid-template-areas: "lbl track n" "note note note";
   column-gap: 10px; row-gap: 1px; align-items: center; justify-items: start;
 }
@@ -480,11 +510,12 @@
 }
 .go-bp__count b { font-family: var(--font-num); font-size: 1.3em; color: var(--kit-gold-hi); }
 
-/* --- the numbers: ONE engraved strip on its own framed plaque -------------- */
+/* --- the numbers: ONE gilt-rimmed plate, its figures parted by medallions
+       (ui/kit.css .kit-stats--plate, MINT's rail) --------------------------- */
 .go-stats.kit-stats {
   grid-area: stats;
-  margin: clamp(10px, 1.4vh, 14px) 0 0;
-  padding: 7px clamp(14px, 1.4vw, 24px) 6px;
+  --plate-h: clamp(50px, 6.2vh, 56px);
+  margin: clamp(8px, 1vh, 10px) 10px 0;
 }
 .go-stats .kit-stats__label {
   white-space: nowrap; text-wrap: nowrap;
@@ -539,19 +570,33 @@
    beside it says why it is there. */
 .go-block--mvp {
   grid-area: mvp;
-  --plinth-h: clamp(46px, 5.6vh, 52px);
-  align-self: stretch; align-content: start; justify-items: center;
-  gap: clamp(6px, 1vh, 10px);
-  margin-top: clamp(10px, 1.4vh, 14px);
+  --plinth-h: clamp(40px, 4.8vh, 46px);
+  --shelf-h: clamp(40px, 5vh, 46px);
+  align-self: start; align-content: start; justify-items: center;
+  gap: 0;
+  margin-top: clamp(4px, .8vh, 8px);
 }
-.go-block--mvp > .kit-heading--ribbon { --rib-h: clamp(28px, 3.4vh, 32px); }
+
+/* the shelf: the plinth and the caption's plaque both stand on its top face */
 .go-mvp {
   position: relative;
-  display: grid; grid-template-columns: auto minmax(0, 15ch); gap: clamp(14px, 1.4vw, 22px);
-  align-items: center;
+  display: flex; align-items: flex-end; justify-content: center; gap: clamp(16px, 1.6vw, 26px);
+  width: 100%;
+  padding: 0 clamp(8px, .8vw, 14px) calc(var(--shelf-h) * .72);
 }
-.go-mvp__slot { position: relative; flex: none; margin: 16px 18px calc(19px + var(--plinth-h) * .9); }
-.go-board { --go-mvp-s: .9; }
+.go-mvp::after {
+  content: ''; position: absolute; z-index: -3; pointer-events: none;
+  left: -3%; right: -3%;
+  --ledge-h: var(--shelf-h);
+  /* the frame's plinth and the plaque stand .18 of the ledge below its top */
+  bottom: calc(var(--shelf-h) * .72 + var(--ledge-h) * .18 - var(--ledge-h) * 152 / 116);
+  height: calc(var(--ledge-h) * 152 / 116);
+  background: url("../../assets/ui/kit/ledge.webp") 50% 0 / auto 100% repeat-x;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, black 10%, black 90%, transparent 100%);
+          mask-image: linear-gradient(90deg, transparent 0%, black 10%, black 90%, transparent 100%);
+}
+.go-mvp__slot { position: relative; flex: none; margin: 16px 34px calc(15px + var(--plinth-h) * .9); }
+.go-board { --go-mvp-s: .6; }
 /* the card hangs in the Kid board's frame, as the reward's three do */
 .go-mvp__slot::before {
   content: ''; position: absolute; z-index: -1; pointer-events: none;
@@ -583,17 +628,38 @@
 }
 /* the candle's light on the wall behind it */
 .go-mvp::before {
-  content: ''; position: absolute; z-index: -3; pointer-events: none;
-  left: calc(var(--card-w) * var(--go-mvp-s) * .5 + 18px); top: 46%;
-  width: calc(var(--card-w) * var(--go-mvp-s) * 2.4); aspect-ratio: 1; translate: -50% -50%;
+  content: ''; position: absolute; z-index: -4; pointer-events: none;
+  left: 50%; top: 46%;
+  width: calc(var(--card-w) * var(--go-mvp-s) * 2.6); aspect-ratio: 1; translate: -50% -50%;
   border-radius: 50%;
   background: radial-gradient(closest-side, color-mix(in srgb, var(--kit-candle) 20%, transparent), transparent 72%);
 }
 /* the card is read here: its VANISH / KEEP badge never letters under 11px */
 .go-mvp__slot .mm-card__badges { font-size: max(11px, calc(9 * var(--u))); }
+/* the label: a museum plaque (.kit-plaque, a bracketed gilt double rule on
+   enamel) standing on the shelf beside the plinth — WORKED HARDEST in the
+   boards' spaced gold small caps, its rarity under it, and the line that
+   says why the card is there */
+.go-mvp__label {
+  flex: 0 1 clamp(178px, 14vw, 226px); min-width: 0;
+  align-self: flex-end;
+  margin: 0 0 4px;
+  padding: clamp(12px, 1.6vh, 15px) clamp(14px, 1.1vw, 18px) clamp(12px, 1.5vh, 14px);
+  --lit-x: 30%; --lit-y: -12%; --lit-a: 38%;
+  display: grid; gap: clamp(5px, .8vh, 8px);
+  filter: drop-shadow(0 8px 8px rgba(0, 0, 0, .7));
+}
+.go-mvp__label > .go-mvp__h {
+  font-size: max(11.5px, var(--fs-xs)); letter-spacing: .16em;
+  column-gap: 6px;
+}
+.go-mvp__label > .go-mvp__h::before, .go-mvp__label > .go-mvp__h::after { width: 14px; }
+.go-mvp__label > .go-mvp__h > em { font-size: max(12px, var(--fs-xs)); }
 .go-mvp__note {
-  margin: 0; font-size: max(13.5px, var(--fs-sm)); line-height: 1.45; font-style: italic;
-  color: var(--kit-text-mid);
+  margin: 0;
+  text-align: center; text-wrap: balance;
+  font-size: max(13.5px, var(--fs-sm)); line-height: 1.38; font-style: italic;
+  color: var(--kit-text);
   text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
 }
 .go-mvp__note b { font-style: normal; font-weight: 600; color: var(--kit-name); }
@@ -712,10 +778,18 @@
 
 /* ── narrower boards ──────────────────────────────────────────────────────── */
 @media (max-width: 1400px) {
-  .go-wrap { --gutter: 16px; grid-template-columns: minmax(0, .8fr) auto minmax(0, 1.24fr); }
+  .go-wrap { --gutter: 16px; grid-template-columns: minmax(0, .86fr) minmax(0, 1fr) minmax(0, 1fr); }
   .go-courage > .go-lbl { letter-spacing: .1em; }
-  .go-mvp { grid-template-columns: auto minmax(0, 12.5ch); gap: 10px; }
-  .go-mvp__note { font-size: 13px; line-height: 1.36; }
+  .go-mvp { gap: 12px; }
+  .go-mvp__slot { margin-inline: 18px; }
+  .go-mvp__label { flex-basis: 200px; }
+  .go-mvp__label { padding-inline: 12px; }
+  .go-mvp__label > .go-mvp__h { letter-spacing: .1em; column-gap: 5px; }
+  /* on a narrow label the heading keeps one line: its star strokes step aside */
+  .go-mvp__label > .go-mvp__h { display: block; text-align: center; }
+  .go-mvp__label > .go-mvp__h::before, .go-mvp__label > .go-mvp__h::after { content: none; }
+  .go-mvp__label > .go-mvp__h > em { display: block; margin-top: 1px; }
+  .go-mvp__note { font-size: 13px; line-height: 1.34; }
   .go-stats .kit-stats__label { font-size: 11.5px; letter-spacing: .06em; }
   .go-trick__name { font-size: 12.5px; }
   .go-trick__cost { width: 16px; height: 16px; font-size: 10px; }
@@ -730,7 +804,7 @@
 
 /* ── the Steam Deck and every short laptop panel ──────────────────────────── */
 @media (max-height: 860px) {
-  .go-board { --go-mvp-s: 1.1; }
+  .go-board { --go-mvp-s: .72; }
   .go-head { margin-top: 12px; }
   .go-head.kit-titleblock--compact { --cart-h: 82px; }
   .go-head .kit-cartouche__title { font-size: 25px; }
@@ -739,21 +813,23 @@
   .go-stage { --go-plate-h: 36px; --go-pic-w: 132px; padding-top: 0; }
   .go-portrait__plate .kit-plate__name { line-height: 1; }
   .go-portrait__plate .kit-plate__epithet { line-height: 1.05; }
-  .go-stanzas { gap: 22px; padding-top: 6px; }
+  .go-stanzas { padding-block: 16px 14px; }
+  .go-stanza { padding-block: 7px; }
   .go-sh { letter-spacing: .14em; }
   .go-sh::before, .go-sh::after { width: 16px; }
-  .go-stanza { padding-block: 17px 21px; }
   .go-stanza li { line-height: 1.3; font-size: 13px; }
   .go-pet__snap { width: 60px; }
   .go-pet__text { font-size: 13px; line-height: 1.34; }
-  .go-ledger { margin-top: 6px; padding: 20px 18px 16px; row-gap: 8px; }
-  .go-who { row-gap: 6px; padding-bottom: 15px; }
-  .go-who__deep { font-size: 24px; }
-  .go-corner { --h: 52px; padding-inline: 24px; }
-  .go-block--mvp { margin-top: 18px; gap: 10px; --plinth-h: 46px; }
-  .go-block--mvp > .kit-heading--ribbon { --rib-h: 26px; }
-  .go-mvp__slot { margin: 12px 14px calc(17px + var(--plinth-h) * .9); }
-  .go-stats.kit-stats { margin-top: 8px; padding-block: 5px 4px; }
+  .go-ledger { margin-top: 6px; padding: 22px 18px 16px; row-gap: 10px; }
+  .go-who { row-gap: 4px; margin-top: 4px; padding: 5px 12px 19px; }
+  .go-who__deep { font-size: 20px; letter-spacing: .05em; }
+  .go-who__focal { column-gap: 10px; }
+  .go-courage { grid-template-columns: auto 50px auto; column-gap: 6px; }
+  .go-courage > .go-lbl { letter-spacing: .06em; }
+  .go-corner { --h: 48px; padding-inline: 20px; }
+  .go-block--mvp { margin-top: 2px; --plinth-h: 38px; --shelf-h: 36px; }
+  .go-mvp__slot { margin: 12px 26px calc(13px + var(--plinth-h) * .9); }
+  .go-stats.kit-stats { margin-top: 10px; }
   .go-stats .kit-stats__value { font-size: 17px; line-height: 1.05; }
   .go-trick { --plate-h: 25px; }
   .go-trick__name { font-size: 12.5px; }
@@ -762,7 +838,11 @@
   .go-keep b { font-size: 13px; line-height: 1.1; }
   .go-keep em { font-size: 12px; line-height: 1.14; }
   .go-keep__sigil { width: 26px; }
-  .go-foot { padding-top: 8px; padding-bottom: 10px; }
+  /* the way home's filigree medallion reaches up past its plate: the row
+     stands a little lower, and the medallion a step smaller, so it never
+     crosses the last figure on the plate above */
+  .go-foot { padding-top: 12px; padding-bottom: 4px; }
+  .go-btn--primary .kit-btn__medal { --md: calc(var(--plate-h) * 1.06); }
 }
 @media (max-width: 1100px) {
   .go-wrap { grid-template-columns: minmax(0, 1fr); grid-template-areas: "stage" "mvp" "left" "ledger" "stats"; overflow-y: auto; }
