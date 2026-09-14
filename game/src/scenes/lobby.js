@@ -57,7 +57,7 @@ import { Session } from '../net/session.js';
 import { attachSession } from '../net/actions.js';
 import { ChannelTransport, canChannel } from '../net/transport.js';
 import {
-  ensureCss, el, rovingFocus, reduceMotion,
+  ensureCss, el, reduceMotion,
   availableCompanions, isStarter, warmFaces,
   companionPortrait, kidPortrait, menuArtSrc,
 } from '../ui/portrait.js';
@@ -87,11 +87,14 @@ const GLYPH = {
  * room's painting, `lobby.png`, drops into the ground when Josh has made it.
  */
 function boardMarkup() {
-  return '<div class="kit-ground lo-ground" aria-hidden="true"><i class="kit-ground__warm"></i><i class="kit-ground__moon"></i></div>'
+  return '<div class="kit-ground kit-ground--treehouse lo-ground" aria-hidden="true"><i class="kit-ground__warm"></i><i class="kit-ground__moon"></i></div>'
     + '<div class="lo-vig" aria-hidden="true"></div>'
-    /* a brass sconce on the wall either side of the stage, lighting the
-       panelling round it, as the Curiosity's hall is staged */
-    + '<div class="lo-hall" aria-hidden="true"><i class="kit-sconce lo-hall__sconce lo-hall__sconce--l"></i><i class="kit-sconce lo-hall__sconce lo-hall__sconce--r"></i></div>'
+    /* the treehouse's own corners: a cobweb strung where each post meets the
+       roof beam (the posts are painted into treehouse.webp) */
+    + '<div class="lo-hall" aria-hidden="true"><i class="kit-web lo-hall__web lo-hall__web--l"></i><i class="kit-web kit-web--r lo-hall__web lo-hall__web--r"></i>'
+    /* gold card stars and a moon a Kid cut out and hung from the roof beam */
+    + '<i class="kit-charm lo-charm lo-charm--1"></i><i class="kit-charm kit-charm--moon lo-charm lo-charm--2"></i>'
+    + '<i class="kit-charm lo-charm lo-charm--3"></i><i class="kit-charm lo-charm lo-charm--4"></i></div>'
     + kitDressMarkup().replace('<i class="kit-dress__rule"></i>',
       '<i class="kit-dress__rule"></i><i class="kit-dress__footscroll"></i>');
 }
@@ -105,6 +108,7 @@ function boardMarkup() {
  */
 function viewMarkup() {
   return `<figure class="lo-view" aria-hidden="true">
+      <i class="kit-sill lo-view__sill"></i>
       <div class="lo-view__pic kit-frame kit-frame--over"><span class="lo-view__art" style="background-image:url('${menuArtSrc('menu')}')"></span></div>
       <i class="lo-view__medal"></i>
       <figcaption class="lo-view__plate kit-plate"><b class="kit-plate__name">The House</b><span class="kit-plate__epithet">somewhere out there in the dark</span></figcaption>
@@ -176,15 +180,55 @@ export class LobbyScene extends Scene {
     this._portraits.length = 0;
   }
 
-  /** Lay the kit board on the root and hand back the element to build on. */
+  /**
+   * Lay the kit board on the root and hand back the element to build on.
+   *
+   * The joined room is repainted on EVERY wire message, so a repaint keeps the
+   * board it already has — its painted ground, its dressing, its lights, the
+   * candle flames mid-flicker — and clears only what stands on it. Rebuilding
+   * the whole board restarted every flame and re-hung the painting each time
+   * somebody so much as changed their Kid.
+   */
   _board(cls) {
     this._dropPortraits();
+    const had = this.root.querySelector(':scope > .lo-board');
+    if (had && had.classList.contains(cls)) {
+      for (const n of [...had.children]) if (n.dataset.loContent) n.remove();
+      return had;
+    }
     this.root.innerHTML = '';
     const board = el('div', `${cls} lo-board kit-board`);
     board.innerHTML = boardMarkup();
     this.root.appendChild(board);
     paintBackdrop(board, 'lobby', () => !this._dead);
     return board;
+  }
+
+  /** Stand something on the board, marked so a repaint clears only that. */
+  _put(board, node) {
+    node.dataset.loContent = '1';
+    board.appendChild(node);
+    return node;
+  }
+
+  /**
+   * Which control has keyboard focus, as something that survives the control
+   * being rebuilt: its `lo__` class and its place among the controls sharing
+   * it (the two pickers are both `.lo__pick`).
+   */
+  _focusKey() {
+    const a = document.activeElement;
+    if (!a || a === document.body || !this.root.contains(a)) return null;
+    const cls = [...a.classList].find((c) => c.startsWith('lo__'));
+    if (!cls) return null;
+    return { cls, i: Math.max(0, [...this.root.querySelectorAll(`.${cls}`)].indexOf(a)) };
+  }
+
+  _restoreFocus(key) {
+    if (!key) return;
+    const n = this.root.querySelectorAll(`.${key.cls}`)[key.i]
+      || this.root.querySelector(`.${key.cls}`);
+    try { n?.focus({ preventScroll: true }); } catch { /* focus is best-effort */ }
   }
 
   /** The title plaque both states share: the wordmark's cartouche and ribbon. */
@@ -235,7 +279,7 @@ export class LobbyScene extends Scene {
 
     const head = this._head();
     head.appendChild(el('p', 'lo__sub kit-cartouche__sub', 'Climb up and wait for your friends.'));
-    wrap.appendChild(head);
+    this._put(wrap, head);
 
     /* The form is the body AND the foot, so "Climb up" can stand where every
        board keeps its way on (bottom right) and still submit the password. */
@@ -248,9 +292,20 @@ export class LobbyScene extends Scene {
     card.setAttribute('aria-label', 'The password');
     card.appendChild(el('h2', 'lo-card__h kit-heading kit-heading--ribbon kit-heading--inline kit-heading--clasp',
       'The password <em>is the map</em>'));
-    card.appendChild(el('p', 'lo__sub lo-card__lede',
+    /* The rule of the place, written out by a Kid on a slip of paper and
+       pinned up where the password is said: the panel's words, not a caption. */
+    const slip = el('div', 'lo-slip kit-paper');
+    slip.appendChild(el('span', 'kit-pin lo-slip__pin'));
+    slip.firstChild.setAttribute('aria-hidden', 'true');
+    slip.appendChild(el('p', 'lo__sub lo-card__lede',
       'Everyone who knows the password ends up in the same treehouse — and the '
       + 'password is the map, so the same words always draw the same house.'));
+    card.appendChild(slip);
+    /* A lantern on a hook either side of the panel: the light the password
+       is read by. Decoration. */
+    card.insertAdjacentHTML('beforeend',
+      '<i class="kit-lantern lo-lantern lo-lantern--l" aria-hidden="true"></i>'
+      + '<i class="kit-lantern lo-lantern lo-lantern--r" aria-hidden="true"></i>');
 
     if (!canChannel()) {
       /* Said plainly rather than left as a dead button. A browser without
@@ -275,26 +330,28 @@ export class LobbyScene extends Scene {
     card.appendChild(plate);
 
     /* The map those words draw, read back as they are typed: the same seed the
-       room will print once everybody is up (`seedFromRoom`, a pure hash). */
-    const seed = el('p', 'lo-seed kit-enamel kit-enamel--dark');
+       room will print once everybody is up (`seedFromRoom`, a pure hash). It
+       is a footnote engraved under the panel's one focal point, the plate,
+       and never a second plate beside it. */
+    const seed = el('p', 'lo-seed');
     seed.setAttribute('aria-live', 'polite');
     const paintSeed = () => {
       const room = tidyRoom(input.value);
       seed.innerHTML = room
-        ? `<i class="kit-enamel__label">draws the house</i><b class="kit-enamel__value">${seedFromRoom(room)}</b>`
-        : '<i class="kit-enamel__label">say two words</i>';
+        ? `<b class="lo-seed__v">№ ${seedFromRoom(room)}</b> <i class="lo-seed__k">the house these words draw</i>`
+        : '<i class="lo-seed__k">say two words</i>';
     };
     paintSeed();
     input.addEventListener('input', paintSeed);
 
     const actions = el('div', 'lo-card__actions');
-    actions.appendChild(seed);
     const roll = el('button', 'lo__roll kit-btn kit-btn--quiet');
     roll.type = 'button';
     roll.innerHTML = `<i class="kit-medallion kit-btn__medal lo-knob" aria-hidden="true">${GLYPH.roll}</i><span>New password</span>`;
     roll.addEventListener('click', () => { input.value = coinRoom(); paintSeed(); input.focus(); });
     actions.appendChild(roll);
     card.appendChild(actions);
+    card.appendChild(seed);
 
     stage.appendChild(card);
     form.appendChild(stage);
@@ -309,7 +366,9 @@ export class LobbyScene extends Scene {
     const go = el('button', 'lo__enter kit-btn');
     go.type = 'submit';
     go.disabled = !canChannel();
-    go.innerHTML = `<span>Climb up</span><em>up the rope ladder</em><kbd>Enter</kbd>`
+    /* the way on as a nameplate: its name over its italic epithet, the key
+       set apart after them, so the three never crowd at 1280x800 */
+    go.innerHTML = `<span class="lo-go__words"><span>Climb up</span><em>up the rope ladder</em></span><kbd>Enter</kbd>`
       + `<i class="kit-medallion kit-medallion--ornate kit-btn__medal" aria-hidden="true">${GLYPH.onward}</i>`;
     foot.appendChild(go);
     form.appendChild(foot);
@@ -321,7 +380,7 @@ export class LobbyScene extends Scene {
       this._open(room);
     });
 
-    wrap.appendChild(form);
+    this._put(wrap, form);
     try { input.focus(); input.select(); } catch { /* focus is best-effort */ }
   }
 
@@ -364,6 +423,9 @@ export class LobbyScene extends Scene {
     const l = this._lobby;
     const players = l.players;
 
+    /* Focus survives the repaint: the wire repaints this on every message,
+       and a player who had just tabbed to "I'm ready" is still on it. */
+    const focus = this._focusKey();
     const wrap = this._board('lo__room');
 
     const head = this._head('lo__head kit-titleblock--compact');
@@ -372,7 +434,7 @@ export class LobbyScene extends Scene {
     head.appendChild(el('p', 'lo__sub kit-titleblock__note',
       `You are ${l.seat + 1} of ${players.length} up here. `
       + 'Everybody sees the same order, and it is not the order you arrived in.'));
-    wrap.appendChild(head);
+    this._put(wrap, head);
 
     const body = el('main', 'lo-body lo-body--room');
 
@@ -473,7 +535,7 @@ export class LobbyScene extends Scene {
     });
     mineRow.appendChild(ready);
     body.appendChild(mineRow);
-    wrap.appendChild(body);
+    this._put(wrap, body);
 
     /* ── the ways out: back down, and in together ───────────────────────── */
     const foot = el('div', 'lo__foot lo-foot');
@@ -513,8 +575,11 @@ export class LobbyScene extends Scene {
         '<i class="kit-enamel__label">Whoever is first on the list says when to go.</i>'));
     }
 
-    wrap.appendChild(foot);
-    try { rovingFocus?.(wrap); } catch { /* keyboard nav is an enhancement */ }
+    this._put(wrap, foot);
+    /* (`rovingFocus(wrap)` stood here with no selector, which bound a keydown
+       handler that could never find an item: a no-op, and one that would pile
+       up now that a repaint keeps its board.) */
+    this._restoreFocus(focus);
   }
 
   /* ── the door opens ───────────────────────────────────────────────────── */

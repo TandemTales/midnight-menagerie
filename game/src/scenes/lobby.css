@@ -30,35 +30,53 @@
   --hud-h: 0px;                       /* no run HUD: rule and corners start at the top */
   display: grid;
   grid-template-rows: auto minmax(0, 1fr) auto;
-  /* the stage: the framed house and the panel beside it */
-  --lo-view-w: clamp(440px, 40.5vw, 670px);
-  --lo-card-w: clamp(470px, 34vw, 560px);
-  --lo-gap: clamp(44px, 4.4vw, 76px);
+  /* the stage: the framed house, a lantern, the panel, a lantern */
+  --lo-view-w: clamp(430px, 37.5vw, 620px);
+  --lo-card-w: clamp(460px, 33vw, 540px);
+  --lo-gap: clamp(84px, 7vw, 116px);          /* the left lantern hangs in it */
+  --lo-lantern-w: clamp(54px, 4.6vw, 74px);
+  --lo-lantern-off: clamp(34px, 3.6vw, 56px); /* the right lantern, out from the panel */
   --lo-stage-w: calc(var(--lo-view-w) + var(--lo-gap) + var(--lo-card-w));
   --lo-view-cx: calc(50vw - var(--lo-stage-w) / 2 + var(--lo-view-w) / 2);
   --lo-view-cy: 53vh;
-  /* its light: the moon the house stands under, cold round the frame; the
-     candle at its foot, warm on the panelling */
-  --ml1-x: var(--lo-view-cx);                 --ml1-y: calc(var(--lo-view-cy) - 2vh);
-  --ml1-w: calc(var(--lo-view-w) * 1.9);      --ml1-h: calc(var(--lo-view-w) * 1.5);
-  --wl3-x: calc(var(--lo-view-cx) + var(--lo-view-w) * .5);
+  --lo-lamp-y: calc(31vh + var(--lo-lantern-w) * 1.02);
+  /* The treehouse.webp painting's own geometry, as it lands on this board
+     (cover, anchored at its foot): its scale, and where its two inner posts
+     meet the roof beam. */
+  --lo-k: max(100vw / 1920, 100vh / 1080);    /* one painting pixel, on screen */
+  --lo-post-l: calc(50vw - 588 * var(--lo-k));
+  --lo-post-r: calc(50vw + 588 * var(--lo-k));
+  --lo-beam: calc(100vh - 1010 * var(--lo-k));
+  /* its light: the moon the house stands under, cold round the frame and
+     across the top of the wall; the candle at its foot; and the two lanterns,
+     which light the paper round the password and the wall above it */
+  --ml1-x: var(--lo-view-cx);                 --ml1-y: calc(var(--lo-view-cy) - 6vh);
+  --ml1-w: calc(var(--lo-view-w) * 2.1);      --ml1-h: calc(var(--lo-view-w) * 1.7);
+  --wl3-x: calc(50vw - var(--lo-stage-w) / 2 + var(--lo-view-w) + var(--lo-gap) / 2);
   --wl3-y: calc(var(--lo-view-cy) + var(--lo-view-w) * .36);
-  --wl3-w: clamp(380px, 34vw, 560px);         --wl3-h: calc(var(--wl3-w) * 1.1);
-  --wl4-x: calc(100vw - var(--lo-view-cx));   --wl4-y: calc(var(--lo-view-cy) - 4vh);
-  --wl4-w: calc(var(--lo-card-w) * 1.7);      --wl4-h: calc(var(--lo-card-w) * 1.35);
-  /* the two sconces between the vines and the stage */
-  --lo-sconce-w: clamp(44px, 3.8vw, 64px);
-  --lo-sconce-cx: calc((50vw - var(--lo-stage-w) / 2 + clamp(38px, 3.5vw, 60px) + clamp(8px, .7vw, 12px)) / 2);
-  --lo-sconce-top: 33vh;
-  --wl5-x: var(--lo-sconce-cx);               --wl5-y: calc(var(--lo-sconce-top) + var(--lo-sconce-w) * 330 / 150 * .16);
-  --wl5-w: clamp(260px, 22vw, 380px);         --wl5-h: calc(var(--wl5-w) * 1.4);
-  --wl6-x: calc(100vw - var(--lo-sconce-cx)); --wl6-y: var(--wl5-y);
+  --wl3-w: clamp(340px, 30vw, 500px);         --wl3-h: calc(var(--wl3-w) * 1.1);
+  --wl4-x: calc(50vw + var(--lo-stage-w) / 2 - var(--lo-card-w) / 2);
+  --wl4-y: calc(var(--lo-lamp-y) - 8vh);
+  --wl4-w: calc(var(--lo-card-w) * 1.5);      --wl4-h: calc(var(--lo-card-w) * .9);
+  --wl5-x: calc(50vw - var(--lo-stage-w) / 2 + var(--lo-view-w) + var(--lo-gap) / 2);
+  --wl5-y: var(--lo-lamp-y);
+  --wl5-w: clamp(360px, 31vw, 520px);         --wl5-h: calc(var(--wl5-w) * 1.25);
+  --wl6-x: calc(50vw + var(--lo-stage-w) / 2 + var(--lo-lantern-off));
+  --wl6-y: var(--lo-lamp-y);
   --wl6-w: var(--wl5-w);                      --wl6-h: var(--wl5-h);
 }
 .lo-hall { position: absolute; inset: 0; z-index: 2; pointer-events: none; }
-.lo-hall__sconce { --sconce-w: var(--lo-sconce-w); top: var(--lo-sconce-top); }
-.lo-hall__sconce--l { left: calc(var(--lo-sconce-cx) - var(--lo-sconce-w) / 2); }
-.lo-hall__sconce--r { right: calc(var(--lo-sconce-cx) - var(--lo-sconce-w) / 2); }
+/* a cobweb in the corner each inner post makes with the roof beam */
+.lo-hall__web { --web-w: clamp(92px, 7.6vw, 128px); top: calc(var(--lo-beam) - 2px); opacity: .62; }
+.lo-hall__web--l { left: calc(var(--lo-post-l) + 33 * var(--lo-k)); }
+.lo-hall__web--r { right: calc(100vw - var(--lo-post-r) + 33 * var(--lo-k)); }
+/* the stars and the moon on their threads from the beam, either side of the
+   plaque, their cards turning in the air over the stage */
+.lo-charm { top: calc(var(--lo-beam) - 2px); margin-left: calc(var(--charm-w) / -2); }
+.lo-charm--1 { left: 30.8vw; --charm-w: clamp(34px, 2.9vw, 48px); --charm-len: 12vh; animation-delay: -1.2s; }
+.lo-charm--2 { left: 35.6vw; --charm-w: clamp(42px, 3.5vw, 58px); --charm-len: 13.2vh; --charm-sway: 2.5deg; animation-delay: -3.4s; }
+.lo-charm--3 { left: 64.4vw; --charm-w: clamp(30px, 2.5vw, 42px); --charm-len: 13.6vh; animation-delay: -5.1s; }
+.lo-charm--4 { left: 69.4vw; --charm-w: clamp(36px, 3vw, 50px); --charm-len: 10.5vh; animation-delay: -2.2s; }
 .lo-vig {
   position: absolute; inset: 0; z-index: 1; pointer-events: none;
   background:
@@ -95,11 +113,14 @@
 .lo-stage {
   display: grid;
   grid-template-columns: var(--lo-view-w) var(--lo-card-w);
-  justify-content: center; align-items: center;
+  /* one row, in the middle of the room; the window and the panel share its
+     foot, because they stand on the same sill */
+  justify-content: center; align-content: center; align-items: end;
   column-gap: var(--lo-gap);
   min-height: 0;
-  padding: clamp(34px, 5vh, 52px) 0 clamp(28px, 4vh, 40px);
+  padding: clamp(34px, 5vh, 52px) 0 clamp(40px, 6vh, 60px);
 }
+.lo-stage > .lo-card { z-index: 1; }
 
 /* the house, framed like the window the Kids are all looking out of */
 .lo-view { position: relative; margin: 0; }
@@ -130,7 +151,8 @@
   position: absolute; left: 50%; top: 0; z-index: 4; pointer-events: none;
   width: clamp(112px, 9.4vw, 150px); aspect-ratio: 156 / 98;
   transform: translate(-50%, -52%);
-  background: url("../../assets/ui/kit/medal-moon.webp") 50% 50% / 100% 100% no-repeat;
+  /* the crest with the stray gilt its crop caught painted out */
+  background: url("../../assets/ui/kit/medal-moon-clean.webp") 50% 50% / 100% 100% no-repeat;
   filter: drop-shadow(0 4px 5px rgba(0, 0, 0, .8));
 }
 .lo-view__plate {
@@ -140,26 +162,62 @@
   white-space: nowrap;
   padding-inline: calc(var(--plate-h) * .9);
 }
-/* the Kid board's skull on its books and its candle, at the frame's foot */
-.lo-view__skull { width: clamp(70px, 5.8vw, 96px); left: calc(clamp(70px, 5.8vw, 96px) * -.46); bottom: -4%; z-index: 6; }
-.lo-view__candle { width: clamp(46px, 3.8vw, 62px); right: calc(clamp(46px, 3.8vw, 62px) * -.32); bottom: -5%; z-index: 6; }
+/* The window stands on a thick plank sill a Kid nailed under it, and the Kid
+   board's skull on its books and its candle stand on the sill's two ends:
+   the skull clear of the frame's gilt corner, the candle in the gap under
+   the lantern. The frame's foot rests a fifth of the way into the sill's top
+   face; everything on the sill stands a little further forward on it. */
+.lo-view { --sill-h: clamp(36px, 4.2vh, 46px); --skull-w: clamp(58px, 5vw, 90px); --candle-w: clamp(44px, 3.6vw, 60px); }
+/* The sill the whole stage stands on, nailed along the wall under the window
+   and the panel, from just inside the board's vine on the left to just inside
+   it on the right. Hung from the window (which shares the panel's foot): the
+   frame's gilt overhangs its box by 13px, and rests a fifth of the way into
+   the sill's top face. */
+.lo-view__sill {
+  position: absolute; z-index: 0;
+  --lo-stage-x: calc(50vw - var(--lo-stage-w) / 2);      /* the window's left edge on the board */
+  --lo-edge-in: calc(clamp(8px, .7vw, 12px) + clamp(38px, 3.5vw, 60px) + 6px);
+  left: calc(var(--lo-edge-in) - var(--lo-stage-x));
+  right: calc(var(--lo-edge-in) - (100vw - var(--lo-stage-x) - var(--lo-view-w)));
+  top: calc(100% + 13px - var(--sill-h) * .22);
+}
+.lo-view__pic { z-index: 1; }
+.lo-view__skull { width: var(--skull-w); left: calc(var(--skull-w) * -1.1); bottom: calc(-13px - var(--sill-h) * .08); z-index: 6; }
+.lo-view__candle { width: var(--candle-w); right: calc(var(--lo-gap) * -.5 - var(--candle-w) / 2); bottom: calc(-13px - var(--sill-h) * .1); z-index: 6; }
 
 /* ── the password panel ───────────────────────────────────────────────────── */
 .lo-card {
   --pk: .8;
   display: grid; justify-items: center;
-  row-gap: clamp(14px, 2.1vh, 22px);
-  padding: clamp(40px, 5.6vh, 52px) clamp(28px, 2.6vw, 44px) clamp(26px, 3.4vh, 34px);
+  row-gap: clamp(14px, 2.2vh, 22px);
+  padding: clamp(44px, 6vh, 56px) clamp(28px, 2.6vw, 44px) clamp(18px, 2.6vh, 26px);
   text-align: center;
+}
+/* the rule of the place on a slip of paper, pinned at a tilt under the
+   ribbon: a Kid's note, in ink, in the lanterns' light */
+.lo-slip {
+  --paper: #d8c49d;
+  position: relative;
+  width: min(100%, 44ch);
+  padding: clamp(12px, 1.7vh, 16px) clamp(16px, 1.5vw, 22px) clamp(10px, 1.5vh, 14px);
+  rotate: -1.1deg;
+  margin-top: 2px;
+}
+/* a brass drawing pin, not the cork board's red one: this is the panel's */
+.lo-slip__pin {
+  --pin-w: clamp(16px, 1.2vw, 20px); left: 50%; top: -7px; translate: -50% 0; z-index: 2;
+  filter: drop-shadow(2px 4px 2px rgba(20, 8, 4, .5)) sepia(1) saturate(1.5) hue-rotate(-6deg) brightness(1.05);
 }
 .lo-card__lede {
   margin: 0;
-  max-width: 40ch;
-  font-size: var(--fs-md); line-height: 1.5;
-  color: var(--kit-text);
-  text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
+  font-size: var(--fs-md); line-height: 1.42;
+  font-style: italic;
+  color: var(--kit-paper-ink);
   text-wrap: balance;
 }
+.lo-lantern { --lantern-w: var(--lo-lantern-w); top: calc(var(--lo-lantern-w) * -.36); z-index: 3; }
+.lo-lantern--l { left: calc(var(--lo-gap) * -.5 - var(--lo-lantern-w) / 2); }
+.lo-lantern--r { right: calc(-1 * var(--lo-lantern-off) - var(--lo-lantern-w) / 2); }
 .lo__warn {
   margin: 0;
   font-size: var(--fs-sm); font-style: italic; line-height: 1.4;
@@ -216,14 +274,24 @@
    plate is already lit round its gilt while the field has focus */
 .lo__code::selection { background: transparent; color: #fff6e2; }
 
-/* under the plate: the seed the words draw, and the way to roll new ones */
+/* under the plate: the way to roll new words, and the house they draw as an
+   engraved footnote on the panel's foot */
 .lo-card__actions {
   display: flex; flex-wrap: wrap; align-items: center; justify-content: center;
   gap: 10px clamp(18px, 1.8vw, 28px);
 }
-.lo-seed { --h: clamp(36px, 4.4vh, 40px); margin: 0; }
-.lo-seed .kit-enamel__label { letter-spacing: .14em; }
-.lo-seed .kit-enamel__value { font-size: calc(var(--h) * .46); letter-spacing: .04em; }
+.lo-seed {
+  margin: calc(clamp(14px, 2.2vh, 22px) * -.45) 0 0;
+  display: flex; align-items: baseline; justify-content: center; gap: .45em;
+  color: var(--kit-text-lo);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
+}
+.lo-seed__k { font-family: var(--font-body); font-style: italic; font-size: max(12px, var(--fs-xs)); }
+.lo-seed__v {
+  font-family: var(--font-num); font-weight: 600; font-size: max(12px, var(--fs-xs));
+  font-variant-numeric: lining-nums tabular-nums; letter-spacing: .06em;
+  color: color-mix(in oklab, var(--kit-gold) 70%, var(--kit-text-lo));
+}
 
 /* roll a new one: the quiet plate with its enamel button on the left end */
 .lo__roll { --plate-h: clamp(40px, 4.9vh, 46px); padding-left: calc(var(--plate-h) * 1.14); }
@@ -240,6 +308,10 @@
 .lo__enter .kit-btn__medal, .lo__go .kit-btn__medal { right: calc(var(--plate-h) * -.84); }
 /* the way on breathes candle-light when it can be taken */
 .lo-foot .kit-btn em { font-size: max(11px, var(--fs-xs)); }
+/* CLIMB UP over its epithet, the key set well apart after them */
+.lo-go__words { display: grid; justify-items: center; row-gap: 1px; line-height: 1.02; }
+.lo-go__words > em { font-size: max(12px, var(--fs-xs)); letter-spacing: .02em; }
+.lo__enter > kbd { margin-left: clamp(8px, 1vw, 16px); }
 .lo__enter::before, .lo__go::before {
   content: ''; position: absolute; inset: -30% -8%; z-index: -1; pointer-events: none;
   border-radius: 50%;
@@ -384,7 +456,7 @@
 
 /* ── the Deck's panel ─────────────────────────────────────────────────────── */
 @media (max-height: 820px) {
-  .lo-stage { padding-block: 40px 30px; }
+  .lo-stage { padding-block: 36px 40px; }
   .lo-card { row-gap: 12px; }
 }
 

@@ -220,6 +220,9 @@ export class AtlasScene extends Scene {
        to stand clear of Back and the tally on either side of the plaque. */
     board.innerHTML = `<div class="at-ground kit-ground" aria-hidden="true"><i class="kit-ground__warm"></i><i class="kit-ground__moon"></i></div>`
       + '<div class="at-bg" aria-hidden="true"></div>'
+      /* the candle at the reading panel's foot, lighting the wall behind the
+         panel: on the board, so it warms the wall and not the panel's words */
+      + '<i class="kit-light kit-light--candle at-wallglow" aria-hidden="true"></i>'
       + `<div class="kit-dress at-dress" aria-hidden="true">
           <i class="kit-dress__floor"></i>
           <i class="kit-dress__rule"></i>
@@ -427,6 +430,9 @@ export class AtlasScene extends Scene {
        to its edges — and the kit's gilt rail round the sheet. Both lie over the
        drawing and take no pointer events; the rail covers only the margin. */
     sheet.appendChild(el('div', 'at-light'));
+    /* the sheet has been kept folded in a pocket: its bottom corner has taken
+       a curl and lifts off the board it is laid on (curl.webp, as the Map's) */
+    sheet.appendChild(el('div', 'at-curl'));
     sheet.appendChild(el('div', 'at-frame kit-railframe kit-railframe--ornate'));
 
     const back = this._wide = el('button', 'at-wide kit-btn kit-btn--quiet');
@@ -536,7 +542,13 @@ export class AtlasScene extends Scene {
     const d = this._dossier = el('aside', 'at-dossier kit-panel kit-panel--damask');
     d.dataset.medal = 'moon';
     d.setAttribute('aria-live', 'polite');
+    /* On the floor at the panel's foot, the Kid board's own dressing: its
+       skull on a stack of books to one side, its candle to the other, the
+       candle's warmth up the wall behind the panel. Decoration only. */
     d.innerHTML = `
+      <i class="kit-light kit-light--candle at-dos__glow" aria-hidden="true"></i>
+      <i class="kit-prop kit-prop--skull at-dos__skull" aria-hidden="true"></i>
+      <i class="kit-prop kit-prop--candle at-dos__candle" aria-hidden="true"></i>
       <div class="at-dos__rule" aria-hidden="true"></div>
       <p class="at-dos__no kit-heading"><span>Section <b class="at-dos__n">I</b></span></p>
       <div class="at-dos__plate">

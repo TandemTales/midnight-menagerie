@@ -46,11 +46,58 @@
 .at-board {
   position: absolute; inset: 0; z-index: 0;
   --hud-h: 0px;
-  /* the corner candles light the desk; a warm pool under the sheet and a
-     second under the reading panel, where a lamp would stand */
+  /* the corner candles light the desk; a warm pool under the sheet; and the
+     candle standing at the reading panel's foot throws its light up the wall
+     behind the panel, round both its sides (a second, wider pool with it) */
   --wl3-x: 36vw; --wl3-y: 56vh; --wl3-w: 96vw; --wl3-h: 110vh;
-  --wl4-x: 84vw; --wl4-y: 60vh; --wl4-w: 46vw; --wl4-h: 90vh;
+  --wl4-x: calc(100vw - var(--at-side) - 8px - var(--at-dos-w) * .1); --wl4-y: 84vh;
+  --wl4-w: clamp(460px, 38vw, 640px);  --wl4-h: 118vh;
+  --wl5-x: calc(100vw - var(--at-side) - 8px - var(--at-dos-w) * .5); --wl5-y: 46vh;
+  --wl5-w: calc(var(--at-dos-w) * 2.1); --wl5-h: 104vh;
 }
+/* the reading panel's medallion without the chip of gilding its crop caught
+   (medal-moon-clean.webp, tools/prep_kids_places.py). The attribute is part
+   of the selector so it matches the kit's own [data-medal="moon"] rule, and
+   wins on order (scene sheets load after kit.css). */
+.at-dossier[data-medal="moon"] { --medal-img: url("../../assets/ui/kit/medal-moon-clean.webp"); }
+/* the Kid board's dressing on the floor at the panel's foot: the skull on its
+   books beside the lower left corner, the candle beside the lower right, each
+   standing clear of the panel's words */
+.at-dos__skull, .at-dos__candle { z-index: 6; }
+.at-dos__skull {
+  width: clamp(56px, 4.8vw, 80px);
+  left: calc(-1 * clamp(56px, 4.8vw, 80px) * .5);
+  bottom: calc(-1 * clamp(22px, 3.6vh, 34px));
+}
+.at-dos__candle {
+  --candle-w: clamp(44px, 3.8vw, 62px);
+  width: var(--candle-w);
+  right: calc(-1 * var(--candle-w) * .3);
+  bottom: calc(-1 * clamp(24px, 3.8vh, 36px));
+}
+/* the candle's own warmth on the panel's lower corner, centred on its flame */
+.at-dos__glow {
+  --light-a: 22%;
+  width: clamp(240px, 20vw, 340px);
+  left: calc(100% - clamp(44px, 3.8vw, 62px) * .2);
+  top: calc(100% + clamp(24px, 3.8vh, 36px) - clamp(44px, 3.8vw, 62px) * 164 / 106 * .9);
+  z-index: -1;
+}
+/* ...and on the wall behind the panel, where it pools up both sides of it */
+.at-wallglow {
+  z-index: 2;
+  --light-a: 34%;
+  width: clamp(560px, 46vw, 780px);
+  left: calc(100vw - var(--at-side) - 8px - clamp(10px, 1vw, 16px));
+  top: 86vh;
+}
+.kit-board.has-backdrop .at-wallglow { opacity: .6; }
+.kit-board.has-backdrop ~ .at-body .at-dos__glow { opacity: .6; }
+/* at a fork the panel's foot is the way on and its round button: the candle
+   and its glow step out of the button's way, the skull stays */
+.at-dossier:has(.at-dos__act:not([hidden])) .at-dos__candle,
+.at-dossier:has(.at-dos__act:not([hidden])) .at-dos__glow { display: none; }
+.at-root:has(.at-dos__act:not([hidden])) .at-wallglow { --light-a: 18%; }
 /* the board's corner candles, drawn small, as the Map draws them */
 .at-corner { width: var(--at-corner); top: 1px; }
 .at-corner--l { left: calc(var(--kit-edge) + 1px); }
@@ -69,13 +116,18 @@
 /* ── header: Back, the plaque, the tally ──────────────────────────────────── */
 /* The plaque on the board's axis, as every board carries its title; Back and
    the tally either side of it, each just inside its corner candle. */
+/* Back and the tally are one pair: the same height on the same centre line,
+   each inset the same distance from its edge of the board — the width of its
+   corner candle and a clear gap — so neither touches the candle's painting. */
 .at-head {
   position: relative; z-index: 4;
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
   column-gap: 16px;
   align-items: center;
-  padding: clamp(6px, 1.2vh, 14px) calc(var(--at-corner) + 8px) 0;
+  --at-inset: calc(clamp(8px, .7vw, 12px) + var(--at-corner) + clamp(14px, 1.3vw, 22px));
+  --at-row-h: clamp(46px, 5.8vh, 52px);
+  padding: clamp(6px, 1.2vh, 14px) var(--at-inset) 0;
   min-height: clamp(112px, 14.6vh, 136px);
 }
 .at-logo { grid-column: 2; grid-row: 1; justify-self: center; z-index: 1; }
@@ -83,9 +135,10 @@
 .at-back {
   grid-column: 1; grid-row: 1;
   justify-self: start; align-self: center;
-  --plate-h: clamp(44px, 5.6vh, 50px);
+  --plate-h: var(--at-row-h);
   padding-left: calc(var(--plate-h) * 1.24);
-  margin: 4px 0 0 calc(var(--plate-h) * .36);
+  /* the medallion's overhang is inside the inset, not over the candle */
+  margin: 4px 0 0 calc(var(--plate-h) * .34);
   font-size: clamp(13px, 1vw, 15px);
   z-index: 2;
 }
@@ -97,12 +150,13 @@
   grid-column: 3; grid-row: 1;
   justify-self: end; align-self: center;
   margin: 4px 0 0;
-  --h: clamp(46px, 5.8vh, 52px);
-  padding-inline: calc(var(--h) * .8);
-  gap: .55em;
+  --h: var(--at-row-h);
+  padding-inline: calc(var(--h) * .66);
+  gap: .5em;
+  white-space: nowrap;
 }
 .at-tally .kit-enamel__value { font-size: calc(var(--h) * .56); }
-.at-tally .kit-enamel__label { font-size: clamp(12px, .84vw, 13px); color: var(--kit-text); letter-spacing: .16em; }
+.at-tally .kit-enamel__label { font-size: clamp(11.5px, .8vw, 13px); color: var(--kit-text); letter-spacing: clamp(.11em, .01em + .1vw, .16em); }
 
 /* ── body ─────────────────────────────────────────────────────────────────── */
 .at-body {
@@ -183,36 +237,54 @@
 .at-estate { transition: opacity var(--t-base) var(--ease-out); }
 .mm-reduce-motion .at-estate { transition: none; }
 
-/* the room's light on the paper: warm in the middle where the candles reach,
-   the far edges and the top in the rail's shade */
+/* The room's light on the paper, and what years in a pocket did to it.
+   Multiplied over the sheet: the painted ageing (parchment-age.webp,
+   tools/prep_kids_places.py — its edges browned unevenly and deepest at the
+   corners, foxing, a tide stain, the grime in both creases), and the edges
+   falling into the rail's shade. */
 .at-light {
   position: absolute; inset: 0; z-index: 2; pointer-events: none;
   background:
-    radial-gradient(68% 62% at 46% 46%, transparent 0%, transparent 42%, rgba(52, 30, 14, .22) 74%, rgba(28, 16, 8, .5) 100%),
-    linear-gradient(to bottom, rgba(18, 10, 12, .26), transparent 14%, transparent 86%, rgba(18, 10, 12, .3));
+    radial-gradient(74% 70% at 40% 34%, transparent 0%, transparent 40%, rgba(64, 38, 18, .26) 72%, rgba(34, 18, 8, .62) 100%),
+    linear-gradient(to bottom, rgba(18, 10, 12, .2), transparent 12%, transparent 84%, rgba(18, 10, 12, .34)),
+    linear-gradient(to right, rgba(18, 10, 12, .14), transparent 10%, transparent 88%, rgba(18, 10, 12, .26)),
+    url("../../assets/ui/kit/parchment-age.webp") 0 0 / 100% 100% no-repeat;
   mix-blend-mode: multiply;
 }
+/* candlelit: the corner candle high on the left warms the sheet's upper left
+   and the light falls away down it; each fold's ridge catches that light on
+   the side facing the candle */
 .at-light::after {
   content: ''; position: absolute; inset: 0;
-  background: radial-gradient(50% 44% at 40% 40%, rgba(255, 214, 150, .16), transparent 70%);
+  background:
+    radial-gradient(64% 58% at 18% 6%, rgba(255, 196, 120, .34), rgba(255, 180, 100, .12) 46%, transparent 76%),
+    radial-gradient(40% 40% at 100% 96%, rgba(255, 180, 100, .12), transparent 70%),
+    linear-gradient(90deg, transparent calc(50% - 7px), rgba(255, 238, 206, .2) calc(50% - 2px), transparent calc(50% - .5px)),
+    linear-gradient(180deg, transparent calc(50% - 7px), rgba(255, 238, 206, .16) calc(50% - 2px), transparent calc(50% - .5px));
   mix-blend-mode: screen;
 }
-/* the sheet has been folded in four and kept in a pocket: the creases catch
-   the light on one side and shade on the other, and the damp has foxed it */
+/* the folds' valleys: the far side of each crease in its own shadow */
 .at-light::before {
   content: ''; position: absolute; inset: 0;
   background:
-    linear-gradient(90deg, transparent calc(50% - 3px), rgba(70, 44, 20, .16) calc(50% - 1px), rgba(255, 244, 220, .12) 50%, transparent calc(50% + 4px)),
-    linear-gradient(180deg, transparent calc(50% - 3px), rgba(70, 44, 20, .14) calc(50% - 1px), rgba(255, 244, 220, .1) 50%, transparent calc(50% + 4px)),
-    radial-gradient(3.2% 4.4% at 12% 18%, rgba(120, 76, 34, .2), transparent 100%),
-    radial-gradient(2.2% 3% at 16% 22%, rgba(120, 76, 34, .14), transparent 100%),
-    radial-gradient(4.5% 6% at 86% 12%, rgba(120, 76, 34, .16), transparent 100%),
-    radial-gradient(2.6% 3.4% at 91% 80%, rgba(120, 76, 34, .2), transparent 100%),
-    radial-gradient(5% 7% at 8% 88%, rgba(120, 76, 34, .18), transparent 100%),
-    radial-gradient(1.6% 2.2% at 62% 93%, rgba(120, 76, 34, .18), transparent 100%),
-    radial-gradient(1.4% 2% at 40% 7%, rgba(120, 76, 34, .16), transparent 100%),
-    radial-gradient(22% 18% at 100% 100%, rgba(96, 60, 26, .2), transparent 100%),
-    radial-gradient(20% 16% at 0% 0%, rgba(96, 60, 26, .16), transparent 100%);
+    linear-gradient(90deg, transparent calc(50% - 1px), rgba(76, 48, 24, .34) 50%, rgba(76, 48, 24, .12) calc(50% + 6px), transparent calc(50% + 22px)),
+    linear-gradient(180deg, transparent calc(50% - 1px), rgba(76, 48, 24, .3) 50%, rgba(76, 48, 24, .1) calc(50% + 5px), transparent calc(50% + 18px));
+  mix-blend-mode: multiply;
+}
+/* the slight curl: the sheet's bottom corner rolling up off the board it is
+   laid on, inside the rail — the roll's underside lit along its crest, the
+   board showing past it in the paper's own shadow (sheet-curl.webp,
+   tools/prep_kids_places.py) — and the lifted edge's shade on the paper */
+.at-curl {
+  position: absolute; z-index: 2; pointer-events: none;
+  right: clamp(6px, .6vw, 10px); bottom: clamp(6px, .6vw, 10px);
+  width: clamp(64px, 5.6vw, 96px); aspect-ratio: 1;
+  background: url("../../assets/ui/kit/sheet-curl.webp") 100% 100% / 100% 100% no-repeat;
+}
+.at-curl::before {
+  content: ''; position: absolute; right: 0; bottom: 0; z-index: -1;
+  width: 240%; aspect-ratio: 1;
+  background: radial-gradient(100% 100% at 100% 100%, rgba(40, 24, 10, .2), transparent 62%);
   mix-blend-mode: multiply;
 }
 /* the gilt rail round the sheet */
@@ -390,7 +462,7 @@
 .at-dossier:has(.at-dos__inside:not([hidden])) .at-dos__heldlbl { display: none; }
 .at-dossier:has(.at-dos__inside:not([hidden])) .at-dos__pf { --fk: .5; width: clamp(96px, 7.6vw, 124px); }
 .at-dossier:has(.at-dos__inside:not([hidden])) .at-dos__who { margin-top: 0; min-width: 0; }
-.at-dossier:has(.at-dos__inside:not([hidden])) .at-dos__plate { padding-block: 7px 8px; }
+.at-dossier:has(.at-dos__inside:not([hidden])) .at-dos__name { padding-block: 8px 9px; }
 .at-dossier:has(.at-dos__inside:not([hidden])) .at-dos__name { font-size: clamp(17px, 1.36vw, 23px); }
 .at-dossier:has(.at-dos__inside:not([hidden])) .at-dos__form { font-size: clamp(12.5px, .9vw, 14px); }
 .at-dossier:has(.at-dos__inside:not([hidden])) .at-dos__hint { display: none; }
@@ -400,23 +472,36 @@
 .at-dos__no { font-size: clamp(12px, .84vw, 13px); }
 .at-dos__no b { font-family: var(--font-num); font-size: 1.25em; color: var(--kit-lav); letter-spacing: .06em; }
 
-/* the wing's nameplate: the Companion board's dark notched plate, the name in
-   the wordmark's lavender, the wing's form as its epithet */
+/* The wing's name in a gold-rimmed cartouche — the kit's violet enamel in its
+   bevelled brass rim with notched, bowed ends (cartouche-lit.webp), never a
+   glossy black lozenge — drawn behind the name alone, so the title has the
+   whole plate to itself and the wing's form sits under it, off the plate, as
+   a nameplate's italic epithet does. Kept low and dark: Marmalade's portrait
+   below is still the brightest thing on the panel. */
 .at-dos__plate {
-  --h: 58px;
-  display: grid; justify-items: center; gap: 3px;
-  padding: 10px calc(var(--h) * .5) 11px;
-  border: 0 solid transparent;
-  border-image: url("../../assets/ui/kit/cartouche-dark.webp") 18 34 18 34 fill /
-    calc(var(--h) * 18 / 64) calc(var(--h) * 34 / 64) stretch;
-  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, .8));
+  --h: 60px;
+  display: grid; justify-items: center;
+  grid-template-rows: auto auto;
+  row-gap: clamp(5px, .8vh, 8px);
+  padding: 0;
+  border: 0; border-image: none;
   text-align: center;
 }
+.at-dos__plate::before {
+  content: ''; grid-row: 1; grid-column: 1; z-index: 0;
+  justify-self: stretch; align-self: stretch;
+  border: 0 solid transparent;
+  border-image: url("../../assets/ui/kit/cartouche-lit.webp") 18 34 18 34 fill /
+    calc(var(--h) * 18 / 64) calc(var(--h) * 34 / 64) stretch;
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, .75)) brightness(.9);
+}
 .at-dos__name {
+  grid-row: 1; grid-column: 1; z-index: 1;
   margin: 0;
+  padding: clamp(11px, 1.6vh, 15px) calc(var(--h) * .66) clamp(12px, 1.7vh, 16px);
   font-family: var(--font-display); font-weight: 700;
-  font-size: clamp(19px, 1.56vw, 26px);
-  line-height: 1.08; letter-spacing: .035em; text-transform: uppercase;
+  font-size: clamp(18px, 1.44vw, 24px);
+  line-height: 1.14; letter-spacing: .05em; text-transform: uppercase;
   text-wrap: balance;
   color: var(--kit-lav);
   background:
@@ -427,12 +512,14 @@
   filter: url("#kit-engrave");
 }
 .at-dos__form {
+  grid-row: 2; grid-column: 1;
   margin: 0;
   max-width: 34ch;
   font-size: clamp(13.5px, .98vw, 15px);
   font-style: italic;
   line-height: 1.3;
   color: var(--kit-text-mid);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
   text-wrap: balance;
 }
 

@@ -2162,3 +2162,205 @@ button.kit-medallion:hover, button.kit-medallion:focus-visible,
   filter: drop-shadow(0 1px 0 rgba(0, 0, 0, .9));
   opacity: .72;
 }
+
+/* ===========================================================================
+   THE KIDS' PLACES, ROUND 4 — appended; nothing above is changed. The Lobby,
+   Neighbourhood Headquarters and the Atlas hang these on their walls.
+
+     .kit-carved     a carved walnut picture frame, parcel-gilt, a cast brass
+                     mount riveted over each mitre (frame-carved.webp,
+                     tools/prep_kids_places.py). The box is the picture; the
+                     moulding stands OUTSIDE it. --carve-w is the rail's width
+     .kit-lamp       a hanging enamel lamp on its cord, the bulb burning under
+                     its rim and a warm bloom round it (lamp.webp, HAZE's).
+                     Place it with left/top; --lamp-w sizes it
+     .kit-clipping   a phrase torn out of a sheet of red paper, the words in
+                     cream; --card tears it from an index card, words in red.
+                     Its shadow belongs to its parent (a clip-path cuts a
+                     shadow of its own away): drop-shadow the container
+     .kit-bulbs--candle  the string of bulbs in the samples' own two lights:
+                     candle amber, a pale wax, lavender — no primaries
+   =========================================================================== */
+
+/* ── carved frame ── */
+.kit-carved {
+  --carve-w: 34px;
+  position: relative;
+  border: 1px solid transparent;
+  border-image-source: url("../../assets/ui/kit/frame-carved.webp");
+  border-image-slice: 116;
+  border-image-width: var(--carve-w);
+  border-image-outset: calc(var(--carve-w) - 3px);
+  border-image-repeat: round;
+  background: none;
+  pointer-events: none;
+  filter: drop-shadow(0 12px 16px rgba(0, 0, 0, .62)) drop-shadow(0 3px 3px rgba(0, 0, 0, .5));
+}
+
+/* ── lamp ── */
+.kit-lamp {
+  --lamp-w: 96px;
+  position: absolute; pointer-events: none;
+  width: var(--lamp-w); aspect-ratio: 300 / 460;
+  background: url("../../assets/ui/kit/lamp.webp") 50% 0 / 100% 100% no-repeat;
+  filter: drop-shadow(0 6px 8px rgba(0, 0, 0, .55));
+}
+.kit-lamp::after {
+  content: ''; position: absolute; left: 50%; top: 88%;
+  width: 260%; aspect-ratio: 1;
+  translate: -50% -50%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side,
+    color-mix(in srgb, #fff1cf 46%, transparent) 0%,
+    color-mix(in srgb, var(--kit-candle) 26%, transparent) 22%,
+    color-mix(in srgb, var(--kit-candle) 8%, transparent) 55%,
+    transparent 100%);
+  mix-blend-mode: screen;
+  animation: kit-lamp-breathe 5.6s var(--ease-soft) infinite;
+}
+@keyframes kit-lamp-breathe { 0%, 100% { opacity: .84; } 50% { opacity: 1; } }
+.kit-still .kit-lamp::after, .rm.is-still .kit-lamp::after { animation: none; }
+@media (prefers-reduced-motion: reduce) {
+  :root:not([data-reduce-motion="0"]) .kit-lamp::after { animation: none; }
+}
+
+/* ── clipping ── */
+.kit-clipping {
+  --clip: #7d2a20;
+  --clip-hi: #9c3a2b;
+  display: inline-block;
+  position: relative;
+  padding: .26em .78em .34em;
+  font-family: var(--font-body); font-style: italic; font-weight: 700;
+  line-height: 1.12; letter-spacing: .01em; white-space: nowrap;
+  color: #f6e9cf;
+  text-shadow: 0 1px 0 rgba(40, 8, 4, .55);
+  background:
+    linear-gradient(172deg, color-mix(in srgb, var(--clip-hi) 70%, transparent) 0%, transparent 46%, rgba(30, 6, 3, .3) 100%),
+    url("../../assets/ui/kit/paper.webp") 0 0 / 180px 180px,
+    var(--clip);
+  background-blend-mode: normal, overlay, normal;
+  /* torn along the top and the foot, snipped at the ends */
+  clip-path: polygon(0% 12%, 6% 4%, 13% 9%, 21% 2%, 30% 8%, 38% 1%, 47% 7%, 55% 0%, 64% 6%, 72% 1%, 81% 8%, 89% 2%, 96% 7%, 100% 3%,
+                     99% 48%, 100% 94%, 93% 99%, 85% 93%, 77% 100%, 68% 94%, 60% 99%, 51% 92%, 43% 98%, 34% 93%, 26% 100%, 17% 94%, 9% 99%, 2% 95%, 1% 52%);
+  transform: rotate(var(--rot, 0deg));
+}
+.kit-clipping--card {
+  --clip: var(--kit-paper);
+  --clip-hi: #fff7e4;
+  color: color-mix(in srgb, var(--kit-thread) 88%, black);
+  text-shadow: none;
+}
+
+/* ── bulbs, candle ── */
+.kit-bulbs--candle > i:nth-child(3n) {
+  background: radial-gradient(circle at 40% 30%, #fbf4ff 0 18%, var(--kit-lav-hi) 40%, var(--kit-lav) 72%, var(--kit-violet));
+  box-shadow: 0 0 10px 2px color-mix(in srgb, var(--kit-lav) 48%, transparent), 0 0 30px 8px color-mix(in srgb, var(--kit-lav) 14%, transparent);
+}
+.kit-bulbs--candle > i:nth-child(3n+1) {
+  background: radial-gradient(circle at 40% 30%, #fffaf0 0 20%, #ffeccb 42%, color-mix(in srgb, var(--kit-candle) 70%, #ffeccb) 76%, var(--kit-candle));
+  box-shadow: 0 0 10px 2px color-mix(in srgb, var(--kit-candle) 40%, transparent), 0 0 30px 8px color-mix(in srgb, var(--kit-candle) 12%, transparent);
+}
+
+/* ===========================================================================
+   THE KIDS' PLACES, PAINTED — round 4, from NUTMEG's Lobby (ui/r4-kids-b).
+   Only the pieces the Lobby uses were merged; NUTMEG's lamp, cork frame,
+   clipping, cutting and re-lit bulbs served its Clubhouse, which OCHRE's won.
+   The pieces are painted by tools/prep_kids_places.py on ui/r4-kids-b.
+
+     .kit-ground--treehouse  the Treehouse: the mansion's flocked damask papered
+                             over a timber-framed plank wall and peeling off it,
+                             lit by the same slots and masks as every ground
+     .kit-lantern            a brass lantern on its iron wall hook, the Kid
+                             board's candle burning in it and its light
+                             breathing on the wall; --lantern-w sizes it
+     .kit-charm (--moon)     a folded gold-card star (or moon) hung on a thread
+                             from whatever is above it, turning slowly;
+                             --charm-w its size, --charm-len its thread
+     .kit-sill               a thick plank sill to stand things on, nailed up
+                             under a window, with its shadow; --sill-h
+   =========================================================================== */
+
+/* ── the treehouse ground ── */
+.kit-ground--treehouse { background-image: url("../../assets/ui/kit/treehouse.webp"); }
+.kit-ground--treehouse .kit-ground__warm { background-image: url("../../assets/ui/kit/treehouse-warm.webp"); }
+.kit-ground--treehouse .kit-ground__moon { background-image: url("../../assets/ui/kit/treehouse-moon.webp"); }
+
+/* ── lantern ──
+   lantern.webp is 200x420: the hook's rosette at the top, the flame 204 rows
+   down (the glass's centre). The glow is centred on the flame; it screens
+   over the wall, never over the words beside it (it is under them in z). */
+.kit-lantern {
+  --lantern-w: 72px;
+  position: absolute; pointer-events: none;
+  width: var(--lantern-w); aspect-ratio: 200 / 420;
+}
+/* the lantern itself on ::after, so its shadow is not also the glow's */
+.kit-lantern::after {
+  content: ''; position: absolute; inset: 0;
+  background: url("../../assets/ui/kit/lantern.webp") 50% 0 / 100% 100% no-repeat;
+  filter: drop-shadow(0 10px 9px rgba(0, 0, 0, .62));
+}
+.kit-lantern::before {
+  content: ''; position: absolute; left: 50%; top: 48.6%;
+  width: 560%; aspect-ratio: 1; translate: -50% -50%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side,
+    color-mix(in srgb, var(--kit-candle) 36%, transparent) 0%,
+    color-mix(in srgb, var(--kit-candle) 13%, transparent) 36%,
+    color-mix(in srgb, var(--kit-candle) 4%, transparent) 64%,
+    transparent 100%);
+  mix-blend-mode: screen;
+  animation: kit-flicker 3.9s ease-in-out infinite;
+}
+.kit-still .kit-lantern::before, .rm.is-still .kit-lantern::before { animation: none; }
+@media (prefers-reduced-motion: reduce) {
+  :root:not([data-reduce-motion="0"]) .kit-lantern::before { animation: none; }
+}
+
+/* ── charm ──
+   The element's top is where the thread is tied; it hangs --charm-len and the
+   card turns about that knot. Decoration only. */
+.kit-charm {
+  --charm-w: 40px;
+  --charm-len: 90px;
+  --charm-sway: 3.5deg;
+  position: absolute; pointer-events: none;
+  width: var(--charm-w); height: calc(var(--charm-len) + var(--charm-w));
+  transform-origin: 50% 0;
+  animation: kit-charm-sway 7.5s ease-in-out infinite;
+}
+.kit-charm::before {
+  content: ''; position: absolute; left: 50%; top: 0;
+  width: 1px; height: calc(var(--charm-len) + var(--charm-w) * .12);
+  translate: -50% 0;
+  background: linear-gradient(180deg, rgba(40, 30, 26, .7), rgba(120, 100, 80, .55));
+}
+.kit-charm::after {
+  content: ''; position: absolute; left: 0; right: 0; bottom: 0;
+  height: var(--charm-w);
+  background: url("../../assets/ui/kit/star-paper.webp") 50% 50% / 100% 100% no-repeat;
+  filter: drop-shadow(0 4px 4px rgba(0, 0, 0, .6));
+}
+.kit-charm--moon::after { background-image: url("../../assets/ui/kit/moon-paper.webp"); }
+@keyframes kit-charm-sway {
+  0%, 100% { rotate: calc(var(--charm-sway) * -1); }
+  50%      { rotate: var(--charm-sway); }
+}
+.kit-still .kit-charm, .rm.is-still .kit-charm { animation: none; }
+@media (prefers-reduced-motion: reduce) {
+  :root:not([data-reduce-motion="0"]) .kit-charm { animation: none; }
+}
+
+/* ── sill ──
+   sill.webp is 1024x112, repeating along its length: the worn top face to row
+   30, the rounded edge to 40, the front face to 84, then its shadow. Stand a
+   thing on it by putting its foot a fifth of --sill-h below the element's top. */
+.kit-sill {
+  --sill-h: 44px;
+  display: block;
+  height: calc(var(--sill-h) * 112 / 84);
+  background: url("../../assets/ui/kit/sill.webp") 0 0 / auto 100% repeat-x;
+  filter: brightness(.78) saturate(.9);
+  pointer-events: none;
+}
