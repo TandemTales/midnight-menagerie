@@ -777,13 +777,22 @@
   font-size: max(13px, var(--fs-sm)); font-style: italic; line-height: 1.35; color: var(--kit-text-mid);
 }
 .go-keep {
+  position: relative;
   display: grid; grid-template-areas: 'i b' 'i e'; grid-template-columns: auto minmax(0, 1fr);
   column-gap: 10px; align-items: center;
   padding: 2px 0 3px;
-  border-top: 1px solid transparent;
-  border-image: linear-gradient(90deg, transparent, color-mix(in srgb, var(--kit-gold) 50%, transparent) 18%, color-mix(in srgb, var(--kit-gold) 50%, transparent) 82%, transparent) 1;
 }
-.go-keep:first-child { border-top-color: transparent; border-image: none; }
+/* round 5: parted by an engraved double rule with a gilt star, as the shelf's
+   ledger rows are, never a web hairline */
+.go-keep + .go-keep::before {
+  content: ''; position: absolute; left: 10%; right: 4%; top: 0; height: 8px; translate: 0 -50%;
+  pointer-events: none;
+  background:
+    url("../../assets/ui/kit/star4.svg") 50% 50% / 7px 7px no-repeat,
+    linear-gradient(90deg, transparent 0%, color-mix(in srgb, var(--kit-gold) 52%, transparent) 22%, color-mix(in srgb, var(--kit-gold) 52%, transparent) 46%, transparent 47.5%, transparent 52.5%, color-mix(in srgb, var(--kit-gold) 52%, transparent) 54%, color-mix(in srgb, var(--kit-gold) 52%, transparent) 78%, transparent 100%) 0 2px / 100% 1px no-repeat,
+    linear-gradient(90deg, transparent 0%, color-mix(in srgb, var(--kit-gold-lo) 66%, transparent) 22%, color-mix(in srgb, var(--kit-gold-lo) 66%, transparent) 46%, transparent 47.5%, transparent 52.5%, color-mix(in srgb, var(--kit-gold-lo) 66%, transparent) 54%, color-mix(in srgb, var(--kit-gold-lo) 66%, transparent) 78%, transparent 100%) 0 5px / 100% 1px no-repeat;
+  filter: drop-shadow(0 1px 0 rgba(0, 0, 0, .8));
+}
 .go-keep__sigil {
   grid-area: i;
   display: grid; place-items: center;

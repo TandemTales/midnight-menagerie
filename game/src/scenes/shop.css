@@ -568,9 +568,17 @@
 .sh-row__txt em { grid-area: desc; align-self: start; }
 .sh-row > .sh-buy { grid-area: buy; }
 /* a gold hairline between entries, fading at both ends like the boards' rules */
-.sh-row + .sh-row {
-  border-top: 1px solid transparent;
-  border-image: linear-gradient(90deg, transparent, color-mix(in srgb, var(--kit-gold) 45%, transparent) 18%, color-mix(in srgb, var(--kit-gold) 45%, transparent) 82%, transparent) 1;
+/* round 5: an engraved double rule between entries, a gilt star at its middle,
+   the way the boards part their sections, never a web hairline */
+.sh-row { position: relative; }
+.sh-row + .sh-row::before {
+  content: ''; position: absolute; left: 7%; right: 7%; top: 0; height: 8px; translate: 0 -50%;
+  pointer-events: none;
+  background:
+    url("../../assets/ui/kit/star4.svg") 50% 50% / 8px 8px no-repeat,
+    linear-gradient(90deg, transparent 0%, color-mix(in srgb, var(--kit-gold) 58%, transparent) 22%, color-mix(in srgb, var(--kit-gold) 58%, transparent) 45.5%, transparent 47%, transparent 53%, color-mix(in srgb, var(--kit-gold) 58%, transparent) 54.5%, color-mix(in srgb, var(--kit-gold) 58%, transparent) 78%, transparent 100%) 0 2px / 100% 1px no-repeat,
+    linear-gradient(90deg, transparent 0%, color-mix(in srgb, var(--kit-gold-lo) 70%, transparent) 22%, color-mix(in srgb, var(--kit-gold-lo) 70%, transparent) 45.5%, transparent 47%, transparent 53%, color-mix(in srgb, var(--kit-gold-lo) 70%, transparent) 54.5%, color-mix(in srgb, var(--kit-gold-lo) 70%, transparent) 78%, transparent 100%) 0 5px / 100% 1px no-repeat;
+  filter: drop-shadow(0 1px 0 rgba(0, 0, 0, .8));
 }
 .sh-row:hover { filter: brightness(1.12); }
 .sh-row.is-poor { filter: grayscale(.8) brightness(.72); }
