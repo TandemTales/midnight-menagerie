@@ -30,28 +30,35 @@
   --hud-h: 0px;                       /* no run HUD: rule and corners start at the top */
   display: grid;
   grid-template-rows: auto minmax(0, 1fr) auto;
-  /* the stage: the framed house and the panel beside it */
-  --lo-view-w: clamp(440px, 40.5vw, 670px);
-  --lo-card-w: clamp(470px, 34vw, 560px);
-  --lo-gap: clamp(44px, 4.4vw, 76px);
+  /* the stage: the framed house and the password panel beside it, the panel
+     as tall as the frame so the two read as one row */
+  --lo-view-w: clamp(470px, 38.2vw, 640px);
+  --lo-view-h: calc(var(--lo-view-w) * 4 / 5);
+  --lo-card-w: clamp(462px, 35.6vw, 590px);
+  --lo-gap: clamp(44px, 4vw, 70px);
   --lo-stage-w: calc(var(--lo-view-w) + var(--lo-gap) + var(--lo-card-w));
-  --lo-view-cx: calc(50vw - var(--lo-stage-w) / 2 + var(--lo-view-w) / 2);
-  --lo-view-cy: 53vh;
-  /* its light: the moon the house stands under, cold round the frame; the
-     candle at its foot, warm on the panelling */
-  --ml1-x: var(--lo-view-cx);                 --ml1-y: calc(var(--lo-view-cy) - 2vh);
-  --ml1-w: calc(var(--lo-view-w) * 1.9);      --ml1-h: calc(var(--lo-view-w) * 1.5);
+  --lo-stage-l: calc(50vw - var(--lo-stage-w) / 2 + clamp(6px, .8vw, 12px));
+  --lo-view-cx: calc(var(--lo-stage-l) + var(--lo-view-w) / 2);
+  --lo-card-cx: calc(var(--lo-stage-l) + var(--lo-view-w) + var(--lo-gap) + var(--lo-card-w) / 2);
+  --lo-view-cy: 54vh;
+  /* the two sconces, high on the wall between the scrollwork and the stage,
+     their candles level with the stage's top rail */
+  --lo-sconce-w: clamp(42px, 3.5vw, 60px);
+  --lo-sconce-cx: calc((clamp(8px, .7vw, 12px) + var(--kit-vine-w) + var(--lo-stage-l)) / 2);
+  --lo-sconce-top: clamp(150px, 21vh, 196px);
+  /* its light. The moon the house stands under, cold round the frame; the
+     candle at its foot, warm on the panelling; a broad warmth on the damask
+     between the plaque and the stage, where the wall was bare; and each
+     sconce's pool reaching up the wall and down to the stage's corner */
+  --ml1-x: var(--lo-view-cx);                 --ml1-y: calc(var(--lo-view-cy) - 4vh);
+  --ml1-w: calc(var(--lo-view-w) * 1.9);      --ml1-h: calc(var(--lo-view-w) * 1.6);
   --wl3-x: calc(var(--lo-view-cx) + var(--lo-view-w) * .5);
-  --wl3-y: calc(var(--lo-view-cy) + var(--lo-view-w) * .36);
-  --wl3-w: clamp(380px, 34vw, 560px);         --wl3-h: calc(var(--wl3-w) * 1.1);
-  --wl4-x: calc(100vw - var(--lo-view-cx));   --wl4-y: calc(var(--lo-view-cy) - 4vh);
-  --wl4-w: calc(var(--lo-card-w) * 1.7);      --wl4-h: calc(var(--lo-card-w) * 1.35);
-  /* the two sconces between the vines and the stage */
-  --lo-sconce-w: clamp(44px, 3.8vw, 64px);
-  --lo-sconce-cx: calc((50vw - var(--lo-stage-w) / 2 + clamp(38px, 3.5vw, 60px) + clamp(8px, .7vw, 12px)) / 2);
-  --lo-sconce-top: 33vh;
-  --wl5-x: var(--lo-sconce-cx);               --wl5-y: calc(var(--lo-sconce-top) + var(--lo-sconce-w) * 330 / 150 * .16);
-  --wl5-w: clamp(260px, 22vw, 380px);         --wl5-h: calc(var(--wl5-w) * 1.4);
+  --wl3-y: calc(var(--lo-view-cy) + var(--lo-view-h) * .44);
+  --wl3-w: clamp(360px, 32vw, 540px);         --wl3-h: calc(var(--wl3-w) * 1.1);
+  --wl4-x: 50vw;                              --wl4-y: clamp(170px, 24vh, 230px);
+  --wl4-w: 74vw;                              --wl4-h: clamp(300px, 44vh, 420px);
+  --wl5-x: var(--lo-sconce-cx);               --wl5-y: calc(var(--lo-sconce-top) + var(--lo-sconce-w) * .38);
+  --wl5-w: clamp(300px, 27vw, 440px);         --wl5-h: calc(var(--wl5-w) * 1.35);
   --wl6-x: calc(100vw - var(--lo-sconce-cx)); --wl6-y: var(--wl5-y);
   --wl6-w: var(--wl5-w);                      --wl6-h: var(--wl5-h);
 }
@@ -62,9 +69,9 @@
 .lo-vig {
   position: absolute; inset: 0; z-index: 1; pointer-events: none;
   background:
-    radial-gradient(118% 96% at 50% 46%, transparent 40%, color-mix(in srgb, var(--kit-void) 82%, transparent) 100%),
-    linear-gradient(to bottom, color-mix(in srgb, var(--kit-void) 40%, transparent) 0%, transparent 18%,
-                    transparent 70%, color-mix(in srgb, var(--kit-void) 62%, transparent) 100%);
+    radial-gradient(118% 96% at 50% 46%, transparent 44%, color-mix(in srgb, var(--kit-void) 78%, transparent) 100%),
+    linear-gradient(to bottom, color-mix(in srgb, var(--kit-void) 26%, transparent) 0%, transparent 16%,
+                    transparent 72%, color-mix(in srgb, var(--kit-void) 60%, transparent) 100%);
 }
 .lo-head, .lo-body, .lo-foot { position: relative; z-index: 3; }
 
@@ -95,10 +102,11 @@
 .lo-stage {
   display: grid;
   grid-template-columns: var(--lo-view-w) var(--lo-card-w);
-  justify-content: center; align-items: center;
+  grid-template-rows: var(--lo-view-h);
+  justify-content: start; align-content: center; align-items: stretch;
   column-gap: var(--lo-gap);
   min-height: 0;
-  padding: clamp(34px, 5vh, 52px) 0 clamp(28px, 4vh, 40px);
+  padding: clamp(44px, 6.6vh, 64px) 0 clamp(30px, 4.2vh, 40px) var(--lo-stage-l);
 }
 
 /* the house, framed like the window the Kids are all looking out of */
@@ -106,31 +114,40 @@
 .lo-view__pic {
   --fk: 1.1;
   display: block;
-  width: 100%;
-  aspect-ratio: 4 / 3;
+  width: 100%; height: 100%;
 }
 .lo-view__art {
   position: absolute; inset: 0; overflow: hidden;
   background-color: var(--kit-void);
-  background-position: 50% 64%;
+  background-position: 50% 62%;
   background-size: cover;
   background-repeat: no-repeat;
-  /* seen through old glass at night: a shade cooler and deeper than the
-     painting on the title, falling off into the frame's shadow */
-  filter: saturate(.92) brightness(.9);
+  /* seen through old glass at night, out beyond the candle: cooler and a
+     step darker than the painting on the title, so the password beside it
+     is the brighter thing */
+  filter: saturate(.9) brightness(.8);
 }
 .lo-view__art::after {
   content: ''; position: absolute; inset: 0;
   background:
-    radial-gradient(90% 80% at 50% 38%, transparent 44%, rgba(6, 5, 10, .55) 100%),
+    radial-gradient(90% 80% at 50% 40%, transparent 42%, rgba(6, 5, 10, .6) 100%),
     linear-gradient(180deg, color-mix(in srgb, var(--kit-moon) 8%, transparent), transparent 40%);
-  box-shadow: inset 0 0 40px rgba(0, 0, 0, .7);
+  box-shadow: inset 0 0 44px rgba(0, 0, 0, .72);
 }
 .lo-view__medal {
   position: absolute; left: 50%; top: 0; z-index: 4; pointer-events: none;
   width: clamp(112px, 9.4vw, 150px); aspect-ratio: 156 / 98;
   transform: translate(-50%, -52%);
   background: url("../../assets/ui/kit/medal-moon.webp") 50% 50% / 100% 100% no-repeat;
+  /* medal-moon.webp was cut out of the Kid board's mirror with the ends of
+     the mirror's scroll arms sliced off at both sides and a shard of the
+     neighbouring gilt in its top right corner. Only the medallion proper is
+     kept — the ring, its finial and the scrolls that curl from it — its outer
+     edge feathered where the arms were cut, so nothing ends in a straight line. */
+  -webkit-mask-image: radial-gradient(ellipse 43% 62% at 50% 56%, black 84%, transparent 100%), linear-gradient(to bottom, black 84%, transparent 100%);
+          mask-image: radial-gradient(ellipse 43% 62% at 50% 56%, black 84%, transparent 100%), linear-gradient(to bottom, black 84%, transparent 100%);
+  -webkit-mask-composite: source-in;
+          mask-composite: intersect;
   filter: drop-shadow(0 4px 5px rgba(0, 0, 0, .8));
 }
 .lo-view__plate {
@@ -140,25 +157,29 @@
   white-space: nowrap;
   padding-inline: calc(var(--plate-h) * .9);
 }
-/* the Kid board's skull on its books and its candle, at the frame's foot */
-.lo-view__skull { width: clamp(70px, 5.8vw, 96px); left: calc(clamp(70px, 5.8vw, 96px) * -.46); bottom: -4%; z-index: 6; }
-.lo-view__candle { width: clamp(46px, 3.8vw, 62px); right: calc(clamp(46px, 3.8vw, 62px) * -.32); bottom: -5%; z-index: 6; }
+/* the Kid board's skull on its books, standing on the floor left of the
+   frame's foot and clear of its corner, and its candle at the other foot */
+.lo-view__skull {
+  --skull-w: clamp(54px, 5vw, 84px);
+  width: var(--skull-w);
+  left: calc(var(--skull-w) * -1 - clamp(14px, 1.3vw, 22px)); bottom: calc(var(--skull-w) * -.34);
+  z-index: 6;
+}
+.lo-view__candle { width: clamp(44px, 3.6vw, 60px); right: calc(clamp(44px, 3.6vw, 60px) * -.34); bottom: -6%; z-index: 6; }
+/* a cobweb strung from the frame's top corner to the wall behind it */
+.lo-view__web { --web-w: clamp(96px, 8.4vw, 140px); left: calc(var(--web-w) * -.3); top: calc(var(--web-w) * -.26); z-index: 3; opacity: .62; }
 
 /* ── the password panel ───────────────────────────────────────────────────── */
+/* Three things, in the order they are read: the password on its lit plate,
+   the way to roll new words, and the explanation pinned under them. */
 .lo-card {
   --pk: .8;
   display: grid; justify-items: center;
-  row-gap: clamp(14px, 2.1vh, 22px);
-  padding: clamp(40px, 5.6vh, 52px) clamp(28px, 2.6vw, 44px) clamp(26px, 3.4vh, 34px);
+  grid-template-rows: auto auto auto;
+  align-content: space-evenly;
+  row-gap: clamp(10px, 1.6vh, 16px);
+  padding: clamp(40px, 5.6vh, 54px) clamp(28px, 2.6vw, 44px) clamp(22px, 3vh, 32px);
   text-align: center;
-}
-.lo-card__lede {
-  margin: 0;
-  max-width: 40ch;
-  font-size: var(--fs-md); line-height: 1.5;
-  color: var(--kit-text);
-  text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
-  text-wrap: balance;
 }
 .lo__warn {
   margin: 0;
@@ -169,31 +190,33 @@
 
 /* The field is a nameplate (the kit's plate.webp, cut the way .kit-plate cuts
    it): PASSWORD engraved on its upper edge, the two words lettered across it
-   in the wordmark's caps. Focus lights the plate's gilt, never a ring. */
+   in the tiles' serif, large, in the plates' warm gold with the candle in it.
+   Focus lights the plate's gilt, never a ring. */
 .lo-plate {
-  --plate-h: clamp(76px, 9.6vh, 88px);
+  --plate-h: clamp(90px, 11.6vh, 108px);
   position: relative;
-  display: grid; justify-items: center; align-content: center; row-gap: 0;
+  display: grid; justify-items: center; align-content: center; row-gap: 2px;
   width: 100%;
   min-height: var(--plate-h);
-  padding: 9px calc(var(--plate-h) * .66) 8px;
+  padding: 10px calc(var(--plate-h) * .6) 10px;
   border: 0 solid transparent;
   border-image-source: url("../../assets/ui/kit/plate.webp");
   border-image-slice: 12 53 12 46 fill;
   border-image-width: calc(var(--plate-h) * 12 / 72) calc(var(--plate-h) * 53 / 72) calc(var(--plate-h) * 12 / 72) calc(var(--plate-h) * 46 / 72);
   border-image-repeat: stretch;
-  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, .8));
+  /* the candle is on this plate: its light spills round the gilt onto the cloth */
+  filter: drop-shadow(0 5px 7px rgba(0, 0, 0, .8)) drop-shadow(0 0 22px color-mix(in srgb, var(--kit-candle) 26%, transparent));
   cursor: text;
   transition: filter var(--t-quick) var(--ease-out);
 }
 .lo-plate:focus-within {
-  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, .8)) drop-shadow(0 0 2px var(--kit-gold-hi))
-          drop-shadow(0 0 16px color-mix(in srgb, var(--kit-candle) 50%, transparent)) brightness(1.08);
+  filter: drop-shadow(0 5px 7px rgba(0, 0, 0, .8)) drop-shadow(0 0 2px var(--kit-gold-hi))
+          drop-shadow(0 0 18px color-mix(in srgb, var(--kit-candle) 46%, transparent)) brightness(1.08);
 }
 .lo-plate__k {
   font-family: var(--font-display); font-weight: 700;
-  font-size: 11px; line-height: 1.2; letter-spacing: .32em; text-transform: uppercase;
-  padding-left: .32em;
+  font-size: clamp(11.5px, .8vw, 13px); line-height: 1.2; letter-spacing: .34em; text-transform: uppercase;
+  padding-left: .34em;
   color: var(--kit-gold);
   text-shadow: 0 -1px 0 rgba(0, 0, 0, .9), 0 1px 0 color-mix(in srgb, var(--kit-gold-hi) 24%, transparent);
 }
@@ -205,29 +228,46 @@
      the body serif, mixed case, in the plates' warm gold — so the longest
      pair ("whispering-torchlight") still fits the plate */
   font-family: var(--font-body); font-weight: 600;
-  font-size: clamp(23px, 1.85vw, 30px); line-height: 1.2;
-  letter-spacing: .03em; text-align: center;
-  color: var(--kit-name);
+  font-size: clamp(28px, 2.44vw, 40px); line-height: 1.16;
+  letter-spacing: .025em; text-align: center;
+  color: #f1dcb0;
   caret-color: var(--kit-gold-hi);
-  text-shadow: 0 1px 0 rgba(0, 0, 0, .95), 0 0 14px color-mix(in srgb, var(--kit-candle) 28%, transparent);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .95), 0 0 16px color-mix(in srgb, var(--kit-candle) 34%, transparent);
 }
+.lo__code::placeholder { color: var(--kit-text-lo); font-style: italic; font-weight: 400; font-size: .72em; }
 .lo__code:focus, .lo__code:focus-visible { outline: none; }
 /* a selection is candle-light on the letters, not a highlighter box: the
    plate is already lit round its gilt while the field has focus */
 .lo__code::selection { background: transparent; color: #fff6e2; }
 
-/* under the plate: the seed the words draw, and the way to roll new ones */
+/* under the plate: the way to roll new words */
 .lo-card__actions {
   display: flex; flex-wrap: wrap; align-items: center; justify-content: center;
   gap: 10px clamp(18px, 1.8vw, 28px);
 }
-.lo-seed { --h: clamp(36px, 4.4vh, 40px); margin: 0; }
-.lo-seed .kit-enamel__label { letter-spacing: .14em; }
-.lo-seed .kit-enamel__value { font-size: calc(var(--h) * .46); letter-spacing: .04em; }
-
 /* roll a new one: the quiet plate with its enamel button on the left end */
 .lo__roll { --plate-h: clamp(40px, 4.9vh, 46px); padding-left: calc(var(--plate-h) * 1.14); }
 .lo__roll > .lo-knob { left: calc(var(--plate-h) * -.3); --md: calc(var(--plate-h) * 1.1); }
+
+/* why: a slip of paper pinned to the panel under the words, turned a little,
+   in the panel's shade — read third, and legible when it is */
+.lo-slip {
+  position: relative;
+  align-self: center;
+  width: min(90%, 30em);
+  margin-top: clamp(2px, .6vh, 8px);
+  padding: clamp(11px, 1.6vh, 15px) clamp(16px, 1.5vw, 24px) clamp(10px, 1.4vh, 13px);
+  --paper: color-mix(in srgb, var(--kit-paper) 70%, #6d5335);
+  transform: rotate(-1.2deg);
+  filter: brightness(.86) saturate(.92);
+}
+.lo-slip__pin { --pin-w: clamp(16px, 1.2vw, 20px); left: 50%; top: -9px; translate: -50% 0; }
+.lo-card__lede {
+  margin: 0;
+  font-size: clamp(13.5px, 1vw, 16px); line-height: 1.42; font-style: italic;
+  color: var(--kit-paper-ink);
+  text-wrap: balance;
+}
 
 /* ── the foot: the board's two ways out ───────────────────────────────────── */
 .lo-foot {
@@ -238,8 +278,28 @@
 .lo__back .kit-btn__medal { left: calc(var(--plate-h) * -.84); }
 .lo__enter, .lo__go { padding-right: calc(var(--plate-h) * 1.3); }
 .lo__enter .kit-btn__medal, .lo__go .kit-btn__medal { right: calc(var(--plate-h) * -.84); }
+/* CLIMB UP over its epithet, the key engraved at the epithet's end: one
+   column of words, clear of the medallion at every size */
+.lo__enter {
+  --plate-h: clamp(52px, 6.6vh, 60px);
+  flex-direction: column; gap: 1px;
+  padding-left: calc(var(--plate-h) * .72);
+  line-height: 1.05;
+}
+.lo__enter > span { font-size: clamp(16px, 1.16vw, 19px); letter-spacing: .2em; padding-left: .2em; }
+.lo__enter > em { display: inline-flex; align-items: baseline; gap: .45em; white-space: nowrap; }
+.lo-foot .kit-btn em { font-size: max(12px, var(--fs-xs)); }
+/* the Enter key as an engraved label, not a keycap: a keycap is a web page */
+.lo__enter kbd {
+  min-width: 0; padding: 0; border-radius: 0;
+  background: none; box-shadow: none;
+  font-family: var(--font-display); font-weight: 700; font-style: normal;
+  font-size: 10.5px; letter-spacing: .18em; text-transform: uppercase;
+  color: var(--kit-gold);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
+}
+.lo__enter kbd::before { content: '\00b7'; margin-right: .55em; letter-spacing: 0; color: var(--kit-gold-lo); }
 /* the way on breathes candle-light when it can be taken */
-.lo-foot .kit-btn em { font-size: max(11px, var(--fs-xs)); }
 .lo__enter::before, .lo__go::before {
   content: ''; position: absolute; inset: -30% -8%; z-index: -1; pointer-events: none;
   border-radius: 50%;
@@ -384,7 +444,6 @@
 
 /* ── the Deck's panel ─────────────────────────────────────────────────────── */
 @media (max-height: 820px) {
-  .lo-stage { padding-block: 40px 30px; }
   .lo-card { row-gap: 12px; }
 }
 

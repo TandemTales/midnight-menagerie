@@ -111,13 +111,13 @@ export class ClubhouseScene extends Scene {
     /* The section tabs stand on the board's top edge — the tabs switch the
        thing they stand on, so that is where they are — and come FIRST in the
        board, so the keyboard still reaches them before what they switch. The
-       board's gilt rail goes over whichever section is showing. */
+       board's carved frame goes round whichever section is showing. */
     main.appendChild(this._tabs);
     main.appendChild(this._buildBoard());
     main.appendChild(this._buildMenagerie());
     main.appendChild(this._buildPets());
     main.appendChild(this._buildBackpack());
-    main.appendChild(el('div', 'cl-frame kit-railframe kit-railframe--ornate'));
+    main.appendChild(el('div', 'cl-frame kit-carved'));
     root.appendChild(main);
 
     root.appendChild(this._buildSide());
@@ -132,19 +132,32 @@ export class ClubhouseScene extends Scene {
 
   /* ── the room itself ────────────────────────────────────────────────────── */
   _buildRoom() {
-    /* The treehouse wall the whole board hangs on (ui/kit.css .kit-ground--planks,
-       the slot Josh's clubhouse.png drops into), lamplit: a string of bulbs
-       across the top, the lamp's pool over the board, dust in the light. */
+    /* The room the whole board hangs in: the boards' own aubergine damask over
+       dark wainscot (ui/kit.css .kit-ground, the slot Josh's clubhouse.png
+       drops into), warmer than the mansion because the Kids have lit it — the
+       enamel lamp over the investigation board, a string of candle-coloured
+       bulbs along the top, dust in the light — and dressed as every board is:
+       the purple scrollwork down both sides, a candle and a cobweb in each top
+       corner, the painted rule round the edge. */
     const room = el('div', 'cl-room kit-board');
     room.innerHTML = `
-      <div class="cl-wall kit-ground kit-ground--planks"><i class="kit-ground__warm"></i><i class="kit-ground__moon"></i></div>
-      <div class="cl-lamp"><span class="cl-lamp__glow"></span></div>
+      <div class="cl-wall kit-ground"><i class="kit-ground__warm"></i><i class="kit-ground__moon"></i></div>
       <div class="cl-lights kit-bulbs">${Array.from({ length: 14 }, (_, i) =>
         `<i style="--i:${i}"></i>`).join('')}</div>
       <div class="cl-floor"></div>
       <div class="cl-dust">${Array.from({ length: 18 }, (_, i) =>
         `<i style="left:${(i * 5.6 + 3) % 100}%;--dur:${(16 + (i % 7) * 3)}s;--del:-${i * 1.7}s;--sz:${1 + (i % 3) * .8}px"></i>`).join('')}</div>
-      <div class="kit-dress" aria-hidden="true"><i class="kit-dress__rule"></i></div>`;
+      <div class="kit-dress cl-dress" aria-hidden="true">
+        <i class="kit-dress__floor"></i>
+        <i class="kit-dress__rule"></i>
+        <i class="kit-dress__vine kit-dress__vine--l cl-vine cl-vine--l"></i>
+        <i class="kit-dress__vine kit-dress__vine--r cl-vine cl-vine--r"></i>
+        <i class="kit-dress__corner kit-dress__corner--l cl-corner cl-corner--l"></i>
+        <i class="kit-dress__corner kit-dress__corner--r cl-corner cl-corner--r"></i>
+        <i class="kit-dress__flame kit-dress__flame--l cl-flame cl-flame--l"></i>
+        <i class="kit-dress__flame kit-dress__flame--r cl-flame cl-flame--r"></i>
+      </div>
+      <div class="cl-lamp kit-lamp" aria-hidden="true"></div>`;
     return room;
   }
 
@@ -270,7 +283,7 @@ export class ClubhouseScene extends Scene {
     cork.appendChild(bp);
 
     // clue notes
-    const cluePos = [[63, 44], [80, 50], [63, 68], [80, 74], [43, 73]];
+    const cluePos = [[63, 45], [80, 51], [63, 74], [80, 79], [43, 77]];
     BOARD_CLUES.forEach((c, i) => {
       const [title, text, known] = c;
       /* `ch-note`, not `note`. The class was renamed in clubhouse.css to get out
@@ -286,13 +299,21 @@ export class ClubhouseScene extends Scene {
       cork.appendChild(note);
     });
 
-    // the thesis, in a kid's handwriting
+    /* The thesis, cut out and pinned up: each phrase torn from a sheet of red
+       paper the way a kid makes a headline, the last one on a scrap of the
+       index cards and underlined in red biro. It holds the board's lower left,
+       which was bare cork. */
     const thesis = el('div', 'scrawl');
-    thesis.style.cssText = 'left:6%;top:78%;--rot:-1.2deg';
-    thesis.innerHTML = `too many pets. same house. <u>not a coincidence.</u>`;
+    thesis.style.cssText = 'left:3.2%;top:79%;--rot:-1.6deg';
+    thesis.innerHTML = `<span class="scrawl__cut kit-clipping" style="--rot:-3deg">too many pets.</span> `
+      + `<span class="scrawl__cut kit-clipping" style="--rot:2.2deg">same house.</span> `
+      + `<span class="scrawl__cut scrawl__cut--last kit-clipping kit-clipping--card" style="--rot:-1deg"><u>not a coincidence.</u></span>`
+      + `<i class="scrawl__pin kit-pin" aria-hidden="true"></i>`;
     cork.appendChild(thesis);
 
     p.appendChild(cork);
+    /* the lamp's light on the board, over everything pinned to it */
+    p.appendChild(el('div', 'cl-lampglow'));
     this._cork = cork;
     return p;
   }
@@ -541,15 +562,24 @@ export class ClubhouseScene extends Scene {
     haunt.appendChild(el('p', 'cl-haunt__desc', `<b>${HAUNTS[this.haunt][1]}</b> ${HAUNTS[this.haunt][2]}`));
     side.appendChild(haunt);
 
+    /* Between the ladder and the way in, the wall is dressed rather than bare:
+       a brass sconce, and the club's motto pinned up beside it on a slip. */
+    const motto = el('div', 'cl-motto');
+    motto.appendChild(el('i', 'cl-motto__sconce kit-sconce'));
+    const quote = el('p', 'cl-quote kit-paper',
+      '&ldquo;Get every animal out that wants to leave.&rdquo;');
+    quote.appendChild(el('i', 'cl-quote__pin kit-pin'));
+    quote.lastChild.setAttribute('aria-hidden', 'true');
+    motto.firstChild.setAttribute('aria-hidden', 'true');
+    motto.appendChild(quote);
+    side.appendChild(motto);
+
     const go = el('button', 'cl-go kit-btn');
     go.type = 'button';
     go.innerHTML = `<b>Plan the Expedition</b><em>choose a Kid and a Companion</em>`
       + `<i class="kit-medallion kit-medallion--ornate kit-btn__medal cl-go__medal" aria-hidden="true">${GLYPH.onward}</i>`;
     side.appendChild(go);
     this._goBtn = go;
-
-    side.appendChild(el('p', 'cl-quote',
-      '&ldquo;Get every animal out that wants to leave.&rdquo;'));
 
     this._side = side;
     return side;

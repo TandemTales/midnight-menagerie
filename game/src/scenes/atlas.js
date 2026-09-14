@@ -237,7 +237,15 @@ export class AtlasScene extends Scene {
 
     const body = el('div', 'at-body');
     body.appendChild(this._buildSheet());
-    body.appendChild(this._buildDossier());
+    /* The reading of the drawing stands in its own column: the panel, and
+       under it the floor it stands over, where the Kid board's skull on its
+       books and a candle keep it company and light the wall behind. */
+    const side = el('div', 'at-side');
+    side.appendChild(this._buildDossier());
+    side.appendChild(el('div', 'at-floor',
+      '<i class="kit-prop kit-prop--skull at-floor__skull"></i><i class="kit-prop kit-prop--candle at-floor__candle"></i>'));
+    side.lastChild.setAttribute('aria-hidden', 'true');
+    body.appendChild(side);
     this.root.appendChild(body);
 
     this._wire();
@@ -342,6 +350,10 @@ export class AtlasScene extends Scene {
   /* ── the sheet ──────────────────────────────────────────────────────────── */
   _buildSheet() {
     const sheet = el('div', 'at-sheet');
+    /* The recovered sheet itself, laid on the frame's velvet backing: its own
+       browned edges show, and one corner has turned up. The drawing is printed
+       on it; the light and the curl are laid over both (see atlas.css). */
+    sheet.appendChild(el('div', 'at-paper'));
 
     const vp = this._vp = el('div', 'at-vp');
     const plate = this._plate = el('div', 'at-plate');
@@ -427,6 +439,10 @@ export class AtlasScene extends Scene {
        to its edges — and the kit's gilt rail round the sheet. Both lie over the
        drawing and take no pointer events; the rail covers only the margin. */
     sheet.appendChild(el('div', 'at-light'));
+    /* where the sheet will not lie flat: its bottom right corner lifts off the
+       backing, catching the candle along its fold and shading what is under it */
+    sheet.appendChild(el('div', 'at-curl'));
+    sheet.appendChild(el('div', 'at-flap'));
     sheet.appendChild(el('div', 'at-frame kit-railframe kit-railframe--ornate'));
 
     const back = this._wide = el('button', 'at-wide kit-btn kit-btn--quiet');
@@ -529,10 +545,11 @@ export class AtlasScene extends Scene {
   /* ── the dossier ────────────────────────────────────────────────────────── */
   _buildDossier() {
     /* A kit panel, read top to bottom in the order a player asks: which wing
-       (its name on a nameplate, its section number over it), who is held there
-       (the Companion in the Kid board's frame with their nameplate on it, as
-       on the Companion board), who keeps it and how far it is surveyed (one
-       engraved strip), and what to do next. */
+       (its name on a gold-rimmed nameplate with room for two lines, its section
+       number over it and its form in italic under it), who is held there (the
+       Companion in the Kid board's frame with their nameplate on it, as on the
+       Companion board), who keeps it and how far it is surveyed (one engraved
+       strip), and what to do next. */
     const d = this._dossier = el('aside', 'at-dossier kit-panel kit-panel--damask');
     d.dataset.medal = 'moon';
     d.setAttribute('aria-live', 'polite');
@@ -541,8 +558,8 @@ export class AtlasScene extends Scene {
       <p class="at-dos__no kit-heading"><span>Section <b class="at-dos__n">I</b></span></p>
       <div class="at-dos__plate">
         <h2 class="at-dos__name">&nbsp;</h2>
-        <p class="at-dos__form">&nbsp;</p>
       </div>
+      <p class="at-dos__form">&nbsp;</p>
       <div class="at-dos__held">
         <span class="at-dos__lbl at-dos__heldlbl">Held here</span>
         <div class="at-dos__pf kit-frame kit-frame--over"></div>
@@ -648,8 +665,9 @@ export class AtlasScene extends Scene {
     const sheet = this._vp.parentElement;
     const b = sheet.getBoundingClientRect();
     if (!b.width || !b.height) return false;
-    /* clear of the gilt rail laid over the paper's edge (atlas.css .at-frame) */
-    const pad = Math.max(20, Math.min(34, b.width * 0.028));
+    /* clear of the gilt rail and the velvet margin round the paper, and a
+       hand's width in from the paper's own browned edge (atlas.css .at-paper) */
+    const pad = Math.max(30, Math.min(46, b.width * 0.038));
     const foot = 34;                                    // the title block's strip
     const aw = Math.max(1, b.width - pad * 2);
     const ah = Math.max(1, b.height - pad * 2 - foot);

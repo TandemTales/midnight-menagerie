@@ -1862,8 +1862,9 @@ button.kit-medallion:hover, button.kit-medallion:focus-visible,
 
 /* ── string lights ──────────────────────────────────────────────────────────
    The kids' own light: a dark wire sagging in one long curve across the top of
-   a board, a bulb on a brass cap every few hands, warm, then red, then cold
-   blue, each breathing on its own beat. Markup is the bulbs:
+   a board, a bulb on a brass cap every few hands, candle amber, then a pale
+   wax, then lavender — the samples' own two lights, never a saturated primary
+   — each breathing on its own beat. Markup is the bulbs:
      <div class="kit-bulbs"><i style="--i:0"></i> … <i style="--i:13"></i></div>
    Fourteen by default (--n); size the box and the wire sags inside it.     */
 .kit-bulbs {
@@ -1895,12 +1896,12 @@ button.kit-medallion:hover, button.kit-medallion:focus-visible,
   box-shadow: 0 1px 0 rgba(0, 0, 0, .6);
 }
 .kit-bulbs > i:nth-child(3n) {
-  background: radial-gradient(circle at 40% 30%, #fff0ee 0 18%, var(--threat-200) 40%, var(--threat-400) 74%, var(--threat-500));
-  box-shadow: 0 0 10px 2px color-mix(in srgb, var(--threat-300) 50%, transparent), 0 0 30px 8px color-mix(in srgb, var(--threat-300) 14%, transparent);
+  background: radial-gradient(circle at 40% 30%, #fbf4ff 0 18%, var(--kit-lav-hi) 40%, var(--kit-lav) 72%, var(--kit-violet));
+  box-shadow: 0 0 10px 2px color-mix(in srgb, var(--kit-lav) 48%, transparent), 0 0 30px 8px color-mix(in srgb, var(--kit-lav) 14%, transparent);
 }
 .kit-bulbs > i:nth-child(3n+1) {
-  background: radial-gradient(circle at 40% 30%, #f0fdff 0 18%, var(--spectre-200) 40%, var(--spectre-400) 74%, var(--spectre-500));
-  box-shadow: 0 0 10px 2px color-mix(in srgb, var(--spectre-300) 46%, transparent), 0 0 30px 8px color-mix(in srgb, var(--spectre-300) 12%, transparent);
+  background: radial-gradient(circle at 40% 30%, #fffaf0 0 20%, #ffeccb 42%, color-mix(in srgb, var(--kit-candle) 70%, #ffeccb) 76%, var(--kit-candle));
+  box-shadow: 0 0 10px 2px color-mix(in srgb, var(--kit-candle) 40%, transparent), 0 0 30px 8px color-mix(in srgb, var(--kit-candle) 12%, transparent);
 }
 @keyframes kit-bulb { 0%, 100% { opacity: .8; } 50% { opacity: 1; } }
 /* a painted room brings its own lights */
@@ -1926,4 +1927,91 @@ button.kit-medallion:hover, button.kit-medallion:focus-visible,
     linear-gradient(180deg, #1c1523 0%, #140f19 60%, #0f0b13 100%);
   background-blend-mode: normal, normal, normal, soft-light, overlay, normal;
   background-clip: padding-box;
+}
+
+/* ===========================================================================
+   THE KIDS' PLACES, ROUND 4 — appended; nothing above is changed. The Lobby,
+   Neighbourhood Headquarters and the Atlas hang these on their walls.
+
+     .kit-carved     a carved walnut picture frame, parcel-gilt, a cast brass
+                     mount riveted over each mitre (frame-carved.webp,
+                     tools/prep_kids_places.py). The box is the picture; the
+                     moulding stands OUTSIDE it. --carve-w is the rail's width
+     .kit-lamp       a hanging enamel lamp on its cord, the bulb burning under
+                     its rim and a warm bloom round it (lamp.webp, HAZE's).
+                     Place it with left/top; --lamp-w sizes it
+     .kit-clipping   a phrase torn out of a sheet of red paper, the words in
+                     cream; --card tears it from an index card, words in red.
+                     Its shadow belongs to its parent (a clip-path cuts a
+                     shadow of its own away): drop-shadow the container
+   =========================================================================== */
+
+/* ── carved frame ── */
+.kit-carved {
+  --carve-w: 34px;
+  position: relative;
+  border: 1px solid transparent;
+  border-image-source: url("../../assets/ui/kit/frame-carved.webp");
+  border-image-slice: 116;
+  border-image-width: var(--carve-w);
+  border-image-outset: calc(var(--carve-w) - 3px);
+  border-image-repeat: round;
+  background: none;
+  pointer-events: none;
+  filter: drop-shadow(0 12px 16px rgba(0, 0, 0, .62)) drop-shadow(0 3px 3px rgba(0, 0, 0, .5));
+}
+
+/* ── lamp ── */
+.kit-lamp {
+  --lamp-w: 96px;
+  position: absolute; pointer-events: none;
+  width: var(--lamp-w); aspect-ratio: 300 / 460;
+  background: url("../../assets/ui/kit/lamp.webp") 50% 0 / 100% 100% no-repeat;
+  filter: drop-shadow(0 6px 8px rgba(0, 0, 0, .55));
+}
+.kit-lamp::after {
+  content: ''; position: absolute; left: 50%; top: 88%;
+  width: 260%; aspect-ratio: 1;
+  translate: -50% -50%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side,
+    color-mix(in srgb, #fff1cf 46%, transparent) 0%,
+    color-mix(in srgb, var(--kit-candle) 26%, transparent) 22%,
+    color-mix(in srgb, var(--kit-candle) 8%, transparent) 55%,
+    transparent 100%);
+  mix-blend-mode: screen;
+  animation: kit-lamp-breathe 5.6s var(--ease-soft) infinite;
+}
+@keyframes kit-lamp-breathe { 0%, 100% { opacity: .84; } 50% { opacity: 1; } }
+.kit-still .kit-lamp::after, .rm.is-still .kit-lamp::after { animation: none; }
+@media (prefers-reduced-motion: reduce) {
+  :root:not([data-reduce-motion="0"]) .kit-lamp::after { animation: none; }
+}
+
+/* ── clipping ── */
+.kit-clipping {
+  --clip: #7d2a20;
+  --clip-hi: #9c3a2b;
+  display: inline-block;
+  position: relative;
+  padding: .26em .78em .34em;
+  font-family: var(--font-body); font-style: italic; font-weight: 700;
+  line-height: 1.12; letter-spacing: .01em; white-space: nowrap;
+  color: #f6e9cf;
+  text-shadow: 0 1px 0 rgba(40, 8, 4, .55);
+  background:
+    linear-gradient(172deg, color-mix(in srgb, var(--clip-hi) 70%, transparent) 0%, transparent 46%, rgba(30, 6, 3, .3) 100%),
+    url("../../assets/ui/kit/paper.webp") 0 0 / 180px 180px,
+    var(--clip);
+  background-blend-mode: normal, overlay, normal;
+  /* torn along the top and the foot, snipped at the ends */
+  clip-path: polygon(0% 12%, 6% 4%, 13% 9%, 21% 2%, 30% 8%, 38% 1%, 47% 7%, 55% 0%, 64% 6%, 72% 1%, 81% 8%, 89% 2%, 96% 7%, 100% 3%,
+                     99% 48%, 100% 94%, 93% 99%, 85% 93%, 77% 100%, 68% 94%, 60% 99%, 51% 92%, 43% 98%, 34% 93%, 26% 100%, 17% 94%, 9% 99%, 2% 95%, 1% 52%);
+  transform: rotate(var(--rot, 0deg));
+}
+.kit-clipping--card {
+  --clip: var(--kit-paper);
+  --clip-hi: #fff7e4;
+  color: color-mix(in srgb, var(--kit-thread) 88%, black);
+  text-shadow: none;
 }

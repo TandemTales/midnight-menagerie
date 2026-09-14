@@ -52,7 +52,7 @@ import { KIDS, COMPANIONS } from '../data/schema.js';
 import { MAX_PARTY } from '../combat/engine.js';
 import { loadoutFor } from './select.js';
 import { canChooseEntry } from '../state/run.js';
-import { Lobby, seedFromRoom } from '../net/lobby.js';
+import { Lobby } from '../net/lobby.js';
 import { Session } from '../net/session.js';
 import { attachSession } from '../net/actions.js';
 import { ChannelTransport, canChannel } from '../net/transport.js';
@@ -108,6 +108,7 @@ function viewMarkup() {
       <div class="lo-view__pic kit-frame kit-frame--over"><span class="lo-view__art" style="background-image:url('${menuArtSrc('menu')}')"></span></div>
       <i class="lo-view__medal"></i>
       <figcaption class="lo-view__plate kit-plate"><b class="kit-plate__name">The House</b><span class="kit-plate__epithet">somewhere out there in the dark</span></figcaption>
+      <i class="kit-web lo-view__web"></i>
       <i class="kit-prop kit-prop--skull lo-view__skull"></i>
       <i class="kit-prop kit-prop--candle lo-view__candle"></i>
     </figure>`;
@@ -243,22 +244,18 @@ export class LobbyScene extends Scene {
     const stage = el('div', 'lo-stage');
     stage.insertAdjacentHTML('beforeend', viewMarkup());
 
-    const card = el('section', 'lo-card kit-panel');
+    /* THE PANEL READS IN ONE ORDER: the password, then the way to roll new
+       words, then why it matters. The two words are the one thing on this
+       board a player must carry to somebody else, so they are the biggest,
+       brightest letters under the title, on the plate the candle is on; the
+       explanation is a slip of paper pinned under them, in the shadow; and
+       the seed the words hash to — a ten-digit number nobody says aloud —
+       is not printed at all. The room still derives it (`seedFromRoom`). */
+    const card = el('section', 'lo-card kit-panel kit-panel--damask');
     card.dataset.medal = 'star';
     card.setAttribute('aria-label', 'The password');
     card.appendChild(el('h2', 'lo-card__h kit-heading kit-heading--ribbon kit-heading--inline kit-heading--clasp',
-      'The password <em>is the map</em>'));
-    card.appendChild(el('p', 'lo__sub lo-card__lede',
-      'Everyone who knows the password ends up in the same treehouse — and the '
-      + 'password is the map, so the same words always draw the same house.'));
-
-    if (!canChannel()) {
-      /* Said plainly rather than left as a dead button. A browser without
-         BroadcastChannel cannot reach the only wire that exists yet. */
-      card.appendChild(el('p', 'lo__warn',
-        'This browser has no BroadcastChannel, so nobody else can climb up. '
-        + 'Two Kids on one screen still works from New Expedition.'));
-    }
+      'The password <em>say it out loud</em>'));
 
     /* The field is an engraved nameplate: the word PASSWORD cut into its top
        edge and the two words lettered across it. */
@@ -267,6 +264,7 @@ export class LobbyScene extends Scene {
     const input = el('input', 'lo__code');
     input.type = 'text';
     input.value = suggested;
+    input.placeholder = 'say two words';
     input.spellcheck = false;
     input.autocomplete = 'off';
     input.setAttribute('aria-label', 'Password');
@@ -274,27 +272,29 @@ export class LobbyScene extends Scene {
     plate.appendChild(input);
     card.appendChild(plate);
 
-    /* The map those words draw, read back as they are typed: the same seed the
-       room will print once everybody is up (`seedFromRoom`, a pure hash). */
-    const seed = el('p', 'lo-seed kit-enamel kit-enamel--dark');
-    seed.setAttribute('aria-live', 'polite');
-    const paintSeed = () => {
-      const room = tidyRoom(input.value);
-      seed.innerHTML = room
-        ? `<i class="kit-enamel__label">draws the house</i><b class="kit-enamel__value">${seedFromRoom(room)}</b>`
-        : '<i class="kit-enamel__label">say two words</i>';
-    };
-    paintSeed();
-    input.addEventListener('input', paintSeed);
-
     const actions = el('div', 'lo-card__actions');
-    actions.appendChild(seed);
     const roll = el('button', 'lo__roll kit-btn kit-btn--quiet');
     roll.type = 'button';
     roll.innerHTML = `<i class="kit-medallion kit-btn__medal lo-knob" aria-hidden="true">${GLYPH.roll}</i><span>New password</span>`;
-    roll.addEventListener('click', () => { input.value = coinRoom(); paintSeed(); input.focus(); });
+    roll.addEventListener('click', () => { input.value = coinRoom(); input.focus(); });
     actions.appendChild(roll);
     card.appendChild(actions);
+
+    const slip = el('div', 'lo-slip kit-paper');
+    slip.appendChild(el('i', 'lo-slip__pin kit-pin'));
+    slip.firstChild.setAttribute('aria-hidden', 'true');
+    slip.appendChild(el('p', 'lo__sub lo-card__lede',
+      'Everyone who knows the password ends up in the same treehouse — and the '
+      + 'password is the map, so the same words always draw the same house.'));
+    card.appendChild(slip);
+
+    if (!canChannel()) {
+      /* Said plainly rather than left as a dead button. A browser without
+         BroadcastChannel cannot reach the only wire that exists yet. */
+      card.appendChild(el('p', 'lo__warn',
+        'This browser has no BroadcastChannel, so nobody else can climb up. '
+        + 'Two Kids on one screen still works from New Expedition.'));
+    }
 
     stage.appendChild(card);
     form.appendChild(stage);
@@ -306,10 +306,13 @@ export class LobbyScene extends Scene {
     back.addEventListener('click', () => this.ctx.scenes?.go?.('title', {}));
     foot.appendChild(back);
 
+    /* The way up: CLIMB UP over its epithet, the Enter key engraved after the
+       epithet on the same small line, so neither crowds the other or the
+       medallion at 1280. */
     const go = el('button', 'lo__enter kit-btn');
     go.type = 'submit';
     go.disabled = !canChannel();
-    go.innerHTML = `<span>Climb up</span><em>up the rope ladder</em><kbd>Enter</kbd>`
+    go.innerHTML = `<span>Climb up</span><em>up the rope ladder <kbd>Enter</kbd></em>`
       + `<i class="kit-medallion kit-medallion--ornate kit-btn__medal" aria-hidden="true">${GLYPH.onward}</i>`;
     foot.appendChild(go);
     form.appendChild(foot);
@@ -364,11 +367,20 @@ export class LobbyScene extends Scene {
     const l = this._lobby;
     const players = l.players;
 
+    /* FOCUS SURVIVES THE REPAINT (IVORY's, ui/r2-expand2-c). The wire repaints
+       this whole board on every lobby message — somebody climbing up, somebody
+       picking a Companion — and a player who had just tabbed to "I'm ready"
+       was thrown back to the top of the page each time. Remember which control
+       had focus, by its `lo__` class and its place among the controls sharing
+       that class (both pickers are `.lo__pick`), and put focus back on its
+       replacement, visibly only if it was visible. */
+    const had = this._focusKey();
+
     const wrap = this._board('lo__room');
 
     const head = this._head('lo__head kit-titleblock--compact');
     head.appendChild(el('p', 'lo__code-out kit-cartouche__sub',
-      `<span>${this._room}</span> · seed ${seedFromRoom(this._room)}`));
+      `the password is <span>${this._room}</span>`));
     head.appendChild(el('p', 'lo__sub kit-titleblock__note',
       `You are ${l.seat + 1} of ${players.length} up here. `
       + 'Everybody sees the same order, and it is not the order you arrived in.'));
@@ -515,6 +527,26 @@ export class LobbyScene extends Scene {
 
     wrap.appendChild(foot);
     try { rovingFocus?.(wrap); } catch { /* keyboard nav is an enhancement */ }
+    this._restoreFocus(had);
+  }
+
+  /** Which control has focus on this board, as something a rebuild can find. */
+  _focusKey() {
+    const a = document.activeElement;
+    if (!a || !this.root || !this.root.contains(a)) return null;
+    const cls = [...a.classList].find((c) => c.startsWith('lo__'));
+    if (!cls) return null;
+    const same = [...this.root.querySelectorAll(`.${cls}`)];
+    let visible = false;
+    try { visible = a.matches(':focus-visible'); } catch { /* older engines */ }
+    return { cls, i: Math.max(0, same.indexOf(a)), visible };
+  }
+
+  _restoreFocus(key) {
+    if (!key || !this.root) return;
+    const next = this.root.querySelectorAll(`.${key.cls}`)[key.i];
+    if (!next || next.disabled) return;
+    try { next.focus({ preventScroll: true, focusVisible: key.visible }); } catch { /* focus is best-effort */ }
   }
 
   /* ── the door opens ───────────────────────────────────────────────────── */

@@ -130,6 +130,29 @@ async def main():
               "sorted peer list, not arrival order",
               f"{a_seats!r} vs {b_seats!r}")
 
+        # KEYBOARD FOCUS SURVIVES A WIRE REPAINT. The room is rebuilt from
+        # scratch on every lobby message, and a player who had tabbed to
+        # "I'm ready" used to be thrown back to the top of the page whenever
+        # anybody else in the room so much as picked a Companion. Put tab A's
+        # focus on its ready button, have tab B announce a change, and A's
+        # focus must be on the NEW button the repaint built.
+        await A.focus(".lo__ready")
+        await A.evaluate("() => { window.__readyBefore = document.querySelector('.lo__ready'); }")
+        await B.evaluate("""() => {
+          const lob = window.MM.ctx.scenes?.current?._lobby;
+          if (lob) lob.setChoice({ name: 'over the wire' });
+        }""")
+        await A.wait_for_timeout(700)
+        focus = await A.evaluate("""() => {
+          const now = document.querySelector('.lo__ready');
+          return { rebuilt: !!now && now !== window.__readyBefore,
+                   focused: !!now && document.activeElement === now };
+        }""")
+        check(focus["rebuilt"], "a message from the other tab repaints this tab's room", str(focus))
+        check(focus["focused"],
+              "and keyboard focus is still on I'm ready after the repaint",
+              str(focus))
+
         # One veteran, one rookie — see BE_A_VETERAN.
         vet = await A.evaluate(BE_A_VETERAN)
         check(vet.startswith("4/6/") and "rope" in vet and "chalk" in vet,
