@@ -1,4 +1,4 @@
-# Handoff — the UI pass is in round 4, and round 3's winners are merged
+# Handoff — launch UI pass round 5; rounds 0 to 4 are merged
 
 You are picking up Midnight Menagerie on `dev`. Everything below is pushed.
 
@@ -12,18 +12,33 @@ from every judge.
 
 ## FIRST, BEFORE ANYTHING
 
-**1. Is round 4 still building?** It was launched on 2026-09-13 from `c7d31db`,
-as workflow `wf_180be12f-091` in session `5714ff4c`. A workflow lives and dies
-with its session, and no other session can resume it.
-- **The branches:** `git log --oneline c7d31db..ui/r4-<track>-<slot>` for each of
-  the twelve (`<track>` is `polish`, `combat`, `dialogs` or `kids`; `<slot>` is
-  `a`, `b` or `c`).
-- **The captures:** a builder that finished has put its screenshots in
-  `$UILOOP/judging/r4/<track>/<CODE>/`. That is twelve for POLISH and six for any
-  other track.
-- **If that session is gone and the round is not done,** relaunch it with `args.tracks`
-  cut to the unfinished tracks. A relaunched builder starts from whatever its
-  worktree already holds.
+**1. Round 5 is briefed and set up, but not launched.** Josh asked for it to start
+in a fresh conversation, so launching it is your first job. Everything is pushed;
+`dev` holds the round's brief at `d1dd14b`, and the handoff commits after it touch
+only docs and tools.
+- **The brief:** `docs/ui-pass/BRIEF-r5.md`, `RUBRIC-r5.md` and `round-5.args.json`.
+  There are four tracks (POLISH, COMBAT, DIALOGS, KIDS' PLACES) and twelve
+  builders on ports 8831–8842, with `maxBuilders: 6`.
+- **What session `5714ff4c` left on disk,** in its `UILOOP` (path below):
+  - twelve worktrees `wt/r5-<track>-<slot>` on `ui/r5-*` at `d1dd14b`, with nothing
+    committed;
+  - the baselines in `judging/r5/<track>/<CODE>/`: QUINCE, ZEPHYR, DRIFT and HOLLY.
+    There should be 30 PNGs. Count them, and re-take any that are missing with the
+    Deliverables commands, without `--port`, from the main checkout on 8777.
+  - `judging/r0` to `r4`: every capture a judge has seen.
+- **Move the worktrees into your own scratchpad first.** Subagents write there
+  without permission prompts, and session `5714ff4c` did the same move at round 2.
+  Per worktree, `git worktree move "<old UILOOP>/wt/r5-…" "<your scratchpad>/ui-loop/wt/r5-…"`
+  is an instant rename on the same drive. Then `cp -r` the old `judging/` across.
+- **Dry-run, then launch.** Run
+  `python tools/ui_pass_probe.py docs/ui-pass/round-5.args.json --uiloop <your UILOOP>`,
+  then:
+  `Workflow({ scriptPath: "docs/ui-pass/round-workflow.js", args: { ...round-5.args.json, repo, uiloop, base: "d1dd14b…" } })`.
+  Pass the full sha from `git rev-parse d1dd14b`. Round 4 took 7.3 hours.
+- **After round 5 merges, wire the enemy animations.** Josh's call, 09-13, "do it
+  after round 5 merges". His `SS_<enemy>_<clip>.png` sheets are arriving in
+  `animations/sprites/enemies/animations/` (66 by 09-13, 13+ enemies). Nothing
+  builds or plays them yet. Memory note `enemy-animations-after-round-5` has the plan.
 
 **2. Josh drops art in while you work.**
 - **Enemies:** `ls -t animations/sprites/enemies | head` shows the newest
@@ -35,9 +50,9 @@ with its session, and no other session can resume it.
   paintings are the one thing that can lift every screen's background score.
 
 **3. The battery:** `python tools/devserver.py 8777`, then `python tools/gates.py`
-(99 gates, about 30 minutes). On the round 3 merge (`8de2362`) it read red only
-on the known `tests/sprites/check.py` and `tests/run/run.py`, and on
-`tests/steam-deck`'s load-sensitive Map row, which passed 6/0 run alone.
+(99 gates, about 30 minutes). On the round 4 merge (`ecb9315`) it read red only
+on the known `tests/sprites/check.py` and `tests/run/run.py`. `steam-deck` passed;
+its Map row is load-sensitive, so re-run it alone before blaming a change.
 
 ## THE UI PASS
 
@@ -45,7 +60,7 @@ on the known `tests/sprites/check.py` and `tests/run/run.py`, and on
 score log.
 
 `UILOOP` holds the worktrees (`wt/`) and every capture a judge has seen
-(`judging/r0` to `r3`). It is
+(`judging/r0` to `r5`). Session `5714ff4c`'s is
 `C:\Users\Josh\AppData\Local\Temp\claude\C--Users-Josh-OneDrive-Desktop-Tandem-Tales-Midnight-Menagerie\5714ff4c-0809-4a83-8794-4dabc7cc6f3a\scratchpad\ui-loop`.
 Keep it outside OneDrive, always.
 
@@ -60,14 +75,18 @@ Keep it outside OneDrive, always.
 | 3 | POLISH the six boards | ONYX 6.56 · PEARL 6.28 · MINT 6.28 · before 5.50 | ONYX, 2 of 3 `1d9f09d` |
 | 3 | COMBAT, with a full-hand board | TOPAZ 7.00 · QUILL 6.50 · SLATE 6.33 · before 5.17 | TOPAZ `f025e59` |
 | 3 | DIALOGS opening / Settings / pile viewer | YARROW 6.61 · UMBER 6.56 · WILLOW 6.50 · before 2.72 | UMBER, decided on the rankings `6806123` |
-| 4 | POLISH · COMBAT · DIALOGS · KIDS' PLACES | building | |
+| 4 | POLISH the six boards | ACORN 6.98 · CEDAR 6.82 · BASALT 6.63 · before 6.51 | ACORN `8d05ca5` |
+| 4 | COMBAT, three boards | FLINT 7.33 (boss board 8.0) · GARNET 6.92 · EBONY 6.42 · before 5.58 | FLINT `265ac4d` |
+| 4 | DIALOGS | KESTREL 7.00 · INDIGO 6.42 · JASPER 6.33 · before 4.92 | KESTREL `42753f9` |
+| 4 | KIDS' PLACES | OCHRE 6.94 · MARL 6.94 · NUTMEG 6.83 · before 5.94 | Lobby NUTMEG, Clubhouse OCHRE, Atlas MARL `ecb9315` |
+| 5 | POLISH · COMBAT · DIALOGS · KIDS' PLACES | briefed, set up, not launched | |
 
 **Where the game is.**
 - **Paintings:** Title, Companion Select, Kid Select and the opening's Kid picker
   ARE Josh's paintings.
 - **Kit screens:** the six boards, combat, the lobby, the clubhouse, the atlas, and
   every Modal (the opening's story, Settings, the pile viewer, the confirm dialog),
-  scoring between 5.7 and 7.3 in their last rounds.
+  scoring between 6.0 and 8.0 in their last rounds.
 - **Still web chrome:** the coach, the handoff veil and the toasts.
 
 **The ceiling is the backgrounds.** Converting a screen has been worth about four
@@ -119,19 +138,21 @@ grounds are renders. Until Josh's paintings land, the loop plateaus around 7.
 8. **Log** the scores in the README, update this file and the memory, and brief
    the next round.
 
-### Round 4, when it lands
+### Round 5, when it lands
 
 - **Merges:** POLISH, COMBAT and DIALOGS are REFINE, so three whole-branch merges.
   KIDS' PLACES is EXPAND: take one winner's branch whole, then lay the other
-  winners' screen files on top with only the kit pieces those screens use
-  (`31b6d8f`).
-- **Seams to check after merging:**
-  - DIALOGS and KIDS' PLACES both append to `kit.css`, so rebuild the end of the
-    file from the blobs.
-  - POLISH's shared components reach every other track's screens.
-  - Photograph all fifteen screens beside their judged captures, and run
-    `tests/scene-css` and `tests/css-tokens` before the battery (`c53376a` and
-    `e14011b` are what each has caught).
+  winners' screen files on top, with only the kit rules and assets those screens
+  use (`ecb9315`'s message shows how).
+- **kit.css:** every track appends to its end, so each merge conflicts there. Run
+  `git merge --no-ff --no-commit <branch>`, then
+  `python tools/kitcss_merge.py d1dd14b <branch>`. Check that the resolved file's
+  changes equal the branch's, then `git add`.
+- **Name collisions:** grep a laid-over screen's classes and assets against what is
+  already merged. In round 4 three builders each made a `lamp.webp`.
+- **Reading the result:** `python tools/ui_pass_digest.py <task output> <track> --notes CODE --worst CODE`.
+- **Checks:** photograph all fifteen screens beside their judged captures, run
+  `tests/scene-css` and `tests/css-tokens`, then the battery. Push.
 - **Still unconverted:** the coach, the handoff veil and the toasts.
 
 ## DONE 2026-09-13
@@ -149,7 +170,14 @@ grounds are renders. Until Josh's paintings land, the loop plateaus around 7.
 - **Round 3 briefed** (`662d874`), built, judged and merged (`1d9f09d`, `f025e59`,
   `6806123`). `c53376a` moved two layout rules off shared kit classes for
   `scene-css`, and `8de2362` rebuilt the Butler from Josh's second redraw.
-- **Round 4 briefed** (`c7d31db`) and launched with four tracks.
+- **Round 4 built, judged and merged** (`8d05ca5`, `265ac4d`, `42753f9`, `ecb9315`).
+  - KIDS' PLACES was assembled from three builders, one per screen.
+  - `tools/kitcss_merge.py` and `tools/ui_pass_digest.py` were kept from the
+    session's scratchpad.
+- **Round 5 briefed** (`d1dd14b`), with its worktrees and baselines set up. Josh
+  launches it in a new conversation.
+- **Flagged for a separate session:** hovering a card dealt straight into the hand
+  logs "ctxFor reading 'hand'" (true on dev too; a task chip was offered).
 
 ## DONE 2026-09-12
 
@@ -223,6 +251,8 @@ Big Scare** (`3a12203`).
 
 ## JOSH'S CALLS — do not re-ask
 
+- **Enemy animation sheets are wired after UI round 5 merges** (09-13, "do it after
+  round 5 merges"), not during a round: `ui/enemy.js` is the COMBAT track's.
 - **Enemy still SOURCES stay untracked** "for now" (09-12). The built `.webp` are
   committed.
 - **Josh paints the backgrounds** from the prompt pack (09-12). Until each one
@@ -335,7 +365,8 @@ Big Scare** (`3a12203`).
 ## GATES
 
 Every number below is from the battery on the round 3 merge (`8de2362`),
-2026-09-13. The commits since touch the loop's docs only.
+2026-09-13. The round 4 merge's battery (`ecb9315`) matched it: red only on the
+known sprites and run.py rows, with steam-deck 6/0, map 30/0 and coop/lobby 29/0.
 
 | gate | reads |
 |---|---|
