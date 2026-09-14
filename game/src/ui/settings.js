@@ -189,7 +189,7 @@ export async function openSettings(ctx = {}) {
     `<div class="mm-set__label"><span>Current expedition</span>` +
     `<span class="mm-set__hint">A seed reproduces a run exactly: the same rooms, rewards and shop stock.</span></div>` +
     `<i class="kit-leader mm-set__lead" aria-hidden="true"></i>` +
-    `<output class="mm-set__seed kit-enamel kit-enamel--dark"><b class="kit-enamel__value">${escape_(curSeed)}</b></output>`;
+    `<output class="mm-set__seed kit-enamel kit-enamel--dark${rawSeed == null ? ' is-empty' : ''}"><b class="kit-enamel__value">${escape_(curSeed)}</b></output>`;
   seedFs.appendChild(cur);
 
   const entry = document.createElement('div');

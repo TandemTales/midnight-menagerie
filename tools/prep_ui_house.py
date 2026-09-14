@@ -259,10 +259,10 @@ def bookmark(W=60, H=480, ss=4):
 def plate_arch(W=400, H=132, ss=4):
     """A portrait's nameplate, as a 9-slice (slices 40 84 22 84): a gilt rim
     round aubergine enamel. Its ends are the Companion tiles' ogee brackets —
-    a notch at each corner, the end bowing out between them, a small curl
-    hooked on each notch — and its top rises in a low arch between them. The
-    arch lives in the top slice and the ends in theirs, so stretching the plate
-    widens the arch and never bends a scroll."""
+    a notch at each corner and the end bowing out between them — and its top
+    swells into a low arch between them, springing without a kink. The arch
+    lives in the top slice and the ends in theirs, so stretching the plate
+    widens the arch and never bends an end."""
     rng = np.random.default_rng(4404)
     NW, NH = W * ss, H * ss
     yy, xx = (np.mgrid[0:NH, 0:NW].astype(np.float32) + 0.5) / ss
@@ -274,7 +274,7 @@ def plate_arch(W=400, H=132, ss=4):
     ymid = (yt + yb) / 2
     # the arch: a cosine swell between xa0 and xa1
     u = np.clip((xx - xa0) / (xa1 - xa0), 0, 1)
-    top = np.where((xx > xa0) & (xx < xa1), yt - (yt - crown) * np.sin(u * math.pi) ** 0.85, yt)
+    top = yt - (yt - crown) * np.clip(np.sin(u * math.pi), 0, 1) ** 1.6
     shape = (xx >= xe0) & (xx <= xe1) & (yy >= top) & (yy <= yb)
     # the ends: a bow out to the side between two concave corner notches
     for side, xe in ((-1, xe0), (1, xe1)):
@@ -282,22 +282,14 @@ def plate_arch(W=400, H=132, ss=4):
         shape |= bow
         for cy in (yt, yb):
             shape &= ~disc(xx, yy, xe + side * 2.0, cy, 13.0)
-    hooks = np.zeros_like(shape)
-    for side, xe in ((-1, xe0), (1, xe1)):
-        for sy, cy in ((-1, yt), (1, yb)):
-            a0 = math.atan2(sy * 1.0, side * 1.0)
-            pts = P.volute(xe + side * 11.0, cy + sy * 1.0, 7.5, 2.4, a0 + math.pi, 0.85 * side * sy, 40)
-            hooks |= P.stroke_mask(W, H, [(pts, 4.6, 2.2)], ss) > 0.5
-    solid = shape | hooks
+    solid = shape
     d = ndimage.distance_transform_edt(shape) / ss
     rim = 9.0
     field = shape & (d > rim)
     bev = np.clip(d / rim, 0, 1)
     h_rim = np.where(shape, np.where(d < rim, np.sin(bev * math.pi) ** 0.8 * 5.0 + 1.5, 0.6), 0)
     line = shape & (np.abs(d - (rim + 4.5)) < 0.7)
-    hd = ndimage.distance_transform_edt(hooks) / ss
-    h_hook = np.where(hooks, np.sqrt(np.clip(hd / 2.2, 0, 1)) * 3.5 + 2.5, 0)
-    hgt = np.maximum(h_rim, h_hook)
+    hgt = h_rim
     hgt = ndimage.gaussian_filter(hgt * ss, ss * 0.5)
     n = normals(hgt, 0.8)
     metal = brass(n, wear=noise((NH, NW), rng, ss * 3), spec_amt=0.6, lift=-0.1)

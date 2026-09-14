@@ -271,6 +271,8 @@
   user-select: text;
 }
 .mm-set__seed .kit-enamel__value { font-size: calc(var(--read-h) * .5); letter-spacing: .08em; }
+/* no expedition, no seed: the plate unlit, so an empty value never shines */
+.mm-set__seed.kit-enamel.is-empty { filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .75)) saturate(.45) brightness(.72); }
 .mm-set__text.kit-field {
   --field-h: calc(var(--read-h) + 4px);
   justify-self: end;
