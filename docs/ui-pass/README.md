@@ -70,7 +70,11 @@ so round 2 runs six at once, as round 1 did.
 | 3 | POLISH the six boards | ONYX 6.56 · PEARL 6.28 · MINT 6.28 · the screens before 5.50 | ONYX, 2 of 3 judges | `1d9f09d` |
 | 3 | COMBAT, a Scuffle, a boss and a boss with a full hand | TOPAZ 7.00 · QUILL 6.50 · SLATE 6.33 · the screen before 5.17 | TOPAZ, both judges | `f025e59` |
 | 3 | DIALOGS the opening's story / Settings / the pile viewer | YARROW 6.61 · UMBER 6.56 · WILLOW 6.50 · the screens before 2.72 | UMBER: three judges named three winners; UMBER wins the rankings (3 head-to-head, Borda 20 / 17 / 17) | `6806123` |
-| 4 | POLISH; COMBAT; DIALOGS; KIDS' PLACES Lobby / Clubhouse / Atlas | briefed (`BRIEF-r4.md`, `RUBRIC-r4.md`, `round-4.args.json`) | | |
+| 4 | POLISH the six boards | ACORN 6.98 · CEDAR 6.82 · BASALT 6.63 · the screens before 6.51 | ACORN, both judges | `8d05ca5` |
+| 4 | COMBAT, three boards | FLINT 7.33 · GARNET 6.92 · EBONY 6.42 · the screen before 5.58 | FLINT, both judges; the boss board 8.0, the loop's first 8 | `265ac4d` |
+| 4 | DIALOGS opening / Settings / pile viewer | KESTREL 7.00 · INDIGO 6.42 · JASPER 6.33 · the screens before 4.92 | KESTREL, both judges | `42753f9` |
+| 4 | KIDS' PLACES Lobby / Clubhouse / Atlas | OCHRE 6.94 · MARL 6.94 · NUTMEG 6.83 · the screens before 5.94 | per screen, 3 judges: Lobby NUTMEG, Clubhouse OCHRE, Atlas MARL | `ecb9315` |
+| 5 | POLISH; COMBAT; DIALOGS; KIDS' PLACES | briefed (`BRIEF-r5.md`, `RUBRIC-r5.md`, `round-5.args.json`) | | |
 
 **Scores anchor to the candidates beside them.** Round 0's winner scored 7.0 in
 round 0 and 5.58 as round 1's baseline: the judges grew stricter as the field
@@ -84,6 +88,7 @@ Against their own baselines:
 | 1 | REFINE +1.25 | EXPAND +3.61 |
 | 2 | POLISH +0.50 | COMBAT +3.75, EXPAND-2 +4.05 |
 | 3 | POLISH +1.06, COMBAT +1.83 | DIALOGS +3.84 |
+| 4 | POLISH +0.47, COMBAT +1.75, DIALOGS +2.08, KIDS' PLACES +1.00 | — |
 
 Converting a screen moves it about four points. Refining one moves it half a point
 to two points, more when the brief names concrete defects the judges can see

@@ -1,0 +1,149 @@
+{
+  "round": "r5",
+  "maxBuilders": 6,
+  "briefs": [
+    "docs/ui-pass/BRIEF-r0.md",
+    "docs/ui-pass/BRIEF-r1.md",
+    "docs/ui-pass/BRIEF-r5.md"
+  ],
+  "rubrics": [
+    "docs/ui-pass/RUBRIC.md",
+    "docs/ui-pass/RUBRIC-r1.md",
+    "docs/ui-pass/RUBRIC-r5.md"
+  ],
+  "samples": [
+    "UI/title.png",
+    "UI/mainMenu.png",
+    "UI/selectCompanion.png",
+    "UI/selectKid.png"
+  ],
+  "tracks": [
+    {
+      "key": "polish",
+      "name": "POLISH",
+      "rule": "refine",
+      "screens": [
+        "shop",
+        "reward",
+        "event",
+        "map",
+        "rest",
+        "gameover"
+      ],
+      "baseline": "QUINCE",
+      "builders": [
+        {
+          "slot": "a",
+          "code": "RAVEN",
+          "port": 8831,
+          "angle": "LITERAL. Work down the POLISH fix list, 1 to 13, in order and exactly as written, reading the branches it names before you copy an idea from them. Every fix visibly done on screen at both sizes, and nothing else changed."
+        },
+        {
+          "slot": "b",
+          "code": "SABLE",
+          "port": 8832,
+          "angle": "THE FOCAL POINTS. Do every fix, and put your extra effort into each board's hero and its caption, which the round-4 judges found missing: Mr. Moth as the Shop's shopkeeper, Game Over's centrepiece, the fort's nameplate, the Curiosity's register page. One unmistakable focal point per board, then a second, then everything else, at 1280x800 and 1600x900."
+        },
+        {
+          "slot": "c",
+          "code": "THISTLE",
+          "port": 8833,
+          "angle": "PAINTED DRESSING. Do every fix, and put your extra effort into the objects of each room and the strip over it: sconces and candles, still lifes, brass bosses, carved plates, watercolour stains, and the HUD as cartouches and filigree sockets, so nothing on any board reads as a web pill, a thin outline or a flat bar."
+        }
+      ]
+    },
+    {
+      "key": "combat",
+      "name": "COMBAT",
+      "rule": "refine",
+      "screens": [
+        "combat",
+        "combat-boss",
+        "combat-crowd"
+      ],
+      "baseline": "ZEPHYR",
+      "builders": [
+        {
+          "slot": "a",
+          "code": "VESPER",
+          "port": 8834,
+          "angle": "LITERAL. Work down the COMBAT fix list, 1 to 6, in order and exactly as written, reading the branches it names before you copy an idea from them. Every fix visibly done on all three boards at both sizes, and nothing else changed."
+        },
+        {
+          "slot": "b",
+          "code": "WALNUT",
+          "port": 8835,
+          "angle": "THE TABLE. Do every fix, and put your extra effort into everything that sits on the table in front of the Kid: the decks on their bracket, the hourglass with its sand, the Nerve coin, the conditions on their plate, as painted objects with weight and light that read at a glance at 1280x800. Keep FLINT's boss staging."
+        },
+        {
+          "slot": "c",
+          "code": "YEW",
+          "port": 8836,
+          "angle": "THE FULL HAND. Do every fix, and put your extra effort into the crowded boss board: a hand of nine or ten where every name, type line, cost and rules text reads at 1280x800 and no card cuts another's title, while the fan never covers the Kid's panel, the piles or END TURN, and the Butler stands inside a painted mirror."
+        }
+      ]
+    },
+    {
+      "key": "dialogs",
+      "name": "DIALOGS",
+      "rule": "refine",
+      "screens": [
+        "opening",
+        "settings",
+        "piles"
+      ],
+      "baseline": "DRIFT",
+      "builders": [
+        {
+          "slot": "a",
+          "code": "ALDER",
+          "port": 8837,
+          "angle": "LITERAL. Work down the DIALOGS fix list, 1 to 5, in order and exactly as written, reading the branches it names before you copy an idea from them. Every fix visibly done on all three screens at both sizes, and nothing else changed."
+        },
+        {
+          "slot": "b",
+          "code": "BIRCH",
+          "port": 8838,
+          "angle": "A PAINTED LEDGER. Do every fix, and put your extra effort into Settings and the pile viewer as a ledger and a trick case from this house: sections that differ, values and states lettered in gilt, filters as plates, a tray that stages its cards, every control still a real control with keyboard and gamepad."
+        },
+        {
+          "slot": "c",
+          "code": "CLOVE",
+          "port": 8839,
+          "angle": "THE STORY PAGE. Do every fix, and put your extra effort into the opening: the portrait, its nameplate and star, the page, its ribbon and divider, and the lit room around them dressed so the bottom third is not an empty blur, as the one screen where the game tells its own story."
+        }
+      ]
+    },
+    {
+      "key": "kids",
+      "name": "KIDS' PLACES",
+      "rule": "expand",
+      "screens": [
+        "lobby",
+        "clubhouse",
+        "atlas"
+      ],
+      "baseline": "HOLLY",
+      "builders": [
+        {
+          "slot": "a",
+          "code": "ELDER",
+          "port": 8840,
+          "angle": "LITERAL. Work down the KIDS' PLACES fix list, 1 to 10, in order and exactly as written, reading the branches it names before you copy an idea from them. Every fix visibly done on all three screens at both sizes, and nothing else changed."
+        },
+        {
+          "slot": "b",
+          "code": "FINCH",
+          "port": 8841,
+          "angle": "ONE TREEHOUSE. Do every fix, and put your extra effort into the Lobby and the Clubhouse as two rooms built by the same kids from the same timber: painted beams, planks, shelves and string lights they share, warm against the mansion, with the Atlas lit by the same candles."
+        },
+        {
+          "slot": "c",
+          "code": "GORSE",
+          "port": 8842,
+          "angle": "FULL BOARDS. Do every fix, and put your extra effort into every surface having something to read and nothing dead: the seed legible in its plaque, the clubhouse board's lower half and right column full of the investigation, the atlas caption and props clear, all in the right reading order at 1280x800."
+        }
+      ]
+    }
+  ]
+}
