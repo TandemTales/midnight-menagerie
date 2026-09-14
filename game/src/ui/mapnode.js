@@ -331,6 +331,17 @@ export function mapNodeMarkup(node, info, hazardName = '', at = null) {
                 M${f - a} ${i} L${f} ${i} L${f} ${i + a}
                 M${f} ${f - a} L${f} ${f} L${f - a} ${f}
                 M${i + a} ${f} L${i} ${f} L${i} ${f - a}`;
+  /* Inked by hand, not placed by a diagram tool: every mark sits a degree or
+     two off square and leans a little, seeded off the room so it never moves,
+     and the pen went over it twice, the second pass a hair off the first and
+     paler (the route's own overdraw, .mi-ghost). The boss is one solid mass of
+     ink, and a second pass under it would only read as a drop shadow. */
+  const hand = wobbler(s ^ 0x7e11);
+  const rot = hand() * 5, lean = hand() * 5;
+  const glyphAt = (dx, dy, r) => `translate(${(off + dx).toFixed(2)} ${(off + dy).toFixed(2)}) scale(${gs / 48})`
+    + ` rotate(${r.toFixed(2)} 24 24) translate(24 24) skewX(${lean.toFixed(2)}) translate(-24 -24)`;
+  const ghost = big ? ''
+    : `<g class="mn-overdraw" transform="${glyphAt(0.9 + hand() * .5, 0.7 + hand() * .5, rot + hand() * 3)}"><g opacity=".3">${glyphMarkup(node.type)}</g></g>`;
 
   return `<button type="button" class="map-node map-node--${node.type}" tabindex="-1"
       data-id="${escapeHtml(node.id)}" data-type="${escapeHtml(node.type)}"
@@ -343,7 +354,7 @@ export function mapNodeMarkup(node, info, hazardName = '', at = null) {
       <svg class="mn-art" viewBox="0 0 ${box} ${box}" width="${box}" height="${box}">
         <path class="mn-ring"  d="${ringD}"/>
         <path class="mn-ring2" d="${ring2}"/>
-        <g transform="translate(${off} ${off}) scale(${gs / 48})">${glyphMarkup(node.type)}</g>
+        ${ghost}<g transform="${glyphAt(0, 0, rot)}">${glyphMarkup(node.type)}</g>
         <path class="mn-tick" d="${tickD}"/>
         <path class="mn-kbd"  d="${kbdD}"/>
         <!-- A drafting leader.  The collision pass moves a name chip off its own

@@ -123,26 +123,29 @@ export class ShopScene extends RoomScene {
     const { CardView } = await import('../ui/card.js');
     if (this._dead) return;
 
-    /* The board, composed like the Kid board. One shelf of Tricks across the
-       whole cabinet, five real cards standing on a carved ledge in front of
-       the curtain he hangs behind it, their prices hung on the ledge's front —
-       and under it the counter: Keepsakes and Snacks either side, and between
-       them Mr. Moth himself, in his lit portrait medallion with his name on a
-       cartouche, the one thing he says to you, what you are already carrying,
-       and his Forgetting service with its own price (6cfaef5's arrangement:
-       the service stops being a narrow slab on the end of the shelf). */
+    /* The board, composed like the Kid board. One shelf across the whole
+       cabinet holds every purchase (MINT's and PEARL's arrangement): Mr. Moth
+       himself stands at its LEFT end in his lit portrait medallion with his
+       name on a cartouche, then the five Tricks on a carved ledge in front of
+       the curtain he hangs behind them, and his Forgetting service closes the
+       row as a sixth framed card, every price hung on the ledge's front.
+       Under it the counter: Keepsakes and Snacks either side, and between them
+       only the one thing he says to you, over what you already carry. */
     const wrap = el('div', 'sh-floor');
     wrap.innerHTML = `
       <div class="sh-left">
         <section class="sh-counter sh-counter--cards kit-panel kit-mat--curtain" data-medal="star2" aria-label="${esc(TERMS.card)}s for sale">
           <h2 class="sh-h sh-h--cards kit-heading kit-heading--ribbon kit-heading--inline kit-heading--clasp">${esc(TERMS.deck)} <em>on the table</em></h2>
+          <!-- Mr. Moth, standing at the left end of the shelf: not for sale, so
+               outside the list of things that are -->
+          <figure class="sh-keeper">
+            <span class="sh-keeper__light" aria-hidden="true"></span>
+            <span class="sh-moth__frame" aria-hidden="true"></span>
+            ${MOTH_SVG}
+            <figcaption class="sh-moth__name kit-plate"><b class="kit-plate__name">Mr. Moth</b><span class="kit-plate__epithet">keeper of lost things</span></figcaption>
+          </figure>
           <div class="sh-cards kit-cards" data-tip-avoid=".sh-card, .rm-where, .sh-counter--moth, .sh-side .sh-counter, .sh-keeper, .sh-service" data-tip-gap="12" role="list"></div>
           <i class="sh-ledge kit-ledge" aria-hidden="true"></i>
-          <!-- on the ends of the ledge, in the curtain's shadow: the Kid board's
-               skull on its books and a candle at one end, a candle at the other -->
-          <i class="sh-prop sh-prop--skull kit-prop kit-prop--skull" aria-hidden="true"></i>
-          <i class="sh-prop sh-prop--l kit-prop kit-prop--candle" aria-hidden="true"></i>
-          <i class="sh-prop sh-prop--r kit-prop kit-prop--candle" aria-hidden="true"></i>
         </section>
       </div>
       <div class="sh-side">
@@ -152,15 +155,7 @@ export class ShopScene extends RoomScene {
         </section>
         <section class="sh-counter sh-counter--moth kit-panel" data-medal="moon">
           <div class="sh-moth__say">
-            <figure class="sh-keeper">
-              <span class="sh-keeper__light" aria-hidden="true"></span>
-              <span class="sh-moth__frame" aria-hidden="true"></span>
-              ${MOTH_SVG}
-            </figure>
-            <div class="sh-moth__words">
-              <p class="sh-moth__name kit-plate"><b class="kit-plate__name">Mr. Moth</b><span class="kit-plate__epithet">keeper of lost things</span></p>
-              <p class="sh-moth__line">&ldquo;${esc(this._greeting)}&rdquo;</p>
-            </div>
+            <p class="sh-moth__line">&ldquo;${esc(this._greeting)}&rdquo;</p>
             <!-- Live, not a snapshot: this panel is the only place in the shop
                  that says what you already have, and it used to be written once
                  at build time — so after buying two Snacks the HUD read 2 and
@@ -174,10 +169,6 @@ export class ShopScene extends RoomScene {
               <div><dt>${esc(TERMS.potion)}s</dt><dd data-inv="snacks"></dd></div>
               <div><dt data-invlabel="clues"></dt><dd data-inv="clues"></dd></div>
             </dl>
-          </div>
-          <div class="sh-service" role="group" aria-label="Removal service">
-            <h3 class="sh-h sh-service__h kit-heading kit-heading--inline">Forgetting <em>a service</em></h3>
-            <div class="sh-remove"></div>
           </div>
         </section>
         <section class="sh-counter sh-counter--snacks kit-panel" data-medal="paw" aria-label="${esc(TERMS.potion)}s for sale">
@@ -193,8 +184,8 @@ export class ShopScene extends RoomScene {
     this._cardSlots = [];
 
     // ── Tricks ──────────────────────────────────────────────────────────────
-    // Five Tricks on the ledge; Mr. Moth and his Forgetting service keep the
-    // counter below (in the markup above).
+    // Mr. Moth stands at the left end of the ledge (in the markup above); the
+    // five Tricks follow him, and his Forgetting service closes the row.
     for (const item of this.stock.cards) {
       const def = cardById(item.id);
       if (!def) continue;
@@ -219,8 +210,25 @@ export class ShopScene extends RoomScene {
       this._views.push(view);
       this._cardSlots.push({ slot, view });
     }
-    // The Forgetting service lives on Mr. Moth's counter, its price beside it.
-    this.$remove = wrap.querySelector('.sh-remove');
+    // The sixth card: the Forgetting service, framed and dealt like a Trick —
+    // the crescent medallion lit in its art window, FORGETTING on the Tricks'
+    // own dark nameplate, "a service" as its type line, what it does as its
+    // rules — and its price hung on the ledge beneath it like everything else.
+    const service = el('div', 'sh-service');
+    service.setAttribute('role', 'listitem');
+    service.setAttribute('aria-label', 'Removal service');
+    service.innerHTML = `
+      <div class="sh-service__face">
+        <div class="sh-service__card">
+          <span class="sh-service__art" aria-hidden="true"><span class="sh-service__medal"></span></span>
+          <h3 class="sh-h sh-service__h">Forgetting <em>a service</em></h3>
+          <div class="sh-service__rules"></div>
+        </div>
+      </div>
+      <div class="sh-remove"></div>`;
+    this.$cards.appendChild(service);
+    this.$remove = service.querySelector('.sh-remove');
+    this.$removeText = service.querySelector('.sh-service__rules');
 
     // ── Keepsakes ───────────────────────────────────────────────────────────
     for (const item of this.stock.keepsakes) {
@@ -304,9 +312,11 @@ export class ShopScene extends RoomScene {
     const price = this.run.removalPrice;
     const flat = this.run.flags.flatRemoval;
     const canRemove = (this.run.removableCards?.() || []).length > 0;
-    this.$remove.innerHTML = `
+    // the words are the sixth card's rules; its price hangs on the ledge under it
+    this.$removeText.innerHTML = `
       <p class="sh-remove__blurb">Hand over one ${esc(TERMS.card)} and he will keep it. You will not
         remember it. <b>${flat ? 'The price never moves.' : `Each one after this costs 25 more.`}</b></p>`;
+    this.$remove.innerHTML = '';
     const key = 'removal';
     this.$remove.appendChild(this._priceTag(price, key, `Forget a ${TERMS.card}`, async () => {
       const cards = this.run.removableCards().map(c => ({ uid: c.uid, def: cardById(c.id), upgraded: c.upgraded }))
@@ -435,6 +445,10 @@ export class ShopScene extends RoomScene {
     for (const { slot, view } of this._cardSlots || []) {
       fitCardToSlot(view, slot.querySelector('.sh-card__face'), { legibleAt: 232 });
     }
+    // The Forgetting card is drawn, not a CardView: its rules take the same lift.
+    const svc = this.root?.querySelector('.sh-service__card');
+    const w = svc?.clientWidth || 0;
+    if (w) svc.style.setProperty('--rules-k', Math.max(1, Math.min(1.4, 232 / w)).toFixed(3));
   }
 
   _say(html, tone = '') {

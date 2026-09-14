@@ -258,46 +258,46 @@
 .mi-shades { transform: translate(1.2px, 2.4px); }
 .mi-shade {
   fill: none; stroke: var(--ink-900);
-  stroke-width: 5; stroke-linecap: round; stroke-linejoin: round;
+  stroke-width: 5.8; stroke-linecap: round; stroke-linejoin: round;
   opacity: .11;
   transition: opacity var(--t-base), stroke-width var(--t-base);
 }
-.mi-shade.is-open   { stroke-width: 8; opacity: .20; }
-.mi-shade.is-walked { stroke-width: 8; opacity: .19; }
-.mi-shade.is-dead   { stroke-width: 5; opacity: .11; }
-.mi-shade.is-cold   { stroke-width: 3.4; opacity: .05; }
+.mi-shade.is-open   { stroke-width: 8.8; opacity: .20; }
+.mi-shade.is-walked { stroke-width: 8.8; opacity: .19; }
+.mi-shade.is-dead   { stroke-width: 5.8; opacity: .11; }
+.mi-shade.is-cold   { stroke-width: 4; opacity: .05; }
 
 /* the overdraw: the second pass of the same pencil, a pixel or two off line */
 .mi-ghost {
   fill: none; stroke: var(--graphite);
-  stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round;
+  stroke-width: 3.2; stroke-linecap: round; stroke-linejoin: round;
   opacity: .46;
   transition: opacity var(--t-base), stroke-width var(--t-base);
 }
-.mi-ghost.is-open   { stroke: var(--mark); stroke-width: 3.6; opacity: .62; }
-.mi-ghost.is-walked { stroke-width: 4.2; opacity: .70; }
-.mi-ghost.is-dead   { stroke-width: 2.6; opacity: .46; }
-.mi-ghost.is-cold   { stroke-width: 1.8; opacity: .22; }
+.mi-ghost.is-open   { stroke: var(--mark); stroke-width: 4.2; opacity: .62; }
+.mi-ghost.is-walked { stroke-width: 4.8; opacity: .70; }
+.mi-ghost.is-dead   { stroke-width: 3.2; opacity: .46; }
+.mi-ghost.is-cold   { stroke-width: 2.2; opacity: .22; }
 
 .mi-edge {
   fill: none; stroke: var(--graphite);
-  stroke-width: 4.6; stroke-linecap: round; stroke-linejoin: round;
+  stroke-width: 5.4; stroke-linecap: round; stroke-linejoin: round;
   opacity: .86;
   transition: opacity var(--t-base) var(--ease-out), stroke-width var(--t-base);
 }
 .mi-edge.is-open {                            /* inked in: you can walk this now */
-  stroke: var(--mark); stroke-width: 7; opacity: 1;
+  stroke: var(--mark); stroke-width: 7.8; opacity: 1;
 }
 .mi-edge.is-walked {                          /* already walked: gone over hard */
-  stroke: var(--pencil); stroke-width: 6.6; opacity: 1;
+  stroke: var(--pencil); stroke-width: 7.4; opacity: 1;
 }
 /* still ahead of you on some route — the layer you plan on */
-.mi-edge.is-dead { opacity: .86; stroke-width: 4.6; }
+.mi-edge.is-dead { opacity: .86; stroke-width: 5.4; }
 /* no route from where you are standing — pale graphite, never invisible */
-.mi-edge.is-cold { stroke: var(--graphite-soft); opacity: .62; stroke-width: 3; }
+.mi-edge.is-cold { stroke: var(--graphite-soft); opacity: .62; stroke-width: 3.6; }
 
 /* a passage that skips a row: the same pencil, leaning further off the straight */
-.mi-edge--long { stroke-width: 4.8; }
+.mi-edge--long { stroke-width: 5.6; }
 
 /* the way in: the doorway edges read as arrivals, not as route legs */
 .mi-edge--entry { stroke: var(--mark); opacity: .9; }
@@ -319,17 +319,27 @@
 .mi-here-b { stroke-width: 1.6; opacity: .45; stroke-dasharray: 2 10; }
 
 /* ── hazard wings ───────────────────────────────────────────────────────────
-   A surveyor's boundary (6cfaef5's): the wing hatched across in its own ink,
-   a dashed line run round it by hand and a fine solid one just inside it. It
-   is drawn onto the plan, under the route, and never a box of colour. */
-.mi-zone { color: #8e2c27; transition: opacity var(--t-base); }
-.mi-zone--boon { color: #265d78; }
-.mi-zone-hatch { opacity: .42; }
-.mi-zone-edge {
-  fill: none; stroke: currentColor; stroke-width: 3.6; stroke-linejoin: round; stroke-linecap: round;
-  stroke-dasharray: 20 11; opacity: .78;
+   A soft painted wash (662d874's): a pale bloom of the wing's pigment laid on
+   the plan under the route, paler at its heart, pooled darker along its
+   deckled edge with a tide line inside it, the key's hatch only a breath of
+   texture in the paint. Never a dashed or ruled box: that read as a selection
+   rectangle laid over the drawing. */
+.mi-zone { color: #9b2f2a; transition: opacity var(--t-base); }
+.mi-zone--boon { color: #2f6680; }
+.mi-zone-wash { fill: currentColor; opacity: .13; }
+.mi-zone-pool { fill: currentColor; opacity: .06; }
+.mi-zone-bloom { fill: color-mix(in srgb, currentColor 50%, var(--parchment)); opacity: .09; }
+.mi-zone-hatch { opacity: .08; }
+.mi-zone-tide {
+  fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linejoin: round;
+  opacity: .12;
 }
-.mi-zone-edge--in { stroke-width: 1.4; stroke-dasharray: none; opacity: .5; }
+.mi-zone-edge {
+  fill: none; stroke: currentColor; stroke-width: 5; stroke-linejoin: round;
+  opacity: .22;
+}
+/* the same edge pooled again a hair off: where the two meet the pigment is darker */
+.mi-zone-edge--pool { stroke-width: 3.2; opacity: .16; }
 /* The wing's keyed symbol.  Same mark as the bar's note wears, so the plan and
    the margin legend read as one thing. */
 /* the key is a wax seal pressed onto the sheet: a ragged melted rim, the
@@ -339,7 +349,7 @@
 .mi-seal { fill: url(#mm-wax); filter: drop-shadow(1px 2px 1.5px rgba(40, 20, 10, .45)); }
 .mi-zone--boon .mi-seal { fill: url(#mm-wax-boon); }
 .mi-seal-ring { fill: none; stroke: rgba(0, 0, 0, .28); stroke-width: 1.6; }
-.mi-zone-lead { stroke: currentColor; stroke-width: 3; stroke-dasharray: 7 5; opacity: .7; }
+.mi-zone-lead { stroke: currentColor; stroke-width: 3; stroke-linecap: round; opacity: .5; }
 .mi-zone-glyph .s {
   fill: none; stroke: var(--parchment); stroke-width: 1.9;
   stroke-linecap: round; stroke-linejoin: round;
@@ -396,9 +406,11 @@
 }
 .mn-art { position: relative; overflow: visible; }
 .mn-art .s { fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; }
-.mn-art .w3 { stroke-width: 4.8; }
-.mn-art .w2 { stroke-width: 3.4; }
-.mn-art .w1 { stroke-width: 2.1; }
+/* inked, not plotted: the pen's weight is a pen's, heavy enough to hold its
+   own on the survey at the sheet's fit zoom (fix 10, round 4) */
+.mn-art .w3 { stroke-width: 5.8; }
+.mn-art .w2 { stroke-width: 4.3; }
+.mn-art .w1 { stroke-width: 2.8; }
 .mn-art .j  { stroke-linejoin: miter; stroke-miterlimit: 3; }
 .mn-art .f  { fill: currentColor; stroke: none; }
 .mn-art .pl { fill: var(--parchment); stroke: currentColor; }
@@ -469,7 +481,11 @@
      every chip on almost every sheet; when it is not, `.mn-lead` draws the
      leader back to the mark. */
   position: absolute; top: calc(100% + 3px + var(--mn-dy, 0px)); left: 50%;
-  transform: translateX(calc(-50% + var(--mn-dx, 0px)));
+  /* --lab-s: a small cartouche stops growing with its mark past a point
+     (map.js LABEL_K_MAX), scaled from its top centre so it stays where the
+     placement pass set it */
+  transform: translateX(calc(-50% + var(--mn-dx, 0px))) scale(var(--lab-s, 1));
+  transform-origin: 50% 0;
   font-family: var(--font-body); font-size: 16.5px; font-weight: 600;
   letter-spacing: .01em; white-space: nowrap; line-height: 1.15;
   max-width: 320px;
@@ -565,6 +581,7 @@
    the brass plate somebody screwed to the door you are walking towards. */
 .map-node--boss .mn-label {
   --plate-h: 76px;
+  transform: translateX(calc(-50% + var(--mn-dx, 0px)));
   font-family: var(--font-display); font-size: 22px; font-weight: 700; letter-spacing: .08em;
   text-transform: uppercase;
   color: var(--kit-name);

@@ -4,15 +4,16 @@
 
    A staged board, composed like the select screens, read in one order:
      1. the cabinet — a velvet curtain hung behind it and lit by the lantern
-        over the crest (.kit-mat--curtain), the TRICKS ribbon under the crest,
-        five Tricks in their portrait frames standing on a carved, parcel-gilt
-        ledge (.kit-ledge), and every price hung on the ledge's front as one
-        counter plaque: a Button and a number on enamel, BUY on a round enamel
-        button seated over its end (.kit-price);
+        over the crest (.kit-mat--curtain), the TRICKS ribbon on its top rail,
+        and on a carved, parcel-gilt ledge (.kit-ledge) every purchase in the
+        shop: Mr. Moth at its left end in his lit portrait medallion with his
+        name on a cartouche, the five Tricks in their portrait frames, and his
+        Forgetting service as a sixth framed card; every price hung on the
+        ledge's front as a coin, a large figure and a round enamel BUY
+        (.kit-price);
      2. the counter under it — Keepsakes and Snacks on the panels' suede either
-        side, and between them Mr. Moth: his lit portrait medallion, his name
-        on a cartouche, the one thing he says to you, an engraved strip of what
-        you already carry, and his Forgetting service with its price.
+        side, and between them what he says to you, over an engraved strip of
+        what you already carry.
    =========================================================================== */
 
 /* The shelf is one board that fits the screen: the frames take whatever
@@ -24,7 +25,7 @@
    centre returned the footer — visible, and unclickable. */
 .scene--shop .rm-body {
   justify-content: flex-start; align-items: stretch;
-  padding-top: clamp(4px, .8vh, 12px); padding-bottom: clamp(4px, 1vh, 12px);
+  padding-top: clamp(4px, .8vh, 12px); padding-bottom: clamp(4px, .5vh, 8px);
   padding-inline: calc(var(--rm-pad) + var(--kit-vine-w, 36px) * .45);
   overflow-y: auto; scroll-padding-block-end: clamp(18px, 3vh, 40px);
   scrollbar-color: var(--kit-gold-lo) transparent;
@@ -37,8 +38,10 @@
   grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr) minmax(0, 1.1fr);
   grid-template-rows: minmax(clamp(270px, 37vh, 450px), 1fr) auto;
   column-gap: clamp(22px, 2vw, 36px);
-  row-gap: clamp(18px, 2.4vh, 26px);
-  width: min(1560px, 100%); margin: clamp(8px, 1.2vh, 14px) auto 0;
+  row-gap: clamp(16px, 2vh, 22px);
+  /* the cabinet's rail, and the TRICKS ribbon on it, stand clear of the
+     plaque's location line above them */
+  width: min(1560px, 100%); margin: clamp(20px, 2.5vh, 26px) auto 0;
 }
 /* The markup groups the counters as a left column and a side column; the board
    lays all four out on one grid instead. */
@@ -72,12 +75,20 @@
   --rib-h: clamp(24px, 3.1vh, 29px);
   /* TRICKS rides the top rail on a ribbon parted by the crest, as the
      counters below wear theirs: the cabinet keeps its height for the cards */
-  --head-h: calc(var(--rib-h) * .5 + clamp(10px, 1.4vh, 16px));
+  --head-h: calc(var(--rib-h) * .5 + clamp(7px, .9vh, 12px));
   /* the shelf's measures, shared by the cards, their prices and the ledge */
-  --frame-pad: clamp(8px, .72vw, 13px);
+  --frame-pad: clamp(7px, .62vw, 11px);
   --shelf-price-h: clamp(30px, 3.9vh, 36px);
-  --tag-h: max(38px, calc(var(--shelf-price-h) * 1.24));
+  --tag-h: max(38px, calc(var(--shelf-price-h) * 1.3));
+  /* each price is lifted onto the ledge's lip, its medallions reaching up over
+     the foot of the frame above it: the frames keep that height */
+  --tag-lift: calc(var(--shelf-price-h) * .22);
   --sh-ledge-h: clamp(46px, 6.2vh, 58px);
+  /* Mr. Moth's end of the shelf, and the far end past the Forgetting card */
+  --keeper-w: clamp(112px, min(9.4vw, 17vh), 156px);
+  --keeper-x: clamp(10px, 1.1vw, 20px);
+  --shelf-end-l: calc(var(--keeper-x) + var(--keeper-w) + clamp(4px, .5vw, 10px));
+  --shelf-end-r: clamp(6px, .6vw, 12px);
   --rule: none;                                  /* the shelf is its own frame */
   /* the curtain behind the counter, lit by the lantern over the crest: the
      folds come up out of the dark under it and fall away to both ends */
@@ -105,23 +116,23 @@
 
 .sh-cards {
   /* the least room between two frames: the spread is space-evenly's */
-  --gap: calc(var(--frame-pad) * 2 + clamp(14px, 1.4vw, 24px));
-  --shelf-ends: clamp(120px, 9.5vw, 160px);
-  /* the Trick frames: as tall as the cabinet allows, as wide as five slots
-     sharing the shelf allow, whichever is smaller */
-  /* (container units measure the content box: the shelf's dressed ends are
+  --gap: calc(var(--frame-pad) * 2 + clamp(10px, 1vw, 18px));
+  /* the Trick frames: as tall as the cabinet allows, as wide as six card
+     slots (five Tricks and the Forgetting card) sharing the shelf allow,
+     whichever is smaller */
+  /* (container units measure the content box: Mr. Moth's end of the shelf is
      already out of 100cqw) */
-  --face-h: min(100cqh - var(--frame-pad) - var(--tag-h) - var(--frame-pad) - 6px,
-                (100cqw - 4 * var(--gap)) / 5 / var(--card-aspect));
+  --face-h: min(100cqh - var(--frame-pad) - (var(--tag-h) - var(--tag-lift)) - var(--frame-pad) - 6px,
+                (100cqw - 5 * var(--gap) - 2 * var(--frame-pad)) / 6 / var(--card-aspect));
   --face-w: calc(var(--face-h) * var(--card-aspect));
   container-type: size;
   position: relative; z-index: 1;
   flex: 1 1 auto; min-height: 0;
-  /* the five stand spread along the whole ledge between the dressed ends, the
+  /* the six stand spread along the ledge from Mr. Moth to the far end, the
      way stock is set out on a shelf, the curtain showing between them */
   display: flex; justify-content: space-evenly; align-items: flex-end;
   gap: 0;
-  padding: var(--frame-pad) var(--shelf-ends) 4px;
+  padding: var(--frame-pad) var(--shelf-end-r) 4px var(--shelf-end-l);
   width: calc(100% + 2 * clamp(14px, 1.4vw, 26px));
   margin-inline: calc(-1 * clamp(14px, 1.4vw, 26px));
 }
@@ -132,18 +143,8 @@
   position: absolute; z-index: 0; pointer-events: none;
   left: 0; right: 0;
   /* the frames' feet are the price row and 6px above the cabinet's floor */
-  bottom: calc(var(--tag-h) + 6px + var(--ledge-h) * .18 - var(--ledge-h) * 152 / 116);
+  bottom: calc(var(--tag-h) - var(--tag-lift) + 6px + var(--ledge-h) * .18 - var(--ledge-h) * 152 / 116);
 }
-
-/* the ledge's two ends, dressed: they stand on its top face in the curtain's
-   shadow, each candle lighting the velvet round it */
-.sh-prop {
-  z-index: 1;
-  bottom: calc(var(--tag-h) + 6px - var(--sh-ledge-h, 52px) * .06);
-}
-.sh-prop--skull { left: clamp(22px, 2.2vw, 38px); width: clamp(62px, 5.2vw, 86px); filter: brightness(.9); }
-.sh-prop--l { left: calc(clamp(22px, 2.2vw, 38px) + clamp(62px, 5.2vw, 86px) * .84); width: clamp(40px, 3.3vw, 54px); }
-.sh-prop--r { right: clamp(34px, 3vw, 52px); width: clamp(40px, 3.3vw, 54px); }
 
 .sh-card {
   position: relative; z-index: 2;
@@ -156,7 +157,7 @@
   transition: transform var(--t-quick) var(--ease-out), filter var(--t-base) var(--ease-out);
 }
 /* the frame and its recess, drawn behind the card and lifting with it */
-.sh-card__face::before {
+.sh-card__face::before, .sh-service__face::before {
   content: ''; position: absolute; z-index: -1; pointer-events: none;
   inset: calc(var(--frame-pad) * -1);
   border: 8px solid transparent;          /* the frame's margin outside its rail */
@@ -198,26 +199,31 @@
   filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .8));
 }
 /* the price, hung on the ledge's front under the frame */
-.sh-card > .sh-buy { --price-h: var(--shelf-price-h); margin-top: calc(var(--frame-pad) - 1px); z-index: 2; }
+.sh-card > .sh-buy { --price-h: var(--shelf-price-h); margin-top: calc(var(--frame-pad) - 1px - var(--tag-lift)); z-index: 3; }
 
-/* ── Mr. Moth, on his counter ───────────────────────────────────────────────
+/* ── Mr. Moth, at the left end of the shelf ─────────────────────────────────
    His portrait is engraved brass line-work on enamel, lit by his own lamp, in
-   the Kid board's round button set in its gold filigree (button-ornate.webp);
-   his name on the Companion tiles' nameplate beside it, what he says under
-   that, what you carry on an engraved strip, and the Forgetting service with
-   its price along the foot of the panel. */
+   the Kid board's round button set in its gold filigree (button-ornate.webp),
+   standing on the ledge's top face at the end of the row with his name on a
+   dark cartouche laid across the foot of the medallion, the way every
+   Companion tile on UI/selectCompanion.png wears its name: MR. MOTH over a
+   small italic epithet. The ledge's front under him is bare: he is not for
+   sale. */
 .sh-keeper {
-  --keeper-w: clamp(80px, 6.25vw, 100px);
-  position: relative; z-index: 1;
-  flex: none; width: var(--keeper-w);
+  --moth-plate: clamp(38px, 4.6vh, 44px);          /* his nameplate's height */
+  position: absolute; z-index: 2;
+  left: var(--keeper-x);
+  /* his nameplate stands where the frames' feet do */
+  bottom: calc(var(--tag-h) - var(--tag-lift) + 6px);
+  width: var(--keeper-w);
   margin: 0;
-  display: grid; place-items: center;
+  display: grid; grid-template-rows: auto calc(var(--moth-plate) * .62); justify-items: center;
 }
 .sh-keeper__light {
-  position: absolute; left: 50%; top: 50%;
-  width: 260%; aspect-ratio: 1; translate: -50% -50%;
+  position: absolute; left: 50%; top: 40%;
+  width: 250%; aspect-ratio: 1; translate: -50% -50%;
   border-radius: 50%; pointer-events: none; z-index: -1;
-  background: radial-gradient(closest-side, color-mix(in srgb, var(--kit-candle) 24%, transparent), color-mix(in srgb, var(--kit-candle) 7%, transparent) 50%, transparent);
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--kit-candle) 28%, transparent), color-mix(in srgb, var(--kit-candle) 8%, transparent) 50%, transparent);
   mix-blend-mode: screen;
 }
 .rm:not(.is-still) .sh-keeper__light { animation: kit-flicker 5.2s ease-in-out infinite; }
@@ -229,7 +235,7 @@
   filter: drop-shadow(0 6px 8px rgba(0, 0, 0, .85));
 }
 .sh-keeper .sh-moth {
-  grid-row: 1; grid-column: 1;
+  grid-row: 1; grid-column: 1; align-self: center;
   position: relative; z-index: 1;
   width: calc(var(--keeper-w) * 98 / 180); height: auto; aspect-ratio: 1;
   translate: 0 calc(var(--keeper-w) * -.012);
@@ -243,20 +249,27 @@
   box-shadow: inset 0 0 12px rgba(0, 0, 0, .9), inset 0 -6px 14px color-mix(in srgb, var(--kit-candle) 18%, transparent);
   overflow: hidden;
 }
-/* his name: the Companion tiles' nameplate, the cartouche's own gilt ends */
-.sh-moth__name.kit-plate {
-  --plate-h: clamp(40px, 4.8vh, 46px);
-  justify-self: start;
+/* his name: the Companion tiles' dark cartouche, over the foot of his frame */
+.sh-keeper .sh-moth__name { grid-row: 1 / 3; grid-column: 1; align-self: end; z-index: 2; }
+.sh-keeper .sh-moth__name.kit-plate {
+  --plate-h: var(--moth-plate);
+  min-width: calc(var(--keeper-w) * 1.08);
   margin: 0;
-  padding-inline: calc(var(--plate-h) * .7);
-  border-image-source: url("../../assets/ui/kit/plate-lit.webp");
+  padding: 1px calc(var(--plate-h) * .56) 2px;
+  border-image-source: url("../../assets/ui/kit/cartouche-dark.webp");
+  border-image-slice: 18 34 18 34 fill;
+  border-image-width: calc(var(--plate-h) * 18 / 64) calc(var(--plate-h) * 34 / 64);
+  gap: 0;
 }
 .sh-moth__name .kit-plate__name {
   font-family: var(--font-display); font-weight: 700;
-  font-size: max(12.5px, calc(var(--plate-h) * .34)); letter-spacing: .12em; text-transform: uppercase;
+  font-size: max(12.5px, calc(var(--plate-h) * .34)); letter-spacing: .1em; text-transform: uppercase;
   white-space: nowrap; color: var(--kit-name);
 }
-.sh-moth__name .kit-plate__epithet { font-size: max(11.5px, calc(var(--plate-h) * .27)); white-space: nowrap; }
+.sh-moth__name .kit-plate__epithet {
+  font-size: max(11.5px, calc(var(--plate-h) * .28)); white-space: nowrap;
+  color: color-mix(in oklab, var(--kit-name) 72%, var(--kit-text-mid));
+}
 /* his figure is domed and lit like the boards' enamel (the #kit-relief SVG
    filter in index.html); the lamp's glow stays a flat light over him */
 .sh-moth > path, .sh-moth > ellipse:not(.sh-moth__glow) { filter: url("#kit-relief"); }
@@ -284,6 +297,154 @@
 .rm:not(.is-still) .sh-moth__glow { animation: sh-flicker 5.5s var(--ease-soft) infinite; }
 @keyframes sh-flicker { 0%,100% { opacity: .95; } 43% { opacity: .6; } 66% { opacity: 1; } }
 
+/* ── Forgetting: the sixth card on the shelf ────────────────────────────────
+   Framed exactly like a Trick (the same portrait frame and velvet recess round
+   a card of the same size), and the card lettered in the kit's brass the way
+   .kit-cards dresses a Trick: the crescent medallion lit in a moonlit art
+   window, FORGETTING on the dark cartouche over the foot of the art, "a
+   service" as its type line, and what it does on the aubergine enamel rules
+   panel inside an engraved double rule. Its price hangs on the ledge's front
+   beneath it like every other thing for sale. --u is one unit of a card's own
+   drawing (1/224 of its width), as on a Trick. */
+.sh-service {
+  position: relative; z-index: 2;
+  display: flex; flex-direction: column; align-items: center;
+  width: var(--face-w); flex: none;
+}
+.sh-service__face {
+  position: relative;
+  width: var(--face-w); height: var(--face-h);
+  transition: transform var(--t-quick) var(--ease-out), filter var(--t-base) var(--ease-out);
+}
+.sh-service:hover .sh-service__face { transform: translateY(-6px); }
+.sh-service:has(.sh-buy.is-poor) .sh-service__face { filter: grayscale(.8) brightness(.62); }
+.sh-service__card {
+  --u: calc(var(--face-w) / 224);
+  position: absolute; inset: 0;
+  border-radius: calc(13 * var(--u));
+  /* the brass frame every Trick on the shelf wears (.kit-cards) */
+  background:
+    url("../../assets/ui/kit/grain.webp") 0 0 / 180px 180px,
+    linear-gradient(160deg, var(--kit-gold-hi) 0%, var(--kit-gold) 16%, var(--kit-gold-lo) 42%, var(--kit-gold) 64%, color-mix(in oklab, var(--kit-gold-hi) 80%, var(--kit-gold)) 86%, var(--kit-gold-lo) 100%);
+  background-blend-mode: overlay, normal;
+  box-shadow:
+    inset 0 0 0 calc(1 * var(--u)) color-mix(in srgb, color-mix(in oklab, var(--kit-gold-lo) 55%, black) 90%, transparent),
+    inset 0 0 0 calc(3 * var(--u)) color-mix(in srgb, var(--kit-gold-hi) 26%, transparent),
+    0 calc(4 * var(--u)) calc(12 * var(--u)) rgba(0, 0, 0, .7);
+}
+/* the face: the Tricks' aubergine enamel, a candle's light where the words are */
+.sh-service__card::before {
+  content: ''; position: absolute; inset: calc(7 * var(--u));
+  border-radius: calc(8 * var(--u));
+  background:
+    radial-gradient(120% 34% at 50% 102%, color-mix(in srgb, var(--kit-lav) 26%, transparent), transparent 72%),
+    radial-gradient(110% 44% at 50% 62%, color-mix(in srgb, #ffcf94 34%, transparent), transparent 76%),
+    radial-gradient(150% 120% at 50% 55%, transparent 50%, rgb(6 4 9 / .55) 100%),
+    url("../../assets/ui/kit/enamel.webp") 50% 0 / calc(220 * var(--u)) calc(220 * var(--u)),
+    #2a1b3b;
+  background-blend-mode: overlay, overlay, normal, normal, normal;
+  box-shadow:
+    inset 0 0 0 calc(1 * var(--u)) rgba(0, 0, 0, .8),
+    inset 0 0 0 calc(2.5 * var(--u)) color-mix(in srgb, var(--kit-gold) 50%, transparent),
+    inset 0 0 0 calc(3.5 * var(--u)) rgba(0, 0, 0, .55);
+}
+/* the rules panel's engraved double rule, a brass fleuron at its lower corners */
+.sh-service__card::after {
+  content: ''; position: absolute; pointer-events: none;
+  left: calc(14 * var(--u)); right: calc(14 * var(--u));
+  top: calc(154 * var(--u)); bottom: calc(14 * var(--u));
+  border: calc(3.4 * var(--u)) double color-mix(in srgb, var(--kit-gold) 52%, transparent);
+  border-top-color: transparent;
+  --fl: calc(15 * var(--u));
+  background:
+    url("../../assets/ui/kit/fleuron-bl.webp") 0 100% / var(--fl) var(--fl) no-repeat,
+    url("../../assets/ui/kit/fleuron-br.webp") 100% 100% / var(--fl) var(--fl) no-repeat;
+  background-origin: border-box;
+  opacity: .9;
+}
+/* the art: the crescent medallion hung in a window of night velvet, cold
+   light on it and a few stars pricked into the cloth */
+.sh-service__art {
+  position: absolute; z-index: 1;
+  left: calc(7 * var(--u)); right: calc(7 * var(--u)); top: calc(7 * var(--u));
+  height: calc(126 * var(--u));
+  border-radius: calc(8 * var(--u)) calc(8 * var(--u)) 0 0;
+  overflow: hidden;
+  background:
+    radial-gradient(46% 52% at 50% 44%, color-mix(in srgb, var(--kit-moon) 32%, transparent), transparent 72%),
+    radial-gradient(120% 90% at 50% 40%, transparent 45%, rgba(4, 3, 8, .8) 100%),
+    url("../../assets/ui/kit/velvet.webp") 50% 0 / calc(200 * var(--u)) auto,
+    linear-gradient(180deg, #1a1030, #0c0814);
+  box-shadow: inset 0 calc(-1 * var(--u)) 0 color-mix(in srgb, var(--kit-gold-hi) 40%, transparent);
+}
+.sh-service__art::before {
+  content: ''; position: absolute; inset: 0;
+  background:
+    radial-gradient(calc(1.6 * var(--u)) calc(1.6 * var(--u)) at 18% 22%, rgba(236, 230, 255, .8), transparent),
+    radial-gradient(calc(1.2 * var(--u)) calc(1.2 * var(--u)) at 80% 16%, rgba(236, 230, 255, .7), transparent),
+    radial-gradient(calc(1.4 * var(--u)) calc(1.4 * var(--u)) at 86% 58%, rgba(236, 230, 255, .6), transparent),
+    radial-gradient(calc(1.1 * var(--u)) calc(1.1 * var(--u)) at 12% 64%, rgba(236, 230, 255, .55), transparent);
+}
+.sh-service__medal {
+  position: absolute; left: 50%; top: calc(56 * var(--u));
+  width: calc(128 * var(--u)); aspect-ratio: 156 / 98;
+  translate: -50% -50%;
+  background: url("../../assets/ui/kit/medal-moon.webp") 50% 50% / 100% 100% no-repeat;
+  filter: drop-shadow(0 calc(3 * var(--u)) calc(4 * var(--u)) rgba(0, 0, 0, .85)) drop-shadow(0 0 calc(10 * var(--u)) color-mix(in srgb, var(--kit-moon) 30%, transparent));
+}
+/* FORGETTING, on the card's dark cartouche nameplate over the foot of the art */
+.sh-service .sh-service__h {
+  position: absolute; z-index: 2;
+  left: calc(15 * var(--u)); right: calc(15 * var(--u)); top: calc(111 * var(--u));
+  height: calc(38 * var(--u));
+  display: grid; place-items: center;
+  margin: 0; padding: 0 calc(12 * var(--u)) calc(1 * var(--u));
+  border: 0 solid transparent;
+  border-image-source: url("../../assets/ui/kit/cartouche-dark.webp");
+  border-image-slice: 18 34 18 34 fill;
+  border-image-width: calc(38 * var(--u) * 18 / 64) calc(38 * var(--u) * 34 / 64);
+  filter: drop-shadow(0 calc(2 * var(--u)) calc(3 * var(--u)) rgba(0, 0, 0, .85));
+  font-family: var(--font-display); font-weight: 700;
+  font-size: max(12px, calc(18.5 * var(--u))); letter-spacing: .02em; line-height: 1;
+  text-transform: none;
+  color: var(--kit-lav-hi);
+  text-shadow:
+    0 calc(-1 * var(--u)) 0 rgba(12, 5, 20, .95),
+    0 calc(1 * var(--u)) 0 color-mix(in srgb, var(--kit-gold) 75%, transparent),
+    0 calc(2 * var(--u)) calc(3 * var(--u)) rgba(0, 0, 0, .9),
+    0 0 calc(8 * var(--u)) color-mix(in srgb, var(--kit-violet) 55%, transparent);
+}
+/* "a service": the card's type line, in spaced gold small caps */
+.sh-service .sh-service__h > em {
+  position: absolute; left: 0; right: 0; top: calc(100% + 4 * var(--u));
+  margin: 0; text-align: center; line-height: 1.15;
+  font-family: var(--font-display); font-style: normal; font-weight: 600;
+  font-variant: normal;
+  font-size: max(11px, calc(10.5 * var(--u) * 1.2)); letter-spacing: .2em; text-transform: uppercase;
+  color: color-mix(in oklab, var(--kit-gold-hi) 84%, var(--kit-text));
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
+}
+/* what it does: the card's rules, lifted the way a Trick's are on a small
+   card (--rules-k, set by shop.js _layout) */
+.sh-service__rules {
+  position: absolute; z-index: 1;
+  left: calc(19 * var(--u)); right: calc(19 * var(--u));
+  top: calc(176 * var(--u)); bottom: calc(22 * var(--u));
+  display: grid; place-items: center;
+}
+.sh-remove { display: contents; }
+.sh-remove__blurb {
+  margin: 0;
+  text-align: center; text-wrap: balance;
+  font-family: var(--font-body);
+  font-size: max(11.5px, calc(13.5 * var(--u) * var(--rules-k, 1))); line-height: 1.2;
+  color: var(--kit-text);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
+}
+.sh-remove__blurb b { display: block; margin-top: calc(3 * var(--u)); color: var(--kit-gold-hi); font-weight: 400; font-style: italic; }
+.sh-service > .sh-remove > .sh-buy,
+.sh-remove > .sh-buy { --price-h: var(--shelf-price-h); margin-top: calc(var(--frame-pad) - 1px - var(--tag-lift)); z-index: 3; }
+
 /* ── the counter: Keepsakes and Snacks, ledger rows on the panels' suede ─── */
 .sh-counter--keeps.kit-panel,
 .sh-counter--snacks.kit-panel,
@@ -294,7 +455,7 @@
   /* lit from the lantern over the cabinet: warm along the top, falling off */
   --lit-y: -12%; --lit-w: 110%; --lit-h: 95%; --lit-a: 46%;
   /* the words keep a finger's width inside the inner rule, top and bottom */
-  padding: calc(var(--rib-h) * .5 + clamp(8px, 1vh, 12px)) clamp(18px, 1.5vw, 26px) clamp(20px, 2.4vh, 24px);
+  padding: calc(var(--rib-h) * .5 + clamp(8px, 1vh, 12px)) clamp(18px, 1.5vw, 26px) clamp(15px, 1.8vh, 19px);
   align-self: stretch;
 }
 /* the side panels are lit from the middle of the board, where his lamp is */
@@ -311,10 +472,10 @@
 .sh-row {
   --row-price-h: clamp(28px, 3.5vh, 32px);
   display: grid; grid-template-columns: auto minmax(0, 1fr) auto;
-  grid-template-rows: max(38px, calc(var(--row-price-h) * 1.24)) auto;
+  grid-template-rows: calc(var(--row-price-h) * 1.14) auto;
   grid-template-areas: "sig name buy" "sig desc desc";
-  align-items: center; column-gap: clamp(10px, .9vw, 14px); row-gap: 0;
-  padding: clamp(4px, .6vh, 7px) 2px clamp(5px, .7vh, 8px);
+  align-items: center; column-gap: clamp(10px, .9vw, 14px); row-gap: 3px;
+  padding: clamp(3px, .45vh, 5px) 2px clamp(3px, .5vh, 5px);
   transition: filter var(--t-quick) var(--ease-out);
 }
 .sh-row__sig { grid-area: sig; align-self: start; margin: 2px 0 0; }
@@ -362,7 +523,7 @@
 /* ── the price: .kit-price, and what it says when it is not BUY ───────────── */
 .sh-buy {
   --price-h: var(--row-price-h, 34px);
-  padding: 0; border: 0; background: none;
+  padding: 0 0 0 calc(var(--coin-d) * .42); border: 0; background: none;
   color: inherit; font: inherit;
   cursor: pointer;
   transition: filter var(--t-quick) var(--ease-out), transform var(--t-quick) var(--ease-out);
@@ -407,29 +568,22 @@
 }
 .rm.is-still .sh-buy.is-refused { animation: none; }
 
-/* ── between them: Mr. Moth ─────────────────────────────────────────────────
-   His portrait and his name and his line on one row, what you carry under
-   them on an engraved strip, and his service along the foot. */
+/* ── between them: what he says, over what you carry ───────────────────────
+   Mr. Moth himself stands on the shelf now, so his counter keeps one focal
+   point: his line, in the lavender italic, centred under the panel's moon, and
+   under it what you already carry on an engraved strip. */
 .sh-counter--moth.kit-panel {
   --medal-k: .56;
   --lit-x: 50%; --lit-y: 30%; --lit-w: 120%; --lit-h: 110%; --lit-a: 40%;
-  display: grid; grid-template-rows: auto auto; align-content: space-between; row-gap: clamp(6px, 1vh, 9px);
+  display: grid; align-content: center; justify-items: stretch;
   padding-top: clamp(22px, 2.8vh, 30px);
 }
-.sh-moth__say {
-  display: grid; grid-template-columns: auto minmax(0, 1fr);
-  grid-template-areas: "keeper words" "you you";
-  column-gap: clamp(10px, 1vw, 16px); row-gap: clamp(5px, .8vh, 8px);
-  align-items: center;
-}
-.sh-moth__say > .sh-keeper { grid-area: keeper; }
-.sh-moth__words { grid-area: words; display: grid; gap: 4px; justify-items: start; min-width: 0; }
-.sh-moth__say > .sh-moth__you { grid-area: you; }
+.sh-moth__say { display: grid; gap: clamp(12px, 2vh, 20px); align-content: center; }
 .sh-moth__line {
-  margin: 0; padding: 0 2px;
-  text-wrap: balance;
+  margin: 0; padding: 0 clamp(4px, .6vw, 12px);
+  text-align: center; text-wrap: balance;
   font-family: var(--font-body); font-style: italic; font-weight: 600;
-  font-size: clamp(14.5px, 1.06vw, 17px); line-height: 1.26;
+  font-size: clamp(17px, 1.42vw, 23px); line-height: 1.3;
   color: var(--kit-lav-hi);
   text-shadow: 0 1px 0 rgba(0, 0, 0, .9), 0 0 18px color-mix(in srgb, var(--kit-violet) 45%, transparent);
 }
@@ -438,7 +592,7 @@
 .sh-moth__you {
   position: relative;
   display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr);
-  margin: 0; padding: 5px 0 4px;
+  margin: 0; padding: 7px 0 6px;
   background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--kit-void) 55%, transparent) 12%, color-mix(in srgb, var(--kit-void) 55%, transparent) 88%, transparent);
 }
 .sh-moth__you::before, .sh-moth__you::after {
@@ -453,7 +607,7 @@
 .sh-moth__you::after { bottom: 0; transform: scaleY(-1); }
 .sh-moth__you div {
   position: relative;
-  display: grid; grid-template-rows: 15px 22px; justify-items: center; align-items: end; gap: 0;
+  display: grid; grid-template-rows: 16px 24px; justify-items: center; align-items: end; gap: 1px;
   min-width: 0;
 }
 .sh-moth__you div + div::before {
@@ -469,7 +623,7 @@
   white-space: nowrap;
 }
 .sh-moth__you dd {
-  margin: 0; font-family: var(--font-num); font-weight: 600; font-size: clamp(16px, 1.15vw, 19px); line-height: 1.1;
+  margin: 0; font-family: var(--font-num); font-weight: 600; font-size: clamp(17px, 1.3vw, 21px); line-height: 1.1;
   font-variant-numeric: lining-nums tabular-nums;
   color: var(--kit-gold-hi); text-shadow: 0 1px 0 rgba(0, 0, 0, .9), 0 0 12px color-mix(in srgb, var(--kit-candle) 20%, transparent);
 }
@@ -480,43 +634,12 @@
 }
 .sh-deck:hover { color: #fff1d2; }
 
-/* ── Forgetting: his service, along the foot of his counter ─────────────────
-   FORGETTING and its epithet on one line, what it does under that, and its
-   price on the same counter plaque as everything else for sale. */
-.sh-service {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  grid-template-areas: "head buy" "blurb buy";
-  column-gap: 12px; row-gap: 2px; align-items: center;
-  padding-top: clamp(6px, .9vh, 9px);
-  border-top: 1px solid transparent;
-  border-image: linear-gradient(90deg, transparent, color-mix(in srgb, var(--kit-gold) 50%, transparent) 14%, color-mix(in srgb, var(--kit-gold) 50%, transparent) 86%, transparent) 1;
-}
-.sh-service .sh-service__h {
-  grid-area: head;
-  margin: 0; justify-self: start;
-  grid-template-columns: auto auto; column-gap: 0;
-  font-size: max(12px, var(--fs-xs)); letter-spacing: .18em;
-  color: var(--kit-gold-hi);
-}
-.sh-service .sh-service__h::before, .sh-service .sh-service__h::after { content: none; }
-.sh-service .sh-service__h > em { grid-column: 2; font-size: max(12px, var(--fs-xs)); margin-left: 8px; }
-.sh-remove { display: contents; }
-.sh-remove__blurb {
-  grid-area: blurb;
-  margin: 0; padding: 0;
-  font-size: max(12.5px, calc(var(--fs-sm) * .96)); line-height: 1.24;
-  color: var(--kit-text);
-  text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
-}
-.sh-remove__blurb b { color: var(--kit-gold-hi); font-weight: 400; font-style: italic; }
-.sh-remove > .sh-buy { grid-area: buy; --price-h: clamp(28px, 3.5vh, 32px); }
-
 /* the shop gives its height to the shelf: its plaque and its way out are drawn a step smaller */
 .scene--shop .kit-titleblock--compact { --cart-h: clamp(86px, 10.2vh, 106px); }
 .scene--shop .kit-titleblock--compact .kit-cartouche__title { font-size: clamp(25px, 2.1vw, 34px); }
 .scene--shop .kit-titleblock--compact .kit-cartouche__sub { font-size: max(12.5px, var(--fs-sm)); }
-.scene--shop .rm-go { --plate-h: clamp(42px, 5.1vh, 48px); }
+.scene--shop .rm-go { --plate-h: clamp(40px, 4.7vh, 46px); }
+.scene--shop .rm-foot { padding-bottom: clamp(10px, 1.3vh, 14px); }
 
 /* ── his line, in the footer ─────────────────────────────────────────────── */
 .sh-line {
@@ -534,10 +657,7 @@
 @media (max-width: 1400px) {
   .sh-floor { grid-template-columns: minmax(0, 1.12fr) minmax(0, .92fr) minmax(0, 1.12fr); column-gap: 18px; }
   .sh-moth__you dt { letter-spacing: 0; font-size: 11px; }
-  .sh-moth__line { font-size: 14px; }
-  /* the service's price joins its name's line, and what it does runs the
-     width of the counter under both */
-  .sh-service { grid-template-areas: "head buy" "blurb blurb"; row-gap: 3px; }
+  .sh-moth__line { font-size: 16.5px; }
 }
 
 /* ── narrow: the counter stacks under the frames and the board scrolls ───── */
@@ -559,22 +679,21 @@
   .scene--shop .rm-body { padding-top: 2px; }
   /* the cabinet's rail ribbon keeps clear of the plaque's note above it, and
      the counters' bottom rails of the footer's plates below them */
-  .scene--shop .sh-floor { margin-top: 14px; row-gap: 16px; grid-template-rows: minmax(280px, 1fr) auto; }
+  .scene--shop .sh-floor { margin-top: 25px; row-gap: 15px; grid-template-rows: minmax(280px, 1fr) auto; }
   .scene--shop .rm-body { padding-bottom: 8px; }
-  .sh-counter--cards.kit-panel { --rib-h: 24px; --medal-k: .84; --frame-pad: 8px; --shelf-price-h: 28px; }
+  .sh-counter--cards.kit-panel { --rib-h: 24px; --medal-k: .84; --frame-pad: 7px; --shelf-price-h: 28px;
+                                 --keeper-w: 96px; --keeper-x: 8px; }
+  .scene--shop .sh-cards { --gap: 21px; }
   .sh-counter--keeps.kit-panel, .sh-counter--snacks.kit-panel, .sh-counter--moth.kit-panel {
-    padding: 20px 18px 18px 16px;
+    padding: 20px 18px 14px 16px;
   }
-  .scene--shop .sh-row { --row-price-h: 26px; padding-block: 4px 5px; }
+  .scene--shop .sh-row { --row-price-h: 26px; padding-block: 2px 3px; }
   .scene--shop .sh-row__txt b { font-size: 15px; }
   .scene--shop .sh-row__txt em { font-size: 13px; line-height: 1.18; }
   .scene--shop .sh-row__sig { width: 34px; height: 34px; }
-  .scene--shop .sh-keeper { --keeper-w: 76px; }
-  .scene--shop .sh-moth__name.kit-plate { --plate-h: 34px; }
-  .scene--shop .sh-moth__say { row-gap: 3px; }
-  .scene--shop .sh-counter--moth.kit-panel { row-gap: 4px; padding-bottom: 22px; }
-  .scene--shop .sh-service { padding-top: 5px; }
-  .scene--shop .sh-moth__line { line-height: 1.2; }
+  .scene--shop .sh-keeper { --moth-plate: 34px; }
+  .scene--shop .sh-moth__say { row-gap: 6px; }
+  .scene--shop .sh-moth__line { line-height: 1.22; }
   .scene--shop .rm-foot { padding-top: 3px; padding-bottom: 10px; }
   .scene--shop .rm-go { --plate-h: 40px; }
 }

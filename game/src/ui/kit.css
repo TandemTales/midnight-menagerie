@@ -1207,9 +1207,9 @@ button.kit-medallion:hover, button.kit-medallion:focus-visible,
                            the shadow it casts (--ledge-h)
      .kit-plaque           a bracketed painted plaque: plate-rect's gilt double
                            rule and corner brackets round a .kit-mat material
-     .kit-price            a counter plaque: a Button coin and an engraved price
-                           on enamel, a round enamel BUY seated on its end
-                           (__plate __coin __value __buy; --price-h)
+     .kit-price            a price: a Button coin in its brass setting, a large
+                           engraved figure beside it, a round enamel BUY medallion
+                           beside that (__plate __coin __value __buy; --price-h)
      .kit-num              a numbered enamel medallion to seat on a border
      .kit-flag             a small ribbon plaque for a note on a board's foot
      .kit-stats--framed    the engraved stat strip, framed on its own plaque
@@ -1276,42 +1276,60 @@ button.kit-medallion:hover, button.kit-medallion:focus-visible,
 }
 
 /* ── price ──────────────────────────────────────────────────────────────────
-   Two pieces, one control, sized for a counter: the price on a small enamel
-   cartouche led by one of the house's Buttons, and BUY on the Kid board's
-   round purple enamel button in its gold rim, seated over the plate's right
-   end so the two read as one plaque.                                        */
+   One control, sized for a counter, read the way MINT's and PEARL's shelves
+   read (round 3): one of the house's Buttons struck as a coin and seated in
+   its studded brass setting (coin.webp in socket-round.webp), a large engraved
+   figure beside it on the Kid board's dark nameplate, and BUY on the Kid
+   board's round purple enamel button in its gold rim beside that. The coin
+   and BUY are round medallions larger than the plate and overhang it top and
+   bottom, so only --price-h takes layout height inside the element's own.
+     <button class="kit-price">
+       <span class="kit-price__plate"><i class="kit-price__coin"></i>
+         <b class="kit-price__value">62</b></span>
+       <span class="kit-price__buy">Buy</span>
+     </button>                                                               */
 .kit-price {
   --price-h: 36px;
+  --coin-d: calc(var(--price-h) * 1.16);
+  --buy-d: max(38px, calc(var(--price-h) * 1.3));
   position: relative;
   display: inline-flex; align-items: center;
-  height: max(38px, calc(var(--price-h) * 1.24));
+  height: max(38px, calc(var(--price-h) * 1.3));
+  padding-left: calc(var(--coin-d) * .42);
 }
 .kit-price__plate {
-  display: inline-flex; align-items: center; gap: calc(var(--price-h) * .16);
+  position: relative;
+  display: inline-flex; align-items: center;
   height: var(--price-h);
-  padding: 0 calc(var(--price-h) * .92) 0 calc(var(--price-h) * .46);
+  padding: 0 calc(var(--buy-d) * .62) 0 calc(var(--coin-d) * .66);
   border: 0 solid transparent;
-  border-image: url("../../assets/ui/kit/cartouche-lit.webp") 18 34 18 34 fill /
-    calc(var(--price-h) * 18 / 64) calc(var(--price-h) * 34 / 64) stretch;
+  border-image: url("../../assets/ui/kit/plate.webp") 12 53 12 46 fill /
+    calc(var(--price-h) * 12 / 72) calc(var(--price-h) * 53 / 72) calc(var(--price-h) * 12 / 72) calc(var(--price-h) * 46 / 72) stretch;
   filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .75));
 }
+/* the coin: a brass Button in a studded setting, over the plate's left end */
 .kit-price__coin {
-  flex: none; display: block;
-  width: calc(var(--price-h) * .6); aspect-ratio: 1;
-  background: url("../../assets/ui/kit/coin.webp") 50% 50% / 100% 100% no-repeat;
-  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, .85));
+  position: absolute; left: calc(var(--coin-d) * -.42); top: 50%;
+  width: var(--coin-d); aspect-ratio: 1; translate: 0 -50%;
+  display: block;
+  background:
+    url("../../assets/ui/kit/coin.webp") 50% 50% / 74% 74% no-repeat,
+    url("../../assets/ui/kit/socket-round.webp") 50% 50% / 100% 100% no-repeat;
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .85));
 }
+/* the figure, large: gold lining numerals cut into the plate, a dark lip over
+   each stroke and the candle catching the one under it */
 .kit-price__value {
   font-family: var(--font-num); font-weight: 700; font-style: normal;
-  font-size: calc(var(--price-h) * .58); line-height: 1;
+  font-size: calc(var(--price-h) * .68); line-height: 1;
   font-variant-numeric: lining-nums tabular-nums;
+  letter-spacing: .02em;
   padding-top: 2px;
   color: var(--kit-gold-hi);
-  /* struck into the enamel: a dark lip above, the light on the lower edge */
-  text-shadow: 0 -1px 0 rgba(0, 0, 0, .9), 0 1px 0 color-mix(in srgb, var(--kit-gold-lo) 90%, transparent), 0 0 10px color-mix(in srgb, var(--kit-candle) 25%, transparent);
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, .95), 0 1px 0 color-mix(in srgb, var(--kit-gold-hi) 22%, transparent), 0 0 10px color-mix(in srgb, var(--kit-candle) 25%, transparent);
 }
+/* BUY: the round purple enamel button in its gold rim, on the plate's right end */
 .kit-price__buy {
-  --buy-d: max(38px, calc(var(--price-h) * 1.24));   /* BUY must sit inside the enamel, not on the rim */
   position: relative; z-index: 1;
   flex: none;
   display: grid; place-items: center;
@@ -1320,11 +1338,11 @@ button.kit-medallion:hover, button.kit-medallion:focus-visible,
   border-radius: 50%;
   background: url("../../assets/ui/kit/button.webp") 50% 50% / 100% 100% no-repeat;
   font-family: var(--font-display); font-weight: 700; font-style: normal;
-  font-size: max(11.5px, calc(var(--price-h) * .33)); line-height: 1; letter-spacing: .02em;
+  font-size: max(11.5px, calc(var(--buy-d) * .27)); line-height: 1; letter-spacing: .03em;
   padding: 1px 0 0 .04em;
   text-transform: uppercase; white-space: nowrap;
   color: var(--kit-gold-hi);
-  text-shadow: 0 -1px 0 rgba(0, 0, 0, .95), 0 1px 0 color-mix(in srgb, var(--kit-gold-lo) 80%, transparent), 0 0 8px color-mix(in srgb, var(--kit-candle) 35%, transparent);
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, .95), 0 1px 0 color-mix(in srgb, var(--kit-lav-hi) 25%, transparent), 0 0 8px color-mix(in srgb, var(--kit-candle) 35%, transparent);
   filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .8));
 }
 
@@ -1926,4 +1944,75 @@ button.kit-medallion:hover, button.kit-medallion:focus-visible,
     linear-gradient(180deg, #1c1523 0%, #140f19 60%, #0f0b13 100%);
   background-blend-mode: normal, normal, normal, soft-light, overlay, normal;
   background-clip: padding-box;
+}
+
+/* ── shelf rail ─────────────────────────────────────────────────────────────
+   Round 4, POLISH: the rail the Reward's rarity plates stand on (PEARL's,
+   ui/r3-polish-c). rail-panels.webp (tools/prep_ui_rail.py) is a carved and
+   gilded rail seen from just above, 640x96, a 3-slice with 64 px ends: a
+   walnut top lit along its front lip (to row 21), a round gilt bead (to 29),
+   an apron of recessed panels in beaded gilt mouldings with a gilt boss where
+   two meet (30-55), a square dark block at each end capped with a gilt star
+   rosette, a cove into the dark (to 60) and the shadow it throws (to 96).
+   --rail-h is the element's height. Stand a thing on it with its foot 14/96 of
+   --rail-h below the element's top; hang a plate on its apron centred 43/96
+   down. Decoration: it never takes pointer events.                          */
+.kit-shelf-rail {
+  --rail-h: 64px;
+  display: block;
+  height: var(--rail-h);
+  border: 0 solid transparent;
+  border-image: url("../../assets/ui/kit/rail-panels.webp") 0 64 fill / 0 calc(var(--rail-h) * 64 / 96) round;
+  filter: drop-shadow(0 10px 12px rgba(0, 0, 0, .55));
+  pointer-events: none;
+}
+
+/* ── stat plate ─────────────────────────────────────────────────────────────
+   Round 4, POLISH (MINT's rail): `.kit-stats--plate` on a .kit-stats band
+   sets the figures on ONE long gilt-rimmed nameplate, the kit's own plate
+   with its scrolled gilt ends (plate-lit.webp, 9-sliced so only its enamel
+   field stretches), every figure parted from the next by a small round
+   purple enamel medallion in its brass rim with a gilt star set in it
+   (button.webp, star4.svg), and a larger medallion capping each end of the
+   plate. --plate-h sizes it; the end medallions overhang the plate and take
+   no room. For a ledger of counts, never for controls.                     */
+.kit-stats.kit-stats--plate {
+  --plate-h: 62px;
+  --stud: clamp(18px, 1.4vw, 22px);
+  min-height: var(--plate-h);
+  padding: calc(var(--plate-h) * .15) calc(var(--plate-h) * .98) calc(var(--plate-h) * .13);
+  border: 0 solid transparent;
+  border-image: url("../../assets/ui/kit/plate-lit.webp") 12 53 12 46 fill /
+    calc(var(--plate-h) * 12 / 72) calc(var(--plate-h) * 53 / 72) calc(var(--plate-h) * 12 / 72) calc(var(--plate-h) * 46 / 72) stretch;
+  background: none;
+  filter: drop-shadow(0 6px 10px rgba(0, 0, 0, .8));
+}
+/* the end medallions, seated over the plate's scrolled ends */
+.kit-stats.kit-stats--plate::before, .kit-stats.kit-stats--plate::after {
+  content: ''; position: absolute; top: 50%; left: auto; right: auto;
+  width: calc(var(--plate-h) * .78); height: calc(var(--plate-h) * .78);
+  translate: 0 -50%; transform: none;
+  background:
+    url("../../assets/ui/kit/star4.svg") 50% 50% / 42% 42% no-repeat,
+    url("../../assets/ui/kit/button.webp") 50% 50% / 100% 100% no-repeat;
+  -webkit-mask-image: none; mask-image: none;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, .85));
+}
+.kit-stats.kit-stats--plate::before { left: calc(var(--plate-h) * -.18); }
+.kit-stats.kit-stats--plate::after { right: calc(var(--plate-h) * -.18); }
+/* the studs between the figures: round enamel medallions, not lozenges */
+.kit-stats.kit-stats--plate > * + *::before {
+  width: var(--stud); height: var(--stud);
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background:
+    url("../../assets/ui/kit/star4.svg") 50% 50% / 46% 46% no-repeat,
+    url("../../assets/ui/kit/button.webp") 50% 50% / 100% 100% no-repeat;
+  box-shadow: none;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, .85));
+}
+.kit-stats.kit-stats--plate > * { padding: 0 calc(var(--stud) * .5 + 6px); }
+.kit-stats.kit-stats--plate .kit-stats__label { color: var(--kit-text-mid); }
+.kit-stats.kit-stats--plate .kit-stats__value {
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, .9), 0 1px 0 color-mix(in srgb, var(--kit-gold-lo) 80%, transparent), 0 0 12px color-mix(in srgb, var(--kit-candle) 22%, transparent);
 }

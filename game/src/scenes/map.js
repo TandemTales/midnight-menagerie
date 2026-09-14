@@ -93,6 +93,10 @@ function _route(run) {
 }
 /** Node icons stop shrinking with the sheet below this effective scale. */
 const MIN_ICON_SCALE = 0.86;
+/** A room's name plate counter-scales with its mark up to this factor, no
+ *  further (PEARL's, round 3): a small cartouche beside its room, never a
+ *  slab that covers the next one on a 1280 panel. */
+const LABEL_K_MAX = 1.3;
 /** Screen px of desk kept between the fitted sheet and the gilt rail, in total
  *  across each axis (the viewport IS the inside of the rail). */
 const FIT_PAD = 22;
@@ -638,6 +642,34 @@ export class MapScene extends Scene {
     }
     g.restore();
 
+    // 7c. the sheet as the room lights it (fix 10, round 4). The two candles
+    //     standing over the rail's top corners and the one on the desk at its
+    //     front right corner each throw a warm pool down onto the paper, and
+    //     the paper falls away from the lit middle into a brown shadow at all
+    //     four edges, deepest in the corners the light does not reach: a sheet
+    //     lying in a candlelit room, not a card lit evenly by a screen.
+    g.save();
+    g.globalCompositeOperation = 'multiply';
+    const fall = g.createRadialGradient(w * .5, h * .44, Math.min(w, h) * .34, w * .5, h * .46, Math.hypot(w, h) * .6);
+    fall.addColorStop(0, hexA('#8c6a45', 0));
+    fall.addColorStop(.55, hexA('#8c6a45', .14));
+    fall.addColorStop(.85, hexA('#6a4a2c', .34));
+    fall.addColorStop(1, hexA('#4e341e', .5));
+    g.fillStyle = fall; g.fillRect(0, 0, w, h);
+    g.globalCompositeOperation = 'soft-light';
+    for (const [cx, cy, r, a] of [[w * .1, -h * .06, 760, .62], [w * .9, -h * .06, 760, .62], [w * .97, h * 1.02, 620, .5]]) {
+      const gr = g.createRadialGradient(cx, cy, 0, cx, cy, r);
+      gr.addColorStop(0, hexA('#ffc27a', a)); gr.addColorStop(.5, hexA('#ffb35c', a * .38)); gr.addColorStop(1, hexA('#ffb35c', 0));
+      g.fillStyle = gr; g.fillRect(0, 0, w, h);
+    }
+    g.globalCompositeOperation = 'screen';
+    for (const [cx, cy, r, a] of [[w * .1, 0, 520, .07], [w * .9, 0, 520, .07], [w * .97, h, 420, .06]]) {
+      const gr = g.createRadialGradient(cx, cy, 0, cx, cy, r);
+      gr.addColorStop(0, hexA('#ffcf94', a)); gr.addColorStop(1, hexA('#ffcf94', 0));
+      g.fillStyle = gr; g.fillRect(0, 0, w, h);
+    }
+    g.restore();
+
     // 8. the ink — this wing's own section drawing, re-inked
     this._layPlan(g, ink);
 
@@ -968,6 +1000,8 @@ export class MapScene extends Scene {
                top: n.y * this.SH - hx, bottom: n.y * this.SH + hx };
     });
     const KEY = 40;
+    // where each seal lands, so no room's name plate is laid over one (_placeTags)
+    this._seals = [];
     parts.push('<g class="mi-zones">');
     for (const hz of map.hazards) {
       const x = hz.rect.x0 * this.SW, y = hz.rect.y0 * this.SH;
@@ -985,18 +1019,27 @@ export class MapScene extends Scene {
         if (!best || c < best.c) best = { px, py, c };
         if (c === 0) break;
       }
+      this._seals.push({ left: best.px, top: best.py, right: best.px + KEY, bottom: best.py + KEY });
       // a short leader from the roundel back to the nearest point on the boundary
       const ax = best.px + KEY / 2, ay = best.py + KEY / 2;
       const bx = clampN(ax, x, x + w), by = clampN(ay, y, y + h);
-      /* A surveyor's boundary, the way the plan keys an area (6cfaef5's): the
-         wing hatched across in the zone's ink, a dashed line run round it by
-         hand, and a fine solid line just inside that one, so the zone reads as
-         drawn onto the plan and never as a coloured box laid over it. */
+      /* A soft painted wash, laid on with a brush (662d874's): a pale bloom of
+         pigment with a paler heart where it ran thin, pooled darker at its
+         deckled edge as it dried, a tide line just inside that, and the key's
+         hatch a breath of texture in it that follows the brush, never a box.
+         No dash and no ruled edge: a dashed rectangle read as a selection. */
+      const deck = deckledRect(s, x, y, w, h, 40, 2.6);
+      // the pigment sits unevenly: a second, smaller pool of it off to one side
+      const px2 = x + w * (0.08 + ((s >>> 5) % 17) / 100), py2 = y + h * (0.1 + ((s >>> 11) % 13) / 100);
       parts.push(`<g class="mi-zone mi-zone--${hz.kind}" data-hz="${hz.id}">
-        <rect class="mi-zone-hatch" x="${x}" y="${y}" width="${w}" height="${h}" rx="22"
+        <path class="mi-zone-wash" d="${deck}"/>
+        <path class="mi-zone-pool" d="${deckledRect(s ^ 0x51f, px2, py2, w * .58, h * .62, 36, 2)}"/>
+        <path class="mi-zone-bloom" d="${deckledRect(s ^ 0x3c1, x + 18, y + 16, w - 36, h - 32, 30, 1.6)}"/>
+        <path class="mi-zone-hatch" d="${deck}"
               fill="url(#${hz.kind === 'boon' ? 'mm-dots' : 'mm-hatch'})"/>
-        <path class="mi-zone-edge" d="${roundedWobbleRect(s, x, y, w, h, 22)}"/>
-        <path class="mi-zone-edge mi-zone-edge--in" d="${roundedWobbleRect(s ^ 0x3c1, x + 8, y + 8, w - 16, h - 16, 16)}"/>
+        <path class="mi-zone-tide" d="${deckledRect(s ^ 0x7a9, x + 7, y + 7, w - 14, h - 14, 34, 2.2)}"/>
+        <path class="mi-zone-edge" d="${deck}"/>
+        <path class="mi-zone-edge mi-zone-edge--pool" d="${deckledRect(s ^ 0x9d1, x + 1, y + 1, w - 2, h - 2, 40, 2.6)}"/>
         <g class="mi-zone-key">
           <path class="mi-zone-lead" d="M${ax.toFixed(1)} ${ay.toFixed(1)} L${bx.toFixed(1)} ${by.toFixed(1)}"/>
           <path class="mi-seal-melt" d="${sealMelt(s, ax, ay, KEY / 2 + 4)}"/>
@@ -1067,7 +1110,7 @@ export class MapScene extends Scene {
         // inked by hand, not ruled: a little more tremble and a shorter step
         // than a straightedge would leave
         pencilStroke(seedOf(e.from + e.to), x1, y1, x2, y2,
-          { bow: long ? 15 : 9, tremble: 2.1, step: long ? 28 : 21 }),
+          { bow: long ? 17 : 11, tremble: 2.9, step: long ? 24 : 18 }),
         long ? ' mi-edge--long' : '');
     }
 
@@ -1079,7 +1122,7 @@ export class MapScene extends Scene {
       const x0 = WIN.x + 16;
       put(ENTRY, id,
         pencilStroke(seedOf('in' + id), x0, y + 14, x - NODE_R - 14, y,
-          { bow: 9, tremble: 1.2, step: 22 }),
+          { bow: 10, tremble: 1.8, step: 20 }),
         ' mi-edge--entry');
     }
     parts.push('<g class="mi-halos">'  + halos.join('')  + '</g>');
@@ -1242,7 +1285,8 @@ export class MapScene extends Scene {
      */
     const boxOf = (L, dx, dy) => {
       const cx = L.n.x * this.SW, cy = L.n.y * this.SH;
-      const hw = (L.w / 2 + 4) * k, hh = (L.h || LABEL_H) * k;
+      const ks = L.n.type === NodeType.BOSS ? k : k * (this._labS || 1);
+      const hw = (L.w / 2 + 4) * ks, hh = (L.h || LABEL_H) * ks;
       const lo = WIN.x + 10 + hw, hi = WIN.x + WIN.w - 10 - hw;
       const c = hi > lo ? clampN(cx + dx * k, lo, hi) : cx;
       /* ...and vertically. A name over the first row used to hang above the
@@ -1284,40 +1328,21 @@ export class MapScene extends Scene {
     // was going to hide this anyway" — otherwise the class stops meaning
     // anything and the next person to read it is misled.
     for (const L of this._labels) { L.dx = 0; L.dy = 0; L.off = false; }
+    // The room you stand in, the boss, and the rooms you may enter: placed
+    // first and together, each plate on clear paper right beside its room, on
+    // a leader that never crosses a route (_placeTags, PEARL's).
+    this._placeTags(shown.filter((L) => rank(L) <= 2), { placed, legal, k });
     for (const L of shown.sort((a, b) => rank(a) - rank(b))) {
-      /* A room you may enter wears its name ATTACHED: on its nameplate right
-         under the mark, right over it, level with it on either side, or tucked
-         against one of its lower or upper shoulders — and nowhere else. The
-         old ladder let a name drift up to two rows away with a pencil leader
-         back, and on a 1280 panel, where the first row's rooms are 58 px apart,
-         "Formal Dining Room" landed beside Entry Hall and "Entry Hall" under
-         the Parlor: every name legible, half of them on the wrong room. A name
-         that has to sit on a leg of the route now does, rather than on the
-         wrong room. The boss and the rooms you cannot enter keep the wider
-         ladder: their names are landmarks, not choices. */
-      const h = L.h || LABEL_H, bx = L.box;
+      if (rank(L) <= 2) continue;
+      /* The rooms you cannot enter keep the wider ladder: their names are
+         landmarks, not choices, and one that finds no clear paper is dropped. */
       const cands = [];
-      if (rank(L) === 2 || rank(L) === 0) {
-        const side = bx / 2 + L.w / 2 + 16;
-        const mid = -(bx / 2 + 3 + h / 2);
-        const sh = L.w / 2 + bx * .3;
-        cands.push([0, 6], [0, -(bx + h + 14)], [side, mid], [-side, mid],
-                   [sh, -bx * .3], [-sh, -bx * .3], [sh, -(bx * .7 + h)], [-sh, -(bx * .7 + h)]);
-        /* When a lane is packed (the entrance column on a 1280 panel, where
-           the rooms' rings touch), the name goes out on its own plate a little
-           way to the side, stepping up or down into the gap between rows, and
-           a brass leader ties it back to its room (_drawLeader). A name never
-           sits on a room to be close to its own. */
-        for (const out of [side + 26, side + 58, side + 96]) {
-          for (const d of [0, -26, 26, -52, 52, -80, 80]) cands.push([out, mid + d], [-out, mid + d]);
-        }
-      } else {
+      {
         const side = L.w / 2 + 34;
         for (const dy of [0, 26, -(L.box + 26), 54, -(L.box + 54), 82, -(L.box + 82)]) {
           cands.push([0, dy]);
           if (Math.abs(dy) <= 56) { cands.push([side, dy], [-side, dy]); }
         }
-        if (rank(L) === 1) cands.push([-(L.w / 2 + bx * .2), 0], [-(L.w / 2 + bx * .2), 40], [-(L.w / 2 + bx * .3), -(bx + h)]);
       }
       // nearest first, so the first slot that clears is also the closest one
       cands.sort((p, q) => (Math.abs(p[0]) + Math.abs(p[1])) - (Math.abs(q[0]) + Math.abs(q[1])));
@@ -1343,21 +1368,224 @@ export class MapScene extends Scene {
       L.el.style.setProperty('--mn-dy', L.dy ? L.dy.toFixed(1) + 'px' : '0px');
       L.el.classList.toggle('lab-off', !!L.off);
       // which side of its room the nameplate hangs on: its brass pointer faces
-      // the room from that side (map.css .mn-label::after)
-      const h = L.h || LABEL_H, midY = L.box / 2 + 3 + (L.dy || 0) + h / 2;   // chip centre, from the mark's
-      const side = Math.abs(midY) < h * .6 && Math.abs(L.dx || 0) > L.w / 2
+      // the room from that side (map.css .mn-label::after). A plate is drawn at
+      // --lab-s about its top centre (the boss's never), so its measures here
+      // are the drawn ones.
+      const s = L.n.type === NodeType.BOSS ? 1 : (this._labS || 1);
+      const h = (L.h || LABEL_H) * s, hw = L.w / 2 * s;
+      const midY = L.box / 2 + 3 + (L.dy || 0) + h / 2;   // chip centre, from the mark's
+      const side = Math.abs(midY) < h * .6 && Math.abs(L.dx || 0) > hw
         ? ((L.dx || 0) > 0 ? 'right' : 'left')
         : (midY < 0 ? 'above' : 'below');
       L.el.dataset.lab = side;
       /* the plate's brass pointer sits on the point of its facing edge nearest
          the room, so a plate the frame has pushed sideways still points
-         straight at its own room (map.css reads --lab-px / --lab-py) */
+         straight at its own room (map.css reads --lab-px / --lab-py, in the
+         plate's own, unscaled px) */
       const vertical = side === 'above' || side === 'below';
-      L.px = vertical ? clampN(-(L.dx || 0), -(L.w / 2 - 16), L.w / 2 - 16) : 0;
-      L.py = vertical ? 0 : clampN(-midY, -(h / 2 - 6), h / 2 - 6);
-      L.el.style.setProperty('--lab-px', L.px.toFixed(1) + 'px');
-      L.el.style.setProperty('--lab-py', L.py.toFixed(1) + 'px');
+      L.px = vertical ? clampN(-(L.dx || 0), -(hw - 16 * s), hw - 16 * s) : 0;
+      L.py = vertical ? 0 : clampN(-midY, -(h / 2 - 6 * s), h / 2 - 6 * s);
+      L.el.style.setProperty('--lab-px', (L.px / s).toFixed(1) + 'px');
+      L.el.style.setProperty('--lab-py', (L.py / s).toFixed(1) + 'px');
       this._drawLeader(L);
+    }
+  }
+
+  /**
+   * The rooms you may enter, the one you stand in and the boss wear their
+   * names on small cartouches set right beside their rooms, each tied back by
+   * a short brass leader (map.css .mn-label, .mn-lead). PEARL's, round 3.
+   *
+   * At the door of a wing the entrances stand one lane apart with the next
+   * column of rooms a hand's width to their right, so on a 1280 panel there is
+   * no paper touching a room where its name fits: the old ladder took the least
+   * bad of a few attached slots and sent "Formal Dining Room" and "Entry Hall"
+   * out along long rods across the routes. So each plate goes where the paper
+   * IS clear, as close to its own room as that paper allows, and the plates
+   * are placed together, the one with the fewest clear places first, so an easy
+   * name never takes the only paper a hard one had.
+   *   hard   on the paper; clear of every room's mark (a lit room's ring, the
+   *          glyph of the rest), of what the drawing prints in its margins,
+   *          of the wings' seals and of every plate already placed; and a
+   *          leader that crosses no leg of the route
+   *   soft   as short a leader as possible; a leader that never runs through
+   *          another room's drawing; as little of a route under the plate as
+   *          the paper allows; beside or below rather than above
+   */
+  _placeTags(tags, { placed, legal, k }) {
+    if (!tags.length) return;
+    const m = this.model;
+    const kl = k * (this._labS || 1);                     // a plate's own scale on the sheet
+    const BREATH = 2 * k;                                 // paper round a room's drawing
+    const APART = 12 * k;                                 // paper between two plates
+    const RING = 42 * k;                                  // a lit room's pencil ring, outer edge
+    const GLYPH = 22 * k;                                 // the drawing of any other room
+    // on the paper, inside its double rule, and above the drawing's title block
+    const edge = { left: 52, top: 52, right: this.SW - 52, bottom: WIN.y + WIN.h + 24 };
+    const isLit = (o) => o.n.id === m.currentId || legal.has(o.n.id);
+    const marks = this._labels.map((o) => ({
+      L: o, lit: isLit(o), cx: o.n.x * this.SW, cy: o.n.y * this.SH,
+      r: o.n.type === NodeType.BOSS ? 76 * k : isLit(o) ? RING : GLYPH,
+    }));
+    const blocks = [];
+    // THE WAY IN, pencilled up the left margin beside the entrances
+    const starts = m.map.startIds.map((id) => m.byId.get(id)).filter(Boolean);
+    if (starts.length) {
+      const my = starts.reduce((a, n) => a + n.y, 0) / starts.length * this.SH;
+      blocks.push({ left: WIN.x - 36, right: WIN.x + 4, top: my - 150, bottom: my + 150 });
+    }
+    // what the drawing prints in its margins: the way to drive it up the right
+    // side, the compass rose at the plan's top right, the scale bar under it
+    blocks.push({ left: this.SW - 74, right: this.SW - 42, top: WIN.y, bottom: WIN.y + WIN.h });
+    blocks.push({ left: WIN.x + WIN.w - 140, right: WIN.x + WIN.w - 28, top: WIN.y + 32, bottom: WIN.y + 144 });
+    blocks.push({ left: WIN.x - 6, right: WIN.x + 200, top: WIN.y + WIN.h + 4, bottom: WIN.y + WIN.h + 30 });
+    // the gilt rail's corner scrolls lie over the paper's four corners
+    const cz = 64 / (this._fitZoom || this.view.z || 1);
+    blocks.push({ left: 0, right: cz, top: 0, bottom: cz }, { left: this.SW - cz, right: this.SW, top: 0, bottom: cz },
+                { left: 0, right: cz, top: this.SH - cz, bottom: this.SH }, { left: this.SW - cz, right: this.SW, top: this.SH - cz, bottom: this.SH });
+    // the wax seals keying the wings (_buildInk)
+    for (const q of this._seals || []) blocks.push({ left: q.left - 6, right: q.right + 6, top: q.top - 6, bottom: q.bottom + 6 });
+    // the keyboard's crop marks round the room it is on
+    const fo = this._focusId && m.byId.get(this._focusId);
+    if (fo) {
+      const half = 43 * k, fx = fo.x * this.SW, fy = fo.y * this.SH;
+      blocks.push({ left: fx - half, right: fx + half, top: fy - half, bottom: fy + half });
+    }
+    const near = (b, x, y) => Math.hypot(clampN(x, b.left, b.right) - x, clampN(y, b.top, b.bottom) - y);
+    // does the segment from (x1,y1) to (x2,y2) pass through a disc, or graze it?
+    const crosses = (x1, y1, x2, y2, D) => {
+      const vx = x2 - x1, vy = y2 - y1, L2 = vx * vx + vy * vy || 1;
+      const t = clampN(((D.cx - x1) * vx + (D.cy - y1) * vy) / L2, 0, 1);
+      return Math.hypot(x1 + vx * t - D.cx, y1 + vy * t - D.cy) < D.r + 3 * k;
+    };
+    // do two segments properly cross?
+    const side3 = (ax, ay, bx, by, cx, cy) => Math.sign((bx - ax) * (cy - ay) - (by - ay) * (cx - ax));
+    const cut = (a, b) => side3(a[0], a[1], a[2], a[3], b[0], b[1]) !== side3(a[0], a[1], a[2], a[3], b[2], b[3])
+      && side3(b[0], b[1], b[2], b[3], a[0], a[1]) !== side3(b[0], b[1], b[2], b[3], a[2], a[3]);
+    const plateOf = (L) => {
+      const boss = L.n.type === NodeType.BOSS;
+      const sc = boss ? k : kl;                            // the boss's plate is never shrunk
+      return { boss, h: (L.h || LABEL_H) * sc, w: (L.w + 8) * sc, ownR: boss ? 76 * k : RING };
+    };
+    /* Candidates are found row by row rather than point by point: for a plate
+       centred at height uy, every mark and every block rules out one interval
+       of x, so what is left of the row is clear paper exactly, however thin
+       the slot. Each clear stretch then offers a handful of centres. */
+    const candidatesFor = (L) => {
+      const { boss, h, w, ownR } = plateOf(L);
+      const cx = L.n.x * this.SW, cy = L.n.y * this.SH;
+      const R = (boss ? 230 : 160) * k, STEP = (boss ? 5 : 3) * k;
+      const reach = R + w / 2 + 80 * k;
+      const local = marks.filter((D) => Math.abs(D.cx - cx) < reach && Math.abs(D.cy - cy) < reach);
+      const lit = local.filter((D) => D.lit && D.L !== L);
+      // only the legs that pass near this room can lie under its plate or its
+      // leader; a leg leaving this room itself starts under the leader's root
+      const legs = (this._legSegs || []).filter(([x1, y1, x2, y2]) =>
+        Math.max(x1, x2) > cx - reach && Math.min(x1, x2) < cx + reach
+        && Math.max(y1, y2) > cy - reach && Math.min(y1, y2) < cy + reach);
+      const foreign = legs.filter(([x1, y1, x2, y2]) =>
+        Math.hypot(x1 - cx, y1 - cy) > 1 && Math.hypot(x2 - cx, y2 - cy) > 1);
+      const under = (b) => {
+        let c = 0;
+        for (const [x1, y1, x2, y2] of legs) {
+          if (Math.max(x1, x2) < b.left || Math.min(x1, x2) > b.right
+              || Math.max(y1, y2) < b.top || Math.min(y1, y2) > b.bottom) continue;
+          for (let i = 1; i < 16; i++) {
+            const t = i / 16, px = x1 + (x2 - x1) * t, py = y1 + (y2 - y1) * t;
+            if (px > b.left && px < b.right && py > b.top && py < b.bottom) c++;
+          }
+        }
+        return c;
+      };
+      const out = [];
+      const score = (ux, uy) => {
+        const b = { left: ux - w / 2, right: ux + w / 2, top: uy - h / 2, bottom: uy + h / 2 };
+        const ex = clampN(cx, b.left, b.right), ey = clampN(cy, b.top, b.bottom);
+        const own = Math.hypot(ex - cx, ey - cy);
+        // the leader runs from the room's ring to the nearest point of its plate
+        if (own > ownR) {
+          const lead = [cx, cy, ex, ey];
+          for (const g of foreign) if (cut(lead, g)) return null;
+        }
+        // ...and never through another room's drawing: through a lit room's
+        // ring it would tie the name to the wrong door
+        let cross = 0, stray = 0;
+        if (own > ownR) {
+          for (const D of local) if (D.L !== L && crosses(cx, cy, ex, ey, D)) cross += D.lit ? 2 : 1;
+        }
+        for (const D of lit) stray = Math.max(stray, own - near(b, D.cx, D.cy) + 14 * k);
+        const lead = Math.max(0, own - ownR) / k;
+        // the plates hang beside their column, to its right, like a key: a plate
+        // over its room or to its left pays for breaking the rhythm
+        return {
+          b, ux,
+          score: cross * 300 + lead * 2 + stray / k * 10 + under(b) * 3
+            + (uy - cy < -h ? 18 : 0) + (!boss && b.left < cx ? 20 : 0),
+        };
+      };
+      for (let gy = -R; gy <= R; gy += STEP) {
+        const uy = cy + gy, top = uy - h / 2, bottom = uy + h / 2;
+        if (top < edge.top || bottom > edge.bottom) continue;
+        const bad = [];
+        for (const D of local) {
+          const r = D.L === L ? ownR + 2 * k : D.r + BREATH;
+          const dy = Math.max(0, Math.abs(D.cy - uy) - h / 2);
+          if (dy >= r) continue;
+          const sx = w / 2 + Math.sqrt(r * r - dy * dy);
+          bad.push([D.cx - sx, D.cx + sx]);
+        }
+        for (const q of blocks) {
+          if (q.top < bottom && q.bottom > top) bad.push([q.left - w / 2, q.right + w / 2]);
+        }
+        bad.sort((p, q) => p[0] - q[0]);
+        const lo = Math.max(edge.left + w / 2, cx - R - w / 2), hi = Math.min(edge.right - w / 2, cx + R + w / 2);
+        let x = lo;
+        const take = (a, c) => {
+          if (c < a) return;
+          const xs = new Set([a, c, clampN(cx, a, c)]);
+          for (let t = a + 12 * k; t < c; t += 12 * k) xs.add(t);
+          for (const ux of xs) { const sc = score(ux, uy); if (sc) out.push(sc); }
+        };
+        for (const [a, c] of bad) {
+          if (c <= x) continue;
+          if (a >= hi) break;
+          if (a > x) take(x, Math.min(a, hi));
+          x = Math.max(x, c);
+          if (x >= hi) break;
+        }
+        if (x < hi) take(x, hi);
+      }
+      out.sort((p, q) => p.score - q.score);
+      return out;
+    };
+    const pool = tags.map((L) => ({ L, cands: candidatesFor(L) }));
+    pool.sort((p, q) => p.cands.length - q.cands.length);
+    for (const { L, cands } of pool) {
+      const cx = L.n.x * this.SW, cy = L.n.y * this.SH;
+      const { h, w, ownR } = plateOf(L);
+      // two plates may not touch; closer than a plate's height they read as
+      // one stack, so the paper between them is paid for too
+      const AIR = 30 * k;
+      const gap = (b, p) => Math.max(p.left - b.right, b.left - p.right, p.top - b.bottom, b.top - p.bottom);
+      let pick = null, best = Infinity;
+      for (const c of cands) {
+        if (c.score >= best) break;                          // sorted: nothing later can win
+        let s = c.score, ok = true;
+        for (const p of placed) {
+          const g = gap(c.b, p);
+          if (g < APART) { ok = false; break; }
+          if (g < AIR) s += (AIR - g) / k * 2;
+        }
+        if (ok && s < best) { best = s; pick = c; }
+      }
+      if (!pick) {
+        // nowhere clear at all: hang it straight under its room, as the old pass did
+        const top = cy + ownR + BREATH;
+        pick = { ux: cx, b: { left: cx - w / 2, right: cx + w / 2, top, bottom: top + h } };
+      }
+      L.dx = (pick.ux - cx) / k;
+      L.dy = (pick.b.top - cy) / k - (L.box / 2 + 3);
+      placed.push(pick.b);
     }
   }
 
@@ -1379,15 +1607,18 @@ export class MapScene extends Scene {
     // between the two; any other name only once it has been moved off its mark
     const lit = L.n.id === this.model.currentId || (this._legalIds || []).includes(L.n.id);
     if ((!far && !lit) || L.off) { path.setAttribute('d', ''); return; }
-    const b = L.box, hw = L.w / 2, hh = (L.h || LABEL_H) / 2;
+    // the plate as it is drawn: at --lab-s about its top centre (never the boss's)
+    const s = boss ? 1 : (this._labS || 1);
+    const b = L.box, hw = L.w / 2 * s, hh = (L.h || LABEL_H) / 2 * s;
     const ox = b / 2, oy = b / 2;                       // the mark's centre
     const tx = b / 2 + L.dx, ty = b + 3 + L.dy + hh;    // the chip's centre
     /* The rod ends at the tip of the brass lozenge on the plate's edge that
        faces the room (map.css .mn-label::after), so the pointer and the rod
        read as one fitting. */
     const side = L.el.dataset.lab || 'below';
-    const ex = side === 'right' ? tx - hw - 4 : side === 'left' ? tx + hw + 4 : tx + (L.px || 0);
-    const ey = side === 'below' ? ty - hh - 4 : side === 'above' ? ty + hh + 4 : ty + (L.py || 0);
+    const tip = 4 * s;
+    const ex = side === 'right' ? tx - hw - tip : side === 'left' ? tx + hw + tip : tx + (L.px || 0);
+    const ey = side === 'below' ? ty - hh - tip : side === 'above' ? ty + hh + tip : ty + (L.py || 0);
     const vx = ex - ox, vy = ey - oy, len = Math.hypot(vx, vy) || 1;
     const ux = vx / len, uy = vy / len;
     // from just outside the room's pencil rings (ui/mapnode.js: r 41 of 86)
@@ -1644,6 +1875,10 @@ export class MapScene extends Scene {
     if (k !== this._mnK) {
       this._mnK = k;
       this.el.nodes.style.setProperty('--mn-k', k.toFixed(2));
+      // A room's name plate grows with its mark only so far: past LABEL_K_MAX
+      // it would read no better and would cover the next room (a 1280 panel).
+      this._labS = Math.round(Math.min(1, LABEL_K_MAX / k) * 100) / 100;
+      this.el.nodes.style.setProperty('--lab-s', this._labS.toFixed(2));
       relayout = true;
     }
     const close = v.z > (this._fitZoom || 1) * 1.22;
@@ -2272,7 +2507,8 @@ function sealMelt(seed, cx, cy, r) {
 }
 /** A rounded rect's outline as a wash leaves it: the brush's edge wandering in
  *  and out, feathered with small deckles, closed and smooth. */
-function deckledRect(seed, x, y, w, h, r) {
+function deckledRect(seed, x, y, w, h, r, sway = 0) {
+  r = Math.max(2, Math.min(r, w / 2 - 1, h / 2 - 1));    // a small wing's corners still meet
   let s = (seed ^ 0x6d2b) || 1;
   const n = () => { s ^= s << 13; s ^= s >>> 17; s ^= s << 5; s >>>= 0; return s / 4294967296 - 0.5; };
   // walk the rounded rect's perimeter at a fixed step
@@ -2289,11 +2525,14 @@ function deckledRect(seed, x, y, w, h, r) {
   seg(x + w - r, y + h, x + r, y + h); arc(x + r, y + h - r, Math.PI / 2);
   seg(x, y + h - r, x, y + r); arc(x + r, y + r, Math.PI);
   const cx = x + w / 2, cy = y + h / 2;
-  let slow = 0;
+  let slow = 0, wander = 0;
   const pts = per.map(([px, py]) => {
     slow = slow * 0.7 + n() * 5;                 // the brush drifts, then deckles
+    // `sway`: the brush's long wander in and out along a whole side, the way
+    // a wash is laid, never a ruled edge (0 keeps the old, tight deckle)
+    wander = wander * 0.93 + n() * sway;
     const dx = px - cx, dy = py - cy, L = Math.hypot(dx, dy) || 1;
-    const off = slow + n() * 4.5;
+    const off = slow + wander + n() * 4.5;
     return [px + dx / L * off, py + dy / L * off];
   });
   let d = `M${pts[0][0].toFixed(1)} ${pts[0][1].toFixed(1)}`;
