@@ -924,6 +924,11 @@ export class EnemyView {
        The Butler's `--e3` is cream, so his tailcoat faded to white trousers at
        the hem. A garment silhouette can opt out and stay dark all the way down. */
     if (props.grad) el.dataset.grad = props.grad;
+    /* The silhouette names the painting, so the stage can be set for a figure's
+       own composition: The Butler leans left from the waist, and in the
+       mirror a boss alone stands in (scenes/combat.css) his flame met the
+       arch's upper-left rail until he stood a step toward his coat-tails. */
+    if (sil) el.dataset.silhouette = sil;
     /* ROLE, not just tier. The Governess's Favorite Doll is `tier:'boss'`,
        `role:'bossPart'`, 50 Courage — and the stylesheet's boss-arena size rule
        applied to every rig on the board, so she staged at 258x420 while her own

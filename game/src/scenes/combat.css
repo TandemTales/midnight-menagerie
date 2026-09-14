@@ -2066,10 +2066,11 @@
 /* …AND THE RULES ARE SET TO READ IN IT. Each card in a crowded hand is fitted
    to the box it shows (ui/hand.js asks, CardView#fitRules answers): the
    largest size up to 22u at which its own words wrap into the strip, down to
-   13u for the longest rule, so a short rule reads at 1280x800 instead of
-   sitting small in room it could use. A number keeps to the line's height. */
+   11.5u for the longest rule, so a short rule reads at 1280x800 instead of
+   sitting small in room it could use. A number, a size up, never deepens its
+   line (line-height 0), so every line is the height the fit counted. */
 .cb-handhost.kit-cards .mm-hand.is-crowded .mm-card[data-rarity][data-type][data-uid].is-fitted:not(.is-hover):not(.is-selected):not(.is-dragging):not(.is-aiming):not(.is-hero) .mm-card__rules { font-size: calc(var(--rules-fit) * var(--u)); line-height: 1.1; }
-.cb-handhost.kit-cards .mm-hand.is-crowded .mm-card[data-rarity][data-type][data-uid].is-fitted:not(.is-hover):not(.is-selected):not(.is-dragging):not(.is-aiming):not(.is-hero) .mm-card__rules .mm-card__num { line-height: 1; }
+.cb-handhost.kit-cards .mm-hand.is-crowded .mm-card[data-rarity][data-type][data-uid].is-fitted:not(.is-hover):not(.is-selected):not(.is-dragging):not(.is-aiming):not(.is-hero) .mm-card__rules .mm-card__num { line-height: 0; }
 /* THE FAN'S LAST CARD IS WHOLE. Nothing covers it, so it keeps its plate's
    centred name, its type line and its rules the width of its panel: set into
    the strip it had no need of, its rule ran a line past the panel's foot. */
@@ -2993,16 +2994,19 @@
    a bevel catching the light) and the medallion set back ROUND, a fifth larger,
    its enamel full to the rail: 437x636, its centre at row 82, slices 219 / 150.
    The intent set in it is sized to the crown (--al-iv, --al-ph: the shield
-   stands in the enamel with a clear margin at every size), and he stands a
-   step back in the glass, a little toward his coat-tails (--mirror-k,
-   --mirror-x), so the flame of his head clears the arch's upper-left rail. */
+   stands in the enamel with a clear margin at every size), and a boss stands
+   a step back in the glass (--mirror-k). The Butler leans left from the
+   waist, so he also stands a little toward his coat-tails (--mirror-x, by
+   his painting's data-silhouette), and the flame of his head clears the
+   arch's upper-left rail. */
 .cb-root[data-arena="boss"] .cb-enemies[data-n="1"] .cb-enemy[data-tier="boss"]:not([data-role="bossPart"]) {
   --al-w: clamp(290px, calc(min(calc(430px * var(--e-sz)), calc(69vh - var(--e-band) - 127px - var(--e-rise, 0px))) * 1.2), 480px);
   --al-iv: calc(var(--al-w) * .165);
   --al-ph: calc(var(--al-w) * .072);
   --mirror-k: .92;
-  --mirror-x: calc(var(--al-w) * .062);
+  --mirror-x: 0px;
 }
+.cb-root[data-arena="boss"] .cb-enemies[data-n="1"] .cb-enemy[data-tier="boss"][data-silhouette="butler"]:not([data-role="bossPart"]) { --mirror-x: calc(var(--al-w) * .062); }
 .cb-root[data-arena="boss"] .cb-enemies[data-n="1"] .cb-enemy[data-tier="boss"]:not([data-role="bossPart"]) .cb-intent,
 .cb-root[data-arena="boss"] .cb-enemies[data-n="1"] .cb-enemy[data-tier="boss"]:not([data-role="bossPart"]) .cb-intent.is-heavy,
 .cb-root[data-arena="boss"] .cb-enemies[data-n="1"] .cb-enemy[data-tier="boss"]:not([data-role="bossPart"]) .cb-intent.is-heavy .cb-intent__chip[data-role="damage"] { --iv: var(--al-iv); --ph: var(--al-ph); }

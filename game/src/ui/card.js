@@ -107,12 +107,40 @@ function bodyContext() {
 function bodyFontsIn() {
   try { return !document.fonts || document.fonts.check('400 20px Grenze'); } catch { return true; }
 }
+/* A card sets its figures in lining-nums (card.css), which a canvas cannot
+   ask for: its default figures run a quarter narrower, and a rule with an 11
+   and a 22 in it wrapped a line more than it was fitted for. So a figure's
+   width is measured once on the page, in the card's own figure style, per
+   weight, and every digit is counted at it. */
+let digitEm = null;
+function digitEms() {
+  if (digitEm) return digitEm;
+  if (typeof document === 'undefined' || !document.body) return null;
+  const probe = document.createElement('span');
+  probe.style.cssText = `position:absolute;left:-9999px;top:0;white-space:nowrap;font-size:100px;font-family:${bodyFamily};font-variant-numeric:lining-nums tabular-nums;`;
+  probe.textContent = '0123456789';
+  document.body.appendChild(probe);
+  probe.style.fontWeight = '400';
+  const w400 = probe.getBoundingClientRect().width / 1000;
+  probe.style.fontWeight = '600';
+  const w600 = probe.getBoundingClientRect().width / 1000;
+  probe.remove();
+  const out = { text: w400, em: w400, kw: w600, num: w600 * 1.1 };
+  if (bodyFontsIn()) digitEm = out;
+  return out;
+}
 /** -> rows of boxes { em, pad, gap } from a rendered `.mm-card__rules`; `gap` is the space before the box, in em. */
 function rulesBoxes(rulesEl) {
   const ctx = bodyContext();
   if (!ctx) return null;
   const fonts = { text: `400 100px ${bodyFamily}`, em: `italic 400 100px ${bodyFamily}`, num: `600 110px ${bodyFamily}`, kw: `600 100px ${bodyFamily}` };
-  const w = (s, kind) => { ctx.font = fonts[kind]; return ctx.measureText(s).width / 100; };
+  const figs = digitEms();
+  if (!figs) return null;
+  const w = (s, kind) => {
+    const digits = (s.match(/\d/g) || []).length;
+    ctx.font = fonts[kind];
+    return ctx.measureText(digits ? s.replace(/\d/g, '') : s).width / 100 + digits * figs[kind];
+  };
   const space = w(' ', 'text');
   const rows = [];
   for (const row of rulesEl.children) {
@@ -339,7 +367,7 @@ export class CardView {
    * reads it. Cheap to call on every layout: it answers from the last box, and
    * the words are measured once per text.
    */
-  fitRules(widthU, heightU, { lo = 13, hi = 22, lh = 1.1 } = {}) {
+  fitRules(widthU, heightU, { lo = 11.5, hi = 22, lh = 1.1 } = {}) {
     if (this._dead || !this.$rules) return;
     const key = Math.round(widthU * 4) + ':' + Math.round(heightU * 4) + ':' + lo + ':' + hi + ':' + lh;
     if (this._fitKey === key) return;
