@@ -2364,3 +2364,157 @@ button.kit-medallion:hover, button.kit-medallion:focus-visible,
   filter: brightness(.78) saturate(.9);
   pointer-events: none;
 }
+
+/* ===========================================================================
+   THE KIDS' PLACES, TIMBER — round 5, KIDS' PLACES. Appended; nothing above is
+   changed. The Treehouse and Headquarters are one treehouse, built of the same
+   painted timber, and the Kids pin what they find to it. The pieces are
+   painted by tools/prep_kids_boards.py, each piece light falls on painted
+   twice — in the dark and by candle — so the lit wood shows only round the
+   lights a board points at it, and falls away into the dark between them.
+
+     .kit-stud        a purple enamel cabochon in a brass bezel, the Kid board's
+                      round button in miniature, set over a frame's corner boss;
+                      --stud sizes it. Place it with left/top
+     .kit-plank       a thick plank nailed along a wall to stand things on: its
+                      grain, knots, a check and its nails, its front arris
+                      catching the light (plank.webp, plank-warm.webp).
+                      --plank-h is the plank; point up to three candles at it
+                      along its length with --plank-l1..3 and --plank-reach
+     .kit-newsclip    a cutting from the local paper, torn out: __head letters
+                      its headline, __deck the line under it, the house in
+                      half-tone below (newsclip.webp); --clip-w sizes it
+     .kit-ground--hideout  the treehouse both Kids' places stand in: plank
+                      walls, a roof beam, two posts and a nailer rail of sawn,
+                      checked timber, floorboards (hideout*.webp), lit by the
+                      same slots and masks as every ground (see .kit-ground)
+     .kit-trunk       the tree the treehouse is built round, in its bark, rising
+                      through the floor; as tall as the element (it tiles up
+                      and down). The candle-lit bark shows round up to two
+                      lights: --trunk-l1 / --trunk-l2 (heights), --trunk-reach
+     .kit-casement    a small treehouse window high in the wall, and through it
+                      the night of UI/mainMenu.png: --bough (the gnarled tree's
+                      boughs against the stars) or --moon (the sky with the
+                      moon); --case-w sizes it. Its cold light blooms on the
+                      wall round it; point a moon slot of the ground at it too
+   =========================================================================== */
+
+/* ── stud ── */
+.kit-stud {
+  --stud: 24px;
+  position: absolute; pointer-events: none;
+  width: var(--stud); height: var(--stud);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 35% 30%, rgba(250, 238, 255, .62) 0 7%, rgba(220, 196, 255, .16) 18%, transparent 30%),
+    url("../../assets/ui/kit/button.webp") 50% 50% / 100% 100% no-repeat;
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .8));
+}
+
+/* ── plank ──
+   plank.webp and plank-warm.webp are 1024x120 and tile along x: the worn top
+   face to row 26, the rounded arris to 34, the front face to 84, then the
+   shadow it throws on the wall. Stand a thing on it with its foot a sixth of
+   --plank-h below the element's top. A candle's light is the lit painting
+   showing through an ellipse --plank-reach wide, centred on each --plank-l*. */
+.kit-plank {
+  --plank-h: 44px;
+  --plank-reach: 360px;
+  --plank-l1: -9999px; --plank-l2: -9999px; --plank-l3: -9999px;
+  position: relative;
+  display: block;
+  height: calc(var(--plank-h) * 120 / 84);
+  background: url("../../assets/ui/kit/plank.webp") 0 0 / auto 100% repeat-x;
+  pointer-events: none;
+}
+.kit-plank::after {
+  content: ''; position: absolute; inset: 0;
+  background: url("../../assets/ui/kit/plank-warm.webp") 0 0 / auto 100% repeat-x;
+  -webkit-mask-image:
+    radial-gradient(calc(var(--plank-reach) / 2) 260% at var(--plank-l1) 20%, #000 0%, rgba(0, 0, 0, .62) 38%, rgba(0, 0, 0, .2) 70%, transparent 100%),
+    radial-gradient(calc(var(--plank-reach) / 2) 260% at var(--plank-l2) 20%, #000 0%, rgba(0, 0, 0, .62) 38%, rgba(0, 0, 0, .2) 70%, transparent 100%),
+    radial-gradient(calc(var(--plank-reach) / 2) 260% at var(--plank-l3) 20%, #000 0%, rgba(0, 0, 0, .62) 38%, rgba(0, 0, 0, .2) 70%, transparent 100%);
+          mask-image:
+    radial-gradient(calc(var(--plank-reach) / 2) 260% at var(--plank-l1) 20%, #000 0%, rgba(0, 0, 0, .62) 38%, rgba(0, 0, 0, .2) 70%, transparent 100%),
+    radial-gradient(calc(var(--plank-reach) / 2) 260% at var(--plank-l2) 20%, #000 0%, rgba(0, 0, 0, .62) 38%, rgba(0, 0, 0, .2) 70%, transparent 100%),
+    radial-gradient(calc(var(--plank-reach) / 2) 260% at var(--plank-l3) 20%, #000 0%, rgba(0, 0, 0, .62) 38%, rgba(0, 0, 0, .2) 70%, transparent 100%);
+}
+
+/* ── newsclip ──
+   newsclip.webp is 420x520: the headline band in rows 18-150, the deck in
+   156-190, the half-tone house from 204, set columns under it. */
+.kit-newsclip {
+  --clip-w: 120px;
+  position: relative;
+  width: var(--clip-w); aspect-ratio: 420 / 520;
+  background: url("../../assets/ui/kit/newsclip.webp") 50% 50% / 100% 100% no-repeat;
+  filter: drop-shadow(1px 4px 3px rgba(30, 14, 6, .5));
+}
+.kit-newsclip__head {
+  position: absolute; left: 6%; right: 6%; top: 3.6%; height: 25.4%;
+  display: grid; place-items: center;
+  font-family: var(--font-display); font-weight: 700; font-style: normal;
+  font-size: max(11px, calc(var(--clip-w) * .128)); line-height: .96;
+  letter-spacing: .01em; text-transform: uppercase; text-align: center; text-wrap: balance;
+  color: #1f1a15;
+}
+.kit-newsclip__deck {
+  position: absolute; left: 5%; right: 5%; top: 29.6%; height: 7%;
+  display: grid; place-items: center;
+  font-family: var(--font-body); font-style: italic; font-weight: 600;
+  font-size: max(11px, calc(var(--clip-w) * .09)); line-height: 1;
+  white-space: nowrap;
+  color: #3a3129;
+}
+
+/* ── the hideout ground ──
+   The Treehouse and Headquarters share one treehouse: the same boards, the
+   same beam and posts. A board that wants the wall warmer or colder tints it
+   over the ground, never by repainting it. */
+.kit-ground--hideout { background-image: url("../../assets/ui/kit/hideout.webp"); }
+.kit-ground--hideout .kit-ground__warm { background-image: url("../../assets/ui/kit/hideout-warm.webp"); }
+.kit-ground--hideout .kit-ground__moon { background-image: url("../../assets/ui/kit/hideout-moon.webp"); }
+
+/* ── trunk ──
+   trunk.webp / trunk-warm.webp are 240x720 and tile up and down; the bark's
+   silhouette is the middle 196 columns, so the element may overhang what it
+   stands behind by a tenth of its width either side. */
+.kit-trunk {
+  --trunk-reach: 300px;
+  --trunk-l1: -9999px; --trunk-l2: -9999px;
+  position: absolute; pointer-events: none;
+  background: url("../../assets/ui/kit/trunk.webp") 50% 0 / 100% auto repeat-y;
+  filter: drop-shadow(8px 0 14px rgba(0, 0, 0, .55));
+}
+.kit-trunk::after {
+  content: ''; position: absolute; inset: 0;
+  background: url("../../assets/ui/kit/trunk-warm.webp") 50% 0 / 100% auto repeat-y;
+  -webkit-mask-image:
+    radial-gradient(160% calc(var(--trunk-reach) / 2) at 30% var(--trunk-l1), #000 0%, rgba(0, 0, 0, .6) 36%, rgba(0, 0, 0, .18) 68%, transparent 100%),
+    radial-gradient(160% calc(var(--trunk-reach) / 2) at 30% var(--trunk-l2), #000 0%, rgba(0, 0, 0, .6) 36%, rgba(0, 0, 0, .18) 68%, transparent 100%);
+          mask-image:
+    radial-gradient(160% calc(var(--trunk-reach) / 2) at 30% var(--trunk-l1), #000 0%, rgba(0, 0, 0, .6) 36%, rgba(0, 0, 0, .18) 68%, transparent 100%),
+    radial-gradient(160% calc(var(--trunk-reach) / 2) at 30% var(--trunk-l2), #000 0%, rgba(0, 0, 0, .6) 36%, rgba(0, 0, 0, .18) 68%, transparent 100%);
+}
+.kit-board.has-backdrop .kit-trunk { display: none; }
+
+/* ── casement ──
+   casement-*.webp are 360x400: the frame's outside from (14,12) to (346,352),
+   the glass inside a 30 px plank, the sill under it to row 376. The glass is
+   painted from the sample, so it is the brightest cold thing on the wall. */
+.kit-casement {
+  --case-w: 180px;
+  position: absolute; pointer-events: none;
+  width: var(--case-w); aspect-ratio: 360 / 400;
+  background: url("../../assets/ui/kit/casement-bough.webp") 50% 0 / 100% 100% no-repeat;
+  filter: drop-shadow(0 10px 12px rgba(0, 0, 0, .6));
+}
+.kit-casement--moon { background-image: url("../../assets/ui/kit/casement-moon.webp"); }
+.kit-casement::before {
+  content: ''; position: absolute; z-index: -1;
+  left: -40%; right: -40%; top: -30%; bottom: -10%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--kit-moon) 18%, transparent), color-mix(in srgb, var(--kit-moon) 5%, transparent) 55%, transparent);
+  mix-blend-mode: screen;
+}
+.kit-board.has-backdrop .kit-casement { display: none; }

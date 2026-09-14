@@ -240,7 +240,19 @@ export class AtlasScene extends Scene {
 
     const body = el('div', 'at-body');
     body.appendChild(this._buildSheet());
-    body.appendChild(this._buildDossier());
+    /* The reading of the drawing stands in its own column (OCHRE's): the panel,
+       and under it the floor it stands over, where the Kid board's skull on its
+       books and its candle keep it company, the candle lighting the wall behind
+       the panel. Never on the panel's corners, never over its words. */
+    const side = el('div', 'at-side');
+    side.appendChild(this._buildDossier());
+    const floor = el('div', 'at-floor',
+      '<i class="kit-light kit-light--candle at-floor__glow"></i>'
+      + '<i class="kit-prop kit-prop--skull at-floor__skull"></i>'
+      + '<i class="kit-prop kit-prop--candle at-floor__candle"></i>');
+    floor.setAttribute('aria-hidden', 'true');
+    side.appendChild(floor);
+    body.appendChild(side);
     this.root.appendChild(body);
 
     this._wire();
@@ -345,6 +357,10 @@ export class AtlasScene extends Scene {
   /* ── the sheet ──────────────────────────────────────────────────────────── */
   _buildSheet() {
     const sheet = el('div', 'at-sheet');
+    /* The recovered sheet itself, laid on the frame's dark purple velvet mat
+       (OCHRE's): its own browned edges show inside the gilt rail. The drawing
+       is printed on it; the light and the curl are laid over both. */
+    sheet.appendChild(el('div', 'at-paper'));
 
     const vp = this._vp = el('div', 'at-vp');
     const plate = this._plate = el('div', 'at-plate');
@@ -419,7 +435,9 @@ export class AtlasScene extends Scene {
     /* The title block sits UNDER the drawing, not over it. `scenes/map.js`
        learned this the expensive way twice: a label laid across a plan covers
        marks, and on a drawing that is simply wrong however high its z-index is
-       — both offenders there ended up moved or tucked. */
+       — both offenders there ended up moved or tucked. It is lettered on a
+       paper label pasted in the sheet's foot, so the years of browning and the
+       crease that run through the rest of the sheet never run through it. */
     const foot = el('div', 'at-foot');
     foot.innerHTML =
       `<span class="at-foot__t">The Mansion &mdash; recovered floor plan</span>`
@@ -542,13 +560,9 @@ export class AtlasScene extends Scene {
     const d = this._dossier = el('aside', 'at-dossier kit-panel kit-panel--damask');
     d.dataset.medal = 'moon';
     d.setAttribute('aria-live', 'polite');
-    /* On the floor at the panel's foot, the Kid board's own dressing: its
-       skull on a stack of books to one side, its candle to the other, the
-       candle's warmth up the wall behind the panel. Decoration only. */
+    /* The Kid board's skull and candle stand on the floor under this panel
+       (enter() builds the floor), not on its corners. */
     d.innerHTML = `
-      <i class="kit-light kit-light--candle at-dos__glow" aria-hidden="true"></i>
-      <i class="kit-prop kit-prop--skull at-dos__skull" aria-hidden="true"></i>
-      <i class="kit-prop kit-prop--candle at-dos__candle" aria-hidden="true"></i>
       <div class="at-dos__rule" aria-hidden="true"></div>
       <p class="at-dos__no kit-heading"><span>Section <b class="at-dos__n">I</b></span></p>
       <div class="at-dos__plate">
@@ -660,9 +674,10 @@ export class AtlasScene extends Scene {
     const sheet = this._vp.parentElement;
     const b = sheet.getBoundingClientRect();
     if (!b.width || !b.height) return false;
-    /* clear of the gilt rail laid over the paper's edge (atlas.css .at-frame) */
-    const pad = Math.max(20, Math.min(34, b.width * 0.028));
-    const foot = 34;                                    // the title block's strip
+    /* clear of the gilt rail, the velvet mat round the paper and a finger's
+       width of the paper's own browned margin (atlas.css .at-frame, .at-paper) */
+    const pad = Math.max(30, Math.min(46, b.width * 0.04));
+    const foot = 40;                                    // the pasted title label's strip
     const aw = Math.max(1, b.width - pad * 2);
     const ah = Math.max(1, b.height - pad * 2 - foot);
     const k = Math.min(aw / MASTER.w, ah / MASTER.h);
@@ -801,7 +816,9 @@ export class AtlasScene extends Scene {
     d.dataset.seen = known ? '1' : '0';
     d.querySelector('.at-dos__n').textContent = w.meta.roman;
     d.querySelector('.at-dos__name').textContent = w.meta.name;
-    d.querySelector('.at-dos__form').textContent = w.meta.form;
+    /* The form is written as two clauses parted by a middle dot: set as two
+       lines broken AT the dot (OCHRE's), so no line ends on a stray point. */
+    d.querySelector('.at-dos__form').innerHTML = String(w.meta.form).split(/\s+·\s+/).map(esc).join('<br>');
     d.querySelector('.at-dos__boss').textContent = known ? w.meta.boss : 'Not yet known';
     d.querySelector('.at-dos__rooms').textContent = '20';
     d.querySelector('.at-dos__state').textContent = seen ? 'Surveyed' : 'Unsurveyed';

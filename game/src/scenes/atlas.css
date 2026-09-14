@@ -46,58 +46,34 @@
 .at-board {
   position: absolute; inset: 0; z-index: 0;
   --hud-h: 0px;
-  /* the corner candles light the desk; a warm pool under the sheet; and the
-     candle standing at the reading panel's foot throws its light up the wall
-     behind the panel, round both its sides (a second, wider pool with it) */
-  --wl3-x: 36vw; --wl3-y: 56vh; --wl3-w: 96vw; --wl3-h: 110vh;
-  --wl4-x: calc(100vw - var(--at-side) - 8px - var(--at-dos-w) * .1); --wl4-y: 84vh;
-  --wl4-w: clamp(460px, 38vw, 640px);  --wl4-h: 118vh;
-  --wl5-x: calc(100vw - var(--at-side) - 8px - var(--at-dos-w) * .5); --wl5-y: 46vh;
-  --wl5-w: calc(var(--at-dos-w) * 2.1); --wl5-h: 104vh;
+  /* THE WALL ROUND THE SHEET AND THE PANEL IS LIT, never an unlit ground: the
+     corner candles pour down the wall's top; a warm pool behind the sheet
+     reaches past its rail on every side; the candle on the floor under the
+     panel throws its light up the wall behind the panel and into the gap
+     between the two; and a breath of it lies along the floor they stand on */
+  --corner-w: var(--at-corner);
+  --wl3-x: 36vw; --wl3-y: 50vh; --wl3-w: 104vw; --wl3-h: 124vh;
+  --wl4-x: calc(100vw - var(--at-side) - 8px - var(--at-dos-w) * .22); --wl4-y: 88vh;
+  --wl4-w: clamp(520px, 44vw, 720px);  --wl4-h: 124vh;
+  --wl5-x: calc(100vw - var(--at-side) - 8px - var(--at-dos-w) * .5); --wl5-y: 40vh;
+  --wl5-w: calc(var(--at-dos-w) * 2.6); --wl5-h: 116vh;
+  --wl6-x: 50vw; --wl6-y: 13vh; --wl6-w: 112vw; --wl6-h: 58vh;
 }
 /* the reading panel's medallion without the chip of gilding its crop caught
    (medal-moon-clean.webp, tools/prep_kids_places.py). The attribute is part
    of the selector so it matches the kit's own [data-medal="moon"] rule, and
    wins on order (scene sheets load after kit.css). */
 .at-dossier[data-medal="moon"] { --medal-img: url("../../assets/ui/kit/medal-moon-clean.webp"); }
-/* the Kid board's dressing on the floor at the panel's foot: the skull on its
-   books beside the lower left corner, the candle beside the lower right, each
-   standing clear of the panel's words */
-.at-dos__skull, .at-dos__candle { z-index: 6; }
-.at-dos__skull {
-  width: clamp(56px, 4.8vw, 80px);
-  left: calc(-1 * clamp(56px, 4.8vw, 80px) * .5);
-  bottom: calc(-1 * clamp(22px, 3.6vh, 34px));
-}
-.at-dos__candle {
-  --candle-w: clamp(44px, 3.8vw, 62px);
-  width: var(--candle-w);
-  right: calc(-1 * var(--candle-w) * .3);
-  bottom: calc(-1 * clamp(24px, 3.8vh, 36px));
-}
-/* the candle's own warmth on the panel's lower corner, centred on its flame */
-.at-dos__glow {
-  --light-a: 22%;
-  width: clamp(240px, 20vw, 340px);
-  left: calc(100% - clamp(44px, 3.8vw, 62px) * .2);
-  top: calc(100% + clamp(24px, 3.8vh, 36px) - clamp(44px, 3.8vw, 62px) * 164 / 106 * .9);
-  z-index: -1;
-}
-/* ...and on the wall behind the panel, where it pools up both sides of it */
+/* the candle on the floor, its light up the wall behind the panel */
 .at-wallglow {
   z-index: 2;
-  --light-a: 34%;
-  width: clamp(560px, 46vw, 780px);
-  left: calc(100vw - var(--at-side) - 8px - clamp(10px, 1vw, 16px));
-  top: 86vh;
+  --light-a: 40%;
+  width: clamp(600px, 50vw, 820px);
+  left: calc(100vw - var(--at-side) - 8px - var(--at-dos-w) * .22);
+  top: 92vh;
 }
 .kit-board.has-backdrop .at-wallglow { opacity: .6; }
-.kit-board.has-backdrop ~ .at-body .at-dos__glow { opacity: .6; }
-/* at a fork the panel's foot is the way on and its round button: the candle
-   and its glow step out of the button's way, the skull stays */
-.at-dossier:has(.at-dos__act:not([hidden])) .at-dos__candle,
-.at-dossier:has(.at-dos__act:not([hidden])) .at-dos__glow { display: none; }
-.at-root:has(.at-dos__act:not([hidden])) .at-wallglow { --light-a: 18%; }
+.at-root:has(.at-dos__act:not([hidden])) .at-wallglow { --light-a: 26%; }
 /* the board's corner candles, drawn small, as the Map draws them */
 .at-corner { width: var(--at-corner); top: 1px; }
 .at-corner--l { left: calc(var(--kit-edge) + 1px); }
@@ -106,11 +82,12 @@
 .at-flame--l { left: calc(var(--kit-edge) + var(--at-corner) * .56 - var(--at-corner) * .31); }
 .at-flame--r { right: calc(var(--kit-edge) + var(--at-corner) * .56 - var(--at-corner) * .31); }
 .at-vine { top: calc(var(--at-corner) * .72); bottom: 60px; }
+/* the night only at the board's very edges, so the candlelit wall reads */
 .at-bg {
   position: absolute; inset: 0; z-index: 1; pointer-events: none;
   background:
-    radial-gradient(90% 80% at 44% 52%, transparent 40%, color-mix(in srgb, var(--kit-void) 70%, transparent) 100%),
-    linear-gradient(to bottom, color-mix(in srgb, var(--kit-void) 40%, transparent), transparent 20%, transparent 80%, color-mix(in srgb, var(--kit-void) 50%, transparent));
+    radial-gradient(124% 110% at 50% 44%, transparent 62%, color-mix(in srgb, var(--kit-void) 58%, transparent) 100%),
+    linear-gradient(to bottom, transparent 86%, color-mix(in srgb, var(--kit-void) 40%, transparent));
 }
 
 /* ── header: Back, the plaque, the tally ──────────────────────────────────── */
@@ -167,6 +144,38 @@
   padding: clamp(10px, 1.6vh, 18px) calc(var(--at-side) + 8px) clamp(26px, 4vh, 40px);
   min-height: 0;
 }
+/* The side column: the panel under its moon medallion, and the floor under
+   it (OCHRE's), where the Kid board's skull on its books and its candle stand
+   on the line the sheet's frame stands on. The floor is what the panel leaves,
+   so it is a size container: the props are never taller than their floor, and
+   where the panel has taken it (a fork's way on) they are not set out. */
+.at-side {
+  position: relative;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  min-height: 0;
+  padding-top: clamp(24px, 3.4vh, 32px);
+}
+.at-floor { position: relative; min-height: 0; container-type: size; }
+.at-floor__skull {
+  width: min(clamp(62px, 5vw, 84px), calc(92cqh * 130 / 153));
+  left: 17%; bottom: calc(-1 * clamp(10px, 1.8vh, 16px));
+  z-index: 1;
+}
+.at-floor__candle {
+  width: min(clamp(46px, 3.7vw, 62px), calc(96cqh * 106 / 164));
+  right: 19%; bottom: calc(-1 * clamp(12px, 2vh, 18px));
+  z-index: 1;
+}
+.at-floor__glow {
+  --light-a: 28%;
+  width: clamp(260px, 22vw, 360px);
+  left: 81%; top: 72%;
+  z-index: 0;
+}
+@container (max-height: 44px) {
+  .at-floor__skull, .at-floor__candle, .at-floor__glow { display: none; }
+}
 
 /* ── the sheet ────────────────────────────────────────────────────────────── */
 /* The PAPER fills its column; the DRAWING is placed on it by `_fitSheet()`.
@@ -180,19 +189,30 @@
   width: 100%;
   height: 100%;
   min-width: 0; min-height: 0;
+  /* the frame's backing: the samples' dark purple velvet, in the rail's shade */
+  --at-mat: clamp(12px, 1.15vw, 18px);
+  background:
+    radial-gradient(120% 110% at 40% 30%, transparent 40%, rgba(0, 0, 0, .5) 100%),
+    url("../../assets/ui/kit/velvet.webp") 0 0 / 256px 256px,
+    #1a0f22;
+  box-shadow: 0 30px 60px rgba(0, 0, 0, .7), 0 8px 20px rgba(0, 0, 0, .5), inset 0 0 22px rgba(0, 0, 0, .85);
+}
+/* the paper, a margin inside the frame, lying on the velvet with a hair of
+   shadow under its edges */
+.at-paper {
+  position: absolute; inset: var(--at-mat); z-index: 0; pointer-events: none;
   background:
     url("../../assets/ui/kit/paper.webp") 0 0 / 256px 256px,
     var(--parchment);
   background-blend-mode: overlay, normal;
-  box-shadow: 0 30px 60px rgba(0, 0, 0, .7), 0 8px 20px rgba(0, 0, 0, .5);
+  box-shadow: 0 0 0 1px rgba(40, 22, 10, .55), 0 3px 8px rgba(0, 0, 0, .6);
 }
 
 /* The drawn double rule a survey sheet carries, inked not imaged. */
-.at-sheet::before {
-  content: ''; position: absolute; inset: clamp(14px, 1.4vw, 22px);
+.at-paper::before {
+  content: ''; position: absolute; inset: clamp(8px, .8vw, 12px);
   border: 1px solid color-mix(in srgb, var(--graphite) 50%, transparent);
   box-shadow: 0 0 0 3px transparent, 0 0 0 4px color-mix(in srgb, var(--graphite) 30%, transparent);
-  pointer-events: none;
 }
 
 .at-vp {
@@ -243,7 +263,7 @@
    corners, foxing, a tide stain, the grime in both creases), and the edges
    falling into the rail's shade. */
 .at-light {
-  position: absolute; inset: 0; z-index: 2; pointer-events: none;
+  position: absolute; inset: var(--at-mat); z-index: 2; pointer-events: none;
   background:
     radial-gradient(74% 70% at 40% 34%, transparent 0%, transparent 40%, rgba(64, 38, 18, .26) 72%, rgba(34, 18, 8, .62) 100%),
     linear-gradient(to bottom, rgba(18, 10, 12, .2), transparent 12%, transparent 84%, rgba(18, 10, 12, .34)),
@@ -277,7 +297,7 @@
    tools/prep_kids_places.py) — and the lifted edge's shade on the paper */
 .at-curl {
   position: absolute; z-index: 2; pointer-events: none;
-  right: clamp(6px, .6vw, 10px); bottom: clamp(6px, .6vw, 10px);
+  right: var(--at-mat); bottom: var(--at-mat);
   width: clamp(64px, 5.6vw, 96px); aspect-ratio: 1;
   background: url("../../assets/ui/kit/sheet-curl.webp") 100% 100% / 100% 100% no-repeat;
 }
@@ -402,28 +422,42 @@
 /* ── sheet furniture ──────────────────────────────────────────────────────── */
 /* The title block sits BELOW the drawing, in the paper margin `_fitSheet()`
    leaves for it — never over the plan. `scenes/map.js` learned this twice. */
+/* The title label: a slip of cleaner paper pasted in the sheet's foot, over
+   the browning and the crease (z above .at-light), a ruled title block drawn
+   on it the way a survey's is, lettered in the draughtsman's graphite. */
 .at-foot {
-  position: absolute; z-index: 1;
-  left: 0; right: 0; bottom: clamp(16px, 1.6vw, 24px);
-  height: 2em;
+  position: absolute; z-index: 3;
+  left: 50%; bottom: calc(var(--at-mat) + clamp(7px, .9vw, 12px));
+  transform: translateX(-50%) rotate(-.35deg);
   display: flex;
   justify-content: center;
-  gap: var(--s-5);
+  gap: clamp(10px, 1vw, 16px);
   align-items: center;
+  white-space: nowrap;
+  padding: clamp(5px, .7vh, 7px) clamp(16px, 1.5vw, 24px) clamp(4px, .6vh, 6px);
+  background:
+    radial-gradient(130% 160% at 50% 40%, transparent 55%, rgba(120, 84, 44, .22) 100%),
+    url("../../assets/ui/kit/paper.webp") 0 0 / 256px 256px,
+    #eadcbc;
+  background-blend-mode: normal, overlay, normal;
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 250, 236, .5),
+    inset 0 0 0 3px transparent, inset 0 0 0 4px color-mix(in srgb, var(--graphite) 42%, transparent),
+    0 1px 1px rgba(40, 20, 8, .35), 1px 3px 5px -1px rgba(30, 14, 6, .4);
   font-family: var(--font-display); font-weight: 700;
-  font-size: clamp(12px, .8vw, 13px);
-  color: color-mix(in srgb, var(--graphite) 94%, black);
+  font-size: clamp(12px, .82vw, 13.5px);
+  color: #2a2119;
   letter-spacing: .14em;
   text-transform: uppercase;
   pointer-events: none;
 }
 .at-foot__t::after {
   content: ''; display: inline-block; vertical-align: middle;
-  width: 5px; height: 5px; margin: 0 0 2px calc(var(--s-5) / 2 + 2px);
+  width: 5px; height: 5px; margin: 0 0 2px clamp(10px, 1vw, 16px);
   transform: rotate(45deg);
-  background: color-mix(in srgb, var(--graphite) 80%, transparent);
+  background: color-mix(in srgb, #2a2119 80%, transparent);
 }
-.at-foot__d { font-family: var(--font-body); font-style: italic; font-weight: 600; letter-spacing: .04em; text-transform: none; font-size: 1.12em; color: color-mix(in srgb, var(--graphite) 86%, black); }
+.at-foot__d { font-family: var(--font-body); font-style: italic; font-weight: 600; letter-spacing: .03em; text-transform: none; font-size: 1.14em; color: #3a2e24; }
 
 .at-wide {
   position: absolute; z-index: 4;
@@ -439,15 +473,14 @@
 /* ── the dossier ──────────────────────────────────────────────────────────── */
 .at-dossier {
   position: relative;
-  align-self: center;
   --medal-k: .84;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  gap: clamp(9px, 1.5vh, 14px);
+  gap: clamp(8px, 1.3vh, 12px);
   --pk: .82;
-  padding: clamp(36px, 5.2vh, 48px) clamp(18px, 1.6vw, 28px) clamp(18px, 2.8vh, 26px);
+  padding: clamp(34px, 4.9vh, 46px) clamp(18px, 1.6vw, 28px) clamp(16px, 2.4vh, 22px);
   min-width: 0;
 }
 /* At a fork the panel has the way on to say as well, and the button that takes
@@ -541,7 +574,7 @@
    every caller sizes it. Measured 120x0 here before this line existed. */
 .at-dos__pf {
   --fk: .66;
-  width: calc(100% - 20px);
+  width: calc(100% - clamp(40px, 4.6vw, 74px));
 }
 .at-dos__pf .pf {
   width: 100%;
