@@ -428,39 +428,50 @@ def fbm(shape, rng, octaves=5, base=4.0, persistence=.55):
 
 
 def stain(W, H, pigment, seed, second=None):
-    """A wash laid into a rectangle's footprint by a loaded brush: the edge wanders,
-    the pigment dries darker where it pooled against it, a tide line stands a
-    little inside, back-runs bloom where wetter water pushed the colour out, and
-    the paper's tooth holds grains of it. RGBA: the pigment's colour, its density
-    as alpha, so it lays over the parchment the way a glaze does."""
+    """A wash laid into a wing's footprint by a loaded brush, the way a surveyor
+    tints a zone: not a rectangle but three or four overlapping pools of the
+    same pigment run together, their joint edge wandering, the pigment drying
+    darkest where it pooled against that edge, a tide line a little inside it,
+    back-runs where wetter water pushed the colour out, a second pigment that
+    did not quite mix, and the paper's tooth holding grains of both. RGBA: the
+    pigment's colour, its density as alpha, so it lays over the parchment the
+    way a glaze does. Dense enough to register at a glance."""
     rng = np.random.default_rng(seed)
     yy, xx = np.mgrid[0:H, 0:W].astype(np.float32)
-    ix, iy = W * .045, H * .075
-    rx, ry = W / 2 - ix, H / 2 - iy
-    k = min(rx, ry) * .5
-    qx, qy = np.abs(xx - W / 2) - (rx - k), np.abs(yy - H / 2) - (ry - k)
-    sdf = np.hypot(np.maximum(qx, 0), np.maximum(qy, 0)) + np.minimum(np.maximum(qx, qy), 0) - k
-    d = sdf + fbm((H, W), rng, 4, 3.0) * min(W, H) * .04 + fbm((H, W), rng, 3, 10.0) * min(W, H) * .01
-    inside = np.clip(-d / 1.6, 0, 1)
-    din = np.clip(-d, 0, None)
     m = min(W, H)
-    body = .20 + .07 * fbm((H, W), rng, 5, 2.2)
-    pool = np.exp(-din / (m * .03)) * .30 + np.exp(-din / 2.2) * .28
-    tide = np.exp(-((din - m * (.09 + .015 * fbm((H, W), rng, 3, 4))) / 1.8) ** 2) * .10
-    gran = np.clip(fbm((H, W), rng, 2, 70.0), -1.2, 2.2) * .035
+    # the pools: soft superellipses along the footprint, overlapping
+    field = np.full((H, W), -1e9, np.float32)
+    n = 4
+    for i in range(n):
+        cx = W * (.24 + .52 * i / (n - 1)) + rng.uniform(-.03, .03) * W
+        cy = H * .5 + rng.uniform(-.06, .06) * H
+        rx = W * rng.uniform(.15, .19)
+        ry = H * rng.uniform(.3, .36)
+        e = 1 - (np.abs((xx - cx) / rx) ** 2.6 + np.abs((yy - cy) / ry) ** 2.6) ** (1 / 2.6)
+        field = np.maximum(field, e * min(rx, ry))
+    d = -field + fbm((H, W), rng, 4, 3.2) * m * .05 + fbm((H, W), rng, 3, 11.0) * m * .014
+    inside = np.clip(-d / 1.5, 0, 1)
+    inside *= np.clip(np.minimum(np.minimum(xx, W - 1 - xx), np.minimum(yy, H - 1 - yy)) / 10, 0, 1)
+    din = np.clip(-d, 0, None)
+    body = .44 + .10 * fbm((H, W), rng, 5, 2.4)
+    pool = np.exp(-din / (m * .035)) * .30 + np.exp(-din / 2.0) * .30
+    tide = np.exp(-((din - m * (.10 + .02 * fbm((H, W), rng, 3, 4))) / 1.7) ** 2) * .12
+    gran = np.clip(fbm((H, W), rng, 2, 80.0), -1.2, 2.4) * .05
     bloom = np.zeros((H, W), np.float32)
-    for _ in range(4):
-        bx, by = rng.uniform(.18, .82) * W, rng.uniform(.22, .78) * H
-        br = rng.uniform(.18, .32) * m
-        rr = np.hypot(xx - bx, yy - by) + fbm((H, W), rng, 3, 12) * br * .1
-        bloom -= np.clip(1 - rr / br, 0, 1) ** .8 * .10
-        bloom += np.exp(-((rr - br) / 2.4) ** 2) * .10
-    D = ndi.gaussian_filter(np.clip(body + pool + tide + gran + bloom, .03, .92) * inside, .6)
+    for _ in range(5):
+        bx, by = rng.uniform(.15, .85) * W, rng.uniform(.22, .78) * H
+        br = rng.uniform(.16, .3) * m
+        rr = np.hypot(xx - bx, yy - by) + fbm((H, W), rng, 3, 12) * br * .12
+        bloom -= np.clip(1 - rr / br, 0, 1) ** .8 * .09
+        bloom += np.exp(-((rr - br) / 2.2) ** 2) * .12
+    D = ndi.gaussian_filter(np.clip(body + pool + tide + gran + bloom, .05, .95) * inside, .6)
     C = np.broadcast_to(np.array(pigment, np.float32), (H, W, 3)).copy()
-    if second is not None:                       # two pigments that did not quite mix
-        mix = np.clip(.5 + .5 * fbm((H, W), rng, 3, 2.0), 0, 1)[..., None] * .55
+    if second is not None:
+        mix = np.clip(.5 + .6 * fbm((H, W), rng, 3, 2.0), 0, 1)[..., None] * .5
         C = C * (1 - mix) + np.array(second, np.float32) * mix
-    return np.dstack([C, np.clip(D, 0, 1) * 255]).astype(np.uint8)
+    # where the pigment is dense it is darker, as a glaze is
+    C *= (1 - .35 * np.clip(D - .5, 0, 1))[..., None]
+    return np.dstack([np.clip(C, 0, 255), np.clip(D, 0, 1) * 255]).astype(np.uint8)
 
 
 def main():
@@ -473,8 +484,8 @@ def main():
     save(socket_keep(), "socket-keep.webp")
     save(plate_carved(), "plate-carved.webp", trim=False)
     save(initial_vine(), "initial-vine.webp", trim=False)
-    save(stain(880, 400, (126, 36, 28), 11, second=(150, 78, 30)), "stain-madder.webp", trim=False, quality=86)
-    save(stain(880, 400, (30, 74, 104), 23, second=(46, 92, 96)), "stain-indigo.webp", trim=False, quality=86)
+    save(stain(880, 400, (138, 34, 26), 11, second=(160, 84, 34)), "stain-madder.webp", trim=False, quality=86)
+    save(stain(880, 400, (28, 76, 112), 23, second=(44, 100, 98)), "stain-indigo.webp", trim=False, quality=86)
 
 
 if __name__ == "__main__":
