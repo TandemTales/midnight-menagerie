@@ -416,13 +416,15 @@
      part of it, so it stays the size it was written at however far the sheet is
      pushed in. */
   transform: translate(-50%, -50%) scale(calc(1 / var(--k, 1)));
+  /* the dossier's own gold-rimmed nameplate (nameplate.webp), small: the wing
+     on the drawing and the wing on the panel wear the same plate */
   --h: clamp(30px, 2.3vw, 36px);
   display: inline-flex; align-items: center;
   height: var(--h);
-  padding: 0 calc(var(--h) * .62) 1px;
+  padding: 0 calc(var(--h) * .6) 1px;
   border: 0 solid transparent;
-  border-image: url("../../assets/ui/kit/cartouche-dark.webp") 18 34 18 34 fill /
-    calc(var(--h) * 18 / 64) calc(var(--h) * 34 / 64) stretch;
+  border-image: url("../../assets/ui/kit/nameplate.webp") 44 60 44 60 fill /
+    calc(var(--h) * 44 / 130 * 1.3) calc(var(--h) * 60 / 130 * 1.3) stretch;
   white-space: nowrap;
   font-family: var(--font-display); font-weight: 700;
   font-size: clamp(12px, .84vw, 13.5px);
