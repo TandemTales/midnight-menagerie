@@ -270,7 +270,8 @@
 }
 /* his name: the Companion tiles' dark cartouche, across the foot of his frame */
 .sh-keeper .sh-moth__name {
-  position: absolute; z-index: 3; left: 50%; bottom: 11.5%;
+  /* across the foot of the glass, clear of the paw medallion under it */
+  position: absolute; z-index: 3; left: 50%; bottom: 15.5%;
   translate: -50% 0;
 }
 .sh-keeper .sh-moth__name.kit-plate {
