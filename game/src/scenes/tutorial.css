@@ -187,7 +187,7 @@
   color: var(--kit-text-mid);
 }
 
-.tut-lines { display: flex; flex-direction: column; gap: clamp(10px, 1.5vh, 14px); }
+.tut-lines { display: flex; flex-direction: column; gap: clamp(10px, 1.7vh, 16px); }
 /* a printed headpiece over the text: two gilt strokes meeting at a star, so
    the words stand under something on the page instead of floating in it */
 .tut-lines::before {
@@ -205,11 +205,13 @@
 }
 .tut-line {
   margin: 0;
-  font-size: calc(var(--fs-lg) * 1.12);
-  line-height: 1.5;
+  font-size: calc(var(--fs-lg) * 1.2);
+  line-height: 1.48;
   color: var(--kit-text);
   text-shadow: 0 1px 0 rgba(0, 0, 0, .7);
-  text-wrap: pretty;
+  /* set like a storybook page: a paragraph's lines kept even, never one
+     stranded word at its end */
+  text-wrap: balance;
 }
 /* The page opens on an illuminated initial (tutorial.js wraps it): the
    wordmark's own lettering — marbled lavender, bevelled and rimmed in gold by
@@ -232,7 +234,7 @@
   filter: url("#kit-engrave") drop-shadow(0 0 10px color-mix(in srgb, var(--kit-violet) 38%, transparent));
 }
 /* The kid's own words, and the last line of a page, sit differently. */
-.tut-line:last-child { color: var(--kit-text-mid); text-wrap: balance; }
+.tut-line:last-child { color: var(--kit-text-mid); }
 .tut-panel[data-page="loss"] .tut-line:last-child {
   font-style: italic;
   color: var(--kit-name);
@@ -482,8 +484,8 @@
    unlit. They are a reading, not controls. */
 .tut-dots.kit-ladder {
   --md: 20px;
-  flex: none;
-  gap: 10px;
+  flex: 0 1 auto; min-width: 0;
+  gap: clamp(5px, .62vw, 10px);
   padding: 8px 8px;
 }
 .tut-dot.kit-ladder__rung { cursor: default; pointer-events: none; }
@@ -492,7 +494,7 @@
 
 /* Go on: the boards' lit nameplate, an ornate enamel medallion seated on its
    end, as every board's way onward wears one */
-.tut-next.kit-btn { margin-right: calc(var(--plate-h) * .95); padding-right: calc(var(--plate-h) * 1.3); }
+.tut-next.kit-btn { flex: none; white-space: nowrap; margin-right: calc(var(--plate-h) * .95); padding-right: calc(var(--plate-h) * 1.3); }
 .tut-next .kit-btn__medal { right: calc(var(--plate-h) * -.84); }
 .tut-next[hidden] { display: none; }
 
