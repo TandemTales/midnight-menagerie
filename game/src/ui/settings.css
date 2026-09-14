@@ -93,6 +93,9 @@
   margin: 0; min-width: 0;
   padding: calc(var(--rib-h) * .5 + var(--panel-top)) var(--pad-x) var(--pad-b);
 }
+/* its brass fleurons stand in its corners on their own, as the Kid board's
+   panels wear star lobes on their rail, without a thin rule drawn between them */
+.mm-set__group.kit-panel::after { border-color: transparent; }
 
 /* its ribbon across the top rail (an absolutely placed legend) */
 .mm-set__legend.kit-heading--ribbon {
@@ -117,10 +120,10 @@
 .mm-set__row > .mm-set__label > .mm-set__hint { grid-area: hint; }
 .mm-set__row > .mm-set__lead { grid-area: lead; align-self: center; margin: 0 9px; translate: 0 .32em; }
 .mm-set__row > :not(.mm-set__label):not(.mm-set__lead) { grid-area: ctrl; }
-/* lines parted by a gilt hairline that fades before the panel's rule */
+/* lines parted by air, and a breath of shadow, not by a drawn rule */
 .mm-set__row + .mm-set__row {
   border-top: 0;
-  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--kit-gold) 30%, transparent) 10%, color-mix(in srgb, var(--kit-gold) 30%, transparent) 90%, transparent) 0 0 / 100% 1px no-repeat;
+  background: linear-gradient(90deg, transparent, rgba(0, 0, 0, .28) 12%, rgba(0, 0, 0, .28) 88%, transparent) 0 0 / 100% 1px no-repeat;
 }
 /* a name over its note, lettered like the Shop's wares */
 .mm-set__label { display: flex; flex-direction: column; gap: 2px; min-width: 0; cursor: pointer; }
