@@ -118,6 +118,11 @@
 .go-head .go-lede { max-width: none; white-space: nowrap; font-size: max(13px, var(--fs-sm)); }
 /* the Heart's three sentences get the full plaque and may wrap inside it */
 .go-head.is-long { --cart-h: clamp(140px, 17.4vh, 158px); }
+/* ...and the middle of the board gives that height back: the two portraits
+   and the Worked Hardest card stand a size smaller, so the record under them
+   never runs down over the stat plate */
+.go-board:has(.go-head.is-long) { --go-mvp-s: .58; }
+.go-board:has(.go-head.is-long) .go-stage { --go-pic-w: clamp(100px, 7.2vw, 116px); }
 .go-head.is-long .go-lede {
   white-space: normal; max-width: calc(78ch + 2 * var(--cart-pad-x));
   font-size: max(12px, var(--fs-xs)); line-height: 1.24;
@@ -379,7 +384,7 @@
 .go-who__focal {
   grid-area: focal;
   display: flex; align-items: center; justify-content: center; flex-wrap: wrap;
-  gap: 4px clamp(12px, 1vw, 16px);
+  gap: 4px clamp(10px, .8vw, 12px);
 }
 /* HOW FAR, in the wordmark's lavender, engraved like it (#kit-engrave) */
 .go-who__deep {
@@ -411,8 +416,10 @@
 .go-who__reach { grid-area: reach; justify-self: stretch; }
 .go-seed { grid-area: seed; justify-self: stretch; position: relative; }
 .go-who__wing {
-  font-family: var(--font-body); font-weight: 600; font-size: max(15px, var(--fs-md)); line-height: 1.1;
-  color: var(--kit-name); white-space: nowrap;
+  font-family: var(--font-body); font-weight: 600; font-size: max(15px, var(--fs-md)); line-height: 1.05;
+  /* the record's cartouches share the middle column: a long wing ("the Heart
+     of the House") wraps inside its plate rather than running off its ends */
+  color: var(--kit-name); white-space: normal; text-wrap: balance;
   text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
 }
 .go-seed__row { display: inline-flex; align-items: center; gap: 8px; }
@@ -448,11 +455,11 @@
 
 /* --- Courage: an engraved gauge under the focal number --------------------- */
 .go-courage {
-  display: grid; grid-template-columns: auto clamp(60px, 4.4vw, 80px) auto;
+  display: grid; grid-template-columns: auto clamp(52px, 3.6vw, 64px) auto;
   grid-template-areas: "lbl track n" "note note note";
   column-gap: 10px; row-gap: 1px; align-items: center; justify-items: start;
 }
-.go-courage > .go-lbl { grid-area: lbl; }
+.go-courage > .go-lbl { grid-area: lbl; letter-spacing: .12em; }
 .go-courage__track { grid-area: track; justify-self: stretch; }
 .go-courage__n { grid-area: n; }
 .go-courage__note { grid-area: note; justify-self: center; }
@@ -827,6 +834,12 @@
   .go-board { --go-mvp-s: .72; }
   .go-head { margin-top: 12px; }
   .go-head.kit-titleblock--compact { --cart-h: 82px; }
+  /* the Heart's three sentences still need their taller plaque on a short
+     panel: the compact height above would hang them across the ribbon */
+  .go-head.kit-titleblock--compact.is-long { --cart-h: 142px; }
+  .go-head.is-long .go-lede { font-size: 11.5px; line-height: 1.2; }
+  .go-board:has(.go-head.is-long) { --go-mvp-s: .56; }
+  .go-board:has(.go-head.is-long) .go-stage { --go-pic-w: 104px; }
   .go-head .kit-cartouche__title { font-size: 25px; }
   .go-head .kit-titleblock__note { margin-top: 1px; }
   .go-wrap { padding-top: 14px; }
