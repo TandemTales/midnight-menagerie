@@ -102,8 +102,9 @@
     0 0 120px -10px color-mix(in srgb, var(--kit-candle) 9%, transparent),
     inset 0 0 40px rgba(0, 0, 0, .45);
 }
-/* the panel's own engraved double rule moves in to stand inside the velvet */
-.mm-modal--kit .mm-modal__dialog::after { inset: var(--rule-in); }
+/* the velvet and its gilt fillet are the frame's inner edge, so the panel's
+   own thin engraved double rule is not drawn a second time inside them */
+.mm-modal--kit .mm-modal__dialog { --rule: none; }
 
 /* ── the dialog's fittings (modal.js puts them on; ui/kit.css paints them) ── */
 .mm-dlg-dress { position: absolute; inset: 0; z-index: 1; pointer-events: none; }

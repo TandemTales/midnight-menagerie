@@ -149,8 +149,9 @@
   max-height: calc(100vh - 120px);
   opacity: 0;
 }
-/* the page's own engraved double rule stands inside its velvet */
-.tut-panel::after { inset: calc(var(--liner-w) + 10px); }
+/* the velvet and its gilt fillet are the page's inner edge: the panel's thin
+   engraved double rule is not drawn again inside them */
+.tut-panel { --rule: none; }
 /* ── the page's fittings: velvet, brass guards, the bookmark ──────────────── */
 .tut-fit { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
 .tut-fit__liner { inset: 5px; --liner-w: inherit; }
