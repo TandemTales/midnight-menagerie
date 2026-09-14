@@ -1,49 +1,52 @@
-"""Render the fight's REGALIA: what the master of a wing wears, and the made
-things a Scuffle's readings sit in.
+"""Render the fight's REGALIA: what the master of a wing wears and stands in,
+and the made things a Scuffle's readings sit in.
 
-Round 4's COMBAT brief asked for five things the kit had no painted piece for.
-Each is rendered here by the kit's own method (tools/prep_ui_materials.py: a
-height field lit from the boards' top left, the antique brass ramp measured off
-the samples, an ink line round every silhouette), or cut from the samples
-themselves where the samples already painted it:
+Round 4's COMBAT brief asked for pieces the kit had no painting of. Each is
+rendered here by the kit's own method (tools/prep_ui_materials.py: a height
+field lit from the boards' top left, the antique brass ramp measured off the
+samples, an ink line round every silhouette), or cut from the samples
+themselves where the samples already painted it. Run it after
+tools/prep_ui_kit.py (it reads damask.webp and button.webp from the kit).
 
-  boss-plate.webp   THE BOSS'S NAMEPLATE. A winged ribbon cartouche: a dark
-                    aubergine plaque in a double brass rim whose ends are drawn
-                    out to an ogee point, a tapering spear running on from each
-                    point to where a star is set (cart-star.webp, in CSS), and a
-                    pair of cast C-scrolls rising and falling off each end like
-                    wings. A 3-slice: CAP px at each end, a plain run of rail
-                    between (border-image 0 CAP 0 CAP).
+The boss:
+  boss-plate.webp   THE BOSS'S NAMEPLATE, a winged ribbon cartouche: a dark
+                    aubergine plaque in a double brass rim whose corners sweep
+                    out into pointed ears, an ogee point at mid-height at each
+                    end, and a tapering spear with a lozenge bead running on from
+                    each point to where CSS sets a star (cart-star.webp). A
+                    3-slice: CAP px at each end, a plain run of rail between.
   boss-crest.webp   the wordmark's own crest, cut whole from UI/title.png: the
-                    fleur-de-lis finial, its C-scroll arms with their purple
-                    leaves, the pendant under it, and the plaque's rails running
-                    off either side (feathered), to clasp the boss plate's top
-                    rim with the fleur rising toward his feet.
+                    fleur-de-lis finial, its C-scroll arms and purple leaves and
+                    the head of the pendant, the plaque's rails feathered off
+                    either side, to clasp the plate's top rim with the fleur
+                    rising toward his feet.
+  boss-alcove.webp  the FRAME OF HIS STAGE: UI/selectKid.png's own centre mirror
+                    cut out of the board, the Kid board's empty enamel laid into
+                    its crown medallion (his intent is set there), an old
+                    mirror's shadow inside its rails, its foot faded where his
+                    plate stands. A vertical 3-slice (ALC_TOP / ALC_BOT).
+  boss-beam.webp    the LIGHT he stands in: a shaft of moonlight from a high
+                    window, streaked and hung with motes, and the pool it makes
+                    on the floor where his feet are.
+
+The readings:
   roundel.webp      a CONDITION's round medallion: a bevelled brass bezel with a
-                    fine bead inside it and four studs, round a domed enamel
-                    whose colour is CSS's (a token per kind), glazed: shadow at
-                    the rim, a window's crescent high on the dome. The field is
-                    translucent so the token shows through the glaze.
+                    fine bead inside it and four studs round a domed enamel whose
+                    colour is CSS's (a token per kind); the piece carries only
+                    the glaze over it: shadow at the rim, a window's crescent.
   nerve-coin.webp   NERVE's struck coin: a milled edge, a raised rim, a ring of
-                    engraved eight-point stars (the wordmark's), and a sunburst
-                    field sunk under it so a dark numeral stands on bright gold.
+                    engraved stars, and a burnished sunburst field sunk under it
+                    so a dark numeral stands on bright gold.
   card-backs.webp   a PILE: three painted card backs fanned, aubergine velvet
-                    under a gilt double rule, a crescent-moon crest medallion on
-                    the top one, a vellum edge where each card's thickness shows.
-  boss-beam.webp    the LIGHT the boss stands in: a shaft of moonlight from a
-                    high window, streaked and hung with motes, and the pool it
-                    makes on the floor where his feet are.
-  boss-alcove.webp  the FRAME OF HIS STAGE: UI/selectKid.png's own centre mirror,
-                    cut out of the board, the moon in its top medallion painted
-                    out (his intent is set there), its foot faded where his
-                    plate stands. A vertical 3-slice.
+                    with the house's damask in it under a gilt double rule, a
+                    crescent-moon crest on the top one, vellum edges.
+  iron-bracket.webp a WROUGHT-IRON wall bracket: a shelf bar on a strut and
+                    scrolls, riveted to a backplate on the wall, for DISCARD and
+                    its candle to stand on.
   keycap.webp       END TURN's keyboard key: a brass bezel round a domed key of
                     the round buttons' aubergine enamel.
   card-flock.webp   the kit's damask at a fifth of its strength, for the flock
                     worked into a Trick's rules panel in the hand.
-  iron-bracket.webp a WROUGHT-IRON wall bracket: a shelf plate on a scrolled
-                    iron arm, riveted to a backplate on the frame's rail, for
-                    DISCARD and its candle to stand on.
 
     python tools/prep_combat_regalia.py                 # everything
     python tools/prep_combat_regalia.py --only plate,crest
@@ -59,8 +62,8 @@ from PIL import Image, ImageDraw
 from scipy import ndimage
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from prep_ui_materials import (OUT, UI, brass, down, hexc, noise, normals,  # noqa: E402
-                               ramp, save, smooth, specular)
+from prep_ui_materials import (OUT, UI, brass, down, noise, normals, ramp,  # noqa: E402
+                               save, smooth, specular)
 
 INK = np.array([12, 7, 4], np.float32)
 ANTIQUE = 0.9
@@ -286,8 +289,8 @@ def roundel():
 
 
 # ── Nerve's coin ────────────────────────────────────────────────────────────
-def star_mask(xx, yy, cx, cy, R, r, n=8, rot=-math.pi / 2):
-    """An n-point star: inside test on the polygon, as a float mask."""
+def star_points(cx, cy, R, r, n=8, rot=-math.pi / 2):
+    """The outline of an n-point star, outer radius R and inner radius r."""
     pts = []
     for k in range(n * 2):
         rad = R if k % 2 == 0 else r
@@ -326,7 +329,7 @@ def nerve_coin():
         a0 = k * 2 * math.pi / 16
         sx, sy = c + rm * math.cos(a0), c + rm * math.sin(a0)
         big = k % 2 == 0
-        pts = star_mask(None, None, sx, sy, 7.4 if big else 4.6, 2.2 if big else 1.5, n=8 if big else 4, rot=a0)
+        pts = star_points(sx, sy, 7.4 if big else 4.6, 2.2 if big else 1.5, n=8 if big else 4, rot=a0)
         dr.polygon([(x * s, y * s) for x, y in pts], fill=255)
     st = np.asarray(stars, np.float32) / 255.0
     d_st = ndimage.distance_transform_edt(st > 0.5) / ss
@@ -678,7 +681,8 @@ PIECES = {
     "plate": boss_plate, "crest": boss_crest, "roundel": roundel, "coin": nerve_coin,
     "backs": card_backs, "bracket": iron_bracket, "flock": card_flock, "beam": boss_beam, "alcove": boss_alcove, "keycap": keycap,
 }
-SHEET = ["boss-plate.webp", "boss-crest.webp", "roundel.webp", "nerve-coin.webp", "card-backs.webp", "iron-bracket.webp"]
+SHEET = ["boss-plate.webp", "boss-crest.webp", "boss-alcove.webp", "roundel.webp", "nerve-coin.webp",
+         "card-backs.webp", "iron-bracket.webp", "keycap.webp"]
 
 
 def contact_sheet(path):
