@@ -584,17 +584,21 @@ export class RewardScene extends RoomScene {
       </div>
       <div class="rw-fan kit-cards" data-tip-avoid=".rw-slot, .rm-where, .rw-spoils, .rw-candle" data-tip-bounds=".rw-cards" data-tip-gap="18" role="listbox" aria-label="Three ${esc(TERMS.card)}s. Choose one, or skip."></div>
       <i class="rw-ledge kit-shelf-rail" aria-hidden="true"></i>`;
-    // Two candles stand either side of the three frames on the rail, the way
-    // the Kid board keeps one beside its mirror, and over each a moonlit
-    // lancet on the alcove's wall, so both flanks of the stage are a wall
-    // with a window in it and neither is empty. Decoration only.
+    // Round 5: the hall is LIT. On the wall of each flank a brass sconce hangs
+    // over the wainscot with its candle burning, and its light falls on the
+    // damask and the panelling round it (reward.css points the ground's light
+    // slots at the two flames); on the rail's two ends a candle stands on a
+    // book, and a cast brass boss caps each end of the rail. Decoration only.
     for (const side of ['l', 'r']) {
-      const w = el('i', `kit-window${side === 'r' ? ' kit-window--r' : ''} rw-window rw-window--${side}`);
-      w.setAttribute('aria-hidden', 'true');
-      sec.appendChild(w);
+      const s = el('i', `kit-sconce rw-sconce rw-sconce--${side}`);
+      s.setAttribute('aria-hidden', 'true');
+      sec.appendChild(s);
       const c = el('i', `kit-prop kit-prop--candle rw-candle rw-candle--${side}`);
       c.setAttribute('aria-hidden', 'true');
       sec.appendChild(c);
+      const b = el('i', `rw-boss rw-boss--${side}`);
+      b.setAttribute('aria-hidden', 'true');
+      sec.appendChild(b);
     }
     (this.$stage || this.$body).appendChild(sec);
     // CHOOSE ONE TRICK hangs on the frame's top rule itself, between the
@@ -640,7 +644,12 @@ export class RewardScene extends RoomScene {
         uid: `rw-${c.id}`, largeText: this.largeText, reduceMotion: this.reduceMotion,
       });
       slot.appendChild(view.el);
-      const tag = el('span', 'rw-slot__rarity kit-enamel', `<i class="kit-enamel__label">${esc(def.rarity)}</i>`);
+      // the middle of the three stands in the candles' light (reward.css)
+      if (i === (r.cards.length - 1) / 2) slot.classList.add('is-centre');
+      // the rarity, lettered on a gold ribbon hung on the rail under its frame,
+      // a small enamel jewel in the rarity's colour set at its middle
+      const tag = el('span', 'rw-slot__rarity kit-flag',
+        `<i class="rw-slot__gem" aria-hidden="true"></i><i class="rw-slot__word">${esc(def.rarity)}</i>`);
       tag.dataset.rarity = def.rarity;
       slot.appendChild(tag);
       fan.appendChild(slot);
@@ -689,6 +698,10 @@ export class RewardScene extends RoomScene {
     const onResize = () => this._layout();
     window.addEventListener('resize', onResize);
     this._own(() => window.removeEventListener('resize', onResize));
+    // The stage can settle lower once the plaque's fonts land, which moves the
+    // sconces without resizing anything the observer below watches.
+    document.fonts?.ready?.then(() => { if (!this._dead) this._pointLights(); });
+    this._own(bus.on('scene:entered', () => { if (!this._dead) this._pointLights(); }));
     /* Fit again whenever a slot or a card changes size, not only when the
        window does. `ensureCss` gives up waiting on a stylesheet after 1.2 s so
        a scene never stalls, and on a loaded machine card.css can land after
@@ -708,9 +721,13 @@ export class RewardScene extends RoomScene {
     else this._own(bus.on('scene:entered', () => {
       setTimeout(() => {
         if (this._dead || this.resolved) return;
-        // focus fires synchronously inside focus(), so the flag covers exactly it
+        // focus fires synchronously inside focus(), so the flag covers exactly it.
+        // The keyboard starts on the MIDDLE one of the three (CEDAR's, round 4):
+        // the stage's axis, where the candles' light is, so the lit frame on
+        // arrival is the centre of the composition and never one flank of it.
+        const mid = this._slots[Math.floor(((this._slots?.length || 1) - 1) / 2)];
         this._quietFocus = true;
-        try { this._slots[0]?.slot.focus(); } finally { this._quietFocus = false; }
+        try { mid?.slot.focus({ preventScroll: true }); } finally { this._quietFocus = false; }
       }, 0);
     }));
   }
@@ -723,6 +740,26 @@ export class RewardScene extends RoomScene {
       fitCardToSlot(view, slot, { legibleAt: Math.min(224, (slot.clientWidth || 224) * 1.2) });
     }
     this._fillRules();
+    this._pointLights();
+  }
+
+  /**
+   * Aim the room's candle light at the two sconces (ui/kit.css .kit-ground):
+   * the ground reveals its lit damask and wainscot through light slots placed
+   * in viewport lengths, and the sconces hang on the stage, which stands
+   * wherever the title and the spoils leave it. reward.css's defaults are the
+   * 1600x900 answer; this is the measured one. Decoration only.
+   */
+  _pointLights() {
+    const board = this.root?.querySelector('.rm--reward');
+    if (!board) return;
+    for (const [sel, k] of [['.rw-sconce--l', 3], ['.rw-sconce--r', 4]]) {
+      const s = board.querySelector(sel);
+      const r = s?.getBoundingClientRect();
+      if (!r || !r.width) continue;
+      board.style.setProperty(`--wl${k}-x`, `${(r.left + r.width / 2).toFixed(1)}px`);
+      board.style.setProperty(`--wl${k}-y`, `${(r.top + r.height * .15).toFixed(1)}px`);
+    }
   }
 
   /**

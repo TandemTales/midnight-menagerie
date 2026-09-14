@@ -276,6 +276,120 @@ def plate_carved(W=240, H=128, band=30, seed=5):
     return np.dstack([np.clip(rgb, 0, 255), a]).astype(np.uint8)
 
 
+def stroke_mask(shape, pts, w0, w1, soft=.8):
+    """A tapering brush stroke along a polyline, as coverage 0-1."""
+    H, W = shape
+    m = Image.new("L", (W * 4, H * 4), 0)
+    from PIL import ImageDraw
+    d = ImageDraw.Draw(m)
+    n = len(pts)
+    for i in range(n - 1):
+        t = i / max(1, n - 2)
+        w = (w0 + (w1 - w0) * t) * 4
+        (x0, y0), (x1, y1) = pts[i], pts[i + 1]
+        d.line([(x0 * 4, y0 * 4), (x1 * 4, y1 * 4)], fill=255, width=max(1, int(round(w))))
+        d.ellipse([x1 * 4 - w / 2, y1 * 4 - w / 2, x1 * 4 + w / 2, y1 * 4 + w / 2], fill=255)
+    m = m.resize((W, H), Image.LANCZOS)
+    return ndi.gaussian_filter(np.asarray(m).astype(np.float32) / 255, soft)
+
+
+def spiral(cx, cy, r0, turns, a0, direction=1, n=60):
+    pts = []
+    for i in range(n):
+        t = i / (n - 1)
+        a = a0 + direction * t * turns * 2 * np.pi
+        r = r0 * (1 - .82 * t)
+        pts.append((cx + np.cos(a) * r, cy + np.sin(a) * r))
+    return pts
+
+
+def initial_vine(S=200, band=24):
+    """An illuminated initial's ground: a carved gilt frame — an ovolo rising off
+    the page with a bead inside it — a rosette boss on each corner, and inside
+    it a field of deep violet enamel with a gilt vine climbing round its edges:
+    tendrils curling into spirals, a leaf at each turn, a few gilt dots pricked
+    between them. The middle is left quiet for the letter the page sets on it."""
+    rng = np.random.default_rng(29)
+    yy, xx = np.mgrid[0:S, 0:S].astype(np.float32)
+    d = np.minimum(np.minimum(xx, S - 1 - xx), np.minimum(yy, S - 1 - yy))
+    t = d / band
+    frame = d < band
+    h = np.zeros((S, S), np.float32)
+    h += np.sqrt(np.clip(1 - ((t - .09) / .09) ** 2, 0, 1)) * .22               # the outer bead
+    ov = np.clip((t - .2) / .38, 0, 1)
+    h += (t >= .2) * (t < .58) * np.sin(ov * np.pi) * .42                        # the ovolo, rounded
+    h += (t >= .58) * (t < .8) * (-.08 * np.sin(np.clip((t - .58) / .22, 0, 1) * np.pi))   # a cove
+    h += np.sqrt(np.clip(1 - ((t - .89) / .09) ** 2, 0, 1)) * .2                # the inner bead
+    h = ndi.gaussian_filter(h, .7) * frame
+    metal = shade(h, frame, strength=S * .12, light=(-.55, -.75, .42)).astype(np.float32)
+    # the field
+    inner = ~frame
+    mott = ndi.gaussian_filter(rng.normal(0, 1, (S, S)), 5)
+    mott /= np.abs(mott).max() + 1e-6
+    rr = np.hypot(xx - S * .42, yy - S * .38) / S
+    hi, lo = np.array([74, 34, 92], np.float32), np.array([22, 9, 32], np.float32)
+    k = np.clip(1 - rr * 1.5, 0, 1)[..., None]
+    field = lo + (hi - lo) * k
+    field *= (1 + .16 * mott)[..., None]
+    # the vine: tendrils along the frame's inner edge, spirals in the corners
+    vine = np.zeros((S, S), np.float32)
+    b = band + 8
+    paths = [
+        [(b, S - b - 10), (b + 8, S * .7), (b + 4, S * .5), (b + 12, S * .32), (b + 26, b + 8)],
+        [(S - b, b + 10), (S - b - 8, S * .3), (S - b - 4, S * .5), (S - b - 12, S * .68), (S - b - 26, S - b - 8)],
+        [(b + 10, b), (S * .32, b + 8), (S * .5, b + 3), (S * .68, b + 10), (S - b - 8, b + 22)],
+        [(S - b - 10, S - b), (S * .68, S - b - 8), (S * .5, S - b - 3), (S * .32, S - b - 10), (b + 8, S - b - 22)],
+    ]
+    for p in paths:
+        # a smooth curve through the points
+        from scipy.interpolate import splprep, splev
+        arr = np.array(p).T
+        tck, _ = splprep(arr, s=0, k=3)
+        u = np.linspace(0, 1, 80)
+        cx, cy = splev(u, tck)
+        vine = np.maximum(vine, stroke_mask((S, S), list(zip(cx, cy)), 4.6, 2.0))
+    for (cx, cy, a0, dr) in [(b + 16, b + 16, 0, 1), (S - b - 16, b + 16, np.pi / 2, -1),
+                             (S - b - 16, S - b - 16, np.pi, 1), (b + 16, S - b - 16, -np.pi / 2, -1)]:
+        vine = np.maximum(vine, stroke_mask((S, S), spiral(cx, cy, 12, 1.25, a0, dr), 3.8, 1.4))
+    # leaves: small almond shapes off the tendrils
+    for (lx, ly, ang) in [(b + 10, S * .42, -.6), (S - b - 10, S * .58, 2.5), (S * .42, b + 10, .9), (S * .58, S - b - 10, -2.2),
+                          (b + 14, S * .62, .5), (S - b - 14, S * .38, -2.6), (S * .62, b + 14, 2.0), (S * .38, S - b - 14, -1.1)]:
+        ca, sa = np.cos(ang), np.sin(ang)
+        u = (xx - lx) * ca + (yy - ly) * sa
+        v = -(xx - lx) * sa + (yy - ly) * ca
+        leaf = np.clip(1 - (u / 11) ** 2 - (v / (4.6 * np.clip(1 - np.abs(u) / 11, 0, 1) + .01)) ** 2, 0, 1)
+        vine = np.maximum(vine, (leaf > 0).astype(np.float32) * np.clip(leaf * 3, 0, 1))
+    for _ in range(14):
+        px, py = rng.uniform(b + 6, S - b - 6), rng.uniform(b + 6, S - b - 6)
+        if abs(px - S / 2) < S * .22 and abs(py - S / 2) < S * .22:
+            continue
+        vine = np.maximum(vine, np.clip(1.6 - np.hypot(xx - px, yy - py) / 1.3, 0, 1))
+    vine *= inner
+    vh = ndi.gaussian_filter(vine, 1.2) * .5
+    gilt = shade(vh, vine > .05, strength=S * .14, grain=.02, light=(-.55, -.75, .5)).astype(np.float32)
+    va = np.clip(vine * 1.1, 0, 1)[..., None] * .92
+    rgb = field * (1 - va) + gilt[..., :3] * va
+    # the field sinks under the frame's inner lip
+    lip = np.clip(1 - (d - band) / 7, 0, 1) * inner
+    rgb *= (1 - .55 * lip)[..., None]
+    fa = frame.astype(np.float32)[..., None]
+    rgb = rgb * (1 - fa) + metal[..., :3] * fa
+    # rosette bosses on the corners
+    bs = int(band * 1.1)
+    boss = boss_rosette(size=bs, petals=6).astype(np.float32)
+    for cx, cy in ((band / 2, band / 2), (S - 1 - band / 2, band / 2), (band / 2, S - 1 - band / 2), (S - 1 - band / 2, S - 1 - band / 2)):
+        x0, y0 = int(round(cx - bs / 2)), int(round(cy - bs / 2))
+        sub = boss[max(0, -y0):, max(0, -x0):]
+        x0, y0 = max(0, x0), max(0, y0)
+        hh, ww = min(sub.shape[0], S - y0), min(sub.shape[1], S - x0)
+        sub = sub[:hh, :ww]
+        al = sub[..., 3:4] / 255
+        rgb[y0:y0 + hh, x0:x0 + ww] = rgb[y0:y0 + hh, x0:x0 + ww] * (1 - al) + sub[..., :3] * al
+    edge = np.ones((S, S), bool)
+    alpha = np.full((S, S), 255, np.float32)
+    return np.dstack([np.clip(rgb, 0, 255), alpha]).astype(np.uint8)
+
+
 def shade_ramp(h, mask, strength, stops, grain=0.0, light=(-.55, -.75, .34)):
     """shade(), with a different material's colour ramp and a grain laid in."""
     H, W = h.shape
@@ -358,6 +472,7 @@ def main():
     save(boss_rosette(), "boss-rosette.webp")
     save(socket_keep(), "socket-keep.webp")
     save(plate_carved(), "plate-carved.webp", trim=False)
+    save(initial_vine(), "initial-vine.webp", trim=False)
     save(stain(880, 400, (126, 36, 28), 11, second=(150, 78, 30)), "stain-madder.webp", trim=False, quality=86)
     save(stain(880, 400, (30, 74, 104), 23, second=(46, 92, 96)), "stain-indigo.webp", trim=False, quality=86)
 

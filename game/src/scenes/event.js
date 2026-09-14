@@ -127,7 +127,7 @@ export class EventScene extends RoomScene {
     // the initial in engraved small caps (event.css).
     page.innerHTML = `
       <div class="ev-prose">
-        ${this._proseParagraphs(d.text).map((p, i) => `<p${i === 0 ? ' class="ev-lede"' : ''}>${esc(p)}</p>`).join('')}
+        ${this._proseMarkup(this._proseParagraphs(d.text))}
       </div>
       <div class="ev-options" role="group" aria-label="What do you do?"></div>
       <div class="ev-outcome" hidden aria-live="polite"></div>`;
@@ -190,6 +190,43 @@ export class EventScene extends RoomScene {
       out.splice(0, 2, `${out[0]} ${out[1]}`);
     }
     return out;
+  }
+
+  /**
+   * The page as a printer sets its opening (round 5).
+   *
+   * The first letter is an ILLUMINATED INITIAL: a real element (so it can wear
+   * its gilt frame and vine ground, initial-vine.webp, and a letter struck in
+   * gilt) dropped three lines deep, hidden from assistive tech while the same
+   * letter stays in the sentence for it, so the words still read whole. The
+   * words after it, up to about a third of a line and never past the first
+   * stop, are the lead-in in spaced small capitals; the rest is set ragged
+   * right, unhyphenated. Every word stays, in order.
+   */
+  _proseMarkup(paras) {
+    if (!paras.length) return '';
+    const [first, ...rest] = paras;
+    // the initial takes any opening quote with its letter
+    const m = /^([“"'‘(]*)(\S)([\s\S]*)$/.exec(first);
+    if (!m) return paras.map((p, i) => `<p${i === 0 ? ' class="ev-lede"' : ''}>${esc(p)}</p>`).join('');
+    const [, lead0, letter, after] = m;
+    const initial = `${lead0}${letter}`;
+    // the lead-in: the rest of the opening word and a few more, whole words only
+    const words = after.split(/(\s+)/);
+    let leadin = '';
+    for (let i = 0; i < words.length; i++) {
+      const next = leadin + words[i];
+      if (/\S/.test(words[i]) && leadin.trim() && next.trim().length > 20) break;
+      leadin = next;
+      if (/[.!?;:]["”’')]*$/.test(words[i]) || (/,$/.test(words[i]) && leadin.trim().length > 10)) break;
+    }
+    const tail = after.slice(leadin.trimEnd().length);
+    leadin = leadin.trimEnd();
+    const opening = `<p class="ev-lede">`
+      + `<span class="ev-initial" aria-hidden="true"><b class="ev-initial__letter">${esc(initial)}</b></span>`
+      + `<span class="sr-only">${esc(initial)}</span>`
+      + `<span class="ev-leadin">${esc(leadin)}</span>${esc(tail)}</p>`;
+    return opening + rest.map(p => `<p>${esc(p)}</p>`).join('');
   }
 
   /**
