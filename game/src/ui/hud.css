@@ -59,10 +59,12 @@
    lettered in gold. Nothing hangs outside the chip's box, so nothing can be
    clipped by it. */
 .mm-hud__chip {
+  /* the cartouche's curled end: the words never run into it */
+  --chip-end: calc(var(--hud-chip-h) * 34 / 64);
   position: relative; isolation: isolate;
   display: inline-flex; align-items: center; gap: .42em;
   height: var(--hud-chip-h);
-  padding: 0 1.1em;
+  padding: 0 max(1.1em, calc(var(--chip-end) + 3px));
   color: var(--kit-name);
   background: none;
   border: 0;
@@ -84,7 +86,7 @@
   border: 0 solid transparent;
   border-image-source: url("../../assets/ui/kit/cartouche-lit.webp");
   border-image-slice: 18 34 18 34 fill;
-  border-image-width: calc(var(--hud-chip-h) * 18 / 64) calc(var(--hud-chip-h) * 34 / 64);
+  border-image-width: calc(var(--hud-chip-h) * 18 / 64) var(--chip-end);
   border-image-repeat: stretch;
   filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .8)) brightness(1.06);
 }
@@ -390,7 +392,8 @@
 @media (max-width: 1400px) {
   .mm-hud { gap: 5px; padding-inline: 8px; }
   .mm-hud__group { gap: 4px; }
-  .mm-hud__chip { padding: 0 .66em; }
+  /* the ends curl a little tighter, and the words stop short of them */
+  .mm-hud__chip { --chip-end: calc(var(--hud-chip-h) * 27 / 64); padding: 0 calc(var(--chip-end) + 2px); }
   .mm-hud__chip:has(> .mm-icon:first-child) { padding-left: 0; }
   .mm-hud__settings { padding: 0; }
   .mm-hud__bar { width: calc(var(--bar-h) * 3.3); }
