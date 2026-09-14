@@ -137,6 +137,7 @@ export class Modal {
       dress.innerHTML =
         '<i class="kit-liner mm-dlg-dress__liner"></i>'
         + '<i class="kit-web mm-dlg-dress__web"></i>'
+        + '<i class="mm-dlg-dress__vine mm-dlg-dress__vine--l"></i><i class="mm-dlg-dress__vine mm-dlg-dress__vine--r"></i>'
         + '<i class="kit-bracket kit-bracket--tl mm-dlg-dress__guard"></i>'
         + '<i class="kit-bracket kit-bracket--tr mm-dlg-dress__guard"></i>'
         + '<i class="kit-bracket kit-bracket--bl mm-dlg-dress__guard"></i>'

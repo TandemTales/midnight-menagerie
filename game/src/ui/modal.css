@@ -110,6 +110,16 @@
 .mm-dlg-dress { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
 .mm-dlg-dress__liner { inset: var(--liner-in); --liner-w: inherit; }
 .mm-dlg-dress__guard { --bracket: clamp(64px, 5.6vw, 88px); }
+/* the Kid board's purple scrollwork climbing the velvet on both sides */
+.mm-dlg-dress__vine {
+  position: absolute; z-index: 1;
+  top: calc(clamp(64px, 5.6vw, 88px) * .72); bottom: calc(clamp(64px, 5.6vw, 88px) * .72);
+  width: calc(var(--liner-w) * 1.9);
+  background: 50% 50% / 100% 100% no-repeat;
+  filter: brightness(1.55) saturate(1.2) drop-shadow(0 2px 2px rgba(0, 0, 0, .7));
+}
+.mm-dlg-dress__vine--l { left: calc(var(--liner-in) + var(--liner-w) * .5 - var(--liner-w) * .95); background-image: url("../../assets/ui/kit/vine-l.webp"); }
+.mm-dlg-dress__vine--r { right: calc(var(--liner-in) + var(--liner-w) * .5 - var(--liner-w) * .95); background-image: url("../../assets/ui/kit/vine-r.webp"); }
 /* old threads strung from the top left guard across the corner of the frame */
 .mm-dlg-dress__web {
   --web-w: clamp(78px, 6.6vw, 108px);
