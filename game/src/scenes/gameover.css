@@ -121,7 +121,7 @@
 /* ...and the middle of the board gives that height back: the two portraits
    and the Worked Hardest card stand a size smaller, so the record under them
    never runs down over the stat plate */
-.go-board:has(.go-head.is-long) { --go-mvp-s: .58; }
+.go-board:has(.go-head.is-long) { --go-mvp-s: .66; }
 .go-board:has(.go-head.is-long) .go-stage { --go-pic-w: clamp(100px, 7.2vw, 116px); }
 .go-head.is-long .go-lede {
   white-space: normal; max-width: calc(78ch + 2 * var(--cart-pad-x));
@@ -135,12 +135,11 @@
   display: grid;
   /* shared across the board (round 4): the record stands in the middle under
      the Worked Hardest shelf, so neither flank is one crammed tall column */
-  grid-template-columns: minmax(0, .8fr) minmax(0, 1.08fr) minmax(0, 1fr);
-  grid-template-rows: auto auto minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, .8fr) minmax(0, 1.14fr) minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr) auto;
   grid-template-areas:
     "left  stage  ledger"
-    "left  mvp    ledger"
-    "left  record ledger"
+    "left  altar  ledger"
     "stats stats  stats";
   column-gap: var(--gutter);
   row-gap: 0;
@@ -349,13 +348,14 @@
   align-self: stretch;
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  grid-template-rows: auto auto;
-  grid-template-areas: "deck" "keep";
-  --ledger-gap: clamp(30px, 5.4vh, 52px);
+  grid-template-rows: auto auto auto;
+  grid-template-areas: "head" "deck" "keep";
+  --ledger-gap: clamp(16px, 2.6vh, 26px);
   align-content: center;
   row-gap: var(--ledger-gap);
   margin-top: 10px;
-  padding: clamp(24px, 3vh, 30px) clamp(20px, 1.8vw, 30px) clamp(18px, 2.2vh, 20px);
+  /* the head keeps clear of the moon riding the top rail */
+  padding: clamp(32px, 4vh, 38px) clamp(20px, 1.8vw, 30px) clamp(20px, 2.6vh, 24px);
 }
 
 .go-lbl {
@@ -365,70 +365,40 @@
   text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
 }
 
-/* --- the record: HOW FAR and the Courage left on one line, the wing and the
-       seed on their cartouches under it, all in the middle of the board under
-       the Worked Hardest shelf ----------------------------------------------- */
-.go-who {
-  grid-area: record;
-  align-self: start;
-  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  grid-template-areas: "focal focal" "reach seed";
-  align-items: stretch; column-gap: clamp(10px, 1vw, 16px); row-gap: clamp(3px, .5vh, 6px);
-  margin-top: clamp(4px, .6vh, 6px);
-  /* an engraved plaque under the shelf, like the label on it: the record is
-     set on something, never on the bare wall; the seed's hint hangs inside it */
-  --lit-x: 50%; --lit-y: -20%; --lit-w: 90%; --lit-h: 120%; --lit-a: 34%;
-  padding: clamp(3px, .5vh, 5px) clamp(12px, 1vw, 16px) calc(clamp(3px, .5vh, 5px) + 15px);
+/* --- the ledger's head: the Courage left on the fights' gauge, and the seed
+       on its brass plate, side by side over the final Tricks ---------------- */
+.go-ledhead {
+  grid-area: head;
+  display: grid; grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center; column-gap: clamp(12px, 1.2vw, 20px);
+  padding: 0 4px 2px;
+  position: relative;
 }
-/* HOW FAR and the Courage gauge share one line, the gauge's note under it */
-.go-who__focal {
-  grid-area: focal;
-  display: flex; align-items: center; justify-content: center; flex-wrap: wrap;
-  gap: 4px clamp(10px, .8vw, 12px);
-}
-/* HOW FAR, in the wordmark's lavender, engraved like it (#kit-engrave) */
-.go-who__deep {
-  font-family: var(--font-display); font-weight: 700;
-  font-size: clamp(22px, 1.8vw, 29px); line-height: 1.02; letter-spacing: .06em; text-transform: uppercase;
-  white-space: nowrap;
-  color: var(--kit-lav);
+/* parted from the Tricks under it by the ledger's engraved rule */
+.go-ledhead::after {
+  content: ''; position: absolute; left: 10%; right: 10%; bottom: calc(var(--ledger-gap, 24px) * -.5); height: 9px;
+  translate: 0 50%;
   background:
-    linear-gradient(180deg, color-mix(in srgb, var(--kit-lav-hi) 55%, transparent) 0%, transparent 42%, color-mix(in srgb, var(--kit-violet-lo) 50%, transparent) 100%),
-    url("../../assets/ui/kit/marble.webp") 0 0 / 160px 160px;
-  -webkit-background-clip: text; background-clip: text;
-  -webkit-text-fill-color: transparent;
-  filter: url("#kit-engrave") drop-shadow(0 0 10px color-mix(in srgb, var(--kit-violet) 30%, transparent));
-  padding: 2px 4px 4px;
+    url("../../assets/ui/kit/star4.svg") 50% 50% / 9px 9px no-repeat,
+    linear-gradient(90deg, transparent 0%, color-mix(in srgb, var(--kit-gold) 62%, transparent) 26%, color-mix(in srgb, var(--kit-gold) 62%, transparent) 45%, transparent 47%, transparent 53%, color-mix(in srgb, var(--kit-gold) 62%, transparent) 55%, color-mix(in srgb, var(--kit-gold) 62%, transparent) 74%, transparent 100%) 0 4px / 100% 1px no-repeat;
+  filter: drop-shadow(0 1px 0 rgba(0, 0, 0, .8));
+  pointer-events: none;
 }
-/* the wing it reached and the seed: matching enamel cartouches with gilt rims */
-.go-corner {
-  --h: clamp(42px, 5vh, 48px);
-  display: grid; justify-items: center; align-content: center; gap: 0;
-  min-height: var(--h);
-  padding: calc(var(--h) * .14) calc(var(--h) * .62) calc(var(--h) * .12);
-  line-height: 1.1;
-  border: 0 solid transparent;
-  border-image: url("../../assets/ui/kit/cartouche-lit.webp") 18 34 18 34 fill /
-    calc(var(--h) * 18 / 64) calc(var(--h) * 34 / 64) stretch;
-  filter: drop-shadow(0 3px 5px rgba(0, 0, 0, .8));
-  text-align: center;
-}
-.go-who__reach { grid-area: reach; justify-self: stretch; }
-.go-seed { grid-area: seed; justify-self: stretch; position: relative; }
-.go-who__wing {
-  font-family: var(--font-body); font-weight: 600; font-size: max(15px, var(--fs-md)); line-height: 1.05;
-  /* the record's cartouches share the middle column: a long wing ("the Heart
-     of the House") wraps inside its plate rather than running off its ends */
-  color: var(--kit-name); white-space: normal; text-wrap: balance;
-  text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
-}
+.go-seed { position: relative; display: grid; justify-items: end; gap: 2px; }
 .go-seed__row { display: inline-flex; align-items: center; gap: 8px; }
+/* the seed struck on a small brass plate: dark figures cut into the gilt */
 .go-seed__val {
   white-space: nowrap;
   font-family: var(--font-num); font-variant-numeric: var(--num-feat);
-  font-size: max(15px, var(--fs-md)); font-weight: 600; letter-spacing: .1em;
-  color: var(--kit-gold-hi);
-  text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
+  font-size: max(15px, var(--fs-md)); font-weight: 700; letter-spacing: .1em;
+  padding: 3px 14px 2px;
+  color: #22150a;
+  text-shadow: 0 1px 0 rgba(255, 238, 196, .5);
+  background:
+    radial-gradient(120% 90% at 30% 20%, rgba(255, 244, 214, .5), transparent 60%),
+    linear-gradient(180deg, var(--kit-gold-hi) 0%, var(--kit-gold) 55%, color-mix(in oklab, var(--kit-gold) 70%, var(--kit-gold-lo)) 100%);
+  border-radius: 2px;
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--kit-gold-lo) 80%, black), inset 0 0 0 2.5px color-mix(in srgb, var(--kit-gold-hi) 55%, transparent), 0 2px 3px rgba(0, 0, 0, .7);
 }
 .go-seed__copy {
   --plate-h: 26px;
@@ -445,27 +415,27 @@
   filter: drop-shadow(0 3px 5px rgba(0, 0, 0, .75)) drop-shadow(0 0 10px color-mix(in srgb, var(--kit-candle) 40%, transparent)) brightness(1.12);
 }
 .go-seed__copy:focus-visible { outline: none; filter: drop-shadow(0 3px 5px rgba(0, 0, 0, .75)) drop-shadow(0 0 2px var(--kit-gold-hi)) drop-shadow(0 0 12px color-mix(in srgb, var(--kit-candle) 60%, transparent)) brightness(1.15); }
-/* the hint hangs under the seed's plate, as its caption */
 .go-seed__hint {
-  position: absolute; top: calc(100% + 3px); left: -20px; right: -20px;
   font-size: max(12px, var(--fs-xs)); font-style: italic; color: var(--kit-text-mid);
-  white-space: nowrap; text-align: center; line-height: 1.1;
+  white-space: nowrap; text-align: right; line-height: 1.1;
   text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
 }
 
-/* --- Courage: an engraved gauge under the focal number --------------------- */
+
+/* --- Courage: the Kid's own gauge from the fights ----------------------------- */
 .go-courage {
-  display: grid; grid-template-columns: auto clamp(52px, 3.6vw, 64px) auto;
+  display: grid; grid-template-columns: auto minmax(40px, 1fr) auto;
   grid-template-areas: "lbl track n" "note note note";
-  column-gap: 10px; row-gap: 1px; align-items: center; justify-items: start;
+  column-gap: 10px; row-gap: 2px; align-items: center; justify-items: start;
+  min-width: 0;
 }
 .go-courage > .go-lbl { grid-area: lbl; letter-spacing: .12em; }
 .go-courage__track { grid-area: track; justify-self: stretch; }
 .go-courage__n { grid-area: n; }
-.go-courage__note { grid-area: note; justify-self: center; }
+.go-courage__note { grid-area: note; justify-self: start; }
 /* the gauge is the fights' own (.kit-tube, READINGS IN METAL): brass round
    a glazed enamel fill, driven by scaleX like the Kid's bar in a fight */
-.go-courage__track.kit-tube { --tube-h: 18px; width: 100%; }
+.go-courage__track.kit-tube { --tube-h: 18px; width: 100%; max-width: 120px; }
 .go-courage__track .kit-tube__fill { transition: transform 1.2s var(--ease-out); }
 .go-courage__n { font-family: var(--font-num); font-variant-numeric: var(--num-feat); font-size: max(14px, var(--fs-md)); font-weight: 600; color: var(--courage-300); }
 .go-courage__note { font-size: max(12.5px, var(--fs-xs)); font-style: italic; color: var(--kit-text-lo); }
@@ -518,23 +488,61 @@
 }
 .go-bp__count b { font-family: var(--font-num); font-size: 1.3em; color: var(--kit-gold-hi); }
 
-/* --- the numbers: ONE gilt-rimmed plate, its figures parted by medallions
-       (ui/kit.css .kit-stats--plate, MINT's rail) --------------------------- */
+/* --- the numbers: ONE gilt-rimmed plate (ui/kit.css .kit-stats--plate,
+       MINT's rail), each figure beside its engraved mark (round 5, CEDAR's):
+       the map key's own glyph for a room, a card, a strike, a Button and an
+       hourglass for the rest, gold ink in a round enamel medallion, as the
+       map's key sets its marks. The figures are parted by brass lozenges now,
+       so a mark is never mistaken for a stud. -------------------------------- */
 .go-stats.kit-stats {
   grid-area: stats;
   --plate-h: clamp(50px, 6.2vh, 56px);
   margin: clamp(6px, .7vh, 8px) 10px 0;
+}
+.go-stat {
+  display: grid;
+  grid-template-columns: auto auto; grid-template-rows: auto auto;
+  grid-template-areas: "ico lbl" "ico val";
+  justify-content: center; justify-items: start; align-items: center;
+  column-gap: clamp(7px, .6vw, 10px); row-gap: 0;
+}
+.go-stat > .go-stat__ico { grid-area: ico; }
+.go-stat > .go-lbl { grid-area: lbl; align-self: end; }
+.go-stat > b { grid-area: val; align-self: start; }
+.go-stat__ico {
+  display: grid; place-items: center;
+  width: clamp(28px, 2.1vw, 34px); aspect-ratio: 1;
+  border-radius: 50%;
+  background: url("../../assets/ui/kit/button.webp") 50% 50% / 100% 100% no-repeat;
+  color: var(--kit-gold-hi);
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .8));
+}
+.go-stat__ico svg { width: 60%; height: 60%; overflow: visible; filter: drop-shadow(0 1px 0 rgba(0, 0, 0, .85)); }
+.go-stat__ico .s { fill: none; stroke: currentColor; stroke-width: 3.6; stroke-linecap: round; stroke-linejoin: round; }
+.go-stat__ico .w1 { stroke-width: 2.6; }
+.go-stat__ico .w3 { stroke-width: 4.4; }
+.go-stat__ico .j { stroke-linejoin: miter; stroke-miterlimit: 3; }
+.go-stat__ico .f { fill: currentColor; stroke: none; }
+.go-stat__ico .pl, .go-stat__ico .pw { fill: var(--kit-enamel); }
+.go-stat__ico .mass { fill: currentColor; stroke: currentColor; stroke-width: 2; }
+.go-stat__ico .tear { stroke-dasharray: 7 3.5; }
+.go-stat + .go-stat::before {
+  width: 6px; height: 6px;
+  transform: translate(-50%, -50%) rotate(45deg);
+  border-radius: 0;
+  background: linear-gradient(135deg, var(--kit-gold-hi), var(--kit-gold) 50%, var(--kit-gold-lo));
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, .7);
+  filter: none;
 }
 .go-stats .kit-stats__label {
   white-space: nowrap; text-wrap: nowrap;
   font-size: max(11px, calc(var(--fs-xs) * 1.02)); letter-spacing: .12em;
   color: var(--kit-text-mid);
 }
-.go-stats .kit-stats__value { font-size: clamp(18px, 1.3vw, 21px); }
-.go-stat em { font-size: 11px; font-style: italic; color: var(--kit-text-lo); }
+.go-stats .kit-stats__value { font-size: clamp(18px, 1.3vw, 21px); line-height: 1.05; }
 
 /* --- blocks and their headings --------------------------------------------- */
-.go-block { display: grid; gap: clamp(6px, .9vh, 10px); min-width: 0; align-content: start; }
+.go-block { display: grid; gap: clamp(4px, .7vh, 8px); min-width: 0; align-content: start; }
 .go-h { margin: 0; font-size: max(11.5px, var(--fs-xs)); }
 .go-h .go-h__n { letter-spacing: .02em; font-size: max(12.5px, var(--fs-xs)); }
 .go-block--deck { grid-area: deck; }
@@ -560,9 +568,9 @@
 }
 
 /* --- the final deck: every Trick on a nameplate ---------------------------- */
-.go-tricks { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 4px; }
+.go-tricks { display: flex; flex-wrap: wrap; justify-content: center; gap: 3px 4px; }
 .go-trick {
-  --plate-h: 28px;
+  --plate-h: 26px;
   flex-direction: row; gap: 5px;
   padding: 0 calc(var(--plate-h) * .44);
   border-image-source: url("../../assets/ui/kit/plate-lit.webp");
@@ -591,39 +599,128 @@
 .go-trick__name u { text-decoration: none; color: var(--good-300); font-weight: 700; }
 .go-trick__n { font-family: var(--font-num); font-variant-numeric: var(--num-feat); font-size: 12.5px; font-style: normal; color: var(--kit-gold-hi); }
 
-/* --- the card that did the work: on a gilt plinth, under its own light -----
-   Read at the reward's scale (--go-mvp-s on --card-w), on the plinth AMBER
-   stood it on, the candle's light pooled on the wall behind it; the note
-   beside it says why it is there. */
-.go-block--mvp {
-  grid-area: mvp;
-  --plinth-h: clamp(40px, 4.8vh, 46px);
-  --shelf-h: clamp(40px, 5vh, 46px);
-  align-self: start; align-content: start; justify-items: center;
-  gap: 0;
-  margin-top: clamp(4px, .8vh, 8px);
-}
-
-/* the shelf: the plinth and the caption's plaque both stand on its top face */
-.go-mvp {
+/* --- the triptych: the middle of the board, ONE focal point ------------------
+   A carved, parcel-gilt shelf (.kit-ledge's painting) under three things
+   standing on it: the Trick that worked hardest centred in its frame on its
+   gilt pedestal, WORKED HARDEST on the ribbon over it; to its left a framed
+   HOW FAR plaque with its large numeral, to its right a framed plate with the
+   line that says why. The plaques are carved walnut mouldings round velvet,
+   a gilt bead at their lips and a boss at each corner (plate-carved.webp), the
+   same frames the Curiosity's doors and Mr. Moth's saying wear. */
+.go-altar {
+  grid-area: altar;
+  --shelf-h: clamp(36px, 4.4vh, 44px);
+  --tri-w: clamp(116px, 9.6vw, 156px);
+  --plinth-h: clamp(38px, 4.6vh, 46px);
   position: relative;
-  display: flex; align-items: flex-end; justify-content: center; gap: clamp(16px, 1.6vw, 26px);
-  width: 100%;
-  padding: 0 clamp(8px, .8vw, 14px) calc(var(--shelf-h) * .72);
+  align-self: center;
+  display: flex; align-items: flex-end; justify-content: center;
+  gap: clamp(12px, 1.3vw, 22px);
+  margin-top: clamp(6px, 1vh, 12px);
+  padding: 0 clamp(4px, .5vw, 10px) calc(var(--shelf-h) * .72);
 }
-.go-mvp::after {
-  content: ''; position: absolute; z-index: -3; pointer-events: none;
-  left: -3%; right: -3%;
+/* the shelf: its top face under all three, its ends lost in the dark */
+.go-altar__shelf {
   --ledge-h: var(--shelf-h);
-  /* the frame's plinth and the plaque stand .18 of the ledge below its top */
+  position: absolute; z-index: -3; pointer-events: none;
+  left: -4%; right: -4%;
   bottom: calc(var(--shelf-h) * .72 + var(--ledge-h) * .18 - var(--ledge-h) * 152 / 116);
-  height: calc(var(--ledge-h) * 152 / 116);
-  background: url("../../assets/ui/kit/ledge.webp") 50% 0 / auto 100% repeat-x;
-  -webkit-mask-image: linear-gradient(90deg, transparent 0%, black 10%, black 90%, transparent 100%);
-          mask-image: linear-gradient(90deg, transparent 0%, black 10%, black 90%, transparent 100%);
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, black 9%, black 91%, transparent 100%);
+          mask-image: linear-gradient(90deg, transparent 0%, black 9%, black 91%, transparent 100%);
 }
-.go-mvp__slot { position: relative; flex: none; margin: 12px 34px calc(15px + var(--plinth-h) * .9); }
-.go-board { --go-mvp-s: .72; }
+/* the candle's light on the wall behind the three */
+.go-altar::before {
+  content: ''; position: absolute; z-index: -4; pointer-events: none;
+  left: 50%; top: 42%;
+  width: 118%; aspect-ratio: 1.6; translate: -50% -50%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--kit-candle) 17%, transparent), transparent 72%);
+}
+.go-tri {
+  --carve: clamp(11px, .85vw, 14px);
+  flex: 0 0 var(--tri-w); min-width: 0;
+  display: grid; justify-items: center; align-content: center; gap: 1px;
+  margin-bottom: 3px;
+  padding: calc(var(--carve) + clamp(6px, 1vh, 10px)) calc(var(--carve) + 4px) calc(var(--carve) + clamp(6px, .9vh, 9px));
+  border: var(--carve) solid transparent;
+  border-image: url("../../assets/ui/kit/plate-carved.webp") 34 / var(--carve) stretch;
+  background:
+    radial-gradient(110% 70% at 50% 108%, color-mix(in srgb, var(--kit-candle) 20%, transparent), transparent 70%),
+    radial-gradient(120% 120% at 50% 45%, transparent 45%, rgba(4, 2, 6, .72) 100%),
+    url("../../assets/ui/kit/flock.webp") 50% 0 / 233px 265px,
+    #1a0f22;
+  background-clip: padding-box; background-origin: padding-box;
+  text-align: center;
+  filter: drop-shadow(0 8px 8px rgba(0, 0, 0, .7));
+}
+.go-tri[hidden] { display: none; }
+.go-tri__h, .go-reach__unit, .go-reach__wing {
+  font-family: var(--font-display); font-weight: 700;
+  font-size: max(11.5px, var(--fs-xs)); letter-spacing: .16em; text-transform: uppercase;
+  color: var(--kit-gold-hi);
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, .9), 0 1px 0 color-mix(in srgb, var(--kit-gold-lo) 70%, transparent);
+  line-height: 1.15;
+}
+.go-reach__unit { color: var(--kit-text); letter-spacing: .12em; }
+.go-reach__wing { color: var(--kit-text-mid); letter-spacing: .2em; }
+/* the numeral, struck large in gilt: the gold in the stroke, a dark cut round it */
+.go-reach__n {
+  font-family: var(--font-num); font-weight: 700;
+  font-variant-numeric: lining-nums tabular-nums;
+  font-size: clamp(46px, 4.2vw, 68px); line-height: .95;
+  margin: 2px 0 1px;
+  color: var(--kit-gold-hi);
+  background: linear-gradient(172deg, #fff4d0 0%, var(--kit-gold-hi) 28%, #c99a52 54%, var(--kit-gold-lo) 76%, #d9b26c 100%);
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 -1px 0 rgba(20, 8, 2, .9)) drop-shadow(0 2px 0 #140a03) drop-shadow(1px 0 0 #1c0f06) drop-shadow(-1px 0 0 #1c0f06) drop-shadow(0 0 10px color-mix(in srgb, var(--kit-candle) 38%, transparent));
+}
+.go-reach__where {
+  font-family: var(--font-body); font-style: italic; font-weight: 600;
+  font-size: max(13.5px, var(--fs-sm)); line-height: 1.15;
+  color: var(--kit-name); text-wrap: balance;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
+}
+/* a fleuron rule: a gilt star between two fine strokes */
+.go-tri__rule {
+  display: block; width: 78%; height: 9px; margin: 4px 0 3px;
+  background:
+    url("../../assets/ui/kit/star4.svg") 50% 50% / 8px 8px no-repeat,
+    linear-gradient(90deg, transparent 0%, color-mix(in srgb, var(--kit-gold) 72%, transparent) 30%, color-mix(in srgb, var(--kit-gold) 72%, transparent) 42%, transparent 44%, transparent 56%, color-mix(in srgb, var(--kit-gold) 72%, transparent) 58%, color-mix(in srgb, var(--kit-gold) 72%, transparent) 70%, transparent 100%) 0 4px / 100% 1px no-repeat;
+}
+/* the plate that says why: a gilt star over it, a rule under it */
+.go-said__mark {
+  display: block; width: 14px; height: 14px; margin-bottom: 4px;
+  background: url("../../assets/ui/kit/star4.svg") 50% 50% / 100% 100% no-repeat;
+  filter: drop-shadow(0 1px 0 rgba(0, 0, 0, .85));
+}
+.go-mvp__note {
+  margin: 0;
+  text-align: center; text-wrap: balance;
+  font-size: max(13px, var(--fs-sm)); line-height: 1.36; font-style: italic;
+  color: var(--kit-text);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
+}
+.go-mvp__note b { font-style: normal; font-weight: 600; color: var(--kit-name); }
+
+/* the centre of the three: the card in its frame, on its pedestal. As wide
+   as the framed card, never as its ribbon: the ribbon may overhang the two
+   plaques beside it, which stand lower than the card */
+.go-block--mvp {
+  flex: none;
+  width: calc(var(--card-w) * var(--go-mvp-s, .6) + 36px);
+  display: grid; grid-template-columns: minmax(0, 1fr); justify-items: center; gap: 0;
+  position: relative;
+}
+.go-mvp__h { justify-self: center; width: max-content; }
+.go-block--mvp[hidden] { display: none; }
+/* WORKED HARDEST on its ribbon, over the frame's top rail */
+.go-mvp__h { position: relative; z-index: 3; margin: 0 0 -6px; }
+.go-mvp__h.kit-heading--ribbon { --rib-h: clamp(26px, 3.2vh, 30px); font-size: max(12px, calc(var(--rib-h) * .44)); letter-spacing: .14em; }
+.go-mvp__h.kit-heading--ribbon > em { font-size: max(12px, calc(var(--rib-h) * .42)); }
+.go-mvp { position: relative; display: block; }
+.go-mvp__slot { position: relative; flex: none; margin: 14px 18px calc(15px + var(--plinth-h) * .9); }
+.go-board { --go-mvp-s: .84; }
 /* the card hangs in the Kid board's frame, as the reward's three do */
 .go-mvp__slot::before {
   content: ''; position: absolute; z-index: -1; pointer-events: none;
@@ -635,61 +732,26 @@
   border-image-repeat: stretch;
   /* flocked velvet behind the card (flock.webp), warm from below */
   background:
-    radial-gradient(90% 55% at 50% 100%, color-mix(in srgb, #ffcf94 42%, transparent), transparent 72%),
+    radial-gradient(90% 55% at 50% 100%, color-mix(in srgb, #ffcf94 46%, transparent), transparent 72%),
     radial-gradient(130% 110% at 50% 45%, transparent 50%, rgb(4 2 6 / .6) 100%),
     url("../../assets/ui/kit/flock.webp") 50% 0 / 233px 265px,
     #150c1b;
   background-blend-mode: overlay, normal, normal, normal;
   background-clip: padding-box;
-  box-shadow: 0 0 50px color-mix(in srgb, var(--kit-candle) 18%, transparent), 0 18px 32px -12px rgba(0, 0, 0, .95);
+  box-shadow: 0 0 50px color-mix(in srgb, var(--kit-candle) 22%, transparent), 0 18px 32px -12px rgba(0, 0, 0, .95);
+  filter: drop-shadow(0 0 1.5px color-mix(in srgb, var(--kit-candle) 60%, transparent));
 }
 /* the pedestal it stands on: the ledge's walnut and parcel gilt, carved
-   egg-and-dart on its frieze (pedestal.webp, tools/prep_ui_surfaces.py); the
-   frame's foot stands on its lit top slab */
+   egg-and-dart on its frieze (pedestal.webp) */
 .go-mvp__slot::after {
   content: ''; position: absolute; z-index: -2; pointer-events: none;
-  left: -40px; right: -40px; top: calc(100% + 15px - var(--plinth-h) * .1); height: var(--plinth-h);
+  left: -30px; right: -30px; top: calc(100% + 15px - var(--plinth-h) * .1); height: var(--plinth-h);
   border: 0 solid transparent;
   border-image: url("../../assets/ui/kit/pedestal.webp") 0 56 fill / 0 calc(var(--plinth-h) * 56 / 120) round;
   filter: drop-shadow(0 8px 10px rgba(0, 0, 0, .7));
 }
-/* the candle's light on the wall behind it */
-.go-mvp::before {
-  content: ''; position: absolute; z-index: -4; pointer-events: none;
-  left: 50%; top: 46%;
-  width: calc(var(--card-w) * var(--go-mvp-s) * 2.6); aspect-ratio: 1; translate: -50% -50%;
-  border-radius: 50%;
-  background: radial-gradient(closest-side, color-mix(in srgb, var(--kit-candle) 20%, transparent), transparent 72%);
-}
 /* the card is read here: its VANISH / KEEP badge never letters under 11px */
 .go-mvp__slot .mm-card__badges { font-size: max(11px, calc(9 * var(--u))); }
-/* the label: a museum plaque (.kit-plaque, a bracketed gilt double rule on
-   enamel) standing on the shelf beside the plinth — WORKED HARDEST in the
-   boards' spaced gold small caps, its rarity under it, and the line that
-   says why the card is there */
-.go-mvp__label {
-  flex: 0 1 clamp(178px, 14vw, 226px); min-width: 0;
-  align-self: flex-end;
-  margin: 0 0 4px;
-  padding: clamp(12px, 1.6vh, 15px) clamp(14px, 1.1vw, 18px) clamp(12px, 1.5vh, 14px);
-  --lit-x: 30%; --lit-y: -12%; --lit-a: 38%;
-  display: grid; gap: clamp(5px, .8vh, 8px);
-  filter: drop-shadow(0 8px 8px rgba(0, 0, 0, .7));
-}
-.go-mvp__label > .go-mvp__h {
-  font-size: max(11.5px, var(--fs-xs)); letter-spacing: .16em;
-  column-gap: 6px;
-}
-.go-mvp__label > .go-mvp__h::before, .go-mvp__label > .go-mvp__h::after { width: 14px; }
-.go-mvp__label > .go-mvp__h > em { font-size: max(12px, var(--fs-xs)); }
-.go-mvp__note {
-  margin: 0;
-  text-align: center; text-wrap: balance;
-  font-size: max(13.5px, var(--fs-sm)); line-height: 1.38; font-style: italic;
-  color: var(--kit-text);
-  text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
-}
-.go-mvp__note b { font-style: normal; font-weight: 600; color: var(--kit-name); }
 
 /* --- keepsakes: ledger rows ------------------------------------------------ */
 .go-keeps { display: grid; grid-template-columns: minmax(0, 1fr); column-gap: clamp(12px, 1.2vw, 20px); }
@@ -771,7 +833,7 @@
 .scene--gameover.is-entering .go-stanza:nth-child(2) { animation-delay: .76s; }
 .scene--gameover.is-entering .go-stanza:nth-child(3) { animation-delay: .90s; }
 .scene--gameover.is-entering .go-ledger   { animation: go-in-up .9s var(--ease-out) .5s both; }
-.scene--gameover.is-entering .go-block--mvp { animation: go-in-up .9s var(--ease-out) .7s both; }
+.scene--gameover.is-entering .go-altar     { animation: go-in-up .9s var(--ease-out) .7s both; }
 .scene--gameover.is-entering .go-stats    { animation: go-in-up .8s var(--ease-out) .9s both; }
 .scene--gameover.is-entering .go-foot     { animation: go-in-up .7s var(--ease-out) 1.2s both; }
 @keyframes go-in-up    { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
@@ -805,19 +867,21 @@
 
 /* ── narrower boards ──────────────────────────────────────────────────────── */
 @media (max-width: 1400px) {
-  .go-wrap { --gutter: 16px; grid-template-columns: minmax(0, .86fr) minmax(0, 1fr) minmax(0, 1fr); }
+  .go-wrap { --gutter: 14px; grid-template-columns: minmax(0, .7fr) minmax(0, 1.16fr) minmax(0, 1.06fr); }
+  .go-altar { --tri-w: 122px; }
+  .go-tri { --carve: 10px; padding-inline: 16px; }
+  .go-tri__h { letter-spacing: .1em; }
+  /* the left panel is narrower here: its headings keep one line */
+  .go-stanzas { padding-inline: 14px; }
+  .go-stanzas .go-sh { letter-spacing: .06em; column-gap: 5px; white-space: nowrap; }
+  .go-stanzas .go-sh::before, .go-stanzas .go-sh::after { width: 9px; background-size: 9px 9px, 0 0; }
   .go-courage > .go-lbl { letter-spacing: .1em; }
-  .go-mvp { gap: 12px; }
-  .go-mvp__slot { margin-inline: 18px; }
-  .go-mvp__label { flex-basis: 200px; }
-  .go-mvp__label { padding-inline: 12px; }
-  .go-mvp__label > .go-mvp__h { letter-spacing: .1em; column-gap: 5px; }
-  /* on a narrow label the heading keeps one line: its star strokes step aside */
-  .go-mvp__label > .go-mvp__h { display: block; text-align: center; }
-  .go-mvp__label > .go-mvp__h::before, .go-mvp__label > .go-mvp__h::after { content: none; }
-  .go-mvp__label > .go-mvp__h > em { display: block; margin-top: 1px; }
-  .go-mvp__note { font-size: 13px; line-height: 1.34; }
-  .go-stats .kit-stats__label { font-size: 11.5px; letter-spacing: .06em; }
+  .go-altar { gap: 10px; }
+  .go-mvp__slot { margin-inline: 14px; }
+  .go-mvp__note { font-size: 12.5px; line-height: 1.3; }
+  .go-stat { column-gap: 6px; }
+  .go-stat__ico { width: 26px; }
+  .go-stats .kit-stats__label { font-size: 11px; letter-spacing: .05em; }
   .go-trick__name { font-size: 12.5px; }
   .go-trick__cost { width: 16px; height: 16px; font-size: 10px; }
   .go-keep { column-gap: 8px; }
@@ -831,14 +895,14 @@
 
 /* ── the Steam Deck and every short laptop panel ──────────────────────────── */
 @media (max-height: 860px) {
-  .go-board { --go-mvp-s: .72; }
+  .go-board { --go-mvp-s: .8; }
   .go-head { margin-top: 12px; }
   .go-head.kit-titleblock--compact { --cart-h: 82px; }
   /* the Heart's three sentences still need their taller plaque on a short
      panel: the compact height above would hang them across the ribbon */
   .go-head.kit-titleblock--compact.is-long { --cart-h: 142px; }
   .go-head.is-long .go-lede { font-size: 11.5px; line-height: 1.2; }
-  .go-board:has(.go-head.is-long) { --go-mvp-s: .56; }
+  .go-board:has(.go-head.is-long) { --go-mvp-s: .62; }
   .go-board:has(.go-head.is-long) .go-stage { --go-pic-w: 104px; }
   .go-head .kit-cartouche__title { font-size: 25px; }
   .go-head .kit-titleblock__note { margin-top: 1px; }
@@ -853,15 +917,12 @@
   .go-stanza li { line-height: 1.3; font-size: 13px; }
   .go-pet__snap { width: 60px; }
   .go-pet__text { font-size: 13px; line-height: 1.34; }
-  .go-ledger { margin-top: 6px; padding: 22px 18px 16px; --ledger-gap: 26px; }
-  .go-who { row-gap: 4px; margin-top: 4px; padding: 5px 12px 19px; }
-  .go-who__deep { font-size: 20px; letter-spacing: .05em; }
-  .go-who__focal { column-gap: 10px; }
-  .go-courage { grid-template-columns: auto 50px auto; column-gap: 6px; }
+  .go-ledger { margin-top: 6px; padding: 30px 16px 20px; --ledger-gap: 14px; }
+  .go-courage { column-gap: 6px; }
   .go-courage > .go-lbl { letter-spacing: .06em; }
-  .go-corner { --h: 48px; padding-inline: 20px; }
-  .go-block--mvp { margin-top: 2px; --plinth-h: 38px; --shelf-h: 36px; }
-  .go-mvp__slot { margin: 12px 26px calc(13px + var(--plinth-h) * .9); }
+  .go-altar { --plinth-h: 34px; --shelf-h: 32px; margin-top: 2px; }
+  .go-mvp__slot { margin: 12px 14px calc(13px + var(--plinth-h) * .9); }
+  .go-reach__n { font-size: 44px; }
   .go-stats.kit-stats { margin-top: 10px; }
   .go-stats .kit-stats__value { font-size: 17px; line-height: 1.05; }
   .go-trick { --plate-h: 25px; }
@@ -878,5 +939,5 @@
   .go-btn--primary .kit-btn__medal { --md: calc(var(--plate-h) * 1.06); }
 }
 @media (max-width: 1100px) {
-  .go-wrap { grid-template-columns: minmax(0, 1fr); grid-template-areas: "stage" "mvp" "left" "ledger" "stats"; overflow-y: auto; }
+  .go-wrap { grid-template-columns: minmax(0, 1fr); grid-template-areas: "stage" "altar" "left" "ledger" "stats"; overflow-y: auto; }
 }
