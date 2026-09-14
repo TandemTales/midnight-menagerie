@@ -27,7 +27,6 @@
 
 import { Modal, confirmModal, kitButton } from './modal.js';
 import { formatSeed } from './portrait.js';
-import { icon } from './icons.js';
 
 /**
  * The whole surface, declared once. The panel is generated from this, so a new
@@ -137,27 +136,32 @@ export async function openSettings(ctx = {}) {
     className: 'mm-settings-modal',
   });
 
-  /* The panel is laid out like the Kid board's dossier: the boards' railed
-     panels in two columns, each group one panel with the gold ribbon banner
-     ("✦ SOUND ✦") across its top rail. How the house sounds and moves on the
-     left, how you read and play it on the right; under both, on one line, the
-     seed it is built from and the ways out of it. The cells are DOM order, so
-     Tab walks each one down before the next. */
+  /* The panel is a ledger of the house's workings, laid out in three columns
+     so every page of it is open at once, at the Deck's 1280x800 as at 1600x900:
+     how it sounds and reads, how it moves (and the way out of an expedition),
+     how it plays, the seed it is built from and the one dangerous thing. Each
+     group is one of the Kid board's railed panels with the gold ribbon banner
+     ("✦ SOUND ✦") across its top rail, and each line leads the eye from its
+     name to its control along a row of brass dots. The columns are DOM order,
+     so Tab walks each one down before the next. */
   const form = document.createElement('div');
   form.className = 'mm-set';
   const cell = () => { const c = document.createElement('div'); c.className = 'mm-set__col'; return c; };
-  const colA = cell(), colB = cell(), colC = cell(), colD = cell();
-  form.append(colA, colB, colC, colD);
+  const colA = cell(), colB = cell(), colC = cell();
+  const colD = colB;                 // the expedition stands under Motion
+  form.append(colA, colB, colC);
   modal.body.appendChild(form);
 
   const rerender = [];
 
   const GROUP = 'mm-set__group kit-panel';
   const LEGEND = 'mm-set__legend kit-heading kit-heading--ribbon';
+  const COLUMN = { Sound: colA, Reading: colA, Motion: colB, Play: colC };
 
-  for (const [n, section] of SETTINGS_SPEC.entries()) {
+  for (const section of SETTINGS_SPEC) {
     const fs = document.createElement('fieldset');
     fs.className = GROUP;
+    fs.dataset.group = section.group.toLowerCase();
     const lg = document.createElement('legend');
     lg.className = LEGEND;
     lg.textContent = section.group;
@@ -166,7 +170,7 @@ export async function openSettings(ctx = {}) {
     for (const item of section.items) {
       fs.appendChild(buildRow(ctx, Save, item, rerender));
     }
-    (n < 2 ? colA : colB).appendChild(fs);
+    (COLUMN[section.group] || colC).appendChild(fs);
   }
 
   // ── seed ────────────────────────────────────────────────────────────────
@@ -183,14 +187,16 @@ export async function openSettings(ctx = {}) {
   cur.innerHTML =
     `<div class="mm-set__label"><span>Current expedition</span>` +
     `<span class="mm-set__hint">A seed reproduces a run exactly: the same rooms, rewards and shop stock.</span></div>` +
-    `<output class="mm-set__seed kit-enamel kit-enamel--dark"><b class="kit-enamel__value">${escape_(curSeed)}</b></output>`;
+    `<i class="kit-leader mm-set__lead" aria-hidden="true"></i>` +
+    `<output class="mm-set__seed kit-enamel kit-enamel--dark${rawSeed == null ? ' is-empty' : ''}"><b class="kit-enamel__value">${escape_(curSeed)}</b></output>`;
   seedFs.appendChild(cur);
 
   const entry = document.createElement('div');
   entry.className = 'mm-set__row';
   entry.innerHTML =
     `<div class="mm-set__label"><span>Seed for the next expedition</span>` +
-    `<span class="mm-set__hint">Leave blank for a random one.</span></div>`;
+    `<span class="mm-set__hint">Leave blank for a random one.</span></div>` +
+    `<i class="kit-leader mm-set__lead" aria-hidden="true"></i>`;
   const seedIn = document.createElement('input');
   seedIn.type = 'text';
   seedIn.className = 'mm-set__text kit-field';
@@ -219,27 +225,39 @@ export async function openSettings(ctx = {}) {
    * So this row does two jobs: it says the expedition is already saved, and it
    * gives the deliberate way out. A finished run is not resumable (`save()`
    * returns early on `result`) and a deep-link mock must never touch storage,
-   * so neither offers it.
+   * so neither offers it: the row is still there, its plate unlit and its note
+   * saying why, so the ledger is the same ledger wherever it is opened and a
+   * player on the title screen learns where the way out will be.
    */
   const live = ctx.run && !ctx.run.ephemeral && !ctx.run.result;
-  if (live) {
-    const party = !!ctx.run.isParty;
+  {
+    const party = !!(live && ctx.run.isParty);
     const trip = document.createElement('fieldset');
     trip.className = GROUP;
+    trip.dataset.group = 'expedition';
     trip.innerHTML = `<legend class="${LEGEND}">Expedition</legend>`;
     const tRow = document.createElement('div');
     tRow.className = 'mm-set__row';
+    const why = live
+      ? 'Your expedition saves itself after every room. '
+        + 'Quitting now keeps it exactly where it is — Continue on the title screen picks it back up.'
+        + (party ? ' In a party this ends the expedition for everyone.' : '')
+      : !ctx.run
+        ? 'There is no expedition under way. Once one is, it saves itself after every room, and this is where you leave it.'
+        : ctx.run.result
+          ? 'This expedition is over, so there is nothing left to save.'
+          : 'This expedition is a preview and is never saved, so there is nothing to quit from.';
     tRow.innerHTML =
       `<div class="mm-set__label"><span>Save and quit</span>` +
-      `<span class="mm-set__hint">Your expedition saves itself after every room. ` +
-      `Quitting now keeps it exactly where it is — Continue on the title screen picks it back up.` +
-      `${party ? ' In a party this ends the expedition for everyone.' : ''}</span></div>`;
+      `<span class="mm-set__hint">${escape_(why)}</span></div>` +
+      `<i class="kit-leader mm-set__lead" aria-hidden="true"></i>`;
     const quit = document.createElement('button');
     quit.type = 'button';
     quit.className = 'mm-btn';
     quit.textContent = 'Save and quit';
     kitButton(quit, { quiet: true });
-    quit.addEventListener('click', async () => {
+    quit.disabled = !live;
+    if (live) quit.addEventListener('click', async () => {
       if (party) {
         const ok = await confirmModal({
           title: 'Quit the expedition?',
@@ -275,13 +293,15 @@ export async function openSettings(ctx = {}) {
   dRow.className = 'mm-set__row';
   dRow.innerHTML =
     `<div class="mm-set__label"><span>Reset all progress</span>` +
-    `<span class="mm-set__hint">Deletes every rescued Companion, every clue, the Haunt Level and the current expedition. This cannot be undone.</span></div>`;
+    `<span class="mm-set__hint">Deletes every rescued Companion, every clue, the Haunt Level and the current expedition. This cannot be undone.</span></div>` +
+    `<i class="kit-leader mm-set__lead" aria-hidden="true"></i>`;
   const reset = document.createElement('button');
   reset.type = 'button';
   reset.className = 'mm-btn mm-btn--danger';
   reset.textContent = 'Reset…';
-  reset.appendChild(icon('ui.warn'));
-  kitButton(reset);
+  /* the warning is a skull struck on a round enamel medallion at the plate's
+     end, as DONE wears its tick, and the lettering is the Courage bar's red */
+  kitButton(reset, { medal: 'danger' });
   reset.addEventListener('click', async () => {
     const ok = await confirmModal({
       title: 'Reset all progress?',
@@ -297,7 +317,7 @@ export async function openSettings(ctx = {}) {
   });
   dRow.appendChild(reset);
   danger.appendChild(dRow);
-  colD.appendChild(danger);
+  colC.appendChild(danger);
 
   // ── footer ──────────────────────────────────────────────────────────────
   const restore = document.createElement('button');
@@ -335,13 +355,22 @@ function buildRow(ctx, Save, item, rerender) {
   label.innerHTML = `<span>${escape_(item.label)}</span>` +
     (item.hint ? `<span class="mm-set__hint">${escape_(item.hint)}</span>` : '');
   row.appendChild(label);
+  /* the ledger's leader, from the name to its control (not on a row whose
+     choices sit under its name) */
+  if (item.type !== 'choice') {
+    const lead = document.createElement('i');
+    lead.className = 'kit-leader mm-set__lead';
+    lead.setAttribute('aria-hidden', 'true');
+    row.appendChild(lead);
+  }
 
   if (item.type === 'range') {
     /* A REAL range input, so the keyboard, the pad and the tests drive it as
        one. Behind its bare track lies the Courage bar's brass tube
        (.kit-tube--warm), its amber enamel filled as far as the value; the thumb
-       is the boards' round enamel button; the value is struck on the tiles'
-       dark cartouche. `--v` (0..1) is the only thing the picture needs. */
+       is the boards' round enamel button; the value is the ledger's figure at
+       the end of its line, in gold lining numerals. `--v` (0..1) is the only
+       thing the picture needs. */
     const wrap = document.createElement('div');
     wrap.className = 'mm-set__rangewrap';
     const slot = document.createElement('div');
@@ -355,13 +384,13 @@ function buildRow(ctx, Save, item, rerender) {
     input.min = String(item.min); input.max = String(item.max); input.step = String(item.step);
     input.value = String(get(Save, item.key));
     const out = document.createElement('output');
-    out.className = 'mm-set__out kit-enamel kit-enamel--dark';
+    out.className = 'mm-set__out';
     out.htmlFor = id;
     const show = () => {
       const span = Number(item.max) - Number(item.min);
       const v = span ? (Number(input.value) - Number(item.min)) / span : 0;
       slot.style.setProperty('--v', String(Math.max(0, Math.min(1, v))));
-      out.innerHTML = `<b class="kit-enamel__value">${escape_(item.fmt ? item.fmt(input.value) : input.value)}</b>`;
+      out.textContent = item.fmt ? item.fmt(input.value) : input.value;
     };
     show();
     const commit = () => {
@@ -375,8 +404,10 @@ function buildRow(ctx, Save, item, rerender) {
     rerender.push(() => { input.value = String(get(Save, item.key)); show(); });
 
   } else if (item.type === 'toggle') {
-    /* The same brass tube as a switch: its amber enamel lit when it is on, the
-       enamel button riding to that end, and the state spelled out beside it. */
+    /* The same brass tube as a switch: dark when it is off, its amber enamel
+       lit when it is on and the enamel button riding to that end, lit too. The
+       knob's end and the lit enamel say it twice, so no plate beside it needs
+       to spell it out a third time; `aria-checked` says it to a reader. */
     const btn = document.createElement('button');
     btn.type = 'button'; btn.id = id;
     btn.className = 'mm-set__toggle';
@@ -385,13 +416,10 @@ function buildRow(ctx, Save, item, rerender) {
       const on = !!get(Save, item.key);
       btn.setAttribute('aria-checked', String(on));
       btn.dataset.on = on ? '1' : '0';
-      /* the word struck on the same dark cartouche a slider's value wears, so
-         the column of readings runs straight down the panel */
       btn.innerHTML =
         `<i class="mm-set__switch" aria-hidden="true">`
         + `<i class="mm-set__tube kit-tube kit-tube--warm"><i class="kit-tube__fill"></i></i>`
-        + `<i class="mm-set__knob"></i></i>`
-        + `<span class="mm-set__state kit-enamel kit-enamel--dark"><b class="kit-enamel__label">${on ? 'On' : 'Off'}</b></span>`;
+        + `<i class="mm-set__knob"></i></i>`;
     };
     btn.addEventListener('click', () => { setSetting(ctx, item.key, !get(Save, item.key)); paint(); });
     paint();

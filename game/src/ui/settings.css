@@ -3,126 +3,157 @@
    Inside the kit panel (ui/modal.css), and built from the kit's own pieces,
    which settings.js puts on as classes:
      a group             .kit-panel             one of the Kid board's railed
-                                                panels, laid out as its dossier is
+                                                panels, its fleurons at the corners
      a group's heading   .kit-heading--ribbon   the gold ribbon banner across the
                                                 panel's top rail ("✦ SOUND ✦")
+     a line              .kit-leader            the ledger's brass dots, from a
+                                                setting's name to its control
      a slider / switch   .kit-tube--warm        the Courage bar's brass tube, its
                                                 amber enamel filled to the value,
                                                 the round enamel button its knob
-     a value, a state    .kit-enamel--dark      the Companion tiles' cartouche
+     a value             gold lining numerals   the ledger's figure at the end of
+                                                its line
      a choice            .kit-btn / --quiet     nameplates, the chosen one lit
+     the seed            .kit-enamel--dark      struck on the tiles' cartouche
      the next seed       .kit-field             lettered onto a nameplate
      save / reset        .kit-btn               nameplates
    Every control is still the real element — a range input, a switch button, a
    text input — so the keyboard, the pad and assistive tech drive it as one.
-   This sheet lays the dossier out and seats those pieces; it paints no frame. */
+   This sheet lays the ledger out and seats those pieces; it paints no frame. */
 
-/* the dossier: the dialog opens wide enough for two columns of panels */
-.mm-settings-modal .mm-modal__dialog { width: min(100%, 68rem); }
+/* the ledger: wide enough for three columns of panels, the map showing round it */
+.mm-settings-modal .mm-modal__dialog { width: min(100%, 84rem); }
+/* its name on a plaque a size smaller than a board's, so the pages get the height */
+@media (max-height: 920px) {
+  .mm-settings-modal .mm-modal__head { --cart-h: clamp(96px, 12.2vh, 112px); }
+}
 
 .mm-set {
-  --rib-h: clamp(28px, 3.6vh, 34px);
-  --row-pad: 7px;                       /* above a row, a pixel more below */
-  --hint-fs: max(12.5px, var(--fs-xs));
-  --slot-h: 32px;  --knob: 28px;         /* a slider */
-  --sw-w: 64px;    --sw-h: 30px;         /* a switch */
-  --read-h: 32px;                       /* a reading's cartouche */
-  --choice-h: 38px;
-  --panel-top: 10px;                    /* under a panel's ribbon */
-  --cell-top: 12px;                     /* over a cell's first ribbon */
-  --stack: clamp(16px, 2.4vh, 22px);    /* between two panels in a column */
-  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+  --rib-h: clamp(26px, 3.3vh, 32px);
+  --row-pad: 6px;                       /* above a row, a pixel more below */
+  --name-fs: calc(var(--fs-md) * 1.02);
+  --hint-fs: max(12px, calc(var(--fs-xs) * 1.12));
+  --slot-w: clamp(104px, 8.6vw, 142px);
+  --slot-h: 30px;  --knob: 26px;         /* a slider */
+  --sw-w: 58px;    --sw-h: 28px;         /* a switch */
+  --read-w: 3.3em;                      /* a value's figure */
+  --read-h: 30px;                       /* the seed's cartouche */
+  --choice-h: 34px;
+  --panel-top: 8px;                     /* under a panel's ribbon */
+  --stack: clamp(8px, 1.4vh, 16px);     /* between two panels in a column */
+  /* a panel's words stand clear of its engraved inner rule and the fleurons at
+     its corners (kit.css .kit-panel::after, at --pk .66: the rule 13-16 px in,
+     a fleuron reaching 35 px along each edge) */
+  --pad-x: clamp(29px, 2.3vw, 36px);
+  --pad-b: clamp(22px, 2.9vh, 28px);
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
   align-items: stretch;
-  gap: clamp(6px, 1vh, 10px) clamp(26px, 2.6vw, 40px);
-  padding: 0 4px 16px;
+  gap: 0 clamp(26px, 2.4vw, 38px);
+  padding: 0 2px 4px;
 }
-/* The Deck's 800 px: the same dossier a notch tighter, so both columns' first
-   two panels stand whole above the buttons. */
-@media (max-height: 860px) {
+/* 900 px and the Deck's 800: the same ledger a notch tighter, so every panel
+   of all three columns stands whole above the buttons. */
+@media (max-height: 920px) {
   .mm-set {
-    --row-pad: 5px; --hint-fs: 12px;
-    --slot-h: 28px; --knob: 24px;
-    --sw-w: 58px;   --sw-h: 26px;
-    --read-h: 28px; --choice-h: 34px;
-    --panel-top: 6px; --cell-top: 10px; --stack: 14px;
+    --row-pad: 4px;
+    --slot-h: 26px; --knob: 22px;
+    --sw-w: 52px;   --sw-h: 24px;
+    --read-h: 28px; --choice-h: 30px;
+    --panel-top: 4px;
+  }
+}
+/* …and at 900 the words a step larger again, into the height 800 does not have */
+@media (min-height: 861px) and (max-height: 920px) {
+  .mm-set {
+    --row-pad: 5px; --panel-top: 6px;
+    --name-fs: calc(var(--fs-md) * 1.06);
+    --hint-fs: 13.4px;
   }
 }
 
-/* A cell of the dossier: its panels stacked. The two cells of a row are as
-   tall as each other, the shorter one's panels spread apart, so a row's two
-   columns end on the same line and the next row starts level. */
+/* a column: its panels stacked, the first ribbon's upper half clear of the top;
+   the three end on one line, as the boards' panels do, the last panel of a
+   shorter column standing taller to meet it */
 .mm-set__col {
-  display: flex; flex-direction: column; justify-content: space-between;
+  display: flex; flex-direction: column;
   gap: calc(var(--rib-h) * .5 + var(--stack));
   min-width: 0;
-  padding-top: calc(var(--rib-h) * .5 + var(--cell-top));   /* the first ribbon's upper half */
+  padding-top: calc(var(--rib-h) * .5);
 }
-/* what scrolls under the plaque or the buttons fades into the damask rather
-   than being cut off by the edge of the scroll */
+.mm-set__col > .mm-set__group:last-child { flex: 1 0 auto; }
+/* nothing is meant to scroll, but if a player's text is larger than the board,
+   what runs under the buttons fades into the damask instead of being cut */
+.mm-settings-modal .mm-modal__body { margin-top: 2px; padding-bottom: 8px; }
 .mm-modal__body:has(> .mm-set) {
-  --fade: clamp(30px, 5vh, 44px);
-  -webkit-mask-image: linear-gradient(to bottom, transparent 0, black 10px, black calc(100% - var(--fade)), transparent 100%);
-          mask-image: linear-gradient(to bottom, transparent 0, black 10px, black calc(100% - var(--fade)), transparent 100%);
+  --fade: 8px;
+  -webkit-mask-image: linear-gradient(to bottom, black 0, black calc(100% - var(--fade)), transparent 100%);
+          mask-image: linear-gradient(to bottom, black 0, black calc(100% - var(--fade)), transparent 100%);
 }
 
 /* a group: one of the Kid board's railed panels */
 .mm-set__group.kit-panel {
-  --pk: .7;
+  --pk: .66;
   margin: 0; min-width: 0;
-  padding: calc(var(--rib-h) * .5 + var(--panel-top)) clamp(16px, 1.5vw, 24px) calc(var(--row-pad) + 1px);
+  padding: calc(var(--rib-h) * .5 + var(--panel-top)) var(--pad-x) var(--pad-b);
 }
+/* its brass fleurons stand in its corners on their own, as the Kid board's
+   panels wear star lobes on their rail, without a thin rule drawn between them */
+.mm-set__group.kit-panel::after { border-color: transparent; }
 
 /* its ribbon across the top rail (an absolutely placed legend) */
 .mm-set__legend.kit-heading--ribbon {
-  --rib-h: clamp(28px, 3.6vh, 34px);
+  --rib-h: clamp(26px, 3.3vh, 32px);
   position: absolute; left: 50%; top: 0; z-index: 3;
   translate: -50% calc(-50% - 1px);
   float: none;
   margin: 0;
 }
 
-/* a row: the name and its control on one line, the note under both */
+/* a line: the name, the leader, the control; the note under all three */
 .mm-set__row {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  grid-template-areas: "name ctrl" "hint hint";
+  grid-template-columns: auto minmax(14px, 1fr) auto;
+  grid-template-areas: "name lead ctrl" "hint hint hint";
   align-items: center;
-  gap: 1px 14px;
-  padding: var(--row-pad) 2px calc(var(--row-pad) + 1px);
+  gap: 0;
+  padding: var(--row-pad) 0 calc(var(--row-pad) + 1px);
 }
 .mm-set__row > .mm-set__label { display: contents; }
 .mm-set__row > .mm-set__label > span:first-child { grid-area: name; }
 .mm-set__row > .mm-set__label > .mm-set__hint { grid-area: hint; }
-.mm-set__row > :not(.mm-set__label) { grid-area: ctrl; }
-/* rows parted by a gilt hairline that fades before the panel's rule */
+.mm-set__row > .mm-set__lead { grid-area: lead; align-self: center; margin: 0 9px; translate: 0 .32em; }
+.mm-set__row > :not(.mm-set__label):not(.mm-set__lead) { grid-area: ctrl; }
+/* lines parted by air, and a breath of shadow, not by a drawn rule */
 .mm-set__row + .mm-set__row {
   border-top: 0;
-  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--kit-gold) 34%, transparent) 12%, color-mix(in srgb, var(--kit-gold) 34%, transparent) 88%, transparent) 0 0 / 100% 1px no-repeat;
+  background: linear-gradient(90deg, transparent, rgba(0, 0, 0, .28) 12%, rgba(0, 0, 0, .28) 88%, transparent) 0 0 / 100% 1px no-repeat;
 }
 /* a name over its note, lettered like the Shop's wares */
-.mm-set__label { display: flex; flex-direction: column; gap: 3px; min-width: 0; cursor: pointer; }
+.mm-set__label { display: flex; flex-direction: column; gap: 2px; min-width: 0; cursor: pointer; }
 .mm-set__label > span:first-child {
   font-family: var(--font-body); font-weight: 600;
-  font-size: calc(var(--fs-md) * 1.06); line-height: 1.2;
+  font-size: var(--name-fs); line-height: 1.2;
+  white-space: nowrap;
   color: var(--kit-name);
   text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
 }
 .mm-set__hint {
-  font-size: var(--hint-fs); line-height: 1.34; font-style: italic;
+  margin-top: 1px;
+  font-size: var(--hint-fs); line-height: 1.28; font-style: italic;
   color: var(--kit-text-mid);
   text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
-  text-wrap: pretty;
+  text-wrap: balance;
 }
 
-/* ── range: the brass tube, the enamel knob, the value on its cartouche ───── */
-.mm-set__rangewrap { display: flex; align-items: center; justify-content: flex-end; gap: 12px; }
+/* ── range: the brass tube, the enamel knob, the figure ─────────────────── */
+.mm-set__rangewrap { display: flex; align-items: center; justify-content: flex-end; gap: 8px; }
 .mm-set__slot {
   --v: 0;
   position: relative;
-  width: clamp(120px, 10vw, 158px); height: var(--slot-h);
+  width: var(--slot-w); height: var(--slot-h);
 }
 .mm-set__slot > .mm-set__tube {
-  --tube-h: calc(var(--slot-h) * .46);
+  --tube-h: calc(var(--slot-h) * .5);
   position: absolute; left: 0; right: 0; top: 50%;
   translate: 0 -50%;
   pointer-events: none;
@@ -173,36 +204,32 @@
 .mm-set__rangewrap input[type="range"]:focus-visible::-webkit-slider-thumb {
   box-shadow: 0 3px 4px rgba(0, 0, 0, .75), 0 0 0 2px var(--kit-gold-hi), 0 0 14px 2px color-mix(in srgb, var(--kit-candle) 65%, transparent);
 }
-.mm-set__out.kit-enamel,
-.mm-set__state.kit-enamel {
-  --h: var(--read-h);
-  min-width: 80px;
-  padding: 0 calc(var(--h) * .56);
+/* the figure: gold lining numerals, right-aligned down the panel like a ledger's */
+.mm-set__out {
+  min-width: var(--read-w);
+  font-family: var(--font-num); font-weight: 600; font-style: normal;
+  font-size: calc(var(--fs-md) * 1.02); line-height: 1;
+  font-variant-numeric: lining-nums tabular-nums;
+  text-align: right;
+  color: var(--kit-gold-hi);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .95), 0 0 10px color-mix(in srgb, var(--kit-candle) 22%, transparent);
 }
-.mm-set__out .kit-enamel__value { font-size: 15px; letter-spacing: .02em; }
 
 /* ── toggle: the same tube as a switch ───────────────────────────────────── */
 .mm-set__toggle {
-  display: inline-flex; align-items: center; gap: 12px;
+  display: inline-flex; align-items: center;
   justify-self: end;
-  margin: 0; padding: 2px 0;
+  margin: 0; padding: 3px 0;
   background: none; border: 0; border-radius: 0;
-  font-family: var(--font-display); font-weight: 700;
-  font-size: 12px; letter-spacing: .18em; text-transform: uppercase;
-  color: var(--kit-text-mid);
-  text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
-  transition: color var(--t-quick) var(--ease-out), filter var(--t-quick) var(--ease-out);
+  transition: filter var(--t-quick) var(--ease-out);
+  cursor: pointer;
 }
-/* the word sits on the cartouche a slider's value wears, so the column of
-   readings runs straight down the panel */
-.mm-set__state .kit-enamel__label { font-size: 12px; color: inherit; }
-.mm-set__toggle[data-on="1"] .mm-set__state .kit-enamel__label { text-shadow: 0 -1px 0 rgba(0, 0, 0, .9), 0 0 10px color-mix(in srgb, var(--kit-candle) 45%, transparent); }
 .mm-set__switch {
   position: relative; flex: none; display: block;
   width: var(--sw-w); height: var(--sw-h);
 }
 .mm-set__switch > .mm-set__tube {
-  --tube-h: calc(var(--sw-h) - 8px);
+  --tube-h: calc(var(--sw-h) - 7px);
   position: absolute; left: 0; right: 0; top: 50%;
   translate: 0 -50%;
 }
@@ -210,61 +237,79 @@
   transform: scaleX(0);
   transition: transform var(--t-base) var(--ease-out);
 }
+/* off: the knob parked dull at the left end of an empty tube */
 .mm-set__knob {
   position: absolute; left: -2px; top: 50%;
   width: var(--sw-h); height: var(--sw-h);
   translate: 0 -50%;
   border-radius: 50%;
   background: url("../../assets/ui/kit/button.webp") 50% 50% / 100% 100% no-repeat;
-  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .8)) saturate(.55) brightness(.8);
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .8)) saturate(.5) brightness(.72);
   transition: transform var(--t-base) var(--ease-snap), filter var(--t-quick) var(--ease-out);
 }
-.mm-set__toggle:hover { color: var(--kit-text); }
 .mm-set__toggle:hover .mm-set__knob { filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .8)) saturate(.8) brightness(.95); }
-.mm-set__toggle[data-on="1"] { color: var(--kit-gold-hi); }
+/* on: the amber lit the length of the tube, the knob at the far end catching the candle */
 .mm-set__toggle[data-on="1"] .kit-tube__fill { transform: scaleX(1); }
 .mm-set__toggle[data-on="1"] .mm-set__knob {
-  transform: translateX(calc(var(--sw-w) - var(--sw-h) + 2px));
-  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .8)) drop-shadow(0 0 6px color-mix(in srgb, var(--kit-candle) 55%, transparent)) brightness(1.15);
+  transform: translateX(calc(var(--sw-w) - var(--sw-h) + 4px));
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .8)) drop-shadow(0 0 7px color-mix(in srgb, var(--kit-candle) 60%, transparent)) brightness(1.18);
+}
+.mm-set__knob::after {
+  content: ''; position: absolute; inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 46%, var(--kit-gold-hi) 0 1.5px, var(--kit-gold) 2.6px, var(--kit-gold-lo) 3.6px, transparent 4.4px);
 }
 .mm-set__toggle:focus-visible {
   outline: none;
   filter: drop-shadow(0 0 1.5px var(--kit-gold-hi)) drop-shadow(0 0 10px color-mix(in srgb, var(--kit-candle) 55%, transparent));
 }
-/* the state is also spelled out in words next to the switch — never colour alone */
 
 /* ── choice: nameplates, the chosen one lit ──────────────────────────────── */
 .mm-set__row:has(> .mm-set__choices) { grid-template-columns: minmax(0, 1fr); grid-template-areas: "name" "ctrl" "hint"; }
-.mm-set__choices { display: flex; flex-wrap: wrap; gap: 8px 10px; justify-self: start; padding: 5px 0 4px; }
+.mm-set__choices {
+  display: grid; grid-template-columns: repeat(2, minmax(0, max-content));
+  gap: 6px 10px; justify-content: start;
+  padding: 6px 0 3px;
+}
 .mm-set__choice.kit-btn {
   --plate-h: var(--choice-h);
-  font-size: 12px; letter-spacing: .12em;
+  font-size: 11.5px; letter-spacing: .11em;
+  padding-inline: calc(var(--plate-h) * .74);
 }
 
 /* ── seed ─────────────────────────────────────────────────────────────────── */
 .mm-set__seed.kit-enamel {
-  --h: calc(var(--read-h) + 6px);
+  --h: var(--read-h);
   justify-self: end;
+  min-width: 5em;
   user-select: text;
 }
-.mm-set__seed .kit-enamel__value { letter-spacing: .08em; }
+.mm-set__seed .kit-enamel__value { font-size: calc(var(--read-h) * .5); letter-spacing: .08em; }
+/* no expedition, no seed: the plate unlit, so an empty value never shines */
+.mm-set__seed.kit-enamel.is-empty { filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .75)) saturate(.45) brightness(.72); }
 .mm-set__text.kit-field {
-  --field-h: calc(var(--read-h) + 10px);
+  --field-h: calc(var(--read-h) + 4px);
   justify-self: end;
-  width: 17ch;
+  width: 14ch;
+  font-size: calc(var(--field-h) * .38);
   user-select: text;
 }
 
 /* ── the expedition and the danger rows ──────────────────────────────────── */
-.mm-set__row > .kit-btn { justify-self: end; --plate-h: calc(var(--read-h) + 10px); }
-.mm-set__row > .kit-btn .mm-icon { width: 1.05em; height: 1.05em; }
+.mm-set__row > .kit-btn { justify-self: end; --plate-h: calc(var(--read-h) + 4px); font-size: 12.5px; }
+/* a plate with a medallion on its end stands clear of the panel's right edge */
+.mm-set__row > .kit-btn.mm-dlg-btn--medal { margin-right: calc(var(--plate-h) * .42); }
 
 /* largeText: one column of panels, and each label above its control, so
    neither is squeezed */
-:root[data-large-text="1"] .mm-settings-modal .mm-modal__dialog { width: min(100%, 48rem); }
+:root[data-large-text="1"] .mm-settings-modal .mm-modal__dialog { width: min(100%, 50rem); }
 :root[data-large-text="1"] .mm-set { grid-template-columns: minmax(0, 1fr); }
+:root[data-large-text="1"] .mm-set__col { padding-top: calc(var(--rib-h) * .5 + 16px); }
+:root[data-large-text="1"] .mm-set__col + .mm-set__col { padding-top: calc(var(--rib-h) * .5 + var(--stack)); }
 :root[data-large-text="1"] .mm-set__row { grid-template-columns: 1fr; grid-template-areas: "name" "hint" "ctrl"; }
 :root[data-large-text="1"] .mm-set__row > .mm-set__label { display: flex; grid-area: name; }
+:root[data-large-text="1"] .mm-set__row > .mm-set__lead { display: none; }
+:root[data-large-text="1"] .mm-set__label > span:first-child { white-space: normal; }
 :root[data-large-text="1"] .mm-set__rangewrap { width: 100%; justify-content: flex-start; }
 :root[data-large-text="1"] .mm-set__slot { flex: 1 1 auto; }
 :root[data-large-text="1"] .mm-set__toggle,

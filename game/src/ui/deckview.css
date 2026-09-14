@@ -80,7 +80,9 @@
   font-size: calc(var(--field-h) * .36);
 }
 .mm-deck__clear.kit-btn { --plate-h: clamp(40px, 5vh, 44px); align-self: flex-end; }
-.mm-deck__clear.kit-btn:disabled { opacity: .5; cursor: default; }
+/* with nothing to clear it is still a plate you could press, only unlit
+   (ui/modal.css .mm-modal--kit .kit-btn:disabled) */
+.mm-deck__clear.kit-btn:disabled { cursor: default; }
 
 /* the note: a quiet engraved caption, a star-tipped stroke either side */
 .mm-deck__note {
@@ -110,22 +112,31 @@
   font-size: var(--fs-md); font-style: italic; color: var(--kit-text-mid);
 }
 
-/* ── the table: the Shop's alcove, the grid scrolling inside it ───────────── */
+/* ── the case: the Shop's alcove lined in velvet, the grid scrolling inside ── */
 .mm-deck__table.kit-stage {
   --stage-pk: .74;
   --stage-medal-w: clamp(84px, 6.4vw, 104px);
+  --liner-w: clamp(14px, 1.1vw, 18px);
   flex: 1 1 auto; min-height: 0;
   display: flex; flex-direction: column; gap: 4px;
-  margin: clamp(22px, 3.2vh, 30px) 12px 6px;
-  padding: calc(var(--stage-medal-w) * 98 / 156 * .5 + 8px) clamp(12px, 1.4vw, 20px) 6px;
-  /* the alcove's floor is the cards' baize: the flocked damask cloth, a candle's
-     pool on it, under the stage's own shadows (which lie over this) */
-  background:
-    radial-gradient(64% 76% at 50% 58%, color-mix(in srgb, var(--kit-candle) 17%, transparent), transparent 76%),
-    url("../../assets/ui/kit/felt-damask.webp") 50% 0 / 150px auto,
-    linear-gradient(180deg, #1d1524, #150f1b);
-  background-clip: padding-box;
+  margin: clamp(22px, 3.2vh, 30px) 6px 4px;
+  padding: calc(var(--stage-medal-w) * 98 / 156 * .5 + 6px) calc(var(--liner-w) + clamp(12px, 1.2vw, 18px)) calc(var(--liner-w) + 6px);
+  /* the case's floor: the boards' flocked damask, pushed back under the cards
+     and lit by the candle burning at the frame's corner — warm in the middle
+     where the Tricks lie, falling into the velvet's shadow at the edges */
+  --mat-veil: .56; --mat-edge: .7; --mat-size: 350px 398px;
+  --lit-x: 56%; --lit-y: 70%; --lit-w: 90%; --lit-h: 110%; --lit-a: 46%;
 }
+/* the recess shading the stage lays over its floor, eased so the damask shows */
+.mm-deck__table.kit-stage::before {
+  background:
+    radial-gradient(70% 34% at 50% 0%, rgba(4, 3, 6, .5), transparent 70%),
+    linear-gradient(180deg, rgba(6, 4, 9, .3) 0%, transparent 30%, transparent 80%, rgba(6, 4, 9, .3) 100%);
+  background-clip: padding-box;
+  box-shadow: inset 0 0 40px rgba(0, 0, 0, .55), 0 26px 60px -24px rgba(0, 0, 0, .95);
+}
+/* the velvet lining the case, just inside its rail */
+.mm-deck__liner { inset: 4px; z-index: -1; --liner-w: inherit; }
 .mm-deck__table > .mm-deck__note { padding: 0 6%; }
 
 /* ── grid: the Tricks laid out on the table ───────────────────────────────── */

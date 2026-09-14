@@ -177,12 +177,17 @@ export class DeckView {
     empty.className = 'mm-deck__empty';
     empty.hidden = true;
 
-    /* the table the Tricks are laid out on: the Shop's alcove (.kit-stage), the
-       panels' rail round a deeper stretch with the moon on its top rule, the
-       note engraved under the moon and the cards below it */
+    /* the case the Tricks are laid out in: the Shop's alcove (.kit-stage), the
+       panels' rail round a deeper stretch with the moon on its top rule, lined
+       with tufted velvet (.kit-liner) round a floor of flocked damask in a
+       candle's light (.kit-mat--flock); the note engraved under the moon and
+       the cards laid below it */
     const table = document.createElement('div');
-    table.className = 'mm-deck__table kit-stage';
-    table.append(note, empty, grid);
+    table.className = 'mm-deck__table kit-stage kit-mat kit-mat--flock';
+    const liner = document.createElement('i');
+    liner.className = 'kit-liner mm-deck__liner';
+    liner.setAttribute('aria-hidden', 'true');
+    table.append(liner, note, empty, grid);
 
     root.append(bar, filt, table);
     this.el = root; this.grid = grid; this.emptyEl = empty;
@@ -440,7 +445,7 @@ export async function openPile(o = {}) {
     done.type = 'button'; done.className = 'mm-btn mm-btn--primary';
     done.textContent = 'Close';
     done.addEventListener('click', () => modal.close(null));
-    modal.footer.appendChild(kitButton(done, { medal: 'done' }));
+    modal.footer.appendChild(kitButton(done, { medal: 'close' }));
   }
 
   const result = await modal.open();

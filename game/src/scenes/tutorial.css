@@ -61,11 +61,13 @@
 .tut-stage {
   position: relative; z-index: 1;
   display: grid;
-  grid-template-columns: minmax(0, clamp(18rem, 21vw, 21rem)) minmax(0, 46rem);
+  grid-template-columns: minmax(0, clamp(20rem, 27vw, 30rem)) minmax(0, 44rem);
   align-items: stretch;
-  gap: clamp(44px, 4.6vw, 76px);
+  /* a clear stretch of the lit room between the portrait and the page: they
+     stand in the room, apart, rather than sharing one slab */
+  gap: clamp(64px, 6.4vw, 112px);
   /* under the plaque, over the Skip plate */
-  padding: clamp(150px, 19vh, 176px) clamp(72px, 7vw, 120px) clamp(78px, 10vh, 96px);
+  padding: clamp(150px, 19vh, 176px) clamp(72px, 7vw, 120px) clamp(86px, 11vh, 108px);
   max-width: 100%;
 }
 .tut-root[data-wide="1"] .tut-stage {
@@ -101,7 +103,7 @@
   display: block;
   width: 100%; height: auto;
   aspect-ratio: 3 / 4;
-  max-height: min(58vh, 520px);
+  max-height: min(64vh, 600px);
   object-fit: cover; object-position: 50% 18%;
   /* the room's candlelight on it, the frame's shadow falling across its edge */
   filter: saturate(.94) brightness(.96);
@@ -110,15 +112,18 @@
    glows round the frame, in the room, never inside the gilt. */
 .tut-frame--ghost { box-shadow: inset 0 0 26px rgba(0, 0, 0, .85), 0 16px 34px -14px rgba(0, 0, 0, .9), 0 0 54px color-mix(in srgb, var(--spectre-300) 22%, transparent); }
 .tut-frame--ghost .tut-fig__img { object-position: 42% 50%; }
-/* the nameplate over the foot of the frame, as every tile on the select boards wears one */
+/* the nameplate over the foot of the frame, as every tile on the select boards
+   wears one: the tiles' ogee ends and a low arch over the name (.kit-plate--arch) */
 .tut-plate.kit-plate {
-  --plate-h: clamp(54px, 6.6vh, 62px);
-  position: absolute; z-index: 4; left: 50%; bottom: calc(var(--plate-h) * -.38);
+  --plate-h: clamp(62px, 7.6vh, 72px);
+  position: absolute; z-index: 4; left: 50%; bottom: calc(var(--plate-h) * -.42);
   translate: -50% 0;
-  min-width: 62%;
-  padding-inline: calc(var(--plate-h) * .8);
+  min-width: 66%;
   white-space: nowrap;
+  gap: 0;
 }
+.tut-plate .kit-plate__name { font-size: calc(var(--plate-h) * .33); padding-top: calc(var(--plate-h) * .05); }
+.tut-plate .kit-plate__epithet { font-size: max(12.5px, calc(var(--plate-h) * .215)); }
 /* the skull on its books and the candle at the frame's two feet, as on the Kid
    board: in front of the frame's corners, clear of the nameplate between them */
 .tut-prop { z-index: 5; }
@@ -137,11 +142,30 @@
 .tut-root .tut-panel { display: flex; flex-direction: column; }
 .tut-panel.kit-panel {
   --pk: .9;
+  --liner-w: clamp(16px, 1.25vw, 20px);
   gap: clamp(14px, 2vh, 20px);
   min-width: 0;
-  padding: clamp(50px, 6.6vh, 60px) clamp(36px, 3.6vw, 56px) clamp(24px, 3.2vh, 32px);
+  padding: clamp(58px, 7.4vh, 68px) clamp(46px, 3.9vw, 62px) clamp(34px, 4.2vh, 44px);
   max-height: calc(100vh - 120px);
   opacity: 0;
+}
+/* the velvet and its gilt fillet are the page's inner edge: the panel's thin
+   engraved double rule is not drawn again inside them */
+.tut-panel { --rule: none; }
+/* ── the page's fittings: velvet, brass guards, the bookmark ──────────────── */
+.tut-fit { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
+.tut-fit__liner { inset: 5px; --liner-w: inherit; }
+.tut-fit__guard { --bracket: clamp(66px, 5.6vw, 90px); }
+/* the story's ribbon, hanging out from under the foot of the page, to the
+   right of the scrollwork on the board's bottom rule and clear of Skip */
+.tut-fit__mark {
+  --mark-w: clamp(24px, 1.8vw, 30px);
+  left: 54%; top: calc(100% + 3px); z-index: -1;
+  height: clamp(66px, 9vh, 86px);
+}
+.tut-fit__mark::after {
+  content: ''; position: absolute; left: 0; right: 0; top: 0; height: 22px;
+  background: linear-gradient(rgba(6, 4, 9, .9), transparent);
 }
 .tut-panel.is-in { animation: tut-page-in var(--t-slow) var(--ease-out) both; }
 @keyframes tut-page-in {
@@ -165,28 +189,51 @@
   color: var(--kit-text-mid);
 }
 
-.tut-lines { display: flex; flex-direction: column; gap: clamp(10px, 1.5vh, 14px); }
+.tut-lines { display: flex; flex-direction: column; gap: clamp(10px, 1.7vh, 16px); }
+/* a printed headpiece over the text: two gilt strokes meeting at a star, so
+   the words stand under something on the page instead of floating in it */
+.tut-lines::before {
+  content: ''; flex: none; align-self: center;
+  width: min(300px, 56%); height: 15px;
+  margin-bottom: clamp(8px, 1.6vh, 16px);
+  background:
+    url("../../assets/ui/kit/star4.svg") 50% 50% / 13px 13px no-repeat,
+    radial-gradient(circle, var(--kit-gold) 0 1.4px, transparent 2px) calc(50% - 22px) 50% / 8px 8px no-repeat,
+    radial-gradient(circle, var(--kit-gold) 0 1.4px, transparent 2px) calc(50% + 22px) 50% / 8px 8px no-repeat,
+    linear-gradient(90deg, transparent, color-mix(in srgb, var(--kit-gold) 85%, transparent)) 0 50% / calc(50% - 32px) 1.5px no-repeat,
+    linear-gradient(270deg, transparent, color-mix(in srgb, var(--kit-gold) 85%, transparent)) 100% 50% / calc(50% - 32px) 1.5px no-repeat;
+  filter: drop-shadow(0 1px 0 rgba(0, 0, 0, .85));
+  opacity: .9;
+}
 .tut-line {
   margin: 0;
-  font-size: var(--fs-lg);
-  line-height: 1.52;
+  font-size: calc(var(--fs-lg) * 1.2);
+  line-height: 1.48;
   color: var(--kit-text);
   text-shadow: 0 1px 0 rgba(0, 0, 0, .7);
-  text-wrap: pretty;
+  /* set like a storybook page: a paragraph's lines kept even, never one
+     stranded word at its end */
+  text-wrap: balance;
 }
-/* The first line opens on an illuminated initial, as a Curiosity's page does:
-   the letter in gilt, set in its framed enamel box (initial.webp), dropped into
-   the line. `flow-root` keeps the float inside its own paragraph. */
-.tut-line:first-child { display: flow-root; }
-.tut-line:first-child::first-letter {
-  float: left;
-  margin: 2px 12px 0 0;
-  padding: .17em .27em .1em;
-  line-height: .8;
-  font-family: var(--font-display); font-weight: 700; font-size: 2.1em;
-  color: var(--kit-gold-hi);
-  background: url("../../assets/ui/kit/initial.webp") 50% 50% / 100% 100% no-repeat;
-  text-shadow: 0 1px 0 var(--kit-gold-lo), 0 2px 0 #1c1029, 0 0 14px color-mix(in srgb, var(--kit-candle) 40%, transparent);
+/* The page opens on an illuminated initial (tutorial.js wraps it): the
+   wordmark's own lettering — marbled lavender, bevelled and rimmed in gold by
+   the #kit-engrave filter — standing on the first line's baseline and rising
+   two lines tall above it, so it stays a letter of its word ("Orbit") with no
+   box and no gap round it. */
+.tut-initial {
+  display: inline-block;
+  font-size: 2.5em; line-height: .86;
+  margin: 0 -.01em 0 -.02em;
+  padding: .06em .02em 0;
+  vertical-align: baseline;
+  font-family: var(--font-display); font-weight: 700;
+  color: var(--kit-lav);
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--kit-lav-hi) 60%, transparent) 0%, transparent 44%, color-mix(in srgb, var(--kit-violet-lo) 55%, transparent) 100%),
+    url("../../assets/ui/kit/marble.webp") 0 0 / 120px 120px;
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: url("#kit-engrave") drop-shadow(0 0 10px color-mix(in srgb, var(--kit-violet) 38%, transparent));
 }
 /* The kid's own words, and the last line of a page, sit differently. */
 .tut-line:last-child { color: var(--kit-text-mid); }
@@ -439,8 +486,8 @@
    unlit. They are a reading, not controls. */
 .tut-dots.kit-ladder {
   --md: 20px;
-  flex: none;
-  gap: 10px;
+  flex: 0 1 auto; min-width: 0;
+  gap: clamp(5px, .62vw, 10px);
   padding: 8px 8px;
 }
 .tut-dot.kit-ladder__rung { cursor: default; pointer-events: none; }
@@ -449,7 +496,7 @@
 
 /* Go on: the boards' lit nameplate, an ornate enamel medallion seated on its
    end, as every board's way onward wears one */
-.tut-next.kit-btn { margin-right: calc(var(--plate-h) * .95); padding-right: calc(var(--plate-h) * 1.3); }
+.tut-next.kit-btn { flex: none; white-space: nowrap; margin-right: calc(var(--plate-h) * .95); padding-right: calc(var(--plate-h) * 1.3); }
 .tut-next .kit-btn__medal { right: calc(var(--plate-h) * -.84); }
 .tut-next[hidden] { display: none; }
 
