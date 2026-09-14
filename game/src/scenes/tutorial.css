@@ -82,6 +82,10 @@
 /* beside the portrait, the page stands a little shorter than the frame, both
    feet on the mantel, so its moon crest clears the board's plaque */
 .tut-root[data-wide="0"] .tut-panel { margin-top: clamp(34px, 5vh, 46px); }
+/* a page on its own carries the longest beats: it sets its headpiece a size
+   smaller and starts nearer its rail, so it too stands clear of the plaque */
+.tut-root[data-wide="1"] .tut-panel { --medal-k: .8; padding-top: clamp(46px, 5.8vh, 52px); padding-bottom: clamp(28px, 3.6vh, 36px); }
+.tut-root[data-wide="1"] .tut-lines::before { width: min(400px, 76%); margin-bottom: clamp(2px, .6vh, 6px); }
 /* the text sits in the middle of a tall page and the way on stands at its foot */
 .tut-root[data-wide="0"] .tut-lines { margin-block: auto; }
 .tut-root[data-wide="0"] .tut-foot { margin-top: 0; }

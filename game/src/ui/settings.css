@@ -43,7 +43,7 @@
   --slot-h: 30px;  --knob: 26px;         /* a slider */
   --sw-w: 54px;    --sw-h: 26px;         /* a switch */
   --read-w: clamp(62px, 4.5vw, 72px);   /* the column of readings */
-  --read-h: 28px;
+  --read-h: 30px;
   --choice-h: 34px;
   --panel-top: 8px;                     /* under a panel's ribbon */
   --stack: clamp(8px, 1.4vh, 16px);     /* between two panels in a column */
@@ -64,7 +64,7 @@
     --row-pad: 4px;
     --slot-h: 26px; --knob: 22px;
     --sw-w: 48px;   --sw-h: 22px;
-    --read-h: 26px; --choice-h: 30px;
+    --read-h: 27px; --choice-h: 30px;
     --panel-top: 4px;
   }
 }
@@ -155,16 +155,44 @@
   translate: -50% calc(-50% - 1px);
   float: none;
   margin: 0;
-  gap: calc(var(--rib-h) * .22);
-  padding-left: calc(var(--rib-h) * .95);
+  gap: calc(var(--rib-h) * .2);
+  padding-left: calc(var(--rib-h) * .5);
 }
+/* the crest sits over the ribbon's own painted star at its left end */
 .mm-set__legend > .mm-set__crest.kit-crest {
-  --crest: calc(var(--rib-h) * 1.32);
-  margin: 0 0 0 calc(var(--rib-h) * -.18);
+  --crest: calc(var(--rib-h) * 1.36);
+  margin: 0 0 0 calc(var(--rib-h) * -.02);
   /* the ribbon's own lift (brightness 1.22) is not the medallion's */
   filter: brightness(.84) saturate(1.06) drop-shadow(0 2px 2px rgba(0, 0, 0, .75));
 }
 .mm-set__legendname { display: block; }
+/* the carved fittings are headed by a nameplate instead: the Companion tiles'
+   lit enamel plate across the carving, the name lettered in gilt, and on the
+   dangerous page in the Courage bar's red */
+.mm-set__group[data-group="seed"] > .mm-set__legend,
+.mm-set__group[data-group="expedition"] > .mm-set__legend,
+.mm-set__group[data-group="danger"] > .mm-set__legend {
+  --plate-h: calc(var(--rib-h) + 6px);
+  height: var(--plate-h);
+  min-width: 0;
+  padding: 0 calc(var(--plate-h) * 1.02) 1px calc(var(--plate-h) * .62);
+  border-image-source: url("../../assets/ui/kit/plate-lit.webp");
+  border-image-slice: 12 53 12 46 fill;
+  border-image-width: calc(var(--plate-h) * 12 / 72) calc(var(--plate-h) * 53 / 72) calc(var(--plate-h) * 12 / 72) calc(var(--plate-h) * 46 / 72);
+  color: var(--kit-gold-hi);
+  -webkit-text-stroke: 0;
+  font-size: calc(var(--rib-h) * .45);
+  letter-spacing: .2em;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, .95), 0 1px 0 color-mix(in srgb, var(--kit-gold-hi) 18%, transparent), 0 0 10px color-mix(in srgb, var(--kit-candle) 22%, transparent);
+  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .75));
+}
+.mm-set__group[data-group="seed"] > .mm-set__legend > .mm-set__crest,
+.mm-set__group[data-group="expedition"] > .mm-set__legend > .mm-set__crest,
+.mm-set__group[data-group="danger"] > .mm-set__legend > .mm-set__crest {
+  margin-left: calc(var(--plate-h) * -.62);
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .75));
+}
+.mm-set__group[data-group="danger"] > .mm-set__legend { color: color-mix(in oklab, var(--threat-200) 82%, var(--kit-gold-hi)); }
 
 /* a line: the name, the leader, the control; the note under all three */
 .mm-set__row {
@@ -217,7 +245,7 @@
   gap: 0;
 }
 .mm-set__reading .kit-enamel__value {
-  font-size: calc(var(--h) * .52);
+  font-size: calc(var(--h) * .54);
   letter-spacing: .01em;
   padding-top: 1px;
 }
@@ -315,7 +343,7 @@
   translate: 0 -50%;
   border-radius: 50%;
   background: url("../../assets/ui/kit/button.webp") 50% 50% / 100% 100% no-repeat;
-  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .8)) saturate(.5) brightness(.72);
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .8)) saturate(.75) brightness(.9);
   transition: transform var(--t-base) var(--ease-snap), filter var(--t-quick) var(--ease-out);
 }
 .mm-set__knob > svg { width: 56%; height: 56%; overflow: visible; opacity: 0; }
@@ -324,7 +352,7 @@
   stroke: #1d1208; stroke-width: 2.2; stroke-linejoin: round;
   paint-order: stroke fill;
 }
-.mm-set__toggle:hover .mm-set__knob { filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .8)) saturate(.8) brightness(.95); }
+.mm-set__toggle:hover .mm-set__knob { filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .8)) saturate(.95) brightness(1.05); }
 /* on: the amber lit the length of the tube, the knob at the far end catching
    the candle, a gold check struck in it */
 .mm-set__toggle[data-on="1"] .kit-tube__fill { transform: scaleX(1); }

@@ -72,9 +72,25 @@
 
 /* ── filters: engraved nameplates, a brass chevron at each one's end ─────── */
 .mm-deck__filters {
+  position: relative;
   display: flex; align-items: center; justify-content: center;
   gap: 8px clamp(8px, 1vw, 16px); flex-wrap: wrap;
 }
+/* the plates of both rows are mounted on the case's gilt rules: the same
+   star-tipped double rule the ways out stand on at the dialog's foot */
+.mm-deck__bar, .mm-deck__filters { position: relative; isolation: isolate; }
+.mm-deck__bar::before, .mm-deck__filters::before {
+  content: ''; position: absolute; z-index: -1; pointer-events: none;
+  left: 3%; right: 3%; top: 50%; height: 7px; translate: 0 -50%;
+  background:
+    url("../../assets/ui/kit/star4.svg") 0 50% / 7px 7px no-repeat,
+    url("../../assets/ui/kit/star4.svg") 100% 50% / 7px 7px no-repeat,
+    linear-gradient(90deg, transparent, var(--kit-gold) 9%, var(--kit-gold-hi) 50%, var(--kit-gold) 91%, transparent) 50% 1px / calc(100% - 16px) 1px no-repeat,
+    linear-gradient(90deg, transparent, var(--kit-gold-lo) 9%, var(--kit-gold) 50%, var(--kit-gold-lo) 91%, transparent) 50% 5px / calc(100% - 16px) 1px no-repeat;
+  filter: drop-shadow(0 1px 0 rgba(0, 0, 0, .85));
+  opacity: .75;
+}
+.mm-deck__bar::before { left: 18%; right: 18%; }
 .mm-deck__sortwrap {
   --field-h: clamp(46px, 5.9vh, 52px);
   display: block;
@@ -103,10 +119,16 @@
   /* the Companion tiles' lit enamel plate: a nameplate, not a slot */
   border-image-source: url("../../assets/ui/kit/plate-lit.webp");
 }
-.mm-deck__clear.kit-btn { --plate-h: clamp(44px, 5.6vh, 50px); align-self: center; }
-/* with nothing to clear it is still a plate you could press, only unlit
-   (ui/modal.css .mm-modal--kit .kit-btn:disabled) */
-.mm-deck__clear.kit-btn:disabled { cursor: default; }
+.mm-deck__clear.kit-btn { --plate-h: clamp(44px, 5.6vh, 50px); align-self: center; border-image-source: url("../../assets/ui/kit/plate-lit.webp"); }
+/* with nothing to clear it is still the filters' own plate, only its lettering
+   quiet and its enamel a shade dulled (not ui/modal.css's unlit black plate,
+   which beside five lit plates would read as a hole in the row) */
+.mm-modal--kit .mm-deck__clear.kit-btn:disabled,
+.mm-modal--kit .mm-deck__clear.kit-btn:disabled:hover {
+  cursor: default;
+  color: var(--kit-text-mid);
+  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .7)) saturate(.7) brightness(.88);
+}
 
 /* the note: a quiet engraved caption, a star-tipped stroke either side */
 .mm-deck__note {
