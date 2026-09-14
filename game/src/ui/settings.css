@@ -47,7 +47,7 @@
   --pad-x: clamp(29px, 2.3vw, 36px);
   --pad-b: clamp(22px, 2.9vh, 28px);
   display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
-  align-items: start;
+  align-items: stretch;
   gap: 0 clamp(26px, 2.4vw, 38px);
   padding: 0 2px 4px;
 }
@@ -71,13 +71,16 @@
   }
 }
 
-/* a column: its panels stacked, the first ribbon's upper half clear of the top */
+/* a column: its panels stacked, the first ribbon's upper half clear of the top;
+   the three end on one line, as the boards' panels do, the last panel of a
+   shorter column standing taller to meet it */
 .mm-set__col {
   display: flex; flex-direction: column;
   gap: calc(var(--rib-h) * .5 + var(--stack));
   min-width: 0;
   padding-top: calc(var(--rib-h) * .5);
 }
+.mm-set__col > .mm-set__group:last-child { flex: 1 0 auto; }
 /* nothing is meant to scroll, but if a player's text is larger than the board,
    what runs under the buttons fades into the damask instead of being cut */
 .mm-settings-modal .mm-modal__body { margin-top: 2px; padding-bottom: 8px; }
