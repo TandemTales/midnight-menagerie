@@ -229,8 +229,8 @@ const FORT_PAINT = `
   <path class="rs-rail rs-rail--lo" d="M0 -80.5h420"/>
   <path class="rs-cord" d="M210 -82L191 23M210 -82L229 23"/>
   <circle class="rs-hook" cx="210" cy="-83" r="2.6"/>
-  <circle class="rs-candleglow rs-sconceglow" cx="46" cy="-66" r="58" filter="url(#rsBlur8)"/>
-  <image href="${KIT_ART}sconce.webp" x="30" y="-80" width="32" height="70" class="rs-prop rs-sconce"/>
+  <circle class="rs-candleglow rs-sconceglow" cx="46" cy="-14" r="58" filter="url(#rsBlur8)"/>
+  <image href="${KIT_ART}sconce.webp" x="30" y="-28" width="32" height="70" class="rs-prop rs-sconce"/>
 
   <!-- a portrait of the house, hung where the kids could not reach to take it down -->
   <rect class="rs-picframe" x="186" y="22" width="48" height="58" rx="2" fill="url(#rsGilt)"/>
@@ -238,17 +238,17 @@ const FORT_PAINT = `
   <rect class="rs-picedge" x="192" y="28" width="36" height="46"/>
 
   <!-- the window the moon comes through, and what it lays across the room -->
-  <path class="rs-winframe" d="M350 110V-34c0-27 13-41 30-41s30 14 30 41v144Z"/>
-  <path d="M357 106V-32c0-22 10-35 23-35s23 13 23 35v138Z" fill="url(#rsGlass)"/>
-  <circle class="rs-moonglow" cx="391" cy="-26" r="15" filter="url(#rsBlur4)"/>
-  <circle class="rs-moondisc" cx="391" cy="-26" r="7"/>
-  <g class="rs-stars"><circle cx="365" cy="-40" r=".9"/><circle cx="369" cy="-4" r=".6"/><circle cx="365" cy="36" r=".9"/><circle cx="371" cy="74" r=".7"/><circle cx="395" cy="84" r=".8"/><circle cx="362" cy="94" r=".6"/><circle cx="386" cy="20" r=".6"/><circle cx="397" cy="-52" r=".7"/></g>
-  <path class="rs-mullion" d="M380 -67v173M357 -8h46M357 50h46"/>
+  <path class="rs-winframe" d="M350 110V15c0-27 13-41 30-41s30 14 30 41v95Z"/>
+  <path d="M357 106V17c0-22 10-35 23-35s23 13 23 35v89Z" fill="url(#rsGlass)"/>
+  <circle class="rs-moonglow" cx="391" cy="12" r="15" filter="url(#rsBlur4)"/>
+  <circle class="rs-moondisc" cx="391" cy="12" r="7"/>
+  <g class="rs-stars"><circle cx="365" cy="4" r=".9"/><circle cx="369" cy="26" r=".6"/><circle cx="365" cy="58" r=".9"/><circle cx="371" cy="84" r=".7"/><circle cx="395" cy="90" r=".8"/><circle cx="362" cy="98" r=".6"/><circle cx="386" cy="44" r=".6"/><circle cx="397" cy="66" r=".7"/></g>
+  <path class="rs-mullion" d="M380 -18v124M357 34h46M357 72h46"/>
   <path class="rs-winsill" d="M344 108h72v7h-72Z"/>
-  <path d="M362 -20 404 -20 322 257 190 257Z" fill="url(#rsShaft)" filter="url(#rsBlur8)"/>
-  <path class="rs-moonbeam" d="M370 -14 398 -14 300 257 226 257Z" filter="url(#rsBlur4)"/>
+  <path d="M362 20 404 20 322 257 190 257Z" fill="url(#rsShaft)" filter="url(#rsBlur8)"/>
+  <path class="rs-moonbeam" d="M370 24 398 24 300 257 226 257Z" filter="url(#rsBlur4)"/>
 
-  <image href="${KIT_ART}web-l.webp" x="-2" y="-128" width="64" height="91" class="rs-web"/>
+  <image href="${KIT_ART}web-l.webp" x="-2" y="-34" width="64" height="91" class="rs-web"/>
 
   <!-- the door they wedged: panelled, boarded across, still shut -->
   <path class="rs-doorframe" d="M4 58h80v199H4Z"/>
@@ -288,10 +288,10 @@ const FORT_PAINT = `
   </g>
 
   <!-- the fort's flag, and the bunting strung from it to the chair -->
-  <path class="rs-pole" d="M104 132 86 -34"/>
-  <circle class="rs-polecap" cx="86" cy="-36" r="2.6"/>
-  <path class="rs-pennant" d="M88 -30 133 -19 90 -6Z"/>
-  <path class="rs-pennant-star" d="M103 -22l1.4 2.9 3.1.4-2.3 2.1.6 3.1-2.8-1.5-2.8 1.5.6-3.1-2.3-2.1 3.1-.4Z"/>
+  <path class="rs-pole" d="M104 132 88 -14"/>
+  <circle class="rs-polecap" cx="88" cy="-16" r="2.6"/>
+  <path class="rs-pennant" d="M90 -10 135 1 92 14Z"/>
+  <path class="rs-pennant-star" d="M105 -2l1.4 2.9 3.1.4-2.3 2.1.6 3.1-2.8-1.5-2.8 1.5.6-3.1-2.3-2.1 3.1-.4Z"/>
   <path class="rs-string" d="M94 44C170 98 282 108 354 98"/>
   <g class="rs-bunting">
     <path class="rs-bunt rs-bunt--gold"   d="M125 64h11l-5.5 12Z"/>
@@ -477,14 +477,29 @@ export class RestScene extends RoomScene {
     const mateDeck = mate ? r.deckViewsOf(mate) : [];
 
     const wrap = el('div', 'rs-room');
-    // The fort is staged in a gold-railed panel with the moon on its rail, the
-    // way the Kid board seats its mirror; the choices are panels beside it.
+    /* Round 5: the fort is a PAINTING hung on the wall â€” a wide landscape in
+       a gold-railed frame with the moon on its rail (c7d31db's proportions),
+       the fort filling it rather than sitting small under an empty wall â€” and
+       under it a carved ledge (.kit-ledge) with the scene's nameplate fixed to
+       its front, the Companion tiles' cartouche naming who is in it tonight
+       (BASALT's), and a lit candle standing on each end. The choices are
+       panels beside it. */
+    const kidName = String(r.kidNameOf?.(r.local) || 'You').split(' ')[0];
+    const petName = COMPANIONS.find(c => c.slug === r.companion)?.name || 'your Companion';
     wrap.innerHTML = `
-      <div class="rs-art kit-panel" data-medal="moon">
-        <div class="rs-scene">${FORT_PAINT}
-          <span class="rs-glowbox" aria-hidden="true"><i class="rs-glow rs-glow--moon"></i><i class="rs-glow rs-glow--rug"></i></span>
-          ${FORT_SVG}
-          <span class="rs-glowbox rs-glowbox--front" aria-hidden="true"><i class="rs-glow rs-glow--lamp"></i></span>
+      <div class="rs-stage">
+        <div class="rs-art kit-panel" data-medal="moon">
+          <div class="rs-scene">${FORT_PAINT}
+            <span class="rs-glowbox" aria-hidden="true"><i class="rs-glow rs-glow--moon"></i><i class="rs-glow rs-glow--rug"></i></span>
+            ${FORT_SVG}
+            <span class="rs-glowbox rs-glowbox--front" aria-hidden="true"><i class="rs-glow rs-glow--lamp"></i></span>
+          </div>
+        </div>
+        <div class="rs-shelf">
+          <i class="rs-shelf__ledge kit-ledge" aria-hidden="true"></i>
+          <i class="rs-shelf__candle rs-shelf__candle--l kit-prop kit-prop--candle" aria-hidden="true"></i>
+          <p class="rs-art__plate kit-plate"><b class="kit-plate__name">The Blanket Fort</b><span class="kit-plate__epithet">${esc(kidName)} and ${esc(petName)}, until morning</span></p>
+          <i class="rs-shelf__candle rs-shelf__candle--r kit-prop kit-prop--candle" aria-hidden="true"></i>
         </div>
       </div>
       <div class="rs-choices" role="group" aria-label="Choose one thing to do here"></div>`;

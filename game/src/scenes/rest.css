@@ -38,8 +38,9 @@
 .rs-room {
   flex: 1 1 auto; min-height: 0;
   display: grid;
-  /* the choices are what is read: their plaques take the wider column */
-  grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr);
+  /* round 5: the painting takes the wider column, so the fort is large; the
+     choices keep the width their words need */
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: clamp(30px, 3.4vw, 64px);
   /* the fort's frame and the column of choices share one top rail and one
      bottom rail: no dead band above or below the picture */
@@ -50,26 +51,80 @@
 }
 
 /* ── the fort ─────────────────────────────────────────────────────────────── */
+/* Round 5: a wide landscape painting in its frame, over a carved ledge. The
+   stage is a size container, so the frame is as wide as the column allows
+   unless the column is too short for a landscape that wide, and the ledge,
+   its nameplate and its two candles take the same width under it. The
+   painting shows the room through a 420x310 window cut from the floor up:
+   the fort fills it, the wall above it only as tall as the flag. */
+.rs-stage {
+  --shelf-h: clamp(58px, 7.2vh, 68px);
+  --art-pad: clamp(8px, .8vw, 12px);
+  --candle-room: clamp(22px, 1.9vw, 32px);
+  --art-w: min(100cqw - 2 * var(--candle-room), (100cqh - var(--shelf-h) - 2 * var(--art-pad)) * 420 / 310 + 2 * var(--art-pad));
+  container-type: size;
+  position: relative;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  min-height: 0;
+}
 .rs-art {
   --pk: .9;
   --medal-k: .56;
-  padding: clamp(8px, .8vw, 12px);
-  align-self: stretch;
-  display: grid; grid-template-rows: minmax(0, 1fr);
+  flex: none;
+  width: var(--art-w);
+  padding: var(--art-pad);
 }
-/* The picture fills the frame, whatever shape the column makes it: both SVGs
-   show the room through a 420x410 window sliced from the floor up (rest.js),
-   so a taller frame shows more of the wall above the fort, never a band of
-   nothing. */
 .rs-scene {
   position: relative;
-  width: 100%; height: 100%; min-height: 0;
+  width: 100%; aspect-ratio: 420 / 310;
   container-type: size;
-  margin-inline: auto;
   overflow: hidden;
   border-radius: 3px;
   box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .85), inset 0 0 24px rgba(0, 0, 0, .7);
 }
+/* the ledge under the painting: walnut and parcel gilt, a little wider than
+   the frame, its nameplate screwed to its front and a candle at each end */
+.rs-shelf {
+  position: relative; flex: none;
+  width: var(--art-w); height: var(--shelf-h);
+}
+.rs-shelf__ledge {
+  --ledge-h: clamp(28px, 3.4vh, 34px);
+  position: absolute; z-index: 0;
+  left: calc(-1 * var(--candle-room)); right: calc(-1 * var(--candle-room));
+  top: 11px;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, black 18px, black calc(100% - 18px), transparent 100%);
+          mask-image: linear-gradient(90deg, transparent 0, black 18px, black calc(100% - 18px), transparent 100%);
+}
+.rs-shelf__candle {
+  z-index: 1;
+  width: clamp(34px, 2.9vw, 48px);
+  bottom: calc(var(--shelf-h) - 11px - clamp(28px, 3.4vh, 34px) * .2);
+  filter: brightness(1.05) drop-shadow(0 4px 4px rgba(0, 0, 0, .7));
+  translate: -50% 0;
+}
+.rs-shelf__candle--l { left: calc(-.5 * var(--candle-room)); }
+.rs-shelf__candle--r { left: calc(100% + .5 * var(--candle-room)); }
+/* the scene's name: the Companion tiles' dark cartouche on the ledge's front */
+.rs-art__plate.kit-plate {
+  --plate-h: clamp(42px, 5.2vh, 48px);
+  position: absolute; z-index: 2; left: 50%; top: calc(11px + clamp(28px, 3.4vh, 34px) * .62);
+  translate: -50% -50%;
+  margin: 0;
+  min-width: min(62%, 340px);
+  padding: 1px calc(var(--plate-h) * .9) 2px;
+  border-image-source: url("../../assets/ui/kit/cartouche-dark.webp");
+  border-image-slice: 18 34 18 34 fill;
+  border-image-width: calc(var(--plate-h) * 18 / 64) calc(var(--plate-h) * 34 / 64);
+  gap: 0;
+  white-space: nowrap;
+}
+.rs-art__plate .kit-plate__name {
+  font-family: var(--font-display); font-weight: 700;
+  font-size: max(13px, calc(var(--plate-h) * .34)); letter-spacing: .14em; text-transform: uppercase;
+  color: var(--kit-name);
+}
+.rs-art__plate .kit-plate__epithet { font-size: max(12px, calc(var(--plate-h) * .27)); }
 .rs-scene > svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
 /* the lights painted over the picture ride the drawing, not the frame: this
    box is the SVGs' 420x410 window, sliced into the scene the same way (as
@@ -101,7 +156,7 @@
    edges are light spilling and not a drawn cone, streaked the way dust in it is */
 .rs-glow--moon::before {
   content: ''; position: absolute; inset: 0;
-  clip-path: polygon(85.4% 25.9%, 96.6% 25.9%, 79% 95.2%, 42% 95.2%);
+  clip-path: polygon(85.4% 36.6%, 96.6% 36.6%, 79% 95.2%, 42% 95.2%);
   background:
     repeating-linear-gradient(104deg, transparent 0 7px, color-mix(in srgb, var(--kit-moon) 9%, transparent) 7px 11px, transparent 11px 19px),
     linear-gradient(200deg, color-mix(in srgb, var(--kit-moon) 42%, transparent) 0%, color-mix(in srgb, var(--kit-moon) 28%, transparent) 50%, color-mix(in srgb, var(--kit-moon-lo) 22%, transparent) 100%);
@@ -278,6 +333,7 @@
    rail, the lamp and the two of them stay where they were. */
 .kit-board.has-backdrop .rs-fort__paint { opacity: 0; }
 .kit-board.has-backdrop .rs-art { background: transparent; box-shadow: none; }
+.kit-board.has-backdrop .rs-shelf__ledge { opacity: .9; }
 .kit-board.has-backdrop .rs-scene { box-shadow: none; }
 
 /* ── the night's choices: a gold-railed panel each ────────────────────────── */
@@ -352,7 +408,7 @@
   grid-area: name; align-self: end; min-width: 0;
   display: block;
   font-family: var(--font-display); font-weight: 700;
-  font-size: clamp(18px, 1.38vw, 23px); letter-spacing: .09em; text-transform: uppercase;
+  font-size: clamp(17px, 1.24vw, 20.5px); letter-spacing: .08em; text-transform: uppercase;
   line-height: 1.1; color: var(--kit-gold-hi);
   text-shadow: 0 -1px 0 rgba(0, 0, 0, .95), 0 1px 0 color-mix(in srgb, var(--kit-gold-lo) 80%, transparent), 0 0 14px color-mix(in srgb, var(--kit-candle) 18%, transparent);
 }
@@ -492,8 +548,9 @@
   .rs-door__txt > b { font-size: 17px; letter-spacing: .07em; }
   .rs-door__read.kit-plate { --plate-h: 40px; }
   .rs-choices { gap: 20px; }
-  .rs-room { padding: 22px 0 12px; grid-template-columns: minmax(0, .86fr) minmax(0, 1.14fr); gap: 32px; }
+  .rs-room { padding: 22px 0 10px; gap: 30px; }
   .rs-art { --medal-k: .5; }
+  .rs-stage { --shelf-h: 56px; }
   .rs-door__txt > em, .rs-door__note { line-height: 1.16; }
   .rs-door { row-gap: 0; }
   /* the plaque's sub is one long line: the plate grows a little to hold it
@@ -537,5 +594,5 @@
 }
 @media (max-width: 1180px) {
   .rs-room { grid-template-columns: minmax(0, 1fr); }
-  .rs-art { display: none; }
+  .rs-stage { display: none; }
 }
