@@ -31,7 +31,7 @@
   --side-w: clamp(250px, 20.4vw, 330px);
   --side-gap: clamp(22px, 2vw, 34px);
   --head-h: clamp(122px, 15.6vh, 142px);
-  --cl-top: calc(var(--head-h) + var(--cl-carve) + clamp(6px, 1vh, 12px));
+  --cl-top: calc(var(--head-h) + var(--cl-carve) + clamp(10px, 1.5vh, 16px));
   --cl-bot: calc(clamp(14px, 2vh, 20px) + var(--cl-carve));
   --cl-corner: clamp(128px, 10.6vw, 176px);
 

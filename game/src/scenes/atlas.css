@@ -130,20 +130,28 @@
   min-height: 0;
   padding-top: clamp(22px, 3vh, 28px);
 }
-.at-floor { position: relative; min-height: 0; }
+/* The floor is whatever height the panel leaves, and at a fork the panel
+   takes nearly all of it. So the floor is a size container: the skull and the
+   candle are never taller than the floor they stand on, and where there is
+   no floor to speak of they are simply not set out. They never stand on the
+   panel or its button. */
+.at-floor { position: relative; min-height: 0; container-type: size; }
 /* both stand on the floor line the sheet's foot stands on, a quarter of the
    panel's width in from each side: well inside its corner fleurs */
 .at-floor__skull {
-  --skull-w: clamp(64px, 5.2vw, 84px);
+  --skull-w: min(clamp(64px, 5.2vw, 84px), calc(86cqh * 130 / 153));
   width: var(--skull-w);
   left: 24%; bottom: calc(clamp(8px, 1.4vh, 14px) * -1);
   z-index: 1;
 }
 .at-floor__candle {
-  --candle-w: clamp(46px, 3.7vw, 60px);
+  --candle-w: min(clamp(46px, 3.7vw, 60px), calc(86cqh * 106 / 164));
   width: var(--candle-w);
   right: 25%; bottom: calc(clamp(6px, 1.2vh, 12px) * -1);
   z-index: 1;
+}
+@container (max-height: 46px) {
+  .at-floor__skull, .at-floor__candle { display: none; }
 }
 
 /* ── the sheet ────────────────────────────────────────────────────────────── */
