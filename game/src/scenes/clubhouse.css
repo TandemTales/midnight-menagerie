@@ -28,7 +28,7 @@
   --cl-carve: clamp(30px, 2.4vw, 38px);
   --cl-l: calc(clamp(8px, .7vw, 12px) + var(--cl-vine) + clamp(8px, .8vw, 14px) + var(--cl-carve));
   --cl-r: calc(clamp(8px, .7vw, 12px) + var(--cl-vine) + clamp(6px, .6vw, 10px));
-  --side-w: clamp(250px, 20.4vw, 330px);
+  --side-w: clamp(262px, 21.4vw, 340px);
   --side-gap: clamp(22px, 2vw, 34px);
   --head-h: clamp(122px, 15.6vh, 142px);
   --cl-top: calc(var(--head-h) + var(--cl-carve) + clamp(10px, 1.5vh, 16px));
@@ -635,10 +635,13 @@
   z-index: 5;
 }
 
-/* the Expedition Log */
+/* the Expedition Log. Its rows stand inside the panel's engraved inner rule,
+   and the last one above the brass fleurons on the rule's bottom corners
+   (at --pk .72 the rule is 13.5px in and a fleuron 23.5px square), so no
+   label or figure lies on an ornament. */
 .chalk {
   --pk: .72;
-  padding: clamp(26px, 3.6vh, 32px) clamp(18px, 1.5vw, 24px) clamp(14px, 2vh, 20px);
+  padding: clamp(26px, 3.6vh, 32px) clamp(24px, 2vw, 30px) clamp(38px, 4.8vh, 44px);
 }
 .chalk__h { margin: 0 0 clamp(8px, 1.3vh, 13px); font-size: clamp(12.5px, .9vw, 14px); }
 .chalk__dl { row-gap: clamp(5px, .9vh, 9px); }
@@ -648,13 +651,18 @@
 /* Haunt Level */
 .cl-haunt {
   --pk: .72;
-  padding: clamp(26px, 3.6vh, 32px) clamp(12px, 1.2vw, 20px) clamp(14px, 2vh, 20px);
+  padding: clamp(26px, 3.6vh, 32px) clamp(30px, 2.2vw, 36px) clamp(18px, 2.6vh, 24px);
 }
 .cl-haunt__h { margin: 0 0 clamp(2px, .6vh, 6px); font-size: clamp(12.5px, .9vw, 14px); }
 /* The select screen styles a `.haunt__pip` of its own and its sheet can load
    after this one, so the kit's medallion is re-seated here with a selector
    that outranks it (and names no class the select screen does). */
-.cl-haunt [role="radiogroup"].kit-ladder { --md: clamp(34px, 2.7vw, 40px); }
+.cl-haunt [role="radiogroup"].kit-ladder {
+  --md: clamp(30px, 2.4vw, 38px);
+  /* the panel's own padding makes the room the chosen rung's filigree
+     overhangs into, clear of the inner rule, so the ladder needs none */
+  padding-inline: 0;
+}
 .cl-haunt [role="radiogroup"] .kit-ladder__rung {
   width: var(--md); height: var(--md);
   border: 0; border-radius: 50%; opacity: 1;
