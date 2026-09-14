@@ -61,7 +61,7 @@
 .tut-stage {
   position: relative; z-index: 1;
   display: grid;
-  grid-template-columns: minmax(0, clamp(20rem, 25vw, 27rem)) minmax(0, 44rem);
+  grid-template-columns: minmax(0, clamp(20rem, 27vw, 30rem)) minmax(0, 44rem);
   align-items: stretch;
   /* a clear stretch of the lit room between the portrait and the page: they
      stand in the room, apart, rather than sharing one slab */
@@ -103,7 +103,7 @@
   display: block;
   width: 100%; height: auto;
   aspect-ratio: 3 / 4;
-  max-height: min(61vh, 580px);
+  max-height: min(64vh, 600px);
   object-fit: cover; object-position: 50% 18%;
   /* the room's candlelight on it, the frame's shadow falling across its edge */
   filter: saturate(.94) brightness(.96);
@@ -156,10 +156,11 @@
 .tut-fit { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
 .tut-fit__liner { inset: 5px; --liner-w: inherit; }
 .tut-fit__guard { --bracket: clamp(66px, 5.6vw, 90px); }
-/* the story's ribbon, hanging out from under the foot of the page */
+/* the story's ribbon, hanging out from under the foot of the page, to the
+   right of the scrollwork on the board's bottom rule and clear of Skip */
 .tut-fit__mark {
   --mark-w: clamp(24px, 1.8vw, 30px);
-  left: 8%; top: calc(100% + 3px); z-index: -1;
+  left: 54%; top: calc(100% + 3px); z-index: -1;
   height: clamp(66px, 9vh, 86px);
 }
 .tut-fit__mark::after {
