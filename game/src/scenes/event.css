@@ -112,12 +112,12 @@
 }
 .ev-initial__letter {
   display: block;
-  padding-top: 5%;
+  padding-top: 7%;
   font-family: var(--font-display); font-weight: 700; font-style: normal;
-  font-size: calc(var(--cap) * .74); line-height: 1;
+  font-size: calc(var(--cap) * .86); line-height: 1;
   letter-spacing: 0;
   color: var(--kit-gold-hi);
-  background: linear-gradient(172deg, #fff4d0 0%, var(--kit-gold-hi) 26%, #c99a52 52%, var(--kit-gold-lo) 74%, #d9b26c 100%);
+  background: linear-gradient(174deg, #fff8dc 0%, #f4dca0 22%, var(--kit-gold-hi) 40%, #cfa45c 60%, #a8793c 78%, #e2c07c 100%);
   -webkit-background-clip: text; background-clip: text;
   -webkit-text-fill-color: transparent;
   filter: drop-shadow(0 -1px 0 rgba(20, 8, 2, .9)) drop-shadow(0 1.5px 0 #140a03) drop-shadow(1px 0 0 #1c0f06) drop-shadow(-1px 0 0 #1c0f06) drop-shadow(0 0 8px color-mix(in srgb, var(--kit-candle) 40%, transparent));
