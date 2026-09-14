@@ -2933,6 +2933,11 @@
 .cb-root[data-arena="boss"] .cb-enemies[data-n="1"] .cb-enemy.is-dying[data-tier="boss"]::after {
   opacity: 0; transition: opacity .9s var(--ease-soft) .3s;
 }
+@media (prefers-reduced-motion: reduce) {
+  .cb-enemy.is-dying .cb-enemy__alcove,
+  .cb-root[data-arena="boss"] .cb-enemies[data-n="1"] .cb-enemy.is-dying[data-tier="boss"]::before,
+  .cb-root[data-arena="boss"] .cb-enemies[data-n="1"] .cb-enemy.is-dying[data-tier="boss"]::after { transition: none; }
+}
 .cb-root[data-arena="boss"] .cb-enemy[data-tier="boss"]:not([data-role="bossPart"]) .cb-enemy__pool { width: 104%; height: 40px; bottom: -15px; }
 /* the plate's painted rails stop short of its box: the tube tucks up under it */
 .cb-root[data-arena="boss"] .cb-enemy[data-tier="boss"]:not([data-role="bossPart"]) .cb-enemy__vitals { margin-top: -4px; }
