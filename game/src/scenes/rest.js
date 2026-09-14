@@ -87,6 +87,12 @@ const GENERIC_TALK = [
 
 /* THE FORT, IN TWO LAYERS, both on the same 420x280 grid.
  *
+ * The grid is shown through a taller window, 0 -130 420 410, sliced to the
+ * panel: the panel stands as tall as the column of choices beside it, so the
+ * room's wall carries on 130 units up above the drawing (a picture rail and
+ * the portrait's cord, a sconce, the lancet window's arch and the flag), and
+ * the panel shows as much of it as its shape asks for, from the floor up.
+ *
  * `.rs-fort__paint` is the room and the fort: wall, barricaded door, moonlit
  * window, rug, the quilts with their patches and folds, the lamplit way in.
  * Painted with gradients and one woven-cloth texture filter, and NOTHING in it
@@ -103,12 +109,12 @@ const GENERIC_TALK = [
 const KIT_ART = new URL('../../assets/ui/kit/', import.meta.url).href;
 
 const FORT_PAINT = `
-<svg class="rs-fort__paint" viewBox="0 0 420 280" aria-hidden="true" focusable="false">
+<svg class="rs-fort__paint" viewBox="0 -130 420 410" preserveAspectRatio="xMidYMax slice" aria-hidden="true" focusable="false">
   <defs>
     <linearGradient id="rsWall" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0" class="rs-wall-a"/><stop offset=".6" class="rs-wall-b"/><stop offset="1" class="rs-wall-c"/>
     </linearGradient>
-    <radialGradient id="rsMoonWash" cx="90%" cy="16%" r="64%">
+    <radialGradient id="rsMoonWash" gradientUnits="userSpaceOnUse" cx="378" cy="-6" r="269" gradientTransform="translate(378 -6) scale(1 .78) translate(-378 6)">
       <stop offset="0" class="rs-moon-a"/><stop offset="1" class="rs-moon-z"/>
     </radialGradient>
     <radialGradient id="rsWarmWash" cx="50%" cy="80%" r="50%">
@@ -157,7 +163,7 @@ const FORT_PAINT = `
     <linearGradient id="rsGilt" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0" class="rs-gilt-a"/><stop offset=".5" class="rs-gilt-b"/><stop offset="1" class="rs-gilt-c"/>
     </linearGradient>
-    <radialGradient id="rsVig" cx="50%" cy="58%" r="76%">
+    <radialGradient id="rsVig" gradientUnits="userSpaceOnUse" cx="210" cy="150" r="356" gradientTransform="translate(210 150) scale(1 .86) translate(-210 -150)">
       <stop offset=".5" class="rs-vig-a"/><stop offset="1" class="rs-vig-b"/>
     </radialGradient>
     <pattern id="rsDamask" width="46" height="52" patternUnits="userSpaceOnUse">
@@ -184,7 +190,7 @@ const FORT_PAINT = `
     </filter>
     <!-- the whole picture, as if brushed: edges that wander, and the tooth of
          the canvas multiplied into everything -->
-    <filter id="rsPaint" filterUnits="userSpaceOnUse" x="-24" y="-24" width="468" height="328" color-interpolation-filters="sRGB">
+    <filter id="rsPaint" filterUnits="userSpaceOnUse" x="-24" y="-154" width="468" height="482" color-interpolation-filters="sRGB">
       <feTurbulence type="fractalNoise" baseFrequency=".024" numOctaves="3" seed="8" result="w"/>
       <feDisplacementMap in="SourceGraphic" in2="w" scale="3.4" xChannelSelector="R" yChannelSelector="B" result="d"/>
       <feTurbulence type="fractalNoise" baseFrequency=".55 .75" numOctaves="3" seed="3" result="c"/>
@@ -207,14 +213,24 @@ const FORT_PAINT = `
   <g filter="url(#rsPaint)">
   <!-- the room: damask plaster, a dado rail, and moonlight coming in from the right -->
   <g filter="url(#rsPlaster)">
-    <rect x="-24" y="-24" width="468" height="281" fill="url(#rsWall)"/>
+    <rect x="-24" y="-154" width="468" height="411" fill="url(#rsWall)"/>
     <path class="rs-wains" d="M-24 178h468v79H-24Z"/>
   </g>
-  <rect width="420" height="178" fill="url(#rsDamask)" class="rs-damask"/>
+  <rect y="-154" width="420" height="332" fill="url(#rsDamask)" class="rs-damask"/>
   <path class="rs-rail" d="M0 178h420"/>
   <path class="rs-rail rs-rail--lo" d="M0 181.5h420"/>
-  <rect width="420" height="257" fill="url(#rsMoonWash)"/>
+  <rect y="-154" width="420" height="411" fill="url(#rsMoonWash)"/>
   <ellipse class="rs-wallglow" cx="206" cy="170" rx="150" ry="74" filter="url(#rsBlur8)"/>
+
+  <!-- high on the wall: the picture rail the portrait hangs from on its cord,
+       and a brass sconce over the door with its candle lit, the room's one
+       warm light up there against the moon's cold window -->
+  <path class="rs-rail" d="M0 -84h420"/>
+  <path class="rs-rail rs-rail--lo" d="M0 -80.5h420"/>
+  <path class="rs-cord" d="M210 -82L191 23M210 -82L229 23"/>
+  <circle class="rs-hook" cx="210" cy="-83" r="2.6"/>
+  <circle class="rs-candleglow rs-sconceglow" cx="46" cy="-62" r="42" filter="url(#rsBlur8)"/>
+  <image href="${KIT_ART}sconce.webp" x="30" y="-80" width="32" height="70" class="rs-prop rs-sconce"/>
 
   <!-- a portrait of the house, hung where the kids could not reach to take it down -->
   <rect class="rs-picframe" x="186" y="22" width="48" height="58" rx="2" fill="url(#rsGilt)"/>
@@ -222,15 +238,17 @@ const FORT_PAINT = `
   <rect class="rs-picedge" x="192" y="28" width="36" height="46"/>
 
   <!-- the window the moon comes through, and what it lays across the room -->
-  <path class="rs-winframe" d="M350 110V46c0-23 13-35 30-35s30 12 30 35v64Z"/>
-  <path d="M357 106V48c0-18 10-29 23-29s23 11 23 29v58Z" fill="url(#rsGlass)"/>
-  <circle class="rs-moonglow" cx="391" cy="40" r="15" filter="url(#rsBlur4)"/>
-  <circle class="rs-moondisc" cx="391" cy="40" r="7"/>
-  <g class="rs-stars"><circle cx="365" cy="36" r=".9"/><circle cx="371" cy="74" r=".7"/><circle cx="395" cy="84" r=".8"/><circle cx="362" cy="94" r=".6"/><circle cx="386" cy="60" r=".6"/></g>
-  <path class="rs-mullion" d="M380 19v87M357 60h46"/>
+  <path class="rs-winframe" d="M350 110V-34c0-27 13-41 30-41s30 14 30 41v144Z"/>
+  <path d="M357 106V-32c0-22 10-35 23-35s23 13 23 35v138Z" fill="url(#rsGlass)"/>
+  <circle class="rs-moonglow" cx="391" cy="-26" r="15" filter="url(#rsBlur4)"/>
+  <circle class="rs-moondisc" cx="391" cy="-26" r="7"/>
+  <g class="rs-stars"><circle cx="365" cy="-40" r=".9"/><circle cx="369" cy="-4" r=".6"/><circle cx="365" cy="36" r=".9"/><circle cx="371" cy="74" r=".7"/><circle cx="395" cy="84" r=".8"/><circle cx="362" cy="94" r=".6"/><circle cx="386" cy="20" r=".6"/><circle cx="397" cy="-52" r=".7"/></g>
+  <path class="rs-mullion" d="M380 -67v173M357 -8h46M357 50h46"/>
   <path class="rs-winsill" d="M344 108h72v7h-72Z"/>
-  <path d="M362 40 404 40 322 257 190 257Z" fill="url(#rsShaft)" filter="url(#rsBlur8)"/>
-  <path class="rs-moonbeam" d="M370 46 398 46 300 257 226 257Z" filter="url(#rsBlur4)"/>
+  <path d="M362 -20 404 -20 322 257 190 257Z" fill="url(#rsShaft)" filter="url(#rsBlur8)"/>
+  <path class="rs-moonbeam" d="M370 -14 398 -14 300 257 226 257Z" filter="url(#rsBlur4)"/>
+
+  <image href="${KIT_ART}web-l.webp" x="-2" y="-128" width="64" height="91" class="rs-web"/>
 
   <!-- the door they wedged: panelled, boarded across, still shut -->
   <path class="rs-doorframe" d="M4 58h80v199H4Z"/>
@@ -270,10 +288,10 @@ const FORT_PAINT = `
   </g>
 
   <!-- the fort's flag, and the bunting strung from it to the chair -->
-  <path class="rs-pole" d="M104 132 91 34"/>
-  <circle class="rs-polecap" cx="91" cy="32" r="2.6"/>
-  <path class="rs-pennant" d="M93 38 138 49 95 62Z"/>
-  <path class="rs-pennant-star" d="M108 46l1.4 2.9 3.1.4-2.3 2.1.6 3.1-2.8-1.5-2.8 1.5.6-3.1-2.3-2.1 3.1-.4Z"/>
+  <path class="rs-pole" d="M104 132 86 -34"/>
+  <circle class="rs-polecap" cx="86" cy="-36" r="2.6"/>
+  <path class="rs-pennant" d="M88 -30 133 -19 90 -6Z"/>
+  <path class="rs-pennant-star" d="M103 -22l1.4 2.9 3.1.4-2.3 2.1.6 3.1-2.8-1.5-2.8 1.5.6-3.1-2.3-2.1 3.1-.4Z"/>
   <path class="rs-string" d="M94 44C170 98 282 108 354 98"/>
   <g class="rs-bunting">
     <path class="rs-bunt rs-bunt--gold"   d="M125 64h11l-5.5 12Z"/>
@@ -360,11 +378,11 @@ const FORT_PAINT = `
   <circle class="rs-candleglow" cx="400" cy="232" r="30" filter="url(#rsBlur8)"/>
   <image href="${KIT_ART}candle.webp" x="386" y="229" width="28" height="44" class="rs-prop"/>
 
-  <rect x="-24" y="-24" width="468" height="328" fill="url(#rsVig)"/>
+  <rect x="-24" y="-154" width="468" height="482" fill="url(#rsVig)"/>
 </svg>`;
 
 const FORT_SVG = `
-<svg class="rs-fort" viewBox="0 0 420 280" role="img"
+<svg class="rs-fort" viewBox="0 -130 420 410" preserveAspectRatio="xMidYMax slice" role="img"
      aria-label="A blanket fort: a table with blankets over it, a torch burning inside,
                  a kid and a small animal sitting in the warm.">
   <defs>
@@ -464,10 +482,9 @@ export class RestScene extends RoomScene {
     wrap.innerHTML = `
       <div class="rs-art kit-panel" data-medal="moon">
         <div class="rs-scene">${FORT_PAINT}
-          <i class="rs-glow rs-glow--moon" aria-hidden="true"></i>
-          <i class="rs-glow rs-glow--rug" aria-hidden="true"></i>
+          <span class="rs-glowbox" aria-hidden="true"><i class="rs-glow rs-glow--moon"></i><i class="rs-glow rs-glow--rug"></i></span>
           ${FORT_SVG}
-          <i class="rs-glow rs-glow--lamp" aria-hidden="true"></i>
+          <span class="rs-glowbox rs-glowbox--front" aria-hidden="true"><i class="rs-glow rs-glow--lamp"></i></span>
         </div>
       </div>
       <div class="rs-choices" role="group" aria-label="Choose one thing to do here"></div>`;
