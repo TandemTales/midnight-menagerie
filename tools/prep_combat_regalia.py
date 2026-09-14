@@ -37,6 +37,8 @@ themselves where the samples already painted it:
                     cut out of the board, the moon in its top medallion painted
                     out (his intent is set there), its foot faded where his
                     plate stands. A vertical 3-slice.
+  keycap.webp       END TURN's keyboard key: a brass bezel round a domed key of
+                    the round buttons' aubergine enamel.
   card-flock.webp   the kit's damask at a fifth of its strength, for the flock
                     worked into a Trick's rules panel in the hand.
   iron-bracket.webp a WROUGHT-IRON wall bracket: a shelf plate on a scrolled
@@ -631,6 +633,36 @@ def boss_alcove():
     print(f"      boss-alcove: {im.width}x{im.height}, medallion centre ({mx * ALC_STRETCH:.1f}, {my}), slices {ALC_TOP}/{ALC_BOT}")
 
 
+# ── a key set into a plate ─────────────────────────────────────────────────
+def keycap():
+    """END TURN's keyboard key as a made thing: a brass bezel with rounded
+    corners round a domed key of the round buttons' dark aubergine enamel, lit
+    from the boards' top left, a gloss along its upper edge."""
+    rng = np.random.default_rng(7707)
+    S, ss = 48, 4
+    W = S * ss
+    m = Image.new("L", (W, W), 0)
+    ImageDraw.Draw(m).rounded_rectangle([2.5 * ss, 2.5 * ss, (S - 2.5) * ss, (S - 2.5) * ss], radius=9 * ss, fill=255)
+    mask = np.asarray(m, np.float32) / 255.0 > 0.5
+    d = ndimage.distance_transform_edt(mask) / ss
+    RIM = 5.2
+    hgt = np.where(d < RIM, rod(d, RIM) * 4.2, 2.2 + 1.6 * smooth(RIM, RIM + 12, d))
+    hgt = ndimage.gaussian_filter(hgt * ss, ss * 0.5)
+    n = normals(hgt, 1.0)
+    metal = antique(n, rng, (W, W), ss, spec=0.6, lift=0.05)
+    yy = np.arange(W, dtype=np.float32)[:, None] / W * np.ones((1, W), np.float32)
+    top = ramp(yy, [(0, "#3a2b4c"), (0.5, "#221831"), (1, "#120c1a")])
+    top = top * (0.62 + 0.38 * smooth(RIM, RIM + 7, d))[..., None]
+    top = top * (1 + noise((W, W), rng, ss * 2.5)[..., None] * 0.06)
+    gl = np.exp(-((yy - 0.25) / 0.07) ** 2) * smooth(RIM + 1, RIM + 5, d)
+    top = top + gl[..., None] * np.array([150, 125, 190], np.float32) * 0.22
+    col = np.where((d < RIM)[..., None], metal, top)
+    col = np.where((np.abs(d - RIM) < 0.7)[..., None], INK, col)
+    col = col * smooth(0, 0.8, d)[..., None] + INK * (1 - smooth(0, 0.8, d))[..., None]
+    alpha = smooth(-0.2, 0.7, d) * mask
+    save(rgba(down(col, ss), down(alpha.astype(np.float32), ss)), "keycap.webp", 94)
+
+
 # ── the rules panel's flock ─────────────────────────────────────────────────
 def card_flock():
     """The kit's damask (damask.webp, lavender through an alpha pattern) at a
@@ -644,7 +676,7 @@ def card_flock():
 
 PIECES = {
     "plate": boss_plate, "crest": boss_crest, "roundel": roundel, "coin": nerve_coin,
-    "backs": card_backs, "bracket": iron_bracket, "flock": card_flock, "beam": boss_beam, "alcove": boss_alcove,
+    "backs": card_backs, "bracket": iron_bracket, "flock": card_flock, "beam": boss_beam, "alcove": boss_alcove, "keycap": keycap,
 }
 SHEET = ["boss-plate.webp", "boss-crest.webp", "roundel.webp", "nerve-coin.webp", "card-backs.webp", "iron-bracket.webp"]
 
