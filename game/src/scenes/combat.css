@@ -184,7 +184,8 @@
 .cb-root[data-arena="boss"] .cb-enemies:is([data-n="4"], [data-n="5"], [data-n="6"]) .cb-enemy[data-tier="boss"]:not([data-role="bossPart"]) .cb-enemy__plate { width: min(300px, 100%); }
 .cb-root[data-arena="boss"] .cb-enemies:is([data-n="4"], [data-n="5"], [data-n="6"]) .cb-enemy[data-tier="boss"]:not([data-role="bossPart"]) .cb-enemy__name {
   --np-h: 36px;
-  font-size: 12px; letter-spacing: .14em;
+  --bp-h: 40px;               /* the regalia plate, sized to its column (round 4) */
+  font-size: 12.5px; letter-spacing: .12em;
 }
 /* FIVE BODIES — the Keeper plus its four Sanctuary Locks, the widest board in
    the game. The row is centred and carries up to 132px of left padding to stay
@@ -2882,8 +2883,10 @@
   bottom: calc(var(--al-w) * -.16);
   border: 0 solid transparent;
   border-image: url("../../assets/ui/kit/boss-alcove.webp") 205 0 150 0 fill / calc(var(--al-w) * 205 / 437) 0 calc(var(--al-w) * 150 / 437) 0 stretch;
-  /* still while he lunges, like his plate */
+  /* still while he lunges, like his plate, on a layer of its own so a lunge
+     moves it on the compositor instead of repainting the frame */
   transform: translate3d(calc(-50% - var(--e-lx, 0px)), calc(var(--e-ly, 0px) * -1), 0);
+  will-change: transform;
 }
 /* A pair of the house's brass wall sconces (sconce.webp, the Kid board's own
    candle in each) hang on the wall either side of the frame at his shoulders,
@@ -2902,6 +2905,7 @@
     url("../../assets/ui/kit/sconce.webp") 50% calc(var(--sc-w) * .7) / var(--sc-w) var(--sc-h) no-repeat,
     radial-gradient(closest-side, color-mix(in srgb, var(--kit-candle) 30%, transparent), color-mix(in srgb, var(--kit-candle) 10%, transparent) 50%, transparent) 50% 0 / 100% calc(var(--sc-h) * 1.1) no-repeat;
   transform: translate3d(calc(-50% - var(--e-lx, 0px)), calc(var(--e-ly, 0px) * -1), 0);
+  will-change: transform;
   filter: drop-shadow(0 10px 12px rgba(0, 0, 0, .6));
 }
 .cb-root[data-arena="boss"] .cb-enemies[data-n="1"] .cb-enemy[data-tier="boss"]:not([data-role="bossPart"])::before { left: calc(50% - var(--al-w) / 2 - var(--sc-w) * .95); }
@@ -2912,12 +2916,60 @@
 /* a boss alone keeps its gauge whole and hangs its conditions off the gauge's
    end, a row of medallions level with the enamel, clear of the hand below */
 .cb-root[data-arena="boss"] .cb-enemies[data-n="1"] .cb-enemy[data-tier="boss"]:not([data-role="bossPart"]) .cb-enemy__vitals > .cb-enemy__statuses {
-  --roundel: clamp(28px, 2.05vw, 33px);
-  position: absolute; left: calc(100% + 4px); top: 50%;
+  --roundel: clamp(30px, 2.25vw, 36px);
+  position: absolute; left: calc(100% + 2px); top: 50%;
   transform: translateY(-50%);
   flex-wrap: nowrap; max-width: none;
-  gap: 7px 12px;
-  margin: 0; padding: 0 12px 0 6px;
+  gap: 7px 13px;
+  margin: 0; padding: 0 16px 0 10px;
+}
+/* …HUNG ON A GILT ROD run out from the gauge's end knob, a lozenge at its tip,
+   so they read as his, fixed to his gauge, not as three coins beside it */
+.cb-root[data-arena="boss"] .cb-enemies[data-n="1"] .cb-enemy[data-tier="boss"]:not([data-role="bossPart"]) .cb-enemy__vitals > .cb-enemy__statuses::before,
+.cb-root[data-arena="boss"] .cb-enemies[data-n="1"] .cb-enemy[data-tier="boss"]:not([data-role="bossPart"]) .cb-enemy__vitals > .cb-enemy__statuses::after {
+  content: ''; position: absolute; z-index: -1; pointer-events: none;
+  top: 50%;
+}
+.cb-root[data-arena="boss"] .cb-enemies[data-n="1"] .cb-enemy[data-tier="boss"]:not([data-role="bossPart"]) .cb-enemy__vitals > .cb-enemy__statuses::before {
+  left: 0; right: 8px; height: 5px; margin-top: -3px;
+  border-radius: 3px;
+  background: linear-gradient(180deg, var(--kit-gold-hi) 0%, var(--kit-gold) 42%, var(--kit-gold-lo) 100%);
+  box-shadow: inset 0 0 0 1px rgba(26, 14, 4, .75), 0 2px 3px rgba(0, 0, 0, .8);
+}
+.cb-root[data-arena="boss"] .cb-enemies[data-n="1"] .cb-enemy[data-tier="boss"]:not([data-role="bossPart"]) .cb-enemy__vitals > .cb-enemy__statuses::after {
+  right: 2px; width: 11px; height: 11px; margin-top: -6px;
+  transform: rotate(45deg);
+  background: linear-gradient(135deg, var(--kit-gold-hi), var(--kit-gold) 50%, var(--kit-gold-lo));
+  box-shadow: inset 0 0 0 1px rgba(26, 14, 4, .8), 0 2px 3px rgba(0, 0, 0, .8);
+}
+/* Where something stands on the plate above the name (a counter row, or a
+   House Rule ribbon on a shared row), the name comes down by the crest's whole
+   height, so the fleur never reaches into it. */
+.cb-root[data-arena="boss"] .cb-enemy[data-tier="boss"]:not([data-role="bossPart"]):has(.cb-enemy__counters:not(:empty)) .cb-enemy__name,
+.cb-root[data-arena="boss"] .cb-enemies:not([data-n="1"]) .cb-enemy.has-rule[data-tier="boss"]:not([data-role="bossPart"]) .cb-enemy__name {
+  margin-top: calc(var(--bp-h) * .5 + 4px);
+}
+/* A boss alone keeping a House Rule hangs its ribbon on the gilt rod off the
+   RIGHT end of his gauge, ahead of his conditions: on the plate's top it would
+   lie across the crest and the fleur under his shoes, and off the left end it
+   met the INCOMING readout hanging beside the Kid. */
+.cb-root[data-arena="boss"] .cb-enemies[data-n="1"] .cb-enemy.has-rule[data-tier="boss"]:not([data-role="bossPart"]) .cb-enemy__plate::before {
+  top: auto; bottom: calc(var(--tube-h, 28px) / 2 + 2px); left: calc(100% + 14px);
+  width: 128px; min-width: 0; padding: 0 0 1px; justify-content: center;
+  font-size: 10px; letter-spacing: .12em;
+  transform: translateY(50%);
+}
+.cb-root[data-arena="boss"] .cb-enemies[data-n="1"] .cb-enemy.has-rule[data-tier="boss"]:not([data-role="bossPart"]) .cb-enemy__vitals > .cb-enemy__statuses {
+  padding-left: 150px;
+}
+/* a long name on a boss that shares the row sets closer on a lower plate */
+.cb-root[data-arena="boss"] .cb-enemies:not([data-n="1"]) .cb-enemy[data-tier="boss"]:not([data-role="bossPart"]) .cb-enemy__name[data-len="long"] {
+  font-size: clamp(14px, 1.05vw, 16px); letter-spacing: .14em;
+}
+.cb-root[data-arena="boss"] .cb-enemies:not([data-n="1"]) .cb-enemy[data-tier="boss"]:not([data-role="bossPart"]) .cb-enemy__name[data-len="xlong"] {
+  --bp-h: clamp(44px, 3.3vw, 52px);
+  font-size: clamp(12.5px, .95vw, 14.5px); letter-spacing: .06em;
+  padding-inline: calc(var(--bp-cap) * .9);
 }
 /* the trailing letter-space would sit the name left of centre on its plate.
    Lettered like the wordmark: marble through the letters, the engrave filter's

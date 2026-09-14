@@ -1080,6 +1080,12 @@ export class EnemyView {
     lettering.className = 'cb-enemy__lettering';
     lettering.textContent = this.name;
     this.$name.appendChild(lettering);
+    /* A long name on the boss's regalia plate sets closer when the boss shares
+       the row (combat.css): "The Carnivorous Conservatory" at the lone boss's
+       tracking ran 538px across a 320px column and under its Growth Patches. */
+    const len = String(this.name || '').length;
+    if (len > 22) this.$name.dataset.len = 'xlong';
+    else if (len > 16) this.$name.dataset.len = 'long';
     this._statusKey = '';
     this.setState(snap);
     this.a.spawn = 1;
