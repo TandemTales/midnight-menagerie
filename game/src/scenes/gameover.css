@@ -577,24 +577,30 @@
 
 /* --- the final deck: every Trick on a nameplate ---------------------------- */
 .go-tricks { display: flex; flex-wrap: wrap; justify-content: center; gap: 3px 4px; }
+/* Round 5: each Trick on a small CARTOUCHE, not a pill â€” the HUD's own
+   plaque, violet enamel filled to a gilt rim with an ogee end either side
+   (cartouche-lit.webp) â€” its cost struck on a gold coin with a beaded rim
+   (coin-face.webp, the face the cards' costs wear) seated over its left end. */
 .go-trick {
   --plate-h: 26px;
+  --coin: calc(var(--plate-h) * .9);
   flex-direction: row; gap: 5px;
-  padding: 0 calc(var(--plate-h) * .44);
-  border-image-source: url("../../assets/ui/kit/plate-lit.webp");
-  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, .7));
+  padding: 0 calc(var(--plate-h) * .5) 0 calc(var(--plate-h) * .28);
+  border-image-source: url("../../assets/ui/kit/cartouche-lit.webp");
+  border-image-slice: 18 34 18 34 fill;
+  border-image-width: calc(var(--plate-h) * 18 / 64) calc(var(--plate-h) * 26 / 64);
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, .75));
 }
 .go-trick__cost {
   display: grid; place-items: center; flex: none;
-  width: 18px; height: 18px; border-radius: 50%;
+  width: var(--coin); height: var(--coin); border-radius: 50%;
+  padding-bottom: 1px;
   font-family: var(--font-num); font-variant-numeric: var(--num-feat);
-  font-size: 11px; font-weight: 700; font-style: normal; line-height: 1;
-  color: #20140a;
-  text-shadow: 0 1px 0 color-mix(in srgb, var(--kit-gold-hi) 70%, white);
-  background:
-    radial-gradient(60% 60% at 36% 30%, color-mix(in oklab, var(--kit-gold-hi) 80%, white), transparent 62%),
-    radial-gradient(100% 100% at 50% 60%, var(--kit-gold-hi) 0%, var(--kit-gold) 55%, var(--kit-gold-lo) 100%);
-  box-shadow: inset 0 0 0 1.5px color-mix(in oklab, var(--kit-gold-lo) 80%, black), 0 0 0 1px rgba(0, 0, 0, .7);
+  font-size: calc(var(--coin) * .5); font-weight: 700; font-style: normal; line-height: 1;
+  color: #241406;
+  text-shadow: 0 1px 0 rgba(255, 238, 190, .55);
+  background: url("../../assets/ui/kit/coin-face.webp") 50% 50% / 100% 100% no-repeat;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, .8));
 }
 .go-trick__name {
   font-family: var(--font-body); font-size: 13px; font-weight: 600; line-height: 1;
@@ -891,7 +897,7 @@
   .go-stat__ico { width: 26px; }
   .go-stats .kit-stats__label { font-size: 11px; letter-spacing: .05em; }
   .go-trick__name { font-size: 12.5px; }
-  .go-trick__cost { width: 16px; height: 16px; font-size: 10px; }
+  .go-trick { --coin: 20px; }
   .go-keep { column-gap: 8px; }
   .go-seed__hint { font-size: 11.5px; }
   /* the three ways out: each hint under its words, so the row fits the board */
