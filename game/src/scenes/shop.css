@@ -328,6 +328,11 @@
 .sh-moth__spot--sm { fill: color-mix(in srgb, var(--kit-lav) 70%, var(--kit-gold)); }
 .sh-moth__pupil { fill: #140a18; }
 .sh-moth__wingrim { fill: none; stroke: color-mix(in srgb, var(--kit-candle) 70%, transparent); stroke-width: 1.3; stroke-linecap: round; }
+.sh-moth__band { fill: color-mix(in srgb, var(--kit-lav-hi) 34%, transparent); }
+.sh-moth__tip { fill: color-mix(in srgb, #0c0614 70%, transparent); }
+.sh-moth__dots circle { fill: color-mix(in srgb, var(--kit-lav-hi) 60%, transparent); }
+/* the lamp's warmth caught round his head, behind the fur */
+.sh-moth__halo { fill: color-mix(in srgb, var(--kit-candle) 16%, transparent); filter: blur(3px); }
 .sh-moth__coat { fill: url(#shCoat); stroke: #07040a; stroke-width: 1.2; }
 .sh-moth__coatrim { fill: none; stroke: color-mix(in srgb, var(--kit-candle) 75%, transparent); stroke-width: 1.4; }
 .sh-moth__lapel { fill: #0c0712; stroke: color-mix(in srgb, var(--kit-gold) 60%, transparent); stroke-width: .9; }
