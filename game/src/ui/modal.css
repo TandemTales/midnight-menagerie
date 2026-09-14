@@ -139,12 +139,27 @@
 .mm-dlg-dress__candle > .kit-prop { inset: 0; }
 .mm-dlg-dress__candle > .kit-prop::before { display: none; }
 .mm-dlg-dress__glow { left: 50%; top: 12%; width: calc(var(--cw) * 6); --light-a: 24%; }
+/* the skull on its books, set on the lower left guard's boss the way the candle
+   stands on the right one, on the two large dialogs (a question keeps its
+   corners bare) */
+.mm-dlg-dress__books {
+  --bw: clamp(70px, 5.4vw, 88px);
+  position: absolute; z-index: 5;
+  left: calc(var(--bw) * -.14);
+  bottom: calc(var(--bw) * -.08);
+  width: var(--bw); aspect-ratio: 130 / 153;
+  display: none;
+}
+.mm-modal--kit:not([data-size="sm"]) .mm-dlg-dress__books { display: block; }
+.mm-dlg-dress__books > .kit-prop { inset: 0; filter: brightness(.92) drop-shadow(0 6px 6px rgba(0, 0, 0, .7)); }
+.mm-dlg-dress__books > .kit-prop::before { display: none; }
 :root[data-reduce-motion="1"] .mm-dlg-dress__candle .kit-prop--candle::after,
 :root[data-reduce-motion="1"] .mm-dlg-dress__glow { animation: none; }
 /* a question: wide enough that its two answers each keep to one line */
 .mm-modal--kit[data-size="sm"] .mm-modal__dialog { width: min(100%, 46rem); }
-/* a case of cards: five across inside the velvet, at 1600 as at the Deck's 1280 */
-.mm-modal--kit[data-size="wide"] .mm-modal__dialog { width: min(100%, 80rem); }
+/* a case of cards: five across inside the velvet at the size a Trick is read
+   at, at 1600 as at the Deck's 1280 */
+.mm-modal--kit[data-size="wide"] .mm-modal__dialog { width: min(100%, 90rem); }
 /* the panel in the room's light, not an even fill: the candle burning on its
    lower right corner warms the damask round it, a little light falls from
    under the plaque, and the cloth sinks into shadow towards the far corners.
@@ -216,6 +231,34 @@
   padding: clamp(4px, .9vh, 10px) clamp(28px, 3vw, 44px) 0;
 }
 .mm-modal--kit .mm-modal__foot .kit-btn { --plate-h: var(--btn-h); flex: none; white-space: nowrap; }
+/* the floor they stand on: a gilt double rule run across the foot behind the
+   plates, fading before the velvet and tipped with the boards' stars; between
+   two ways out, the Kid board's paw medallion set on the rule (medal-paw.webp
+   is painted on its own short stretch of rail) */
+.mm-modal--kit .mm-modal__foot {
+  --foot-pad: clamp(4px, .9vh, 10px);
+  --paw-h: calc(var(--btn-h) * .92);
+}
+.mm-modal--kit .mm-modal__foot::before {
+  content: ''; position: absolute; z-index: -1; pointer-events: none;
+  left: clamp(8px, 1.2vw, 18px); right: clamp(8px, 1.2vw, 18px);
+  top: calc(var(--foot-pad) + var(--btn-h) / 2 - 3px); height: 7px;
+  background:
+    url("../../assets/ui/kit/star4.svg") 0 50% / 7px 7px no-repeat,
+    url("../../assets/ui/kit/star4.svg") 100% 50% / 7px 7px no-repeat,
+    linear-gradient(90deg, transparent, var(--kit-gold) 9%, var(--kit-gold-hi) 50%, var(--kit-gold) 91%, transparent) 50% 1px / calc(100% - 16px) 1px no-repeat,
+    linear-gradient(90deg, transparent, var(--kit-gold-lo) 9%, var(--kit-gold) 50%, var(--kit-gold-lo) 91%, transparent) 50% 5px / calc(100% - 16px) 1px no-repeat;
+  filter: drop-shadow(0 1px 0 rgba(0, 0, 0, .85));
+  opacity: .9;
+}
+.mm-dlg-paw {
+  flex: none; display: block;
+  height: var(--paw-h); aspect-ratio: 106 / 55;
+  margin-inline: calc(clamp(22px, 2.4vw, 36px) * -.35);
+  background: url("../../assets/ui/kit/medal-paw.webp") 50% 50% / 100% 100% no-repeat;
+  filter: drop-shadow(0 3px 3px rgba(0, 0, 0, .8));
+  pointer-events: none;
+}
 
 /* the close: the round enamel button set in the top right corner guard, over
    its boss, so the brass holds it */

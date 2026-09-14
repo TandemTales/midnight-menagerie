@@ -36,6 +36,8 @@ export const DIALOG_GLYPH = {
   done: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.6 12.6 5.5 9.7l4.3 4.3 8.7-9.6 2.9 2.7-11.5 12.6z"/></svg>',
   /* a skull, for the one thing that cannot be undone */
   danger: '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M12 1.8c-5.2 0-9 3.7-9 8.6 0 3 1.4 5.2 3.5 6.5v3.3c0 1 .8 1.8 1.8 1.8h7.4c1 0 1.8-.8 1.8-1.8v-3.3c2.1-1.3 3.5-3.5 3.5-6.5 0-4.9-3.8-8.6-9-8.6zM8.5 8.9a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zm7 0a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM12 14.2l1.5 2.6h-3zm-2.3 4.1h1.3v2.6H9.7zm3.3 0h1.3v2.6H13z"/></svg>',
+  /* a hazard triangle, for a plate that asks before it destroys anything */
+  warn: '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M12 1.6 23.4 21.6H.6zM10.8 8.3h2.4l-.45 7.3h-1.5zM12 16.9a1.35 1.35 0 1 1 0 2.7 1.35 1.35 0 0 1 0-2.7z"/></svg>',
 };
 
 /**
@@ -145,7 +147,10 @@ export class Modal {
         + '<i class="kit-bracket kit-bracket--bl mm-dlg-dress__guard"></i>'
         + '<i class="kit-bracket kit-bracket--br mm-dlg-dress__guard"></i>'
         + '<i class="mm-dlg-dress__candle"><i class="kit-light kit-light--candle mm-dlg-dress__glow"></i>'
-        + '<i class="kit-prop kit-prop--candle"></i></i>';
+        + '<i class="kit-prop kit-prop--candle"></i></i>'
+        /* and on the lower left guard, the Kid board's other still life: a
+           skull on a stack of old books (shown on the large dialogs only) */
+        + '<i class="mm-dlg-dress__books"><i class="kit-prop kit-prop--skull"></i></i>';
       dlg.append(dress, head, body, footer, close);
     } else { head.appendChild(close); dlg.append(head, body, footer); }
     root.append(scrim, dlg);
@@ -180,6 +185,7 @@ export class Modal {
     if (this._opened) return this._promise;
     this._opened = true;
     this._prevFocus = document.activeElement;
+    this._seatPaw();
     this.host.appendChild(this.el);
     this.el.hidden = false;
 
@@ -209,6 +215,21 @@ export class Modal {
 
     this._promise = new Promise((res) => { this._resolve = res; });
     return this._promise;
+  }
+
+  /**
+   * The ways out of a framed dialog stand on a gilt rule (modal.css), and when
+   * there are two of them the Kid board's paw medallion is set on the rule
+   * between them. Decoration, placed once the caller has filled the footer.
+   */
+  _seatPaw() {
+    if (!this.el.classList.contains('mm-modal--kit') || this.footer.querySelector('.mm-dlg-paw')) return;
+    const btns = [...this.footer.children].filter((n) => n.tagName === 'BUTTON');
+    if (btns.length < 2) return;
+    const paw = document.createElement('i');
+    paw.className = 'mm-dlg-paw';
+    paw.setAttribute('aria-hidden', 'true');
+    btns[btns.length - 1].before(paw);
   }
 
   close(result = null) {

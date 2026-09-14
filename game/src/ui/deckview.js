@@ -33,8 +33,10 @@ import { icon } from './icons.js';
 import { plural, word } from '../util/plural.js';
 
 const TYPES = ['attack', 'skill', 'power', 'status', 'curse'];
-/** The card width, in px, whose printed rules size every card here reads at. */
-const LEGIBLE_AT = 210;
+/** The card width, in px, whose printed rules size every card here reads at.
+    Set so a Trick's rules read at one size in the case at 1600 and at the
+    Deck's 1280 (about 17 px), filling its text box rather than floating in it. */
+const LEGIBLE_AT = 250;
 const RARITIES = ['basic', 'common', 'uncommon', 'rare'];
 
 const MODES = {
@@ -346,7 +348,13 @@ export class DeckView {
           /* Tricks here are for READING: a card smaller than the Shop's lifts its
              rules type instead of shrinking it (ui/kit.css .kit-cards, the same
              `legibleAt` scenes/_cardfit.js gives the shelf) */
-          if (sizes[i][0]) v.el.style.setProperty('--rules-k', Math.max(1, Math.min(1.4, LEGIBLE_AT / sizes[i][0])).toFixed(3));
+          /* and a Trick with little to say says it larger, so its rules fill
+             the box on the case's big cards instead of floating in it; a long
+             one keeps to the size it fits at (card.js classes the length) */
+          const cl = v.el.classList;
+          const [legible, most] = cl.contains('is-text-xlong') ? [LEGIBLE_AT * .8, 1.04]
+            : cl.contains('is-text-long') ? [LEGIBLE_AT, 1.25] : [LEGIBLE_AT * 1.08, 1.4];
+          if (sizes[i][0]) v.el.style.setProperty('--rules-k', Math.max(1, Math.min(most, legible / sizes[i][0])).toFixed(3));
         }
       }
     });
