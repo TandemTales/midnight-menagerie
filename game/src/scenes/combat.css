@@ -2869,7 +2869,7 @@
    height reference is the boss stage's own cap (its --e-h, above). The crown's
    medallion (row 62 of the painting) is hung on his intent's centre, which
    sits 40px - --ph - --iv/2 from the top of his column (.cb-enemy__above and
-   .cb-intent). */
+   .cb-intent); its foot runs down past his ground line behind his plate. */
 .cb-root[data-arena="boss"] .cb-enemies[data-n="1"] .cb-enemy[data-tier="boss"]:not([data-role="bossPart"]) {
   --al-w: clamp(290px, calc(min(calc(430px * var(--e-sz)), calc(69vh - var(--e-band) - 127px - var(--e-rise, 0px))) * 1.2), 480px);
 }
@@ -2880,7 +2880,7 @@
   display: block; position: absolute; z-index: -2; pointer-events: none;
   left: 50%; width: var(--al-w);
   top: calc(40px - var(--al-ph) - var(--al-iv) / 2 - var(--al-w) * 62 / 437);
-  bottom: calc(var(--al-w) * -.16);
+  bottom: calc(var(--e-band) + var(--e-rise, 0px) - var(--al-w) * .16);
   border: 0 solid transparent;
   border-image: url("../../assets/ui/kit/boss-alcove.webp") 205 0 150 0 fill / calc(var(--al-w) * 205 / 437) 0 calc(var(--al-w) * 150 / 437) 0 stretch;
   /* still while he lunges, like his plate, on a layer of its own so a lunge
@@ -2910,6 +2910,12 @@
 }
 .cb-root[data-arena="boss"] .cb-enemies[data-n="1"] .cb-enemy[data-tier="boss"]:not([data-role="bossPart"])::before { left: calc(50% - var(--al-w) / 2 - var(--sc-w) * .95); }
 .cb-root[data-arena="boss"] .cb-enemies[data-n="1"] .cb-enemy[data-tier="boss"]:not([data-role="bossPart"])::after { left: calc(50% + var(--al-w) / 2 + var(--sc-w) * .95); }
+/* when he comes apart the room he stood in dims with him */
+.cb-enemy.is-dying .cb-enemy__alcove,
+.cb-root[data-arena="boss"] .cb-enemies[data-n="1"] .cb-enemy.is-dying[data-tier="boss"]::before,
+.cb-root[data-arena="boss"] .cb-enemies[data-n="1"] .cb-enemy.is-dying[data-tier="boss"]::after {
+  opacity: 0; transition: opacity .9s var(--ease-soft) .3s;
+}
 .cb-root[data-arena="boss"] .cb-enemy[data-tier="boss"]:not([data-role="bossPart"]) .cb-enemy__pool { width: 104%; height: 40px; bottom: -15px; }
 /* the plate's painted rails stop short of its box: the tube tucks up under it */
 .cb-root[data-arena="boss"] .cb-enemy[data-tier="boss"]:not([data-role="bossPart"]) .cb-enemy__vitals { margin-top: -4px; }
