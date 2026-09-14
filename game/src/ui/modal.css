@@ -305,7 +305,9 @@
   transform: none;
   color: var(--kit-text-mid);
   text-shadow: 0 1px 0 rgba(0, 0, 0, .95), 0 -1px 0 rgba(0, 0, 0, .5);
-  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .7)) saturate(.35) brightness(.74);
+  /* the lit enamel plate kept, only dulled: a quiet plate, never a black one */
+  border-image-source: url("../../assets/ui/kit/plate-lit.webp");
+  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .7)) saturate(.6) brightness(.84);
 }
 
 .mm-btn.kit-medallion {

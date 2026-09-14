@@ -46,7 +46,7 @@
   --read-h: 30px;
   --choice-h: 34px;
   --panel-top: 8px;                     /* under a panel's ribbon */
-  --stack: clamp(8px, 1.4vh, 16px);     /* between two panels in a column */
+  --stack: clamp(12px, 1.9vh, 18px);    /* between two panels in a column: room for a crest */
   /* a panel's words stand clear of its engraved inner rule and the fleurons at
      its corners (kit.css .kit-panel::after, at --pk .66: the rule 13-16 px in,
      a fleuron reaching 35 px along each edge) */
@@ -128,11 +128,11 @@
   border-image-width: calc(52px * var(--fk));
   border-image-outset: calc(12px * var(--fk));
   --mat: url("../../assets/ui/kit/enamel.webp"); --mat-size: 360px 360px; --mat-base: #221630;
-  --mat-veil: .34; --mat-edge: .62;
-  box-shadow: 0 18px 40px -18px rgba(0, 0, 0, .9), inset 0 0 30px rgba(0, 0, 0, .55);
+  --mat-veil: .12; --mat-edge: .66;
+  box-shadow: 0 18px 40px -18px rgba(0, 0, 0, .9), inset 0 0 30px rgba(0, 0, 0, .5);
 }
-.mm-set__group[data-group="expedition"] { --lit-x: 88%; --lit-y: 115%; --lit-a: 36%; }
-.mm-set__group[data-group="seed"]       { --lit-x: 96%; --lit-y: 125%; --lit-a: 40%; }
+.mm-set__group[data-group="expedition"] { --lit-x: 80%; --lit-y: 110%; --lit-a: 44%; }
+.mm-set__group[data-group="seed"]       { --lit-x: 90%; --lit-y: 120%; --lit-a: 48%; }
 .mm-set__group[data-group="danger"] {
   --lit-x: 100%; --lit-y: 112%; --lit-a: 52%; --lit: #ffb27a;
   --mat-base: #2a0c12; --mat-veil: .2;
@@ -158,10 +158,12 @@
   gap: calc(var(--rib-h) * .2);
   padding-left: calc(var(--rib-h) * .5);
 }
-/* the crest sits over the ribbon's own painted star at its left end */
+/* the crest sits over the ribbon's own painted star at its left end, larger
+   than the ribbon is tall, the way the Kid board's medallions stand proud of
+   the rails they are seated on */
 .mm-set__legend > .mm-set__crest.kit-crest {
-  --crest: calc(var(--rib-h) * 1.36);
-  margin: 0 0 0 calc(var(--rib-h) * -.02);
+  --crest: calc(var(--rib-h) * 1.62);
+  margin: 0 0 0 calc(var(--rib-h) * -.2);
   /* the ribbon's own lift (brightness 1.22) is not the medallion's */
   filter: brightness(.84) saturate(1.06) drop-shadow(0 2px 2px rgba(0, 0, 0, .75));
 }
@@ -189,7 +191,7 @@
 .mm-set__group[data-group="seed"] > .mm-set__legend > .mm-set__crest,
 .mm-set__group[data-group="expedition"] > .mm-set__legend > .mm-set__crest,
 .mm-set__group[data-group="danger"] > .mm-set__legend > .mm-set__crest {
-  margin-left: calc(var(--plate-h) * -.62);
+  margin-left: calc(var(--plate-h) * -.74);
   filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .75));
 }
 .mm-set__group[data-group="danger"] > .mm-set__legend { color: color-mix(in oklab, var(--threat-200) 82%, var(--kit-gold-hi)); }
@@ -213,8 +215,8 @@
 .mm-set__row + .mm-set__row {
   border-top: 0;
   background:
-    linear-gradient(90deg, transparent, rgba(0, 0, 0, .55) 8%, rgba(0, 0, 0, .55) 92%, transparent) 0 0 / 100% 1px no-repeat,
-    linear-gradient(90deg, transparent, color-mix(in srgb, var(--kit-gold) 22%, transparent) 10%, color-mix(in srgb, var(--kit-gold) 22%, transparent) 90%, transparent) 0 1px / 100% 1px no-repeat;
+    linear-gradient(90deg, transparent, rgba(0, 0, 0, .6) 6%, rgba(0, 0, 0, .6) 94%, transparent) 0 0 / 100% 1px no-repeat,
+    linear-gradient(90deg, transparent, color-mix(in srgb, var(--kit-gold) 34%, transparent) 8%, color-mix(in srgb, var(--kit-gold) 34%, transparent) 92%, transparent) 0 1px / 100% 1px no-repeat;
 }
 /* a name over its note, lettered like the Shop's wares */
 .mm-set__label { display: flex; flex-direction: column; gap: 2px; min-width: 0; cursor: pointer; }

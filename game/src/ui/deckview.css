@@ -121,14 +121,8 @@
 }
 .mm-deck__clear.kit-btn { --plate-h: clamp(44px, 5.6vh, 50px); align-self: center; border-image-source: url("../../assets/ui/kit/plate-lit.webp"); }
 /* with nothing to clear it is still the filters' own plate, only its lettering
-   quiet and its enamel a shade dulled (not ui/modal.css's unlit black plate,
-   which beside five lit plates would read as a hole in the row) */
-.mm-modal--kit .mm-deck__clear.kit-btn:disabled,
-.mm-modal--kit .mm-deck__clear.kit-btn:disabled:hover {
-  cursor: default;
-  color: var(--kit-text-mid);
-  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .7)) saturate(.7) brightness(.88);
-}
+   quiet and its enamel dulled (ui/modal.css .mm-modal--kit .kit-btn:disabled) */
+.mm-deck__clear.kit-btn:disabled { cursor: default; }
 
 /* the note: a quiet engraved caption, a star-tipped stroke either side */
 .mm-deck__note {
