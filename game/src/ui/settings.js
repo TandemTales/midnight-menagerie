@@ -27,7 +27,6 @@
 
 import { Modal, confirmModal, kitButton } from './modal.js';
 import { formatSeed } from './portrait.js';
-import { icon } from './icons.js';
 
 /**
  * The whole surface, declared once. The panel is generated from this, so a new
@@ -300,8 +299,9 @@ export async function openSettings(ctx = {}) {
   reset.type = 'button';
   reset.className = 'mm-btn mm-btn--danger';
   reset.textContent = 'Reset…';
-  reset.appendChild(icon('ui.warn'));
-  kitButton(reset);
+  /* the warning is a skull struck on a round enamel medallion at the plate's
+     end, as DONE wears its tick, and the lettering is the Courage bar's red */
+  kitButton(reset, { medal: 'danger' });
   reset.addEventListener('click', async () => {
     const ok = await confirmModal({
       title: 'Reset all progress?',

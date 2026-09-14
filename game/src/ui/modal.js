@@ -34,6 +34,8 @@ import { icon } from './icons.js';
 export const DIALOG_GLYPH = {
   close: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.3 3.9 12 9.6l5.7-5.7 2.4 2.4-5.7 5.7 5.7 5.7-2.4 2.4-5.7-5.7-5.7 5.7-2.4-2.4 5.7-5.7-5.7-5.7z"/></svg>',
   done: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.6 12.6 5.5 9.7l4.3 4.3 8.7-9.6 2.9 2.7-11.5 12.6z"/></svg>',
+  /* a skull, for the one thing that cannot be undone */
+  danger: '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M12 1.8c-5.2 0-9 3.7-9 8.6 0 3 1.4 5.2 3.5 6.5v3.3c0 1 .8 1.8 1.8 1.8h7.4c1 0 1.8-.8 1.8-1.8v-3.3c2.1-1.3 3.5-3.5 3.5-6.5 0-4.9-3.8-8.6-9-8.6zM8.5 8.9a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zm7 0a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM12 14.2l1.5 2.6h-3zm-2.3 4.1h1.3v2.6H9.7zm3.3 0h1.3v2.6H13z"/></svg>',
 };
 
 /**
@@ -42,7 +44,7 @@ export const DIALOG_GLYPH = {
  * the few lines that stop base.css's chrome button painting over the plate.
  * `medal` seats a round enamel medallion with that glyph on the plate's end.
  * @param {HTMLButtonElement} b
- * @param {{quiet?:boolean, medal?:'done'|'close'}} [o]
+ * @param {{quiet?:boolean, medal?:'done'|'close'|'danger'}} [o]
  */
 export function kitButton(b, { quiet = false, medal = '' } = {}) {
   b.classList.add('kit-btn');

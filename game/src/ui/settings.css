@@ -294,7 +294,8 @@
 
 /* ── the expedition and the danger rows ──────────────────────────────────── */
 .mm-set__row > .kit-btn { justify-self: end; --plate-h: calc(var(--read-h) + 4px); font-size: 12.5px; }
-.mm-set__row > .kit-btn .mm-icon { width: 1.05em; height: 1.05em; }
+/* a plate with a medallion on its end stands clear of the panel's right edge */
+.mm-set__row > .kit-btn.mm-dlg-btn--medal { margin-right: calc(var(--plate-h) * .42); }
 
 /* largeText: one column of panels, and each label above its control, so
    neither is squeezed */
