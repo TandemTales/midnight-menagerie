@@ -942,6 +942,20 @@
 }
 .cb-enemy__vitals > .cb-enemy__statuses > .cb-status { --roundel: inherit; }
 .cb-enemy__vitals > .cb-enemy__statuses:empty { display: none; }
+/* …EXCEPT ON A ROW OF FOUR TO SIX, where the columns stand shoulder to shoulder
+   and a medallion beside one gauge lay on the next creature's. There they take
+   a line of their own under the gauge, a size down and centred, and the plate
+   is lifted clear of the hand for it (EnemyView#setPlateLimit). */
+.cb-enemies:is([data-n="4"], [data-n="5"], [data-n="6"]) .cb-enemy__vitals { flex-wrap: wrap; justify-content: center; }
+.cb-enemies:is([data-n="4"], [data-n="5"], [data-n="6"]) .cb-enemy__vitals > .cb-enemy__bar { flex: 1 1 100%; min-width: 0; }
+.cb-enemies:is([data-n="4"], [data-n="5"], [data-n="6"]) .cb-enemy__vitals > .cb-enemy__guard { top: calc(var(--tube-h, 20px) / 2); }
+.cb-enemies:is([data-n="4"], [data-n="5"], [data-n="6"]) .cb-enemy__vitals > .cb-enemy__statuses {
+  --roundel: 23px;
+  flex: 1 1 100%; align-self: auto;
+  flex-wrap: wrap; justify-content: center;
+  gap: 5px 11px;
+  margin: 4px 0 0; padding: 0 8px 0 0;
+}
 
 /* target preview on an enemy */
 .cb-enemy.is-targeted .rg-trunk-rim { stroke: var(--flame-200); stroke-width: 3.4; }

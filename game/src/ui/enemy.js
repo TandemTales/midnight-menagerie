@@ -1118,12 +1118,18 @@ export class EnemyView {
        where they can be seen, and he stands a little smaller. */
     if (this._risesForPlate()) {
       if (this._rise) this.el.style.setProperty('--e-rise', '0px');
-      /* No row is reserved for conditions any more: a boss hangs them off
-         the end of its gauge (combat.css, round 4), so the first Weak that
-         lands adds nothing to the plate's height and he never changes size
-         mid-fight. Only the stack coins hanging under the roundels reach
-         below the gauge, by a few px, and the gap below covers them. */
-      const over = this.$plate.getBoundingClientRect().bottom - limitY;
+      /* A row of conditions is RESERVED under the gauge while it has none, so
+         the first Weak that lands does not push the row into the hand, and
+         the boss never changes size mid-fight. A boss alone hangs its
+         conditions off the gauge's END instead (combat.css, round 4: their
+         row is absolutely placed), and then nothing is reserved: the first
+         Weak adds nothing to the plate's height. The row is a roundel and its
+         stack coin's overhang tall (combat.css --roundel). */
+      const stCss = getComputedStyle(this.$statuses);
+      const beside = stCss.position === 'absolute';
+      const roundel = parseFloat(stCss.getPropertyValue('--roundel')) || 26;
+      const reserve = beside || this.$statuses.childElementCount ? 0 : Math.round(roundel * 1.2 + 4);
+      const over = this.$plate.getBoundingClientRect().bottom + reserve - limitY;
       const rise = over > 0 ? Math.min(Math.round(over), BOSS_RISE_MAX) : 0;
       this._rise = rise;
       this.el.style.setProperty('--e-rise', rise + 'px');
