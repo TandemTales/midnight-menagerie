@@ -291,6 +291,9 @@
    them (662d874's), the Kid board's moon medallion riding on the ribbon with
    its foot tucked behind the ribbon's upper edge. */
 .rw-stage {
+  /* the alcove's rail a size heavier than the kit's: a frame round the hall,
+     not a rule drawn round the cards */
+  --stage-pk: 1.25;
   --spoil-h: clamp(34px, 4.3vh, 40px);
   --rib-h: clamp(30px, 3.8vh, 36px);
   --stage-medal: url("../../assets/ui/kit/medal-moon.webp");
