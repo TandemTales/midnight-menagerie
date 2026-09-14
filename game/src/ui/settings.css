@@ -62,6 +62,14 @@
     --panel-top: 4px;
   }
 }
+/* …and at 900 the words a step larger again, into the height 800 does not have */
+@media (min-height: 861px) and (max-height: 920px) {
+  .mm-set {
+    --row-pad: 5px; --panel-top: 6px;
+    --name-fs: calc(var(--fs-md) * 1.06);
+    --hint-fs: 13.4px;
+  }
+}
 
 /* a column: its panels stacked, the first ribbon's upper half clear of the top */
 .mm-set__col {
@@ -128,7 +136,7 @@
   font-size: var(--hint-fs); line-height: 1.28; font-style: italic;
   color: var(--kit-text-mid);
   text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
-  text-wrap: pretty;
+  text-wrap: balance;
 }
 
 /* ── range: the brass tube, the enamel knob, the figure ─────────────────── */
