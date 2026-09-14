@@ -229,7 +229,7 @@ const FORT_PAINT = `
   <path class="rs-rail rs-rail--lo" d="M0 -80.5h420"/>
   <path class="rs-cord" d="M210 -82L191 23M210 -82L229 23"/>
   <circle class="rs-hook" cx="210" cy="-83" r="2.6"/>
-  <circle class="rs-candleglow rs-sconceglow" cx="46" cy="-62" r="42" filter="url(#rsBlur8)"/>
+  <circle class="rs-candleglow rs-sconceglow" cx="46" cy="-66" r="58" filter="url(#rsBlur8)"/>
   <image href="${KIT_ART}sconce.webp" x="30" y="-80" width="32" height="70" class="rs-prop rs-sconce"/>
 
   <!-- a portrait of the house, hung where the kids could not reach to take it down -->

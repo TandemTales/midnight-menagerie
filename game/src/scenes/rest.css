@@ -139,8 +139,8 @@
 .rs-picedge { fill: none; stroke: var(--kit-void); stroke-width: 1.2; }
 .rs-cord    { fill: none; stroke: color-mix(in oklab, var(--kit-gold) 70%, var(--kit-void)); stroke-width: 1.1; opacity: .85; }
 .rs-hook    { fill: var(--kit-gold); stroke: var(--kit-void); stroke-width: .8; }
-.rs-sconce  { filter: brightness(.92) drop-shadow(0 3px 3px rgba(0, 0, 0, .7)); }
-.rs-sconceglow { opacity: .34; }
+.rs-sconce  { filter: brightness(1.05) drop-shadow(0 3px 3px rgba(0, 0, 0, .7)); }
+.rs-sconceglow { opacity: .55; }
 .rs-web     { opacity: .5; }
 
 /* the chair, the flag, the bunting */
