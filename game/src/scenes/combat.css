@@ -2069,7 +2069,7 @@
    11.5u for the longest rule, so a short rule reads at 1280x800 instead of
    sitting small in room it could use. A number, a size up, never deepens its
    line (line-height 0), so every line is the height the fit counted. */
-.cb-handhost.kit-cards .mm-hand.is-crowded .mm-card[data-rarity][data-type][data-uid].is-fitted:not(.is-hover):not(.is-selected):not(.is-dragging):not(.is-aiming):not(.is-hero) .mm-card__rules { font-size: calc(var(--rules-fit) * var(--u)); line-height: 1.1; }
+.cb-handhost.kit-cards .mm-hand.is-crowded .mm-card[data-rarity][data-type][data-uid].is-fitted:not(.is-hover):not(.is-selected):not(.is-dragging):not(.is-aiming):not(.is-hero) .mm-card__rules { font-size: calc(var(--rules-fit) * var(--u)); line-height: var(--rules-lh, 1.1); }
 .cb-handhost.kit-cards .mm-hand.is-crowded .mm-card[data-rarity][data-type][data-uid].is-fitted:not(.is-hover):not(.is-selected):not(.is-dragging):not(.is-aiming):not(.is-hero) .mm-card__rules .mm-card__num { line-height: 0; }
 /* THE FAN'S LAST CARD IS WHOLE. Nothing covers it, so it keeps its plate's
    centred name, its type line and its rules the width of its panel: set into

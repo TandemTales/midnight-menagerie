@@ -386,8 +386,15 @@ export class CardView {
     for (; f > lo; f -= 0.25) {
       if (linesAt(this._fitRows, f, W) * f * lh <= H) break;
     }
+    f = Math.max(lo, f);
+    // the longest rules in the game still run long at the floor: they close
+    // their leading, never below 0.98, before a line goes under the panel's foot
+    let leading = lh;
+    const need = linesAt(this._fitRows, f, W) * f;
+    if (need * lh > H) leading = Math.max(0.98, Math.floor((H / need) * 100) / 100);
     this._fitKey = key;
-    this.el.style.setProperty('--rules-fit', String(Math.max(lo, f)));
+    this.el.style.setProperty('--rules-fit', String(f));
+    this.el.style.setProperty('--rules-lh', String(leading));
     this.el.classList.add('is-fitted');
   }
 
