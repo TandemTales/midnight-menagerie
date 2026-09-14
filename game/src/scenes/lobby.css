@@ -63,6 +63,18 @@
   --wl6-w: var(--wl5-w);                      --wl6-h: var(--wl5-h);
 }
 .lo-hall { position: absolute; inset: 0; z-index: 2; pointer-events: none; }
+/* the bulbs hang from just inside each corner candle's scroll and sag under
+   the plaque's ribbon, clear of the two medallions on the stage's top rails */
+.lo-bulbs {
+  z-index: 2;
+  left: calc(clamp(8px, .7vw, 12px) + clamp(190px, 17.5vw, 290px) + 4px);
+  right: calc(clamp(8px, .7vw, 12px) + clamp(190px, 17.5vw, 290px) + 4px);
+  top: clamp(84px, 11.6vh, 104px);
+  --sag: clamp(76px, 10.4vh, 94px);
+}
+/* up in the room a line of explanation hangs under the ribbon: the string
+   hangs lower, under that line and above the seats' medallions */
+.lo__room .lo-bulbs { top: clamp(92px, 12.4vh, 112px); --sag: clamp(100px, 13.6vh, 124px); }
 .lo-hall__sconce { --sconce-w: var(--lo-sconce-w); top: var(--lo-sconce-top); }
 .lo-hall__sconce--l { left: calc(var(--lo-sconce-cx) - var(--lo-sconce-w) / 2); }
 .lo-hall__sconce--r { right: calc(var(--lo-sconce-cx) - var(--lo-sconce-w) / 2); }
@@ -125,7 +137,7 @@
   /* seen through old glass at night, out beyond the candle: cooler and a
      step darker than the painting on the title, so the password beside it
      is the brighter thing */
-  filter: saturate(.9) brightness(.8);
+  filter: saturate(.88) brightness(.76);
 }
 .lo-view__art::after {
   content: ''; position: absolute; inset: 0;

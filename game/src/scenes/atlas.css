@@ -48,10 +48,13 @@
 .at-board {
   position: absolute; inset: 0; z-index: 0;
   --hud-h: 0px;
+  /* the corner candles are drawn at --at-corner (below), so their light is
+     centred on THOSE flames, not on the kit's full-size corners */
+  --corner-w: var(--at-corner);
   /* the corner candles light the desk; a warm pool under the sheet and a
      second under the reading panel, where a lamp would stand */
   --wl3-x: 36vw; --wl3-y: 56vh; --wl3-w: 96vw; --wl3-h: 110vh;
-  --wl4-x: 84vw; --wl4-y: 46vh; --wl4-w: 50vw; --wl4-h: 100vh;
+  --wl4-x: 84vw; --wl4-y: 34vh; --wl4-w: 56vw; --wl4-h: 104vh;
   --wl5-x: 94vw; --wl5-y: 88vh; --wl5-w: 30vw; --wl5-h: 46vh;
   --wl6-x: 72vw; --wl6-y: 90vh; --wl6-w: 26vw; --wl6-h: 36vh;
 }
@@ -131,13 +134,13 @@
 /* both stand on the floor line the sheet's foot stands on, a quarter of the
    panel's width in from each side: well inside its corner fleurs */
 .at-floor__skull {
-  --skull-w: clamp(56px, 4.6vw, 76px);
+  --skull-w: clamp(64px, 5.2vw, 84px);
   width: var(--skull-w);
   left: 24%; bottom: calc(clamp(8px, 1.4vh, 14px) * -1);
   z-index: 1;
 }
 .at-floor__candle {
-  --candle-w: clamp(40px, 3.2vw, 52px);
+  --candle-w: clamp(46px, 3.7vw, 60px);
   width: var(--candle-w);
   right: 25%; bottom: calc(clamp(6px, 1.2vh, 12px) * -1);
   z-index: 1;

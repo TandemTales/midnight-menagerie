@@ -92,6 +92,9 @@ function boardMarkup() {
     /* a brass sconce on the wall either side of the stage, lighting the
        panelling round it, as the Curiosity's hall is staged */
     + '<div class="lo-hall" aria-hidden="true"><i class="kit-sconce lo-hall__sconce lo-hall__sconce--l"></i><i class="kit-sconce lo-hall__sconce lo-hall__sconce--r"></i></div>'
+    /* the Kids' own light, strung across the wall between the corner candles
+       and under the plaque: the same bulbs as their Headquarters */
+    + `<div class="lo-bulbs kit-bulbs kit-bulbs--candle" aria-hidden="true" style="--n:12">${Array.from({ length: 12 }, (_, i) => `<i style="--i:${i}"></i>`).join('')}</div>`
     + kitDressMarkup().replace('<i class="kit-dress__rule"></i>',
       '<i class="kit-dress__rule"></i><i class="kit-dress__footscroll"></i>');
 }

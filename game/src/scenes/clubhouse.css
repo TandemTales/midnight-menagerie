@@ -70,11 +70,12 @@
 .cl-flame--r { right: calc(clamp(9px, .8vw, 13px) + var(--cl-corner) * .25); }
 .cl-vine { width: var(--cl-vine); top: calc(var(--cl-corner) * .66); bottom: clamp(24px, 4vh, 40px); }
 
-/* HAZE's lamp, hung from the roof between Title and the sign, its bulb just
-   over the board's top rail; its light is laid on the cork (.cork) */
+/* HAZE's lamp, hung from the roof between Title and the sign and clear of
+   both, its bulb just over the board's top rail; its light is laid on the
+   cork (.cork) and over what is pinned to it (.cl-lampglow) */
 .cl-lamp {
   --lamp-w: clamp(100px, 8.4vw, 136px);
-  left: calc(var(--cl-l) + (100vw - var(--cl-l) - var(--side-w) - var(--side-gap) - var(--cl-r) - var(--cl-carve)) * .37);
+  left: calc(var(--cl-l) + (100vw - var(--cl-l) - var(--side-w) - var(--side-gap) - var(--cl-r) - var(--cl-carve)) * .34);
   top: calc(var(--head-h) - 10px - var(--lamp-w) * 460 / 300 * .852);
   translate: -50% 0;
   z-index: 3;
@@ -83,11 +84,11 @@
    the cork and everything pinned to it, lifting it rather than washing it */
 .cl-lampglow {
   position: absolute; z-index: 5; pointer-events: none;
-  left: 37%; top: 0;
-  width: 78%; height: 88%;
+  left: 34%; top: 0;
+  width: 80%; height: 90%;
   translate: -50% -14%;
   background: radial-gradient(50% 50% at 50% 14%,
-    rgba(255, 216, 156, .3) 0%, rgba(255, 196, 120, .14) 40%, rgba(255, 180, 100, .04) 70%, transparent 100%);
+    rgba(255, 216, 156, .36) 0%, rgba(255, 196, 120, .17) 38%, rgba(255, 180, 100, .05) 68%, transparent 100%);
   mix-blend-mode: screen;
 }
 
@@ -145,7 +146,14 @@
 .cl-back__arrow { display: none; }
 .cl-back__medal { --md: calc(var(--plate-h) * 1.1); left: calc(var(--plate-h) * -.34); }
 
-.cl-sign { justify-self: center; margin-top: clamp(4px, .8vh, 10px); }
+.cl-sign {
+  justify-self: center; margin-top: 2px;
+  /* A size under the kit's compact plaque: the investigation board is what
+     this screen is read for, so the sign is read second, and its ribbon ends
+     above the medallion the chosen section's tab wears on the frame's rail. */
+  --cart-h: clamp(96px, 12.2vh, 118px);
+  --rib-h: clamp(27px, 3.3vh, 32px);
+}
 /* freed and home, opposite Title: the two numbers the whole screen is about */
 .cl-count {
   justify-self: end;
@@ -196,6 +204,11 @@
   translate: -50% -50%;
 }
 .cl-tab { --plate-h: clamp(38px, 4.9vh, 44px); font-size: clamp(12px, .86vw, 13.5px); }
+/* the chosen tab's star sits a little lower on its plate than the kit seats
+   it, so it stays under the sign's ribbon over the middle of the row */
+.cl-tab[aria-selected="true"]::before { translate: -50% -50%; }
+/* and the ribbon hangs a little higher on the sign's bottom rail */
+.cl-sign .cl-sign__sub { margin-top: calc(var(--cart-h) * -.19); }
 
 .cl-panel {
   position: absolute; inset: 0;
@@ -210,9 +223,11 @@
 .scene--clubhouse[data-panel="backpack"]  .cl-panel--backpack {
   opacity: 1; pointer-events: auto; transform: none;
 }
-/* the three paper sections are pinned to the same board, under a dark felt */
+/* the three paper sections are pinned to the same board, under a dark felt.
+   The carved frame stands outside the box, so the felt's margin is only the
+   air a board wants, not room under a rail laid over its edge. */
 .cl-panel--menagerie, .cl-panel--pets, .cl-panel--backpack {
-  padding: clamp(30px, 4.2vh, 38px) clamp(24px, 2.2vw, 38px) clamp(18px, 2.6vh, 26px);
+  padding: clamp(26px, 3.4vh, 32px) clamp(18px, 1.6vw, 28px) clamp(10px, 1.6vh, 16px);
   background:
     radial-gradient(90% 70% at 30% 10%, color-mix(in srgb, var(--kit-candle) 10%, transparent), transparent 70%),
     radial-gradient(130% 120% at 50% 40%, transparent 50%, rgba(0, 0, 0, .55) 100%),
@@ -264,12 +279,12 @@
 /* ── the corkboard ────────────────────────────────────────────────────────── */
 .cork {
   position: absolute; inset: 0;
-  /* the lamp hangs over the top row of photographs (.cl-lamp, 37% across):
+  /* the lamp hangs over the top row of photographs (.cl-lamp, 34% across):
      its pool is brightest on them and falls away down the board, the far
      corners and the foot in shadow, the frame's own shadow along the top */
   background:
-    radial-gradient(34% 46% at 37% 2%, rgba(255, 222, 168, .34), rgba(255, 196, 128, .12) 55%, transparent 80%),
-    radial-gradient(62% 74% at 36% 12%, rgba(255, 190, 120, .2), transparent 72%),
+    radial-gradient(34% 46% at 34% 2%, rgba(255, 222, 168, .34), rgba(255, 196, 128, .12) 55%, transparent 80%),
+    radial-gradient(62% 74% at 33% 12%, rgba(255, 190, 120, .2), transparent 72%),
     radial-gradient(125% 112% at 40% 32%, transparent 44%, rgba(30, 14, 4, .5) 86%, rgba(16, 7, 2, .78) 100%),
     linear-gradient(rgba(122, 84, 44, .38), rgba(122, 84, 44, .38)),
     url("../../assets/ui/kit/cork.webp") 0 0 / 200px 200px,
@@ -298,7 +313,7 @@
 .polaroid, .ch-note, .bpfrag, .scrawl { position: absolute; transform: rotate(var(--rot, 0deg)); z-index: 2; }
 
 .polaroid {
-  width: clamp(110px, 9.6vw, 150px);
+  width: clamp(104px, 9.4vw, 150px);
   display: grid; gap: 1px;
   padding: 7px 7px 8px;
   text-align: center;
@@ -356,7 +371,7 @@
 /* the clue cards: index cards, taped up — a red rule under the heading and
    faint blue lines under the words, printed into the card, not over it */
 .ch-note {
-  width: clamp(138px, 12vw, 184px);
+  width: clamp(136px, 11.6vw, 184px);
   padding: 13px 13px 14px;
   --paper: #efe4c6;
   transition: transform var(--t-base) var(--ease-out);
@@ -412,8 +427,10 @@
   filter: brightness(1.05);
 }
 .bpfrag:focus-visible { outline: 2px solid var(--kit-gold-hi); outline-offset: 4px; }
+/* "Look closer" appears over the foot of the card on hover and keeps no
+   blank band for itself when it is not showing */
 .bpfrag__go {
-  justify-self: center;
+  position: absolute; left: 50%; bottom: 8px; translate: -50% 0;
   --plate-h: 30px;
   display: inline-flex; align-items: center;
   min-height: var(--plate-h);
@@ -499,12 +516,14 @@
    inset over its corner. Each card is a portrait in the Kid board's frame. */
 .petgrid {
   display: grid; grid-template-columns: repeat(4, 1fr);
-  grid-auto-rows: minmax(0, 1fr); gap: clamp(14px, 1.4vw, 24px);
+  grid-auto-rows: minmax(0, 1fr); gap: clamp(12px, 1.2vw, 22px);
   flex: 1; min-height: 0;
-  padding: 8px;
+  padding: 6px 6px 4px;
 }
-/* the panel is the flex parent the grid stretches inside */
-.cl-panel--pets { display: flex; flex-direction: column; gap: var(--s-4); overflow: hidden; }
+/* the panel is the flex parent the grid stretches inside; its heading's own
+   margin is the gap, not added to it */
+.cl-panel--pets { display: flex; flex-direction: column; gap: 0; overflow: hidden; }
+.cl-panel--pets > .cl-panel__head { margin-bottom: clamp(8px, 1.4vh, 16px); }
 .petcard {
   position: relative;
   display: grid; grid-template-rows: minmax(56px, 1fr) auto;
@@ -537,14 +556,14 @@
 .petcard__sp { margin: 0; font-family: var(--font-display); font-weight: 700; font-size: 11px; line-height: 1.25; letter-spacing: .06em; text-transform: uppercase; color: var(--kit-gold); }
 .petcard__lost { margin: 5px 0 0; font-size: var(--fs-sm); line-height: 1.3; font-style: italic; color: var(--kit-text-mid); }
 .petcard__who { margin: 2px 0 0; font-size: var(--fs-sm); color: var(--kit-text-lo); }
-.stagebar { display: flex; align-items: center; gap: 4px; margin-top: 6px; }
+.stagebar { display: flex; flex-wrap: wrap; align-items: center; gap: 3px 4px; margin-top: 5px; }
 .stagebar i {
   width: 9px; height: 9px; transform: rotate(45deg);
   background: #2a2231;
   box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--kit-gold) 55%, transparent);
 }
 .stagebar i.is-on { background: linear-gradient(135deg, var(--spectre-200), var(--spectre-400)); box-shadow: 0 0 0 1px rgba(0, 0, 0, .7), 0 0 8px color-mix(in srgb, var(--spectre-300) 60%, transparent); }
-.stagebar span { margin-left: 6px; font-size: 11px; line-height: 1.2; font-style: italic; color: var(--kit-text-lo); }
+.stagebar span { flex: 1 0 100%; font-size: 11px; line-height: 1.2; font-style: italic; color: var(--kit-text-lo); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
 /* ── backpack ─────────────────────────────────────────────────────────────── */
 .packwho { display: flex; flex-wrap: wrap; gap: 10px 14px; margin-bottom: var(--s-4); }

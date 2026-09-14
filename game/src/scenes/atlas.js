@@ -807,7 +807,10 @@ export class AtlasScene extends Scene {
     d.dataset.seen = known ? '1' : '0';
     d.querySelector('.at-dos__n').textContent = w.meta.roman;
     d.querySelector('.at-dos__name').textContent = w.meta.name;
-    d.querySelector('.at-dos__form').textContent = w.meta.form;
+    /* The form is written as two clauses parted by a middle dot. Set as two
+       lines broken AT the dot, rather than balanced wherever the width falls,
+       so no line ends on a stray point. */
+    d.querySelector('.at-dos__form').innerHTML = String(w.meta.form).split(/\s+·\s+/).map(esc).join('<br>');
     d.querySelector('.at-dos__boss').textContent = known ? w.meta.boss : 'Not yet known';
     d.querySelector('.at-dos__rooms').textContent = '20';
     d.querySelector('.at-dos__state').textContent = seen ? 'Surveyed' : 'Unsurveyed';

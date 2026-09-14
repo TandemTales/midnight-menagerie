@@ -142,7 +142,7 @@ export class ClubhouseScene extends Scene {
     const room = el('div', 'cl-room kit-board');
     room.innerHTML = `
       <div class="cl-wall kit-ground"><i class="kit-ground__warm"></i><i class="kit-ground__moon"></i></div>
-      <div class="cl-lights kit-bulbs">${Array.from({ length: 14 }, (_, i) =>
+      <div class="cl-lights kit-bulbs kit-bulbs--candle">${Array.from({ length: 14 }, (_, i) =>
         `<i style="--i:${i}"></i>`).join('')}</div>
       <div class="cl-floor"></div>
       <div class="cl-dust">${Array.from({ length: 18 }, (_, i) =>
@@ -283,7 +283,10 @@ export class ClubhouseScene extends Scene {
     cork.appendChild(bp);
 
     // clue notes
-    const cluePos = [[63, 45], [80, 51], [63, 74], [80, 79], [43, 77]];
+    /* Two columns of cards under the recovered drawing, the known clues above
+       the unknown ones, and one unknown card beside the thesis: laid so that at
+       1280 no card lies on another, on the drawing or on a photograph. */
+    const cluePos = [[62, 47], [80.5, 53], [62.5, 76.5], [81, 80], [43, 77]];
     BOARD_CLUES.forEach((c, i) => {
       const [title, text, known] = c;
       /* `ch-note`, not `note`. The class was renamed in clubhouse.css to get out

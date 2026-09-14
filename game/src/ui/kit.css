@@ -1862,9 +1862,8 @@ button.kit-medallion:hover, button.kit-medallion:focus-visible,
 
 /* ── string lights ──────────────────────────────────────────────────────────
    The kids' own light: a dark wire sagging in one long curve across the top of
-   a board, a bulb on a brass cap every few hands, candle amber, then a pale
-   wax, then lavender — the samples' own two lights, never a saturated primary
-   — each breathing on its own beat. Markup is the bulbs:
+   a board, a bulb on a brass cap every few hands, warm, then red, then cold
+   blue, each breathing on its own beat. Markup is the bulbs:
      <div class="kit-bulbs"><i style="--i:0"></i> … <i style="--i:13"></i></div>
    Fourteen by default (--n); size the box and the wire sags inside it.     */
 .kit-bulbs {
@@ -1896,12 +1895,12 @@ button.kit-medallion:hover, button.kit-medallion:focus-visible,
   box-shadow: 0 1px 0 rgba(0, 0, 0, .6);
 }
 .kit-bulbs > i:nth-child(3n) {
-  background: radial-gradient(circle at 40% 30%, #fbf4ff 0 18%, var(--kit-lav-hi) 40%, var(--kit-lav) 72%, var(--kit-violet));
-  box-shadow: 0 0 10px 2px color-mix(in srgb, var(--kit-lav) 48%, transparent), 0 0 30px 8px color-mix(in srgb, var(--kit-lav) 14%, transparent);
+  background: radial-gradient(circle at 40% 30%, #fff0ee 0 18%, var(--threat-200) 40%, var(--threat-400) 74%, var(--threat-500));
+  box-shadow: 0 0 10px 2px color-mix(in srgb, var(--threat-300) 50%, transparent), 0 0 30px 8px color-mix(in srgb, var(--threat-300) 14%, transparent);
 }
 .kit-bulbs > i:nth-child(3n+1) {
-  background: radial-gradient(circle at 40% 30%, #fffaf0 0 20%, #ffeccb 42%, color-mix(in srgb, var(--kit-candle) 70%, #ffeccb) 76%, var(--kit-candle));
-  box-shadow: 0 0 10px 2px color-mix(in srgb, var(--kit-candle) 40%, transparent), 0 0 30px 8px color-mix(in srgb, var(--kit-candle) 12%, transparent);
+  background: radial-gradient(circle at 40% 30%, #f0fdff 0 18%, var(--spectre-200) 40%, var(--spectre-400) 74%, var(--spectre-500));
+  box-shadow: 0 0 10px 2px color-mix(in srgb, var(--spectre-300) 46%, transparent), 0 0 30px 8px color-mix(in srgb, var(--spectre-300) 12%, transparent);
 }
 @keyframes kit-bulb { 0%, 100% { opacity: .8; } 50% { opacity: 1; } }
 /* a painted room brings its own lights */
@@ -1944,6 +1943,8 @@ button.kit-medallion:hover, button.kit-medallion:focus-visible,
                      cream; --card tears it from an index card, words in red.
                      Its shadow belongs to its parent (a clip-path cuts a
                      shadow of its own away): drop-shadow the container
+     .kit-bulbs--candle  the string of bulbs in the samples' own two lights:
+                     candle amber, a pale wax, lavender — no primaries
    =========================================================================== */
 
 /* ── carved frame ── */
@@ -2014,4 +2015,14 @@ button.kit-medallion:hover, button.kit-medallion:focus-visible,
   --clip-hi: #fff7e4;
   color: color-mix(in srgb, var(--kit-thread) 88%, black);
   text-shadow: none;
+}
+
+/* ── bulbs, candle ── */
+.kit-bulbs--candle > i:nth-child(3n) {
+  background: radial-gradient(circle at 40% 30%, #fbf4ff 0 18%, var(--kit-lav-hi) 40%, var(--kit-lav) 72%, var(--kit-violet));
+  box-shadow: 0 0 10px 2px color-mix(in srgb, var(--kit-lav) 48%, transparent), 0 0 30px 8px color-mix(in srgb, var(--kit-lav) 14%, transparent);
+}
+.kit-bulbs--candle > i:nth-child(3n+1) {
+  background: radial-gradient(circle at 40% 30%, #fffaf0 0 20%, #ffeccb 42%, color-mix(in srgb, var(--kit-candle) 70%, #ffeccb) 76%, var(--kit-candle));
+  box-shadow: 0 0 10px 2px color-mix(in srgb, var(--kit-candle) 40%, transparent), 0 0 30px 8px color-mix(in srgb, var(--kit-candle) 12%, transparent);
 }
