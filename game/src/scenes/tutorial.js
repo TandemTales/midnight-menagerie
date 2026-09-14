@@ -302,7 +302,11 @@ export class TutorialScene extends Scene {
   _buildPanel() {
     const p = this._panel = el('section', 'tut-panel kit-panel kit-panel--damask');
     p.dataset.medal = 'moon';
+    /* The page is a thing in the room, as the dialogs are (ui/kit.css, OBJECTS
+       IN THE HOUSE): a tufted velvet liner inside its gilt rail, a brass guard
+       over each corner, and the story's silk bookmark hanging from its foot. */
     p.innerHTML = `
+      <i class="tut-fit" aria-hidden="true"><i class="kit-liner tut-fit__liner"></i><i class="kit-bookmark tut-fit__mark"></i><i class="kit-bracket kit-bracket--tl tut-fit__guard"></i><i class="kit-bracket kit-bracket--tr tut-fit__guard"></i><i class="kit-bracket kit-bracket--bl tut-fit__guard"></i><i class="kit-bracket kit-bracket--br tut-fit__guard"></i></i>
       <h1 class="tut-head"></h1>
       <p class="tut-sub"></p>
       <div class="tut-lines"></div>
@@ -462,7 +466,14 @@ export class TutorialScene extends Scene {
     const lines = p.lines || (p.of && k ? p.of(k, info) : []);
     const host = panel.querySelector('.tut-lines');
     host.innerHTML = '';
-    for (const line of lines) host.appendChild(el('p', 'tut-line', esc(line)));
+    lines.forEach((line, n) => {
+      /* The page opens on an illuminated initial: the first letter (and any
+         quote before it) set in the wordmark's engraved lavender, inside its own
+         word, so "Orbit" still reads as one word and nothing boxes it off. */
+      const m = n === 0 && /^([“‘"']?\p{L})(.*)$/su.exec(String(line));
+      host.appendChild(el('p', 'tut-line' + (m ? ' tut-line--lead' : ''),
+        m ? `<span class="tut-initial">${esc(m[1])}</span>${esc(m[2])}` : esc(line)));
+    });
     host.hidden = !lines.length;
 
     const picking = p.kind === 'pick';
@@ -557,7 +568,7 @@ export class TutorialScene extends Scene {
     const box = el('div', 'tut-figbox');
     box.appendChild(frame);
     if (plate) {
-      box.appendChild(el('div', 'tut-plate kit-plate',
+      box.appendChild(el('div', 'tut-plate kit-plate kit-plate--arch',
         `<span class="kit-plate__name">${esc(plate[0])}</span><span class="kit-plate__epithet">${esc(plate[1])}</span>`));
     }
     /* stood on the floor the way the Kid board's mirror is: a skull on its

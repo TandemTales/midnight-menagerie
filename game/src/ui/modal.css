@@ -79,17 +79,21 @@
 
 /* ══ the kit panel ═════════════════════════════════════════════════════════ */
 .mm-modal--kit {
-  /* room above for the plaque's upper half, clear of the HUD's rail; room
-     below for the buttons' lower half */
+  /* room above for the plaque's upper half, clear of the HUD's rail; below,
+     only the room the corner guards and the candle's dish hang into — the
+     buttons stand inside the frame */
   --dlg-top: calc(var(--hud-h, 46px) + 6px + clamp(54px, 6.8vh, 64px));
-  --dlg-bottom: clamp(30px, 4.4vh, 40px);
+  --dlg-bottom: clamp(22px, 3.4vh, 32px);
   padding: var(--dlg-top) var(--s-5) var(--dlg-bottom);
 }
 .mm-modal--kit .mm-modal__dialog {
   --pk: .9;
   --btn-h: clamp(44px, 5.4vh, 52px);
+  --liner-w: clamp(16px, 1.25vw, 20px);
+  --liner-in: 5px;                  /* the liner tucks under the rail's inner lip */
+  --rule-in: calc(var(--liner-in) + var(--liner-w) + 5px);
   padding: 0;
-  overflow: visible;                /* the plaque, the close and the buttons sit ON the rail */
+  overflow: visible;                /* the plaque, the close and the guards sit ON the rail */
   max-height: calc(100vh - var(--dlg-top) - var(--dlg-bottom));
   /* it stands in the dimmed room: a long cast shadow, and the candle's warmth
      on the wall behind it, the brightest thing left on screen */
@@ -98,16 +102,42 @@
     0 0 120px -10px color-mix(in srgb, var(--kit-candle) 9%, transparent),
     inset 0 0 40px rgba(0, 0, 0, .45);
 }
+/* the panel's own engraved double rule moves in to stand inside the velvet */
+.mm-modal--kit .mm-modal__dialog::after { inset: var(--rule-in); }
+
+/* ── the dialog's fittings (modal.js puts them on; ui/kit.css paints them) ── */
+.mm-dlg-dress { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
+.mm-dlg-dress__liner { inset: var(--liner-in); --liner-w: inherit; }
+.mm-dlg-dress__guard { --bracket: clamp(64px, 5.6vw, 88px); }
+/* the candle burning on the lower right corner guard: its dish set on the
+   guard's boss, its light warming the rail, the velvet and the room round the
+   corner (the one lit thing on the frame, breathing unless motion is reduced) */
+.mm-dlg-dress__candle {
+  --cw: clamp(54px, 4.3vw, 70px);
+  position: absolute; z-index: 5;
+  right: calc(var(--cw) * -.36);
+  bottom: calc(var(--cw) * .02 - 2px);
+  width: var(--cw); aspect-ratio: 106 / 164;
+}
+.mm-dlg-dress__candle > .kit-prop { inset: 0; }
+.mm-dlg-dress__candle > .kit-prop::before { display: none; }
+.mm-dlg-dress__glow { left: 50%; top: 14%; width: calc(var(--cw) * 5.4); --light-a: 22%; }
+:root[data-reduce-motion="1"] .mm-dlg-dress__candle .kit-prop--candle::after,
+:root[data-reduce-motion="1"] .mm-dlg-dress__glow { animation: none; }
 /* a question: wide enough that its two answers each keep to one line */
 .mm-modal--kit[data-size="sm"] .mm-modal__dialog { width: min(100%, 46rem); }
-/* the panel in the room's light, not an even fill: a candle's warmth falling
-   from under the plaque, the damask sinking into shadow towards the corners.
+/* a case of cards: five across inside the velvet, at 1600 as at the Deck's 1280 */
+.mm-modal--kit[data-size="wide"] .mm-modal__dialog { width: min(100%, 80rem); }
+/* the panel in the room's light, not an even fill: the candle burning on its
+   lower right corner warms the damask round it, a little light falls from
+   under the plaque, and the cloth sinks into shadow towards the far corners.
    (A dialog wears no medallion, so the panel's ::before is free.) */
 .mm-modal--kit .mm-modal__dialog::before {
   content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none;
   background:
-    radial-gradient(56% 34% at 50% 0%, color-mix(in srgb, var(--kit-candle) 10%, transparent), transparent 72%),
-    radial-gradient(130% 118% at 50% 42%, transparent 46%, rgba(5, 3, 8, .5) 100%);
+    radial-gradient(46% 58% at 100% 100%, color-mix(in srgb, var(--kit-candle) 15%, transparent), transparent 70%),
+    radial-gradient(56% 30% at 50% 0%, color-mix(in srgb, var(--kit-candle) 7%, transparent), transparent 72%),
+    radial-gradient(130% 118% at 44% 40%, transparent 46%, rgba(5, 3, 8, .55) 100%);
 }
 
 /* the plaque across the top rail: the cartouche's middle ON the rail */
@@ -138,7 +168,7 @@
 
 /* the body sits inside the panel's inner double rule, its gilt scrollbar too */
 .mm-modal--kit .mm-modal__body {
-  margin: 12px clamp(24px, 2.2vw, 30px) 0;
+  margin: 12px calc(var(--rule-in) + 6px) 0;
   padding: 6px clamp(10px, 1.2vw, 18px) 18px;
 }
 .mm-modal--kit .mm-scroll { scrollbar-width: thin; scrollbar-color: color-mix(in srgb, var(--kit-gold) 62%, transparent) color-mix(in srgb, var(--kit-void) 55%, transparent); }
@@ -157,24 +187,26 @@
 }
 .mm-modal--kit .mm-modal__text { text-align: center; text-wrap: balance; padding: 6px 4px 2px; }
 
-/* the ways out stand across the bottom rail, the way the Kid board's round
-   buttons stand on its corners: a quiet plate, then the lit one */
+/* the ways out stand INSIDE the frame, on the panel's floor above the velvet,
+   clear of whatever the room below is showing: a quiet plate, then the lit one */
 .mm-modal--kit .mm-modal__foot {
   flex: none;
   position: relative; z-index: 3;
   justify-content: center; align-items: center;
-  gap: clamp(18px, 2vw, 30px);
+  gap: clamp(22px, 2.4vw, 36px);
   flex-wrap: nowrap;
-  margin: 2px 0 calc(var(--btn-h) * -.5);
-  padding: 0 clamp(28px, 3vw, 44px);
+  margin: 0 var(--rule-in) calc(var(--rule-in) + clamp(8px, 1.4vh, 14px));
+  padding: clamp(8px, 1.3vh, 12px) clamp(28px, 3vw, 44px) 0;
 }
 .mm-modal--kit .mm-modal__foot .kit-btn { --plate-h: var(--btn-h); flex: none; white-space: nowrap; }
 
-/* the close: the round enamel button on the rail's top-right corner */
+/* the close: the round enamel button set in the top right corner guard, over
+   its boss, so the brass holds it */
 .mm-modal--kit .mm-modal__close {
   --md: clamp(40px, 5vh, 46px);
-  position: absolute; z-index: 4;
-  top: calc(var(--md) * -.5 + 2px); right: calc(var(--md) * -.5 + 2px);
+  position: absolute; z-index: 6;
+  top: calc(var(--md) * -.5 + clamp(64px, 5.6vw, 88px) * .13 - 4px);
+  right: calc(var(--md) * -.5 + clamp(64px, 5.6vw, 88px) * .13 - 4px);
   font-size: 0;
 }
 
@@ -204,6 +236,17 @@
 /* danger: the same plate, lettered in the Courage bar's red */
 .mm-btn--danger.kit-btn { color: var(--threat-200); }
 .mm-btn--danger.kit-btn:hover:not(:disabled), .mm-btn--danger.kit-btn:focus-visible { color: var(--threat-100); }
+/* A plate that cannot be pressed just now is still a plate: its gilt whole and
+   its lettering legible, only unlit — the enamel dulled and the letters in the
+   quiet engraved grey — never faded out to a ghost of one. */
+.mm-modal--kit .kit-btn:disabled,
+.mm-modal--kit .kit-btn:disabled:hover {
+  opacity: 1;
+  transform: none;
+  color: var(--kit-text-mid);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .95), 0 -1px 0 rgba(0, 0, 0, .5);
+  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .7)) saturate(.35) brightness(.74);
+}
 
 .mm-btn.kit-medallion {
   width: var(--md); height: var(--md); min-height: 0;

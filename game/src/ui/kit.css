@@ -1927,3 +1927,95 @@ button.kit-medallion:hover, button.kit-medallion:focus-visible,
   background-blend-mode: normal, normal, normal, soft-light, overlay, normal;
   background-clip: padding-box;
 }
+
+/* ===========================================================================
+   OBJECTS IN THE HOUSE — round 4, from the DIALOGS track.
+   A dialog is not a web panel laid over the room; it is a thing that stands
+   in the mansion. These are the fittings a board, a case or a ledger is made
+   with, painted by tools/prep_ui_house.py in the samples' aubergine, lavender
+   and antique brass. Appended; nothing above is changed.
+
+     .kit-bracket        a cast brass corner guard over a frame's corner, a
+       --tl --tr --bl --br   violet cabochon on its boss (each painting lit
+                         from the boards' top left); --bracket sizes it
+     .kit-liner          a frame's velvet liner: aubergine velvet tufted into
+                         diamonds, a brass button in each, laid inside a rail
+                         (a 9-slice ring); --liner-w is its width. A gilt
+                         fillet runs round its inner edge and the velvet's
+                         shadow falls on what it frames
+     .kit-bookmark       a silk bookmark ribbon hanging from an edge, cut in a
+                         swallowtail; --mark-w and height size it, its top
+                         lost under whatever it hangs from
+     .kit-plate--arch    a modifier for .kit-plate: the Companion tiles' ogee
+                         ends, a curl on each notch, and a low arch over the name
+     .kit-leader         a ledger's dotted leader: brass dots running from a
+                         label to its figure or control (flex: 1 in a row)
+   =========================================================================== */
+
+/* ── bracket ────────────────────────────────────────────────────────────────
+   The painting is 160 square and its plate starts 6 px in from its corner, so
+   --bracket-in is how far to pull it out over a rail for its edges to wrap
+   the frame's own corner. Decoration: never takes pointer events. */
+.kit-bracket {
+  --bracket: 72px;
+  --bracket-in: calc(var(--bracket) * 6 / 160 + 3px);
+  position: absolute; z-index: 4; pointer-events: none;
+  width: var(--bracket); aspect-ratio: 1;
+  background: 50% 50% / 100% 100% no-repeat;
+  filter: drop-shadow(0 3px 3px rgba(0, 0, 0, .75));
+}
+.kit-bracket--tl { left: calc(-1 * var(--bracket-in)); top: calc(-1 * var(--bracket-in)); background-image: url("../../assets/ui/kit/bracket-tl.webp"); }
+.kit-bracket--tr { right: calc(-1 * var(--bracket-in)); top: calc(-1 * var(--bracket-in)); background-image: url("../../assets/ui/kit/bracket-tr.webp"); }
+.kit-bracket--bl { left: calc(-1 * var(--bracket-in)); bottom: calc(-1 * var(--bracket-in)); background-image: url("../../assets/ui/kit/bracket-bl.webp"); }
+.kit-bracket--br { right: calc(-1 * var(--bracket-in)); bottom: calc(-1 * var(--bracket-in)); background-image: url("../../assets/ui/kit/bracket-br.webp"); }
+
+/* ── liner ──────────────────────────────────────────────────────────────────
+   velvet-ring.webp is a 144 square ring, slices 48: the velvet is tufted on
+   one lattice, so its edges repeat `round` and the diamonds meet at the
+   corners. Place it with inset; it paints only its band. */
+.kit-liner {
+  --liner-w: 20px;
+  position: absolute; pointer-events: none;
+  border: var(--liner-w) solid transparent;
+  border-image: url("../../assets/ui/kit/velvet-ring.webp") 48 / var(--liner-w) round;
+  /* the gilt fillet on its inner edge, and the velvet's shadow on the field */
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, var(--kit-gold) 62%, transparent),
+    inset 0 0 0 2px rgba(0, 0, 0, .55),
+    inset 0 0 18px 2px rgba(0, 0, 0, .5);
+}
+
+/* ── bookmark ───────────────────────────────────────────────────────────────
+   bookmark.webp is 60x480 and hangs from its top: the element shows its foot,
+   as long as the element is tall. */
+.kit-bookmark {
+  --mark-w: 26px;
+  position: absolute; pointer-events: none;
+  width: var(--mark-w); height: calc(var(--mark-w) * 6);
+  background: url("../../assets/ui/kit/bookmark.webp") 50% 100% / 100% auto no-repeat;
+  filter: drop-shadow(2px 5px 4px rgba(0, 0, 0, .7));
+}
+
+/* ── plate, arched ──────────────────────────────────────────────────────────
+   plate-arch.webp is 400x132, sliced 40 84 22 84: its ogee ends in the side
+   slices, the low arch in the top one. */
+.kit-plate.kit-plate--arch {
+  padding: calc(var(--plate-h) * .2) calc(var(--plate-h) * 1.05) calc(var(--plate-h) * .12);
+  border-image-source: url("../../assets/ui/kit/plate-arch.webp");
+  border-image-slice: 40 84 22 84 fill;
+  border-image-width: calc(var(--plate-h) * 40 / 132) calc(var(--plate-h) * 84 / 132) calc(var(--plate-h) * 22 / 132) calc(var(--plate-h) * 84 / 132);
+  border-image-repeat: stretch;
+}
+
+/* ── leader ─────────────────────────────────────────────────────────────────
+   Brass dots on the baseline between a label and what it names, the way a
+   ledger leads the eye across a page. Put it between the two in a flex row. */
+.kit-leader {
+  flex: 1 1 auto; align-self: baseline;
+  min-width: 18px; height: 3px;
+  margin: 0 10px;
+  translate: 0 -.28em;
+  background: radial-gradient(circle, color-mix(in srgb, var(--kit-gold) 88%, transparent) 0 1.1px, transparent 1.6px) 0 50% / 7px 3px repeat-x;
+  filter: drop-shadow(0 1px 0 rgba(0, 0, 0, .9));
+  opacity: .72;
+}

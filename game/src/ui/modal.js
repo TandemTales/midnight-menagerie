@@ -125,8 +125,25 @@ export class Modal {
     const footer = document.createElement('footer');
     footer.className = 'mm-modal__foot';
 
-    if (framed) dlg.append(head, body, footer, close);
-    else { head.appendChild(close); dlg.append(head, body, footer); }
+    if (framed) {
+      /* What makes it a thing in the house rather than a page over it (ui/kit.css,
+         OBJECTS IN THE HOUSE): a tufted velvet liner inside the gilt rail, a
+         brass guard over each corner and a candle burning on its lower right
+         corner. Decoration, first in the dialog so everything that is read or
+         pressed stands in front of it. */
+      const dress = document.createElement('div');
+      dress.className = 'mm-dlg-dress';
+      dress.setAttribute('aria-hidden', 'true');
+      dress.innerHTML =
+        '<i class="kit-liner mm-dlg-dress__liner"></i>'
+        + '<i class="kit-bracket kit-bracket--tl mm-dlg-dress__guard"></i>'
+        + '<i class="kit-bracket kit-bracket--tr mm-dlg-dress__guard"></i>'
+        + '<i class="kit-bracket kit-bracket--bl mm-dlg-dress__guard"></i>'
+        + '<i class="kit-bracket kit-bracket--br mm-dlg-dress__guard"></i>'
+        + '<i class="mm-dlg-dress__candle"><i class="kit-light kit-light--candle mm-dlg-dress__glow"></i>'
+        + '<i class="kit-prop kit-prop--candle"></i></i>';
+      dlg.append(dress, head, body, footer, close);
+    } else { head.appendChild(close); dlg.append(head, body, footer); }
     root.append(scrim, dlg);
 
     this.el = root; this.dialog = dlg; this.body = body; this.footer = footer;
