@@ -138,7 +138,7 @@
 }
 .mm-dlg-dress__candle > .kit-prop { inset: 0; }
 .mm-dlg-dress__candle > .kit-prop::before { display: none; }
-.mm-dlg-dress__glow { left: 50%; top: 12%; width: calc(var(--cw) * 6); --light-a: 30%; }
+.mm-dlg-dress__glow { left: 50%; top: 12%; width: calc(var(--cw) * 6); --light-a: 24%; }
 :root[data-reduce-motion="1"] .mm-dlg-dress__candle .kit-prop--candle::after,
 :root[data-reduce-motion="1"] .mm-dlg-dress__glow { animation: none; }
 /* a question: wide enough that its two answers each keep to one line */
@@ -152,7 +152,7 @@
 .mm-modal--kit .mm-modal__dialog::before {
   content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none;
   background:
-    radial-gradient(46% 58% at 100% 100%, color-mix(in srgb, var(--kit-candle) 15%, transparent), transparent 70%),
+    radial-gradient(46% 58% at 100% 100%, color-mix(in srgb, var(--kit-candle) 11%, transparent), transparent 70%),
     radial-gradient(56% 30% at 50% 0%, color-mix(in srgb, var(--kit-candle) 7%, transparent), transparent 72%),
     radial-gradient(130% 118% at 44% 40%, transparent 46%, rgba(5, 3, 8, .55) 100%);
 }
