@@ -257,13 +257,15 @@ export class LobbyScene extends Scene {
     const card = el('section', 'lo-card kit-panel kit-panel--damask');
     card.dataset.medal = 'star';
     card.setAttribute('aria-label', 'The password');
+    /* The ribbon names the panel and is kept short, so at 1280 its ends stand
+       clear of the rail's corner fleurs rather than lying across them. */
     card.appendChild(el('h2', 'lo-card__h kit-heading kit-heading--ribbon kit-heading--inline kit-heading--clasp',
-      'The password <em>say it out loud</em>'));
+      'Password <em>say it out loud</em>'));
 
-    /* The field is an engraved nameplate: the word PASSWORD cut into its top
-       edge and the two words lettered across it. */
+    /* The field is an engraved nameplate: what goes on it cut into its top
+       edge, and the two words lettered across it. */
     const plate = el('label', 'lo-plate');
-    plate.appendChild(el('span', 'lo-plate__k', 'Password'));
+    plate.appendChild(el('span', 'lo-plate__k', 'Two words'));
     const input = el('input', 'lo__code');
     input.type = 'text';
     input.value = suggested;
