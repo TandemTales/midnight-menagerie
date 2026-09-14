@@ -123,6 +123,14 @@
    never runs down over the stat plate */
 .go-board:has(.go-head.is-long) { --go-mvp-s: .66; }
 .go-board:has(.go-head.is-long) .go-stage { --go-pic-w: clamp(100px, 7.2vw, 116px); }
+/* ...and the ledger, which carries the Courage and the seed in its head, packs
+   its rows closer so the Keepsakes still clear its rail */
+.go-board:has(.go-head.is-long) .go-ledger { --ledger-gap: clamp(8px, 1.4vh, 14px); padding-top: clamp(28px, 3.4vh, 32px); padding-bottom: 16px; }
+.go-board:has(.go-head.is-long) .go-block { gap: 3px; }
+.go-board:has(.go-head.is-long) .go-tricks { gap: 2px 3px; }
+.go-board:has(.go-head.is-long) .go-trick { --plate-h: 23px; }
+.go-board:has(.go-head.is-long) .go-keep { padding-block: 0 1px; }
+.go-board:has(.go-head.is-long) .go-keep em { line-height: 1.1; }
 .go-head.is-long .go-lede {
   white-space: normal; max-width: calc(78ch + 2 * var(--cart-pad-x));
   font-size: max(12px, var(--fs-xs)); line-height: 1.24;
