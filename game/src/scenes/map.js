@@ -1008,6 +1008,9 @@ export class MapScene extends Scene {
     const KEY = 40;
     // where each seal lands, so no room's name plate is laid over one (_placeTags)
     this._seals = [];
+    // the stains are laid over the route's clean-paper halos, pigment on the
+    // paper the pencil wiped, and under the graphite itself (see below)
+    const stains = [];
     parts.push('<g class="mi-zones">');
     for (const hz of map.hazards) {
       const x = hz.rect.x0 * this.SW, y = hz.rect.y0 * this.SH;
@@ -1044,11 +1047,12 @@ export class MapScene extends Scene {
       const ix = w * .07, iy = h * .12;
       const cxz = x + w / 2, cyz = y + h / 2;
       const stainUrl = STAIN[hz.kind === 'boon' ? 'boon' : 'bane'];
-      parts.push(`<g class="mi-zone mi-zone--${hz.kind}" data-hz="${hz.id}">
+      stains.push(`<g class="mi-zone mi-zone--${hz.kind}" data-hz="${hz.id}">
         <image class="mi-zone-stain" href="${stainUrl}" preserveAspectRatio="none"
                x="${(-w / 2 - ix).toFixed(1)}" y="${(-h / 2 - iy).toFixed(1)}"
                width="${(w + 2 * ix).toFixed(1)}" height="${(h + 2 * iy).toFixed(1)}"
-               transform="translate(${cxz.toFixed(1)} ${cyz.toFixed(1)}) scale(${sx} ${sy})"/>
+               transform="translate(${cxz.toFixed(1)} ${cyz.toFixed(1)}) scale(${sx} ${sy})"/></g>`);
+      parts.push(`<g class="mi-zone mi-zone--${hz.kind}" data-hz="${hz.id}">
         <path class="mi-zone-hatch" d="${deck}"
               fill="url(#${hz.kind === 'boon' ? 'mm-dots' : 'mm-hatch'})"/>
         <g class="mi-zone-key">
@@ -1137,6 +1141,7 @@ export class MapScene extends Scene {
         ' mi-edge--entry');
     }
     parts.push('<g class="mi-halos">'  + halos.join('')  + '</g>');
+    parts.push('<g class="mi-stains">' + stains.join('') + '</g>');
     parts.push('<g class="mi-shades">' + shades.join('') + '</g>');
     parts.push('<g class="mi-ghosts">' + ghosts.join('') + '</g>');
     parts.push('<g class="mi-edges">'  + lines.join('')  + '</g>');
