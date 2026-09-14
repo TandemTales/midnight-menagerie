@@ -124,7 +124,7 @@
   /* the case's floor: the boards' flocked damask, pushed back under the cards
      and lit by the candle burning at the frame's corner — warm in the middle
      where the Tricks lie, falling into the velvet's shadow at the edges */
-  --mat-veil: .56; --mat-edge: .7;
+  --mat-veil: .56; --mat-edge: .7; --mat-size: 350px 398px;
   --lit-x: 56%; --lit-y: 70%; --lit-w: 90%; --lit-h: 110%; --lit-a: 46%;
 }
 /* the recess shading the stage lays over its floor, eased so the damask shows */

@@ -83,7 +83,7 @@
      only the room the corner guards and the candle's dish hang into — the
      buttons stand inside the frame */
   --dlg-top: calc(var(--hud-h, 46px) + 6px + clamp(54px, 6.8vh, 64px));
-  --dlg-bottom: clamp(22px, 3.4vh, 32px);
+  --dlg-bottom: clamp(16px, 2.4vh, 26px);
   padding: var(--dlg-top) var(--s-5) var(--dlg-bottom);
 }
 .mm-modal--kit .mm-modal__dialog {
@@ -109,6 +109,12 @@
 .mm-dlg-dress { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
 .mm-dlg-dress__liner { inset: var(--liner-in); --liner-w: inherit; }
 .mm-dlg-dress__guard { --bracket: clamp(64px, 5.6vw, 88px); }
+/* old threads strung from the top left guard across the corner of the frame */
+.mm-dlg-dress__web {
+  --web-w: clamp(78px, 6.6vw, 108px);
+  left: calc(var(--liner-in) + 2px); top: calc(var(--liner-in) + 2px); z-index: 2;
+  opacity: .5;
+}
 /* the candle burning on the lower right corner guard: its dish set on the
    guard's boss, its light warming the rail, the velvet and the room round the
    corner (the one lit thing on the frame, breathing unless motion is reduced) */
@@ -121,7 +127,7 @@
 }
 .mm-dlg-dress__candle > .kit-prop { inset: 0; }
 .mm-dlg-dress__candle > .kit-prop::before { display: none; }
-.mm-dlg-dress__glow { left: 50%; top: 14%; width: calc(var(--cw) * 5.4); --light-a: 22%; }
+.mm-dlg-dress__glow { left: 50%; top: 12%; width: calc(var(--cw) * 6); --light-a: 30%; }
 :root[data-reduce-motion="1"] .mm-dlg-dress__candle .kit-prop--candle::after,
 :root[data-reduce-motion="1"] .mm-dlg-dress__glow { animation: none; }
 /* a question: wide enough that its two answers each keep to one line */
@@ -195,8 +201,8 @@
   justify-content: center; align-items: center;
   gap: clamp(22px, 2.4vw, 36px);
   flex-wrap: nowrap;
-  margin: 0 var(--rule-in) calc(var(--rule-in) + clamp(8px, 1.4vh, 14px));
-  padding: clamp(8px, 1.3vh, 12px) clamp(28px, 3vw, 44px) 0;
+  margin: 0 var(--rule-in) calc(var(--rule-in) + clamp(5px, 1vh, 10px));
+  padding: clamp(4px, .9vh, 10px) clamp(28px, 3vw, 44px) 0;
 }
 .mm-modal--kit .mm-modal__foot .kit-btn { --plate-h: var(--btn-h); flex: none; white-space: nowrap; }
 

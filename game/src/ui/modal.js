@@ -128,14 +128,15 @@ export class Modal {
     if (framed) {
       /* What makes it a thing in the house rather than a page over it (ui/kit.css,
          OBJECTS IN THE HOUSE): a tufted velvet liner inside the gilt rail, a
-         brass guard over each corner and a candle burning on its lower right
-         corner. Decoration, first in the dialog so everything that is read or
-         pressed stands in front of it. */
+         brass guard over each corner, a cobweb the house has strung across its
+         top left one and a candle burning on its lower right. Decoration, first
+         in the dialog so everything that is read or pressed stands in front of it. */
       const dress = document.createElement('div');
       dress.className = 'mm-dlg-dress';
       dress.setAttribute('aria-hidden', 'true');
       dress.innerHTML =
         '<i class="kit-liner mm-dlg-dress__liner"></i>'
+        + '<i class="kit-web mm-dlg-dress__web"></i>'
         + '<i class="kit-bracket kit-bracket--tl mm-dlg-dress__guard"></i>'
         + '<i class="kit-bracket kit-bracket--tr mm-dlg-dress__guard"></i>'
         + '<i class="kit-bracket kit-bracket--bl mm-dlg-dress__guard"></i>'

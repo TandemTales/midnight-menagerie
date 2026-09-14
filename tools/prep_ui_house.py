@@ -18,8 +18,9 @@ aubergine, lavender and antique gold:
                       with a small brass button in each, as a 9-slice ring
                       (slices 48, repeat round) so every edge is lit in place
   bookmark.webp       a silk bookmark ribbon: violet satin with gilt edge
-                      threads, a sheen that turns where it twists, cut in a
-                      swallowtail; it hangs from the top of the image (60x480)
+                      threads, swaying a little as it falls and its sheen moving
+                      with the sway, cut in a swallowtail; it hangs from the top
+                      of the image (60x480)
   plate-arch.webp     a portrait's nameplate as a 9-slice (40 84 22 84): a gilt
                       rim round aubergine enamel, the Companion tiles' ogee
                       ends with a curl on each notch, a low arch over the name
