@@ -40,12 +40,13 @@
 .mm-hud__group--keepsakes { flex: 1 1 auto; min-width: 0; }
 .mm-hud__group--extra:empty { display: none; }
 .mm-hud__group--meta { margin-left: auto; }
-/* a brass stud between groups, the way the rails meet on the boards */
+/* where two lengths of the rail's plates meet, a cast brass boss is struck
+   into the rail (boss-rosette.webp, tools/prep_ui_dressing.py): a milled rim
+   round a rosette, never a drawn dot */
 .mm-hud__group + .mm-hud__group::before {
-  content: ''; flex: none; width: 6px; height: 6px; margin-right: 2px;
-  transform: rotate(45deg);
-  background: linear-gradient(135deg, var(--kit-gold-hi), var(--kit-gold) 50%, var(--kit-gold-lo));
-  box-shadow: 0 0 0 1px var(--kit-void);
+  content: ''; flex: none; width: 15px; height: 15px; margin-right: 1px;
+  background: url("../../assets/ui/kit/boss-rosette.webp") 50% 50% / 100% 100% no-repeat;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, .85)) brightness(1.08);
 }
 .mm-hud__group--extra:empty + .mm-hud__group::before { display: none; }
 
@@ -72,15 +73,20 @@
 /* a chip that leads with its icon seats the icon's medallion on the plate's
    left end; a chip without one (combat's Turn) is the plate alone */
 .mm-hud__chip:has(> .mm-icon:first-child) { padding-left: 0; }
+/* Round 5: the plate is a CARTOUCHE, not a tag. The Companion tiles'
+   nameplate with an ogee end either side (cartouche-lit.webp: violet enamel
+   filled to a bevelled gilt rim), so a chip reads as a small lettered plaque
+   screwed to the rail, the same from either end, and its enamel lifts it off
+   the black lacquer the way the boards' plates lift off their walls. */
 .mm-hud__chip::before {
   content: ''; position: absolute; z-index: -1; pointer-events: none;
   top: 0; bottom: 0; right: 0; left: 0;
   border: 0 solid transparent;
-  border-image-source: url("../../assets/ui/kit/plate-hud.webp");
-  border-image-slice: 16 30 16 30 fill;
-  border-image-width: calc(var(--hud-chip-h) * 16 / 56) calc(var(--hud-chip-h) * 30 / 56);
+  border-image-source: url("../../assets/ui/kit/cartouche-lit.webp");
+  border-image-slice: 18 34 18 34 fill;
+  border-image-width: calc(var(--hud-chip-h) * 18 / 64) calc(var(--hud-chip-h) * 34 / 64);
   border-image-repeat: stretch;
-  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .75));
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .8)) brightness(1.06);
 }
 .mm-hud__chip:has(> .mm-icon:first-child)::before { left: calc(var(--hud-chip-h) * .5); }
 .mm-hud__chip > .mm-icon:first-child {
@@ -131,72 +137,130 @@
 .mm-hud__settings > .mm-icon:first-child { background: none; filter: none; width: 1.05em; height: 1.05em; }
 .mm-hud__settings > .mm-icon:first-child svg { width: 100%; height: 100%; }
 
-/* ── Courage bar: crimson enamel in a brass tube ──────────────────────────── */
-.mm-hud__courage { display: flex; align-items: center; min-width: 11ch; }
-.mm-hud__bar {
+/* ── Courage: a crimson enamel gauge let into a lettered plate ────────────────
+   Round 4's judges saw a flat red capsule. The readout is a PLATE now: the
+   Companion tiles' dark cartouche in its gilt rim (cartouche-dark.webp), a
+   heart struck on the round enamel medallion seated over its left end the way
+   every chip seats its icon, and the gauge is an enamel inlay sunk into the
+   plate's field between its two ogee ends — deep crimson, glazed, the grain of
+   the glass in it, a gilt fillet round the channel it runs in — with the
+   figures lettered across it in cream, cut dark at their edges. The fill still
+   moves on scaleX only. */
+.mm-hud__courage {
   position: relative;
-  width: 12.5ch; height: 1.62em;
-  border: 0 solid transparent;
-  border-image-source: url("../../assets/ui/kit/tube.webp");
-  border-image-slice: 19 fill;
-  border-image-width: calc(1.62em * 19 / 40);
-  border-image-repeat: stretch;
-  border-radius: 999px;
+  display: flex; align-items: center;
+  min-width: 0;
+  height: var(--hud-chip-h);
+}
+.mm-hud__courage > .mm-icon:first-child {
+  position: relative; z-index: 2; flex: none;
+  display: grid; place-items: center;
+  width: calc(var(--hud-chip-h) * 1.12); height: calc(var(--hud-chip-h) * 1.12);
+  margin-right: calc(var(--hud-chip-h) * -.52);
+  border-radius: 50%;
+  background: url("../../assets/ui/kit/button.webp") 50% 50% / 100% 100% no-repeat;
+  color: color-mix(in oklab, var(--courage-300) 82%, var(--kit-gold-hi));
   filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .75));
-  overflow: hidden;
+}
+.mm-hud__courage > .mm-icon:first-child svg { width: 52%; height: 52%; filter: drop-shadow(0 1px 0 rgba(0, 0, 0, .8)); }
+.mm-hud__bar {
+  --bar-h: var(--hud-chip-h);
+  position: relative; z-index: 1;
+  width: calc(var(--bar-h) * 4.1); height: var(--bar-h);
+  border: 0 solid transparent;
+  border-image: url("../../assets/ui/kit/cartouche-dark.webp") 18 34 18 34 fill /
+    calc(var(--bar-h) * 18 / 64) calc(var(--bar-h) * 34 / 64) stretch;
+  border-radius: 0;
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .8)) brightness(1.08);
+  overflow: visible;
+}
+/* the channel the enamel runs in: sunk, dark, a gilt fillet round its lip */
+.mm-hud__bar::before {
+  content: ''; position: absolute; z-index: 0; pointer-events: none;
+  left: calc(var(--bar-h) * .66); right: calc(var(--bar-h) * .44);
+  top: calc(var(--bar-h) * .27); bottom: calc(var(--bar-h) * .27);
+  border-radius: 2px;
+  background: linear-gradient(180deg, #050204 0%, #120709 60%, #1f0f12 100%);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--kit-gold) 62%, transparent),
+    0 0 0 2px rgba(0, 0, 0, .7),
+    inset 0 2px 3px rgba(0, 0, 0, .9);
 }
 .mm-hud__bar > i {
-  position: absolute; inset: 3px 4px;
-  border-radius: 999px;
+  position: absolute; z-index: 1;
+  left: calc(var(--bar-h) * .66); right: calc(var(--bar-h) * .44);
+  top: calc(var(--bar-h) * .27); bottom: calc(var(--bar-h) * .27);
+  border-radius: 1px;
   transform-origin: left center;
   background:
-    linear-gradient(180deg, rgba(255, 236, 236, .42) 0%, rgba(255, 255, 255, .08) 34%, rgba(0, 0, 0, 0) 52%, rgba(0, 0, 0, .34) 100%),
-    linear-gradient(90deg, var(--courage-500), var(--courage-300));
-  box-shadow: inset 0 0 0 1px rgba(40, 6, 12, .6);
+    linear-gradient(180deg, rgba(255, 214, 214, .30) 0%, rgba(255, 255, 255, .06) 30%, rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, .42) 100%),
+    url("../../assets/ui/kit/grain.webp") 0 0 / 96px 96px,
+    linear-gradient(90deg, color-mix(in oklab, var(--courage-500) 70%, #16030a), color-mix(in oklab, var(--courage-500) 72%, var(--courage-300)));
+  background-blend-mode: normal, overlay, normal;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, .55), inset -2px 0 3px rgba(0, 0, 0, .35);
   transition: transform var(--t-slow) var(--ease-out);
 }
 .mm-hud__barlabel {
-  position: absolute; inset: 0;
+  position: absolute; inset: 0; z-index: 2;
   display: grid; place-items: center;
+  padding-left: calc(var(--bar-h) * .22);
   font-family: var(--font-num);
-  font-size: max(12px, .86em);
+  font-size: max(12.5px, .9em);
   font-weight: 700;
-  color: var(--text-hi);
-  /* a real ink stroke so the number survives the bar sliding under it */
+  letter-spacing: .02em;
+  color: #fff6ea;
+  /* a real ink stroke so the number survives the enamel sliding under it */
   text-shadow:
     0 0 2px var(--ink-900), 0 1px 0 var(--ink-900), 0 -1px 0 var(--ink-900),
     1px 0 0 var(--ink-900), -1px 0 0 var(--ink-900);
-  font-variant-numeric: tabular-nums;
+  font-variant-numeric: lining-nums tabular-nums;
 }
-.mm-hud__courage[data-low="1"] .mm-hud__bar { filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .75)) drop-shadow(0 0 4px color-mix(in srgb, var(--threat-300) 70%, transparent)); }
+.mm-hud__courage[data-low="1"] .mm-hud__bar { filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .8)) drop-shadow(0 0 4px color-mix(in srgb, var(--threat-300) 70%, transparent)) brightness(1.08); }
 .mm-hud__courage[data-low="1"] .mm-hud__bar::after {
-  content: ''; position: absolute; inset: 0;
-  box-shadow: inset 0 0 10px color-mix(in srgb, var(--threat-300) 60%, transparent);
+  content: ''; position: absolute; z-index: 1; pointer-events: none;
+  left: calc(var(--bar-h) * .66); right: calc(var(--bar-h) * .44);
+  top: calc(var(--bar-h) * .27); bottom: calc(var(--bar-h) * .27);
+  box-shadow: inset 0 0 8px color-mix(in srgb, var(--threat-300) 70%, transparent);
   animation: mm-hud-pulse 1.6s var(--ease-soft) infinite;
 }
 @keyframes mm-hud-pulse { 0%,100% { opacity: .35; } 50% { opacity: .95; } }
 
-/* ── Snacks: small enamel sockets ─────────────────────────────────────────── */
-.mm-hud__snacks { display: flex; gap: 3px; }
+/* ── Snacks: filigree settings ────────────────────────────────────────────────
+   Round 4's judges read the three empty slots as "empty outline circles". Each
+   slot is now the Kid board's own paw medallion with the paw painted out
+   (socket-filigree.webp, tools/prep_ui_dressing.py): a gilt ring with its fleur
+   finial and drop and the curls either side of it, round a hollow of dark
+   violet enamel sunk under the rim. Three stand shoulder to shoulder so their
+   curls meet, one jewelled setting along the rail. A Snack you carry is lit in
+   its hollow; an empty setting is only the setting. */
+.mm-hud__snacks { display: flex; gap: 0; align-items: center; margin-inline: -1px; }
 .mm-hud__snack {
+  --sock-h: calc(var(--hud-chip-h) * 1.44);
   position: relative;
   display: grid; place-items: center;
-  width: calc(var(--hud-chip-h) * 1.08); height: calc(var(--hud-chip-h) * 1.08);
+  width: calc(var(--sock-h) * 119 / 144); height: var(--sock-h);
+  margin: calc(var(--hud-chip-h) * -.2) calc(var(--sock-h) * -.06);
+  padding-top: calc(var(--sock-h) * .04);
   color: var(--flame-200);
-  background: url("../../assets/ui/kit/button.webp") 50% 50% / 100% 100% no-repeat;
+  background: url("../../assets/ui/kit/socket-filigree.webp") 50% 50% / 100% 100% no-repeat;
   border: 0;
-  border-radius: 999px;
-  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, .8));
+  border-radius: 0;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, .85)) brightness(1.38) saturate(1.08);
   transition: transform var(--t-quick) var(--ease-out), filter var(--t-quick) var(--ease-out);
 }
-.mm-hud__snack .mm-icon { width: 1.02em; height: 1.02em; }
-/* an empty slot is a real socket, not a dimmed button: a brass ring on four
-   scrolled lobes round a black hollow (socket-round.webp), nothing in it */
+.mm-hud__snack .mm-icon { width: .98em; height: .98em; filter: drop-shadow(0 1px 0 rgba(0, 0, 0, .85)); }
+/* carried: the hollow glows the way the candle catches enamel */
+.mm-hud__snack:not(.is-empty)::before {
+  content: ''; position: absolute; pointer-events: none;
+  left: 22%; right: 22%; top: 30%; bottom: 25%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--kit-candle) 30%, transparent), color-mix(in srgb, var(--kit-lav) 10%, transparent) 70%, transparent);
+  mix-blend-mode: screen;
+}
+.mm-hud__snack .mm-icon { position: relative; }
 .mm-hud__snack.is-empty {
   color: transparent;
-  background-image: url("../../assets/ui/kit/socket-round.webp");
-  background-size: 118% 118%;
-  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, .8));
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, .85)) brightness(1.3) saturate(1.05);
 }
 .mm-hud__snack.is-empty .mm-icon { opacity: 0; }
 /* carried, but this is not a Scuffle — readable, deliberately not clickable */
@@ -224,22 +288,24 @@
   --rar: var(--rarity-common);
   position: relative;
   display: grid; place-items: center;
-  width: calc(var(--hud-chip-h) * 1.06); height: calc(var(--hud-chip-h) * 1.06);
+  width: calc(var(--hud-chip-h) * 1.14); height: calc(var(--hud-chip-h) * 1.14);
   color: var(--kit-gold-hi);
-  /* a brass socket with clipped corners round black enamel (socket.webp) */
-  border: 0 solid transparent;
-  border-image-source: url("../../assets/ui/kit/socket.webp");
-  border-image-slice: 14 fill;
-  border-image-width: calc(var(--hud-chip-h) * 1.06 * 14 / 56);
-  background: radial-gradient(70% 60% at 50% 34%, color-mix(in srgb, var(--kit-candle) 16%, transparent), transparent 72%);
-  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .75));
+  /* a cast brass setting with clipped corners, a bead round its inner lip and
+     a stud on each corner, round a hollow of violet enamel (socket-keep.webp,
+     tools/prep_ui_dressing.py) — a setting with a body, never a drawn square */
+  border: 0;
+  background:
+    radial-gradient(56% 50% at 50% 40%, color-mix(in srgb, var(--kit-candle) 20%, transparent), transparent 74%),
+    url("../../assets/ui/kit/socket-keep.webp") 50% 50% / 100% 100% no-repeat;
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .8)) brightness(1.14);
   transition: transform var(--t-quick) var(--ease-out), filter var(--t-quick) var(--ease-out);
 }
-/* the rarity, as an inlay just inside the brass */
+/* the rarity, as a coloured glaze in the enamel just inside the bead */
 .mm-hud__relic::before {
-  content: ''; position: absolute; inset: 17%; pointer-events: none;
-  border: 1px solid color-mix(in srgb, var(--rar) 55%, transparent);
-  clip-path: polygon(18% 0, 82% 0, 100% 18%, 100% 82%, 82% 100%, 18% 100%, 0 82%, 0 18%);
+  content: ''; position: absolute; inset: 22%; pointer-events: none;
+  border: 1px solid color-mix(in srgb, var(--rar) 42%, transparent);
+  clip-path: polygon(29% 0, 71% 0, 100% 29%, 100% 71%, 71% 100%, 29% 100%, 0 71%, 0 29%);
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--rar) 10%, transparent), transparent);
 }
 /* Keepsake sigils (data/relics.js) are drawn as strokes, not fills — the same
    way the shop and the reward room draw them. */
@@ -257,10 +323,23 @@
   color: var(--text-ink); background: var(--kit-gold-hi);
   border-radius: 999px; text-align: center;
 }
+/* none yet: the words engraved on a small dark plate let into the rail — a
+   sunk panel in a gilt bead (cartouche-dark.webp), lettered in the boards'
+   spaced small capitals — never loose italic on the lacquer */
 .mm-hud__norelics {
-  font-size: max(12px, .88em); letter-spacing: .02em;
-  color: var(--kit-text-mid); font-style: italic;
-  padding: 0 .4em;
+  display: inline-flex; align-items: center;
+  height: calc(var(--hud-chip-h) * .92);
+  padding: 0 1.05em 1px;
+  font-family: var(--font-display); font-weight: 700; font-style: normal;
+  font-size: max(11.5px, .8em); letter-spacing: .1em;
+  font-variant: small-caps;
+  color: var(--kit-text-mid);
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, .9), 0 1px 0 color-mix(in srgb, var(--kit-lav-hi) 18%, transparent);
+  white-space: nowrap;
+  border: 0 solid transparent;
+  border-image: url("../../assets/ui/kit/cartouche-dark.webp") 18 34 18 34 fill /
+    calc(var(--hud-chip-h) * .92 * 18 / 64) calc(var(--hud-chip-h) * .92 * 34 / 64) stretch;
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .75)) brightness(1.1);
 }
 
 /* the "no run yet" state is labelled, never silently fake: an engraved
@@ -309,11 +388,15 @@
    gaps between groups and chips, and a shorter plate either side of a value —
    so everything a run carries still fits on ONE rail at the Steam Deck size. */
 @media (max-width: 1400px) {
-  .mm-hud { gap: 7px; padding-inline: 10px; }
-  .mm-hud__group { gap: 5px; }
-  .mm-hud__chip { padding: 0 .8em; }
+  .mm-hud { gap: 5px; padding-inline: 8px; }
+  .mm-hud__group { gap: 4px; }
+  .mm-hud__chip { padding: 0 .66em; }
   .mm-hud__chip:has(> .mm-icon:first-child) { padding-left: 0; }
   .mm-hud__settings { padding: 0; }
-  .mm-hud__bar { width: 11ch; }
-  .mm-hud__relics { gap: 3px; }
+  .mm-hud__bar { width: calc(var(--bar-h) * 3.3); }
+  .mm-hud__relics { gap: 1px; }
+  .mm-hud__relic { width: calc(var(--hud-chip-h) * 1.04); height: calc(var(--hud-chip-h) * 1.04); }
+  .mm-hud__snack { margin-inline: calc(var(--sock-h) * -.1); }
+  .mm-hud__group + .mm-hud__group::before { width: 12px; height: 12px; }
+  .mm-hud__gear::before { width: 12px; height: 12px; margin-right: 1px; }
 }

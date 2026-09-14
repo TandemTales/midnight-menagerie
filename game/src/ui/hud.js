@@ -76,9 +76,15 @@ import { itemById } from '../data/backpack.js';
 const GEAR_CSS = `
 .mm-hud__gear {
   display: flex; align-items: center; gap: var(--s-1);
-  padding-left: var(--s-2);
+  padding-left: 0;
   margin-left: var(--s-1);
-  border-left: 1px solid color-mix(in srgb, var(--kit-gold-lo) 90%, transparent);
+}
+/* Round 5: the Keepsakes and the Gear are parted by a cast brass boss struck
+   into the rail, as every group on it is, not by a drawn hairline */
+.mm-hud__gear::before {
+  content: ''; flex: none; width: 15px; height: 15px; margin-right: 3px;
+  background: url("assets/ui/kit/boss-rosette.webp") 50% 50% / 100% 100% no-repeat;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, .85)) brightness(1.08);
 }
 .mm-hud__gear[hidden] { display: none; }
 .mm-hud__gearlbl {
@@ -285,6 +291,10 @@ export class HUD {
     this.$settings = root.querySelector('.mm-hud__settings');
 
     this.$where.prepend(icon('res.region'));
+    // The Courage plate wears its heart on the round enamel medallion over its
+    // left end, as every chip wears its icon. Decorative: the meter's own
+    // aria-label says what it is.
+    this.$courage.prepend(icon('res.courage'));
     this.$gold.prepend(icon('res.lost-things'));
     /* Clues and Luck keep a PERSISTENT text node, unlike the chips that rebuild
        themselves each refresh: `addChip()` hands this node to a room scene that
