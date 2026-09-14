@@ -965,6 +965,10 @@ export class EnemyView {
         <div class="cb-enemy__intent"></div>
         <div class="cb-enemy__queue" hidden></div>
       </div>
+      <!-- The frame of a boss's stage (combat.css): the Kid board's mirror, his
+           intent set in its crown. Drawn only for a boss alone in its arena, and
+           outside the stage, so a hit shakes the creature and not the wall. -->
+      <div class="cb-enemy__alcove" aria-hidden="true"></div>
       <div class="cb-enemy__stage">
         <div class="cb-enemy__pool"></div>
         <svg class="cb-enemy__rig" viewBox="-140 -300 280 320" preserveAspectRatio="xMidYMax meet" aria-hidden="true">
@@ -1021,8 +1025,13 @@ export class EnemyView {
             <div class="cb-enemy__fill kit-tube__fill"></div>
             <div class="cb-enemy__hp kit-tube__label"><span class="cb-enemy__hpn"></span><span class="cb-enemy__hpm"></span></div>
           </div>
+          <!-- CONDITIONS BESIDE THE GAUGE, not in a row under it (round 4's
+               brief): a row under the plate was one more line reaching down
+               toward a full hand. On a board of several they ride the gauge's
+               end and the gauge gives them its length; a boss alone hangs them
+               off its end instead (combat.css). -->
+          <div class="cb-enemy__statuses"></div>
         </div>
-        <div class="cb-enemy__statuses"></div>
       </div>
       <div class="cb-enemy__preview" hidden></div>`;
 
@@ -1072,6 +1081,12 @@ export class EnemyView {
     lettering.className = 'cb-enemy__lettering';
     lettering.textContent = this.name;
     this.$name.appendChild(lettering);
+    /* A long name on the boss's regalia plate sets closer when the boss shares
+       the row (combat.css): "The Carnivorous Conservatory" at the lone boss's
+       tracking ran 538px across a 320px column and under its Growth Patches. */
+    const len = String(this.name || '').length;
+    if (len > 22) this.$name.dataset.len = 'xlong';
+    else if (len > 16) this.$name.dataset.len = 'long';
     this._statusKey = '';
     this.setState(snap);
     this.a.spawn = 1;
@@ -1103,12 +1118,17 @@ export class EnemyView {
        where they can be seen, and he stands a little smaller. */
     if (this._risesForPlate()) {
       if (this._rise) this.el.style.setProperty('--e-rise', '0px');
-      /* A row of conditions is RESERVED under the plate while it has none, so
+      /* A row of conditions is RESERVED under the gauge while it has none, so
          the first Weak that lands does not push the row into the hand, and
-         the boss never changes size mid-fight: its sockets and their stack
-         coins (combat.css .cb-status, --socket) measure about 1.17 sockets. */
-      const socket = Math.min(30, Math.max(26, window.innerWidth * 0.019));
-      const reserve = this.$statuses.childElementCount ? 0 : Math.round(socket * 1.17);
+         the boss never changes size mid-fight. A boss alone hangs its
+         conditions off the gauge's END instead (combat.css, round 4: their
+         row is absolutely placed), and then nothing is reserved: the first
+         Weak adds nothing to the plate's height. The row is a roundel and its
+         stack coin's overhang tall (combat.css --roundel). */
+      const stCss = getComputedStyle(this.$statuses);
+      const beside = stCss.position === 'absolute';
+      const roundel = parseFloat(stCss.getPropertyValue('--roundel')) || 26;
+      const reserve = beside || this.$statuses.childElementCount ? 0 : Math.round(roundel * 1.2 + 4);
       const over = this.$plate.getBoundingClientRect().bottom + reserve - limitY;
       const rise = over > 0 ? Math.min(Math.round(over), BOSS_RISE_MAX) : 0;
       this._rise = rise;
@@ -1222,7 +1242,7 @@ export class EnemyView {
     this.statusData = list;
     for (const s of list) {
       const d = document.createElement('span');
-      d.className = 'cb-status kit-socket';
+      d.className = 'cb-status kit-roundel';
       d.dataset.kind = s.kind || 'buff';
       d.dataset.id = s.id;
       d.dataset.tipStatus = s.id;

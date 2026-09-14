@@ -417,7 +417,7 @@ export class IntentView {
       this.$pips.textContent = '';
       for (const s of pips.slice(0, 4)) {
         const d = document.createElement('span');
-        d.className = 'cb-intent__pip kit-socket';
+        d.className = 'cb-intent__pip kit-roundel';
         d.dataset.kind = s.kind || 'debuff';
         d.dataset.tipStatus = s.id;
         d.dataset.tipStacks = String(s.stacks);
