@@ -105,10 +105,13 @@
 }
 .rs-shelf__candle--l { left: calc(-.5 * var(--candle-room)); }
 .rs-shelf__candle--r { left: calc(100% + .5 * var(--candle-room)); }
-/* the scene's name: the Companion tiles' dark cartouche on the ledge's front */
+/* the scene's name: the Companion tiles' dark cartouche on the ledge's front
+   (placed through its own class: a scene sheet never lays out a .kit-* one) */
+.rs-art__plate {
+  position: absolute; z-index: 2; left: 50%; top: calc(11px + clamp(28px, 3.4vh, 34px) * .62);
+}
 .rs-art__plate.kit-plate {
   --plate-h: clamp(42px, 5.2vh, 48px);
-  position: absolute; z-index: 2; left: 50%; top: calc(11px + clamp(28px, 3.4vh, 34px) * .62);
   translate: -50% -50%;
   margin: 0;
   min-width: min(62%, 340px);

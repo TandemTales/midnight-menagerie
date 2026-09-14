@@ -344,10 +344,10 @@
    Buttons in its studded brass setting, a star in the round enamel for Luck,
    a lens for a Clue — overhanging the plate the way the Shop's prices wear
    their coins. The two plates hang on the rule either side of the ribbon. */
+.rw-spoils .rm-spoil { position: relative; }
 .rw-spoils .rm-spoil.kit-enamel {
   --h: clamp(40px, 5vh, 46px);
   --md: calc(var(--h) * 1.18);
-  position: relative;
   gap: .5em;
   min-height: var(--h);
   padding: 1px calc(var(--h) * .72) 0 calc(var(--md) * .72);
@@ -360,24 +360,24 @@
   padding: 1px calc(var(--md) * .72) 0 calc(var(--h) * .72);
   margin-left: 0; margin-right: calc(var(--md) * .42);
 }
-.rw-spoils .rm-spoil.kit-enamel::before {
+.rw-spoils .rm-spoil::before {
   content: ''; position: absolute; top: 50%; left: calc(var(--md) * -.42);
   width: var(--md); aspect-ratio: 1; translate: 0 -50%;
   background: url("../../assets/ui/kit/button.webp") 50% 50% / 100% 100% no-repeat;
   filter: drop-shadow(0 2px 3px rgba(0, 0, 0, .85));
 }
-.rw-spoils__side--r .rm-spoil.kit-enamel::before { left: auto; right: calc(var(--md) * -.42); }
-.rw-spoils .rm-spoil--gold.kit-enamel::before {
+.rw-spoils__side--r .rm-spoil::before { left: auto; right: calc(var(--md) * -.42); }
+.rw-spoils .rm-spoil--gold::before {
   background:
     url("../../assets/ui/kit/coin.webp") 50% 50% / 72% 72% no-repeat,
     url("../../assets/ui/kit/socket-round.webp") 50% 50% / 100% 100% no-repeat;
 }
-.rw-spoils .rm-spoil--luck.kit-enamel::before {
+.rw-spoils .rm-spoil--luck::before {
   background:
     url("../../assets/ui/kit/star4.svg") 50% 50% / 44% 44% no-repeat,
     url("../../assets/ui/kit/button.webp") 50% 50% / 100% 100% no-repeat;
 }
-.rw-spoils .rm-spoil--clue.kit-enamel::before {
+.rw-spoils .rm-spoil--clue::before {
   background:
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M10 3.2a6.8 6.8 0 1 1 0 13.6 6.8 6.8 0 0 1 0-13.6zm0 2.4a4.4 4.4 0 1 0 0 8.8 4.4 4.4 0 0 0 0-8.8zm5.1 10.2 1.8-1.8 4.6 4.6-1.8 1.8z' fill='%23e6c98a' stroke='%232e1f0e' stroke-width='.9' paint-order='stroke fill'/%3E%3C/svg%3E") 50% 50% / 46% 46% no-repeat,
     url("../../assets/ui/kit/button.webp") 50% 50% / 100% 100% no-repeat;
@@ -593,14 +593,17 @@
    capitals cut into the gilt, and at the ribbon's middle a small round enamel
    jewel in the rarity's colour set in a brass bezel, so the kind still reads
    at a glance. */
-.rw-slot__rarity.kit-flag {
+.rw-slot__rarity {
   --rib-h: clamp(28px, 3.4vh, 32px);
   position: absolute; left: 50%; bottom: calc(var(--frame-pad) * -1 - var(--rw-rail-h, 60px) * 29 / 96 - var(--rib-h) * .5);
   transform: translateX(-50%);
+  z-index: 2;
+}
+.rw-slot__rarity.kit-flag {
+  --rib-h: clamp(28px, 3.4vh, 32px);
   min-width: calc(var(--rib-h) * 5.4);
   padding-inline: calc(var(--rib-h) * 1.1);
   gap: .5em;
-  z-index: 2;
   filter: brightness(1.2) saturate(.92) drop-shadow(0 3px 4px rgba(0, 0, 0, .8));
 }
 .rw-slot__word {
