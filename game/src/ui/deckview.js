@@ -33,10 +33,17 @@ import { icon } from './icons.js';
 import { plural, word } from '../util/plural.js';
 
 const TYPES = ['attack', 'skill', 'power', 'status', 'curse'];
-/** The card width, in px, whose printed rules size every card here reads at.
-    Set so a Trick's rules read at one size in the case at 1600 and at the
-    Deck's 1280 (about 17 px), filling its text box rather than floating in it. */
-const LEGIBLE_AT = 250;
+/**
+ * The size, in screen px, a Trick's rules are read at in the case, by how much
+ * it has to say (card.js classes the length: under 63 characters, to 104, and
+ * past it). The case's cards are large, and a short rule set at the hand's size
+ * floats in a half-empty box; so every Trick here says its rules at a reading
+ * size, the same at 1600 as on the Deck's 1280, and `_fitRules` steps down any
+ * that would run out of its box.
+ */
+const RULES_PX = { short: 21, long: 17.5, xlong: 15 };
+/** card.css's own rules size for each class, in card units, before --rules-k. */
+const RULES_U = { short: 15.5, large: 17.5, long: 14, xlong: 12.5 };
 const RARITIES = ['basic', 'common', 'uncommon', 'rare'];
 
 const MODES = {
@@ -80,6 +87,8 @@ export class DeckView {
     this.sort = this.mode === 'draw' ? 'name' : (this.mode === 'reward' ? 'none' : 'name');
     this._offs = [];
     this._raf = 0;
+    this._fitRaf = 0;
+    this._large = !!this.ctx?.Save?.settings?.largeText;
     this._build();
   }
 
@@ -353,18 +362,49 @@ export class DeckView {
         const v = this.views.get(uid);
         if (v) {
           v.setTransform({ x: sizes[i][0] / 2, y: sizes[i][1], rot: 0, scale: 1, z: 0 });
-          /* Tricks here are for READING: a card smaller than the Shop's lifts its
-             rules type instead of shrinking it (ui/kit.css .kit-cards, the same
-             `legibleAt` scenes/_cardfit.js gives the shelf) */
-          /* and a Trick with little to say says it larger, so its rules fill
-             the box on the case's big cards instead of floating in it; a long
-             one keeps to the size it fits at (card.js classes the length) */
-          const cl = v.el.classList;
-          const [legible, most] = cl.contains('is-text-xlong') ? [LEGIBLE_AT * .8, 1.04]
-            : cl.contains('is-text-long') ? [LEGIBLE_AT, 1.25] : [LEGIBLE_AT * 1.08, 1.4];
-          if (sizes[i][0]) v.el.style.setProperty('--rules-k', Math.max(1, Math.min(most, legible / sizes[i][0])).toFixed(3));
+          /* Tricks here are for READING: the rules type is lifted to its
+             reading size (RULES_PX) through --rules-k (ui/kit.css .kit-cards,
+             the knob scenes/_cardfit.js gives the shelf). The card is drawn
+             `cellW / 224` screen px to one of its units. */
+          if (sizes[i][0]) {
+            const cl = v.el.classList;
+            const len = cl.contains('is-text-xlong') ? 'xlong' : cl.contains('is-text-long') ? 'long' : 'short';
+            const base = len === 'short' && cl.contains('is-largetext') ? RULES_U.large : RULES_U[len];
+            const px = RULES_PX[len] * (this._large ? 1.12 : 1);
+            const k = Math.max(1, Math.min(1.8, px / (base * sizes[i][0] / 224)));
+            v.el.style.setProperty('--rules-k', k.toFixed(3));
+          }
         }
       }
+      this._fitRules();
+    });
+  }
+
+  /**
+   * A Trick's rules never run out of their box. After a size is set, one read
+   * pass measures every card's rules against its box, and one write pass steps
+   * down only those that overflow, by the square root of how far over they are
+   * (a line's words wrap as the type grows, so the height goes as its square).
+   * Twice at most, never below the card's own size.
+   */
+  _fitRules(round = 0) {
+    if (this._fitRaf) cancelAnimationFrame(this._fitRaf);
+    this._fitRaf = requestAnimationFrame(() => {
+      this._fitRaf = 0;
+      const over = [];
+      for (const v of this.views.values()) {                                // read
+        const box = v.el.isConnected && v.el.querySelector('.mm-card__rules');
+        if (!box || !box.clientHeight) continue;
+        let h = 0;
+        for (const row of box.children) h += row.offsetHeight;
+        const room = box.clientHeight - 2;
+        if (h > room) over.push([v, Math.sqrt(room / h)]);
+      }
+      for (const [v, f] of over) {                                            // write
+        const k = parseFloat(v.el.style.getPropertyValue('--rules-k')) || 1;
+        v.el.style.setProperty('--rules-k', Math.max(1, k * f * .97).toFixed(3));
+      }
+      if (over.length && round < 1) this._fitRules(round + 1);
     });
   }
 
@@ -421,6 +461,7 @@ export class DeckView {
 
   destroy() {
     if (this._raf) cancelAnimationFrame(this._raf);
+    if (this._fitRaf) cancelAnimationFrame(this._fitRaf);
     for (const off of this._offs) { try { off(); } catch {} }
     this._offs.length = 0;
     for (const v of this.views.values()) { try { v.destroy?.(); } catch {} }

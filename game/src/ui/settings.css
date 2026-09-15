@@ -412,6 +412,10 @@
   filter: drop-shadow(0 1px 0 rgba(0, 0, 0, .85)) drop-shadow(0 0 5px color-mix(in srgb, var(--kit-candle) 55%, transparent));
 }
 .mm-set__choice[data-on="1"] .mm-set__star { display: block; }
+/* the chosen plate is the one the candle has caught */
+.mm-set__choice.kit-btn[data-on="1"]:not(:focus-visible) {
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, .8)) drop-shadow(0 0 9px color-mix(in srgb, var(--kit-candle) 26%, transparent)) brightness(1.14);
+}
 
 /* ── seed ─────────────────────────────────────────────────────────────────── */
 .mm-set__seed.kit-enamel {

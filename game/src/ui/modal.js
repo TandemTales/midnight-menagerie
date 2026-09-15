@@ -161,6 +161,17 @@ export class Modal {
     this.subtitleEl = head.querySelector('.mm-modal__subtitle');
     this.closeBtn = close;
 
+    /* A framed dialog owns the keys pressed inside it. The scenes keep their
+       hotkeys on `window` (combat's E ends the turn, Q W D R T open piles; the
+       hand walks on arrows and Tab), and a keydown from the pile viewer's
+       search or grid used to bubble on out to them: typing "bite" filtered
+       on "bit" while the E ended the turn behind the dialog, and Tab from a
+       Trick walked the hand instead of the dialog. Stopped here, on the way
+       OUT, every listener inside the dialog has already had it and this
+       Modal's own Escape and Tab (document, capture) run first. The
+       full-screen veil is not framed and keeps its document listener. */
+    if (framed) root.addEventListener('keydown', (e) => e.stopPropagation());
+
     this.setTitle(this.opts.title || '', this.opts.subtitle || '');
     close.hidden = this.opts.dismissible === false;
     close.addEventListener('click', () => this.close(null));
