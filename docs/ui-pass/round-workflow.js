@@ -84,6 +84,21 @@ const JUDGE = {
 
 const judgingOf = T => `${A.uiloop}/judging/${A.round}/${T.key}`
 
+// Round 5's DIALOGS and KIDS' PLACES builders hit the weekly usage limit an hour
+// in, with their work half made in their worktrees. To finish such a round,
+// resume the run (resumeFromRunId) with `resume` set on each interrupted builder
+// in the args: true, or a string saying where that builder stopped. Only those
+// builders' prompts change, so every agent that finished replays from the cache.
+function resumeNote(b, wt, branch) {
+  return [
+    `This build was interrupted, and you are finishing it. An earlier run of builder ${b.code}, with this same brief and angle, worked on ${branch} until a usage limit stopped it mid-task. Its work is still in ${wt}, and nothing has touched it since:`,
+    `- its commits past BASE: \`git log --stat ${A.base}..HEAD\`;`,
+    `- its uncommitted edits, which may be half made: \`git status\` and \`git diff\`.`,
+    ...(typeof b.resume === 'string' ? [b.resume] : []),
+    `Read the briefs, the samples and the starting screens first, as above. Then read that work and photograph your screens as they stand now. Keep what serves your angle, finish what is half done, and revert only what is broken. No dev server is running for you: start your own on your port. Every Deliverable still applies, the endings guard with --base BASE included.`,
+  ].join('\n')
+}
+
 function builderPrompt(T, b) {
   const J = judgingOf(T)
   const wt = `${A.uiloop}/wt/${A.round}-${T.key}-${b.slot}`
@@ -108,6 +123,7 @@ function builderPrompt(T, b) {
     `Your angle. The other two builders on your track were given different ones, and blind judges will choose:`,
     b.angle,
     ``,
+    ...(b.resume ? [resumeNote(b, wt, branch), ``] : []),
     `Work in cycles: change, photograph with tools/shot.py on your own port, Read the PNG beside the samples, change again. Judge yourself as harshly as ${RUBRICS.join(', ')} will. Stop when you honestly believe a judge would score every one of your screens at 9, or when further changes stop improving them.`,
     ``,
     `Finish with: endings guard printing ENDINGS OK, everything committed on ${branch} inside ${wt}, the ${T.screens.length * 2} canonical screenshots (each of ${T.screens.join(', ')} at the default size and at 1280x800, named as the brief's Deliverables say) copied into ${J}/${b.code}/, at least two screens outside your track photographed on your port and looked at, your dev server stopped. Never touch the main repository. Return the structured result.`,
