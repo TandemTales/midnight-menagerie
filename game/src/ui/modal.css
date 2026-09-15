@@ -37,7 +37,10 @@
 .mm-modal__scrim {
   position: absolute; inset: 0;
   background:
-    linear-gradient(to bottom, color-mix(in srgb, var(--kit-void) 84%, transparent) 0, color-mix(in srgb, var(--kit-void) 76%, transparent) 14%, transparent 30%),
+    /* (the board's own lettered plaque sat just readable behind the dialog's,
+       a second title in ghost letters either side of it: the band is deep
+       enough now to put it out) */
+    linear-gradient(to bottom, color-mix(in srgb, var(--kit-void) 93%, transparent) 0, color-mix(in srgb, var(--kit-void) 90%, transparent) 15%, color-mix(in srgb, var(--kit-void) 40%, transparent) 24%, transparent 32%),
     radial-gradient(70% 64% at 50% 50%, color-mix(in srgb, var(--kit-void) 46%, transparent) 0%, color-mix(in srgb, var(--kit-void) 66%, transparent) 60%, color-mix(in srgb, var(--kit-void) 90%, transparent) 100%),
     linear-gradient(color-mix(in srgb, var(--kit-violet-lo) 12%, transparent), color-mix(in srgb, var(--kit-violet-lo) 12%, transparent));
   -webkit-backdrop-filter: brightness(.56) saturate(.62);
@@ -139,22 +142,41 @@
 .mm-dlg-dress__candle > .kit-prop { inset: 0; }
 .mm-dlg-dress__candle > .kit-prop::before { display: none; }
 .mm-dlg-dress__glow { left: 50%; top: 12%; width: calc(var(--cw) * 6); --light-a: 24%; }
+/* the skull on its books, set on the lower left guard's boss the way the candle
+   stands on the right one, on the two large dialogs (a question keeps its
+   corners bare) */
+.mm-dlg-dress__books {
+  --bw: clamp(70px, 5.4vw, 88px);
+  position: absolute; z-index: 5;
+  left: calc(var(--bw) * -.14);
+  bottom: calc(var(--bw) * -.08);
+  width: var(--bw); aspect-ratio: 130 / 153;
+  display: none;
+}
+.mm-modal--kit:not([data-size="sm"]) .mm-dlg-dress__books { display: block; }
+.mm-dlg-dress__books > .kit-prop { inset: 0; filter: brightness(.92) drop-shadow(0 6px 6px rgba(0, 0, 0, .7)); }
+.mm-dlg-dress__books > .kit-prop::before { display: none; }
 :root[data-reduce-motion="1"] .mm-dlg-dress__candle .kit-prop--candle::after,
 :root[data-reduce-motion="1"] .mm-dlg-dress__glow { animation: none; }
 /* a question: wide enough that its two answers each keep to one line */
 .mm-modal--kit[data-size="sm"] .mm-modal__dialog { width: min(100%, 46rem); }
-/* a case of cards: five across inside the velvet, at 1600 as at the Deck's 1280 */
-.mm-modal--kit[data-size="wide"] .mm-modal__dialog { width: min(100%, 80rem); }
+/* a case of cards: five across inside the velvet at the size a Trick is read
+   at, at 1600 as at the Deck's 1280 */
+.mm-modal--kit[data-size="wide"] .mm-modal__dialog { width: min(100%, 90rem); }
 /* the panel in the room's light, not an even fill: the candle burning on its
    lower right corner warms the damask round it, a little light falls from
    under the plaque, and the cloth sinks into shadow towards the far corners.
+   Under all of it a glaze takes the damask down to the Kid board's own
+   near-black (its dossier panels measure about 20,18,22), so the gilt and the
+   lettering carry the light, as they do in the samples, and not the cloth.
    (A dialog wears no medallion, so the panel's ::before is free.) */
 .mm-modal--kit .mm-modal__dialog::before {
   content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none;
   background:
     radial-gradient(46% 58% at 100% 100%, color-mix(in srgb, var(--kit-candle) 11%, transparent), transparent 70%),
     radial-gradient(56% 30% at 50% 0%, color-mix(in srgb, var(--kit-candle) 7%, transparent), transparent 72%),
-    radial-gradient(130% 118% at 44% 40%, transparent 46%, rgba(5, 3, 8, .55) 100%);
+    radial-gradient(130% 118% at 44% 40%, transparent 46%, rgba(5, 3, 8, .55) 100%),
+    linear-gradient(rgba(8, 5, 11, .42), rgba(8, 5, 11, .42));
 }
 
 /* the plaque across the top rail: the cartouche's middle ON the rail */
@@ -216,6 +238,34 @@
   padding: clamp(4px, .9vh, 10px) clamp(28px, 3vw, 44px) 0;
 }
 .mm-modal--kit .mm-modal__foot .kit-btn { --plate-h: var(--btn-h); flex: none; white-space: nowrap; }
+/* the floor they stand on: a gilt double rule run across the foot behind the
+   plates, fading before the velvet and tipped with the boards' stars; between
+   two ways out, the Kid board's paw medallion set on the rule (medal-paw.webp
+   is painted on its own short stretch of rail) */
+.mm-modal--kit .mm-modal__foot {
+  --foot-pad: clamp(4px, .9vh, 10px);
+  --paw-h: calc(var(--btn-h) * .92);
+}
+.mm-modal--kit .mm-modal__foot::before {
+  content: ''; position: absolute; z-index: -1; pointer-events: none;
+  left: clamp(8px, 1.2vw, 18px); right: clamp(8px, 1.2vw, 18px);
+  top: calc(var(--foot-pad) + var(--btn-h) / 2 - 3px); height: 7px;
+  background:
+    url("../../assets/ui/kit/star4.svg") 0 50% / 7px 7px no-repeat,
+    url("../../assets/ui/kit/star4.svg") 100% 50% / 7px 7px no-repeat,
+    linear-gradient(90deg, transparent, var(--kit-gold) 9%, var(--kit-gold-hi) 50%, var(--kit-gold) 91%, transparent) 50% 1px / calc(100% - 16px) 1px no-repeat,
+    linear-gradient(90deg, transparent, var(--kit-gold-lo) 9%, var(--kit-gold) 50%, var(--kit-gold-lo) 91%, transparent) 50% 5px / calc(100% - 16px) 1px no-repeat;
+  filter: drop-shadow(0 1px 0 rgba(0, 0, 0, .85));
+  opacity: .9;
+}
+.mm-dlg-paw {
+  flex: none; display: block;
+  height: var(--paw-h); aspect-ratio: 106 / 55;
+  margin-inline: calc(clamp(22px, 2.4vw, 36px) * -.35);
+  background: url("../../assets/ui/kit/medal-paw.webp") 50% 50% / 100% 100% no-repeat;
+  filter: drop-shadow(0 3px 3px rgba(0, 0, 0, .8));
+  pointer-events: none;
+}
 
 /* the close: the round enamel button set in the top right corner guard, over
    its boss, so the brass holds it */
@@ -248,8 +298,20 @@
   transition: filter var(--t-quick) var(--ease-out), transform var(--t-quick) var(--ease-out), color var(--t-quick) var(--ease-out);
 }
 .mm-btn.kit-btn--quiet { font-size: var(--fs-sm); color: var(--kit-text-mid); }
+/* in a framed dialog the way onward is the lit plate — the Companion tiles'
+   enamel catching the candle along its top — and the ways back the dark one */
+.mm-modal--kit .mm-btn.kit-btn:not(.kit-btn--quiet) { border-image-source: url("../../assets/ui/kit/plate-lit.webp"); }
 .mm-btn.kit-btn:hover { background: none; }
 .mm-btn.kit-btn:focus-visible { outline: none; box-shadow: none; }
+/* keyboard focus on a dialog's plate: the gilt lights round its silhouette and
+   the candle catches it, drawn BEFORE the plate's shadow — traced round a shadow
+   that is already blurred, the same light becomes a halo */
+.mm-modal--kit .kit-btn:focus-visible {
+  filter: drop-shadow(0 0 1.5px var(--kit-gold-hi)) drop-shadow(0 0 10px color-mix(in srgb, var(--kit-candle) 55%, transparent)) drop-shadow(0 4px 6px rgba(0, 0, 0, .8)) brightness(1.16);
+}
+.mm-modal--kit .kit-btn--quiet:focus-visible {
+  filter: drop-shadow(0 0 1.5px var(--kit-gold-hi)) drop-shadow(0 0 9px color-mix(in srgb, var(--kit-candle) 45%, transparent)) drop-shadow(0 3px 5px rgba(0, 0, 0, .7)) saturate(.95) brightness(1.08);
+}
 /* danger: the same plate, lettered in the Courage bar's red */
 .mm-btn--danger.kit-btn { color: var(--threat-200); }
 .mm-btn--danger.kit-btn:hover:not(:disabled), .mm-btn--danger.kit-btn:focus-visible { color: var(--threat-100); }
@@ -262,7 +324,9 @@
   transform: none;
   color: var(--kit-text-mid);
   text-shadow: 0 1px 0 rgba(0, 0, 0, .95), 0 -1px 0 rgba(0, 0, 0, .5);
-  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .7)) saturate(.35) brightness(.74);
+  /* the lit enamel plate kept, only dulled: a quiet plate, never a black one */
+  border-image-source: url("../../assets/ui/kit/plate-lit.webp");
+  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .7)) saturate(.6) brightness(.84);
 }
 
 .mm-btn.kit-medallion {

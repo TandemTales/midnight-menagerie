@@ -236,6 +236,7 @@ export class TutorialScene extends Scene {
     const stage = this._stage = el('div', 'tut-stage');
     stage.appendChild(this._buildFigure());
     stage.appendChild(this._buildPanel());
+    stage.appendChild(this._buildMantel());
     this.root.appendChild(stage);
     /* The board is a SIBLING of the stage, not a page inside the panel: it is
        its own full-screen painting and it must not inherit the prose column's
@@ -303,10 +304,10 @@ export class TutorialScene extends Scene {
     const p = this._panel = el('section', 'tut-panel kit-panel kit-panel--damask');
     p.dataset.medal = 'moon';
     /* The page is a thing in the room, as the dialogs are (ui/kit.css, OBJECTS
-       IN THE HOUSE): a tufted velvet liner inside its gilt rail, a brass guard
-       over each corner, and the story's silk bookmark hanging from its foot. */
+       IN THE HOUSE): a tufted velvet liner inside its gilt rail and a brass
+       guard over each corner. It stands on the mantel with the portrait. */
     p.innerHTML = `
-      <i class="tut-fit" aria-hidden="true"><i class="kit-liner tut-fit__liner"></i><i class="kit-bookmark tut-fit__mark"></i><i class="kit-bracket kit-bracket--tl tut-fit__guard"></i><i class="kit-bracket kit-bracket--tr tut-fit__guard"></i><i class="kit-bracket kit-bracket--bl tut-fit__guard"></i><i class="kit-bracket kit-bracket--br tut-fit__guard"></i></i>
+      <i class="tut-fit" aria-hidden="true"><i class="kit-liner tut-fit__liner"></i><i class="kit-bracket kit-bracket--tl tut-fit__guard"></i><i class="kit-bracket kit-bracket--tr tut-fit__guard"></i><i class="kit-bracket kit-bracket--bl tut-fit__guard"></i><i class="kit-bracket kit-bracket--br tut-fit__guard"></i></i>
       <h1 class="tut-head"></h1>
       <p class="tut-sub"></p>
       <div class="tut-lines"></div>
@@ -316,6 +317,20 @@ export class TutorialScene extends Scene {
       </div>`;
 
     return p;
+  }
+
+  /**
+   * The mantel the story stands on: the boards' carved egg-and-dart ledge run
+   * across the room under the portrait and the page, their feet on its walnut
+   * top and the nameplate hung over its gilt front, with title.png's fleur
+   * hanging under the middle of it. It is what dresses the bottom of the room
+   * instead of an empty stretch of blurred floor. Decoration only.
+   */
+  _buildMantel() {
+    const m = el('div', 'tut-mantel');
+    m.setAttribute('aria-hidden', 'true');
+    m.innerHTML = '<i class="tut-mantel__shelf"></i>';
+    return m;
   }
 
   /**
@@ -487,6 +502,9 @@ export class TutorialScene extends Scene {
     const next = panel.querySelector('.tut-next');
     /* the words only: the enamel medallion seated on the plate's end stays */
     next.querySelector('.tut-next__words').textContent = p.cta || 'Go on';
+    /* a way on that is a whole phrase ("Stay behind her") takes more of the
+       foot, and the beats' rungs are set a size smaller beside it */
+    panel.dataset.longCta = String((p.cta || 'Go on').length > 8);
     /* Nothing to press until somebody has been chosen. The strip is the page. */
     next.hidden = picking;
 
@@ -568,8 +586,10 @@ export class TutorialScene extends Scene {
     const box = el('div', 'tut-figbox');
     box.appendChild(frame);
     if (plate) {
+      /* the Kid board's star medallion caps the plate, as it caps a dossier panel */
       box.appendChild(el('div', 'tut-plate kit-plate kit-plate--arch',
-        `<span class="kit-plate__name">${esc(plate[0])}</span><span class="kit-plate__epithet">${esc(plate[1])}</span>`));
+        `<i class="tut-plate__star" aria-hidden="true"></i>`
+        + `<span class="kit-plate__name">${esc(plate[0])}</span><span class="kit-plate__epithet">${esc(plate[1])}</span>`));
     }
     /* stood on the floor the way the Kid board's mirror is: a skull on its
        books at one foot of the frame, a lit candle at the other (.kit-prop) */

@@ -70,6 +70,39 @@ export const SETTINGS_SPEC = [
 
 function pct(v) { return `${Math.round(Number(v) * 100)}%`; }
 
+/**
+ * THE LEDGER'S CRESTS. Every page of the ledger wears its own medallion on its
+ * top rail, the way each of the Kid board's panels wears its own (a star, a
+ * shield, a star, a paw): a bell for how the house sounds, an hourglass for how
+ * it moves, an open book for how it reads, a fanned pair of Tricks for how it
+ * plays, a key for the seed that opens the same rooms again, a lantern for the
+ * way out, and a skull for the one thing that cannot be undone. Drawn on the
+ * icons' 24-unit grid, filled and even-odd, so each reads by its silhouette.
+ */
+export const LEDGER_GLYPH = {
+  sound: '<path fill-rule="evenodd" d="M12 1.3a1.75 1.75 0 1 1 0 3.5 1.75 1.75 0 0 1 0-3.5zM12 4.5c-3.7 0-6.2 2.9-6.2 6.9v3.8l-2.4 2.9v1.2h17.2v-1.2l-2.4-2.9v-3.8c0-4-2.5-6.9-6.2-6.9zM6.9 13.1h10.2v1.1H6.9zM9.5 20.4h5a2.5 2.5 0 0 1-5 0z"/>',
+  motion: '<path fill-rule="evenodd" d="M3.4 1.6h17.2v2.7H3.4zM3.4 19.7h17.2v2.7H3.4zM4.4 4.3h1.5v15.4H4.4zM18.1 4.3h1.5v15.4h-1.5zM7.4 4.3h9.2c0 3.7-3 5.5-3.9 7.7.9 2.2 3.9 4 3.9 7.7H7.4c0-3.7 3-5.5 3.9-7.7-.9-2.2-3.9-4-3.9-7.7zM9 5.6h6c-.5 2.2-2.2 3.4-3 5.1-.8-1.7-2.5-2.9-3-5.1z"/>',
+  reading: '<path fill-rule="evenodd" d="M11.2 6.1C8.9 4.5 5.9 4 2.1 4.3v13.9c3.8-.3 6.8.2 9.1 1.8zM12.8 6.1c2.3-1.6 5.3-2.1 9.1-1.8v13.9c-3.8-.3-6.8.2-9.1 1.8zM4 7.5c2-.1 3.7.2 5.4 1v1.1C7.7 8.8 6 8.5 4 8.6zM4 10.6c2-.1 3.7.2 5.4 1v1.1c-1.7-.8-3.4-1.1-5.4-1zM14.6 8.5c1.7-.8 3.4-1.1 5.4-1v1.1c-2-.1-3.7.2-5.4 1zM14.6 11.6c1.7-.8 3.4-1.1 5.4-1v1.1c-2-.1-3.7.2-5.4 1zM1.4 19.2c4-.3 7.3.1 10.6 2 3.3-1.9 6.6-2.3 10.6-2v1.5c-4-.3-7.3.1-10.6 2-3.3-1.9-6.6-2.3-10.6-2z"/>',
+  play: '<path fill-rule="evenodd" d="M1.6 7 9 4.9 7.8 21.4l-4 1.1zM10 2.2l11.3 2-3.1 17.6-11.3-2zM13.3 7.6l1.2 3.3 3.3 1.2-3.3 1.2-1.2 3.3-1.2-3.3-3.3-1.2 3.3-1.2z"/>',
+  seed: '<path fill-rule="evenodd" d="M7 6.9a5.1 5.1 0 1 1 0 10.2 5.1 5.1 0 0 1 0-10.2zm0 2.7a2.4 2.4 0 1 0 0 4.8 2.4 2.4 0 0 0 0-4.8zM11.9 10.8h10.5v2.4H11.9zM17.2 13.2h2v3.6h-2zM20.4 13.2h2v2.6h-2z"/>',
+  expedition: '<path fill-rule="evenodd" d="M12 .8a2 2 0 1 1 0 4 2 2 0 0 1 0-4zm0 1.2a.8.8 0 1 0 0 1.6.8.8 0 0 0 0-1.6zM8.5 5h7l2.2 2.6H6.3zM7 7.6h10v10.9H7zM8.7 9.2v7.7h6.6V9.2zM12 10.1c1.4 1.6 2.1 2.8 2.1 4.1a2.1 2.1 0 0 1-4.2 0c0-1.3.7-2.5 2.1-4.1zM5.8 18.5h12.4v1.7H5.8zM8 20.2h8l-1.1 2H9.1z"/>',
+  danger: '<path fill-rule="evenodd" d="M12 1.8c-5.2 0-9 3.7-9 8.6 0 3 1.4 5.2 3.5 6.5v3.3c0 1 .8 1.8 1.8 1.8h7.4c1 0 1.8-.8 1.8-1.8v-3.3c2.1-1.3 3.5-3.5 3.5-6.5 0-4.9-3.8-8.6-9-8.6zM8.5 8.9a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zm7 0a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM12 14.2l1.5 2.6h-3zm-2.3 4.1h1.3v2.6H9.7zm3.3 0h1.3v2.6H13z"/>',
+  /* the knob of a switch that is on */
+  check: '<path d="M2.6 12.6 5.5 9.7l4.3 4.3 8.7-9.6 2.9 2.7-11.5 12.6z"/>',
+};
+
+/** A glyph as a mask image, for a kit piece that casts it in gilt (.kit-crest). */
+export function glyphUrl(paths) {
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">${paths}</svg>`;
+  return `url("data:image/svg+xml,${encodeURIComponent(svg)}")`;
+}
+
+/** A crest: the boards' round enamel button, its glyph cast in the gilt. */
+function crest(key, extra = '') {
+  return `<i class="kit-crest mm-set__crest${extra}" aria-hidden="true"`
+    + ` style='--glyph:${glyphUrl(LEDGER_GLYPH[key] || '')}'></i>`;
+}
+
 /** Read a setting with a sane default even if Save has not loaded. */
 function get(Save, key) {
   const v = Save?.settings?.[key];
@@ -156,16 +189,18 @@ export async function openSettings(ctx = {}) {
 
   const GROUP = 'mm-set__group kit-panel';
   const LEGEND = 'mm-set__legend kit-heading kit-heading--ribbon';
+  /* a page's heading: the gold ribbon across its top rail, the page's crest
+     pinned to the ribbon before its name */
+  const legend = (name, key) =>
+    `<legend class="${LEGEND}">${crest(key)}<span class="mm-set__legendname">${escape_(name)}</span></legend>`;
   const COLUMN = { Sound: colA, Reading: colA, Motion: colB, Play: colC };
 
   for (const section of SETTINGS_SPEC) {
     const fs = document.createElement('fieldset');
     fs.className = GROUP;
-    fs.dataset.group = section.group.toLowerCase();
-    const lg = document.createElement('legend');
-    lg.className = LEGEND;
-    lg.textContent = section.group;
-    fs.appendChild(lg);
+    const key = section.group.toLowerCase();
+    fs.dataset.group = key;
+    fs.insertAdjacentHTML('beforeend', legend(section.group, key));
 
     for (const item of section.items) {
       fs.appendChild(buildRow(ctx, Save, item, rerender));
@@ -176,7 +211,8 @@ export async function openSettings(ctx = {}) {
   // ── seed ────────────────────────────────────────────────────────────────
   const seedFs = document.createElement('fieldset');
   seedFs.className = GROUP;
-  seedFs.innerHTML = `<legend class="${LEGEND}">Seed</legend>`;
+  seedFs.dataset.group = 'seed';
+  seedFs.innerHTML = legend('Seed', 'seed');
 
   const cur = document.createElement('div');
   cur.className = 'mm-set__row';
@@ -235,7 +271,7 @@ export async function openSettings(ctx = {}) {
     const trip = document.createElement('fieldset');
     trip.className = GROUP;
     trip.dataset.group = 'expedition';
-    trip.innerHTML = `<legend class="${LEGEND}">Expedition</legend>`;
+    trip.innerHTML = legend('Expedition', 'expedition');
     const tRow = document.createElement('div');
     tRow.className = 'mm-set__row';
     const why = live
@@ -288,7 +324,8 @@ export async function openSettings(ctx = {}) {
   // ── danger ──────────────────────────────────────────────────────────────
   const danger = document.createElement('fieldset');
   danger.className = GROUP + ' mm-set__group--danger';
-  danger.innerHTML = `<legend class="${LEGEND}">Danger</legend>`;
+  danger.dataset.group = 'danger';
+  danger.innerHTML = legend('Danger', 'danger');
   const dRow = document.createElement('div');
   dRow.className = 'mm-set__row';
   dRow.innerHTML =
@@ -299,9 +336,10 @@ export async function openSettings(ctx = {}) {
   reset.type = 'button';
   reset.className = 'mm-btn mm-btn--danger';
   reset.textContent = 'Reset…';
-  /* the warning is a skull struck on a round enamel medallion at the plate's
-     end, as DONE wears its tick, and the lettering is the Courage bar's red */
-  kitButton(reset, { medal: 'danger' });
+  /* the warning is a warning: a hazard triangle struck on the round enamel
+     medallion at the plate's end, as DONE wears its tick, the lettering in the
+     Courage bar's red. The panel's own crest is the skull. */
+  kitButton(reset, { medal: 'warn' });
   reset.addEventListener('click', async () => {
     const ok = await confirmModal({
       title: 'Reset all progress?',
@@ -383,14 +421,19 @@ function buildRow(ctx, Save, item, rerender) {
     input.type = 'range'; input.id = id;
     input.min = String(item.min); input.max = String(item.max); input.step = String(item.step);
     input.value = String(get(Save, item.key));
+    /* the figure, in the ledger's column of readings: gold lining numerals
+       struck on the boards' enamel cartouche at the end of the line */
     const out = document.createElement('output');
-    out.className = 'mm-set__out';
+    out.className = 'mm-set__out mm-set__reading kit-enamel';
     out.htmlFor = id;
+    const fig = document.createElement('b');
+    fig.className = 'kit-enamel__value';
+    out.appendChild(fig);
     const show = () => {
       const span = Number(item.max) - Number(item.min);
       const v = span ? (Number(input.value) - Number(item.min)) / span : 0;
       slot.style.setProperty('--v', String(Math.max(0, Math.min(1, v))));
-      out.textContent = item.fmt ? item.fmt(input.value) : input.value;
+      fig.textContent = item.fmt ? item.fmt(input.value) : input.value;
     };
     show();
     const commit = () => {
@@ -405,9 +448,11 @@ function buildRow(ctx, Save, item, rerender) {
 
   } else if (item.type === 'toggle') {
     /* The same brass tube as a switch: dark when it is off, its amber enamel
-       lit when it is on and the enamel button riding to that end, lit too. The
-       knob's end and the lit enamel say it twice, so no plate beside it needs
-       to spell it out a third time; `aria-checked` says it to a reader. */
+       lit when it is on and the enamel button riding to that end with a gold
+       check struck in it. The state is never left to the knob's position: it
+       is lettered in the ledger's column of readings beside it, ON in lit gilt
+       or OFF in the quiet engraving, on the same cartouche a slider's figure
+       wears. The whole of it is one switch; `aria-checked` says it to a reader. */
     const btn = document.createElement('button');
     btn.type = 'button'; btn.id = id;
     btn.className = 'mm-set__toggle';
@@ -419,7 +464,9 @@ function buildRow(ctx, Save, item, rerender) {
       btn.innerHTML =
         `<i class="mm-set__switch" aria-hidden="true">`
         + `<i class="mm-set__tube kit-tube kit-tube--warm"><i class="kit-tube__fill"></i></i>`
-        + `<i class="mm-set__knob"></i></i>`;
+        + `<i class="mm-set__knob"><svg viewBox="0 0 24 24">${LEDGER_GLYPH.check}</svg></i></i>`
+        + `<span class="mm-set__state mm-set__reading kit-enamel" aria-hidden="true">`
+        + `<b class="kit-enamel__value">${on ? 'On' : 'Off'}</b></span>`;
     };
     btn.addEventListener('click', () => { setSetting(ctx, item.key, !get(Save, item.key)); paint(); });
     paint();
@@ -432,8 +479,8 @@ function buildRow(ctx, Save, item, rerender) {
     grp.setAttribute('role', 'radiogroup');
     grp.setAttribute('aria-label', item.label);
     const btns = [];
-    /* a row of the boards' nameplates: the chosen one lit gold, the rest the
-       quiet plate — the kit's own two states, nothing drawn for it here */
+    /* a row of the boards' nameplates: the chosen one lit gold with the
+       boards' four-point star set before its name, the rest the quiet plate */
     const paint = () => {
       const v = get(Save, item.key);
       for (const b of btns) {
@@ -449,7 +496,7 @@ function buildRow(ctx, Save, item, rerender) {
       b.type = 'button'; b.className = 'mm-set__choice kit-btn';
       b.setAttribute('role', 'radio');
       b.dataset.value = value;
-      b.textContent = text;
+      b.innerHTML = `<i class="mm-set__star" aria-hidden="true"></i><span class="mm-set__choicename">${escape_(text)}</span>`;
       b.addEventListener('click', () => { setSetting(ctx, item.key, value); paint(); });
       b.addEventListener('keydown', (e) => {
         const i = btns.indexOf(b);

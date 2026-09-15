@@ -1,19 +1,24 @@
 /* Settings panel. OWNER: ui-chrome agent. Paired with ui/settings.js.
 
-   Inside the kit panel (ui/modal.css), and built from the kit's own pieces,
-   which settings.js puts on as classes:
-     a group             .kit-panel             one of the Kid board's railed
+   THE HOUSE'S LEDGER. Inside the kit panel (ui/modal.css), built from the
+   kit's own pieces, which settings.js puts on as classes:
+     a page              .kit-panel             one of the Kid board's railed
                                                 panels, its fleurons at the corners
-     a group's heading   .kit-heading--ribbon   the gold ribbon banner across the
-                                                panel's top rail ("✦ SOUND ✦")
+     its heading         .kit-heading--ribbon   the gold ribbon banner across the
+                                                panel's top rail ("SOUND"), with
+                         .kit-crest             the page's own crest pinned to it:
+                                                a bell, an hourglass, a book …
      a line              .kit-leader            the ledger's brass dots, from a
                                                 setting's name to its control
      a slider / switch   .kit-tube--warm        the Courage bar's brass tube, its
                                                 amber enamel filled to the value,
                                                 the round enamel button its knob
-     a value             gold lining numerals   the ledger's figure at the end of
-                                                its line
-     a choice            .kit-btn / --quiet     nameplates, the chosen one lit
+     a reading           .kit-enamel            every line ends in the ledger's
+                                                column of readings: a figure or a
+                                                state (90%, ON, OFF) in gold on
+                                                the boards' enamel cartouche
+     a choice            .kit-btn / --quiet     nameplates, the chosen one lit and
+                                                starred
      the seed            .kit-enamel--dark      struck on the tiles' cartouche
      the next seed       .kit-field             lettered onto a nameplate
      save / reset        .kit-btn               nameplates
@@ -21,8 +26,8 @@
    text input — so the keyboard, the pad and assistive tech drive it as one.
    This sheet lays the ledger out and seats those pieces; it paints no frame. */
 
-/* the ledger: wide enough for three columns of panels, the map showing round it */
-.mm-settings-modal .mm-modal__dialog { width: min(100%, 84rem); }
+/* the ledger: wide enough for three columns of pages, the map showing round it */
+.mm-settings-modal .mm-modal__dialog { width: min(100%, 88rem); }
 /* its name on a plaque a size smaller than a board's, so the pages get the height */
 @media (max-height: 920px) {
   .mm-settings-modal .mm-modal__head { --cart-h: clamp(96px, 12.2vh, 112px); }
@@ -30,35 +35,36 @@
 
 .mm-set {
   --rib-h: clamp(26px, 3.3vh, 32px);
+  --crest: calc(var(--rib-h) * 1.3);
   --row-pad: 6px;                       /* above a row, a pixel more below */
   --name-fs: calc(var(--fs-md) * 1.02);
   --hint-fs: max(12px, calc(var(--fs-xs) * 1.12));
-  --slot-w: clamp(104px, 8.6vw, 142px);
+  --slot-w: clamp(92px, 7.6vw, 124px);
   --slot-h: 30px;  --knob: 26px;         /* a slider */
-  --sw-w: 58px;    --sw-h: 28px;         /* a switch */
-  --read-w: 3.3em;                      /* a value's figure */
-  --read-h: 30px;                       /* the seed's cartouche */
+  --sw-w: 54px;    --sw-h: 26px;         /* a switch */
+  --read-w: clamp(68px, 4.9vw, 78px);   /* the column of readings: "100%" clear of the notched ends */
+  --read-h: 30px;
   --choice-h: 34px;
   --panel-top: 8px;                     /* under a panel's ribbon */
-  --stack: clamp(8px, 1.4vh, 16px);     /* between two panels in a column */
+  --stack: clamp(12px, 1.9vh, 18px);    /* between two panels in a column: room for a crest */
   /* a panel's words stand clear of its engraved inner rule and the fleurons at
      its corners (kit.css .kit-panel::after, at --pk .66: the rule 13-16 px in,
      a fleuron reaching 35 px along each edge) */
-  --pad-x: clamp(29px, 2.3vw, 36px);
-  --pad-b: clamp(22px, 2.9vh, 28px);
-  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
+  --pad-x: clamp(24px, 2vw, 32px);
+  --pad-b: clamp(20px, 2.7vh, 26px);
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.08fr) minmax(0, 1fr);
   align-items: stretch;
-  gap: 0 clamp(26px, 2.4vw, 38px);
+  gap: 0 clamp(20px, 2vw, 32px);
   padding: 0 2px 4px;
 }
-/* 900 px and the Deck's 800: the same ledger a notch tighter, so every panel
+/* 900 px and the Deck's 800: the same ledger a notch tighter, so every page
    of all three columns stands whole above the buttons. */
 @media (max-height: 920px) {
   .mm-set {
     --row-pad: 4px;
     --slot-h: 26px; --knob: 22px;
-    --sw-w: 52px;   --sw-h: 24px;
-    --read-h: 28px; --choice-h: 30px;
+    --sw-w: 48px;   --sw-h: 22px;
+    --read-h: 27px; --choice-h: 30px;
     --panel-top: 4px;
   }
 }
@@ -71,8 +77,8 @@
   }
 }
 
-/* a column: its panels stacked, the first ribbon's upper half clear of the top;
-   the three end on one line, as the boards' panels do, the last panel of a
+/* a column: its pages stacked, the first ribbon's upper half clear of the top;
+   the three end on one line, as the boards' panels do, the last page of a
    shorter column standing taller to meet it */
 .mm-set__col {
   display: flex; flex-direction: column;
@@ -90,29 +96,137 @@
           mask-image: linear-gradient(to bottom, black 0, black calc(100% - var(--fade)), transparent 100%);
 }
 
-/* a group: one of the Kid board's railed panels */
+/* a group: one of the Kid board's railed panels, a page of the ledger */
 .mm-set__group.kit-panel {
   --pk: .66;
+  /* the suede a shade under the board's, the Kid board's panels' near-black */
+  --mat-veil: .3;
   margin: 0; min-width: 0;
   padding: calc(var(--rib-h) * .5 + var(--panel-top)) var(--pad-x) var(--pad-b);
 }
+/* a page stood taller to meet its neighbours sets its lines evenly down its
+   height, the way a board spaces its panels, rather than leaving a dead foot */
+.mm-set__group { display: flex; flex-direction: column; }
+.mm-set__group > .mm-set__row { flex: 1 0 auto; align-content: center; }
 /* its brass fleurons stand in its corners on their own, as the Kid board's
    panels wear star lobes on their rail, without a thin rule drawn between them */
 .mm-set__group.kit-panel::after { border-color: transparent; }
 
-/* its ribbon across the top rail (an absolutely placed legend) */
+/* ── the pages are not alike, as the Kid board's are not ────────────────────
+   One board, one light: the candle burning on the frame's lower right corner.
+   The pages nearest it take its warmth on their suede; the far top left, under
+   the plaque, is the coolest. And the pages have roles, as the Kid board's
+   pieces do (railed panels round the dossier, a carved mirror frame, plates):
+   the house's workings are railed suede pages; the two small fittings, the seed
+   and the way out, are enamel plaques in the gilt double rule and corner
+   brackets of the Kid board's dossier panels (plate-rect.webp, the kit's
+   .kit-plaque frame); the one dangerous thing is lacquered wine in the same. */
+.mm-set__group[data-group="sound"]      { --lit-x: 30%; --lit-y: -10%; --lit-a: 26%; --moon-a: 12%; --moon-x: 0%; --moon-y: -12%; }
+.mm-set__group[data-group="reading"]    { --lit-x: 70%; --lit-y: 118%; --lit-a: 22%; --moon-a: 7%; --moon-x: 0%; --moon-y: 0%; }
+.mm-set__group[data-group="motion"]     { --lit-x: 58%; --lit-y: 112%; --lit-a: 32%; }
+.mm-set__group[data-group="play"]       { --lit-x: 76%; --lit-y: 120%; --lit-a: 34%; }
+/* …and the working pages are not all one cloth: how the house plays is lined
+   with the flocked velvet it lays its Tricks on (the Shop's, the Reward's,
+   the trick case's), how it reads with a reading chair's plush velvet; how it
+   sounds and how it moves keep the Kid board's suede. Each veiled so its
+   pattern stays under the words. */
+.mm-set__group[data-group="play"] {
+  --mat: url("../../assets/ui/kit/flock.webp"); --mat-size: 233px 265px; --mat-base: #150c1b;
+  --mat-veil: .36;
+}
+.mm-set__group[data-group="reading"] {
+  --mat: url("../../assets/ui/kit/velvet.webp"); --mat-size: 256px 256px; --mat-base: #160d1e;
+  --mat-veil: .3;
+}
+.mm-set__group[data-group="expedition"],
+.mm-set__group[data-group="seed"],
+.mm-set__group[data-group="danger"] {
+  --rule: none;
+  /* plate-rect.webp is 240x80 (tools/prep_ui_polish.py): a broad gilt rule at
+     its edge, a fine one inside it, a scroll set in each corner between the
+     two; drawn a little heavier than the kit's plaques, so its gilt holds its
+     own beside the pages' carved rails */
+  border-image-source: url("../../assets/ui/kit/plate-rect.webp");
+  border-image-slice: 34;
+  border-image-width: clamp(24px, 1.75vw, 28px);
+  border-image-outset: 4px;
+  --mat: url("../../assets/ui/kit/enamel.webp"); --mat-size: 360px 360px; --mat-base: #221630;
+  --mat-veil: .42; --mat-edge: .66;
+  box-shadow: 0 18px 40px -18px rgba(0, 0, 0, .9), inset 0 0 30px rgba(0, 0, 0, .5);
+}
+.mm-set__group[data-group="expedition"] { --lit-x: 80%; --lit-y: 110%; --lit-a: 44%; }
+.mm-set__group[data-group="seed"]       { --lit-x: 90%; --lit-y: 120%; --lit-a: 48%; }
+.mm-set__group[data-group="danger"] {
+  --lit-x: 100%; --lit-y: 112%; --lit-a: 46%; --lit: #ffb27a;
+  --mat-base: #2a0c18; --mat-veil: .2;
+  /* lacquered wine, the aubergine gone to blood: the enamel's grain under it */
+  background:
+    radial-gradient(125% 115% at 50% 42%, transparent 46%, rgb(8 2 6 / .64) 100%),
+    radial-gradient(95% 90% at var(--lit-x) var(--lit-y), color-mix(in srgb, var(--lit) var(--lit-a), transparent) 0%, color-mix(in srgb, var(--lit) calc(var(--lit-a) * .5), transparent) 42%, transparent 80%),
+    linear-gradient(rgb(20 4 10 / .5), rgb(10 2 6 / .64)),
+    linear-gradient(rgb(92 22 42), rgb(66 16 34)),
+    url("../../assets/ui/kit/enamel.webp") 0 0 / 360px 360px,
+    #2a0c18;
+  background-blend-mode: normal, overlay, normal, color, normal, normal;
+  background-clip: padding-box;
+}
+
+/* its ribbon across the top rail (an absolutely placed legend), the page's
+   crest pinned to the ribbon before its name */
 .mm-set__legend.kit-heading--ribbon {
   --rib-h: clamp(26px, 3.3vh, 32px);
   position: absolute; left: 50%; top: 0; z-index: 3;
   translate: -50% calc(-50% - 1px);
   float: none;
   margin: 0;
+  gap: calc(var(--rib-h) * .2);
+  padding-left: calc(var(--rib-h) * .5);
 }
+/* the crest sits over the ribbon's own painted star at its left end, larger
+   than the ribbon is tall, the way the Kid board's medallions stand proud of
+   the rails they are seated on */
+.mm-set__legend > .mm-set__crest.kit-crest {
+  --crest: calc(var(--rib-h) * 1.62);
+  margin: 0 0 0 calc(var(--rib-h) * -.2);
+  /* the ribbon's own lift (brightness 1.22) is not the medallion's */
+  filter: brightness(.84) saturate(1.06) drop-shadow(0 2px 2px rgba(0, 0, 0, .75));
+}
+/* the name takes the ribbon's free length, centred in it, so on a short name
+   ("PLAY") the crest still sits on the ribbon's end over its painted star,
+   as it does on the longer ones, instead of drifting in to show the star */
+.mm-set__legendname { display: block; flex: 1 1 auto; text-align: center; }
+/* the carved fittings are headed by a nameplate instead: the Companion tiles'
+   lit enamel plate across the carving, the name lettered in gilt, and on the
+   dangerous page in the Courage bar's red */
+.mm-set__group[data-group="seed"] > .mm-set__legend,
+.mm-set__group[data-group="expedition"] > .mm-set__legend,
+.mm-set__group[data-group="danger"] > .mm-set__legend {
+  --plate-h: calc(var(--rib-h) + 6px);
+  height: var(--plate-h);
+  min-width: 0;
+  padding: 0 calc(var(--plate-h) * 1.02) 1px calc(var(--plate-h) * .62);
+  border-image-source: url("../../assets/ui/kit/plate-lit.webp");
+  border-image-slice: 12 53 12 46 fill;
+  border-image-width: calc(var(--plate-h) * 12 / 72) calc(var(--plate-h) * 53 / 72) calc(var(--plate-h) * 12 / 72) calc(var(--plate-h) * 46 / 72);
+  color: var(--kit-gold-hi);
+  -webkit-text-stroke: 0;
+  font-size: calc(var(--rib-h) * .45);
+  letter-spacing: .2em;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, .95), 0 1px 0 color-mix(in srgb, var(--kit-gold-hi) 18%, transparent), 0 0 10px color-mix(in srgb, var(--kit-candle) 22%, transparent);
+  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .75));
+}
+.mm-set__group[data-group="seed"] > .mm-set__legend > .mm-set__crest,
+.mm-set__group[data-group="expedition"] > .mm-set__legend > .mm-set__crest,
+.mm-set__group[data-group="danger"] > .mm-set__legend > .mm-set__crest {
+  margin-left: calc(var(--plate-h) * -.74);
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .75));
+}
+.mm-set__group[data-group="danger"] > .mm-set__legend { color: color-mix(in oklab, var(--threat-200) 82%, var(--kit-gold-hi)); }
 
 /* a line: the name, the leader, the control; the note under all three */
 .mm-set__row {
   display: grid;
-  grid-template-columns: auto minmax(14px, 1fr) auto;
+  grid-template-columns: auto minmax(12px, 1fr) auto;
   grid-template-areas: "name lead ctrl" "hint hint hint";
   align-items: center;
   gap: 0;
@@ -121,12 +235,15 @@
 .mm-set__row > .mm-set__label { display: contents; }
 .mm-set__row > .mm-set__label > span:first-child { grid-area: name; }
 .mm-set__row > .mm-set__label > .mm-set__hint { grid-area: hint; }
-.mm-set__row > .mm-set__lead { grid-area: lead; align-self: center; margin: 0 9px; translate: 0 .32em; }
+.mm-set__row > .mm-set__lead { grid-area: lead; align-self: center; margin: 0 7px; translate: 0 .32em; }
 .mm-set__row > :not(.mm-set__label):not(.mm-set__lead) { grid-area: ctrl; }
-/* lines parted by air, and a breath of shadow, not by a drawn rule */
+/* the ledger's ruling between two lines: a fine engraved cut, dark over a
+   hairline of gilt, fading before the page's edges */
 .mm-set__row + .mm-set__row {
   border-top: 0;
-  background: linear-gradient(90deg, transparent, rgba(0, 0, 0, .28) 12%, rgba(0, 0, 0, .28) 88%, transparent) 0 0 / 100% 1px no-repeat;
+  background:
+    linear-gradient(90deg, transparent, rgba(0, 0, 0, .6) 6%, rgba(0, 0, 0, .6) 94%, transparent) 0 0 / 100% 1px no-repeat,
+    linear-gradient(90deg, transparent, color-mix(in srgb, var(--kit-gold) 34%, transparent) 8%, color-mix(in srgb, var(--kit-gold) 34%, transparent) 92%, transparent) 0 1px / 100% 1px no-repeat;
 }
 /* a name over its note, lettered like the Shop's wares */
 .mm-set__label { display: flex; flex-direction: column; gap: 2px; min-width: 0; cursor: pointer; }
@@ -137,16 +254,33 @@
   color: var(--kit-name);
   text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
 }
+/* the note runs the page's whole width, set like a ledger's hand: left-aligned,
+   no line left short on purpose */
 .mm-set__hint {
   margin-top: 1px;
   font-size: var(--hint-fs); line-height: 1.28; font-style: italic;
   color: var(--kit-text-mid);
   text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
-  text-wrap: balance;
+  text-wrap: pretty;
+}
+
+/* ── a reading: the ledger's column of figures and states ───────────────── */
+.mm-set__reading.kit-enamel {
+  --h: var(--read-h);
+  flex: none;
+  box-sizing: border-box;
+  min-width: var(--read-w);
+  padding: 0 calc(var(--h) * .52);
+  gap: 0;
+}
+.mm-set__reading .kit-enamel__value {
+  font-size: calc(var(--h) * .54);
+  letter-spacing: .01em;
+  padding-top: 1px;
 }
 
 /* ── range: the brass tube, the enamel knob, the figure ─────────────────── */
-.mm-set__rangewrap { display: flex; align-items: center; justify-content: flex-end; gap: 8px; }
+.mm-set__rangewrap { display: flex; align-items: center; justify-content: flex-end; gap: 6px; }
 .mm-set__slot {
   --v: 0;
   position: relative;
@@ -204,23 +338,16 @@
 .mm-set__rangewrap input[type="range"]:focus-visible::-webkit-slider-thumb {
   box-shadow: 0 3px 4px rgba(0, 0, 0, .75), 0 0 0 2px var(--kit-gold-hi), 0 0 14px 2px color-mix(in srgb, var(--kit-candle) 65%, transparent);
 }
-/* the figure: gold lining numerals, right-aligned down the panel like a ledger's */
-.mm-set__out {
-  min-width: var(--read-w);
-  font-family: var(--font-num); font-weight: 600; font-style: normal;
-  font-size: calc(var(--fs-md) * 1.02); line-height: 1;
-  font-variant-numeric: lining-nums tabular-nums;
-  text-align: right;
-  color: var(--kit-gold-hi);
-  text-shadow: 0 1px 0 rgba(0, 0, 0, .95), 0 0 10px color-mix(in srgb, var(--kit-candle) 22%, transparent);
-}
+/* a slider's reading lights with its knob while it is held or focused */
+.mm-set__rangewrap:focus-within .mm-set__out { filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .75)) drop-shadow(0 0 8px color-mix(in srgb, var(--kit-candle) 40%, transparent)); }
 
-/* ── toggle: the same tube as a switch ───────────────────────────────────── */
+/* ── toggle: the same tube as a switch, and its state lettered ──────────── */
 .mm-set__toggle {
-  display: inline-flex; align-items: center;
+  display: inline-flex; align-items: center; gap: 6px;
   justify-self: end;
-  margin: 0; padding: 3px 0;
+  margin: 0; padding: 2px 0;
   background: none; border: 0; border-radius: 0;
+  font: inherit; color: inherit;
   transition: filter var(--t-quick) var(--ease-out);
   cursor: pointer;
 }
@@ -229,7 +356,7 @@
   width: var(--sw-w); height: var(--sw-h);
 }
 .mm-set__switch > .mm-set__tube {
-  --tube-h: calc(var(--sw-h) - 7px);
+  --tube-h: calc(var(--sw-h) - 5px);
   position: absolute; left: 0; right: 0; top: 50%;
   translate: 0 -50%;
 }
@@ -240,60 +367,101 @@
 /* off: the knob parked dull at the left end of an empty tube */
 .mm-set__knob {
   position: absolute; left: -2px; top: 50%;
-  width: var(--sw-h); height: var(--sw-h);
+  display: grid; place-items: center;
+  width: calc(var(--sw-h) + 2px); height: calc(var(--sw-h) + 2px);
   translate: 0 -50%;
   border-radius: 50%;
   background: url("../../assets/ui/kit/button.webp") 50% 50% / 100% 100% no-repeat;
-  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .8)) saturate(.5) brightness(.72);
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .8)) saturate(.75) brightness(.9);
   transition: transform var(--t-base) var(--ease-snap), filter var(--t-quick) var(--ease-out);
 }
-.mm-set__toggle:hover .mm-set__knob { filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .8)) saturate(.8) brightness(.95); }
-/* on: the amber lit the length of the tube, the knob at the far end catching the candle */
+.mm-set__knob > svg { width: 56%; height: 56%; overflow: visible; opacity: 0; }
+.mm-set__knob > svg path {
+  fill: var(--kit-gold-hi);
+  stroke: #1d1208; stroke-width: 2.2; stroke-linejoin: round;
+  paint-order: stroke fill;
+}
+.mm-set__toggle:hover .mm-set__knob { filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .8)) saturate(.95) brightness(1.05); }
+/* on: the amber lit the length of the tube, the knob at the far end catching
+   the candle, a gold check struck in it */
 .mm-set__toggle[data-on="1"] .kit-tube__fill { transform: scaleX(1); }
 .mm-set__toggle[data-on="1"] .mm-set__knob {
-  transform: translateX(calc(var(--sw-w) - var(--sw-h) + 4px));
-  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .8)) drop-shadow(0 0 7px color-mix(in srgb, var(--kit-candle) 60%, transparent)) brightness(1.18);
+  transform: translateX(calc(var(--sw-w) - var(--sw-h) + 2px));
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .8)) drop-shadow(0 0 7px color-mix(in srgb, var(--kit-candle) 60%, transparent)) brightness(1.12);
 }
-.mm-set__knob::after {
-  content: ''; position: absolute; inset: 0;
-  border-radius: 50%;
-  background: radial-gradient(circle at 50% 46%, var(--kit-gold-hi) 0 1.5px, var(--kit-gold) 2.6px, var(--kit-gold-lo) 3.6px, transparent 4.4px);
+.mm-set__toggle[data-on="1"] .mm-set__knob > svg { opacity: 1; }
+/* the state in the column of readings: ON lettered in lit gilt, OFF in the
+   quiet engraving on a dulled plate (still well over 4.5:1) */
+.mm-set__state .kit-enamel__value {
+  font-family: var(--font-display); font-weight: 700;
+  font-size: calc(var(--read-h) * .43);
+  letter-spacing: .16em; padding-left: .16em;
+  text-transform: uppercase;
+}
+.mm-set__toggle[data-on="0"] .mm-set__state { filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .75)) saturate(.35) brightness(.8); }
+.mm-set__toggle[data-on="0"] .mm-set__state .kit-enamel__value { color: var(--kit-text-mid); }
+.mm-set__toggle[data-on="1"] .mm-set__state .kit-enamel__value {
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .95), 0 0 9px color-mix(in srgb, var(--kit-candle) 45%, transparent);
 }
 .mm-set__toggle:focus-visible {
   outline: none;
   filter: drop-shadow(0 0 1.5px var(--kit-gold-hi)) drop-shadow(0 0 10px color-mix(in srgb, var(--kit-candle) 55%, transparent));
 }
 
-/* ── choice: nameplates, the chosen one lit ──────────────────────────────── */
+/* ── choice: nameplates, the chosen one lit and starred ─────────────────── */
 .mm-set__row:has(> .mm-set__choices) { grid-template-columns: minmax(0, 1fr); grid-template-areas: "name" "ctrl" "hint"; }
 .mm-set__choices {
-  display: grid; grid-template-columns: repeat(2, minmax(0, max-content));
-  gap: 6px 10px; justify-content: start;
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px 10px;
   padding: 6px 0 3px;
 }
 .mm-set__choice.kit-btn {
   --plate-h: var(--choice-h);
+  gap: 7px;
   font-size: 11.5px; letter-spacing: .11em;
-  padding-inline: calc(var(--plate-h) * .74);
+  padding-inline: calc(var(--plate-h) * .62);
+}
+/* the boards' four-point star, set before the chosen palette's name */
+.mm-set__star {
+  display: none; flex: none;
+  width: 12px; height: 12px;
+  margin-left: -3px;
+  background: url("../../assets/ui/kit/star4.svg") 50% 50% / 100% 100% no-repeat;
+  filter: drop-shadow(0 1px 0 rgba(0, 0, 0, .85)) drop-shadow(0 0 5px color-mix(in srgb, var(--kit-candle) 55%, transparent));
+}
+.mm-set__choice[data-on="1"] .mm-set__star { display: block; }
+/* the chosen plate is the one the candle has caught */
+.mm-set__choice.kit-btn[data-on="1"]:not(:focus-visible) {
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, .8)) drop-shadow(0 0 9px color-mix(in srgb, var(--kit-candle) 26%, transparent)) brightness(1.14);
 }
 
 /* ── seed ─────────────────────────────────────────────────────────────────── */
 .mm-set__seed.kit-enamel {
   --h: var(--read-h);
   justify-self: end;
-  min-width: 5em;
+  min-width: var(--read-w);
   user-select: text;
 }
 .mm-set__seed .kit-enamel__value { font-size: calc(var(--read-h) * .5); letter-spacing: .08em; }
-/* no expedition, no seed: the plate unlit, so an empty value never shines */
-.mm-set__seed.kit-enamel.is-empty { filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .75)) saturate(.45) brightness(.72); }
+/* no expedition, no seed: a reading with nothing to read, so the column's own
+   unlit plate, lettered like an OFF, and never a black hole in the ledger */
+.mm-set__seed.kit-enamel.is-empty {
+  border-image-source: url("../../assets/ui/kit/cartouche.webp");
+  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .75)) saturate(.35) brightness(.8);
+}
+.mm-set__seed.is-empty .kit-enamel__value { color: var(--kit-text-mid); }
 .mm-set__text.kit-field {
   --field-h: calc(var(--read-h) + 4px);
   justify-self: end;
-  width: 14ch;
-  font-size: calc(var(--field-h) * .38);
+  width: calc(var(--field-h) * 3.4);
+  padding: 0 calc(var(--field-h) * .56);
+  font-size: calc(var(--field-h) * .42);
   user-select: text;
+  /* somewhere to write is the lit enamel plate, as the pile viewer's search
+     is; the seed already struck stays on the tiles' dark cartouche above it */
+  border-image-source: url("../../assets/ui/kit/plate-lit.webp");
 }
+.mm-set__text.kit-field::placeholder { color: var(--kit-text-mid); }
 
 /* ── the expedition and the danger rows ──────────────────────────────────── */
 .mm-set__row > .kit-btn { justify-self: end; --plate-h: calc(var(--read-h) + 4px); font-size: 12.5px; }

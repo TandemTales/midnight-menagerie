@@ -33,8 +33,17 @@ import { icon } from './icons.js';
 import { plural, word } from '../util/plural.js';
 
 const TYPES = ['attack', 'skill', 'power', 'status', 'curse'];
-/** The card width, in px, whose printed rules size every card here reads at. */
-const LEGIBLE_AT = 210;
+/**
+ * The size, in screen px, a Trick's rules are read at in the case, by how much
+ * it has to say (card.js classes the length: under 63 characters, to 104, and
+ * past it). The case's cards are large, and a short rule set at the hand's size
+ * floats in a half-empty box; so every Trick here says its rules at a reading
+ * size, the same at 1600 as on the Deck's 1280, and `_fitRules` steps down any
+ * that would run out of its box.
+ */
+const RULES_PX = { short: 21, long: 17.5, xlong: 15 };
+/** card.css's own rules size for each class, in card units, before --rules-k. */
+const RULES_U = { short: 15.5, large: 17.5, long: 14, xlong: 12.5 };
 const RARITIES = ['basic', 'common', 'uncommon', 'rare'];
 
 const MODES = {
@@ -78,6 +87,8 @@ export class DeckView {
     this.sort = this.mode === 'draw' ? 'name' : (this.mode === 'reward' ? 'none' : 'name');
     this._offs = [];
     this._raf = 0;
+    this._fitRaf = 0;
+    this._large = !!this.ctx?.Save?.settings?.largeText;
     this._build();
   }
 
@@ -172,6 +183,14 @@ export class DeckView {
     grid.tabIndex = 0;
     grid.addEventListener('keydown', (e) => this._onKey(e));
     grid.addEventListener('focus', () => { if (!this.cells.length) return; this._focus(this.focusIndex, false); });
+    /* A Trick focused from outside the grid's own keys (the pad's spatial
+       focus, input/navigation.js, calls focus() on the cell) becomes the
+       grid's focus too, so it lifts into the candle as an arrow key's would;
+       it had no mark at all, its ring taken off below. */
+    grid.addEventListener('focusin', (e) => {
+      const c = e.target.closest?.('.mm-deck__cell');
+      if (c && !c.classList.contains('is-focus')) this._focus(Number(c.dataset.index), false);
+    });
 
     const empty = document.createElement('p');
     empty.className = 'mm-deck__empty';
@@ -187,7 +206,15 @@ export class DeckView {
     const liner = document.createElement('i');
     liner.className = 'kit-liner mm-deck__liner';
     liner.setAttribute('aria-hidden', 'true');
-    table.append(liner, note, empty, grid);
+    /* and a case is a thing that is carried: a cast brass guard over each of
+       its corners, as the dialog it stands in wears larger ones (.kit-bracket) */
+    const guards = ['tl', 'tr', 'bl', 'br'].map((c) => {
+      const g = document.createElement('i');
+      g.className = `kit-bracket kit-bracket--${c} mm-deck__guard`;
+      g.setAttribute('aria-hidden', 'true');
+      return g;
+    });
+    table.append(liner, note, empty, grid, ...guards);
 
     root.append(bar, filt, table);
     this.el = root; this.grid = grid; this.emptyEl = empty;
@@ -343,12 +370,49 @@ export class DeckView {
         const v = this.views.get(uid);
         if (v) {
           v.setTransform({ x: sizes[i][0] / 2, y: sizes[i][1], rot: 0, scale: 1, z: 0 });
-          /* Tricks here are for READING: a card smaller than the Shop's lifts its
-             rules type instead of shrinking it (ui/kit.css .kit-cards, the same
-             `legibleAt` scenes/_cardfit.js gives the shelf) */
-          if (sizes[i][0]) v.el.style.setProperty('--rules-k', Math.max(1, Math.min(1.4, LEGIBLE_AT / sizes[i][0])).toFixed(3));
+          /* Tricks here are for READING: the rules type is lifted to its
+             reading size (RULES_PX) through --rules-k (ui/kit.css .kit-cards,
+             the knob scenes/_cardfit.js gives the shelf). The card is drawn
+             `cellW / 224` screen px to one of its units. */
+          if (sizes[i][0]) {
+            const cl = v.el.classList;
+            const len = cl.contains('is-text-xlong') ? 'xlong' : cl.contains('is-text-long') ? 'long' : 'short';
+            const base = len === 'short' && cl.contains('is-largetext') ? RULES_U.large : RULES_U[len];
+            const px = RULES_PX[len] * (this._large ? 1.12 : 1);
+            const k = Math.max(1, Math.min(1.8, px / (base * sizes[i][0] / 224)));
+            v.el.style.setProperty('--rules-k', k.toFixed(3));
+          }
         }
       }
+      this._fitRules();
+    });
+  }
+
+  /**
+   * A Trick's rules never run out of their box. After a size is set, one read
+   * pass measures every card's rules against its box, and one write pass steps
+   * down only those that overflow, by the square root of how far over they are
+   * (a line's words wrap as the type grows, so the height goes as its square).
+   * Twice at most, never below the card's own size.
+   */
+  _fitRules(round = 0) {
+    if (this._fitRaf) cancelAnimationFrame(this._fitRaf);
+    this._fitRaf = requestAnimationFrame(() => {
+      this._fitRaf = 0;
+      const over = [];
+      for (const v of this.views.values()) {                                // read
+        const box = v.el.isConnected && v.el.querySelector('.mm-card__rules');
+        if (!box || !box.clientHeight) continue;
+        let h = 0;
+        for (const row of box.children) h += row.offsetHeight;
+        const room = box.clientHeight - 2;
+        if (h > room) over.push([v, Math.sqrt(room / h)]);
+      }
+      for (const [v, f] of over) {                                            // write
+        const k = parseFloat(v.el.style.getPropertyValue('--rules-k')) || 1;
+        v.el.style.setProperty('--rules-k', Math.max(1, k * f * .97).toFixed(3));
+      }
+      if (over.length && round < 1) this._fitRules(round + 1);
     });
   }
 
@@ -405,6 +469,7 @@ export class DeckView {
 
   destroy() {
     if (this._raf) cancelAnimationFrame(this._raf);
+    if (this._fitRaf) cancelAnimationFrame(this._fitRaf);
     for (const off of this._offs) { try { off(); } catch {} }
     this._offs.length = 0;
     for (const v of this.views.values()) { try { v.destroy?.(); } catch {} }

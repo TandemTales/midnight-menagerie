@@ -1,24 +1,32 @@
 /* Pile viewer. OWNER: ui-chrome agent. Paired with ui/deckview.js.
 
-   Inside the kit panel (ui/modal.css), and built from the kit's own pieces,
-   which deckview.js puts on as classes:
+   THE TRICK CASE. Inside the kit panel (ui/modal.css), and built from the kit's
+   own pieces, which deckview.js puts on as classes:
      the count        .kit-enamel          struck on the enamel cartouche a
                                            price or a rarity wears ("5 TRICKS")
      the search       .kit-field           lettered onto a nameplate
-     each filter      .kit-select          the quiet nameplate, a gold chevron
-                      .kit-select-wrap     in its right end
+     each filter      .kit-select          an engraved nameplate: what it sorts
+                      .kit-select-wrap     by cut into its upper edge, the choice
+                                           lettered under it, a cast brass
+                                           chevron in an enamel boss at its end
      Clear            .kit-btn--quiet      a nameplate
-     the Tricks       .kit-cards--nerve    the hand's own brass, cost on enamel
-   This sheet lays out the toolbar, sets the note as an engraved caption between
-   two star-tipped strokes, and gives the cards a lit table to lie on. */
+     the case         .kit-stage           the panels' rail round a velvet-lined
+                      .kit-liner           case, its floor the boards' embossed
+                      .kit-mat--flock      damask lit by the frame's candle
+     a Trick's place  case-slot.webp       a gilt-lipped recess pressed into the
+                                           velvet for each card (::before)
+     the Tricks       .kit-cards--nerve    the hand's own brass, cost on the coin
+   This sheet lays them out and seats the Tricks in the case. */
 
 .mm-deck {
-  /* five across the wide panel at 1600 and at the Deck's 1280 alike, and short
-     enough at 800 tall that a whole row stands clear of the buttons */
-  --deck-cw: clamp(160px, min(11.4vw, 21vh), 184px);
+  /* five across the wide case at 1600 and at the Deck's 1280 alike, each at a
+     size a Trick is read at — the row has the weight of the hand's own cards —
+     and short enough at 800 tall that a whole row stands clear of the buttons */
+  --deck-cw: clamp(160px, min(max(13.75vw, 186px), 33vh), 224px);
   --card-w: var(--deck-cw);              /* CardView sizes itself from this */
+  --slot-pad: 16px;                      /* the slot's lip, clear of the card's own frame */
   display: flex; flex-direction: column;
-  gap: clamp(8px, 1.3vh, 12px);
+  gap: clamp(7px, 1.1vh, 11px);
   min-height: 0;
 }
 
@@ -43,16 +51,19 @@
   color: var(--kit-gold);
 }
 .mm-deck__search .kit-field {
-  --field-h: clamp(42px, 5.2vh, 46px);
+  --field-h: clamp(40px, 5vh, 44px);
   width: 100%;
   padding-left: calc(var(--field-h) * 1.02);
   text-align: left;
-  font-size: calc(var(--field-h) * .38);
+  font-size: calc(var(--field-h) * .4);
   letter-spacing: .02em;
+  /* the filters' own lit enamel plate, not a black slot beside them */
+  border-image-source: url("../../assets/ui/kit/plate-lit.webp");
 }
+.mm-deck__search .kit-field::placeholder { color: var(--kit-text-mid); }
 /* the glass sits in the plate's left end, gold on the dark, never a box */
 .mm-deck__glass {
-  position: absolute; z-index: 1; left: calc(clamp(42px, 5.2vh, 46px) * .5); top: 50%;
+  position: absolute; z-index: 1; left: calc(clamp(40px, 5vh, 44px) * .5); top: 50%;
   width: 17px; height: 17px;
   translate: 0 -50%;
   color: var(--kit-gold-hi);
@@ -62,26 +73,58 @@
 .mm-deck__search:focus-within .mm-deck__glass { color: #fff1d2; }
 .mm-deck__search input::-webkit-search-cancel-button { filter: sepia(1) saturate(2.4) hue-rotate(-12deg) brightness(.95); cursor: pointer; }
 
-/* ── filters: an engraved label over each nameplate ───────────────────────── */
+/* ── filters: engraved nameplates, a brass chevron at each one's end ─────── */
 .mm-deck__filters {
-  display: flex; align-items: flex-end; justify-content: center;
-  gap: 8px clamp(10px, 1.2vw, 18px); flex-wrap: wrap;
+  position: relative;
+  display: flex; align-items: center; justify-content: center;
+  gap: 8px clamp(8px, 1vw, 16px); flex-wrap: wrap;
 }
-.mm-deck__sortwrap { display: flex; flex-direction: column; align-items: stretch; gap: 3px; }
+/* the plates of both rows are mounted on the case's gilt rules: the same
+   star-tipped double rule the ways out stand on at the dialog's foot */
+.mm-deck__bar, .mm-deck__filters { position: relative; isolation: isolate; }
+.mm-deck__bar::before, .mm-deck__filters::before {
+  content: ''; position: absolute; z-index: -1; pointer-events: none;
+  left: 3%; right: 3%; top: 50%; height: 7px; translate: 0 -50%;
+  background:
+    url("../../assets/ui/kit/star4.svg") 0 50% / 7px 7px no-repeat,
+    url("../../assets/ui/kit/star4.svg") 100% 50% / 7px 7px no-repeat,
+    linear-gradient(90deg, transparent, var(--kit-gold) 9%, var(--kit-gold-hi) 50%, var(--kit-gold) 91%, transparent) 50% 1px / calc(100% - 16px) 1px no-repeat,
+    linear-gradient(90deg, transparent, var(--kit-gold-lo) 9%, var(--kit-gold) 50%, var(--kit-gold-lo) 91%, transparent) 50% 5px / calc(100% - 16px) 1px no-repeat;
+  filter: drop-shadow(0 1px 0 rgba(0, 0, 0, .85));
+  opacity: .75;
+}
+.mm-deck__bar::before { left: 18%; right: 18%; }
+.mm-deck__sortwrap {
+  --field-h: clamp(46px, 5.9vh, 52px);
+  display: block;
+}
+/* what the plate sorts by, cut into its upper edge in spaced gilt small caps,
+   centred over the choice lettered under it */
 .mm-deck__label {
-  padding-left: 18px;
+  position: absolute; z-index: 2; pointer-events: none;
+  left: calc(var(--field-h) * .58); right: calc(var(--field-h) * .86);
+  top: calc(var(--field-h) * .21);
+  text-align: center;
   font-family: var(--font-display); font-weight: 700;
-  font-size: 11.5px; line-height: 1.2; letter-spacing: .2em; text-transform: uppercase;
-  color: var(--kit-gold);
-  text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
+  font-size: 11px; line-height: 1; letter-spacing: .22em; text-transform: uppercase;
+  padding-left: .22em;
+  white-space: nowrap;
+  color: color-mix(in oklab, var(--kit-gold) 78%, var(--kit-gold-hi));
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, .95), 0 1px 0 color-mix(in srgb, var(--kit-gold-hi) 18%, transparent);
 }
 .mm-deck__select.kit-select {
-  --field-h: clamp(40px, 5vh, 44px);
-  font-size: calc(var(--field-h) * .36);
+  --field-h: inherit;
+  min-width: calc(var(--field-h) * 2.9);
+  padding: calc(var(--field-h) * .36) calc(var(--field-h) * .92) 0 calc(var(--field-h) * .58);
+  text-align: center; text-align-last: center;
+  font-size: calc(var(--field-h) * .325);
+  line-height: 1.1;
+  /* the Companion tiles' lit enamel plate: a nameplate, not a slot */
+  border-image-source: url("../../assets/ui/kit/plate-lit.webp");
 }
-.mm-deck__clear.kit-btn { --plate-h: clamp(40px, 5vh, 44px); align-self: flex-end; }
-/* with nothing to clear it is still a plate you could press, only unlit
-   (ui/modal.css .mm-modal--kit .kit-btn:disabled) */
+.mm-deck__clear.kit-btn { --plate-h: clamp(44px, 5.6vh, 50px); align-self: center; border-image-source: url("../../assets/ui/kit/plate-lit.webp"); }
+/* with nothing to clear it is still the filters' own plate, only its lettering
+   quiet and its enamel dulled (ui/modal.css .mm-modal--kit .kit-btn:disabled) */
 .mm-deck__clear.kit-btn:disabled { cursor: default; }
 
 /* the note: a quiet engraved caption, a star-tipped stroke either side */
@@ -94,7 +137,7 @@
   font-size: max(13px, var(--fs-sm)); line-height: 1.35;
   text-align: center; text-wrap: balance;
   color: var(--kit-text-mid);
-  text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .9), 0 0 10px rgba(0, 0, 0, .8);
   background: none; border: 0; border-radius: 0;
 }
 .mm-deck__note::before, .mm-deck__note::after {
@@ -107,59 +150,73 @@
 .mm-deck__note::before { justify-self: end; width: 100%; }
 .mm-deck__note::after { justify-self: start; width: 100%; transform: scaleX(-1); }
 .mm-deck__note[hidden] { display: none; }
+/* an empty case says so in the engraved small caps of the boards' notes */
 .mm-deck__empty {
-  margin: var(--s-6) 0; text-align: center;
-  font-size: var(--fs-md); font-style: italic; color: var(--kit-text-mid);
+  margin: auto 0; padding: var(--s-5) 0; text-align: center;
+  font-family: var(--font-display); font-weight: 700; font-style: normal;
+  font-size: var(--fs-md); letter-spacing: .2em; text-transform: uppercase;
+  color: var(--kit-text-mid);
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, .95), 0 1px 0 color-mix(in srgb, var(--kit-lav-hi) 18%, transparent), 0 0 14px rgba(0, 0, 0, .9);
 }
+.mm-deck__empty[hidden] { display: none; }
 
-/* ── the case: the Shop's alcove lined in velvet, the grid scrolling inside ── */
+/* the case stands inside the frame's rule, with no second gutter of its own */
+.mm-modal--kit .mm-modal__body:has(> .mm-deck) { margin: 6px calc(var(--rule-in) - 4px) 0; padding-inline: 2px; }
+.mm-modal--kit[data-size="wide"]:has(.mm-deck) .mm-modal__foot { margin-bottom: calc(var(--rule-in) + 3px); }
+.mm-modal--kit[data-size="wide"]:has(.mm-deck) { padding-inline: clamp(10px, 1.2vw, 20px); }
+
+/* ── the case: the panels' rail round a velvet-lined box ─────────────────── */
 .mm-deck__table.kit-stage {
   --stage-pk: .74;
+  /* the moon crest from its repaired cut: whole enamel, no stray fleck */
+  --stage-medal: url("../../assets/ui/kit/medal-moon-clean.webp");
   --stage-medal-w: clamp(84px, 6.4vw, 104px);
   --liner-w: clamp(14px, 1.1vw, 18px);
   flex: 1 1 auto; min-height: 0;
-  display: flex; flex-direction: column; gap: 4px;
-  margin: clamp(22px, 3.2vh, 30px) 6px 4px;
-  padding: calc(var(--stage-medal-w) * 98 / 156 * .5 + 6px) calc(var(--liner-w) + clamp(12px, 1.2vw, 18px)) calc(var(--liner-w) + 6px);
-  /* the case's floor: the boards' flocked damask, pushed back under the cards
-     and lit by the candle burning at the frame's corner — warm in the middle
-     where the Tricks lie, falling into the velvet's shadow at the edges */
-  --mat-veil: .56; --mat-edge: .7; --mat-size: 350px 398px;
-  --lit-x: 56%; --lit-y: 70%; --lit-w: 90%; --lit-h: 110%; --lit-a: 46%;
+  display: flex; flex-direction: column; gap: 2px;
+  margin: clamp(16px, 2.6vh, 26px) 0 2px;
+  padding: calc(var(--stage-medal-w) * 98 / 156 * .5 + 4px) calc(var(--liner-w) + 2px) calc(var(--liner-w) + 4px);
+  /* the case's floor: the boards' flocked damask in relief, the candle on the
+     frame's corner held low over the middle of it, so the pattern stands up
+     in its light where the Tricks lie and sinks into the velvet's shadow at
+     the ends and under the lid's rail */
+  --mat-veil: .2; --mat-edge: .78; --mat-size: 350px 398px;
+  --lit-x: 54%; --lit-y: 64%; --lit-w: 78%; --lit-h: 96%; --lit-a: 62%;
 }
-/* the recess shading the stage lays over its floor, eased so the damask shows */
+/* the recess shading the stage lays over its floor, eased so the relief shows */
 .mm-deck__table.kit-stage::before {
   background:
-    radial-gradient(70% 34% at 50% 0%, rgba(4, 3, 6, .5), transparent 70%),
-    linear-gradient(180deg, rgba(6, 4, 9, .3) 0%, transparent 30%, transparent 80%, rgba(6, 4, 9, .3) 100%);
+    radial-gradient(76% 26% at 50% 0%, rgba(4, 3, 6, .62), transparent 72%),
+    linear-gradient(180deg, rgba(6, 4, 9, .34) 0%, transparent 22%, transparent 84%, rgba(6, 4, 9, .4) 100%);
   background-clip: padding-box;
-  box-shadow: inset 0 0 40px rgba(0, 0, 0, .55), 0 26px 60px -24px rgba(0, 0, 0, .95);
+  box-shadow: inset 0 0 50px rgba(0, 0, 0, .6), inset 0 16px 24px -12px rgba(0, 0, 0, .85), 0 26px 60px -24px rgba(0, 0, 0, .95);
 }
 /* the velvet lining the case, just inside its rail */
 .mm-deck__liner { inset: 4px; z-index: -1; --liner-w: inherit; }
+/* its brass corner guards, a size under the dialog's own, over the cards'
+   scroll so a Trick passing under a corner goes under the brass */
+.mm-deck__guard { --bracket: clamp(44px, 3.6vw, 58px); z-index: 4; }
 .mm-deck__table > .mm-deck__note { padding: 0 6%; }
 
-/* ── grid: the Tricks laid out on the table ───────────────────────────────── */
+/* ── grid: the Tricks laid in the case ──────────────────────────────────── */
 .mm-deck__grid {
   display: grid;
-  /* whole cards, centred: a pile of five lies in the middle of the table, not
+  /* whole cards, centred: a pile of five lies in the middle of the case, not
      against its left edge with an empty column beside it */
   grid-template-columns: repeat(auto-fit, var(--deck-cw));
   justify-content: center;
-  gap: clamp(16px, 2.4vh, 24px) clamp(14px, 1.4vw, 22px);
+  gap: calc(var(--slot-pad) * 2 + clamp(10px, 1.6vh, 16px)) calc(var(--slot-pad) * 2 + 4px);
   justify-items: center;
   align-content: start;
   margin-top: 0;
-  padding: clamp(14px, 2.2vh, 22px) 10px clamp(18px, 2.6vh, 26px);
+  padding: calc(var(--slot-pad) + clamp(3px, .6vh, 8px)) calc(var(--slot-pad) + 2px) calc(var(--slot-pad) + clamp(5px, .9vh, 10px));
   outline: none;
   /* the grid scrolls, the controls above it do not */
   flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain;
   scrollbar-width: thin; scrollbar-color: color-mix(in srgb, var(--kit-gold) 62%, transparent) color-mix(in srgb, var(--kit-void) 55%, transparent);
-  /* cards scrolling past the alcove's edges fade into it, never cut off */
-  -webkit-mask-image: linear-gradient(to bottom, transparent 0, black 12px, black calc(100% - 24px), transparent 100%);
-          mask-image: linear-gradient(to bottom, transparent 0, black 12px, black calc(100% - 24px), transparent 100%);
-  /* candlelight pooled on the table */
-  background: radial-gradient(60% 70% at 50% 45%, color-mix(in srgb, var(--kit-candle) 8%, transparent), transparent 72%);
+  /* cards scrolling past the case's lip fade into it, never cut off */
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0, black 6px, black calc(100% - 8px), transparent 100%);
+          mask-image: linear-gradient(to bottom, transparent 0, black 6px, black calc(100% - 8px), transparent 100%);
 }
 .mm-deck__grid::-webkit-scrollbar { width: 9px; }
 .mm-deck__grid::-webkit-scrollbar-track { background: color-mix(in srgb, var(--kit-void) 60%, transparent); border-radius: 5px; box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--kit-gold-lo) 45%, transparent); }
@@ -175,14 +232,27 @@
   outline: none;
   transition: transform var(--t-quick) var(--ease-out), filter var(--t-quick) var(--ease-out);
 }
-/* each Trick casts its shadow on the table */
+/* the card is the case's size, not the hand's (card.css caps a card at the
+   hand's width, which on the Deck is smaller than a Trick is read at) */
+.mm-deck__cell > .mm-card { --mm-card-w: var(--deck-cw); }
+/* its place in the case: the recess pressed into the velvet under it, a gilt
+   bead round the lip (case-slot.webp, tools/prep_ui_ledger.py). It stays put
+   when the card lifts out of it. */
+.mm-deck__cell::before {
+  content: ''; position: absolute; z-index: -1; pointer-events: none;
+  inset: calc(var(--slot-pad) * -1);
+  border: 0 solid transparent;
+  border-image: url("../../assets/ui/kit/case-slot.webp") 40 fill / calc(var(--slot-pad) * 1.62) stretch;
+}
+/* each Trick lies in its slot's shadow, and the candle catches its upper edge */
 .mm-deck__cell::after {
-  content: ''; position: absolute; left: 8%; right: 8%; bottom: -10px; height: 18px; z-index: -1;
+  content: ''; position: absolute; left: 6%; right: 6%; bottom: -6px; height: 16px; z-index: -1;
   border-radius: 50%;
-  background: radial-gradient(closest-side, rgba(0, 0, 0, .7), transparent);
+  background: radial-gradient(closest-side, rgba(0, 0, 0, .75), transparent);
   pointer-events: none;
 }
 .mm-deck__cell:hover { transform: translateY(-4px); z-index: 2; filter: drop-shadow(0 0 12px color-mix(in srgb, var(--kit-candle) 28%, transparent)); }
+.mm-deck__cell:hover::before { translate: 0 4px; }
 /* keyboard focus: the candle catching the card's gilt, never a ring. base.css's
    global :focus-visible ring loads after this sheet, so it is taken off here by
    specificity; the grid keeps it only while it has no card to hand focus to. */
@@ -191,9 +261,13 @@
   z-index: 3;
   filter: drop-shadow(0 0 2px var(--kit-gold-hi)) drop-shadow(0 0 14px color-mix(in srgb, var(--kit-candle) 60%, transparent));
 }
+.mm-deck__grid:focus-within .mm-deck__cell.is-focus::before { translate: 0 6px; }
 .mm-deck__cell.mm-deck__cell:focus-visible,
 .mm-deck__grid:has(> .mm-deck__cell):focus-visible { outline: none; }
 .mm-deck__cell .mm-card { pointer-events: none; }
+/* a Trick laid in the case to be read sets its rules in even lines, so no
+   word is left alone on the last one */
+.mm-deck__cell .mm-card__rules > div { text-wrap: balance; }
 
 /* reward mode: the cards are the choice, so make picking obvious */
 .mm-deck[data-mode="reward"] .mm-deck__cell { cursor: pointer; }
@@ -203,4 +277,4 @@
 }
 
 /* largeText: fewer, larger cards rather than the same grid with clipped text */
-:root[data-large-text="1"] .mm-deck { --deck-cw: clamp(164px, 15vw, 210px); }
+:root[data-large-text="1"] .mm-deck { --deck-cw: clamp(180px, 16vw, 224px); }

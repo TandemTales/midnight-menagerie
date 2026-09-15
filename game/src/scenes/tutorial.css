@@ -35,6 +35,10 @@
   pointer-events: none;
   background:
     radial-gradient(118% 96% at 50% 44%, transparent 38%, rgba(20, 9, 28, .56) 78%, rgba(10, 5, 15, .9) 100%),
+    /* the sides under the vines fall away too, so a moonlit window in the room
+       beyond the frame is a cold glow behind the scrollwork, never a white
+       patch cut off by the gilt rule */
+    linear-gradient(90deg, rgba(10, 5, 15, .62) 0, rgba(10, 5, 15, .3) 6%, transparent 12%, transparent 88%, rgba(10, 5, 15, .3) 94%, rgba(10, 5, 15, .62) 100%),
     linear-gradient(to bottom, rgba(12, 6, 18, .62) 0, transparent 20%, transparent 62%, rgba(12, 6, 18, .8) 100%),
     linear-gradient(rgba(22, 11, 32, .38), rgba(22, 11, 32, .38));
 }
@@ -59,22 +63,37 @@
    the Kid board's dossier stands as tall as its mirror: the two read as one
    board, and the page keeps its size from beat to beat. */
 .tut-stage {
+  /* under the plaque; over the mantel's front and, below it, the Skip plate.
+     The stage is centred in the room, so the less it keeps below, the lower
+     the story stands and the less bare floor is left under the mantel */
+  --stage-pt: clamp(128px, 16.7vh, 150px);
+  --stage-px: clamp(60px, 6vw, 112px);
+  --stage-pb: clamp(104px, 13.2vh, 152px);
   position: relative; z-index: 1;
   display: grid;
-  grid-template-columns: minmax(0, clamp(20rem, 27vw, 30rem)) minmax(0, 44rem);
+  /* the portrait a size up: as wide as the room's height allows, so at 1600
+     it stands a head taller than the page's first beat needs; at the Deck's
+     1280 the width binds and it keeps clear of the plaque */
+  grid-template-columns: minmax(0, clamp(21rem, min(30vw, 52.2vh), 30rem)) minmax(0, 44rem);
   align-items: stretch;
   /* a clear stretch of the lit room between the portrait and the page: they
      stand in the room, apart, rather than sharing one slab */
-  gap: clamp(64px, 6.4vw, 112px);
-  /* under the plaque, over the Skip plate */
-  padding: clamp(150px, 19vh, 176px) clamp(72px, 7vw, 120px) clamp(86px, 11vh, 108px);
+  gap: clamp(56px, 5.6vw, 100px);
+  padding: var(--stage-pt) var(--stage-px) var(--stage-pb);
   max-width: 100%;
 }
 .tut-root[data-wide="1"] .tut-stage {
   grid-template-columns: minmax(0, 52rem);
   justify-items: center;
-  align-items: center;
+  align-items: end;                   /* a page on its own stands on the mantel too */
 }
+/* beside the portrait, the page stands a little shorter than the frame, both
+   feet on the mantel, so its moon crest clears the board's plaque */
+.tut-root[data-wide="0"] .tut-panel { margin-top: clamp(34px, 5vh, 46px); }
+/* a page on its own carries the longest beats: it sets its headpiece a size
+   smaller and starts nearer its rail, so it too stands clear of the plaque */
+.tut-root[data-wide="1"] .tut-panel { --medal-k: .8; padding-top: clamp(46px, 5.8vh, 52px); padding-bottom: clamp(28px, 3.6vh, 36px); }
+.tut-root[data-wide="1"] .tut-lines::before { width: min(400px, 76%); margin-bottom: clamp(2px, .6vh, 6px); }
 /* the text sits in the middle of a tall page and the way on stands at its foot */
 .tut-root[data-wide="0"] .tut-lines { margin-block: auto; }
 .tut-root[data-wide="0"] .tut-foot { margin-top: 0; }
@@ -84,7 +103,7 @@
   position: relative;
   justify-self: end;
   width: 100%;
-  display: grid; justify-items: center; align-content: center;
+  display: grid; justify-items: center; align-content: end;
   min-height: 1px;
   animation: tut-fig-in var(--t-scene) var(--ease-out) both;
 }
@@ -103,7 +122,7 @@
   display: block;
   width: 100%; height: auto;
   aspect-ratio: 3 / 4;
-  max-height: min(64vh, 600px);
+  max-height: min(72vh, 640px);
   object-fit: cover; object-position: 50% 18%;
   /* the room's candlelight on it, the frame's shadow falling across its edge */
   filter: saturate(.94) brightness(.96);
@@ -123,6 +142,15 @@
   gap: 0;
 }
 .tut-plate .kit-plate__name { font-size: calc(var(--plate-h) * .33); padding-top: calc(var(--plate-h) * .05); }
+/* the Kid board's star medallion capping the plate, seated on its arch */
+.tut-plate__star {
+  position: absolute; z-index: 1; left: 50%; top: 0;
+  width: calc(var(--plate-h) * .5); aspect-ratio: 55 / 56;
+  translate: -50% -58%;
+  background: url("../../assets/ui/kit/medal-star2.webp") 50% 50% / 100% 100% no-repeat;
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .8));
+  pointer-events: none;
+}
 .tut-plate .kit-plate__epithet { font-size: max(12.5px, calc(var(--plate-h) * .215)); }
 /* the skull on its books and the candle at the frame's two feet, as on the Kid
    board: in front of the frame's corners, clear of the nameplate between them */
@@ -152,20 +180,54 @@
 /* the velvet and its gilt fillet are the page's inner edge: the panel's thin
    engraved double rule is not drawn again inside them */
 .tut-panel { --rule: none; }
-/* ── the page's fittings: velvet, brass guards, the bookmark ──────────────── */
+/* the moon crest from its repaired cut (medal-moon-clean.webp, as the Atlas
+   and the Lobby wear it): whole enamel behind the crescent, and no stray
+   fleck of gilt beside its crown */
+.tut-panel[data-medal="moon"] { --medal-img: url("../../assets/ui/kit/medal-moon-clean.webp"); }
+/* ── the page's fittings: velvet and brass guards ───────────────────────── */
 .tut-fit { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
 .tut-fit__liner { inset: 5px; --liner-w: inherit; }
 .tut-fit__guard { --bracket: clamp(66px, 5.6vw, 90px); }
-/* the story's ribbon, hanging out from under the foot of the page, to the
-   right of the scrollwork on the board's bottom rule and clear of Skip */
-.tut-fit__mark {
-  --mark-w: clamp(24px, 1.8vw, 30px);
-  left: 54%; top: calc(100% + 3px); z-index: -1;
-  height: clamp(66px, 9vh, 86px);
+
+/* ── the mantel the story stands on ─────────────────────────────────────────
+   The boards' carved and gilded shelf rail run across the room under the
+   portrait and the page: their feet on its walnut top, the nameplate hung over
+   its panelled front. Under the page and the portrait in z. */
+.tut-mantel {
+  /* ledge.webp (tools/prep_ui_materials.py, the Shop's and Game Over's ledge)
+     is 152 rows: a lit walnut top to row 28, a gilt bead, an egg-and-dart
+     front picked out in gilt (44-100), a fillet and a cove to 116, then the
+     shadow it throws. --ledge-h is the carving itself; a thing stands on it
+     with its foot 0.18 of --ledge-h below the element's top. */
+  --ledge-h: clamp(44px, 6.2vh, 56px);
+  position: absolute; z-index: -1; pointer-events: none;
+  left: calc(var(--stage-px) - clamp(40px, 4vw, 70px));
+  right: calc(var(--stage-px) - clamp(40px, 4vw, 70px));
+  top: calc(100% - var(--stage-pb) - var(--ledge-h) * .18);
+  height: calc(var(--ledge-h) * 152 / 116);
 }
-.tut-fit__mark::after {
-  content: ''; position: absolute; left: 0; right: 0; top: 0; height: 22px;
-  background: linear-gradient(rgba(6, 4, 9, .9), transparent);
+/* the carved shelf, running out into the room's dark at either end rather
+   than stopping on a cut edge; the candles on it warm its front */
+.tut-mantel__shelf {
+  position: absolute; inset: 0;
+  background: url("../../assets/ui/kit/ledge.webp") 50% 0 / auto 100% repeat-x;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, black 5%, black 95%, transparent 100%);
+          mask-image: linear-gradient(90deg, transparent 0, black 5%, black 95%, transparent 100%);
+  filter: drop-shadow(0 10px 12px rgba(0, 0, 0, .55)) brightness(.95);
+}
+/* under the middle of the shelf, title.png's own gilt fleur hangs as the
+   carving's pendant, the way the wordmark's cartouche wears one at its foot
+   as well as its head (boss-crest.webp, turned over), its scrolled arms
+   fading before they reach the rule they were cut from */
+.tut-mantel::after {
+  content: ''; position: absolute; left: 50%;
+  top: calc(var(--ledge-h) * 100 / 116 - 3px);
+  width: clamp(190px, 16vw, 260px); aspect-ratio: 388 / 134;
+  translate: -50% 0; scale: 1 -1;
+  background: url("../../assets/ui/kit/boss-crest.webp") 50% 50% / 100% 100% no-repeat;
+  -webkit-mask-image: linear-gradient(90deg, transparent 3%, black 24%, black 76%, transparent 97%);
+          mask-image: linear-gradient(90deg, transparent 3%, black 24%, black 76%, transparent 97%);
+  filter: brightness(.82) drop-shadow(0 -3px 3px rgba(0, 0, 0, .7));
 }
 .tut-panel.is-in { animation: tut-page-in var(--t-slow) var(--ease-out) both; }
 @keyframes tut-page-in {
@@ -190,20 +252,19 @@
 }
 
 .tut-lines { display: flex; flex-direction: column; gap: clamp(10px, 1.7vh, 16px); }
-/* a printed headpiece over the text: two gilt strokes meeting at a star, so
-   the words stand under something on the page instead of floating in it */
+/* the fleuron over the story: title.png's own gilt fleur-de-lis and its
+   scrolls (boss-crest.webp) set as a printed headpiece, a fine gilt rule
+   running out from either side of it, so the words stand under something on
+   the page instead of floating in it */
 .tut-lines::before {
   content: ''; flex: none; align-self: center;
-  width: min(300px, 56%); height: 15px;
-  margin-bottom: clamp(8px, 1.6vh, 16px);
+  width: min(460px, 86%); aspect-ratio: 460 / 64;
+  margin-bottom: clamp(6px, 1.2vh, 12px);
   background:
-    url("../../assets/ui/kit/star4.svg") 50% 50% / 13px 13px no-repeat,
-    radial-gradient(circle, var(--kit-gold) 0 1.4px, transparent 2px) calc(50% - 22px) 50% / 8px 8px no-repeat,
-    radial-gradient(circle, var(--kit-gold) 0 1.4px, transparent 2px) calc(50% + 22px) 50% / 8px 8px no-repeat,
-    linear-gradient(90deg, transparent, color-mix(in srgb, var(--kit-gold) 85%, transparent)) 0 50% / calc(50% - 32px) 1.5px no-repeat,
-    linear-gradient(270deg, transparent, color-mix(in srgb, var(--kit-gold) 85%, transparent)) 100% 50% / calc(50% - 32px) 1.5px no-repeat;
-  filter: drop-shadow(0 1px 0 rgba(0, 0, 0, .85));
-  opacity: .9;
+    url("../../assets/ui/kit/boss-crest.webp") 50% 100% / auto 100% no-repeat,
+    linear-gradient(90deg, transparent, color-mix(in srgb, var(--kit-gold) 80%, transparent)) 0 84% / calc(50% - 90px) 1.5px no-repeat,
+    linear-gradient(270deg, transparent, color-mix(in srgb, var(--kit-gold) 80%, transparent)) 100% 84% / calc(50% - 90px) 1.5px no-repeat;
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .75));
 }
 .tut-line {
   margin: 0;
@@ -484,12 +545,16 @@
 /* the beats: the kit's ladder of enamel medallions on a brass rod. The page
    you are on sits in the round button's gold filigree; pages still to come are
    unlit. They are a reading, not controls. */
+/* The rod takes the room the way on leaves it, up to a comfortable length,
+   and spaces its rungs along it: a long way on ("Stay behind her") draws them
+   closer instead of running the last rung into its plate. */
 .tut-dots.kit-ladder {
   --md: 20px;
-  flex: 0 1 auto; min-width: 0;
-  gap: clamp(5px, .62vw, 10px);
-  padding: 8px 8px;
+  flex: 1 1 auto; min-width: 0; max-width: 290px;
+  gap: 0;
+  padding: 8px 4px;
 }
+.tut-panel[data-long-cta="true"] .tut-dots.kit-ladder { --md: 16px; }
 .tut-dot.kit-ladder__rung { cursor: default; pointer-events: none; }
 .tut-dot.kit-ladder__rung:not(.is-on):not(.is-past) { filter: drop-shadow(0 2px 3px rgba(0, 0, 0, .8)) saturate(.45) brightness(.78); }
 .tut-dot.kit-ladder__rung.is-past { filter: drop-shadow(0 2px 3px rgba(0, 0, 0, .8)) brightness(1.05); }
@@ -504,7 +569,7 @@
 .tut-skip.kit-btn {
   --plate-h: clamp(40px, 5vh, 46px);
   position: absolute; z-index: 1;
-  right: clamp(40px, 4vw, 70px); bottom: calc(clamp(8px, .7vw, 12px) + clamp(14px, 2.2vh, 22px));
+  right: clamp(40px, 4vw, 70px); bottom: calc(clamp(8px, .7vw, 12px) + clamp(3px, .5vh, 6px));
 }
 .tut-skip.kit-btn { font-size: 12.5px; }
 
