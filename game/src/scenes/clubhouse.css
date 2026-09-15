@@ -3,7 +3,7 @@
    Warm, handmade, lamplit — the deliberate opposite of the mansion, and still
    a board in the game's own language (ui/kit.css).
 
-   What is the Kids' stays the Kids': the treehouse wall (.kit-ground--planks),
+   What is the Kids' stays the Kids': the treehouse timber (.kit-ground--clapboard),
    the string of bulbs, the cork, the photographs, the red thread and the
    masking tape — painted now, never flat CSS. What you READ and PRESS is the
    kit's, exactly as on every other board, so it reads the same way here:
@@ -30,7 +30,7 @@
   --cl-r: calc(clamp(8px, .7vw, 12px) + var(--cl-vine) + clamp(6px, .6vw, 10px));
   --side-w: clamp(262px, 21.4vw, 340px);
   --side-gap: clamp(22px, 2vw, 34px);
-  --head-h: clamp(122px, 15.6vh, 142px);
+  --head-h: clamp(146px, 19.4vh, 178px);
   --cl-top: calc(var(--head-h) + var(--cl-carve) + clamp(10px, 1.5vh, 16px));
   --cl-bot: calc(clamp(14px, 2vh, 20px) + var(--cl-carve));
   --cl-corner: clamp(128px, 10.6vw, 176px);
@@ -46,10 +46,11 @@
 }
 
 /* ── the room ─────────────────────────────────────────────────────────────── */
-/* The boards' damask and wainscot, lit by the Kids: the corner candles, the
-   lamp over the board's left, the bulbs' warmth all along the top, and the
-   side column standing in a pool of its own. Each --wl slot reveals the same
-   room painted under candle light (ui/kit.css .kit-ground). */
+/* The Treehouse's timber (.kit-ground--clapboard), lit by the Kids: the corner
+   candles, the lamp over the board's left, the bulbs' warmth all along the
+   top, and the side column's still life in a pool of its own. Each --wl slot
+   reveals the same wall painted under candle light (ui/kit.css .kit-ground);
+   clapboard.webp has the same lights' falloff painted into it. */
 .cl-room {
   position: absolute; inset: 0;
   --hud-h: 0px;
@@ -148,11 +149,16 @@
 
 .cl-sign {
   justify-self: center; margin-top: 2px;
-  /* A size under the kit's compact plaque: the investigation board is what
-     this screen is read for, so the sign is read second, and its ribbon ends
-     above the medallion the chosen section's tab wears on the frame's rail. */
-  --cart-h: clamp(96px, 12.2vh, 118px);
-  --rib-h: clamp(27px, 3.3vh, 32px);
+  /* The sign outweighs the board it hangs over: the wordmark's own plaque at
+     more than the kit's full size, HEADQUARTERS lettered as large as the
+     header's width allows at 1280 between Title and the tally, and its ribbon
+     still ending above the medallion the chosen section's tab wears on the
+     frame's rail. */
+  /* sized by the header's WIDTH, which is what it has to share: about 150 tall
+     and 620 wide at 1600, 125 tall and 440 wide at 1280 */
+  --cart-h: clamp(120px, calc(7.8vw + 25px), 156px);
+  --cart-pad-x: calc(var(--cart-cap) * .68);
+  --rib-h: clamp(30px, 3.9vh, 37px);
 }
 /* freed and home, opposite Title: the two numbers the whole screen is about */
 .cl-count {
@@ -179,7 +185,7 @@
   margin-bottom: .12em;
 }
 .cl-sign__line2 { display: block; font-size: 1em; letter-spacing: .06em; }
-.cl-sign .cl-sign__board { font-size: clamp(26px, 2.28vw, 40px); }
+.cl-sign .cl-sign__board { font-size: clamp(30px, calc(4.6vw - 25px), 52px); }
 
 /* ── the board ────────────────────────────────────────────────────────────── */
 /* The box is the picture — the cork, or a section's felt — and the carved
@@ -462,18 +468,46 @@
 }
 .bpfrag__count b { font-family: var(--font-num); color: color-mix(in oklab, var(--blueprint-ink) 88%, var(--text-ink)); font-size: 1.4em; }
 
-/* the thesis: three phrases cut out and pinned in the board's lower left, the
-   first two on red paper, the verdict on a scrap of index card */
+/* the board's lower left, as a collage: the House's photograph, a cutting
+   pinned over its edge, and the thesis beside them */
+.cl-snap, .cl-cutting { position: absolute; transform: rotate(var(--rot, 0deg)); z-index: 2; }
+.cl-snap {
+  width: clamp(116px, 10.2vw, 164px);
+  padding: 6px 6px 17px;
+}
+.cl-snap__photo {
+  display: block; aspect-ratio: 4 / 3;
+  background-size: cover; background-position: 50% 62%;
+  box-shadow: inset 0 0 0 1px rgba(40, 24, 12, .5), inset 0 0 18px rgba(0, 0, 0, .6);
+  filter: sepia(.22) saturate(.8) brightness(.95);
+}
+.cl-cutting { --cut-w: clamp(92px, 7.4vw, 120px); z-index: 3; }
+/* pinned through its torn top edge, clear of the headline */
+.cl-cutting__pin { left: 16%; top: -8px; transform: none; }
+/* the thesis: three phrases cut out and pinned beside the cutting, stacked as
+   a kid sticks them up, the first two on red paper, the verdict on a scrap of
+   index card */
 .scrawl {
-  display: grid; grid-template-columns: auto auto; justify-content: start; align-items: center;
-  gap: clamp(4px, .7vh, 8px) clamp(8px, .8vw, 14px);
-  font-size: clamp(17px, 1.62vw, 27px);
+  display: grid; grid-template-columns: auto; justify-items: start; align-items: center;
+  row-gap: clamp(2px, .5vh, 6px);
+  font-size: clamp(15.5px, 1.38vw, 23px);
   filter: drop-shadow(1px 3px 2px rgba(24, 10, 4, .55)) drop-shadow(3px 9px 10px rgba(20, 8, 4, .35));
   transform-origin: 0 0;
+  z-index: 3;
 }
-.scrawl__cut { justify-self: start; }
-.scrawl__cut--last { grid-column: 1 / -1; margin-left: 2.4em; }
-.scrawl__pin { --pin-w: clamp(16px, 1.2vw, 20px); left: calc(50% - .4em); top: -.5em; z-index: 1; }
+.scrawl__cut:nth-child(2) { margin-left: 1.1em; }
+.scrawl__cut--last { margin-left: .3em; }
+.scrawl__pin { --pin-w: clamp(16px, 1.2vw, 20px); left: 58%; top: -.45em; z-index: 1; }
+/* the three unknown cards, narrower: a "?" and three words */
+.ch-note.is-unknown { width: clamp(104px, 8.6vw, 138px); }
+/* the purple enamel studs, each over the boss of the frame's corner mount
+   (frame-carved.webp's boss is 27 of its 116-pixel rail in from the corner,
+   and the rail stands --carve-w - 3px outside the box) */
+.cl-stud { --stud: calc(var(--cl-carve) * .96); --stud-in: calc(var(--cl-carve) * -.767 + 3px); }
+.cl-stud--tl { left: var(--stud-in); top: var(--stud-in); }
+.cl-stud--tr { left: calc(100% - var(--stud-in)); top: var(--stud-in); }
+.cl-stud--bl { left: var(--stud-in); top: calc(100% - var(--stud-in)); }
+.cl-stud--br { left: calc(100% - var(--stud-in)); top: calc(100% - var(--stud-in)); }
 .scrawl u { text-decoration-thickness: 2px; text-underline-offset: 4px; text-decoration-color: color-mix(in srgb, var(--kit-thread) 85%, black); }
 
 /* ── menagerie roster ─────────────────────────────────────────────────────── */
@@ -523,7 +557,15 @@
 /* the panel is the flex parent the grid stretches inside; its heading's own
    margin is the gap, not added to it */
 .cl-panel--pets { display: flex; flex-direction: column; gap: 0; overflow: hidden; }
-.cl-panel--pets > .cl-panel__head { margin-bottom: clamp(8px, 1.4vh, 16px); }
+.cl-panel--pets > .cl-panel__head { margin-bottom: clamp(6px, 1vh, 16px); }
+/* The board stands lower under the sign than it did (the sign outweighs the
+   board, round 5), so this panel gives that height back out of its own air —
+   the felt over the heading, the gap between the rows, the card's padding —
+   and never out of a card: at 1280x800 every stage line stays inside its
+   frame, as before. */
+.cl-panel.cl-panel--pets { padding-top: clamp(18px, 2.6vh, 32px); }
+.cl-panel--pets .petgrid { row-gap: clamp(9px, 1.6vh, 22px); padding-top: 2px; }
+.cl-panel--pets .petcard__body { padding-block: 6px 7px; }
 .petcard {
   position: relative;
   display: grid; grid-template-rows: minmax(56px, 1fr) auto;
@@ -623,15 +665,16 @@
 
 /* ── sidebar: the log, the ladder, the way in ─────────────────────────────── */
 /* Read after the board, top to bottom: what the expeditions have done, how
-   hard the next one is, a candle and the club's motto pinned up between them
-   and the way in, which stands at the foot of the column level with the
-   frame's foot. The column spans exactly the frame's height. */
+   hard the next one is, a still life on a shelf with the club's motto pinned
+   over it, and the way in, which stands at the foot of the column level with
+   the frame's foot. The column starts just under the sign's line, so the shelf
+   has the room a still life needs. */
 .cl__side {
   position: absolute;
-  top: calc(var(--cl-top) - var(--cl-carve) + clamp(12px, 1.8vh, 16px));
+  top: calc(var(--head-h) - clamp(10px, 2.4vh, 24px));
   bottom: calc(var(--cl-bot) - var(--cl-carve));
   right: var(--cl-r); width: var(--side-w);
-  display: flex; flex-direction: column; gap: clamp(20px, 2.8vh, 28px);
+  display: flex; flex-direction: column; gap: clamp(16px, 2.3vh, 24px);
   z-index: 5;
 }
 
@@ -641,10 +684,10 @@
    label or figure lies on an ornament. */
 .chalk {
   --pk: .72;
-  padding: clamp(26px, 3.6vh, 32px) clamp(24px, 2vw, 30px) clamp(38px, 4.8vh, 44px);
+  padding: clamp(24px, 3.3vh, 30px) clamp(24px, 2vw, 30px) clamp(36px, 4.4vh, 42px);
 }
-.chalk__h { margin: 0 0 clamp(8px, 1.3vh, 13px); font-size: clamp(12.5px, .9vw, 14px); }
-.chalk__dl { row-gap: clamp(5px, .9vh, 9px); }
+.chalk__h { margin: 0 0 clamp(6px, 1vh, 11px); font-size: clamp(12.5px, .9vw, 14px); }
+.chalk__dl { row-gap: clamp(3px, .7vh, 8px); }
 .chalk__dl dt { font-size: clamp(12.5px, .86vw, 13.5px); letter-spacing: .11em; }
 .chalk__dl dd { font-size: clamp(19px, 1.36vw, 22px); }
 
@@ -689,31 +732,53 @@
   color: var(--kit-lav);
 }
 
-/* between the ladder and the way in: a brass sconce on the wall and the
-   club's motto pinned beside it on a slip of paper */
-.cl-motto {
+/* Between the ladder and the way in: the Treehouse's plank shelf (.kit-sill
+   --grain, as the Treehouse's window and panel stand on) across the column's
+   foot, the Kid board's still life standing on it — the skull on its books at
+   the left, a lantern, a candle at the right — and the club's motto pinned to
+   the wall over the lantern and the candle. Everything but the motto is
+   decoration. Things stand with their foot a fifth of --sill-h into the
+   plank's element, on its worn top face. */
+.cl-shelf {
   flex: 1 1 auto; min-height: 0;
-  display: flex; align-items: center; justify-content: center;
-  gap: clamp(10px, 1vw, 16px);
   position: relative;
+  --sill-h: clamp(20px, 2.7vh, 26px);
+  --shelf-foot: calc(var(--sill-h) * 112 / 84 - var(--sill-h) * .24);
+  margin: calc(clamp(16px, 2.3vh, 24px) * -.35) 0 calc(clamp(16px, 2.3vh, 24px) * -.2);
 }
-.cl-motto__sconce { position: relative; flex: none; --sconce-w: clamp(32px, 2.6vw, 42px); align-self: center; }
-/* the slip hangs in the sconce's light, not the lamp's: a shade darker than
-   the board's paper, so it is read after the log and the ladder, not before */
+/* (.kit-sill declares its own --sill-h, so the plank takes the shelf's here) */
+.cl-shelf__plank { position: absolute; left: -2%; right: -2%; bottom: 0; --sill-h: clamp(20px, 2.7vh, 26px); }
+/* the plank's two sawn ends in their own shade, and the light of the things
+   on it along its top */
+.cl-shelf__plank::after {
+  content: ''; position: absolute; left: 0; right: 0; top: 0; height: 75%;
+  background:
+    radial-gradient(closest-side, rgba(255, 200, 128, .42), rgba(255, 170, 92, .14) 55%, rgba(255, 170, 92, 0)) 38% 50% / 70% 260% no-repeat,
+    linear-gradient(90deg, rgba(10, 5, 12, .7) 0%, rgba(10, 5, 12, 0) 16%, rgba(10, 5, 12, 0) 80%, rgba(10, 5, 12, .66) 100%);
+  pointer-events: none;
+}
+.cl-shelf__skull { left: 2%; bottom: var(--shelf-foot); width: clamp(54px, 4.6vw, 76px); z-index: 2; }
+.cl-shelf__lantern { left: 26%; bottom: var(--shelf-foot); --lantern-w: clamp(44px, 3.8vw, 62px); z-index: 2; }
+.cl-shelf__candle { right: 8%; bottom: var(--shelf-foot); width: clamp(32px, 2.7vw, 46px); z-index: 2; }
+/* the lantern's and the candle's warmth on the wall behind the still life */
+.cl-shelf__pool { --light-a: 28%; width: clamp(260px, 23vw, 370px); left: 44%; top: 66%; }
+/* the motto, on a slip a shade darker than the board's paper (it hangs in the
+   still life's light, not the lamp's), pinned to the wall over the lantern
+   and the candle, clear of the ladder's panel above it */
 .cl-quote {
-  position: relative;
+  position: absolute; right: 0; top: 0;
+  width: 55%;
   margin: 0;
-  max-width: 74%;
-  padding: clamp(9px, 1.4vh, 13px) clamp(12px, 1.1vw, 18px) clamp(8px, 1.2vh, 11px);
-  --paper: color-mix(in srgb, var(--kit-paper) 62%, #5e4630);
+  padding: clamp(7px, 1.1vh, 10px) clamp(10px, .9vw, 14px) clamp(6px, 1vh, 9px);
+  --paper: color-mix(in srgb, var(--kit-paper) 70%, #5e4630);
   text-align: center;
-  font-size: clamp(13.5px, 1vw, 16px); line-height: 1.3; font-style: italic; font-weight: 600;
+  font-size: clamp(13px, .94vw, 15px); line-height: 1.26; font-style: italic; font-weight: 600;
   color: var(--kit-paper-ink);
   transform: rotate(-1.6deg);
   text-wrap: balance;
-  filter: brightness(.84) saturate(.9);
+  z-index: 1;
 }
-.cl-quote__pin { --pin-w: clamp(15px, 1.15vw, 19px); left: 50%; top: -8px; translate: -50% 0; }
+.cl-quote__pin { --pin-w: clamp(14px, 1.1vw, 18px); left: 50%; top: -8px; translate: -50% 0; }
 
 /* Plan the Expedition: the lit nameplate, the way on in its ornate medallion.
    Its words on two lines of ONE size, tracked like every lit plate, and the

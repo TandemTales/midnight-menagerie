@@ -2425,3 +2425,256 @@ button.kit-medallion:hover, button.kit-medallion:focus-visible,
 .kit-crest::after {
   background: linear-gradient(155deg, #fbeabf 0%, var(--kit-gold-hi) 28%, var(--kit-gold) 60%, color-mix(in oklab, var(--kit-gold-lo) 70%, var(--kit-gold)) 100%);
 }
+
+/* ===========================================================================
+   THE KIDS' PLACES, TIMBER — round 5, KIDS' PLACES. Appended; nothing above is
+   changed. The Treehouse and Headquarters are one treehouse, built of the same
+   painted timber, and the Kids pin what they find to it. The pieces are
+   painted by tools/prep_kids_boards.py, each piece light falls on painted
+   twice — in the dark and by candle — so the lit wood shows only round the
+   lights a board points at it, and falls away into the dark between them.
+
+     .kit-plank       a thick plank nailed along a wall to stand things on: its
+                      grain, knots, a check and its nails, its front arris
+                      catching the light (plank.webp, plank-warm.webp).
+                      --plank-h is the plank; point up to three candles at it
+                      along its length with --plank-l1..3 and --plank-reach
+     .kit-ground--hideout  the treehouse both Kids' places stand in: plank
+                      walls, a roof beam, two posts and a nailer rail of sawn,
+                      checked timber, floorboards (hideout*.webp), lit by the
+                      same slots and masks as every ground (see .kit-ground)
+     .kit-trunk       the tree the treehouse is built round, in its bark, rising
+                      through the floor; as tall as the element (it tiles up
+                      and down). The candle-lit bark shows round up to two
+                      lights: --trunk-l1 / --trunk-l2 (heights), --trunk-reach
+     .kit-casement    a small treehouse window high in the wall, and through it
+                      the night of UI/mainMenu.png: --bough (the gnarled tree's
+                      boughs against the stars) or --moon (the sky with the
+                      moon); --case-w sizes it. Its cold light blooms on the
+                      wall round it; point a moon slot of the ground at it too
+     .kit-corbel      the sawn block a .kit-plank stands on, nailed to the wall
+                      under each of its ends so the plank reads as a shelf that
+                      was built, not a strip laid over the wall: --corbel-w
+                      sizes it, --corbel-lit (0-1) is the candle light on it.
+                      Stand it BEHIND its plank, its head hidden by the plank's
+                      front face (see the section's note)
+     .kit-plank--ends a plank's sawn ends inked, and its shadow thrown past its
+                      right end (give the plank a z-index)
+     .kit-prop--tracing  the Kids' tracing of the floor plan, rolled up and
+                      tied with the board's red wool, lying on its side on a
+                      floor; a .kit-prop, carrying its own shadow
+
+   Merged screen by screen: the Treehouse and the Atlas are this section's,
+   and Headquarters is ELDER's (the next section), so the stud and newspaper
+   cutting that this section's own Headquarters wore are not shipped here.
+   =========================================================================== */
+
+/* ── plank ──
+   plank.webp and plank-warm.webp are 1024x120 and tile along x: the worn top
+   face to row 26, the rounded arris to 34, the front face to 84, then the
+   shadow it throws on the wall. Stand a thing on it with its foot a sixth of
+   --plank-h below the element's top. A candle's light is the lit painting
+   showing through an ellipse --plank-reach wide, centred on each --plank-l*. */
+.kit-plank {
+  --plank-h: 44px;
+  --plank-reach: 360px;
+  --plank-l1: -9999px; --plank-l2: -9999px; --plank-l3: -9999px;
+  position: relative;
+  display: block;
+  height: calc(var(--plank-h) * 120 / 84);
+  background: url("../../assets/ui/kit/plank.webp") 0 0 / auto 100% repeat-x;
+  pointer-events: none;
+}
+.kit-plank::after {
+  content: ''; position: absolute; inset: 0;
+  background: url("../../assets/ui/kit/plank-warm.webp") 0 0 / auto 100% repeat-x;
+  -webkit-mask-image:
+    radial-gradient(calc(var(--plank-reach) / 2) 260% at var(--plank-l1) 20%, #000 0%, rgba(0, 0, 0, .62) 38%, rgba(0, 0, 0, .2) 70%, transparent 100%),
+    radial-gradient(calc(var(--plank-reach) / 2) 260% at var(--plank-l2) 20%, #000 0%, rgba(0, 0, 0, .62) 38%, rgba(0, 0, 0, .2) 70%, transparent 100%),
+    radial-gradient(calc(var(--plank-reach) / 2) 260% at var(--plank-l3) 20%, #000 0%, rgba(0, 0, 0, .62) 38%, rgba(0, 0, 0, .2) 70%, transparent 100%);
+          mask-image:
+    radial-gradient(calc(var(--plank-reach) / 2) 260% at var(--plank-l1) 20%, #000 0%, rgba(0, 0, 0, .62) 38%, rgba(0, 0, 0, .2) 70%, transparent 100%),
+    radial-gradient(calc(var(--plank-reach) / 2) 260% at var(--plank-l2) 20%, #000 0%, rgba(0, 0, 0, .62) 38%, rgba(0, 0, 0, .2) 70%, transparent 100%),
+    radial-gradient(calc(var(--plank-reach) / 2) 260% at var(--plank-l3) 20%, #000 0%, rgba(0, 0, 0, .62) 38%, rgba(0, 0, 0, .2) 70%, transparent 100%);
+}
+
+/* ── the hideout ground ──
+   The Treehouse and Headquarters share one treehouse: the same boards, the
+   same beam and posts. A board that wants the wall warmer or colder tints it
+   over the ground, never by repainting it. */
+.kit-ground--hideout { background-image: url("../../assets/ui/kit/hideout.webp"); }
+.kit-ground--hideout .kit-ground__warm { background-image: url("../../assets/ui/kit/hideout-warm.webp"); }
+.kit-ground--hideout .kit-ground__moon { background-image: url("../../assets/ui/kit/hideout-moon.webp"); }
+
+/* ── trunk ──
+   trunk.webp / trunk-warm.webp are 240x720 and tile up and down; the bark's
+   silhouette is the middle 196 columns, so the element may overhang what it
+   stands behind by a tenth of its width either side. */
+.kit-trunk {
+  --trunk-reach: 300px;
+  --trunk-l1: -9999px; --trunk-l2: -9999px;
+  position: absolute; pointer-events: none;
+  background: url("../../assets/ui/kit/trunk.webp") 50% 0 / 100% auto repeat-y;
+  filter: drop-shadow(8px 0 14px rgba(0, 0, 0, .55));
+}
+.kit-trunk::after {
+  content: ''; position: absolute; inset: 0;
+  background: url("../../assets/ui/kit/trunk-warm.webp") 50% 0 / 100% auto repeat-y;
+  -webkit-mask-image:
+    radial-gradient(160% calc(var(--trunk-reach) / 2) at 30% var(--trunk-l1), #000 0%, rgba(0, 0, 0, .6) 36%, rgba(0, 0, 0, .18) 68%, transparent 100%),
+    radial-gradient(160% calc(var(--trunk-reach) / 2) at 30% var(--trunk-l2), #000 0%, rgba(0, 0, 0, .6) 36%, rgba(0, 0, 0, .18) 68%, transparent 100%);
+          mask-image:
+    radial-gradient(160% calc(var(--trunk-reach) / 2) at 30% var(--trunk-l1), #000 0%, rgba(0, 0, 0, .6) 36%, rgba(0, 0, 0, .18) 68%, transparent 100%),
+    radial-gradient(160% calc(var(--trunk-reach) / 2) at 30% var(--trunk-l2), #000 0%, rgba(0, 0, 0, .6) 36%, rgba(0, 0, 0, .18) 68%, transparent 100%);
+}
+.kit-board.has-backdrop .kit-trunk { display: none; }
+
+/* ── casement ──
+   casement-*.webp are 360x400: the frame's outside from (14,12) to (346,352),
+   the glass inside a 30 px plank, the sill under it to row 376. The glass is
+   painted from the sample, so it is the brightest cold thing on the wall. */
+.kit-casement {
+  --case-w: 180px;
+  position: absolute; pointer-events: none;
+  width: var(--case-w); aspect-ratio: 360 / 400;
+  background: url("../../assets/ui/kit/casement-bough.webp") 50% 0 / 100% 100% no-repeat;
+  filter: drop-shadow(0 10px 12px rgba(0, 0, 0, .6));
+}
+.kit-casement--moon { background-image: url("../../assets/ui/kit/casement-moon.webp"); }
+.kit-casement::before {
+  content: ''; position: absolute; z-index: -1;
+  left: -40%; right: -40%; top: -30%; bottom: -10%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--kit-moon) 18%, transparent), color-mix(in srgb, var(--kit-moon) 5%, transparent) 55%, transparent);
+  mix-blend-mode: screen;
+}
+.kit-board.has-backdrop .kit-casement { display: none; }
+
+/* ── corbel ──
+   plank-corbel.webp / plank-corbel-warm.webp are 72x112: the block's sides at
+   x 12-56, its head in rows 0-22 (hidden behind the plank's front face), the
+   sawn toe at row 86, and its shadow on the wall to the lower right. Its top
+   belongs --corbel-w * 22 / 72 above the foot of the plank's front face, which
+   is --plank-h below the plank element's top. */
+.kit-corbel {
+  --corbel-w: 48px;
+  --corbel-lit: 0;
+  position: absolute; pointer-events: none;
+  width: var(--corbel-w); aspect-ratio: 72 / 112;
+  background: url("../../assets/ui/kit/plank-corbel.webp") 50% 0 / 100% 100% no-repeat;
+}
+.kit-corbel::after {
+  content: ''; position: absolute; inset: 0;
+  background: url("../../assets/ui/kit/plank-corbel-warm.webp") 50% 0 / 100% 100% no-repeat;
+  opacity: var(--corbel-lit);
+}
+/* A plank's sawn ends, drawn over its lit layer (z 1 in the plank's own
+   stacking context, so give the plank a z-index): the samples' ink down each
+   end, and the plank's shadow thrown past its right end, down and to the right,
+   the way the boards' top-left light throws every shadow. --plank-shade is how
+   far past the end that shadow reaches. */
+.kit-plank--ends { --plank-shade: calc(var(--plank-h) * .7); }
+.kit-plank--ends::before {
+  content: ''; position: absolute; z-index: 1; pointer-events: none;
+  left: 0; top: 0; bottom: 0; right: calc(-1 * var(--plank-shade));
+  background:
+    linear-gradient(90deg, rgba(12, 7, 5, .96), rgba(12, 7, 5, .5) 45%, transparent) 0 0 / 4px var(--plank-h) no-repeat,
+    linear-gradient(270deg, rgba(12, 7, 5, .96), rgba(12, 7, 5, .55) 45%, transparent) calc(100% - var(--plank-shade)) 0 / 5px var(--plank-h) no-repeat,
+    radial-gradient(100% 70% at 0% 62%, rgba(8, 5, 10, .8), rgba(8, 5, 10, .34) 50%, transparent 100%) 100% 0 / var(--plank-shade) 100% no-repeat;
+}
+
+/* ── rolled tracing ──
+   tracing-rolled.webp is 220x96: the roll on its side with its near end at the
+   left, the wool's loose end trailing to the right along the floor, and its
+   own shadow under it, so it wears none of the kit's. Its foot is the image's
+   foot: stand it with bottom. */
+.kit-prop--tracing { aspect-ratio: 220 / 96; background-image: url("../../assets/ui/kit/tracing-rolled.webp"); }
+.kit-prop--tracing::before { content: none; }
+
+/* ===========================================================================
+   THE CLUBHOUSE'S TIMBER — round 5, from the KIDS' PLACES track: ELDER's
+   Headquarters, merged screen by screen. Appended; nothing above is changed.
+   Painted by tools/prep_kids_timber.py. Its Treehouse ground and festoon
+   lights served ELDER's own Treehouse, which is not the one merged, and are
+   not shipped.
+
+     .kit-ground--clapboard  Neighbourhood Headquarters' wall: a roof beam,
+                             posts, a rail and clapboards of painted timber,
+                             tinted toward aubergine where no light reaches
+                             it. Posts at 40, 1388 and 1884 of its 1920, the
+                             rail at 600-642
+     .kit-sill--grain       a modifier for .kit-sill: a long plank whose grain,
+                             knots and butted ends read at the size a shelf is
+                             shown, not darkened as a whole — the board it
+                             stands on lays its own lights' falloff along it
+     .kit-lantern--standing  a modifier for .kit-lantern: the same lantern set
+                             down on a shelf — its hook ring and the finial under
+                             its base cropped away, so its base is its foot;
+                             the element's bottom edge is where it stands
+     .kit-newscutting        a newspaper cutting, torn out (NUTMEG's, round 4):
+                             newsprint with the house in half-tone and its
+                             columns set; __head letters its headline in the
+                             band along its top. --cut-w sizes it
+     .kit-stud               a purple enamel stud in a cast brass rosette, for a
+                             frame's corner (after MARL's corner mounts, round
+                             4); --stud sizes it, place it by its centre
+   =========================================================================== */
+
+/* ── the clapboard ground ── */
+.kit-ground--clapboard { background-image: url("../../assets/ui/kit/clapboard.webp"); }
+.kit-ground--clapboard .kit-ground__warm { background-image: url("../../assets/ui/kit/clapboard-warm.webp"); }
+.kit-ground--clapboard .kit-ground__moon { background-image: url("../../assets/ui/kit/clapboard-moon.webp"); }
+
+/* ── sill, grained ──
+   shelfboard.webp is 2048x112, laid out row for row as sill.webp (top face to
+   row 30, edge to 40, front face to 84, then its shadow), so a thing stands on
+   it exactly as on .kit-sill. */
+.kit-sill.kit-sill--grain {
+  background-image: url("../../assets/ui/kit/shelfboard.webp");
+  filter: none;
+}
+
+/* ── lantern, standing ──
+   lantern.webp's roof starts 76 rows down (the hook ring above it) and its base
+   ends at 348 (the finial below): the box shows rows 76 to 348, and the flame
+   (row 204) sits 128 of those 272 rows down. */
+.kit-lantern.kit-lantern--standing { aspect-ratio: 200 / 272; }
+.kit-lantern.kit-lantern--standing::after {
+  background-size: 100% calc(100% * 420 / 272);
+  background-position: 50% calc(var(--lantern-w) * -76 / 200);
+}
+.kit-lantern.kit-lantern--standing::before { top: calc(100% * 128 / 272); width: 440%; }
+
+/* ── newspaper cutting ──
+   newscutting.webp is 420x520: the headline's band is its top 96 rows (ruled
+   off under them), then the photograph and the columns. */
+.kit-newscutting {
+  --cut-w: 140px;
+  position: relative;
+  width: var(--cut-w); aspect-ratio: 420 / 520;
+  background: url("../../assets/ui/kit/newscutting.webp") 50% 50% / 100% 100% no-repeat;
+  filter: drop-shadow(1px 4px 3px rgba(30, 14, 6, .5));
+}
+/* set as a paper sets a headline: the condensed body face at its heaviest,
+   capitals, black ink bitten into newsprint */
+.kit-newscutting__head {
+  position: absolute; left: 7%; right: 7%; top: 3.5%; height: 14%;
+  display: grid; place-items: center;
+  margin: 0;
+  font-family: var(--font-body); font-weight: 800;
+  font-size: max(12px, calc(var(--cut-w) * .135)); line-height: 1;
+  letter-spacing: .02em; text-transform: uppercase; text-align: center; white-space: nowrap;
+  color: #1e1a15;
+  text-shadow: 0 0 .5px rgba(30, 26, 21, .6);
+}
+
+/* ── stud ──
+   stud-rosette.webp is 96 square; its stone is the middle third. */
+.kit-stud {
+  --stud: 30px;
+  position: absolute; pointer-events: none;
+  width: var(--stud); aspect-ratio: 1;
+  translate: -50% -50%;
+  background: url("../../assets/ui/kit/stud-rosette.webp") 50% 50% / 100% 100% no-repeat;
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .7));
+}

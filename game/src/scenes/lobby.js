@@ -87,11 +87,24 @@ const GLYPH = {
  * room's painting, `lobby.png`, drops into the ground when Josh has made it.
  */
 function boardMarkup() {
-  return '<div class="kit-ground kit-ground--treehouse lo-ground" aria-hidden="true"><i class="kit-ground__warm"></i><i class="kit-ground__moon"></i></div>'
+  /* a string of bulbs, `n` of them, sagging between two nails on the beam */
+  const bulbs = (cls, n) => `<div class="kit-bulbs kit-bulbs--candle lo-bulbs ${cls}" style="--n:${n}">`
+    + Array.from({ length: n }, (_, i) => `<i style="--i:${i}"></i>`).join('') + '</div>';
+  return '<div class="kit-ground kit-ground--hideout lo-ground" aria-hidden="true"><i class="kit-ground__warm"></i><i class="kit-ground__moon"></i></div>'
     + '<div class="lo-vig" aria-hidden="true"></div>'
     /* the treehouse's own corners: a cobweb strung where each post meets the
-       roof beam (the posts are painted into treehouse.webp) */
-    + '<div class="lo-hall" aria-hidden="true"><i class="kit-web lo-hall__web lo-hall__web--l"></i><i class="kit-web kit-web--r lo-hall__web lo-hall__web--r"></i>'
+       roof beam (the posts are painted into hideout.webp) */
+    + '<div class="lo-hall" aria-hidden="true">'
+    /* the tree the treehouse is built round, up through the floor behind the
+       stage: the lantern hangs on it and the candle stands in front of it */
+    + '<i class="kit-trunk lo-trunk"></i>'
+    /* two small windows high in the wall either side of the plaque, and the
+       night of the title painting through them: the old tree's boughs, the moon */
+    + '<i class="kit-casement lo-case lo-case--l"></i><i class="kit-casement kit-casement--moon lo-case lo-case--r"></i>'
+    + '<i class="kit-web lo-hall__web lo-hall__web--l"></i><i class="kit-web kit-web--r lo-hall__web lo-hall__web--r"></i>'
+    /* the Kids' own lights, warm and lavender, strung along the roof beam in
+       swags from nail to nail (OCHRE's) */
+    + bulbs('lo-bulbs--1', 6) + bulbs('lo-bulbs--2', 5) + bulbs('lo-bulbs--3', 5) + bulbs('lo-bulbs--4', 6)
     /* gold card stars and a moon a Kid cut out and hung from the roof beam */
     + '<i class="kit-charm lo-charm lo-charm--1"></i><i class="kit-charm kit-charm--moon lo-charm lo-charm--2"></i>'
     + '<i class="kit-charm lo-charm lo-charm--3"></i><i class="kit-charm lo-charm lo-charm--4"></i></div>'
@@ -108,7 +121,8 @@ function boardMarkup() {
  */
 function viewMarkup() {
   return `<figure class="lo-view" aria-hidden="true">
-      <i class="kit-sill lo-view__sill"></i>
+      <i class="kit-corbel lo-view__corbel lo-view__corbel--l"></i><i class="kit-corbel lo-view__corbel lo-view__corbel--r"></i>
+      <i class="kit-plank kit-plank--ends lo-view__sill"></i>
       <div class="lo-view__pic kit-frame kit-frame--over"><span class="lo-view__art" style="background-image:url('${menuArtSrc('menu')}')"></span></div>
       <i class="lo-view__medal"></i>
       <figcaption class="lo-view__plate kit-plate"><b class="kit-plate__name">The House</b><span class="kit-plate__epithet">somewhere out there in the dark</span></figcaption>
@@ -331,18 +345,21 @@ export class LobbyScene extends Scene {
 
     /* The map those words draw, read back as they are typed: the same seed the
        room will print once everybody is up (`seedFromRoom`, a pure hash). It
-       is a footnote engraved under the panel's one focal point, the plate,
-       and never a second plate beside it. */
-    const seed = el('p', 'lo-seed');
+       is engraved on a small gilt-rimmed plaque of its own (c7d31db's), hung
+       from the password's plate the way the boards hang a ribbon from a
+       cartouche — read straight after the words it belongs to, and before the
+       way to roll new ones. */
+    const seed = el('p', 'lo-seed kit-enamel kit-enamel--dark');
     seed.setAttribute('aria-live', 'polite');
     const paintSeed = () => {
       const room = tidyRoom(input.value);
       seed.innerHTML = room
-        ? `<b class="lo-seed__v">№ ${seedFromRoom(room)}</b> <i class="lo-seed__k">the house these words draw</i>`
-        : '<i class="lo-seed__k">say two words</i>';
+        ? `<i class="kit-enamel__label lo-seed__k">Draws the house</i><b class="kit-enamel__value lo-seed__v">№ ${seedFromRoom(room)}</b>`
+        : '<i class="kit-enamel__label lo-seed__k">Say two words</i>';
     };
     paintSeed();
     input.addEventListener('input', paintSeed);
+    card.appendChild(seed);
 
     const actions = el('div', 'lo-card__actions');
     const roll = el('button', 'lo__roll kit-btn kit-btn--quiet');
@@ -351,7 +368,6 @@ export class LobbyScene extends Scene {
     roll.addEventListener('click', () => { input.value = coinRoom(); paintSeed(); input.focus(); });
     actions.appendChild(roll);
     card.appendChild(actions);
-    card.appendChild(seed);
 
     stage.appendChild(card);
     form.appendChild(stage);

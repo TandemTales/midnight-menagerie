@@ -40,9 +40,9 @@
   --lo-view-cx: calc(50vw - var(--lo-stage-w) / 2 + var(--lo-view-w) / 2);
   --lo-view-cy: 53vh;
   --lo-lamp-y: calc(31vh + var(--lo-lantern-w) * 1.02);
-  /* The treehouse.webp painting's own geometry, as it lands on this board
-     (cover, anchored at its foot): its scale, and where its two inner posts
-     meet the roof beam. */
+  /* The hideout.webp painting's own geometry, as it lands on this board
+     (cover, anchored at its foot): its scale, and where its two posts meet
+     the roof beam (tools/prep_kids_boards.py H_POSTS, H_BEAM). */
   --lo-k: max(100vw / 1920, 100vh / 1080);    /* one painting pixel, on screen */
   --lo-post-l: calc(50vw - 588 * var(--lo-k));
   --lo-post-r: calc(50vw + 588 * var(--lo-k));
@@ -64,8 +64,51 @@
   --wl6-x: calc(50vw + var(--lo-stage-w) / 2 + var(--lo-lantern-off));
   --wl6-y: var(--lo-lamp-y);
   --wl6-w: var(--wl5-w);                      --wl6-h: var(--wl5-h);
+  /* the two casements high in the wall, either side of the plaque (it is
+     about 35vw wide), and the moonlight they let in: a glow round the moon's
+     window and a cold shaft falling from each across the boards */
+  --lo-case-w: clamp(128px, 11vw, 186px);
+  --lo-case-top: calc(var(--lo-beam) + clamp(8px, 1.4vh, 14px));
+  --lo-case-l: calc((var(--lo-post-l) + 32.6vw) / 2);
+  --lo-case-r: calc((var(--lo-post-r) + 67.4vw) / 2);
+  --ml2-x: var(--lo-case-r);                  --ml2-y: calc(var(--lo-case-top) + var(--lo-case-w) * .5);
+  --ml2-w: calc(var(--lo-case-w) * 3.4);      --ml2-h: calc(var(--lo-case-w) * 3);
+  --mb1-x: calc(var(--lo-case-l) + var(--lo-case-w) * .3);  --mb1-y: calc(var(--lo-case-top) + var(--lo-case-w) * .8);
+  --mb1-w: calc(var(--lo-case-w) * 2.2);      --mb1-h: 68vh;
+  --mb2-x: calc(var(--lo-case-r) - var(--lo-case-w) * .3);  --mb2-y: var(--mb1-y);
+  --mb2-w: var(--mb1-w);                      --mb2-h: 68vh;
 }
 .lo-hall { position: absolute; inset: 0; z-index: 2; pointer-events: none; }
+/* the casements, their tops a hand under the beam */
+.lo-case { --case-w: var(--lo-case-w); top: var(--lo-case-top); }
+.lo-case--l { left: calc(var(--lo-case-l) - var(--lo-case-w) / 2); }
+.lo-case--r { left: calc(var(--lo-case-r) - var(--lo-case-w) / 2); }
+/* the trunk, up through the floor in the gap between the frame and the panel,
+   from the beam to the boards; its bark lit by the lantern hung on it and the
+   candle stood in front of it */
+.lo-trunk {
+  --trunk-w: calc(var(--lo-gap) * 1.22);
+  width: var(--trunk-w);
+  left: calc(var(--wl3-x) - var(--trunk-w) / 2);
+  top: calc(var(--lo-beam) - 6px); bottom: 0;
+  --trunk-reach: clamp(230px, 32vh, 310px);
+  --trunk-l1: calc(var(--lo-lamp-y) + var(--lo-lantern-w) * .2 - var(--lo-beam));
+  --trunk-l2: calc(var(--wl3-y) - var(--lo-beam));
+}
+.lo__room .lo-trunk { display: none; }
+/* the bulbs, in four swags along the beam: nail to nail from each corner
+   candle to the plaque, the plaque's own middle stretch hidden behind it */
+.lo-bulbs { z-index: 1; top: calc(var(--lo-beam) * .3); --sag: clamp(16px, 2.4vh, 24px); }
+/* the wire catches the bulbs' own light along its top, so the swag reads as a
+   string and never as lights floating in the air */
+.lo-bulbs::before {
+  border-bottom-color: rgba(104, 76, 54, .95);
+  filter: drop-shadow(0 1px 0 rgba(0, 0, 0, .7)) drop-shadow(0 -1px 1px rgba(255, 200, 130, .28));
+}
+.lo-bulbs--1 { left: 18.2vw; width: 7.4vw; }
+.lo-bulbs--2 { left: 25.6vw; width: 7.2vw; }
+.lo-bulbs--3 { right: 25.6vw; width: 7.2vw; }
+.lo-bulbs--4 { right: 18.2vw; width: 7.4vw; }
 /* a cobweb in the corner each inner post makes with the roof beam */
 .lo-hall__web { --web-w: clamp(92px, 7.6vw, 128px); top: calc(var(--lo-beam) - 2px); opacity: .62; }
 .lo-hall__web--l { left: calc(var(--lo-post-l) + 33 * var(--lo-k)); }
@@ -82,7 +125,7 @@
   background:
     radial-gradient(118% 96% at 50% 46%, transparent 40%, color-mix(in srgb, var(--kit-void) 82%, transparent) 100%),
     linear-gradient(to bottom, color-mix(in srgb, var(--kit-void) 40%, transparent) 0%, transparent 18%,
-                    transparent 70%, color-mix(in srgb, var(--kit-void) 62%, transparent) 100%);
+                    transparent 76%, color-mix(in srgb, var(--kit-void) 50%, transparent) 100%);
 }
 .lo-head, .lo-body, .lo-foot { position: relative; z-index: 3; }
 
@@ -167,20 +210,41 @@
    the skull clear of the frame's gilt corner, the candle in the gap under
    the lantern. The frame's foot rests a fifth of the way into the sill's top
    face; everything on the sill stands a little further forward on it. */
-.lo-view { --sill-h: clamp(36px, 4.2vh, 46px); --skull-w: clamp(58px, 5vw, 90px); --candle-w: clamp(44px, 3.6vw, 60px); }
-/* The sill the whole stage stands on, nailed along the wall under the window
-   and the panel, from just inside the board's vine on the left to just inside
-   it on the right. Hung from the window (which shares the panel's foot): the
-   frame's gilt overhangs its box by 13px, and rests a fifth of the way into
-   the sill's top face. */
-.lo-view__sill {
-  position: absolute; z-index: 0;
+.lo-view {
+  --sill-h: clamp(36px, 4.2vh, 46px); --skull-w: clamp(58px, 5vw, 90px); --candle-w: clamp(44px, 3.6vw, 60px);
   --lo-stage-x: calc(50vw - var(--lo-stage-w) / 2);      /* the window's left edge on the board */
   --lo-edge-in: calc(clamp(8px, .7vw, 12px) + clamp(38px, 3.5vw, 60px) + 6px);
+  --lo-sill-top: calc(100% + 13px - var(--sill-h) * .17);
+}
+/* The plank the whole stage stands on, nailed along the wall under the window
+   and the panel, from just inside the board's vine on the left to just inside
+   it on the right (ui/kit.css .kit-plank). Hung from the window (which shares
+   the panel's foot): the frame's gilt overhangs its box by 13px and rests a
+   sixth of the way into the plank's top face. It is lit where the light is —
+   under the candle in the gap, under the lantern beside the panel and a
+   breath under the panel's middle — and falls into the dark at both ends. */
+.lo-view__sill {
+  position: absolute; z-index: 0;
+  --plank-h: var(--sill-h);
   left: calc(var(--lo-edge-in) - var(--lo-stage-x));
   right: calc(var(--lo-edge-in) - (100vw - var(--lo-stage-x) - var(--lo-view-w)));
-  top: calc(100% + 13px - var(--sill-h) * .22);
+  top: var(--lo-sill-top);
+  --plank-reach: clamp(340px, 30vw, 500px);
+  --plank-l1: calc(var(--wl3-x) - var(--lo-edge-in));
+  --plank-l2: calc(var(--wl6-x) - var(--lo-edge-in));
+  --plank-l3: calc(var(--wl4-x) - var(--lo-edge-in) - var(--lo-card-w) * .1);
 }
+/* the plank's two corbels, set in from each end past the foot's two enamel
+   buttons so a toe never crowds their filigree, and behind the plank (the
+   stage's stacking layer, under the plank's z 0), their heads hidden by its
+   front face; the right one stands in the lantern's light */
+.lo-view__corbel {
+  --corbel-w: calc(var(--sill-h) * 1.6);
+  z-index: -1;
+  top: calc(var(--lo-sill-top) + var(--sill-h) - var(--corbel-w) * 22 / 72 - 1px);
+}
+.lo-view__corbel--l { left: calc(var(--lo-edge-in) - var(--lo-stage-x) + var(--sill-h) * 2.6); --corbel-lit: .1; }
+.lo-view__corbel--r { right: calc(var(--lo-edge-in) - (100vw - var(--lo-stage-x) - var(--lo-view-w)) + var(--sill-h) * 2.6); --corbel-lit: .7; }
 .lo-view__pic { z-index: 1; }
 .lo-view__skull { width: var(--skull-w); left: calc(var(--skull-w) * -1.1); bottom: calc(-13px - var(--sill-h) * .08); z-index: 6; }
 .lo-view__candle { width: var(--candle-w); right: calc(var(--lo-gap) * -.5 - var(--candle-w) / 2); bottom: calc(-13px - var(--sill-h) * .1); z-index: 6; }
@@ -188,8 +252,16 @@
 /* ── the password panel ───────────────────────────────────────────────────── */
 .lo-card {
   --pk: .8;
+  /* lit by its two lanterns, not from overhead: the one on the trunk warms the
+     suede down its left side, the one on the wall its right, and the foot of
+     the panel between them falls into the dark */
+  --lit-x: -2%; --lit-y: 12%; --lit-w: 112%; --lit-h: 104%; --lit-a: 48%;
+  --moon: var(--kit-candle);
+  --moon-x: 104%; --moon-y: 14%; --moon-w: 92%; --moon-h: 96%; --moon-a: 26%;
+  --mat-edge: .66;
+  --lo-card-gap: clamp(14px, 2.2vh, 22px);
   display: grid; justify-items: center;
-  row-gap: clamp(14px, 2.2vh, 22px);
+  row-gap: var(--lo-card-gap);
   padding: clamp(44px, 6vh, 56px) clamp(28px, 2.6vw, 44px) clamp(18px, 2.6vh, 26px);
   text-align: center;
 }
@@ -280,18 +352,19 @@
   display: flex; flex-wrap: wrap; align-items: center; justify-content: center;
   gap: 10px clamp(18px, 1.8vw, 28px);
 }
+/* the house the words draw, on its own gilt-rimmed plaque (c7d31db's), hung
+   from the password's plate the way a ribbon hangs from the title cartouche:
+   its top edge on the plate's lower rim */
 .lo-seed {
-  margin: calc(clamp(14px, 2.2vh, 22px) * -.45) 0 0;
-  display: flex; align-items: baseline; justify-content: center; gap: .45em;
-  color: var(--kit-text-lo);
-  text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
+  --h: clamp(34px, 4.4vh, 40px);
+  position: relative; z-index: 2;
+  justify-self: center;
+  margin: calc(-1 * var(--lo-card-gap) - var(--h) * .42) 0 0;
+  padding-inline: calc(var(--h) * .72);
+  gap: .6em;
 }
-.lo-seed__k { font-family: var(--font-body); font-style: italic; font-size: max(12px, var(--fs-xs)); }
-.lo-seed__v {
-  font-family: var(--font-num); font-weight: 600; font-size: max(12px, var(--fs-xs));
-  font-variant-numeric: lining-nums tabular-nums; letter-spacing: .06em;
-  color: color-mix(in oklab, var(--kit-gold) 70%, var(--kit-text-lo));
-}
+.lo-seed__k { font-size: max(11.5px, calc(var(--h) * .29)); letter-spacing: .16em; color: var(--kit-text); }
+.lo-seed__v { font-size: calc(var(--h) * .5); letter-spacing: .05em; }
 
 /* roll a new one: the quiet plate with its enamel button on the left end */
 .lo__roll { --plate-h: clamp(40px, 4.9vh, 46px); padding-left: calc(var(--plate-h) * 1.14); }
@@ -457,7 +530,7 @@
 /* ── the Deck's panel ─────────────────────────────────────────────────────── */
 @media (max-height: 820px) {
   .lo-stage { padding-block: 36px 40px; }
-  .lo-card { row-gap: 12px; }
+  .lo-card { --lo-card-gap: 12px; }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -19,7 +19,7 @@ import { COMPANIONS, KIDS, TERMS, REGION_ORDER } from '../data/schema.js';
 import {
   ensureCss, fontsReady, companionPortrait, kidPortrait, petPortrait, blueprintSrc,
   el, svg, rovingFocus, setReduceMotion, reduceMotion, REGION_NAMES,
-  freedCompanions, availableCompanions, warmFaces,
+  freedCompanions, availableCompanions, warmFaces, menuArtSrc,
 } from '../ui/portrait.js';
 import { KID_CODEX, loadoutFor } from './select.js';
 import { shouldPlayOpening } from './tutorial.js';
@@ -117,7 +117,12 @@ export class ClubhouseScene extends Scene {
     main.appendChild(this._buildMenagerie());
     main.appendChild(this._buildPets());
     main.appendChild(this._buildBackpack());
-    main.appendChild(el('div', 'cl-frame kit-carved'));
+    /* the carved frame, a purple enamel stud in a brass rosette over each of
+       its corner mounts (MARL's studs, round 4). Decoration. */
+    const frame = el('div', 'cl-frame kit-carved',
+      ['tl', 'tr', 'bl', 'br'].map((c) => `<i class="kit-stud cl-stud cl-stud--${c}"></i>`).join(''));
+    frame.setAttribute('aria-hidden', 'true');
+    main.appendChild(frame);
     root.appendChild(main);
 
     root.appendChild(this._buildSide());
@@ -132,16 +137,18 @@ export class ClubhouseScene extends Scene {
 
   /* ── the room itself ────────────────────────────────────────────────────── */
   _buildRoom() {
-    /* The room the whole board hangs in: the boards' own aubergine damask over
-       dark wainscot (ui/kit.css .kit-ground, the slot Josh's clubhouse.png
-       drops into), warmer than the mansion because the Kids have lit it — the
-       enamel lamp over the investigation board, a string of candle-coloured
-       bulbs along the top, dust in the light — and dressed as every board is:
-       the purple scrollwork down both sides, a candle and a cobweb in each top
-       corner, the painted rule round the edge. */
+    /* The room the whole board hangs in: the Treehouse's own timber (ui/kit.css
+       .kit-ground--clapboard, tools/prep_kids_timber.py) — the same roof beam,
+       posts, rail and clapboards, tinted toward aubergine where the light does
+       not reach, the slot Josh's clubhouse.png drops into — warmer than the
+       mansion because the Kids have lit it: the enamel lamp over the
+       investigation board, a string of candle-coloured bulbs along the top,
+       dust in the light. Dressed as every board is: the purple scrollwork down
+       both sides over the planks, a candle and a cobweb in each top corner, the
+       painted rule round the edge. */
     const room = el('div', 'cl-room kit-board');
     room.innerHTML = `
-      <div class="cl-wall kit-ground"><i class="kit-ground__warm"></i><i class="kit-ground__moon"></i></div>
+      <div class="cl-wall kit-ground kit-ground--clapboard"><i class="kit-ground__warm"></i><i class="kit-ground__moon"></i></div>
       <div class="cl-lights kit-bulbs kit-bulbs--candle">${Array.from({ length: 14 }, (_, i) =>
         `<i style="--i:${i}"></i>`).join('')}</div>
       <div class="cl-floor"></div>
@@ -285,8 +292,10 @@ export class ClubhouseScene extends Scene {
     // clue notes
     /* Two columns of cards under the recovered drawing, the known clues above
        the unknown ones, and one unknown card beside the thesis: laid so that at
-       1280 no card lies on another, on the drawing or on a photograph. */
-    const cluePos = [[62, 47], [80.5, 53], [62.5, 76.5], [81, 80], [43, 77]];
+       1280 no card lies on another, on the drawing or on a photograph. The
+       three unknown cards are narrower (a "?" and three words) and packed to
+       the right, leaving the board's lower left to the collage. */
+    const cluePos = [[62, 47], [80.5, 53], [65, 77], [84.2, 79.5], [48.6, 77.5]];
     BOARD_CLUES.forEach((c, i) => {
       const [title, text, known] = c;
       /* `ch-note`, not `note`. The class was renamed in clubhouse.css to get out
@@ -302,12 +311,27 @@ export class ClubhouseScene extends Scene {
       cork.appendChild(note);
     });
 
-    /* The thesis, cut out and pinned up: each phrase torn from a sheet of red
-       paper the way a kid makes a headline, the last one on a scrap of the
-       index cards and underlined in red biro. It holds the board's lower left,
-       which was bare cork. */
+    /* The board's lower half, as a collage. At its lower left the House's
+       photograph (MARL's, round 4): the one snapshot on the board that is not
+       of a pet, UI/mainMenu.png's own painting. Pinned over its edge a cutting
+       from the local paper (NUTMEG's): the house again, in half-tone, under
+       the headline that made the Kids look. */
+    const snap = el('div', 'cl-snap kit-paper',
+      `<span class="pin kit-pin" aria-hidden="true"></span><span class="cl-snap__photo" style="background-image:url('${menuArtSrc('menu')}')"></span>`);
+    snap.setAttribute('aria-hidden', 'true');
+    snap.style.cssText = 'left:1.5%;top:73.2%;--rot:-4deg';
+    cork.appendChild(snap);
+    const cut = el('div', 'cl-cutting kit-newscutting',
+      '<span class="pin kit-pin kit-pin--blue cl-cutting__pin" aria-hidden="true"></span>'
+      + '<p class="kit-newscutting__head">Pets vanish</p>');
+    cut.style.cssText = 'left:15.6%;top:74.6%;--rot:3.2deg';
+    cork.appendChild(cut);
+
+    /* The thesis, cut out and pinned up beside them: each phrase torn from a
+       sheet of red paper the way a kid makes a headline, the last one on a
+       scrap of the index cards and underlined in red biro. */
     const thesis = el('div', 'scrawl');
-    thesis.style.cssText = 'left:3.2%;top:79%;--rot:-1.6deg';
+    thesis.style.cssText = 'left:28.2%;top:72.6%;--rot:-1.2deg';
     thesis.innerHTML = `<span class="scrawl__cut kit-clipping" style="--rot:-3deg">too many pets.</span> `
       + `<span class="scrawl__cut kit-clipping" style="--rot:2.2deg">same house.</span> `
       + `<span class="scrawl__cut scrawl__cut--last kit-clipping kit-clipping--card" style="--rot:-1deg"><u>not a coincidence.</u></span>`
@@ -565,15 +589,22 @@ export class ClubhouseScene extends Scene {
     haunt.appendChild(el('p', 'cl-haunt__desc', `<b>${HAUNTS[this.haunt][1]}</b> ${HAUNTS[this.haunt][2]}`));
     side.appendChild(haunt);
 
-    /* Between the ladder and the way in, the wall is dressed rather than bare:
-       a brass sconce, and the club's motto pinned up beside it on a slip. */
-    const motto = el('div', 'cl-motto');
-    motto.appendChild(el('i', 'cl-motto__sconce kit-sconce'));
+    /* Between the ladder and the way in, a still life on a shelf (MARL's, round
+       4): the Treehouse's own plank shelf nailed to the wall, and standing on
+       it the Kid board's skull on its books, a lantern and a candle, their
+       light warming the wall and the plank round them. The club's motto is
+       pinned to the wall above it on a slip. Decoration, but for the motto. */
+    const motto = el('div', 'cl-motto cl-shelf');
+    motto.insertAdjacentHTML('beforeend',
+      '<i class="kit-light kit-light--candle cl-shelf__pool" aria-hidden="true"></i>'
+      + '<i class="kit-sill kit-sill--grain cl-shelf__plank" aria-hidden="true"></i>'
+      + '<i class="kit-prop kit-prop--skull cl-shelf__skull" aria-hidden="true"></i>'
+      + '<i class="kit-lantern kit-lantern--standing cl-shelf__lantern" aria-hidden="true"></i>'
+      + '<i class="kit-prop kit-prop--candle cl-shelf__candle" aria-hidden="true"></i>');
     const quote = el('p', 'cl-quote kit-paper',
       '&ldquo;Get every animal out that wants to leave.&rdquo;');
     quote.appendChild(el('i', 'cl-quote__pin kit-pin'));
     quote.lastChild.setAttribute('aria-hidden', 'true');
-    motto.firstChild.setAttribute('aria-hidden', 'true');
     motto.appendChild(quote);
     side.appendChild(motto);
 
