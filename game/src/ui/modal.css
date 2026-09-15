@@ -37,7 +37,10 @@
 .mm-modal__scrim {
   position: absolute; inset: 0;
   background:
-    linear-gradient(to bottom, color-mix(in srgb, var(--kit-void) 84%, transparent) 0, color-mix(in srgb, var(--kit-void) 76%, transparent) 14%, transparent 30%),
+    /* (the board's own lettered plaque sat just readable behind the dialog's,
+       a second title in ghost letters either side of it: the band is deep
+       enough now to put it out) */
+    linear-gradient(to bottom, color-mix(in srgb, var(--kit-void) 93%, transparent) 0, color-mix(in srgb, var(--kit-void) 90%, transparent) 15%, color-mix(in srgb, var(--kit-void) 40%, transparent) 24%, transparent 32%),
     radial-gradient(70% 64% at 50% 50%, color-mix(in srgb, var(--kit-void) 46%, transparent) 0%, color-mix(in srgb, var(--kit-void) 66%, transparent) 60%, color-mix(in srgb, var(--kit-void) 90%, transparent) 100%),
     linear-gradient(color-mix(in srgb, var(--kit-violet-lo) 12%, transparent), color-mix(in srgb, var(--kit-violet-lo) 12%, transparent));
   -webkit-backdrop-filter: brightness(.56) saturate(.62);
