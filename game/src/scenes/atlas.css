@@ -81,8 +81,8 @@
    plaque and down the wall beside the sheet and the panel */
 .at-cornerglow {
   z-index: 2;
-  --light-a: 24%;
-  width: clamp(620px, 50vw, 860px);
+  --light-a: 38%;
+  width: clamp(760px, 62vw, 1060px);
   top: calc(var(--at-corner) * .18);
   animation-delay: -1.1s;
 }
