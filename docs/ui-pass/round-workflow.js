@@ -85,10 +85,12 @@ const JUDGE = {
 const judgingOf = T => `${A.uiloop}/judging/${A.round}/${T.key}`
 
 // Round 5's DIALOGS and KIDS' PLACES builders hit the weekly usage limit an hour
-// in, with their work half made in their worktrees. To finish such a round,
-// resume the run (resumeFromRunId) with `resume` set on each interrupted builder
-// in the args: true, or a string saying where that builder stopped. Only those
-// builders' prompts change, so every agent that finished replays from the cache.
+// in, with their work half made in their worktrees. Set `resume` on each
+// interrupted builder in the args: true, or a string saying where it stopped.
+// No other prompt changes. But run ONLY the unfinished tracks as a new run:
+// resumeFromRunId replays a finished agent only when it is called in the same
+// order, and round 5's resume re-ran POLISH's and COMBAT's four judges on
+// byte-identical prompts, because the resumed builders started in a new order.
 function resumeNote(b, wt, branch) {
   return [
     `This build was interrupted, and you are finishing it. An earlier run of builder ${b.code}, with this same brief and angle, worked on ${branch} until a usage limit stopped it mid-task. Its work is still in ${wt}, and nothing has touched it since:`,
