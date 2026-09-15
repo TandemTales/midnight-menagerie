@@ -291,8 +291,20 @@
   transition: filter var(--t-quick) var(--ease-out), transform var(--t-quick) var(--ease-out), color var(--t-quick) var(--ease-out);
 }
 .mm-btn.kit-btn--quiet { font-size: var(--fs-sm); color: var(--kit-text-mid); }
+/* in a framed dialog the way onward is the lit plate — the Companion tiles'
+   enamel catching the candle along its top — and the ways back the dark one */
+.mm-modal--kit .mm-btn.kit-btn:not(.kit-btn--quiet) { border-image-source: url("../../assets/ui/kit/plate-lit.webp"); }
 .mm-btn.kit-btn:hover { background: none; }
 .mm-btn.kit-btn:focus-visible { outline: none; box-shadow: none; }
+/* keyboard focus on a dialog's plate: the gilt lights round its silhouette and
+   the candle catches it, drawn BEFORE the plate's shadow — traced round a shadow
+   that is already blurred, the same light becomes a halo */
+.mm-modal--kit .kit-btn:focus-visible {
+  filter: drop-shadow(0 0 1.5px var(--kit-gold-hi)) drop-shadow(0 0 10px color-mix(in srgb, var(--kit-candle) 55%, transparent)) drop-shadow(0 4px 6px rgba(0, 0, 0, .8)) brightness(1.16);
+}
+.mm-modal--kit .kit-btn--quiet:focus-visible {
+  filter: drop-shadow(0 0 1.5px var(--kit-gold-hi)) drop-shadow(0 0 9px color-mix(in srgb, var(--kit-candle) 45%, transparent)) drop-shadow(0 3px 5px rgba(0, 0, 0, .7)) saturate(.95) brightness(1.08);
+}
 /* danger: the same plate, lettered in the Courage bar's red */
 .mm-btn--danger.kit-btn { color: var(--threat-200); }
 .mm-btn--danger.kit-btn:hover:not(:disabled), .mm-btn--danger.kit-btn:focus-visible { color: var(--threat-100); }

@@ -147,10 +147,15 @@
 .mm-deck__note::before { justify-self: end; width: 100%; }
 .mm-deck__note::after { justify-self: start; width: 100%; transform: scaleX(-1); }
 .mm-deck__note[hidden] { display: none; }
+/* an empty case says so in the engraved small caps of the boards' notes */
 .mm-deck__empty {
-  margin: var(--s-6) 0; text-align: center;
-  font-size: var(--fs-md); font-style: italic; color: var(--kit-text-mid);
+  margin: auto 0; padding: var(--s-5) 0; text-align: center;
+  font-family: var(--font-display); font-weight: 700; font-style: normal;
+  font-size: var(--fs-md); letter-spacing: .2em; text-transform: uppercase;
+  color: var(--kit-text-mid);
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, .95), 0 1px 0 color-mix(in srgb, var(--kit-lav-hi) 18%, transparent), 0 0 14px rgba(0, 0, 0, .9);
 }
+.mm-deck__empty[hidden] { display: none; }
 
 /* the case stands inside the frame's rule, with no second gutter of its own */
 .mm-modal--kit .mm-modal__body:has(> .mm-deck) { margin: 6px calc(var(--rule-in) - 4px) 0; padding-inline: 2px; }
@@ -252,6 +257,9 @@
 .mm-deck__cell.mm-deck__cell:focus-visible,
 .mm-deck__grid:has(> .mm-deck__cell):focus-visible { outline: none; }
 .mm-deck__cell .mm-card { pointer-events: none; }
+/* a Trick laid in the case to be read sets its rules in even lines, so no
+   word is left alone on the last one */
+.mm-deck__cell .mm-card__rules > div { text-wrap: balance; }
 
 /* reward mode: the cards are the choice, so make picking obvious */
 .mm-deck[data-mode="reward"] .mm-deck__cell { cursor: pointer; }
