@@ -52,6 +52,10 @@
      panel throws its light up the wall behind the panel and into the gap
      between the two; and a breath of it lies along the floor they stand on */
   --corner-w: var(--at-corner);
+  /* the corner candles' own pools, opened out so their light reaches the
+     plaque, Back and the tally, and runs down both sides of the sheet */
+  --wl1-w: calc(var(--at-corner) * 5.4); --wl1-h: calc(var(--at-corner) * 6);
+  --wl2-w: var(--wl1-w);                 --wl2-h: var(--wl1-h);
   --wl3-x: 36vw; --wl3-y: 50vh; --wl3-w: 104vw; --wl3-h: 124vh;
   --wl4-x: calc(100vw - var(--at-side) - 8px - var(--at-dos-w) * .22); --wl4-y: 88vh;
   --wl4-w: clamp(520px, 44vw, 720px);  --wl4-h: 124vh;
@@ -72,7 +76,19 @@
   left: calc(100vw - var(--at-side) - 8px - var(--at-dos-w) * .22);
   top: 92vh;
 }
-.kit-board.has-backdrop .at-wallglow { opacity: .6; }
+/* the corner candles' light on the wall: centred on each flame (a fifth of the
+   way down its painting, .56 of the way across), wide enough to reach the
+   plaque and down the wall beside the sheet and the panel */
+.at-cornerglow {
+  z-index: 2;
+  --light-a: 24%;
+  width: clamp(620px, 50vw, 860px);
+  top: calc(var(--at-corner) * .18);
+  animation-delay: -1.1s;
+}
+.at-cornerglow--l { left: calc(var(--kit-edge) + var(--at-corner) * .56); }
+.at-cornerglow--r { left: calc(100vw - var(--kit-edge) - var(--at-corner) * .56); animation-delay: -2.6s; }
+.kit-board.has-backdrop .at-wallglow, .kit-board.has-backdrop .at-cornerglow { opacity: .6; }
 .at-root:has(.at-dos__act:not([hidden])) .at-wallglow { --light-a: 26%; }
 /* the board's corner candles, drawn small, as the Map draws them */
 .at-corner { width: var(--at-corner); top: 1px; }

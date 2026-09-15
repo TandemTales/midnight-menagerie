@@ -223,6 +223,10 @@ export class AtlasScene extends Scene {
       /* the candle at the reading panel's foot, lighting the wall behind the
          panel: on the board, so it warms the wall and not the panel's words */
       + '<i class="kit-light kit-light--candle at-wallglow" aria-hidden="true"></i>'
+      /* and the two corner candles' light poured down the wall round the
+         plaque, Back and the tally, and down both sides of the sheet */
+      + '<i class="kit-light kit-light--candle at-cornerglow at-cornerglow--l" aria-hidden="true"></i>'
+      + '<i class="kit-light kit-light--candle at-cornerglow at-cornerglow--r" aria-hidden="true"></i>'
       + `<div class="kit-dress at-dress" aria-hidden="true">
           <i class="kit-dress__floor"></i>
           <i class="kit-dress__rule"></i>

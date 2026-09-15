@@ -375,6 +375,20 @@ export class ClubhouseScene extends Scene {
       const [ax, ay] = pts[0], [bx, by] = pts[pts.length - 1];
       d += `M${ax.toFixed(0)} ${ay.toFixed(0)}Q${((ax + bx) / 2).toFixed(0)} ${(Math.max(ay, by) + 120).toFixed(0)} ${bx.toFixed(0)} ${by.toFixed(0)}`;
     }
+    /* The case, tied together: the house on the recovered drawing to the house
+       in the photograph, and the cutting to the thesis it started. */
+    const pinAt = (sel) => {
+      const pin = cork.querySelector(sel);
+      if (!pin) return null;
+      const r = pin.getBoundingClientRect();
+      return [r.x + r.width / 2 - box.x, r.y + r.height / 2 - box.y];
+    };
+    for (const [from, to, sag] of [['.bpfrag .pin', '.cl-snap .pin', 0.1], ['.cl-news .pin', '.scrawl__pin', 0.22]]) {
+      const a = pinAt(from), b = pinAt(to);
+      if (!a || !b) continue;
+      const mx = (a[0] + b[0]) / 2, my = (a[1] + b[1]) / 2 + Math.abs(b[0] - a[0]) * sag + 12;
+      d += `M${a[0].toFixed(0)} ${a[1].toFixed(0)}Q${mx.toFixed(0)} ${my.toFixed(0)} ${b[0].toFixed(0)} ${b[1].toFixed(0)}`;
+    }
     g.innerHTML = `<path class="cork__thread" d="${d}"/>`;
   }
 
