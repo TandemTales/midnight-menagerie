@@ -183,6 +183,14 @@ export class DeckView {
     grid.tabIndex = 0;
     grid.addEventListener('keydown', (e) => this._onKey(e));
     grid.addEventListener('focus', () => { if (!this.cells.length) return; this._focus(this.focusIndex, false); });
+    /* A Trick focused from outside the grid's own keys (the pad's spatial
+       focus, input/navigation.js, calls focus() on the cell) becomes the
+       grid's focus too, so it lifts into the candle as an arrow key's would;
+       it had no mark at all, its ring taken off below. */
+    grid.addEventListener('focusin', (e) => {
+      const c = e.target.closest?.('.mm-deck__cell');
+      if (c && !c.classList.contains('is-focus')) this._focus(Number(c.dataset.index), false);
+    });
 
     const empty = document.createElement('p');
     empty.className = 'mm-deck__empty';
