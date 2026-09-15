@@ -38,6 +38,9 @@ Outputs (game/assets/ui/kit/):
   plank-corbel.webp / plank-corbel-warm.webp
         the sawn block a plank shelf stands on, its bottom corners cut off,
         two nails through it, its shadow on the wall            (.kit-corbel)
+  tracing-rolled.webp
+        the Kids' tracing of the floor plan rolled up and tied with the
+        board's red wool, lying on a floor in candle light (.kit-prop--tracing)
 
     python tools/prep_kids_boards.py                 # everything
     python tools/prep_kids_boards.py --only plank    # one piece
@@ -826,6 +829,143 @@ def corbel():
         save(np.dstack([np.clip(rgb, 0, 255), small[..., 3]]), name, 90)
 
 
+# ═════════════════════════════════════════════════════════════════════════════
+# THE ROLLED TRACING
+# The Kids' own copy of the floor plan, traced off the recovered sheet and
+# rolled up to carry, tied round its middle with a length of the Headquarters
+# board's red wool, set down on the floor. A roll of old paper lying on its
+# side: its near end shows the turns of the sheet, the outer turn carries a few
+# of the plan's walls in faint blue ink, the sheet's edge lifts along its length,
+# and the wool's loose ends fall over its front onto the floor. Lit by the
+# candle standing on that floor, from the upper right.
+# ═════════════════════════════════════════════════════════════════════════════
+SC_W, SC_H = 220, 96
+
+
+def rolled_tracing():
+    rng = np.random.default_rng(1848)
+    ss = 4
+    W, H = SC_W * ss, SC_H * ss
+    yy, xx = np.mgrid[0:H, 0:W].astype(np.float32) / ss
+    A = np.array([34.0, 60.0], np.float32)
+    B = np.array([192.0, 52.0], np.float32)
+    L = float(np.linalg.norm(B - A))
+    d = (B - A) / L
+    nrm = np.array([-d[1], d[0]], np.float32)
+    r, e = 17.0, 6.5                                   # the roll's radius; its end foreshortened
+    u = (xx - A[0]) * d[0] + (yy - A[1]) * d[1]
+    v = (xx - A[0]) * nrm[0] + (yy - A[1]) * nrm[1]
+    vr = np.clip(v / r, -1, 1)
+    # the near end, a disc seen at a slant; the side of the roll behind it; its
+    # far end rounding the outline off
+    face = (u / e) ** 2 + (v / r) ** 2 <= 1.0
+    cap = e * np.sqrt(np.clip(1 - vr ** 2, 0, 1))
+    side = (u >= 0) & (u <= L + cap) & (np.abs(v) <= r) & ~face
+    roll = face | side
+
+    # ── the paper ──
+    fib = P.aniso_noise(H, W, rng, 10 * ss, 1.2 * ss, angle=float(np.degrees(np.arctan2(d[1], d[0])))) * 0.06
+    mott = noise((H, W), rng, 9 * ss) * 0.12 + noise((H, W), rng, 3 * ss) * 0.05
+    paper = hexc("#a8926b") * (1 + fib + mott)[..., None]
+    # grimed toward both ends where hands hold it, foxed here and there
+    ends = np.exp(-np.clip(u, 0, None) / 16) * 0.22 + np.exp(-np.clip(L - u, 0, None) / 14) * 0.18
+    paper = paper * (1 - ends)[..., None]
+    for _ in range(7):
+        fx, fy = rng.uniform(A[0] + 10, B[0] - 10), rng.uniform(A[1] - r * .8, A[1] + r * .6)
+        fd = np.hypot(xx - fx, yy - fy) / rng.uniform(1.4, 3.2)
+        paper = paper * (1 - 0.16 * np.exp(-fd ** 2))[..., None]
+    # a few of the plan's walls in faint blue ink on the outer turn
+    ink_b = np.zeros((H, W), np.float32)
+    for _ in range(9):
+        u0, u1 = sorted(rng.uniform(8, L - 8, 2))
+        vv = rng.uniform(-r * .75, r * .7)
+        ink_b = np.maximum(ink_b, (np.abs(v - vv) < 0.45) & (u > u0) & (u < min(u1, u0 + 30)))
+    for _ in range(7):
+        uu = rng.uniform(10, L - 10)
+        v0, v1 = sorted(rng.uniform(-r * .8, r * .75, 2))
+        ink_b = np.maximum(ink_b, (np.abs(u - uu) < 0.45) & (v > v0) & (v < v1))
+    ink_b = ndimage.gaussian_filter(ink_b.astype(np.float32), 0.5 * ss) * side
+    paper = paper * (1 - ink_b[..., None] * 0.45) + hexc("#3b5578") * (ink_b[..., None] * 0.3)
+    # the sheet's edge, lifted along the roll a third of the way down from its top
+    seam_v = -r * 0.28 + P.wob1d(W, rng, 30 * ss, 0.8)[None, :]
+    seam = side & (u > L * 0.1) & (np.abs(v - seam_v) < 0.6)
+    under = side & (u > L * 0.1) & (v - seam_v > 0.6) & (v - seam_v < 3.2)
+    paper = np.where(seam[..., None], paper * 1.12, paper)
+    paper = np.where(under[..., None], paper * (0.62 + 0.38 * np.clip((v - seam_v - 0.6) / 2.6, 0, 1))[..., None], paper)
+
+    # ── height: a cylinder, the near end a flat disc cut with the sheet's turns ──
+    hgt = np.where(side, np.sqrt(np.clip(r * r - v * v, 0, None)), 0)
+    rho = np.sqrt((u / e) ** 2 + (v / r) ** 2)
+    theta = np.arctan2(v / r, u / e)
+    turns = (rho * 7.0 - theta / (2 * np.pi)) % 1.0
+    edge_on = face & (turns < 0.3) & (rho > 0.16)
+    gap = face & ~edge_on
+    hgt = np.where(face, r + 0.5, hgt)
+    hgt = np.where(gap, r - 1.2, hgt)
+    face_col = np.where(edge_on[..., None], hexc("#e0cfa6") * (0.9 + 0.1 * rho[..., None]), hexc("#3a2a1c") * (0.55 + 0.45 * rho[..., None]))
+    face_col = np.where((face & (rho <= 0.16))[..., None], hexc("#140c08"), face_col)
+    alb = np.where(face[..., None], face_col, paper)
+
+    # ── the red wool, twice round the middle, knotted on top, its ends let fall ──
+    wool = np.zeros((H, W), np.float32)
+    ut = L * 0.57
+    for off in (-2.6, 2.6):
+        band_u = ut + off + P.wob1d(H, rng, 8 * ss, 0.5)[:, None] + v * 0.06
+        wool = np.maximum(wool, (np.abs(u - band_u) < 1.25) * (np.abs(v) <= r + 0.6) * side)
+    knot_c = A + d * ut - nrm * (r - 1.0)
+    kd = np.sqrt(((xx - knot_c[0]) / 4.2) ** 2 + ((yy - knot_c[1]) / 3.0) ** 2)
+    knot = kd <= 1.0
+
+    def strand(p0, p1, p2, p3, width):
+        m = np.zeros((H, W), bool)
+        for t in np.linspace(0, 1, 90):
+            q = ((1 - t) ** 3) * p0 + 3 * ((1 - t) ** 2) * t * p1 + 3 * (1 - t) * t * t * p2 + (t ** 3) * p3
+            wdt = width * (1 - 0.35 * t)
+            m |= (xx - q[0]) ** 2 + (yy - q[1]) ** 2 <= wdt * wdt
+        return m
+    k0 = knot_c
+    end1 = strand(k0, k0 + np.array([12, -2]), k0 + np.array([15, 27]), k0 + np.array([36, 37]), 1.3)
+    end2 = strand(k0, k0 + np.array([-7, -2]), k0 + np.array([-9, 9]), k0 + np.array([-13, 17]), 1.2)
+    loose = end1 | end2
+    wool_all = (wool > 0) | knot | loose
+    twist = ((u * 0.9 + v * 0.9 + xx * 0.25) % 2.4) / 2.4
+    wool_col = ramp(np.clip(0.35 + 0.4 * np.sin(twist * np.pi) + noise((H, W), rng, 0.6 * ss) * 0.2, 0, 1),
+                    [(0.0, "#4e120c"), (0.5, "#8e2519"), (1.0, "#c0493a")])
+    alb = np.where(wool_all[..., None], wool_col, alb)
+    hgt = np.where(wool > 0, hgt + 1.6, hgt)
+    hgt = np.where(knot, np.maximum(hgt, r + 3.5 * np.sqrt(np.clip(1 - kd ** 2, 0, 1))), hgt)
+    # the loose ends lie over the roll's front and then on the floor
+    lh = np.where(side, hgt + 1.8, 1.8)
+    hgt = np.where(loose & ~knot, lh, hgt)
+
+    mask = roll | loose | knot
+    hg = ndimage.gaussian_filter(hgt, ss * 0.45)
+    n = normals(hg * ss * 0.5, 1.0)
+    Lc = np.array([0.34, -0.58, 0.74], np.float32); Lc /= np.linalg.norm(Lc)
+    lam = lambert(n, Lc)
+    col = alb * np.array([1.0, 0.86, 0.7], np.float32) * (0.3 + 0.74 * lam)[..., None]
+    col = col + (specular(n, Lc, power=18.0) * side * 0.18)[..., None] * np.array([255, 230, 190], np.float32)
+    # the roll's underside turns away into the dark, and its far end with it
+    turn = np.clip(1 - np.clip(v / r, 0, 1) ** 1.4 * 0.68, 0, 1)
+    col = np.where(side[..., None], col * turn[..., None], col)
+    ink = M.ink_lines(hgt * ss * 0.5, amount=0.45, thresh=1.6)
+    d_in = ndimage.distance_transform_edt(mask) / ss
+    rim = np.clip(1 - d_in / 1.1, 0, 1) * 0.75
+    col = col * (ink * (1 - rim))[..., None]
+    col = aubergine(col, 0.35)
+
+    # its shadow on the floor, under and a little behind the candle's side
+    mid = (A + B) / 2
+    sd = np.sqrt(((xx - mid[0] + 8) / (L * 0.56 + 10)) ** 2 + ((yy - mid[1] - r - 4) / 7.5) ** 2)
+    shadow = np.clip(1 - sd, 0, 1) ** 1.2 * 0.7
+    shadow = np.maximum(shadow, ndimage.gaussian_filter((loose & ~side).astype(np.float32), 1.2 * ss) * 0.5)
+    alpha = np.maximum(mask.astype(np.float32), shadow * (1 - mask))
+    img = np.where(mask[..., None], col, np.array([8, 5, 8], np.float32))
+    small = down(np.dstack([np.clip(img, 0, 255), alpha * 255]), ss)
+    rgb = P.kuwahara(small[..., :3], radius=1, sectors=8, q=8.0)
+    save(np.dstack([np.clip(rgb, 0, 255), small[..., 3]]), "tracing-rolled.webp", 90)
+
+
 PIECES = {
     "plank": plank,
     "newsclip": newsclip,
@@ -833,6 +973,7 @@ PIECES = {
     "trunk": trunk,
     "casements": casements,
     "corbel": corbel,
+    "tracing": rolled_tracing,
 }
 
 

@@ -2403,6 +2403,11 @@ button.kit-medallion:hover, button.kit-medallion:focus-visible,
                       sizes it, --corbel-lit (0-1) is the candle light on it.
                       Stand it BEHIND its plank, its head hidden by the plank's
                       front face (see the section's note)
+     .kit-plank--ends a plank's sawn ends inked, and its shadow thrown past its
+                      right end (give the plank a z-index)
+     .kit-prop--tracing  the Kids' tracing of the floor plan, rolled up and
+                      tied with the board's red wool, lying on its side on a
+                      floor; a .kit-prop, carrying its own shadow
    =========================================================================== */
 
 /* ── stud ── */
@@ -2557,3 +2562,11 @@ button.kit-medallion:hover, button.kit-medallion:focus-visible,
     linear-gradient(270deg, rgba(12, 7, 5, .96), rgba(12, 7, 5, .55) 45%, transparent) calc(100% - var(--plank-shade)) 0 / 5px var(--plank-h) no-repeat,
     radial-gradient(100% 70% at 0% 62%, rgba(8, 5, 10, .8), rgba(8, 5, 10, .34) 50%, transparent 100%) 100% 0 / var(--plank-shade) 100% no-repeat;
 }
+
+/* ── rolled tracing ──
+   tracing-rolled.webp is 220x96: the roll on its side with its near end at the
+   left, the wool's loose end trailing to the right along the floor, and its
+   own shadow under it, so it wears none of the kit's. Its foot is the image's
+   foot: stand it with bottom. */
+.kit-prop--tracing { aspect-ratio: 220 / 96; background-image: url("../../assets/ui/kit/tracing-rolled.webp"); }
+.kit-prop--tracing::before { content: none; }

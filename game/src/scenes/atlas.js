@@ -246,9 +246,12 @@ export class AtlasScene extends Scene {
        the panel. Never on the panel's corners, never over its words. */
     const side = el('div', 'at-side');
     side.appendChild(this._buildDossier());
+    /* ...and the Kids' own tracing of this sheet, rolled up and tied with the
+       Headquarters board's red wool, set down in front of the skull's books. */
     const floor = el('div', 'at-floor',
       '<i class="kit-light kit-light--candle at-floor__glow"></i>'
       + '<i class="kit-prop kit-prop--skull at-floor__skull"></i>'
+      + '<i class="kit-prop kit-prop--tracing at-floor__tracing"></i>'
       + '<i class="kit-prop kit-prop--candle at-floor__candle"></i>');
     floor.setAttribute('aria-hidden', 'true');
     side.appendChild(floor);

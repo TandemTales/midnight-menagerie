@@ -173,8 +173,16 @@
   left: 81%; top: 72%;
   z-index: 0;
 }
+/* the rolled tracing, lying in front of the books with its near end against
+   them and the wool trailing toward the candle */
+.at-floor__tracing {
+  width: min(clamp(112px, 8.6vw, 150px), calc(100cqh * 1.46));
+  left: calc(17% + min(clamp(62px, 5vw, 84px), calc(92cqh * 130 / 153)) * .5);
+  bottom: calc(-1 * clamp(15px, 2.3vh, 21px));
+  z-index: 2;
+}
 @container (max-height: 44px) {
-  .at-floor__skull, .at-floor__candle, .at-floor__glow { display: none; }
+  .at-floor__skull, .at-floor__candle, .at-floor__glow, .at-floor__tracing { display: none; }
 }
 
 /* ── the sheet ────────────────────────────────────────────────────────────── */
