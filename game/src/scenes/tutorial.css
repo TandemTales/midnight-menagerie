@@ -63,10 +63,12 @@
    the Kid board's dossier stands as tall as its mirror: the two read as one
    board, and the page keeps its size from beat to beat. */
 .tut-stage {
-  /* under the plaque; over the mantel's front and, below it, the Skip plate */
+  /* under the plaque; over the mantel's front and, below it, the Skip plate.
+     The stage is centred in the room, so the less it keeps below, the lower
+     the story stands and the less bare floor is left under the mantel */
   --stage-pt: clamp(128px, 16.7vh, 150px);
   --stage-px: clamp(60px, 6vw, 112px);
-  --stage-pb: clamp(128px, 16.9vh, 152px);
+  --stage-pb: clamp(104px, 13.2vh, 152px);
   position: relative; z-index: 1;
   display: grid;
   /* the portrait a size up: as wide as the room's height allows, so at 1600
@@ -543,12 +545,16 @@
 /* the beats: the kit's ladder of enamel medallions on a brass rod. The page
    you are on sits in the round button's gold filigree; pages still to come are
    unlit. They are a reading, not controls. */
+/* The rod takes the room the way on leaves it, up to a comfortable length,
+   and spaces its rungs along it: a long way on ("Stay behind her") draws them
+   closer instead of running the last rung into its plate. */
 .tut-dots.kit-ladder {
   --md: 20px;
-  flex: 0 1 auto; min-width: 0;
-  gap: clamp(5px, .62vw, 10px);
-  padding: 8px 8px;
+  flex: 1 1 auto; min-width: 0; max-width: 290px;
+  gap: 0;
+  padding: 8px 4px;
 }
+.tut-panel[data-long-cta="true"] .tut-dots.kit-ladder { --md: 16px; }
 .tut-dot.kit-ladder__rung { cursor: default; pointer-events: none; }
 .tut-dot.kit-ladder__rung:not(.is-on):not(.is-past) { filter: drop-shadow(0 2px 3px rgba(0, 0, 0, .8)) saturate(.45) brightness(.78); }
 .tut-dot.kit-ladder__rung.is-past { filter: drop-shadow(0 2px 3px rgba(0, 0, 0, .8)) brightness(1.05); }

@@ -502,6 +502,9 @@ export class TutorialScene extends Scene {
     const next = panel.querySelector('.tut-next');
     /* the words only: the enamel medallion seated on the plate's end stays */
     next.querySelector('.tut-next__words').textContent = p.cta || 'Go on';
+    /* a way on that is a whole phrase ("Stay behind her") takes more of the
+       foot, and the beats' rungs are set a size smaller beside it */
+    panel.dataset.longCta = String((p.cta || 'Go on').length > 8);
     /* Nothing to press until somebody has been chosen. The strip is the page. */
     next.hidden = picking;
 
