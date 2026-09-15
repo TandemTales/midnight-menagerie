@@ -99,6 +99,12 @@
 /* the bulbs, in four swags along the beam: nail to nail from each corner
    candle to the plaque, the plaque's own middle stretch hidden behind it */
 .lo-bulbs { z-index: 1; top: calc(var(--lo-beam) * .3); --sag: clamp(16px, 2.4vh, 24px); }
+/* the wire catches the bulbs' own light along its top, so the swag reads as a
+   string and never as lights floating in the air */
+.lo-bulbs::before {
+  border-bottom-color: rgba(104, 76, 54, .95);
+  filter: drop-shadow(0 1px 0 rgba(0, 0, 0, .7)) drop-shadow(0 -1px 1px rgba(255, 200, 130, .28));
+}
 .lo-bulbs--1 { left: 18.2vw; width: 7.4vw; }
 .lo-bulbs--2 { left: 25.6vw; width: 7.2vw; }
 .lo-bulbs--3 { right: 25.6vw; width: 7.2vw; }
@@ -119,7 +125,7 @@
   background:
     radial-gradient(118% 96% at 50% 46%, transparent 40%, color-mix(in srgb, var(--kit-void) 82%, transparent) 100%),
     linear-gradient(to bottom, color-mix(in srgb, var(--kit-void) 40%, transparent) 0%, transparent 18%,
-                    transparent 70%, color-mix(in srgb, var(--kit-void) 62%, transparent) 100%);
+                    transparent 76%, color-mix(in srgb, var(--kit-void) 50%, transparent) 100%);
 }
 .lo-head, .lo-body, .lo-foot { position: relative; z-index: 3; }
 
@@ -232,10 +238,10 @@
 /* ── the password panel ───────────────────────────────────────────────────── */
 .lo-card {
   --pk: .8;
+  --lo-card-gap: clamp(14px, 2.2vh, 22px);
   display: grid; justify-items: center;
-  row-gap: clamp(14px, 2.2vh, 22px);
-  /* the foot leaves room over the seed's plaque, which hangs on the rail */
-  padding: clamp(44px, 6vh, 56px) clamp(28px, 2.6vw, 44px) clamp(32px, 4.6vh, 42px);
+  row-gap: var(--lo-card-gap);
+  padding: clamp(44px, 6vh, 56px) clamp(28px, 2.6vw, 44px) clamp(18px, 2.6vh, 26px);
   text-align: center;
 }
 /* the rule of the place on a slip of paper, pinned at a tilt under the
@@ -325,13 +331,14 @@
   display: flex; flex-wrap: wrap; align-items: center; justify-content: center;
   gap: 10px clamp(18px, 1.8vw, 28px);
 }
-/* the house the words draw, on its own gilt-rimmed plaque hung on the panel's
-   bottom rail, as "The House" hangs on the frame's (c7d31db's plaque) */
+/* the house the words draw, on its own gilt-rimmed plaque (c7d31db's), hung
+   from the password's plate the way a ribbon hangs from the title cartouche:
+   its top edge on the plate's lower rim */
 .lo-seed {
-  --h: clamp(36px, 4.6vh, 42px);
-  position: absolute; left: 50%; bottom: 0; z-index: 5;
-  transform: translate(-50%, 50%);
-  margin: 0;
+  --h: clamp(34px, 4.4vh, 40px);
+  position: relative; z-index: 2;
+  justify-self: center;
+  margin: calc(-1 * var(--lo-card-gap) - var(--h) * .42) 0 0;
   padding-inline: calc(var(--h) * .72);
   gap: .6em;
 }
@@ -502,7 +509,7 @@
 /* ── the Deck's panel ─────────────────────────────────────────────────────── */
 @media (max-height: 820px) {
   .lo-stage { padding-block: 36px 40px; }
-  .lo-card { row-gap: 12px; }
+  .lo-card { --lo-card-gap: 12px; }
 }
 
 @media (prefers-reduced-motion: reduce) {

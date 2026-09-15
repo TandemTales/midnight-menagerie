@@ -344,10 +344,10 @@ export class LobbyScene extends Scene {
 
     /* The map those words draw, read back as they are typed: the same seed the
        room will print once everybody is up (`seedFromRoom`, a pure hash). It
-       is engraved on a small gilt-rimmed plaque of its own (c7d31db's), hung on
-       the panel's bottom rail the way "The House" hangs on the frame's, so the
-       two read as a pair across the stage: the house, and the words that draw
-       it. */
+       is engraved on a small gilt-rimmed plaque of its own (c7d31db's), hung
+       from the password's plate the way the boards hang a ribbon from a
+       cartouche — read straight after the words it belongs to, and before the
+       way to roll new ones. */
     const seed = el('p', 'lo-seed kit-enamel kit-enamel--dark');
     seed.setAttribute('aria-live', 'polite');
     const paintSeed = () => {
@@ -358,6 +358,7 @@ export class LobbyScene extends Scene {
     };
     paintSeed();
     input.addEventListener('input', paintSeed);
+    card.appendChild(seed);
 
     const actions = el('div', 'lo-card__actions');
     const roll = el('button', 'lo__roll kit-btn kit-btn--quiet');
@@ -366,7 +367,6 @@ export class LobbyScene extends Scene {
     roll.addEventListener('click', () => { input.value = coinRoom(); paintSeed(); input.focus(); });
     actions.appendChild(roll);
     card.appendChild(actions);
-    card.appendChild(seed);
 
     stage.appendChild(card);
     form.appendChild(stage);
