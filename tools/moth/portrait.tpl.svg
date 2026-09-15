@@ -1,0 +1,78 @@
+<svg class="sh-moth" viewBox="0 20 120 232" preserveAspectRatio="xMidYMax slice" role="img" aria-label="Mr. Moth, behind his counter">
+  <defs>
+    <radialGradient id="shLamp" cx="50%" cy="50%">
+      <stop offset="0%" class="sh-lamp-a"/><stop offset="100%" class="sh-lamp-b"/>
+    </radialGradient>
+    <radialGradient id="shWingU" cx="80%" cy="95%" r="115%">
+      <stop offset="0" class="sh-wu-a"/><stop offset=".42" class="sh-wu-b"/><stop offset="1" class="sh-wu-c"/>
+    </radialGradient>
+    <radialGradient id="shWingL" cx="74%" cy="30%" r="100%">
+      <stop offset="0" class="sh-wl-a"/><stop offset=".55" class="sh-wl-b"/><stop offset="1" class="sh-wl-c"/>
+    </radialGradient>
+    <linearGradient id="shCoat" x1="0" y1="0" x2="1" y2=".2">
+      <stop offset="0" class="sh-coat-a"/><stop offset=".6" class="sh-coat-b"/><stop offset="1" class="sh-coat-c"/>
+    </linearGradient>
+    <radialGradient id="shHead" cx="66%" cy="74%" r="78%">
+      <stop offset="0" class="sh-head-a"/><stop offset=".6" class="sh-head-b"/><stop offset="1" class="sh-head-c"/>
+    </radialGradient>
+    <radialGradient id="shEye" cx="36%" cy="30%" r="72%">
+      <stop offset="0" class="sh-eye-a"/><stop offset=".3" class="sh-eye-b"/><stop offset="1" class="sh-eye-c"/>
+    </radialGradient>
+    <radialGradient id="shRuff" cx="62%" cy="85%" r="80%">
+      <stop offset="0" class="sh-ruff-a"/><stop offset="1" class="sh-ruff-b"/>
+    </radialGradient>
+    <filter id="shBrush" x="-10%" y="-10%" width="120%" height="120%" color-interpolation-filters="sRGB">
+      <feTurbulence type="fractalNoise" baseFrequency=".08" numOctaves="2" seed="7" result="w"/>
+      <feDisplacementMap in="SourceGraphic" in2="w" scale="2.2" xChannelSelector="R" yChannelSelector="G" result="d"/>
+      <feTurbulence type="fractalNoise" baseFrequency=".85" numOctaves="2" seed="3" result="n"/>
+      <feColorMatrix in="n" type="matrix" values="0 0 0 .3 .72  0 0 0 .3 .72  0 0 0 .3 .72  0 0 0 0 1" result="g"/>
+      <feBlend in="d" in2="g" mode="multiply" result="b"/>
+      <feComposite in="b" in2="d" operator="in"/>
+    </filter>
+  </defs>
+  <g class="sh-moth__fig" filter="url(#shBrush)">
+    <g class="sh-moth__wings">
+      <path class="sh-moth__wingu" d="M52 110 C40 94 22 74 7 52 C3 45 8 39 15 42 C34 51 50 73 60 101 Z"/>
+      <path class="sh-moth__wingu" d="M68 110 C80 94 98 74 113 52 C117 45 112 39 105 42 C86 51 70 73 60 101 Z"/>
+      <path class="sh-moth__wingl" d="M52 118 C38 124 20 142 17 162 C15 175 26 181 36 173 C48 163 55 142 58 124 Z"/>
+      <path class="sh-moth__wingl" d="M68 118 C82 124 100 142 103 162 C105 175 94 181 84 173 C72 163 65 142 62 124 Z"/>
+      <!-- a pale band across each forewing and dusky tips, the markings a real moth wears -->
+      <path class="sh-moth__band" d="M30 88 C24 78 20 70 18 60 C24 62 30 66 34 72 C38 78 42 86 44 94 C40 94 34 92 30 88Z"/>
+      <path class="sh-moth__band" d="M90 88 C96 78 100 70 102 60 C96 62 90 66 86 72 C82 78 78 86 76 94 C80 94 86 92 90 88Z"/>
+      <path class="sh-moth__tip" d="M7 52 C3 45 8 39 15 42 C20 44 24 47 27 50 C20 52 12 54 7 52Z"/>
+      <path class="sh-moth__tip" d="M113 52 C117 45 112 39 105 42 C100 44 96 47 93 50 C100 52 108 54 113 52Z"/>
+      <g class="sh-moth__dots"><circle cx="20" cy="150" r="1.5"/><circle cx="24" cy="164" r="1.3"/><circle cx="31" cy="172" r="1.2"/><circle cx="100" cy="150" r="1.5"/><circle cx="96" cy="164" r="1.3"/><circle cx="89" cy="172" r="1.2"/></g>
+      <path class="sh-moth__vein" d="M56 104 C44 90 30 70 14 47 M56 106 C42 98 30 88 18 80 M57 120 C46 132 34 148 24 166 M57 122 C50 138 44 154 36 170 M64 104 C76 90 90 70 106 47 M64 106 C78 98 90 88 102 80 M63 120 C74 132 86 148 96 166 M63 122 C70 138 76 154 84 170"/>
+      <circle class="sh-moth__spot" cx="27" cy="66" r="6.4"/><circle class="sh-moth__spot" cx="93" cy="66" r="6.4"/>
+      <circle class="sh-moth__pupil" cx="27" cy="66" r="2.7"/><circle class="sh-moth__pupil" cx="93" cy="66" r="2.7"/>
+      <circle class="sh-moth__spot sh-moth__spot--sm" cx="31" cy="158" r="4.6"/><circle class="sh-moth__spot sh-moth__spot--sm" cx="89" cy="158" r="4.6"/>
+      <path class="sh-moth__wingrim" d="M105 42 C86 51 70 73 60 101 M113 52 C98 74 80 94 68 110 M103 162 C105 175 94 181 84 173"/>
+    </g>
+    <path class="sh-moth__coat" d="M45 118 C40 150 33 196 28 236 L92 236 C87 196 80 150 75 118 C69 112 51 112 45 118Z"/>
+    <path class="sh-moth__coatrim" d="M75 118 C80 150 87 196 92 236"/>
+    <path class="sh-moth__lapel" d="M50 118 L60 146 L70 118 C66 121 54 121 50 118Z"/>
+    <path class="sh-moth__seam" d="M60 146 L60 236"/>
+    <circle class="sh-moth__btn" cx="60" cy="160" r="2.1"/><circle class="sh-moth__btn" cx="60" cy="176" r="2.1"/><circle class="sh-moth__btn" cx="60" cy="192" r="2.1"/>
+    <path class="sh-moth__sleeve" d="M74 122 C84 134 90 152 94 172 L86 176 C83 158 78 142 70 130Z"/>
+    <path class="sh-moth__hand" d="M85 173 C88 169 95 169 96 174 C96 178 90 180 86 178Z"/>
+    <path class="sh-moth__ruff" d="M36 116 C42 102 78 102 84 116 C80 126 40 126 36 116Z"/>
+    <path class="sh-moth__fur" d="{ruff}"/>
+    <ellipse class="sh-moth__halo" cx="60" cy="86" rx="28" ry="26"/>
+    <ellipse class="sh-moth__head" cx="60" cy="88" rx="18" ry="17"/>
+    <path class="sh-moth__fur sh-moth__fur--head" d="{headfur}"/>
+    <ellipse class="sh-moth__eye" cx="51.5" cy="89" rx="7" ry="8"/>
+    <ellipse class="sh-moth__eye" cx="68.5" cy="89" rx="7" ry="8"/>
+    <circle class="sh-moth__glint" cx="49.6" cy="86" r="1.8"/><circle class="sh-moth__glint" cx="66.6" cy="86" r="1.8"/>
+    <path class="sh-moth__stem" d="{stems}"/>
+    <path class="sh-moth__barbs" d="{barbs}"/>
+  </g>
+  <circle class="sh-moth__glow" cx="95" cy="196" r="46" fill="url(#shLamp)"/>
+  <g class="sh-moth__lantern">
+    <path class="sh-moth__bail" d="M91 178 C92 182 98 182 99 178"/>
+    <path class="sh-moth__lampcap" d="M87 184 L103 184 L100 179 L90 179Z"/>
+    <path class="sh-moth__lampglass" d="M88 185 L102 185 L101 205 L89 205Z"/>
+    <path class="sh-moth__lampflame" d="M95 189 C98.5 193.5 98.5 198 95 201.5 C91.5 198 91.5 193.5 95 189Z"/>
+    <path class="sh-moth__lampbars" d="M92 185 L92 205 M98 185 L98 205"/>
+    <path class="sh-moth__lampbase" d="M86 205 L104 205 L102 210 L88 210Z"/>
+  </g>
+</svg>

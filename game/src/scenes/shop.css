@@ -84,11 +84,14 @@
      the foot of the frame above it: the frames keep that height */
   --tag-lift: calc(var(--shelf-price-h) * .22);
   --sh-ledge-h: clamp(46px, 6.2vh, 58px);
-  /* Mr. Moth's end of the shelf, and the far end past the Forgetting card */
-  --keeper-w: clamp(112px, min(9.4vw, 17vh), 156px);
-  --keeper-x: clamp(10px, 1.1vw, 20px);
-  --shelf-end-l: calc(var(--keeper-x) + var(--keeper-w) + clamp(4px, .5vw, 10px));
-  --shelf-end-r: clamp(6px, .6vw, 12px);
+  /* Mr. Moth's end of the shelf, and the far end past the Forgetting card.
+     Round 5: his mirror stands in from the shelf's end, far enough for the
+     skull on its books to stand at its foot; the far end keeps room for a
+     candle on a book. */
+  --keeper-w: clamp(116px, min(8.6vw, 15.4vh), 144px);
+  --keeper-x: clamp(34px, 2.6vw, 46px);
+  --shelf-end-l: calc(var(--keeper-x) + var(--keeper-w) + clamp(6px, .6vw, 12px));
+  --shelf-end-r: clamp(34px, 3vw, 52px);
   --rule: none;                                  /* the shelf is its own frame */
   /* the curtain behind the counter, lit by the lantern over the crest: the
      folds come up out of the dark under it and fall away to both ends */
@@ -209,51 +212,71 @@
    Companion tile on UI/selectCompanion.png wears its name: MR. MOTH over a
    small italic epithet. The ledge's front under him is bare: he is not for
    sale. */
+/* Round 5: the Kid board's MIRROR is his portrait frame (moth-mirror.webp,
+   tools/prep_ui_dressing.py) — the moon medallion on its crest, the paw
+   medallion at its foot, the scrollwork painted by the samples' own hand —
+   standing on the ledge's top face at the head of the shelf, a head taller
+   than the Tricks beside it. Its glass is a dark room: velvet behind him, his
+   lamp low in his hand warming it from below, the moon's light a breath on
+   the crest. His name hangs on the Companion tiles' dark cartouche across
+   the foot of the frame, over the paw. */
 .sh-keeper {
   --moth-plate: clamp(38px, 4.6vh, 44px);          /* his nameplate's height */
   position: absolute; z-index: 2;
   left: var(--keeper-x);
-  /* his nameplate stands where the frames' feet do */
-  bottom: calc(var(--tag-h) - var(--tag-lift) + 6px);
+  /* the mirror's foot stands where the frames' feet do */
+  bottom: calc(var(--tag-h) - var(--tag-lift) + 2px);
   width: var(--keeper-w);
+  aspect-ratio: 348 / 711;
   margin: 0;
-  display: grid; grid-template-rows: auto calc(var(--moth-plate) * .62); justify-items: center;
 }
 .sh-keeper__light {
-  position: absolute; left: 50%; top: 40%;
-  width: 250%; aspect-ratio: 1; translate: -50% -50%;
+  position: absolute; left: 50%; top: 52%;
+  width: 290%; aspect-ratio: 1; translate: -50% -50%;
   border-radius: 50%; pointer-events: none; z-index: -1;
-  background: radial-gradient(closest-side, color-mix(in srgb, var(--kit-candle) 28%, transparent), color-mix(in srgb, var(--kit-candle) 8%, transparent) 50%, transparent);
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--kit-candle) 30%, transparent), color-mix(in srgb, var(--kit-candle) 9%, transparent) 46%, transparent);
   mix-blend-mode: screen;
 }
 .rm:not(.is-still) .sh-keeper__light { animation: kit-flicker 5.2s ease-in-out infinite; }
-.sh-moth__frame {
-  grid-row: 1; grid-column: 1;
-  position: relative; display: block;
-  width: 100%; aspect-ratio: 180 / 172;
-  background: url("../../assets/ui/kit/button-ornate.webp") 50% 50% / 100% 100% no-repeat;
-  filter: drop-shadow(0 6px 8px rgba(0, 0, 0, .85));
+/* the glass: the room behind him, as the mirror's opening cuts it (an inline
+   SVG does not stretch between its offsets, so both are sized to the glass) */
+.sh-keeper__glass, .sh-keeper .sh-moth {
+  position: absolute;
+  left: 13.2%; top: 14%;
+  width: 73.9%; height: 68.3%;
+  border-radius: 48% / 26%;
+}
+.sh-keeper__glass {
+  z-index: 0;
+  background:
+    radial-gradient(80% 44% at 64% 86%, color-mix(in srgb, var(--kit-candle) 46%, transparent), transparent 72%),
+    radial-gradient(70% 36% at 50% 4%, color-mix(in srgb, var(--kit-moon) 16%, transparent), transparent 70%),
+    radial-gradient(120% 90% at 50% 50%, transparent 40%, rgba(3, 2, 5, .85) 100%),
+    url("../../assets/ui/kit/flock.webp") 50% 0 / 116px 132px,
+    #140b1b;
+  background-blend-mode: screen, screen, normal, normal, normal;
+  box-shadow: inset 0 0 18px rgba(0, 0, 0, .95), inset 0 -10px 22px color-mix(in srgb, var(--kit-candle) 16%, transparent);
 }
 .sh-keeper .sh-moth {
-  grid-row: 1; grid-column: 1; align-self: center;
-  position: relative; z-index: 1;
-  width: calc(var(--keeper-w) * 98 / 180); height: auto; aspect-ratio: 1;
-  translate: 0 calc(var(--keeper-w) * -.012);
+  z-index: 1;
   display: block;
-  padding: 4% 4% 0;
-  border-radius: 50%;
-  /* lit by his own lamp: warm from the lower right, the enamel deep behind him */
-  background:
-    radial-gradient(55% 55% at 74% 70%, color-mix(in srgb, var(--kit-candle) 55%, transparent), transparent 70%),
-    radial-gradient(90% 90% at 40% 30%, #3d2a58, #150d20 75%);
-  box-shadow: inset 0 0 12px rgba(0, 0, 0, .9), inset 0 -6px 14px color-mix(in srgb, var(--kit-candle) 18%, transparent);
   overflow: hidden;
 }
-/* his name: the Companion tiles' dark cartouche, over the foot of his frame */
-.sh-keeper .sh-moth__name { grid-row: 1 / 3; grid-column: 1; align-self: end; z-index: 2; }
+.sh-moth__frame {
+  position: absolute; inset: 0; z-index: 2;
+  display: block;
+  background: url("../../assets/ui/kit/moth-mirror.webp") 50% 50% / 100% 100% no-repeat;
+  filter: drop-shadow(0 8px 10px rgba(0, 0, 0, .85)) brightness(1.1) saturate(1.05);
+}
+/* his name: the Companion tiles' dark cartouche, across the foot of his frame */
+.sh-keeper .sh-moth__name {
+  /* across the foot of the glass, clear of the paw medallion under it */
+  position: absolute; z-index: 3; left: 50%; bottom: 15.5%;
+  translate: -50% 0;
+}
 .sh-keeper .sh-moth__name.kit-plate {
   --plate-h: var(--moth-plate);
-  min-width: calc(var(--keeper-w) * 1.08);
+  min-width: calc(var(--keeper-w) * 1.02);
   margin: 0;
   padding: 1px calc(var(--plate-h) * .56) 2px;
   border-image-source: url("../../assets/ui/kit/cartouche-dark.webp");
@@ -270,30 +293,97 @@
   font-size: max(11.5px, calc(var(--plate-h) * .28)); white-space: nowrap;
   color: color-mix(in oklab, var(--kit-name) 72%, var(--kit-text-mid));
 }
-/* his figure is domed and lit like the boards' enamel (the #kit-relief SVG
-   filter in index.html); the lamp's glow stays a flat light over him */
-.sh-moth > path, .sh-moth > ellipse:not(.sh-moth__glow) { filter: url("#kit-relief"); }
-.sh-lamp-a { stop-color: var(--kit-candle); stop-opacity: .55; }
+/* ── his portrait ────────────────────────────────────────────────────────────
+   Painted in the kit's own colours (the drawing is tools/moth/portrait.tpl.svg,
+   the colours live here): wings of violet silk warmed at their roots by the
+   lantern and lost to the dark at their tips, amber eye-spots, a coat in the
+   aubergine of the board's panels with the lamp running up its right-hand
+   edge, brass buttons, a ruff of cream fur and a fuzzy head in lamplight, two
+   great dark eyes with the lamp caught in them, and feathered antennae in the
+   gilt of old brass. Ink outlines are the painting's own, near-black, never
+   the gold rule a drawn icon would wear. */
+.sh-lamp-a { stop-color: var(--kit-candle); stop-opacity: .62; }
 .sh-lamp-b { stop-color: var(--kit-candle); stop-opacity: 0; }
-/* NOTE: no blanket `fill: none` here — `.sh-moth path` (0,1,1) would outrank
-   every `.sh-moth__coat` (0,1,0) below it and the whole figure would render as
-   a wireframe. Stroke-only shapes declare their own `fill: none`. */
-.sh-moth path, .sh-moth ellipse { stroke-linecap: round; stroke-linejoin: round; }
-.sh-moth__wingline, .sh-moth__btn, .sh-moth__ant, .sh-moth__fluff,
-.sh-moth__arm, .sh-moth__counterline { fill: none; }
-.sh-moth__wing { fill: color-mix(in srgb, var(--kit-violet) 70%, #2a1a3c); stroke: var(--kit-gold-hi); stroke-width: 6; }
-.sh-moth__wingline { stroke: color-mix(in srgb, var(--kit-lav-hi) 70%, transparent); stroke-width: 4.5; }
-.sh-moth__coat { fill: #2a1d36; stroke: var(--kit-gold-hi); stroke-width: 6; }
-.sh-moth__lapel { fill: color-mix(in srgb, var(--kit-violet) 55%, #1e1428); stroke: var(--kit-gold); stroke-width: 4.5; }
-.sh-moth__btn { stroke: var(--kit-gold-hi); stroke-width: 9; }
-.sh-moth__head { fill: #3a2a4a; stroke: var(--kit-gold-hi); stroke-width: 6; }
-.sh-moth__ant { stroke: var(--kit-gold-hi); stroke-width: 6; }
-.sh-moth__eye { fill: #fff0c8; stroke: none; }
-.sh-moth__fluff { stroke: var(--kit-lav-hi); stroke-width: 5.5; }
-.sh-moth__arm { stroke: var(--kit-gold); stroke-width: 9; }
-.sh-moth__lamp { fill: color-mix(in srgb, var(--kit-candle) 85%, #6a4318); stroke: var(--kit-gold-hi); stroke-width: 5; }
-.sh-moth__counter { fill: #1e1622; stroke: var(--kit-gold); stroke-width: 5; }
-.sh-moth__counterline { stroke: color-mix(in srgb, var(--kit-gold) 60%, transparent); stroke-width: 3.5; }
+.sh-wu-a { stop-color: color-mix(in srgb, color-mix(in srgb, var(--kit-lav) 70%, var(--kit-violet)) 62%, var(--kit-candle)); }
+.sh-wu-b { stop-color: color-mix(in srgb, var(--kit-violet) 80%, #1c1030); }
+.sh-wu-c { stop-color: color-mix(in srgb, var(--kit-violet-lo) 45%, #0c0614); }
+.sh-wl-a { stop-color: color-mix(in srgb, var(--kit-violet) 85%, var(--kit-lav)); }
+.sh-wl-b { stop-color: color-mix(in srgb, var(--kit-violet-lo) 90%, var(--kit-violet)); }
+.sh-wl-c { stop-color: color-mix(in srgb, var(--kit-violet-lo) 40%, #0a0512); }
+.sh-coat-a { stop-color: #120a1a; }
+.sh-coat-b { stop-color: color-mix(in srgb, var(--kit-panel-hi) 60%, var(--kit-violet-lo)); }
+.sh-coat-c { stop-color: color-mix(in srgb, #55364a 55%, var(--kit-candle)); }
+.sh-head-a { stop-color: color-mix(in srgb, #b89a86 60%, var(--kit-candle)); }
+.sh-head-b { stop-color: #7a6070; }
+.sh-head-c { stop-color: #2c2030; }
+.sh-eye-a { stop-color: #6b5a7a; }
+.sh-eye-b { stop-color: #1a1024; }
+.sh-eye-c { stop-color: #050208; }
+.sh-ruff-a { stop-color: color-mix(in srgb, #f3e6d4 70%, var(--kit-candle)); }
+.sh-ruff-b { stop-color: #8a7a88; }
+.sh-moth__wingu { fill: url(#shWingU); stroke: #0a0610; stroke-width: 1.2; }
+.sh-moth__wingl { fill: url(#shWingL); stroke: #0a0610; stroke-width: 1.2; }
+.sh-moth__vein { fill: none; stroke: color-mix(in srgb, #1a0e28 70%, transparent); stroke-width: .9; }
+.sh-moth__spot { fill: color-mix(in srgb, var(--kit-gold) 80%, var(--kit-candle)); stroke: #1a0e10; stroke-width: 1.1; }
+.sh-moth__spot--sm { fill: color-mix(in srgb, var(--kit-lav) 70%, var(--kit-gold)); }
+.sh-moth__pupil { fill: #140a18; }
+.sh-moth__wingrim { fill: none; stroke: color-mix(in srgb, var(--kit-candle) 70%, transparent); stroke-width: 1.3; stroke-linecap: round; }
+.sh-moth__band { fill: color-mix(in srgb, var(--kit-lav-hi) 34%, transparent); }
+.sh-moth__tip { fill: color-mix(in srgb, #0c0614 70%, transparent); }
+.sh-moth__dots circle { fill: color-mix(in srgb, var(--kit-lav-hi) 60%, transparent); }
+/* the lamp's warmth caught round his head, behind the fur */
+.sh-moth__halo { fill: color-mix(in srgb, var(--kit-candle) 16%, transparent); filter: blur(3px); }
+.sh-moth__coat { fill: url(#shCoat); stroke: #07040a; stroke-width: 1.2; }
+.sh-moth__coatrim { fill: none; stroke: color-mix(in srgb, var(--kit-candle) 75%, transparent); stroke-width: 1.4; }
+.sh-moth__lapel { fill: #0c0712; stroke: color-mix(in srgb, var(--kit-gold) 60%, transparent); stroke-width: .9; }
+.sh-moth__seam { fill: none; stroke: rgba(0, 0, 0, .6); stroke-width: .8; }
+.sh-moth__btn { fill: var(--kit-gold-hi); stroke: #2a1a08; stroke-width: .6; }
+.sh-moth__sleeve { fill: url(#shCoat); stroke: #07040a; stroke-width: 1; }
+.sh-moth__hand { fill: #2a1e2a; stroke: #07040a; stroke-width: .8; }
+.sh-moth__ruff { fill: url(#shRuff); stroke: none; }
+.sh-moth__fur { fill: none; stroke: color-mix(in srgb, #f6ecdc 80%, var(--kit-candle)); stroke-width: .9; stroke-linecap: round; opacity: .85; }
+.sh-moth__head { fill: url(#shHead); stroke: #0a0610; stroke-width: 1; }
+.sh-moth__fur--head { stroke: color-mix(in srgb, #d8c6c0 70%, var(--kit-candle)); stroke-width: .7; opacity: .55; }
+.sh-moth__eye { fill: url(#shEye); stroke: #050208; stroke-width: .8; }
+.sh-moth__glint { fill: #fff6e0; }
+.sh-moth__stem { fill: none; stroke: #3a2a1c; stroke-width: 1.5; stroke-linecap: round; }
+.sh-moth__barbs { fill: none; stroke: color-mix(in srgb, #8a6a4c 70%, var(--kit-candle)); stroke-width: .7; stroke-linecap: round; opacity: .9; }
+.sh-moth__glow { mix-blend-mode: screen; }
+.sh-moth__bail { fill: none; stroke: var(--kit-gold); stroke-width: 1.1; }
+.sh-moth__lampcap, .sh-moth__lampbase { fill: var(--kit-gold); stroke: #2a1a08; stroke-width: .7; }
+.sh-moth__lampglass { fill: color-mix(in srgb, var(--kit-candle) 40%, #fff3d6); stroke: #2a1a08; stroke-width: .7; opacity: .95; }
+.sh-moth__lampflame { fill: #fffbe8; filter: drop-shadow(0 0 3px var(--kit-candle)); }
+.sh-moth__lampbars { fill: none; stroke: #3a260e; stroke-width: .9; }
+
+/* ── the shelf's two ends ───────────────────────────────────────────────────
+   As the Kid board dresses its mirror's foot: the skull on its books standing
+   on the ledge at the mirror's left, lit by the lamp in the glass; at the far
+   end past the Forgetting card a candle on a book, its light on the curtain.
+   A cast brass boss caps each end of the rail (boss-rosette.webp). All of it
+   decoration: it never takes the pointer. */
+.sh-still { position: absolute; z-index: 3; pointer-events: none; bottom: calc(var(--tag-h) - var(--tag-lift) + 2px); }
+.sh-still > i { position: absolute; display: block; }
+.sh-still--l { left: clamp(2px, .3vw, 6px); width: calc(var(--keeper-w) * .52); aspect-ratio: 130 / 153; }
+.sh-still__skull { inset: 0; filter: brightness(.9) drop-shadow(0 4px 5px rgba(0, 0, 0, .8)); }
+.sh-still--r { right: clamp(0px, .2vw, 4px); width: clamp(34px, 3vw, 50px); aspect-ratio: 50 / 120; }
+/* and a candle at the mirror's right foot, as the Kid board keeps one beside its mirror */
+.sh-still--m { left: calc(var(--keeper-x) + var(--keeper-w) * .9); width: clamp(26px, 2.1vw, 36px); aspect-ratio: 106 / 164; }
+.sh-still--m > .sh-still__candle { inset: 0; }
+.sh-still__books {
+  left: -8%; right: -8%; bottom: 0; height: 30%;
+  background: url("../../assets/ui/kit/skull.webp") 50% 100% / 100% auto no-repeat;
+  filter: brightness(.82) drop-shadow(0 4px 5px rgba(0, 0, 0, .8));
+}
+.sh-still__candle { left: 6%; right: 6%; bottom: 24%; aspect-ratio: 106 / 164; }
+.sh-boss {
+  position: absolute; z-index: 4; pointer-events: none;
+  width: clamp(34px, 2.7vw, 44px); aspect-ratio: 1;
+  bottom: calc((var(--tag-h) - var(--tag-lift) + 6px - var(--sh-ledge-h) * .44) - clamp(34px, 2.7vw, 44px) / 2);
+  background: url("../../assets/ui/kit/boss-rosette.webp") 50% 50% / 100% 100% no-repeat;
+  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .85)) brightness(1.1);
+}
+.sh-boss--l { left: calc(clamp(34px, 2.7vw, 44px) * -.42); }
+.sh-boss--r { right: calc(clamp(34px, 2.7vw, 44px) * -.42); }
 .rm:not(.is-still) .sh-moth__glow { animation: sh-flicker 5.5s var(--ease-soft) infinite; }
 @keyframes sh-flicker { 0%,100% { opacity: .95; } 43% { opacity: .6; } 66% { opacity: 1; } }
 
@@ -484,9 +574,17 @@
 .sh-row__txt em { grid-area: desc; align-self: start; }
 .sh-row > .sh-buy { grid-area: buy; }
 /* a gold hairline between entries, fading at both ends like the boards' rules */
-.sh-row + .sh-row {
-  border-top: 1px solid transparent;
-  border-image: linear-gradient(90deg, transparent, color-mix(in srgb, var(--kit-gold) 45%, transparent) 18%, color-mix(in srgb, var(--kit-gold) 45%, transparent) 82%, transparent) 1;
+/* round 5: an engraved double rule between entries, a gilt star at its middle,
+   the way the boards part their sections, never a web hairline */
+.sh-row { position: relative; }
+.sh-row + .sh-row::before {
+  content: ''; position: absolute; left: 7%; right: 7%; top: 0; height: 8px; translate: 0 -50%;
+  pointer-events: none;
+  background:
+    url("../../assets/ui/kit/star4.svg") 50% 50% / 8px 8px no-repeat,
+    linear-gradient(90deg, transparent 0%, color-mix(in srgb, var(--kit-gold) 58%, transparent) 22%, color-mix(in srgb, var(--kit-gold) 58%, transparent) 45.5%, transparent 47%, transparent 53%, color-mix(in srgb, var(--kit-gold) 58%, transparent) 54.5%, color-mix(in srgb, var(--kit-gold) 58%, transparent) 78%, transparent 100%) 0 2px / 100% 1px no-repeat,
+    linear-gradient(90deg, transparent 0%, color-mix(in srgb, var(--kit-gold-lo) 70%, transparent) 22%, color-mix(in srgb, var(--kit-gold-lo) 70%, transparent) 45.5%, transparent 47%, transparent 53%, color-mix(in srgb, var(--kit-gold-lo) 70%, transparent) 54.5%, color-mix(in srgb, var(--kit-gold-lo) 70%, transparent) 78%, transparent 100%) 0 5px / 100% 1px no-repeat;
+  filter: drop-shadow(0 1px 0 rgba(0, 0, 0, .8));
 }
 .sh-row:hover { filter: brightness(1.12); }
 .sh-row.is-poor { filter: grayscale(.8) brightness(.72); }
@@ -578,58 +676,84 @@
   display: grid; align-content: center; justify-items: stretch;
   padding-top: clamp(22px, 2.8vh, 30px);
 }
-.sh-moth__say { display: grid; gap: clamp(12px, 2vh, 20px); align-content: center; }
+.sh-moth__say { display: grid; gap: clamp(3px, .6vh, 7px); align-content: center; justify-items: center; }
+/* Round 5: his saying is lettered on a CARVED PLATE set on the counter — a
+   walnut moulding round a field of velvet, a gilt bead at its lip and a cast
+   boss pinning each corner (plate-carved.webp, tools/prep_ui_dressing.py) —
+   warmed by his lamp from below; it no longer floats on the bare cloth. */
+.sh-moth__plaque {
+  --carve: clamp(15px, 1.15vw, 19px);
+  position: relative;
+  width: 100%;
+  padding: clamp(4px, .7vh, 8px) calc(var(--carve) * .4 + 14px) clamp(4px, .6vh, 7px);
+  border: var(--carve) solid transparent;
+  border-image: url("../../assets/ui/kit/plate-carved.webp") 34 / var(--carve) stretch;
+  background:
+    radial-gradient(80% 90% at 50% 110%, color-mix(in srgb, var(--kit-candle) 22%, transparent), transparent 70%),
+    radial-gradient(120% 120% at 50% 45%, transparent 45%, rgba(4, 2, 6, .7) 100%),
+    url("../../assets/ui/kit/flock.webp") 50% 0 / 233px 265px,
+    #1a0f22;
+  background-clip: padding-box;
+  background-origin: padding-box;
+  box-shadow: 0 12px 20px -10px rgba(0, 0, 0, .9);
+  filter: drop-shadow(0 6px 8px rgba(0, 0, 0, .6));
+}
+.sh-moth__plaque::before, .sh-moth__plaque::after {
+  /* a gilt fleuron at each end of the saying, set into the velvet */
+  content: ''; position: absolute; top: 50%; width: 14px; height: 14px; translate: 0 -50%;
+  background: url("../../assets/ui/kit/star4.svg") 50% 50% / 100% 100% no-repeat;
+  filter: drop-shadow(0 1px 0 rgba(0, 0, 0, .9));
+  opacity: .9;
+}
+.sh-moth__plaque::before { left: 6px; }
+.sh-moth__plaque::after { right: 6px; }
 .sh-moth__line {
   margin: 0; padding: 0 clamp(4px, .6vw, 12px);
   text-align: center; text-wrap: balance;
   font-family: var(--font-body); font-style: italic; font-weight: 600;
-  font-size: clamp(17px, 1.42vw, 23px); line-height: 1.3;
+  font-size: clamp(15px, 1.18vw, 19px); line-height: 1.24;
   color: var(--kit-lav-hi);
   text-shadow: 0 1px 0 rgba(0, 0, 0, .9), 0 0 18px color-mix(in srgb, var(--kit-violet) 45%, transparent);
 }
-/* What you carry, engraved on a band between the headings' gold double rules:
-   the name in small caps over its count, a brass stud between each. */
+/* signed: MR. MOTH on the boards' engraved rule under the plate */
+.sh-moth__by.kit-heading { font-size: max(11.5px, var(--fs-xs)); letter-spacing: .3em; }
+/* What you carry: each count struck into one of the Kid board's filigree
+   settings (socket-filigree.webp) — the gilt ring round a hollow of violet
+   enamel — its name engraved under it; four settings in a row along the
+   counter's front. */
 .sh-moth__you {
   position: relative;
   display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr);
-  margin: 0; padding: 7px 0 6px;
-  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--kit-void) 55%, transparent) 12%, color-mix(in srgb, var(--kit-void) 55%, transparent) 88%, transparent);
+  width: 100%;
+  margin: 0; padding: 0;
 }
-.sh-moth__you::before, .sh-moth__you::after {
-  content: ''; position: absolute; left: 0; right: 0; height: 4px; pointer-events: none;
-  background:
-    linear-gradient(var(--kit-gold), var(--kit-gold)) 0 0 / 100% 1px no-repeat,
-    linear-gradient(var(--kit-gold-lo), var(--kit-gold-lo)) 0 3px / 100% 1px no-repeat;
-  -webkit-mask-image: linear-gradient(90deg, transparent, black 10%, black 90%, transparent);
-          mask-image: linear-gradient(90deg, transparent, black 10%, black 90%, transparent);
-}
-.sh-moth__you::before { top: 0; }
-.sh-moth__you::after { bottom: 0; transform: scaleY(-1); }
 .sh-moth__you div {
   position: relative;
-  display: grid; grid-template-rows: 16px 24px; justify-items: center; align-items: end; gap: 1px;
+  display: grid; grid-template-rows: auto auto; justify-items: center; align-items: center; gap: 0;
   min-width: 0;
 }
-.sh-moth__you div + div::before {
-  content: ''; position: absolute; left: 0; top: 50%;
-  width: 5px; height: 5px; transform: translate(-50%, -50%) rotate(45deg);
-  background: linear-gradient(135deg, var(--kit-gold-hi), var(--kit-gold) 50%, var(--kit-gold-lo));
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, .7);
+.sh-moth__you dd {
+  grid-row: 1;
+  display: grid; place-items: center;
+  width: clamp(38px, 2.9vw, 46px); aspect-ratio: 119 / 144;
+  margin: 0; padding-top: 7%;
+  background: url("../../assets/ui/kit/socket-filigree.webp") 50% 50% / 100% 100% no-repeat;
+  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .8));
+  font-family: var(--font-num); font-weight: 700; font-size: clamp(14px, 1vw, 17px); line-height: 1;
+  font-variant-numeric: lining-nums tabular-nums;
+  color: var(--kit-gold-hi); text-shadow: 0 1px 0 rgba(0, 0, 0, .95), 0 0 10px color-mix(in srgb, var(--kit-candle) 35%, transparent);
 }
 .sh-moth__you dt {
+  grid-row: 2;
+  margin-top: -2px;
   font-family: var(--font-display); font-weight: 700; font-size: max(11.5px, calc(var(--fs-xs) * .96));
   letter-spacing: .06em; text-transform: uppercase; color: var(--kit-text-mid);
   text-shadow: 0 -1px 0 rgba(0, 0, 0, .9);
   white-space: nowrap;
 }
-.sh-moth__you dd {
-  margin: 0; font-family: var(--font-num); font-weight: 600; font-size: clamp(17px, 1.3vw, 21px); line-height: 1.1;
-  font-variant-numeric: lining-nums tabular-nums;
-  color: var(--kit-gold-hi); text-shadow: 0 1px 0 rgba(0, 0, 0, .9), 0 0 12px color-mix(in srgb, var(--kit-candle) 20%, transparent);
-}
 .sh-deck {
-  color: inherit; font: inherit; line-height: 1.1;
-  min-width: 30px; min-height: 22px; padding: 0 5px;
+  color: inherit; font: inherit; line-height: 1;
+  min-width: 26px; min-height: 22px; padding: 0 2px;
   border-bottom: 1px dotted color-mix(in srgb, var(--kit-gold) 70%, transparent);
 }
 .sh-deck:hover { color: #fff1d2; }
@@ -682,7 +806,9 @@
   .scene--shop .sh-floor { margin-top: 25px; row-gap: 15px; grid-template-rows: minmax(280px, 1fr) auto; }
   .scene--shop .rm-body { padding-bottom: 8px; }
   .sh-counter--cards.kit-panel { --rib-h: 24px; --medal-k: .84; --frame-pad: 7px; --shelf-price-h: 28px;
-                                 --keeper-w: 96px; --keeper-x: 8px; }
+                                 --keeper-w: 112px; --keeper-x: 46px; --shelf-end-r: 30px; }
+  .scene--shop .sh-still--l { width: 44px; }
+  .scene--shop .sh-keeper .sh-moth__name { z-index: 4; }
   .scene--shop .sh-cards { --gap: 21px; }
   .sh-counter--keeps.kit-panel, .sh-counter--snacks.kit-panel, .sh-counter--moth.kit-panel {
     padding: 20px 18px 14px 16px;

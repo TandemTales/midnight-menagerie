@@ -33,7 +33,7 @@
   grid-template-areas: 'prose' 'options' 'outcome';
   align-content: center; justify-items: center;
   gap: clamp(10px, 1.8vh, 22px);
-  width: min(740px, 100%);
+  width: min(780px, 100%);
 }
 /* the page is the panels' suede (.kit-mat, suede.webp), lit the way the hall
    is: the brass lamp over the ledger warms the upper page, where the words
@@ -77,19 +77,66 @@
     linear-gradient(90deg, transparent 0%, color-mix(in srgb, var(--kit-gold) 75%, transparent) 30%, color-mix(in srgb, var(--kit-gold) 75%, transparent) 46.5%, transparent 46.5%, transparent 53.5%, color-mix(in srgb, var(--kit-gold) 75%, transparent) 53.5%, color-mix(in srgb, var(--kit-gold) 75%, transparent) 70%, transparent 100%) 0 5px / 100% 1px no-repeat;
 }
 .ev-prose p {
-  --lh: 1.62;
+  --lh: 1.52;
   --p-fs: calc(var(--fs-md) * 1.1);
   --drop: calc(var(--p-fs) * var(--lh) * 3 - 6px);     /* three lines, less a hair */
   margin: 0 0 .66em;
   font-size: var(--p-fs); line-height: var(--lh); color: var(--kit-text);
+  /* ragged right, never hyphenated: a page read by candle, not a column */
+  text-align: left; hyphens: manual; -webkit-hyphens: manual;
+  text-wrap: pretty;
   text-shadow: 0 1px 0 rgba(0, 0, 0, .7);
+}
+/* ── the illuminated initial (round 5) ───────────────────────────────────────
+   A large gilded initial dropped three lines into the opening: its ground a
+   carved gilt frame with a rosette boss on each corner round deep violet
+   enamel, a gilt vine climbing its inside edge (initial-vine.webp,
+   tools/prep_ui_dressing.py), and the letter struck in gilt — the gold in the
+   stroke, a dark cut round it, the candle catching its upper edges. The box
+   is three of the page's lines tall less a hair, so the fourth line runs back
+   out under it to the full measure. */
+.ev-prose p.ev-lede { display: flow-root; }
+.ev-initial {
+  /* it hangs a little into the page's margin and above the first line, the way
+     a scribe lets an initial break the measure, and its footprint in the text
+     stays three lines less a hair, so the fourth line still runs out full */
+  --hang: 18px;
+  --cap: calc(var(--p-fs) * var(--lh) * 3 + var(--hang));
+  float: left;
+  display: grid; place-items: center;
+  width: var(--cap); height: var(--cap);
+  margin: -7px 18px calc(5px - var(--hang)) calc(-1 * clamp(18px, 1.6vw, 26px));
+  background: url("../../assets/ui/kit/initial-vine.webp") 50% 50% / 100% 100% no-repeat;
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, .75));
+  text-shadow: none;
+}
+.ev-initial__letter {
+  display: block;
+  padding-top: 7%;
+  font-family: var(--font-display); font-weight: 700; font-style: normal;
+  font-size: calc(var(--cap) * .86); line-height: 1;
+  letter-spacing: 0;
+  color: var(--kit-gold-hi);
+  background: linear-gradient(174deg, #fff8dc 0%, #f4dca0 22%, var(--kit-gold-hi) 40%, #cfa45c 60%, #a8793c 78%, #e2c07c 100%);
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 -1px 0 rgba(20, 8, 2, .9)) drop-shadow(0 1.5px 0 #140a03) drop-shadow(1px 0 0 #1c0f06) drop-shadow(-1px 0 0 #1c0f06) drop-shadow(0 0 8px color-mix(in srgb, var(--kit-candle) 40%, transparent));
+}
+/* the lead-in: a few words after the initial in the display face's spaced
+   small capitals, cut into the page — never the whole first line */
+.ev-leadin {
+  font-family: var(--font-display); font-weight: 600;
+  font-size: calc(var(--p-fs) * .9);
+  letter-spacing: .09em; text-transform: uppercase;
+  color: color-mix(in oklab, var(--kit-name) 76%, var(--kit-text));
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, .75), 0 1px 0 color-mix(in srgb, var(--kit-gold-lo) 70%, transparent);
 }
 /* The opening paragraph is set in the body's own size, never a bigger lede
    beside smaller body text. `flow-root` makes it its own block formatting
    context, so the initial cannot bleed down and indent the paragraph after it:
    every later paragraph starts flush. (event.js runs a short opening on into
    the next paragraph, so the first is always long enough to wrap the initial.) */
-.ev-prose p.ev-lede, .ev-prose p:first-child {
+.ev-page--rescue .ev-prose p:first-child {
   display: flow-root;
   margin-bottom: .66em;
 }
@@ -100,7 +147,7 @@
    lines tall less a hair, so the fourth line runs back out under it to the
    full measure. (::first-letter takes no width or height: its line box sets
    the height and the padding squares it round the glyph's own advance.) */
-.ev-prose p.ev-lede::first-letter, .ev-prose p:first-child::first-letter {
+.ev-page--rescue .ev-prose p:first-child::first-letter {
   float: left;
   margin: 6px 14px 0 0;
   font-family: var(--font-display); font-weight: 700;
@@ -119,7 +166,7 @@
    caps (MINT's), in the body's size: the display face's small capitals, cut
    into the page (a dark lip over each stroke, the candle catching the one
    under it) and warmed toward the gilt of the initial they follow. */
-.ev-prose p.ev-lede::first-line, .ev-prose p:first-child::first-line {
+.ev-page--rescue .ev-prose p:first-child::first-line {
   font-family: var(--font-display); font-weight: 600;
   font-size: calc(var(--p-fs) * .92);
   letter-spacing: .09em;
@@ -137,23 +184,29 @@
    ::before, so it is part of the hit target. A door you point at, or have
    chosen, lights warm from inside the plate; nothing draws a ring round it. */
 .ev-options {
-  grid-area: options; display: flex; flex-direction: column; gap: clamp(8px, 1.2vh, 12px);
+  grid-area: options; display: flex; flex-direction: column; gap: clamp(7px, 1vh, 10px);
   width: 100%; max-width: none;
   counter-reset: ev-door;
   padding-top: clamp(6px, 1vh, 10px);
 }
 .ev-opt {
   --md: clamp(46px, 5.6vh, 52px);
+  /* Round 5: a CARVED PLATE, not a flat bar in a thin rule. A walnut moulding
+     mitred at its corners — the ovolo rising off the page, a cove, a gilt
+     bead at its lip — a cast rosette boss pinning each corner
+     (plate-carved.webp, tools/prep_ui_dressing.py), round a field of the
+     boards' aubergine enamel, the candle on it from the side its medallion is
+     on. A door you point at, or have chosen, is the same enamel under more of
+     that light, never a different material. */
+  --carve: clamp(10px, .78vw, 12.5px);
   counter-increment: ev-door;
   position: relative;
-  display: grid; gap: 3px; text-align: left;
+  display: grid; gap: 2px; text-align: left;
   min-height: 58px;
-  margin-left: calc(var(--md) + 12px);
-  padding: 11px 26px 12px 24px;
-  /* one painted plaque for every door (.kit-plaque): plate-rect's gilt double
-     rule and brackets round aubergine enamel, the candle on it from the side
-     its medallion is on. A door you point at, or have chosen, is the same
-     enamel under more of that light — never a different material. */
+  margin-left: calc(var(--md) + 14px);
+  padding: calc(var(--carve) + 3px) calc(var(--carve) + 16px) calc(var(--carve) + 4px) calc(var(--carve) + 14px);
+  border-image: url("../../assets/ui/kit/plate-carved.webp") 34 / var(--carve) stretch;
+  box-shadow: inset 0 0 16px rgba(0, 0, 0, .55), 0 9px 16px -8px rgba(0, 0, 0, .9);
   --lit-x: 8%; --lit-y: 40%; --lit-w: 90%; --lit-h: 170%; --lit-a: 30%;
   --moon-x: 70%; --moon-y: -40%; --moon-w: 90%; --moon-h: 150%; --moon-a: 14%;
   --mat-edge: .45;
@@ -162,7 +215,7 @@
 }
 .ev-opt::before {
   content: counter(ev-door, upper-roman);
-  position: absolute; left: calc(-1 * var(--md) - 12px); top: 50%; transform: translateY(-50%);
+  position: absolute; left: calc(-1 * var(--md) - 14px); top: 50%; transform: translateY(-50%);
   width: var(--md); height: var(--md);
   display: grid; place-items: center;
   border-radius: 50%;
@@ -173,12 +226,15 @@
   padding-bottom: 1px;
   filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .8));
 }
-/* a short brass stem joins the medallion to its plate */
+/* a short brass rod joins the medallion to its plate, pinned into the
+   moulding by a cast boss */
 .ev-opt::after {
   content: ''; position: absolute; pointer-events: none;
-  left: -14px; top: 50%; width: 15px; height: 3px; transform: translateY(-50%);
-  background: linear-gradient(180deg, var(--kit-gold-hi), var(--kit-gold) 50%, var(--kit-gold-lo));
-  box-shadow: 0 1px 0 rgba(0, 0, 0, .7);
+  left: -16px; top: 50%; width: calc(16px + var(--carve) * .62); height: 12px; transform: translateY(-50%);
+  background:
+    url("../../assets/ui/kit/boss-rosette.webp") 100% 50% / 12px 12px no-repeat,
+    linear-gradient(180deg, var(--kit-gold-hi), var(--kit-gold) 50%, var(--kit-gold-lo)) 0 50% / calc(100% - 6px) 4px no-repeat;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, .8));
 }
 /* Hover and keyboard focus bring the candle closer: the same enamel, lit
    warmer and further across, the medallion's number brightening — never a
@@ -550,7 +606,8 @@
   .ev-page:not(.ev-page--rescue) { width: min(664px, 100%); }
   .ev-prose { padding-bottom: 16px; }
   .ev-prose p { --lh: 1.46; --p-fs: 16px; margin-bottom: .44em; }
-  .ev-prose p.ev-lede { margin-bottom: .44em; }
+  .ev-prose p.ev-lede { margin-bottom: .6em; }
+  .ev-initial { --hang: 13px; }
   .ev-options { gap: 8px; padding-top: 4px; }
   .ev-opt { min-height: 52px; padding-block: 8px 9px; }
   .scene--event .rm-body { padding-top: 26px; }

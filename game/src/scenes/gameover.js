@@ -33,7 +33,7 @@ import { Scene } from '../core/scenes.js';
 import { bus } from '../core/bus.js';
 import { Save } from '../core/save.js';
 import { RNG, hashSeed } from '../core/rng.js';
-import { COMPANIONS, KIDS, TERMS, REGION_ORDER } from '../data/schema.js';
+import { COMPANIONS, KIDS, TERMS, REGION_ORDER, NodeType } from '../data/schema.js';
 import { regionMeta, blueprintPlan, MASTER } from '../state/mapgen.js';
 import {
   ensureCss, fontsReady, companionPortrait, kidPortrait, petPortrait,
@@ -41,6 +41,7 @@ import {
   REGION_NAMES, COMPANION_BY_SLUG, KID_BY_SLUG,
 } from '../ui/portrait.js';
 import { kitDressMarkup } from '../ui/kitboard.js';
+import { nodeSymbol } from '../ui/mapnode.js';
 import { paintBackdrop } from '../ui/backdrop.js';
 import { pauseStageFor } from './_stage.js';
 import { fitCardToSlot } from './_cardfit.js';
@@ -112,6 +113,17 @@ const GO_GLYPH = {
   title: `<svg viewBox="0 0 24 24"><path d="M15.6 2.8a9.4 9.4 0 1 0 5.6 15.9A8 8 0 0 1 15.6 2.8z"/></svg>`,
   // straight back in: an arrow turning back on itself, towards the house
   again: `<svg viewBox="0 0 24 24"><path d="M12.4 4.2a7.8 7.8 0 1 1-7.4 10.4l2.7-1a4.9 4.9 0 1 0 4.7-6.5V10L6.8 5.7 12.4 1.4z"/></svg>`,
+};
+
+/** The engraved marks on the stat ribbon (round 5, CEDAR's idea): the map
+ *  key's own room glyphs for the rooms, and these four drawn in the same ink
+ *  on the same 48-unit grid (ui/mapnode.js), each set in a round enamel
+ *  medallion as the map's key sets them. Decorative: the label says it. */
+const STAT_GLYPH = {
+  card: `<svg viewBox="0 0 48 48" aria-hidden="true"><path class="s w1" d="M18 6h16a3 3 0 0 1 3 3v24"/><path class="s w2" d="M12 11h17a3 3 0 0 1 3 3v25a3 3 0 0 1-3 3H12a3 3 0 0 1-3-3V14a3 3 0 0 1 3-3Z"/><path class="s w1" d="M15 21h11M15 27h8"/></svg>`,
+  strike: `<svg viewBox="0 0 48 48" aria-hidden="true"><path class="s w2 j" d="M28 4 11 27h12l-5 17 19-25H25Z"/></svg>`,
+  button: `<svg viewBox="0 0 48 48" aria-hidden="true"><circle class="s w2" cx="24" cy="24" r="17"/><circle class="s w1" cx="24" cy="24" r="11"/><circle class="f" cx="20" cy="20" r="2.4"/><circle class="f" cx="28" cy="20" r="2.4"/><circle class="f" cx="20" cy="28" r="2.4"/><circle class="f" cx="28" cy="28" r="2.4"/></svg>`,
+  glass: `<svg viewBox="0 0 48 48" aria-hidden="true"><path class="s w2" d="M11 6h26M11 42h26"/><path class="s w2" d="M15 6c0 11 16 12 16 18S15 31 15 42M33 6c0 11-16 12-16 18s16 7 16 18"/><path class="f" d="M18 39c3-5 9-5 12 0Z"/></svg>`,
 };
 
 export class GameOverScene extends Scene {
@@ -504,13 +516,16 @@ export class GameOverScene extends Scene {
     return n;
   }
 
-  /* ═══ right: the ledger ══════════════════════════════════════════════════
-     Returns four pieces for the board's grid, shared across it rather than
-     crammed into one tall column: the ledger panel on the right (the final
-     Tricks and the Keepsakes); the Trick that worked hardest, standing on its
-     plinth on a shelf in the middle of the board under the two who went in;
-     under IT the record — how far, the Courage left, the wing reached and the
-     seed; and the numbers, on one gilt-rimmed plate the width of the board. */
+  /* ═══ right: the ledger, and the middle of the board ═════════════════════
+     Round 5 (CEDAR's triptych): the record is no longer a pile of plaques down
+     the middle. The ledger panel on the right carries what you finished WITH
+     — the Courage left on the fights' gauge and the seed that runs this house
+     again in its head, then the final Tricks and the Keepsakes. The middle of
+     the board, under the two who went in, is ONE focal point: a carved shelf
+     with the Trick that worked hardest centred on its pedestal under its
+     ribbon, a framed HOW FAR plaque with its large numeral to the left of it
+     and the line that says why on a framed plate to the right. Under it all
+     the numbers, on one gilt-rimmed plate, each with its engraved mark. */
   _buildLedger() {
     const s = this.summary;
     const { region } = this._cast();
@@ -520,53 +535,41 @@ export class GameOverScene extends Scene {
     led.dataset.medal = 'moon';
     led.setAttribute('aria-label', 'Expedition record');
 
-    /* --- header: HOW FAR, the ledger's one focal number, in the middle; the
-           wing it reached and the seed that would run it again on matching
-           cartouches in its two corners ------------------------------------- */
-    const who = el('div', 'go-who kit-plaque', `
-      <div class="go-who__reach go-corner">
-        <span class="go-lbl">Reached</span>
-        <span class="go-who__wing">${esc(region)} &middot; Wing ${s.wing}</span>
+    /* --- its head: Courage on the fights' gauge, the seed on its brass plate */
+    const hpK = Math.max(0, Math.min(1, s.hp / s.maxHp));
+    const head = el('div', 'go-ledhead', `
+      <div class="go-courage">
+        <span class="go-lbl">${TERMS.hp}</span>
+        <div class="go-courage__track kit-tube kit-tube--warm"><i class="kit-tube__fill" style="transform:scaleX(${hpK.toFixed(3)})"></i></div>
+        <span class="go-courage__n">${s.hp} / ${s.maxHp}</span>
+        <em class="go-courage__note">${this.won ? 'walked out with it' : 'the candle ran out'}</em>
       </div>
-      <div class="go-who__focal">
-        <b class="go-who__deep">${plural(s.floor, 'room')} deep</b>
-      </div>
-      <div class="go-seed go-corner">
+      <div class="go-seed">
         <span class="go-lbl">Seed</span>
         <span class="go-seed__row"><code class="go-seed__val">${formatSeed(s.seed)}</code>
         <button type="button" class="go-seed__copy kit-plate">Copy</button></span>
         <span class="go-seed__hint">Run this house again, exactly as it was.</span>
       </div>`);
-    // (placed on the board under the Worked Hardest card: see `out` below)
+    led.appendChild(head);
 
-    /* --- the numbers, on one gilt-rimmed plate parted by medallions ------ */
+    /* --- the numbers, on one gilt-rimmed plate, each with its engraved mark */
     const grid = el('div', 'go-stats kit-stats kit-stats--plate');
     grid.setAttribute('role', 'group');
     grid.setAttribute('aria-label', 'The numbers');
-    const stat = (label, value, sub) =>
-      `<div class="go-stat"><span class="go-lbl kit-stats__label">${esc(label)}</span>` +
-      `<b class="kit-stats__value">${esc(value)}</b>${sub ? `<em>${esc(sub)}</em>` : ''}</div>`;
+    const G = STAT_GLYPH;
+    const stat = (label, value, glyph) =>
+      `<div class="go-stat"><span class="go-stat__ico" aria-hidden="true">${glyph}</span>`
+      + `<span class="go-lbl kit-stats__label">${esc(label)}</span>`
+      + `<b class="kit-stats__value">${esc(value)}</b></div>`;
     grid.innerHTML =
-      stat(`${TERMS.combat}s won`, s.scuffles) +
-      stat(`${TERMS.elite}s`, s.bigScares) +
-      stat('Curiosities', s.curiosity) +
-      stat(`${TERMS.rest}s`, s.safeRooms) +
-      stat(`${TERMS.card}s played`, s.cardsPlay) +
-      stat('Damage dealt', s.damage) +
-      stat(TERMS.gold, s.gold) +
-      stat('Turns taken', s.turns);
-
-    /* --- Courage bar: the shape of the ending, in the header between the
-           two — how far you got, and how much of you was left ------------- */
-    const bar = el('div', 'go-courage');
-    // the Kid's own gauge from the fights: amber enamel in its brass tube
-    const hpK = Math.max(0, Math.min(1, s.hp / s.maxHp));
-    bar.innerHTML =
-      `<span class="go-lbl">${TERMS.hp}</span>` +
-      `<div class="go-courage__track kit-tube kit-tube--warm"><i class="kit-tube__fill" style="transform:scaleX(${hpK.toFixed(3)})"></i></div>` +
-      `<span class="go-courage__n">${s.hp} / ${s.maxHp}</span>` +
-      `<em class="go-courage__note">${this.won ? 'walked out with it' : 'the candle ran out'}</em>`;
-    who.querySelector('.go-who__focal').appendChild(bar);
+      stat(`${TERMS.combat}s won`, s.scuffles, nodeSymbol(NodeType.SCUFFLE, 20)) +
+      stat(`${TERMS.elite}s`, s.bigScares, nodeSymbol(NodeType.BIG_SCARE, 20)) +
+      stat('Curiosities', s.curiosity, nodeSymbol(NodeType.CURIOSITY, 20)) +
+      stat(`${TERMS.rest}s`, s.safeRooms, nodeSymbol(NodeType.SAFE, 20)) +
+      stat(`${TERMS.card}s played`, s.cardsPlay, G.card) +
+      stat('Damage dealt', s.damage, G.strike) +
+      stat(TERMS.gold, s.gold, G.button) +
+      stat('Turns taken', s.turns, G.glass);
 
     /* --- final deck ------------------------------------------------------- */
     const deck = el('div', 'go-block go-block--deck');
@@ -577,22 +580,6 @@ export class GameOverScene extends Scene {
     this._deckHost = deck.querySelector('.go-tricks');
     this._deckTotal = deck.querySelector('[data-deck-total]');
 
-    /* --- the card that did the work: on its gilt plinth, mid-board -------- */
-    const mvp = el('div', 'go-block go-block--mvp');
-    // A museum piece: the card in its frame on its gilt plinth, standing on a
-    // carved shelf, and beside it on the same shelf its label, WORKED HARDEST
-    // over the line that says why, on a bracketed plaque.
-    mvp.innerHTML = `<div class="go-mvp"><div class="go-mvp__slot kit-cards"></div>
-      <div class="go-mvp__label kit-plaque">
-        <h2 class="go-h go-mvp__h kit-heading">Worked hardest <em class="go-h__n" data-mvp-n></em></h2>
-        <p class="go-mvp__note"></p>
-      </div></div>`;
-    this._mvpSlot = mvp.querySelector('.go-mvp__slot');
-    this._mvpNote = mvp.querySelector('.go-mvp__note');
-    this._mvpN = mvp.querySelector('[data-mvp-n]');
-    this._mvpBlock = mvp;
-    mvp.hidden = true;
-
     /* --- keepsakes: what came out with you ------------------------------- */
     const keep = el('div', 'go-block go-block--keep');
     keep.innerHTML =
@@ -602,9 +589,42 @@ export class GameOverScene extends Scene {
     this._keepHost = keep.querySelector('.go-keeps');
     this._keepTotal = keep.querySelector('[data-keep-total]');
 
+    /* --- the triptych, on one carved shelf -------------------------------- */
+    const altar = el('div', 'go-altar');
+    const reach = el('div', 'go-reach go-tri', `
+      <span class="go-tri__h">How far</span>
+      <b class="go-reach__n">${s.floor}</b>
+      <span class="go-reach__unit">${word(s.floor, 'room')} deep</span>
+      <i class="go-tri__rule" aria-hidden="true"></i>
+      <span class="go-reach__where">${esc(region)}</span>
+      <span class="go-reach__wing">Wing ${s.wing}</span>`);
+    reach.setAttribute('role', 'group');
+    reach.setAttribute('aria-label', `${plural(s.floor, 'room')} deep, in ${region}, wing ${s.wing}`);
+    altar.appendChild(reach);
+
+    const mvp = el('div', 'go-block go-block--mvp');
+    // A museum piece: the card in its frame on its gilt pedestal, its label on
+    // the ribbon over it; what the run made of it is the plate to its right.
+    mvp.innerHTML = `<h2 class="go-h go-mvp__h kit-heading kit-heading--ribbon kit-heading--inline">Worked hardest <em class="go-h__n" data-mvp-n></em></h2>
+      <div class="go-mvp"><div class="go-mvp__slot kit-cards"></div></div>`;
+    this._mvpSlot = mvp.querySelector('.go-mvp__slot');
+    this._mvpN = mvp.querySelector('[data-mvp-n]');
+    this._mvpBlock = mvp;
+    mvp.hidden = true;
+    altar.appendChild(mvp);
+
+    const said = el('div', 'go-said go-tri', `<i class="go-said__mark" aria-hidden="true"></i><p class="go-mvp__note"></p><i class="go-tri__rule" aria-hidden="true"></i>`);
+    said.hidden = true;
+    this._mvpNote = said.querySelector('.go-mvp__note');
+    this._mvpSaid = said;
+    altar.appendChild(said);
+
+    const shelf = el('i', 'go-altar__shelf kit-ledge');
+    shelf.setAttribute('aria-hidden', 'true');
+    altar.appendChild(shelf);
+
     out.appendChild(led);
-    out.appendChild(mvp);
-    out.appendChild(who);
+    out.appendChild(altar);
     out.appendChild(grid);
     return out;
   }
@@ -763,6 +783,7 @@ export class GameOverScene extends Scene {
              <b>${name}</b>, right up until it was not enough.`;
       }
       this._mvpBlock.hidden = false;
+      if (this._mvpSaid) this._mvpSaid.hidden = false;
     } catch { /* card-feel's renderer is not available; the list above stands */ }
   }
 
@@ -948,7 +969,7 @@ export class GameOverScene extends Scene {
     this._cards.length = 0;
     try { this.ctx.atmosphere?.dread?.(0, 0.4); } catch {}
     this._acts = this._deckHost = this._keepHost = this._board = null;
-    this._mvpSlot = this._mvpNote = this._mvpN = this._mvpBlock = null;
+    this._mvpSlot = this._mvpNote = this._mvpN = this._mvpBlock = this._mvpSaid = null;
     this._deckTotal = this._keepTotal = null;
     this.root.innerHTML = '';
   }

@@ -326,20 +326,10 @@
    rectangle laid over the drawing. */
 .mi-zone { color: #9b2f2a; transition: opacity var(--t-base); }
 .mi-zone--boon { color: #2f6680; }
-.mi-zone-wash { fill: currentColor; opacity: .13; }
-.mi-zone-pool { fill: currentColor; opacity: .06; }
-.mi-zone-bloom { fill: color-mix(in srgb, currentColor 50%, var(--parchment)); opacity: .09; }
-.mi-zone-hatch { opacity: .08; }
-.mi-zone-tide {
-  fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linejoin: round;
-  opacity: .12;
-}
-.mi-zone-edge {
-  fill: none; stroke: currentColor; stroke-width: 5; stroke-linejoin: round;
-  opacity: .22;
-}
-/* the same edge pooled again a hair off: where the two meet the pigment is darker */
-.mi-zone-edge--pool { stroke-width: 3.2; opacity: .16; }
+/* round 5: the stain itself (map.js STAIN), multiplied into the paper the way
+   a glaze sinks into it, so the plan's ink and the paper's grain show through */
+.mi-zone-stain { opacity: 1; }
+.mi-zone-hatch { opacity: .1; }
 /* The wing's keyed symbol.  Same mark as the bar's note wears, so the plan and
    the margin legend read as one thing. */
 /* the key is a wax seal pressed onto the sheet: a ragged melted rim, the
@@ -486,17 +476,23 @@
      placement pass set it */
   transform: translateX(calc(-50% + var(--mn-dx, 0px))) scale(var(--lab-s, 1));
   transform-origin: 50% 0;
+  /* Round 5: a CARTOUCHE, not a pill that reads as a tooltip: the Companion
+     tiles' arched nameplate (plate-arch.webp), its ogee ends curling in gilt
+     and a low arch rising over the name, violet enamel filled to its rim and
+     screwed down on the plan with its own shadow on the paper. */
+  --tag-h: 33px;
   font-family: var(--font-body); font-size: 16.5px; font-weight: 600;
-  letter-spacing: .01em; white-space: nowrap; line-height: 1.15;
-  max-width: 320px;
+  letter-spacing: .015em; white-space: nowrap; line-height: 1.1;
+  max-width: 360px;
   color: var(--kit-name);
   background: none;
-  padding: 2px 17px 4px;
+  padding: calc(var(--tag-h) * .22) calc(var(--tag-h) * .72) calc(var(--tag-h) * .06);
   border: 0 solid transparent;
-  border-image: url("../../assets/ui/kit/cartouche-dark.webp") 18 34 18 34 fill / 8px 15px stretch;
+  border-image: url("../../assets/ui/kit/plate-arch.webp") 40 84 22 84 fill /
+    calc(var(--tag-h) * 40 / 132) calc(var(--tag-h) * 84 / 132) calc(var(--tag-h) * 22 / 132) calc(var(--tag-h) * 84 / 132) stretch;
   border-radius: 0;
   box-shadow: none;
-  filter: drop-shadow(0 2px 2px rgba(40, 24, 10, .55));
+  filter: drop-shadow(0 2px 1px rgba(30, 16, 6, .7)) drop-shadow(0 5px 6px rgba(40, 24, 10, .45));
   opacity: 0; pointer-events: none;
   transition: opacity var(--t-quick) var(--ease-out);
   text-shadow: 0 1px 0 rgba(0, 0, 0, .9);

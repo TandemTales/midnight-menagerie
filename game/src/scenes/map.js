@@ -83,6 +83,12 @@ const CSS_READY = (() => {
 })();
 
 const ROMAN = ['','I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII','XIII','XIV','XV','XVI','XVII'];
+/** The wings' watercolour washes (tools/prep_ui_dressing.py): madder for a
+ *  wing that works against you, indigo for a boon. */
+const STAIN = {
+  bane: new URL('../../assets/ui/kit/stain-madder.webp', import.meta.url).href,
+  boon: new URL('../../assets/ui/kit/stain-indigo.webp', import.meta.url).href,
+};
 /** Pseudo-node standing for the doorway you came in through. */
 const ENTRY = '__in';
 /** The walked route as this screen draws it: the doorway, then the rooms. */
@@ -1002,6 +1008,9 @@ export class MapScene extends Scene {
     const KEY = 40;
     // where each seal lands, so no room's name plate is laid over one (_placeTags)
     this._seals = [];
+    // the stains are laid over the route's clean-paper halos, pigment on the
+    // paper the pencil wiped, and under the graphite itself (see below)
+    const stains = [];
     parts.push('<g class="mi-zones">');
     for (const hz of map.hazards) {
       const x = hz.rect.x0 * this.SW, y = hz.rect.y0 * this.SH;
@@ -1023,23 +1032,29 @@ export class MapScene extends Scene {
       // a short leader from the roundel back to the nearest point on the boundary
       const ax = best.px + KEY / 2, ay = best.py + KEY / 2;
       const bx = clampN(ax, x, x + w), by = clampN(ay, y, y + h);
-      /* A soft painted wash, laid on with a brush (662d874's): a pale bloom of
-         pigment with a paler heart where it ran thin, pooled darker at its
-         deckled edge as it dried, a tide line just inside that, and the key's
-         hatch a breath of texture in it that follows the brush, never a box.
-         No dash and no ruled edge: a dashed rectangle read as a selection. */
+      /* Round 5: a WATERCOLOUR STAIN that registers (CEDAR's, round 4), not a
+         pale rounded rectangle. The wing's pigment laid into its footprint by
+         a loaded brush — pools run together, pooled dark where the water
+         dried against their wandering edge, a tide line, back-runs, a second
+         pigment that did not quite mix, the paper's tooth holding grains of it
+         (stain-madder / stain-indigo.webp, tools/prep_ui_dressing.py) — laid a
+         little past the wing's rectangle so its rooms sit in the colour, and
+         turned by the wing's own seed so no two wings wear the same stain. The
+         key's hatch (dots for a boon) stays in it as a breath of texture, so
+         the two kinds still differ by more than colour. */
       const deck = deckledRect(s, x, y, w, h, 40, 2.6);
-      // the pigment sits unevenly: a second, smaller pool of it off to one side
-      const px2 = x + w * (0.08 + ((s >>> 5) % 17) / 100), py2 = y + h * (0.1 + ((s >>> 11) % 13) / 100);
+      const sx = (s & 1) ? -1 : 1, sy = (s & 2) ? -1 : 1;
+      const ix = w * .07, iy = h * .12;
+      const cxz = x + w / 2, cyz = y + h / 2;
+      const stainUrl = STAIN[hz.kind === 'boon' ? 'boon' : 'bane'];
+      stains.push(`<g class="mi-zone mi-zone--${hz.kind}" data-hz="${hz.id}">
+        <image class="mi-zone-stain" href="${stainUrl}" preserveAspectRatio="none"
+               x="${(-w / 2 - ix).toFixed(1)}" y="${(-h / 2 - iy).toFixed(1)}"
+               width="${(w + 2 * ix).toFixed(1)}" height="${(h + 2 * iy).toFixed(1)}"
+               transform="translate(${cxz.toFixed(1)} ${cyz.toFixed(1)}) scale(${sx} ${sy})"/></g>`);
       parts.push(`<g class="mi-zone mi-zone--${hz.kind}" data-hz="${hz.id}">
-        <path class="mi-zone-wash" d="${deck}"/>
-        <path class="mi-zone-pool" d="${deckledRect(s ^ 0x51f, px2, py2, w * .58, h * .62, 36, 2)}"/>
-        <path class="mi-zone-bloom" d="${deckledRect(s ^ 0x3c1, x + 18, y + 16, w - 36, h - 32, 30, 1.6)}"/>
         <path class="mi-zone-hatch" d="${deck}"
               fill="url(#${hz.kind === 'boon' ? 'mm-dots' : 'mm-hatch'})"/>
-        <path class="mi-zone-tide" d="${deckledRect(s ^ 0x7a9, x + 7, y + 7, w - 14, h - 14, 34, 2.2)}"/>
-        <path class="mi-zone-edge" d="${deck}"/>
-        <path class="mi-zone-edge mi-zone-edge--pool" d="${deckledRect(s ^ 0x9d1, x + 1, y + 1, w - 2, h - 2, 40, 2.6)}"/>
         <g class="mi-zone-key">
           <path class="mi-zone-lead" d="M${ax.toFixed(1)} ${ay.toFixed(1)} L${bx.toFixed(1)} ${by.toFixed(1)}"/>
           <path class="mi-seal-melt" d="${sealMelt(s, ax, ay, KEY / 2 + 4)}"/>
@@ -1126,6 +1141,7 @@ export class MapScene extends Scene {
         ' mi-edge--entry');
     }
     parts.push('<g class="mi-halos">'  + halos.join('')  + '</g>');
+    parts.push('<g class="mi-stains">' + stains.join('') + '</g>');
     parts.push('<g class="mi-shades">' + shades.join('') + '</g>');
     parts.push('<g class="mi-ghosts">' + ghosts.join('') + '</g>');
     parts.push('<g class="mi-edges">'  + lines.join('')  + '</g>');
