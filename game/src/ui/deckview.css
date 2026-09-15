@@ -178,7 +178,7 @@
      frame's corner held low over the middle of it, so the pattern stands up
      in its light where the Tricks lie and sinks into the velvet's shadow at
      the ends and under the lid's rail */
-  --mat-veil: .12; --mat-edge: .78; --mat-size: 350px 398px;
+  --mat-veil: .2; --mat-edge: .78; --mat-size: 350px 398px;
   --lit-x: 54%; --lit-y: 64%; --lit-w: 78%; --lit-h: 96%; --lit-a: 62%;
 }
 /* the recess shading the stage lays over its floor, eased so the relief shows */

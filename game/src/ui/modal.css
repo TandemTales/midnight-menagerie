@@ -163,13 +163,17 @@
 /* the panel in the room's light, not an even fill: the candle burning on its
    lower right corner warms the damask round it, a little light falls from
    under the plaque, and the cloth sinks into shadow towards the far corners.
+   Under all of it a glaze takes the damask down to the Kid board's own
+   near-black (its dossier panels measure about 20,18,22), so the gilt and the
+   lettering carry the light, as they do in the samples, and not the cloth.
    (A dialog wears no medallion, so the panel's ::before is free.) */
 .mm-modal--kit .mm-modal__dialog::before {
   content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none;
   background:
     radial-gradient(46% 58% at 100% 100%, color-mix(in srgb, var(--kit-candle) 11%, transparent), transparent 70%),
     radial-gradient(56% 30% at 50% 0%, color-mix(in srgb, var(--kit-candle) 7%, transparent), transparent 72%),
-    radial-gradient(130% 118% at 44% 40%, transparent 46%, rgba(5, 3, 8, .55) 100%);
+    radial-gradient(130% 118% at 44% 40%, transparent 46%, rgba(5, 3, 8, .55) 100%),
+    linear-gradient(rgba(8, 5, 11, .42), rgba(8, 5, 11, .42));
 }
 
 /* the plaque across the top rail: the cartouche's middle ON the rail */
