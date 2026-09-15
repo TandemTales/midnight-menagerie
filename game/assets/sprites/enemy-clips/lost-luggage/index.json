@@ -1,0 +1,155 @@
+{
+ "clips": {
+  "attack": {
+   "file": "attack.webp",
+   "frames": 81,
+   "cols": 9,
+   "rows": 9,
+   "fw": 335,
+   "fh": 301,
+   "anchor": [
+    170.38,
+    286.35
+   ],
+   "source": "SS_suitcase_attack.png",
+   "matte": "CONTAM",
+   "bg": [
+    162.2,
+    152.2,
+    150.5
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": -7.8,
+   "dehalo": false,
+   "warm": 113.0,
+   "dewhite": false,
+   "dip": 0.392,
+   "untail": false,
+   "deblack": false,
+   "endIoU": 0.979,
+   "scale": 0.8477,
+   "unit": 256.0,
+   "loop": false,
+   "fps": 60,
+   "hold": false,
+   "sha1": "fa04535ef63ac997"
+  },
+  "defeat": {
+   "file": "defeat.webp",
+   "frames": 23,
+   "cols": 9,
+   "rows": 3,
+   "fw": 323,
+   "fh": 300,
+   "anchor": [
+    162.42,
+    292.34
+   ],
+   "source": "SS_suitcase_defeat.png",
+   "matte": "CONTAM",
+   "bg": [
+    164.9,
+    156.1,
+    154.7
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": -12.8,
+   "dehalo": false,
+   "warm": 116.0,
+   "dewhite": false,
+   "dip": 0.621,
+   "untail": false,
+   "deblack": false,
+   "endIoU": 0.522,
+   "scale": 0.8477,
+   "unit": 256.0,
+   "loop": false,
+   "fps": 40,
+   "hold": true,
+   "sha1": "107f7641de0eb3ed",
+   "sourceFrames": 81
+  },
+  "hurt": {
+   "file": "hurt.webp",
+   "frames": 81,
+   "cols": 9,
+   "rows": 9,
+   "fw": 346,
+   "fh": 279,
+   "anchor": [
+    152.92,
+    269.67
+   ],
+   "source": "SS_suitcase_hurt.png",
+   "matte": "CONTAM",
+   "bg": [
+    158.9,
+    153.4,
+    153.9
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": -7.8,
+   "dehalo": false,
+   "warm": 116.0,
+   "dewhite": false,
+   "dip": 0.535,
+   "untail": false,
+   "deblack": false,
+   "endIoU": 0.965,
+   "scale": 0.8477,
+   "unit": 256.0,
+   "loop": false,
+   "fps": 60,
+   "hold": false,
+   "sha1": "2527f24cae4a3f25"
+  },
+  "idle": {
+   "file": "idle.webp",
+   "frames": 81,
+   "cols": 9,
+   "rows": 9,
+   "fw": 309,
+   "fh": 277,
+   "anchor": [
+    152.77,
+    265.52
+   ],
+   "source": "SS_suitcase_idle.png",
+   "matte": "CONTAM",
+   "bg": [
+    169.8,
+    163.9,
+    164.3
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": -13.6,
+   "dehalo": false,
+   "warm": 113.0,
+   "dewhite": false,
+   "dip": 0.619,
+   "untail": false,
+   "deblack": false,
+   "endIoU": 0.713,
+   "scale": 0.8477,
+   "unit": 256.0,
+   "loop": true,
+   "fps": 20,
+   "hold": false,
+   "sha1": "e8d05ffcc9c726ff"
+  }
+ },
+ "scale": 0.8477,
+ "unit": 256.0
+}

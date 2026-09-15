@@ -1,0 +1,155 @@
+{
+ "clips": {
+  "attack": {
+   "file": "attack.webp",
+   "frames": 81,
+   "cols": 9,
+   "rows": 9,
+   "fw": 307,
+   "fh": 268,
+   "anchor": [
+    149.2,
+    262.33
+   ],
+   "source": "SS_jamJar_attack.png",
+   "matte": "CONTAM",
+   "bg": [
+    201.4,
+    193.7,
+    186.7
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": -20.2,
+   "dehalo": false,
+   "warm": 103.0,
+   "dewhite": false,
+   "dip": 0.556,
+   "untail": false,
+   "deblack": false,
+   "endIoU": 0.981,
+   "scale": 0.7464,
+   "unit": 256.0,
+   "loop": false,
+   "fps": 60,
+   "hold": false,
+   "sha1": "bbe615df2c25941d"
+  },
+  "defeat": {
+   "file": "defeat.webp",
+   "frames": 15,
+   "cols": 9,
+   "rows": 2,
+   "fw": 260,
+   "fh": 269,
+   "anchor": [
+    134.7,
+    255.78
+   ],
+   "source": "SS_jamJar_defeat.png",
+   "matte": "CONTAM",
+   "bg": [
+    169.7,
+    167.7,
+    167.1
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": -9.6,
+   "dehalo": false,
+   "warm": 78.0,
+   "dewhite": false,
+   "dip": 0.406,
+   "untail": false,
+   "deblack": false,
+   "endIoU": 0.533,
+   "scale": 0.7464,
+   "unit": 256.0,
+   "loop": false,
+   "fps": 40,
+   "hold": true,
+   "sha1": "6b23ba0a622d6346",
+   "sourceFrames": 81
+  },
+  "hurt": {
+   "file": "hurt.webp",
+   "frames": 81,
+   "cols": 9,
+   "rows": 9,
+   "fw": 270,
+   "fh": 262,
+   "anchor": [
+    135.67,
+    259.73
+   ],
+   "source": "SS_jamJar_hurt.png",
+   "matte": "CONTAM",
+   "bg": [
+    167.5,
+    167.3,
+    166.4
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": -12.0,
+   "dehalo": false,
+   "warm": 79.0,
+   "dewhite": false,
+   "dip": 0.554,
+   "untail": false,
+   "deblack": false,
+   "endIoU": 0.99,
+   "scale": 0.7464,
+   "unit": 256.0,
+   "loop": false,
+   "fps": 60,
+   "hold": false,
+   "sha1": "f23d72d654461385"
+  },
+  "idle": {
+   "file": "idle.webp",
+   "frames": 81,
+   "cols": 9,
+   "rows": 9,
+   "fw": 275,
+   "fh": 268,
+   "anchor": [
+    133.99,
+    264.21
+   ],
+   "source": "SS_jamJar_idle.png",
+   "matte": "CONTAM",
+   "bg": [
+    170.4,
+    167.0,
+    166.9
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": -12.6,
+   "dehalo": false,
+   "warm": 78.0,
+   "dewhite": false,
+   "dip": 0.645,
+   "untail": false,
+   "deblack": false,
+   "endIoU": 0.99,
+   "scale": 0.7464,
+   "unit": 256.0,
+   "loop": true,
+   "fps": 20,
+   "hold": false,
+   "sha1": "2dde45146fc6b687"
+  }
+ },
+ "scale": 0.7464,
+ "unit": 256.0
+}

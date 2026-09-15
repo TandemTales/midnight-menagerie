@@ -1,0 +1,155 @@
+{
+ "clips": {
+  "attack": {
+   "file": "attack.webp",
+   "frames": 81,
+   "cols": 9,
+   "rows": 9,
+   "fw": 397,
+   "fh": 397,
+   "anchor": [
+    191.68,
+    383.93
+   ],
+   "source": "SS_coatrackCrawler_attack.png",
+   "matte": "CONTAM",
+   "bg": [
+    180.1,
+    172.7,
+    171.6
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": 0.3,
+   "dehalo": false,
+   "warm": 85.0,
+   "dewhite": false,
+   "dip": 0.561,
+   "untail": false,
+   "deblack": false,
+   "endIoU": 0.964,
+   "scale": 1.0,
+   "unit": 364.0,
+   "loop": false,
+   "fps": 60,
+   "hold": false,
+   "sha1": "973ab40ba44519e7"
+  },
+  "defeat": {
+   "file": "defeat.webp",
+   "frames": 34,
+   "cols": 9,
+   "rows": 4,
+   "fw": 385,
+   "fh": 400,
+   "anchor": [
+    201.39,
+    359.61
+   ],
+   "source": "SS_coatrackCrawler_defeat.png",
+   "matte": "CONTAM",
+   "bg": [
+    174.1,
+    167.9,
+    166.4
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": 3.5,
+   "dehalo": false,
+   "warm": 107.0,
+   "dewhite": false,
+   "dip": 0.289,
+   "untail": false,
+   "deblack": false,
+   "endIoU": 0.298,
+   "scale": 0.9281,
+   "unit": 337.82,
+   "loop": false,
+   "fps": 40,
+   "hold": true,
+   "sha1": "faa021142c1e1ca9",
+   "sourceFrames": 81
+  },
+  "hurt": {
+   "file": "hurt.webp",
+   "frames": 81,
+   "cols": 9,
+   "rows": 9,
+   "fw": 308,
+   "fh": 400,
+   "anchor": [
+    147.07,
+    364.74
+   ],
+   "source": "SS_coatrackCrawler_hurt.png",
+   "matte": "CONTAM",
+   "bg": [
+    179.3,
+    171.9,
+    170.9
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": 0.5,
+   "dehalo": false,
+   "warm": 103.0,
+   "dewhite": false,
+   "dip": 0.359,
+   "untail": false,
+   "deblack": false,
+   "endIoU": 0.987,
+   "scale": 0.939,
+   "unit": 341.78,
+   "loop": false,
+   "fps": 60,
+   "hold": false,
+   "sha1": "3782ccdd36a5e419"
+  },
+  "idle": {
+   "file": "idle.webp",
+   "frames": 81,
+   "cols": 9,
+   "rows": 9,
+   "fw": 245,
+   "fh": 370,
+   "anchor": [
+    123.3,
+    367.0
+   ],
+   "source": "SS_coatrackCrawler_idle.png",
+   "matte": "CONTAM",
+   "bg": [
+    184.1,
+    182.6,
+    183.8
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": 1.3,
+   "dehalo": false,
+   "warm": 85.0,
+   "dewhite": false,
+   "dip": 0.658,
+   "untail": false,
+   "deblack": false,
+   "endIoU": 0.986,
+   "scale": 1.0,
+   "unit": 364.0,
+   "loop": true,
+   "fps": 20,
+   "hold": false,
+   "sha1": "9de40cdeb04002c8"
+  }
+ },
+ "scale": 1.0,
+ "unit": 364.0
+}

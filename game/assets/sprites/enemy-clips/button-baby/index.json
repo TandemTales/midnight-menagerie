@@ -1,0 +1,155 @@
+{
+ "clips": {
+  "attack": {
+   "file": "attack.webp",
+   "frames": 81,
+   "cols": 9,
+   "rows": 9,
+   "fw": 338,
+   "fh": 292,
+   "anchor": [
+    154.1,
+    287.75
+   ],
+   "source": "SS_buttonBaby_attack.png",
+   "matte": "CONTAM",
+   "bg": [
+    157.2,
+    149.6,
+    157.8
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": -18.2,
+   "dehalo": false,
+   "warm": 59.0,
+   "dewhite": false,
+   "dip": 0.383,
+   "untail": false,
+   "deblack": false,
+   "endIoU": 0.993,
+   "scale": 0.8339,
+   "unit": 256.0,
+   "loop": false,
+   "fps": 60,
+   "hold": false,
+   "sha1": "534535874e822e23"
+  },
+  "defeat": {
+   "file": "defeat.webp",
+   "frames": 35,
+   "cols": 9,
+   "rows": 4,
+   "fw": 334,
+   "fh": 274,
+   "anchor": [
+    177.18,
+    270.82
+   ],
+   "source": "SS_buttonBaby_defeat.png",
+   "matte": "CONTAM",
+   "bg": [
+    158.0,
+    152.1,
+    158.6
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": -22.5,
+   "dehalo": false,
+   "warm": 25.0,
+   "dewhite": false,
+   "dip": 0.525,
+   "untail": false,
+   "deblack": false,
+   "endIoU": 0.414,
+   "scale": 0.8339,
+   "unit": 256.0,
+   "loop": false,
+   "fps": 40,
+   "hold": true,
+   "sha1": "d7bc81ba858c20a5",
+   "sourceFrames": 81
+  },
+  "hurt": {
+   "file": "hurt.webp",
+   "frames": 81,
+   "cols": 9,
+   "rows": 9,
+   "fw": 333,
+   "fh": 267,
+   "anchor": [
+    185.43,
+    262.25
+   ],
+   "source": "SS_buttonBaby_hurt.png",
+   "matte": "CONTAM",
+   "bg": [
+    153.7,
+    147.4,
+    157.6
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": -23.2,
+   "dehalo": false,
+   "warm": 56.0,
+   "dewhite": false,
+   "dip": 0.381,
+   "untail": false,
+   "deblack": false,
+   "endIoU": 0.971,
+   "scale": 0.8339,
+   "unit": 256.0,
+   "loop": false,
+   "fps": 60,
+   "hold": false,
+   "sha1": "4ec0205736ee6edc"
+  },
+  "idle": {
+   "file": "idle.webp",
+   "frames": 81,
+   "cols": 9,
+   "rows": 9,
+   "fw": 252,
+   "fh": 262,
+   "anchor": [
+    126.69,
+    259.34
+   ],
+   "source": "SS_buttonBaby_idle.png",
+   "matte": "CONTAM",
+   "bg": [
+    177.9,
+    167.0,
+    181.4
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": -29.5,
+   "dehalo": false,
+   "warm": 58.0,
+   "dewhite": false,
+   "dip": 0.508,
+   "untail": false,
+   "deblack": false,
+   "endIoU": 0.991,
+   "scale": 0.8339,
+   "unit": 256.0,
+   "loop": true,
+   "fps": 20,
+   "hold": false,
+   "sha1": "ceca3c8e1626a0c4"
+  }
+ },
+ "scale": 0.8339,
+ "unit": 256.0
+}

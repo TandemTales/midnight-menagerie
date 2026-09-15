@@ -1,0 +1,192 @@
+{
+ "clips": {
+  "attack": {
+   "file": "attack.webp",
+   "frames": 81,
+   "cols": 9,
+   "rows": 9,
+   "fw": 343,
+   "fh": 396,
+   "anchor": [
+    180.38,
+    371.45
+   ],
+   "source": "SS_governess_attack.png",
+   "matte": "CONTAM",
+   "bg": [
+    182.9,
+    176.8,
+    182.5
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": 8.4,
+   "dehalo": false,
+   "warm": 24.0,
+   "dewhite": false,
+   "dip": 0.544,
+   "untail": false,
+   "deblack": false,
+   "endIoU": 0.982,
+   "scale": 1.0,
+   "unit": 358.0,
+   "loop": false,
+   "fps": 60,
+   "hold": false,
+   "sha1": "3772342e3fb7bfe8"
+  },
+  "cast": {
+   "file": "cast.webp",
+   "frames": 81,
+   "cols": 9,
+   "rows": 9,
+   "fw": 331,
+   "fh": 400,
+   "anchor": [
+    156.74,
+    375.62
+   ],
+   "source": "SS_governess_cast.png",
+   "matte": "CONTAM",
+   "bg": [
+    182.4,
+    176.0,
+    180.1
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": 8.6,
+   "dehalo": false,
+   "warm": 27.0,
+   "dewhite": false,
+   "dip": 0.499,
+   "untail": false,
+   "deblack": false,
+   "endIoU": 0.984,
+   "scale": 0.9259,
+   "unit": 331.48,
+   "loop": false,
+   "fps": 48,
+   "hold": false,
+   "sha1": "733aa070b1df4a63"
+  },
+  "defeat": {
+   "file": "defeat.webp",
+   "frames": 32,
+   "cols": 9,
+   "rows": 4,
+   "fw": 400,
+   "fh": 362,
+   "anchor": [
+    200.46,
+    340.01
+   ],
+   "source": "SS_governess_defeat.png",
+   "matte": "CONTAM",
+   "bg": [
+    181.2,
+    175.9,
+    181.1
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": 9.6,
+   "dehalo": false,
+   "warm": 25.0,
+   "dewhite": false,
+   "dip": 0.425,
+   "untail": false,
+   "deblack": false,
+   "endIoU": 0.264,
+   "scale": 0.9281,
+   "unit": 332.25,
+   "loop": false,
+   "fps": 40,
+   "hold": true,
+   "sha1": "a924eb57bb74c30a",
+   "sourceFrames": 81
+  },
+  "hurt": {
+   "file": "hurt.webp",
+   "frames": 81,
+   "cols": 9,
+   "rows": 9,
+   "fw": 329,
+   "fh": 383,
+   "anchor": [
+    159.15,
+    375.65
+   ],
+   "source": "SS_governess_hurt.png",
+   "matte": "CONTAM",
+   "bg": [
+    175.3,
+    168.2,
+    174.5
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": 6.4,
+   "dehalo": false,
+   "warm": 28.0,
+   "dewhite": false,
+   "dip": 0.468,
+   "untail": false,
+   "deblack": false,
+   "endIoU": 0.982,
+   "scale": 1.0,
+   "unit": 358.0,
+   "loop": false,
+   "fps": 60,
+   "hold": false,
+   "sha1": "09f81f4378552c2f"
+  },
+  "idle": {
+   "file": "idle.webp",
+   "frames": 81,
+   "cols": 9,
+   "rows": 9,
+   "fw": 281,
+   "fh": 382,
+   "anchor": [
+    138.7,
+    365.0
+   ],
+   "source": "SS_governess_idle.png",
+   "matte": "CONTAM",
+   "bg": [
+    182.9,
+    176.4,
+    181.3
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": 4.9,
+   "dehalo": false,
+   "warm": 29.0,
+   "dewhite": false,
+   "dip": 0.57,
+   "untail": false,
+   "deblack": false,
+   "endIoU": 0.98,
+   "scale": 1.0,
+   "unit": 358.0,
+   "loop": true,
+   "fps": 20,
+   "hold": false,
+   "sha1": "b415ce846ed93330"
+  }
+ },
+ "scale": 1.0,
+ "unit": 358.0
+}

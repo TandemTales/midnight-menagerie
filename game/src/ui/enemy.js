@@ -40,7 +40,7 @@
 import { Clock } from '../core/clock.js';
 import { IntentView, statusIconId } from './intent.js';
 import { iconSvg } from './icons.js';
-import { ClipPlayer, enemyStill, manifestReady } from './sprite.js';
+import { ClipPlayer, enemyClips, enemyStill, manifestReady } from './sprite.js';
 
 /* ── THE ANIMATED COMPANION ────────────────────────────────────────────────
    Where a Companion has real animation built (`tools/prep_sprites.py`), it
@@ -98,6 +98,16 @@ const KID_RIG_H = 230;
    to a quarter of what they were tuned against. 200 is the rig's own scale:
    trunks run 46-98 with props reaching ~300 (`BODY`, the authored viewBox). */
 const ENEMY_STILL_H = 200;
+
+/* THE INTENTS A PAINTED `cast` CLIP PLAYS FOR. The Butler and the Governess
+   (2026-09-13) each have one: a buff, a debuff or a summon is a gesture, not a
+   lunge. Every attack family plays `attack` instead, and `defend` alone, sleep,
+   stun, escape and unknown play nothing over the pose `windup` already makes. */
+const CAST_INTENTS = new Set(['buff', 'defendBuff', 'defendDebuff', 'debuff', 'strongDebuff', 'summon']);
+
+/* The clips an animated enemy fetches once its idle is up, so no beat of the
+   fight waits on a download. `idle` itself is the one `ready` waits for. */
+const ENEMY_WARM = ['attack', 'hurt', 'defeat', 'cast'];
 
 const NS = 'http://www.w3.org/2000/svg';
 const TAU = Math.PI * 2;
@@ -984,6 +994,9 @@ export class EnemyView {
             <radialGradient id="${gid}r" cx="0.32" cy="0.24" r="0.9">
               <stop offset="0" class="rg-r1"/><stop offset="1" class="rg-r2"/>
             </radialGradient>
+            <!-- The window onto one atlas cell, for a creature whose painting
+                 moves. Sized per clip in _tickClip, as PlayerView's is. -->
+            <clipPath id="${gid}st"><rect class="rg-stillrect" x="0" y="0" width="1" height="1"/></clipPath>
           </defs>
           <g class="rg-root">
             <g class="rg-limbs-back">${this._limbs(b, limbs, true)}</g>
@@ -991,7 +1004,7 @@ export class EnemyView {
               <!-- The painting, when there is one. Inside rg-body so it breathes,
                    squashes and goes to silhouette for an entrance exactly as the
                    rig does; the rig's own parts are hidden while it is up. -->
-              <g class="rg-still" style="display:none"><image class="rg-stillimg" preserveAspectRatio="none"/></g>
+              <g class="rg-still" style="display:none"><g class="rg-stillfit"><g class="rg-stillclip"><image class="rg-stillimg" preserveAspectRatio="none"/></g></g></g>
               <g class="rg-back">${props.back || ''}</g>
               <path class="rg-trunk" d="${trunk}" fill="url(#${gid}b)"/>
               <path class="rg-trunk-lit" d="${trunk}" fill="url(#${gid}r)"/>
@@ -1070,6 +1083,9 @@ export class EnemyView {
     this.$limbs = Array.from(el.querySelectorAll('.rg-limb-a'));
     this.$still = el.querySelector('.rg-still');
     this.$stillImg = el.querySelector('.rg-stillimg');
+    this.$stillFit = el.querySelector('.rg-stillfit');
+    this.$stillClip = el.querySelector('.rg-stillclip');
+    this.$stillRect = el.querySelector('.rg-stillrect');
     /* Everything the drawn creature is made of, hidden as one when its painting
        is up and shown as one if the painting never arrives. */
     this.$rigArt = Array.from(el.querySelectorAll(
@@ -1504,6 +1520,13 @@ export class EnemyView {
     const a = this.a;
     const fam = String(type || '');
     const m = this.motif;
+    /* A painted clip carries its own anticipation, so it starts HERE, as a
+       Companion's attack does (PlayerView#windup), and the pose below still
+       carries the creature toward the Kid. */
+    if (this._clipUp) {
+      if (fam.startsWith('attack')) this.sprite.play('attack');
+      else if (CAST_INTENTS.has(fam)) this.sprite.play('cast');
+    }
     let posed = null;
     if (fam.startsWith('attack')) {
       a.leanT = -0.7; a.squashT = 0.2;
@@ -1559,6 +1582,8 @@ export class EnemyView {
   /** Hit reaction. `mag` is hpLoss — drives how hard it is thrown. */
   flinch(mag = 4, dir = 1) {
     if (this.dying) return;
+    // Only a hit that got through: a blocked one is `clank`, which plays nothing.
+    if (this._clipUp) this.sprite.play('hurt');
     const k = Math.min(1.4, 0.35 + mag / 22);
     this.a.shove = Math.max(this.a.shove, 16 * k * dir);
     this.a.squash = Math.max(this.a.squash, 0.42 * k);
@@ -1635,10 +1660,21 @@ export class EnemyView {
     this.el.classList.add('is-dying');
     this.intentView.el.style.opacity = '0';
     this.a.leanT = 0; this.a.riseT = 0;
-    // 1 — the stagger
-    this.a.squashT = 0.5;
-    this.a.shove = -10;
-    await this.clock?.ramp(this._d(0.22), () => {}, Clock.easeOutCubic);
+    if (this._clipUp && this.sprite.has('defeat')) {
+      // 1 — it falls, in its own painted defeat, and holds the last frame. The
+      // clip is cut where the creature lies stillest (prep_sprites.defeat_hold);
+      // a stagger on top would squash a body already on the floor. The lights go
+      // out over the last of the fall rather than after it: the scene awaits each
+      // death in turn, and three creatures felled by one Trick fall one by one.
+      await this.sprite.preload('defeat');
+      if (!this._dead) this.sprite.play('defeat');
+      await this.clock?.ramp(this._d(0.7 * this.sprite.duration('defeat')), () => {}, Clock.easeOutCubic);
+    } else {
+      // 1 — the stagger
+      this.a.squashT = 0.5;
+      this.a.shove = -10;
+      await this.clock?.ramp(this._d(0.22), () => {}, Clock.easeOutCubic);
+    }
     // 2 — the lights go out
     this.el.classList.add('is-lightsout');
     await this.clock?.ramp(this._d(0.16), () => {}, Clock.easeOutCubic);
@@ -1692,7 +1728,7 @@ export class EnemyView {
    */
   _mountStill(id) {
     this.art = null;
-    if (!id || (manifestReady() && !enemyStill(id))) return;
+    if (!id || (manifestReady() && !enemyStill(id) && !enemyClips(id))) return;
     const known = enemyStill(id);
     if (known) {
       this._fitStill(known.w, known.h);
@@ -1713,14 +1749,37 @@ export class EnemyView {
   }
 
   /**
-   * Draw the decoded painting. Once, not per frame: a still is one frame, and
-   * this view allocates nothing per frame -- `ClipPlayer.frame()` returns a new
-   * object on every call. An enemy that animates one day needs a tick shaped
-   * like `PlayerView#_tickSprite` instead.
+   * Draw the decoded painting. A still is drawn once, not per frame: it is one
+   * frame, and `ClipPlayer.frame()` returns a new object on every call. A
+   * creature with clips (`enemyClips` in the manifest) is ticked instead, by
+   * `_tickClip`, through the same `<image>`, so the hit flash, the lights going
+   * out and the entrance silhouette reach it unchanged.
    */
   _raiseStill() {
-    const fr = this.sprite?.frame({ still: true });
-    if (!fr || this._dead) return;
+    if (this._dead || !this.sprite) return;
+    // A still is a one-frame clip (ClipPlayer#_loadStill); anything longer moves.
+    if (Object.values(this.sprite.clips || {}).some(c => (c.frames || 1) > 1)) {
+      this.$stillClip.setAttribute('clip-path', `url(#eg${this.uid}st)`);
+      this.$stillImg.setAttribute('x', '0');
+      this.$stillImg.setAttribute('y', '0');
+      this._clipUp = true;
+      this._clipSrc = this._clipName = null;
+      this._tickClip(0);
+      // a creature with clips and no still takes its stage from its idle frame
+      if (!this._stillFitted) {
+        const idle = this.sprite.frame({ still: true });
+        if (idle) this._fitStill(idle.fw, idle.fh);
+      }
+      for (const n of ENEMY_WARM) this.sprite.preload(n);
+      this._showRig(false);
+      this.$still.style.display = '';
+      this._stillUp = true;
+      clearTimeout(this._rigT);
+      this.el.dataset.art = 'still';
+      return;
+    }
+    const fr = this.sprite.frame({ still: true });
+    if (!fr) return;
     const s = ENEMY_STILL_H / Math.max(1, fr.unit);
     const img = this.$stillImg;
     img.setAttribute('href', fr.src);
@@ -1735,6 +1794,63 @@ export class EnemyView {
     this._stillUp = true;
     clearTimeout(this._rigT);
     this.el.dataset.art = 'still';
+  }
+
+  /**
+   * Advance a moving painting and blit its current cell: `PlayerView#_tickSprite`
+   * for a creature. Reduced motion freezes the clip on its first frame.
+   */
+  _tickClip(dt) {
+    const p = this.sprite;
+    if (!p) return;
+    if (!this.reduceMotion) p.advance(dt);
+    const fr = p.frame({ still: this.reduceMotion });
+    if (!fr || !fr.loaded) return;
+    const img = this.$stillImg;
+    if (fr.src !== this._clipSrc) {
+      img.setAttribute('href', fr.src);
+      img.setAttribute('width', fr.atlasW);
+      img.setAttribute('height', fr.atlasH);
+      this._clipSrc = fr.src;
+    }
+    if (fr.clip !== this._clipName) {
+      // The window and the fit move with the clip: a lunge's frame is bigger
+      // than idle's, and clips line up by the feet (ui/sprite.js, `anchor`).
+      this.$stillRect.setAttribute('width', fr.fw);
+      this.$stillRect.setAttribute('height', fr.fh);
+      const s = ENEMY_STILL_H / Math.max(1, fr.unit);
+      this.$stillFit.setAttribute('transform',
+        `scale(${f2(s)}) translate(${f2(-fr.anchor[0])} ${f2(-fr.anchor[1])})`);
+      this._clipName = fr.clip;
+    }
+    img.setAttribute('transform', `translate(${f2(-fr.col * fr.fw)} ${f2(-fr.row * fr.fh)})`);
+  }
+
+  /**
+   * The painting's box on screen, in client pixels: the still's own rect, or for
+   * a moving painting the current cell's window (the `<image>` is the whole
+   * atlas). `feet` and `feetX` are where it stands: a cell's frame reaches past
+   * the feet, and a lunge's frame is wider than idle's, so a moving painting is
+   * measured by its feet. What the gates measure a painting by.
+   */
+  paintRect() {
+    if (!this._clipUp) {
+      const r = this.$stillImg.getBoundingClientRect();
+      return { left: r.left, top: r.top, width: r.width, height: r.height, bottom: r.bottom,
+        feet: r.bottom, feetX: r.left + r.width / 2 };
+    }
+    const fr = this.sprite?.frame({ still: true });
+    const m = this.$stillFit.getScreenCTM?.();
+    if (!fr || !m) return { left: 0, top: 0, width: 0, height: 0, bottom: 0, feet: 0, feetX: 0 };
+    const pt = (x, y) => new DOMPoint(x, y).matrixTransform(m);
+    const c = [pt(0, 0), pt(fr.fw, 0), pt(0, fr.fh), pt(fr.fw, fr.fh)];
+    const xs = c.map(p => p.x), ys = c.map(p => p.y);
+    const left = Math.min(...xs), top = Math.min(...ys);
+    const feet = pt(fr.anchor[0], fr.anchor[1]);
+    return {
+      left, top, width: Math.max(...xs) - left, height: Math.max(...ys) - top,
+      bottom: Math.max(...ys), feet: feet.y, feetX: feet.x,
+    };
   }
 
   /** Size the stage to the painting, the way `_fitViewBox` sizes it to the rig. */
@@ -1802,6 +1918,12 @@ export class EnemyView {
       a.nextBlink -= dt;
       if (a.nextBlink <= 0) { a.nextBlink = 2.2 + this.rnd() * 4.2; a.blink = 1; }
       if (a.blink > 0) a.blink -= dt * 7.5;
+    }
+    // A moving painting breathes and sways in its own idle; drawing ours on top
+    // of it reads as the creature floating. The beats (lean, squash, shove) stay.
+    if (this._clipUp) {
+      this._tickClip(dt);
+      breath = 0; sway = 0; tw = 0;
     }
 
     if (a.spawn > 0) a.spawn = Math.max(0, a.spawn - dt * 2.2);

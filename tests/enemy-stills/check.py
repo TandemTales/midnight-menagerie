@@ -156,15 +156,16 @@ async (id) => {
   if (!v) return null;
   await v.art;
   const st = v.$stage.getBoundingClientRect();
-  const im = v.$stillImg.getBoundingClientRect();
+  // the painting's own box: a moving one's `<image>` is its whole atlas (ui/enemy.js)
+  const im = v.paintRect();
   return {
-    up: !!v._stillUp, art: v.el.dataset.art || null,
+    up: !!v._stillUp, art: v.el.dataset.art || null, clip: !!v._clipUp,
     href: v.$stillImg.getAttribute('href') || '',
     shown: v.$still.style.display !== 'none',
     rigHidden: v.$rigArt.every(g => g.style.display === 'none'),
     rigShown: v.$rigArt.some(g => g.style.display !== 'none'),
     stage: [st.left, st.top, st.width, st.height, st.bottom],
-    img: [im.left, im.top, im.width, im.height, im.bottom],
+    img: [im.left, im.top, im.width, im.height, im.feet],
   };
 }
 """
@@ -176,8 +177,9 @@ def board_checks(eid, meta, st, check):
         return
     check(st["up"] and st["shown"], "board: %s stands as its painting" % eid,
           "stillUp=%s shown=%s" % (st["up"], st["shown"]), quiet=True)
-    check(st["href"].endswith("/enemies/" + meta["file"]), "board: %s draws its own file" % eid,
-          st["href"], quiet=True)
+    # A creature with clips draws its own atlases instead (tests/enemy-clips).
+    own = ("/enemy-clips/%s/" % eid) in st["href"] if st["clip"] else st["href"].endswith("/enemies/" + meta["file"])
+    check(own, "board: %s draws its own file" % eid, st["href"], quiet=True)
     check(st["rigHidden"], "board: %s has no drawn rig showing through" % eid, quiet=True)
     sl, stp, sw, sh, sb = st["stage"]
     il, itp, iw, ih, ib = st["img"]
@@ -187,8 +189,9 @@ def board_checks(eid, meta, st, check):
     fill = max(iw / max(1.0, sw), ih / max(1.0, sh))
     check(fill >= 0.80, "board: %s fills its stage" % eid,
           "%.0f%% of a %dx%d stage" % (100 * fill, sw, sh), quiet=True)
-    # ON THE GROUND LINE: the bottom of the painting sits on the bottom of the
-    # stage, less the viewBox's floor pad (6 of ~226 units) and the idle breath.
+    # ON THE GROUND LINE: the painting's feet (a still's bottom edge) sit on the
+    # bottom of the stage, less the viewBox's floor pad (6 of ~226 units) and the
+    # idle breath.
     gap = sb - ib
     check(-2 <= gap <= 0.07 * sh + 3, "board: %s stands on the floor" % eid,
           "%.1fpx above the stage floor (stage %dpx tall)" % (gap, sh), quiet=True)
@@ -370,12 +373,13 @@ async def main(a):
             act = await page.evaluate("""async () => {
               const s = window.MM.ctx.scenes.current;
               const v = [...s.views.values()].find(x => x._stillUp);
-              const rect = () => v.$stillImg.getBoundingClientRect();
+              // by the feet: a moving painting's frame changes size with its clip
+              const rect = () => v.paintRect();
               const before = rect();
               await v.windup('attack');
               await v.strike();
               const lunged = rect();
-              const lunge = [lunged.left - before.left, lunged.top - before.top];
+              const lunge = [lunged.feetX - before.feetX, lunged.feet - before.feet];
               await v.settle();
               v.flinch(12);
               await new Promise(r => requestAnimationFrame(() => r()));

@@ -1,0 +1,155 @@
+{
+ "clips": {
+  "attack": {
+   "file": "attack.webp",
+   "frames": 81,
+   "cols": 9,
+   "rows": 9,
+   "fw": 305,
+   "fh": 344,
+   "anchor": [
+    147.32,
+    299.75
+   ],
+   "source": "SS_rug_attack.png",
+   "matte": "CONTAM",
+   "bg": [
+    154.4,
+    149.6,
+    145.6
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": -0.5,
+   "dehalo": false,
+   "warm": 156.0,
+   "dewhite": false,
+   "dip": 0.243,
+   "untail": false,
+   "deblack": false,
+   "endIoU": 0.993,
+   "scale": 0.805,
+   "unit": 256.0,
+   "loop": false,
+   "fps": 60,
+   "hold": false,
+   "sha1": "e05911a734ec5979"
+  },
+  "defeat": {
+   "file": "defeat.webp",
+   "frames": 21,
+   "cols": 9,
+   "rows": 3,
+   "fw": 288,
+   "fh": 259,
+   "anchor": [
+    150.24,
+    244.27
+   ],
+   "source": "SS_rug_defeat.png",
+   "matte": "CONTAM",
+   "bg": [
+    154.8,
+    155.5,
+    153.6
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": -5.8,
+   "dehalo": false,
+   "warm": 149.0,
+   "dewhite": false,
+   "dip": 0.563,
+   "untail": false,
+   "deblack": false,
+   "endIoU": 0.4,
+   "scale": 0.805,
+   "unit": 256.0,
+   "loop": false,
+   "fps": 40,
+   "hold": true,
+   "sha1": "1d82501813711d53",
+   "sourceFrames": 81
+  },
+  "hurt": {
+   "file": "hurt.webp",
+   "frames": 81,
+   "cols": 9,
+   "rows": 9,
+   "fw": 382,
+   "fh": 260,
+   "anchor": [
+    152.98,
+    255.26
+   ],
+   "source": "SS_rug_hurt.png",
+   "matte": "CONTAM",
+   "bg": [
+    160.4,
+    158.0,
+    155.4
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": -9.0,
+   "dehalo": false,
+   "warm": 149.0,
+   "dewhite": false,
+   "dip": 0.672,
+   "untail": false,
+   "deblack": false,
+   "endIoU": 0.993,
+   "scale": 0.805,
+   "unit": 256.0,
+   "loop": false,
+   "fps": 60,
+   "hold": false,
+   "sha1": "53b570df86bf2624"
+  },
+  "idle": {
+   "file": "idle.webp",
+   "frames": 81,
+   "cols": 9,
+   "rows": 9,
+   "fw": 315,
+   "fh": 298,
+   "anchor": [
+    157.97,
+    272.6
+   ],
+   "source": "SS_rug_idle.png",
+   "matte": "CONTAM",
+   "bg": [
+    163.0,
+    159.4,
+    156.7
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": -2.8,
+   "dehalo": false,
+   "warm": 143.0,
+   "dewhite": false,
+   "dip": 0.519,
+   "untail": false,
+   "deblack": false,
+   "endIoU": 0.979,
+   "scale": 0.805,
+   "unit": 256.0,
+   "loop": true,
+   "fps": 20,
+   "hold": false,
+   "sha1": "0b41acbefa6f8eb3"
+  }
+ },
+ "scale": 0.805,
+ "unit": 256.0
+}

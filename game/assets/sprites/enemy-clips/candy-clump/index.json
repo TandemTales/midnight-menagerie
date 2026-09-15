@@ -1,0 +1,155 @@
+{
+ "clips": {
+  "attack": {
+   "file": "attack.webp",
+   "frames": 81,
+   "cols": 9,
+   "rows": 9,
+   "fw": 341,
+   "fh": 272,
+   "anchor": [
+    167.03,
+    269.19
+   ],
+   "source": "SS_candyClump_attack.png",
+   "matte": "CONTAM",
+   "bg": [
+    188.4,
+    181.4,
+    179.9
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": -15.6,
+   "dehalo": false,
+   "warm": 123.0,
+   "dewhite": false,
+   "dip": 0.312,
+   "untail": false,
+   "deblack": false,
+   "endIoU": 0.991,
+   "scale": 0.7829,
+   "unit": 256.0,
+   "loop": false,
+   "fps": 60,
+   "hold": false,
+   "sha1": "6f7d185d157d30d4"
+  },
+  "defeat": {
+   "file": "defeat.webp",
+   "frames": 22,
+   "cols": 9,
+   "rows": 3,
+   "fw": 344,
+   "fh": 268,
+   "anchor": [
+    177.19,
+    257.84
+   ],
+   "source": "SS_candyClump_defeat.png",
+   "matte": "CONTAM",
+   "bg": [
+    160.4,
+    155.1,
+    158.6
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": -0.4,
+   "dehalo": false,
+   "warm": 96.0,
+   "dewhite": false,
+   "dip": 0.333,
+   "untail": false,
+   "deblack": false,
+   "endIoU": 0.536,
+   "scale": 0.7829,
+   "unit": 256.0,
+   "loop": false,
+   "fps": 40,
+   "hold": true,
+   "sha1": "2c6cd7c767d75f64",
+   "sourceFrames": 81
+  },
+  "hurt": {
+   "file": "hurt.webp",
+   "frames": 81,
+   "cols": 9,
+   "rows": 9,
+   "fw": 400,
+   "fh": 231,
+   "anchor": [
+    185.54,
+    227.88
+   ],
+   "source": "SS_candyClump_hurt.png",
+   "matte": "CONTAM",
+   "bg": [
+    158.6,
+    153.0,
+    156.8
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": -4.4,
+   "dehalo": false,
+   "warm": 99.0,
+   "dewhite": false,
+   "dip": 0.293,
+   "untail": false,
+   "deblack": false,
+   "endIoU": 0.989,
+   "scale": 0.6885,
+   "unit": 225.13,
+   "loop": false,
+   "fps": 60,
+   "hold": false,
+   "sha1": "158f4c765ac24c93"
+  },
+  "idle": {
+   "file": "idle.webp",
+   "frames": 81,
+   "cols": 9,
+   "rows": 9,
+   "fw": 269,
+   "fh": 261,
+   "anchor": [
+    134.65,
+    259.13
+   ],
+   "source": "SS_candyClump_idle.png",
+   "matte": "CONTAM",
+   "bg": [
+    174.9,
+    170.8,
+    174.6
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": -3.9,
+   "dehalo": false,
+   "warm": 98.0,
+   "dewhite": false,
+   "dip": 0.478,
+   "untail": false,
+   "deblack": false,
+   "endIoU": 0.989,
+   "scale": 0.7829,
+   "unit": 256.0,
+   "loop": true,
+   "fps": 20,
+   "hold": false,
+   "sha1": "cf0645cf6559b1a2"
+  }
+ },
+ "scale": 0.7829,
+ "unit": 256.0
+}

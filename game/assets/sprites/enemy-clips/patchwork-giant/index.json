@@ -1,0 +1,155 @@
+{
+ "clips": {
+  "attack": {
+   "file": "attack.webp",
+   "frames": 81,
+   "cols": 9,
+   "rows": 9,
+   "fw": 400,
+   "fh": 297,
+   "anchor": [
+    198.3,
+    292.97
+   ],
+   "source": "SS_patchworkGiant_attack.png",
+   "matte": "CONTAM",
+   "bg": [
+    168.1,
+    164.4,
+    166.1
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": -23.4,
+   "dehalo": false,
+   "warm": 63.0,
+   "dewhite": true,
+   "dip": 0.437,
+   "untail": false,
+   "deblack": false,
+   "endIoU": 0.993,
+   "scale": 0.907,
+   "unit": 294.78,
+   "loop": false,
+   "fps": 60,
+   "hold": false,
+   "sha1": "a8d2670e44f6e8f4"
+  },
+  "defeat": {
+   "file": "defeat.webp",
+   "frames": 19,
+   "cols": 9,
+   "rows": 3,
+   "fw": 387,
+   "fh": 344,
+   "anchor": [
+    195.7,
+    328.28
+   ],
+   "source": "SS_patchworkGiant_defeat.png",
+   "matte": "CONTAM",
+   "bg": [
+    164.8,
+    156.7,
+    155.9
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": -21.1,
+   "dehalo": false,
+   "warm": 69.0,
+   "dewhite": false,
+   "dip": 0.205,
+   "untail": false,
+   "deblack": false,
+   "endIoU": 0.505,
+   "scale": 1.0,
+   "unit": 325.0,
+   "loop": false,
+   "fps": 40,
+   "hold": true,
+   "sha1": "b452b020af3ead01",
+   "sourceFrames": 81
+  },
+  "hurt": {
+   "file": "hurt.webp",
+   "frames": 81,
+   "cols": 9,
+   "rows": 9,
+   "fw": 400,
+   "fh": 318,
+   "anchor": [
+    210.64,
+    312.24
+   ],
+   "source": "SS_patchworkGiant_hurt.png",
+   "matte": "CONTAM",
+   "bg": [
+    162.9,
+    156.5,
+    157.3
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": -22.9,
+   "dehalo": false,
+   "warm": 69.0,
+   "dewhite": false,
+   "dip": 0.344,
+   "untail": false,
+   "deblack": false,
+   "endIoU": 0.991,
+   "scale": 0.9547,
+   "unit": 310.26,
+   "loop": false,
+   "fps": 60,
+   "hold": false,
+   "sha1": "65e1a6629e353e56"
+  },
+  "idle": {
+   "file": "idle.webp",
+   "frames": 81,
+   "cols": 9,
+   "rows": 9,
+   "fw": 343,
+   "fh": 338,
+   "anchor": [
+    173.85,
+    333.53
+   ],
+   "source": "SS_patchworkGiant_idle.png",
+   "matte": "CONTAM",
+   "bg": [
+    169.5,
+    162.4,
+    163.2
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": -27.2,
+   "dehalo": false,
+   "warm": 65.0,
+   "dewhite": false,
+   "dip": 0.439,
+   "untail": false,
+   "deblack": false,
+   "endIoU": 0.841,
+   "scale": 1.0,
+   "unit": 325.0,
+   "loop": true,
+   "fps": 20,
+   "hold": false,
+   "sha1": "c3f803e3ba4e626d"
+  }
+ },
+ "scale": 1.0,
+ "unit": 325.0
+}

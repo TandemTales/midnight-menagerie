@@ -1,0 +1,155 @@
+{
+ "clips": {
+  "attack": {
+   "file": "attack.webp",
+   "frames": 81,
+   "cols": 9,
+   "rows": 9,
+   "fw": 359,
+   "fh": 304,
+   "anchor": [
+    177.64,
+    286.32
+   ],
+   "source": "SS_blanketBlob_attack.png",
+   "matte": "CONTAM",
+   "bg": [
+    206.7,
+    198.2,
+    210.3
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": -40.6,
+   "dehalo": false,
+   "warm": 41.0,
+   "dewhite": false,
+   "dip": 0.572,
+   "untail": false,
+   "deblack": false,
+   "endIoU": 0.996,
+   "scale": 0.9734,
+   "unit": 256.0,
+   "loop": false,
+   "fps": 60,
+   "hold": false,
+   "sha1": "3320f21da7c76cf7"
+  },
+  "defeat": {
+   "file": "defeat.webp",
+   "frames": 23,
+   "cols": 9,
+   "rows": 3,
+   "fw": 342,
+   "fh": 261,
+   "anchor": [
+    170.83,
+    257.95
+   ],
+   "source": "SS_blanketBlob_defeat.png",
+   "matte": "CONTAM",
+   "bg": [
+    212.0,
+    202.6,
+    210.1
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": -24.8,
+   "dehalo": false,
+   "warm": 57.0,
+   "dewhite": false,
+   "dip": 0.527,
+   "untail": false,
+   "deblack": false,
+   "endIoU": 0.943,
+   "scale": 0.9734,
+   "unit": 256.0,
+   "loop": false,
+   "fps": 40,
+   "hold": true,
+   "sha1": "cb19fd8b34332da8",
+   "sourceFrames": 81
+  },
+  "hurt": {
+   "file": "hurt.webp",
+   "frames": 81,
+   "cols": 9,
+   "rows": 9,
+   "fw": 349,
+   "fh": 331,
+   "anchor": [
+    173.75,
+    327.96
+   ],
+   "source": "SS_blanketBlob_hurt.png",
+   "matte": "CONTAM",
+   "bg": [
+    206.1,
+    195.0,
+    207.3
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": -19.0,
+   "dehalo": false,
+   "warm": 57.0,
+   "dewhite": false,
+   "dip": 0.223,
+   "untail": false,
+   "deblack": false,
+   "endIoU": 0.996,
+   "scale": 0.9734,
+   "unit": 256.0,
+   "loop": false,
+   "fps": 60,
+   "hold": false,
+   "sha1": "3b6f7021d061f81b"
+  },
+  "idle": {
+   "file": "idle.webp",
+   "frames": 81,
+   "cols": 9,
+   "rows": 9,
+   "fw": 343,
+   "fh": 261,
+   "anchor": [
+    171.8,
+    258.92
+   ],
+   "source": "SS_blanketBlob_idle.png",
+   "matte": "CONTAM",
+   "bg": [
+    206.7,
+    197.4,
+    204.4
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": -20.1,
+   "dehalo": false,
+   "warm": 57.0,
+   "dewhite": false,
+   "dip": 0.579,
+   "untail": false,
+   "deblack": false,
+   "endIoU": 0.996,
+   "scale": 0.9734,
+   "unit": 256.0,
+   "loop": true,
+   "fps": 20,
+   "hold": false,
+   "sha1": "3e16eee9918e0ae4"
+  }
+ },
+ "scale": 0.9734,
+ "unit": 256.0
+}

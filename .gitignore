@@ -14,3 +14,6 @@ tests/steam-deck/shots/
 # top level, so animations/kids/ (208MB) would have gone in as plain blobs.
 animations/SS_*.png
 animations/kids/SS_*.png
+# The enemies' sheets (2026-09-13 on) are the same call: 917MB of them by 09-14,
+# in a subfolder neither rule above reaches.
+animations/sprites/enemies/animations/SS_*.png

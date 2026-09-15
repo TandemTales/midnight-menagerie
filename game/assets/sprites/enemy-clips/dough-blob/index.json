@@ -1,0 +1,155 @@
+{
+ "clips": {
+  "attack": {
+   "file": "attack.webp",
+   "frames": 81,
+   "cols": 9,
+   "rows": 9,
+   "fw": 400,
+   "fh": 300,
+   "anchor": [
+    213.1,
+    287.04
+   ],
+   "source": "SS_doughBlob_attack.png",
+   "matte": "CONTAM",
+   "bg": [
+    222.1,
+    215.7,
+    212.0
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": -10.3,
+   "dehalo": false,
+   "warm": 86.0,
+   "dewhite": false,
+   "dip": 0.633,
+   "untail": false,
+   "deblack": false,
+   "endIoU": 0.995,
+   "scale": 0.9259,
+   "unit": 251.85,
+   "loop": false,
+   "fps": 60,
+   "hold": false,
+   "sha1": "4ef3cd44e5095454"
+  },
+  "defeat": {
+   "file": "defeat.webp",
+   "frames": 48,
+   "cols": 9,
+   "rows": 6,
+   "fw": 341,
+   "fh": 315,
+   "anchor": [
+    173.28,
+    312.47
+   ],
+   "source": "SS_doughBlob_defeat.png",
+   "matte": "CONTAM",
+   "bg": [
+    219.8,
+    212.6,
+    209.2
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": -29.8,
+   "dehalo": false,
+   "warm": 86.0,
+   "dewhite": false,
+   "dip": 0.597,
+   "untail": false,
+   "deblack": false,
+   "endIoU": 0.78,
+   "scale": 0.9412,
+   "unit": 256.0,
+   "loop": false,
+   "fps": 40,
+   "hold": true,
+   "sha1": "c850f28ed871a00d",
+   "sourceFrames": 81
+  },
+  "hurt": {
+   "file": "hurt.webp",
+   "frames": 81,
+   "cols": 9,
+   "rows": 9,
+   "fw": 381,
+   "fh": 290,
+   "anchor": [
+    187.29,
+    286.12
+   ],
+   "source": "SS_doughBlob_hurt.png",
+   "matte": "CONTAM",
+   "bg": [
+    221.9,
+    215.2,
+    211.2
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": -15.8,
+   "dehalo": false,
+   "warm": 86.0,
+   "dewhite": false,
+   "dip": 0.778,
+   "untail": false,
+   "deblack": false,
+   "endIoU": 0.995,
+   "scale": 0.9412,
+   "unit": 256.0,
+   "loop": false,
+   "fps": 60,
+   "hold": false,
+   "sha1": "856e4060df9f676b"
+  },
+  "idle": {
+   "file": "idle.webp",
+   "frames": 81,
+   "cols": 9,
+   "rows": 9,
+   "fw": 346,
+   "fh": 262,
+   "anchor": [
+    171.76,
+    258.82
+   ],
+   "source": "SS_doughBlob_idle.png",
+   "matte": "CONTAM",
+   "bg": [
+    220.6,
+    213.9,
+    209.8
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": -24.1,
+   "dehalo": false,
+   "warm": 86.0,
+   "dewhite": false,
+   "dip": 0.761,
+   "untail": false,
+   "deblack": false,
+   "endIoU": 0.995,
+   "scale": 0.9412,
+   "unit": 256.0,
+   "loop": true,
+   "fps": 20,
+   "hold": false,
+   "sha1": "dc15f3291a88c41d"
+  }
+ },
+ "scale": 0.9412,
+ "unit": 256.0
+}

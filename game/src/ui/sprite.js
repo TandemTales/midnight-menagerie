@@ -95,6 +95,15 @@ export function enemyStill(id) {
   return _manifestNow?.enemies?.[id] || null;
 }
 
+/**
+ * The clips an enemy has built, by EnemyDef id -- `['attack', 'defeat', ...]` --
+ * or null. Synchronous for the same reason as `enemyStill`: `EnemyView` decides
+ * in its constructor what the creature is drawn with.
+ */
+export function enemyClips(id) {
+  return _manifestNow?.enemyClips?.[id] || null;
+}
+
 /** Has the manifest arrived, so that `enemyStill` returning null is an answer? */
 export function manifestReady() { return !!_manifestNow; }
 
@@ -125,6 +134,27 @@ function clipIndex(slug) {
     )).catch(() => null));
   }
   return _indexes.get(slug);
+}
+
+/** Where an enemy's atlases and index live, relative to the sprites root. */
+const enemyClipDir = id => `enemy-clips/${id}`;
+
+/**
+ * One enemy's clip index, or null. Its own manifest section and its own folder,
+ * for the reason `_load` gives: an id and a slug are two namespaces. Asks the
+ * manifest first, as `clipIndex` does, so the ~250 enemies with no clips make no
+ * request.
+ */
+function enemyClipIndex(id) {
+  const key = `enemy:${id}`;
+  if (!_indexes.has(key)) {
+    _indexes.set(key, spriteManifest().then((m) => (
+      m.enemyClips?.[id]
+        ? fetch(`${SPRITES}${enemyClipDir(id)}/index.json`).then(r => (r.ok ? r.json() : null))
+        : null
+    )).catch(() => null));
+  }
+  return _indexes.get(key);
 }
 
 /**
@@ -169,12 +199,13 @@ export class ClipPlayer {
   }
 
   async _load() {
-    /* AN ENEMY HAS A STILL AND NO CLIPS, and it never asks `animated`: enemy ids
-       and Companion slugs are two namespaces, and a lookup that crossed them
-       would one day hand a creature a Companion's atlases. */
-    if (this._enemy) return this._loadStill();
-    const idx = await clipIndex(this.slug);
+    /* AN ENEMY NEVER ASKS `animated`: enemy ids and Companion slugs are two
+       namespaces, and a lookup that crossed them would one day hand a creature a
+       Companion's atlases. An enemy's clips have their own section and folder
+       (`enemyClips`, `enemy-clips/<id>/`), and without them it is its still. */
+    const idx = this._enemy ? await enemyClipIndex(this.slug) : await clipIndex(this.slug);
     if (!idx || !idx.clips) return this._loadStill();
+    if (this._enemy) this._dir = enemyClipDir(this.slug);
     this.clips = idx.clips;
     this.scale = idx.scale || 1;
     /* The subject's height in frame pixels, so the mount can size a Companion
@@ -225,7 +256,13 @@ export class ClipPlayer {
   }
 
   /** Where one clip's image lives, relative to the sprites root. */
-  _url(c) { return c.url || `${this.slug}/${c.file}`; }
+  _url(c) { return c.url || `${this._dir || this.slug}/${c.file}`; }
+
+  /**
+   * Fetch and decode a clip now, so its first play is not late. Resolves to the
+   * image, or null for a clip this player does not have.
+   */
+  preload(name) { return this._atlas(name); }
 
   /** Ensure one clip's atlas is decoded. Resolves to the Image, or null. */
   _atlas(name) {
@@ -331,7 +368,9 @@ export class ClipPlayer {
       fw: c.fw, fh: c.fh,
       atlasW: c.cols * c.fw, atlasH: c.rows * c.fh,
       anchor: c.anchor || [c.fw / 2, c.fh],
-      unit: this.unit || c.fh,
+      /* An enemy's clips each carry their own: a lunge too wide for the size cap
+         is built smaller than the idle and drawn the same size by it. */
+      unit: c.unit || this.unit || c.fh,
       opacity: c.fade ? (c.fade[i] ?? 1) : 1,
       src: `${SPRITES}${this._url(c)}`,
       loaded: this._ready.has(this.name),

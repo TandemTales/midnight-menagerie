@@ -1,0 +1,155 @@
+{
+ "clips": {
+  "attack": {
+   "file": "attack.webp",
+   "frames": 81,
+   "cols": 9,
+   "rows": 9,
+   "fw": 318,
+   "fh": 304,
+   "anchor": [
+    145.94,
+    288.97
+   ],
+   "source": "SS_jackInTheBox_attack.png",
+   "matte": "CONTAM",
+   "bg": [
+    156.4,
+    150.8,
+    151.1
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": -18.3,
+   "dehalo": false,
+   "warm": 88.0,
+   "dewhite": false,
+   "dip": 0.41,
+   "untail": false,
+   "deblack": false,
+   "endIoU": 0.991,
+   "scale": 0.7293,
+   "unit": 256.0,
+   "loop": false,
+   "fps": 60,
+   "hold": false,
+   "sha1": "491e6097b3c476f1"
+  },
+  "defeat": {
+   "file": "defeat.webp",
+   "frames": 11,
+   "cols": 9,
+   "rows": 2,
+   "fw": 203,
+   "fh": 265,
+   "anchor": [
+    106.54,
+    258.19
+   ],
+   "source": "SS_jackInTheBox_defeat.png",
+   "matte": "CONTAM",
+   "bg": [
+    166.3,
+    163.3,
+    163.6
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": -26.7,
+   "dehalo": false,
+   "warm": 92.0,
+   "dewhite": false,
+   "dip": 0.526,
+   "untail": false,
+   "deblack": false,
+   "endIoU": 0.65,
+   "scale": 0.7293,
+   "unit": 256.0,
+   "loop": false,
+   "fps": 40,
+   "hold": true,
+   "sha1": "4a89d73e08dede3a",
+   "sourceFrames": 81
+  },
+  "hurt": {
+   "file": "hurt.webp",
+   "frames": 81,
+   "cols": 9,
+   "rows": 9,
+   "fw": 308,
+   "fh": 264,
+   "anchor": [
+    140.4,
+    258.57
+   ],
+   "source": "SS_jackInTheBox_hurt.png",
+   "matte": "CONTAM",
+   "bg": [
+    171.8,
+    161.4,
+    161.1
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": -23.7,
+   "dehalo": false,
+   "warm": 93.0,
+   "dewhite": false,
+   "dip": 0.24,
+   "untail": false,
+   "deblack": false,
+   "endIoU": 0.995,
+   "scale": 0.7293,
+   "unit": 256.0,
+   "loop": false,
+   "fps": 60,
+   "hold": false,
+   "sha1": "b49713e0b676ea28"
+  },
+  "idle": {
+   "file": "idle.webp",
+   "frames": 81,
+   "cols": 9,
+   "rows": 9,
+   "fw": 195,
+   "fh": 261,
+   "anchor": [
+    97.53,
+    258.3
+   ],
+   "source": "SS_jackInTheBox_idle.png",
+   "matte": "CONTAM",
+   "bg": [
+    170.7,
+    167.4,
+    168.5
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": -24.8,
+   "dehalo": false,
+   "warm": 87.0,
+   "dewhite": false,
+   "dip": 0.544,
+   "untail": false,
+   "deblack": false,
+   "endIoU": 0.993,
+   "scale": 0.7293,
+   "unit": 256.0,
+   "loop": true,
+   "fps": 20,
+   "hold": false,
+   "sha1": "7b6c95331087f2fe"
+  }
+ },
+ "scale": 0.7293,
+ "unit": 256.0
+}

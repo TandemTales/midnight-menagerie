@@ -1,0 +1,155 @@
+{
+ "clips": {
+  "attack": {
+   "file": "attack.webp",
+   "frames": 81,
+   "cols": 9,
+   "rows": 9,
+   "fw": 400,
+   "fh": 274,
+   "anchor": [
+    196.16,
+    271.3
+   ],
+   "source": "SS_conservatory_attack.png",
+   "matte": "CONTAM",
+   "bg": [
+    179.9,
+    178.3,
+    176.6
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": -10.4,
+   "dehalo": false,
+   "warm": 93.0,
+   "dewhite": false,
+   "dip": 0.567,
+   "untail": false,
+   "deblack": false,
+   "endIoU": 0.988,
+   "scale": 0.9259,
+   "unit": 259.26,
+   "loop": false,
+   "fps": 60,
+   "hold": false,
+   "sha1": "ad15878ac875a897"
+  },
+  "defeat": {
+   "file": "defeat.webp",
+   "frames": 23,
+   "cols": 9,
+   "rows": 3,
+   "fw": 400,
+   "fh": 286,
+   "anchor": [
+    200.92,
+    282.51
+   ],
+   "source": "SS_conservatory_defeat.png",
+   "matte": "CONTAM",
+   "bg": [
+    175.6,
+    173.0,
+    172.6
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": -17.0,
+   "dehalo": false,
+   "warm": 88.0,
+   "dewhite": false,
+   "dip": 0.762,
+   "untail": false,
+   "deblack": false,
+   "endIoU": 0.598,
+   "scale": 0.995,
+   "unit": 278.61,
+   "loop": false,
+   "fps": 40,
+   "hold": true,
+   "sha1": "c4492f390e669f0e",
+   "sourceFrames": 81
+  },
+  "hurt": {
+   "file": "hurt.webp",
+   "frames": 81,
+   "cols": 9,
+   "rows": 9,
+   "fw": 377,
+   "fh": 322,
+   "anchor": [
+    185.5,
+    316.93
+   ],
+   "source": "SS_conservatory_hurt.png",
+   "matte": "CONTAM",
+   "bg": [
+    174.2,
+    172.0,
+    169.9
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": -18.2,
+   "dehalo": false,
+   "warm": 91.0,
+   "dewhite": false,
+   "dip": 0.133,
+   "untail": false,
+   "deblack": false,
+   "endIoU": 0.988,
+   "scale": 1.0,
+   "unit": 280.0,
+   "loop": false,
+   "fps": 60,
+   "hold": false,
+   "sha1": "5157b6058be4598e"
+  },
+  "idle": {
+   "file": "idle.webp",
+   "frames": 81,
+   "cols": 9,
+   "rows": 9,
+   "fw": 367,
+   "fh": 289,
+   "anchor": [
+    180.38,
+    286.0
+   ],
+   "source": "SS_conservatory_idle.png",
+   "matte": "CONTAM",
+   "bg": [
+    184.9,
+    182.6,
+    181.3
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": -22.8,
+   "dehalo": false,
+   "warm": 91.0,
+   "dewhite": false,
+   "dip": 0.468,
+   "untail": false,
+   "deblack": false,
+   "endIoU": 0.987,
+   "scale": 1.0,
+   "unit": 280.0,
+   "loop": true,
+   "fps": 20,
+   "hold": false,
+   "sha1": "0bbeb3256d112891"
+  }
+ },
+ "scale": 1.0,
+ "unit": 280.0
+}

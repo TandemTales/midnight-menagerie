@@ -1,19 +1,22 @@
 """Turn the authored sprite sheets and stills in `animations/` into game assets.
 
-    python tools/prep_sprites.py            # everything
+    python tools/prep_sprites.py            # everything but the enemy clips
     python tools/prep_sprites.py --report   # measure only, write nothing
     python tools/prep_sprites.py --enemies  # the enemy stills only
+    python tools/prep_sprites.py --enemy-clips [--only butler,door-greeter]
 
 Source (authored, never edited by this tool):
     animations/SS_<slug>_<clip>.png   a grid of animation frames
     animations/sprites/sprite_<name>.png   one still per Companion and Kid
     animations/sprites/enemies/<name>.png  one still per enemy, camelCase
+    animations/sprites/enemies/animations/SS_<name>_<clip>.png   an enemy's clips
 
 Output:
     game/assets/sprites/<slug>/<clip>.webp  one atlas per clip
     game/assets/sprites/<slug>/index.json   clips, frame rects, anchor, fps, fade
     game/assets/sprites/stills/<name>.webp  repaired stills
     game/assets/sprites/enemies/<id>.webp   enemy stills, keyed by EnemyDef id
+    game/assets/sprites/enemy-clips/<id>/   an enemy's atlases and index.json
     game/assets/sprites/index.json          the manifest the runtime discovers
 
 ─────────────────────────────────────────────────────────────────────────────
@@ -71,9 +74,11 @@ scaled it down" comes from.
 """
 
 import argparse
+import hashlib
 import json
 import os
 import re
+import shutil
 import sys
 
 import numpy as np
@@ -86,7 +91,11 @@ SRC_SHEETS = "animations"
 SRC_KIDS = "animations/kids"
 SRC_STILLS = "animations/sprites"
 SRC_ENEMY_STILLS = "animations/sprites/enemies"
+SRC_ENEMY_SHEETS = "animations/sprites/enemies/animations"
 OUT = "game/assets/sprites"
+# NOT under `enemies/`: the enemy-still build removes every file there that is
+# not a current still, and would take an enemy's atlases with it.
+ENEMY_CLIPS_DIR = "enemy-clips"
 
 # The creature's height in output pixels. Source medians sit at ~330px, so this
 # is a ~2.6x downscale: enough for a Companion drawn at 60-80 CSS px on a 2x
@@ -119,6 +128,11 @@ ENEMY_ALIAS = {
     "prim": "porcelain-twin-prim",
     "proper": "porcelain-twin-proper",
     "sporepuff": "spore-puff",
+    # The animation sheets (2026-09-13) arrived under their silhouette names. Each
+    # was matched by eye against the still of the id it maps to: the same painting.
+    "conservatory": "carnivorous-conservatory",
+    "rug": "red-carpet-runner",
+    "suitcase": "lost-luggage",
 }
 
 # AN ENEMY IS DRAWN FAR BIGGER THAN A COMPANION, so its still keeps the
@@ -128,6 +142,20 @@ ENEMY_ALIAS = {
 # for the Big Scares, 1024 for two bosses. A CEILING, the way `build_still`'s
 # 256 is, and today it binds nothing: the tallest content is The Butler, 1005px.
 ENEMY_STILL_MAX_H = 1024
+
+# AN ENEMY'S CLIPS REPLACE ITS STILL, so they build as close to the still as the
+# sheet allows. Measured over the 17 enemies delivered 2026-09-13/14: the idle
+# figure is 234-379px tall in the sheet, and a lunge widens a frame to 646px.
+#   the height  the still's own height, which is its tier ("the art came in at
+#               the size its tier is drawn", above): ~250 for an ordinary creature,
+#               ~1000 for a boss. Never more than the sheet has, and never less
+#               than ENEMY_CLIP_MIN_H while the sheet has it.
+#   the frame   no frame side over ENEMY_CLIP_MAX_SIDE, clip by clip: a clip too
+#               wide for it builds smaller and publishes its own `unit`. A decoded
+#               atlas stays in `core/assets.js`'s cache all session, and at this
+#               cap no atlas passes 3600px on a side (52 MB decoded).
+ENEMY_CLIP_MIN_H = 256
+ENEMY_CLIP_MAX_SIDE = 400
 
 # THE BACKGROUND IS NOT TRANSPARENT. The production brief asks every clip for
 # "a truly transparent alpha background" and the sheets do not have one: `idle`
@@ -408,6 +436,25 @@ CLIPS = {
     "anchor":    {"loop": False, "fps": 24},   # Mossbit: "slow, confident, patient"
     "overgrow":  {"loop": False, "fps": 30},   # Brambleboo: strain, grow
 }
+
+# AN ENEMY'S TIMING, where it differs from a Companion's. A Companion's `defeat`
+# ends the run and can take 3.4s; a creature's ends one of several in a fight,
+# and `EnemyView.die` puts the lights out over the last of it, so it falls at 40
+# fps to the frame `defeat_hold` finds (0.3-1.4s over the 17 delivered). `cast` is the
+# Butler's and the Governess's buff, debuff and summon beat, a deliberate gesture.
+ENEMY_CLIPS = {
+    "defeat":    {"loop": False, "fps": 40, "hold": True},
+    "cast":      {"loop": False, "fps": 48},
+}
+
+# A DEFEAT THAT GETS BACK UP. Every enemy defeat sheet delivered 2026-09-13/14
+# ends on its first pose (last-to-first silhouette IoU 0.98-1.00): the creature
+# falls and recovers. A death holds, so the clip is cut at its most defeated frame
+# and holds there. "Most defeated" is furthest from the standing silhouette PLUS
+# furthest below its standing height; either alone picks wrong, because the Dough
+# Blob and the Dust Bunny are least like themselves rearing up before they slump.
+# Searched from frame 8, clear of the first beat, to 72, clear of the recovery.
+DEFEAT_SEARCH = (8, 72)
 
 
 # ── the matte ───────────────────────────────────────────────────────────────
@@ -944,6 +991,22 @@ def stabilise(centres):
     return (smooth - centres) * STABILISE
 
 
+def clip_window(clip):
+    """The stabilising shift per frame and the clip's shared box in source pixels:
+    (shift, x0, y0, w, h). The union of every frame's box, after its stabilising
+    shift, is the smallest window that never clips the subject."""
+    boxes = clip["boxes"]
+    shift = stabilise(clip["centres"])
+    xs0 = [b[0] + shift[i][0] for i, b in enumerate(boxes)]
+    ys0 = [b[1] + shift[i][1] for i, b in enumerate(boxes)]
+    xs1 = [b[2] + shift[i][0] for i, b in enumerate(boxes)]
+    ys1 = [b[3] + shift[i][1] for i, b in enumerate(boxes)]
+    pad = 2
+    ux0, uy0 = int(np.floor(min(xs0))) - pad, int(np.floor(min(ys0))) - pad
+    ux1, uy1 = int(np.ceil(max(xs1))) + pad, int(np.ceil(max(ys1))) + pad
+    return shift, ux0, uy0, ux1 - ux0, uy1 - uy0
+
+
 def render_clip(clip, scale, out_noext, name=""):
     """Crop every frame to the clip's shared box, scale, pack, save.
 
@@ -952,18 +1015,7 @@ def render_clip(clip, scale, out_noext, name=""):
     same origin re-introduces exactly the wander this tool just removed.
     """
     frames, boxes = clip["frames"], clip["boxes"]
-    shift = stabilise(clip["centres"])
-
-    # The union of every frame's box, after its stabilising shift, is the
-    # smallest window that never clips the subject.
-    xs0 = [b[0] + shift[i][0] for i, b in enumerate(boxes)]
-    ys0 = [b[1] + shift[i][1] for i, b in enumerate(boxes)]
-    xs1 = [b[2] + shift[i][0] for i, b in enumerate(boxes)]
-    ys1 = [b[3] + shift[i][1] for i, b in enumerate(boxes)]
-    pad = 2
-    ux0, uy0 = int(np.floor(min(xs0))) - pad, int(np.floor(min(ys0))) - pad
-    ux1, uy1 = int(np.ceil(max(xs1))) + pad, int(np.ceil(max(ys1))) + pad
-    uw, uh = ux1 - ux0, uy1 - uy0
+    shift, ux0, uy0, uw, uh = clip_window(clip)
 
     fw, fh = max(1, int(round(uw * scale))), max(1, int(round(uh * scale)))
     n = len(frames)
@@ -1143,6 +1195,152 @@ def build_enemy_still(path, out_noext, max_h=ENEMY_STILL_MAX_H):
             "source": os.path.basename(path)}
 
 
+# ── enemy clips ─────────────────────────────────────────────────────────────
+#
+# THE SHEETS ARE NOT THE STILLS' KIND OF ART. The stills above are painted
+# cutouts, and no repair runs on them. The enemies' animation sheets came out of
+# the same generator as the Companions' and were flattened on grey and cut back
+# out: 18 of their 19 idle and cast sheets read CONTAM, the Confectioner's idle
+# PREMULT. So they take the Companion path whole -- `build_clip`, one scale for
+# the enemy, `render_clip` -- and only the scale's rule is their own (see
+# ENEMY_CLIP_MIN_H).
+
+def enemy_sheets():
+    """{EnemyDef id: {clip: path}}, and {id: [names]} wherever two names reach one id."""
+    by_id, names = {}, {}
+    if not os.path.isdir(SRC_ENEMY_SHEETS):
+        return by_id, {}
+    for fn in sorted(os.listdir(SRC_ENEMY_SHEETS)):
+        m = re.match(r"SS_([A-Za-z0-9]+)_([A-Za-z0-9]+)\.png$", fn)
+        if not m:
+            if fn.endswith(".png"):
+                print("  skip (unparsed name):", fn)
+            continue
+        eid = enemy_id_of_still(m.group(1))
+        by_id.setdefault(eid, {})[m.group(2)] = os.path.join(SRC_ENEMY_SHEETS, fn)
+        names.setdefault(eid, set()).add(m.group(1))
+    return by_id, {k: sorted(v) for k, v in names.items() if len(v) > 1}
+
+
+def defeat_hold(clip):
+    """Index of the frame a built defeat clip holds (see DEFEAT_SEARCH): the FIRST
+    frame within 5% of the most defeated one. A fall ends on a plateau -- the Door
+    Greeter lies flat from frame ~24 to ~56 -- and the best-scoring frame is
+    anywhere along it, which doubled that fall for the same pose."""
+    frames, boxes = clip["frames"], clip["boxes"]
+    first = frames[0][1] > 0.5
+    h0 = float(boxes[0][3] - boxes[0][1])
+    lo, hi = DEFEAT_SEARCH
+    scores = {}
+    for i in range(min(lo, len(frames) - 1), min(hi, len(frames) - 1) + 1):
+        m = frames[i][1] > 0.5
+        if m.shape != first.shape:
+            continue
+        iou = float((first & m).sum()) / max(1, int((first | m).sum()))
+        scores[i] = (1.0 - iou) + (h0 - float(boxes[i][3] - boxes[i][1])) / max(1.0, h0)
+    if not scores:
+        return len(frames) - 1
+    top = max(scores.values())
+    return min(i for i, s in scores.items() if s >= 0.95 * top)
+
+
+def file_sha1(path):
+    """The first 16 hex digits of a file's SHA-1. A redelivered sheet keeps its
+    name, so the built index records which bytes it was built from."""
+    h = hashlib.sha1()
+    with open(path, "rb") as fh:
+        for chunk in iter(lambda: fh.read(1 << 20), b""):
+            h.update(chunk)
+    return h.hexdigest()[:16]
+
+
+def build_enemy_clips(args, only, manifest, by_id):
+    """Build the enemies' clips into `enemy-clips/<id>/`. Without --only they are
+    rebuilt as a SET, the way the stills are: an enemy no sheet builds any more
+    drops out of the manifest and off the disk."""
+    root = os.path.join(OUT, ENEMY_CLIPS_DIR)
+    section = dict(manifest.get("enemyClips") or {}) if only else {}
+    for s in sorted(only - set(by_id)):
+        print("  --only %s: no sheets under %s" % (s, SRC_ENEMY_SHEETS))
+    print("\nenemy clips:")
+    for eid, clips in sorted(by_id.items()):
+        if only and eid not in only:
+            continue
+        built = {name: build_clip(p) for name, p in sorted(clips.items())}
+        if "defeat" in built:
+            c = built["defeat"]
+            c["sourceFrames"] = len(c["frames"])
+            n = defeat_hold(c) + 1
+            c["frames"], c["boxes"], c["centres"] = c["frames"][:n], c["boxes"][:n], c["centres"][:n]
+        # The resting figure stands in for the still, so the idle clip sets the
+        # scale: switching from the painting to the animation keeps its size.
+        native = (built["idle"]["median_h"] if "idle" in built
+                  else float(np.median([c["median_h"] for c in built.values()])))
+        still = (manifest.get("enemies") or {}).get(eid)
+        target = min(native, max(ENEMY_CLIP_MIN_H, still["h"] if still else 0))
+        scale = target / native
+        print("\n%s: %d clips, idle figure %.0fpx, still %s -> scale %.3f (unit %.0f)" % (
+            eid, len(built), native, still["h"] if still else "none", scale, native * scale))
+        outdir = os.path.join(root, eid)
+        entry = {"clips": {}, "scale": round(scale, 4), "unit": round(native * scale, 2)}
+        for name, clip in built.items():
+            cfg = {**CLIPS.get(name, {"loop": False, "fps": 24}), **ENEMY_CLIPS.get(name, {})}
+            # THE CAP IS PER CLIP. One wide lunge -- the Confectioner's attack is
+            # 647px across -- held to the cap by the enemy's one scale took every
+            # clip down with it, a boss's idle to 218px. So each clip is scaled to
+            # fit on its own and publishes its own `unit` (the figure's height in
+            # its atlas), and the player draws every clip the same size by it: a
+            # capped clip is softer, not smaller, and only while it plays.
+            s = min(scale, ENEMY_CLIP_MAX_SIDE / float(max(clip_window(clip)[3:])))
+            print("   %-8s %dx%-2d cell %-9s %-7s lift %+5.1f%s frames %d" % (
+                name, ATLAS_COLS, clip["rows"], "%dx%d" % clip["cell"], clip["kind"], clip["lift"],
+                (" DEHALO" if clip["haloed"] else "") + (" DEWHITE" if clip["whited"] else "")
+                + (" UNTAIL" if clip["tailed"] else "")
+                + (" DEBLACK %.2f" % clip["black"] if clip["deblacked"] else ""),
+                len(clip["frames"])))
+            if args.report:
+                continue
+            os.makedirs(outdir, exist_ok=True)
+            meta = render_clip(clip, s, os.path.join(outdir, name), name)
+            meta.update(scale=round(s, 4), unit=round(native * s, 2))
+            # NO DISSOLVE. `fade_envelope` reads a mid-clip loss of focus as a
+            # dissolve, which Marmalade's spectral clips are; on these sheets it
+            # is a lunge's motion blur, and the Door Greeter's attack faded to 35%
+            # as it swung. The measurement (`dip`) stays in the index.
+            meta.pop("fade", None)
+            meta.update(loop=cfg["loop"], fps=cfg["fps"], hold=bool(cfg.get("hold")),
+                        sha1=file_sha1(clip["path"]))
+            if "sourceFrames" in clip:
+                meta["sourceFrames"] = clip["sourceFrames"]
+            if (not cfg["loop"] and not cfg.get("hold")
+                    and meta.get("endIoU") is not None and meta["endIoU"] < PING_IOU):
+                meta["ping"] = True
+                meta["fps"] = int(round(cfg["fps"] * PING_SPEED))
+                print("              ^ ends elsewhere (first/last IoU %.2f): there and back at %d fps"
+                      % (meta["endIoU"], meta["fps"]))
+            entry["clips"][name] = meta
+            print("              -> %s %dx%d atlas %dx%d" % (
+                meta["file"], meta["fw"], meta["fh"], meta["cols"] * meta["fw"], meta["rows"] * meta["fh"]))
+        built = None                 # this enemy's frames, before the next one's load
+        if args.report:
+            continue
+        keep = {m["file"] for m in entry["clips"].values()} | {"index.json"}
+        for stale in sorted(os.listdir(outdir)):
+            if stale not in keep:
+                os.remove(os.path.join(outdir, stale))
+                print("   removed stale", stale)
+        json.dump(entry, open(os.path.join(outdir, "index.json"), "w"), indent=1)
+        section[eid] = sorted(entry["clips"])
+    if args.report:
+        return
+    if not only and os.path.isdir(root):
+        for stale in sorted(os.listdir(root)):
+            if stale not in section:
+                shutil.rmtree(os.path.join(root, stale))
+                print("   removed stale enemy", stale)
+    manifest["enemyClips"] = section
+
+
 # ── driver ──────────────────────────────────────────────────────────────────
 
 def slug_of_still(fn):
@@ -1167,11 +1365,22 @@ def main():
                     help="with --only, rebuild the stills as well")
     ap.add_argument("--enemies", action="store_true",
                     help="rebuild the enemy stills; alone, touches nothing else in the manifest")
+    ap.add_argument("--enemy-clips", action="store_true",
+                    help="build the enemies' clips (with --only, those EnemyDef ids); "
+                         "touches nothing else in the manifest")
     args = ap.parse_args()
     only = {s.strip() for s in args.only.split(",") if s.strip()}
     # `--enemies` alone is a partial build exactly the way `--only` is: it starts
     # from the manifest on disk and builds no Companion, no Kid and no still.
-    partial = bool(only) or args.enemies
+    # `--enemy-clips` is one too, and its `--only` names enemies, not Companions.
+    partial = bool(only) or args.enemies or args.enemy_clips
+    enemy_sheet_ids = {}
+    if args.enemy_clips:
+        enemy_sheet_ids, clash = enemy_sheets()
+        for k, v in sorted(clash.items()):
+            print("  TWO NAMES FOR ONE ENEMY'S SHEETS: %s <- %s" % (k, ", ".join(v)))
+        if clash:
+            return 1
 
     # Resolved BEFORE anything is built: two files landing on one id is an
     # authoring error, and finding it after a full rebuild of the atlases would
@@ -1180,7 +1389,7 @@ def main():
     # The sources are not in git, so a machine without them KEEPS the enemy
     # stills as built. Rebuilding "everything" there would otherwise rebuild the
     # section to nothing and every enemy would go back to a silhouette.
-    enemies_wanted = not only or args.enemies
+    enemies_wanted = (not only and not args.enemy_clips) or args.enemies
     if enemies_wanted and not os.path.isdir(SRC_ENEMY_STILLS):
         print("  no %s here: the enemy stills stay as built" % SRC_ENEMY_STILLS)
         enemies_wanted = False
@@ -1213,8 +1422,9 @@ def main():
 
     prev_path = os.path.join(OUT, "index.json")
     prev = json.load(open(prev_path)) if os.path.exists(prev_path) else {}
-    # The enemy section is carried unless it is rebuilt below, in every mode.
+    # The enemy sections are carried unless they are rebuilt below, in every mode.
     manifest = {"animated": {}, "stills": {}, "enemies": prev.get("enemies") or {},
+                "enemyClips": prev.get("enemyClips") or {},
                 "targetContentH": TARGET_CONTENT_H, "kids": sorted(kid_slugs)}
     prev_kids = set()
     # `--only` REBUILDS SOME COMPANIONS WITHOUT REWRITING THE REST. Each run
@@ -1222,7 +1432,7 @@ def main():
     # process each, which is also what keeps memory bounded -- accumulates
     # instead of each run forgetting the one before it.
     if partial:
-        for s in sorted(only - set(by_slug)):
+        for s in sorted(only - set(by_slug)) if not args.enemy_clips else []:
             print("  --only %s: no sheets under %s" % (s, SRC_SHEETS))
         if prev:
             for s, names in (prev.get("animated") or {}).items():
@@ -1236,7 +1446,7 @@ def main():
     for slug, clips in sorted(by_slug.items()):
         if only and slug not in only:
             continue
-        if args.enemies and not only:
+        if (args.enemies and not only) or args.enemy_clips:
             continue
         built = {name: build_clip(p) for name, p in sorted(clips.items())}
 
@@ -1337,6 +1547,9 @@ def main():
                 if stale not in keep:
                     os.remove(os.path.join(outdir, stale))
                     print("   removed stale", stale)
+
+    if args.enemy_clips:
+        build_enemy_clips(args, only, manifest, enemy_sheet_ids)
 
     if not args.report:
         # Only the Kids that are actually BUILT. Listing one whose sheets exist

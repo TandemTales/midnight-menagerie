@@ -786,6 +786,124 @@
    "source": "wardrobeGuest.png"
   }
  },
+ "enemyClips": {
+  "blanket-blob": [
+   "attack",
+   "defeat",
+   "hurt",
+   "idle"
+  ],
+  "blanket-hydra": [
+   "attack",
+   "defeat",
+   "hurt",
+   "idle"
+  ],
+  "butler": [
+   "attack",
+   "cast",
+   "defeat",
+   "hurt",
+   "idle"
+  ],
+  "button-baby": [
+   "attack",
+   "defeat",
+   "hurt",
+   "idle"
+  ],
+  "candy-clump": [
+   "attack",
+   "defeat",
+   "hurt",
+   "idle"
+  ],
+  "carnivorous-conservatory": [
+   "attack",
+   "defeat",
+   "hurt",
+   "idle"
+  ],
+  "coatrack-crawler": [
+   "attack",
+   "defeat",
+   "hurt",
+   "idle"
+  ],
+  "compost-colossus": [
+   "attack",
+   "defeat",
+   "hurt",
+   "idle"
+  ],
+  "confectioner": [
+   "attack",
+   "defeat",
+   "hurt",
+   "idle"
+  ],
+  "creeping-ivy": [
+   "attack",
+   "defeat",
+   "hurt",
+   "idle"
+  ],
+  "door-greeter": [
+   "attack",
+   "defeat",
+   "hurt",
+   "idle"
+  ],
+  "dough-blob": [
+   "attack",
+   "defeat",
+   "hurt",
+   "idle"
+  ],
+  "dust-bunny": [
+   "attack",
+   "defeat",
+   "hurt",
+   "idle"
+  ],
+  "governess": [
+   "attack",
+   "cast",
+   "defeat",
+   "hurt",
+   "idle"
+  ],
+  "jack-in-the-box": [
+   "attack",
+   "defeat",
+   "hurt",
+   "idle"
+  ],
+  "jam-jar": [
+   "attack",
+   "defeat",
+   "hurt",
+   "idle"
+  ],
+  "lost-luggage": [
+   "attack",
+   "defeat",
+   "hurt",
+   "idle"
+  ],
+  "patchwork-giant": [
+   "attack",
+   "defeat",
+   "hurt",
+   "idle"
+  ],
+  "red-carpet-runner": [
+   "attack",
+   "defeat",
+   "hurt",
+   "idle"
+  ]
+ },
  "targetContentH": 128,
  "kids": [
   "amina",

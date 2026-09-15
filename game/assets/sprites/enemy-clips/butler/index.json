@@ -1,0 +1,192 @@
+{
+ "clips": {
+  "attack": {
+   "file": "attack.webp",
+   "frames": 81,
+   "cols": 9,
+   "rows": 9,
+   "fw": 400,
+   "fh": 350,
+   "anchor": [
+    215.91,
+    344.97
+   ],
+   "source": "SS_butler_attack.png",
+   "matte": "CONTAM",
+   "bg": [
+    155.9,
+    152.5,
+    158.9
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": -13.7,
+   "dehalo": false,
+   "warm": 2.0,
+   "dewhite": false,
+   "dip": 0.459,
+   "untail": false,
+   "deblack": false,
+   "endIoU": 0.807,
+   "scale": 0.8989,
+   "unit": 340.67,
+   "loop": false,
+   "fps": 60,
+   "hold": false,
+   "sha1": "fdd188cc8c9deb0e"
+  },
+  "cast": {
+   "file": "cast.webp",
+   "frames": 81,
+   "cols": 9,
+   "rows": 9,
+   "fw": 400,
+   "fh": 333,
+   "anchor": [
+    236.83,
+    329.38
+   ],
+   "source": "SS_butler_cast.png",
+   "matte": "CONTAM",
+   "bg": [
+    164.8,
+    161.7,
+    167.6
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": -13.3,
+   "dehalo": false,
+   "warm": 2.0,
+   "dewhite": false,
+   "dip": 0.521,
+   "untail": false,
+   "deblack": false,
+   "endIoU": 0.945,
+   "scale": 0.8869,
+   "unit": 336.14,
+   "loop": false,
+   "fps": 48,
+   "hold": false,
+   "sha1": "1c180f3e0116896e"
+  },
+  "defeat": {
+   "file": "defeat.webp",
+   "frames": 30,
+   "cols": 9,
+   "rows": 4,
+   "fw": 344,
+   "fh": 400,
+   "anchor": [
+    182.51,
+    349.99
+   ],
+   "source": "SS_butler_defeat.png",
+   "matte": "CONTAM",
+   "bg": [
+    156.9,
+    159.3,
+    167.4
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": -19.9,
+   "dehalo": false,
+   "warm": -22.0,
+   "dewhite": false,
+   "dip": 0.562,
+   "untail": false,
+   "deblack": false,
+   "endIoU": 0.348,
+   "scale": 0.9524,
+   "unit": 360.95,
+   "loop": false,
+   "fps": 40,
+   "hold": true,
+   "sha1": "53e4a2453f6e4ba6",
+   "sourceFrames": 81
+  },
+  "hurt": {
+   "file": "hurt.webp",
+   "frames": 81,
+   "cols": 9,
+   "rows": 9,
+   "fw": 400,
+   "fh": 362,
+   "anchor": [
+    227.7,
+    351.71
+   ],
+   "source": "SS_butler_hurt.png",
+   "matte": "CONTAM",
+   "bg": [
+    165.4,
+    162.5,
+    167.9
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": -12.5,
+   "dehalo": false,
+   "warm": 0.0,
+   "dewhite": false,
+   "dip": 0.563,
+   "untail": false,
+   "deblack": false,
+   "endIoU": 0.913,
+   "scale": 0.9368,
+   "unit": 355.04,
+   "loop": false,
+   "fps": 60,
+   "hold": false,
+   "sha1": "a2b207c1b54b6c92"
+  },
+  "idle": {
+   "file": "idle.webp",
+   "frames": 81,
+   "cols": 9,
+   "rows": 9,
+   "fw": 289,
+   "fh": 400,
+   "anchor": [
+    144.04,
+    396.1
+   ],
+   "source": "SS_butler_idle.png",
+   "matte": "CONTAM",
+   "bg": [
+    162.3,
+    160.5,
+    167.7
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": -19.1,
+   "dehalo": false,
+   "warm": 4.0,
+   "dewhite": false,
+   "dip": 0.661,
+   "untail": false,
+   "deblack": false,
+   "endIoU": 0.859,
+   "scale": 0.9926,
+   "unit": 376.18,
+   "loop": true,
+   "fps": 20,
+   "hold": false,
+   "sha1": "c4811d13332bf08e"
+  }
+ },
+ "scale": 1.0,
+ "unit": 379.0
+}
