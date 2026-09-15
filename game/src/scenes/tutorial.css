@@ -69,8 +69,10 @@
   --stage-pb: clamp(128px, 16.9vh, 152px);
   position: relative; z-index: 1;
   display: grid;
-  /* the portrait a size up: as wide as the room's height allows */
-  grid-template-columns: minmax(0, clamp(21rem, min(30vw, 49.8vh), 29rem)) minmax(0, 44rem);
+  /* the portrait a size up: as wide as the room's height allows, so at 1600
+     it stands a head taller than the page's first beat needs; at the Deck's
+     1280 the width binds and it keeps clear of the plaque */
+  grid-template-columns: minmax(0, clamp(21rem, min(30vw, 52.2vh), 30rem)) minmax(0, 44rem);
   align-items: stretch;
   /* a clear stretch of the lit room between the portrait and the page: they
      stand in the room, apart, rather than sharing one slab */
@@ -176,6 +178,10 @@
 /* the velvet and its gilt fillet are the page's inner edge: the panel's thin
    engraved double rule is not drawn again inside them */
 .tut-panel { --rule: none; }
+/* the moon crest from its repaired cut (medal-moon-clean.webp, as the Atlas
+   and the Lobby wear it): whole enamel behind the crescent, and no stray
+   fleck of gilt beside its crown */
+.tut-panel[data-medal="moon"] { --medal-img: url("../../assets/ui/kit/medal-moon-clean.webp"); }
 /* ── the page's fittings: velvet and brass guards ───────────────────────── */
 .tut-fit { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
 .tut-fit__liner { inset: 5px; --liner-w: inherit; }

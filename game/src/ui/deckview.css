@@ -168,6 +168,8 @@
 /* ── the case: the panels' rail round a velvet-lined box ─────────────────── */
 .mm-deck__table.kit-stage {
   --stage-pk: .74;
+  /* the moon crest from its repaired cut: whole enamel, no stray fleck */
+  --stage-medal: url("../../assets/ui/kit/medal-moon-clean.webp");
   --stage-medal-w: clamp(84px, 6.4vw, 104px);
   --liner-w: clamp(14px, 1.1vw, 18px);
   flex: 1 1 auto; min-height: 0;
