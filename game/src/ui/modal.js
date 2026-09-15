@@ -161,17 +161,6 @@ export class Modal {
     this.subtitleEl = head.querySelector('.mm-modal__subtitle');
     this.closeBtn = close;
 
-    /* A framed dialog owns the keys pressed inside it. The scenes keep their
-       hotkeys on `window` (combat's E ends the turn, Q W D R T open piles; the
-       hand walks on arrows and Tab), and a keydown from the pile viewer's
-       search or grid used to bubble on out to them: typing "bite" filtered
-       on "bit" while the E ended the turn behind the dialog, and Tab from a
-       Trick walked the hand instead of the dialog. Stopped here, on the way
-       OUT, every listener inside the dialog has already had it and this
-       Modal's own Escape and Tab (document, capture) run first. The
-       full-screen veil is not framed and keeps its document listener. */
-    if (framed) root.addEventListener('keydown', (e) => e.stopPropagation());
-
     this.setTitle(this.opts.title || '', this.opts.subtitle || '');
     close.hidden = this.opts.dismissible === false;
     close.addEventListener('click', () => this.close(null));
@@ -213,6 +202,23 @@ export class Modal {
     };
     document.addEventListener('keydown', onKey, true);
     this._offs.push(() => document.removeEventListener('keydown', onKey, true));
+
+    /* A framed dialog owns the keys pressed inside it. The scenes keep their
+       hotkeys on `window` (combat's E ends the turn, Q W D R T open piles, the
+       hand walks on arrows and Tab, the coach turns on Enter), and a keydown
+       from the pile viewer's search or grid bubbled on out to them: typing
+       "bite" filtered on "bit" while the E ended the turn behind the dialog,
+       and Tab from a Trick walked the hand instead of the dialog. Stopped on
+       `document`, the last stop before `window`: every listener inside the
+       dialog and every document listener (the tooltip's) still has it, and
+       this Modal's own Escape and Tab above run first. A key from outside the
+       dialog (the pad's forwarded keys go to `window`) is left alone, and the
+       full-screen veil is not framed. */
+    if (this.el.classList.contains('mm-modal--kit')) {
+      const own = (e) => { if (this.el.contains(e.target)) e.stopPropagation(); };
+      document.addEventListener('keydown', own);
+      this._offs.push(() => document.removeEventListener('keydown', own));
+    }
 
     // focus the first useful control, or the dialog itself
     requestAnimationFrame(() => {
