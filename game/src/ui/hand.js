@@ -1025,6 +1025,22 @@ export class Hand {
       this._lastSlot = last;
       last.view.el.classList.add('is-fan-last');
     }
+    /* A CROWDED HAND FITS EACH CARD'S RULES TO WHAT SHOWS OF IT (round 5). A
+       covered card's rules wrap into the strip its neighbour leaves showing,
+       and they were set at the full card's size, so a short rule sat small in
+       a strip with room for it to read. Each card is asked for the largest
+       size its own words fit (CardView#fitRules, answered from a cache: this
+       runs on every hover). The boxes are scenes/combat.css's, in design
+       units: a covered card's rules run 45u narrower than its strip and 104u
+       tall; the last card's run 170u by 104u. Its name is fitted the same
+       way to the plate cut down to the strip, 19u narrower than the strip. */
+    if (F.crowded) {
+      const strip = 224 * Math.min(1, F.step / F.cw);
+      for (const s of this.slots) {
+        s.view.fitRules?.(s === last ? 170 : strip - 45, 104);
+        if (s !== last) s.view.fitName?.(strip - 19);
+      }
+    }
 
     const hover = this.hoverSlot;
     const hoverIdx = hover ? this.slots.indexOf(hover) : -1;

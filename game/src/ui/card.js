@@ -53,6 +53,147 @@ function keywordLabel(raw) {
 }
 const capitalise = (s) => s.charAt(0).toUpperCase() + s.slice(1);
 
+/**
+ * How wide a line of the card's display type is, in em.
+ *
+ * A crowded hand shows each covered card as a strip (scenes/combat.css, "A
+ * CROWDED HAND READS FROM THE LEFT"), and its name plate is cut down to that
+ * strip so the next card never cuts it. The name must then fit the plate, and
+ * CSS cannot measure text: so the face measures its own name and type line
+ * once, on a canvas, in the face they are set in, and publishes the widths as
+ * unitless `--name-em` / `--type-em` for the stylesheet to size them by. A
+ * measure is cached per string only once the webfonts are in; before that the
+ * card measures again when they land (see CardView#_measureType).
+ */
+const EM_CACHE = new Map();
+let emCtx = null;
+let emFamily = '';
+function fontsIn() {
+  try { return !document.fonts || document.fonts.check('700 20px Cinzel'); } catch { return true; }
+}
+function textEm(text, weight, tracking) {
+  const key = weight + '|' + tracking + '|' + text;
+  if (EM_CACHE.has(key)) return EM_CACHE.get(key);
+  if (typeof document === 'undefined') return null;
+  if (!emCtx) {
+    try { emCtx = document.createElement('canvas').getContext('2d'); } catch { emCtx = null; }
+    if (!emCtx) return null;
+    emFamily = (getComputedStyle(document.documentElement).getPropertyValue('--font-display') || '').trim() || 'Cinzel, Georgia, serif';
+  }
+  emCtx.font = `${weight} 100px ${emFamily}`;
+  const em = Math.round((emCtx.measureText(text).width / 100 + tracking * [...text].length) * 1000) / 1000;
+  if (fontsIn()) EM_CACHE.set(key, em);
+  return em;
+}
+
+/**
+ * THE RULES, FITTED TO THE ROOM A CROWDED HAND LEAVES THEM (see
+ * CardView#fitRules). A card's rules are wrapped here the way the page wraps
+ * them — boxes of text between the spaces, a keyword never broken, a number a
+ * size up in the semibold — against a width, at falling sizes, until they fit
+ * a height. All of it in the card's design units, so the answer is the same at
+ * every viewport and costs no layout: the words are measured once on a canvas,
+ * in the body face, at 100px.
+ */
+let bodyCtx = null;
+let bodyFamily = '';
+const FIT_KW_PAD = 2;               // .kit-cards .mm-card__kw: 1u of padding each side
+function bodyContext() {
+  if (bodyCtx) return bodyCtx;
+  try { bodyCtx = document.createElement('canvas').getContext('2d'); } catch { bodyCtx = null; }
+  if (bodyCtx) bodyFamily = (getComputedStyle(document.documentElement).getPropertyValue('--font-body') || '').trim() || 'Grenze, Georgia, serif';
+  return bodyCtx;
+}
+function bodyFontsIn() {
+  try { return !document.fonts || document.fonts.check('400 20px Grenze'); } catch { return true; }
+}
+/* A card sets its figures in lining-nums (card.css), which a canvas cannot
+   ask for: its default figures run a quarter narrower, and a rule with an 11
+   and a 22 in it wrapped a line more than it was fitted for. So a figure's
+   width is measured once on the page, in the card's own figure style, per
+   weight, and every digit is counted at it. */
+let digitEm = null;
+function digitEms() {
+  if (digitEm) return digitEm;
+  if (typeof document === 'undefined' || !document.body) return null;
+  const probe = document.createElement('span');
+  probe.style.cssText = `position:absolute;left:-9999px;top:0;white-space:nowrap;font-size:100px;font-family:${bodyFamily};font-variant-numeric:lining-nums tabular-nums;`;
+  probe.textContent = '0123456789';
+  document.body.appendChild(probe);
+  probe.style.fontWeight = '400';
+  const w400 = probe.getBoundingClientRect().width / 1000;
+  probe.style.fontWeight = '600';
+  const w600 = probe.getBoundingClientRect().width / 1000;
+  probe.remove();
+  const out = { text: w400, em: w400, kw: w600, num: w600 * 1.1 };
+  if (bodyFontsIn()) digitEm = out;
+  return out;
+}
+/** -> rows of boxes { em, pad, gap } from a rendered `.mm-card__rules`; `gap` is the space before the box, in em. */
+function rulesBoxes(rulesEl) {
+  const ctx = bodyContext();
+  if (!ctx) return null;
+  const fonts = { text: `400 100px ${bodyFamily}`, em: `italic 400 100px ${bodyFamily}`, num: `600 110px ${bodyFamily}`, kw: `600 100px ${bodyFamily}` };
+  const figs = digitEms();
+  if (!figs) return null;
+  const w = (s, kind) => {
+    const digits = (s.match(/\d/g) || []).length;
+    ctx.font = fonts[kind];
+    return ctx.measureText(digits ? s.replace(/\d/g, '') : s).width / 100 + digits * figs[kind];
+  };
+  const space = w(' ', 'text');
+  const rows = [];
+  for (const row of rulesEl.children) {
+    const boxes = [];
+    let cur = null;
+    let pendingGap = 0;
+    const push = () => { if (cur) { boxes.push(cur); cur = null; } };
+    for (const node of row.childNodes) {
+      const kind = node.nodeType === 3 ? 'text'
+        : node.classList?.contains('mm-card__kw') ? 'kw'
+        : node.classList?.contains('mm-card__num') ? 'num'
+        : node.tagName === 'EM' ? 'em' : 'text';
+      const str = node.textContent || '';
+      if (kind === 'kw') {
+        if (!cur) { cur = { em: 0, pad: 0, gap: pendingGap }; pendingGap = 0; }
+        cur.em += w(str, 'kw'); cur.pad += FIT_KW_PAD;
+        continue;
+      }
+      const parts = str.split(/( +)/);
+      for (const p of parts) {
+        if (!p) continue;
+        if (p[0] === ' ') { push(); pendingGap += space * p.length; continue; }
+        if (!cur) { cur = { em: 0, pad: 0, gap: pendingGap }; pendingGap = 0; }
+        cur.em += w(p, kind);
+      }
+    }
+    push();
+    rows.push(boxes);
+  }
+  return rows;
+}
+/** How many lines `rows` take at size `f` (u) in width `W` (u); Infinity if a box cannot fit. */
+function linesAt(rows, f, W) {
+  let n = 0;
+  for (const boxes of rows) {
+    if (!boxes.length) continue;
+    let line = -1;
+    n++;
+    for (const b of boxes) {
+      const bw = b.em * f + b.pad;
+      if (bw > W) return Infinity;
+      if (line < 0) { line = bw; continue; }
+      const next = line + b.gap * f + bw;
+      if (next > W) { n++; line = bw; } else line = next;
+    }
+  }
+  return n;
+}
+
+/* A name plate's end caps and the lettering's inset, by the lines it holds,
+   in design units (CardView#fitName; scenes/combat.css draws the same). */
+const NAME_CAPS = { 1: { cap: 19, pad: 16 }, 2: { cap: 15.5, pad: 17 }, 3: { cap: 13, pad: 14.5 } };
+
 let SEQ = 0;
 
 export class CardView {
@@ -194,7 +335,115 @@ export class CardView {
     const len = n.length + (this.state.upgraded ? 1 : 0);
     this.el.classList.toggle('is-name-long', len > 13 && len <= 18);
     this.el.classList.toggle('is-name-xlong', len > 18);
+    this._nameWords = null; this._nameFitKey = null;
+    this._measureType();
     this._updateAria();
+  }
+
+  /** Publish `--name-em` and `--type-em` (see `textEm`), and again once the webfonts land. */
+  _measureType() {
+    const name = (this.def.name || this.def.id) + (this.state.upgraded ? '+' : '');
+    const t = this.def.type || 'skill';
+    const sub = TARGET_SUB[this.def.target];
+    // the crowded hand's settings (scenes/combat.css): the name at .02em, the
+    // type line closed up to .07em with its target at .03em
+    const nameEm = textEm(name, 700, 0.02);
+    const typeEm = textEm((TYPE_LABEL[t] || t).toUpperCase(), 600, 0.07);
+    const subEm = sub ? textEm((' · ' + sub).toUpperCase(), 600, 0.03) : 0;
+    if (nameEm) this.el.style.setProperty('--name-em', String(nameEm));
+    if (typeEm != null && subEm != null) this.el.style.setProperty('--type-em', String(Math.round((typeEm + subEm) * 1000) / 1000));
+    if (!fontsIn() && !this._emWait && typeof document !== 'undefined' && document.fonts) {
+      this._emWait = true;
+      document.fonts.ready.then(() => { this._emWait = false; this._nameWords = null; this._nameFitKey = null; if (!this._dead) this._measureType(); }).catch(() => {});
+    }
+  }
+
+  /**
+   * Fit the rules to a box `widthU` x `heightU` design units: the largest size
+   * from `hi` down to `lo` (in u, a quarter-unit at a time) at which they wrap
+   * into it at line height `lh`, published as `--rules-fit` with `is-fitted`.
+   * A crowded hand asks for this (ui/hand.js) with the strip a covered card
+   * shows, and scenes/combat.css sets the rules at that size; nothing else
+   * reads it. Cheap to call on every layout: it answers from the last box, and
+   * the words are measured once per text.
+   */
+  fitRules(widthU, heightU, { lo = 11.5, hi = 22, lh = 1.1 } = {}) {
+    if (this._dead || !this.$rules) return;
+    const key = Math.round(widthU * 4) + ':' + Math.round(heightU * 4) + ':' + lo + ':' + hi + ':' + lh;
+    if (this._fitKey === key) return;
+    if (!this._fitRows) {
+      this._fitRows = rulesBoxes(this.$rules);
+      if (!this._fitRows) return;
+      if (!bodyFontsIn() && !this._fitWait && typeof document !== 'undefined' && document.fonts) {
+        this._fitWait = true;
+        document.fonts.ready.then(() => { this._fitWait = false; this._fitRows = null; this._fitKey = null; }).catch(() => {});
+      }
+    }
+    // a hair of slack for what a canvas does not see: kerning across a span's
+    // edge, a preview swapping 9 for 12, sub-pixel rounding at a small scale
+    const W = widthU * 0.95, H = heightU * 0.97;
+    let f = hi;
+    for (; f > lo; f -= 0.25) {
+      if (linesAt(this._fitRows, f, W) * f * lh <= H) break;
+    }
+    f = Math.max(lo, f);
+    // the longest rules in the game still run long at the floor: they close
+    // their leading, never below 0.98, before a line goes under the panel's foot
+    let leading = lh;
+    const need = linesAt(this._fitRows, f, W) * f;
+    if (need * lh > H) leading = Math.max(0.98, Math.floor((H / need) * 100) / 100);
+    this._fitKey = key;
+    this.el.style.setProperty('--rules-fit', String(f));
+    this.el.style.setProperty('--rules-lh', String(leading));
+    this.el.classList.add('is-fitted');
+  }
+
+  /**
+   * Fit the name to a plate `plateU` design units wide: one line as large as it
+   * will go (to `hi`), else two lines no smaller than 13u, else three no
+   * smaller than `lo`. Published as `--name-fit` (in u) and `--name-lines`.
+   * The plate's notched caps come in to their full width on the rows a second
+   * and third line sit on, so a taller plate draws narrower caps and letters
+   * just inside them (NAME_CAPS; scenes/combat.css draws the same numbers).
+   * The name is measured in the display face with the plate's tracking, word
+   * by word, and wrapped the way the page wraps it (a balanced wrap keeps the
+   * greedy line count), so it never runs onto a cap.
+   */
+  fitName(plateU, { lo = 11.5, hi = 17.5, track = 0.02 } = {}) {
+    if (this._dead || !this.$name) return;
+    const key = Math.round(plateU * 4) + ':' + lo + ':' + hi;
+    if (this._nameFitKey === key) return;
+    if (!this._nameWords) {
+      const text = (this.def.name || this.def.id) + (this.state.upgraded ? '+' : '');
+      const words = text.split(/\s+/).filter(Boolean);
+      const ems = words.map((wd) => textEm(wd, 700, track));
+      const space = textEm('a a', 700, track) - 2 * textEm('a', 700, track);
+      if (ems.some((e) => e == null) || space == null) return;
+      this._nameWords = { ems, space };
+    }
+    const { ems, space } = this._nameWords;
+    const lines = (f, W) => {
+      let n = 1, line = -1;
+      for (const e of ems) {
+        const w = e * f;
+        if (w > W) return Infinity;
+        if (line < 0) { line = w; continue; }
+        const next = line + space * f + w;
+        if (next > W) { n++; line = w; } else line = next;
+      }
+      return n;
+    };
+    const largest = (maxLines, floor) => {
+      const W = (plateU - 2 * NAME_CAPS[maxLines].pad) * 0.97;
+      for (let f = hi; f >= floor; f -= 0.25) if (lines(f, W) <= maxLines) return f;
+      return 0;
+    };
+    let n = 1, f = largest(1, 14);
+    if (!f) { n = 2; f = largest(2, 13); }
+    if (!f) { n = 3; f = largest(3, lo) || lo; }
+    this._nameFitKey = key;
+    this.el.style.setProperty('--name-fit', String(f));
+    this.el.style.setProperty('--name-lines', String(n));
   }
 
   _renderType() {
@@ -335,6 +584,8 @@ export class CardView {
     this.$rules.appendChild(frag);
     this.el.classList.toggle('is-text-long', plain > 62 && plain <= 104);
     this.el.classList.toggle('is-text-xlong', plain > 104);
+    // new words: the next crowded layout fits them afresh (CardView#fitRules)
+    this._fitRows = null; this._fitKey = null;
     this._preview = null;
     this._updateAria();
   }
