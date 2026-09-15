@@ -427,8 +427,13 @@
   user-select: text;
 }
 .mm-set__seed .kit-enamel__value { font-size: calc(var(--read-h) * .5); letter-spacing: .08em; }
-/* no expedition, no seed: the plate unlit, so an empty value never shines */
-.mm-set__seed.kit-enamel.is-empty { filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .75)) saturate(.45) brightness(.72); }
+/* no expedition, no seed: a reading with nothing to read, so the column's own
+   unlit plate, lettered like an OFF, and never a black hole in the ledger */
+.mm-set__seed.kit-enamel.is-empty {
+  border-image-source: url("../../assets/ui/kit/cartouche.webp");
+  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .75)) saturate(.35) brightness(.8);
+}
+.mm-set__seed.is-empty .kit-enamel__value { color: var(--kit-text-mid); }
 .mm-set__text.kit-field {
   --field-h: calc(var(--read-h) + 4px);
   justify-self: end;

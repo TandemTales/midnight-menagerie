@@ -1659,8 +1659,9 @@ button.kit-medallion:hover, button.kit-medallion:focus-visible,
 .kit-field:focus-visible {
   outline: none;
   /* the gilt edge first, then the shadow: a light traced round a shadow that
-     is already blurred becomes a halo */
-  filter: drop-shadow(0 0 .8px var(--kit-gold-hi)) drop-shadow(0 4px 6px rgba(0, 0, 0, .8)) brightness(1.1);
+     is already blurred becomes a halo. A little candle on the rim, so the
+     place the keys will write is found at a glance, and no more than that */
+  filter: drop-shadow(0 0 1.3px var(--kit-gold-hi)) drop-shadow(0 0 7px color-mix(in srgb, var(--kit-candle) 34%, transparent)) drop-shadow(0 4px 6px rgba(0, 0, 0, .8)) brightness(1.16);
 }
 
 /* ── select ─────────────────────────────────────────────────────────────────
@@ -1693,7 +1694,8 @@ button.kit-medallion:hover, button.kit-medallion:focus-visible,
   transition: filter var(--t-quick) var(--ease-out);
 }
 .kit-select:hover { filter: drop-shadow(0 3px 5px rgba(0, 0, 0, .75)) brightness(1.12); }
-.kit-select:focus-visible { outline: none; filter: drop-shadow(0 0 1.2px var(--kit-gold-hi)) drop-shadow(0 0 9px color-mix(in srgb, var(--kit-candle) 38%, transparent)) drop-shadow(0 3px 5px rgba(0, 0, 0, .75)) brightness(1.12); }
+.kit-select:focus-visible { outline: none; filter: drop-shadow(0 0 1.5px var(--kit-gold-hi)) drop-shadow(0 0 10px color-mix(in srgb, var(--kit-candle) 50%, transparent)) drop-shadow(0 3px 5px rgba(0, 0, 0, .75)) brightness(1.2); }
+.kit-select-wrap:has(> .kit-select:focus-visible) > :not(.kit-select) { filter: brightness(1.2); }
 .kit-select option { background: #17111c; color: var(--kit-text); }
 /* Round 5: the list's chevron is cast brass, not a painted triangle — a gilt
    chevron, lit from the top left over the dark cut under it, set in the Kid
