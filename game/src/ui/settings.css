@@ -125,6 +125,19 @@
 .mm-set__group[data-group="reading"]    { --lit-x: 70%; --lit-y: 118%; --lit-a: 22%; --moon-a: 7%; --moon-x: 0%; --moon-y: 0%; }
 .mm-set__group[data-group="motion"]     { --lit-x: 58%; --lit-y: 112%; --lit-a: 32%; }
 .mm-set__group[data-group="play"]       { --lit-x: 76%; --lit-y: 120%; --lit-a: 34%; }
+/* …and the working pages are not all one cloth: how the house plays is lined
+   with the flocked velvet it lays its Tricks on (the Shop's, the Reward's,
+   the trick case's), how it reads with a reading chair's plush velvet; how it
+   sounds and how it moves keep the Kid board's suede. Each veiled so its
+   pattern stays under the words. */
+.mm-set__group[data-group="play"] {
+  --mat: url("../../assets/ui/kit/flock.webp"); --mat-size: 233px 265px; --mat-base: #150c1b;
+  --mat-veil: .36;
+}
+.mm-set__group[data-group="reading"] {
+  --mat: url("../../assets/ui/kit/velvet.webp"); --mat-size: 256px 256px; --mat-base: #160d1e;
+  --mat-veil: .3;
+}
 .mm-set__group[data-group="expedition"],
 .mm-set__group[data-group="seed"],
 .mm-set__group[data-group="danger"] {
