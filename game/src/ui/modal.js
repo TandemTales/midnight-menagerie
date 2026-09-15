@@ -68,6 +68,15 @@ const FOCUSABLE = [
 ].join(',');
 
 let OPEN_COUNT = 0;
+/**
+ * The modals open right now, bottom to top. Only the top one answers Escape
+ * and Tab. Each modal's key handler is a capture listener on `document`, so
+ * with a question open over Settings both of them heard every key: Settings'
+ * trap saw focus outside its own dialog and took it back, the question's trap
+ * took it back again, and Tab never left "Keep my progress"; Escape closed the
+ * question and Settings under it at once.
+ */
+const STACK = [];
 
 export class Modal {
   /**
@@ -190,10 +199,12 @@ export class Modal {
     this.el.hidden = false;
 
     OPEN_COUNT++;
+    STACK.push(this);
     document.documentElement.classList.add('mm-modal-open');
     this._makeBackgroundInert();
 
     const onKey = (e) => {
+      if (STACK[STACK.length - 1] !== this) return;     // a dialog over this one has the keys
       if (e.key === 'Escape' && this.opts.dismissible !== false) {
         e.stopPropagation(); e.preventDefault(); this.close(null);
       } else if (e.key === 'Tab') {
@@ -255,6 +266,8 @@ export class Modal {
     for (const off of this._offs) { try { off(); } catch {} }
     this._offs.length = 0;
     this._releaseBackground();
+    const at = STACK.indexOf(this);
+    if (at >= 0) STACK.splice(at, 1);
     OPEN_COUNT = Math.max(0, OPEN_COUNT - 1);
     if (OPEN_COUNT === 0) document.documentElement.classList.remove('mm-modal-open');
     this.el.classList.remove('is-in');
