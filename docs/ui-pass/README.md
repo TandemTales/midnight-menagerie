@@ -56,6 +56,22 @@ so round 2 runs six at once, as round 1 did.
   `!window.MM.ctx.scenes.busy`.
 - **`tests/steam-deck`'s Map row is load-sensitive** and fails the same way on the
   commit before the kit (A/B, 2026-09-12). Re-run it alone before blaming a change.
+- **A usage limit can stop builders mid-build.** In round 5 the weekly limit
+  stopped all six DIALOGS and KIDS' PLACES builders about an hour in. Their
+  worktrees kept their commits and half-made edits.
+  - Set `resume` on each stopped builder in the args, saying where it stopped,
+    and it finishes from its worktree instead of starting again at BASE.
+  - Run only the unfinished tracks, as a new run. `resumeFromRunId` replays a
+    finished agent only when it is called in the same order, and round 5's
+    resume re-ran POLISH's and COMBAT's four judges on byte-identical prompts.
+- **One dev server serves one capture at a time.** `tools/devserver.py` listens
+  with a backlog of 5. Two `shot.py` runs at once get ERR_CONNECTION_REFUSED on
+  fonts and images, and write console files that look like page errors.
+- **Prove a merge's endings commit to commit, not with the endings guard.** In the
+  main checkout, `endings_guard.py` repairs every file that differs from the
+  base, including files someone else has modified and not committed
+  (`tests/critic-design/result.json`). Instead, compare
+  `git diff --numstat BASE HEAD` with the same diff plus `--ignore-cr-at-eol`.
 
 ## Results
 
@@ -74,7 +90,10 @@ so round 2 runs six at once, as round 1 did.
 | 4 | COMBAT, three boards | FLINT 7.33 · GARNET 6.92 · EBONY 6.42 · the screen before 5.58 | FLINT, both judges; the boss board 8.0, the loop's first 8 | `265ac4d` |
 | 4 | DIALOGS opening / Settings / pile viewer | KESTREL 7.00 · INDIGO 6.42 · JASPER 6.33 · the screens before 4.92 | KESTREL, both judges | `42753f9` |
 | 4 | KIDS' PLACES Lobby / Clubhouse / Atlas | OCHRE 6.94 · MARL 6.94 · NUTMEG 6.83 · the screens before 5.94 | per screen, 3 judges: Lobby NUTMEG, Clubhouse OCHRE, Atlas MARL | `ecb9315` |
-| 5 | POLISH; COMBAT; DIALOGS; KIDS' PLACES | briefed (`BRIEF-r5.md`, `RUBRIC-r5.md`, `round-5.args.json`) | | |
+| 5 | POLISH the six boards | THISTLE 7.08 · SABLE 7.08 · RAVEN 6.92 · the screens before 6.25 | THISTLE, both judges; a second blind judging agreed, 4 of 4 | `dbcc970` |
+| 5 | COMBAT, three boards | VESPER 7.11 · YEW 6.89 · WALNUT 6.83 · the screen before 6.67 | VESPER, 2 of 3 judges; a second blind judging agreed, 4 of 5 | `e3f23aa` |
+| 5 | DIALOGS opening / Settings / pile viewer | BIRCH 7.08 · ALDER 6.83 · CLOVE 6.58 · the screens before 5.75 | BIRCH, both judges | `5313c65` |
+| 5 | KIDS' PLACES Lobby / Clubhouse / Atlas | GORSE 6.89 · ELDER 6.78 · FINCH 6.72 · the screens before 5.89 | per screen, 3 judges: Lobby GORSE, Clubhouse ELDER, Atlas GORSE | `25a5111` |
 
 **Scores anchor to the candidates beside them.** Round 0's winner scored 7.0 in
 round 0 and 5.58 as round 1's baseline: the judges grew stricter as the field
@@ -89,12 +108,20 @@ Against their own baselines:
 | 2 | POLISH +0.50 | COMBAT +3.75, EXPAND-2 +4.05 |
 | 3 | POLISH +1.06, COMBAT +1.83 | DIALOGS +3.84 |
 | 4 | POLISH +0.47, COMBAT +1.75, DIALOGS +2.08, KIDS' PLACES +1.00 | — |
+| 5 | POLISH +0.83, COMBAT +0.44, DIALOGS +1.33, KIDS' PLACES +1.00 | — |
 
 Converting a screen moves it about four points. Refining one moves it half a point
 to two points, more when the brief names concrete defects the judges can see
 (round 3's COMBAT gained most on the crowded board, 7.0 against 4.0). The
 background dimension is what stalls: every judge scores it between 5 and 6 on
 every candidate, winner or not, because the grounds are still renders.
+
+**How much of a score is the judge.** Round 5's resume judged POLISH and COMBAT a
+second time, blind, on the same captures. Both judgings named the same winners.
+Candidate means moved by up to a third of a point (COMBAT's YEW 6.89 then 6.58,
+its baseline 6.67 then 6.33), and the order below the winner swapped (YEW and
+WALNUT). A gap of 0.3 or less between two means is within that noise: read the
+judges' picks and rankings, which decide the merge, before the means.
 
 **When the judges split with no majority**, `round-workflow.js` decides on their
 rankings: the candidate that beats each other one head to head across every
