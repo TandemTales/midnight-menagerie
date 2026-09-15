@@ -57,7 +57,10 @@
   text-align: left;
   font-size: calc(var(--field-h) * .4);
   letter-spacing: .02em;
+  /* the filters' own lit enamel plate, not a black slot beside them */
+  border-image-source: url("../../assets/ui/kit/plate-lit.webp");
 }
+.mm-deck__search .kit-field::placeholder { color: var(--kit-text-mid); }
 /* the glass sits in the plate's left end, gold on the dark, never a box */
 .mm-deck__glass {
   position: absolute; z-index: 1; left: calc(clamp(40px, 5vh, 44px) * .5); top: 50%;
@@ -188,6 +191,9 @@
 }
 /* the velvet lining the case, just inside its rail */
 .mm-deck__liner { inset: 4px; z-index: -1; --liner-w: inherit; }
+/* its brass corner guards, a size under the dialog's own, over the cards'
+   scroll so a Trick passing under a corner goes under the brass */
+.mm-deck__guard { --bracket: clamp(44px, 3.6vw, 58px); z-index: 4; }
 .mm-deck__table > .mm-deck__note { padding: 0 6%; }
 
 /* ── grid: the Tricks laid in the case ──────────────────────────────────── */

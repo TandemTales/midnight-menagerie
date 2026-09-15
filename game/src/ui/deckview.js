@@ -189,7 +189,15 @@ export class DeckView {
     const liner = document.createElement('i');
     liner.className = 'kit-liner mm-deck__liner';
     liner.setAttribute('aria-hidden', 'true');
-    table.append(liner, note, empty, grid);
+    /* and a case is a thing that is carried: a cast brass guard over each of
+       its corners, as the dialog it stands in wears larger ones (.kit-bracket) */
+    const guards = ['tl', 'tr', 'bl', 'br'].map((c) => {
+      const g = document.createElement('i');
+      g.className = `kit-bracket kit-bracket--${c} mm-deck__guard`;
+      g.setAttribute('aria-hidden', 'true');
+      return g;
+    });
+    table.append(liner, note, empty, grid, ...guards);
 
     root.append(bar, filt, table);
     this.el = root; this.grid = grid; this.emptyEl = empty;

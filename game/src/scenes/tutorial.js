@@ -320,11 +320,11 @@ export class TutorialScene extends Scene {
   }
 
   /**
-   * The mantel the story stands on: the boards' carved and gilded shelf rail
-   * run across the room under the portrait and the page, their feet on its
-   * walnut top and the nameplate hung over its panelled front. It is what
-   * dresses the bottom of the room instead of an empty stretch of blurred
-   * floor. Decoration only.
+   * The mantel the story stands on: the boards' carved egg-and-dart ledge run
+   * across the room under the portrait and the page, their feet on its walnut
+   * top and the nameplate hung over its gilt front, with title.png's fleur
+   * hanging under the middle of it. It is what dresses the bottom of the room
+   * instead of an empty stretch of blurred floor. Decoration only.
    */
   _buildMantel() {
     const m = el('div', 'tut-mantel');

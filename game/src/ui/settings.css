@@ -116,8 +116,9 @@
    the plaque, is the coolest. And the pages have roles, as the Kid board's
    pieces do (railed panels round the dossier, a carved mirror frame, plates):
    the house's workings are railed suede pages; the two small fittings, the seed
-   and the way out, are enamel plates in the Kid board's carved portrait frame;
-   the one dangerous thing is lacquered oxblood in the same carving. */
+   and the way out, are enamel plaques in the gilt double rule and corner
+   brackets of the Kid board's dossier panels (plate-rect.webp, the kit's
+   .kit-plaque frame); the one dangerous thing is lacquered wine in the same. */
 .mm-set__group[data-group="sound"]      { --lit-x: 30%; --lit-y: -10%; --lit-a: 26%; --moon-a: 12%; --moon-x: 0%; --moon-y: -12%; }
 .mm-set__group[data-group="reading"]    { --lit-x: 70%; --lit-y: 118%; --lit-a: 22%; --moon-a: 7%; --moon-x: 0%; --moon-y: 0%; }
 .mm-set__group[data-group="motion"]     { --lit-x: 58%; --lit-y: 112%; --lit-a: 32%; }
@@ -125,12 +126,15 @@
 .mm-set__group[data-group="expedition"],
 .mm-set__group[data-group="seed"],
 .mm-set__group[data-group="danger"] {
-  --fk: .6;
   --rule: none;
-  border-image-source: url("../../assets/ui/kit/frame.webp");
-  border-image-slice: 52;
-  border-image-width: calc(52px * var(--fk));
-  border-image-outset: calc(12px * var(--fk));
+  /* plate-rect.webp is 240x80 (tools/prep_ui_polish.py): a broad gilt rule at
+     its edge, a fine one inside it, a scroll set in each corner between the
+     two; drawn a little heavier than the kit's plaques, so its gilt holds its
+     own beside the pages' carved rails */
+  border-image-source: url("../../assets/ui/kit/plate-rect.webp");
+  border-image-slice: 34;
+  border-image-width: clamp(24px, 1.75vw, 28px);
+  border-image-outset: 4px;
   --mat: url("../../assets/ui/kit/enamel.webp"); --mat-size: 360px 360px; --mat-base: #221630;
   --mat-veil: .12; --mat-edge: .66;
   box-shadow: 0 18px 40px -18px rgba(0, 0, 0, .9), inset 0 0 30px rgba(0, 0, 0, .5);
@@ -426,7 +430,11 @@
   padding: 0 calc(var(--field-h) * .56);
   font-size: calc(var(--field-h) * .42);
   user-select: text;
+  /* somewhere to write is the lit enamel plate, as the pile viewer's search
+     is; the seed already struck stays on the tiles' dark cartouche above it */
+  border-image-source: url("../../assets/ui/kit/plate-lit.webp");
 }
+.mm-set__text.kit-field::placeholder { color: var(--kit-text-mid); }
 
 /* ── the expedition and the danger rows ──────────────────────────────────── */
 .mm-set__row > .kit-btn { justify-self: end; --plate-h: calc(var(--read-h) + 4px); font-size: 12.5px; }

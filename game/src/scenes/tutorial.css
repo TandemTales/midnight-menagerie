@@ -182,23 +182,40 @@
    portrait and the page: their feet on its walnut top, the nameplate hung over
    its panelled front. Under the page and the portrait in z. */
 .tut-mantel {
-  /* rail-panels.webp (tools/prep_ui_rail.py) is the shelf rail the Reward's
-     plates stand on: a walnut top lit along its lip, a gilt bead, an apron of
-     recessed panels with gilt bosses and a star rosette capping each end, and
-     its shadow. A thing stands on it with its foot 14/96 of the rail's height
-     below its top. */
-  --rail-h: clamp(64px, 10.5vh, 84px);
+  /* ledge.webp (tools/prep_ui_materials.py, the Shop's and Game Over's ledge)
+     is 152 rows: a lit walnut top to row 28, a gilt bead, an egg-and-dart
+     front picked out in gilt (44-100), a fillet and a cove to 116, then the
+     shadow it throws. --ledge-h is the carving itself; a thing stands on it
+     with its foot 0.18 of --ledge-h below the element's top. */
+  --ledge-h: clamp(44px, 6.2vh, 56px);
   position: absolute; z-index: -1; pointer-events: none;
   left: calc(var(--stage-px) - clamp(40px, 4vw, 70px));
   right: calc(var(--stage-px) - clamp(40px, 4vw, 70px));
-  top: calc(100% - var(--stage-pb) - var(--rail-h) * 14 / 96);
-  height: var(--rail-h);
+  top: calc(100% - var(--stage-pb) - var(--ledge-h) * .18);
+  height: calc(var(--ledge-h) * 152 / 116);
 }
+/* the carved shelf, running out into the room's dark at either end rather
+   than stopping on a cut edge; the candles on it warm its front */
 .tut-mantel__shelf {
   position: absolute; inset: 0;
-  border: 0 solid transparent;
-  border-image: url("../../assets/ui/kit/rail-panels.webp") 0 64 fill / 0 calc(var(--rail-h) * 64 / 96) round;
-  filter: drop-shadow(0 10px 12px rgba(0, 0, 0, .55)) brightness(.92);
+  background: url("../../assets/ui/kit/ledge.webp") 50% 0 / auto 100% repeat-x;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, black 5%, black 95%, transparent 100%);
+          mask-image: linear-gradient(90deg, transparent 0, black 5%, black 95%, transparent 100%);
+  filter: drop-shadow(0 10px 12px rgba(0, 0, 0, .55)) brightness(.95);
+}
+/* under the middle of the shelf, title.png's own gilt fleur hangs as the
+   carving's pendant, the way the wordmark's cartouche wears one at its foot
+   as well as its head (boss-crest.webp, turned over), its scrolled arms
+   fading before they reach the rule they were cut from */
+.tut-mantel::after {
+  content: ''; position: absolute; left: 50%;
+  top: calc(var(--ledge-h) * 100 / 116 - 3px);
+  width: clamp(190px, 16vw, 260px); aspect-ratio: 388 / 134;
+  translate: -50% 0; scale: 1 -1;
+  background: url("../../assets/ui/kit/boss-crest.webp") 50% 50% / 100% 100% no-repeat;
+  -webkit-mask-image: linear-gradient(90deg, transparent 3%, black 24%, black 76%, transparent 97%);
+          mask-image: linear-gradient(90deg, transparent 3%, black 24%, black 76%, transparent 97%);
+  filter: brightness(.82) drop-shadow(0 -3px 3px rgba(0, 0, 0, .7));
 }
 .tut-panel.is-in { animation: tut-page-in var(--t-slow) var(--ease-out) both; }
 @keyframes tut-page-in {
