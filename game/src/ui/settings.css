@@ -178,7 +178,10 @@
   /* the ribbon's own lift (brightness 1.22) is not the medallion's */
   filter: brightness(.84) saturate(1.06) drop-shadow(0 2px 2px rgba(0, 0, 0, .75));
 }
-.mm-set__legendname { display: block; }
+/* the name takes the ribbon's free length, centred in it, so on a short name
+   ("PLAY") the crest still sits on the ribbon's end over its painted star,
+   as it does on the longer ones, instead of drifting in to show the star */
+.mm-set__legendname { display: block; flex: 1 1 auto; text-align: center; }
 /* the carved fittings are headed by a nameplate instead: the Companion tiles'
    lit enamel plate across the carving, the name lettered in gilt, and on the
    dangerous page in the Courage bar's red */
