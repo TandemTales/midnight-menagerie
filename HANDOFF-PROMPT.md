@@ -1,4 +1,4 @@
-# Handoff — UI pass round 5 is merged; wire the enemy animations, then brief round 6
+# Handoff — UI pass round 5 is merged and the enemies animate; brief round 6
 
 You are picking up Midnight Menagerie on `dev`. Everything below is pushed.
 
@@ -12,13 +12,40 @@ from every judge.
 
 ## FIRST, BEFORE ANYTHING
 
-**1. Round 5 is merged: wire the enemy animations next.** Josh's call, 09-13, "do
-it after round 5 merges". His `SS_<enemy>_<clip>.png` sheets are arriving in
-`animations/sprites/enemies/animations/` (66 by 09-13, 13+ enemies). Nothing
-builds or plays them yet. Memory note `enemy-animations-after-round-5` has the
-plan. `ui/enemy.js` is the COMBAT track's file during a round, so it goes in
-between rounds, and round 6's COMBAT brief must say what changed in it. VESPER
-(round 5) already made `enemy.js` set `data-silhouette` on the enemy element.
+**1. The enemies animate (09-15), and round 6's COMBAT brief must say how.** Josh's
+call was "do it after round 5 merges". His sheets in
+`animations/sprites/enemies/animations/` (78 for 19 enemies on 09-15, still
+arriving) build with `python tools/prep_sprites.py --enemy-clips`.
+- **The build:** it writes `game/assets/sprites/enemy-clips/<id>/` and the
+  manifest's `enemyClips` section. The sheets take the Companion matte path,
+  because they are grey-flattened generator output, unlike the stills.
+  - **Size:** the idle figure builds at the lesser of its native height and its
+    still's (at least 256); a boss keeps native, the Butler 379.
+  - **Frame cap:** no frame side over 400, clip by clip. Each clip publishes its
+    own `unit`, so a wide lunge is softer, not smaller.
+  - **Defeats:** every defeat sheet delivered falls AND GETS BACK UP, so it is
+    cut at its first most-defeated frame (`defeat_hold`) and held.
+  - **No fades:** a clip's `fade` is dropped, because a lunge's blur is not a
+    dissolve.
+  - **Sheet names:** `rug`, `suitcase` and `conservatory` are aliases in
+    `ENEMY_ALIAS`.
+- **The game (`ui/enemy.js`, `ui/sprite.js`):**
+  - `ClipPlayer` loads an enemy's clips before its still.
+  - EnemyView ticks a moving painting through the same `.rg-stillimg`, now
+    inside `.rg-stillfit > .rg-stillclip`. The hit flash, lights-out and entrance
+    silhouette reach it unchanged.
+  - **Beats:** the wind-up plays `attack`, or `cast` for buff, debuff and summon
+    intents; an unblocked hit plays `hurt`; a death plays `defeat`, and the
+    lights go out at 70% of it.
+  - **Idle:** our procedural breath, sway and twitch are off while a clip idles.
+  - **Measuring:** `paintRect()` gives a painting's box and feet, and what the
+    gates measure by.
+- **The gates:** `tests/enemy-clips/check.py` is new: 665 passed, 0 console
+  errors. `tests/enemy-stills` measures moving paintings by their feet: 433
+  passed.
+- **For round 6's COMBAT brief:** the creatures now move, so two captures of one
+  board show different idle frames. `enemy.js` is still COMBAT's presentation
+  file.
 
 **2. Then brief round 6 from round 5's judges.** The two task output files hold
 every build and verdict (read them with `tools/ui_pass_digest.py`):
@@ -38,6 +65,13 @@ builders mid-build").
   delivery. A new file or a redraw turns `tests/enemy-stills` red until
   `python tools/prep_sprites.py --enemies` rebuilds it. Commit the built still,
   never the source.
+- **Enemy animation sheets:** `ls -t animations/sprites/enemies/animations | head`.
+  A new or redelivered sheet turns `tests/enemy-clips` red, checked by name and by
+  SHA-1. `python tools/prep_sprites.py --enemy-clips --only <id>` rebuilds one
+  enemy in about 3 minutes; a run without `--only` rebuilds all 19 in about an
+  hour. A sheet under a new name that resolves to no EnemyDef needs an
+  `ENEMY_ALIAS` entry: match it by eye against the stills. The sheets are
+  gitignored; commit the built clips.
 - **Backgrounds:** `animations/backgrounds/` does not exist yet. When it appears,
   run `python tools/prep_backgrounds.py` before the next round's baselines. His
   paintings are the one thing that can lift every screen's background score.
@@ -190,6 +224,13 @@ grounds are renders. Until Josh's paintings land, the loop plateaus around 7.
     closed both dialogs.
 - **The loop's README** logs round 5 and the three traps it paid for: the usage
   limit, one capture per dev server, and endings in the main checkout.
+- **The enemies animate.** Nineteen enemies, from 78 of Josh's sheets, play
+  idle, attack, hurt and defeat, and the Butler and the Governess also play cast.
+  - **The build:** `prep_sprites.py --enemy-clips`, with 173 MB of atlases.
+  - **The game:** `ClipPlayer` and EnemyView (FIRST, item 1).
+  - **The gate:** `tests/enemy-clips`.
+  - **Measured before it was decided:** the defeat sheets that get back up, the
+    three silhouette names, the per-clip size cap, and the motion-blur fade.
 
 ## DONE 2026-09-13
 
@@ -287,8 +328,8 @@ Big Scare** (`3a12203`).
 
 ## JOSH'S CALLS — do not re-ask
 
-- **Enemy animation sheets are wired after UI round 5 merges** (09-13, "do it after
-  round 5 merges"), not during a round: `ui/enemy.js` is the COMBAT track's.
+- **Enemy animation sheets go in between UI rounds** (09-13, "do it after round 5
+  merges"), never during one: `ui/enemy.js` is the COMBAT track's. Wired 09-15.
 - **Enemy still SOURCES stay untracked** "for now" (09-12). The built `.webp` are
   committed.
 - **Josh paints the backgrounds** from the prompt pack (09-12). Until each one
@@ -313,6 +354,12 @@ Big Scare** (`3a12203`).
 - **The enemy-stills gate goes red whenever Josh delivers.** A new file trips
   "every delivered source is built". A redraw trips the IoU check against the
   built still. Rebuild; don't debug.
+- **So does the enemy-clips gate, for his animation sheets.** A new sheet trips
+  "every delivered sheet is built", and a redelivered one the SHA-1 check. Rebuild
+  that enemy with `--enemy-clips --only <id>`; don't debug.
+- **Every enemy defeat sheet gets back up.** The last frame matches the first
+  (silhouette IoU 0.98-1.00 on all 19). The build cuts it; never hold a defeat
+  sheet's own last frame.
 - **Every deck sits EXACTLY at its cost quota.** Adding a Trick at cost 1, or
   moving one back down, turns `cost-curve` red. That is deliberate. Offset it in
   the same deck and rarity.
@@ -356,6 +403,13 @@ Big Scare** (`3a12203`).
 - **`maya/defeat` fails the HALO bar**, and so do Taffy's five clips. Fixing
   either means re-tuning a matte rule against all 195 clips.
 - **Pipkin has no `SS_pipkin_ready.png`.** He falls back to idle.
+- **41 Companion and Kid clips fade to 35% opacity mid-beat.** Examples are
+  bones/attack, crinkle/attack and samir/attack. `fade_envelope` likely reads a
+  lunge's motion blur as a dissolve; it was meant for Marmalade's spectral and
+  zoomies. The enemy build drops these fades. The Companion clips are unchecked
+  in the game; a task chip was offered 09-15.
+- **The Calling Bell and 255 other enemies have no animation.** They stand as
+  stills or rigs until Josh's sheets for them arrive.
 - **The built Kid stills are older than their sources.** A rebuild re-keys them to
   first names, which needs `STILL_ALIAS` in `ui/sprite.js` updated in the same
   commit, and it rewrites ten Companion stills. Compare all 24 before and after.
@@ -416,11 +470,13 @@ Every number below is from the battery on the round 3 merge (`8de2362`),
 known sprites and run.py rows, with steam-deck 6/0, map 30/0 and coop/lobby 29/0.
 The round 5 merge's (`25a5111`, 2026-09-15, 1754s) matched again. Only two
 counts grew with the new code: seams checks 8506 call sites, and scene-css 1424
-classes.
+classes. With the enemy clips (09-15) the battery is 100 gates in 1917s, red
+only on the known three. steam-deck went 5/1 then 6/0 run alone.
 
 | gate | reads |
 |---|---|
-| `tools/gates.py` | 99 gates in 1770s, 3 red: sprites and run.py (known), steam-deck (the Map race; 6/0 run alone) |
+| `tools/gates.py` | 100 gates in 1917s, 3 red: sprites and run.py (known), steam-deck (the Map race; 6/0 run alone) |
+| `tests/enemy-clips/check.py` | 665 passed, 0 failed, 0 console errors (19 enemies; beats on door-greeter, dust-bunny, butler) |
 | `tests/cards/run.py` | 1470 cards, 0 errors, 0 warnings |
 | `tests/combat/run.py` · `tests/coop/run.py` | 695 · 645 |
 | `tests/cost-curve/check.py` | 17 passed, 0 failed |
