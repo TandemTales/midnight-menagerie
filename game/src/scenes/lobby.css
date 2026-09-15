@@ -252,6 +252,13 @@
 /* ── the password panel ───────────────────────────────────────────────────── */
 .lo-card {
   --pk: .8;
+  /* lit by its two lanterns, not from overhead: the one on the trunk warms the
+     suede down its left side, the one on the wall its right, and the foot of
+     the panel between them falls into the dark */
+  --lit-x: -2%; --lit-y: 12%; --lit-w: 112%; --lit-h: 104%; --lit-a: 48%;
+  --moon: var(--kit-candle);
+  --moon-x: 104%; --moon-y: 14%; --moon-w: 92%; --moon-h: 96%; --moon-a: 26%;
+  --mat-edge: .66;
   --lo-card-gap: clamp(14px, 2.2vh, 22px);
   display: grid; justify-items: center;
   row-gap: var(--lo-card-gap);
