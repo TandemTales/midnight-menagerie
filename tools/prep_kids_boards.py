@@ -35,6 +35,9 @@ Outputs (game/assets/ui/kit/):
         a treehouse window onto the night: a rough plank frame and a cross
         bar round old glass, and through it the sky over the grounds, stars,
         the moon, and the tree's own boughs in their bark   (.kit-casement)
+  plank-corbel.webp / plank-corbel-warm.webp
+        the sawn block a plank shelf stands on, its bottom corners cut off,
+        two nails through it, its shadow on the wall            (.kit-corbel)
 
     python tools/prep_kids_boards.py                 # everything
     python tools/prep_kids_boards.py --only plank    # one piece
@@ -185,8 +188,11 @@ def plank():
 
     dark = render(L_dark, (0.62, 0.55, 0.78), 0.34, 0.5, (40, 30, 50), (80, 62, 90), 0.35)
     dark = aubergine(dark, 0.5)
-    warm = render(L_warm, (1.0, 0.78, 0.54), 0.72, 1.35, (150, 100, 50), (255, 196, 120), 0.8)
+    # candle light, but no more saturated than the samples' own candle-lit
+    # wood and wax (about 0.5 in HSV): the plank is lit, not orange
+    warm = render(L_warm, (1.0, 0.87, 0.72), 0.66, 1.22, (150, 110, 70), (255, 206, 150), 0.7)
     warm = aubergine(warm, 0.18)
+    warm = warm * 0.8 + warm.mean(axis=2, keepdims=True) * 0.2
     # the shadow the plank throws on the wall under it: soft, deepest at its foot
     ys = np.clip((yy - PL_FOOT) / (H - PL_FOOT), 0, 1)
     shadow_a = np.where(yy >= PL_FOOT, (1 - ys) ** 1.8 * 0.72, 0.0)
@@ -740,12 +746,93 @@ def casements():
     casement_piece("casement-moon.webp", (1372, 0, 1672, 300), moon=(0.62, 0.34, 26), seed=42)
 
 
+# ═════════════════════════════════════════════════════════════════════════════
+# THE CORBEL
+# What a plank shelf stands on: a block of the same sawn timber nailed to the
+# wall under each end, its two bottom corners sawn off across the grain the way
+# a Kid squares one up. Seen straight on, lit from the boards' top left: its
+# arrises rounded, a check running down its grain, two nails through it into
+# the wall, and its shadow thrown on the wall to the lower right. Its head, above
+# CB_HEAD, is hidden behind the plank it carries.
+# ═════════════════════════════════════════════════════════════════════════════
+CB_W, CB_H = 72, 112
+CB_X0, CB_X1 = 12, 56          # the corbel's sides
+CB_HEAD = 22                   # the head, behind the plank's front face
+CB_SAW = 60                    # where the sawn-off corners begin
+CB_TOE = 86                    # the flat toe
+
+
+def corbel():
+    rng = np.random.default_rng(2718)
+    ss = 4
+    W, H = CB_W * ss, CB_H * ss
+    yy, xx = np.mgrid[0:H, 0:W].astype(np.float32) / ss
+    cx = (CB_X0 + CB_X1) / 2
+    half = (CB_X1 - CB_X0) / 2
+    # the silhouette: square sides, then both corners sawn off to a flat toe,
+    # each sawn line wandering a hair
+    t = np.clip((yy - CB_SAW) / (CB_TOE - CB_SAW), 0, 1)
+    wob = P.wob1d(H, rng, 18 * ss, 0.5)[:, None]
+    reach = half - t * half * 0.58 + wob * (yy > CB_HEAD)
+    body = (np.abs(xx - cx) <= reach) & (yy >= 0) & (yy <= CB_TOE)
+    kerf = body & (np.abs(yy - CB_HEAD) < 0.6)
+    d_in = ndimage.distance_transform_edt(body) / ss
+    # height: a bevelled block, its arrises rounded by hands and weather
+    hgt = np.where(body, np.clip(d_in / 3.2, 0, 1) ** 0.55 * 10, 0)
+    hgt = np.where(kerf, hgt - 3, hgt)
+    wood = timber_albedo(H, W, np.random.default_rng(77), "#4a3222", "#6e4d34", "#1f140c", vertical=True)
+    crack = checks(H, W, np.random.default_rng(78), 2, 60 * ss, along_x=False)
+    crack = crack * body * (xx > cx + 2) * (xx < cx + half * 0.6) * (yy > CB_HEAD + 30)
+    wood = wood * (1 - crack[..., None] * 0.8)
+    hgt = hgt - crack * 2.2
+    # two nails through it into the wall, just under the plank
+    nails = np.zeros((H, W), np.float32)
+    for nx, ny in ((cx - 8, CB_HEAD + 8), (cx + 7, CB_HEAD + 27)):
+        nd = np.hypot(xx - nx, yy - ny)
+        nails = np.maximum(nails, np.clip(1 - nd / 3.2, 0, 1))
+    head = nails > 0
+    hgt = np.where(head, hgt + np.sqrt(nails) * 3.0, hgt)
+    wood = np.where(head[..., None], ramp(nails, [(0, "#1c1410"), (0.55, "#4a3f38"), (1, "#948168")]), wood)
+    hg = ndimage.gaussian_filter(hgt, ss * 0.5)
+    n = normals(hg * ss, 0.9)
+    ink = M.ink_lines(hgt * ss, amount=0.5, thresh=1.4)
+    rim_ink = np.clip(1 - d_in / 1.3, 0, 1) * 0.72
+    # the right side turning away from the light
+    u = np.clip((xx - (cx - reach)) / np.maximum(reach * 2, 1e-3), 0, 1)
+    turn = 0.62 + 0.38 * (1 - u ** 1.6)
+
+    def render(L, colour, amb, gain, spec_amt, aub):
+        lam = lambert(n, L)
+        col = wood * np.asarray(colour, np.float32) * (amb + gain * lam)[..., None]
+        s = specular(n, L, power=12.0) * (0.25 + 0.75 * head) * spec_amt
+        col = col + s[..., None] * np.array([120, 96, 70], np.float32)
+        col = col * (turn * ink * (1 - rim_ink))[..., None]
+        col = np.where(kerf[..., None], col * 0.35, col)
+        return aubergine(col, aub)
+
+    L1 = np.array([-0.3, -0.55, 0.78], np.float32); L1 /= np.linalg.norm(L1)
+    L2 = np.array([-0.15, -0.8, 0.58], np.float32); L2 /= np.linalg.norm(L2)
+    dark = render(L1, (0.62, 0.55, 0.78), 0.34, 0.5, 0.3, 0.5)
+    warm = render(L2, (1.0, 0.87, 0.72), 0.6, 1.1, 0.8, 0.2)
+    # its shadow on the wall: the silhouette pushed to the lower right, softened
+    sh = ndimage.shift(body.astype(np.float32), (5 * ss, 6 * ss), order=0)
+    sh = ndimage.gaussian_filter(sh, 3.2 * ss) * 0.62
+    alpha = np.maximum(body.astype(np.float32), sh * (1 - body))
+    for img, name in ((dark, "plank-corbel.webp"), (warm, "plank-corbel-warm.webp")):
+        img = np.where(body[..., None], img, np.array([10, 6, 12], np.float32))
+        rgba = np.dstack([np.clip(img, 0, 255), alpha * 255])
+        small = down(rgba, ss)
+        rgb = P.kuwahara(small[..., :3], radius=1, sectors=8, q=8.0)
+        save(np.dstack([np.clip(rgb, 0, 255), small[..., 3]]), name, 90)
+
+
 PIECES = {
     "plank": plank,
     "newsclip": newsclip,
     "hideout": hideout,
     "trunk": trunk,
     "casements": casements,
+    "corbel": corbel,
 }
 
 

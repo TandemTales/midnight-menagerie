@@ -2397,6 +2397,12 @@ button.kit-medallion:hover, button.kit-medallion:focus-visible,
                       boughs against the stars) or --moon (the sky with the
                       moon); --case-w sizes it. Its cold light blooms on the
                       wall round it; point a moon slot of the ground at it too
+     .kit-corbel      the sawn block a .kit-plank stands on, nailed to the wall
+                      under each of its ends so the plank reads as a shelf that
+                      was built, not a strip laid over the wall: --corbel-w
+                      sizes it, --corbel-lit (0-1) is the candle light on it.
+                      Stand it BEHIND its plank, its head hidden by the plank's
+                      front face (see the section's note)
    =========================================================================== */
 
 /* ── stud ── */
@@ -2518,3 +2524,36 @@ button.kit-medallion:hover, button.kit-medallion:focus-visible,
   mix-blend-mode: screen;
 }
 .kit-board.has-backdrop .kit-casement { display: none; }
+
+/* ── corbel ──
+   plank-corbel.webp / plank-corbel-warm.webp are 72x112: the block's sides at
+   x 12-56, its head in rows 0-22 (hidden behind the plank's front face), the
+   sawn toe at row 86, and its shadow on the wall to the lower right. Its top
+   belongs --corbel-w * 22 / 72 above the foot of the plank's front face, which
+   is --plank-h below the plank element's top. */
+.kit-corbel {
+  --corbel-w: 48px;
+  --corbel-lit: 0;
+  position: absolute; pointer-events: none;
+  width: var(--corbel-w); aspect-ratio: 72 / 112;
+  background: url("../../assets/ui/kit/plank-corbel.webp") 50% 0 / 100% 100% no-repeat;
+}
+.kit-corbel::after {
+  content: ''; position: absolute; inset: 0;
+  background: url("../../assets/ui/kit/plank-corbel-warm.webp") 50% 0 / 100% 100% no-repeat;
+  opacity: var(--corbel-lit);
+}
+/* A plank's sawn ends, drawn over its lit layer (z 1 in the plank's own
+   stacking context, so give the plank a z-index): the samples' ink down each
+   end, and the plank's shadow thrown past its right end, down and to the right,
+   the way the boards' top-left light throws every shadow. --plank-shade is how
+   far past the end that shadow reaches. */
+.kit-plank--ends { --plank-shade: calc(var(--plank-h) * .7); }
+.kit-plank--ends::before {
+  content: ''; position: absolute; z-index: 1; pointer-events: none;
+  left: 0; top: 0; bottom: 0; right: calc(-1 * var(--plank-shade));
+  background:
+    linear-gradient(90deg, rgba(12, 7, 5, .96), rgba(12, 7, 5, .5) 45%, transparent) 0 0 / 4px var(--plank-h) no-repeat,
+    linear-gradient(270deg, rgba(12, 7, 5, .96), rgba(12, 7, 5, .55) 45%, transparent) calc(100% - var(--plank-shade)) 0 / 5px var(--plank-h) no-repeat,
+    radial-gradient(100% 70% at 0% 62%, rgba(8, 5, 10, .8), rgba(8, 5, 10, .34) 50%, transparent 100%) 100% 0 / var(--plank-shade) 100% no-repeat;
+}

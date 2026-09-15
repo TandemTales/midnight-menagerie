@@ -606,7 +606,9 @@ export class ClubhouseScene extends Scene {
       + '<i class="kit-lantern cl-shelf__lantern" aria-hidden="true"></i>'
       + '<i class="kit-prop kit-prop--skull cl-shelf__skull" aria-hidden="true"></i>'
       + '<i class="kit-prop kit-prop--candle cl-shelf__candle" aria-hidden="true"></i>'
-      + '<i class="kit-plank cl-shelf__plank" aria-hidden="true"></i>';
+      + '<i class="kit-corbel cl-shelf__corbel cl-shelf__corbel--l" aria-hidden="true"></i>'
+      + '<i class="kit-corbel cl-shelf__corbel cl-shelf__corbel--r" aria-hidden="true"></i>'
+      + '<i class="kit-plank kit-plank--ends cl-shelf__plank" aria-hidden="true"></i>';
     const quote = el('p', 'cl-quote kit-paper',
       '&ldquo;Get every animal out that wants to leave.&rdquo;'
       + '<i class="kit-pin cl-quote__pin cl-quote__pin--l" aria-hidden="true"></i>'

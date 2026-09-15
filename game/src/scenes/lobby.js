@@ -121,7 +121,8 @@ function boardMarkup() {
  */
 function viewMarkup() {
   return `<figure class="lo-view" aria-hidden="true">
-      <i class="kit-plank lo-view__sill"></i>
+      <i class="kit-corbel lo-view__corbel lo-view__corbel--l"></i><i class="kit-corbel lo-view__corbel lo-view__corbel--r"></i>
+      <i class="kit-plank kit-plank--ends lo-view__sill"></i>
       <div class="lo-view__pic kit-frame kit-frame--over"><span class="lo-view__art" style="background-image:url('${menuArtSrc('menu')}')"></span></div>
       <i class="lo-view__medal"></i>
       <figcaption class="lo-view__plate kit-plate"><b class="kit-plate__name">The House</b><span class="kit-plate__epithet">somewhere out there in the dark</span></figcaption>

@@ -210,7 +210,12 @@
    the skull clear of the frame's gilt corner, the candle in the gap under
    the lantern. The frame's foot rests a fifth of the way into the sill's top
    face; everything on the sill stands a little further forward on it. */
-.lo-view { --sill-h: clamp(36px, 4.2vh, 46px); --skull-w: clamp(58px, 5vw, 90px); --candle-w: clamp(44px, 3.6vw, 60px); }
+.lo-view {
+  --sill-h: clamp(36px, 4.2vh, 46px); --skull-w: clamp(58px, 5vw, 90px); --candle-w: clamp(44px, 3.6vw, 60px);
+  --lo-stage-x: calc(50vw - var(--lo-stage-w) / 2);      /* the window's left edge on the board */
+  --lo-edge-in: calc(clamp(8px, .7vw, 12px) + clamp(38px, 3.5vw, 60px) + 6px);
+  --lo-sill-top: calc(100% + 13px - var(--sill-h) * .17);
+}
 /* The plank the whole stage stands on, nailed along the wall under the window
    and the panel, from just inside the board's vine on the left to just inside
    it on the right (ui/kit.css .kit-plank). Hung from the window (which shares
@@ -221,16 +226,25 @@
 .lo-view__sill {
   position: absolute; z-index: 0;
   --plank-h: var(--sill-h);
-  --lo-stage-x: calc(50vw - var(--lo-stage-w) / 2);      /* the window's left edge on the board */
-  --lo-edge-in: calc(clamp(8px, .7vw, 12px) + clamp(38px, 3.5vw, 60px) + 6px);
   left: calc(var(--lo-edge-in) - var(--lo-stage-x));
   right: calc(var(--lo-edge-in) - (100vw - var(--lo-stage-x) - var(--lo-view-w)));
-  top: calc(100% + 13px - var(--sill-h) * .17);
+  top: var(--lo-sill-top);
   --plank-reach: clamp(340px, 30vw, 500px);
   --plank-l1: calc(var(--wl3-x) - var(--lo-edge-in));
   --plank-l2: calc(var(--wl6-x) - var(--lo-edge-in));
   --plank-l3: calc(var(--wl4-x) - var(--lo-edge-in) - var(--lo-card-w) * .1);
 }
+/* the plank's two corbels, set in from each end past the foot's two enamel
+   buttons so a toe never crowds their filigree, and behind the plank (the
+   stage's stacking layer, under the plank's z 0), their heads hidden by its
+   front face; the right one stands in the lantern's light */
+.lo-view__corbel {
+  --corbel-w: calc(var(--sill-h) * 1.6);
+  z-index: -1;
+  top: calc(var(--lo-sill-top) + var(--sill-h) - var(--corbel-w) * 22 / 72 - 1px);
+}
+.lo-view__corbel--l { left: calc(var(--lo-edge-in) - var(--lo-stage-x) + var(--sill-h) * 2.6); --corbel-lit: .1; }
+.lo-view__corbel--r { right: calc(var(--lo-edge-in) - (100vw - var(--lo-stage-x) - var(--lo-view-w)) + var(--sill-h) * 2.6); --corbel-lit: .7; }
 .lo-view__pic { z-index: 1; }
 .lo-view__skull { width: var(--skull-w); left: calc(var(--skull-w) * -1.1); bottom: calc(-13px - var(--sill-h) * .08); z-index: 6; }
 .lo-view__candle { width: var(--candle-w); right: calc(var(--lo-gap) * -.5 - var(--candle-w) / 2); bottom: calc(-13px - var(--sill-h) * .1); z-index: 6; }
