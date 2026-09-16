@@ -154,8 +154,8 @@ were 15,853, and 121 MB of atlases where there were 373.
   paintings are the one thing that can lift every screen's background score.
 
 **8. The battery:** `python tools/devserver.py 8777`, then `python tools/gates.py`
-(99 gates, about 30 minutes). On the round 5 merge (`25a5111`) it ran 99 gates
-in 1754s, red only on the known three:
+(100 gates, about 30 minutes). On the round 6 merge it ran 100 gates in 1881s,
+red only on the known three:
 - `tests/sprites/check.py`: the seven HALO clips;
 - `tests/run/run.py`: the Archivist on seed 371416, and `_losePatience` past
   turn 30;
@@ -561,7 +561,10 @@ known sprites and run.py rows, with steam-deck 6/0, map 30/0 and coop/lobby 29/0
 The round 5 merge's (`25a5111`, 2026-09-15, 1754s) matched again. Only two
 counts grew with the new code: seams checks 8506 call sites, and scene-css 1424
 classes. With the enemy clips (09-15) the battery is 100 gates in 1917s, red
-only on the known three. steam-deck went 5/1 then 6/0 run alone.
+only on the known three. The round 6 merge's (2026-09-16, 1881s) ran 4 red, and
+the fourth was `enemy-clips` reporting twenty sheets Josh had delivered WHILE
+the round ran -- the gate working, not a regression. Built, it is 921/0/0 across
+27 creatures. steam-deck went 5/1 then 6/0 run alone, as it always does.
 
 | gate | reads |
 |---|---|
