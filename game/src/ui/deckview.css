@@ -19,12 +19,15 @@
    This sheet lays them out and seats the Tricks in the case. */
 
 .mm-deck {
-  /* five across the wide case at 1600 and at the Deck's 1280 alike, each at a
-     size a Trick is read at — the row has the weight of the hand's own cards —
-     and short enough at 800 tall that a whole row stands clear of the buttons */
-  --deck-cw: clamp(160px, min(max(13.75vw, 186px), 33vh), 224px);
+  /* Five across the wide case at 1600 and at the Deck's 1280 alike, each as
+     large as the case's width will carry, so a pile of five STOCKS the case
+     instead of lying in a grid with air round it. The case takes its height
+     from the row rather than the room (below), so a card is free to grow to
+     what the width allows and the dialog closes up round it. */
+  --deck-cw: clamp(150px, min(calc(16.4vw - 40px), 36vh), 236px);
   --card-w: var(--deck-cw);              /* CardView sizes itself from this */
-  --slot-pad: 16px;                      /* the slot's lip, clear of the card's own frame */
+  --slot-pad: clamp(12px, 1.15vw, 17px); /* the slot's lip, clear of the card's own frame */
+  --rub-h: clamp(21px, 2.7vh, 26px);     /* the tag pinned over each nameplate */
   display: flex; flex-direction: column;
   gap: clamp(7px, 1.1vh, 11px);
   min-height: 0;
@@ -45,15 +48,16 @@
 .mm-deck__count .kit-enamel__label { font-size: max(12px, calc(var(--h) * .3)); }
 
 .mm-deck__search {
+  --field-h: clamp(40px, 5vh, 44px);
   position: relative;
   display: flex; align-items: center;
   flex: 0 1 clamp(260px, 26vw, 360px); min-width: 0;
   color: var(--kit-gold);
 }
 .mm-deck__search .kit-field {
-  --field-h: clamp(40px, 5vh, 44px);
+  --field-h: inherit;
   width: 100%;
-  padding-left: calc(var(--field-h) * 1.02);
+  padding-left: calc(var(--field-h) * 1.06);
   text-align: left;
   font-size: calc(var(--field-h) * .4);
   letter-spacing: .02em;
@@ -61,16 +65,19 @@
   border-image-source: url("../../assets/ui/kit/plate-lit.webp");
 }
 .mm-deck__search .kit-field::placeholder { color: var(--kit-text-mid); }
-/* the glass sits in the plate's left end, gold on the dark, never a box */
-.mm-deck__glass {
-  position: absolute; z-index: 1; left: calc(clamp(40px, 5vh, 44px) * .5); top: 50%;
-  width: 17px; height: 17px;
+/* the glass is STRUCK ON A MEDALLION seated in the plate's left end, the way
+   every plate in the house wears a round enamel button on one end — it used to
+   be a bare 17px icon floated on the plate, which is a web search box */
+.mm-deck__cap.kit-medallion {
+  --md: calc(var(--field-h) * 1.04);
+  position: absolute; z-index: 2; left: calc(var(--field-h) * -.13); top: 50%;
   translate: 0 -50%;
-  color: var(--kit-gold-hi);
-  filter: drop-shadow(0 1px 0 rgba(0, 0, 0, .9));
   pointer-events: none;
 }
-.mm-deck__search:focus-within .mm-deck__glass { color: #fff1d2; }
+.mm-deck__glass { color: var(--kit-gold-hi); }
+.mm-deck__search:focus-within .mm-deck__cap {
+  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .8)) drop-shadow(0 0 8px color-mix(in srgb, var(--kit-candle) 55%, transparent)) brightness(1.14);
+}
 .mm-deck__search input::-webkit-search-cancel-button { filter: sepia(1) saturate(2.4) hue-rotate(-12deg) brightness(.95); cursor: pointer; }
 
 /* ── filters: engraved nameplates, a brass chevron at each one's end ─────── */
@@ -93,36 +100,47 @@
   filter: drop-shadow(0 1px 0 rgba(0, 0, 0, .85));
   opacity: .75;
 }
+.mm-deck__bar { padding-bottom: calc(var(--rub-h) * .2); }
 .mm-deck__bar::before { left: 18%; right: 18%; }
+/* the rule the plates are mounted on runs behind the PLATES, not behind the
+   plates and their tags together, so it stays on the row's carved middle */
+.mm-deck__filters::before { top: calc(50% + var(--rub-h) * .22); }
+/* ── A FILTER IS TWO OBJECTS ────────────────────────────────────────────────
+   The tag says what the plate chooses BY; the plate carries the choice. They
+   used to be one short capsule with a tiny caption crammed into its top and a
+   caret stuck on its end — which is a web select box with gilt on it. Now the
+   tag is the Companion tiles' own small notched cartouche (.kit-rubric),
+   pinned over the plate's upper rail and standing proud of it, and the plate
+   below carries one piece of lettering at a size it can be read at. */
 .mm-deck__sortwrap {
-  --field-h: clamp(46px, 5.9vh, 52px);
-  display: block;
+  --field-h: clamp(42px, 5.3vh, 48px);
+  position: relative; display: block;
+  /* the tag's lower half laps ONTO the plate's top rail: pinned to it, not
+     floating over it */
+  padding-top: calc(var(--rub-h) * .44);
 }
-/* what the plate sorts by, cut into its upper edge in spaced gilt small caps,
-   centred over the choice lettered under it */
-.mm-deck__label {
-  position: absolute; z-index: 2; pointer-events: none;
-  left: calc(var(--field-h) * .58); right: calc(var(--field-h) * .86);
-  top: calc(var(--field-h) * .21);
-  text-align: center;
-  font-family: var(--font-display); font-weight: 700;
-  font-size: 11px; line-height: 1; letter-spacing: .22em; text-transform: uppercase;
-  padding-left: .22em;
-  white-space: nowrap;
-  color: color-mix(in oklab, var(--kit-gold) 78%, var(--kit-gold-hi));
-  text-shadow: 0 -1px 0 rgba(0, 0, 0, .95), 0 1px 0 color-mix(in srgb, var(--kit-gold-hi) 18%, transparent);
+.mm-deck__label.kit-rubric {
+  position: absolute; z-index: 3; left: 50%; top: 0;
+  translate: -50% 0;
+  pointer-events: none;
 }
 .mm-deck__select.kit-select {
   --field-h: inherit;
-  min-width: calc(var(--field-h) * 2.9);
-  padding: calc(var(--field-h) * .36) calc(var(--field-h) * .92) 0 calc(var(--field-h) * .58);
+  min-width: calc(var(--field-h) * 2.95);
+  padding: 1px calc(var(--field-h) * .92) 0 calc(var(--field-h) * .5);
   text-align: center; text-align-last: center;
-  font-size: calc(var(--field-h) * .325);
+  font-size: calc(var(--field-h) * .37);
   line-height: 1.1;
   /* the Companion tiles' lit enamel plate: a nameplate, not a slot */
   border-image-source: url("../../assets/ui/kit/plate-lit.webp");
 }
-.mm-deck__clear.kit-btn { --plate-h: clamp(44px, 5.6vh, 50px); align-self: center; border-image-source: url("../../assets/ui/kit/plate-lit.webp"); }
+/* nothing to clear is still a plate, and it stands on the plates' own line —
+   not on the tags' */
+.mm-deck__clear.kit-btn {
+  --plate-h: clamp(42px, 5.3vh, 48px);
+  align-self: flex-end;
+  border-image-source: url("../../assets/ui/kit/plate-lit.webp");
+}
 /* with nothing to clear it is still the filters' own plate, only its lettering
    quiet and its enamel dulled (ui/modal.css .mm-modal--kit .kit-btn:disabled) */
 .mm-deck__clear.kit-btn:disabled { cursor: default; }
@@ -163,7 +181,6 @@
 /* the case stands inside the frame's rule, with no second gutter of its own */
 .mm-modal--kit .mm-modal__body:has(> .mm-deck) { margin: 6px calc(var(--rule-in) - 4px) 0; padding-inline: 2px; }
 .mm-modal--kit[data-size="wide"]:has(.mm-deck) .mm-modal__foot { margin-bottom: calc(var(--rule-in) + 3px); }
-.mm-modal--kit[data-size="wide"]:has(.mm-deck) { padding-inline: clamp(10px, 1.2vw, 20px); }
 
 /* ── the case: the panels' rail round a velvet-lined box ─────────────────── */
 .mm-deck__table.kit-stage {
@@ -172,8 +189,17 @@
   --stage-medal: url("../../assets/ui/kit/medal-moon-clean.webp");
   --stage-medal-w: clamp(84px, 6.4vw, 104px);
   --liner-w: clamp(14px, 1.1vw, 18px);
-  flex: 1 1 auto; min-height: 0;
+  /* THE CASE IS AS DEEP AS WHAT IS IN IT. It used to take the whole height the
+     dialog could give and leave the row of Tricks lying in the top of it; now
+     it closes on the row, and the dialog closes on the case, so a five-Trick
+     pile is a case of five Tricks laid over the fight and not a screen. A
+     pile that overruns the room still fills it and scrolls (the grid shrinks
+     before the case does). */
+  flex: 0 1 auto; min-height: 0;
   display: flex; flex-direction: column; gap: 2px;
+  /* the case's own floor is what a Trick is cut to (the grid, below), so five
+     lie whole in it at any width the dialog is given */
+  container-type: inline-size;
   margin: clamp(16px, 2.6vh, 26px) 0 2px;
   padding: calc(var(--stage-medal-w) * 98 / 156 * .5 + 4px) calc(var(--liner-w) + 2px) calc(var(--liner-w) + 4px);
   /* the case's floor: the boards' flocked damask in relief, the candle on the
@@ -200,6 +226,14 @@
 
 /* ── grid: the Tricks laid in the case ──────────────────────────────────── */
 .mm-deck__grid {
+  /* A TRICK IS CUT TO THE CASE IT LIES IN. `100cqw` is the case's floor between
+     its velvet, so this is the largest card five of which lie whole on it, with
+     their slots' lips and the scroll gutter taken off — a stocked case at 1280
+     and at 1600, and never a fifth Trick sawn off at the lining. The vw figure
+     on .mm-deck is the same size in round numbers, for --card-w. */
+  --deck-cw: min(
+    clamp(150px, 36vh, 236px),
+    calc((100cqw - 10 * var(--slot-pad) - 34px) / 5));
   display: grid;
   /* whole cards, centred: a pile of five lies in the middle of the case, not
      against its left edge with an empty column beside it */
@@ -211,8 +245,9 @@
   margin-top: 0;
   padding: calc(var(--slot-pad) + clamp(3px, .6vh, 8px)) calc(var(--slot-pad) + 2px) calc(var(--slot-pad) + clamp(5px, .9vh, 10px));
   outline: none;
-  /* the grid scrolls, the controls above it do not */
-  flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain;
+  /* the grid scrolls, the controls above it do not; and it asks for exactly
+     the height its rows need, so a short pile does not stretch the case */
+  flex: 0 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain;
   scrollbar-width: thin; scrollbar-color: color-mix(in srgb, var(--kit-gold) 62%, transparent) color-mix(in srgb, var(--kit-void) 55%, transparent);
   /* cards scrolling past the case's lip fade into it, never cut off */
   -webkit-mask-image: linear-gradient(to bottom, transparent 0, black 6px, black calc(100% - 8px), transparent 100%);

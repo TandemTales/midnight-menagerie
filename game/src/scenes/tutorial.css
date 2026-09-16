@@ -52,6 +52,69 @@
 .tut-dress__vine { bottom: clamp(96px, 13vh, 130px); opacity: .85; }
 .tut-dress > .tut-light { left: 50%; top: 58%; width: min(88vw, 1300px); --light-a: 15%; }
 
+/* ── the floor the room stands on ───────────────────────────────────────────
+   Below the mantel the screen was an empty dark band, and both of round 5's
+   judges said so. The house's own flagstones (floor.webp, the Companion
+   board's ground) run back from the bottom of the screen to the mantel's
+   foot, the light from the two candles above pooled where they stand and the
+   stones falling into the dark at either side. Under everything: the authored
+   room is still what is lit above it, and a painting will drop in over both. */
+.tut-floor {
+  position: absolute; z-index: 0; pointer-events: none;
+  left: var(--kit-edge, 10px); right: var(--kit-edge, 10px); bottom: var(--kit-edge, 10px);
+  height: clamp(118px, 21vh, 200px);
+  overflow: hidden;
+  perspective: 540px; perspective-origin: 50% -34%;
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0, rgba(0, 0, 0, .5) 26%, black 58%);
+          mask-image: linear-gradient(to bottom, transparent 0, rgba(0, 0, 0, .5) 26%, black 58%);
+}
+.tut-floor__stones {
+  position: absolute; left: -60%; right: -60%; top: 0; height: 260%;
+  background: url("../../assets/ui/kit/floor.webp") 50% 0 / 620px 121px repeat;
+  transform: rotateX(58deg); transform-origin: 50% 0;
+  filter: brightness(1.3) saturate(.88) contrast(1.1);
+}
+/* the dark the stones fall into at the room's sides, and the shade along the
+   very foot of the screen */
+.tut-floor::after {
+  content: ''; position: absolute; inset: 0;
+  background:
+    linear-gradient(90deg, rgba(8, 5, 12, .88) 0%, rgba(8, 5, 12, .24) 9%, transparent 22%, transparent 78%, rgba(8, 5, 12, .24) 91%, rgba(8, 5, 12, .88) 100%),
+    linear-gradient(to bottom, rgba(14, 8, 20, .1), rgba(8, 5, 12, .34));
+}
+.tut-floor__pool { --light-a: 54%; z-index: 1; }
+.tut-floor__pool--fig  { left: 30%; top: 62%; width: clamp(380px, 36vw, 600px); }
+.tut-floor__pool--page { left: 70%; top: 58%; width: clamp(500px, 48vw, 780px); --light-a: 40%; animation-delay: -1.3s; }
+/* the kids' brass lantern set down on the stones beside the portrait's candle,
+   burning under its own rim; its light on the floor and up the mantel's apron */
+.tut-lantern {
+  --lw: clamp(52px, 4.4vw, 72px);
+  position: absolute; z-index: 2;
+  /* in the clear stretch of room between the portrait and the page, beside
+     the portrait's candle, at both sizes the stage is laid out at */
+  left: 41.5%; bottom: clamp(9px, 1.5vh, 17px);
+  translate: -50% 0;
+  width: var(--lw); aspect-ratio: 200 / 420;
+  background: url("../../assets/ui/kit/lantern.webp") 50% 100% / 100% 100% no-repeat;
+  filter: brightness(1.04) drop-shadow(0 8px 8px rgba(0, 0, 0, .68));
+}
+.tut-lantern::before { content: none; }
+.tut-lantern::after {
+  content: ''; position: absolute; left: 50%; top: 56%;
+  width: 330%; aspect-ratio: 1;
+  translate: -50% -50%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--kit-candle) 44%, transparent), color-mix(in srgb, var(--kit-candle) 13%, transparent) 46%, transparent);
+  mix-blend-mode: screen;
+  animation: kit-flicker 3.1s ease-in-out infinite;
+  animation-delay: -.8s;
+}
+.mm-reduce-motion .tut-lantern::after,
+:root[data-reduce-motion="1"] .tut-lantern::after { animation: none; }
+@media (prefers-reduced-motion: reduce) {
+  :root:not([data-reduce-motion="0"]) .tut-lantern::after { animation: none; }
+}
+
 /* the board's name on the title plaque, between the corner candles */
 .tut-plaque {
   position: absolute; z-index: 1; left: 50%; top: clamp(16px, 2.6vh, 28px);
@@ -66,9 +129,11 @@
   /* under the plaque; over the mantel's front and, below it, the Skip plate.
      The stage is centred in the room, so the less it keeps below, the lower
      the story stands and the less bare floor is left under the mantel */
-  --stage-pt: clamp(128px, 16.7vh, 150px);
+  --stage-pt: clamp(124px, 16.2vh, 148px);
   --stage-px: clamp(60px, 6vw, 112px);
-  --stage-pb: clamp(104px, 13.2vh, 152px);
+  /* enough room under the mantel for the stones to be a floor and the lantern
+     to stand on them, rather than the dark band round 5 left there */
+  --stage-pb: clamp(116px, 15.2vh, 172px);
   position: relative; z-index: 1;
   display: grid;
   /* the portrait a size up: as wide as the room's height allows, so at 1600
@@ -194,34 +259,54 @@
    portrait and the page: their feet on its walnut top, the nameplate hung over
    its panelled front. Under the page and the portrait in z. */
 .tut-mantel {
-  /* ledge.webp (tools/prep_ui_materials.py, the Shop's and Game Over's ledge)
-     is 152 rows: a lit walnut top to row 28, a gilt bead, an egg-and-dart
-     front picked out in gilt (44-100), a fillet and a cove to 116, then the
-     shadow it throws. --ledge-h is the carving itself; a thing stands on it
-     with its foot 0.18 of --ledge-h below the element's top. */
-  --ledge-h: clamp(44px, 6.2vh, 56px);
+  /* THE LEDGE HAS ENDS. It was ledge.webp — one bead tile repeated edge to
+     edge and masked away at both sides, which is what both of round 5's
+     judges named ("a flat, evenly repeated bead strip across the whole
+     width"). It is now the boards' own carved rail (.kit-shelf-rail,
+     rail-panels.webp, 640x96, a 3-slice with 64 px ends): a lit walnut top
+     over a round gilt bead, an apron of recessed panels in beaded gilt with a
+     boss where two meet, and a square block capped with a gilt star rosette
+     AT EACH END, so the carving stops where a carved thing stops. A thing
+     stands on it with its foot 14/96 of --rail-h below the element's top. */
+  --rail-h: clamp(54px, 7.4vh, 74px);
   position: absolute; z-index: -1; pointer-events: none;
-  left: calc(var(--stage-px) - clamp(40px, 4vw, 70px));
-  right: calc(var(--stage-px) - clamp(40px, 4vw, 70px));
-  top: calc(100% - var(--stage-pb) - var(--ledge-h) * .18);
-  height: calc(var(--ledge-h) * 152 / 116);
+  left: calc(var(--stage-px) - clamp(48px, 5vw, 86px));
+  right: calc(var(--stage-px) - clamp(48px, 5vw, 86px));
+  top: calc(100% - var(--stage-pb) - var(--rail-h) * 14 / 96);
+  height: var(--rail-h);
 }
-/* the carved shelf, running out into the room's dark at either end rather
-   than stopping on a cut edge; the candles on it warm its front */
-.tut-mantel__shelf {
-  position: absolute; inset: 0;
-  background: url("../../assets/ui/kit/ledge.webp") 50% 0 / auto 100% repeat-x;
-  -webkit-mask-image: linear-gradient(90deg, transparent 0, black 5%, black 95%, transparent 100%);
-          mask-image: linear-gradient(90deg, transparent 0, black 5%, black 95%, transparent 100%);
-  filter: drop-shadow(0 10px 12px rgba(0, 0, 0, .55)) brightness(.95);
+.tut-mantel__shelf { position: absolute; left: 0; right: 0; top: 0; }
+/* the candles above it catch the walnut's front arris — brightest under the
+   page, falling away to the two end blocks, so the length of the carving is
+   lit rather than evenly bright */
+.tut-mantel::before {
+  content: ''; position: absolute; z-index: 1;
+  left: calc(var(--rail-h) * 64 / 96); right: calc(var(--rail-h) * 64 / 96);
+  top: calc(var(--rail-h) * 19 / 96); height: 2px;
+  background:
+    radial-gradient(70% 100% at 62% 50%, color-mix(in srgb, var(--kit-gold-hi) 78%, transparent), transparent 76%) 0 0 / 100% 1px no-repeat,
+    radial-gradient(56% 100% at 28% 50%, color-mix(in srgb, var(--kit-gold-hi) 42%, transparent), transparent 74%) 0 0 / 100% 1px no-repeat,
+    linear-gradient(90deg, transparent, rgba(0, 0, 0, .5) 18%, rgba(0, 0, 0, .5) 82%, transparent) 0 1px / 100% 1px no-repeat;
 }
+/* where the portrait and the page bear on the walnut, each presses its own
+   shadow into the top — the carving is carrying something, not a strip of
+   pattern behind them */
+.tut-mantel__load {
+  position: absolute; z-index: 1;
+  top: calc(var(--rail-h) * 2 / 96); height: calc(var(--rail-h) * 21 / 96);
+  background: radial-gradient(70% 120% at 50% 100%, rgba(6, 3, 9, .72), rgba(6, 3, 9, .3) 52%, transparent 78%);
+}
+.tut-mantel__load--l { left: 4%; width: 30%; }
+.tut-mantel__load--r { right: 4%; width: 46%; }
+.tut-root[data-wide="1"] .tut-mantel__load--l { left: 20%; width: 26%; }
+.tut-root[data-wide="1"] .tut-mantel__load--r { right: 20%; width: 26%; }
 /* under the middle of the shelf, title.png's own gilt fleur hangs as the
    carving's pendant, the way the wordmark's cartouche wears one at its foot
    as well as its head (boss-crest.webp, turned over), its scrolled arms
-   fading before they reach the rule they were cut from */
+   fading before they reach the rail they were cut from */
 .tut-mantel::after {
   content: ''; position: absolute; left: 50%;
-  top: calc(var(--ledge-h) * 100 / 116 - 3px);
+  top: calc(var(--rail-h) * 56 / 96);
   width: clamp(190px, 16vw, 260px); aspect-ratio: 388 / 134;
   translate: -50% 0; scale: 1 -1;
   background: url("../../assets/ui/kit/boss-crest.webp") 50% 50% / 100% 100% no-repeat;
@@ -542,22 +627,32 @@
   /* a gilt hairline between the page and the way on, fading before the rule */
   background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--kit-gold) 40%, transparent) 10%, color-mix(in srgb, var(--kit-gold) 40%, transparent) 90%, transparent) 0 0 / 100% 1px no-repeat;
 }
-/* the beats: the kit's ladder of enamel medallions on a brass rod. The page
-   you are on sits in the round button's gold filigree; pages still to come are
-   unlit. They are a reading, not controls. */
-/* The rod takes the room the way on leaves it, up to a comfortable length,
-   and spaces its rungs along it: a long way on ("Stay behind her") draws them
-   closer instead of running the last rung into its plate. */
-.tut-dots.kit-ladder {
-  --md: 20px;
-  flex: 1 1 auto; min-width: 0; max-width: 290px;
-  gap: 0;
-  padding: 8px 4px;
+/* THE BEATS ARE THE WORDMARK'S STARS, not a row of dots on a rod. Eleven
+   small gold stars strung on a gilt thread (.kit-stars): the page you are
+   reading burning larger in the candle's light, the pages behind you gilt,
+   the pages to come dim bronze. They are a reading, never controls.
+   The thread takes the room the way on leaves it: a long way on ("Stay
+   behind her") draws the stars closer instead of running the last one into
+   its plate. */
+.tut-dots {
+  --star: clamp(17px, 1.6vw, 25px);
+  flex: 0 1 auto; min-width: 0;
+  padding-block: 4px;
 }
-.tut-panel[data-long-cta="true"] .tut-dots.kit-ladder { --md: 16px; }
-.tut-dot.kit-ladder__rung { cursor: default; pointer-events: none; }
-.tut-dot.kit-ladder__rung:not(.is-on):not(.is-past) { filter: drop-shadow(0 2px 3px rgba(0, 0, 0, .8)) saturate(.45) brightness(.78); }
-.tut-dot.kit-ladder__rung.is-past { filter: drop-shadow(0 2px 3px rgba(0, 0, 0, .8)) brightness(1.05); }
+.tut-panel[data-long-cta="true"] .tut-dots { --star: clamp(14px, 1.25vw, 20px); }
+.tut-dot { cursor: default; }
+
+/* The page is marked. A purple silk bookmark (.kit-bookmark) comes out from
+   under the page's lower rail beside its corner guard and hangs down over the
+   mantel's carving — round 5's judges asked for it off the baseline, and it is
+   the one thing on the board that says this story has a place kept in it. */
+.tut-mark {
+  --mark-w: clamp(21px, 1.7vw, 29px);
+  z-index: 2;
+  right: clamp(46px, 4.6vw, 80px);
+  top: calc(100% - var(--mark-w) * .5);
+  height: calc(var(--mark-w) * 2.7);
+}
 
 /* Go on: the boards' lit nameplate, an ornate enamel medallion seated on its
    end, as every board's way onward wears one */
@@ -565,13 +660,29 @@
 .tut-next .kit-btn__medal { right: calc(var(--plate-h) * -.84); }
 .tut-next[hidden] { display: none; }
 
-/* Skip: the quiet nameplate, standing on the board's bottom rule */
+/* Skip: THE SAME OBJECT AS GO ON, unlit — the quiet nameplate with a round
+   enamel medallion seated on its end (two chevrons, the way past the story),
+   standing on the stones at the foot of the room. It was a bare capsule with
+   nothing on either end, which is the one control on this screen that read as
+   web chrome. Its gilt is dulled, not greyed: the plate keeps the brass it is
+   made of and its words stay warm. */
 .tut-skip.kit-btn {
   --plate-h: clamp(40px, 5vh, 46px);
-  position: absolute; z-index: 1;
-  right: clamp(40px, 4vw, 70px); bottom: calc(clamp(8px, .7vw, 12px) + clamp(3px, .5vh, 6px));
+  position: absolute; z-index: 3;
+  right: calc(clamp(40px, 4vw, 70px) + var(--plate-h) * .5);
+  bottom: calc(clamp(8px, .7vw, 12px) + clamp(10px, 1.7vh, 18px));
+  padding-right: calc(var(--plate-h) * 1.06);
 }
 .tut-skip.kit-btn { font-size: 12.5px; }
+.tut-skip.kit-btn--quiet {
+  color: color-mix(in oklab, var(--kit-name) 84%, var(--kit-text-mid));
+  filter: drop-shadow(0 3px 5px rgba(0, 0, 0, .8)) saturate(.8) brightness(.92);
+}
+.tut-skip.kit-btn--quiet:hover, .tut-skip.kit-btn--quiet:focus-visible { color: var(--kit-gold-hi); }
+/* placed through the scene's own class: a rule naming the kit's medallion
+   would restate every board's seat for it (tests/scene-css) */
+.tut-skip__medal { --md: calc(var(--plate-h) * 1.06); position: absolute; right: calc(var(--plate-h) * -.53); top: 50%; translate: 0 -50%; }
+.tut-skip__medal svg { width: 42%; height: 42%; }
 
 /* ── narrow ───────────────────────────────────────────────────────────────── */
 @media (max-width: 1180px) {

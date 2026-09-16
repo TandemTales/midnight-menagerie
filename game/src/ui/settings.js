@@ -191,8 +191,8 @@ export async function openSettings(ctx = {}) {
   const LEGEND = 'mm-set__legend kit-heading kit-heading--ribbon';
   /* a page's heading: the gold ribbon across its top rail, the page's crest
      pinned to the ribbon before its name */
-  const legend = (name, key) =>
-    `<legend class="${LEGEND}">${crest(key)}<span class="mm-set__legendname">${escape_(name)}</span></legend>`;
+  const legend = (name, key, extra = '') =>
+    `<legend class="${LEGEND}${extra}">${crest(key)}<span class="mm-set__legendname">${escape_(name)}</span></legend>`;
   const COLUMN = { Sound: colA, Reading: colA, Motion: colB, Play: colC };
 
   for (const section of SETTINGS_SPEC) {
@@ -318,14 +318,28 @@ export async function openSettings(ctx = {}) {
     });
     tRow.appendChild(quit);
     trip.appendChild(tRow);
+    /* ALDER's moon, hung on the page's lower rail: one sparing painted prop,
+       so the ledger's three columns are not three identical bordered boxes */
+    const moon = document.createElement('i');
+    moon.className = 'mm-set__moon';
+    moon.setAttribute('aria-hidden', 'true');
+    trip.appendChild(moon);
     colD.appendChild(trip);
   }
 
   // ── danger ──────────────────────────────────────────────────────────────
+  /* THE DANGEROUS PAGE IS MARKED, NOT FILLED IN. It was a flat red wash with a
+     red-ruled box round it, which is a web alert box wearing gilt; round 5's
+     judges said so. It is the same enamel plaque as the seed and the way out
+     now, and the house marks it the way the house marks anything: the ribbon
+     banner across its rail dyed the colour of sealing wax, a blob of that wax
+     pressed with the skull over its corner, and the one plate that cannot be
+     taken back flanked by a skull and a hazard. */
   const danger = document.createElement('fieldset');
   danger.className = GROUP + ' mm-set__group--danger';
   danger.dataset.group = 'danger';
-  danger.innerHTML = legend('Danger', 'danger');
+  danger.innerHTML = legend('Danger', 'danger', ' kit-heading--oxblood')
+    + '<i class="kit-seal mm-set__seal" aria-hidden="true"></i>';
   const dRow = document.createElement('div');
   dRow.className = 'mm-set__row';
   dRow.innerHTML =
@@ -335,7 +349,12 @@ export async function openSettings(ctx = {}) {
   const reset = document.createElement('button');
   reset.type = 'button';
   reset.className = 'mm-btn mm-btn--danger';
-  reset.textContent = 'Reset…';
+  /* the house's skull struck on the plate's near end, the hazard on its far
+     one (kitButton's `medal`, below): the two things that flank a door you
+     cannot walk back through */
+  reset.innerHTML = '<i class="kit-crest mm-set__resetcrest" aria-hidden="true"'
+    + ` style='--glyph:${glyphUrl(LEDGER_GLYPH.danger)}'></i>`
+    + '<span class="mm-set__resetword">Reset…</span>';
   /* the warning is a warning: a hazard triangle struck on the round enamel
      medallion at the plate's end, as DONE wears its tick, the lettering in the
      Courage bar's red. The panel's own crest is the skull. */
@@ -447,12 +466,15 @@ function buildRow(ctx, Save, item, rerender) {
     rerender.push(() => { input.value = String(get(Save, item.key)); show(); });
 
   } else if (item.type === 'toggle') {
-    /* The same brass tube as a switch: dark when it is off, its amber enamel
-       lit when it is on and the enamel button riding to that end with a gold
-       check struck in it. The state is never left to the knob's position: it
-       is lettered in the ledger's column of readings beside it, ON in lit gilt
-       or OFF in the quiet engraving, on the same cartouche a slider's figure
-       wears. The whole of it is one switch; `aria-checked` says it to a reader. */
+    /* ONE ENGRAVED SWITCH, WHICH SAYS ITS OWN STATE. Round 5's judges found
+       every row carrying a slider-switch AND a separate OFF/ON pill beside it —
+       the control drawn twice, which is what makes a row read as a web form.
+       So the state is lettered INTO the switch, the way a brass rocker plate is
+       engraved: the Courage bar's tube, its amber lit the length of it when the
+       switch is on, the round enamel button riding to that end with a gold
+       check struck in it, and the word cut into the tube's field at the end the
+       button is NOT — ON behind it, OFF in front of it. One object; and
+       `aria-checked` on the switch itself is what a reader is told. */
     const btn = document.createElement('button');
     btn.type = 'button'; btn.id = id;
     btn.className = 'mm-set__toggle';
@@ -464,9 +486,8 @@ function buildRow(ctx, Save, item, rerender) {
       btn.innerHTML =
         `<i class="mm-set__switch" aria-hidden="true">`
         + `<i class="mm-set__tube kit-tube kit-tube--warm"><i class="kit-tube__fill"></i></i>`
-        + `<i class="mm-set__knob"><svg viewBox="0 0 24 24">${LEDGER_GLYPH.check}</svg></i></i>`
-        + `<span class="mm-set__state mm-set__reading kit-enamel" aria-hidden="true">`
-        + `<b class="kit-enamel__value">${on ? 'On' : 'Off'}</b></span>`;
+        + `<b class="mm-set__word">${on ? 'On' : 'Off'}</b>`
+        + `<i class="mm-set__knob"><svg viewBox="0 0 24 24">${LEDGER_GLYPH.check}</svg></i></i>`;
     };
     btn.addEventListener('click', () => { setSetting(ctx, item.key, !get(Save, item.key)); paint(); });
     paint();

@@ -21,6 +21,7 @@ import os
 import sys
 
 import numpy as np
+from PIL import Image, ImageDraw
 from scipy import ndimage
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -107,8 +108,89 @@ def slot():
     save(rgba, "case-slot.webp", 92)
 
 
+def ribbon_crimson():
+    """The kit's gold ribbon banner dyed the house's sealing wax (round 5's
+    CLOVE, `ui/r5-dialogs-c`). The painting's own value is what is re-mapped, so
+    every fold, every cast shadow and the swallowtail notches survive; only the
+    silk changes colour. The gilt stars at its ends and the lit lip of each fold
+    keep their brass, or the banner reads as a flat red shape."""
+    src = np.asarray(Image.open(os.path.join(OUT, "ribbon.webp")).convert("RGBA")).astype(np.float32)
+    rgb, a = src[..., :3], src[..., 3]
+    lum = rgb @ np.array([0.2126, 0.7152, 0.0722], np.float32) / 255.0
+    lo, hi = np.percentile(lum[a > 128], [2, 99.5])
+    t = np.clip((lum - lo) / max(hi - lo, 1e-3), 0, 1)
+    red = ramp(t, [(0.0, "#1a0305"), (0.3, "#4a0c10"), (0.55, "#7c1a19"), (0.78, "#a8392c"), (1.0, "#e0886a")])
+    sat = (rgb.max(axis=2) - rgb.min(axis=2)) / np.maximum(rgb.max(axis=2), 1)
+    keep = smooth(0.78, 0.95, t) * smooth(0.3, 0.5, sat)
+    col = red * (1 - keep[..., None]) + rgb * keep[..., None]
+    save(np.dstack([col, a]), "ribbon-crimson.webp", 92)
+
+
+WAX = [(0.0, "#0e0102"), (0.3, "#34060a"), (0.55, "#5a0e10"),
+       (0.75, "#801b1a"), (0.9, "#a8342c"), (1.0, "#d8705a")]
+
+
+def seal():
+    """A blob of oxblood sealing wax pressed with the house's skull (round 5's
+    ALDER, `ui/r5-dialogs-a`): an uneven rim where the wax spread, the sunken
+    ring the stamp's edge left, the skull standing proud on the pressed face,
+    glossy where the board's light off the top left catches it. The one page
+    whose action cannot be undone is SEALED, not filled in red."""
+    W = H = 128
+    ss = 4
+    rng = np.random.default_rng(23)
+    n = W * ss
+    yy, xx = np.mgrid[0:n, 0:n].astype(np.float32) / ss
+    cx = cy = W / 2
+    ang = np.arctan2(yy - cy, xx - cx)
+    rad = np.hypot(xx - cx, yy - cy)
+    # the spread of the wax: a wobbling edge, a few low lobes
+    wob = (np.sin(ang * 3 + 0.7) * 2.1 + np.sin(ang * 5 + 2.1) * 1.4 + np.sin(ang * 8 + 4.0) * 0.8)
+    edge = 52 + wob
+    inside = rad < edge
+    d_edge = np.clip(edge - rad, 0, None)
+    # height: a rounded bead at the spread edge, a flat pressed face inside
+    body = np.sqrt(np.clip(d_edge / 9.0, 0, 1)) * 7.0
+    ring_r = 36.0
+    ring = np.exp(-((rad - ring_r) / 1.6) ** 2) * 2.6
+    face = np.where(rad < ring_r - 1.5, 1.2, 0.0)
+    hgt = body - ring - face
+    # the skull, raised on the stamped face
+    im = Image.new("L", (n, n), 0)
+    dr = ImageDraw.Draw(im)
+    S = lambda v: v * ss                                             # noqa: E731
+    dr.ellipse([S(cx - 17), S(cy - 22), S(cx + 17), S(cy + 10)], fill=255)
+    dr.rounded_rectangle([S(cx - 10), S(cy + 2), S(cx + 10), S(cy + 19)], radius=S(4), fill=255)
+    for ex in (-8, 8):
+        dr.ellipse([S(cx + ex - 5.2), S(cy - 9), S(cx + ex + 5.2), S(cy + 1.5)], fill=0)
+    dr.polygon([S(cx), S(cy + 2), S(cx - 2.8), S(cy + 8), S(cx + 2.8), S(cy + 8)], fill=0)
+    for tx in (-5.5, 0, 5.5):
+        dr.rectangle([S(cx + tx - .7), S(cy + 11.5), S(cx + tx + .7), S(cy + 18)], fill=0)
+    skull = ndimage.gaussian_filter(np.asarray(im, np.float32) / 255.0, ss * 0.6)
+    hgt = hgt + skull * 5.6
+    hgt = np.where(inside, hgt, 0) * ss
+    hgt = ndimage.gaussian_filter(hgt, ss * 0.5)
+    nrm = normals(hgt, 0.9)
+    lit = lambert(nrm)
+    t = np.clip(-0.02 + lit * 0.74, 0, 1) ** 1.1
+    col = ramp(t, WAX)
+    col = col * (1 + M.noise(hgt.shape, rng, ss * 3) * 0.06)[..., None]
+    spec = specular(nrm, power=38.0)
+    col = col + spec[..., None] * np.array([255, 205, 180], np.float32) * 0.42
+    cut = np.clip(-ndimage.laplace(ndimage.gaussian_filter(hgt, ss * 0.7)) * 1.3, 0, 1)
+    col = col * (1 - cut[..., None] * 0.75)
+    alpha = np.clip(d_edge * ss / (ss * 1.2), 0, 1)
+    edge_ink = smooth(0.0, 1.4, d_edge)
+    col = col * edge_ink[..., None] + np.array([20, 3, 4], np.float32) * (1 - edge_ink[..., None])
+    col = down(col, ss)
+    alpha = np.asarray(Image.fromarray((alpha * 255).astype(np.uint8)).resize((W, H), Image.LANCZOS), np.float32)
+    save(np.dstack([col, alpha]), "wax-seal.webp", 92)
+
+
 PIECES = {
     "slot": slot,
+    "ribbon": ribbon_crimson,
+    "seal": seal,
 }
 
 

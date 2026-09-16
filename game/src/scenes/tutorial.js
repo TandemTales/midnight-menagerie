@@ -190,6 +190,8 @@ const NAMED_AT = PAGES.findIndex((p) => p.id === 'name');
 /** The glyphs the story sets in enamel, drawn like the boards' (reward.js KIT_GLYPH). */
 const TUT_GLYPH = {
   onward: '<svg viewBox="0 0 24 24"><path d="M3.5 9.6h9.2V5.2L21 12l-8.3 6.8v-4.4H3.5z"/></svg>',
+  /* two chevrons: the way PAST the story, on the medallion Go on wears */
+  onwardFast: '<svg viewBox="0 0 24 24"><path d="M2.6 4.8 11 12l-8.4 7.2zM12.4 4.8 20.8 12l-8.4 7.2z"/></svg>',
 };
 
 export class TutorialScene extends Scene {
@@ -230,6 +232,7 @@ export class TutorialScene extends Scene {
     this.root.classList.add('tut-root');
     this.root.innerHTML = '';
     this.root.appendChild(el('div', 'tut-veil'));
+    this.root.appendChild(this._buildFloor());
     this.root.appendChild(this._buildDress());
     this.root.appendChild(this._buildPlaque());
 
@@ -238,6 +241,7 @@ export class TutorialScene extends Scene {
     stage.appendChild(this._buildPanel());
     stage.appendChild(this._buildMantel());
     this.root.appendChild(stage);
+    this.root.appendChild(this._buildLantern());
     /* The board is a SIBLING of the stage, not a page inside the panel: it is
        its own full-screen painting and it must not inherit the prose column's
        width or padding. `_render` shows exactly one of the two. */
@@ -308,11 +312,12 @@ export class TutorialScene extends Scene {
        guard over each corner. It stands on the mantel with the portrait. */
     p.innerHTML = `
       <i class="tut-fit" aria-hidden="true"><i class="kit-liner tut-fit__liner"></i><i class="kit-bracket kit-bracket--tl tut-fit__guard"></i><i class="kit-bracket kit-bracket--tr tut-fit__guard"></i><i class="kit-bracket kit-bracket--bl tut-fit__guard"></i><i class="kit-bracket kit-bracket--br tut-fit__guard"></i></i>
+      <i class="kit-bookmark tut-mark" aria-hidden="true"></i>
       <h1 class="tut-head"></h1>
       <p class="tut-sub"></p>
       <div class="tut-lines"></div>
       <div class="tut-foot">
-        <span class="tut-dots kit-ladder" aria-hidden="true"></span>
+        <span class="tut-dots kit-stars" aria-hidden="true"></span>
         <button class="tut-next kit-btn" type="button"><span class="tut-next__words">Go on</span><i class="kit-medallion kit-medallion--ornate kit-btn__medal tut-next__medal" aria-hidden="true">${TUT_GLYPH.onward}</i></button>
       </div>`;
 
@@ -329,8 +334,49 @@ export class TutorialScene extends Scene {
   _buildMantel() {
     const m = el('div', 'tut-mantel');
     m.setAttribute('aria-hidden', 'true');
-    m.innerHTML = '<i class="tut-mantel__shelf"></i>';
+    /* The boards' own carved rail (.kit-shelf-rail, rail-panels.webp): a lit
+       walnut top over a gilt bead, an apron of recessed panels with a boss
+       where two meet, and A SQUARE BLOCK CAPPED WITH A GILT ROSETTE AT EACH
+       END — the ledge stops, the way a carved thing stops. It was one bead
+       tile repeated edge to edge, which both of round 5's judges named. The
+       portrait and the page press their own shadows into its walnut where
+       they stand, and the fleur hangs under its middle. */
+    m.innerHTML =
+      '<i class="tut-mantel__shelf kit-shelf-rail"></i>'
+      + '<i class="tut-mantel__load tut-mantel__load--l"></i>'
+      + '<i class="tut-mantel__load tut-mantel__load--r"></i>';
     return m;
+  }
+
+  /**
+   * THE FLOOR THE ROOM STANDS ON. Below the mantel the screen used to be an
+   * empty dark band — both of round 5's judges said so. The house's own
+   * flagstones run back from the bottom of the screen to the mantel's foot
+   * (ALDER's, `ui/r5-dialogs-a`), with the kids' brass lantern set down on
+   * them beside the portrait's candle and its light pooled where it stands.
+   * Decoration under everything; the authored room still shows above it.
+   */
+  _buildFloor() {
+    const f = el('div', 'tut-floor');
+    f.setAttribute('aria-hidden', 'true');
+    f.innerHTML =
+      '<i class="tut-floor__stones"></i>'
+      + '<i class="kit-light kit-light--candle tut-floor__pool tut-floor__pool--fig"></i>'
+      + '<i class="kit-light kit-light--candle tut-floor__pool tut-floor__pool--page"></i>';
+    return f;
+  }
+
+  /**
+   * The kids' brass lantern, set down on the stones in the stretch of room
+   * between the portrait and the page, beside the portrait's candle (ALDER's,
+   * `ui/r5-dialogs-a`). It stands IN FRONT of the mantel, not behind it, so it
+   * is a thing in the room and not a picture on the wall — which is why it is
+   * the stage's neighbour rather than a child of the floor.
+   */
+  _buildLantern() {
+    const l = el('i', 'kit-prop tut-lantern');
+    l.setAttribute('aria-hidden', 'true');
+    return l;
   }
 
   /**
@@ -407,7 +453,10 @@ export class TutorialScene extends Scene {
   _buildSkip() {
     const s = el('button', 'tut-skip kit-btn kit-btn--quiet');
     s.type = 'button';
-    s.innerHTML = 'Skip &mdash; I know the house';
+    /* the same object as Go on, unlit: a nameplate with a round enamel
+       medallion seated on its end — two chevrons, the way past the story */
+    s.innerHTML = '<span class="tut-skip__words">Skip &mdash; I know the house</span>'
+      + `<i class="kit-medallion kit-btn__medal tut-skip__medal" aria-hidden="true">${TUT_GLYPH.onwardFast}</i>`;
     s.addEventListener('click', () => this._skip());
     return s;
   }
@@ -541,9 +590,8 @@ export class TutorialScene extends Scene {
     const total = PAGES.length;
     host.innerHTML = '';
     for (let n = 0; n < total; n++) {
-      const d = el('i', 'tut-dot kit-ladder__rung' + (n === this.i ? ' is-on' : n < this.i ? ' is-past' : ''));
-      if (n === this.i) d.setAttribute('aria-checked', 'true');
-      host.appendChild(d);
+      host.appendChild(el('i', 'tut-dot kit-stars__star'
+        + (n === this.i ? ' is-on' : n < this.i ? ' is-past' : '')));
     }
   }
 

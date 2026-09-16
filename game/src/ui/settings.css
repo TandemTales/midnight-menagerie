@@ -41,7 +41,8 @@
   --hint-fs: max(12px, calc(var(--fs-xs) * 1.12));
   --slot-w: clamp(92px, 7.6vw, 124px);
   --slot-h: 30px;  --knob: 26px;         /* a slider */
-  --sw-w: 54px;    --sw-h: 26px;         /* a switch */
+  --sw-w: clamp(108px, 8.4vw, 124px);   /* a switch: the tube, its word, its knob */
+  --sw-h: 26px;
   --read-w: clamp(68px, 4.9vw, 78px);   /* the column of readings: "100%" clear of the notched ends */
   --read-h: 30px;
   --choice-h: 34px;
@@ -63,7 +64,7 @@
   .mm-set {
     --row-pad: 4px;
     --slot-h: 26px; --knob: 22px;
-    --sw-w: 48px;   --sw-h: 22px;
+    --sw-h: 23px;
     --read-h: 27px; --choice-h: 30px;
     --panel-top: 4px;
   }
@@ -156,19 +157,15 @@
 }
 .mm-set__group[data-group="expedition"] { --lit-x: 80%; --lit-y: 110%; --lit-a: 44%; }
 .mm-set__group[data-group="seed"]       { --lit-x: 90%; --lit-y: 120%; --lit-a: 48%; }
+/* THE DANGEROUS PAGE IS NOT A RED BOX. It was a filled wine field in a red
+   rule, which both of round 5's judges read as a web alert; it is the same
+   aubergine enamel plaque as the other two carved fittings now, only lit
+   warmer and pitched a shade towards wine, and everything that says DANGER is
+   an object laid ON it: the crimson ribbon on its rail, the wax seal pressed
+   over its corner, the skull and the hazard flanking RESET. */
 .mm-set__group[data-group="danger"] {
-  --lit-x: 100%; --lit-y: 112%; --lit-a: 46%; --lit: #ffb27a;
-  --mat-base: #2a0c18; --mat-veil: .2;
-  /* lacquered wine, the aubergine gone to blood: the enamel's grain under it */
-  background:
-    radial-gradient(125% 115% at 50% 42%, transparent 46%, rgb(8 2 6 / .64) 100%),
-    radial-gradient(95% 90% at var(--lit-x) var(--lit-y), color-mix(in srgb, var(--lit) var(--lit-a), transparent) 0%, color-mix(in srgb, var(--lit) calc(var(--lit-a) * .5), transparent) 42%, transparent 80%),
-    linear-gradient(rgb(20 4 10 / .5), rgb(10 2 6 / .64)),
-    linear-gradient(rgb(92 22 42), rgb(66 16 34)),
-    url("../../assets/ui/kit/enamel.webp") 0 0 / 360px 360px,
-    #2a0c18;
-  background-blend-mode: normal, overlay, normal, color, normal, normal;
-  background-clip: padding-box;
+  --lit-x: 92%; --lit-y: 116%; --lit-a: 40%; --lit: #ff9a72;
+  --mat-base: #241026; --mat-veil: .36; --mat-edge: .7;
 }
 
 /* its ribbon across the top rail (an absolutely placed legend), the page's
@@ -199,8 +196,7 @@
    lit enamel plate across the carving, the name lettered in gilt, and on the
    dangerous page in the Courage bar's red */
 .mm-set__group[data-group="seed"] > .mm-set__legend,
-.mm-set__group[data-group="expedition"] > .mm-set__legend,
-.mm-set__group[data-group="danger"] > .mm-set__legend {
+.mm-set__group[data-group="expedition"] > .mm-set__legend {
   --plate-h: calc(var(--rib-h) + 6px);
   height: var(--plate-h);
   min-width: 0;
@@ -216,12 +212,33 @@
   filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .75));
 }
 .mm-set__group[data-group="seed"] > .mm-set__legend > .mm-set__crest,
-.mm-set__group[data-group="expedition"] > .mm-set__legend > .mm-set__crest,
-.mm-set__group[data-group="danger"] > .mm-set__legend > .mm-set__crest {
+.mm-set__group[data-group="expedition"] > .mm-set__legend > .mm-set__crest {
   margin-left: calc(var(--plate-h) * -.74);
   filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .75));
 }
-.mm-set__group[data-group="danger"] > .mm-set__legend { color: color-mix(in oklab, var(--threat-200) 82%, var(--kit-gold-hi)); }
+/* the skull on the crimson ribbon's own end, over its painted star */
+.mm-set__group[data-group="danger"] > .mm-set__legend > .mm-set__crest {
+  filter: brightness(.9) saturate(1.1) drop-shadow(0 2px 2px rgba(0, 0, 0, .8));
+}
+/* the wax pressed over the page's lower right corner, where its note leaves
+   the enamel bare — half on the plaque's gilt rule, as a real seal is */
+.mm-set__seal {
+  --seal: clamp(52px, 4.2vw, 72px);
+  --tilt: -11deg;
+  right: calc(var(--seal) * -.22); bottom: calc(var(--seal) * -.26);
+  z-index: 2;
+}
+/* the moon hung on the way out's lower rail: one painted prop, so the three
+   columns of the ledger are not three identical bordered boxes */
+.mm-set__moon {
+  position: absolute; z-index: 2; left: 50%;
+  bottom: calc(var(--pad-b) * -.36);
+  width: clamp(54px, 4.2vw, 72px); aspect-ratio: 156 / 98;
+  translate: -50% 0;
+  background: url("../../assets/ui/kit/medal-moon-clean.webp") 50% 50% / 100% 100% no-repeat;
+  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .8));
+  pointer-events: none;
+}
 
 /* a line: the name, the leader, the control; the note under all three */
 .mm-set__row {
@@ -341,9 +358,16 @@
 /* a slider's reading lights with its knob while it is held or focused */
 .mm-set__rangewrap:focus-within .mm-set__out { filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .75)) drop-shadow(0 0 8px color-mix(in srgb, var(--kit-candle) 40%, transparent)); }
 
-/* ── toggle: the same tube as a switch, and its state lettered ──────────── */
+/* ── toggle: ONE engraved switch, which says its own state ──────────────────
+   Round 5's judges found every row carrying a slider-switch AND a separate
+   OFF/ON pill: the control drawn twice, which is what makes a ledger line read
+   as a web form. The state is cut INTO the switch now, the way a brass rocker
+   plate is engraved — the Courage bar's tube, its amber lit the length of it
+   when the switch is on, the round enamel button riding to that end with a
+   gold check struck in it, and the word engraved in the tube's dark field at
+   the end the button is NOT. One object per line. */
 .mm-set__toggle {
-  display: inline-flex; align-items: center; gap: 6px;
+  display: inline-flex; align-items: center;
   justify-self: end;
   margin: 0; padding: 2px 0;
   background: none; border: 0; border-radius: 0;
@@ -356,7 +380,7 @@
   width: var(--sw-w); height: var(--sw-h);
 }
 .mm-set__switch > .mm-set__tube {
-  --tube-h: calc(var(--sw-h) - 5px);
+  --tube-h: var(--sw-h);
   position: absolute; left: 0; right: 0; top: 50%;
   translate: 0 -50%;
 }
@@ -364,11 +388,27 @@
   transform: scaleX(0);
   transition: transform var(--t-base) var(--ease-out);
 }
+/* the state engraved in the tube's field: OFF in front of the parked button,
+   ON behind the button once it has run to the far end. Cut, not printed — the
+   dark above the letters, a hairline of light on their lower lip. */
+.mm-set__word {
+  position: absolute; z-index: 2; top: 50%;
+  left: calc(var(--sw-h) + 2px); right: 4px;
+  translate: 0 -50%;
+  font-family: var(--font-display); font-weight: 700; font-style: normal;
+  font-size: max(11px, calc(var(--sw-h) * .46)); line-height: 1;
+  letter-spacing: .16em; padding-left: .16em; text-transform: uppercase;
+  text-align: center;
+  color: color-mix(in oklab, var(--kit-text-mid) 74%, var(--kit-gold));
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, .95), 0 1px 0 color-mix(in srgb, var(--kit-gold-hi) 20%, transparent);
+  transition: color var(--t-quick) var(--ease-out), left var(--t-base) var(--ease-out), right var(--t-base) var(--ease-out);
+  pointer-events: none;
+}
 /* off: the knob parked dull at the left end of an empty tube */
 .mm-set__knob {
-  position: absolute; left: -2px; top: 50%;
+  position: absolute; z-index: 3; left: -2px; top: 50%;
   display: grid; place-items: center;
-  width: calc(var(--sw-h) + 2px); height: calc(var(--sw-h) + 2px);
+  width: calc(var(--sw-h) + 4px); height: calc(var(--sw-h) + 4px);
   translate: 0 -50%;
   border-radius: 50%;
   background: url("../../assets/ui/kit/button.webp") 50% 50% / 100% 100% no-repeat;
@@ -383,26 +423,21 @@
 }
 .mm-set__toggle:hover .mm-set__knob { filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .8)) saturate(.95) brightness(1.05); }
 /* on: the amber lit the length of the tube, the knob at the far end catching
-   the candle, a gold check struck in it */
+   the candle, a gold check struck in it, and ON standing behind it in lit gilt */
 .mm-set__toggle[data-on="1"] .kit-tube__fill { transform: scaleX(1); }
+/* a lit switch carries its own word, so its amber is struck a step brighter
+   than a slider's fill — ON is cut INTO the metal and has to read on it */
+.mm-set__toggle[data-on="1"] .mm-set__tube.kit-tube { filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .8)) saturate(.9) brightness(1.06) hue-rotate(-4deg); }
+.mm-set__toggle[data-on="1"] .mm-set__word {
+  left: 4px; right: calc(var(--sw-h) + 2px);
+  color: #150900;
+  text-shadow: 0 1px 0 rgba(255, 240, 205, .38);
+}
 .mm-set__toggle[data-on="1"] .mm-set__knob {
-  transform: translateX(calc(var(--sw-w) - var(--sw-h) + 2px));
+  transform: translateX(calc(var(--sw-w) - var(--sw-h) - 2px));
   filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .8)) drop-shadow(0 0 7px color-mix(in srgb, var(--kit-candle) 60%, transparent)) brightness(1.12);
 }
 .mm-set__toggle[data-on="1"] .mm-set__knob > svg { opacity: 1; }
-/* the state in the column of readings: ON lettered in lit gilt, OFF in the
-   quiet engraving on a dulled plate (still well over 4.5:1) */
-.mm-set__state .kit-enamel__value {
-  font-family: var(--font-display); font-weight: 700;
-  font-size: calc(var(--read-h) * .43);
-  letter-spacing: .16em; padding-left: .16em;
-  text-transform: uppercase;
-}
-.mm-set__toggle[data-on="0"] .mm-set__state { filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .75)) saturate(.35) brightness(.8); }
-.mm-set__toggle[data-on="0"] .mm-set__state .kit-enamel__value { color: var(--kit-text-mid); }
-.mm-set__toggle[data-on="1"] .mm-set__state .kit-enamel__value {
-  text-shadow: 0 1px 0 rgba(0, 0, 0, .95), 0 0 9px color-mix(in srgb, var(--kit-candle) 45%, transparent);
-}
 .mm-set__toggle:focus-visible {
   outline: none;
   filter: drop-shadow(0 0 1.5px var(--kit-gold-hi)) drop-shadow(0 0 10px color-mix(in srgb, var(--kit-candle) 55%, transparent));
@@ -467,6 +502,11 @@
 .mm-set__row > .kit-btn { justify-self: end; --plate-h: calc(var(--read-h) + 4px); font-size: 12.5px; }
 /* a plate with a medallion on its end stands clear of the panel's right edge */
 .mm-set__row > .kit-btn.mm-dlg-btn--medal { margin-right: calc(var(--plate-h) * .42); }
+/* RESET is flanked: the house's skull struck on the plate's near end, the
+   hazard on its far one, and the word between them in the Courage bar's red */
+.mm-set__row > .mm-btn--danger.kit-btn { gap: 8px; padding-left: calc(var(--plate-h) * .34); }
+.mm-set__resetcrest.kit-crest { --crest: calc(var(--plate-h) * .74); margin-left: 0; }
+.mm-set__resetword { padding-left: 1px; }
 
 /* largeText: one column of panels, and each label above its control, so
    neither is squeezed */

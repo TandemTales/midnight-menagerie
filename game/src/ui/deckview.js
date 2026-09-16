@@ -115,11 +115,17 @@ export class DeckView {
     this.countN = count.querySelector('b');
     this.countL = count.querySelector('span');
 
-    // search
+    /* search: the nameplate to write on, with the glass struck on a round
+       enamel medallion seated in its left end, the way every plate in the
+       house wears a medallion on one end rather than an icon floated on it */
     const search = document.createElement('label');
     search.className = 'mm-deck__search';
     search.innerHTML = '<span class="sr-only">Search Tricks</span>';
-    search.prepend(icon('ui.search', { cls: 'mm-deck__glass' }));
+    const glassCap = document.createElement('i');
+    glassCap.className = 'kit-medallion mm-deck__cap';
+    glassCap.setAttribute('aria-hidden', 'true');
+    glassCap.appendChild(icon('ui.search', { cls: 'mm-deck__glass' }));
+    search.prepend(glassCap);
     const input = document.createElement('input');
     input.type = 'search'; input.placeholder = 'Search…'; input.autocomplete = 'off';
     input.className = 'kit-field';
@@ -140,7 +146,7 @@ export class DeckView {
 
     const sortWrap = document.createElement('label');
     sortWrap.className = 'mm-deck__sortwrap kit-select-wrap';
-    sortWrap.innerHTML = '<span class="mm-deck__label">Sort</span>';
+    sortWrap.innerHTML = '<span class="mm-deck__label kit-rubric">Sort</span>';
     const sortSel = document.createElement('select');
     sortSel.className = 'mm-deck__select kit-select';
     for (const [v, l] of [['name', 'Name'], ['cost', 'Nerve cost'], ['type', 'Type'], ['rarity', 'Rarity']]) {
@@ -229,7 +235,7 @@ export class DeckView {
   _select(label, key, options) {
     const wrap = document.createElement('label');
     wrap.className = 'mm-deck__sortwrap kit-select-wrap';
-    wrap.innerHTML = `<span class="mm-deck__label">${label}</span>`;
+    wrap.innerHTML = `<span class="mm-deck__label kit-rubric">${label}</span>`;
     const sel = document.createElement('select');
     sel.className = 'mm-deck__select kit-select';
     for (const [v, l] of options) {
