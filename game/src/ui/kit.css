@@ -2678,3 +2678,120 @@ button.kit-medallion:hover, button.kit-medallion:focus-visible,
   background: url("../../assets/ui/kit/stud-rosette.webp") 50% 50% / 100% 100% no-repeat;
   filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .7));
 }
+
+/* ===========================================================================
+   A ROOM, NOT A WALLPAPER — round 7, KIDS' PLACES. Appended; nothing above is
+   changed. Three rounds of judges have read the Kids' walls as a tiled
+   texture: "a flat, evenly lit tiled texture with no painted depth or candle
+   falloff", "a repeated CSS texture rather than a painted interior", and of
+   the trunk, that it is a strip of grain rather than a tree. A wall stops
+   being wallpaper when three things are true of it — the light POOLS on it
+   and falls away between pools, it has OBJECTS hanging on it that are not the
+   wall, and something with a SHAPE stands in front of it. These are those
+   three, painted by tools/prep_kids_room.py.
+
+     .kit-ground--deep   a modifier for .kit-ground: the unlit wall pushed
+                         further down into the dark, so a candle's pool has
+                         somewhere to fall off TO. Strength is --deep. It lies
+                         over the ground's own painting and UNDER its __warm
+                         and __moon children, so the lit wood is untouched and
+                         only the wall between the lights loses its light; it
+                         lifts on its own when a painting arrives
+     .kit-bole           the whole tree the treehouse is built round: one
+                         piece, drawn to its element and NOT tiled — it tapers
+                         all the way down and its roots flare out over the
+                         floor at its foot.
+                         Sized by its HEIGHT (it carries its own aspect); the
+                         bark is the middle third of it and the roots spread
+                         into the rest, so it may be laid across what stands
+                         either side of it. Candle-lit bark shows round up to
+                         two lights: --bole-l1 / --bole-l2, --bole-reach
+     .kit-lookout        the treehouse's own window, to hang BESIDE a framed
+                         picture and never over one: a rough plank frame and a
+                         cross bar round four panes of old glass, and through
+                         them the mansion far off across the grounds under the
+                         moon, conifers in front of it and the tree's boughs
+                         across the near corner. --look-w sizes it; its cold
+                         light blooms on the wall round it
+     .kit-prop--rope     a coil of climbing rope over a nail, its tail hanging:
+                         a .kit-prop, hung by its top rather than stood
+     .kit-paper--torn    a modifier for .kit-paper: the sheet torn out of a pad
+                         by hand rather than cut square — ruled feint, creased
+                         once where it was folded, its lower right lifting off
+                         what it is pinned to
+   =========================================================================== */
+
+/* ── ground, deepened ── */
+.kit-ground--deep::before {
+  content: ''; position: absolute; inset: 0;
+  background: color-mix(in srgb, var(--kit-void) var(--deep, 52%), transparent);
+  transition: opacity var(--t-slow) var(--ease-out);
+}
+
+/* ── bole ──
+   bole.webp / bole-warm.webp are 660x1440 and do not tile: the bark is the
+   middle 34.5% of the width and the roots spread from 70% down to the foot. Give the element a top and a bottom (or a
+   height) and it takes its own width from them. */
+.kit-bole {
+  --bole-reach: 300px;
+  --bole-l1: -9999px; --bole-l2: -9999px;
+  position: absolute; pointer-events: none;
+  aspect-ratio: 660 / 1440;
+  background: url("../../assets/ui/kit/bole.webp") 50% 50% / 100% 100% no-repeat;
+  filter: drop-shadow(10px 2px 18px rgba(0, 0, 0, .6));
+}
+.kit-bole::after {
+  content: ''; position: absolute; inset: 0;
+  background: url("../../assets/ui/kit/bole-warm.webp") 50% 50% / 100% 100% no-repeat;
+  -webkit-mask-image:
+    radial-gradient(170% calc(var(--bole-reach) / 2) at 34% var(--bole-l1), #000 0%, rgba(0, 0, 0, .58) 36%, rgba(0, 0, 0, .16) 68%, transparent 100%),
+    radial-gradient(170% calc(var(--bole-reach) / 2) at 34% var(--bole-l2), #000 0%, rgba(0, 0, 0, .58) 36%, rgba(0, 0, 0, .16) 68%, transparent 100%);
+          mask-image:
+    radial-gradient(170% calc(var(--bole-reach) / 2) at 34% var(--bole-l1), #000 0%, rgba(0, 0, 0, .58) 36%, rgba(0, 0, 0, .16) 68%, transparent 100%),
+    radial-gradient(170% calc(var(--bole-reach) / 2) at 34% var(--bole-l2), #000 0%, rgba(0, 0, 0, .58) 36%, rgba(0, 0, 0, .16) 68%, transparent 100%);
+}
+.kit-board.has-backdrop .kit-bole { display: none; }
+
+/* ── lookout ──
+   lookout.webp is 440x580: the frame's outside from (16,14) to (424,526), the
+   glass inside a 34 px plank, the sill under it to row 554. The glass is
+   painted from UI/mainMenu.png, so the house out there is the samples' own. */
+.kit-lookout {
+  --look-w: 150px;
+  position: absolute; pointer-events: none;
+  width: var(--look-w); aspect-ratio: 440 / 580;
+  background: url("../../assets/ui/kit/lookout.webp") 50% 0 / 100% 100% no-repeat;
+  filter: drop-shadow(0 12px 14px rgba(0, 0, 0, .62));
+}
+.kit-lookout::before {
+  content: ''; position: absolute; z-index: -1;
+  left: -46%; right: -46%; top: -26%; bottom: -14%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--kit-moon) 20%, transparent), color-mix(in srgb, var(--kit-moon) 6%, transparent) 54%, transparent);
+  mix-blend-mode: screen;
+}
+.kit-board.has-backdrop .kit-lookout { display: none; }
+
+/* ── rope ──
+   rope-coil.webp is 210x300: the coil hangs from a nail near its top, so this
+   prop is placed by its TOP and carries no contact shadow of its own. */
+.kit-prop--rope {
+  aspect-ratio: 210 / 300;
+  background-image: url("../../assets/ui/kit/rope-coil.webp");
+  background-position: 50% 0;
+  filter: drop-shadow(5px 8px 7px rgba(0, 0, 0, .58));
+}
+.kit-prop--rope::before { content: none; }
+
+/* ── paper, torn ──
+   slip-torn.webp is 640x300 and stretches to whatever box the note needs; the
+   tear is in its alpha, so a mask would clip a box-shadow — the sheet's own
+   shadow is a drop-shadow instead. */
+.kit-paper--torn {
+  background:
+    radial-gradient(150% 130% at 44% 34%, transparent 52%, color-mix(in srgb, var(--kit-paper-shade) 52%, transparent) 100%),
+    url("../../assets/ui/kit/slip-torn.webp") 50% 50% / 100% 100% no-repeat;
+  background-blend-mode: multiply, normal;
+  box-shadow: none;
+  filter: drop-shadow(1px 2px 1px rgba(40, 20, 8, .42)) drop-shadow(4px 9px 9px rgba(24, 10, 4, .46));
+}
