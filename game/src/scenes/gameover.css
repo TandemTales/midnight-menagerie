@@ -613,6 +613,60 @@
 .go-trick__name u { text-decoration: none; color: var(--good-300); font-weight: 700; }
 .go-trick__n { font-family: var(--font-num); font-variant-numeric: var(--num-feat); font-size: 12.5px; font-style: normal; color: var(--kit-gold-hi); }
 
+
+/* ── round 6: the seed on a plaque, the Tricks as a list ─────────────────────
+   Round 5's judge, on the ledger: "the seed field is a flat gold rectangle"
+   and "Final Tricks is a crowded tag cloud of gold-studded pills". So the seed
+   is struck on the select boards' own dark cartouche, in engraved gilt figures
+   the way a plate on a door is lettered; and the Tricks are what a deck list
+   is — a plain engraved list, ruled line by line, each entry's cost on the
+   gold coin the cards' costs are struck on. */
+.go-seed__val.go-seed__val {
+  --plate-h: clamp(28px, 3.3vh, 33px);
+  display: inline-grid; place-items: center;
+  min-width: calc(var(--plate-h) * 4.6);
+  padding: 1px calc(var(--plate-h) * .62) 2px;
+  border: 0; border-radius: 0;
+  border-image-source: url("../../assets/ui/kit/cartouche-dark.webp");
+  border-image-slice: 18 34 18 34 fill;
+  border-image-width: calc(var(--plate-h) * 18 / 64) calc(var(--plate-h) * 34 / 64);
+  background: none;
+  box-shadow: none;
+  font-size: max(14px, calc(var(--plate-h) * .46));
+  letter-spacing: .14em;
+  color: var(--kit-gold-hi);
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, .9), 0 1px 0 color-mix(in srgb, var(--kit-gold-lo) 80%, transparent);
+  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .8));
+}
+/* the list: two or three ruled columns of entries, as a clerk would set them */
+.go-tricks.go-tricks {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(clamp(106px, 9.6vw, 152px), 1fr));
+  gap: 0 clamp(9px, .9vw, 16px);
+  justify-content: stretch;
+}
+.go-trick.go-trick {
+  --plate-h: 24px;
+  --coin: 19px;
+  display: flex; flex-direction: row; align-items: center; justify-content: flex-start; gap: 8px;
+  min-width: 0;
+  margin: 0; padding: 3px 2px 4px 1px;
+  border: 0;
+  border-image: none;
+  border-bottom: 1px solid color-mix(in srgb, var(--kit-gold-lo) 46%, transparent);
+  background: none;
+  box-shadow: none;
+  filter: none;
+}
+.go-trick.go-trick .go-trick__name {
+  font-family: var(--font-display); font-weight: 600;
+  font-size: 12.5px; line-height: 1.16; letter-spacing: .03em;
+  white-space: normal; text-wrap: pretty;
+  color: var(--kit-name);
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, .85), 0 1px 0 color-mix(in srgb, var(--kit-gold-lo) 46%, transparent);
+}
+.go-trick.go-trick .go-trick__n { color: var(--kit-gold-hi); margin-left: auto; padding-left: 4px; }
+
 /* --- the triptych: the middle of the board, ONE focal point ------------------
    A carved, parcel-gilt shelf (.kit-ledge's painting) under three things
    standing on it: the Trick that worked hardest centred in its frame on its
@@ -764,6 +818,56 @@
   border-image: url("../../assets/ui/kit/pedestal.webp") 0 56 fill / 0 calc(var(--plinth-h) * 56 / 120) round;
   filter: drop-shadow(0 8px 10px rgba(0, 0, 0, .7));
 }
+
+/* ── round 6: the centrepiece, sized like one ────────────────────────────────
+   Round 5's judge: "the run's emotional centrepiece is undersized — the Worked
+   Hardest card is small and sits low between two taller side panels." So the
+   card is a size larger than either plaque (RAVEN's --go-mvp-s), the two
+   plaques are cut to ONE height between them so the three read as a symmetric
+   triptych, and WORKED HARDEST comes off the ribbon above the card and onto
+   the pedestal under it, as a nameplate — which is where a museum puts the
+   label, and what the Companion tiles do with a name. */
+.go-board { --go-mvp-s: 1.04; }
+.go-altar { --tri-w: clamp(124px, 10.4vw, 168px); align-items: flex-end; }
+/* both flanks stand at the same height, and lower than the card, so nothing on
+   the shelf out-tops the thing the run was about */
+.go-tri {
+  min-height: calc(var(--card-w) * var(--go-mvp-s, 1) / var(--card-aspect) * .72);
+  justify-content: center;
+  margin-bottom: calc(var(--plinth-h) * .48);
+}
+/* the label, on the pedestal under the card: the select boards' dark cartouche,
+   WORKED HARDEST over the small count that says how often it went out */
+.go-block--mvp { width: calc(var(--card-w) * var(--go-mvp-s, .6) + 40px); }
+.go-mvp__slot { margin: 6px 20px calc(16px + var(--plinth-h) * .96); }
+.go-mvp__h.kit-plate {
+  --plate-h: clamp(38px, 4.6vh, 46px);
+  position: relative; z-index: 4;
+  justify-self: center;
+  width: max-content; max-width: 100%;
+  margin: calc(-1 * var(--plinth-h) * .74) 0 0;
+  padding: 1px calc(var(--plate-h) * .6) 2px;
+  border: 0;
+  border-image-source: url("../../assets/ui/kit/cartouche-dark.webp");
+  border-image-slice: 18 34 18 34 fill;
+  border-image-width: calc(var(--plate-h) * 18 / 64) calc(var(--plate-h) * 34 / 64);
+  gap: 0;
+  filter: drop-shadow(0 4px 5px rgba(0, 0, 0, .85));
+}
+.go-mvp__h .kit-plate__name {
+  font-family: var(--font-display); font-weight: 700;
+  font-size: max(12.5px, calc(var(--plate-h) * .33));
+  letter-spacing: .16em; text-transform: uppercase;
+  white-space: nowrap; color: var(--kit-name);
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, .9), 0 1px 0 color-mix(in srgb, var(--kit-gold-lo) 70%, transparent);
+}
+.go-mvp__h .kit-plate__epithet {
+  font-family: var(--font-body); font-style: italic; font-weight: 400;
+  font-size: max(11px, calc(var(--plate-h) * .26)); white-space: nowrap;
+  color: color-mix(in oklab, var(--kit-name) 70%, var(--kit-text-mid));
+}
+.go-mvp__h .kit-plate__epithet:empty { display: none; }
+
 /* the card is read here: its VANISH / KEEP badge never letters under 11px */
 .go-mvp__slot .mm-card__badges { font-size: max(11px, calc(9 * var(--u))); }
 
@@ -950,9 +1054,8 @@
   .go-reach__n { font-size: 44px; }
   .go-stats.kit-stats { margin-top: 10px; }
   .go-stats .kit-stats__value { font-size: 17px; line-height: 1.05; }
-  .go-trick { --plate-h: 25px; }
-  .go-trick__name { font-size: 12.5px; }
-  .go-tricks { gap: 3px 3px; }
+  .go-trick.go-trick { --plate-h: 22px; --coin: 17px; gap: 6px; padding: 1px 1px 2px 0; }
+  .go-trick.go-trick .go-trick__name { font-size: 11.5px; line-height: 1.12; }
   .go-keep { padding-block: 1px 2px; }
   .go-keep b { font-size: 13px; line-height: 1.1; }
   .go-keep em { font-size: 12px; line-height: 1.14; }

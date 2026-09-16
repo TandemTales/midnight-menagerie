@@ -605,8 +605,8 @@ export class GameOverScene extends Scene {
     const mvp = el('div', 'go-block go-block--mvp');
     // A museum piece: the card in its frame on its gilt pedestal, its label on
     // the ribbon over it; what the run made of it is the plate to its right.
-    mvp.innerHTML = `<h2 class="go-h go-mvp__h kit-heading kit-heading--ribbon kit-heading--inline">Worked hardest <em class="go-h__n" data-mvp-n></em></h2>
-      <div class="go-mvp"><div class="go-mvp__slot kit-cards"></div></div>`;
+    mvp.innerHTML = `<div class="go-mvp"><div class="go-mvp__slot kit-cards"></div></div>
+      <h2 class="go-h go-mvp__h kit-plate"><b class="kit-plate__name">Worked hardest</b><span class="kit-plate__epithet go-h__n" data-mvp-n></span></h2>`;
     this._mvpSlot = mvp.querySelector('.go-mvp__slot');
     this._mvpN = mvp.querySelector('[data-mvp-n]');
     this._mvpBlock = mvp;
