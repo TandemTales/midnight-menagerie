@@ -1,4 +1,4 @@
-# Handoff — round 5 is merged, the enemies animate; round 6 is the next round to brief
+# Handoff — round 6 is merged; POLISH has converged, and the backgrounds are the wall
 
 You are picking up Midnight Menagerie on `dev`. Everything below is pushed.
 
@@ -12,29 +12,66 @@ from every judge.
 
 ## FIRST, BEFORE ANYTHING
 
-**1. Brief round 6 — and ASK JOSH FIRST how big it should be.** Round 5's 21
-agents took about 13M subagent tokens and the weekly usage limit stopped six of
-its builders mid-build (README, "A usage limit can stop builders mid-build"),
-which cost a day. The limit reset 09-15 03:00 America/Denver and round 5's
-resume plus the enemy animations have run against this week since. Josh was
-asked on 09-15 whether round 6 runs at full size (four tracks, twelve builders),
-at half (two tracks), or waits for the reset; he had not answered when this
-session ended. His standing order is still "dont stop until its perfected".
+**1. POLISH has run out, and that is the round's real finding.** Round 6 ran two
+tracks. COMBAT gained +0.83 and merged cleanly. POLISH did not: for the first time
+in the pass the BASELINE tied for first (6.83, level with ROWAN, above the
+tiebreak's own winner TEASEL at 6.78), one of the three judges named the baseline
+outright, and the three judges named three different winners. Four candidates and
+the screens they started from sat inside 0.67 — noise. README's "Round 6 is
+where POLISH ran out" has the numbers and what to do about it.
 
-**2. What round 6's brief is written from.** The two task output files hold every
-build and verdict (read them with `tools/ui_pass_digest.py`):
-- `wcudg6f1y.output`: POLISH's and COMBAT's builds and first judging;
-- `w4c312fpu.output`: DIALOGS' and KIDS' PLACES' builds and judging, and
-  POLISH's and COMBAT's second judging.
-Both are in session `f921e739`'s tasks folder,
-`C:\Users\Josh\AppData\Local\Temp\claude\C--Users-Josh-OneDrive-Desktop-Tandem-Tales-Midnight-Menagerie\f921e739-3596-4b9f-b0d2-9e78e6b37796\tasks\`.
-`--worst THISTLE`, `--worst VESPER`, `--worst BIRCH`, and `--worst GORSE` and
-`--worst ELDER` for KIDS' PLACES' screens, give the fix lists; the grafts come
-with them. The round's steps are "A round, step by step" below; the worktrees
-from round 5 are still in `f921e739`'s scratchpad and its branches are `ui/r5-*`.
+So **do not brief another POLISH refine round of the same shape.** It will cost
+six figures of tokens to move nothing. What is left:
 
-**3. The enemies animate (09-15), and round 6's COMBAT brief must say how.** Josh's
-call was "do it after round 5 merges". His sheets in
+- **DIALOGS and KIDS' PLACES never ran in round 6** and their round-5 fix lists
+  are unspent (see 2 below). They are the two tracks with headroom: DIALOGS gained
+  +1.33 in round 5 and KIDS' PLACES +1.00, and Settings still scores 3-4 on
+  background, the worst in the pass. **Round 7 is those two tracks.**
+- **One POLISH fix is still open, and the brief had it wrong.** Fix 7 asked for
+  the Safe Room's four option plates to become four painted objects. ROWAN did
+  exactly that — velvet, walnut, fired enamel — and two judges marked it
+  DOWN ("brown and rose option panels"). They were right: real materials, wrong
+  palette. Its `rest.css` block is reverted on `dev` and the change is still on
+  `ui/r6-polish-a` if someone wants to retune it. Re-ask as "four materials WITHIN
+  the palette".
+- **Everything else on POLISH waits for paint.** See 4.
+
+**2. What round 7's brief is written from.** DIALOGS' and KIDS' PLACES' round-5
+verdicts, which nothing has spent yet, live in `w4c312fpu.output` in session
+`f921e739`'s tasks folder under
+`%TEMP%\claude\C--Users-Josh-OneDrive-Desktop-Tandem-Tales-Midnight-Menagerie\f921e739-3596-4b9f-b0d2-9e78e6b37796\tasks\`.
+Read them with `python tools/ui_pass_digest.py <file> dialogs --worst BIRCH` and
+`... kids --worst GORSE`. Round 6's own verdicts are in this session's
+`wei4yfxc4.output`; `--worst ROWAN` and `--worst CAMPION` give what round 6's
+winners still get marked down for, which is what a round 8 POLISH/COMBAT pass
+would be written from.
+
+`docs/ui-pass/BRIEF-r6.md`, `RUBRIC-r6.md` and `round-6.args.json` are the
+template: copy them to `-r7`, keep the two-track shape, and keep the two
+paragraphs BRIEF-r6 added — the one telling builders the creatures are
+animated so two captures of one board catch different idle frames, and the one
+telling them not to spend the round painting rooms in CSS.
+
+**3. The backgrounds are the wall, and they are Josh's to paint.** Six rounds, and
+no candidate has scored above 8 on any screen. Every judge gives the same reason
+in their own words: the room behind the board is a render, not a painting. They
+score the background dimension 5 or 6 on every POLISH and COMBAT candidate,
+winner or loser, and 3 or 4 on the dialogs — and they score it the same on the
+baseline, because it is the same render in all of them. The loop's stop condition
+is 9 from every judge. **It cannot be reached by more rounds of this kind.**
+
+- `docs/art/background-prompts.md` is the list Josh paints from.
+- `animations/backgrounds/` still does not exist. When it appears, run
+  `python tools/prep_backgrounds.py` BEFORE the next round's baselines; it builds
+  into `game/assets/backgrounds/` and the manifest there is already wired.
+- Until then every brief must tell builders not to spend the round painting rooms
+  in CSS, and to keep every painting slot working and unobstructed. BRIEF-r6's
+  "The bar, and what is holding it" is the wording.
+- This is worth telling Josh again whenever he asks what is left. It is the one
+  thing that lifts every screen at once, and it is not something an agent can do.
+
+**4. The enemies animate (09-15); round 6's COMBAT brief says how, and round 7's
+must keep saying it.** Josh's call was "do it after round 5 merges". His sheets in
 `animations/sprites/enemies/animations/` (90 for 22 enemies on 09-15, still
 arriving) build with `python tools/prep_sprites.py --enemy-clips`.
 - **The build:** it writes `game/assets/sprites/enemy-clips/<id>/` and the
@@ -68,7 +105,7 @@ arriving) build with `python tools/prep_sprites.py --enemy-clips`.
   board show different idle frames. `enemy.js` is still COMBAT's presentation
   file.
 
-**4. And only a dissolve fades now (09-15, `5b312b8`).** 37 Companion and Kid
+**5. And only a dissolve fades now (09-15, `5b312b8`).** 37 Companion and Kid
 clips had been drawn at 35% opacity in the middle of their beat -- Bones bit at
 0.35, measured in the running game. `fade_envelope`'s focus dip TIMES a dissolve
 but cannot tell one from a lunge's motion blur (Boggle's Hide dips to 0.084,
@@ -77,7 +114,7 @@ that may fade at all: `spectral`, `zoomies`, `hide`, `shadow`, each quoted from
 Josh's animation brief. 16 slugs were rebuilt; `tests/sprites/check.py` now fails
 both ways round. Pipkin gained the `ready` clip Josh delivered on 09-12.
 
-**5. Twenty-two frames a clip, and a death that stays down (09-15, `0d6b3b2`).**
+**6. Twenty-two frames a clip, and a death that stays down (09-15, `0d6b3b2`).**
 A sheet is 81 cells and about a fifth of them carry the animation, so every clip
 now keeps `prep_sprites.TARGET_FRAMES` = 22 of them: 4,242 frames where there
 were 15,853, and 121 MB of atlases where there were 373.
@@ -99,7 +136,7 @@ were 15,853, and 121 MB of atlases where there were 373.
   halo rather than nine (which is how `boggle/celebrate` joined the known-red
   list; it was never passing, only unsampled).
 
-**6. Josh drops art in while you work.**
+**7. Josh drops art in while you work.**
 - **Enemies:** `ls -t animations/sprites/enemies | head` shows the newest
   delivery. A new file or a redraw turns `tests/enemy-stills` red until
   `python tools/prep_sprites.py --enemies` rebuilds it. Commit the built still,
@@ -107,15 +144,16 @@ were 15,853, and 121 MB of atlases where there were 373.
 - **Enemy animation sheets:** `ls -t animations/sprites/enemies/animations | head`.
   A new or redelivered sheet turns `tests/enemy-clips` red, checked by name and by
   SHA-1. `python tools/prep_sprites.py --enemy-clips --only <id>` rebuilds one
-  enemy in about 3 minutes; a run without `--only` rebuilds all 22 in about an
-  hour. A sheet under a new name that resolves to no EnemyDef needs an
+  enemy in about 3 minutes; a run without `--only` rebuilds all 27 in about an
+  hour. Five arrived DURING round 6 and turned the gate red in the battery; that
+  is the gate working, not a regression. A sheet under a new name that resolves to no EnemyDef needs an
   `ENEMY_ALIAS` entry: match it by eye against the stills. The sheets are
   gitignored; commit the built clips.
 - **Backgrounds:** `animations/backgrounds/` does not exist yet. When it appears,
   run `python tools/prep_backgrounds.py` before the next round's baselines. His
   paintings are the one thing that can lift every screen's background score.
 
-**7. The battery:** `python tools/devserver.py 8777`, then `python tools/gates.py`
+**8. The battery:** `python tools/devserver.py 8777`, then `python tools/gates.py`
 (99 gates, about 30 minutes). On the round 5 merge (`25a5111`) it ran 99 gates
 in 1754s, red only on the known three:
 - `tests/sprites/check.py`: the seven HALO clips;
@@ -527,8 +565,8 @@ only on the known three. steam-deck went 5/1 then 6/0 run alone.
 
 | gate | reads |
 |---|---|
-| `tools/gates.py` | 100 gates in 1917s, 3 red: sprites and run.py (known), steam-deck (the Map race; 6/0 run alone) |
-| `tests/enemy-clips/check.py` | 761 passed, 0 failed, 0 console errors (22 enemies; beats on door-greeter, dust-bunny, butler) |
+| `tools/gates.py` | 100 gates in 1881s, 3 red: sprites and run.py (known), steam-deck (the Map race; 6/0 run alone) |
+| `tests/enemy-clips/check.py` | 921 passed, 0 failed, 0 console errors (27 enemies; beats on door-greeter, dust-bunny, butler) |
 | `tests/cards/run.py` | 1470 cards, 0 errors, 0 warnings |
 | `tests/combat/run.py` · `tests/coop/run.py` | 695 · 645 |
 | `tests/cost-curve/check.py` | 17 passed, 0 failed |

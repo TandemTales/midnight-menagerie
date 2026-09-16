@@ -94,6 +94,8 @@ so round 2 runs six at once, as round 1 did.
 | 5 | COMBAT, three boards | VESPER 7.11 · YEW 6.89 · WALNUT 6.83 · the screen before 6.67 | VESPER, 2 of 3 judges; a second blind judging agreed, 4 of 5 | `e3f23aa` |
 | 5 | DIALOGS opening / Settings / pile viewer | BIRCH 7.08 · ALDER 6.83 · CLOVE 6.58 · the screens before 5.75 | BIRCH, both judges | `5313c65` |
 | 5 | KIDS' PLACES Lobby / Clubhouse / Atlas | GORSE 6.89 · ELDER 6.78 · FINCH 6.72 · the screens before 5.89 | per screen, 3 judges: Lobby GORSE, Clubhouse ELDER, Atlas GORSE | `25a5111` |
+| 6 | POLISH the six boards | ROWAN 6.83 · **the screens before 6.83** · TEASEL 6.78 · SORREL 6.17 | CONVERGED: three judges, three winners, one of them the baseline. The ranking tiebreak returned TEASEL, below the baseline. ROWAN merged instead for the HUD rail and the Shop (3 of 3), its `rest` reverted | `2e0de84` |
+| 6 | COMBAT, three boards | CAMPION 7.33 · HAWTHORN 7.17 · the screen before 6.50 · JUNIPER 6.00 | CAMPION, both judges; HAWTHORN's enemy condition tray grafted in | `4718b54` |
 
 **Scores anchor to the candidates beside them.** Round 0's winner scored 7.0 in
 round 0 and 5.58 as round 1's baseline: the judges grew stricter as the field
@@ -109,6 +111,7 @@ Against their own baselines:
 | 3 | POLISH +1.06, COMBAT +1.83 | DIALOGS +3.84 |
 | 4 | POLISH +0.47, COMBAT +1.75, DIALOGS +2.08, KIDS' PLACES +1.00 | — |
 | 5 | POLISH +0.83, COMBAT +0.44, DIALOGS +1.33, KIDS' PLACES +1.00 | — |
+| 6 | **POLISH +0.00**, COMBAT +0.83 | — |
 
 Converting a screen moves it about four points. Refining one moves it half a point
 to two points, more when the brief names concrete defects the judges can see
@@ -122,6 +125,30 @@ Candidate means moved by up to a third of a point (COMBAT's YEW 6.89 then 6.58,
 its baseline 6.67 then 6.33), and the order below the winner swapped (YEW and
 WALNUT). A gap of 0.3 or less between two means is within that noise: read the
 judges' picks and rankings, which decide the merge, before the means.
+
+**Round 6 is where POLISH ran out.** For the first time the BASELINE tied for
+first (6.83, level with ROWAN, above TEASEL's 6.78), one of the three judges
+named it the winner outright, and the three judges named three different winners.
+The whole field — four candidates and the screens they started from — sat inside
+0.67. In every earlier round the baseline came last by a wide margin (round 5
+POLISH: 6.50 against a 7.13 winner). A refine track whose baseline is inside the
+noise has nothing left to refine, and the ranking tiebreak stops meaning
+anything: it returned TEASEL, whose mean is the lowest of the top three.
+
+What that does NOT mean is that nothing improved. An aggregate mean hides a track
+that gains on some screens and loses on others, and the round's two briefed
+headline fixes both landed: ROWAN won the Shop 3 of 3, the only unanimous screen
+result in the track, and it is the one candidate that turned the top HUD strip
+into a carved rail — the fix every judge on both tracks had asked for twice.
+**When a track converges, read the screens and the briefed fixes, not the mean,
+and merge the candidate that did the thing you asked for.**
+
+And a fix the brief got wrong. POLISH fix 7 asked for the Safe Room's four option
+plates to stop being identical purple slabs and become four painted objects.
+ROWAN did exactly that — velvet, walnut, fired enamel — and two judges marked it
+DOWN for it ("brown and rose option panels", "the wainscot bleeding through the
+rest plaques"). They were right: the materials were real but they left the
+palette. Ask for variety WITHIN the palette, or the fix makes the screen worse.
 
 **When the judges split with no majority**, `round-workflow.js` decides on their
 rankings: the candidate that beats each other one head to head across every
