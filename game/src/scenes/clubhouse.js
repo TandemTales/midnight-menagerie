@@ -103,6 +103,7 @@ export class ClubhouseScene extends Scene {
     root.dataset.panel = this.panel;
     root.classList.toggle('kit-still', reduceMotion());
 
+    root.appendChild(this._defs());
     const room = this._buildRoom();
     root.appendChild(room);
     root.appendChild(this._buildHeader());
@@ -135,6 +136,29 @@ export class ClubhouseScene extends Scene {
     bus.emit('clubhouse:ready');
   }
 
+  /**
+   * This screen's own filters. Scoped to the scene (index.html's `kit-defs` is
+   * the shared kit's and nobody's this round), removed with the scene.
+   *
+   * `#cl-print` is what a photographic print has that a canvas render does not:
+   * an acutance edge. The pet photographs are generated (ui/petart.js) with a
+   * deliberate flash blur, halation and grain, which is right for a snapshot —
+   * but pinned an inch from engraved gold caps they read as SMEARED, which is
+   * the note every round-5 judge left on this board. A 3x3 unsharp convolution
+   * puts the bite back into the fur and the eyes without touching the grain or
+   * the generator, and the kernel's weights sum to 1 so nothing gains exposure.
+   */
+  _defs() {
+    const s = svg(`<svg class="cl-defs" width="0" height="0" aria-hidden="true" focusable="false">
+      <filter id="cl-print" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">
+        <feConvolveMatrix order="3" preserveAlpha="true" divisor="1" bias="0"
+          kernelMatrix="0 -0.55 0  -0.55 3.2 -0.55  0 -0.55 0"/>
+      </filter>
+    </svg>`);
+    s.setAttribute('style', 'position:absolute;width:0;height:0;overflow:hidden');
+    return s;
+  }
+
   /* ── the room itself ────────────────────────────────────────────────────── */
   _buildRoom() {
     /* The room the whole board hangs in: the Treehouse's own timber (ui/kit.css
@@ -148,7 +172,7 @@ export class ClubhouseScene extends Scene {
        painted rule round the edge. */
     const room = el('div', 'cl-room kit-board');
     room.innerHTML = `
-      <div class="cl-wall kit-ground kit-ground--clapboard kit-ground--deep"><i class="kit-ground__warm"></i><i class="kit-ground__moon"></i></div>
+      <div class="cl-wall kit-ground kit-ground--clapboard"><i class="kit-ground__warm"></i><i class="kit-ground__moon"></i></div>
       <div class="cl-lights kit-bulbs kit-bulbs--candle">${Array.from({ length: 14 }, (_, i) =>
         `<i style="--i:${i}"></i>`).join('')}</div>
       <div class="cl-floor"></div>
@@ -164,13 +188,7 @@ export class ClubhouseScene extends Scene {
         <i class="kit-dress__flame kit-dress__flame--l cl-flame cl-flame--l"></i>
         <i class="kit-dress__flame kit-dress__flame--r cl-flame cl-flame--r"></i>
       </div>
-      <div class="cl-lamp kit-lamp" aria-hidden="true"></div>
-      <svg class="cl-filters" width="0" height="0" aria-hidden="true" focusable="false">
-        <filter id="cl-crisp" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">
-          <feConvolveMatrix order="3" divisor="1" preserveAlpha="true"
-            kernelMatrix="0 -0.25 0  -0.25 2 -0.25  0 -0.25 0"/>
-        </filter>
-      </svg>`;
+      <div class="cl-lamp kit-lamp" aria-hidden="true"></div>`;
     return room;
   }
 
@@ -234,7 +252,13 @@ export class ClubhouseScene extends Scene {
     p.setAttribute('role', 'tabpanel');
 
     const cork = el('div', 'cork');
-    cork.innerHTML = `<svg class="cork__string" aria-hidden="true"><g></g></svg>`;
+    /* Two reels of wool on two layers. The chain that links the eight
+       photographs runs BEHIND them, the way a string pinned first does; the
+       leads that tie the chain and the cutting to the House's snapshot run
+       OVER them, because they were run last and because they are the argument
+       — if they were hidden behind the paper the board would not make it. */
+    cork.innerHTML = '<svg class="cork__string" aria-hidden="true"><g></g></svg>'
+      + '<svg class="cork__string cork__string--over" aria-hidden="true"><g></g></svg>';
 
     // the pinned pet polaroids
     /* Corkboard geography. The right ~24% of the board belongs to the recovered
@@ -242,10 +266,15 @@ export class ClubhouseScene extends Scene {
        in two rows across the left. Round 3 pinned the fifth one at 72% and the
        blueprint (later in the DOM, same z-index) covered Pixel completely — a
        missing pet you could not see on the missing-pets board. */
+    /* Both rows ride higher than they did, because the board's foot is now an
+       EXHIBIT and an exhibit needs room: the House's photograph, the cutting
+       and the verdict are laid along it as three separate pieces with air
+       between them, instead of the pile they made when the rows ended at 72%
+       of the cork and left them 27% to share. */
     const rot = [-3.4, 2.1, -1.6, 3.2, -2.4, 1.4, -3.0, 2.6];
     const pos = [
-      [2, 5], [17, 2], [32, 7], [47, 3],
-      [2, 40], [17, 45], [32, 39], [47, 44],
+      [2, 1], [17, 3], [32, 0], [47, 2.5],
+      [2, 35], [17, 37], [32, 34], [47, 36.5],
     ];
     KIDS.forEach((k, i) => {
       const info = KID_CODEX[k.slug] ?? {};
@@ -280,7 +309,7 @@ export class ClubhouseScene extends Scene {
        until the atlas existed there was nothing for that instinct to reach. */
     const bp = el('button', 'bpfrag kit-paper');
     bp.type = 'button';
-    bp.style.cssText = 'right:2.5%;top:5%;--rot:1.6deg';
+    bp.style.cssText = 'right:2.5%;top:2%;--rot:1.6deg';
     bp.setAttribute('aria-label',
       `Open the atlas — the house, ${this.revealed.size} of ${REGION_ORDER.length} wings mapped`);
     bp.innerHTML = `
@@ -301,7 +330,13 @@ export class ClubhouseScene extends Scene {
        1280 no card lies on another, on the drawing or on a photograph. The
        three unknown cards are narrower (a "?" and three words) and packed to
        the right, leaving the board's lower left to the collage. */
-    const cluePos = [[62, 47], [80.5, 53], [65, 77], [84.2, 79.5], [48.6, 77.5]];
+    /* The board's right half reads as a numbered exhibit list: the two clues we
+       HAVE, one under the other beside the drawing, then the three slots still
+       empty in one row along the foot — so the corner opposite them is free for
+       the House, the cutting and the verdict, and every card on the board is
+       either something to read or an honest gap. */
+    const cluePos = [[60, 46], [79.5, 51], [57.5, 74.5], [71.5, 77], [85.5, 75]];
+    const clueNo  = ['i', 'ii', 'iii', 'iv', 'v'];
     BOARD_CLUES.forEach((c, i) => {
       const [title, text, known] = c;
       /* `ch-note`, not `note`. The class was renamed in clubhouse.css to get out
@@ -311,41 +346,47 @@ export class ClubhouseScene extends Scene {
          exists for, one level down: same name, different file. */
       const note = el('div', 'ch-note kit-paper' + (known ? '' : ' is-unknown'));
       note.style.cssText = `left:${cluePos[i][0]}%;top:${cluePos[i][1]}%;--rot:${(i % 2 ? 1.8 : -2.2)}deg`;
+      /* the exhibit number in the corner of the card, pencilled in by hand the
+         way a kid numbers what they have found */
+      const no = `<i class="ch-note__no" aria-hidden="true">${clueNo[i]}</i>`;
       note.innerHTML = known
-        ? `<span class="ch-tape kit-tape" aria-hidden="true"></span><b>${title}</b><p>${text}</p>`
-        : `<span class="ch-tape kit-tape" aria-hidden="true"></span><b>?</b><p>Not found yet.</p>`;
+        ? `<span class="ch-tape kit-tape" aria-hidden="true"></span>${no}<b>${title}</b><p>${text}</p>`
+        : `<span class="ch-tape kit-tape" aria-hidden="true"></span>${no}<b>?</b><p>Not found yet.</p>`;
       cork.appendChild(note);
     });
 
-    /* The board's lower half, as a collage. At its lower left the House's
-       photograph (MARL's, round 4): the one snapshot on the board that is not
-       of a pet, UI/mainMenu.png's own painting. Pinned over its edge a cutting
-       from the local paper (NUTMEG's): the house again, in half-tone, under
-       the headline that made the Kids look. */
-    const snap = el('div', 'cl-snap kit-paper',
-      `<span class="pin kit-pin" aria-hidden="true"></span><span class="cl-snap__photo" style="background-image:url('${menuArtSrc('menu')}')"></span>`
-      /* GORSE's caption (ui/r5-kids-c), written on the print's own white
-         margin the way the pet polaroids are captioned — round 5's judges
-         had this as the one photograph on the board with nothing under it */
-      + '<span class="cl-snap__cap">The House</span>'
-      + '<span class="cl-snap__sub">where they all went</span>');
-    snap.setAttribute('aria-hidden', 'true');
-    snap.style.cssText = 'left:1.4%;top:73%;--rot:-4deg';
+    /* ── the evidence corner ────────────────────────────────────────────────
+       The board's foot, composed rather than piled: three exhibits laid left to
+       right with air between them, each carrying its own words, and each a
+       different KIND of paper — a snapshot, newsprint, a cut-out verdict — so
+       the corner reads as one argument being made.
+
+       1  The House's photograph (MARL's, round 4): the one snapshot on the
+          board that is not of a pet, UI/mainMenu.png's own painting, now
+          CAPTIONED in the same hand as the pet polaroids (GORSE's words), so
+          the picture the whole investigation turns on says what it is.
+       2  The cutting from the local paper (NUTMEG's): the house again, in
+          half-tone, under the headline that made the Kids look — with GORSE's
+          standfirst set under the rule, which is the number the board is about.
+       3  The verdict, torn out phrase by phrase. */
+    const snap = el('figure', 'cl-snap kit-paper',
+      `<span class="pin kit-pin" aria-hidden="true"></span>`
+      + `<span class="cl-snap__photo" style="background-image:url('${menuArtSrc('menu')}')"></span>`
+      + `<figcaption class="cl-snap__cap">The House<em>where they all went</em></figcaption>`);
+    snap.style.cssText = 'left:1.5%;top:69.4%;--rot:-3.4deg';
     cork.appendChild(snap);
-    /* the cutting stands beside the photograph rather than on its edge, and
-       carries its own deck under the headline (GORSE's) */
     const cut = el('div', 'cl-cutting kit-newscutting',
       '<span class="pin kit-pin kit-pin--blue cl-cutting__pin" aria-hidden="true"></span>'
       + '<p class="kit-newscutting__head">Pets vanish</p>'
-      + '<p class="cl-cutting__deck">eight gone this year</p>');
-    cut.style.cssText = 'left:16.2%;top:74.2%;--rot:3.2deg';
+      + '<p class="cl-cutting__sub">eight gone this year</p>');
+    cut.style.cssText = 'left:19.4%;top:70.6%;--rot:3.2deg';
     cork.appendChild(cut);
 
     /* The thesis, cut out and pinned up beside them: each phrase torn from a
        sheet of red paper the way a kid makes a headline, the last one on a
        scrap of the index cards and underlined in red biro. */
     const thesis = el('div', 'scrawl');
-    thesis.style.cssText = 'left:28.2%;top:72.6%;--rot:-1.2deg';
+    thesis.style.cssText = 'left:34.6%;top:70.5%;--rot:-1.2deg';
     thesis.innerHTML = `<span class="scrawl__cut kit-clipping" style="--rot:-3deg">too many pets.</span> `
       + `<span class="scrawl__cut kit-clipping" style="--rot:2.2deg">same house.</span> `
       + `<span class="scrawl__cut scrawl__cut--last kit-clipping kit-clipping--card" style="--rot:-1deg"><u>not a coincidence.</u></span>`
@@ -359,15 +400,33 @@ export class ClubhouseScene extends Scene {
     return p;
   }
 
-  /** Red string between the pinned polaroids, with a believable sag. */
+  /**
+   * Red wool between what is pinned up, with a believable sag.
+   *
+   * Two runs, and the second is the argument: the eight photographs are chained
+   * in the order they are pinned, and then the ends of that chain and the
+   * newspaper cutting are ALL tied to the House's snapshot. It is the thing a
+   * kid does with a reel of wool and it is the only line of reasoning on the
+   * board that is drawn rather than written — eight animals, one house.
+   */
   _drawStrings() {
     const cork = this._cork;
     if (!cork) return;
     const svgEl = cork.querySelector('.cork__string');
+    const overEl = cork.querySelector('.cork__string--over');
     const g = svgEl.querySelector('g');
     const box = cork.getBoundingClientRect();
     if (!box.width) return;
-    svgEl.setAttribute('viewBox', `0 0 ${Math.round(box.width)} ${Math.round(box.height)}`);
+    const vb = `0 0 ${Math.round(box.width)} ${Math.round(box.height)}`;
+    svgEl.setAttribute('viewBox', vb);
+    overEl?.setAttribute('viewBox', vb);
+    const at = (sel) => {
+      const pin = cork.querySelector(sel);
+      if (!pin) return null;
+      const r = pin.getBoundingClientRect();
+      if (!r.width) return null;
+      return [r.x + r.width / 2 - box.x, r.y + r.height / 2 - box.y];
+    };
     const pts = [...cork.querySelectorAll('.polaroid .pin')].map((pin) => {
       const r = pin.getBoundingClientRect();
       return [r.x + r.width / 2 - box.x, r.y + r.height / 2 - box.y];
@@ -378,11 +437,27 @@ export class ClubhouseScene extends Scene {
       const mx = (x0 + x1) / 2, my = (y0 + y1) / 2 + Math.abs(x1 - x0) * 0.14 + 10;
       d += `M${x0.toFixed(0)} ${y0.toFixed(0)}Q${mx.toFixed(0)} ${my.toFixed(0)} ${x1.toFixed(0)} ${y1.toFixed(0)}`;
     }
-    if (pts.length > 2) {
-      const [ax, ay] = pts[0], [bx, by] = pts[pts.length - 1];
-      d += `M${ax.toFixed(0)} ${ay.toFixed(0)}Q${((ax + bx) / 2).toFixed(0)} ${(Math.max(ay, by) + 120).toFixed(0)} ${bx.toFixed(0)} ${by.toFixed(0)}`;
+    /* everything the board has leads to the same address */
+    const hub = at('.cl-snap .pin');
+    let lead = '';
+    if (hub) {
+      /* the two photographs nearest the corner, the cutting and the verdict.
+         Not all eight: the leads are chosen to run over open cork rather than
+         across somebody's face, which is also how a kid runs them. */
+      const ties = [pts[4], pts[5], at('.cl-cutting__pin')].filter(Boolean);
+      for (const [x0, y0] of ties) {
+        const dx = hub[0] - x0, dy = hub[1] - y0;
+        const len = Math.hypot(dx, dy);
+        if (len < 24) continue;
+        const mx = x0 + dx * 0.5, my = y0 + dy * 0.5 + Math.min(34, len * 0.12) + 5;
+        lead += `M${x0.toFixed(0)} ${y0.toFixed(0)}Q${mx.toFixed(0)} ${my.toFixed(0)} ${hub[0].toFixed(0)} ${hub[1].toFixed(0)}`;
+      }
     }
     g.innerHTML = `<path class="cork__thread" d="${d}"/>`;
+    if (overEl) {
+      overEl.querySelector('g').innerHTML = lead
+        ? `<path class="cork__thread cork__thread--lead" d="${lead}"/>` : '';
+    }
   }
 
   /* ── panel: the Menagerie roster ────────────────────────────────────────── */
@@ -606,24 +681,34 @@ export class ClubhouseScene extends Scene {
     /* Between the ladder and the way in, a still life on a shelf (MARL's, round
        4): the Treehouse's own plank shelf nailed to the wall, and standing on
        it the Kid board's skull on its books, a lantern and a candle, their
-       light warming the wall and the plank round them. The club's motto is
-       pinned to the wall above it on a slip. Decoration, but for the motto. */
+       light warming the wall and the plank round them.
+       Over them, and the point of the whole column: the club's one rule on a
+       card pinned to the wall (ELDER's treatment, round 5). It was a thin cream
+       strip of small type laid along the shelf's edge, which is where a caption
+       goes, not where a manifesto goes. It is a proper card now — tilted, big
+       enough to read across the room, its pin standing in a clear band of paper
+       above the first line — and it is what the still life is lit for. */
     const motto = el('div', 'cl-motto cl-shelf');
+    /* The still life is its own box under the card, and a SIZE CONTAINER: the
+       skull, the roll, the lantern and the candle are sized from the height the
+       column actually leaves them, so the card can never stand on the skull's
+       head at one size and float over an empty plank at another. */
     motto.insertAdjacentHTML('beforeend',
-      '<i class="kit-light kit-light--candle cl-shelf__pool" aria-hidden="true"></i>'
-      + '<i class="kit-sill kit-sill--grain cl-shelf__plank" aria-hidden="true"></i>'
-      + '<i class="kit-prop kit-prop--skull cl-shelf__skull" aria-hidden="true"></i>'
-      + '<i class="kit-lantern kit-lantern--standing cl-shelf__lantern" aria-hidden="true"></i>'
-      + '<i class="kit-prop kit-prop--candle cl-shelf__candle" aria-hidden="true"></i>');
-    /* ELDER's own treatment (ui/r5-kids-a): a card of paper pinned to the wall
-       at a tilt and big enough to read, its pin through the top corner and
-       clear of the words — round 5's judges had this as "a thin cream strip
-       with small type squeezed onto the shelf edge". */
-    const quote = el('blockquote', 'cl-quote kit-paper kit-paper--torn',
-      '<p class="cl-quote__t">Get every animal out<br>that wants to leave.</p>'
-      + '<cite class="cl-quote__by">the house rule</cite>');
-    quote.appendChild(el('i', 'cl-quote__pin kit-pin'));
-    quote.lastChild.setAttribute('aria-hidden', 'true');
+      '<i class="cl-shelf__still" aria-hidden="true">'
+      + '<i class="kit-light kit-light--candle cl-shelf__pool"></i>'
+      + '<i class="kit-sill kit-sill--grain cl-shelf__plank"></i>'
+      + '<i class="kit-prop kit-prop--skull cl-shelf__skull"></i>'
+      /* GORSE's rolled tracing with its wax seal, off the atlas floor and onto
+         this shelf (the round-7 brief asks for it here too): the same drawing
+         the board upstairs is pinned with, rolled up and put away. */
+      + '<i class="kit-prop kit-prop--tracing cl-shelf__roll"></i>'
+      + '<i class="kit-lantern kit-lantern--standing cl-shelf__lantern"></i>'
+      + '<i class="kit-prop kit-prop--candle cl-shelf__candle"></i>'
+      + '</i>');
+    const quote = el('blockquote', 'cl-quote kit-paper');
+    quote.innerHTML = '<i class="cl-quote__pin kit-pin" aria-hidden="true"></i>'
+      + '<span class="cl-quote__k">The club rule</span>'
+      + '<p class="cl-quote__t">&ldquo;Get every animal out that wants to leave.&rdquo;</p>';
     motto.appendChild(quote);
     side.appendChild(motto);
 

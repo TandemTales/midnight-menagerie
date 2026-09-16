@@ -55,22 +55,12 @@
   position: absolute; inset: 0;
   --hud-h: 0px;
   --corner-w: var(--cl-corner);
-  /* THE WALL IS DARK BETWEEN THE LIGHTS. Round 5's judges read the Kids'
-     walls as "a flat, evenly lit tiled texture": these pools were each most
-     of a screen wide, so the clapboard came up evenly everywhere and the
-     repeat was the only thing left to see. The ground is pushed down into the
-     dark (--deep, ui/kit.css .kit-ground--deep) and every pool is drawn in to
-     the reach of the light that makes it — the lamp over the board, the
-     still life's lantern and candle on the right, the bulbs along the top. */
-  --deep: 52%;
-  --wl3-x: 28vw;  --wl3-y: 26vh;  --wl3-w: 42vw;  --wl3-h: 58vh;
-  --wl4-x: 87vw;  --wl4-y: 46vh;  --wl4-w: 26vw;  --wl4-h: 58vh;
-  --wl5-x: 50vw;  --wl5-y: 0vh;   --wl5-w: 96vw;  --wl5-h: 22vh;
-  --wl6-x: 88vw;  --wl6-y: 82vh;  --wl6-w: 34vw;  --wl6-h: 44vh;
+  --wl3-x: 26vw;  --wl3-y: 30vh;  --wl3-w: 64vw;  --wl3-h: 92vh;
+  --wl4-x: 87vw;  --wl4-y: 44vh;  --wl4-w: 40vw;  --wl4-h: 96vh;
+  --wl5-x: 50vw;  --wl5-y: 1vh;   --wl5-w: 104vw; --wl5-h: 34vh;
+  --wl6-x: 62vw;  --wl6-y: 80vh;  --wl6-w: 70vw;  --wl6-h: 60vh;
 }
 .cl-wall { z-index: 0; }
-/* the board's own filter bank: an unsharp kernel the pinned photographs use */
-.cl-filters { position: absolute; width: 0; height: 0; overflow: hidden; }
 /* the corner candles and their cobwebs, drawn small enough to stand clear of
    Title and the tally either side of the sign */
 .cl-corner { width: var(--cl-corner); top: 1px; }
@@ -309,6 +299,8 @@
   box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .55), inset 0 16px 22px -8px rgba(0, 0, 0, .62), inset 12px 0 20px -10px rgba(0, 0, 0, .45), inset 0 -10px 20px -6px rgba(0, 0, 0, .4);
 }
 .cork__string { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; overflow: visible; }
+/* the leads, run last and over everything pinned up */
+.cork__string--over { z-index: 4; }
 /* red wool, not a vector line: a darker core, a light twist along its top, and
    the shadow it throws on the cork a little below it */
 .cork__thread {
@@ -318,6 +310,14 @@
   stroke-linecap: round;
   filter: drop-shadow(0 3px 1.5px rgba(30, 10, 4, .55));
   opacity: .96;
+}
+/* the leads: the ends of the chain and the newspaper cutting, all tied to the
+   House's snapshot. Thinner than the chain, because they were added later and
+   in a hurry, and a hair darker where they run over the lamplit cork. */
+.cork__thread--lead {
+  stroke-width: 1.9;
+  stroke: color-mix(in srgb, var(--thread) 88%, #3a0d06);
+  opacity: .82;
 }
 
 .pin {
@@ -380,20 +380,27 @@
 }
 /* A pet still in the house: the photograph is the only thing they have of them,
    so it stays sharp — but it goes cold and slightly faded, the way a picture
-   you have looked at nine hundred times does. Home again, it is warm. */
-/* SHARP. Round 5's judges: the prints read "soft and smeared beside sharp
-   engraved type and gold frames" — they are photographs painted with a real
-   depth of field, and at 130 px the browser's own downscale takes the rest of
-   their edge away. #cl-crisp (an feConvolveMatrix in the board's own inline
-   SVG, scenes/clubhouse.js) puts it back before the colour grade runs. */
-.polaroid .polaroid__photo .petpic { filter: url("#cl-crisp"); }
-.polaroid:not(.is-found) .polaroid__photo .petpic { filter: url("#cl-crisp") saturate(.62) brightness(.86) contrast(1.07) sepia(.12); }
-.polaroid.is-found .polaroid__photo .petpic { filter: url("#cl-crisp") saturate(1.06) contrast(1.06); }
+   you have looked at nine hundred times does. Home again, it is warm.
+
+   SHARP now means sharp. These are generated snapshots (ui/petart.js) with a
+   flash blur and halation painted into them, and beside engraved gold caps they
+   read as smeared — every round-5 judge said so. `#cl-print` (scenes/
+   clubhouse.js `_defs`) is a 3x3 unsharp kernel: the print gets the acutance a
+   photographic print has, the grain and the halation are untouched, and the
+   generator is not altered for the sake of one board. The filter runs FIRST,
+   so the grade below is applied to a crisp image, not sharpened noise. */
+.polaroid .polaroid__photo .petpic { filter: url("#cl-print"); }
+.polaroid:not(.is-found) .polaroid__photo .petpic { filter: url("#cl-print") saturate(.66) brightness(.88) contrast(1.12) sepia(.1); }
+.polaroid.is-found .polaroid__photo .petpic { filter: url("#cl-print") saturate(1.08) contrast(1.06); }
+@supports not (filter: url("#cl-print")) {
+  .polaroid:not(.is-found) .polaroid__photo .petpic { filter: saturate(.66) brightness(.88) contrast(1.12) sepia(.1); }
+  .polaroid.is-found .polaroid__photo .petpic { filter: saturate(1.08) contrast(1.06); }
+}
 
 /* the clue cards: index cards, taped up — a red rule under the heading and
    faint blue lines under the words, printed into the card, not over it */
 .ch-note {
-  width: clamp(136px, 11.6vw, 184px);
+  width: clamp(128px, 11vw, 186px);
   padding: 13px 13px 14px;
   --paper: #efe4c6;
   transition: transform var(--t-base) var(--ease-out);
@@ -410,6 +417,7 @@
 .ch-note:hover { transform: rotate(0deg) scale(1.04); z-index: 5; }
 .ch-note b {
   display: block;
+  padding-right: 13px;                 /* clear of the pencilled exhibit number */
   font-family: var(--font-display); font-weight: 700;
   font-size: clamp(12.5px, .92vw, 14.5px); letter-spacing: .06em; line-height: 1.15;
   color: var(--kit-paper-ink);
@@ -421,8 +429,16 @@
 }
 /* a card still face down: grey card, the question mark still legible */
 .ch-note.is-unknown { --paper: #cdbd9a; }
-.ch-note.is-unknown b { font-family: var(--font-body); font-size: clamp(20px, 1.6vw, 26px); text-align: center; color: var(--kit-paper-ink); }
+.ch-note.is-unknown b { padding-right: 0; font-family: var(--font-body); font-size: clamp(20px, 1.6vw, 26px); text-align: center; color: var(--kit-paper-ink); }
 .ch-note.is-unknown p { text-align: center; color: color-mix(in oklab, var(--kit-paper-ink) 90%, #cdbd9a); }
+/* the exhibit's number, pencilled into the card's corner: five slots, two
+   filled, and the board reads in an order rather than as scattered paper */
+.ch-note__no {
+  position: absolute; right: 9px; top: 6px;
+  font-family: var(--font-display); font-style: normal; font-weight: 700;
+  font-size: 9.5px; line-height: 1; letter-spacing: .12em;
+  color: color-mix(in oklab, var(--kit-paper-ink) 42%, var(--paper));
+}
 .ch-tape {
   position: absolute; top: -11px; left: 50%;
   transform: translateX(-50%) rotate(-4deg);
@@ -484,50 +500,58 @@
 }
 .bpfrag__count b { font-family: var(--font-num); color: color-mix(in oklab, var(--blueprint-ink) 88%, var(--text-ink)); font-size: 1.4em; }
 
-/* the board's lower left, as a collage: the House's photograph, a cutting
-   pinned over its edge, and the thesis beside them */
+/* ── the evidence corner ──────────────────────────────────────────────────── */
+/* The board's foot is a COMPOSED exhibit, not a heap: three pieces of paper of
+   three different kinds, laid left to right with air between them, each with
+   its own words — the House's photograph, captioned; the cutting that made the
+   Kids look, with the number under its headline; and the verdict, torn out
+   phrase by phrase. The red wool from the photographs ends here. */
 .cl-snap, .cl-cutting { position: absolute; transform: rotate(var(--rot, 0deg)); z-index: 2; }
 .cl-snap {
-  width: clamp(104px, 9vw, 146px);
-  padding: 6px 6px 7px;
-  display: grid; gap: 0;
+  width: clamp(124px, 10.8vw, 172px);
+  margin: 0;
+  padding: 7px 7px 9px;
   text-align: center;
+  transition: transform var(--t-base) var(--ease-out);
 }
-/* The caption on the print's own margin, in the kit's nameplate grammar: the
-   name in engraved spaced caps over its italic epithet, which is how every
-   plate in the game names a thing — and which fits the print's width, where
-   two lines of spaced caps did not. */
-.cl-snap__cap {
-  margin-top: 5px;
-  font-family: var(--font-display); font-weight: 700;
-  font-size: clamp(11px, .85vw, 13.5px); line-height: 1.1;
-  letter-spacing: .1em; text-transform: uppercase;
-  color: var(--kit-paper-ink);
-}
-.cl-snap__sub {
-  font-family: var(--font-body); font-style: italic; font-weight: 500;
-  font-size: clamp(9.5px, .72vw, 11.5px); line-height: 1.15; letter-spacing: .01em;
-  color: color-mix(in oklab, var(--kit-paper-ink) 78%, var(--kit-paper));
-}
+.cl-snap:hover { transform: rotate(0deg) scale(1.04); z-index: 5; }
 .cl-snap__photo {
   display: block; aspect-ratio: 4 / 3;
   background-size: cover; background-position: 50% 62%;
   box-shadow: inset 0 0 0 1px rgba(40, 24, 12, .5), inset 0 0 18px rgba(0, 0, 0, .6);
-  filter: sepia(.22) saturate(.8) brightness(.95);
+  filter: sepia(.22) saturate(.8) brightness(.95) contrast(1.06);
 }
-.cl-cutting { --cut-w: clamp(84px, 6.6vw, 108px); z-index: 3; }
+/* written under the print in the same hand as the pet snapshots, so the one
+   photograph on the board that is not a missing animal still says what it is */
+.cl-snap__cap {
+  display: grid; gap: 0;
+  margin: 6px 0 0;
+  font-family: var(--font-body); font-style: italic; font-weight: 600;
+  font-size: clamp(14px, 1.06vw, 16.5px); line-height: 1.06;
+  color: var(--kit-paper-ink);
+}
+.cl-snap__cap em {
+  margin-top: 2px;
+  font-weight: 400; font-size: clamp(11px, .8vw, 12.5px); line-height: 1.12;
+  color: color-mix(in oklab, var(--kit-paper-ink) 66%, var(--kit-paper));
+}
+.cl-cutting { --cut-w: clamp(108px, 8.9vw, 142px); z-index: 3; }
 /* pinned through its torn top edge, clear of the headline */
 .cl-cutting__pin { left: 16%; top: -8px; transform: none; }
-/* the deck under the headline, in the paper's own rule-off band: how many */
-.cl-cutting__deck {
-  position: absolute; left: 7%; right: 7%; top: 18.4%;
+/* the standfirst under the headline's rule: the figure the whole board is
+   about, set in the paper's own italic and printed INTO the newsprint (a wash
+   of the stock's colour over the half-tone, a hairline under it) */
+.cl-cutting__sub {
+  position: absolute; left: 7%; right: 7%; top: 19.2%;
+  display: grid; place-items: center;
   margin: 0;
+  padding: 1px 0 2px;
+  background: linear-gradient(180deg, #ece3cd, #e4d9bd);
+  box-shadow: 0 1px 0 rgba(44, 38, 30, .5);
   font-family: var(--font-body); font-style: italic; font-weight: 700;
-  font-size: max(9px, calc(var(--cut-w) * .105)); line-height: 1.1;
-  text-align: center; white-space: nowrap;
-  color: #211d18;
-  /* lifted off the half-tone under it, the way a deck is printed over white */
-  text-shadow: 0 0 2px #efe7d6, 0 0 4px #efe7d6, 0 0 6px rgba(239, 231, 214, .8);
+  font-size: max(9.5px, calc(var(--cut-w) * .093)); line-height: 1.18;
+  letter-spacing: .005em; text-align: center; white-space: nowrap;
+  color: #262019;
 }
 /* the thesis: three phrases cut out and pinned beside the cutting, stacked as
    a kid sticks them up, the first two on red paper, the verdict on a scrap of
@@ -544,7 +568,7 @@
 .scrawl__cut--last { margin-left: .3em; }
 .scrawl__pin { --pin-w: clamp(16px, 1.2vw, 20px); left: 58%; top: -.45em; z-index: 1; }
 /* the three unknown cards, narrower: a "?" and three words */
-.ch-note.is-unknown { width: clamp(104px, 8.6vw, 138px); }
+.ch-note.is-unknown { width: clamp(98px, 8.1vw, 130px); }
 /* the purple enamel studs, each over the boss of the frame's corner mount
    (frame-carved.webp's boss is 27 of its 116-pixel rail in from the corner,
    and the rail stands --carve-w - 3px outside the box) */
@@ -719,7 +743,7 @@
   top: calc(var(--head-h) - clamp(10px, 2.4vh, 24px));
   bottom: calc(var(--cl-bot) - var(--cl-carve));
   right: var(--cl-r); width: var(--side-w);
-  display: flex; flex-direction: column; gap: clamp(16px, 2.3vh, 24px);
+  display: flex; flex-direction: column; gap: clamp(12px, 1.9vh, 20px);
   z-index: 5;
 }
 
@@ -729,7 +753,7 @@
    label or figure lies on an ornament. */
 .chalk {
   --pk: .72;
-  padding: clamp(24px, 3.3vh, 30px) clamp(24px, 2vw, 30px) clamp(36px, 4.4vh, 42px);
+  padding: clamp(20px, 2.8vh, 26px) clamp(24px, 2vw, 30px) clamp(30px, 3.7vh, 36px);
 }
 .chalk__h { margin: 0 0 clamp(6px, 1vh, 11px); font-size: clamp(12.5px, .9vw, 14px); }
 .chalk__dl { row-gap: clamp(3px, .7vh, 8px); }
@@ -739,7 +763,7 @@
 /* Haunt Level */
 .cl-haunt {
   --pk: .72;
-  padding: clamp(26px, 3.6vh, 32px) clamp(30px, 2.2vw, 36px) clamp(18px, 2.6vh, 24px);
+  padding: clamp(22px, 3vh, 28px) clamp(30px, 2.2vw, 36px) clamp(15px, 2.1vh, 20px);
 }
 .cl-haunt__h { margin: 0 0 clamp(2px, .6vh, 6px); font-size: clamp(12.5px, .9vw, 14px); }
 /* The select screen styles a `.haunt__pip` of its own and its sheet can load
@@ -784,15 +808,26 @@
    the wall over the lantern and the candle. Everything but the motto is
    decoration. Things stand with their foot a fifth of --sill-h into the
    plank's element, on its worn top face. */
+/* The card is in FLOW at the top of this block and the still life is absolute
+   at its foot, so the two can never lie on each other however short the column
+   gets: the card takes the words' height, the shelf takes what is left, and the
+   props shrink with it. */
 .cl-shelf {
   flex: 1 1 auto; min-height: 0;
   position: relative;
-  --sill-h: clamp(20px, 2.7vh, 26px);
+  display: grid; grid-template-rows: auto minmax(0, 1fr);
+  --sill-h: min(clamp(19px, 2.5vh, 26px), 26cqh);
   --shelf-foot: calc(var(--sill-h) * 112 / 84 - var(--sill-h) * .24);
-  margin: calc(clamp(16px, 2.3vh, 24px) * -.35) 0 calc(clamp(16px, 2.3vh, 24px) * -.2);
+  margin: calc(clamp(12px, 1.9vh, 20px) * -.5) 0 calc(clamp(12px, 1.9vh, 20px) * -.42);
+}
+/* the still life's own box: what the column leaves under the card */
+.cl-shelf__still {
+  grid-row: 2;
+  position: relative; display: block; min-height: 0;
+  container-type: size;
 }
 /* (.kit-sill declares its own --sill-h, so the plank takes the shelf's here) */
-.cl-shelf__plank { position: absolute; left: -2%; right: -2%; bottom: 0; --sill-h: clamp(20px, 2.7vh, 26px); }
+.cl-shelf__plank { position: absolute; left: -2%; right: -2%; bottom: 0; --sill-h: min(clamp(19px, 2.5vh, 26px), 26cqh); }
 /* the plank's two sawn ends in their own shade, and the light of the things
    on it along its top */
 .cl-shelf__plank::after {
@@ -802,46 +837,59 @@
     linear-gradient(90deg, rgba(10, 5, 12, .7) 0%, rgba(10, 5, 12, 0) 16%, rgba(10, 5, 12, 0) 80%, rgba(10, 5, 12, .66) 100%);
   pointer-events: none;
 }
-/* The still life keeps the shelf's LEFT half and the motto the wall above its
-   right, so neither stands in front of the other — round 5's judges had the
-   motto as a strip laid across the shelf's edge. */
-.cl-shelf__skull { left: 1%; bottom: var(--shelf-foot); width: clamp(54px, 4.6vw, 76px); z-index: 2; }
-.cl-shelf__lantern { left: 20%; bottom: var(--shelf-foot); --lantern-w: clamp(44px, 3.8vw, 62px); z-index: 2; }
-.cl-shelf__candle { left: 38%; bottom: var(--shelf-foot); width: clamp(32px, 2.7vw, 46px); z-index: 2; }
-/* the lantern's and the candle's warmth on the wall behind the still life */
-.cl-shelf__pool { --light-a: 30%; width: clamp(240px, 21vw, 340px); left: 28%; top: 62%; }
-/* the motto, on a slip a shade darker than the board's paper (it hangs in the
-   still life's light, not the lamp's), pinned to the wall over the lantern
-   and the candle, clear of the ladder's panel above it */
+/* the still life, gathered at the shelf's two ends so the card above it is
+   never crowded: the skull on its books and the lantern at the left, the
+   candle at the right, all sized by what the row is given */
+.cl-shelf__skull   { left: 0%;  bottom: var(--shelf-foot); width: min(clamp(50px, 4.4vw, 74px), calc(80cqh * 130 / 153)); z-index: 3; }
+.cl-shelf__roll    { left: 23%; bottom: calc(var(--shelf-foot) - var(--sill-h) * .1); width: min(clamp(62px, 5.4vw, 92px), calc(36cqh * 220 / 96)); z-index: 4; }
+.cl-shelf__lantern { left: 48%; bottom: var(--shelf-foot); --lantern-w: min(clamp(40px, 3.6vw, 60px), calc(72cqh * 200 / 272)); z-index: 2; }
+.cl-shelf__candle  { right: 6%; bottom: var(--shelf-foot); width: min(clamp(30px, 2.6vw, 46px), calc(66cqh * 106 / 164)); z-index: 2; }
+/* the lantern's and the candle's warmth on the wall behind the still life, and
+   up onto the card pinned over it */
+.cl-shelf__pool { --light-a: 34%; width: clamp(250px, 22vw, 360px); left: 58%; top: 40%; }
+
+/* THE CLUB RULE, on a card pinned to the wall over the shelf (ELDER's, round
+   5). It was a 13px strip laid along the plank's edge, which reads as a
+   caption; a manifesto is a CARD — the size of the index cards on the board,
+   tilted the way a thing pinned by one pin hangs, its brass pin standing in a
+   clear band of paper well above the first line, the still life's light on it
+   from below. It is the last thing read in the column before the way in. */
 .cl-quote {
-  position: absolute; right: 1.5%; top: 0;
-  width: 59%;
-  margin: 0;
-  padding: clamp(12px, 1.7vh, 16px) clamp(13px, 1.2vw, 18px) clamp(9px, 1.4vh, 13px);
-  --paper: color-mix(in srgb, var(--kit-paper) 74%, #5e4630);
+  grid-row: 1;
+  position: relative;
+  justify-self: stretch;
+  margin: 0 clamp(8px, 1.4vw, 20px) clamp(5px, .9vh, 10px);
+  padding: clamp(19px, 2.5vh, 25px) clamp(13px, 1.2vw, 19px) clamp(11px, 1.5vh, 15px);
+  --paper: color-mix(in srgb, var(--kit-paper) 84%, #6a5136);
   text-align: center;
   color: var(--kit-paper-ink);
-  transform: rotate(-2.4deg);
-  z-index: 1;
+  transform: rotate(-1.9deg);
+  z-index: 3;
 }
+.cl-quote__k {
+  display: block;
+  margin-bottom: clamp(3px, .5vh, 5px);
+  font-family: var(--font-display); font-weight: 700;
+  font-size: clamp(10px, .72vw, 11.5px); line-height: 1; letter-spacing: .24em;
+  text-transform: uppercase; padding-left: .24em;
+  color: color-mix(in oklab, var(--kit-paper-ink) 58%, #7c5a2e);
+}
+/* a hairline rule either side of the label, as a club card has */
+.cl-quote__k::before, .cl-quote__k::after {
+  content: ''; display: inline-block; vertical-align: middle;
+  width: clamp(10px, 1.1vw, 18px); height: 1px; margin: 0 .5em 2px;
+  background: color-mix(in oklab, var(--kit-paper-ink) 34%, var(--paper));
+}
+/* held to about fifteen ems so the rule always breaks over two or three lines
+   and the card stays a CARD — a one-line strip is the caption it used to be */
 .cl-quote__t {
-  margin: 0;
+  max-width: 11.4em;
+  margin: 0 auto;
   font-family: var(--font-body); font-style: italic; font-weight: 600;
-  font-size: clamp(13px, .99vw, 16px); line-height: 1.24;
+  font-size: clamp(15px, 1.12vw, 18.5px); line-height: 1.3;
   text-wrap: balance;
 }
-/* who says so, engraved small under the rule the way a nameplate's epithet is */
-.cl-quote__by {
-  display: block;
-  margin-top: clamp(4px, .6vh, 6px);
-  padding-top: clamp(3px, .5vh, 5px);
-  border-top: 1px solid color-mix(in srgb, var(--kit-paper-ink) 26%, transparent);
-  font-family: var(--font-display); font-weight: 700; font-style: normal;
-  font-size: clamp(9.5px, .72vw, 11.5px); letter-spacing: .16em; text-transform: uppercase;
-  color: color-mix(in oklab, var(--kit-paper-ink) 74%, var(--kit-paper));
-}
-/* the pin through its top-left corner, clear of the words */
-.cl-quote__pin { --pin-w: clamp(15px, 1.2vw, 19px); left: 14%; top: -7px; }
+.cl-quote__pin { --pin-w: clamp(16px, 1.25vw, 21px); left: 50%; top: clamp(4px, .6vh, 6px); translate: -50% 0; z-index: 2; }
 
 /* Plan the Expedition: the lit nameplate, the way on in its ornate medallion.
    Its words on two lines of ONE size, tracked like every lit plate, and the
