@@ -41,10 +41,14 @@
        a second title in ghost letters either side of it: the band is deep
        enough now to put it out) */
     linear-gradient(to bottom, color-mix(in srgb, var(--kit-void) 93%, transparent) 0, color-mix(in srgb, var(--kit-void) 90%, transparent) 15%, color-mix(in srgb, var(--kit-void) 40%, transparent) 24%, transparent 32%),
-    radial-gradient(70% 64% at 50% 50%, color-mix(in srgb, var(--kit-void) 46%, transparent) 0%, color-mix(in srgb, var(--kit-void) 66%, transparent) 60%, color-mix(in srgb, var(--kit-void) 90%, transparent) 100%),
+    /* the room is turned DOWN, not out: at the edges it used to reach 90% of
+       the void, so a dialog with any margin round it stood on black and read
+       as the whole screen. The fight, the map, the shop is still there down
+       both sides — dim, cool and clearly behind. */
+    radial-gradient(74% 68% at 50% 50%, color-mix(in srgb, var(--kit-void) 42%, transparent) 0%, color-mix(in srgb, var(--kit-void) 57%, transparent) 62%, color-mix(in srgb, var(--kit-void) 72%, transparent) 100%),
     linear-gradient(color-mix(in srgb, var(--kit-violet-lo) 12%, transparent), color-mix(in srgb, var(--kit-violet-lo) 12%, transparent));
-  -webkit-backdrop-filter: brightness(.56) saturate(.62);
-          backdrop-filter: brightness(.56) saturate(.62);
+  -webkit-backdrop-filter: brightness(.66) saturate(.68);
+          backdrop-filter: brightness(.66) saturate(.68);
   opacity: 0;
   transition: opacity var(--t-base) var(--ease-out);
 }
@@ -83,12 +87,21 @@
 /* ══ the kit panel ═════════════════════════════════════════════════════════ */
 .mm-modal--kit {
   /* room above for the plaque's upper half, clear of the HUD's rail; below,
-     only the room the corner guards and the candle's dish hang into — the
-     buttons stand inside the frame */
+     the room the corner guards, the candle's dish and the skull's books stand
+     in — the buttons stand inside the frame */
   --dlg-top: calc(var(--hud-h, 46px) + 6px + clamp(54px, 6.8vh, 64px));
-  --dlg-bottom: clamp(16px, 2.4vh, 26px);
-  padding: var(--dlg-top) var(--s-5) var(--dlg-bottom);
+  --dlg-bottom: clamp(20px, 4.6vh, 42px);
+  /* A DIALOG IS A THING LAID ON THE BOARD, never a second screen. The room it
+     covers is left showing down both sides and along the foot, so the fight,
+     the map or the shop is still THERE round it — at the Deck's 1280 as at
+     1600, where the frame used to run to within a hair of the screen and its
+     close hung off the edge. */
+  --dlg-side: clamp(var(--s-5), 4.2vw, 100px);
+  padding: var(--dlg-top) var(--dlg-side) var(--dlg-bottom);
 }
+/* the case of Tricks is the widest thing the house opens, so it keeps the
+   widest margin of room round it */
+.mm-modal--kit[data-size="wide"] { --dlg-side: clamp(26px, 5.6vw, 124px); }
 .mm-modal--kit .mm-modal__dialog {
   --pk: .9;
   --btn-h: clamp(44px, 5.4vh, 52px);
@@ -142,14 +155,18 @@
 .mm-dlg-dress__candle > .kit-prop { inset: 0; }
 .mm-dlg-dress__candle > .kit-prop::before { display: none; }
 .mm-dlg-dress__glow { left: 50%; top: 12%; width: calc(var(--cw) * 6); --light-a: 24%; }
-/* the skull on its books, set on the lower left guard's boss the way the candle
-   stands on the right one, on the two large dialogs (a question keeps its
-   corners bare) */
+/* The skull on its books, standing on the floor of the room at the dialog's
+   foot, on the two large dialogs (a question keeps its corners bare). It used
+   to be set on the lower left corner guard, where at 1280 it covered the brass
+   and the frame's mitre both — a prop parked on the frame rather than a thing
+   standing in front of it. It stands clear of the guard now, its feet below
+   the bottom rail on the board's own floor, the way the Kid board's candle
+   stands on the cobbles in front of the board. */
 .mm-dlg-dress__books {
-  --bw: clamp(70px, 5.4vw, 88px);
+  --bw: clamp(66px, 5.4vw, 88px);
   position: absolute; z-index: 5;
-  left: calc(var(--bw) * -.14);
-  bottom: calc(var(--bw) * -.08);
+  left: calc(clamp(64px, 5.6vw, 88px) + clamp(4px, .9vw, 16px));
+  bottom: calc(-1 * min(var(--bw) * .5, var(--dlg-bottom) - 7px));
   width: var(--bw); aspect-ratio: 130 / 153;
   display: none;
 }

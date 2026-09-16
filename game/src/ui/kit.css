@@ -2396,6 +2396,23 @@ button.kit-medallion:hover, button.kit-medallion:focus-visible,
                          (the Kid board's panels each wear their own: a star, a
                          shield, a paw). The glyph is a mask: --glyph is a url()
                          of a 24-unit SVG of filled paths; --crest sizes it
+
+   Round 7 adds, from the same track — a control and its name are TWO objects,
+   and a page is marked, not filled in:
+
+     .kit-rubric         the small notched cartouche that NAMES a control,
+                         pinned on its upper edge, lettered in engraved gilt
+                         small caps; --rub-h sizes it, --dark for the tiles'
+                         near-black field
+     .kit-stars          the wordmark's own gold stars strung on a gilt thread:
+       __star            where you are in a run of pages. .is-past is behind
+                         you, .is-on is the one you are reading, burning larger
+                         in the candle. A reading, never a control
+     .kit-heading--oxblood  .kit-heading--ribbon's silk dyed the house's sealing
+                         wax (ribbon-crimson.webp), lettered in gilt
+     .kit-seal           a blob of oxblood wax pressed with the house's skull
+                         (wax-seal.webp), for the page whose action cannot be
+                         undone; --seal sizes it, --tilt turns it
    =========================================================================== */
 
 /* ── crest ──────────────────────────────────────────────────────────────────
@@ -2424,6 +2441,100 @@ button.kit-medallion:hover, button.kit-medallion:focus-visible,
 .kit-crest::before { background: rgb(14 7 3 / .92); translate: 0 max(1px, calc(var(--crest) * .03)); }
 .kit-crest::after {
   background: linear-gradient(155deg, #fbeabf 0%, var(--kit-gold-hi) 28%, var(--kit-gold) 60%, color-mix(in oklab, var(--kit-gold-lo) 70%, var(--kit-gold)) 100%);
+}
+
+/* ── rubric ─────────────────────────────────────────────────────────────────
+   The small notched cartouche that NAMES a control, pinned on its upper edge:
+   the Companion tiles' own cartouche cut down to a tag, lettered in engraved
+   gilt small caps. A control and its name are two objects in the house — the
+   nameplate carries the choice, the tag carries what the choice is FOR — and
+   never a tiny label and a value crammed into one capsule, which is how a web
+   select box is built. --rub-h sizes it.                                    */
+.kit-rubric {
+  --rub-h: 22px;
+  display: inline-flex; align-items: center; justify-content: center;
+  min-height: var(--rub-h);
+  padding: 0 calc(var(--rub-h) * .66 + .2em) 1px calc(var(--rub-h) * .66);
+  border: 0 solid transparent;
+  border-image-source: url("../../assets/ui/kit/cartouche-lit.webp");
+  border-image-slice: 18 34 18 34 fill;
+  border-image-width: calc(var(--rub-h) * 18 / 64) calc(var(--rub-h) * 34 / 64);
+  border-image-repeat: stretch;
+  font-family: var(--font-display); font-weight: 700; font-style: normal;
+  font-size: max(10px, calc(var(--rub-h) * .44)); line-height: 1;
+  letter-spacing: .2em; text-transform: uppercase; white-space: nowrap;
+  color: var(--kit-gold-hi);
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, .95), 0 1px 0 color-mix(in srgb, var(--kit-gold-hi) 20%, transparent);
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, .85));
+}
+.kit-rubric--dark { border-image-source: url("../../assets/ui/kit/cartouche-dark.webp"); color: var(--kit-name); }
+
+/* ── stars ──────────────────────────────────────────────────────────────────
+   Where you are in a run of pages, told the way the wordmark tells anything:
+   its own gold stars (cart-star.webp) strung on a gilt thread, the page you
+   are reading burning larger in the candle's light, the pages behind you gilt,
+   the pages to come dim bronze. A READING, never controls — give it an
+   aria-hidden and say the count in words elsewhere. --star sizes one.
+     <span class="kit-stars" aria-hidden="true">
+       <i class="kit-stars__star is-past"></i><i class="kit-stars__star is-on"></i>… */
+.kit-stars {
+  --star: 22px;
+  position: relative;
+  display: flex; align-items: center; justify-content: center;
+  gap: calc(var(--star) * .36);
+  padding: calc(var(--star) * .46) calc(var(--star) * .4);
+}
+.kit-stars::before {
+  content: ''; position: absolute; z-index: 0; pointer-events: none;
+  left: 0; right: 0; top: 50%; height: 3px;
+  translate: 0 -50%;
+  background:
+    linear-gradient(90deg, transparent, color-mix(in srgb, var(--kit-gold-hi) 85%, transparent) 7%, color-mix(in srgb, var(--kit-gold-hi) 85%, transparent) 93%, transparent) 0 0 / 100% 1px no-repeat,
+    linear-gradient(90deg, transparent, color-mix(in srgb, var(--kit-gold-lo) 80%, transparent) 7%, color-mix(in srgb, var(--kit-gold-lo) 80%, transparent) 93%, transparent) 0 2px / 100% 1px no-repeat;
+  filter: drop-shadow(0 1px 0 rgba(0, 0, 0, .9));
+}
+.kit-stars__star {
+  position: relative; z-index: 1; flex: none;
+  width: var(--star); height: var(--star);
+  background: url("../../assets/ui/kit/cart-star.webp") 50% 50% / auto 100% no-repeat;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, .9)) saturate(.72) brightness(.88);
+  scale: .84;
+  pointer-events: none;
+}
+.kit-stars__star.is-past { filter: drop-shadow(0 1px 1px rgba(0, 0, 0, .9)) brightness(1.02); scale: .92; }
+.kit-stars__star.is-on {
+  margin-inline: calc(var(--star) * .26);
+  scale: 1.5;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, .9)) drop-shadow(0 0 8px color-mix(in srgb, var(--kit-candle) 78%, transparent)) brightness(1.32);
+}
+
+/* ── heading, oxblood ───────────────────────────────────────────────────────
+   A modifier on .kit-heading--ribbon, which is not touched: the same painted
+   banner with its silk dyed the house's sealing wax (ribbon-crimson.webp,
+   tools/prep_ui_ledger.py — the painting's value re-mapped, so every fold and
+   its gilt stars survive), lettered in gilt instead of ink so the name reads
+   on the red.                                                                */
+.kit-heading--ribbon.kit-heading--oxblood {
+  border-image-source: url("../../assets/ui/kit/ribbon-crimson.webp");
+  color: #f6dfab;
+  -webkit-text-stroke: 0;
+  text-shadow: 0 -1px 0 rgba(36, 3, 5, .95), 0 1px 0 rgba(255, 210, 160, .2), 0 0 9px rgba(36, 3, 5, .7);
+  filter: saturate(1.02) drop-shadow(0 3px 4px rgba(0, 0, 0, .78));
+}
+
+/* ── seal ───────────────────────────────────────────────────────────────────
+   A blob of oxblood wax pressed with the house's skull (wax-seal.webp): how
+   this house marks the one thing that cannot be undone. Decoration, laid on a
+   panel's corner — never a filled red box, which is a web alert. --seal sizes
+   it, --tilt turns it off true the way a hand presses one.                  */
+.kit-seal {
+  --seal: 64px;
+  --tilt: -9deg;
+  position: absolute; pointer-events: none;
+  width: var(--seal); aspect-ratio: 1;
+  rotate: var(--tilt);
+  background: url("../../assets/ui/kit/wax-seal.webp") 50% 50% / 100% 100% no-repeat;
+  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .8)) drop-shadow(0 0 12px color-mix(in srgb, var(--threat-500, #a8342c) 22%, transparent));
 }
 
 /* ===========================================================================
