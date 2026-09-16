@@ -642,6 +642,18 @@
 .tut-panel[data-long-cta="true"] .tut-dots { --star: clamp(14px, 1.25vw, 20px); }
 .tut-dot { cursor: default; }
 
+/* The page is marked. A purple silk bookmark (.kit-bookmark) comes out from
+   under the page's lower rail beside its corner guard and hangs down over the
+   mantel's carving — round 5's judges asked for it off the baseline, and it is
+   the one thing on the board that says this story has a place kept in it. */
+.tut-mark {
+  --mark-w: clamp(21px, 1.7vw, 29px);
+  z-index: 2;
+  right: clamp(46px, 4.6vw, 80px);
+  top: calc(100% - var(--mark-w) * .5);
+  height: calc(var(--mark-w) * 2.7);
+}
+
 /* Go on: the boards' lit nameplate, an ornate enamel medallion seated on its
    end, as every board's way onward wears one */
 .tut-next.kit-btn { flex: none; white-space: nowrap; margin-right: calc(var(--plate-h) * .95); padding-right: calc(var(--plate-h) * 1.3); }

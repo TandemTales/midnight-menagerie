@@ -312,6 +312,7 @@ export class TutorialScene extends Scene {
        guard over each corner. It stands on the mantel with the portrait. */
     p.innerHTML = `
       <i class="tut-fit" aria-hidden="true"><i class="kit-liner tut-fit__liner"></i><i class="kit-bracket kit-bracket--tl tut-fit__guard"></i><i class="kit-bracket kit-bracket--tr tut-fit__guard"></i><i class="kit-bracket kit-bracket--bl tut-fit__guard"></i><i class="kit-bracket kit-bracket--br tut-fit__guard"></i></i>
+      <i class="kit-bookmark tut-mark" aria-hidden="true"></i>
       <h1 class="tut-head"></h1>
       <p class="tut-sub"></p>
       <div class="tut-lines"></div>
