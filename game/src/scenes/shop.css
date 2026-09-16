@@ -92,7 +92,7 @@
      the niche's width follows from the mirror's own proportions. It stands in
      from the shelf's end, far enough for the skull on its books to stand at
      its foot; the far end keeps room for a candle on a book. */
-  --moth-h: clamp(236px, calc(var(--cab-h, 330px) - var(--head-h) - var(--feet) - 2px), 460px);
+  --moth-h: clamp(236px, calc(var(--cab-h, 330px) - var(--head-h) * .34 - var(--feet) - 2px), 460px);
   --keeper-w: calc(var(--moth-h) * 348 / 711);
   --keeper-x: clamp(26px, 2.1vw, 40px);
   --shelf-end-l: calc(var(--keeper-x) + var(--keeper-w) + clamp(6px, .6vw, 12px));
@@ -236,9 +236,9 @@
 /* his lamp, low in the glass: its warm light out on the curtain round him */
 .sh-keeper__light {
   position: absolute; left: 50%; top: 72%;
-  width: 330%; aspect-ratio: 1; translate: -50% -50%;
+  width: 350%; aspect-ratio: 1; translate: -50% -50%;
   border-radius: 50%; pointer-events: none; z-index: -1;
-  background: radial-gradient(closest-side, color-mix(in srgb, var(--kit-candle) 40%, transparent), color-mix(in srgb, var(--kit-candle) 14%, transparent) 42%, color-mix(in srgb, var(--kit-candle) 4%, transparent) 72%, transparent);
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--kit-candle) 50%, transparent), color-mix(in srgb, var(--kit-candle) 18%, transparent) 42%, color-mix(in srgb, var(--kit-candle) 4%, transparent) 72%, transparent);
   mix-blend-mode: screen;
 }
 .rm:not(.is-still) .sh-keeper__light { animation: kit-flicker 5.2s ease-in-out infinite; }
@@ -259,6 +259,8 @@
   display: block;
   overflow: hidden;
   background: url("../../assets/ui/kit/moth-portrait.webp") 50% 100% / 100% 100% no-repeat;
+  /* his own lamp is the brightest thing on this shelf: he is the host of it */
+  filter: brightness(1.12) saturate(1.06) contrast(1.04);
 }
 .sh-moth__frame {
   position: absolute; inset: 0; z-index: 2;
@@ -782,7 +784,7 @@
   .scene--shop .sh-floor { margin-top: 25px; row-gap: 15px; grid-template-rows: minmax(280px, 1fr) auto; }
   .scene--shop .rm-body { padding-bottom: 8px; }
   .sh-counter--cards.kit-panel { --rib-h: 24px; --medal-k: .84; --frame-pad: 7px; --shelf-price-h: 28px;
-                                 --moth-h: clamp(212px, calc(var(--cab-h, 300px) - var(--head-h) - var(--feet) - 2px), 330px);
+                                 --moth-h: clamp(212px, calc(var(--cab-h, 300px) - var(--head-h) * .34 - var(--feet) - 2px), 330px);
                                  --keeper-x: 30px; --shelf-end-r: 30px; }
   .scene--shop .sh-keeper .sh-moth__name { z-index: 4; }
   .scene--shop .sh-cards { --gap: 21px; }
