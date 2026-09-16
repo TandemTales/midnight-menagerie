@@ -40,15 +40,15 @@
     /* (the board's own lettered plaque sat just readable behind the dialog's,
        a second title in ghost letters either side of it: the band is deep
        enough now to put it out) */
-    linear-gradient(to bottom, color-mix(in srgb, var(--kit-void) 93%, transparent) 0, color-mix(in srgb, var(--kit-void) 90%, transparent) 15%, color-mix(in srgb, var(--kit-void) 40%, transparent) 24%, transparent 32%),
+    linear-gradient(to bottom, color-mix(in srgb, var(--kit-void) 96%, transparent) 0, color-mix(in srgb, var(--kit-void) 94%, transparent) 16%, color-mix(in srgb, var(--kit-void) 52%, transparent) 25%, transparent 34%),
     /* the room is turned DOWN, not out: at the edges it used to reach 90% of
        the void, so a dialog with any margin round it stood on black and read
        as the whole screen. The fight, the map, the shop is still there down
        both sides — dim, cool and clearly behind. */
-    radial-gradient(74% 68% at 50% 50%, color-mix(in srgb, var(--kit-void) 42%, transparent) 0%, color-mix(in srgb, var(--kit-void) 57%, transparent) 62%, color-mix(in srgb, var(--kit-void) 72%, transparent) 100%),
+    radial-gradient(78% 72% at 50% 50%, color-mix(in srgb, var(--kit-void) 38%, transparent) 0%, color-mix(in srgb, var(--kit-void) 48%, transparent) 62%, color-mix(in srgb, var(--kit-void) 58%, transparent) 100%),
     linear-gradient(color-mix(in srgb, var(--kit-violet-lo) 12%, transparent), color-mix(in srgb, var(--kit-violet-lo) 12%, transparent));
-  -webkit-backdrop-filter: brightness(.66) saturate(.68);
-          backdrop-filter: brightness(.66) saturate(.68);
+  -webkit-backdrop-filter: brightness(.74) saturate(.74);
+          backdrop-filter: brightness(.74) saturate(.74);
   opacity: 0;
   transition: opacity var(--t-base) var(--ease-out);
 }

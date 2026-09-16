@@ -396,7 +396,7 @@
   left: calc(var(--sw-h) + 2px); right: 4px;
   translate: 0 -50%;
   font-family: var(--font-display); font-weight: 700; font-style: normal;
-  font-size: calc(var(--sw-h) * .46); line-height: 1;
+  font-size: max(11px, calc(var(--sw-h) * .46)); line-height: 1;
   letter-spacing: .16em; padding-left: .16em; text-transform: uppercase;
   text-align: center;
   color: color-mix(in oklab, var(--kit-text-mid) 74%, var(--kit-gold));
@@ -425,10 +425,13 @@
 /* on: the amber lit the length of the tube, the knob at the far end catching
    the candle, a gold check struck in it, and ON standing behind it in lit gilt */
 .mm-set__toggle[data-on="1"] .kit-tube__fill { transform: scaleX(1); }
+/* a lit switch carries its own word, so its amber is struck a step brighter
+   than a slider's fill — ON is cut INTO the metal and has to read on it */
+.mm-set__toggle[data-on="1"] .mm-set__tube.kit-tube { filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .8)) saturate(.9) brightness(1.06) hue-rotate(-4deg); }
 .mm-set__toggle[data-on="1"] .mm-set__word {
   left: 4px; right: calc(var(--sw-h) + 2px);
-  color: #180b01;
-  text-shadow: 0 1px 0 rgba(255, 238, 198, .5);
+  color: #150900;
+  text-shadow: 0 1px 0 rgba(255, 240, 205, .38);
 }
 .mm-set__toggle[data-on="1"] .mm-set__knob {
   transform: translateX(calc(var(--sw-w) - var(--sw-h) - 2px));

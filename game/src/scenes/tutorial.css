@@ -635,11 +635,11 @@
    behind her") draws the stars closer instead of running the last one into
    its plate. */
 .tut-dots {
-  --star: clamp(15px, 1.35vw, 21px);
+  --star: clamp(17px, 1.6vw, 25px);
   flex: 0 1 auto; min-width: 0;
-  padding-block: 6px;
+  padding-block: 4px;
 }
-.tut-panel[data-long-cta="true"] .tut-dots { --star: clamp(13px, 1.05vw, 17px); }
+.tut-panel[data-long-cta="true"] .tut-dots { --star: clamp(14px, 1.25vw, 20px); }
 .tut-dot { cursor: default; }
 
 /* Go on: the boards' lit nameplate, an ornate enamel medallion seated on its
