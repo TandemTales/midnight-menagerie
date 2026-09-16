@@ -2,16 +2,17 @@
  "clips": {
   "attack": {
    "file": "attack.webp",
-   "frames": 81,
-   "cols": 9,
-   "rows": 9,
-   "fw": 359,
-   "fh": 304,
+   "frames": 22,
+   "cols": 8,
+   "rows": 3,
+   "fw": 356,
+   "fh": 270,
    "anchor": [
-    177.64,
-    286.32
+    174.72,
+    261.84
    ],
    "source": "SS_blanketBlob_attack.png",
+   "sourceFrames": 81,
    "matte": "CONTAM",
    "bg": [
     206.7,
@@ -26,21 +27,21 @@
    "dehalo": false,
    "warm": 41.0,
    "dewhite": false,
-   "dip": 0.572,
+   "dip": 0.567,
    "untail": false,
    "deblack": false,
-   "endIoU": 0.996,
+   "endIoU": 0.995,
    "scale": 0.9734,
    "unit": 256.0,
    "loop": false,
-   "fps": 60,
+   "fps": 16.3,
    "hold": false,
    "sha1": "3320f21da7c76cf7"
   },
   "defeat": {
    "file": "defeat.webp",
-   "frames": 23,
-   "cols": 9,
+   "frames": 22,
+   "cols": 8,
    "rows": 3,
    "fw": 342,
    "fh": 261,
@@ -49,6 +50,7 @@
     257.95
    ],
    "source": "SS_blanketBlob_defeat.png",
+   "sourceFrames": 81,
    "matte": "CONTAM",
    "bg": [
     212.0,
@@ -66,27 +68,28 @@
    "dip": 0.527,
    "untail": false,
    "deblack": false,
+   "defeatCut": 22,
    "endIoU": 0.943,
    "scale": 0.9734,
    "unit": 256.0,
    "loop": false,
-   "fps": 40,
+   "fps": 38.26,
    "hold": true,
-   "sha1": "cb19fd8b34332da8",
-   "sourceFrames": 81
+   "sha1": "cb19fd8b34332da8"
   },
   "hurt": {
    "file": "hurt.webp",
-   "frames": 81,
-   "cols": 9,
-   "rows": 9,
-   "fw": 349,
-   "fh": 331,
+   "frames": 22,
+   "cols": 8,
+   "rows": 3,
+   "fw": 343,
+   "fh": 329,
    "anchor": [
-    173.75,
-    327.96
+    171.8,
+    326.08
    ],
    "source": "SS_blanketBlob_hurt.png",
+   "sourceFrames": 81,
    "matte": "CONTAM",
    "bg": [
     206.1,
@@ -101,29 +104,30 @@
    "dehalo": false,
    "warm": 57.0,
    "dewhite": false,
-   "dip": 0.223,
+   "dip": 0.259,
    "untail": false,
    "deblack": false,
    "endIoU": 0.996,
    "scale": 0.9734,
    "unit": 256.0,
    "loop": false,
-   "fps": 60,
+   "fps": 16.3,
    "hold": false,
    "sha1": "3b6f7021d061f81b"
   },
   "idle": {
    "file": "idle.webp",
-   "frames": 81,
-   "cols": 9,
-   "rows": 9,
+   "frames": 22,
+   "cols": 8,
+   "rows": 3,
    "fw": 343,
-   "fh": 261,
+   "fh": 260,
    "anchor": [
     171.8,
-    258.92
+    257.95
    ],
    "source": "SS_blanketBlob_idle.png",
+   "sourceFrames": 81,
    "matte": "CONTAM",
    "bg": [
     206.7,
@@ -138,14 +142,14 @@
    "dehalo": false,
    "warm": 57.0,
    "dewhite": false,
-   "dip": 0.579,
+   "dip": 0.583,
    "untail": false,
    "deblack": false,
    "endIoU": 0.996,
    "scale": 0.9734,
    "unit": 256.0,
    "loop": true,
-   "fps": 20,
+   "fps": 5.43,
    "hold": false,
    "sha1": "3e16eee9918e0ae4"
   }

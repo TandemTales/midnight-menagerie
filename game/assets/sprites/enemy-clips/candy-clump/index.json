@@ -2,16 +2,17 @@
  "clips": {
   "attack": {
    "file": "attack.webp",
-   "frames": 81,
-   "cols": 9,
-   "rows": 9,
-   "fw": 341,
-   "fh": 272,
+   "frames": 22,
+   "cols": 8,
+   "rows": 3,
+   "fw": 336,
+   "fh": 271,
    "anchor": [
-    167.03,
-    269.19
+    165.51,
+    267.63
    ],
    "source": "SS_candyClump_attack.png",
+   "sourceFrames": 81,
    "matte": "CONTAM",
    "bg": [
     188.4,
@@ -26,21 +27,21 @@
    "dehalo": false,
    "warm": 123.0,
    "dewhite": false,
-   "dip": 0.312,
+   "dip": 0.334,
    "untail": false,
    "deblack": false,
    "endIoU": 0.991,
    "scale": 0.7829,
    "unit": 256.0,
    "loop": false,
-   "fps": 60,
+   "fps": 16.3,
    "hold": false,
    "sha1": "6f7d185d157d30d4"
   },
   "defeat": {
    "file": "defeat.webp",
    "frames": 22,
-   "cols": 9,
+   "cols": 8,
    "rows": 3,
    "fw": 344,
    "fh": 268,
@@ -49,6 +50,7 @@
     257.84
    ],
    "source": "SS_candyClump_defeat.png",
+   "sourceFrames": 81,
    "matte": "CONTAM",
    "bg": [
     160.4,
@@ -66,27 +68,28 @@
    "dip": 0.333,
    "untail": false,
    "deblack": false,
+   "defeatCut": 21,
    "endIoU": 0.536,
    "scale": 0.7829,
    "unit": 256.0,
    "loop": false,
-   "fps": 40,
+   "fps": 40.0,
    "hold": true,
-   "sha1": "2c6cd7c767d75f64",
-   "sourceFrames": 81
+   "sha1": "2c6cd7c767d75f64"
   },
   "hurt": {
    "file": "hurt.webp",
-   "frames": 81,
-   "cols": 9,
-   "rows": 9,
+   "frames": 22,
+   "cols": 8,
+   "rows": 3,
    "fw": 400,
    "fh": 231,
    "anchor": [
-    185.54,
-    227.88
+    186.18,
+    228.67
    ],
    "source": "SS_candyClump_hurt.png",
+   "sourceFrames": 81,
    "matte": "CONTAM",
    "bg": [
     158.6,
@@ -101,29 +104,30 @@
    "dehalo": false,
    "warm": 99.0,
    "dewhite": false,
-   "dip": 0.293,
+   "dip": 0.308,
    "untail": false,
    "deblack": false,
    "endIoU": 0.989,
-   "scale": 0.6885,
-   "unit": 225.13,
+   "scale": 0.6908,
+   "unit": 225.91,
    "loop": false,
-   "fps": 60,
+   "fps": 16.3,
    "hold": false,
    "sha1": "158f4c765ac24c93"
   },
   "idle": {
    "file": "idle.webp",
-   "frames": 81,
-   "cols": 9,
-   "rows": 9,
-   "fw": 269,
+   "frames": 22,
+   "cols": 8,
+   "rows": 3,
+   "fw": 267,
    "fh": 261,
    "anchor": [
-    134.65,
+    133.92,
     259.13
    ],
    "source": "SS_candyClump_idle.png",
+   "sourceFrames": 81,
    "matte": "CONTAM",
    "bg": [
     174.9,
@@ -138,14 +142,14 @@
    "dehalo": false,
    "warm": 98.0,
    "dewhite": false,
-   "dip": 0.478,
+   "dip": 0.493,
    "untail": false,
    "deblack": false,
-   "endIoU": 0.989,
+   "endIoU": 0.988,
    "scale": 0.7829,
    "unit": 256.0,
    "loop": true,
-   "fps": 20,
+   "fps": 5.43,
    "hold": false,
    "sha1": "cf0645cf6559b1a2"
   }

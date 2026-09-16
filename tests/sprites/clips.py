@@ -171,10 +171,11 @@ KIDRIG = """() => {
   const t = document.querySelector('.pr-palset').getAttribute('transform');
   const n = t.match(/-?[\d.]+/g).map(Number);
   /* HER VISIBLE WIDTH, NOT HER ELEMENT'S. `getBBox()` is geometric and ignores
-     the clip, so once the Kids animated it returned the whole 9x9 atlas -- 1196
-     px against a still's ~150 -- and read a correctly placed Companion as
-     standing inside her. The clip rect is the cell, and `.pr-kidfit`'s scale is
-     what puts it on screen; a still goes through the same two nodes. */
+     the clip, so once the Kids animated it returned the whole atlas -- 1196 px
+     across a 9x9 one, and still several times a cell now that a clip keeps
+     TARGET_FRAMES -- and read a correctly placed Companion as standing inside
+     her. The clip rect is the cell, and `.pr-kidfit`'s scale is what puts it on
+     screen; a still goes through the same two nodes. */
   const fit = document.querySelector('.pr-kidfit').getAttribute('transform') || '';
   const sc = Number((fit.match(/scale\(([-\d.]+)\)/) || [])[1] || 1);
   const cell = Number(document.querySelector('.pr-kidrect').getAttribute('width') || 0);

@@ -2,16 +2,17 @@
  "clips": {
   "attack": {
    "file": "attack.webp",
-   "frames": 81,
-   "cols": 9,
-   "rows": 9,
+   "frames": 22,
+   "cols": 8,
+   "rows": 3,
    "fw": 318,
-   "fh": 304,
+   "fh": 303,
    "anchor": [
-    145.94,
-    288.97
+    145.54,
+    287.34
    ],
    "source": "SS_jackInTheBox_attack.png",
+   "sourceFrames": 81,
    "matte": "CONTAM",
    "bg": [
     156.4,
@@ -26,21 +27,21 @@
    "dehalo": false,
    "warm": 88.0,
    "dewhite": false,
-   "dip": 0.41,
+   "dip": 0.457,
    "untail": false,
    "deblack": false,
-   "endIoU": 0.991,
+   "endIoU": 0.992,
    "scale": 0.7293,
    "unit": 256.0,
    "loop": false,
-   "fps": 60,
+   "fps": 16.3,
    "hold": false,
    "sha1": "491e6097b3c476f1"
   },
   "defeat": {
    "file": "defeat.webp",
    "frames": 11,
-   "cols": 9,
+   "cols": 6,
    "rows": 2,
    "fw": 203,
    "fh": 265,
@@ -49,6 +50,7 @@
     258.19
    ],
    "source": "SS_jackInTheBox_defeat.png",
+   "sourceFrames": 81,
    "matte": "CONTAM",
    "bg": [
     166.3,
@@ -66,27 +68,28 @@
    "dip": 0.526,
    "untail": false,
    "deblack": false,
+   "defeatCut": 10,
    "endIoU": 0.65,
    "scale": 0.7293,
    "unit": 256.0,
    "loop": false,
-   "fps": 40,
+   "fps": 40.0,
    "hold": true,
-   "sha1": "4a89d73e08dede3a",
-   "sourceFrames": 81
+   "sha1": "4a89d73e08dede3a"
   },
   "hurt": {
    "file": "hurt.webp",
-   "frames": 81,
-   "cols": 9,
-   "rows": 9,
-   "fw": 308,
-   "fh": 264,
+   "frames": 22,
+   "cols": 8,
+   "rows": 3,
+   "fw": 305,
+   "fh": 262,
    "anchor": [
-    140.4,
-    258.57
+    137.48,
+    258.68
    ],
    "source": "SS_jackInTheBox_hurt.png",
+   "sourceFrames": 81,
    "matte": "CONTAM",
    "bg": [
     171.8,
@@ -101,29 +104,30 @@
    "dehalo": false,
    "warm": 93.0,
    "dewhite": false,
-   "dip": 0.24,
+   "dip": 0.307,
    "untail": false,
    "deblack": false,
    "endIoU": 0.995,
    "scale": 0.7293,
    "unit": 256.0,
    "loop": false,
-   "fps": 60,
+   "fps": 16.3,
    "hold": false,
    "sha1": "b49713e0b676ea28"
   },
   "idle": {
    "file": "idle.webp",
-   "frames": 81,
-   "cols": 9,
-   "rows": 9,
-   "fw": 195,
-   "fh": 261,
+   "frames": 22,
+   "cols": 8,
+   "rows": 3,
+   "fw": 194,
+   "fh": 260,
    "anchor": [
-    97.53,
-    258.3
+    96.79,
+    258.35
    ],
    "source": "SS_jackInTheBox_idle.png",
+   "sourceFrames": 81,
    "matte": "CONTAM",
    "bg": [
     170.7,
@@ -138,14 +142,14 @@
    "dehalo": false,
    "warm": 87.0,
    "dewhite": false,
-   "dip": 0.544,
+   "dip": 0.56,
    "untail": false,
    "deblack": false,
    "endIoU": 0.993,
    "scale": 0.7293,
    "unit": 256.0,
    "loop": true,
-   "fps": 20,
+   "fps": 5.43,
    "hold": false,
    "sha1": "7b6c95331087f2fe"
   }

@@ -17,9 +17,18 @@
  *                    their frame corner makes the Companion hop every time one
  *                    ends. Lining them up by this point does not.
  *   loop             `idle` and `caution` cycle; everything else is a beat.
+ *   frames, fps      the atlas keeps prep_sprites.TARGET_FRAMES of the sheet's
+ *                    81 cells and publishes a rate scaled to match, so
+ *                    `frames / fps` is still the seconds the beat is meant to
+ *                    take. `fps` is therefore FRACTIONAL -- a 4.05s idle is 22
+ *                    frames at 5.43 -- and nothing here may round it.
  *   hold             `defeat` stops on its last frame. The brief: "The final
  *                    frame should be a stable defeated pose and should not
- *                    return to idle."
+ *                    return to idle." That last frame is a defeated pose only
+ *                    because the build cut the clip there: every sheet
+ *                    delivered falls and then stands back up, so `hold` over an
+ *                    uncut sheet froze the Companion upright and alive
+ *                    (prep_sprites.cut_defeat, `defeatCut` in the index).
  *   fade[]           per-frame opacity, on the clips that are dissolves. WHICH
  *                    clips those are is authored (prep_sprites.FADE_FLOOR:
  *                    `spectral`, `zoomies`, `hide`, `shadow`)

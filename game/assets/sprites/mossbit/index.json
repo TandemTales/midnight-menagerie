@@ -2,16 +2,17 @@
  "clips": {
   "affection": {
    "file": "affection.webp",
-   "frames": 81,
-   "cols": 9,
-   "rows": 9,
+   "frames": 22,
+   "cols": 8,
+   "rows": 3,
    "fw": 197,
    "fh": 132,
    "anchor": [
-    90.91,
+    90.44,
     130.06
    ],
    "source": "SS_mossbit_affection.png",
+   "sourceFrames": 81,
    "matte": "CONTAM",
    "bg": [
     176.7,
@@ -31,21 +32,22 @@
    "deblack": false,
    "endIoU": 0.995,
    "loop": false,
-   "fps": 30,
+   "fps": 8.15,
    "hold": false
   },
   "anchor": {
    "file": "anchor.webp",
-   "frames": 81,
-   "cols": 9,
-   "rows": 9,
+   "frames": 22,
+   "cols": 8,
+   "rows": 3,
    "fw": 177,
    "fh": 131,
    "anchor": [
-    85.11,
-    129.14
+    85.1,
+    129.25
    ],
    "source": "SS_mossbit_anchor.png",
+   "sourceFrames": 81,
    "matte": "CONTAM",
    "bg": [
     177.6,
@@ -60,26 +62,27 @@
    "dehalo": false,
    "warm": 45.0,
    "dewhite": false,
-   "dip": 0.686,
+   "dip": 0.69,
    "untail": false,
    "deblack": false,
    "endIoU": 0.995,
    "loop": false,
-   "fps": 24,
+   "fps": 6.52,
    "hold": false
   },
   "attack": {
    "file": "attack.webp",
-   "frames": 81,
-   "cols": 9,
-   "rows": 9,
-   "fw": 192,
-   "fh": 154,
+   "frames": 22,
+   "cols": 8,
+   "rows": 3,
+   "fw": 189,
+   "fh": 153,
    "anchor": [
-    99.26,
-    151.57
+    96.91,
+    150.48
    ],
    "source": "SS_mossbit_attack.png",
+   "sourceFrames": 81,
    "matte": "CONTAM",
    "bg": [
     170.1,
@@ -94,26 +97,27 @@
    "dehalo": false,
    "warm": 52.0,
    "dewhite": false,
-   "dip": 0.483,
+   "dip": 0.484,
    "untail": false,
    "deblack": false,
    "endIoU": 0.995,
    "loop": false,
-   "fps": 60,
+   "fps": 16.3,
    "hold": false
   },
   "celebrate": {
    "file": "celebrate.webp",
-   "frames": 81,
-   "cols": 9,
-   "rows": 9,
-   "fw": 192,
+   "frames": 22,
+   "cols": 8,
+   "rows": 3,
+   "fw": 191,
    "fh": 168,
    "anchor": [
-    91.76,
-    166.32
+    91.75,
+    165.65
    ],
    "source": "SS_mossbit_celebrate.png",
+   "sourceFrames": 81,
    "matte": "CONTAM",
    "bg": [
     172.1,
@@ -128,26 +132,27 @@
    "dehalo": false,
    "warm": 49.0,
    "dewhite": false,
-   "dip": 0.301,
+   "dip": 0.445,
    "untail": false,
    "deblack": false,
-   "endIoU": 0.994,
+   "endIoU": 0.996,
    "loop": false,
-   "fps": 30,
+   "fps": 8.15,
    "hold": false
   },
   "defeat": {
    "file": "defeat.webp",
-   "frames": 81,
-   "cols": 9,
-   "rows": 9,
-   "fw": 180,
-   "fh": 132,
+   "frames": 22,
+   "cols": 8,
+   "rows": 3,
+   "fw": 176,
+   "fh": 131,
    "anchor": [
-    91.54,
-    124.61
+    87.96,
+    121.61
    ],
    "source": "SS_mossbit_defeat.png",
+   "sourceFrames": 81,
    "matte": "CONTAM",
    "bg": [
     175.9,
@@ -162,26 +167,28 @@
    "dehalo": false,
    "warm": 52.0,
    "dewhite": false,
-   "dip": 0.72,
+   "dip": 0.719,
    "untail": false,
    "deblack": false,
-   "endIoU": 0.996,
+   "defeatCut": 42,
+   "endIoU": 0.702,
    "loop": false,
-   "fps": 24,
+   "fps": 12.28,
    "hold": true
   },
   "hurt": {
    "file": "hurt.webp",
-   "frames": 81,
-   "cols": 9,
-   "rows": 9,
-   "fw": 180,
-   "fh": 182,
+   "frames": 22,
+   "cols": 8,
+   "rows": 3,
+   "fw": 179,
+   "fh": 181,
    "anchor": [
-    88.64,
-    178.93
+    88.66,
+    178.47
    ],
    "source": "SS_mossbit_hurt.png",
+   "sourceFrames": 81,
    "matte": "CONTAM",
    "bg": [
     171.0,
@@ -196,26 +203,27 @@
    "dehalo": false,
    "warm": 50.0,
    "dewhite": false,
-   "dip": 0.161,
+   "dip": 0.205,
    "untail": false,
    "deblack": false,
-   "endIoU": 0.995,
+   "endIoU": 0.996,
    "loop": false,
-   "fps": 60,
+   "fps": 16.3,
    "hold": false
   },
   "idle": {
    "file": "idle.webp",
-   "frames": 81,
-   "cols": 9,
-   "rows": 9,
-   "fw": 178,
-   "fh": 131,
+   "frames": 22,
+   "cols": 8,
+   "rows": 3,
+   "fw": 177,
+   "fh": 130,
    "anchor": [
-    89.15,
-    129.54
+    89.17,
+    129.03
    ],
    "source": "SS_mossbit_idle.png",
+   "sourceFrames": 81,
    "matte": "CONTAM",
    "bg": [
     176.8,
@@ -230,26 +238,27 @@
    "dehalo": false,
    "warm": 50.0,
    "dewhite": false,
-   "dip": 0.53,
+   "dip": 0.533,
    "untail": false,
    "deblack": false,
-   "endIoU": 0.995,
+   "endIoU": 0.997,
    "loop": true,
-   "fps": 20,
+   "fps": 5.43,
    "hold": false
   },
   "ready": {
    "file": "ready.webp",
-   "frames": 81,
-   "cols": 9,
-   "rows": 9,
+   "frames": 22,
+   "cols": 8,
+   "rows": 3,
    "fw": 195,
    "fh": 147,
    "anchor": [
-    95.95,
-    143.5
+    95.74,
+    143.54
    ],
    "source": "SS_mossbit_ready.png",
+   "sourceFrames": 81,
    "matte": "CONTAM",
    "bg": [
     170.4,
@@ -264,26 +273,27 @@
    "dehalo": false,
    "warm": 49.0,
    "dewhite": false,
-   "dip": 0.479,
+   "dip": 0.485,
    "untail": false,
    "deblack": false,
-   "endIoU": 0.993,
+   "endIoU": 0.994,
    "loop": false,
-   "fps": 40,
+   "fps": 10.86,
    "hold": false
   },
   "release": {
    "file": "release.webp",
-   "frames": 81,
-   "cols": 9,
-   "rows": 9,
-   "fw": 260,
-   "fh": 185,
+   "frames": 22,
+   "cols": 8,
+   "rows": 3,
+   "fw": 248,
+   "fh": 184,
    "anchor": [
-    101.06,
-    171.69
+    90.66,
+    171.68
    ],
    "source": "SS_mossbit_release.png",
+   "sourceFrames": 81,
    "matte": "CONTAM",
    "bg": [
     167.3,
@@ -298,26 +308,27 @@
    "dehalo": false,
    "warm": 85.0,
    "dewhite": false,
-   "dip": 0.496,
+   "dip": 0.501,
    "untail": false,
    "deblack": false,
    "endIoU": 0.993,
    "loop": false,
-   "fps": 48,
+   "fps": 13.04,
    "hold": false
   },
   "trick": {
    "file": "trick.webp",
-   "frames": 81,
-   "cols": 9,
-   "rows": 9,
-   "fw": 205,
+   "frames": 22,
+   "cols": 8,
+   "rows": 3,
+   "fw": 204,
    "fh": 157,
    "anchor": [
-    94.55,
-    155.24
+    93.5,
+    155.21
    ],
    "source": "SS_mossbit_trick.png",
+   "sourceFrames": 81,
    "matte": "CONTAM",
    "bg": [
     174.8,
@@ -335,9 +346,9 @@
    "dip": 0.232,
    "untail": false,
    "deblack": false,
-   "endIoU": 0.994,
+   "endIoU": 0.993,
    "loop": false,
-   "fps": 48,
+   "fps": 13.04,
    "hold": false
   }
  },

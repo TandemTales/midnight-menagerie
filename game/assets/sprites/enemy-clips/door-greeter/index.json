@@ -2,16 +2,17 @@
  "clips": {
   "attack": {
    "file": "attack.webp",
-   "frames": 81,
-   "cols": 9,
-   "rows": 9,
-   "fw": 206,
+   "frames": 22,
+   "cols": 8,
+   "rows": 3,
+   "fw": 205,
    "fh": 400,
    "anchor": [
-    96.2,
-    346.61
+    94.02,
+    349.17
    ],
    "source": "SS_doorGreeter_attack.png",
+   "sourceFrames": 81,
    "matte": "CONTAM",
    "bg": [
     155.3,
@@ -26,21 +27,21 @@
    "dehalo": false,
    "warm": 142.0,
    "dewhite": false,
-   "dip": 0.114,
+   "dip": 0.156,
    "untail": false,
    "deblack": false,
    "endIoU": 0.982,
    "scale": 0.8214,
    "unit": 303.9,
    "loop": false,
-   "fps": 60,
+   "fps": 16.3,
    "hold": false,
    "sha1": "e175ae6aeeeece6f"
   },
   "defeat": {
    "file": "defeat.webp",
    "frames": 22,
-   "cols": 9,
+   "cols": 8,
    "rows": 3,
    "fw": 367,
    "fh": 396,
@@ -49,6 +50,7 @@
     366.11
    ],
    "source": "SS_doorGreeter_defeat.png",
+   "sourceFrames": 81,
    "matte": "CONTAM",
    "bg": [
     149.8,
@@ -66,27 +68,28 @@
    "dip": 0.341,
    "untail": false,
    "deblack": false,
+   "defeatCut": 21,
    "endIoU": 0.106,
    "scale": 1.0,
    "unit": 370.0,
    "loop": false,
-   "fps": 40,
+   "fps": 40.0,
    "hold": true,
-   "sha1": "1a0f7b78da6a408a",
-   "sourceFrames": 81
+   "sha1": "1a0f7b78da6a408a"
   },
   "hurt": {
    "file": "hurt.webp",
-   "frames": 81,
-   "cols": 9,
-   "rows": 9,
-   "fw": 271,
+   "frames": 22,
+   "cols": 8,
+   "rows": 3,
+   "fw": 272,
    "fh": 400,
    "anchor": [
-    143.34,
-    378.49
+    145.61,
+    378.37
    ],
    "source": "SS_doorGreeter_hurt.png",
+   "sourceFrames": 81,
    "matte": "CONTAM",
    "bg": [
     141.3,
@@ -101,29 +104,30 @@
    "dehalo": false,
    "warm": 132.0,
    "dewhite": false,
-   "dip": 0.334,
+   "dip": 0.365,
    "untail": false,
    "deblack": false,
    "endIoU": 0.997,
-   "scale": 0.9756,
-   "unit": 360.98,
+   "scale": 0.9901,
+   "unit": 366.34,
    "loop": false,
-   "fps": 60,
+   "fps": 16.3,
    "hold": false,
    "sha1": "afdb1665a402b287"
   },
   "idle": {
    "file": "idle.webp",
-   "frames": 81,
-   "cols": 9,
-   "rows": 9,
-   "fw": 228,
+   "frames": 22,
+   "cols": 8,
+   "rows": 3,
+   "fw": 227,
    "fh": 400,
    "anchor": [
-    103.05,
-    380.15
+    102.62,
+    379.15
    ],
    "source": "SS_doorGreeter_idle.png",
+   "sourceFrames": 81,
    "matte": "CONTAM",
    "bg": [
     185.5,
@@ -138,14 +142,14 @@
    "dehalo": false,
    "warm": 139.0,
    "dewhite": false,
-   "dip": 0.306,
+   "dip": 0.459,
    "untail": false,
    "deblack": false,
    "endIoU": 0.996,
    "scale": 1.0,
    "unit": 370.0,
    "loop": true,
-   "fps": 20,
+   "fps": 5.43,
    "hold": false,
    "sha1": "144a89ac76f4d458"
   }

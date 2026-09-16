@@ -1,0 +1,159 @@
+{
+ "clips": {
+  "attack": {
+   "file": "attack.webp",
+   "frames": 22,
+   "cols": 8,
+   "rows": 3,
+   "fw": 342,
+   "fh": 367,
+   "anchor": [
+    171.0,
+    358.0
+   ],
+   "source": "SS_toyChest_attack.png",
+   "sourceFrames": 81,
+   "matte": "CONTAM",
+   "bg": [
+    187.4,
+    182.0,
+    181.5
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": -24.2,
+   "dehalo": false,
+   "warm": 102.0,
+   "dewhite": false,
+   "dip": 0.578,
+   "untail": false,
+   "deblack": false,
+   "endIoU": 0.996,
+   "scale": 1.0,
+   "unit": 285.0,
+   "loop": false,
+   "fps": 16.3,
+   "hold": false,
+   "sha1": "a8344866e2d4e4ce"
+  },
+  "defeat": {
+   "file": "defeat.webp",
+   "frames": 22,
+   "cols": 8,
+   "rows": 3,
+   "fw": 376,
+   "fh": 400,
+   "anchor": [
+    179.9,
+    352.09
+   ],
+   "source": "SS_toyChest_defeat.png",
+   "sourceFrames": 81,
+   "matte": "CONTAM",
+   "bg": [
+    163.2,
+    157.6,
+    156.4
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": -6.3,
+   "dehalo": false,
+   "warm": 74.0,
+   "dewhite": false,
+   "dip": 0.236,
+   "untail": false,
+   "deblack": false,
+   "defeatCut": 40,
+   "endIoU": 0.492,
+   "scale": 0.7421,
+   "unit": 211.5,
+   "loop": false,
+   "fps": 21.46,
+   "hold": true,
+   "sha1": "7371767ae5fe0258"
+  },
+  "hurt": {
+   "file": "hurt.webp",
+   "frames": 22,
+   "cols": 8,
+   "rows": 3,
+   "fw": 347,
+   "fh": 346,
+   "anchor": [
+    175.6,
+    343.11
+   ],
+   "source": "SS_toyChest_hurt.png",
+   "sourceFrames": 81,
+   "matte": "CONTAM",
+   "bg": [
+    185.4,
+    179.8,
+    179.2
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": -12.0,
+   "dehalo": false,
+   "warm": 78.0,
+   "dewhite": false,
+   "dip": 0.477,
+   "untail": false,
+   "deblack": false,
+   "endIoU": 0.985,
+   "scale": 1.0,
+   "unit": 285.0,
+   "loop": false,
+   "fps": 16.3,
+   "hold": false,
+   "sha1": "691604010ed9c51a"
+  },
+  "idle": {
+   "file": "idle.webp",
+   "frames": 22,
+   "cols": 8,
+   "rows": 3,
+   "fw": 352,
+   "fh": 309,
+   "anchor": [
+    178.08,
+    305.96
+   ],
+   "source": "SS_toyChest_idle.png",
+   "sourceFrames": 81,
+   "matte": "CONTAM",
+   "bg": [
+    185.2,
+    181.0,
+    181.7
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": -18.3,
+   "dehalo": false,
+   "warm": 83.0,
+   "dewhite": false,
+   "dip": 0.597,
+   "untail": false,
+   "deblack": false,
+   "endIoU": 0.849,
+   "scale": 1.0,
+   "unit": 285.0,
+   "loop": true,
+   "fps": 5.43,
+   "hold": false,
+   "sha1": "824521fa1183a67a"
+  }
+ },
+ "scale": 1.0,
+ "unit": 285.0
+}

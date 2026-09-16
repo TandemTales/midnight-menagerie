@@ -2,16 +2,17 @@
  "clips": {
   "attack": {
    "file": "attack.webp",
-   "frames": 81,
-   "cols": 9,
-   "rows": 9,
+   "frames": 22,
+   "cols": 8,
+   "rows": 3,
    "fw": 400,
-   "fh": 231,
+   "fh": 225,
    "anchor": [
-    158.63,
-    223.67
+    158.6,
+    217.35
    ],
    "source": "SS_blanketHydra_attack.png",
+   "sourceFrames": 81,
    "matte": "CONTAM",
    "bg": [
     183.2,
@@ -26,29 +27,30 @@
    "dehalo": false,
    "warm": 47.0,
    "dewhite": true,
-   "dip": 0.281,
+   "dip": 0.47,
    "untail": false,
    "deblack": false,
-   "endIoU": 0.991,
+   "endIoU": 0.992,
    "scale": 0.7968,
    "unit": 186.45,
    "loop": false,
-   "fps": 60,
+   "fps": 16.3,
    "hold": false,
    "sha1": "763b33121d2d1486"
   },
   "defeat": {
    "file": "defeat.webp",
-   "frames": 25,
-   "cols": 9,
+   "frames": 22,
+   "cols": 8,
    "rows": 3,
    "fw": 359,
    "fh": 244,
    "anchor": [
     180.0,
-    240.22
+    240.19
    ],
    "source": "SS_blanketHydra_defeat.png",
+   "sourceFrames": 81,
    "matte": "CONTAM",
    "bg": [
     174.7,
@@ -66,27 +68,28 @@
    "dip": 0.461,
    "untail": false,
    "deblack": false,
+   "defeatCut": 24,
    "endIoU": 0.734,
    "scale": 1.0,
    "unit": 234.0,
    "loop": false,
-   "fps": 40,
+   "fps": 35.2,
    "hold": true,
-   "sha1": "558c04c97ca2c6c5",
-   "sourceFrames": 81
+   "sha1": "558c04c97ca2c6c5"
   },
   "hurt": {
    "file": "hurt.webp",
-   "frames": 81,
-   "cols": 9,
-   "rows": 9,
-   "fw": 363,
+   "frames": 22,
+   "cols": 8,
+   "rows": 3,
+   "fw": 361,
    "fh": 268,
    "anchor": [
-    182.0,
-    261.07
+    180.0,
+    261.0
    ],
    "source": "SS_blanketHydra_hurt.png",
+   "sourceFrames": 81,
    "matte": "CONTAM",
    "bg": [
     172.1,
@@ -101,22 +104,22 @@
    "dehalo": false,
    "warm": 50.0,
    "dewhite": false,
-   "dip": 0.476,
+   "dip": 0.483,
    "untail": false,
    "deblack": false,
    "endIoU": 0.99,
    "scale": 1.0,
    "unit": 234.0,
    "loop": false,
-   "fps": 60,
+   "fps": 16.3,
    "hold": false,
    "sha1": "a46a597d56c54041"
   },
   "idle": {
    "file": "idle.webp",
-   "frames": 81,
-   "cols": 9,
-   "rows": 9,
+   "frames": 22,
+   "cols": 8,
+   "rows": 3,
    "fw": 359,
    "fh": 242,
    "anchor": [
@@ -124,6 +127,7 @@
     239.0
    ],
    "source": "SS_blanketHydra_idle.png",
+   "sourceFrames": 81,
    "matte": "CONTAM",
    "bg": [
     176.6,
@@ -138,14 +142,14 @@
    "dehalo": false,
    "warm": 51.0,
    "dewhite": false,
-   "dip": 0.521,
+   "dip": 0.528,
    "untail": false,
    "deblack": false,
    "endIoU": 0.991,
    "scale": 1.0,
    "unit": 234.0,
    "loop": true,
-   "fps": 20,
+   "fps": 5.43,
    "hold": false,
    "sha1": "34dd461b2f8c5d67"
   }

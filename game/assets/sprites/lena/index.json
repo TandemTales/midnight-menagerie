@@ -2,16 +2,17 @@
  "clips": {
   "attack": {
    "file": "attack.webp",
-   "frames": 81,
-   "cols": 9,
-   "rows": 9,
+   "frames": 22,
+   "cols": 8,
+   "rows": 3,
    "fw": 309,
    "fh": 276,
    "anchor": [
-    128.0,
-    271.51
+    125.4,
+    271.58
    ],
    "source": "SS_lena_attack.png",
+   "sourceFrames": 81,
    "matte": "CONTAM",
    "bg": [
     153.0,
@@ -26,26 +27,27 @@
    "dehalo": false,
    "warm": 95.0,
    "dewhite": false,
-   "dip": 0.457,
+   "dip": 0.501,
    "untail": false,
    "deblack": false,
    "endIoU": 0.987,
    "loop": false,
-   "fps": 60,
+   "fps": 16.3,
    "hold": false
   },
   "defeat": {
    "file": "defeat.webp",
-   "frames": 81,
-   "cols": 9,
-   "rows": 9,
-   "fw": 217,
-   "fh": 292,
+   "frames": 13,
+   "cols": 7,
+   "rows": 2,
+   "fw": 209,
+   "fh": 281,
    "anchor": [
-    102.99,
-    279.95
+    96.28,
+    273.97
    ],
    "source": "SS_lena_defeat.png",
+   "sourceFrames": 81,
    "matte": "CONTAM",
    "bg": [
     154.8,
@@ -60,26 +62,28 @@
    "dehalo": false,
    "warm": 131.0,
    "dewhite": false,
-   "dip": 0.3,
+   "dip": 0.39,
    "untail": false,
    "deblack": false,
-   "endIoU": 0.987,
+   "defeatCut": 12,
+   "endIoU": 0.352,
    "loop": false,
-   "fps": 24,
+   "fps": 24.0,
    "hold": true
   },
   "hurt": {
    "file": "hurt.webp",
-   "frames": 75,
-   "cols": 9,
-   "rows": 9,
+   "frames": 22,
+   "cols": 8,
+   "rows": 3,
    "fw": 187,
    "fh": 276,
    "anchor": [
-    96.4,
+    96.53,
     273.8
    ],
    "source": "SS_lena_hurt.png",
+   "sourceFrames": 75,
    "matte": "CONTAM",
    "bg": [
     154.0,
@@ -94,19 +98,19 @@
    "dehalo": false,
    "warm": 118.0,
    "dewhite": false,
-   "dip": 0.585,
+   "dip": 0.629,
    "untail": false,
    "deblack": false,
    "endIoU": 0.976,
    "loop": false,
-   "fps": 60,
+   "fps": 17.6,
    "hold": false
   },
   "idle": {
    "file": "idle.webp",
-   "frames": 81,
-   "cols": 9,
-   "rows": 9,
+   "frames": 22,
+   "cols": 8,
+   "rows": 3,
    "fw": 162,
    "fh": 276,
    "anchor": [
@@ -114,6 +118,7 @@
     273.8
    ],
    "source": "SS_lena_idle.png",
+   "sourceFrames": 81,
    "matte": "CONTAM",
    "bg": [
     152.7,
@@ -133,7 +138,7 @@
    "deblack": false,
    "endIoU": 0.991,
    "loop": true,
-   "fps": 20,
+   "fps": 5.43,
    "hold": false
   }
  },

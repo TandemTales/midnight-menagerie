@@ -2,16 +2,17 @@
  "clips": {
   "attack": {
    "file": "attack.webp",
-   "frames": 81,
-   "cols": 9,
-   "rows": 9,
+   "frames": 22,
+   "cols": 8,
+   "rows": 3,
    "fw": 400,
-   "fh": 217,
+   "fh": 224,
    "anchor": [
-    212.88,
-    214.6
+    213.87,
+    221.47
    ],
    "source": "SS_compostColossus_attack.png",
+   "sourceFrames": 81,
    "matte": "CONTAM",
    "bg": [
     188.8,
@@ -26,29 +27,30 @@
    "dehalo": false,
    "warm": 61.0,
    "dewhite": false,
-   "dip": 0.493,
+   "dip": 0.533,
    "untail": false,
    "deblack": false,
    "endIoU": 0.988,
-   "scale": 0.7299,
-   "unit": 207.3,
+   "scale": 0.7533,
+   "unit": 213.94,
    "loop": false,
-   "fps": 60,
+   "fps": 16.3,
    "hold": false,
    "sha1": "c778d53b429561f4"
   },
   "defeat": {
    "file": "defeat.webp",
-   "frames": 27,
-   "cols": 9,
+   "frames": 22,
+   "cols": 8,
    "rows": 3,
    "fw": 400,
    "fh": 267,
    "anchor": [
-    202.19,
-    261.57
+    202.31,
+    261.53
    ],
    "source": "SS_compostColossus_defeat.png",
+   "sourceFrames": 81,
    "matte": "CONTAM",
    "bg": [
     166.2,
@@ -66,27 +68,28 @@
    "dip": 0.201,
    "untail": false,
    "deblack": false,
+   "defeatCut": 26,
    "endIoU": 0.622,
    "scale": 0.8351,
    "unit": 237.16,
    "loop": false,
-   "fps": 40,
+   "fps": 32.59,
    "hold": true,
-   "sha1": "f462207d930b33b7",
-   "sourceFrames": 81
+   "sha1": "f462207d930b33b7"
   },
   "hurt": {
    "file": "hurt.webp",
-   "frames": 81,
-   "cols": 9,
-   "rows": 9,
+   "frames": 22,
+   "cols": 8,
+   "rows": 3,
    "fw": 400,
-   "fh": 254,
+   "fh": 256,
    "anchor": [
-    200.48,
-    251.26
+    199.51,
+    253.62
    ],
    "source": "SS_compostColossus_hurt.png",
+   "sourceFrames": 81,
    "matte": "CONTAM",
    "bg": [
     166.9,
@@ -101,22 +104,22 @@
    "dehalo": false,
    "warm": 60.0,
    "dewhite": false,
-   "dip": 0.472,
+   "dip": 0.517,
    "untail": false,
    "deblack": false,
    "endIoU": 0.992,
-   "scale": 0.8403,
-   "unit": 238.66,
+   "scale": 0.8511,
+   "unit": 241.7,
    "loop": false,
-   "fps": 60,
+   "fps": 16.3,
    "hold": false,
    "sha1": "a86e7fd23437dafa"
   },
   "idle": {
    "file": "idle.webp",
-   "frames": 81,
-   "cols": 9,
-   "rows": 9,
+   "frames": 22,
+   "cols": 8,
+   "rows": 3,
    "fw": 400,
    "fh": 285,
    "anchor": [
@@ -124,6 +127,7 @@
     280.99
    ],
    "source": "SS_compostColossus_idle.png",
+   "sourceFrames": 81,
    "matte": "CONTAM",
    "bg": [
     168.0,
@@ -138,14 +142,14 @@
    "dehalo": false,
    "warm": 58.0,
    "dewhite": false,
-   "dip": 0.46,
+   "dip": 0.462,
    "untail": false,
    "deblack": false,
    "endIoU": 0.992,
    "scale": 0.9456,
    "unit": 268.56,
    "loop": true,
-   "fps": 20,
+   "fps": 5.43,
    "hold": false,
    "sha1": "9da6c153d7ac3018"
   }

@@ -104,9 +104,15 @@ def static_checks(manifest, check):
         if "defeat" in clips:
             d = clips["defeat"]
             check(d["hold"] and not d["loop"], "built: %s's defeat holds its last frame" % eid, quiet=True)
-            check(d["frames"] < d.get("sourceFrames", 0),
+            # ASKS `defeatCut`, NOT THE FRAME COUNT. Since every clip is reduced to
+            # prep_sprites.TARGET_FRAMES, `frames < sourceFrames` is true of every
+            # clip built, cut or not, and would pass this check on a defeat that
+            # still stands back up. `defeatCut` is the source frame the fall was
+            # truncated at and says the recovery specifically was dropped.
+            cut = d.get("defeatCut")
+            check(cut is not None and cut + 1 < d.get("sourceFrames", 0),
                   "built: %s's defeat is cut before the creature gets back up" % eid,
-                  "%s of %s frames" % (d["frames"], d.get("sourceFrames")))
+                  "held at %s of %s source frames" % (cut, d.get("sourceFrames")))
         on_disk = set(os.listdir(os.path.join(CLIPDIR, eid)))
         strays = sorted(on_disk - {c["file"] for c in clips.values()} - {"index.json"})
         check(not strays, "built: %s's folder holds only its clips" % eid, ", ".join(strays))

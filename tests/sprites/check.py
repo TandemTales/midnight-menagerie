@@ -177,6 +177,34 @@ def check_clip(slug, name, meta, fails, counts):
         return
     counts["clips"] += 1
 
+    # ── THE FRAME BUDGET, AND THE BEAT IT STILL HAS TO LAST ────────────────
+    # A sheet arrives with 81 cells and the atlas keeps prep_sprites.TARGET_FRAMES
+    # of them. The rate has to come down with the count or the beat plays ~3.7x
+    # too fast, and that failure is invisible in a still: every frame is correct
+    # and the whole clip is wrong. So the two are checked against each other --
+    # frames over fps must still be the seconds prep_sprites.CLIPS asked for.
+    src = meta.get("sourceFrames")
+    if src is None:
+        fails.append(("STALE", "%s/%s" % (slug, name),
+                      "no `sourceFrames` -- built by a prep_sprites older than the frame pass"))
+    elif meta["frames"] > P.TARGET_FRAMES:
+        fails.append(("FRAMES", "%s/%s" % (slug, name),
+                      "%d frames, over the %d budget" % (meta["frames"], P.TARGET_FRAMES)))
+    else:
+        cfg = P.CLIPS.get(name)
+        span = (meta.get("defeatCut") + 1) if meta.get("defeatCut") is not None else src
+        want = span / float(cfg["fps"]) if cfg else None
+        # A ping's rate carries PING_SPEED so its round trip is not twice the
+        # beat; the beat itself is what this is measuring, so take that back off.
+        fps = float(meta.get("fps") or 24) / (P.PING_SPEED if meta.get("ping") else 1.0)
+        got = meta["frames"] / fps
+        if want and abs(got - want) > 0.05 * want:
+            fails.append(("TIMING", "%s/%s" % (slug, name),
+                          "%d frames at %g fps is %.2fs; %d source frames at the authored %d is %.2fs"
+                          % (meta["frames"], fps, got, span, cfg["fps"], want)))
+        else:
+            counts["seconds"]["%s/%s" % (slug, name)] = got
+
     # ── THE HALO PAIRING: measured and repaired must agree ──────────────────
     lift = meta.get("lift")
     if lift is None:
@@ -214,10 +242,17 @@ def check_clip(slug, name, meta, fails, counts):
     elif meta.get("deblack"):
         fails.append(("DEBLACK", "%s/%s" % (slug, name),
                       "deblack on a %s sheet" % meta.get("matte")))
-    # Sample rather than sweep for the expensive measurements: 81 frames of
-    # identical provenance measure the same thing 81 times. Alpha is cheap, so
-    # WASH and ANCHOR look at every frame.
-    step = max(1, meta["frames"] // 8)
+    # EVERY FRAME, now that a clip is prep_sprites.TARGET_FRAMES and not 81.
+    # The halo statistic below is a ratio of MEANS over the frames it looks at,
+    # so which frames those are decides the answer on a clip sitting near the
+    # bar -- and two do. Measured over all 81 frames, boggle/celebrate is 0.484
+    # and brambleboo/hurt 0.504, both within 0.02 of MIN_EDGE_RATIO; the old
+    # nine-frame sample read them 0.519 and 0.527 and passed both, and an
+    # eleven-frame sample of the same unchanged art reads 0.487 and 0.489 and
+    # fails both. Sampling was there because 81 frames of identical provenance
+    # measure the same thing 81 times; at 22 the sweep is affordable, and it is
+    # the only way this answer stops depending on which frames were counted.
+    step = 1
     wash, bots, edges, bodies, empty = [], [], [], [], 0
 
     for i, fr in frames_of(atlas, meta):
@@ -313,6 +348,28 @@ def check_clip(slug, name, meta, fails, counts):
         fails.append(("DISSOLVE", "%s/%s" % (slug, name),
                       "a dissolve clip with no fade envelope (dip %.3f)" % meta["dip"]))
 
+    # ── A DEATH DOES NOT GET BACK UP ───────────────────────────────────────
+    # Every defeat sheet delivered falls and then stands again, ending within
+    # 0.87-1.00 silhouette IoU of the pose it started from, so `hold` on its own
+    # froze the Companion UPRIGHT AND ALIVE at the end of the run. The build cuts
+    # the clip at prep_sprites.defeat_hold and records the frame in `defeatCut`.
+    #
+    # Asks for the CUT, not for a short clip: every clip is reduced to
+    # TARGET_FRAMES, so "fewer frames than the sheet" is true of all of them and
+    # would pass a defeat that still recovers.
+    if name == "defeat":
+        cut = meta.get("defeatCut")
+        if not meta.get("hold") or meta.get("loop"):
+            fails.append(("DEFEAT", "%s/%s" % (slug, name),
+                          "hold=%s loop=%s -- a death hands back to idle"
+                          % (meta.get("hold"), meta.get("loop"))))
+        elif cut is None or src is None or cut + 1 >= src:
+            fails.append(("DEFEAT", "%s/%s" % (slug, name),
+                          "held at %s of %s source frames -- the recovery is still in the clip"
+                          % (cut, src)))
+        else:
+            counts["deaths"]["%s" % slug] = "%d of %d" % (cut + 1, src)
+
     # ── PING: measured and acted on must agree ──────────────────────────────
     iou = meta.get("endIoU")
     if iou is None:
@@ -336,7 +393,7 @@ def main():
     fails = []
     counts = {"clips": 0, "sampled": 0, "dissolves": 0, "nosample": 0, "stills": 0,
               "wash": {}, "anchor": {}, "halo": {}, "lift": {}, "undecidable": [],
-              "pings": [], "pingless": 0}
+              "pings": [], "pingless": 0, "seconds": {}, "deaths": {}}
 
     print("built Companion sprites, re-measured")
     for slug, names in sorted(manifest.get("animated", {}).items()):
@@ -379,6 +436,14 @@ def main():
     print("\n  %d clips checked, %d frames sampled for halo, %d stills, %d enemy stills"
           % (counts["clips"], counts["sampled"], counts["stills"], counts["enemies"]))
     print("  %d dissolve envelopes verified" % counts["dissolves"])
+    print("  %d deaths cut before the recovery%s" % (
+        len(counts["deaths"]),
+        (": " + ", ".join("%s %s" % kv for kv in sorted(counts["deaths"].items())))
+        if counts["deaths"] else ""))
+    if counts["seconds"]:
+        s = max(counts["seconds"].items(), key=lambda kv: kv[1])
+        print("  beat length:  longest %-20s %.2fs (each within 5%% of the rate CLIPS asks for)"
+              % (s[0], s[1]))
     print("  %d clips play there and back%s" % (
         len(counts["pings"]), (": " + ", ".join(counts["pings"])) if counts["pings"] else ""))
     if counts["pingless"]:

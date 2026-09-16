@@ -22,9 +22,9 @@ Output:
 ─────────────────────────────────────────────────────────────────────────────
 WHY THIS FILE IS LONGER THAN "SLICE A GRID AND SAVE THE CELLS"
 
-Four things in the source art are wrong in ways that are invisible in a file
+Five things in the source art are wrong in ways that are invisible in a file
 browser and glaring at 60fps on a dark background. Each one is measured here
-rather than assumed, because three of the four were the opposite of what the
+rather than assumed, because three of the five were the opposite of what the
 file's appearance suggested.
 
 1.  THE GRID IS NOT SQUARE AND NOT ALWAYS FULL. Every sheet is nine columns.
@@ -66,7 +66,20 @@ file's appearance suggested.
     onto the smoothed track, which removes the shake and leaves deliberate,
     low-frequency movement alone.
 
-A fifth step is prophylactic rather than corrective: transparent pixels get
+5.  EVERY DEFEAT SHEET GETS BACK UP. All 43 delivered -- 19 enemies, 16
+    Companions, 8 Kids -- fall and then stand again, ending within 0.87-1.00
+    silhouette IoU of the pose they started from. The clip is a beat that holds
+    its last frame, so played whole a death ends with the creature upright and
+    alive. Each is cut at its most defeated frame (`cut_defeat`) and holds
+    there. This one IS what the files look like; what hid it is that the bug is
+    in the last second of a clip nothing else plays.
+
+And one thing is not wrong with the art at all, but with how much of it there
+is: a sheet is 81 cells and a fifth of them carry the animation, so each clip
+keeps TARGET_FRAMES of them and publishes a frame rate scaled to match, which
+leaves every beat lasting exactly as long as it did.
+
+A last step is prophylactic rather than corrective: transparent pixels get
 their colour flooded from the nearest opaque neighbour (`_edge_extend`). Their
 alpha is zero so they are invisible, but a bilinear tap or a mipmap blends
 their RGB in anyway, which is where "I removed the halo and it came back when I
@@ -172,8 +185,44 @@ ALPHA_FLOOR = 12
 SOLID_ALPHA = 96          # "definitely the creature", the seed for the filter
 
 # Frames are packed nine to a row, matching how the sheets are authored, which
-# keeps every atlas well inside a 2048px texture limit.
+# keeps every atlas well inside a 2048px texture limit. A CEILING: an atlas that
+# does not fill its last row is repacked narrower (`atlas_grid`), which costs
+# nothing and takes 22 frames from 9x3 to 8x3.
 ATLAS_COLS = 9
+
+# HOW MANY OF THE 81 CELLS AN ATLAS KEEPS. Most of a sheet is not animation.
+# Measured over fourteen clips, 4 to 33 of the 80 steps move the silhouette by
+# under 1.5% -- `charge` 4, `idle` 5, `attack` 13, `spectral` 33 -- and what is
+# left reconstructs from a fifth of the frames almost exactly.
+#
+# WHICH fifth is the whole question, and the three obvious answers are not the
+# same. Scored as the runtime actually plays them -- one kept frame is on screen
+# for the whole span until the next, so a selection's error is, over every
+# SOURCE frame, how far the frame really on screen is from the one that should
+# be -- over those fourteen clips at 22 frames:
+#
+#   medoid of the span   0.066   the frame closest to the ones it stands in for
+#   nearest (linspace)   0.076   the obvious answer, and second best
+#   sharpest in span     0.080   WORSE than not choosing at all
+#   even in arc length   0.214   three times worse than any of them
+#
+# The last two are the two intuitions to distrust. `sharpest` fails for the same
+# reason FADE_FLOOR exists: a focus dip times a dissolve and cannot tell one from
+# a lunge's motion blur, so "pick the crispest frame" systematically throws away
+# the frames where something is happening. `arc length` -- spend frames where the
+# motion is -- fails because the runtime plays every frame for the same length of
+# time: the source's own motion is lumpy (its busiest step carries 2.0-5.3x the
+# mean) and that lumpiness IS the animation's timing, so respacing the frames
+# evenly in motion respaces the beat and ruins it.
+TARGET_FRAMES = 22
+
+# AND THE BEAT STILL TAKES AS LONG AS IT DID. `fps` is what the runtime divides
+# the frame count by, so keeping 22 of 81 frames at the authored rate would play
+# every clip 3.7x too fast. Each clip publishes its own rate instead, scaled by
+# exactly the share of frames it kept, which leaves the CLIPS table below meaning
+# what it says -- how long the beat lasts -- rather than how many cells it has.
+# The rates land where hand-drawn animation has always lived: an `attack` at
+# 16fps, a slow `idle` breath at 5.4.
 
 # THE OTHER WAY A GENERATOR HANDS BACK A BAD EDGE. `classify` below catches art
 # FLATTENED against a background: the edge colour is dragged toward that
@@ -475,13 +524,28 @@ ENEMY_CLIPS = {
     "cast":      {"loop": False, "fps": 48},
 }
 
-# A DEFEAT THAT GETS BACK UP. Every enemy defeat sheet delivered 2026-09-13/14
-# ends on its first pose (last-to-first silhouette IoU 0.98-1.00): the creature
-# falls and recovers. A death holds, so the clip is cut at its most defeated frame
-# and holds there. "Most defeated" is furthest from the standing silhouette PLUS
-# furthest below its standing height; either alone picks wrong, because the Dough
-# Blob and the Dust Bunny are least like themselves rearing up before they slump.
-# Searched from frame 8, clear of the first beat, to 72, clear of the recovery.
+# A DEFEAT THAT GETS BACK UP. EVERY defeat sheet delivered does this -- all 19
+# enemies (2026-09-13/14) and all 24 Companions and Kids -- ending on its first
+# pose at a last-to-first silhouette IoU of 0.87 to 1.00: the creature falls and
+# then stands back up. A death holds, so `hold` on its own held the LAST frame,
+# which is the creature upright and alive. The clip is cut at its most defeated
+# frame and holds there instead.
+#
+# "Most defeated" is furthest from the standing silhouette PLUS furthest below
+# its standing height, and BOTH terms are load-bearing in both directions:
+#   without the height   the Dough Blob and the Dust Bunny are least like
+#                        themselves rearing up before they slump, and Boggle --
+#                        whose idle already lies flat -- scores highest sitting
+#                        bolt upright with his mouth open, 1.88x his own height.
+#   without the distance there is nothing to find on a Companion who dies without
+#                        getting shorter: Wink the spider splays sideways.
+# Checked by eye against all 24 built clips: every frame it picks is the creature
+# collapsed. Two alternatives were built and rejected on the same 24 -- scoring
+# by whole-frame appearance rather than silhouette holds Marmalade standing and
+# Boggle mid-scream, and dropping the height term holds Taffy still upright.
+#
+# Searched from frame 8, clear of the first beat, to 72, clear of the recovery;
+# every one of the 43 lands inside that at frames 9-50.
 DEFEAT_SEARCH = (8, 72)
 
 
@@ -1019,12 +1083,97 @@ def stabilise(centres):
     return (smooth - centres) * STABILISE
 
 
+def pick_frames(frames, n_out):
+    """The `n_out` source frames that best stand in for all of them (TARGET_FRAMES).
+
+    The output spans are EVEN, because the runtime holds each kept frame for the
+    same length of time and the source's uneven motion is the beat's own timing.
+    Within a span the medoid is taken -- the frame whose silhouette is closest to
+    the frames it will be covering -- which is the same thing as minimising the
+    error the runtime will actually show, and which drops a frame the generator
+    placed off the motion path without ever having to recognise one.
+    """
+    n = len(frames)
+    if n <= n_out:
+        return list(range(n))
+    edges = np.linspace(0, n, n_out + 1)
+    masks = [f[1] > 0.5 for f in frames]
+    out = []
+    for k in range(n_out):
+        lo, hi = int(round(edges[k])), max(int(round(edges[k + 1])), int(round(edges[k])) + 1)
+        span = [i for i in range(lo, min(hi, n)) if masks[i].shape == masks[lo].shape]
+        if not span:
+            out.append(min(lo, n - 1))
+            continue
+        cost = {}
+        for i in span:
+            cost[i] = sum(1.0 - float((masks[i] & masks[j]).sum())
+                          / max(1, int((masks[i] | masks[j]).sum())) for j in span)
+        out.append(min(span, key=lambda i: cost[i]))
+    # THE TWO ENDS ARE NOT NEGOTIABLE, whatever the medoid of their span prefers.
+    # The last frame of a `defeat` is the pose the death HOLDS -- the one
+    # `defeat_hold` picked the cut for -- and the first frame is the idle pose the
+    # brief has every one-shot return to and a `ping` play back down to. Both are
+    # inside their own span already, so this moves a frame by one or two rather
+    # than reaching across the clip.
+    out[0], out[-1] = 0, n - 1
+    return sorted(set(out))
+
+
+def reduce_clip(clip, n_out=TARGET_FRAMES):
+    """Keep only `n_out` frames of a built clip, and record what it was cut from.
+
+    THE JITTER FILTER RUNS FIRST and is carried on the clip, because `stabilise`
+    low-passes the centre track over SMOOTH_WIN frames: run afterwards on the
+    kept frames its five-frame window would span eighteen source frames and pull
+    deliberate, low-frequency movement flat along with the shake.
+    """
+    clip.setdefault("sourceFrames", len(clip["frames"]))
+    clip["shift"] = stabilise(clip["centres"])
+    clip["timebase"] = len(clip["frames"])
+    keep = pick_frames(clip["frames"], n_out)
+    if len(keep) == len(clip["frames"]):
+        return clip
+    clip["frames"] = [clip["frames"][i] for i in keep]
+    clip["boxes"] = [clip["boxes"][i] for i in keep]
+    clip["centres"] = clip["centres"][keep]
+    clip["shift"] = clip["shift"][keep]
+    return clip
+
+
+def clip_fps(fps, clip):
+    """The rate that makes a reduced clip last exactly as long as the frames it
+    was chosen from. 22 kept of 81 at the authored 20 is a 4.05s idle at 5.43fps,
+    not a 1.10s one. Fractional on purpose: rounding 5.43 to 5 stretches that
+    idle by 9%, and the runtime divides by this number rather than counting it."""
+    kept = len(clip["frames"])
+    return round(fps * kept / max(1, clip.get("timebase") or kept), 2)
+
+
+def cut_defeat(clip):
+    """Drop a defeat's recovery, so the death holds the pose it fell into.
+
+    Every defeat sheet delivered -- all 19 enemies and all 24 Companions and
+    Kids -- falls and then stands back up, ending within 0.87-1.00 silhouette IoU
+    of the pose it started from. `hold` alone therefore held the creature UPRIGHT
+    and alive. The clip is cut at `defeat_hold` and holds there instead.
+    """
+    clip["sourceFrames"] = len(clip["frames"])
+    cut = defeat_hold(clip)
+    clip["defeatCut"] = cut
+    n = cut + 1
+    clip["frames"], clip["boxes"] = clip["frames"][:n], clip["boxes"][:n]
+    clip["centres"] = clip["centres"][:n]
+    return clip
+
+
 def clip_window(clip):
     """The stabilising shift per frame and the clip's shared box in source pixels:
     (shift, x0, y0, w, h). The union of every frame's box, after its stabilising
     shift, is the smallest window that never clips the subject."""
     boxes = clip["boxes"]
-    shift = stabilise(clip["centres"])
+    # Already low-passed over the FULL track by `reduce_clip`, if it ran.
+    shift = clip["shift"] if clip.get("shift") is not None else stabilise(clip["centres"])
     xs0 = [b[0] + shift[i][0] for i, b in enumerate(boxes)]
     ys0 = [b[1] + shift[i][1] for i, b in enumerate(boxes)]
     xs1 = [b[2] + shift[i][0] for i, b in enumerate(boxes)]
@@ -1033,6 +1182,15 @@ def clip_window(clip):
     ux0, uy0 = int(np.floor(min(xs0))) - pad, int(np.floor(min(ys0))) - pad
     ux1, uy1 = int(np.ceil(max(xs1))) + pad, int(np.ceil(max(ys1))) + pad
     return shift, ux0, uy0, ux1 - ux0, uy1 - uy0
+
+
+def atlas_grid(n):
+    """Rows and columns for `n` frames: no more than ATLAS_COLS wide, and no
+    wider than the row count it settles on needs. 22 frames pack 8x3 rather than
+    9x3, which is two dead cells instead of five and a narrower texture; 81 still
+    packs 9x9, so nothing already built moves."""
+    arows = (n + ATLAS_COLS - 1) // ATLAS_COLS
+    return min(ATLAS_COLS, (n + arows - 1) // arows), arows
 
 
 def render_clip(clip, scale, out_noext, name=""):
@@ -1047,8 +1205,7 @@ def render_clip(clip, scale, out_noext, name=""):
 
     fw, fh = max(1, int(round(uw * scale))), max(1, int(round(uh * scale)))
     n = len(frames)
-    acols = min(ATLAS_COLS, n)
-    arows = (n + acols - 1) // acols
+    acols, arows = atlas_grid(n)
     atlas = Image.new("RGBA", (acols * fw, arows * fh), (0, 0, 0, 0))
     focus = []
     first_a = last_a = None
@@ -1109,6 +1266,11 @@ def render_clip(clip, scale, out_noext, name=""):
         "file": fname, "frames": n, "cols": acols, "rows": arows, "fw": fw, "fh": fh,
         "anchor": [round((med_cx - ux0) * scale, 2), round((med_by - uy0) * scale, 2)],
         "source": os.path.basename(clip["path"]),
+        # WHAT THE 22 FRAMES CAME FROM. `sourceFrames` is the sheet's own count and
+        # `defeatCut` the frame a death was cut at, so "the recovery was dropped"
+        # and "four in five frames were dropped" stay two separate, checkable facts
+        # rather than one shrunken number that could mean either.
+        "sourceFrames": clip.get("sourceFrames", n),
         "matte": clip["kind"], "bg": clip["B"], "grid": [ATLAS_COLS, clip["rows"]],
         # THE SOURCE MEASUREMENT, CARRIED FORWARD. The built atlas cannot answer
         # whether the ring was there: LANCZOS at 0.63 plus the premultiply round
@@ -1122,6 +1284,8 @@ def render_clip(clip, scale, out_noext, name=""):
     }
     if clip["black"] is not None:
         meta["black"] = round(clip["black"], 3)
+    if "defeatCut" in clip:
+        meta["defeatCut"] = clip["defeatCut"]
     # Measured on the atlas frames themselves, which share one box, so the two
     # silhouettes need no alignment before they are compared.
     if first_a is not None and last_a is not None:
@@ -1298,10 +1462,7 @@ def build_enemy_clips(args, only, manifest, by_id):
             continue
         built = {name: build_clip(p) for name, p in sorted(clips.items())}
         if "defeat" in built:
-            c = built["defeat"]
-            c["sourceFrames"] = len(c["frames"])
-            n = defeat_hold(c) + 1
-            c["frames"], c["boxes"], c["centres"] = c["frames"][:n], c["boxes"][:n], c["centres"][:n]
+            cut_defeat(built["defeat"])
         # The resting figure stands in for the still, so the idle clip sets the
         # scale: switching from the painting to the animation keeps its size.
         native = (built["idle"]["median_h"] if "idle" in built
@@ -1315,6 +1476,7 @@ def build_enemy_clips(args, only, manifest, by_id):
         entry = {"clips": {}, "scale": round(scale, 4), "unit": round(native * scale, 2)}
         for name, clip in built.items():
             cfg = {**CLIPS.get(name, {"loop": False, "fps": 24}), **ENEMY_CLIPS.get(name, {})}
+            reduce_clip(clip)
             # THE CAP IS PER CLIP. One wide lunge -- the Confectioner's attack is
             # 647px across -- held to the cap by the enemy's one scale took every
             # clip down with it, a boss's idle to 218px. So each clip is scaled to
@@ -1322,12 +1484,13 @@ def build_enemy_clips(args, only, manifest, by_id):
             # its atlas), and the player draws every clip the same size by it: a
             # capped clip is softer, not smaller, and only while it plays.
             s = min(scale, ENEMY_CLIP_MAX_SIDE / float(max(clip_window(clip)[3:])))
-            print("   %-8s %dx%-2d cell %-9s %-7s lift %+5.1f%s frames %d" % (
+            print("   %-8s %dx%-2d cell %-9s %-7s lift %+5.1f%s frames %d of %d%s" % (
                 name, ATLAS_COLS, clip["rows"], "%dx%d" % clip["cell"], clip["kind"], clip["lift"],
                 (" DEHALO" if clip["haloed"] else "") + (" DEWHITE" if clip["whited"] else "")
                 + (" UNTAIL" if clip["tailed"] else "")
                 + (" DEBLACK %.2f" % clip["black"] if clip["deblacked"] else ""),
-                len(clip["frames"])))
+                len(clip["frames"]), clip["sourceFrames"],
+                "  CUT@%d (gets back up)" % clip["defeatCut"] if "defeatCut" in clip else ""))
             if args.report:
                 continue
             os.makedirs(outdir, exist_ok=True)
@@ -1338,15 +1501,13 @@ def build_enemy_clips(args, only, manifest, by_id):
             # is a lunge's motion blur, and the Door Greeter's attack faded to 35%
             # as it swung. The measurement (`dip`) stays in the index.
             meta.pop("fade", None)
-            meta.update(loop=cfg["loop"], fps=cfg["fps"], hold=bool(cfg.get("hold")),
-                        sha1=file_sha1(clip["path"]))
-            if "sourceFrames" in clip:
-                meta["sourceFrames"] = clip["sourceFrames"]
+            meta.update(loop=cfg["loop"], fps=clip_fps(cfg["fps"], clip),
+                        hold=bool(cfg.get("hold")), sha1=file_sha1(clip["path"]))
             if (not cfg["loop"] and not cfg.get("hold")
                     and meta.get("endIoU") is not None and meta["endIoU"] < PING_IOU):
                 meta["ping"] = True
-                meta["fps"] = int(round(cfg["fps"] * PING_SPEED))
-                print("              ^ ends elsewhere (first/last IoU %.2f): there and back at %d fps"
+                meta["fps"] = round(meta["fps"] * PING_SPEED, 2)
+                print("              ^ ends elsewhere (first/last IoU %.2f): there and back at %g fps"
                       % (meta["endIoU"], meta["fps"]))
             entry["clips"][name] = meta
             print("              -> %s %dx%d atlas %dx%d" % (
@@ -1482,8 +1643,13 @@ def main():
 
         # ONE scale for every clip of this Companion. See note 3 at the top: the
         # subject is a constant size in pixels, so the reference is the median
-        # content height across all clips, not anything per-cell.
+        # content height across all clips, not anything per-cell. Measured over
+        # the WHOLE sheet, before `cut_defeat` takes the recovery off the death:
+        # a fall's frames are short by definition, and letting a truncated defeat
+        # into this median would resize every other clip the Companion has.
         ref = float(np.median([c["median_h"] for c in built.values()]))
+        if "defeat" in built:
+            cut_defeat(built["defeat"])
         target = KID_TARGET_CONTENT_H if slug in kid_slugs else TARGET_CONTENT_H
         scale = target / ref
 
@@ -1499,23 +1665,26 @@ def main():
         entry = {"clips": {}, "scale": round(scale, 4), "unit": target}
         for name, clip in built.items():
             cfg = CLIPS.get(name, {"loop": False, "fps": 24})
-            print("   %-10s %dx%-2d cell %-9s %-7s wash %5.1f%%  bg=%-20s lift %+5.1f%s frames %d" % (
+            reduce_clip(clip)
+            print("   %-10s %dx%-2d cell %-9s %-7s wash %5.1f%%  bg=%-20s lift %+5.1f%s frames %d of %d%s" % (
                 name, ATLAS_COLS, clip["rows"], "%dx%d" % clip["cell"], clip["kind"],
                 100 * clip["washed"], str(clip["B"]), clip["lift"],
                 (" DEHALO" if clip["haloed"] else "       ")
                 + (" DEWHITE" if clip["whited"] else "        ")
                 + (" UNTAIL" if clip["tailed"] else "")
                 + (" DEBLACK %.2f" % clip["black"] if clip["deblacked"] else ""),
-                len(clip["frames"])))
+                len(clip["frames"]), clip["sourceFrames"],
+                "  CUT@%d (gets back up)" % clip["defeatCut"] if "defeatCut" in clip else ""))
             if args.report:
                 continue
             meta = render_clip(clip, scale, os.path.join(outdir, name), name)
-            meta.update(loop=cfg["loop"], fps=cfg["fps"], hold=bool(cfg.get("hold")))
+            meta.update(loop=cfg["loop"], fps=clip_fps(cfg["fps"], clip),
+                        hold=bool(cfg.get("hold")))
             if (not cfg["loop"] and not cfg.get("hold")
                     and meta.get("endIoU") is not None and meta["endIoU"] < PING_IOU):
                 meta["ping"] = True
-                meta["fps"] = int(round(cfg["fps"] * PING_SPEED))
-                print("              ^ ends elsewhere (first/last IoU %.2f): there and back at %d fps"
+                meta["fps"] = round(meta["fps"] * PING_SPEED, 2)
+                print("              ^ ends elsewhere (first/last IoU %.2f): there and back at %g fps"
                       % (meta["endIoU"], meta["fps"]))
             entry["clips"][name] = meta
             if "fade" in meta:

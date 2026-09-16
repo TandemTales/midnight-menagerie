@@ -2,16 +2,17 @@
  "clips": {
   "attack": {
    "file": "attack.webp",
-   "frames": 81,
-   "cols": 9,
-   "rows": 9,
+   "frames": 22,
+   "cols": 8,
+   "rows": 3,
    "fw": 202,
-   "fh": 277,
+   "fh": 276,
    "anchor": [
-    98.52,
-    269.94
+    98.6,
+    269.34
    ],
    "source": "SS_prya_attack.png",
+   "sourceFrames": 81,
    "matte": "CONTAM",
    "bg": [
     165.3,
@@ -26,26 +27,27 @@
    "dehalo": false,
    "warm": 127.0,
    "dewhite": false,
-   "dip": 0.532,
+   "dip": 0.601,
    "untail": false,
    "deblack": false,
-   "endIoU": 0.987,
+   "endIoU": 0.986,
    "loop": false,
-   "fps": 60,
+   "fps": 16.3,
    "hold": false
   },
   "defeat": {
    "file": "defeat.webp",
-   "frames": 81,
+   "frames": 17,
    "cols": 9,
-   "rows": 9,
-   "fw": 209,
-   "fh": 270,
+   "rows": 2,
+   "fw": 207,
+   "fh": 269,
    "anchor": [
-    100.41,
-    264.24
+    100.26,
+    263.88
    ],
    "source": "SS_prya_defeat.png",
+   "sourceFrames": 81,
    "matte": "CONTAM",
    "bg": [
     166.9,
@@ -60,26 +62,28 @@
    "dehalo": false,
    "warm": 128.0,
    "dewhite": false,
-   "dip": 0.437,
+   "dip": 0.654,
    "untail": false,
    "deblack": false,
-   "endIoU": 0.983,
+   "defeatCut": 16,
+   "endIoU": 0.314,
    "loop": false,
-   "fps": 24,
+   "fps": 24.0,
    "hold": true
   },
   "hurt": {
    "file": "hurt.webp",
-   "frames": 81,
-   "cols": 9,
-   "rows": 9,
-   "fw": 157,
-   "fh": 269,
+   "frames": 22,
+   "cols": 8,
+   "rows": 3,
+   "fw": 155,
+   "fh": 266,
    "anchor": [
-    86.51,
-    264.17
+    86.62,
+    263.39
    ],
    "source": "SS_prya_hurt.png",
+   "sourceFrames": 81,
    "matte": "CONTAM",
    "bg": [
     167.4,
@@ -94,26 +98,27 @@
    "dehalo": false,
    "warm": 114.0,
    "dewhite": false,
-   "dip": 0.674,
+   "dip": 0.683,
    "untail": false,
    "deblack": false,
-   "endIoU": 0.957,
+   "endIoU": 0.959,
    "loop": false,
-   "fps": 60,
+   "fps": 16.3,
    "hold": false
   },
   "idle": {
    "file": "idle.webp",
-   "frames": 81,
-   "cols": 9,
-   "rows": 9,
-   "fw": 132,
+   "frames": 22,
+   "cols": 8,
+   "rows": 3,
+   "fw": 131,
    "fh": 267,
    "anchor": [
-    67.46,
-    264.88
+    66.69,
+    264.82
    ],
    "source": "SS_prya_idle.png",
+   "sourceFrames": 81,
    "matte": "CONTAM",
    "bg": [
     178.1,
@@ -128,12 +133,12 @@
    "dehalo": false,
    "warm": 92.0,
    "dewhite": false,
-   "dip": 0.727,
+   "dip": 0.736,
    "untail": false,
    "deblack": false,
-   "endIoU": 0.982,
+   "endIoU": 0.981,
    "loop": true,
-   "fps": 20,
+   "fps": 5.43,
    "hold": false
   }
  },

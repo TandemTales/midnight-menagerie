@@ -794,6 +794,12 @@
    "hurt",
    "idle"
   ],
+  "blanket-creeper": [
+   "attack",
+   "defeat",
+   "hurt",
+   "idle"
+  ],
   "blanket-hydra": [
    "attack",
    "defeat",
@@ -898,7 +904,19 @@
    "hurt",
    "idle"
   ],
+  "patchwork-soldier": [
+   "attack",
+   "defeat",
+   "hurt",
+   "idle"
+  ],
   "red-carpet-runner": [
+   "attack",
+   "defeat",
+   "hurt",
+   "idle"
+  ],
+  "toy-chest": [
    "attack",
    "defeat",
    "hurt",

@@ -2,16 +2,17 @@
  "clips": {
   "attack": {
    "file": "attack.webp",
-   "frames": 81,
-   "cols": 9,
-   "rows": 9,
+   "frames": 22,
+   "cols": 8,
+   "rows": 3,
    "fw": 400,
-   "fh": 297,
+   "fh": 321,
    "anchor": [
-    198.3,
-    292.97
+    201.36,
+    317.48
    ],
    "source": "SS_patchworkGiant_attack.png",
+   "sourceFrames": 81,
    "matte": "CONTAM",
    "bg": [
     168.1,
@@ -26,21 +27,21 @@
    "dehalo": false,
    "warm": 63.0,
    "dewhite": true,
-   "dip": 0.437,
+   "dip": 0.459,
    "untail": false,
    "deblack": false,
    "endIoU": 0.993,
-   "scale": 0.907,
-   "unit": 294.78,
+   "scale": 0.9828,
+   "unit": 319.41,
    "loop": false,
-   "fps": 60,
+   "fps": 16.3,
    "hold": false,
    "sha1": "a8d2670e44f6e8f4"
   },
   "defeat": {
    "file": "defeat.webp",
    "frames": 19,
-   "cols": 9,
+   "cols": 7,
    "rows": 3,
    "fw": 387,
    "fh": 344,
@@ -49,6 +50,7 @@
     328.28
    ],
    "source": "SS_patchworkGiant_defeat.png",
+   "sourceFrames": 81,
    "matte": "CONTAM",
    "bg": [
     164.8,
@@ -66,27 +68,28 @@
    "dip": 0.205,
    "untail": false,
    "deblack": false,
+   "defeatCut": 18,
    "endIoU": 0.505,
    "scale": 1.0,
    "unit": 325.0,
    "loop": false,
-   "fps": 40,
+   "fps": 40.0,
    "hold": true,
-   "sha1": "b452b020af3ead01",
-   "sourceFrames": 81
+   "sha1": "b452b020af3ead01"
   },
   "hurt": {
    "file": "hurt.webp",
-   "frames": 81,
-   "cols": 9,
-   "rows": 9,
+   "frames": 22,
+   "cols": 8,
+   "rows": 3,
    "fw": 400,
-   "fh": 318,
+   "fh": 317,
    "anchor": [
-    210.64,
-    312.24
+    211.35,
+    312.07
    ],
    "source": "SS_patchworkGiant_hurt.png",
+   "sourceFrames": 81,
    "matte": "CONTAM",
    "bg": [
     162.9,
@@ -101,29 +104,30 @@
    "dehalo": false,
    "warm": 69.0,
    "dewhite": false,
-   "dip": 0.344,
+   "dip": 0.362,
    "untail": false,
    "deblack": false,
    "endIoU": 0.991,
-   "scale": 0.9547,
-   "unit": 310.26,
+   "scale": 0.9569,
+   "unit": 311.0,
    "loop": false,
-   "fps": 60,
+   "fps": 16.3,
    "hold": false,
    "sha1": "65e1a6629e353e56"
   },
   "idle": {
    "file": "idle.webp",
-   "frames": 81,
-   "cols": 9,
-   "rows": 9,
-   "fw": 343,
+   "frames": 22,
+   "cols": 8,
+   "rows": 3,
+   "fw": 341,
    "fh": 338,
    "anchor": [
-    173.85,
-    333.53
+    172.68,
+    333.61
    ],
    "source": "SS_patchworkGiant_idle.png",
+   "sourceFrames": 81,
    "matte": "CONTAM",
    "bg": [
     169.5,
@@ -145,7 +149,7 @@
    "scale": 1.0,
    "unit": 325.0,
    "loop": true,
-   "fps": 20,
+   "fps": 5.43,
    "hold": false,
    "sha1": "c3f803e3ba4e626d"
   }

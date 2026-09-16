@@ -1,0 +1,159 @@
+{
+ "clips": {
+  "attack": {
+   "file": "attack.webp",
+   "frames": 22,
+   "cols": 8,
+   "rows": 3,
+   "fw": 377,
+   "fh": 248,
+   "anchor": [
+    192.75,
+    239.55
+   ],
+   "source": "SS_blanketCreeper_attack.png",
+   "sourceFrames": 81,
+   "matte": "CONTAM",
+   "bg": [
+    160.6,
+    151.7,
+    155.1
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": -4.9,
+   "dehalo": false,
+   "warm": 53.0,
+   "dewhite": false,
+   "dip": 0.494,
+   "untail": false,
+   "deblack": false,
+   "endIoU": 0.995,
+   "scale": 1.0,
+   "unit": 226.0,
+   "loop": false,
+   "fps": 16.3,
+   "hold": false,
+   "sha1": "8d2f9cdfc4082b6a"
+  },
+  "defeat": {
+   "file": "defeat.webp",
+   "frames": 22,
+   "cols": 8,
+   "rows": 3,
+   "fw": 368,
+   "fh": 230,
+   "anchor": [
+    184.04,
+    227.08
+   ],
+   "source": "SS_blanketCreeper_defeat.png",
+   "sourceFrames": 81,
+   "matte": "CONTAM",
+   "bg": [
+    157.7,
+    148.6,
+    152.1
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": -5.2,
+   "dehalo": false,
+   "warm": 56.0,
+   "dewhite": false,
+   "dip": 0.492,
+   "untail": false,
+   "deblack": false,
+   "defeatCut": 28,
+   "endIoU": 0.89,
+   "scale": 1.0,
+   "unit": 226.0,
+   "loop": false,
+   "fps": 30.34,
+   "hold": true,
+   "sha1": "67b94e3fa8468703"
+  },
+  "hurt": {
+   "file": "hurt.webp",
+   "frames": 22,
+   "cols": 8,
+   "rows": 3,
+   "fw": 359,
+   "fh": 232,
+   "anchor": [
+    180.0,
+    228.96
+   ],
+   "source": "SS_blanketCreeper_hurt.png",
+   "sourceFrames": 81,
+   "matte": "CONTAM",
+   "bg": [
+    154.8,
+    146.0,
+    148.5
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": -5.1,
+   "dehalo": false,
+   "warm": 55.0,
+   "dewhite": false,
+   "dip": 0.451,
+   "untail": false,
+   "deblack": false,
+   "endIoU": 0.995,
+   "scale": 1.0,
+   "unit": 226.0,
+   "loop": false,
+   "fps": 16.3,
+   "hold": false,
+   "sha1": "56760f5164707343"
+  },
+  "idle": {
+   "file": "idle.webp",
+   "frames": 22,
+   "cols": 8,
+   "rows": 3,
+   "fw": 361,
+   "fh": 237,
+   "anchor": [
+    181.5,
+    233.7
+   ],
+   "source": "SS_blanketCreeper_idle.png",
+   "sourceFrames": 81,
+   "matte": "CONTAM",
+   "bg": [
+    157.6,
+    148.3,
+    151.5
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": -3.9,
+   "dehalo": false,
+   "warm": 53.0,
+   "dewhite": false,
+   "dip": 0.486,
+   "untail": false,
+   "deblack": false,
+   "endIoU": 0.995,
+   "scale": 1.0,
+   "unit": 226.0,
+   "loop": true,
+   "fps": 5.43,
+   "hold": false,
+   "sha1": "0d98db14ef715b4b"
+  }
+ },
+ "scale": 1.0,
+ "unit": 226.0
+}

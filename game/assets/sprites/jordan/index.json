@@ -2,16 +2,17 @@
  "clips": {
   "attack": {
    "file": "attack.webp",
-   "frames": 81,
-   "cols": 9,
-   "rows": 9,
-   "fw": 238,
+   "frames": 22,
+   "cols": 8,
+   "rows": 3,
+   "fw": 236,
    "fh": 264,
    "anchor": [
     137.15,
     260.68
    ],
    "source": "SS_jordan_attack.png",
+   "sourceFrames": 81,
    "matte": "CONTAM",
    "bg": [
     161.7,
@@ -26,26 +27,27 @@
    "dehalo": false,
    "warm": 24.0,
    "dewhite": false,
-   "dip": 0.65,
+   "dip": 0.652,
    "untail": false,
    "deblack": false,
    "endIoU": 0.991,
    "loop": false,
-   "fps": 60,
+   "fps": 16.3,
    "hold": false
   },
   "defeat": {
    "file": "defeat.webp",
-   "frames": 81,
+   "frames": 18,
    "cols": 9,
-   "rows": 9,
-   "fw": 201,
-   "fh": 269,
+   "rows": 2,
+   "fw": 186,
+   "fh": 264,
    "anchor": [
-    108.39,
-    261.54
+    95.16,
+    260.54
    ],
    "source": "SS_jordan_defeat.png",
+   "sourceFrames": 81,
    "matte": "CONTAM",
    "bg": [
     154.7,
@@ -60,26 +62,28 @@
    "dehalo": false,
    "warm": 47.0,
    "dewhite": false,
-   "dip": 0.521,
+   "dip": 0.645,
    "untail": false,
    "deblack": false,
-   "endIoU": 0.99,
+   "defeatCut": 17,
+   "endIoU": 0.29,
    "loop": false,
-   "fps": 24,
+   "fps": 24.0,
    "hold": true
   },
   "hurt": {
    "file": "hurt.webp",
-   "frames": 81,
-   "cols": 9,
-   "rows": 9,
+   "frames": 22,
+   "cols": 8,
+   "rows": 3,
    "fw": 215,
-   "fh": 266,
+   "fh": 265,
    "anchor": [
-    122.94,
-    262.01
+    122.51,
+    262.04
    ],
    "source": "SS_jordan_hurt.png",
+   "sourceFrames": 81,
    "matte": "CONTAM",
    "bg": [
     158.9,
@@ -94,26 +98,27 @@
    "dehalo": false,
    "warm": 26.0,
    "dewhite": false,
-   "dip": 0.716,
+   "dip": 0.778,
    "untail": false,
    "deblack": false,
-   "endIoU": 0.987,
+   "endIoU": 0.988,
    "loop": false,
-   "fps": 60,
+   "fps": 16.3,
    "hold": false
   },
   "idle": {
    "file": "idle.webp",
-   "frames": 81,
-   "cols": 9,
-   "rows": 9,
-   "fw": 180,
+   "frames": 22,
+   "cols": 8,
+   "rows": 3,
+   "fw": 179,
    "fh": 265,
    "anchor": [
-    85.19,
+    85.15,
     262.84
    ],
    "source": "SS_jordan_idle.png",
+   "sourceFrames": 81,
    "matte": "CONTAM",
    "bg": [
     163.7,
@@ -128,12 +133,12 @@
    "dehalo": false,
    "warm": 29.0,
    "dewhite": false,
-   "dip": 0.707,
+   "dip": 0.706,
    "untail": false,
    "deblack": false,
-   "endIoU": 0.988,
+   "endIoU": 0.989,
    "loop": true,
-   "fps": 20,
+   "fps": 5.43,
    "hold": false
   }
  },

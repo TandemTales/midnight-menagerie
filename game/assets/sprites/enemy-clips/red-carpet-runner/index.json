@@ -2,16 +2,17 @@
  "clips": {
   "attack": {
    "file": "attack.webp",
-   "frames": 81,
-   "cols": 9,
-   "rows": 9,
-   "fw": 305,
-   "fh": 344,
+   "frames": 22,
+   "cols": 8,
+   "rows": 3,
+   "fw": 298,
+   "fh": 337,
    "anchor": [
-    147.32,
-    299.75
+    140.42,
+    299.51
    ],
    "source": "SS_rug_attack.png",
+   "sourceFrames": 81,
    "matte": "CONTAM",
    "bg": [
     154.4,
@@ -26,21 +27,21 @@
    "dehalo": false,
    "warm": 156.0,
    "dewhite": false,
-   "dip": 0.243,
+   "dip": 0.267,
    "untail": false,
    "deblack": false,
    "endIoU": 0.993,
    "scale": 0.805,
    "unit": 256.0,
    "loop": false,
-   "fps": 60,
+   "fps": 16.3,
    "hold": false,
    "sha1": "e05911a734ec5979"
   },
   "defeat": {
    "file": "defeat.webp",
    "frames": 21,
-   "cols": 9,
+   "cols": 7,
    "rows": 3,
    "fw": 288,
    "fh": 259,
@@ -49,6 +50,7 @@
     244.27
    ],
    "source": "SS_rug_defeat.png",
+   "sourceFrames": 81,
    "matte": "CONTAM",
    "bg": [
     154.8,
@@ -66,27 +68,28 @@
    "dip": 0.563,
    "untail": false,
    "deblack": false,
+   "defeatCut": 20,
    "endIoU": 0.4,
    "scale": 0.805,
    "unit": 256.0,
    "loop": false,
-   "fps": 40,
+   "fps": 40.0,
    "hold": true,
-   "sha1": "1d82501813711d53",
-   "sourceFrames": 81
+   "sha1": "1d82501813711d53"
   },
   "hurt": {
    "file": "hurt.webp",
-   "frames": 81,
-   "cols": 9,
-   "rows": 9,
-   "fw": 382,
+   "frames": 22,
+   "cols": 8,
+   "rows": 3,
+   "fw": 379,
    "fh": 260,
    "anchor": [
-    152.98,
-    255.26
+    153.85,
+    255.32
    ],
    "source": "SS_rug_hurt.png",
+   "sourceFrames": 81,
    "matte": "CONTAM",
    "bg": [
     160.4,
@@ -101,29 +104,30 @@
    "dehalo": false,
    "warm": 149.0,
    "dewhite": false,
-   "dip": 0.672,
+   "dip": 0.722,
    "untail": false,
    "deblack": false,
-   "endIoU": 0.993,
+   "endIoU": 0.994,
    "scale": 0.805,
    "unit": 256.0,
    "loop": false,
-   "fps": 60,
+   "fps": 16.3,
    "hold": false,
    "sha1": "53b570df86bf2624"
   },
   "idle": {
    "file": "idle.webp",
-   "frames": 81,
-   "cols": 9,
-   "rows": 9,
-   "fw": 315,
-   "fh": 298,
+   "frames": 22,
+   "cols": 8,
+   "rows": 3,
+   "fw": 312,
+   "fh": 295,
    "anchor": [
-    157.97,
-    272.6
+    157.66,
+    271.12
    ],
    "source": "SS_rug_idle.png",
+   "sourceFrames": 81,
    "matte": "CONTAM",
    "bg": [
     163.0,
@@ -138,14 +142,14 @@
    "dehalo": false,
    "warm": 143.0,
    "dewhite": false,
-   "dip": 0.519,
+   "dip": 0.527,
    "untail": false,
    "deblack": false,
-   "endIoU": 0.979,
+   "endIoU": 0.978,
    "scale": 0.805,
    "unit": 256.0,
    "loop": true,
-   "fps": 20,
+   "fps": 5.43,
    "hold": false,
    "sha1": "0b41acbefa6f8eb3"
   }

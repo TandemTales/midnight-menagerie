@@ -1,0 +1,159 @@
+{
+ "clips": {
+  "attack": {
+   "file": "attack.webp",
+   "frames": 22,
+   "cols": 8,
+   "rows": 3,
+   "fw": 245,
+   "fh": 263,
+   "anchor": [
+    138.88,
+    259.3
+   ],
+   "source": "SS_patchworkSoldier_attack.png",
+   "sourceFrames": 81,
+   "matte": "CONTAM",
+   "bg": [
+    163.2,
+    157.7,
+    157.9
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": -8.9,
+   "dehalo": false,
+   "warm": 76.0,
+   "dewhite": false,
+   "dip": 0.784,
+   "untail": false,
+   "deblack": false,
+   "endIoU": 0.988,
+   "scale": 0.7273,
+   "unit": 256.0,
+   "loop": false,
+   "fps": 16.3,
+   "hold": false,
+   "sha1": "6f51549035bd0739"
+  },
+  "defeat": {
+   "file": "defeat.webp",
+   "frames": 22,
+   "cols": 8,
+   "rows": 3,
+   "fw": 233,
+   "fh": 267,
+   "anchor": [
+    131.09,
+    261.92
+   ],
+   "source": "SS_patchworkSoldier_defeat.png",
+   "sourceFrames": 81,
+   "matte": "CONTAM",
+   "bg": [
+    170.0,
+    161.3,
+    159.2
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": -8.9,
+   "dehalo": false,
+   "warm": 74.0,
+   "dewhite": false,
+   "dip": 0.511,
+   "untail": false,
+   "deblack": false,
+   "defeatCut": 23,
+   "endIoU": 0.27,
+   "scale": 0.7273,
+   "unit": 256.0,
+   "loop": false,
+   "fps": 36.67,
+   "hold": true,
+   "sha1": "99b943a5ba3a9aa8"
+  },
+  "hurt": {
+   "file": "hurt.webp",
+   "frames": 22,
+   "cols": 8,
+   "rows": 3,
+   "fw": 249,
+   "fh": 264,
+   "anchor": [
+    119.75,
+    260.09
+   ],
+   "source": "SS_patchworkSoldier_hurt.png",
+   "sourceFrames": 81,
+   "matte": "CONTAM",
+   "bg": [
+    160.0,
+    153.5,
+    152.6
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": -11.2,
+   "dehalo": false,
+   "warm": 72.0,
+   "dewhite": false,
+   "dip": 0.387,
+   "untail": false,
+   "deblack": false,
+   "endIoU": 0.988,
+   "scale": 0.7273,
+   "unit": 256.0,
+   "loop": false,
+   "fps": 16.3,
+   "hold": false,
+   "sha1": "beb617dc77ebf274"
+  },
+  "idle": {
+   "file": "idle.webp",
+   "frames": 22,
+   "cols": 8,
+   "rows": 3,
+   "fw": 180,
+   "fh": 259,
+   "anchor": [
+    89.82,
+    257.45
+   ],
+   "source": "SS_patchworkSoldier_idle.png",
+   "sourceFrames": 81,
+   "matte": "CONTAM",
+   "bg": [
+    158.5,
+    154.6,
+    154.6
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": -8.5,
+   "dehalo": false,
+   "warm": 70.0,
+   "dewhite": false,
+   "dip": 0.546,
+   "untail": false,
+   "deblack": false,
+   "endIoU": 0.991,
+   "scale": 0.7273,
+   "unit": 256.0,
+   "loop": true,
+   "fps": 5.43,
+   "hold": false,
+   "sha1": "69e58a3adc8dcde1"
+  }
+ },
+ "scale": 0.7273,
+ "unit": 256.0
+}
