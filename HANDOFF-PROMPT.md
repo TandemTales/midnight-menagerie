@@ -35,7 +35,7 @@ from round 5 are still in `f921e739`'s scratchpad and its branches are `ui/r5-*`
 
 **3. The enemies animate (09-15), and round 6's COMBAT brief must say how.** Josh's
 call was "do it after round 5 merges". His sheets in
-`animations/sprites/enemies/animations/` (78 for 19 enemies on 09-15, still
+`animations/sprites/enemies/animations/` (90 for 22 enemies on 09-15, still
 arriving) build with `python tools/prep_sprites.py --enemy-clips`.
 - **The build:** it writes `game/assets/sprites/enemy-clips/<id>/` and the
   manifest's `enemyClips` section. The sheets take the Companion matte path,
@@ -61,7 +61,7 @@ arriving) build with `python tools/prep_sprites.py --enemy-clips`.
   - **Idle:** our procedural breath, sway and twitch are off while a clip idles.
   - **Measuring:** `paintRect()` gives a painting's box and feet, and what the
     gates measure by.
-- **The gates:** `tests/enemy-clips/check.py` is new: 665 passed, 0 console
+- **The gates:** `tests/enemy-clips/check.py` is new: 761 passed, 0 console
   errors. `tests/enemy-stills` measures moving paintings by their feet: 433
   passed.
 - **For round 6's COMBAT brief:** the creatures now move, so two captures of one
@@ -77,7 +77,29 @@ that may fade at all: `spectral`, `zoomies`, `hide`, `shadow`, each quoted from
 Josh's animation brief. 16 slugs were rebuilt; `tests/sprites/check.py` now fails
 both ways round. Pipkin gained the `ready` clip Josh delivered on 09-12.
 
-**5. Josh drops art in while you work.**
+**5. Twenty-two frames a clip, and a death that stays down (09-15, `0d6b3b2`).**
+A sheet is 81 cells and about a fifth of them carry the animation, so every clip
+now keeps `prep_sprites.TARGET_FRAMES` = 22 of them: 4,242 frames where there
+were 15,853, and 121 MB of atlases where there were 373.
+- **Which 22:** even spans, medoid within each. Scored as the runtime plays them,
+  that reconstructs the clip at 0.066 against 0.076 for plain `linspace`, 0.080
+  for the sharpest frame in each span, and 0.214 for spacing them evenly in
+  motion. The last two are the intuitions to distrust -- the sharpest frame is
+  the FADE_FLOOR mistake again, and respacing by motion respaces the beat.
+- **The beat still lasts as long:** each clip publishes its own `fps`, scaled by
+  the share of frames it kept. A 4.05s idle is 22 frames at 5.43fps. Nothing may
+  round that number.
+- **The defeats:** every sheet delivered falls and GETS BACK UP, so `hold` was
+  freezing the Companion upright and alive. The enemies were cut at
+  `defeat_hold` in September; the Companions and Kids never were, and all 24 now
+  are -- checked by eye on the built clips, and in the running game.
+- **The gate asks `defeatCut`,** not the frame count: every clip is shorter now,
+  so "fewer frames than the sheet" would pass a defeat that still recovers.
+  `tests/sprites` also holds frames against fps, and sweeps every frame for the
+  halo rather than nine (which is how `boggle/celebrate` joined the known-red
+  list; it was never passing, only unsampled).
+
+**6. Josh drops art in while you work.**
 - **Enemies:** `ls -t animations/sprites/enemies | head` shows the newest
   delivery. A new file or a redraw turns `tests/enemy-stills` red until
   `python tools/prep_sprites.py --enemies` rebuilds it. Commit the built still,
@@ -85,7 +107,7 @@ both ways round. Pipkin gained the `ready` clip Josh delivered on 09-12.
 - **Enemy animation sheets:** `ls -t animations/sprites/enemies/animations | head`.
   A new or redelivered sheet turns `tests/enemy-clips` red, checked by name and by
   SHA-1. `python tools/prep_sprites.py --enemy-clips --only <id>` rebuilds one
-  enemy in about 3 minutes; a run without `--only` rebuilds all 19 in about an
+  enemy in about 3 minutes; a run without `--only` rebuilds all 22 in about an
   hour. A sheet under a new name that resolves to no EnemyDef needs an
   `ENEMY_ALIAS` entry: match it by eye against the stills. The sheets are
   gitignored; commit the built clips.
@@ -93,10 +115,10 @@ both ways round. Pipkin gained the `ready` clip Josh delivered on 09-12.
   run `python tools/prep_backgrounds.py` before the next round's baselines. His
   paintings are the one thing that can lift every screen's background score.
 
-**6. The battery:** `python tools/devserver.py 8777`, then `python tools/gates.py`
+**7. The battery:** `python tools/devserver.py 8777`, then `python tools/gates.py`
 (99 gates, about 30 minutes). On the round 5 merge (`25a5111`) it ran 99 gates
 in 1754s, red only on the known three:
-- `tests/sprites/check.py`: the six HALO clips;
+- `tests/sprites/check.py`: the seven HALO clips;
 - `tests/run/run.py`: the Archivist on seed 371416, and `_losePatience` past
   turn 30;
 - `tests/steam-deck`: the Map race, 6/0 run alone.
@@ -378,9 +400,9 @@ Big Scare** (`3a12203`).
 - **So does the enemy-clips gate, for his animation sheets.** A new sheet trips
   "every delivered sheet is built", and a redelivered one the SHA-1 check. Rebuild
   that enemy with `--enemy-clips --only <id>`; don't debug.
-- **Every enemy defeat sheet gets back up.** The last frame matches the first
-  (silhouette IoU 0.98-1.00 on all 19). The build cuts it; never hold a defeat
-  sheet's own last frame.
+- **EVERY defeat sheet gets back up** -- all 22 enemies and all 24 Companions
+  and Kids. The last frame matches the first (silhouette IoU 0.87-1.00). The
+  build cuts each at `defeat_hold`; never hold a defeat sheet's own last frame.
 - **Every deck sits EXACTLY at its cost quota.** Adding a Trick at cost 1, or
   moving one back down, turns `cost-curve` red. That is deliberate. Offset it in
   the same deck and rarity.
@@ -421,8 +443,11 @@ Big Scare** (`3a12203`).
   pipkin 23, drizzle 26, brambleboo 25, and mopsy and mossbit at 28.
 - **Thirteen decks' dead-effect lists** are in
   `docs/notes/2026-09-11-card-cost-pass.md`, under "Found and NOT fixed".
-- **`maya/defeat` fails the HALO bar**, and so do Taffy's five clips. Fixing
-  either means re-tuning a matte rule against all 195 clips.
+- **`maya/defeat` fails the HALO bar**, and so do Taffy's five clips and
+  `boggle/celebrate`. Fixing any of them means re-tuning a matte rule against all
+  196 clips. Boggle's is the newest name on that list and the oldest defect: the
+  gate used to measure nine sampled frames and now sweeps every one, and over the
+  whole clip he has always read 0.484 against a 0.50 bar.
 - **The Calling Bell and 255 other enemies have no animation.** They stand as
   stills or rigs until Josh's sheets for them arrive.
 - **Bones' and Marmalade's atlases still predate the current matte rules** in
@@ -503,13 +528,13 @@ only on the known three. steam-deck went 5/1 then 6/0 run alone.
 | gate | reads |
 |---|---|
 | `tools/gates.py` | 100 gates in 1917s, 3 red: sprites and run.py (known), steam-deck (the Map race; 6/0 run alone) |
-| `tests/enemy-clips/check.py` | 665 passed, 0 failed, 0 console errors (19 enemies; beats on door-greeter, dust-bunny, butler) |
+| `tests/enemy-clips/check.py` | 761 passed, 0 failed, 0 console errors (22 enemies; beats on door-greeter, dust-bunny, butler) |
 | `tests/cards/run.py` | 1470 cards, 0 errors, 0 warnings |
 | `tests/combat/run.py` · `tests/coop/run.py` | 695 · 645 |
 | `tests/cost-curve/check.py` | 17 passed, 0 failed |
 | `tests/upgrade-effects/check.py` | 1288 upgrades played, 218 moved nothing, 28 unplayable on this board, 54 need a friend, 72 hinge on a choice, 0 stale waivers, 0 broken, 0 console errors |
 | `tests/sprite-triggers/check.py` · `tests/kid-clips/check.py` | 292 · 10 |
-| `tests/sprites/check.py` | 196 clips, 24 stills, 51 enemy stills, 6 failures (known: Taffy's five HALO clips and `maya/defeat`), 4 dissolve envelopes verified |
+| `tests/sprites/check.py` | 196 clips, 24 stills, 51 enemy stills, 7 failures (known: Taffy's five HALO clips, `maya/defeat` and `boggle/celebrate`), 4 dissolve envelopes verified, 24 deaths cut before the recovery |
 | `tests/sprites/clips.py` | 28 passed, 0 failed |
 | `tests/enemy-stills/check.py` | 433 passed, 0 failed, 0 console errors |
 | `tests/greenhouse/check.py` · `tests/design-courage/check.py` | 45 · 129 checked, 0 failures |
