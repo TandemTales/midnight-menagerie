@@ -333,16 +333,44 @@ def save_image(img, path_noext):
 # Emerge, Taffy's Split) gets the same treatment from the same measurement with
 # nothing to re-tune.
 #
-# Only the DEPTH is authored, because how ghostly a clip should go is a look and
-# not a measurement. Measured dip (min/max focus) separates the two kinds of
-# clip cleanly: spectral 0.27 and zoomies 0.39 against 0.51+ for all ten others,
-# so nothing else in the set trips this.
+# WHICH clips may fade is authored too, and that was learned the hard way. The
+# paragraph above was measured over Marmalade's twelve clips ALONE -- "spectral
+# 0.27 and zoomies 0.39 against 0.51+ for all ten others" -- and DIP_THRESHOLD
+# was set in that gap. When the other fifteen Companions and the eight Kids were
+# built (2026-09-11), the same threshold caught 39 more clips, and every one of
+# them was drawn at 35% opacity in the middle of its beat: Bones' attack went to
+# 0.35 as he bit, Crinkle's crow spent 0.95s of its attack under 0.42, Samir
+# punched at 0.35. Measured in the running game, 2026-09-15.
+#
+# AND THE MEASUREMENT CANNOT TELL THE TWO APART. Over all 24 slugs the dip of a
+# real dissolve and of a motion-blurred lunge overlap completely: Boggle's Hide
+# dips to 0.084 and Hush's Shadow Phase to 0.332, while Bones' attack dips to
+# 0.424 and Samir's to 0.348 -- deeper, in the first case, than spectral's 0.266.
+# There is no threshold that keeps the four and drops the 37.
+#
+# So the NAME is the rule, and this table is it: a clip fades only if it is named
+# here, and its value is how ghostly it goes. The measurement still decides the
+# TIMING, which is what it is good at. A new dissolve clip is one line here.
 DIP_THRESHOLD = 0.45
+#
+# The four are the ones Josh's animation brief ("MM animation prompts.docx")
+# asks to stop being solid. Quoted from it, because the reading is the rule:
 FADE_FLOOR = {
-    "spectral": 0.10,   # nearly gone: this one is a disappearance
-    "zoomies": 0.42,    # a speed blur, not a vanishing act
+    # "dissolve into a ghostlike translucent form" -- nearly gone
+    "spectral": 0.10,
+    # "a very fast playful sprint or spectral dash" -- a speed blur, not a vanishing
+    "zoomies": 0.42,
+    # "as though disappearing beneath an unseen bed or into a pocket of darkness"
+    "hide": 0.35,
+    # "melting smoothly into a dark supernatural shadow ... until almost no solid
+    # body remains"
+    "shadow": 0.35,
 }
-FADE_FLOOR_DEFAULT = 0.35
+# NOT here, and each was checked against its own prompt: Boggle's `scare` is
+# "suddenly expanding into an exaggerated frightening display", Taffy's `split`
+# "divides from one candy slime body into two smaller complete blobs", and
+# Crinkle's `fold` folds. Nothing in them stops being solid. A previous pass read
+# all three as dissolves from their mechanics; the brief does not.
 
 # How hard the jitter filter pulls. 1.0 would weld every frame to the smoothed
 # track and kill real motion with it; 0 would disable the step. 0.75 removes
@@ -1073,7 +1101,9 @@ def render_clip(clip, scale, out_noext, name=""):
     med_by = float(np.median([b[3] + shift[i][1] for i, b in enumerate(boxes)]))
 
     focus = np.array(focus)
-    fade = fade_envelope(focus, FADE_FLOOR.get(name, FADE_FLOOR_DEFAULT))
+    # Only a clip named in FADE_FLOOR may dissolve; see the table for why.
+    floor = FADE_FLOOR.get(name)
+    fade = fade_envelope(focus, floor) if floor is not None else None
 
     meta = {
         "file": fname, "frames": n, "cols": acols, "rows": arows, "fw": fw, "fh": fh,
@@ -1556,6 +1586,12 @@ def main():
         # but whose atlas does not is the same lie `animated` is careful not to
         # tell -- and `--only` means a half-built roster is the normal state.
         manifest["kids"] = sorted(s for s in kid_slugs | prev_kids if s in manifest["animated"])
+        # SORTED, so what a partial build writes does not depend on which slugs it
+        # rebuilt. Carried entries keep their old order and rebuilt ones land at
+        # the end, which rewrote the manifest end to end -- 185 lines of reshuffle
+        # for one added clip, on top of the change being reviewed.
+        for k in ("animated", "stills", "enemies", "enemyClips"):
+            manifest[k] = dict(sorted(manifest[k].items()))
         json.dump(manifest, open(os.path.join(OUT, "index.json"), "w"), indent=1)
         print("wrote", OUT)
     return 0

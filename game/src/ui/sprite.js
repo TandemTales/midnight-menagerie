@@ -20,9 +20,12 @@
  *   hold             `defeat` stops on its last frame. The brief: "The final
  *                    frame should be a stable defeated pose and should not
  *                    return to idle."
- *   fade[]           per-frame opacity for the clips that defocus mid-way
- *                    (`spectral`, `zoomies`). Measured, not authored -- see the
- *                    dissolve section of prep_sprites.py.
+ *   fade[]           per-frame opacity, on the clips that are dissolves. WHICH
+ *                    clips those are is authored (prep_sprites.FADE_FLOOR:
+ *                    `spectral`, `zoomies`, `hide`, `shadow`)
+ *                    and only the timing is measured -- a focus dip reads the
+ *                    same on a lunge's motion blur, and once drew 39 clips at
+ *                    35% opacity mid-beat.
  *   ping             a beat that does NOT end where it began. The brief asks
  *                    every clip to finish on the idle pose; the pipeline checks
  *                    (first-vs-last silhouette overlap, prep_sprites.PING_IOU),

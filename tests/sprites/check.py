@@ -39,9 +39,12 @@ an edit to prep_sprites.py that turns it red, so none of them is decorative:
               measured anchor: ANCHOR fails, which is the check standing in for
               "the Companion jumps when it attacks".
   geometry    change ATLAS_COLS without rebuilding: GEOMETRY fails.
-  fade        drop `spectral` from FADE_FLOOR and rebuild: DISSOLVE fails,
-              because the clip that the brief says must "dissolve into a
-              ghostlike translucent form" would no longer lose any opacity.
+  fade        add `attack` to FADE_FLOOR and rebuild bones: DISSOLVE fails,
+              because a motion-blurred lunge is not a dissolve and the gate now
+              says which clips may fade. Drop `spectral` from it and rebuild
+              marmalade: DISSOLVE fails the other way, because the clip the
+              brief says must "dissolve into a ghostlike translucent form" would
+              no longer lose any opacity.
   ping        set prep_sprites.PING_IOU = 0.80 and rebuild mopsy: affection
               ends at IoU 0.78, is marked ping, and this file's 0.60 says it
               must not be, so PING goes red. Lowering the bar proves nothing:
@@ -78,6 +81,8 @@ Image.MAX_IMAGE_PIXELS = None
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 SPRITES = os.path.join(ROOT, "game/assets/sprites")
+sys.path.insert(0, os.path.join(ROOT, "tools"))
+import prep_sprites as P  # noqa: E402  (the build's own table, not a copy of it)
 
 # THE WASH. A clean sprite's low-alpha pixels are a one-or-two pixel
 # antialiased ring around the body, so they are a small fraction of the body
@@ -285,7 +290,15 @@ def check_clip(slug, name, meta, fails, counts):
     # ── DISSOLVE ────────────────────────────────────────────────────────────
     if "fade" in meta:
         f = meta["fade"]
-        if len(f) != meta["frames"]:
+        # ONLY A NAMED CLIP MAY FADE. The focus measurement times a dissolve; it
+        # cannot tell one from a motion-blurred lunge, and on 2026-09-11 it gave
+        # 39 clips an envelope that drew them at 35% opacity mid-beat (Bones'
+        # attack, Samir's punch). prep_sprites.FADE_FLOOR is the list.
+        if name not in P.FADE_FLOOR:
+            fails.append(("DISSOLVE", "%s/%s" % (slug, name),
+                          "not a dissolve clip (prep_sprites.FADE_FLOOR), yet it is drawn at %.0f%% opacity mid-beat"
+                          % (100 * min(f))))
+        elif len(f) != meta["frames"]:
             fails.append(("DISSOLVE", "%s/%s" % (slug, name),
                           "fade has %d entries for %d frames" % (len(f), meta["frames"])))
         elif min(f) >= 0.95:
@@ -293,6 +306,12 @@ def check_clip(slug, name, meta, fails, counts):
                           "fade envelope never dips (min %.2f)" % min(f)))
         else:
             counts["dissolves"] += 1
+    elif name in P.FADE_FLOOR and (meta.get("dip") or 1.0) < P.DIP_THRESHOLD:
+        # the other way round: a dissolve clip whose focus dips but that lost its
+        # envelope -- the brief's "dissolve into a ghostlike translucent form"
+        # silently became a sprite going blurry.
+        fails.append(("DISSOLVE", "%s/%s" % (slug, name),
+                      "a dissolve clip with no fade envelope (dip %.3f)" % meta["dip"]))
 
     # ── PING: measured and acted on must agree ──────────────────────────────
     iou = meta.get("endIoU")
