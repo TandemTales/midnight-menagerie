@@ -1,0 +1,84 @@
+{
+  "round": "r7",
+  "maxBuilders": 6,
+  "briefs": [
+    "docs/ui-pass/BRIEF-r0.md",
+    "docs/ui-pass/BRIEF-r1.md",
+    "docs/ui-pass/BRIEF-r7.md"
+  ],
+  "rubrics": [
+    "docs/ui-pass/RUBRIC.md",
+    "docs/ui-pass/RUBRIC-r1.md",
+    "docs/ui-pass/RUBRIC-r7.md"
+  ],
+  "samples": [
+    "UI/title.png",
+    "UI/mainMenu.png",
+    "UI/selectCompanion.png",
+    "UI/selectKid.png"
+  ],
+  "tracks": [
+    {
+      "key": "dialogs",
+      "name": "DIALOGS",
+      "rule": "refine",
+      "screens": [
+        "opening",
+        "settings",
+        "piles"
+      ],
+      "baseline": "HAZEL",
+      "builders": [
+        {
+          "slot": "a",
+          "code": "MEADOW",
+          "port": 8861,
+          "angle": "LITERAL. Work down the DIALOGS fix list, 1 to 9, in order and exactly as written, reading the branches it names before you copy an idea from them. Every fix visibly done on all three screens at both sizes, and nothing else changed."
+        },
+        {
+          "slot": "b",
+          "code": "PLOVER",
+          "port": 8862,
+          "angle": "ONE ENGRAVED SWITCH. Do every fix, and put your extra effort into Settings, which scores 3 to 4 on background, the lowest of anything in the pass. Every row states its state ONCE, as one engraved control a hand could throw; the three columns stop being three identical bordered boxes; and DANGER is marked the way this house marks a dangerous thing, with a ribbon, a seal and a skull, not a red fill. It must stay a real control set, keyboard and gamepad, at 1280x800."
+        },
+        {
+          "slot": "c",
+          "code": "SORLEY",
+          "port": 8863,
+          "angle": "THE DIALOG SITS OVER THE WORLD. Do every fix, and put your extra effort into the two dialogs as objects laid ON the board rather than pages replacing it: the pile viewer must leave the fight visible around it at 1280x800 with its close and its skull stack clear of the frame, its filters two-piece with a cartouche tag on each, its tray stocked; and the opening must stand on a painted floor with a lantern, its shelf a carved ledge with ends rather than a repeated bead."
+        }
+      ]
+    },
+    {
+      "key": "kids",
+      "name": "KIDS' PLACES",
+      "rule": "expand",
+      "screens": [
+        "lobby",
+        "clubhouse",
+        "atlas"
+      ],
+      "baseline": "PEWTER",
+      "builders": [
+        {
+          "slot": "a",
+          "code": "SEDGE",
+          "port": 8864,
+          "angle": "LITERAL. Work down the KIDS' PLACES fix list, 1 to 11, in order and exactly as written, reading the branches it names before you copy an idea from them. Every fix visibly done on all three screens at both sizes, and nothing else changed. Read the TIMBER section of kit.css before you add a plank: two builders have already written two plank vocabularies into it."
+        },
+        {
+          "slot": "b",
+          "code": "HARROW",
+          "port": 8865,
+          "angle": "A ROOM, NOT A WALLPAPER. Do every fix, and put your extra effort into the three walls, which every judge has called a tiled texture two rounds running. Break the repeat, pool the candlelight so it falls off, let the trunk be a tree the house is built around rather than a strip of grain, and paint a separate window beside the framed house portrait so the players see the mansion from inside the treehouse. The Atlas wall is the weakest surface on the track: dress it and light it."
+        },
+        {
+          "slot": "c",
+          "code": "TINDER",
+          "port": 8866,
+          "angle": "THE EVIDENCE CORNER. Do every fix, and put your extra effort into the Clubhouse as a composed investigation: the lower-left photo captioned and the PETS VANISH clipping given room instead of squeezed against it, the right column below HAUNT LEVEL staged with a large pinned quote card whose pin clears its text, the polaroids sharp enough to sit beside engraved type, and every surface carrying something to read in the right reading order at 1280x800."
+        }
+      ]
+    }
+  ]
+}
