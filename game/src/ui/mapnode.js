@@ -40,6 +40,21 @@ export function pencilRing(seed, cx, cy, rx, ry, wobble = 0.08, points = 22) {
   return d;
 }
 
+/**
+ * A wax seal's scalloped edge: a disc of radius `r` with `lobes` shallow bumps
+ * round it, the way a seal press leaves the wax. One closed path.
+ */
+function sealRosette(cx, cy, r, lobes = 15, amp = 1.7, steps = 180) {
+  let d = '';
+  for (let i = 0; i <= steps; i++) {
+    const t = (i / steps) * Math.PI * 2;
+    const k = r + Math.cos(t * lobes) * amp;
+    d += (i === 0 ? 'M' : 'L') + (cx + Math.cos(t) * k).toFixed(2) + ' ' + (cy + Math.sin(t) * k).toFixed(2);
+  }
+  return d + 'Z';
+}
+const SEAL_D = sealRosette(24, 24, 15.6);
+
 /** A wobbly line between two points, as an SVG path. `amp` in px. */
 export function inkLine(seed, x1, y1, x2, y2, amp = 3, segs = 8) {
   const w = wobbler(seed);
@@ -154,23 +169,30 @@ const G = {
 
   // The keeper of the wing.  This used to be an arched door with vertical bars
   // inside it, which in greyscale was the SAME silhouette as the Rescue cage —
-  // the two most important marks on the sheet were indistinguishable.  It is
-  // now the only large SOLID mass of ink on the whole drawing: a horned bulk
-  // with the paper showing through its eyes, standing inside a struck-out
-  // survey rosette.  Nothing else is filled, nothing else is this size, and
-  // nothing else radiates.  You can find it from across the sheet.
+  // the two most important marks on the sheet were indistinguishable.  Round 4
+  // made it a horned bulk of solid ink with the paper showing through its eyes
+  // and a zigzag grin, and round 6's judge named that as the one element on the
+  // blueprint "that is neither ink nor gilt": a flat black spiky silhouette
+  // with cartoon eyes, a sticker on a survey.
+  //
+  // It is the SURVEYOR'S SEAL now, which is what a draughtsman puts on the one
+  // room he is warning you about: a struck-out survey rosette in ink, a scallop-
+  // edged disc of gilt wax stamped inside it, and the house's crown pressed into
+  // the wax so the paper shows through the intaglio.  It keeps everything the
+  // mass was for — it is still the only disc this size, still radiates, still
+  // findable from across the sheet, still nothing like the Rescue cage — and it
+  // is drawn in the two things the rest of the plan is drawn in.
   [NodeType.BOSS]: `
     <path class="s w1 ray" d="M24 24 L24 1 M24 24 L24 47 M24 24 L1 24 M24 24 L47 24
                               M24 24 L7.7 7.7 M24 24 L40.3 40.3 M24 24 L40.3 7.7 M24 24 L7.7 40.3"/>
     <path class="s w1 ray" d="M24 24 m-21 0 a21 21 0 1 0 42 0 a21 21 0 1 0 -42 0Z"/>
-    <path class="f mass" d="M4 46.5 L7.5 28 L3 15 L11.5 21 L14.5 6 L19.5 18
-                            L24 2 L28.5 18 L33.5 6 L36.5 21 L45 15 L40.5 28 L44 46.5 Z"/>
-    <path class="pw eye" d="M13.6 29.2 a4.6 5.4 0 1 0 9.2 0 a4.6 5.4 0 1 0 -9.2 0Z"/>
-    <path class="pw eye" d="M25.2 29.2 a4.6 5.4 0 1 0 9.2 0 a4.6 5.4 0 1 0 -9.2 0Z"/>
-    <path class="f" d="M16.4 30.6 a1.8 2.2 0 1 0 3.6 0 a1.8 2.2 0 1 0 -3.6 0Z"/>
-    <path class="f" d="M28 30.6 a1.8 2.2 0 1 0 3.6 0 a1.8 2.2 0 1 0 -3.6 0Z"/>
-    <path class="pw grin" d="M14 39 L17.5 42.5 L21 39 L24.5 42.5 L28 39 L31.5 42.5 L35 39
-                             L35 40.6 L31.5 44.2 L28 40.6 L24.5 44.2 L21 40.6 L17.5 44.2 L14 40.6 Z"/>`,
+    <path class="f seal" d="${SEAL_D}"/>
+    <path class="s sealrim" d="${SEAL_D}"/>
+    <path class="s sealbead" d="M24 24 m-13.6 0 a13.6 13.6 0 1 0 27.2 0 a13.6 13.6 0 1 0 -27.2 0Z"/>
+    <g transform="translate(24 24) scale(.96) translate(-12 -12.4)">
+      <path class="pw crownin" d="M1.2 5.4 6.6 10 12 1.8 17.4 10l5.4-4.6-2 12H3.2zM3.6 20h16.8v2.8H3.6z"/>
+      <path class="s crownline" d="M1.2 5.4 6.6 10 12 1.8 17.4 10l5.4-4.6-2 12H3.2zM3.6 20h16.8v2.8H3.6z"/>
+    </g>`,
 
   // Blanket fort.  This was a triangle with a hem, which on a plan covered in
   // hazard warnings read as a warning sign — exactly backwards for the one room

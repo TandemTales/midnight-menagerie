@@ -38,10 +38,15 @@
    between it and the paper. At 1600x900 that fits the sheet at 0.70x, which
    tests/map requires.                                                      */
 .map-screen {
-  --map-side: clamp(46px, calc(8.9vw - 69px), 74px);
+  --map-side: clamp(42px, calc(8.4vw - 66px), 68px);
   --map-cart: clamp(96px, 11.4vh, 106px);
   --map-top: calc(var(--hud-h) + var(--map-cart) - 40px);
-  --map-foot: clamp(50px, 6vh, 56px);
+  --map-foot: clamp(38px, 5vh, 44px);
+  /* Round 6: the rail stands this far OUTSIDE the viewport, so a mount of dark
+     desk runs all the way round the sheet between the paper and the gold — the
+     way every other board on this game seats what it frames. The survey used to
+     fill the rail edge to edge. */
+  --map-mount: clamp(12px, 1.15vw, 19px);
   --map-corner: clamp(150px, 11.8vw, 196px);
   --kit-edge: clamp(6px, .5vw, 9px);
   /* the survey as the candles leave it: warmer and a shade down from the
@@ -64,7 +69,7 @@
 .map-vine {
   top: calc(var(--map-top) + 40px);
   bottom: calc(var(--map-foot) + 96px);
-  width: calc(var(--map-side) - 18px);
+  width: max(24px, calc(var(--map-side) - var(--map-mount) - 10px));
 }
 .map-vine--l { left: 8px; }
 .map-vine--r { right: 8px; }
@@ -134,15 +139,15 @@
   width: 1280px; height: 1280px; pointer-events: none;
   mix-blend-mode: screen;
   background: radial-gradient(circle closest-side,
-    color-mix(in srgb, var(--flame-glow) 13%, transparent) 0%,
-    color-mix(in srgb, var(--flame-500) 6%, transparent) 42%,
+    color-mix(in srgb, var(--flame-glow) 22%, transparent) 0%,
+    color-mix(in srgb, var(--flame-500) 10%, transparent) 42%,
     transparent 70%);
 }
 .map-lamp--warm {
   mix-blend-mode: overlay;
   background: radial-gradient(circle closest-side,
-    color-mix(in srgb, var(--flame-100) 30%, transparent) 0%,
-    color-mix(in srgb, var(--flame-200) 8%, transparent) 34%,
+    color-mix(in srgb, var(--flame-100) 44%, transparent) 0%,
+    color-mix(in srgb, var(--flame-200) 14%, transparent) 34%,
     transparent 60%);
 }
 .map-grain {
@@ -154,10 +159,24 @@
 /* ── the gilt rail, and what stands in front of it ───────────────────────── */
 .map-frame {
   position: absolute; z-index: 4;
-  top: var(--map-top); bottom: var(--map-foot);
-  left: var(--map-side); right: var(--map-side);
-  --fk: 1.15;
-  filter: drop-shadow(0 5px 8px rgba(0, 0, 0, .75));
+  top: calc(var(--map-top) - var(--map-mount));
+  bottom: calc(var(--map-foot) - var(--map-mount));
+  left: calc(var(--map-side) - var(--map-mount));
+  right: calc(var(--map-side) - var(--map-mount));
+  --fk: 1.34;
+  filter: drop-shadow(0 6px 10px rgba(0, 0, 0, .82)) brightness(1.08) saturate(1.06);
+}
+/* the mount inside the rail: the desk in shadow where the sheet does not cover
+   it, so the paper sits IN the frame instead of being cut off by it */
+.map-mount {
+  position: absolute; z-index: 1; pointer-events: none;
+  top: calc(var(--map-top) - var(--map-mount));
+  bottom: calc(var(--map-foot) - var(--map-mount));
+  left: calc(var(--map-side) - var(--map-mount));
+  right: calc(var(--map-side) - var(--map-mount));
+  background:
+    linear-gradient(180deg, rgba(10, 6, 14, .62), rgba(10, 6, 14, .38) 40%, rgba(10, 6, 14, .66));
+  box-shadow: inset 0 0 26px rgba(0, 0, 0, .9);
 }
 .map-props { position: absolute; inset: 0; z-index: 4; pointer-events: none; }
 .map-props > i { position: absolute; display: block; }
@@ -406,11 +425,29 @@
 .mn-art .pl { fill: var(--parchment); stroke: currentColor; }
 .mn-art .pw { fill: var(--parchment); }
 .mn-art .tear { stroke-dasharray: 7 3.5; }
-/* the boss: solid mass, struck-out rosette, paper showing through the face */
-.mn-art .mass { fill: currentColor; stroke: currentColor; stroke-width: 2.2;
-                stroke-linejoin: round; paint-order: stroke; }
+/* the boss: the surveyor's seal — a struck-out rosette in ink, a scallop-edged
+   disc of gilt wax inside it, the house's crown pressed into the wax so the
+   paper shows through the intaglio. Round 6: it was a solid black spiky mass
+   with paper eyes and a grin, the one mark on the plan that was neither ink
+   nor gilt. --mark is the plan's own gilt, the colour its route is drawn in. */
 .mn-art .ray  { stroke-width: 2.2; opacity: .62; stroke-dasharray: 6 5; }
-.mn-art .eye, .mn-art .grin { fill: var(--parchment); stroke: none; }
+.mn-art .seal {
+  fill: var(--mark); stroke: none;
+  filter: drop-shadow(0 1.4px 1.2px rgba(48, 24, 8, .5));
+}
+.mn-art .sealrim {
+  fill: none; stroke: color-mix(in srgb, var(--mark) 52%, var(--ink-900));
+  stroke-width: 1.8; stroke-linejoin: round;
+}
+.mn-art .sealbead {
+  fill: none; stroke: color-mix(in srgb, var(--mark) 40%, var(--ink-900));
+  stroke-width: 1.1; opacity: .8;
+}
+.mn-art .crownin  { fill: color-mix(in srgb, var(--mark) 24%, var(--parchment)); stroke: none; }
+.mn-art .crownline {
+  fill: none; stroke: color-mix(in srgb, var(--mark) 46%, var(--ink-900));
+  stroke-width: 1.5; stroke-linejoin: round;
+}
 
 .mn-ring, .mn-ring2 {
   fill: none; stroke: var(--mark); stroke-width: 4.4;
@@ -571,6 +608,32 @@
     color-mix(in srgb, var(--parchment) 70%, transparent) 60%, transparent 80%);
 }
 .map-node--boss { z-index: 3; }
+/* Round 6: the seal is the one lit thing in the icon field — the draughtsman's
+   candle stood over the room he is warning you about. The clearing under it is
+   warm paper, not white, and a slow bloom breathes off the wax. */
+.map-node--boss .mn-pool {
+  inset: -42%;
+  background: radial-gradient(circle closest-side,
+    color-mix(in srgb, var(--parchment) 78%, var(--flame-100)) 0%,
+    color-mix(in srgb, var(--parchment) 86%, var(--flame-200)) 38%,
+    color-mix(in srgb, var(--parchment) 74%, transparent) 62%,
+    transparent 82%);
+}
+.map-node--boss .mn-in::after {
+  content: ''; position: absolute; inset: -58%; z-index: -1; pointer-events: none;
+  border-radius: 50%;
+  background: radial-gradient(circle closest-side,
+    color-mix(in srgb, var(--flame-glow) 34%, transparent) 0%,
+    color-mix(in srgb, var(--flame-500) 13%, transparent) 44%,
+    transparent 74%);
+  mix-blend-mode: screen;
+  animation: map-sealglow 5.4s ease-in-out infinite;
+}
+.map-screen.is-still .map-node--boss .mn-in::after { animation: none; }
+@media (prefers-reduced-motion: reduce) {
+  :root:not([data-reduce-motion='0']) .map-node--boss .mn-in::after { animation: none; }
+}
+@keyframes map-sealglow { 0%, 100% { opacity: 1; } 46% { opacity: .66; } }
 /* The boss's name on a kit nameplate — the select boards' dark cartouche with
    its gold rim, lettered in engraved caps — with BOSS struck under it as the
    plate's epithet. It is the one label on the sheet that is not pencil: it is
