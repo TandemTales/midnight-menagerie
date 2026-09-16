@@ -96,6 +96,8 @@ so round 2 runs six at once, as round 1 did.
 | 5 | KIDS' PLACES Lobby / Clubhouse / Atlas | GORSE 6.89 · ELDER 6.78 · FINCH 6.72 · the screens before 5.89 | per screen, 3 judges: Lobby GORSE, Clubhouse ELDER, Atlas GORSE | `25a5111` |
 | 6 | POLISH the six boards | ROWAN 6.83 · **the screens before 6.83** · TEASEL 6.78 · SORREL 6.17 | CONVERGED: three judges, three winners, one of them the baseline. The ranking tiebreak returned TEASEL, below the baseline. ROWAN merged instead for the HUD rail and the Shop (3 of 3), its `rest` reverted | `2e0de84` |
 | 6 | COMBAT, three boards | CAMPION 7.33 · HAWTHORN 7.17 · the screen before 6.50 · JUNIPER 6.00 | CAMPION, both judges; HAWTHORN's enemy condition tray grafted in | `4718b54` |
+| 7 | DIALOGS opening / Settings / pile viewer | SORLEY 7.67 · PLOVER 7.17 · MEADOW 7.00 · the screens before 5.17 | SORLEY, both judges, all three screens. **+2.50**, the largest gain since round 3; its Settings scored 8.0 | `d5cd11f` |
+| 7 | KIDS' PLACES Lobby / Clubhouse / Atlas | HARROW 7.56 · TINDER 7.33 · SEDGE 7.00 · the screens before 6.44 | per screen, 3 judges: Lobby HARROW, Clubhouse TINDER, Atlas HARROW | `40b2a1b`, `05c1916` |
 
 **Scores anchor to the candidates beside them.** Round 0's winner scored 7.0 in
 round 0 and 5.58 as round 1's baseline: the judges grew stricter as the field
@@ -112,6 +114,7 @@ Against their own baselines:
 | 4 | POLISH +0.47, COMBAT +1.75, DIALOGS +2.08, KIDS' PLACES +1.00 | — |
 | 5 | POLISH +0.83, COMBAT +0.44, DIALOGS +1.33, KIDS' PLACES +1.00 | — |
 | 6 | **POLISH +0.00**, COMBAT +0.83 | — |
+| 7 | DIALOGS **+2.50**, KIDS' PLACES +1.11 | — |
 
 Converting a screen moves it about four points. Refining one moves it half a point
 to two points, more when the brief names concrete defects the judges can see
@@ -162,5 +165,37 @@ system) because the judges asked for pieces of them: WICK's star-glyph ribbon
 headers and moonlit windows, MOTH's crest medallions and card nameplates.
 
 The backgrounds cannot pass until they are paintings: both judges hold every
-placeholder at about 5. `docs/art/background-prompts.md` is the list Josh paints
+placeholder at about 5.
+
+**And a measured account of WHY, 2026-09-16.** The judges' words for six rounds
+were "a flat, evenly lit tiled texture", "no painted depth or candle falloff",
+"wallpaper behind cards". Measured against the samples, that is one defect.
+Over the darkest tenth of each image:
+
+  Josh's four samples   rgb(0.3,0.2,0.2) — (1.2,1.0,2.3) — (0.5,0.4,2.5)
+                        — (3.8,3.4,3.7), min channel 0.1 to 2.9
+  our ten screens       rgb(7.8,5.2,7.8) and alike, min channel 3.9 to 5.1
+
+Every screen sat about five levels off the floor: nothing in the game was ever
+black. It cost twice, because saturation is (max-min)/max and a minimum channel
+that cannot reach 0 caps S at 0.73 — exactly where our screens topped out
+(0.61-0.73) against the samples' 0.85-1.00. And that is where the style lives:
+57% of `title`'s pixels at S >= 0.85 sit below V 0.05, and 27% of
+`selectCompanion`'s. Their colour is in the DARKS, a near-black that is purely
+violet; ours was a grey.
+
+`57da26a` took the floor out (prep_ui_paint's unlit pass, --kit-void,
+--kit-ground-0, the vignette's terminal stop, combat's corner). Min channel
+3.9-5.1 -> 2.0-3.4, shadow saturation 0.33-0.40 -> 0.48-0.62, dynamic range
+16-20x -> 21-32x, S p95 0.67-0.70 -> 0.71-0.80, and the ground's lit-to-unlit
+ratio 3.2-3.8x -> 4.1-4.9x against mainMenu's 4.5x. Still short: the ground's
+column-to-column spread is 0.021-0.024 against the samples' 0.034-0.082, so the
+light pools less across the width than theirs does.
+
+**One measurement lied, and looking caught it.** Cutting combat's full-frame
+violet wash from .16 to .08 alpha gave the best black-floor number of the whole
+pass — and turned the fight sepia, because the render under it is warm brown
+and that violet is the only thing tying it to a purple-black house. The alpha
+went back and the colour darkened instead. **Put the before and after side by
+side; a metric moving the right way is not the same as the screen improving.** `docs/art/background-prompts.md` is the list Josh paints
 from, and `tools/prep_backgrounds.py` builds them into `game/assets/backgrounds/`.

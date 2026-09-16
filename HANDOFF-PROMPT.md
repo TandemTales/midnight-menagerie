@@ -1,4 +1,4 @@
-# Handoff — round 6 is merged; POLISH has converged, and the backgrounds are the wall
+# Handoff — round 7 is merged; every screen has now been through the loop, and the backgrounds are the wall
 
 You are picking up Midnight Menagerie on `dev`. Everything below is pushed.
 
@@ -12,48 +12,39 @@ from every judge.
 
 ## FIRST, BEFORE ANYTHING
 
-**1. POLISH has run out, and that is the round's real finding.** Round 6 ran two
-tracks. COMBAT gained +0.83 and merged cleanly. POLISH did not: for the first time
-in the pass the BASELINE tied for first (6.83, level with ROWAN, above the
-tiebreak's own winner TEASEL at 6.78), one of the three judges named the baseline
-outright, and the three judges named three different winners. Four candidates and
-the screens they started from sat inside 0.67 — noise. README's "Round 6 is
-where POLISH ran out" has the numbers and what to do about it.
+**1. Round 7 landed well, and all fifteen screens have now been through the loop.**
+DIALOGS' SORLEY took 7.67 against a 5.17 baseline — **+2.50, the largest gain
+since round 3** — winning all three screens from both judges, with Settings at
+8.0, a score only one other screen in the pass has reached. KIDS' PLACES gained
++1.11 and merged per screen: Lobby HARROW, Clubhouse TINDER, Atlas HARROW.
 
-So **do not brief another POLISH refine round of the same shape.** It will cost
-six figures of tokens to move nothing. What is left:
+So there is no track with an unspent fix list any more. What a round 8 would be:
 
-- **DIALOGS and KIDS' PLACES never ran in round 6** and their round-5 fix lists
-  are unspent (see 2 below). They are the two tracks with headroom: DIALOGS gained
-  +1.33 in round 5 and KIDS' PLACES +1.00, and Settings still scores 3-4 on
-  background, the worst in the pass. **Round 7 is those two tracks.**
-- **One POLISH fix is still open, and the brief had it wrong.** Fix 7 asked for
-  the Safe Room's four option plates to become four painted objects. ROWAN did
-  exactly that — velvet, walnut, fired enamel — and two judges marked it
-  DOWN ("brown and rose option panels"). They were right: real materials, wrong
-  palette. Its `rest.css` block is reverted on `dev` and the change is still on
-  `ui/r6-polish-a` if someone wants to retune it. Re-ask as "four materials WITHIN
-  the palette".
-- **Everything else on POLISH waits for paint.** See 4.
+- **DIALOGS and KIDS' PLACES again**, from round 7's own verdicts. Read them with
+  `python tools/ui_pass_digest.py <wby5zlql9.output> dialogs --worst SORLEY` and
+  `... kids --worst HARROW` (and `--worst TINDER` for the Clubhouse, which is
+  TINDER's screen now). The fix lists are short and specific — SORLEY's toggle
+  knobs hang outside their tracks, its CLEAR plate is an orphan in the filter
+  rail, the EXPEDITION panel's lower half is empty.
+- **POLISH is still converged** (see round 6, below) and COMBAT has had no round
+  since 6. Neither is where the value is.
+- **Honestly: the loop is now bounded by 3 below.** Round 7's judges said it
+  outright — "the ceiling is the ground: every wall, floor and corkboard here
+  is a render, not a painting at mainMenu.png's level, which pins the background
+  score at 5-6 everywhere and holds the whole track near 7."
 
-**2. What round 7's brief is written from.** DIALOGS' and KIDS' PLACES' round-5
-verdicts, which nothing has spent yet, live in `w4c312fpu.output` in session
-`f921e739`'s tasks folder under
-`%TEMP%\claude\C--Users-Josh-OneDrive-Desktop-Tandem-Tales-Midnight-Menagerie\f921e739-3596-4b9f-b0d2-9e78e6b37796\tasks\`.
-Read them with `python tools/ui_pass_digest.py <file> dialogs --worst BIRCH` and
-`... kids --worst GORSE`. Round 6's own verdicts are in this session's
-`wei4yfxc4.output`; `--worst ROWAN` and `--worst CAMPION` give what round 6's
-winners still get marked down for, which is what a round 8 POLISH/COMBAT pass
-would be written from.
+**2. Where every round's verdicts live.** Round 7: `wby5zlql9.output` in THIS
+session's tasks folder. Round 6: `wei4yfxc4.output`, same place. Rounds 4-5:
+`w4c312fpu.output` and `wcudg6f1y.output` in session `f921e739`'s. All read with
+`tools/ui_pass_digest.py <file> <track> [--worst CODE] [--notes CODE,...]`.
 
-`docs/ui-pass/BRIEF-r6.md`, `RUBRIC-r6.md` and `round-6.args.json` are the
-template: copy them to `-r7`, keep the two-track shape, and keep the two
-paragraphs BRIEF-r6 added — the one telling builders the creatures are
-animated so two captures of one board catch different idle frames, and the one
-telling them not to spend the round painting rooms in CSS.
+`docs/ui-pass/BRIEF-r7.md`, `RUBRIC-r7.md` and `round-7.args.json` are the
+template: copy to `-r8`, keep the two-track shape, and keep the paragraphs about
+the animated creatures and about not painting rooms in CSS. Codes used so far are
+listed across `round-*.args.json`; check a new one is unused before you assign it.
 
-**3. The backgrounds are the wall, and they are Josh's to paint.** Six rounds, and
-no candidate has scored above 8 on any screen. Every judge gives the same reason
+**3. The backgrounds are the wall, and they are Josh's to paint.** Seven rounds,
+and no candidate has scored above 8 on any screen. Every judge gives the same reason
 in their own words: the room behind the board is a render, not a painting. They
 score the background dimension 5 or 6 on every POLISH and COMBAT candidate,
 winner or loser, and 3 or 4 on the dialogs — and they score it the same on the
@@ -69,6 +60,22 @@ is 9 from every judge. **It cannot be reached by more rounds of this kind.**
   "The bar, and what is holding it" is the wording.
 - This is worth telling Josh again whenever he asks what is left. It is the one
   thing that lifts every screen at once, and it is not something an agent can do.
+- **What the procedural ground CAN do was done on 09-16 (`57da26a`), and it is
+  measured.** Our darkest tenth ran rgb(7.8,5.2,7.8) against the samples'
+  rgb(0.3,0.2,0.2)..(3.8,3.4,3.7): every screen sat five levels off the floor, and
+  because saturation is (max-min)/max that ALSO capped our colour at 0.73 against
+  their 0.85-1.00. One floor, both symptoms. Taking it out moved the min channel
+  to 2.0-3.4, shadow saturation to 0.48-0.62 and the dynamic range to 21-32x.
+  README's "And a measured account of WHY" carries the numbers and the method.
+- **The trap in that work, which cost an hour:** cutting combat's full-frame
+  violet wash gave the best black-floor number of the pass and turned the fight
+  SEPIA — the render under it is warm brown and that violet is the only thing
+  tying it to a purple-black house. **Put before and after side by side. A metric
+  moving the right way is not the same as the screen improving.**
+- Still short of the samples: the ground's column-to-column spread is 0.021-0.024
+  against their 0.034-0.082. Their light pools harder across the width. That is
+  the next procedural thing worth trying, and it is in the light-slot positions
+  the scenes set (`--wl*-x/y` in `.kit-ground__warm`), not in the texture.
 
 **4. The enemies animate (09-15); round 6's COMBAT brief says how, and round 7's
 must keep saying it.** Josh's call was "do it after round 5 merges". His sheets in
