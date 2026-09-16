@@ -1,0 +1,159 @@
+{
+ "clips": {
+  "attack": {
+   "file": "attack.webp",
+   "frames": 22,
+   "cols": 8,
+   "rows": 3,
+   "fw": 224,
+   "fh": 260,
+   "anchor": [
+    112.07,
+    257.47
+   ],
+   "source": "SS_pantryMimic_attack.png",
+   "sourceFrames": 81,
+   "matte": "CONTAM",
+   "bg": [
+    176.7,
+    172.1,
+    172.2
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": -23.9,
+   "dehalo": false,
+   "warm": 70.0,
+   "dewhite": false,
+   "dip": 0.497,
+   "untail": false,
+   "deblack": false,
+   "endIoU": 0.979,
+   "scale": 0.7485,
+   "unit": 256.0,
+   "loop": false,
+   "fps": 16.3,
+   "hold": false,
+   "sha1": "9a51c5a5d0755061"
+  },
+  "defeat": {
+   "file": "defeat.webp",
+   "frames": 22,
+   "cols": 8,
+   "rows": 3,
+   "fw": 290,
+   "fh": 296,
+   "anchor": [
+    147.88,
+    276.64
+   ],
+   "source": "SS_pantryMimic_defeat.png",
+   "sourceFrames": 81,
+   "matte": "CONTAM",
+   "bg": [
+    168.6,
+    163.4,
+    163.2
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": -23.2,
+   "dehalo": false,
+   "warm": 50.0,
+   "dewhite": false,
+   "dip": 0.126,
+   "untail": false,
+   "deblack": false,
+   "defeatCut": 21,
+   "endIoU": 0.406,
+   "scale": 0.7485,
+   "unit": 256.0,
+   "loop": false,
+   "fps": 40.0,
+   "hold": true,
+   "sha1": "25a1f8eec59e0698"
+  },
+  "hurt": {
+   "file": "hurt.webp",
+   "frames": 22,
+   "cols": 8,
+   "rows": 3,
+   "fw": 267,
+   "fh": 261,
+   "anchor": [
+    137.67,
+    258.25
+   ],
+   "source": "SS_pantryMimic_hurt.png",
+   "sourceFrames": 81,
+   "matte": "CONTAM",
+   "bg": [
+    172.8,
+    167.7,
+    167.1
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": -20.0,
+   "dehalo": false,
+   "warm": 70.0,
+   "dewhite": false,
+   "dip": 0.288,
+   "untail": false,
+   "deblack": false,
+   "endIoU": 0.991,
+   "scale": 0.7485,
+   "unit": 256.0,
+   "loop": false,
+   "fps": 16.3,
+   "hold": false,
+   "sha1": "f2e992e70a99a20b"
+  },
+  "idle": {
+   "file": "idle.webp",
+   "frames": 22,
+   "cols": 8,
+   "rows": 3,
+   "fw": 227,
+   "fh": 260,
+   "anchor": [
+    113.59,
+    258.25
+   ],
+   "source": "SS_pantryMimic_idle.png",
+   "sourceFrames": 81,
+   "matte": "CONTAM",
+   "bg": [
+    188.5,
+    184.7,
+    186.1
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": -22.0,
+   "dehalo": false,
+   "warm": 75.0,
+   "dewhite": false,
+   "dip": 0.458,
+   "untail": false,
+   "deblack": false,
+   "endIoU": 0.993,
+   "scale": 0.7485,
+   "unit": 256.0,
+   "loop": true,
+   "fps": 5.43,
+   "hold": false,
+   "sha1": "d4d85fa891f351e5"
+  }
+ },
+ "scale": 0.7485,
+ "unit": 256.0
+}

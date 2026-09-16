@@ -1,0 +1,159 @@
+{
+ "clips": {
+  "attack": {
+   "file": "attack.webp",
+   "frames": 22,
+   "cols": 8,
+   "rows": 3,
+   "fw": 358,
+   "fh": 291,
+   "anchor": [
+    169.0,
+    287.0
+   ],
+   "source": "SS_ovenMaw_attack.png",
+   "sourceFrames": 81,
+   "matte": "CONTAM",
+   "bg": [
+    170.3,
+    157.5,
+    161.7
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": -32.1,
+   "dehalo": false,
+   "warm": 199.0,
+   "dewhite": false,
+   "dip": 0.407,
+   "untail": false,
+   "deblack": false,
+   "endIoU": 0.994,
+   "scale": 1.0,
+   "unit": 286.0,
+   "loop": false,
+   "fps": 16.3,
+   "hold": false,
+   "sha1": "a29d29bc5c9aaee0"
+  },
+  "defeat": {
+   "file": "defeat.webp",
+   "frames": 22,
+   "cols": 8,
+   "rows": 3,
+   "fw": 360,
+   "fh": 354,
+   "anchor": [
+    171.98,
+    347.58
+   ],
+   "source": "SS_ovenMaw_defeat.png",
+   "sourceFrames": 81,
+   "matte": "CONTAM",
+   "bg": [
+    171.0,
+    167.9,
+    170.4
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": -21.9,
+   "dehalo": false,
+   "warm": 76.0,
+   "dewhite": false,
+   "dip": 0.151,
+   "untail": false,
+   "deblack": false,
+   "defeatCut": 33,
+   "endIoU": 0.65,
+   "scale": 1.0,
+   "unit": 286.0,
+   "loop": false,
+   "fps": 25.88,
+   "hold": true,
+   "sha1": "8fea08eea97bf0f5"
+  },
+  "hurt": {
+   "file": "hurt.webp",
+   "frames": 22,
+   "cols": 8,
+   "rows": 3,
+   "fw": 377,
+   "fh": 332,
+   "anchor": [
+    169.0,
+    322.62
+   ],
+   "source": "SS_ovenMaw_hurt.png",
+   "sourceFrames": 81,
+   "matte": "CONTAM",
+   "bg": [
+    167.4,
+    165.8,
+    170.4
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": -26.7,
+   "dehalo": false,
+   "warm": 80.0,
+   "dewhite": false,
+   "dip": 0.163,
+   "untail": false,
+   "deblack": false,
+   "endIoU": 0.993,
+   "scale": 1.0,
+   "unit": 286.0,
+   "loop": false,
+   "fps": 16.3,
+   "hold": false,
+   "sha1": "df2c492bd7c12546"
+  },
+  "idle": {
+   "file": "idle.webp",
+   "frames": 22,
+   "cols": 8,
+   "rows": 3,
+   "fw": 338,
+   "fh": 311,
+   "anchor": [
+    169.0,
+    308.09
+   ],
+   "source": "SS_ovenMaw_idle.png",
+   "sourceFrames": 81,
+   "matte": "CONTAM",
+   "bg": [
+    174.7,
+    171.7,
+    174.8
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": -29.5,
+   "dehalo": false,
+   "warm": 86.0,
+   "dewhite": false,
+   "dip": 0.508,
+   "untail": false,
+   "deblack": false,
+   "endIoU": 0.993,
+   "scale": 1.0,
+   "unit": 286.0,
+   "loop": true,
+   "fps": 5.43,
+   "hold": false,
+   "sha1": "fca01a4c174d117b"
+  }
+ },
+ "scale": 1.0,
+ "unit": 286.0
+}

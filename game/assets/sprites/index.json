@@ -788,6 +788,12 @@
   }
  },
  "enemyClips": {
+  "ancient-topiary": [
+   "attack",
+   "defeat",
+   "hurt",
+   "idle"
+  ],
   "blanket-blob": [
    "attack",
    "defeat",
@@ -898,6 +904,18 @@
    "hurt",
    "idle"
   ],
+  "oven-maw": [
+   "attack",
+   "defeat",
+   "hurt",
+   "idle"
+  ],
+  "pantry-mimic": [
+   "attack",
+   "defeat",
+   "hurt",
+   "idle"
+  ],
   "patchwork-giant": [
    "attack",
    "defeat",
@@ -911,6 +929,18 @@
    "idle"
   ],
   "red-carpet-runner": [
+   "attack",
+   "defeat",
+   "hurt",
+   "idle"
+  ],
+  "slipper-skitter": [
+   "attack",
+   "defeat",
+   "hurt",
+   "idle"
+  ],
+  "the-wardrobe": [
    "attack",
    "defeat",
    "hurt",

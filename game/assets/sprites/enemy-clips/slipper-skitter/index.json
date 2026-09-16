@@ -1,0 +1,159 @@
+{
+ "clips": {
+  "attack": {
+   "file": "attack.webp",
+   "frames": 22,
+   "cols": 8,
+   "rows": 3,
+   "fw": 368,
+   "fh": 272,
+   "anchor": [
+    176.1,
+    267.58
+   ],
+   "source": "SS_slipperSkitter_attack.png",
+   "sourceFrames": 81,
+   "matte": "CONTAM",
+   "bg": [
+    212.9,
+    204.2,
+    204.5
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": -14.7,
+   "dehalo": false,
+   "warm": 63.0,
+   "dewhite": false,
+   "dip": 0.494,
+   "untail": false,
+   "deblack": false,
+   "endIoU": 0.992,
+   "scale": 1.0,
+   "unit": 201.0,
+   "loop": false,
+   "fps": 16.3,
+   "hold": false,
+   "sha1": "c21dffe2a7bda4cf"
+  },
+  "defeat": {
+   "file": "defeat.webp",
+   "frames": 13,
+   "cols": 7,
+   "rows": 2,
+   "fw": 350,
+   "fh": 260,
+   "anchor": [
+    174.33,
+    255.88
+   ],
+   "source": "SS_slipperSkitter_defeat.png",
+   "sourceFrames": 81,
+   "matte": "CONTAM",
+   "bg": [
+    212.7,
+    204.5,
+    205.4
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": -14.4,
+   "dehalo": false,
+   "warm": 59.0,
+   "dewhite": false,
+   "dip": 0.644,
+   "untail": false,
+   "deblack": false,
+   "defeatCut": 12,
+   "endIoU": 0.415,
+   "scale": 1.0,
+   "unit": 201.0,
+   "loop": false,
+   "fps": 40.0,
+   "hold": true,
+   "sha1": "6c26f5aa722c6148"
+  },
+  "hurt": {
+   "file": "hurt.webp",
+   "frames": 22,
+   "cols": 8,
+   "rows": 3,
+   "fw": 378,
+   "fh": 313,
+   "anchor": [
+    173.5,
+    308.0
+   ],
+   "source": "SS_slipperSkitter_hurt.png",
+   "sourceFrames": 81,
+   "matte": "CONTAM",
+   "bg": [
+    204.0,
+    196.2,
+    196.3
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": -17.1,
+   "dehalo": false,
+   "warm": 61.0,
+   "dewhite": false,
+   "dip": 0.385,
+   "untail": false,
+   "deblack": false,
+   "endIoU": 0.994,
+   "scale": 1.0,
+   "unit": 201.0,
+   "loop": false,
+   "fps": 16.3,
+   "hold": false,
+   "sha1": "e59203a89eee7755"
+  },
+  "idle": {
+   "file": "idle.webp",
+   "frames": 22,
+   "cols": 8,
+   "rows": 3,
+   "fw": 349,
+   "fh": 212,
+   "anchor": [
+    172.54,
+    203.29
+   ],
+   "source": "SS_slipperSkitter_idle.png",
+   "sourceFrames": 81,
+   "matte": "CONTAM",
+   "bg": [
+    209.6,
+    201.1,
+    202.4
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": -26.5,
+   "dehalo": false,
+   "warm": 59.0,
+   "dewhite": false,
+   "dip": 0.633,
+   "untail": false,
+   "deblack": false,
+   "endIoU": 0.993,
+   "scale": 1.0,
+   "unit": 201.0,
+   "loop": true,
+   "fps": 5.43,
+   "hold": false,
+   "sha1": "6eb630459d1546e7"
+  }
+ },
+ "scale": 1.0,
+ "unit": 201.0
+}

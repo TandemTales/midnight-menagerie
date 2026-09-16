@@ -146,6 +146,12 @@ ENEMY_ALIAS = {
     "conservatory": "carnivorous-conservatory",
     "rug": "red-carpet-runner",
     "suitcase": "lost-luggage",
+    # 2026-09-16. `grandWardrobe` would resolve to `grand-wardrobe`, which is no
+    # EnemyDef, and the house has two wardrobes. Matched by eye against both
+    # stills: the sheet's idle frame IS `the-wardrobe` -- the multi-door cabinet
+    # with lit eyes in every compartment, clawed arms out of three doors and its
+    # drawers hanging open. `wardrobe-guest` is the other one, shut and cobwebbed.
+    "grandWardrobe": "the-wardrobe",
 }
 
 # AN ENEMY IS DRAWN FAR BIGGER THAN A COMPANION, so its still keeps the
