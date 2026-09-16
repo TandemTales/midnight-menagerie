@@ -164,10 +164,26 @@
 
   /* --- The kit: Josh's painted boards (ui/kit.css) ------------------------
      Measured off UI/selectKid.png and UI/selectCompanion.png, not invented.
-     Grounds are near-black aubergine, never flat black; gold is antique brass
-     (shadow / body / highlight), never yellow; display type is lavender.     */
-  --kit-void:      #08060b;   /* the gutters between painted frames */
-  --kit-ground-0:  #0d0911;   /* board ground, deepest */
+     Grounds are near-black aubergine; gold is antique brass (shadow / body /
+     highlight), never yellow; display type is lavender.
+
+     THE DEEPEST TWO GO TO BLACK, and "never flat black" was the one thing here
+     that was not measured. It is true of the aubergine the light reaches
+     (--kit-ground-1, below) and it was wrong about the void. Measured over the
+     darkest tenth of each image:
+
+       Josh's four samples   rgb(0.3,0.2,0.2) · (1.2,1.0,2.3) · (0.5,0.4,2.5)
+                             · (3.8,3.4,3.7) -- min channel 0.1 to 2.9
+       our ten screens       rgb(7.8,5.2,7.8) and alike -- min channel 3.9-5.1
+
+     Every screen we draw is lifted about five levels off the floor, and it is
+     this token that does it: `.kit-board .rm-vig` drives every board's corner to
+     88% of --kit-void, so the void IS our black. The lift costs twice over,
+     because saturation is (max-min)/max: a minimum channel that cannot reach 0
+     caps S at 0.73, which is exactly where our screens topped out (0.61-0.73)
+     against the samples' 0.85-1.00. One floor, both symptoms.                */
+  --kit-void:      #020109;   /* the gutters between painted frames, and our black */
+  --kit-ground-0:  #080510;   /* board ground, deepest */
   --kit-ground-1:  #1a1022;   /* board ground, where the light reaches */
   --kit-panel:     #15111a;   /* inside a gold-railed panel (sampled 17,15,20) */
   --kit-panel-hi:  #1f1826;

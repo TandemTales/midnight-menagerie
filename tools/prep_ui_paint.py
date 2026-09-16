@@ -486,11 +486,22 @@ def room():
         col = col * (1 + (brush * 0.07 + brush2 * 0.045 + dabs * 0.06)[..., None])
         return np.clip(col, 0, 255)
 
-    # in the dark: the room lost in a cold violet shadow, its top in soot
+    # in the dark: the room lost in a cold violet shadow, its top in soot.
+    #
+    # IT HAS TO GO TO BLACK, and it did not. Measured over the darkest tenth of
+    # each image, Josh's four samples sit at a minimum channel of 0.1 to 2.9 and
+    # our ten screens at 3.9 to 5.1 -- every screen lifted about five levels off
+    # the floor. This pass is half of that (tokens.css --kit-void is the other
+    # half), and the lift is what makes the wall read as an evenly lit texture
+    # rather than a room with light in it: a candle cannot pool on a wall that is
+    # already glowing. `amb` is the term that does it -- it hands every surface a
+    # share of its albedo whatever the light is doing -- so it comes down, the
+    # falloffs deepen to carry the difference, and `gain` goes up to keep what
+    # the light DOES reach as bright as it was.
     dark = lit(alb, hgt, gloss, np.array([0, -0.4, 0.92], np.float32),
-               (0.58, 0.52, 0.78), 0.32, 0.36)
-    vfall = (0.46 + 0.54 * smooth(0, 560, yy)) * (1 - 0.5 * smooth(Y_FLOOR, H, yy))
-    hfall = 1 - 0.24 * (np.abs(xx - W / 2) / (W / 2)) ** 2
+               (0.58, 0.52, 0.78), 0.20, 0.42)
+    vfall = (0.30 + 0.70 * smooth(0, 560, yy)) * (1 - 0.58 * smooth(Y_FLOOR, H, yy))
+    hfall = 1 - 0.45 * (np.abs(xx - W / 2) / (W / 2)) ** 2
     dark = dark * (vfall * hfall)[..., None]
     dark = finish(dark, (40, 30, 52), 0.25)
     # candle light, grazing down the wall from sconces above eye level

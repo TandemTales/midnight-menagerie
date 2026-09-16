@@ -167,7 +167,7 @@
 .kit-board.has-backdrop .kit-ground::before { opacity: 0; }
 .kit-board .rm-vig {
   background:
-    radial-gradient(115% 92% at 50% 44%, transparent 40%, color-mix(in srgb, var(--kit-void) 88%, transparent) 100%),
+    radial-gradient(115% 92% at 50% 44%, transparent 40%, color-mix(in srgb, var(--kit-void) 94%, transparent) 100%),
     linear-gradient(to bottom, transparent 72%, color-mix(in srgb, var(--kit-void) 65%, transparent) 100%);
 }
 

@@ -56,11 +56,31 @@
 .cb-dress__vignette {
   position: absolute; inset: 0;
   /* the edges fall into the boards' aubergine, not into grey: the room under
-     it is warm brown and moon-blue, and the samples' ground is purple-black */
+     it is warm brown and moon-blue, and the samples' ground is purple-black.
+
+     AND THE FLAT WASH AT THE END USED TO BE THIS SCREEN'S BLACK. A full-frame
+     `rgba(46,22,66,.16)` laid OVER everything puts a floor of .16*(46,22,66) =
+     rgb(7.4,3.5,10.6) under every pixel of the fight, and nothing can be darker
+     than the scrim in front of it. Measured on the darkest tenth of a Scuffle,
+     combat came out at a minimum channel of 7.0 against 3.2-3.6 on the boards
+     and 0.1-2.9 on Josh's four samples -- the lightest black in the game, on the
+     screen the player is in longest. It costs saturation too, because S is
+     (max-min)/max and a minimum that cannot reach 0 caps it.
+
+     The wash still has a job, and DROPPING ITS ALPHA WAS THE WRONG WAY TO DO
+     THIS. At .08 the floor fell to rgb(2.6,1.2,3.8) and the fight went sepia:
+     the render under it is warm brown, the violet is what ties it to a
+     purple-black house, and half the violet is half the tie. Caught by looking,
+     not by the number -- the black floor improved and the screen got worse.
+     So the alpha stays where it was and the COLOUR darkens instead: the same
+     coverage pulling toward a deeper violet tints as strongly and floors at
+     rgb(5.3,2.4,7.7) instead of rgb(7.4,3.5,10.6). The corner takes --kit-void,
+     which is what every other board falls into, instead of its own
+     hand-written near-black. */
   background:
-    radial-gradient(120% 96% at 50% 38%, transparent 46%, rgba(20, 9, 28, .5) 82%, rgba(10, 5, 15, .86) 100%),
-    linear-gradient(to bottom, rgba(12, 6, 18, .6) 0, transparent 15%, transparent 62%, rgba(12, 6, 18, .72) 100%),
-    linear-gradient(rgba(46, 22, 66, .16), rgba(46, 22, 66, .16));
+    radial-gradient(120% 96% at 50% 38%, transparent 46%, rgba(14, 6, 20, .52) 82%, color-mix(in srgb, var(--kit-void) 90%, transparent) 100%),
+    linear-gradient(to bottom, rgba(9, 4, 14, .62) 0, transparent 15%, transparent 62%, rgba(9, 4, 14, .74) 100%),
+    linear-gradient(rgba(33, 15, 48, .16), rgba(33, 15, 48, .16));
 }
 /* the corners are dressing, never a place for a reading: they sit under the
    House Rules rail and a teammate's panel, which both paint over them */
