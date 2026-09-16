@@ -1033,12 +1033,19 @@ export class Hand {
        runs on every hover). The boxes are scenes/combat.css's, in design
        units: a covered card's rules run 45u narrower than its strip and 104u
        tall; the last card's run 170u by 104u. Its name is fitted the same
-       way to the plate cut down to the strip, 19u narrower than the strip. */
+       way to the plate cut down to the strip, 19u narrower than the strip.
+       ROUND 6: the boxes were measured conservatively (45u of slack on a strip
+       the rules panel only spends 31u of) and the names were fitted from 17.5u
+       down, so "Bite" set a third larger than "Shake, Boy!" beside it and the
+       row read as nine type sizes. The rules get the width they actually have,
+       and a crowded fan's names are fitted over a narrower band — nothing
+       reaches for 17.5u when its neighbour cannot — so the row reads as one
+       row. CardView#fitName caps the wrap at two lines either way. */
     if (F.crowded) {
       const strip = 224 * Math.min(1, F.step / F.cw);
       for (const s of this.slots) {
-        s.view.fitRules?.(s === last ? 170 : strip - 45, 104);
-        if (s !== last) s.view.fitName?.(strip - 19);
+        s.view.fitRules?.(s === last ? 170 : strip - 38, 104, { lo: 12.5 });
+        if (s !== last) s.view.fitName?.(strip - 19, { hi: 15.5 });
       }
     }
 

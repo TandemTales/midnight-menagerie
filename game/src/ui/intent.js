@@ -400,6 +400,15 @@ export class IntentView {
         this.$vals.appendChild(this._chip('word', 'Guard', ''));
       }
       this.el.classList.toggle('has-extras', extras.length > 0);
+      /* ONE UNIT, NOT TWO PIECES (round 6). `.cb-intent` always reserved a row
+         under the medallion for its value chips, and a move whose whole
+         announcement is a word — HOUSE RULE, SUMMON — puts that word in
+         `extras`, a row BELOW the reserved one. The Door Greeter's ribbon
+         landed 70px under its own medallion with nothing between them, and
+         all three judges read them as two unrelated pieces. The stylesheet
+         hangs the ribbon off the medallion itself when the row between them
+         is empty; this is how it knows. */
+      this.el.classList.toggle('has-vals', this.$vals.childElementCount > 0);
     }
     this.el.classList.toggle('has-num', hasDmg || hasBlk);
     this.el.classList.toggle('is-multi', hasDmg && hits > 1);

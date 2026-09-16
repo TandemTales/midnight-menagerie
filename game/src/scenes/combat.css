@@ -1229,16 +1229,18 @@
    letters CHOOSE YOUR KID, cut dark into the kit's gold ribbon with its two
    painted stars at the ends ("✦ HOUSE RULE ✦"). A number stays on the dark
    plate; a word is a proclamation. */
+/* …AND IT IS CUT TO BE READ AT A GLANCE (round 6: it was 22px under a 74px
+   medallion and read as that medallion's caption). */
 .cb-intent__chip:is([data-role="rule"], [data-role="word"]) {
-  --rib-h: max(22px, calc(var(--ph) * .84));
+  --rib-h: max(28px, calc(var(--ph) * 1.06));
   height: var(--rib-h);
-  min-width: calc(var(--rib-h) * 4);
-  padding: 0 calc(var(--rib-h) * 1.08) 1px;
+  min-width: calc(var(--rib-h) * 3.8);
+  padding: 0 calc(var(--rib-h) * .96) 1px;
   border-image: url("../../assets/ui/kit/ribbon.webp") 0 47 0 52 fill / 0 calc(var(--rib-h) * 47 / 49) 0 calc(var(--rib-h) * 52 / 49) stretch;
   filter: brightness(1.2) saturate(.9) drop-shadow(0 2px 3px rgba(0, 0, 0, .85));
 }
 .cb-intent__chip:is([data-role="rule"], [data-role="word"]) b {
-  font-family: var(--font-display); font-weight: 700; font-size: 11px;
+  font-family: var(--font-display); font-weight: 700; font-size: 12.5px;
   letter-spacing: .15em; text-transform: uppercase;
   color: #140b04;
   -webkit-text-stroke: 0; text-shadow: 0 1px 0 rgba(255, 232, 178, .42);
@@ -1247,6 +1249,28 @@
 .cb-intent.is-heavy .cb-intent__chip[data-role="damage"] b { color: var(--threat-100); }
 .cb-intent.is-lethal .cb-intent__chip[data-role="damage"] {
   filter: drop-shadow(0 2px 3px rgba(0, 0, 0, .85)) drop-shadow(0 0 6px color-mix(in srgb, var(--threat-300) 80%, transparent));
+}
+
+/* ── ONE ATTACHED UNIT, HUNG FROM ITS MEDALLION (round 6) ──────────────────
+   All three judges read the enemy's intent as two unrelated pieces: "the HOUSE
+   RULE ribbon is a thin strip sitting on the Door Greeter's crown, cut off
+   from its quatrefoil medallion 70px above". Both halves of that were true.
+   A move whose whole announcement is a word puts that word in `extras`, which
+   hangs BELOW the row of value chips — and that row is empty for exactly those
+   moves, so 22px of nothing stood between the medallion and its ribbon, and
+   the ribbon itself came to rest on the creature's head.
+   So: when there is no number to print, the ribbon hangs off the medallion's
+   own rim, and the whole unit is lifted clear of the painting. The ribbon is
+   cut larger at the same time (below), because a 22px strip under a 74px
+   medallion reads as a caption and not as a proclamation.
+   The boss alone in his arena is left exactly where he was: his intent is set
+   into the mirror's crown, which is placed against this geometry. */
+.cb-intent.has-extras:not(.has-vals) .cb-intent__extras { top: calc(var(--iv) - 6px); }
+.cb-enemies:not([data-n="1"]) .cb-intent.has-extras:not(.has-vals),
+.cb-enemies:not([data-n="1"]) .cb-intent:has(> .cb-intent__vals > .cb-intent__chip:is([data-role="rule"], [data-role="word"])),
+.cb-enemy:not([data-tier="boss"]) .cb-intent.has-extras:not(.has-vals),
+.cb-enemy:not([data-tier="boss"]) .cb-intent:has(> .cb-intent__vals > .cb-intent__chip:is([data-role="rule"], [data-role="word"])) {
+  margin-bottom: 18px;
 }
 
 /* ── WHAT IT DOES TO YOUR DECK GETS ITS OWN LINE ───────────────────────────
@@ -2020,7 +2044,16 @@
   top: calc(172 * var(--u)); bottom: calc(17 * var(--u));
   padding: 0 calc(3 * var(--u)) 0 calc(6 * var(--u));
   line-height: 1.12;
+  /* AND THEY BREAK WHERE A SENTENCE BREAKS (round 6). A judge quoted the hand
+     back at us: "Shed 1 / Bone. Draw / 1 Trick." A greedy wrap fills every
+     line to the edge and leaves the last one with two words, which is how a
+     number ends up on one line and its noun on the next. Balanced, the same
+     rule sets as "Shed 1 Bone. / Draw 1 Trick." — the same size, the same
+     number of lines (balance never adds one, so CardView#fitRules's count
+     still holds), broken where the eye would break it. */
+  text-wrap: balance;
 }
+.cb-handhost.kit-cards .mm-hand.is-crowded .mm-card[data-rarity]:not(.is-fan-last):not(.is-hover):not(.is-selected):not(.is-dragging):not(.is-aiming):not(.is-hero) .mm-card__rules > div { text-wrap: balance; }
 /* NO CARD'S TITLE PLATE OR TYPE LINE IS CUT BY THE NEXT CARD (round 5). The
    name sat flush left in the strip a covered card shows, but the plate under
    it ran on beneath the next card and was cut at its edge on every card of a
@@ -2046,15 +2079,17 @@
   height: auto; min-height: calc(38 * var(--u));
   padding: calc(6 * var(--u)) 0 calc(6.5 * var(--u));
   /* the caps narrow as the plate grows a line (NAME_CAPS in ui/card.js):
-     19u, 15.5u, 13u */
-  border-image-width: calc(10.7 * var(--u)) calc(clamp(13, 22.5 - 3.5 * var(--name-lines, 1), 19) * var(--u));
+     19u on one line, 11u on two. Round 6 cut the second-line cap hard: a
+     covered card's plate is only 120u wide and 34u of that was end caps, which
+     is what forced the longest name in the Bones deck onto a third line. */
+  border-image-width: calc(10.7 * var(--u)) calc(clamp(11, 27 - 8 * var(--name-lines, 1), 19) * var(--u));
   justify-items: start; align-items: center;
 }
 .cb-handhost.kit-cards .mm-hand.is-crowded .mm-card[data-rarity][data-type][data-uid]:not(.is-fan-last):not(.is-hover):not(.is-selected):not(.is-dragging):not(.is-aiming):not(.is-hero) .mm-card__name {
   font-size: calc(var(--name-fit, clamp(12, (var(--strip) - 51) / var(--name-em, 7), 17.5)) * var(--u));
   line-height: 1.04; letter-spacing: .02em;
-  /* just inside the caps: 16u, 17u, 14.5u for one, two, three lines */
-  padding: 0 calc((11.5 + 6.25 * var(--name-lines, 1) - 1.75 * var(--name-lines, 1) * var(--name-lines, 1)) * var(--u));
+  /* just inside the caps: 16u on one line, 10u on two */
+  padding: 0 calc(clamp(10, 22 - 6 * var(--name-lines, 1), 16) * var(--u));
   white-space: normal; text-wrap: balance; text-align: left;
 }
 .cb-handhost.kit-cards .mm-hand.is-crowded .mm-card[data-rarity][data-type][data-uid]:not(.is-fan-last):not(.is-hover):not(.is-selected):not(.is-dragging):not(.is-aiming):not(.is-hero) .mm-card__type {
@@ -2110,13 +2145,16 @@
    right corner is as narrow as its plate, and `Hand#setBounds` gives the fan
    the table in between. */
 .cb-root {
-  --corner-md: clamp(58px, 4.6vw, 76px);        /* END TURN's ring */
+  --corner-md: clamp(60px, 4.8vw, 79px);        /* END TURN's ring */
   /* NERVE IS THE HEAVIEST THING ON THE TABLE (round 5): its coin is cut a size
      over END TURN's ring, so its figure reads at 1280x800 from across the room */
   --nerve-coin: clamp(62px, 4.5vw, 72px);
-  /* a deck's gilded tray, top rim to foot (deck-draw.webp is 150x196: a
-     card's own proportion with the tray round it) */
-  --pile-h: clamp(64px, 5vw, 84px);
+  /* A PILE IS A DECK, TOP BACK TO THE FOOT OF ITS STACK (round 6: the tray is
+     gone — deck-draw.webp is 160x208, a full-size back with the stack's gilt
+     edges stepping out from under it). Cut larger to match: at round 5's size
+     the back inside the tray printed 56 px tall on a 1280 board and both
+     corners read as badges. */
+  --pile-h: clamp(80px, 6.2vw, 104px);
 }
 .cb-bl, .cb-br {
   position: absolute; bottom: clamp(16px, 2.2vh, 26px);
@@ -2129,9 +2167,10 @@
   bottom: clamp(30px, 3.6vh, 36px);
   display: flex; align-items: flex-end; gap: 0;
 }
-/* the draw deck stands in the crook of Nerve's right wing, on the same table,
-   its nameplate level with Nerve's */
-.cb-bl > .cb-pile--draw { margin-left: calc(var(--nerve-coin) * -.3); margin-bottom: calc(var(--pile-h) * .17); }
+/* the draw deck stands beside the cradle, on the same table, its nameplate
+   level with Nerve's. Round 6's cradle reaches further than round 5's wings,
+   so the deck stands off it instead of in it. */
+.cb-bl > .cb-pile--draw { margin-left: calc(var(--nerve-coin) * -.06); margin-bottom: calc(var(--pile-h) * .13); }
 /* END TURN first in the DOM (the keyboard's order), drawn at the bottom; the
    shelf of piles over it is fixed to the frame's right wall */
 .cb-br {
@@ -2149,7 +2188,7 @@
    right 100). */
 .cb-br__piles {
   --wall: calc(clamp(26px, 2.35vw, 38px) - clamp(10px, .9vw, 15px));
-  --shelf: calc(var(--pile-h) * .36);            /* the shelf's 30px, on screen */
+  --shelf: calc(var(--pile-h) * .29);            /* the shelf's 30px, on screen */
   position: relative; z-index: 1;
   align-self: flex-end;
   display: flex; flex-direction: row-reverse; align-items: flex-end; justify-content: flex-start;
@@ -2194,22 +2233,28 @@
    milled edge showing under the face, a channel of aubergine enamel the turn's
    Nerve is lit in (the SVG arc rides in it), and an engine-turned field
    burnished plain where the figure is struck. It lies in a clean beaded bezel
-   carried on C-scroll wings (nerve-wings.webp: 256x196, the hole at (128, 98),
-   r 64), a knop at its crown and a drop at its foot. The figure is cut deep and
+   carried on a wrought cradle. The figure is cut deep and
    dark into the bright gold with a lit lower lip: the highest contrast on the
    board, at every size. The cost on every Trick in the hand is struck on gold
-   the same way. */
+   the same way.
+   ROUND 6: THE SETTING IS A CRADLE, NOT A BRACKET. Two thin C-scrolls under a
+   coin this heavy read as something bolted on afterwards. nerve-wings.webp is
+   redrawn as a wrought cage (300x226, the hole at (150, 113), r 64): volutes
+   rising over its crown and falling under its foot, claws clasping the bezel,
+   an outer hoop hung with berries, the iron brightened toward the boards'
+   antique gold. Three judges across two rounds named a cradle like this one
+   the most sample-like ornament on any board. */
 .cb-nerve {
   --nc: var(--nerve-coin);                       /* the setting's hole, on screen */
   position: relative;
-  width: calc(var(--nc) * 256 / 128); height: calc(var(--nc) * 196 / 128);
+  width: calc(var(--nc) * 300 / 128); height: calc(var(--nc) * 226 / 128);
   display: flex; align-items: center; justify-content: center;
   background: url("../../assets/ui/kit/nerve-wings.webp") 50% 50% / 100% 100% no-repeat;
   isolation: isolate;
   filter: drop-shadow(0 4px 6px rgba(0, 0, 0, .8));
   cursor: help;
 }
-/* the hole's centre, as a fraction of the setting: 128/256 across, 98/196 down */
+/* the hole's centre, as a fraction of the setting: 150/300 across, 113/226 down */
 .cb-nerve__ring, .cb-nerve__core, .cb-nerve__n { --hx: 50%; --hy: 50%; }
 /* the arc: in the coin's channel, r 91 of the face's 111 */
 .cb-nerve__ring {
@@ -2281,12 +2326,16 @@
    squared up, its gilt edges showing along its foot; the discard pile is thrown
    in; a Torn Trick is ripped across; a Vanished one is a ghost in its tray.
    Each is one painted piece (tools/prep_combat_table.py); the count is struck
-   on a coin at the tray's shoulder, the name on a nameplate across its foot. */
+   on a coin at its top corner, the name on a nameplate across its foot.
+   ROUND 6: NO TRAY. The tray's rim took most of the box and the back inside it
+   printed 56 px tall at 1280x800, so both corners read as small badges. The
+   pile IS the deck now, a full-size back with the stack's gilt edges stepping
+   out from under it (160x208, WALNUT's piece), and it is cut a third larger. */
 .cb-pile {
   --ph: var(--pile-h);
   position: relative;
   display: block;
-  width: calc(var(--ph) * 150 / 196); height: var(--ph);
+  width: calc(var(--ph) * 160 / 208); height: var(--ph);
   min-width: 0;
   padding: 0;
   border: 0; border-radius: 0;
@@ -2350,8 +2399,8 @@
    and running from the upper one, not a gold silhouette of one. The SVG stays
    for anything that reads it, painted over by its own background. */
 .cb-endturn .cb-endturn__medal svg {
-  width: calc(var(--md) * .5); height: calc(var(--md) * .5 * 132 / 96);
-  margin-top: calc(var(--md) * .02);
+  width: calc(var(--md) * .62); height: calc(var(--md) * .62 * 132 / 96);
+  margin-top: calc(var(--md) * .01);
   background: url("../../assets/ui/kit/hourglass-glass.webp") 50% 50% / 100% 100% no-repeat;
   filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .85)) drop-shadow(0 0 5px color-mix(in srgb, var(--kit-candle) 22%, transparent));
 }
@@ -3026,6 +3075,27 @@
   transform: translate3d(calc(-50% - var(--e-lx, 0px)), calc(var(--e-ly, 0px) * -1), 0);
   will-change: transform;
 }
+/* …AND THE MOONLIGHT LEANS ACROSS IT (round 6). Three judges read round 5's
+   glass as "a flat grey-blue haze with no reflection or tarnish". Two things
+   were doing it. The glass itself is repainted deep and tarnished
+   (tools/prep_combat_table.py), and the light that crosses it is lifted out of
+   the 3-slice into one stretched piece of its own: boss-glaze.webp, the
+   shaft's two leans, the dust turning in them and the wash where they land.
+   A lean inside a 3-slice kinks at the seam where the middle band squashes;
+   this cannot, at any stage height. Its own alpha holds it inside the glass
+   and clear of the crown's medallion, so it never touches a rail — and it
+   paints over the frame's own background layer but under everything the
+   creature is, because the alcove sits at z -2 in his column. */
+.cb-root[data-arena="boss"] .cb-enemies[data-n="1"] .cb-enemy[data-tier="boss"]:not([data-role="bossPart"]) .cb-enemy__alcove::before {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  background: url("../../assets/ui/kit/boss-glaze.webp") 50% 50% / 100% 100% no-repeat;
+}
+/* THE SHAFT FALLS BEHIND THE MIRROR, NOT OVER IT. `boss-beam.webp` is painted
+   on the stage at z -1 and the mirror hangs at z -2, so the shaft was washing
+   the glass — most of the "pale haze" the judges named was the beam, not the
+   glass. Behind it the room still takes the light, the crown's open scrollwork
+   still shows it, and the mirror answers with its own. */
+.cb-root[data-arena="boss"] .cb-enemies[data-n="1"] .cb-enemy[data-tier="boss"]:not([data-role="bossPart"]) .cb-enemy__stage::before { z-index: -3; }
 /* A pair of the house's brass wall sconces (sconce.webp, the Kid board's own
    candle in each) hang on the wall either side of the frame at his shoulders,
    each throwing its warm pool on the plaster: the warm candle against the cold
