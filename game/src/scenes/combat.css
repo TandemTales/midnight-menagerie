@@ -2088,8 +2088,9 @@
 .cb-handhost.kit-cards .mm-hand.is-crowded .mm-card[data-rarity][data-type][data-uid]:not(.is-fan-last):not(.is-hover):not(.is-selected):not(.is-dragging):not(.is-aiming):not(.is-hero) .mm-card__name {
   font-size: calc(var(--name-fit, clamp(12, (var(--strip) - 51) / var(--name-em, 7), 17.5)) * var(--u));
   line-height: 1.04; letter-spacing: .02em;
-  /* just inside the caps: 16u on one line, 10u on two */
-  padding: 0 calc(clamp(10, 22 - 6 * var(--name-lines, 1), 16) * var(--u));
+  /* just inside the caps: 16u on one line, 12u on two — a unit clear of the
+     11u cap, so a two-line name never touches the notch it sits between */
+  padding: 0 calc(clamp(12, 20 - 4 * var(--name-lines, 1), 16) * var(--u));
   white-space: normal; text-wrap: balance; text-align: left;
 }
 .cb-handhost.kit-cards .mm-hand.is-crowded .mm-card[data-rarity][data-type][data-uid]:not(.is-fan-last):not(.is-hover):not(.is-selected):not(.is-dragging):not(.is-aiming):not(.is-hero) .mm-card__type {

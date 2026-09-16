@@ -193,7 +193,7 @@ function linesAt(rows, f, W) {
 /* A name plate's end caps and the lettering's inset, by the lines it holds,
    in design units (CardView#fitName; scenes/combat.css draws the same). Three
    is kept for anything that still asks, but fitName stops at two. */
-const NAME_CAPS = { 1: { cap: 19, pad: 16 }, 2: { cap: 11, pad: 10 }, 3: { cap: 11, pad: 10 } };
+const NAME_CAPS = { 1: { cap: 19, pad: 16 }, 2: { cap: 11, pad: 12 }, 3: { cap: 11, pad: 12 } };
 
 let SEQ = 0;
 
@@ -417,7 +417,7 @@ export class CardView {
    * by word, and wrapped the way the page wraps it (a balanced wrap keeps the
    * greedy line count), so it never runs onto a cap.
    */
-  fitName(plateU, { lo = 11.5, hi = 17.5, track = 0.02 } = {}) {
+  fitName(plateU, { lo = 11, hi = 17.5, track = 0.02 } = {}) {
     if (this._dead || !this.$name) return;
     const key = Math.round(plateU * 4) + ':' + lo + ':' + hi;
     if (this._nameFitKey === key) return;
