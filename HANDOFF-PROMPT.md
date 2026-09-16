@@ -1,4 +1,4 @@
-# Handoff — UI pass round 5 is merged and the enemies animate; brief round 6
+# Handoff — round 5 is merged, the enemies animate; round 6 is the next round to brief
 
 You are picking up Midnight Menagerie on `dev`. Everything below is pushed.
 
@@ -12,7 +12,28 @@ from every judge.
 
 ## FIRST, BEFORE ANYTHING
 
-**1. The enemies animate (09-15), and round 6's COMBAT brief must say how.** Josh's
+**1. Brief round 6 — and ASK JOSH FIRST how big it should be.** Round 5's 21
+agents took about 13M subagent tokens and the weekly usage limit stopped six of
+its builders mid-build (README, "A usage limit can stop builders mid-build"),
+which cost a day. The limit reset 09-15 03:00 America/Denver and round 5's
+resume plus the enemy animations have run against this week since. Josh was
+asked on 09-15 whether round 6 runs at full size (four tracks, twelve builders),
+at half (two tracks), or waits for the reset; he had not answered when this
+session ended. His standing order is still "dont stop until its perfected".
+
+**2. What round 6's brief is written from.** The two task output files hold every
+build and verdict (read them with `tools/ui_pass_digest.py`):
+- `wcudg6f1y.output`: POLISH's and COMBAT's builds and first judging;
+- `w4c312fpu.output`: DIALOGS' and KIDS' PLACES' builds and judging, and
+  POLISH's and COMBAT's second judging.
+Both are in session `f921e739`'s tasks folder,
+`C:\Users\Josh\AppData\Local\Temp\claude\C--Users-Josh-OneDrive-Desktop-Tandem-Tales-Midnight-Menagerie\f921e739-3596-4b9f-b0d2-9e78e6b37796\tasks\`.
+`--worst THISTLE`, `--worst VESPER`, `--worst BIRCH`, and `--worst GORSE` and
+`--worst ELDER` for KIDS' PLACES' screens, give the fix lists; the grafts come
+with them. The round's steps are "A round, step by step" below; the worktrees
+from round 5 are still in `f921e739`'s scratchpad and its branches are `ui/r5-*`.
+
+**3. The enemies animate (09-15), and round 6's COMBAT brief must say how.** Josh's
 call was "do it after round 5 merges". His sheets in
 `animations/sprites/enemies/animations/` (78 for 19 enemies on 09-15, still
 arriving) build with `python tools/prep_sprites.py --enemy-clips`.
@@ -47,20 +68,16 @@ arriving) build with `python tools/prep_sprites.py --enemy-clips`.
   board show different idle frames. `enemy.js` is still COMBAT's presentation
   file.
 
-**2. Then brief round 6 from round 5's judges.** The two task output files hold
-every build and verdict (read them with `tools/ui_pass_digest.py`):
-- `wcudg6f1y.output`: POLISH's and COMBAT's builds and first judging;
-- `w4c312fpu.output`: DIALOGS' and KIDS' PLACES' builds and judging, and
-  POLISH's and COMBAT's second judging.
-Both are in session `f921e739`'s tasks folder,
-`C:\Users\Josh\AppData\Local\Temp\claude\C--Users-Josh-OneDrive-Desktop-Tandem-Tales-Midnight-Menagerie\f921e739-3596-4b9f-b0d2-9e78e6b37796\tasks\`.
-`--worst THISTLE`, `--worst VESPER`, `--worst BIRCH`, and `--worst GORSE` and
-`--worst ELDER` for KIDS' PLACES' screens, give the fix lists; the grafts come
-with them. Round 5's 21 agents took about 13M subagent tokens, and the weekly
-usage limit stopped six of its builders once (README, "A usage limit can stop
-builders mid-build").
+**4. And only a dissolve fades now (09-15, `5b312b8`).** 37 Companion and Kid
+clips had been drawn at 35% opacity in the middle of their beat -- Bones bit at
+0.35, measured in the running game. `fade_envelope`'s focus dip TIMES a dissolve
+but cannot tell one from a lunge's motion blur (Boggle's Hide dips to 0.084,
+Bones' attack to 0.424), so `prep_sprites.FADE_FLOOR` is now the list of clips
+that may fade at all: `spectral`, `zoomies`, `hide`, `shadow`, each quoted from
+Josh's animation brief. 16 slugs were rebuilt; `tests/sprites/check.py` now fails
+both ways round. Pipkin gained the `ready` clip Josh delivered on 09-12.
 
-**3. Josh drops art in while you work.**
+**5. Josh drops art in while you work.**
 - **Enemies:** `ls -t animations/sprites/enemies | head` shows the newest
   delivery. A new file or a redraw turns `tests/enemy-stills` red until
   `python tools/prep_sprites.py --enemies` rebuilds it. Commit the built still,
@@ -76,7 +93,7 @@ builders mid-build").
   run `python tools/prep_backgrounds.py` before the next round's baselines. His
   paintings are the one thing that can lift every screen's background score.
 
-**4. The battery:** `python tools/devserver.py 8777`, then `python tools/gates.py`
+**6. The battery:** `python tools/devserver.py 8777`, then `python tools/gates.py`
 (99 gates, about 30 minutes). On the round 5 merge (`25a5111`) it ran 99 gates
 in 1754s, red only on the known three:
 - `tests/sprites/check.py`: the six HALO clips;
@@ -231,6 +248,10 @@ grounds are renders. Until Josh's paintings land, the loop plateaus around 7.
   - **The gate:** `tests/enemy-clips`.
   - **Measured before it was decided:** the defeat sheets that get back up, the
     three silhouette names, the per-clip size cap, and the motion-blur fade.
+- **The fade defect the enemy work turned up** (`5b312b8`): 37 Companion and Kid
+  clips were drawn at 35% opacity mid-beat. `FADE_FLOOR` is now the list of clips
+  that may fade; 16 slugs rebuilt; the sprites gate fails both ways round; Pipkin
+  gained his `ready`; the manifest is written sorted.
 
 ## DONE 2026-09-13
 
@@ -402,14 +423,12 @@ Big Scare** (`3a12203`).
   `docs/notes/2026-09-11-card-cost-pass.md`, under "Found and NOT fixed".
 - **`maya/defeat` fails the HALO bar**, and so do Taffy's five clips. Fixing
   either means re-tuning a matte rule against all 195 clips.
-- **Pipkin has no `SS_pipkin_ready.png`.** He falls back to idle.
-- **41 Companion and Kid clips fade to 35% opacity mid-beat.** Examples are
-  bones/attack, crinkle/attack and samir/attack. `fade_envelope` likely reads a
-  lunge's motion blur as a dissolve; it was meant for Marmalade's spectral and
-  zoomies. The enemy build drops these fades. The Companion clips are unchecked
-  in the game; a task chip was offered 09-15.
 - **The Calling Bell and 255 other enemies have no animation.** They stand as
   stills or rigs until Josh's sheets for them arrive.
+- **Bones' and Marmalade's atlases still predate the current matte rules** in
+  part: rebuilding Bones on 09-15 moved 0.01-0.11% of his pixels and added the
+  UNTAIL and DEBLACK flags to his index. Marmalade has not been rebuilt since
+  09-04. Neither is visibly wrong; a rebuild is cheap if one ever looks it.
 - **The built Kid stills are older than their sources.** A rebuild re-keys them to
   first names, which needs `STILL_ALIAS` in `ui/sprite.js` updated in the same
   commit, and it rewrites ten Companion stills. Compare all 24 before and after.
@@ -458,6 +477,14 @@ Big Scare** (`3a12203`).
 - **One dev server serves one capture at a time.** Its listen backlog is 5. Two
   `shot.py` runs at once get ERR_CONNECTION_REFUSED on fonts and images, and
   write console files that look like page errors.
+- **A threshold tuned on one Companion is not a rule.** `DIP_THRESHOLD` was set
+  in the gap Marmalade's twelve clips left, and caught 39 more when the other 23
+  slugs were built. Where a measurement cannot separate two intents -- a dissolve
+  from a lunge's motion blur -- name the members instead, and quote the brief in
+  the table (`FADE_FLOOR`).
+- **A partial sprite build used to reshuffle the whole manifest**, because
+  carried entries kept their order and rebuilt ones landed at the end. It is
+  written sorted now; a diff there is a real change.
 - **The endings guard in the main checkout rewrites files that aren't yours.** It
   repairs every file that differs from its base, and Josh's modified
   `tests/critic-design/result.json` is one. Prove a merge's endings commit to
@@ -482,7 +509,7 @@ only on the known three. steam-deck went 5/1 then 6/0 run alone.
 | `tests/cost-curve/check.py` | 17 passed, 0 failed |
 | `tests/upgrade-effects/check.py` | 1288 upgrades played, 218 moved nothing, 28 unplayable on this board, 54 need a friend, 72 hinge on a choice, 0 stale waivers, 0 broken, 0 console errors |
 | `tests/sprite-triggers/check.py` · `tests/kid-clips/check.py` | 292 · 10 |
-| `tests/sprites/check.py` | 195 clips, 24 stills, 51 enemy stills, 6 failures (known: Taffy's five HALO clips and `maya/defeat`) |
+| `tests/sprites/check.py` | 196 clips, 24 stills, 51 enemy stills, 6 failures (known: Taffy's five HALO clips and `maya/defeat`), 4 dissolve envelopes verified |
 | `tests/sprites/clips.py` | 28 passed, 0 failed |
 | `tests/enemy-stills/check.py` | 433 passed, 0 failed, 0 console errors |
 | `tests/greenhouse/check.py` · `tests/design-courage/check.py` | 45 · 129 checked, 0 failures |
