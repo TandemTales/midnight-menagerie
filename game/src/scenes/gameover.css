@@ -840,12 +840,16 @@
    WORKED HARDEST over the small count that says how often it went out */
 .go-block--mvp { width: calc(var(--card-w) * var(--go-mvp-s, .6) + 40px); }
 .go-mvp__slot { margin: 6px 20px calc(16px + var(--plinth-h) * .96); }
-.go-mvp__h.kit-plate {
-  --plate-h: clamp(38px, 4.6vh, 46px);
+/* the plate's own box is set on .go-mvp__h alone: a scene sheet that lays out
+   a selector naming .kit-* turns tests/scene-css red (round 6 brief) */
+.go-mvp__h {
   position: relative; z-index: 4;
   justify-self: center;
   width: max-content; max-width: 100%;
   margin: calc(-1 * var(--plinth-h) * .74) 0 0;
+}
+.go-mvp__h.kit-plate {
+  --plate-h: clamp(38px, 4.6vh, 46px);
   padding: 1px calc(var(--plate-h) * .6) 2px;
   border: 0;
   border-image-source: url("../../assets/ui/kit/cartouche-dark.webp");
