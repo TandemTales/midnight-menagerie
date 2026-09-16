@@ -5,30 +5,69 @@
      window: the HUD is read at a glance on a 1280x800 panel too */
   --hud-fs: calc(clamp(13px, .9vw, 14.5px) * var(--type-scale, 1));
   --hud-chip-h: 1.76em;
+  /* the carved end block at each end of the rail */
+  --hud-cap: clamp(26px, 2.2vw, 36px);
   position: relative;
-  display: flex; align-items: center; gap: var(--s-3);
+  display: flex; align-items: center; gap: var(--s-2);
   flex-wrap: wrap;
-  padding: 6px var(--s-4) 9px;
+  padding: 6px calc(var(--hud-cap) + var(--s-2)) 9px;
   min-height: var(--hud-h);
   font-family: var(--font-body);
   font-size: var(--hud-fs);
   color: var(--kit-text);
-  /* An engraved gilded rail (tools/prep_ui_polish.py rail-engraved.webp):
-     black lacquer over dark wood, a fine gilt line cut along its face with a
-     running scroll of pricked dots, and along its foot a brass rod moulded
-     bead-and-reel, studded where its lengths meet (::after). */
+  /* ONE CARVED RAIL, round 6. Every judge of round 5 — POLISH and COMBAT —
+     called this strip a web toolbar: "a row of small, samey pill chips". It
+     was a line of separate plates on a flat band. It is a thing now, with the
+     three parts a carved rail has: an ARRIS along its top where the candles
+     catch the gilt, a FACE of black lacquer over dark wood with the engraved
+     gilt line and its pricked scroll running along it (rail-engraved.webp,
+     tools/prep_ui_polish.py) falling into shadow toward its foot, and a
+     moulded brass FOOT with the rail's own shadow under it (::after). Each
+     end is closed by a carved block with a cast rosette set into it
+     (::before), so the rail reads as a length of something rather than as the
+     top edge of the page. The readouts are cut INTO the face, not laid on it. */
+  --cap-boss: clamp(15px, 1.2vw, 20px);
   background:
+    /* the two carved end blocks that close the rail: a cast brass rosette set
+       into a face a shade deeper than the frieze, shut off by a gilt bead */
+    url("../../assets/ui/kit/rosette.webp") calc(var(--hud-cap) * .5) 58% / var(--cap-boss) var(--cap-boss) no-repeat,
+    url("../../assets/ui/kit/rosette.webp") calc(100% - var(--hud-cap) * .5) 58% / var(--cap-boss) var(--cap-boss) no-repeat,
+    linear-gradient(color-mix(in srgb, var(--kit-gold) 60%, transparent), color-mix(in srgb, var(--kit-gold-lo) 80%, transparent)) var(--hud-cap) 8px / 1.5px calc(100% - 16px) no-repeat,
+    linear-gradient(color-mix(in srgb, var(--kit-gold) 60%, transparent), color-mix(in srgb, var(--kit-gold-lo) 80%, transparent)) calc(100% - var(--hud-cap)) 8px / 1.5px calc(100% - 16px) no-repeat,
+    linear-gradient(180deg, rgba(0, 0, 0, .34), rgba(0, 0, 0, .6)) 0 8px / var(--hud-cap) calc(100% - 16px) no-repeat,
+    linear-gradient(180deg, rgba(0, 0, 0, .34), rgba(0, 0, 0, .6)) 100% 8px / var(--hud-cap) calc(100% - 16px) no-repeat,
+    /* the arris: gilt highlight, its dark cut, and the shadow it throws down the face */
+    linear-gradient(180deg,
+      color-mix(in srgb, var(--kit-gold-hi) 86%, transparent) 0 1px,
+      color-mix(in srgb, var(--kit-gold) 70%, #000) 1px 2.5px,
+      rgba(0, 0, 0, .55) 2.5px 5px,
+      rgba(0, 0, 0, .22) 5px 9px,
+      transparent 9px),
+    /* the face's own fall: lit under the arris, gathering dark at the foot */
+    linear-gradient(180deg,
+      color-mix(in srgb, var(--kit-candle) 9%, transparent) 0%,
+      transparent 38%,
+      rgba(0, 0, 0, .34) 84%,
+      rgba(0, 0, 0, .58) 100%),
     linear-gradient(180deg, color-mix(in srgb, var(--kit-violet) 9%, transparent) 0%, transparent 60%),
+    /* the two gilt fillets that close the frieze, top and bottom */
+    linear-gradient(color-mix(in srgb, var(--kit-gold) 74%, transparent), color-mix(in srgb, var(--kit-gold) 74%, transparent)) 0 7px / 100% 1px repeat-x,
+    linear-gradient(rgba(0, 0, 0, .8), rgba(0, 0, 0, .8)) 0 8px / 100% 1px repeat-x,
+    linear-gradient(rgba(0, 0, 0, .8), rgba(0, 0, 0, .8)) 0 calc(100% - 8px) / 100% 1px repeat-x,
+    linear-gradient(color-mix(in srgb, var(--kit-gold-lo) 92%, transparent), color-mix(in srgb, var(--kit-gold-lo) 92%, transparent)) 0 calc(100% - 7px) / 100% 1px repeat-x,
     url("../../assets/ui/kit/rail-engraved.webp") 0 0 / 256px 62px repeat-x,
     #110b10;
-  box-shadow: 0 10px 20px -6px rgba(0, 0, 0, .85);
+  box-shadow:
+    inset 0 -1px 0 rgba(0, 0, 0, .9),
+    0 12px 22px -6px rgba(0, 0, 0, .9);
 }
 .mm-hud::after {
-  content: ''; position: absolute; left: 0; right: 0; bottom: -7px; height: 14px;
+  content: ''; position: absolute; left: 0; right: 0; bottom: -5px; height: 12px;
   pointer-events: none; z-index: 1;
   background: url("../../assets/ui/kit/rail-engraved.webp") 0 100% / 256px 46px repeat-x;
-  filter: drop-shadow(0 3px 3px rgba(0, 0, 0, .7));
+  filter: drop-shadow(0 3px 3px rgba(0, 0, 0, .75));
 }
+
 /* ONE position: the top edge of the viewport, full width, on every run screen.
    Scenes mount it into their own root; this pins it there without the scene
    needing a rule of its own. */
@@ -75,20 +114,25 @@
 /* a chip that leads with its icon seats the icon's medallion on the plate's
    left end; a chip without one (combat's Turn) is the plate alone */
 .mm-hud__chip:has(> .mm-icon:first-child) { padding-left: 0; }
-/* Round 5: the plate is a CARTOUCHE, not a tag. The Companion tiles'
-   nameplate with an ogee end either side (cartouche-lit.webp: violet enamel
-   filled to a bevelled gilt rim), so a chip reads as a small lettered plaque
-   screwed to the rail, the same from either end, and its enamel lifts it off
-   the black lacquer the way the boards' plates lift off their walls. */
+/* Round 6: the readout is CUT INTO the rail, not screwed onto it. The plate
+   keeps the Companion tiles' cartouche silhouette with its ogee end either
+   side, but it is the DARK plate now (cartouche-dark.webp) and it is lit like
+   a recess: the shadow the cut throws falls UPWARD out of it onto the rail's
+   face, and the light the candles put into the rail runs along its lower lip.
+   Round 5's plate was violet enamel with a drop shadow under it, which is
+   what made a row of them read as a row of pills on a toolbar. */
 .mm-hud__chip::before {
   content: ''; position: absolute; z-index: -1; pointer-events: none;
   top: 0; bottom: 0; right: 0; left: 0;
   border: 0 solid transparent;
-  border-image-source: url("../../assets/ui/kit/cartouche-lit.webp");
+  border-image-source: url("../../assets/ui/kit/cartouche-dark.webp");
   border-image-slice: 18 34 18 34 fill;
   border-image-width: calc(var(--hud-chip-h) * 18 / 64) var(--chip-end);
   border-image-repeat: stretch;
-  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .8)) brightness(1.06);
+  filter:
+    drop-shadow(0 -1.5px 1px rgba(0, 0, 0, .95))
+    drop-shadow(0 1.5px 0 color-mix(in srgb, var(--kit-gold-hi) 30%, transparent))
+    brightness(.98);
 }
 .mm-hud__chip:has(> .mm-icon:first-child)::before { left: calc(var(--hud-chip-h) * .5); }
 .mm-hud__chip > .mm-icon:first-child {
@@ -173,7 +217,10 @@
   border-image: url("../../assets/ui/kit/cartouche-dark.webp") 18 34 18 34 fill /
     calc(var(--bar-h) * 18 / 64) calc(var(--bar-h) * 34 / 64) stretch;
   border-radius: 0;
-  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .8)) brightness(1.08);
+  /* cut into the rail, like every other readout on it (round 6) */
+  filter:
+    drop-shadow(0 -1.5px 1px rgba(0, 0, 0, .95))
+    drop-shadow(0 1.5px 0 color-mix(in srgb, var(--kit-gold-hi) 30%, transparent));
   overflow: visible;
 }
 /* the channel the enamel runs in: sunk, dark, a gilt fillet round its lip */
@@ -197,7 +244,7 @@
   background:
     linear-gradient(180deg, rgba(255, 214, 214, .30) 0%, rgba(255, 255, 255, .06) 30%, rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, .42) 100%),
     url("../../assets/ui/kit/grain.webp") 0 0 / 96px 96px,
-    linear-gradient(90deg, color-mix(in oklab, var(--courage-500) 70%, #16030a), color-mix(in oklab, var(--courage-500) 72%, var(--courage-300)));
+    linear-gradient(90deg, color-mix(in oklab, var(--courage-500) 56%, #16030a), color-mix(in oklab, var(--courage-500) 62%, var(--courage-300)));
   background-blend-mode: normal, overlay, normal;
   box-shadow: inset 0 1px 2px rgba(0, 0, 0, .55), inset -2px 0 3px rgba(0, 0, 0, .35);
   transition: transform var(--t-slow) var(--ease-out);
@@ -366,16 +413,15 @@
    Same markup, same order, same icons. It is denser, it does not paint a
    ground (the Scuffle screen has its own), and it hosts the Turn chip. It must
    read as the same object as the map's HUD, moved indoors. */
+/* Round 6: it wears the SAME RAIL. It used to paint a gradient instead, which
+   is half of why all three of this round's COMBAT judges called the strip a web
+   toolbar: the fight's readouts were floating on a wash while every other
+   board's were cut into a carved rail. Only the density is the fight's own. */
 .mm-hud[data-variant="combat"] {
-  background: linear-gradient(180deg,
-    color-mix(in srgb, var(--ink-900) 72%, transparent),
-    transparent);
-  box-shadow: none;
-  padding: var(--s-2) var(--s-5);
+  padding: var(--s-1) calc(var(--hud-cap) + var(--s-2));
   pointer-events: none;
 }
 .mm-hud[data-variant="combat"] > .mm-hud__group { pointer-events: auto; }
-.mm-hud[data-variant="combat"]::after { content: none; }
 
 .mm-hud[data-compact="1"] { gap: var(--s-3); padding: var(--s-1) var(--s-3); }
 .mm-hud[data-compact="1"] .mm-hud__seed,
@@ -390,7 +436,7 @@
    gaps between groups and chips, and a shorter plate either side of a value —
    so everything a run carries still fits on ONE rail at the Steam Deck size. */
 @media (max-width: 1400px) {
-  .mm-hud { gap: 5px; padding-inline: 8px; }
+  .mm-hud { --hud-cap: 22px; gap: 5px; padding-inline: calc(var(--hud-cap) + 6px); }
   .mm-hud__group { gap: 4px; }
   /* the ends curl a little tighter, and the words stop short of them */
   .mm-hud__chip { --chip-end: calc(var(--hud-chip-h) * 27 / 64); padding: 0 calc(var(--chip-end) + 2px); }

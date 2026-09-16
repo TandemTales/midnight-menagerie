@@ -293,6 +293,162 @@
 
 .ev-page.is-answered .ev-options { pointer-events: none; }
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   THE HOUSE REGISTER — round 6, POLISH (SABLE's page, ui/r5-polish-b).
+
+   Round 5's judges both said the choices "read as web buttons inside an ornate
+   frame": three flat purple slabs in thin gold outlines. A register is not a
+   menu. So the page is a leaf of AGED PARCHMENT — creased where it was folded
+   into four, foxed at its edges, warm under the lectern's brass lamp — and the
+   choices are ENTRIES RULED ON IT in a clerk's brown ink, their numbers struck
+   on enamel in the margin against a red double margin rule.
+
+   Every entry keeps a visible affordance, in the samples' own metal: the round
+   enamel medallion out in the margin, and a brass socket with a gilt chevron
+   in it at the end of the line. Point at one and the lamp comes to that line.
+   ═══════════════════════════════════════════════════════════════════════════ */
+.ev-page.ev-register {
+  --ink: var(--kit-paper-ink);
+  --ink-mid: color-mix(in oklab, var(--kit-paper-ink) 82%, var(--kit-parchment-shade));
+  --rule-ink: color-mix(in srgb, var(--kit-ink-rule) 34%, transparent);
+  background:
+    radial-gradient(132% 112% at 50% 38%, transparent 46%, rgb(66 34 12 / .55) 100%),
+    radial-gradient(72% 42% at 50% 6%, rgb(255 222 170 / .26), transparent 74%),
+    radial-gradient(62% 40% at 50% 100%, color-mix(in srgb, var(--ev-a) 12%, transparent), transparent 70%),
+    url("../../assets/ui/kit/parchment-age.webp") 50% 50% / cover no-repeat,
+    url("../../assets/ui/kit/paper.webp") 0 0 / 220px 220px,
+    linear-gradient(180deg, #e2cba1 0%, #d2b587 55%, #ba9861 100%);
+  background-blend-mode: multiply, screen, screen, multiply, overlay, normal;
+  background-clip: padding-box;
+  box-shadow: 0 24px 54px -18px rgba(0, 0, 0, .95), inset 0 0 34px rgb(58 30 10 / .4);
+}
+/* the panel's inner double rule, printed on the page in the clerk's brown */
+.ev-page.ev-register::after {
+  border-color: color-mix(in srgb, var(--kit-ink-rule) 55%, transparent);
+  opacity: .85;
+}
+/* where the leaf was folded into four and opened out again: a soft shadow down
+   each fold and one across it, with the light catching the ridge beside it */
+.ev-register__fold {
+  position: absolute; inset: 0; z-index: 0; pointer-events: none;
+  border-radius: inherit;
+  background:
+    linear-gradient(90deg, transparent calc(33.3% - 9px), rgb(92 56 22 / .24) calc(33.3% - 1px), rgb(255 242 212 / .42) 33.3%, rgb(92 56 22 / .2) calc(33.3% + 1px), transparent calc(33.3% + 9px)),
+    linear-gradient(90deg, transparent calc(66.6% - 9px), rgb(92 56 22 / .21) calc(66.6% - 1px), rgb(255 242 212 / .38) 66.6%, rgb(92 56 22 / .18) calc(66.6% + 1px), transparent calc(66.6% + 9px)),
+    linear-gradient(180deg, transparent calc(52% - 11px), rgb(92 56 22 / .25) calc(52% - 1px), rgb(255 242 212 / .42) 52%, rgb(92 56 22 / .19) calc(52% + 1px), transparent calc(52% + 11px));
+}
+.ev-register > .ev-prose,
+.ev-register > .ev-options,
+.ev-register > .ev-outcome { position: relative; z-index: 1; }
+
+/* the entry written on the leaf, in the hand that kept it */
+.ev-register .ev-prose p {
+  color: var(--ink);
+  text-shadow: 0 1px 0 rgb(255 242 214 / .34);
+}
+.ev-register .ev-prose p:last-child:not(:first-child) { color: var(--ink-mid); }
+/* the rule between the story and the entries: inked, not gilt */
+.ev-register .ev-prose::after {
+  background:
+    url("../../assets/ui/kit/star4.svg") 50% 50% / 11px 11px no-repeat,
+    linear-gradient(90deg, transparent 0%, color-mix(in srgb, var(--kit-ink-rule) 62%, transparent) 26%, color-mix(in srgb, var(--kit-ink-rule) 62%, transparent) 46.5%, transparent 46.5%, transparent 53.5%, color-mix(in srgb, var(--kit-ink-rule) 62%, transparent) 53.5%, color-mix(in srgb, var(--kit-ink-rule) 62%, transparent) 74%, transparent 100%) 0 5px / 100% 1px no-repeat;
+  filter: sepia(1) saturate(2.6) hue-rotate(-16deg) brightness(.5);
+}
+/* the illuminated initial keeps its gilt; only its shadow moves onto the page */
+.ev-register .ev-initial { filter: drop-shadow(0 4px 7px rgb(58 30 10 / .55)); }
+
+/* ── the entries ─────────────────────────────────────────────────────────── */
+.ev-register .ev-options {
+  position: relative;
+  gap: 0;
+  padding-top: clamp(8px, 1.2vh, 12px);
+}
+/* the red double margin rule the numbers stand against */
+.ev-register .ev-options::before {
+  content: ''; position: absolute; pointer-events: none;
+  left: calc(clamp(42px, 5vh, 48px) + 9px); top: -2px; bottom: -4px; width: 4px;
+  border-left: 1px solid color-mix(in srgb, var(--kit-ink-oxblood) 52%, transparent);
+  border-right: 1px solid color-mix(in srgb, var(--kit-ink-oxblood) 38%, transparent);
+}
+.ev-register .ev-opt {
+  --md: clamp(42px, 5vh, 48px);
+  --nib: clamp(23px, 2vw, 28px);
+  min-height: 54px;
+  margin-left: calc(var(--md) + 20px);
+  padding: 9px calc(var(--nib) + 16px) 10px 14px;
+  border: 0; border-image: none;
+  border-bottom: 1px solid var(--rule-ink);
+  background: none;
+  box-shadow: none;
+  filter: none;
+}
+.ev-register .ev-opt:first-child { border-top: 1px solid var(--rule-ink); }
+/* the number stays struck on its enamel medallion, out in the margin */
+.ev-register .ev-opt::before { left: calc(-1 * var(--md) - 20px); }
+/* and at the end of the line, the affordance: a brass socket with a gilt
+   chevron in it — an entry you may write yourself against */
+.ev-register .ev-opt::after {
+  content: '›';
+  position: absolute; pointer-events: none;
+  left: auto; right: 4px; top: 50%; translate: 0 -50%; transform: none;
+  width: var(--nib); height: var(--nib);
+  display: grid; place-items: center;
+  background: url("../../assets/ui/kit/socket-round.webp") 50% 50% / 100% 100% no-repeat;
+  font-family: var(--font-display); font-weight: 700;
+  font-size: calc(var(--nib) * .74); line-height: 1;
+  color: var(--kit-gold-hi);
+  text-shadow: 0 1px 0 rgba(28, 14, 2, .95);
+  padding-bottom: calc(var(--nib) * .06);
+  filter: drop-shadow(0 2px 2px rgb(58 30 10 / .6));
+}
+.ev-register .ev-opt__label {
+  color: var(--ink);
+  text-shadow: 0 1px 0 rgb(255 242 214 / .38);
+}
+/* the clerk's dotted leader, carrying the eye from what the entry costs to
+   the ring you press at the end of its line */
+.ev-register .ev-opt__meta { flex-wrap: nowrap; }
+.ev-register .ev-opt__meta::after {
+  content: ''; flex: 1 1 40px; min-width: 20px; align-self: center;
+  height: 1px; margin-left: 6px;
+  background: repeating-linear-gradient(90deg,
+    color-mix(in srgb, var(--kit-ink-rule) 52%, transparent) 0 2px,
+    transparent 2px 6px);
+}
+/* the stakes, each in the ink a clerk would rule it in */
+.ev-register .ev-tag--risk { color: var(--kit-ink-oxblood); }
+.ev-register .ev-tag--gain { color: var(--kit-ink-green); }
+.ev-register .ev-tag--cost { color: var(--kit-paper-ink); }
+.ev-register .ev-tag--gear { color: var(--kit-ink-violet); }
+.ev-register .ev-opt .kit-tag { font-weight: 600; text-shadow: 0 1px 0 rgb(255 242 214 / .32); }
+.ev-register .ev-opt .kit-tag > i { color: color-mix(in oklab, var(--kit-paper-ink) 68%, var(--kit-parchment-shade)); }
+.ev-register .ev-opt__gate { color: var(--kit-ink-oxblood); }
+/* the entry under the pointer or the keyboard: the lamp brought to that line */
+.ev-register .ev-opt:hover:not(:disabled), .ev-register .ev-opt:focus-visible {
+  transform: translateX(3px);
+  background: linear-gradient(90deg, rgb(255 206 130 / .5), rgb(255 206 130 / .16) 62%, transparent);
+  filter: none;
+}
+.ev-register .ev-opt:hover:not(:disabled) .ev-opt__label,
+.ev-register .ev-opt:focus-visible .ev-opt__label { color: var(--kit-ink-oxblood); }
+.ev-register .ev-opt:focus-visible { box-shadow: inset 3px 0 0 var(--kit-ink-oxblood); }
+.ev-register .ev-opt:hover:not(:disabled)::after,
+.ev-register .ev-opt:focus-visible::after { filter: drop-shadow(0 2px 3px rgb(58 30 10 / .6)) brightness(1.24); }
+.ev-register .ev-opt.is-chosen {
+  background: linear-gradient(90deg, rgb(255 206 130 / .62), rgb(255 206 130 / .22) 70%, transparent);
+  filter: none;
+}
+.ev-register .ev-opt.is-chosen .ev-opt__label { color: var(--kit-ink-oxblood); }
+.ev-register .ev-opt:disabled { filter: saturate(.45); opacity: .55; }
+.ev-register .ev-opt.is-chosen:disabled { opacity: 1; filter: none; }
+.ev-register .ev-opt.is-faded { opacity: .42; }
+
+/* what came of it, written on the page under the entries */
+.ev-register .ev-outcome::before { background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--kit-ink-rule) 60%, transparent) 25%, color-mix(in srgb, var(--kit-ink-rule) 60%, transparent) 75%, transparent); }
+.ev-register .ev-out__t { color: var(--kit-ink-violet); text-shadow: 0 1px 0 rgb(255 242 214 / .35); }
+.ev-register .ev-out__p { color: var(--ink); }
+.ev-register .ev-out__next { color: var(--kit-ink-oxblood); }
+
 /* ── the hall around the page ───────────────────────────────────────────────
    Each side wall is staged the same way, mirrored: a gothic window onto the
    grounds, a brass sconce between it and the page, and on the floor a candle

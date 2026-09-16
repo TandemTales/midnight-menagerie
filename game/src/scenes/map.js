@@ -104,8 +104,12 @@ const MIN_ICON_SCALE = 0.86;
  *  slab that covers the next one on a 1280 panel. */
 const LABEL_K_MAX = 1.3;
 /** Screen px of desk kept between the fitted sheet and the gilt rail, in total
- *  across each axis (the viewport IS the inside of the rail). */
-const FIT_PAD = 22;
+ *  across each axis (the viewport IS the inside of the rail). Round 6: the
+ *  survey used to run edge to edge inside the rail with 11px of desk round it,
+ *  which read as a blueprint filling the frame rather than a sheet LAID on a
+ *  desk inside one. The rail also stands --map-mount further out (map.css), so
+ *  the dark mount round the paper is this and that together. */
+const FIT_PAD = 34;
 
 /* ── The wing's own plan, re-inked ──────────────────────────────────────────
    The section drawings are small (165x470 up to 713x237) and the plan window is
@@ -410,6 +414,7 @@ export class MapScene extends Scene {
           <i class="kit-dress__vine kit-dress__vine--r map-vine map-vine--r"></i>
         </div>
 
+        <div class="map-mount" aria-hidden="true"></div>
         <div class="map-viewport" role="application"
              aria-label="Blueprint of ${escapeHtml(meta.name)}. Choose the next room.">
           <div class="map-sheet">
