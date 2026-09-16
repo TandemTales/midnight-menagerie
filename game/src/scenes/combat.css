@@ -3143,6 +3143,20 @@
   gap: 7px 13px;
   margin: 0; padding: 0 16px 0 10px;
 }
+/* …IN THE SAME TRAY THE KID'S STAND IN (round 6, HAWTHORN's graft; both judges
+   named it the round's single best idea). The Kid's conditions sit on the
+   boards' notched dark cartouche, slung under her Courage gauge; his stood on a
+   bare gold rod against the wall, so on the crowded board the two sides read as
+   two different pieces of furniture. His row takes the same tray — scroll-ended,
+   painted under the rod, and only while he is carrying something — and the rod
+   still runs out of his gauge's end knob through it, which is what says the
+   conditions are HIS. */
+.cb-root[data-arena="boss"] .cb-enemies[data-n="1"] .cb-enemy[data-tier="boss"]:not([data-role="bossPart"]) .cb-enemy__vitals > .cb-enemy__statuses:not(:empty) {
+  border: 0 solid transparent;
+  border-image: url("../../assets/ui/kit/cartouche-dark.webp") 18 34 18 34 fill / 12px 24px stretch;
+  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .85));
+  padding: 4px 28px 11px 16px;
+}
 /* …HUNG ON A GILT ROD run out from the gauge's end knob, a lozenge at its tip,
    so they read as his, fixed to his gauge, not as three coins beside it */
 .cb-root[data-arena="boss"] .cb-enemies[data-n="1"] .cb-enemy[data-tier="boss"]:not([data-role="bossPart"]) .cb-enemy__vitals > .cb-enemy__statuses::before,
@@ -3151,13 +3165,13 @@
   top: 50%;
 }
 .cb-root[data-arena="boss"] .cb-enemies[data-n="1"] .cb-enemy[data-tier="boss"]:not([data-role="bossPart"]) .cb-enemy__vitals > .cb-enemy__statuses::before {
-  left: 0; right: 8px; height: 5px; margin-top: -3px;
+  left: -8px; right: 10px; height: 5px; margin-top: -6px;
   border-radius: 3px;
   background: linear-gradient(180deg, var(--kit-gold-hi) 0%, var(--kit-gold) 42%, var(--kit-gold-lo) 100%);
   box-shadow: inset 0 0 0 1px rgba(26, 14, 4, .75), 0 2px 3px rgba(0, 0, 0, .8);
 }
 .cb-root[data-arena="boss"] .cb-enemies[data-n="1"] .cb-enemy[data-tier="boss"]:not([data-role="bossPart"]) .cb-enemy__vitals > .cb-enemy__statuses::after {
-  right: 2px; width: 11px; height: 11px; margin-top: -6px;
+  right: 4px; width: 11px; height: 11px; margin-top: -9px;
   transform: rotate(45deg);
   background: linear-gradient(135deg, var(--kit-gold-hi), var(--kit-gold) 50%, var(--kit-gold-lo));
   box-shadow: inset 0 0 0 1px rgba(26, 14, 4, .8), 0 2px 3px rgba(0, 0, 0, .8);
