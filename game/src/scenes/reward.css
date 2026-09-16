@@ -240,26 +240,32 @@
   --crest-w: clamp(72px, 5.4vw, 92px);
   --crest-h: calc(var(--crest-w) * 98 / 156);
   --crest-rise: calc(var(--crest-h) * .84 - clamp(30px, 3.8vh, 36px) / 2 + clamp(34px, 4.3vh, 40px) / 2 + 3px);
-  /* Round 5: the hall is lit (ui/kit.css .kit-ground). Each flank's sconce
-     throws a tall pool of candlelight over the damask above the chair rail
-     and down the wainscot below it; the candle on each end of the rail warms
-     the panelling round its foot; and a broad pool rises behind the middle of
-     the three, where the frames stand in the candles' light. The sconces hang
-     at --sconce-y, their flames a sixth of the way down them. */
-  --sconce-w: min(clamp(62px, 5.2vw, 90px), calc(var(--flank-w) * .5));
-  --sconce-y: calc(var(--hud-h) + 37vh);
-  --sconce-fy: calc(var(--sconce-y) + var(--sconce-w) * 330 / 150 * .15);
-  --wl3-x: var(--flank-cx);                  --wl3-y: var(--sconce-fy);
-  --wl3-w: clamp(360px, 30vw, 520px);        --wl3-h: calc(var(--wl3-w) * 1.55);
+  /* Round 6: the hall is lit from two sides, cold against warm — the contrast
+     the samples paint. Each flank's gothic lancet throws a cold shaft down
+     through the alcove (--mb1/--mb2, measured onto the glass in reward.js);
+     the candle on each end of the rail warms the panelling round its foot
+     (--wl3/--wl4); and a broad pool rises behind the middle of the three,
+     where the frames stand in the candles' light. The lancets hang at
+     --win-y, their glass a fifth of the way down them. */
+  --win-y: calc(var(--hud-h) + 32vh);
+  --wl3-x: var(--flank-cx);                  --wl3-y: calc(100vh - clamp(150px, 20vh, 190px));
+  --wl3-w: clamp(330px, 28vw, 480px);        --wl3-h: calc(var(--wl3-w) * 1.1);
   --wl4-x: calc(100vw - var(--flank-cx));    --wl4-y: var(--wl3-y);
   --wl4-w: var(--wl3-w);                     --wl4-h: var(--wl3-h);
   --wl5-x: 50vw;                             --wl5-y: calc(var(--hud-h) + 52vh);
   --wl5-w: calc(var(--fan-half) * 2.3);      --wl5-h: 70vh;
   --wl6-x: 50vw;                             --wl6-y: calc(100vh - clamp(120px, 14vh, 150px));
   --wl6-w: 100vw;                            --wl6-h: 36vh;
-  /* moonlight: only a cold wash over the plaque, where the house's windows are */
-  --ml1-x: 50vw;                             --ml1-y: calc(var(--hud-h) + 6vh);
-  --ml1-w: 70vw;                             --ml1-h: 44vh;
+  /* moonlight: a cold pool on the damask round each lancet, and a shaft
+     slanting down out of it, through the alcove and across the flagstones */
+  --ml1-x: var(--flank-cx);                  --ml1-y: calc(var(--win-y) + 8vh);
+  --ml1-w: calc(var(--flank-w) * 2.6);       --ml1-h: 52vh;
+  --ml2-x: calc(100vw - var(--flank-cx));    --ml2-y: var(--ml1-y);
+  --ml2-w: var(--ml1-w);                     --ml2-h: var(--ml1-h);
+  --mb1-x: calc(var(--flank-cx) + var(--flank-w) * .3); --mb1-y: var(--win-y);
+  --mb1-w: calc(var(--flank-w) * 1.9);       --mb1-h: calc(100vh - var(--win-y));
+  --mb2-x: calc(100vw - var(--mb1-x));       --mb2-y: var(--mb1-y);
+  --mb2-w: var(--mb1-w);                     --mb2-h: var(--mb1-h);
 }
 /* a Big Scare also hands over a Keepsake: its panel hangs under the row on the
    rule, and the three stand in the height it leaves */
@@ -308,7 +314,7 @@
 .rw-stage::before {
   top: calc(var(--spoil-h) / 2);
   /* a shallower alcove than the kit's: the three stand in a lit hall, its
-     damask and wainscot showing wherever the sconces and candles reach, only
+     damask and wainscot showing wherever the lancets and candles reach, only
      the top under the rule and the far corners falling into the dark */
   background:
     radial-gradient(70% 30% at 50% 0%, rgba(4, 3, 6, .36), transparent 70%),
@@ -473,44 +479,50 @@
   background: radial-gradient(closest-side, color-mix(in srgb, var(--kit-candle) 24%, transparent), color-mix(in srgb, var(--kit-candle) 8%, transparent) 52%, transparent);
   mix-blend-mode: screen;
 }
-/* the flanks: a brass sconce on each wall, over the wainscot (.kit-sconce,
-   its candle breathing), and under it a candle on the rail's end, just
-   inside its star block */
+/* the flanks: high on each wall a moonlit gothic lancet (.kit-window,
+   QUINCE's, ui/r4-polish-a) letting cold light into the alcove, and under it
+   on the rail's end a candle on a book burning warm against it. They stood as
+   floating brass sconces before, and the hall behind the cards read as empty
+   dark wainscot. */
 /* hung level with the tops of the frames, on the damask over the chair rail;
-   reward.js (_pointLights) aims the ground's two light slots at the flames */
-.rw-sconce {
-  --sconce-w: inherit;
-  top: calc(var(--frame-pad) + clamp(2px, .8vh, 10px));
+   reward.js (_pointLights) aims the ground's beams at the two glasses */
+.rw-window {
+  --win-w: min(calc(var(--flank-w) * .92), calc(var(--slot-h) * .54));
+  top: calc(var(--frame-pad) * .4);
   z-index: -1;
   translate: -50% 0;
-  filter: drop-shadow(0 10px 10px rgba(0, 0, 0, .75)) brightness(1.08);
+  filter: drop-shadow(0 12px 16px rgba(0, 0, 0, .7)) brightness(1.1) saturate(1.06);
 }
-.rw-sconce--l { left: calc(var(--flank-w) / 2 + 6px); }
-.rw-sconce--r { left: calc(100% - var(--flank-w) / 2 - 6px); }
-/* the sconce's candle washes the wall above and below it, as a real one
-   does: a tall soft ellipse of warm light screened over the damask and down
-   the wainscot, under the sconce itself */
-.rw-sconce::before {
-  content: ''; position: absolute; z-index: -1; pointer-events: none;
-  left: 50%; top: 20%;
-  width: 440%; height: 250%;
-  translate: -50% -38%;
-  border-radius: 50%;
+.rw-window--l { left: calc(var(--flank-w) / 2 + 6px); }
+.rw-window--r { left: calc(100% - var(--flank-w) / 2 - 6px); }
+/* the moonlight standing off the glass, and the cold wash it lays on the
+   damask and the wainscot round it */
+.rw-window::before {
+  left: -68%; right: -68%; top: 2%; bottom: 6%;
   background: radial-gradient(closest-side,
-    color-mix(in srgb, var(--kit-candle) 26%, transparent) 0%,
-    color-mix(in srgb, var(--kit-candle) 11%, transparent) 42%,
-    color-mix(in srgb, var(--kit-candle) 3%, transparent) 72%, transparent);
+    color-mix(in srgb, var(--kit-moon) 26%, transparent) 0%,
+    color-mix(in srgb, var(--kit-moon) 10%, transparent) 46%,
+    color-mix(in srgb, var(--kit-moon) 3%, transparent) 74%, transparent);
+}
+/* and the shaft itself, standing in the air of the alcove: soft on every side
+   (a shaft of light has no edge to cut), leaning inward the way the Curiosity's
+   hall leans its two. */
+.rw-window::after {
+  content: ''; position: absolute; z-index: -1; pointer-events: none;
+  left: 50%; top: 18%;
+  width: 128%;
+  height: calc(var(--slot-h) * .96 + var(--stand, 20px));
+  transform-origin: 50% 0;
+  background: linear-gradient(90deg, transparent 0%,
+    color-mix(in srgb, var(--kit-moon) 36%, transparent) 28%,
+    color-mix(in srgb, var(--kit-moon) 46%, transparent) 52%,
+    color-mix(in srgb, var(--kit-moon) 23%, transparent) 78%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 14%, rgba(0, 0, 0, .7) 56%, rgba(0, 0, 0, .3) 86%, transparent 100%);
+          mask-image: linear-gradient(to bottom, transparent 0%, #000 14%, rgba(0, 0, 0, .7) 56%, rgba(0, 0, 0, .3) 86%, transparent 100%);
   mix-blend-mode: screen;
 }
-/* the sconce's candle lights the wall round it: a warm bloom screened over
-   the damask, wider and warmer than the kit's own */
-.rw-sconce::after {
-  width: 560%;
-  background: radial-gradient(closest-side,
-    color-mix(in srgb, var(--kit-candle) 44%, transparent) 0%,
-    color-mix(in srgb, var(--kit-candle) 16%, transparent) 36%,
-    color-mix(in srgb, var(--kit-candle) 5%, transparent) 64%, transparent);
-}
+.rw-window--l::after { transform: translateX(-42%) skewX(21deg); }
+.rw-window--r::after { transform: translateX(-58%) skewX(-21deg); }
 .rw-candle {
   bottom: calc(var(--stand) - var(--rw-rail-h) * .02);
   width: clamp(40px, 3.4vw, 58px);
