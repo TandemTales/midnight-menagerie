@@ -168,7 +168,7 @@ export class ClubhouseScene extends Scene {
       <svg class="cl-filters" width="0" height="0" aria-hidden="true" focusable="false">
         <filter id="cl-crisp" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">
           <feConvolveMatrix order="3" divisor="1" preserveAlpha="true"
-            kernelMatrix="0 -0.55 0  -0.55 3.2 -0.55  0 -0.55 0"/>
+            kernelMatrix="0 -0.25 0  -0.25 2 -0.25  0 -0.25 0"/>
         </filter>
       </svg>`;
     return room;

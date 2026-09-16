@@ -70,6 +70,13 @@
   --wl5-x: calc(100vw - var(--at-side) - 8px - var(--at-dos-w) * .5); --wl5-y: 42vh;
   --wl5-w: calc(var(--at-dos-w) * 1.65); --wl5-h: 70vh;
   --wl6-x: 50vw; --wl6-y: 11vh; --wl6-w: 74vw; --wl6-h: 30vh;
+  /* AND COLD LIGHT, which this wall had none of: every pool on it was a
+     candle's, so the whole thing came up one warm brown. The house has
+     windows — a shaft of moonlight falls through the top of the wall left of
+     the plaque and pools down the wall beside the sheet, and the damask comes
+     up blue where it lands and warm where the candles reach. */
+  --ml1-x: 8vw;  --ml1-y: 30vh; --ml1-w: 34vw; --ml1-h: 64vh;
+  --mb1-x: 27vw; --mb1-y: -5vh; --mb1-w: 24vw; --mb1-h: 42vh;
 }
 /* the reading panel's medallion without the chip of gilding its crop caught
    (medal-moon-clean.webp, tools/prep_kids_places.py). The attribute is part
@@ -106,10 +113,18 @@
 .at-flame--l { left: calc(var(--kit-edge) + var(--at-corner) * .56 - var(--at-corner) * .31); }
 .at-flame--r { right: calc(var(--kit-edge) + var(--at-corner) * .56 - var(--at-corner) * .31); }
 .at-vine { top: calc(var(--at-corner) * .72); bottom: 60px; }
-/* the night at the board's edges and along its foot, over the deepened wall */
+/* The night at the board's edges and along its foot, over the deepened wall —
+   and the grime of a house nobody airs: soot gathered under the ceiling
+   between the two candles, damp risen unevenly out of the skirting. An
+   unbroken gradient is what made this wall read as a render; these are the
+   two stains that make one read as a wall. */
 .at-bg {
   position: absolute; inset: 0; z-index: 1; pointer-events: none;
   background:
+    radial-gradient(30% 13% at 47% -3%, rgba(12, 7, 16, .5), transparent 76%),
+    radial-gradient(22% 9% at 21% -1%, rgba(12, 7, 16, .38), transparent 78%),
+    radial-gradient(40% 15% at 27% 103%, rgba(9, 6, 14, .55), transparent 74%),
+    radial-gradient(32% 13% at 71% 104%, rgba(9, 6, 14, .48), transparent 72%),
     radial-gradient(118% 104% at 46% 42%, transparent 54%, color-mix(in srgb, var(--kit-void) 62%, transparent) 100%),
     linear-gradient(to bottom, transparent 78%, color-mix(in srgb, var(--kit-void) 46%, transparent));
 }

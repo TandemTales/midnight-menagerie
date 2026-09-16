@@ -387,7 +387,7 @@
    their edge away. #cl-crisp (an feConvolveMatrix in the board's own inline
    SVG, scenes/clubhouse.js) puts it back before the colour grade runs. */
 .polaroid .polaroid__photo .petpic { filter: url("#cl-crisp"); }
-.polaroid:not(.is-found) .polaroid__photo .petpic { filter: url("#cl-crisp") saturate(.62) brightness(.86) contrast(1.12) sepia(.12); }
+.polaroid:not(.is-found) .polaroid__photo .petpic { filter: url("#cl-crisp") saturate(.62) brightness(.86) contrast(1.07) sepia(.12); }
 .polaroid.is-found .polaroid__photo .petpic { filter: url("#cl-crisp") saturate(1.06) contrast(1.06); }
 
 /* the clue cards: index cards, taped up — a red rule under the heading and

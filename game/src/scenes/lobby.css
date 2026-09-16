@@ -68,9 +68,10 @@
   --wl3-x: calc(50vw - var(--lo-stage-w) / 2 + var(--lo-view-w) + var(--lo-gap) / 2);
   --wl3-y: calc(var(--lo-view-cy) + var(--lo-view-w) * .36);
   --wl3-w: clamp(260px, 22vw, 380px);         --wl3-h: calc(var(--wl3-w) * 1.1);
-  --wl4-x: calc(50vw + var(--lo-stage-w) / 2 - var(--lo-card-w) / 2);
-  --wl4-y: calc(var(--lo-lamp-y) - 8vh);
-  --wl4-w: calc(var(--lo-card-w) * 1.15);     --wl4-h: calc(var(--lo-card-w) * .74);
+  /* the candle's light along the floorboards at the tree's foot, so the
+     boards below the shelf are a floor and not the board's dark edge */
+  --wl4-x: 50vw;                              --wl4-y: 102vh;
+  --wl4-w: 88vw;                              --wl4-h: 48vh;
   --wl5-x: calc(50vw - var(--lo-stage-w) / 2 + var(--lo-view-w) + var(--lo-gap) / 2);
   --wl5-y: var(--lo-lamp-y);
   --wl5-w: clamp(280px, 24vw, 400px);         --wl5-h: calc(var(--wl5-w) * 1.25);
