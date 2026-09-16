@@ -1,0 +1,87 @@
+{
+  "round": "r6",
+  "maxBuilders": 6,
+  "briefs": [
+    "docs/ui-pass/BRIEF-r0.md",
+    "docs/ui-pass/BRIEF-r1.md",
+    "docs/ui-pass/BRIEF-r6.md"
+  ],
+  "rubrics": [
+    "docs/ui-pass/RUBRIC.md",
+    "docs/ui-pass/RUBRIC-r1.md",
+    "docs/ui-pass/RUBRIC-r6.md"
+  ],
+  "samples": [
+    "UI/title.png",
+    "UI/mainMenu.png",
+    "UI/selectCompanion.png",
+    "UI/selectKid.png"
+  ],
+  "tracks": [
+    {
+      "key": "polish",
+      "name": "POLISH",
+      "rule": "refine",
+      "screens": [
+        "shop",
+        "reward",
+        "event",
+        "map",
+        "rest",
+        "gameover"
+      ],
+      "baseline": "LARCH",
+      "builders": [
+        {
+          "slot": "a",
+          "code": "ROWAN",
+          "port": 8851,
+          "angle": "LITERAL. Work down the POLISH fix list, 1 to 10, in order and exactly as written, reading the branches it names before you copy an idea from them. Every fix visibly done on screen at both sizes, and nothing else changed."
+        },
+        {
+          "slot": "b",
+          "code": "SORREL",
+          "port": 8852,
+          "angle": "THE CARVED RAIL. Do every fix, and put your extra effort into fix 10, the top HUD strip, which every judge on both tracks has now called a web toolbar for two rounds running. One carved nameplate rail with ends, a surface and a shadow, that Courage, Clues, Luck, Tricks, the Snacks and the Keepsakes are set INTO as sockets and inlays rather than laid on as separate plates. It has to hold at 1280x800, on all six boards and on all three fights, with room under it for the boss board's crown finial and Guard shield."
+        },
+        {
+          "slot": "c",
+          "code": "TEASEL",
+          "port": 8853,
+          "angle": "THE THREE STAGES. Do every fix, and put your extra effort into the three screens THISTLE did not win or barely held: the Shop's keeper, the Reward's room and the Curiosity's register. A large candle-lit Mr. Moth who hosts his counter with his nameplate clear of his face; cold moonlit windows behind the Reward's cards against the warm candles; and a real parchment ledger page for The House Register whose entries are still unmistakably clickable. Then the Game Over centrepiece."
+        }
+      ]
+    },
+    {
+      "key": "combat",
+      "name": "COMBAT",
+      "rule": "refine",
+      "screens": [
+        "combat",
+        "combat-boss",
+        "combat-crowd"
+      ],
+      "baseline": "BRACKEN",
+      "builders": [
+        {
+          "slot": "a",
+          "code": "JUNIPER",
+          "port": 8854,
+          "angle": "LITERAL. Work down the COMBAT fix list, 1 to 7, in order and exactly as written, reading the branches it names before you copy an idea from them. Every fix visibly done on all three boards at both sizes, and nothing else changed. Do not touch hud.css."
+        },
+        {
+          "slot": "b",
+          "code": "HAWTHORN",
+          "port": 8855,
+          "angle": "THE FULL HAND. Do every fix, and put your extra effort into fix 2, the crowded boss board: a hand of nine or ten where every title fits its plate on at most two clean lines at one consistent size, every body sets without breaking a word across lines, and every type line and cost reads at 1280x800, while the fan never covers the Kid's panel, the piles or END TURN. This is the screen that has scored lowest on the track in every round."
+        },
+        {
+          "slot": "c",
+          "code": "CAMPION",
+          "port": 8856,
+          "angle": "THE MIRROR AND THE TABLE. Do every fix, and put your extra effort into the two painted objects the judges keep reaching for: dark, deep mirror glass with moonlight streaks and tarnish behind The Butler, with nothing overlapping his nameplate's letters; and the bottom corners as real furniture, the hourglass with falling sand in a purple enamel disc, the Nerve coin in an iron filigree cradle, the piles as full-size card backs on their bracket."
+        }
+      ]
+    }
+  ]
+}
