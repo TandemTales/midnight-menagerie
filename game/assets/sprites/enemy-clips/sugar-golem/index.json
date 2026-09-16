@@ -6,37 +6,37 @@
    "cols": 8,
    "rows": 3,
    "fw": 400,
-   "fh": 314,
+   "fh": 289,
    "anchor": [
-    200.08,
-    271.37
+    196.08,
+    281.71
    ],
-   "source": "SS_grandWardrobe_attack.png",
+   "source": "SS_sugarGolem_attack.png",
    "sourceFrames": 81,
    "matte": "CONTAM",
    "bg": [
-    189.8,
-    186.0,
-    188.1
+    231.3,
+    227.8,
+    242.5
    ],
    "grid": [
     9,
     9
    ],
-   "lift": -8.8,
+   "lift": -7.2,
    "dehalo": false,
-   "warm": 23.0,
-   "dewhite": true,
-   "dip": 0.519,
+   "warm": 70.0,
+   "dewhite": false,
+   "dip": 0.496,
    "untail": false,
    "deblack": false,
-   "endIoU": 0.982,
-   "scale": 0.6359,
-   "unit": 201.59,
+   "endIoU": 0.993,
+   "scale": 0.7782,
+   "unit": 220.23,
    "loop": false,
    "fps": 16.3,
    "hold": false,
-   "sha1": "a908a65b818f1ba9"
+   "sha1": "f5e7570e1720293c"
   },
   "defeat": {
    "file": "defeat.webp",
@@ -44,38 +44,38 @@
    "cols": 8,
    "rows": 3,
    "fw": 400,
-   "fh": 246,
+   "fh": 281,
    "anchor": [
-    201.31,
-    238.05
+    200.17,
+    259.99
    ],
-   "source": "SS_grandWardrobe_defeat.png",
+   "source": "SS_sugarGolem_defeat.png",
    "sourceFrames": 81,
    "matte": "CONTAM",
    "bg": [
-    186.8,
-    181.9,
-    182.4
+    234.7,
+    227.0,
+    223.4
    ],
    "grid": [
     9,
     9
    ],
-   "lift": -7.3,
+   "lift": -13.9,
    "dehalo": false,
-   "warm": 33.0,
+   "warm": 83.0,
    "dewhite": false,
-   "dip": 0.72,
+   "dip": 0.284,
    "untail": false,
    "deblack": false,
-   "defeatCut": 24,
-   "endIoU": 0.278,
-   "scale": 0.7463,
-   "unit": 236.57,
+   "defeatCut": 28,
+   "endIoU": 0.402,
+   "scale": 0.8097,
+   "unit": 229.15,
    "loop": false,
-   "fps": 35.2,
+   "fps": 30.34,
    "hold": true,
-   "sha1": "08cbd438ef0e8297"
+   "sha1": "37d44115115f7cd2"
   },
   "hurt": {
    "file": "hurt.webp",
@@ -83,77 +83,77 @@
    "cols": 8,
    "rows": 3,
    "fw": 400,
-   "fh": 295,
+   "fh": 285,
    "anchor": [
-    191.43,
-    291.16
+    175.54,
+    278.71
    ],
-   "source": "SS_grandWardrobe_hurt.png",
+   "source": "SS_sugarGolem_hurt.png",
    "sourceFrames": 81,
    "matte": "CONTAM",
    "bg": [
-    183.8,
-    177.4,
-    179.1
+    237.9,
+    232.2,
+    229.9
    ],
    "grid": [
     9,
     9
    ],
-   "lift": -3.7,
+   "lift": -9.1,
    "dehalo": false,
-   "warm": 26.0,
+   "warm": 82.0,
    "dewhite": false,
-   "dip": 0.56,
+   "dip": 0.391,
    "untail": false,
    "deblack": false,
-   "endIoU": 0.995,
-   "scale": 0.907,
-   "unit": 287.53,
+   "endIoU": 0.994,
+   "scale": 0.8602,
+   "unit": 243.44,
    "loop": false,
    "fps": 16.3,
    "hold": false,
-   "sha1": "366686dd38212e1e"
+   "sha1": "b63212cb8fc1ae26"
   },
   "idle": {
    "file": "idle.webp",
    "frames": 22,
    "cols": 8,
    "rows": 3,
-   "fw": 400,
-   "fh": 292,
+   "fw": 380,
+   "fh": 328,
    "anchor": [
-    196.52,
-    290.0
+    190.75,
+    313.3
    ],
-   "source": "SS_grandWardrobe_idle.png",
+   "source": "SS_sugarGolem_idle.png",
    "sourceFrames": 81,
    "matte": "CONTAM",
    "bg": [
-    185.5,
-    180.7,
-    183.0
+    244.3,
+    239.8,
+    238.0
    ],
    "grid": [
     9,
     9
    ],
-   "lift": -7.9,
+   "lift": -10.6,
    "dehalo": false,
-   "warm": 46.0,
+   "warm": 82.0,
    "dewhite": false,
-   "dip": 0.678,
+   "dip": 0.636,
    "untail": false,
    "deblack": false,
-   "endIoU": 0.996,
-   "scale": 0.9091,
-   "unit": 288.18,
+   "endIoU": 0.994,
+   "scale": 1.0,
+   "unit": 283.0,
    "loop": true,
    "fps": 5.43,
    "hold": false,
-   "sha1": "d7eda271ab9e934f"
+   "sha1": "e2c6a4f7b1f3b6a0"
   }
  },
  "scale": 1.0,
- "unit": 317.0
+ "unit": 283.0
 }

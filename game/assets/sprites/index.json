@@ -940,6 +940,12 @@
    "hurt",
    "idle"
   ],
+  "sugar-golem": [
+   "attack",
+   "defeat",
+   "hurt",
+   "idle"
+  ],
   "the-wardrobe": [
    "attack",
    "defeat",

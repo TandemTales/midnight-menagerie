@@ -288,7 +288,18 @@ async def main(a):
               ", ".join(plan["unknown"]))
 
         # ── construction: decided before a frame can be painted ─────────────────
-        painted_id = sorted(enemies)[0]
+        # A STILL ENEMY, and it has to be one that is still STILL. This was
+        # `sorted(enemies)[0]`, which is fine right up to the moment Josh
+        # delivers animation for whichever id sorts first -- on 2026-09-16 that
+        # became `ancient-topiary`, `EnemyView` correctly loaded its clips
+        # instead of its painting, and the check failed holding the clip's href
+        # against the still's. The creature had not broken; the gate's subject
+        # had moved. Pick one the manifest does not list clips for.
+        clipped = set(manifest.get("enemyClips") or {})
+        painted_id = next((i for i in sorted(enemies) if i not in clipped), None)
+        check(painted_id is not None,
+              "there is a painted enemy with no clips to test the still path with",
+              "every built still now animates; this check needs a new subject")
         construct = await page.evaluate("""async ([paintedId]) => {
           const [{ EnemyView }, { enemyStill, manifestReady }, { ENEMIES }] = await Promise.all([
             import('/game/src/ui/enemy.js'), import('/game/src/ui/sprite.js'),
