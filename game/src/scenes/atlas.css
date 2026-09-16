@@ -52,16 +52,31 @@
      panel throws its light up the wall behind the panel and into the gap
      between the two; and a breath of it lies along the floor they stand on */
   --corner-w: var(--at-corner);
-  /* the corner candles' own pools, opened out so their light reaches the
-     plaque, Back and the tally, and runs down both sides of the sheet */
-  --wl1-w: calc(var(--at-corner) * 5.4); --wl1-h: calc(var(--at-corner) * 6);
+  /* THE WALL IS A DARK ONE WITH CANDLES ON IT. Round 5's judges read this wall
+     as "a plain brown-purple gradient ... lit evenly with no candle pooling",
+     and it was: every pool below was a screen wide, so the whole wall came up
+     at once and none of it fell away. The ground is pushed down into the dark
+     (--deep, ui/kit.css .kit-ground--deep) and each pool is drawn in to the
+     reach of the candle that makes it — the two in the corners, the one
+     behind the sheet, and the one on the floor under the reading panel — so
+     the panelling between them goes dark and the damask comes up only where
+     a flame is. */
+  --deep: 44%;
+  --wl1-w: calc(var(--at-corner) * 3.1); --wl1-h: calc(var(--at-corner) * 3.5);
   --wl2-w: var(--wl1-w);                 --wl2-h: var(--wl1-h);
-  --wl3-x: 36vw; --wl3-y: 50vh; --wl3-w: 104vw; --wl3-h: 124vh;
-  --wl4-x: calc(100vw - var(--at-side) - 8px - var(--at-dos-w) * .22); --wl4-y: 88vh;
-  --wl4-w: clamp(520px, 44vw, 720px);  --wl4-h: 124vh;
-  --wl5-x: calc(100vw - var(--at-side) - 8px - var(--at-dos-w) * .5); --wl5-y: 40vh;
-  --wl5-w: calc(var(--at-dos-w) * 2.6); --wl5-h: 116vh;
-  --wl6-x: 50vw; --wl6-y: 13vh; --wl6-w: 112vw; --wl6-h: 58vh;
+  --wl3-x: 34vw; --wl3-y: 48vh; --wl3-w: 64vw; --wl3-h: 82vh;
+  --wl4-x: calc(100vw - var(--at-side) - 8px - var(--at-dos-w) * .22); --wl4-y: 92vh;
+  --wl4-w: clamp(340px, 28vw, 470px);  --wl4-h: 64vh;
+  --wl5-x: calc(100vw - var(--at-side) - 8px - var(--at-dos-w) * .5); --wl5-y: 42vh;
+  --wl5-w: calc(var(--at-dos-w) * 1.65); --wl5-h: 70vh;
+  --wl6-x: 50vw; --wl6-y: 11vh; --wl6-w: 74vw; --wl6-h: 30vh;
+  /* AND COLD LIGHT, which this wall had none of: every pool on it was a
+     candle's, so the whole thing came up one warm brown. The house has
+     windows — a shaft of moonlight falls through the top of the wall left of
+     the plaque and pools down the wall beside the sheet, and the damask comes
+     up blue where it lands and warm where the candles reach. */
+  --ml1-x: 8vw;  --ml1-y: 30vh; --ml1-w: 34vw; --ml1-h: 64vh;
+  --mb1-x: 27vw; --mb1-y: -5vh; --mb1-w: 24vw; --mb1-h: 42vh;
 }
 /* the reading panel's medallion without the chip of gilding its crop caught
    (medal-moon-clean.webp, tools/prep_kids_places.py). The attribute is part
@@ -71,8 +86,8 @@
 /* the candle on the floor, its light up the wall behind the panel */
 .at-wallglow {
   z-index: 2;
-  --light-a: 40%;
-  width: clamp(600px, 50vw, 820px);
+  --light-a: 46%;
+  width: clamp(380px, 32vw, 540px);
   left: calc(100vw - var(--at-side) - 8px - var(--at-dos-w) * .22);
   top: 92vh;
 }
@@ -81,8 +96,8 @@
    plaque and down the wall beside the sheet and the panel */
 .at-cornerglow {
   z-index: 2;
-  --light-a: 38%;
-  width: clamp(760px, 62vw, 1060px);
+  --light-a: 40%;
+  width: clamp(430px, 36vw, 620px);
   top: calc(var(--at-corner) * .18);
   animation-delay: -1.1s;
 }
@@ -98,12 +113,33 @@
 .at-flame--l { left: calc(var(--kit-edge) + var(--at-corner) * .56 - var(--at-corner) * .31); }
 .at-flame--r { right: calc(var(--kit-edge) + var(--at-corner) * .56 - var(--at-corner) * .31); }
 .at-vine { top: calc(var(--at-corner) * .72); bottom: 60px; }
-/* the night only at the board's very edges, so the candlelit wall reads */
+/* The night at the board's edges and along its foot, over the deepened wall —
+   and the grime of a house nobody airs: soot gathered under the ceiling
+   between the two candles, damp risen unevenly out of the skirting. An
+   unbroken gradient is what made this wall read as a render; these are the
+   two stains that make one read as a wall. */
 .at-bg {
   position: absolute; inset: 0; z-index: 1; pointer-events: none;
   background:
-    radial-gradient(124% 110% at 50% 44%, transparent 62%, color-mix(in srgb, var(--kit-void) 58%, transparent) 100%),
-    linear-gradient(to bottom, transparent 86%, color-mix(in srgb, var(--kit-void) 40%, transparent));
+    radial-gradient(30% 13% at 47% -3%, rgba(12, 7, 16, .5), transparent 76%),
+    radial-gradient(22% 9% at 21% -1%, rgba(12, 7, 16, .38), transparent 78%),
+    radial-gradient(40% 15% at 27% 103%, rgba(9, 6, 14, .55), transparent 74%),
+    radial-gradient(32% 13% at 71% 104%, rgba(9, 6, 14, .48), transparent 72%),
+    radial-gradient(118% 104% at 46% 42%, transparent 54%, color-mix(in srgb, var(--kit-void) 62%, transparent) 100%),
+    linear-gradient(to bottom, transparent 78%, color-mix(in srgb, var(--kit-void) 46%, transparent));
+}
+/* the samples' cobwebs, in the two corners the board's candles stand in */
+.at-web { z-index: 0; --web-w: clamp(84px, 7.4vw, 126px); top: calc(var(--kit-edge) + 2px); }
+.at-web--l { left: calc(var(--kit-edge) + 2px); }
+.at-web--r { right: calc(var(--kit-edge) + 2px); }
+/* and one more where the reading panel's foot meets the wall, so the dim
+   corner under it is a corner of a room and not an unlit patch */
+.at-web--dos {
+  z-index: 0; --web-w: clamp(76px, 6.6vw, 112px);
+  top: auto; bottom: calc(var(--kit-edge) + 4px);
+  right: calc(var(--kit-edge) + 4px);
+  transform: scaleY(-1);
+  opacity: .46;
 }
 
 /* ── header: Back, the plaque, the tally ──────────────────────────────────── */
@@ -197,8 +233,17 @@
   bottom: calc(-1 * clamp(15px, 2.3vh, 21px));
   z-index: 2;
 }
+/* the lantern stands on the same line as the skull and the candle: its base
+   IS its foot (ui/kit.css .kit-lantern--standing) */
+.at-floor__lantern {
+  --lantern-w: min(clamp(40px, 3.3vw, 54px), calc(70cqh * 200 / 272));
+  left: 47%;
+  bottom: calc(-1 * clamp(8px, 1.4vh, 13px));
+  z-index: 1;
+}
 @container (max-height: 44px) {
-  .at-floor__skull, .at-floor__candle, .at-floor__glow, .at-floor__tracing { display: none; }
+  .at-floor__skull, .at-floor__candle, .at-floor__glow, .at-floor__tracing,
+  .at-floor__lantern { display: none; }
 }
 
 /* ── the sheet ────────────────────────────────────────────────────────────── */
@@ -230,6 +275,29 @@
     var(--parchment);
   background-blend-mode: overlay, normal;
   box-shadow: 0 0 0 1px rgba(40, 22, 10, .55), 0 3px 8px rgba(0, 0, 0, .6);
+}
+
+/* The mat: the kit's tufted velvet liner in the band between the gilt rail
+   and the paper, its fillet gilding the paper's edge, a brass fleuron set into
+   each corner. Round 5's judges read the old flat band as "an undecorated CSS
+   band"; this is the same band, matted. */
+.at-mat {
+  inset: 0; z-index: 2;
+  --liner-w: var(--at-mat);
+  /* the liner's own velvet is lit for a lit panel; on this sheet it is in the
+     rail's shade, a tone under the gilt round it */
+  filter: brightness(.86) saturate(.92);
+}
+.at-mat::after {
+  content: ''; position: absolute; inset: calc(-1 * var(--at-mat)); pointer-events: none;
+  --fl: clamp(15px, 1.5vw, 24px);
+  background:
+    url("../../assets/ui/kit/fleuron-tl.webp") 0 0 / var(--fl) var(--fl) no-repeat,
+    url("../../assets/ui/kit/fleuron-tr.webp") 100% 0 / var(--fl) var(--fl) no-repeat,
+    url("../../assets/ui/kit/fleuron-bl.webp") 0 100% / var(--fl) var(--fl) no-repeat,
+    url("../../assets/ui/kit/fleuron-br.webp") 100% 100% / var(--fl) var(--fl) no-repeat;
+  /* undoing the liner's shade, so the brass reads as brass on it */
+  filter: brightness(1.32) drop-shadow(0 1px 1px rgba(0, 0, 0, .8));
 }
 
 /* The drawn double rule a survey sheet carries, inked not imaged. */

@@ -218,7 +218,7 @@ export class AtlasScene extends Scene {
     /* The dressing is laid out here rather than by kitDressMarkup() so each
        piece can wear an `at-` class: this board's corners are drawn smaller,
        to stand clear of Back and the tally on either side of the plaque. */
-    board.innerHTML = `<div class="at-ground kit-ground" aria-hidden="true"><i class="kit-ground__warm"></i><i class="kit-ground__moon"></i></div>`
+    board.innerHTML = `<div class="at-ground kit-ground kit-ground--deep" aria-hidden="true"><i class="kit-ground__warm"></i><i class="kit-ground__moon"></i></div>`
       + '<div class="at-bg" aria-hidden="true"></div>'
       /* the candle at the reading panel's foot, lighting the wall behind the
          panel: on the board, so it warms the wall and not the panel's words */
@@ -228,6 +228,9 @@ export class AtlasScene extends Scene {
       + '<i class="kit-light kit-light--candle at-cornerglow at-cornerglow--l" aria-hidden="true"></i>'
       + '<i class="kit-light kit-light--candle at-cornerglow at-cornerglow--r" aria-hidden="true"></i>'
       + `<div class="kit-dress at-dress" aria-hidden="true">
+          <i class="kit-web at-web at-web--l"></i>
+          <i class="kit-web kit-web--r at-web at-web--r"></i>
+          <i class="kit-web kit-web--r at-web at-web--dos"></i>
           <i class="kit-dress__floor"></i>
           <i class="kit-dress__rule"></i>
           <i class="kit-dress__vine kit-dress__vine--l at-vine at-vine--l"></i>
@@ -256,6 +259,10 @@ export class AtlasScene extends Scene {
       '<i class="kit-light kit-light--candle at-floor__glow"></i>'
       + '<i class="kit-prop kit-prop--skull at-floor__skull"></i>'
       + '<i class="kit-prop kit-prop--tracing at-floor__tracing"></i>'
+      /* and the Kids' own brass lantern set down between them, so the dim
+         stretch of wall under the panel has a lit object standing in it and
+         not only a stretch of pool (the Clubhouse's shelf keeps the same one) */
+      + '<i class="kit-lantern kit-lantern--standing at-floor__lantern"></i>'
       + '<i class="kit-prop kit-prop--candle at-floor__candle"></i>');
     floor.setAttribute('aria-hidden', 'true');
     side.appendChild(floor);
@@ -368,6 +375,12 @@ export class AtlasScene extends Scene {
        (OCHRE's): its own browned edges show inside the gilt rail. The drawing
        is printed on it; the light and the curl are laid over both. */
     sheet.appendChild(el('div', 'at-paper'));
+    /* The mat the sheet is laid on. It was a flat band of velvet and read as
+       one: this is the kit's tufted velvet liner (ui/kit.css .kit-liner) with
+       its gilt fillet on the paper's edge, and a brass fleuron set into each
+       of its four corners — the way the samples mat a picture. */
+    sheet.appendChild(el('i', 'at-mat kit-liner'));
+    sheet.lastChild.setAttribute('aria-hidden', 'true');
 
     const vp = this._vp = el('div', 'at-vp');
     const plate = this._plate = el('div', 'at-plate');

@@ -30,15 +30,23 @@
   --hud-h: 0px;                       /* no run HUD: rule and corners start at the top */
   display: grid;
   grid-template-rows: auto minmax(0, 1fr) auto;
-  /* the stage: the framed house, a lantern, the panel, a lantern */
-  --lo-view-w: clamp(430px, 37.5vw, 620px);
-  --lo-card-w: clamp(460px, 33vw, 540px);
-  --lo-gap: clamp(84px, 7vw, 116px);          /* the left lantern hangs in it */
+  /* The stage: the framed house, a lantern, the panel, a lantern — drawn in
+     from the board's sides so a COLUMN OF WALL is left standing on the left,
+     wide enough to hang the lookout window in beside the picture. The gap in
+     the middle is the tree's, and is a tree's width. */
+  --lo-view-w: clamp(338px, 28vw, 480px);
+  --lo-card-w: clamp(396px, 29vw, 470px);
+  --lo-gap: clamp(96px, 8vw, 132px);          /* the tree stands up through it */
   --lo-lantern-w: clamp(54px, 4.6vw, 74px);
   --lo-lantern-off: clamp(34px, 3.6vw, 56px); /* the right lantern, out from the panel */
   --lo-stage-w: calc(var(--lo-view-w) + var(--lo-gap) + var(--lo-card-w));
   --lo-view-cx: calc(50vw - var(--lo-stage-w) / 2 + var(--lo-view-w) / 2);
   --lo-view-cy: 53vh;
+  /* the wall the stage leaves standing on the left, and the window hung in it */
+  --lo-wall-in: calc(var(--kit-edge) + var(--kit-vine-w) + clamp(6px, .7vw, 12px));
+  --lo-col-w: calc(50vw - var(--lo-stage-w) / 2 - var(--lo-wall-in));
+  --lo-look-w: clamp(104px, min(11.4vw, calc(var(--lo-col-w) * .84)), 208px);
+  --lo-look-h: calc(var(--lo-look-w) * 580 / 440);
   --lo-lamp-y: calc(31vh + var(--lo-lantern-w) * 1.02);
   /* The hideout.webp painting's own geometry, as it lands on this board
      (cover, anchored at its foot): its scale, and where its two posts meet
@@ -47,20 +55,26 @@
   --lo-post-l: calc(50vw - 588 * var(--lo-k));
   --lo-post-r: calc(50vw + 588 * var(--lo-k));
   --lo-beam: calc(100vh - 1010 * var(--lo-k));
-  /* its light: the moon the house stands under, cold round the frame and
-     across the top of the wall; the candle at its foot; and the two lanterns,
-     which light the paper round the password and the wall above it */
-  --ml1-x: var(--lo-view-cx);                 --ml1-y: calc(var(--lo-view-cy) - 6vh);
-  --ml1-w: calc(var(--lo-view-w) * 2.1);      --ml1-h: calc(var(--lo-view-w) * 1.7);
+  /* ITS LIGHT. The room is a dark one with lights IN it, not a lit room: the
+     wall is pushed down into the dark (--deep, ui/kit.css .kit-ground--deep)
+     and every pool below is drawn in tight enough that the boards fall away
+     between them. Cold: the moon through the lookout window on the left wall,
+     and through the casement by the plaque. Warm: the candle at the tree's
+     foot and the two lanterns either side of the password. */
+  --deep: 60%;
+  --ml1-x: calc(var(--lo-wall-in) + var(--lo-col-w) / 2);
+  --ml1-y: calc(var(--lo-view-cy) - var(--lo-look-h) * .1);
+  --ml1-w: calc(var(--lo-look-w) * 4.2);      --ml1-h: calc(var(--lo-look-w) * 4.6);
   --wl3-x: calc(50vw - var(--lo-stage-w) / 2 + var(--lo-view-w) + var(--lo-gap) / 2);
   --wl3-y: calc(var(--lo-view-cy) + var(--lo-view-w) * .36);
-  --wl3-w: clamp(340px, 30vw, 500px);         --wl3-h: calc(var(--wl3-w) * 1.1);
-  --wl4-x: calc(50vw + var(--lo-stage-w) / 2 - var(--lo-card-w) / 2);
-  --wl4-y: calc(var(--lo-lamp-y) - 8vh);
-  --wl4-w: calc(var(--lo-card-w) * 1.5);      --wl4-h: calc(var(--lo-card-w) * .9);
+  --wl3-w: clamp(260px, 22vw, 380px);         --wl3-h: calc(var(--wl3-w) * 1.1);
+  /* the candle's light along the floorboards at the tree's foot, so the
+     boards below the shelf are a floor and not the board's dark edge */
+  --wl4-x: 50vw;                              --wl4-y: 102vh;
+  --wl4-w: 88vw;                              --wl4-h: 48vh;
   --wl5-x: calc(50vw - var(--lo-stage-w) / 2 + var(--lo-view-w) + var(--lo-gap) / 2);
   --wl5-y: var(--lo-lamp-y);
-  --wl5-w: clamp(360px, 31vw, 520px);         --wl5-h: calc(var(--wl5-w) * 1.25);
+  --wl5-w: clamp(280px, 24vw, 400px);         --wl5-h: calc(var(--wl5-w) * 1.25);
   --wl6-x: calc(50vw + var(--lo-stage-w) / 2 + var(--lo-lantern-off));
   --wl6-y: var(--lo-lamp-y);
   --wl6-w: var(--wl5-w);                      --wl6-h: var(--wl5-h);
@@ -72,30 +86,54 @@
   --lo-case-l: calc((var(--lo-post-l) + 32.6vw) / 2);
   --lo-case-r: calc((var(--lo-post-r) + 67.4vw) / 2);
   --ml2-x: var(--lo-case-r);                  --ml2-y: calc(var(--lo-case-top) + var(--lo-case-w) * .5);
-  --ml2-w: calc(var(--lo-case-w) * 3.4);      --ml2-h: calc(var(--lo-case-w) * 3);
-  --mb1-x: calc(var(--lo-case-l) + var(--lo-case-w) * .3);  --mb1-y: calc(var(--lo-case-top) + var(--lo-case-w) * .8);
-  --mb1-w: calc(var(--lo-case-w) * 2.2);      --mb1-h: 68vh;
-  --mb2-x: calc(var(--lo-case-r) - var(--lo-case-w) * .3);  --mb2-y: var(--mb1-y);
-  --mb2-w: var(--mb1-w);                      --mb2-h: 68vh;
+  --ml2-w: calc(var(--lo-case-w) * 2.6);      --ml2-h: calc(var(--lo-case-w) * 2.3);
+  /* the shaft the lookout throws down the left wall, and the casement's */
+  --mb1-x: calc(var(--lo-wall-in) + var(--lo-col-w) / 2 + var(--lo-look-w) * .22);
+  --mb1-y: calc(var(--lo-view-cy) - var(--lo-look-h) * .62);
+  --mb1-w: calc(var(--lo-look-w) * 2.1);      --mb1-h: 52vh;
+  --mb2-x: calc(var(--lo-case-r) - var(--lo-case-w) * .3);
+  --mb2-y: calc(var(--lo-case-top) + var(--lo-case-w) * .8);
+  --mb2-w: calc(var(--lo-case-w) * 2.2);      --mb2-h: 62vh;
 }
 .lo-hall { position: absolute; inset: 0; z-index: 2; pointer-events: none; }
 /* the casements, their tops a hand under the beam */
 .lo-case { --case-w: var(--lo-case-w); top: var(--lo-case-top); }
 .lo-case--l { left: calc(var(--lo-case-l) - var(--lo-case-w) / 2); }
 .lo-case--r { left: calc(var(--lo-case-r) - var(--lo-case-w) / 2); }
-/* the trunk, up through the floor in the gap between the frame and the panel,
-   from the beam to the boards; its bark lit by the lantern hung on it and the
-   candle stood in front of it */
-.lo-trunk {
-  --trunk-w: calc(var(--lo-gap) * 1.22);
-  width: var(--trunk-w);
-  left: calc(var(--wl3-x) - var(--trunk-w) / 2);
-  top: calc(var(--lo-beam) - 6px); bottom: 0;
-  --trunk-reach: clamp(230px, 32vh, 310px);
-  --trunk-l1: calc(var(--lo-lamp-y) + var(--lo-lantern-w) * .2 - var(--lo-beam));
-  --trunk-l2: calc(var(--wl3-y) - var(--lo-beam));
+/* THE TREE the treehouse is built round (ui/kit.css .kit-bole), rising in the
+   gap between the frame and the panel from the roof beam to the floor, and its
+   roots out through the floorboards at its foot, past both ends of the shelf
+   the stage stands on.
+   One piece, sized off its own height — never a strip that tiles. Its bark is
+   lit by the lantern hung on it and the candle stood in front of it. */
+.lo-bole {
+  --bole-h: calc(100vh - var(--lo-beam) + 6px);
+  --bole-w: calc(var(--bole-h) * 660 / 1440);
+  width: var(--bole-w); height: var(--bole-h);
+  left: calc(var(--wl3-x) - var(--bole-w) / 2);
+  top: calc(var(--lo-beam) - 6px);
+  --bole-reach: clamp(280px, 38vh, 380px);
+  --bole-l1: calc(var(--lo-lamp-y) - var(--lo-lantern-w) * .3 - var(--lo-beam));
+  --bole-l2: calc(var(--wl3-y) - var(--lo-beam));
 }
-.lo__room .lo-trunk { display: none; }
+.lo__room .lo-bole { display: none; }
+
+/* THE LOOKOUT, hung in the column of wall the stage leaves standing on the
+   left, BESIDE the framed portrait of the house and never over it: the same
+   house, but out there — small, across the grounds, under the moon. The board
+   points its first moon pool and its first shaft at this window. */
+.lo-look {
+  --look-w: var(--lo-look-w);
+  left: calc(var(--lo-wall-in) + (var(--lo-col-w) - var(--lo-look-w)) / 2);
+  top: calc(var(--lo-view-cy) - var(--lo-look-h) * .62);
+}
+/* and a coil of the rope ladder's own rope, over a nail on the right wall */
+.lo-rope {
+  width: clamp(58px, 5.4vw, 92px);
+  right: calc(var(--lo-wall-in) + clamp(2px, .8vw, 16px));
+  top: calc(var(--lo-view-cy) - var(--lo-view-w) * .34);
+  z-index: 2;
+}
 /* the bulbs, in four swags along the beam: nail to nail from each corner
    candle to the plaque, the plaque's own middle stretch hidden behind it */
 .lo-bulbs { z-index: 1; top: calc(var(--lo-beam) * .3); --sag: clamp(16px, 2.4vh, 24px); }
@@ -265,13 +303,15 @@
   padding: clamp(44px, 6vh, 56px) clamp(28px, 2.6vw, 44px) clamp(18px, 2.6vh, 26px);
   text-align: center;
 }
-/* the rule of the place on a slip of paper, pinned at a tilt under the
-   ribbon: a Kid's note, in ink, in the lanterns' light */
+/* The rule of the place on a slip of paper, pinned at a tilt under the ribbon:
+   a Kid's note, in ink, in the lanterns' light. The sheet is TORN out of a pad
+   (ui/kit.css .kit-paper--torn) rather than a cut cream rectangle — so its
+   padding leaves room for the rip down each side and the crease across it. */
 .lo-slip {
   --paper: #d8c49d;
   position: relative;
   width: min(100%, 44ch);
-  padding: clamp(12px, 1.7vh, 16px) clamp(16px, 1.5vw, 22px) clamp(10px, 1.5vh, 14px);
+  padding: clamp(16px, 2.2vh, 21px) clamp(24px, 2.2vw, 32px) clamp(15px, 2vh, 20px);
   rotate: -1.1deg;
   margin-top: 2px;
 }
@@ -352,19 +392,19 @@
   display: flex; flex-wrap: wrap; align-items: center; justify-content: center;
   gap: 10px clamp(18px, 1.8vw, 28px);
 }
-/* the house the words draw, on its own gilt-rimmed plaque (c7d31db's), hung
-   from the password's plate the way a ribbon hangs from the title cartouche:
-   its top edge on the plate's lower rim */
+/* The house the words draw, on a gold ribbon banner of its own (ELDER's,
+   ui/r5-kids-a), standing a clear hand under the password's plate: the plate
+   and the number are two separate pieces of gilt, not one crowded one. */
 .lo-seed {
-  --h: clamp(34px, 4.4vh, 40px);
+  --rib-h: clamp(30px, 3.4vh, 38px);
   position: relative; z-index: 2;
   justify-self: center;
-  margin: calc(-1 * var(--lo-card-gap) - var(--h) * .42) 0 0;
-  padding-inline: calc(var(--h) * .72);
-  gap: .6em;
+  margin: clamp(2px, .8vh, 8px) 0 0;
+  padding-inline: calc(var(--rib-h) * .95);
+  font-size: clamp(11px, 1.05vw, 15px);
+  gap: .55em;
 }
-.lo-seed__k { font-size: max(11.5px, calc(var(--h) * .29)); letter-spacing: .16em; color: var(--kit-text); }
-.lo-seed__v { font-size: calc(var(--h) * .5); letter-spacing: .05em; }
+.lo-seed__v { font-family: var(--font-num); letter-spacing: .03em; margin-left: .5em; }
 
 /* roll a new one: the quiet plate with its enamel button on the left end */
 .lo__roll { --plate-h: clamp(40px, 4.9vh, 46px); padding-left: calc(var(--plate-h) * 1.14); }

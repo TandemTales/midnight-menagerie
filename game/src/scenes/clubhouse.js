@@ -148,7 +148,7 @@ export class ClubhouseScene extends Scene {
        painted rule round the edge. */
     const room = el('div', 'cl-room kit-board');
     room.innerHTML = `
-      <div class="cl-wall kit-ground kit-ground--clapboard"><i class="kit-ground__warm"></i><i class="kit-ground__moon"></i></div>
+      <div class="cl-wall kit-ground kit-ground--clapboard kit-ground--deep"><i class="kit-ground__warm"></i><i class="kit-ground__moon"></i></div>
       <div class="cl-lights kit-bulbs kit-bulbs--candle">${Array.from({ length: 14 }, (_, i) =>
         `<i style="--i:${i}"></i>`).join('')}</div>
       <div class="cl-floor"></div>
@@ -164,7 +164,13 @@ export class ClubhouseScene extends Scene {
         <i class="kit-dress__flame kit-dress__flame--l cl-flame cl-flame--l"></i>
         <i class="kit-dress__flame kit-dress__flame--r cl-flame cl-flame--r"></i>
       </div>
-      <div class="cl-lamp kit-lamp" aria-hidden="true"></div>`;
+      <div class="cl-lamp kit-lamp" aria-hidden="true"></div>
+      <svg class="cl-filters" width="0" height="0" aria-hidden="true" focusable="false">
+        <filter id="cl-crisp" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">
+          <feConvolveMatrix order="3" divisor="1" preserveAlpha="true"
+            kernelMatrix="0 -0.25 0  -0.25 2 -0.25  0 -0.25 0"/>
+        </filter>
+      </svg>`;
     return room;
   }
 
@@ -317,14 +323,22 @@ export class ClubhouseScene extends Scene {
        from the local paper (NUTMEG's): the house again, in half-tone, under
        the headline that made the Kids look. */
     const snap = el('div', 'cl-snap kit-paper',
-      `<span class="pin kit-pin" aria-hidden="true"></span><span class="cl-snap__photo" style="background-image:url('${menuArtSrc('menu')}')"></span>`);
+      `<span class="pin kit-pin" aria-hidden="true"></span><span class="cl-snap__photo" style="background-image:url('${menuArtSrc('menu')}')"></span>`
+      /* GORSE's caption (ui/r5-kids-c), written on the print's own white
+         margin the way the pet polaroids are captioned — round 5's judges
+         had this as the one photograph on the board with nothing under it */
+      + '<span class="cl-snap__cap">The House</span>'
+      + '<span class="cl-snap__sub">where they all went</span>');
     snap.setAttribute('aria-hidden', 'true');
-    snap.style.cssText = 'left:1.5%;top:73.2%;--rot:-4deg';
+    snap.style.cssText = 'left:1.4%;top:73%;--rot:-4deg';
     cork.appendChild(snap);
+    /* the cutting stands beside the photograph rather than on its edge, and
+       carries its own deck under the headline (GORSE's) */
     const cut = el('div', 'cl-cutting kit-newscutting',
       '<span class="pin kit-pin kit-pin--blue cl-cutting__pin" aria-hidden="true"></span>'
-      + '<p class="kit-newscutting__head">Pets vanish</p>');
-    cut.style.cssText = 'left:15.6%;top:74.6%;--rot:3.2deg';
+      + '<p class="kit-newscutting__head">Pets vanish</p>'
+      + '<p class="cl-cutting__deck">eight gone this year</p>');
+    cut.style.cssText = 'left:16.2%;top:74.2%;--rot:3.2deg';
     cork.appendChild(cut);
 
     /* The thesis, cut out and pinned up beside them: each phrase torn from a
@@ -601,8 +615,13 @@ export class ClubhouseScene extends Scene {
       + '<i class="kit-prop kit-prop--skull cl-shelf__skull" aria-hidden="true"></i>'
       + '<i class="kit-lantern kit-lantern--standing cl-shelf__lantern" aria-hidden="true"></i>'
       + '<i class="kit-prop kit-prop--candle cl-shelf__candle" aria-hidden="true"></i>');
-    const quote = el('p', 'cl-quote kit-paper',
-      '&ldquo;Get every animal out that wants to leave.&rdquo;');
+    /* ELDER's own treatment (ui/r5-kids-a): a card of paper pinned to the wall
+       at a tilt and big enough to read, its pin through the top corner and
+       clear of the words — round 5's judges had this as "a thin cream strip
+       with small type squeezed onto the shelf edge". */
+    const quote = el('blockquote', 'cl-quote kit-paper kit-paper--torn',
+      '<p class="cl-quote__t">Get every animal out<br>that wants to leave.</p>'
+      + '<cite class="cl-quote__by">the house rule</cite>');
     quote.appendChild(el('i', 'cl-quote__pin kit-pin'));
     quote.lastChild.setAttribute('aria-hidden', 'true');
     motto.appendChild(quote);

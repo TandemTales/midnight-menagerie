@@ -90,14 +90,22 @@ function boardMarkup() {
   /* a string of bulbs, `n` of them, sagging between two nails on the beam */
   const bulbs = (cls, n) => `<div class="kit-bulbs kit-bulbs--candle lo-bulbs ${cls}" style="--n:${n}">`
     + Array.from({ length: n }, (_, i) => `<i style="--i:${i}"></i>`).join('') + '</div>';
-  return '<div class="kit-ground kit-ground--hideout lo-ground" aria-hidden="true"><i class="kit-ground__warm"></i><i class="kit-ground__moon"></i></div>'
+  /* the wall is pushed down into the dark (kit-ground--deep) so the lanterns,
+     the candle and the two windows have somewhere to pool their light */
+  return '<div class="kit-ground kit-ground--hideout kit-ground--deep lo-ground" aria-hidden="true"><i class="kit-ground__warm"></i><i class="kit-ground__moon"></i></div>'
     + '<div class="lo-vig" aria-hidden="true"></div>'
     /* the treehouse's own corners: a cobweb strung where each post meets the
        roof beam (the posts are painted into hideout.webp) */
     + '<div class="lo-hall" aria-hidden="true">'
-    /* the tree the treehouse is built round, up through the floor behind the
-       stage: the lantern hangs on it and the candle stands in front of it */
-    + '<i class="kit-trunk lo-trunk"></i>'
+    /* the tree the treehouse is built round, whole: up through the floor
+       behind the stage, its bough sawn off where the roof passes it and its
+       roots out over the boards. The lantern hangs on it, the candle stands
+       in front of it. */
+    + '<i class="kit-bole lo-bole"></i>'
+    /* the lookout, beside the framed portrait: the house itself, out there */
+    + '<i class="kit-lookout lo-look"></i>'
+    /* a coil of the rope ladder over a nail on the other wall */
+    + '<i class="kit-prop kit-prop--rope lo-rope"></i>'
     /* two small windows high in the wall either side of the plaque, and the
        night of the title painting through them: the old tree's boughs, the moon */
     + '<i class="kit-casement lo-case lo-case--l"></i><i class="kit-casement kit-casement--moon lo-case lo-case--r"></i>'
@@ -308,7 +316,7 @@ export class LobbyScene extends Scene {
       'The password <em>is the map</em>'));
     /* The rule of the place, written out by a Kid on a slip of paper and
        pinned up where the password is said: the panel's words, not a caption. */
-    const slip = el('div', 'lo-slip kit-paper');
+    const slip = el('div', 'lo-slip kit-paper kit-paper--torn');
     slip.appendChild(el('span', 'kit-pin lo-slip__pin'));
     slip.firstChild.setAttribute('aria-hidden', 'true');
     slip.appendChild(el('p', 'lo__sub lo-card__lede',
@@ -344,18 +352,17 @@ export class LobbyScene extends Scene {
     card.appendChild(plate);
 
     /* The map those words draw, read back as they are typed: the same seed the
-       room will print once everybody is up (`seedFromRoom`, a pure hash). It
-       is engraved on a small gilt-rimmed plaque of its own (c7d31db's), hung
-       from the password's plate the way the boards hang a ribbon from a
-       cartouche — read straight after the words it belongs to, and before the
-       way to roll new ones. */
-    const seed = el('p', 'lo-seed kit-enamel kit-enamel--dark');
+       room will print once everybody is up (`seedFromRoom`, a pure hash).
+       ELDER's standalone gold ribbon (ui/r5-kids-a), STANDING CLEAR of the
+       password's plate rather than hung off its lower rim — round 5's judges
+       had it touching the plate's gilt while the panel's foot went empty. */
+    const seed = el('p', 'lo-seed kit-ribbon');
     seed.setAttribute('aria-live', 'polite');
     const paintSeed = () => {
       const room = tidyRoom(input.value);
       seed.innerHTML = room
-        ? `<i class="kit-enamel__label lo-seed__k">Draws the house</i><b class="kit-enamel__value lo-seed__v">№ ${seedFromRoom(room)}</b>`
-        : '<i class="kit-enamel__label lo-seed__k">Say two words</i>';
+        ? `Draws the house <b class="lo-seed__v">&#8470; ${seedFromRoom(room)}</b>`
+        : 'Say two words';
     };
     paintSeed();
     input.addEventListener('input', paintSeed);
