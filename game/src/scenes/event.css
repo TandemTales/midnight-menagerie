@@ -405,6 +405,16 @@
   color: var(--ink);
   text-shadow: 0 1px 0 rgb(255 242 214 / .38);
 }
+/* the clerk's dotted leader, carrying the eye from what the entry costs to
+   the ring you press at the end of its line */
+.ev-register .ev-opt__meta { flex-wrap: nowrap; }
+.ev-register .ev-opt__meta::after {
+  content: ''; flex: 1 1 40px; min-width: 20px; align-self: center;
+  height: 1px; margin-left: 6px;
+  background: repeating-linear-gradient(90deg,
+    color-mix(in srgb, var(--kit-ink-rule) 52%, transparent) 0 2px,
+    transparent 2px 6px);
+}
 /* the stakes, each in the ink a clerk would rule it in */
 .ev-register .ev-tag--risk { color: var(--kit-ink-oxblood); }
 .ev-register .ev-tag--gain { color: var(--kit-ink-green); }
