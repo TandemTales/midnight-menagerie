@@ -113,7 +113,12 @@ export class EventScene extends RoomScene {
   _buildPage() {
     const d = this.def;
     this._buildHall();
-    const page = el('article', 'ev-page kit-panel');
+    /* Round 6: the page is THE HOUSE REGISTER itself — a leaf of aged
+       parchment, creased where it was folded and foxed at its edges, ruled
+       for entries in a clerk's brown ink under the moon medallion (SABLE's,
+       ui/r5-polish-b). The choices used to be flat purple slabs in thin gold
+       outlines inside the frame, which read as web buttons on a board. */
+    const page = el('article', 'ev-page ev-register kit-panel');
     page.dataset.mood = d.mood || 'curious';
     page.dataset.medal = 'moon';
     /* No illustration. The Curiosities are the best writing in the build and the
@@ -126,6 +131,7 @@ export class EventScene extends RoomScene {
     // illuminated initial dropped three lines into it, and the words beside
     // the initial in engraved small caps (event.css).
     page.innerHTML = `
+      <i class="ev-register__fold" aria-hidden="true"></i>
       <div class="ev-prose">
         ${this._proseMarkup(this._proseParagraphs(d.text))}
       </div>

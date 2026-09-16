@@ -202,6 +202,13 @@
   --kit-paper-shade:     #c9b48d;   /* the same paper where it curls away from the light */
   --kit-paper-ink:       #2b1e15;   /* pencil and biro on it (12:1 on --kit-paper) */
   --kit-thread:          #9e2a1e;   /* the red string between the photographs */
+
+  /* the House Register's inks: what a clerk writes an entry in, on parchment
+     (round 6, POLISH — the Curiosity's ledger page) */
+  --kit-ink-oxblood:     #6e1f14;   /* a risk, in red ink */
+  --kit-ink-green:       #1f4a24;   /* a gain, in green ink */
+  --kit-ink-violet:      #3d2352;   /* a heading, in violet ink */
+  --kit-ink-rule:        #603a18;   /* the ruled lines and the printed rules */
 }
 
 /* ===========================================================================
