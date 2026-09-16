@@ -436,7 +436,11 @@ TRAY_W, TRAY_H = 150, 196
 
 
 def tray_layers():
-    """-> (rgba float array TRAY_H x TRAY_W x 4, bed box (x0, y0, x1, y1))."""
+    """The gilded card-shaped tray a pile used to lie in. UNUSED since round 6,
+    which took the piles off it (see `decks`); kept because it is the only
+    painting of this fitting in the kit and a later board may want a tray.
+
+    -> (rgba float array TRAY_H x TRAY_W x 4, bed box (x0, y0, x1, y1))."""
     rng = np.random.default_rng(4404)
     W, H, ss = TRAY_W, TRAY_H, 3
     SW, SH = W * ss, H * ss
