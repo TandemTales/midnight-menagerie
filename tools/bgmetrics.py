@@ -296,8 +296,29 @@ def m_spread(rgb, tile=TILE):
             "colSpread": float(lv.mean(0).std() / max(lv.mean(), 1e-3))}
 
 
+def m_void(rgb):
+    """How much of the frame is PURE BLACK, and how bright the sky band is.
+
+    A pure-black pixel carries no tooth, no drawn line and no ink, so a room
+    that hands a third of its frame to rgb(0,0,0) has capped every other axis
+    on this table. It also DIVIDES the others away: graveyard reads tooth 0.140
+    whole-frame and 0.331 with the sky excluded.
+
+    mainMenu.png is a night sky and holds NO pure black in its top third;
+    ours ran 19.7% (graveyard) to 71.5% (the Hedge Maze) on 2026-09-17.
+    """
+    H = rgb.shape[0]
+    blk = rgb.max(-1) <= 0.0
+    top = blk[:max(1, int(H * 0.30))]
+    band = rgb[:max(1, int(H * 0.14))]
+    return {"voidPct": float(blk.mean() * 100.0),
+            "voidTop": float(top.mean() * 100.0),
+            "skyLevel": float(band.mean())}
+
+
 AXES = [("floor", m_floor), ("tooth", m_tooth), ("edge", m_edge),
-        ("ink", m_ink), ("peak", m_peak), ("mid", m_mid), ("spread", m_spread)]
+        ("ink", m_ink), ("peak", m_peak), ("mid", m_mid), ("spread", m_spread),
+        ("void", m_void)]
 
 
 def measure(path, box=None, h=COMMON_H):
@@ -313,7 +334,9 @@ ROW = [("minCh", "minCh", "{:6.2f}"), ("satShadow", "satShd", "{:6.3f}"),
        ("edgeWidth", "edgeW", "{:6.2f}"), ("inkShare", "ink%", "{:6.3f}"),
        ("inkDepth", "inkDp", "{:6.3f}"), ("peakOverMed", "pk/med", "{:6.1f}"),
        ("blownPct", "blown%", "{:6.2f}"), ("midSat", "midSat", "{:6.3f}"),
-       ("midHue", "midHue", "{:6.0f}"), ("tileSpread", "spread", "{:6.3f}")]
+       ("midHue", "midHue", "{:6.0f}"), ("tileSpread", "spread", "{:6.3f}"),
+       ("voidPct", "void%", "{:6.2f}"), ("voidTop", "voidT%", "{:6.2f}"),
+       ("skyLevel", "skyLvl", "{:6.1f}")]
 
 
 def table(rows, label_w=30):
