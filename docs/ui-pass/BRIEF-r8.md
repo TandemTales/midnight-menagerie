@@ -129,10 +129,37 @@ Work it in order. It is what the measurements and the captures actually say.
    recoloured.** 17 regions over 6 modes, 9 floor patterns and 3 papers. Round 2
    measured structural cross-correlation at 0.63 mean and treated it as the
    defect; `python tools/lookmetrics.py --tag r8 --tier high` measures it again.
-6. **The ceiling is deliberately the darkest part of the frame now** (all four
-   samples go near-black at the top) and it still costs ~1.5 ms of an 8.8 ms
-   backdrop. Patterns 3/6/7/8 are only ever seen at a grazing angle. Check
-   whether each earns its cost.
+6. **THE TOP OF THE FRAME IS NOT DARK, IT IS ZERO -- and this item said the
+   opposite until it was measured.** It read "the ceiling is deliberately the
+   darkest part of the frame now (all four samples go near-black at the top)".
+   Near-black and black are not the same thing, and the difference is this
+   round's whole subject: **a pure-black pixel cannot carry tooth, a drawn line
+   or ink depth.** Share of PURE black (`max(r,g,b) == 0`), upper 30% of the
+   frame, whole frame in brackets, all seventeen rooms swept at BASE:
+
+       hedge      71.5 (31.6)   passages   31.6 (13.2)   nursery    13.3 ( 9.1)
+       heart      56.0 (28.7)   kitchens   29.2 (11.7)   lampworks  11.6 ( 8.2)
+       greenhouse 43.4 (17.7)   pumpkin    28.9 (19.3)   crypt      10.3 (12.3)
+       ballroom   19.8 (13.0)   graveyard  19.7 (16.4)   ... then under 8
+
+       SAMPLES    mainMenu 0.0 (1.6)   title 1.7 (2.2)
+                  selectCompanion 3.0 (1.5)   selectKid 7.3 (9.2)
+
+   `mainMenu.png` is a NIGHT SKY and it contains no pure black at all in its top
+   third. The Hedge Maze hands away 71.5% of its upper band and 31.6% of the
+   whole frame; eleven of the seventeen rooms are above the darkest sample's
+   7.3%. Two different causes, and they are separate fixes:
+   - **the open-sky shell has a void where a sky goes** (hedge, heart, pumpkin,
+     graveyard). Stars on zero is not a painted sky; mainMenu's is clouded,
+     graded and lit from the house.
+   - **several interior ceilings clip to zero** (greenhouse 43.4, passages 31.6,
+     kitchens 29.2). Six rooms already sit inside the samples' range -- foyer
+     7.5, kennels 7.5, study 6.3, bathhouse 5.5, attic 4.7, sleeping 3.8 -- so
+     this is not a global exposure question, it is those ceilings.
+
+   The ceiling still costs ~1.5 ms of an 8.8 ms backdrop and patterns 3/6/7/8
+   are only ever seen at a grazing angle, so also check whether each earns its
+   cost -- but **do not buy the perf back by making the top blacker.**
 7. **The statue, the Greenhouse planting and the chair are better than they were
    rather than right.** The statue reads as a figure; the planting has mass and
    a leaf edge; the chair is still three rounded boxes.
