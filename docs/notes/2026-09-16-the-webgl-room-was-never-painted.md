@@ -251,21 +251,28 @@ What survived, because each was verified at the size it renders:
   flooding the term red and counting pixels (62-69k, round the perimeter where
   the five cabinets stand) before touching a number.
 
-**And the instrument is the reason it stops here.** Two mounts of one region
-differ over **17% of their pixels**; with the props hidden 13.4 points remain,
-so most of it is the particle field spawning over time from a stream the clock
-freeze cannot rewind, and `motes=0` does not remove it. The other ~3.6 points
-are the props moving: `atmosphere._seed` is deterministic from the region key,
-but everything in the region draws from one `_rand()` stream, so anything that
-consumes a different number of draws reshuffles the layout.
-`setMood(region, { seed })` accepts a seed and forwarding it from the showcase
-has no effect, most likely because setMood early-returns when the mood already
-matches.
+**And the instrument was broken, but not for the reason I first wrote down.**
+Two mounts of one region differed over **17% of their pixels**, and the first
+diagnosis here blamed the prop layout reshuffling and the particle field
+spawning from an unrewindable stream. Both were wrong. `build()` is
+deterministic per region already, and particle positions are a pure function of
+time.
 
-So: **structural A/B is reliable** -- a floor, a wall, a paper, a sky, all far
-larger than the noise. **A single small prop cannot be A/B'd.** Fixing that
-means giving the layout its own RNG, separate from the particle stream. That is
-the right fix and it is the first thing a prop pass should do.
+It was the **PHASE**. `clock.t` accumulates scaled dt, and setting `clock.scale`
+to 0 stops it at whatever value the page happened to reach while booting --
+while everything time-driven in the room reads it: props SWAY on
+`sin(uTime*0.55 + seed)`, stars twinkle on `sin(uTime*1.7 + seed)`, clouds
+drift on `uTime*0.004`, flames flicker. Pinning `clock.t` to a constant before
+the capture makes two captures of one region **byte-identical -- 0 pixels
+differing, motes and props and all**. One line in
+`tools/shot-scripts/backdrop-room.js`.
+
+So a prop CAN be A/B'd, and the prop pass that was deferred for want of an
+instrument is unblocked. The lesson is the old one from
+[[diagnose-with-a-discriminator]] and I re-learned it the slow way: I had two
+candidate causes (layout, particles), measured a discriminator that separated
+them from each other (props hidden: 13.4 of 17 points remained), and concluded
+"mostly particles" -- without ever testing the cause that was neither.
 
 ## The trap, for the fifth and sixth time
 

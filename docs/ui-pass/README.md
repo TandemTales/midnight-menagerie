@@ -197,8 +197,7 @@ violet wash from .16 to .08 alpha gave the best black-floor number of the whole
 pass — and turned the fight sepia, because the render under it is warm brown
 and that violet is the only thing tying it to a purple-black house. The alpha
 went back and the colour darkened instead. **Put the before and after side by
-side; a metric moving the right way is not the same as the screen improving.** `docs/art/background-prompts.md` is the list Josh paints
-from, and `tools/prep_backgrounds.py` builds them into `game/assets/backgrounds/`.
+side; a metric moving the right way is not the same as the screen improving.**
 
 ### And the half of the ground nobody had touched, 2026-09-16
 
@@ -252,7 +251,15 @@ drawn work on the ceiling: **13.79 ms, +2.56 ms, and 58 fps observed before and
 after.** Headroom spent, not frames -- but measure it next time instead of
 quoting the round-2 note at it.
 
-**The next round's briefs should say the room behind combat is no longer a
-placeholder.** It still is not a painting, and `animations/backgrounds/` is still
-empty, but the sentence every judge has written for seven rounds was aimed at
-something specific and measurable, and those specifics are gone.
+**And from 2026-09-17 the room is not a placeholder at all: it is the
+deliverable.** Josh: *"no more background art ... see how good they could
+possibly be with just procedural generation only ... make it as good as it can
+be without it. now finish the loop with this in mind."* Every brief from r5 to
+r7 told builders NOT to spend the round painting rooms in CSS and to keep the
+painting slots clear. That instruction is retired, `background-prompts.md` is
+retired, and round 8 is a BACKGROUNDS round: see `BRIEF-r8.md`.
+
+The one axis still an order of magnitude short is **ink depth** -- 0.009-0.080
+against mainMenu.png's 0.248 -- and his depth comes from drawn subject matter,
+masonry joints and tracery and ironwork, not from a heavier line. Tooth and edge
+width are already at his figures on an isolated room.

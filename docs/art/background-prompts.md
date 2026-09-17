@@ -1,3 +1,12 @@
+> **RETIRED, 2026-09-17.** Josh: *"no more background art ... there will be no
+> background art."* Nobody is painting these 25, `animations/backgrounds/` will
+> never exist, and `tools/prep_backgrounds.py` never has an input. The
+> procedural room in `game/src/fx/` is the finished article and the UI pass's
+> job is to take it as far as procedure goes -- see `docs/ui-pass/BRIEF-r8.md`.
+>
+> Kept because it is still the best written record of what each of the
+> seventeen rooms is SUPPOSED to depict, which is useful to a procedural round.
+
 # Background paintings — prompt pack
 
 Every background in the game should sit at the level of `UI/mainMenu.png`: a full

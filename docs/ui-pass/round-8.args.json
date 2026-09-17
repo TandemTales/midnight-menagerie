@@ -1,0 +1,56 @@
+{
+  "round": "r8",
+  "maxBuilders": 3,
+  "briefs": [
+    "docs/ui-pass/BRIEF-r0.md",
+    "docs/ui-pass/BRIEF-r1.md",
+    "docs/ui-pass/BRIEF-r8.md"
+  ],
+  "rubrics": [
+    "docs/ui-pass/RUBRIC.md",
+    "docs/ui-pass/RUBRIC-r1.md",
+    "docs/ui-pass/RUBRIC-r8.md"
+  ],
+  "samples": [
+    "UI/title.png",
+    "UI/mainMenu.png",
+    "UI/selectCompanion.png",
+    "UI/selectKid.png"
+  ],
+  "tracks": [
+    {
+      "key": "background",
+      "name": "BACKGROUNDS",
+      "rule": "refine",
+      "screens": [
+        "room-foyer",
+        "room-crypt",
+        "room-graveyard",
+        "combat",
+        "combat-boss",
+        "rest"
+      ],
+      "baseline": "TALLOW",
+      "builders": [
+        {
+          "slot": "a",
+          "code": "SOOT",
+          "port": 8871,
+          "angle": "LITERAL. Work down the round 8 fix list, 1 to 8, in order and exactly as written. Fix 1 is the round: DRAWN SUBJECT on the six wall modes, with FOLIAGE and INDUSTRIAL first because neither has anything a hand drew and between them they carry the Hedge Maze, the Greenhouse, the Kitchens, the Lampworks and the Attic. Then fix 3, the fifteen prop silhouettes nobody has touched, highest prop-count first. Measure ink depth on an isolated room before and after with bgmetrics and put both numbers in notes_for_merger. Nothing outside the fix list."
+        },
+        {
+          "slot": "b",
+          "code": "VERDIGRIS",
+          "port": 8872,
+          "angle": "THE ROOM DEPICTS SOMETHING. Do fix 1, then spend the round on what each room IS rather than what it is made of. docs/art/background-prompts.md is retired as a painting list but it is still the best written record of what all seventeen rooms are supposed to depict -- read it and build what it describes: the Foyer's staircase and its chandelier, the Crypt's ossuary niches, the Greenhouse's stepped planting terraces, the Lampworks' benches. A room with a SUBJECT beats a room with a texture, and fix 5 (two regions sharing an arch mode are the same room recoloured) is the same problem. Keep every region recognisably itself."
+        },
+        {
+          "slot": "c",
+          "code": "BISTRE",
+          "port": 8873,
+          "angle": "LIGHT IS THE PAINTER'S TOOL. Do fix 1, then spend the round on light and value: where the eye goes, what is lit and what is left black, how a candle's pool falls off, what bounces off a floor onto a wall, how haze separates one plane from the next. The samples are DARK pictures with a few bright accents (mainMenu: 49.7% of pixels below L32, 3.6% above L192) and every room here is lit fairly evenly by comparison -- tile spread 0.99 to 1.52 against the samples' 0.54 says our frames vary MORE than theirs, which means the variation is in the wrong places. Also fix 4: the CSS room behind the boards and dialogs is the same everywhere, spread 0.20 against 0.54."
+        }
+      ]
+    }
+  ]
+}

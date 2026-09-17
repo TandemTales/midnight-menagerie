@@ -62,116 +62,116 @@ template: copy to `-r8`, keep the two-track shape, and keep the paragraphs about
 the animated creatures and about not painting rooms in CSS. Codes used so far are
 listed across `round-*.args.json`; check a new one is unused before you assign it.
 
-**3. The backgrounds are the wall, and they are Josh's to paint.** Seven rounds,
-and no candidate has scored above 8 on any screen. Every judge gives the same reason
-in their own words: the room behind the board is a render, not a painting. They
-score the background dimension 5 or 6 on every POLISH and COMBAT candidate,
-winner or loser, and 3 or 4 on the dialogs — and they score it the same on the
-baseline, because it is the same render in all of them. The loop's stop condition
-is 9 from every judge. **It cannot be reached by more rounds of this kind.**
+**3. THERE WILL BE NO BACKGROUND ART. The procedural room is the finished
+article, and the loop's job is to take it as far as procedure goes.**
 
-- `docs/art/background-prompts.md` is the list Josh paints from.
-- `animations/backgrounds/` still does not exist. When it appears, run
-  `python tools/prep_backgrounds.py` BEFORE the next round's baselines; it builds
-  into `game/assets/backgrounds/` and the manifest there is already wired.
-- Until then every brief must tell builders not to spend the round painting rooms
-  in CSS, and to keep every painting slot working and unobstructed. BRIEF-r6's
-  "The bar, and what is holding it" is the wording.
-- This is worth telling Josh again whenever he asks what is left. It is the one
-  thing that lifts every screen at once, and it is not something an agent can do.
-- **The procedural half is DONE, 2026-09-16, and it is measured.** Two defects,
-  both found by measuring our screens against `UI/*.png` rather than by taste:
-  - **`57da26a` the black floor.** Our darkest tenth ran rgb(7.8,5.2,7.8) against
-    the samples' rgb(0.3,0.2,0.2)..(3.8,3.4,3.7): every screen sat five levels off
-    the floor, and because saturation is (max-min)/max the same lift ALSO capped
-    our colour at 0.73 against their 0.85-1.00. One floor, both symptoms. After:
-    min channel 2.0-3.4, shadow saturation 0.48-0.62, range 21-32x.
-  - **`cc59d6e` + `16e608d` the tooth.** Measured on FLAT surfaces only (one
-    width, tiled, only tiles with no edge in them), as high-frequency energy over
-    the surface's own level: Josh 0.185/0.325/0.318/0.498, ours 0.015-0.019. An
-    order of magnitude, and the whole of "a render, not a painting". His incident
-    is flat across every octave from 0.8px to 12px; ours was weakest at the fine
-    end. The room now carries 1/f tooth (beta 1.1) modulated by a slow wear field,
-    at x1.9 in the dark pass because at 7/255 a 13% tooth rounds away in 8 bits.
-    **The ground went 0.029 -> 0.139, a sixth of his lowest to three quarters.**
-- **THE TRAP, three times in one day, and it is the lesson to carry:** the metric
-  pointed past the right answer every time. Cutting combat's violet wash gave the
-  best black-floor number of the pass and turned the fight SEPIA. The tooth's own
-  amplitude reached his figure at 0.20 and read as film grain. The wear field kept
-  improving at 0.55 and turned the wall blotchy. **Every one was caught by putting
-  the crop beside the old one at 1:1, and none by the number.** Measure to find
-  the defect; look to set the amount.
-- **What is left of the CSS room is NOT worth doing procedurally.** The bare
-  ground's column-to-column spread is 0.021-0.024 against the samples'
-  0.034-0.082, but our FULL screens already run 0.045-0.155 against their
-  0.034-0.082 -- more varied than theirs. The flatness is only in the wall with
-  nothing on it, which is not what a judge sees. Chasing it means moving the
-  scenes' candle positions (`--wl*-x/y`), which is a design change nobody asked
-  for. The remaining grain gap (0.139 against 0.185) closes only by making the
-  wall noisier, which was tried and rejected.
+Josh, 2026-09-17, and this supersedes everything earlier rounds recorded about
+paintings: *"no more background art. i wanted to start the loop to perfect
+backgrounds and see how good they could possibly be with just procedural
+generation only. there will be no background art. make it as good as it can be
+without it. now finish the loop with this in mind."*
 
-**3a. AND THE OTHER ROOM, which none of the above ever touched (2026-09-16).**
-Josh, the same day: *"continue looping to perfect the backgrounds and be sure
-that all of the other 'parts' to the background (pillars, etc) are being revised
-too. it must look as good as the UI image examples in the UI folder and match
-them perfectly."*
+So, concretely, and **do not re-derive any of this**:
 
-Everything in item 3 is `tools/prep_ui_paint.py`, which paints the **CSS** room:
-`room.webp` and the plates on it, behind the six boards and round the dialogs.
-**Combat does not use it.** The room behind a fight is the WebGL stage
-(`game/src/fx/backdrop.js`, `shaders/backdrop.js`) -- and it is the ONE screen
-where a large area of room is visible, because the boards cover theirs almost
-completely and the map is a blueprint sheet over it. Measured with the new
-`tools/bgmetrics.py`, the wall behind every fight carried 0.022 of tooth at the
-0.8 px octave against the samples' 0.12-0.48, and **not one prop edge in the
-house had a line darker than both sides** (0.000 against their 0.04-0.39).
+- `docs/art/background-prompts.md` is RETIRED. Nobody is painting those 25.
+- `animations/backgrounds/` will never exist. Stop waiting for it, stop telling
+  builders to keep a painting slot clear, and stop running
+  `python tools/prep_backgrounds.py` before a round's baselines. The slot code
+  (`tools/prep_backgrounds.py`, `ui/backdrop.js`, `ui/kitboard.js`) is harmless
+  and is left in place; it simply never has an input.
+- **The briefs' old instruction was backwards.** Every brief from r5 on told
+  builders not to spend the round painting rooms in CSS and to keep the painting
+  slots unobstructed. From round 8 the ROOM IS THE DELIVERABLE.
+- **The rubric's 9 is now a target rather than a deferral.** "A viewer could
+  not tell this was not painted by the same hand as the samples" is what
+  procedure is being asked to reach. It may not reach it; the answer to "how
+  good can this get procedurally" is what Josh asked the loop to find out, and
+  a converged field is a legitimate answer.
+- The four samples stay the reference, and `tools/bgmetrics.py` stays the
+  instrument: they are how "as good as it can be" is measured against
+  something rather than asserted.
 
-- **What changed, part by part**, is in
-  `docs/notes/2026-09-16-the-webgl-room-was-never-painted.md`: a canvas tooth in
-  the post grade, a relief-driven drawn line in every surface, a floor that is
-  stones and boards with per-cell value and hue, relief occlusion so panelling
-  reads as panelling, a damask on the papered walls, a doorway that is a hole, a
-  column with a profile and flutes, prop edges and joints measured in pixels, a
-  chroma ceiling per material, flames that are 9 cm instead of 73, striped and
-  broken light shafts, contact shadows with a core and a penumbra, grit on the
-  floor, and an open-air skyline of towers and firs under a clouded sky.
-- **The three findings to carry:**
-  - **Josh's tooth is white noise, not 1/f.** Flat weights across 1-21 px match
-    his spectrum; the 1/f^1.1 that item 3 used for the CSS ground leaves the fine
-    end empty and moved the WebGL measurement 0.038 -> 0.038.
-  - **A drawn line's width is in PIXELS.** A 4 cm chair rail across a 19 m room
-    is a fifth of a pixel of relief, so lighting alone can only draw it as a
-    hairline. The screen-space derivative of the height field gives a constant
-    width at any depth, for free -- the shader already takes it for its normal.
-  - **One number for the whole house is not a rule.** The prop chroma ceiling was
-    set by eye at 0.14 on the Ballroom's statuary; the 17-region sweep
-    immediately showed the Greenhouse's planting going grey. It is per material
-    now (`PROP_MATERIAL.sat`).
-- **`tests/shader-literals/check.py` is new and it is worth knowing about
-  BEFORE you edit a shader:** a backtick inside a `/* glsl */` template literal
-  ends it, and what you get is `PAGEERROR Unexpected identifier '<a GLSL local>'`,
-  a black frame, `state: no MM` and an empty `.console.txt`. It cost four cycles
-  in one afternoon, because this codebase quotes identifiers in backticks
-  everywhere else. The gate also checks that every `${SPLICE}` is a name the file
-  actually imports -- `${NOISE}` in a file that imports only `GLSL_LIB` took the
-  whole game down for seven captures.
-- **A PROP PASS NEEDS AN RNG FIX FIRST, and that is the finding to carry.** Two
-  mounts of one region differ over **17% of their pixels** -- 13.4 points of it
-  the particle field (which `motes=0` does not stop), ~3.6 the props moving,
-  because everything in a region draws from one `_rand()` stream and anything
-  that consumes a different number of draws reshuffles the layout.
-  `setMood(region, { seed })` takes a seed and forwarding it from the showcase
-  does nothing (setMood almost certainly early-returns when the mood matches).
-  **Structural A/B is reliable; a single small prop cannot be A/B'd at all.**
-  Give the layout its own RNG separate from the particle stream before touching
-  another silhouette. Five of the twenty are done (plant, shrub, column, statue,
-  cabinet); the unimproved ones still carry 44 headstones, 35 chairs, 33 drapes,
-  30 crates, 25 candelabra. A batch written blind regressed and was reverted --
-  at thirty pixels the recognisable CUE beats the parts.
-- **Still Josh's to paint:** the samples' rooms are near-black with ORNAMENT on
-  them and props with drawn detail. Procedure now gets the surfaces, the
-  structure, the light and the ink; what it cannot invent is a painting's
-  subject. The list is still `docs/art/background-prompts.md`.
+**What the ground already is, measured** (both rooms, 2026-09-16, and item 3a
+has the detail):
+
+| | before the pass | after | `mainMenu.png` |
+|---|---|---|---|
+| combat room, tooth | 0.076 | 0.150 | 0.226 |
+| ...its 0.8 px octave | 0.050 | 0.086 | 0.124 |
+| ...min channel | 5.49 | 3.30 | 2.32 |
+| ...edge width, px | 2.54 | 2.51 | 2.52 |
+| an isolated room, tooth | 0.085 | 0.246-0.317 | 0.226 |
+| ...ink share | 0.33 | 0.35-0.53 | 0.674 |
+| ...ink DEPTH | 0.000 | 0.009-0.080 | 0.248 |
+
+Read that table before briefing: **tooth and edge width are AT his figure on an
+isolated room; ink depth is the axis still an order of magnitude short**, and
+his ink depth comes from drawn subject matter -- masonry joints, tracery,
+ironwork -- not from a stronger line. That is where a procedural round has room
+to move, and it is the first thing round 8's brief should aim at.
+
+**3a. WHICH ROOM a screen shows, because there are two and they share nothing.**
+
+| | file | shows on |
+|---|---|---|
+| the CSS room | `tools/prep_ui_paint.py` -> `game/assets/ui/kit/room*.webp` | the six boards, round every dialog |
+| the WebGL room | `game/src/fx/backdrop.js` + `fx/shaders/backdrop.js` + `fx/atmosphere.js` | **COMBAT**, and the showcase |
+
+The ground pass of 2026-09-16 (`57da26a`, `cc59d6e`, `16e608d`) painted only the
+CSS one, and the handoff then recorded "the procedural half is DONE" -- while
+combat, the ONE screen where a large area of room is visible, had never been
+touched. `aebb6d7` and `da37410` are that work.
+`docs/notes/2026-09-16-the-webgl-room-was-never-painted.md` is the full account;
+the four findings a round 8 must not re-derive:
+
+- **Josh's tooth is WHITE NOISE, not 1/f.** Read through the cumulative
+  high-pass `tools/bgmetrics.py` uses, the samples run 0.41 0.67 0.83 0.94 1.00
+  across the 0.8-12 px octaves. The 1/f^1.1 the CSS ground uses gives
+  0.06 0.14 0.30 0.60 1.00 and leaves the fine end empty: copying it to the
+  WebGL room moved the measurement 0.038 -> 0.038. Canvas tooth lives in the
+  POST GRADE, in display space, multiplicative so pure black stays black, on
+  cells measured in PIXELS.
+- **A drawn line's width is in PIXELS.** A 4 cm chair rail across a 19 m room is
+  a fifth of a pixel of relief, so lighting can only ever draw it as a hairline.
+  `length(vec2(dFdx(h), dFdy(h)))` is metres of relief per pixel; a threshold on
+  it is a constant-width line at any depth and costs nothing, because the shader
+  already takes those derivatives for its normal. Gate it on resolvability or it
+  draws BANDS. Same for antialias, joint and rim widths.
+- **A recess is darker than the face it is cut into.** The wall's panels were
+  hairlines because the flat floor of a 42 cm recess has the same NORMAL as the
+  wall. One occlusion term off the height field gave six architecture modes
+  their joinery.
+- **AND MEASURE WHAT IT COSTS.** The first version was +3.75 ms of an 11.2 ms
+  frame, 2.14 ms of it the post grade: six octaves of value noise is 24 hash
+  calls on 921,600 pixels, and "the post chain is bandwidth-bound" is only true
+  for the taps it was measured with. Three taps with the same measured spectrum
+  (**the finest octave is white noise, so ONE hash, not four**), one tap for the
+  wear field, `MM_TOOTH` off at tier low, no drawn work on the ceiling: 13.95 ms
+  and 59 fps observed, before AND after.
+
+**3b. PIN THE PHASE, and a capture is byte-identical.** Two mounts of one region
+differed over 17% of their pixels, and this handoff blamed the prop layout and
+the particle stream -- both wrong. `clock.t` accumulates scaled dt,
+`clock.scale = 0` stops it at whatever the page reached while booting, and
+everything time-driven reads it: props sway on `sin(uTime*0.55 + seed)`, stars
+twinkle, clouds drift, flames flicker. `ctx.clock.t = 120` before the shot gives
+**0 differing pixels, motes and props and all** -- one line in
+`tools/shot-scripts/backdrop-room.js`, which also has `region=`, `tier=`,
+`seed=`, `props=0`, `actor=0`, `frames=0`, `shafts=0`, `motes=0` and one-knob
+overrides (`tooth=`, `damask=`, `ink=`, `propsat=`).
+**So a single prop CAN be A/B'd**, which the prop pass needs: five of the twenty
+silhouettes are done (plant, shrub, column, statue, cabinet) and the rest still
+carry 44 headstones, 35 chairs, 33 drapes, 30 crates, 25 candelabra. A batch
+written blind regressed and was reverted -- at thirty pixels the recognisable
+CUE beats the parts, and two of its clips were the classic SDF error, a `max()`
+applied to the ACCUMULATED distance instead of to the primitive it was shaping.
+
+**3c. `tests/shader-literals/check.py` before you edit a shader.** A backtick
+inside a `/* glsl */` template literal ends it, and what you get is
+`PAGEERROR Unexpected identifier '<a GLSL local>'`, a black frame, `state: no MM`
+and an empty `.console.txt`. It cost four cycles in one afternoon because this
+codebase quotes identifiers in backticks everywhere else. The gate also checks
+every `${SPLICE}` against what the file imports.
 
 **4. The enemies animate (09-15); round 6's COMBAT brief says how, and round 7's
 must keep saying it.** Josh's call was "do it after round 5 merges". His sheets in
@@ -252,9 +252,8 @@ were 15,853, and 121 MB of atlases where there were 373.
   is the gate working, not a regression. A sheet under a new name that resolves to no EnemyDef needs an
   `ENEMY_ALIAS` entry: match it by eye against the stills. The sheets are
   gitignored; commit the built clips.
-- **Backgrounds:** `animations/backgrounds/` does not exist yet. When it appears,
-  run `python tools/prep_backgrounds.py` before the next round's baselines. His
-  paintings are the one thing that can lift every screen's background score.
+- **Backgrounds: none are coming** (item 3, Josh 2026-09-17). Do not look for
+  `animations/backgrounds/` and do not run `prep_backgrounds.py`.
 
 **8. The battery:** `python tools/devserver.py 8777`, then `python tools/gates.py`
 (100 gates, about 30 minutes). On the round 6 merge it ran 100 gates in 1881s,
@@ -570,9 +569,9 @@ Big Scare** (`3a12203`).
   merges"), never during one: `ui/enemy.js` is the COMBAT track's. Wired 09-15.
 - **Enemy still SOURCES stay untracked** "for now" (09-12). The built `.webp` are
   committed.
-- **Josh paints the backgrounds** from the prompt pack (09-12). Until each one
-  lands, its board shows a rendered placeholder room, and the painting slot
-  takes the painting as soon as `prep_backgrounds.py` builds it.
+- **NO BACKGROUND ART** (09-17, and it replaces the 09-12 call that he would
+  paint them). The procedural room is final; the loop's job is to take it as far
+  as procedure goes. `docs/art/background-prompts.md` is retired.
 - **The Carnivorous Conservatory is the Greenhouse boss** (09-12), and the Head
   Gardener is "just a big scare".
 - **The SS sheets are never committed** (standing). That includes the Kid sheets.

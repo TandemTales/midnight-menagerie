@@ -22,29 +22,12 @@ async () => {
     if (v !== undefined) window.MM.__bgOver[k] = parseFloat(v);
   }
   ctx.clock.scale = 1;
-  /* seed=N TRIES to make the prop layout reproducible and DOES NOT SUCCEED --
-     left here with this note so the next person does not spend the same hour.
-
-     Measured: two mounts of one region differ over 17% of their pixels. With
-     the props hidden 13.4 points of that remain, so most of it is the particle
-     field spawning over time from a stream the clock freeze cannot rewind --
-     `motes=0` below did not remove it either. The remaining ~3.6 points are
-     the props themselves moving: atmosphere._seed is derived from the region
-     key and is deterministic in principle, but everything in the region draws
-     from the same `_rand()` stream, so anything that consumes a different
-     number of draws reshuffles the layout.
-
-     `setMood(region, { seed })` has accepted an explicit seed all along, and
-     forwarding it here has no effect, most likely because setMood early-returns
-     when the mood already matches the target -- showcase.set() has already set
-     it by then.
-
-     WHAT THIS COSTS: structural A/B (a floor, a wall, a paper, the sky) is
-     reliable, because those changes are far larger than the noise and cover
-     the frame. A single small PROP cannot be A/B'd: it may not be in the same
-     place, and motes drift over it. Fixing that means giving the showcase its
-     own RNG for the layout, separate from the particle stream -- the right fix,
-     and not a small one. */
+  /* seed=N is forwarded to setMood, which mixes a ROOM seed into the region's
+     own so two rooms that share a name do not share a layout. It is not needed
+     for reproducibility -- see the phase note below; build() is deterministic
+     per region on its own -- but it is how you get a DIFFERENT arrangement of
+     the same room on purpose, which is useful when one layout happens to hide
+     the prop you are trying to look at. */
   const seed = (q.match(/seed=([A-Za-z0-9_-]+)/) || [])[1];
   if (seed !== undefined) {
     ctx.atmosphere.setMood(region, { instant: true, seed });
@@ -70,12 +53,9 @@ async () => {
     for (const m of ctxBd.frames) m.visible = false;
   }
   if ((q.match(/shafts=([01])/) || [])[1] === '0') ctxBd.shafts.visible = false;
-  /* motes=0 hides the particle field, and it is the toggle that makes a
-     capture REPRODUCIBLE. Measured: two mounts of one region with the same
-     seed differ over 17% of their pixels, and 13.4 of those points are still
-     there with the props hidden -- the dust, embers and wisps spawn over time
-     from a stream the clock freeze cannot rewind. Without them off, no
-     before/after of a single prop means anything. */
+  /* motes=0 hides the particle field. NOT needed for reproducibility -- with
+     the phase pinned a capture is byte-identical with the motes on -- but
+     useful for telling which layer a mark belongs to. */
   if ((q.match(/motes=([01])/) || [])[1] === '0') {
     const pf = ctx.atmosphere.particles;
     if (pf && pf.points) pf.points.visible = false;
@@ -99,8 +79,19 @@ async () => {
     }
   }
   window.MM.showcase.steady();
+  /* PIN THE PHASE, do not just stop the clock. clock.t accumulates scaled dt
+     and setting scale to 0 leaves it at whatever value the page took to boot --
+     and everything time-driven in the room reads it: the props SWAY on
+     sin(uTime*0.55 + seed), the stars twinkle on sin(uTime*1.7 + seed), the
+     clouds drift on uTime*0.004, the flames flicker. That is why two captures
+     of one region differed over 17% of their pixels and why a single prop could
+     not be A/B'd: not the layout (build() is deterministic per region), the
+     PHASE. Pinning t makes a capture reproducible. */
+  ctx.clock.t = 120;
   ctx.clock.scale = 0;
-  await new Promise(r => setTimeout(r, 300));
+  await new Promise(r => setTimeout(r, 120));
+  ctx.clock.t = 120;
+  await new Promise(r => setTimeout(r, 260));
   const u = ctx.stage.grade.uniforms;
   return { region, tier: ctx.stage.tier, tooth: u.uTooth.value, texel: [u.uTexel.value.x, u.uTexel.value.y] };
 }
