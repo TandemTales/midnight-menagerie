@@ -88,6 +88,25 @@ ${LIGHT_LIB}
 uniform float uTime, uSeed, uDread, uFogAmt, uArch, uCool, uGrime, uOpen, uCeil, uGain;
 uniform float uGloss, uAlbLift, uInk, uLip, uDamask, uDamCell, uDamKind;
 uniform float uSubject, uFar;
+/* uSkyGlow  how bright the whole night is, per region. POST-EXPOSURE, so the
+             module divides it by the palette's exposure: the Graveyard sits at
+             1.33 and the Title at 1.8, and one flat number gave the Title a
+             near-white house.
+   uOpenSky  1 where the region has no ceiling (room.h = 0). The sky used to be
+             painted only for the EXTERIOR arch mode, so the Hedge Maze -- open
+             to the night, but arch 3 (FOLIAGE) -- had unlit plane above its
+             hedge and measured 71.5% PURE BLACK in its upper third. */
+uniform float uSkyGlow, uOpenSky;
+/* uSkyDeep  the SKY's own base colour, which is NOT the wall's uDeep.
+             A night sky is the same night over every region -- mainMenu.png's
+             is a saturated navy, rgb(3,11,26) at the top of the frame to
+             rgb(13,24,44) at the roofline -- but a region's DEEP is the colour
+             of its MASONRY. Painted with it, the Hedge Maze's green deep gave
+             an OLIVE sky that read as a sick night, and no sample contains one. The module blends each region's deep toward a
+             canonical night so a region keeps a trace of its own cast without
+             the sky stopping being a sky. Walls and floors are untouched:
+             those are the palettes Josh has not ruled on. */
+uniform vec3 uSkyDeep;
 uniform vec3  uDamHue;
 uniform vec2  uSize;           // wall plane size in metres (w, h)
 uniform vec3  uDeep, uMid, uHi, uAccent, uFog, uOpenGlow, uAmbient;
@@ -844,7 +863,28 @@ vec3 skyColor(vec2 q, float horizon){
      clear colour showing above it) can no longer stretch the gradient or push
      the moon out of frame. */
   float up = clamp((q.y - horizon) / 15.0, 0.0, 1.0);
-  vec3 sky = mix(uOpenGlow, uDeep, smoothstep(0.0, 0.85, up));
+  /* A NIGHT SKY IS NEVER BLACK AND IT IS NEVER THE BRIGHTEST THING IN THE
+     FRAME, and this gradient managed both at once: it climbed to the full
+     horizon colour low down and to RAW uSkyDeep at the zenith. Measured on the
+     round 8 captures, the top 14% of the Graveyard came out at level 2.7 and
+     71.5% of the Hedge Maze's upper third was pure rgb(0,0,0) -- while the
+     visible band just above the roofline ran three to four times brighter than
+     the moonlit paving beneath it. Upside down in both directions at once.
+
+     mainMenu.png's own sky, measured two ways that agree: median L16.7, p95
+     L24, 99% of it below L32; and as a clean strip, level 16.5 with 0.00% pure
+     black and a near-linear ramp of rgb(3,11,26) at the top of the frame to
+     rgb(13,24,44) at the roofline. Its variation is 3.4% of level at the
+     zenith rising to ~8.6% near the horizon, so the cloud below is right to
+     fade out going up.
+
+     So: the ramp runs between two LEVELS of uSkyDeep and never reaches zero, and
+     the horizon glow is an exponential BAND a few metres deep rather than a
+     fifteen-metre smoothstep -- which is what the glow of a town behind a hill
+     actually looks like. uOpenGlow still sets its colour, so a region that
+     authors a warm horizon keeps one. */
+  vec3 sky = (uSkyDeep * mix(6.80, 3.90, smoothstep(0.0, 0.62, up))
+              + uOpenGlow * 0.46 * exp(-up * 4.2)) * uSkyGlow;
   /* CLOUD BANKS. mainMenu.png's sky is not a gradient -- it has soft banks of
      cloud in it, lighter toward the horizon where the town glow catches them,
      and that is the one thing that stops a gradient reading as a gradient.
@@ -853,7 +893,11 @@ vec3 skyColor(vec2 q, float horizon){
   float bank = mmFbm3(cq + uSeed) * 0.72 + mmFbm3(cq*2.7 - uSeed) * 0.28;
   float cloud = smoothstep(0.42, 0.78, bank) * smoothstep(0.03, 0.30, up)
               * (1.0 - smoothstep(0.55, 1.0, up)*0.55);
-  sky = mix(sky, mix(uDeep*1.5, uOpenGlow*0.95, 0.45 + 0.55*(1.0-up)), cloud*0.62);
+  /* A CLOUD IS LIT ON ONE EDGE and dark in its body. Painting the whole bank
+     lighter is what made this read as haze rather than as weather. */
+  float lipC = smoothstep(0.50, 0.74, bank) - smoothstep(0.74, 0.96, bank);
+  sky *= 1.0 - cloud * 0.34;
+  sky += mix(uSkyDeep*1.30, uOpenGlow*0.62, 0.40) * cloud * lipC * uSkyGlow * 2.6;
   /* STARS, and they are POINTS. A cell hash through a smoothstep fills the
      whole cell, so every star in the game was an eight-pixel grey SQUARE --
      dozens of them across the Graveyard's and the Pumpkin Grounds' sky, and
@@ -1055,8 +1099,21 @@ void main(){
          * (0.42 + 0.95*max(nrm.y, 0.0) + 0.30*max(-nrm.x, 0.0)) * 1.55 * uGain;
   }
 
+  /* ---- ANY region without a ceiling gets the sky ---------------------------
+     The Hedge Maze is open to the night and its arch mode does not draw one,
+     so everything above the hedge was unlit plane. Same solidity mask the
+     exterior mode uses, and a lower horizon because there is no roofline to
+     stand the sky above -- the hedge itself is the skyline. */
+  if (uOpenSky > 0.5 && uArch < 4.5) {
+    float solidO = smoothstep(0.25, 0.85, h);
+    col = mix(skyColor(q, 0.6), col, solidO);
+  }
+
   // ---- ceiling falls away into darkness -------------------------------------
-  if (uArch < 4.5) {
+  // NOT where there is no ceiling: this multiplier is 0.10 above uCeil, and a
+  // ceiling-less region is handed a 6.4 m fallback, so it would crush the sky
+  // the branch above just painted back to the void it replaced.
+  if (uArch < 4.5 && uOpenSky < 0.5) {
     col *= mix(1.0, 0.10, smoothstep(uCeil, uCeil + 2.4, q.y));
     col *= mix(0.42, 1.0, smoothstep(0.0, 1.6, q.y));            // grounded base shadow
     col *= mix(0.58, 1.0, smoothstep(uCeil, uCeil - 1.5, q.y));  // shadow under the cornice

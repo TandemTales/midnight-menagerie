@@ -33,6 +33,11 @@ import {
 } from './shaders/backdrop.js';
 
 const MAX_PROPS = 52, MAX_SHAFTS = 6, MAX_POOLS = 4, MAX_FLAMES = 10;
+/* The night every region's sky is carried toward. It is the Graveyard's own
+   `deep`, which is the one open-air region whose sky was tuned against
+   mainMenu.png: measured, it comes out at hue 216 and a sky level of 7.8-16.9
+   across the four ceiling-less regions, against the samples' 8.5-16.5. */
+const NIGHT_DEEP = new THREE.Color(0x141725);
 const FLOOR_FRONT = 15;      // how far the floor reaches toward/behind the camera
 
 /** Default room if a region does not author one. */
@@ -130,6 +135,8 @@ export class Backdrop {
            of. See subjectH in shaders/backdrop.js and SUBJECT below. uFar is 1
            on the back wall and 0 on the two side walls. */
         uSubject: { value: 0 }, uFar: { value: 1 },
+        uSkyGlow: { value: 1.0 }, uOpenSky: { value: 0 },
+        uSkyDeep: { value: new THREE.Color(0x141725) },
         uDamHue: { value: new THREE.Color(0.46, 0.24, 0.66) },
         uSize: { value: new THREE.Vector2(30, 14) },
         uDeep: { value: new THREE.Color(0x0d0b16) },
@@ -950,6 +957,24 @@ export class Backdrop {
     w.uOpen.value = p.openGlow ?? 0.5;
     w.uFogAmt.value = p.wallFog ?? 0.18;
     w.uCeil.value = ceil;
+    /* A region with room.h = 0 is OPEN TO THE SKY, and uCeil cannot say so: the
+       fallback hands it 6.4 m, so the Hedge Maze was crushed to a tenth above
+       6.4 m and painted no sky at all -- 71.5% of its upper third pure black. */
+    const noCeil = (p.room?.h ?? 0) <= 0.01 ? 1 : 0;
+    w.uOpenSky.value = noCeil;
+    /* HOW BRIGHT THE NIGHT IS, and it is a POST-EXPOSURE quantity, so it is
+       divided by the region's own exposure. Set by eye on the Graveyard at
+       exposure 1.33; applied flat it gave the Title -- exposure 1.8, contrast
+       1.67, a warm gold horizon -- a near-white house and hot gold cloud. */
+    w.uSkyGlow.value = (p.skyGlow ?? 1.20) / Math.max(p.exposure ?? 2.0, 0.4);
+    /* THE SKY IS NOT A WALL. Painted with the region's own `deep` -- the colour
+       of its masonry -- the Hedge Maze's green gave an olive sky that read as a
+       sick night, and not one of the four samples contains one. mainMenu.png's
+       sky is a saturated navy at 0.70-0.89 saturation. So the sky's base is the
+       region's deep carried most of the way to a canonical night: a region
+       keeps a trace of its own cast, and every sky is recognisably night.
+       NOT a palette change -- walls, floors and props are as authored. */
+    w.uSkyDeep.value.copy(p._deep).lerp(NIGHT_DEEP, 0.72);
     w.uGain.value = (p.gain ?? 3.4) * 1.05;
     w.uGloss.value = (p.gloss ?? 0.5) * 0.5;
     w.uDeep.value.copy(p._deep);
@@ -1018,6 +1043,8 @@ export class Backdrop {
       su.uDeep.value.copy(p._deep); su.uMid.value.copy(p._mid); su.uHi.value.copy(p._hi);
       su.uAccent.value.copy(p._accent); su.uFog.value.copy(p._fog);
       su.uOpenGlow.value.copy(p._open); su.uAmbient.value.copy(p._ambient);
+      su.uOpenSky.value = noCeil; su.uSkyGlow.value = w.uSkyGlow.value;
+      su.uSkyDeep.value.copy(w.uSkyDeep.value);
       this.sides[i].visible = p.sides !== false;
     }
 
