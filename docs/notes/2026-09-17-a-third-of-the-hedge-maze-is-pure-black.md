@@ -67,8 +67,8 @@ seven rounds of judges have written -- "the left wall has nothing on it".
 Looking at the capture rather than the number separates two causes:
 
 - **The open-sky shell has a void where a sky goes** (hedge, heart, pumpkin,
-  graveyard). Stars scattered on zero. `mainMenu`'s night sky is clouded, graded
-  and lit from the house it stands in front of.
+  graveyard). Stars scattered on zero. Measured against `mainMenu`'s own clean
+  sky, which is the next section.
 - **Several interior ceilings clip to zero** (greenhouse 43.4, passages 31.6,
   kitchens 29.2), while six rooms already sit inside the samples' range -- foyer
   7.5, kennels 7.5, study 6.3, bathhouse 5.5, attic 4.7, sleeping 3.8. So it is
@@ -97,3 +97,71 @@ pass were both done directly rather than as a round.
 
 At merge, check each candidate's pure-black share against this table. A
 candidate that gives the frame back is worth more than its mean says.
+
+## The sky, measured, and it is far plainer than it looks
+
+Written after the above, because "give it a painted sky" is not a specification
+and the first two attempts at one were both wrong.
+
+Sky band of each open-sky room against `mainMenu.png`'s clean sky:
+
+| | sky level | pure black | stars >110 |
+|---|---|---|---|
+| mainMenu (x400-1300, y0-150) | **16.5** | **0.0%** | 0.01% |
+| hedge | 0.8 | 72.2% | **0.11%** |
+| heart | 4.1 | 25.0% | 0.02% |
+| pumpkin | 2.6 | 30.5% | 0.00% |
+| graveyard | 2.0 | 34.6% | 0.02% |
+
+**Ours is 4x to 20x too dark AND its stars are up to 11x too hot.** A void with
+hot points, where his is a bright navy field with faint ones. That second half
+is the part an eye does not catch: the instinct is to add bright accents, and
+the measurement says remove them.
+
+**It took three passes to get an honest measurement of his sky, and the first
+two both lied.**
+
+1. Patch `x1180-1420 y0-320` gave "cloud variation 34.4% of level, p99 80".
+2. The bright tail turned out to be 106 blobs of MEDIAN SIZE 3 px, 8 of them
+   over 20 px -- stars, not cloud masses. So a "lit cloud mass" term built on
+   reading 1 was deleted.
+3. **The patch was contaminated.** Its lower half holds the right-hand towers'
+   spires and roof detail. The same sky above the roofline reads `>30: 0.07%`
+   against the patch's `5.60%`.
+
+Clean sky, `x400-1300 y0-150`, with the vertical ramp removed:
+
+    ramp, y0 -> y330      luma 13 15 17 19 21 23 26 28 32   (near linear)
+    top / roofline rgb    (3, 11, 26) -> (13, 24, 44)        sat 0.89 -> 0.71
+    low-frequency var     std 0.60 = 3.4% of level
+    high-frequency        std 1.85 = 10.6%  (the canvas tooth, already built)
+    p1 / p50 / p99        13 / 17 / 23
+    stars                 >110: 0.01% of area
+    PURE BLACK            0.00%
+
+**His night sky is a nearly pure linear navy ramp.** Remarkably plain: its
+quality is that it is a smooth, saturated, non-zero field, not that it has
+weather in it. Adding clouds would be inventing drama he does not have.
+
+A CPU prototype (`sky_proto.py`, this session's scratchpad) hits every axis:
+
+    level 16.4 (17.4)   black 0.00 (0.00)   cloud 3.9% (3.4%)   sat 0.83 (0.80)
+    p1 12.7 (13)        p99 19.7 (23)       >30 0.03% (0.07%)   >110 0.01% (0.01%)
+
+    TOP (3,11,26)  HORIZON (13,24,44)  CLOUD_AMP 0.034
+    STAR_FRAC 0.0008  STAR_GAIN 7.0  STAR_POW 3.2
+
+**And the trap it nearly walked into:** fitting the contaminated numbers gave
+`CLOUD_AMP 0.44`, which drives 0.61% of the sky to PURE BLACK at the low end of
+its own modulation -- reintroducing the exact defect being fixed. Any variation
+term here is bounded by "never reaches zero"; at this ramp that bound is about
+0.34, and the honest value is 0.034.
+
+The same navy field is wanted in two places, which is why this is one fix and
+not two: the open-sky shell, and the **glass ceilings** -- the Impossible
+Greenhouse has a glass roof with a void above it, and a glasshouse at night
+should show that sky through the mullions.
+
+The seventeen-room sweep is byte-identical on a re-shoot (0 differing pixels,
+greenhouse, with the phase pinned), so it is a valid before/after baseline for
+this pass.
