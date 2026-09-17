@@ -202,3 +202,40 @@ Tested across all seventeen rooms, that is not what is happening:
 Ink depth tracks how MUCH line a room carries, not how well a line survives its
 surface. The low-ink rooms have fewer drawn lines, not buried ones -- which is
 the same fix the round is already briefed for, and not a new one.
+
+## And the OTHER room: the ground pass fixed one of its three passes
+
+Measured with the new axis, the CSS room behind the boards and dialogs
+(`game/assets/ui/kit/room*.webp`, built by `tools/prep_ui_paint.py`):
+
+| | minCh | inkDp | spread | void% | skyLvl |
+|---|---|---|---|---|---|
+| `room.webp` | 0.69 | **0.337** | 0.449 | 0.99 | 2.4 |
+| `room-warm.webp` | **10.16** | 0.117 | 0.217 | 0.00 | 36.0 |
+| `room-moon.webp` | **11.03** | 0.096 | 0.199 | 0.03 | 35.3 |
+| the samples | 0.00-2.32 | 0.010-0.248 | 0.54 avg | 1.5-9.1 | 8.5-29.8 |
+
+Two things fall out.
+
+**`room.webp` has the highest ink depth of any surface in the project, 0.337
+against mainMenu.png's 0.248.** The CSS room's base painting is not the weak
+part of this game.
+
+**Its two LIT variants never reach black, and that is a leftover.** `lit()`
+computes `col = alb * c * (amb + gain * lam)`, so `amb` is a hard floor: where
+the lambert term is zero the surface cannot go below `alb * c * amb`. The
+variants run `amb` 0.66 (warm) and 0.52 (moon), which is exactly the minCh
+10.16 / 11.03 above. The black-floor pass (`57da26a`) lowered the ambient on the
+UNLIT pass -- 0.32 to 0.20, and that is `room.webp`, which now reads 0.69 -- and
+never touched the two lit passes. So the defect that pass was written to fix
+still stands in the two assets that actually show behind a board.
+
+Fix 4 of `BRIEF-r8.md` attributes "tile spread 0.20 against 0.54" to "the CSS
+room". That is these two variants; `room.webp` itself is 0.449.
+
+**But do not set this one by the number.** These three are seen THROUGH boards
+and dialogs, not as pictures, and the samples reaching 0.00 are whole
+compositions with a lit subject in them. Lowering `amb` darkens everything the
+plates sit on, and Settings already scores 3-4 on background -- the lowest in
+the pass -- partly for being hard to read. The amount belongs to a 1:1 look with
+a board in front of it, which is the standing lesson of this pass.
