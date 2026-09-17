@@ -53,6 +53,23 @@ const SHAPE_W = [1.15, 0.55, 1.00, 0.95, 1.20, 0.80, 0.34, 0.85, 1.10, 1.35,
 // Which shapes hang from the ceiling rather than stand on the floor.
 export const HANGING = { 4: 1, 7: 1 };
 
+/**
+ * THE SUBJECT of a room, by name. A region's `subject` picks one; `subjectH` in
+ * shaders/backdrop.js draws it into the wall's relief.
+ *
+ * An architecture MODE says what a wall is made of. Seventeen regions share six
+ * of them, so the Crypt and the Secret Passages were one coursed wall
+ * recoloured and the Kitchens, the Attic and the Lampworks were one set of
+ * rails. A subject is the thing the region is NAMED after, and every one of
+ * these was already written down in `docs/art/background-prompts.md` — the list
+ * nobody was ever going to paint.
+ */
+export const SUBJECT = {
+  none: 0, stair: 1, bookcase: 2, niches: 3, terrace: 4, bench: 5,
+  wardrobe: 6, pens: 7, topiary: 8, timber: 9, mirrors: 10, dado: 11,
+  rafters: 12, fence: 13, coping: 14, toyshelf: 15, range: 16, hearth: 17,
+};
+
 const NLIGHT = 5;
 /** How much of a cinematic (key/fill) light reaches a PROP. See syncLights. */
 const CINE_PROP = 0.26;
@@ -109,6 +126,10 @@ export class Backdrop {
            stripes. applyPalette sets the kind off the region's label. */
         uDamask: { value: 0.55 }, uDamCell: { value: 0.92 },
         uDamKind: { value: 0 },
+        /* THE SUBJECT — what this room IS, as opposed to what its wall is made
+           of. See subjectH in shaders/backdrop.js and SUBJECT below. uFar is 1
+           on the back wall and 0 on the two side walls. */
+        uSubject: { value: 0 }, uFar: { value: 1 },
         uDamHue: { value: new THREE.Color(0.46, 0.24, 0.66) },
         uSize: { value: new THREE.Vector2(30, 14) },
         uDeep: { value: new THREE.Color(0x0d0b16) },
@@ -921,6 +942,9 @@ export class Backdrop {
     w.uDamKind.value = kind;
     w.uDamCell.value = p.damaskCell ?? (kind === 2 ? 0.74 : 0.92);
     w.uArch.value = arch;
+    const subj = SUBJECT[p.subject] ?? 0;
+    w.uSubject.value = subj;
+    w.uFar.value = 1;
     w.uCool.value = p.coolFill ?? 0.9;
     w.uGrime.value = p.grime ?? 0.7;
     w.uOpen.value = p.openGlow ?? 0.5;
@@ -982,6 +1006,8 @@ export class Backdrop {
       su.uDamask.value = dam;
       su.uDamKind.value = kind;
       su.uDamCell.value = w.uDamCell.value;
+      su.uSubject.value = subj;
+      su.uFar.value = 0;                        // one staircase, forty niches
       su.uCool.value = (p.coolFill ?? 0.9) * 0.85;
       su.uGrime.value = Math.min(1, (p.grime ?? 0.7) + 0.12);
       su.uOpen.value = 0;                       // no doorway on the side walls
