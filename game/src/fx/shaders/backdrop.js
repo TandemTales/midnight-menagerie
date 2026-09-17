@@ -1289,7 +1289,7 @@ void main(){
      underneath it was the same value as the floor two metres away. */
   for (int i = 0; i < 4; i++){
     vec4 P = uPool[i];
-    if (P.w <= 0.001 || uIsCeiling > 0.5) continue;
+    if (P.w <= 0.001) continue;
     vec2 d = w - P.xy;
     vec2 ax = uPoolAxis[i].xy;
     float along = dot(d, ax) / max(uPoolAxis[i].z, 0.001);
@@ -1297,7 +1297,16 @@ void main(){
     float r = length(vec2(along, across)) / max(P.z, 0.001);
     float core = exp(-r*r*2.1);
     float spill = exp(-r*1.05) * 0.42;
-    float grain = 0.80 + 0.34*mmFbm3(w*1.7 + float(i)*7.3);
+    /* MEASURED, AND PUT BACK. Cutting the pools off the ceiling entirely took
+       0.95 ms and also took the vault: on room-crypt the top band of the frame
+       went from a mean of 23.7 to 0.46. Not darker -- GONE, because these
+       pools were supplying nearly all the light up there, by accident, their
+       centres being floor positions. What they cannot afford up there is the
+       fbm: four mmFbm3 calls is twelve noise taps for a break-up nobody can
+       see at 8.5% of gain. So the ellipses stay and the grain does not, which
+       is most of the saving and none of the loss. */
+    float grain = 0.95;
+    if (uIsCeiling < 0.5) grain = 0.80 + 0.34*mmFbm3(w*1.7 + float(i)*7.3);
     col += uPoolCol[i] * P.w * (core*1.15 + spill) * grain * (0.16 + 0.84*mmLum(alb)*3.4) * 0.50;
   }
 
