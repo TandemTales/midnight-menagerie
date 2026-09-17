@@ -505,12 +505,25 @@ def room():
     tooth = M.periodic_noise(0, np.random.default_rng(5150), beta=1.1, lo_cut=4.0,
                              shape=(H, W))
     tooth = tooth / (np.abs(tooth).std() + 1e-9)
+    # AND IT IS NOT THE SAME EVERYWHERE. A tooth of one strength over the whole
+    # wall is grain; a painted wall is worn unevenly -- damp in one corner, rubbed
+    # smooth where things pass, heavy where the plaster went on thick. A slow
+    # field over the top gives the tooth somewhere to be busy and somewhere to be
+    # calm, which is the difference between a texture and a surface.
+    wear = M.periodic_noise(0, np.random.default_rng(6270), beta=2.2, lo_cut=1.0,
+                            shape=(H, W))
+    # 0.25, NOT 0.55. At 0.55 the metric went on improving (the ground's grain
+    # reached 0.127 against 0.088) and the wall turned blotchy -- patches of dirt
+    # and damp rather than a surface that is a little more worn in some places
+    # than others. Third time in this pass that the number pointed past the
+    # answer; the crop beside the old one is what settled it, as before.
+    wear = 1.0 + 0.25 * (wear / (np.abs(wear).std() + 1e-9)).clip(-1.6, 1.6)
     # the wood's grain, drawn along the boards with a dry brush
     grain = aniso_noise(H, W, rng, 34, 0.9)
     woodzone = ((yy >= Y_PIC[0]) & (yy < Y_PIC[1])) | ((yy >= Y_DADO[0]) & (yy < Y_FLOOR))
     woodzone = np.broadcast_to(woodzone, (H, W)).astype(np.float32)
 
-    def finish(col, hi_colour, hi_amt):
+    def finish(col, hi_colour, hi_amt, tooth_k=1.0):
         col = col + lip[..., None] * np.asarray(hi_colour, np.float32) * hi_amt
         col = col * (1 - 0.5 * ao[..., None])
         col = col * (1 + (grain * 0.11 * woodzone)[..., None])
@@ -518,7 +531,7 @@ def room():
         col = col * (1 - ink[..., None])
         col = col * (0.72 + 0.28 * tex[..., None]) ** 1.0
         col = col * (1 + (brush * 0.07 + brush2 * 0.045 + dabs * 0.06)[..., None])
-        col = col * (1 + tooth[..., None] * TOOTH)
+        col = col * (1 + (tooth * wear)[..., None] * TOOTH * tooth_k)
         return np.clip(col, 0, 255)
 
     # in the dark: the room lost in a cold violet shadow, its top in soot.
@@ -538,7 +551,12 @@ def room():
     vfall = (0.30 + 0.70 * smooth(0, 560, yy)) * (1 - 0.58 * smooth(Y_FLOOR, H, yy))
     hfall = 1 - 0.45 * (np.abs(xx - W / 2) / (W / 2)) ** 2
     dark = dark * (vfall * hfall)[..., None]
-    dark = finish(dark, (40, 30, 52), 0.25)
+    # TWICE THE TOOTH IN THE DARK, and it is 8 bits that need it, not taste. This
+    # pass sits at a level of 7/255, where a 13% tooth is under one level and
+    # rounds away: measured, the dark room kept 0.060 of the 0.124 the lit passes
+    # kept. Asking for twice buys back about a level, and it is the pass that
+    # covers most of the wall, because the candles only reach so far.
+    dark = finish(dark, (40, 30, 52), 0.25, tooth_k=1.9)
     # candle light, grazing down the wall from sconces above eye level
     Lw = np.array([0, -0.8, 0.6], np.float32)
     Lw /= np.linalg.norm(Lw)
