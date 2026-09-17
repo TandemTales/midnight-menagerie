@@ -48,6 +48,10 @@ UI = M.UI
 OUT = M.OUT
 PREVIEW = None
 
+# How hard the ground's tooth shows through the paint (see `room`). 0.13 is by
+# eye: 0.20 reaches the samples' own figure and reads as film grain.
+TOOTH = 0.13
+
 hexc, ramp, smooth, noise, normals, lambert, specular = (
     M.hexc, M.ramp, M.smooth, M.noise, M.normals, M.lambert, M.specular)
 
@@ -471,6 +475,36 @@ def room():
     # size of a brush, a little lighter or darker, never an even render
     dabs = ndimage.gaussian_filter(rng.normal(0, 1, (H // 6, W // 6)).astype(np.float32), 0.9)
     dabs = resize_f(dabs / (np.abs(dabs).max() + 1e-6), W, H)
+    # THE TOOTH OF THE THING IT IS PAINTED ON, and the room did not have one.
+    # Measured on flat surfaces only -- tiles with no edge crossing them, every
+    # image resampled to one width first, so a panel edge or a letter cannot
+    # inflate the number -- as high-frequency energy over the surface's own
+    # level:
+    #
+    #   Josh's four samples   0.185  0.325  0.318  0.498
+    #   this room             0.015  0.019  0.019
+    #
+    # An order of magnitude, and it is the whole of "a render, not a painting".
+    # Broken into octaves his incident is roughly FLAT from 0.8px to 12px, where
+    # ours was weak everywhere and weakest at the fine end (0.009 against 0.10 to
+    # 0.27 at 0.8px). What was already here -- the felt's grit, two brush
+    # directions, the dabs -- is all low-frequency and all under 7%: it moves the
+    # value in patches the size of a brush and leaves the surface between them
+    # glassy.
+    #
+    # So the surface gets the tooth of its ground, 1/f across every octave
+    # (beta 1.1 is the flat-per-octave exponent his spectrum shows), multiplied
+    # in so it rides the light instead of adding a grey film, with the largest
+    # wavelengths cut so it is a tooth and not a stain.
+    #
+    # AMPLITUDE IS SET BY EYE, NOT BY THE NUMBER, and they disagree. Reaching his
+    # 0.185 needs 0.20, and at 0.20 the wall reads as film grain and the damask
+    # under it disappears; 0.13 reads as plaster and paper. So this lands at
+    # about 0.12, six times what the room had and a third short of his lowest
+    # sample, and going further would score better and look worse.
+    tooth = M.periodic_noise(0, np.random.default_rng(5150), beta=1.1, lo_cut=4.0,
+                             shape=(H, W))
+    tooth = tooth / (np.abs(tooth).std() + 1e-9)
     # the wood's grain, drawn along the boards with a dry brush
     grain = aniso_noise(H, W, rng, 34, 0.9)
     woodzone = ((yy >= Y_PIC[0]) & (yy < Y_PIC[1])) | ((yy >= Y_DADO[0]) & (yy < Y_FLOOR))
@@ -484,6 +518,7 @@ def room():
         col = col * (1 - ink[..., None])
         col = col * (0.72 + 0.28 * tex[..., None]) ** 1.0
         col = col * (1 + (brush * 0.07 + brush2 * 0.045 + dabs * 0.06)[..., None])
+        col = col * (1 + tooth[..., None] * TOOTH)
         return np.clip(col, 0, 255)
 
     # in the dark: the room lost in a cold violet shadow, its top in soot.
