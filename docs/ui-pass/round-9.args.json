@@ -1,0 +1,57 @@
+{
+  "round": "r9",
+  "maxBuilders": 3,
+  "briefs": [
+    "docs/ui-pass/BRIEF-r0.md",
+    "docs/ui-pass/BRIEF-r1.md",
+    "docs/ui-pass/BRIEF-r8.md",
+    "docs/ui-pass/BRIEF-r9.md"
+  ],
+  "rubrics": [
+    "docs/ui-pass/RUBRIC.md",
+    "docs/ui-pass/RUBRIC-r1.md",
+    "docs/ui-pass/RUBRIC-r8.md"
+  ],
+  "samples": [
+    "UI/title.png",
+    "UI/mainMenu.png",
+    "UI/selectCompanion.png",
+    "UI/selectKid.png"
+  ],
+  "tracks": [
+    {
+      "key": "bg2",
+      "name": "BACKGROUNDS",
+      "rule": "refine",
+      "screens": [
+        "room-foyer",
+        "room-crypt",
+        "room-graveyard",
+        "combat",
+        "combat-boss",
+        "rest"
+      ],
+      "baseline": "SORREL",
+      "builders": [
+        {
+          "slot": "a",
+          "code": "GALLNUT",
+          "port": 8881,
+          "angle": "THE LINE. Fix 1 is your whole round: an ink CONTOUR round every form, in all seventeen regions. Both judges raised it on every screen and one called it 'the single cheapest thing that would move these from render to painting'. We ink the HOLLOWS of relief steps and nothing else, so a form standing in front of another form has no line between them -- prop silhouettes, arch mouldings, the stair, railings, headstones, and the junction where a floor meets a wall. Then fix 2 (the staircase is a wireframe: treads, strings, newels and handrail need painted mass, a lit top edge with a dark line under it) and fix 3 (one pitch is a stamped tile; break every even run). Mind the ink HIERARCHY trap: repeating joints 0.10-0.21, big forms 0.5-0.9, and mmDrawn saturates at 0.26 per pixel so setting them equal makes a wall read as scaffolding."
+        },
+        {
+          "slot": "b",
+          "code": "UMBER",
+          "port": 8882,
+          "angle": "THE LIGHT IS ON THE WRONG SURFACE. Fix 5 is your round, and it is four separate things the table in the brief separates: the bright band belongs on the FLOOR and ours is on the WALL (Foyer band2 39.8 against its floor 21.0, where mainMenu is 39.6 at the floor); our rooms are two to three times darker in the median than the samples (6.4-9.2 against 11.5-21.1); our lit area is half his and our light is MORE concentrated, not less (focus 0.32-0.41 against 0.22-0.28), so a few small pools carry everything and nothing else is lit at all; and the top of the frame is still half as bright as his. Do fix 4 as part of this -- combat's balustrade hairlines cross behind the enemy nameplates and the room must sit BEHIND the board -- and fix 8, the motes, which no sample contains a single one of. Set every amount by looking at a 1:1 crop beside the sample, never by the number."
+        },
+        {
+          "slot": "c",
+          "code": "CARMINE",
+          "port": 8883,
+          "angle": "THE THINGS IN THE ROOM. Fix 7 is your round: the props are pale grey slabs with no contour and no contents, on every screen, and the two reasons are already known and must not be re-derived. You cannot light a prop that is at its ceiling, so drawn marks on props must be DARK -- a highlight added as a highlight executes in the right shape and changes nothing. And a prop is GREY BY CONSTRUCTION: it takes the key and the fill at the same CINE_PROP 0.26 and in most palettes those are equal-and-opposite hues, which no chroma cap can fix because a cap changes saturation and not hue. lights.js has `kind` on the light object but does not publish it in the packed payload; publish it and let a prop take the fill at about a third of the key. Then fix 6, the side walls, which round 8's winner says it never wrote a subject for -- graft SOOT's panel courses, dado and bracketed cornice from ui/r8-background-a. Remember the Foyer's cabinet and clock occupy ~180 px, so parts DO read there."
+        }
+      ]
+    }
+  ]
+}
