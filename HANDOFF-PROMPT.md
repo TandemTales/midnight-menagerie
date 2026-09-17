@@ -55,12 +55,14 @@ has the measurements and the constants:
   level, stars 0.01% of area above L110. A CPU prototype hits every axis. The
   bound: any variation term above ~0.34 drives the sky back to pure black at
   the low end of its own modulation.
-- **The CSS room's two lit passes never reach black.** `lit()`'s `amb` is a hard
-  floor and `57da26a` only lowered the unlit one, so `room-warm` and `room-moon`
-  read minCh 10.16 / 11.03 against the samples' 0.00-2.32. Set the amount by eye
-  with a board in front of it. (And `room.webp` has the highest ink depth of any
-  surface in the project, 0.337 against mainMenu's 0.248 -- the CSS room's base
-  painting is not this game's weak part.)
+- ~~The CSS room's two lit passes never reach black.~~ **RETRACTED the same day,
+  do not act on it.** `kit.css` composites `room-warm` and `room-moon` through
+  the candle-pool and moonbeam MASKS, so they are never drawn full-frame: they
+  are the room as it looks INSIDE a light pool, and `amb` 0.66 / 0.52 is correct
+  by design. The full-frame pass is `room.webp` and it does reach black (minCh
+  0.61). Comparing a pool-masked layer with the samples' whole-composition 0.00
+  is the wrong population. Lowering it would darken every candle pool in the
+  game.
 
 **POLISH is still converged** (see round 6) and COMBAT has had no round since 6.
 Round 7's judges' own words for why the room was the right target: "the ceiling

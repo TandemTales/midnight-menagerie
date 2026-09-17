@@ -253,12 +253,35 @@ still stands in the two assets that actually show behind a board.
 Fix 4 of `BRIEF-r8.md` attributes "tile spread 0.20 against 0.54" to "the CSS
 room". That is these two variants; `room.webp` itself is 0.449.
 
-**But do not set this one by the number.** These three are seen THROUGH boards
-and dialogs, not as pictures, and the samples reaching 0.00 are whole
-compositions with a lit subject in them. Lowering `amb` darkens everything the
-plates sit on, and Settings already scores 3-4 on background -- the lowest in
-the pass -- partly for being hard to read. The amount belongs to a 1:1 look with
-a board in front of it, which is the standing lesson of this pass.
+### And that reading is WRONG. Retracted the same day, before it was acted on
+
+The caveat above was "do not set this one by the number, these are seen through
+boards". The real answer is stronger than a caveat: **there is no defect here at
+all**, and the fix would have made the game worse.
+
+`kit.css` composites those two assets through MASKS:
+
+    .kit-ground__warm   mask-image: pool.webp x6     (the candle pools)
+    .kit-ground__moon   mask-image: pool.webp x2, beam.webp, beam-r.webp
+
+They are never drawn full-frame. `room.webp` is the room unlit and it covers the
+whole ground; `room-warm` and `room-moon` are the same room AS IT LOOKS INSIDE A
+LIGHT POOL, revealed only where a candle or a moonbeam actually falls (the mask
+positions default to -999px, so with no light placed nothing shows at all).
+
+So `amb` 0.66 and 0.52 are correct BY DESIGN, and minCh 7.87 / 8.06 is the
+darkest corner of a lit pool -- which must not be black, because a lit pool is
+not black. The pass that had to reach black is the unlit one, and it does:
+`room.webp` measures minCh 0.61 against the samples' 0.00-2.32.
+
+**The samples' 0.00 is a whole composition including its unlit areas.** Comparing
+a pool-masked layer against it is comparing the wrong populations -- the same
+error as the contaminated sky patch earlier in this note, twice in one day.
+Lowering those two would have darkened every candle pool in the game.
+
+`BRIEF-r8.md` fix 4's "tile spread 0.20 against 0.54" still stands, and round 8
+moved it: 0.217 -> 0.338 (warm) and 0.199 -> 0.320 (moon), by adding three slow
+asymmetric fields that are not separable in x and y. That one was real.
 
 ## The sweep did its job: the Study's numbers fell and the Study got better
 

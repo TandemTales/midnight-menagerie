@@ -62,6 +62,9 @@ See `docs/notes/2026-09-17-a-third-of-the-hedge-maze-is-pure-black.md`.
    `FRAC` 0.0008 / `GAIN` 7.0 / `POW` 3.2. Our sky is 4x-20x too dark and its
    stars up to 11x too HOT. Bound: any variation term above ~0.34 drives the sky
    back to pure black at the low end of its own modulation.
-2. **The CSS room's two lit passes never reach black.** `lit()`'s `amb` is a
-   hard floor and the black-floor pass only lowered the unlit one. Set the
-   amount by eye with a board in front of it, not by the number.
+2. ~~The CSS room's two lit passes never reach black.~~ **RETRACTED, not a
+   defect.** `kit.css` composites `room-warm` and `room-moon` through the candle
+   and moonbeam MASKS -- they are never drawn full-frame, so they are the room
+   as it looks INSIDE a light pool and must not reach black. `room.webp` is the
+   full-frame unlit pass and it does (minCh 0.61). Lowering `amb` would have
+   darkened every candle pool in the game.
