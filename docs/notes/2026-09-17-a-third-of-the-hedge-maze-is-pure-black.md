@@ -165,3 +165,40 @@ should show that sky through the mullions.
 The seventeen-room sweep is byte-identical on a re-shoot (0 differing pixels,
 greenhouse, with the phase pinned), so it is a valid before/after baseline for
 this pass.
+
+## What the void costs, and one hypothesis that failed
+
+**The void is most of the exteriors' bad numbers.** Measure the same capture
+with the sky excluded (`--box 0,380,1600,900`) and the tooth more than doubles:
+
+| tooth | whole frame | below the sky | mainMenu |
+|---|---|---|---|
+| graveyard | 0.140 | **0.331** | 0.226 |
+| pumpkin | 0.127 | **0.314** | 0.226 |
+| crypt (interior control) | 0.268 | 0.443 | 0.226 |
+
+So the two rooms that looked like the tooth pass had missed them were never
+short of tooth: **below the horizon they are at the top of the range and above
+his figure.** The ground work landed; a third of the frame being zero was
+dividing it away. The control rises too -- every room has a dark upper band --
+but the exteriors rise twice as far.
+
+A caveat this also exposes: **stars on black inflate `inkDepth`**, because a
+bright point on a zero field is an edge. Graveyard reads 0.032 whole-frame and
+0.018 below the sky. The exteriors' ink is therefore *worse* than the first
+table said, not better.
+
+**And one hypothesis that failed, recorded because it was convincing.** The
+Secret Passages has the best masonry in the sweep by eye -- coursed blocks,
+dark joints, a mottled face -- and the LOWEST ink depth of seventeen (0.011). The
+obvious reading is that the mottle competes with the drawn line and buries it.
+Tested across all seventeen rooms, that is not what is happening:
+
+    inkDepth vs tileSpread   r = -0.158      (the mottle hypothesis)
+    inkDepth vs colSpread    r = +0.053      (   "          "      )
+    inkDepth vs inkShare     r = +0.896
+    inkDepth vs tooth        r = +0.476
+
+Ink depth tracks how MUCH line a room carries, not how well a line survives its
+surface. The low-ink rooms have fewer drawn lines, not buried ones -- which is
+the same fix the round is already briefed for, and not a new one.
