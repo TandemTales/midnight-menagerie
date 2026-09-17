@@ -1,4 +1,8 @@
-# Handoff — round 7 merged, and the procedural ground has been taken as far as it goes
+# Handoff — round 7 merged, and BOTH procedural rooms are now painted
+
+**Read FIRST item 3a before you touch a background.** "The background" is two
+different systems, they share nothing, and until 2026-09-16 only one of them had
+ever been worked on.
 
 You are picking up Midnight Menagerie on `dev`. Everything below is pushed.
 
@@ -97,15 +101,64 @@ is 9 from every judge. **It cannot be reached by more rounds of this kind.**
   improving at 0.55 and turned the wall blotchy. **Every one was caught by putting
   the crop beside the old one at 1:1, and none by the number.** Measure to find
   the defect; look to set the amount.
-- **What is left is NOT worth doing procedurally.** The bare ground's
-  column-to-column spread is 0.021-0.024 against the samples' 0.034-0.082, but our
-  FULL screens already run 0.045-0.155 against their 0.034-0.082 -- more varied
-  than theirs. The flatness is only in the wall with nothing on it, which is not
-  what a judge sees. Chasing it means moving the scenes' candle positions
-  (`--wl*-x/y`), which is a design change nobody asked for. The remaining grain
-  gap (0.139 against 0.185) closes only by making the wall noisier, which was
-  tried and rejected. **The ground is as far as procedure takes it. The rest is
-  paint.**
+- **What is left of the CSS room is NOT worth doing procedurally.** The bare
+  ground's column-to-column spread is 0.021-0.024 against the samples'
+  0.034-0.082, but our FULL screens already run 0.045-0.155 against their
+  0.034-0.082 -- more varied than theirs. The flatness is only in the wall with
+  nothing on it, which is not what a judge sees. Chasing it means moving the
+  scenes' candle positions (`--wl*-x/y`), which is a design change nobody asked
+  for. The remaining grain gap (0.139 against 0.185) closes only by making the
+  wall noisier, which was tried and rejected.
+
+**3a. AND THE OTHER ROOM, which none of the above ever touched (2026-09-16).**
+Josh, the same day: *"continue looping to perfect the backgrounds and be sure
+that all of the other 'parts' to the background (pillars, etc) are being revised
+too. it must look as good as the UI image examples in the UI folder and match
+them perfectly."*
+
+Everything in item 3 is `tools/prep_ui_paint.py`, which paints the **CSS** room:
+`room.webp` and the plates on it, behind the six boards and round the dialogs.
+**Combat does not use it.** The room behind a fight is the WebGL stage
+(`game/src/fx/backdrop.js`, `shaders/backdrop.js`) -- and it is the ONE screen
+where a large area of room is visible, because the boards cover theirs almost
+completely and the map is a blueprint sheet over it. Measured with the new
+`tools/bgmetrics.py`, the wall behind every fight carried 0.022 of tooth at the
+0.8 px octave against the samples' 0.12-0.48, and **not one prop edge in the
+house had a line darker than both sides** (0.000 against their 0.04-0.39).
+
+- **What changed, part by part**, is in
+  `docs/notes/2026-09-16-the-webgl-room-was-never-painted.md`: a canvas tooth in
+  the post grade, a relief-driven drawn line in every surface, a floor that is
+  stones and boards with per-cell value and hue, relief occlusion so panelling
+  reads as panelling, a damask on the papered walls, a doorway that is a hole, a
+  column with a profile and flutes, prop edges and joints measured in pixels, a
+  chroma ceiling per material, flames that are 9 cm instead of 73, striped and
+  broken light shafts, contact shadows with a core and a penumbra, grit on the
+  floor, and an open-air skyline of towers and firs under a clouded sky.
+- **The three findings to carry:**
+  - **Josh's tooth is white noise, not 1/f.** Flat weights across 1-21 px match
+    his spectrum; the 1/f^1.1 that item 3 used for the CSS ground leaves the fine
+    end empty and moved the WebGL measurement 0.038 -> 0.038.
+  - **A drawn line's width is in PIXELS.** A 4 cm chair rail across a 19 m room
+    is a fifth of a pixel of relief, so lighting alone can only draw it as a
+    hairline. The screen-space derivative of the height field gives a constant
+    width at any depth, for free -- the shader already takes it for its normal.
+  - **One number for the whole house is not a rule.** The prop chroma ceiling was
+    set by eye at 0.14 on the Ballroom's statuary; the 17-region sweep
+    immediately showed the Greenhouse's planting going grey. It is per material
+    now (`PROP_MATERIAL.sat`).
+- **`tests/shader-literals/check.py` is new and it is worth knowing about
+  BEFORE you edit a shader:** a backtick inside a `/* glsl */` template literal
+  ends it, and what you get is `PAGEERROR Unexpected identifier '<a GLSL local>'`,
+  a black frame, `state: no MM` and an empty `.console.txt`. It cost four cycles
+  in one afternoon, because this codebase quotes identifiers in backticks
+  everywhere else. The gate also checks that every `${SPLICE}` is a name the file
+  actually imports -- `${NOISE}` in a file that imports only `GLSL_LIB` took the
+  whole game down for seven captures.
+- **Still Josh's to paint:** the samples' rooms are near-black with ORNAMENT on
+  them and props with drawn detail. Procedure now gets the surfaces, the
+  structure, the light and the ink; what it cannot invent is a painting's
+  subject. The list is still `docs/art/background-prompts.md`.
 
 **4. The enemies animate (09-15); round 6's COMBAT brief says how, and round 7's
 must keep saying it.** Josh's call was "do it after round 5 merges". His sheets in
@@ -319,6 +372,60 @@ grounds are renders. Until Josh's paintings land, the loop plateaus around 7.
 - **Reading a result:** `python tools/ui_pass_digest.py <task output> <track> --notes CODE --worst CODE`.
 - **Still unconverted:** the coach, the handoff veil and the toasts.
 
+## DONE 2026-09-16 (the WebGL room)
+
+- **`tools/bgmetrics.py`** scores a capture against `UI/*.png` on the axes that
+  separate a render from a painting: floor, shadow saturation, tooth per octave,
+  edge width in pixels, ink share and depth, peak over median, mid-tone
+  saturation and hue, tile spread. `--samples --patches` prints the targets.
+  Every image is scaled to a common height, and a CROP's scale comes from the
+  FULL image's height -- a 200 px patch upscaled to 900 reads 0.018 of fine tooth
+  where it should read 0.28.
+- **`tools/shot-scripts/backdrop-room.js`** photographs one region's room on its
+  own through the atmosphere showcase, with the clock frozen. `region=`, `tier=`,
+  `props=0`, `actor=0` and one-knob overrides (`tooth=`, `damask=`, `ink=`,
+  `propsat=`...) come off the URL fragment, which is how every amount in the pass
+  was set by eye against a 1:1 crop.
+- **The room itself:** see FIRST, item 3a. Combat's room band went tooth 0.076 ->
+  0.145 against mainMenu's 0.226, fine octave 0.050 -> 0.081 against 0.124, min
+  channel 5.49 -> 3.32 against 2.32, edge width 2.55 against 2.52.
+- **`tests/shader-literals/check.py`** is new and belongs to every future shader
+  edit: a backtick inside a `/* glsl */` literal ends it, and a `${SPLICE}` the
+  file does not import throws at module load. Both cost cycles today.
+- **All seventeen regions swept** after every change, three times. That sweep is
+  what caught the per-material chroma ceiling, the Kitchens' inked rafters, the
+  damask printing on brick, the sky plane's missing 78 px and 10 m, and the
+  Greenhouse's planting losing its mass. **Do not judge a backdrop change on one
+  region.**
+- **The battery on this work: 101 gates in 1920s, 3 red, all three the known
+  rows** -- the seven HALO sprite clips, run.py's Archivist seed 371416 and
+  `_losePatience`, and steam-deck's Map boss node. steam-deck read 5/1 in the
+  battery AND 5/1 twice alone this time, which is the load-sensitive row memory
+  already A/B'd red on `origin/dev` (2026-09-11); nothing in this pass touches
+  the map or any layout. `tests/shader-literals` is the 101st gate and green.
+- **AND MEASURE WHAT IT COSTS.** The first version was **+3.75 ms of a 11.2 ms
+  frame -- a third** -- and 2.14 ms of that was the post grade alone. The round-2
+  note that the post chain is bandwidth-bound is true for the taps it measured;
+  six octaves of value noise is 24 hash calls on 921,600 pixels and it is not
+  free. Cut to three taps with the same measured spectrum (**the finest octave is
+  white noise, so it needs one hash, not four**), one tap for the wear field,
+  `MM_TOOTH` off at tier low, and no drawn work on the ceiling: 13.79 ms, +2.56
+  ms, 58 fps observed before AND after. `bash` the A/B out of
+  `tools/gpuprof.py --scene combat`, three runs each way.
+- **TWO TRAPS THIS PASS PAID FOR, and the second cost the most:**
+  - **A staging directory keyed by BASENAME.** The A/B script copied the files it
+    was about to swap into one flat folder, and `game/src/fx/backdrop.js` and
+    `game/src/fx/shaders/backdrop.js` share a basename: the second overwrote the
+    first, and the restore wrote the SHADER over the module. The game stopped
+    booting (`state: no MM`) and the four checks queued behind it -- tier low,
+    the seam diagnosis, steam-deck alone -- all ran against a dead build before
+    anyone read a state file. Mirror the path, never the basename.
+  - **A seam in a flat sky cannot be attributed by eye.** Two guesses were wrong
+    before `frames=0` / `shafts=0` / `props=0` on
+    `tools/shot-scripts/backdrop-room.js` pinned the Graveyard's dark band on
+    the near frame's LINTEL, drawn over open sky where there is no doorway for
+    it to be the head of. Layer A/B, not inspection.
+
 ## DONE 2026-09-14 to 09-15
 
 - **Round 5 launched** from session `f921e739` (run `wf_64c93733-bc2`), after
@@ -500,6 +607,28 @@ Big Scare** (`3a12203`).
   `tests/critic-design/lib/expedition.js`.
 
 ## OPEN, NAMED, NOT STARTED
+
+**Left in the WebGL room after 2026-09-16, honestly:**
+- **`animations/backgrounds/` is still empty.** Procedure now gets the surfaces,
+  the structure, the light and the ink; what it cannot invent is a painting's
+  SUBJECT. The samples' rooms are near-black with ornament and props that have
+  drawn detail -- pages on a book, drips on a candle, a gilt edge -- and that is
+  still Josh's.
+- **The region palettes are far more saturated than the samples in places.** The
+  Ballroom is plum and magenta at exposure 3.55, the Greenhouse acid green. The
+  PROPS are capped now (`PROP_MATERIAL.sat`) but the walls and floors are as
+  authored, and nobody has decided whether those palettes are deliberate. Ask
+  before re-tuning them: it is a design change.
+- **The Greenhouse's planting reads as clumps**, not as individual plants, and
+  the statue's arms are crude. Both are shape work in `shapeField`, and both are
+  better than they were rather than right.
+- **The Foyer's floor is planks** (`floorPattern: 0`) where `selectKid.png` shows
+  stone. The authored choice was left alone.
+- **One cosmetic slip, knowingly left:** the floor's grit subtracts its own
+  shadow (`col *= 1.0 - speck*0.22`) without the `drawable` guard the rest of
+  that block has, so at a grazing angle it averages a ~3% darkening over
+  sub-pixel cells. Costs a 7-minute 17-region re-sweep to fix and verify; not
+  worth a round on its own.
 
 - **The co-op lobby loses keyboard focus on every wire message.** GROVE's
   `_paintRoom` rebuilds the board; IVORY's lost lobby had kept focus

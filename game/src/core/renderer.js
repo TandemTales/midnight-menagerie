@@ -57,9 +57,9 @@ import { GradeShaderDef } from '../fx/shaders/grade.js';
  * particle count — all of which change how CRISP the room is, not how it is lit.
  */
 export const QUALITY_TIERS = {
-  high:   { renderScale: 1.00, dprCap: 2.00, bloomScale: 0.50, halTaps: 8, dirt: 1, particles: 1500 },
-  medium: { renderScale: 0.80, dprCap: 1.50, bloomScale: 0.50, halTaps: 6, dirt: 1, particles: 1100 },
-  low:    { renderScale: 0.62, dprCap: 1.00, bloomScale: 0.25, halTaps: 4, dirt: 0, particles: 650  },
+  high:   { renderScale: 1.00, dprCap: 2.00, bloomScale: 0.50, halTaps: 8, dirt: 1, tooth: 1, particles: 1500 },
+  medium: { renderScale: 0.80, dprCap: 1.50, bloomScale: 0.50, halTaps: 6, dirt: 1, tooth: 1, particles: 1100 },
+  low:    { renderScale: 0.62, dprCap: 1.00, bloomScale: 0.25, halTaps: 4, dirt: 0, tooth: 0, particles: 650  },
 };
 const TIER_ORDER = ['low', 'medium', 'high'];
 
@@ -173,6 +173,11 @@ export class Stage {
     d.MM_HAL_TAPS = t.halTaps;
     d.MM_DIRT = t.dirt;
     d.MM_TONEMAP = 1;
+    /* The canvas tooth. Measured at 2.14 ms of a 11.2 ms frame in its first,
+       six-tap form and about a third of that now; the weakest GPU the game
+       supports should not pay even that, and at a 0.62 render scale the finest
+       octave does not survive the upscale anyway. */
+    d.MM_TOOTH = t.tooth ?? 1;
     this.grade.material.needsUpdate = true;
   }
 

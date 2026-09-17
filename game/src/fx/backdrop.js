@@ -94,6 +94,22 @@ export class Backdrop {
         uFogAmt: { value: 0.18 }, uArch: { value: 0 }, uCool: { value: 1 },
         uGrime: { value: 0.7 }, uOpen: { value: 0.5 }, uCeil: { value: 6.4 },
         uGain: { value: 3.4 }, uGloss: { value: 0.3 }, uAlbLift: { value: 0.012 },
+        /* The drawn line — see mmDrawn in shaders/backdrop.js. Ink is how dark
+           a relief hollow goes, lip how hard its crest catches the light.
+           0.80 by eye on the Foyer's panelling against the samples: at 0.55 the
+           mouldings read but the wall is still softer than theirs, and at 1.00
+           the lines go to black wire. The measured ink DEPTH is 0.01-0.08
+           against mainMenu.png's 0.248, so the metric wants more than the eye
+           does -- and the eye is the one that gets to choose. */
+        uInk: { value: 0.80 }, uLip: { value: 0.45 },
+        /* The wallpaper. uDamHue tints the motif away from the wall it is on
+           (the samples' walls are near-black plum with PURPLE scrollwork over
+           them); uDamCell is the repeat, in metres; uDamKind picks the paper —
+           0 a fleur on an ogee, 1 a quatrefoil on a trellis, 2 a sprig on
+           stripes. applyPalette sets the kind off the region's label. */
+        uDamask: { value: 0.55 }, uDamCell: { value: 0.92 },
+        uDamKind: { value: 0 },
+        uDamHue: { value: new THREE.Color(0.46, 0.24, 0.66) },
         uSize: { value: new THREE.Vector2(30, 14) },
         uDeep: { value: new THREE.Color(0x0d0b16) },
         uMid: { value: new THREE.Color(0x241a2c) },
@@ -135,6 +151,11 @@ export class Backdrop {
       uFogNear: { value: 16 }, uFogFar: { value: 34 }, uGloss: { value: 0.5 },
       uPattern: { value: 0 }, uGain: { value: 3.4 }, uAlbLift: { value: 0.010 },
       uIsCeiling: { value: 0 },
+      /* The drawn line, and how wet the floor is. uWet scales the vertical
+         mirror smear a lamp leaves: it used to be uGloss*3.4 unconditionally,
+         which is the loudest thing on a Foyer floor and nothing any sample
+         does. */
+      uInk: { value: 0.80 }, uLip: { value: 0.45 }, uWet: { value: 0.26 },
       uSpan: { value: new THREE.Vector2(30, 34) },
       uDeep: { value: new THREE.Color(0x090711) },
       uMid: { value: new THREE.Color(0x1c1622) },
@@ -198,6 +219,7 @@ export class Backdrop {
     this.propMat = new THREE.ShaderMaterial({
       uniforms: {
         uTime: { value: 0 }, uSway: { value: 1 }, uRimAmt: { value: 1 }, uDread: { value: 0 },
+        uInk: { value: 0.80 },     // the outline; see mmDrawn in shaders/backdrop.js
         uGain: { value: 3.4 }, uGloss: { value: 0.55 },
         uFogNear: { value: 12 }, uFogFar: { value: 30 },
         uKeyDir: { value: new THREE.Vector2(-0.7, 0.7) },
@@ -214,6 +236,18 @@ export class Backdrop {
         uMatFreq: { value: new THREE.Vector2(0.55, 1.30) },
         uAO: { value: 1.0 },
         uPropKnee: { value: 0.30 }, uPropMax: { value: 0.55 },
+        /* The chroma ceiling, the twin of the luminance one above. The samples'
+           own props measure 0.19-0.43 mean saturation; ours measured 0.75, and
+           applyPropMaterial overrides this per material (PROP_MATERIAL.sat).
+
+           0.14 is set BY EYE against the Ballroom's colonnade: at 0.36 the
+           statues are magenta blobs, at 0.22 pinkish, at 0.14 pale stone in a
+           warm room, at 0.08 grey and the room's warmth goes with them. The
+           number has to be this low because most of a prop's final chroma is
+           added AFTER this shader -- the grade's per-channel contrast power,
+           the split tone, bloom and halation all put colour back, and the
+           measured chain turns a linear cap of 0.04 into 0.22 on screen. */
+        uPropSat: { value: 0.14 }, uPropSatMax: { value: 0.20 },
       },
       vertexShader: PROP_VERT, fragmentShader: PROP_FRAG,
       transparent: true, depthWrite: false, side: THREE.DoubleSide, fog: false,
@@ -295,7 +329,12 @@ export class Backdrop {
     flGeo.setAttribute('uv', flBase.getAttribute('uv'));
     this._flPos = new THREE.InstancedBufferAttribute(new Float32Array(MAX_FLAMES * 3), 3);
     this._flCol = new THREE.InstancedBufferAttribute(new Float32Array(MAX_FLAMES * 3), 3);
-    this._flParam = new THREE.InstancedBufferAttribute(new Float32Array(MAX_FLAMES * 2), 2);
+    /* x halo size in metres, y intensity, z 1 for a real flame and 0 for a
+       wisp or a cold spill. FLAME_FRAG draws the flame itself at a fixed NINE
+       CENTIMETRES and uses x only for its halo, because the two are not the
+       same size and were sharing one number — which is why every candle in the
+       house arrived as a 73 cm white disc. */
+    this._flParam = new THREE.InstancedBufferAttribute(new Float32Array(MAX_FLAMES * 3), 3);
     this._flSeed = new THREE.InstancedBufferAttribute(new Float32Array(MAX_FLAMES), 1);
     /* PERF: these are rewritten every frame by syncFlames(). three defaults
        BufferAttributes to STATIC_DRAW, which ANGLE backs with a D3D11 DEFAULT
@@ -395,8 +434,23 @@ export class Backdrop {
   _applyRoom(room) {
     this.room = room;
     const open = room.h <= 0.01;
-    const wallH = open ? 17 : room.h + room.wallPad;
-    const wallW = room.w + (open ? 0 : 1.2);
+    /* An open-air region's "wall" is its SKY, and at 17 m it stopped 78 px from
+       the top of the Graveyard's frame: above that line the renderer's clear
+       colour showed through as a violet band brighter than the sky beneath it.
+       30 m clears the top of every authored camera. The plane costs the same
+       pixels either way, and skyColor no longer scales its gradient or hangs
+       its moon off uSize.y, so a taller plane cannot change the look. */
+    const wallH = open ? 30 : room.h + room.wallPad;
+    /* ...and WIDE enough, for the same reason. The Hedge Maze authors a 38 m
+       yard and its camera sees 57 m of it at the far wall, so the left third of
+       every capture of it was the clear colour: a flat dark plane with a
+       straight diagonal edge, which is the most CG thing an open-air region
+       could possibly show. 76 m covers the widest authored camera.
+
+       `room.w` itself is NOT changed — prop placement reads it, and widening
+       the yard would scatter the props into the sky. Only the SHELL grows. */
+    const wallW = open ? Math.max(room.w, 76) : room.w + 1.2;
+    const groundW = open ? Math.max(room.w, 76) : room.w;
 
     this.wall.geometry.dispose();
     this.wall.geometry = new THREE.PlaneGeometry(wallW, wallH);
@@ -418,9 +472,9 @@ export class Backdrop {
     const spanZ = room.d + FLOOR_FRONT;
     const cz = (FLOOR_FRONT - room.d) / 2;
     this.floor.geometry.dispose();
-    this.floor.geometry = new THREE.PlaneGeometry(room.w, spanZ);
+    this.floor.geometry = new THREE.PlaneGeometry(groundW, spanZ);
     this.floor.position.set(0, 0, cz);
-    this.floorMat.uniforms.uSpan.value.set(room.w, spanZ);
+    this.floorMat.uniforms.uSpan.value.set(groundW, spanZ);
 
     this.ceiling.visible = !open;
     if (!open) {
@@ -827,11 +881,46 @@ export class Backdrop {
     }
   }
 
+  /** A stable small integer per region, off its label. */
+  static labelHash(label) {
+    let h = 2166136261;
+    const str = String(label || 'room');
+    for (let i = 0; i < str.length; i++) {
+      h ^= str.charCodeAt(i);
+      h = (h * 16777619) >>> 0;
+    }
+    return h >>> 3;
+  }
+
+  /**
+   * How much wallpaper an architecture mode may carry. A fleur damask is right
+   * on PANELLING and nowhere else: the seventeen-region sweep found it printed
+   * over the Kitchens' brick (arch 4) and, in principle, over the Graveyard's
+   * sky, because the wall shader draws every mode. Stone gets a trace of it,
+   * because a coursed wall in this house may well have been papered once.
+   * A palette may override with `damask`.
+   */
+  static damaskFor(arch) {
+    if (arch === 0) return 1.00;    // panel: wainscot, chair rail, stiles
+    if (arch === 2) return 0.28;    // stone: what is left of the paper
+    return 0.0;                     // glass, foliage, industrial, open sky
+  }
+
   /** Colour + parameter application. Safe to call every frame during a cross-fade. */
   applyPalette(p) {
     const ceil = p.room?.h > 0 ? p.room.h : (p.ceil ?? 6.4);
     const w = this.wallMat.uniforms;
-    w.uArch.value = p.arch ?? 0;
+    const arch = p.arch ?? 0;
+    const dam = (p.damask ?? 0.55) * Backdrop.damaskFor(arch);
+    /* Which paper this room is hung with. Off the region's LABEL, not its
+       uSeed: uSeed is drawn from the build's rand() and would change the
+       Nursery's wallpaper every time you walked back into it. A palette may
+       name it with `damaskKind`. */
+    const kind = p.damaskKind ?? (Backdrop.labelHash(p.label) % 3);
+    w.uDamask.value = dam;
+    w.uDamKind.value = kind;
+    w.uDamCell.value = p.damaskCell ?? (kind === 2 ? 0.74 : 0.92);
+    w.uArch.value = arch;
     w.uCool.value = p.coolFill ?? 0.9;
     w.uGrime.value = p.grime ?? 0.7;
     w.uOpen.value = p.openGlow ?? 0.5;
@@ -889,7 +978,10 @@ export class Backdrop {
 
     for (let i = 0; i < 2; i++) {
       const su = this.sides[i].material.uniforms;
-      su.uArch.value = p.arch ?? 0;
+      su.uArch.value = arch;
+      su.uDamask.value = dam;
+      su.uDamKind.value = kind;
+      su.uDamCell.value = w.uDamCell.value;
       su.uCool.value = (p.coolFill ?? 0.9) * 0.85;
       su.uGrime.value = Math.min(1, (p.grime ?? 0.7) + 0.12);
       su.uOpen.value = 0;                       // no doorway on the side walls
@@ -904,7 +996,17 @@ export class Backdrop {
     }
 
     this.shaftMat.uniforms.uColor.value.copy(p._shaft);
-    for (const m of this.frames) {
+    /* A LINTEL IS A DOORWAY'S HEAD, and an open-air region has no doorway. Over
+       the Graveyard's sky the near frame's lintel quad (FRAME_CROP[2]) drew a
+       dark band across the upper third with a hard bottom edge -- the seam a
+       layer-by-layer A/B (`props=0`, `shafts=0`, `frames=0` on
+       tools/shot-scripts/backdrop-room.js) pinned on it after two guesses. The
+       drapes and the clutter band stay: a yard may well have a bough or a wall
+       in the foreground. */
+    const openSky = (p.room?.h ?? p.ceil ?? 6.4) <= 0.01;
+    for (let i = 0; i < this.frames.length; i++) {
+      const m = this.frames[i];
+      m.visible = !(openSky && i === 2);
       m.material.uniforms.uColor.value.copy(p._frame);
       m.material.uniforms.uRim.value.copy(p._rim);
       m.material.uniforms.uAmount.value = p.frameAmount ?? 0.92;
@@ -922,6 +1024,9 @@ export class Backdrop {
     u.uMatMix.value.set(m.mix[0], m.mix[1], m.mix[2], m.mix[3]);
     u.uMatFreq.value.set(m.freq[0], m.freq[1]);
     u.uAO.value = m.ao;
+    const sat = m.sat ?? 0.14;
+    u.uPropSat.value = sat;
+    u.uPropSatMax.value = sat * 1.45;
   }
 
   /** Pack the light rig into wall- and floor-local coordinates. */
@@ -980,6 +1085,10 @@ export class Backdrop {
   syncFlames(rig) {
     const pos = this._flPos.array, col = this._flCol.array,
       par = this._flParam.array, sd = this._flSeed.array;
+    /* A candle is drawn under a light that is a FLAME: warm, flickering and
+       standing in the room. A cinematic key, a wisp and a cold moon spill are
+       none of those, and a candle under any of them is a candle floating in
+       mid-air with nothing holding it. */
     let k = 0;
     const ls = rig.lights;
     /* Only flag an attribute dirty when its contents actually moved. Of the four,
@@ -991,7 +1100,7 @@ export class Backdrop {
     for (let i = 0; i < ls.length && k < MAX_FLAMES; i++) {
       const l = ls[i];
       if (!l.enabled || l.glow <= 0.001 || l.live <= 0.01) continue;
-      const p3 = k * 3, p2 = k * 2;
+      const p3 = k * 3;
       if (pos[p3] !== l.pos.x || pos[p3 + 1] !== l.pos.y || pos[p3 + 2] !== l.pos.z) {
         pos[p3] = l.pos.x; pos[p3 + 1] = l.pos.y; pos[p3 + 2] = l.pos.z; dPos = true;
       }
@@ -1000,8 +1109,9 @@ export class Backdrop {
       }
       const size = (0.16 + 0.030 * l.radius) * l.glowSize;
       const inten = l.glow * (0.55 + 0.75 * Math.min(l.live / 2.2, 1.4));
-      if (par[p2] !== size || par[p2 + 1] !== inten) {
-        par[p2] = size; par[p2 + 1] = inten; dPar = true;
+      const wick = (l.kind === 'warm' && l.flicker && !l.cine) ? 1 : 0;
+      if (par[p3] !== size || par[p3 + 1] !== inten || par[p3 + 2] !== wick) {
+        par[p3] = size; par[p3 + 1] = inten; par[p3 + 2] = wick; dPar = true;
       }
       const seed = l.id * 0.37;
       if (sd[k] !== seed) { sd[k] = seed; dSeed = true; }

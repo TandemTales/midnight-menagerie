@@ -27,6 +27,7 @@ export const GradeShaderDef = {
     MM_HAL_TAPS: 8,
     MM_DIRT: 1,
     MM_TONEMAP: 1,
+    MM_TOOTH: 1,
   },
 
   uniforms: {
@@ -64,6 +65,34 @@ export const GradeShaderDef = {
     /* Mirrors renderer.toneMappingExposure. Only used when MM_TONEMAP is on —
        i.e. when this pass has absorbed the OutputPass. */
     uToneExposure: { value: 1.0 },
+    /* ---- canvas tooth ----------------------------------------------------
+       The ground Josh paints on has tooth, and it is the whole of "a painting,
+       not a render" — the complaint every UI judge has made about the room
+       behind the board for seven rounds. Measured as high-frequency energy
+       over a flat surface's own level (tools/bgmetrics.py), the samples carry
+       0.21-0.48 at the 0.8 px octave; this room carried 0.022 on its wall.
+
+       It belongs HERE and not in the surface shaders: paint texture lives on
+       the picture plane, at a fixed size in pixels, the same at the far wall
+       as on the near frame. A tooth authored in world metres is 4 px on a prop
+       and a fifth of a pixel on the wall behind it, which is exactly the
+       spectrum the measurement found.
+
+       uToothDark exists because at 7/255 a 13% tooth rounds away in 8 bits —
+       the same correction `16e608d` had to make in the painted room's dark
+       pass.
+
+       0.100 is set BY EYE and it is deliberately short of the samples' own
+       figure. A one-sigma modulation of 0.22 does reach mainMenu.png's measured
+       0.226, and it reads as film grain on dirty glass; 0.10 reads as plaster.
+       The rest of their number is not noise at all — it is DRAWN detail, stone
+       by stone and moulding by moulding, and it is bought in the surface
+       shaders, never here. Fifth instance of the trap the ground pass wrote
+       down three times in one day: measure to find the defect, LOOK to set the
+       amount. */
+    uTooth:      { value: 0.097 },
+    uToothDark:  { value: 1.30 },
+    uToothWear:  { value: 0.42 },
   },
 
   vertexShader: /* glsl */`
@@ -81,7 +110,8 @@ export const GradeShaderDef = {
     uniform vec4  uImpact;
     uniform float uTime, uGrain, uVignette, uAberration, uFlash, uPulse, uDesat,
                   uDread, uToneAmt, uHalation, uDirt, uExposure, uLift, uAspect,
-                  uSaturate, uContrast, uToneExposure;
+                  uSaturate, uContrast, uToneExposure,
+                  uTooth, uToothDark, uToothWear;
     varying vec2  vUv;
 
     #if MM_DIRT
@@ -94,6 +124,34 @@ export const GradeShaderDef = {
       return clamp(smudge*0.85 + fine*0.35 + scratch*0.6, 0.0, 1.6);
     }
     #endif
+
+    /* THREE taps on cells measured in PIXELS -- one pixel, three, eleven --
+       normalised to unit standard deviation.
+
+       The spectrum is a measurement, not a preference. Read through the same
+       cumulative high-pass tools/bgmetrics.py uses, the samples' tooth is
+       0.41 0.67 0.83 0.94 1.00 across the 0.8 .. 12 px octaves: almost exactly
+       white noise over this span, and nothing like the 1/f^1.1 the painted
+       room's ground uses, which delivers 0.06 0.14 0.30 0.60 1.00 and leaves
+       the fine end empty. That is the whole difference between a ground with
+       tooth and a wash.
+
+       Three taps rather than six because the first version cost 2.14 ms of a
+       11.2 ms frame, measured: twenty-four hash calls on 921,600 pixels is not
+       free however bandwidth-bound the pass is. These three measure
+       0.522 0.680 0.801 0.914 1.00 against the six-tap field's
+       0.496 0.674 0.806 0.919 1.00 -- the same paper for nine hashes.
+       **The finest octave is white noise, so it is not interpolated at all**:
+       one hash, and it is the octave that matters most.
+
+       Nothing here reads uTime: paint does not shimmer. The film grain two
+       blocks below is the thing that is supposed to move. */
+    float mmToothField(vec2 px){
+      float v = (mmHash21(floor(px) + 3.1) - 0.5) * 0.85
+              + (mmNoise(px/ 3.2 + 41.1) - 0.5) * 1.00
+              + (mmNoise(px/11.0 + 91.7) - 0.5) * 1.15;
+      return v * 2.4574;   /* unit std: measured on the same construction */
+    }
 
     #if MM_TONEMAP
     /* Verbatim three.js ACESFilmicToneMapping + sRGB OETF, so removing OutputPass
@@ -223,6 +281,32 @@ export const GradeShaderDef = {
       #if MM_TONEMAP
       col = mmACESFilmic(col);
       col = mmSRGBEncode(col);
+      #endif
+
+      /* ---- canvas tooth, in DISPLAY space and last -------------------------
+         Display space because that is where the ground is seen and where the
+         measurement lives, and because the tone map would otherwise eat the
+         tooth out of the highlights and leave it only in the darks.
+
+         Multiplicative: a textured ground decides how much paint sits in the
+         hollow, so it scales what is there and can never lift pure black off
+         zero — which is what the black-floor pass (57da26a) bought and this
+         must not spend. The dark term gives the shadows their share back, and
+         the wear field keeps the tooth from reading as an even screen: worn
+         unevenly at 0.42, blotchy by 0.55. */
+      #if MM_TOOTH
+      if (uTooth > 0.0001) {
+        vec2 px = vUv / uTexel;
+        float t = mmToothField(px);
+        /* One noise tap for the wear, not an fbm3: its features are 180 px
+           across and an fbm3 is twelve more hashes for detail nothing can
+           see at that scale. */
+        float wear = 1.0 + uToothWear * (mmNoise(px * 0.0062 + 5.3) * 2.0 - 1.0);
+        float pl = mmLum(col);
+        float amt = uTooth * wear * (1.0 + uToothDark * smoothstep(0.30, 0.02, pl));
+        col *= 1.0 + t * amt;
+        col = clamp(col, 0.0, 1.0);
+      }
       #endif
 
       gl_FragColor = vec4(col, 1.0);

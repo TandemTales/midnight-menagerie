@@ -199,3 +199,60 @@ and that violet is the only thing tying it to a purple-black house. The alpha
 went back and the colour darkened instead. **Put the before and after side by
 side; a metric moving the right way is not the same as the screen improving.** `docs/art/background-prompts.md` is the list Josh paints
 from, and `tools/prep_backgrounds.py` builds them into `game/assets/backgrounds/`.
+
+### And the half of the ground nobody had touched, 2026-09-16
+
+Everything above is `tools/prep_ui_paint.py`, which paints the **CSS** room:
+`room.webp` and the plates that stand on it. That is what shows behind the six
+boards and round the dialogs.
+
+**Combat does not use it.** The room behind a fight is the WebGL stage
+(`game/src/fx/backdrop.js`, `shaders/backdrop.js`), and it is also the only
+screen where a large area of *room* is visible — the boards cover theirs almost
+completely and the map is a blueprint sheet over it. None of the ground pass
+reached it, so the wall behind every fight measured 0.022 of tooth at the 0.8 px
+octave against the samples' 0.12–0.48, and not one prop edge in the house
+carried a line darker than both sides.
+
+`tools/bgmetrics.py` is the kept scorer: floor, shadow saturation, tooth per
+octave, edge width in pixels, ink share and depth, peak over median, mid-tone
+saturation and hue, tile spread. Every image is scaled to a common height first,
+because tooth and edge width are both measured in pixels and neither survives a
+resize — and the crop's scale comes from the FULL image's height, or a 200 px
+patch upscaled to 900 reads 0.018 where it should read 0.28.
+
+What it found, what changed and the four traps are in
+`docs/notes/2026-09-16-the-webgl-room-was-never-painted.md`. The three worth
+carrying into the next round:
+
+- **Josh's tooth is white noise, not 1/f.** Flat weights across 1–21 px match the
+  samples' spectrum; the painted room's own 1/f^1.1 leaves the fine end empty and
+  moved the measurement 0.038 → 0.038.
+- **A drawn line's width is in PIXELS.** A 4 cm chair rail across a 19 m room is a
+  fifth of a pixel of relief, so lighting can only ever draw it as a hairline.
+  Screen-space derivatives of the height field give a line of constant width at
+  any depth, for free.
+- **One number for the whole house is not a rule.** The prop chroma ceiling was
+  set by eye at 0.14 on the Ballroom's statuary and the seventeen-region sweep
+  immediately showed the Greenhouse's planting going grey. It is per material now.
+
+Where it landed, on combat's room band against `mainMenu.png`: tooth 0.076 ->
+0.145 (his 0.226), the 0.8 px octave 0.050 -> 0.081 (0.124), min channel 5.49 ->
+3.32 (2.32), edge width 2.55 against 2.52, tile spread 0.636 -> 0.784 (0.540).
+Two thirds of his figure, which is where the CSS ground settled too, and for the
+same reason: the last third is drawn subject matter and not noise.
+
+**And it cost more than the reasoning said.** A/B against the commit before,
+three runs each: the frame went 11.23 -> 14.98 ms, and 2.14 ms of that was the
+post grade alone -- six octaves of value noise is twenty-four hash calls on
+921,600 pixels, however bandwidth-bound the pass is. Cut to three taps (the
+finest octave is white noise, so one hash instead of four) with the same
+measured spectrum, one tap for the wear field, MM_TOOTH off at tier low, and no
+drawn work on the ceiling: **13.79 ms, +2.56 ms, and 58 fps observed before and
+after.** Headroom spent, not frames -- but measure it next time instead of
+quoting the round-2 note at it.
+
+**The next round's briefs should say the room behind combat is no longer a
+placeholder.** It still is not a painting, and `animations/backgrounds/` is still
+empty, but the sentence every judge has written for seven rounds was aimed at
+something specific and measurable, and those specifics are gone.

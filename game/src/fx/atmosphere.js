@@ -86,15 +86,21 @@ import { ParticleField, PTYPE } from './particles.js';
  * materials occlude more than polished ones.
  */
 const PROP_MATERIAL = {
-  //          grain blotch joint speck        joints/m x, y      ao
-  wood:    { mix: [0.34, 0.12, 0.26, 0.05], freq: [0.55, 1.35], ao: 1.00 },
-  paint:   { mix: [0.16, 0.16, 0.30, 0.04], freq: [0.70, 1.10], ao: 1.00 },
-  stone:   { mix: [0.09, 0.36, 0.22, 0.18], freq: [0.75, 0.55], ao: 0.92 },
-  tile:    { mix: [0.07, 0.20, 0.42, 0.08], freq: [1.60, 1.60], ao: 0.86 },
-  cloth:   { mix: [0.38, 0.15, 0.07, 0.03], freq: [2.10, 0.28], ao: 1.12 },
-  metal:   { mix: [0.15, 0.11, 0.32, 0.05], freq: [0.32, 1.95], ao: 0.84 },
-  foliage: { mix: [0.20, 0.44, 0.05, 0.16], freq: [2.60, 2.60], ao: 1.06 },
+  //          grain blotch joint speck        joints/m x, y      ao    sat
+  wood:    { mix: [0.34, 0.12, 0.26, 0.05], freq: [0.55, 1.35], ao: 1.00, sat: 0.17 },
+  paint:   { mix: [0.16, 0.16, 0.30, 0.04], freq: [0.70, 1.10], ao: 1.00, sat: 0.15 },
+  stone:   { mix: [0.09, 0.36, 0.22, 0.18], freq: [0.75, 0.55], ao: 0.92, sat: 0.11 },
+  tile:    { mix: [0.07, 0.20, 0.42, 0.08], freq: [1.60, 1.60], ao: 0.86, sat: 0.14 },
+  cloth:   { mix: [0.38, 0.15, 0.07, 0.03], freq: [2.10, 0.28], ao: 1.12, sat: 0.20 },
+  metal:   { mix: [0.15, 0.11, 0.32, 0.05], freq: [0.32, 1.95], ao: 0.84, sat: 0.13 },
+  foliage: { mix: [0.20, 0.44, 0.05, 0.16], freq: [2.60, 2.60], ao: 1.06, sat: 0.34 },
 };
+/* `sat` is the prop chroma ceiling (PROP_FRAG, next to the luminance one). One
+   value for the whole house was measured against UI/*.png and set at 0.14 by
+   eye on the Ballroom's statuary -- and the seventeen-region sweep immediately
+   showed why it cannot be one value: at 0.14 the Greenhouse's planting went
+   grey, and a bank of grey blobs reads as boulders. A marble statue and a hedge
+   do not hold the same chroma. */
 
 const D = {
   arch: 0, floorPattern: 0, ceil: 6.4,
