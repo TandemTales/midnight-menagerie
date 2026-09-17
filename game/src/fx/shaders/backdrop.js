@@ -1752,11 +1752,45 @@ void main(){
     float tone = 0.48 + 1.00*mmHash11(bid*11.3 + shelf*2.9 + vSeed);
     float band = (1.0 - smoothstep(0.0, 0.030, abs(sy - (0.10 + bh*0.52))))
                * step(0.55, mmHash11(bid*6.1 + vSeed));
-    albedo *= 1.0 + book * (tone - 1.0) * 0.90;
-    albedo *= 1.0 - (1.0 - book) * inShelf * 0.55;     // the dark behind them
-    albedo *= 1.0 + book * band * 0.62;
+    /* The amount, finally set BY EYE. The note left here said it could not be,
+       because a prop A/B needs the same prop in both captures -- and it can be
+       now: the backdrop-room script pins clock.t, so two captures of a region
+       are byte-identical and the same cabinet stands in both. At 0.90/0.55 the
+       contents were faint streaks at the 290 px this cabinet occupies in the
+       foreground of four of this round's captures. */
+    albedo *= 1.0 + book * (tone - 1.0) * 1.15;
+    albedo *= 1.0 - (1.0 - book) * inShelf * 0.78;     // the dark behind them
+    albedo *= 1.0 + book * band * 0.72;
     // and the shelf's own front edge catches the light
-    albedo *= 1.0 + (1.0 - smoothstep(0.0, 0.035, abs(sy - 0.075))) * 0.30;
+    albedo *= 1.0 + (1.0 - smoothstep(0.0, 0.035, abs(sy - 0.075))) * 0.34;
+    /* AND THE CABINET ITSELF. A carcass with contents in it and no joinery ON
+       it is still a box, which is what shape 5 -- 58 instances, the commonest
+       prop in the house -- has read as in every capture of the Foyer. What says
+       cabinet is the GLAZING: two doors with a stile between them, bars across
+       the panes, and the plinth it stands on. */
+    float sx = abs(vUv.x - 0.5);
+    float gbx = abs(fract(vUv.x*4.0) - 0.5) * 0.25;
+    float gby = abs(fract(vUv.y*5.0) - 0.5) * 0.20;
+    float bars = max(1.0 - smoothstep(0.009, 0.020, gbx),
+                     1.0 - smoothstep(0.009, 0.020, gby))
+               * step(0.11, vUv.y) * step(vUv.y, 0.92);
+    float stile = (1.0 - smoothstep(0.011, 0.026, sx))
+                + (1.0 - smoothstep(0.011, 0.026, abs(sx - 0.355)));
+    /* DARK, not light. The joinery went in as a highlight first and nothing
+       changed on screen, because a cabinet this near the camera already sits at
+       the prop luminance ceiling (propCeil/exposure, clamped in this shader
+       below) -- adding light to a surface at its ceiling is a no-op. A glazing
+       bar is dark wood anyway. */
+    /* AND HARD. The grid was proved to execute and to be the right shape by
+       flooding it red and green and looking (shots/zoom-probe.png), so the only
+       thing wrong was the amount: at 0.46 of albedo it was invisible, because a
+       near prop's output is mostly the additive rim and ambient terms below
+       plus a luminance knee that compresses whatever albedo does. 0.86 is what
+       a drawn line on a lit prop costs. */
+    albedo *= 1.0 - bars * 0.86;
+    albedo *= 1.0 - clamp(stile, 0.0, 1.0) * 0.72;
+    albedo *= 1.0 - (1.0 - smoothstep(0.0, 0.015, abs(vUv.y - 0.095))) * 0.80;
+    albedo *= 1.0 - (1.0 - smoothstep(0.0, 0.015, abs(vUv.y - 0.905))) * 0.72;
   }
 
   /* THE CLOCK'S DIAL AND ITS DOOR. Shape 14 stands in the Foyer, the Study and
@@ -1997,9 +2031,17 @@ void main(){
   float land   = 1.0 + 0.85 * smoothstep(0.55, 1.0, vGround) * (1.0 - smoothstep(1.0, 1.22, vGround));
   float cut    = 1.0 - smoothstep(1.0, 1.18, vGround);
   float d = mmFbm3(vec2(vUv.x*6.0 + vSeed*11.0, vUv.y*2.4 - uTime*0.09));
-  float body = pow(edge, 2.2)*along*land*cut*(0.34 + 0.86*d);
-  vec3 col = uColor * body * vInt * 0.78 * (1.0 - uDread*0.45);
-  gl_FragColor = vec4(col, body*0.62);
+  /* AND IT IS STILL THE LOUDEST UNPAINTED THING IN THE FRAME. Not one of the
+     four samples has a light shaft in it, and with the rooms now carrying drawn
+     subject the three diagonal streaks across the Foyer are what the eye goes
+     to first. 2.2 leaves a wide bright core with a definite flank; 3.4 keeps
+     the same reach and the same landing pool but pulls the body into a haze,
+     which is the most a shaft can be here and still be light in air.
+     Set by looking at the capture, not by the number -- the metric prefers them
+     bright, as it did the last two times. */
+  float body = pow(edge, 3.4)*along*land*cut*(0.34 + 0.86*d);
+  vec3 col = uColor * body * vInt * 0.60 * (1.0 - uDread*0.45);
+  gl_FragColor = vec4(col, body*0.50);
 }`;
 
 /* ---------------------------------------------------------------- near frame */
