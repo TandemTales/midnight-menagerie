@@ -158,14 +158,17 @@ export const REGIONS = {
   foyer: {
     label: 'The Forgotten Foyer',
     propMat: 'wood', propCeil: 0.5,
-    arch: 0, floorPattern: 0,
+    arch: 0, floorPattern: 0, subject: 'stair',
     room: { w: 26, d: 21, h: 8.6, side: 0.03, ceilPattern: 7, wallPad: 6.0 },
     cam: { y: 2.55, z: 9.4, look: 2.9, fov: 40 },
     deep: '#1c1424', mid: '#37252f', hi: '#5f3f31', accent: '#52768e',
     floorDeep: '#140f19', floorMid: '#322321', ambient: '#191424',
     propAlb: '#3c2b29', propHi: '#6f513c', rimCol: '#d5ab6d', shaft: '#d6b88a',
     gloss: 0.62, openGlow: 0.72, open: '#4a8090', grime: 0.60,
-    props: { shapes: [14, 0, 6, 5, 1, 7], count: 26, height: 2.5, layout: 'perimeter' },
+    /* ...and the CHANDELIER (shape 4). The one thing every description of this
+       room names after the staircase, and the Foyer was the only tall region in
+       the house whose prop set had no hanging shape in it at all. */
+    props: { shapes: [14, 0, 6, 4, 5, 1, 7], count: 26, height: 2.5, layout: 'perimeter' },
     particles: { mix: [[PTYPE.DUST, 0.80], [PTYPE.WISP, 0.12], [PTYPE.EMBER, 0.08]],
                  tint: '#ffe6bc', wispTint: '#7fd9ec', emberTint: '#ffb64a',
                  speed: 0.85, scale: 1.05, wind: 0.7, density: 0.85 },
@@ -187,7 +190,7 @@ export const REGIONS = {
   nursery: {
     label: 'The Forgotten Nursery',
     propMat: 'paint', propCeil: 0.239,
-    arch: 0, floorPattern: 0,
+    arch: 0, floorPattern: 0, subject: 'toyshelf',
     room: { w: 15, d: 12.5, h: 4.8, side: 0.0, ceilPattern: 3, wallPad: 4.0 },
     cam: { y: 1.62, z: 5.6, look: 1.76, fov: 44 },
     deep: '#21182b', mid: '#422d41', hi: '#744e5d', accent: '#6b8eab',
@@ -216,7 +219,7 @@ export const REGIONS = {
   sleeping: {
     label: 'The Sleeping Quarters',
     propMat: 'cloth', propCeil: 0.278,
-    arch: 0, floorPattern: 0,
+    arch: 0, floorPattern: 0, subject: 'wardrobe',
     room: { w: 18, d: 16, h: 5.6, side: 0.06, ceilPattern: 3, wallPad: 4.6 },
     cam: { y: 2.30, z: 9.0, look: 2.05, fov: 39 },
     nookSide: -1,
@@ -245,7 +248,7 @@ export const REGIONS = {
   kitchens: {
     label: 'The Kitchens and Cellars',
     propMat: 'metal', propCeil: 0.423,
-    arch: 4, floorPattern: 2,
+    arch: 4, floorPattern: 2, subject: 'range',
     room: { w: 22, d: 11, h: 4.4, side: 0.0, ceilPattern: 6, wallPad: 3.6 },
     cam: { y: 1.92, z: 7.0, look: 2.25, fov: 47 },
     deep: '#201419', mid: '#462c24', hi: '#70492c', accent: '#7d8d58',
@@ -274,7 +277,7 @@ export const REGIONS = {
   greenhouse: {
     label: 'The Impossible Greenhouse',
     propMat: 'foliage', propCeil: 0.569,
-    arch: 1, floorPattern: 2,
+    arch: 1, floorPattern: 2, subject: 'terrace',
     room: { w: 30, d: 26, h: 10.5, side: 0.10, ceilPattern: 5, wallPad: 5.0 },
     cam: { y: 2.75, z: 11.2, look: 3.4, fov: 39 },
     deep: '#131d1f', mid: '#233f31', hi: '#3c694d', accent: '#62ba91',
@@ -304,14 +307,18 @@ export const REGIONS = {
   graveyard: {
     label: 'The Mansion Graveyard',
     propMat: 'stone', propCeil: 0.392,
-    sides: false, arch: 5, floorPattern: 2,
+    sides: false, arch: 5, floorPattern: 2, subject: 'fence',
     room: { w: 52, d: 32, h: 0, side: 0, ceilPattern: 0, wallPad: 0 },
     cam: { y: 3.10, z: 12.0, look: 3.1, fov: 41 },
     deep: '#141725', mid: '#272f3c', hi: '#424e5b', accent: '#789dba',
     shaft: '#b4c8d9', floorDeep: '#0f1119', floorMid: '#202528', ambient: '#151826',
     propAlb: '#3d4245', propHi: '#757b78', rimCol: '#c1d8ed',
     gloss: 0.28, grime: 0.85, coolFill: 1.15, wallFog: 0.20, open: '#86afcb', openGlow: 0.30,
-    props: { shapes: [3, 3, 9, 15, 3], count: 34, height: 1.5, layout: 'rows' },
+    /* No SHRUB here. Every prop in this region is cut in `stone`, and a shrub
+       silhouette in stone is a grey lump -- the single worst object in the
+       Graveyard capture for six rounds. A graveyard is headstones, tomb chests
+       and statuary, which the region already has shapes for. */
+    props: { shapes: [3, 3, 16, 15, 3], count: 34, height: 1.5, layout: 'rows' },
     particles: { mix: [[PTYPE.ASH, 0.40], [PTYPE.DUST, 0.34], [PTYPE.WISP, 0.26]],
                  tint: '#cfd9e0', wispTint: '#8fe8d0', emberTint: '#ffb64a',
                  speed: 0.65, scale: 1.2, wind: 0.9, density: 0.9 },
@@ -323,7 +330,11 @@ export const REGIONS = {
       { kind: 'warm', x: 2.8, y: 0.90, z: -5.0, color: '#dda558', intensity: 5.7, radius: 4.47 },
       { kind: 'cold', x: 7.0, y: 1.20, z: -9.5, color: '#91c4d7', intensity: 0.94, radius: 6.8 },
     ],
-    shafts: { count: 3, spread: 22, y: 12.0, z: -12, angle: 0.16, width: 3.4, intensity: 0.29, pool: 1.5 },
+    /* A SHAFT NEEDS SOMETHING TO COME THROUGH. This region has no ceiling and
+       no windows, so three hard-edged bright stripes across the night sky read
+       as searchlights -- the loudest unpainted thing in the capture. Kept only
+       as the faintest haze the moon puts in the air. */
+    shafts: { count: 2, spread: 26, y: 12.0, z: -12, angle: 0.16, width: 5.2, intensity: 0.075, pool: 1.5 },
     vignette: 1.19,
   },
 
@@ -332,7 +343,7 @@ export const REGIONS = {
   study: {
     label: 'The Grand Study and Library',
     propMat: 'wood', propCeil: 0.424,
-    arch: 0, floorPattern: 0,
+    arch: 0, floorPattern: 0, subject: 'bookcase',
     room: { w: 19, d: 17, h: 8.2, side: 0.04, ceilPattern: 3, wallPad: 5.0 },
     cam: { y: 2.20, z: 8.4, look: 2.7, fov: 43 },
     deep: '#1c1319', mid: '#3a2824', hi: '#614534', accent: '#5d849d',
@@ -361,7 +372,7 @@ export const REGIONS = {
   attic: {
     label: 'The Moonlit Attic and Observatory',
     propMat: 'wood', propCeil: 0.264,
-    arch: 4, floorPattern: 0,
+    arch: 4, floorPattern: 0, subject: 'rafters',
     room: { w: 24, d: 19, h: 7.2, side: 0.20, ceilPattern: 6, wallPad: 4.4 },
     cam: { y: 1.95, z: 8.6, look: 2.6, fov: 45 },
     deep: '#17152c', mid: '#2a2746', hi: '#433e69', accent: '#8592cd',
@@ -388,7 +399,7 @@ export const REGIONS = {
   lampworks: {
     label: 'The Lampworks',
     propMat: 'metal', propCeil: 0.239,
-    arch: 4, floorPattern: 2,
+    arch: 4, floorPattern: 2, subject: 'bench',
     room: { w: 27, d: 23, h: 7.4, side: 0.0, ceilPattern: 8, wallPad: 4.8 },
     cam: { y: 2.40, z: 10.0, look: 2.6, fov: 42 },
     deep: '#151725', mid: '#273241', hi: '#3e505f', accent: '#60a9cf',
@@ -418,7 +429,7 @@ export const REGIONS = {
   ballroom: {
     label: 'The Ballroom and Velvet Suites',
     propMat: 'cloth', propCeil: 0.474,
-    arch: 0, floorPattern: 1,
+    arch: 0, floorPattern: 1, subject: 'mirrors',
     room: { w: 34, d: 26, h: 10.5, side: 0.05, ceilPattern: 7, wallPad: 5.4 },
     cam: { y: 3.15, z: 9.2, look: 3.5, fov: 47 },
     deep: '#201322', mid: '#472231', hi: '#763e48', accent: '#9c71ac',
@@ -448,7 +459,7 @@ export const REGIONS = {
   crypt: {
     label: 'The Crypt and Ossuary',
     propMat: 'stone', propCeil: 0.441,
-    arch: 2, floorPattern: 2,
+    arch: 2, floorPattern: 2, subject: 'niches',
     room: { w: 14, d: 25, h: 4.9, side: 0.0, ceilPattern: 4, wallPad: 3.4 },
     cam: { y: 1.90, z: 8.0, look: 2.0, fov: 46 },
     deep: '#141720', mid: '#262f33', hi: '#414c49', accent: '#5eb3b1',
@@ -476,7 +487,7 @@ export const REGIONS = {
   hedge: {
     label: 'The Withered Hedge Maze',
     propMat: 'foliage', propCeil: 0.391,
-    sides: false, arch: 3, floorPattern: 2,
+    sides: false, arch: 3, floorPattern: 2, subject: 'topiary',
     room: { w: 38, d: 28, h: 0, side: 0, ceilPattern: 0, wallPad: 0 },
     cam: { y: 2.35, z: 9.2, look: 2.5, fov: 47 },
     deep: '#191618', mid: '#353020', hi: '#575030', accent: '#90905e',
@@ -495,7 +506,9 @@ export const REGIONS = {
       { kind: 'warm', x: 3.0, y: 1.00, z: -5.0, color: '#dda358', intensity: 1.47, radius: 4.64 },
       { kind: 'cold', x: -6.4, y: 1.20, z: -8.5, color: '#a891d0', intensity: 1.32, radius: 6.4 },
     ],
-    shafts: { count: 4, spread: 24, y: 9.0, z: -11.0, angle: 0.34, width: 2.6, intensity: 0.35, pool: 1.6 },
+    /* Open to the sky: see the Graveyard's note. A shaft needs something to
+       come through, and there is no ceiling here. */
+    shafts: { count: 2, spread: 28, y: 9.0, z: -11.0, angle: 0.34, width: 4.4, intensity: 0.12, pool: 1.6 },
   },
 
   /* ── 13. The Secret Passages ───────────────────────────────────────────────
@@ -504,7 +517,7 @@ export const REGIONS = {
   passages: {
     label: 'The Secret Passages',
     propMat: 'wood', propCeil: 0.165,
-    arch: 2, floorPattern: 0,
+    arch: 2, floorPattern: 0, subject: 'timber',
     room: { w: 7.5, d: 20, h: 3.4, side: 0.0, ceilPattern: 3, wallPad: 2.4 },
     cam: { y: 1.70, z: 6.8, look: 1.75, fov: 52 },
     deep: '#191525', mid: '#2e2437', hi: '#47394e', accent: '#836faf',
@@ -532,7 +545,7 @@ export const REGIONS = {
   bathhouse: {
     label: 'The Bathhouse and Rain Wing',
     propMat: 'tile', propCeil: 0.249,
-    arch: 1, floorPattern: 1,
+    arch: 1, floorPattern: 1, subject: 'dado',
     room: { w: 21, d: 17, h: 7.0, side: 0.08, ceilPattern: 5, wallPad: 4.4 },
     cam: { y: 2.62, z: 7.4, look: 2.45, fov: 52 },
     nookSide: 1,
@@ -561,7 +574,7 @@ export const REGIONS = {
   kennels: {
     label: 'The Kennels and Animal Ward',
     propMat: 'wood', propCeil: 0.19,
-    arch: 0, floorPattern: 2,
+    arch: 0, floorPattern: 2, subject: 'pens',
     room: { w: 20, d: 11, h: 4.0, side: 0.0, ceilPattern: 8, wallPad: 3.2 },
     cam: { y: 2.55, z: 5.4, look: 1.05, fov: 52 },
     deep: '#1c141a', mid: '#3a2b23', hi: '#614a32', accent: '#768e9b',
@@ -580,7 +593,9 @@ export const REGIONS = {
       { kind: 'warm', x: 3.2, y: 1.10, z: -4.6, color: '#e6c086', intensity: 0.75, radius: 4.64 },
       { kind: 'cold', x: 6.6, y: 2.40, z: -8.6, color: '#83a6bc', intensity: 3.23, radius: 7.0 },
     ],
-    shafts: { count: 3, spread: 13, y: 4.6, z: -7.5, angle: 0.14, width: 2.0, intensity: 0.31, pool: 1.7 },
+    /* Open to the sky: see the Graveyard's note. A shaft needs something to
+       come through, and there is no ceiling here. */
+    shafts: { count: 2, spread: 16, y: 4.6, z: -7.5, angle: 0.14, width: 3.4, intensity: 0.11, pool: 1.7 },
     warmTone: 0.05,
   },
 
@@ -589,7 +604,7 @@ export const REGIONS = {
   pumpkin: {
     label: 'The Moon Courtyard and Pumpkin Grounds',
     propMat: 'foliage', propCeil: 0.29,
-    sides: false, arch: 5, floorPattern: 2,
+    sides: false, arch: 5, floorPattern: 2, subject: 'coping',
     room: { w: 48, d: 30, h: 0, side: 0, ceilPattern: 0, wallPad: 0 },
     cam: { y: 2.05, z: 8.2, look: 2.2, fov: 51 },
     deep: '#131723', mid: '#243335', hi: '#3c534a', accent: '#78a7be',
@@ -619,7 +634,7 @@ export const REGIONS = {
   heart: {
     label: 'The Heart of the House',
     propMat: 'stone', propCeil: 0.619,
-    arch: 0, floorPattern: 0,
+    arch: 0, floorPattern: 0, subject: 'hearth',
     room: { w: 24, d: 24, h: 9.5, side: 0.02, ceilPattern: 4, wallPad: 5.0 },
     cam: { y: 2.30, z: 13.0, look: 3.3, fov: 33 },
     deep: '#211a1c', mid: '#423428', hi: '#725b41', accent: '#c3a674',
@@ -653,7 +668,7 @@ export const REGIONS = {
   title: {
     label: 'Midnight Menagerie',
     propMat: 'stone', propCeil: 0.439,
-    sides: false, arch: 5, floorPattern: 2,
+    sides: false, arch: 5, floorPattern: 2, subject: 'fence',
     room: { w: 56, d: 34, h: 0, side: 0, ceilPattern: 0, wallPad: 0 },
     cam: { y: 2.6, z: 12.5, look: 3.6, fov: 44 },
     deep: '#121324', mid: '#22273d', hi: '#393f5d', accent: '#7891be',
@@ -671,7 +686,9 @@ export const REGIONS = {
       { kind: 'warm', x: 7.4, y: 1.60, z: -2.0, color: '#dda358', intensity: 1.82, radius: 4.3 },
       { kind: 'cold', x: 6.0, y: 10.0, z: -18.0, color: '#b1c1e2', intensity: 2.79, radius: 20.0, flicker: false },
     ],
-    shafts: { count: 2, spread: 18, y: 12.0, z: -14.0, angle: 0.22, width: 3.4, intensity: 0.25, pool: 1.4 },
+    /* Open to the sky: see the Graveyard's note. A shaft needs something to
+       come through, and there is no ceiling here. */
+    shafts: { count: 2, spread: 22, y: 12.0, z: -14.0, angle: 0.22, width: 4.4, intensity: 0.10, pool: 1.4 },
     bloom: 0.90, warmTone: 0.05, halation: 0.62, vignette: 1.16,
   },
 };
@@ -1205,7 +1222,11 @@ export class Atmosphere {
       const L = this.live, T = this.target;
       for (const [, dst] of COLOR_KEYS) L[dst].lerp(T[dst], k * 0.35 + 0.06);
       for (const key of NUM_KEYS) L[key] = L[key] + (T[key] - L[key]) * (k * 0.4 + 0.06);
+      /* Discrete, so they SWITCH rather than lerp — and the subject switches
+         with the arch mode it is drawn on, because a staircase halfway through
+         a cross-fade onto a coursed stone wall is neither room. */
       L.arch = T.arch; L.floorPattern = T.floorPattern; L.sides = T.sides; L.room = T.room;
+      L.subject = T.subject;
       this.backdrop.applyPalette(L);
       this._applyGrade(L, k);
       if (this._fade >= 1) { this.live = T; this.backdrop.applyPalette(T); this._applyGrade(T, 1); }

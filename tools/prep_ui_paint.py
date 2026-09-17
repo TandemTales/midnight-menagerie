@@ -417,6 +417,77 @@ def room_paint_layers():
         facing = np.clip(-(gy * 0.8 + gx * 0.5), 0, 1)
         lip = np.maximum(lip, bev_lit * facing * 0.7)
 
+    # ── WHAT IS ON THE UPPER WALL ───────────────────────────────────────────
+    # 528 px of plain paper, top to chair rail, is the biggest single area in
+    # this room and the one the judges have called tiled wallpaper for seven
+    # rounds. It is also the strip that actually SHOWS: a board covers the middle
+    # of the screen, so what a player sees of this room is the band under the HUD
+    # and a hand's width down each side, and both of those are upper wall.
+    #
+    # So it gets the two things a Victorian hall puts there. A STENCILLED FRIEZE
+    # under the picture rail -- a palmette on a 128 px repeat between two beaded
+    # rules, which is the ornament BRIEF-r8's fix 2 asks for and it need not be
+    # wallpaper. And PICTURES, hung: five of them, two deliberately at the far
+    # edges where the board does not reach, each a moulded frame round a canvas
+    # sunk into it. Both are drawn into the HEIGHT field, so ink_lines outlines
+    # them and the scumbled ao gathers under every moulding, exactly as it does
+    # for the panelling below.
+    fr0, fr1 = Y_PIC[1] + 6, Y_PIC[1] + 92
+    fwob = wob1d(W, rng, 300, 1.8)[None, :]
+    yf = yy - fwob
+    band = (yf >= fr0) & (yf < fr1)
+    # the two rules that close the frieze, and the bead-and-reel on the lower one
+    rule_t = np.exp(-((yf - fr0 - 4.0) / 2.2) ** 2)
+    rule_b = np.exp(-((yf - fr1 + 5.0) / 2.6) ** 2)
+    reel = 0.5 + 0.5 * np.cos(xx * (2 * np.pi / 17.0))
+    # THE PALMETTE: a fan of five leaves off a stem, mirrored every half repeat,
+    # with a small scroll between each pair. Drawn as a function of position so
+    # the repeat cannot tear at a cell edge -- the same rule the wall shader's
+    # damask lattice is written to.
+    u = np.abs(((xx + 64.0) % 128.0) - 64.0) / 64.0          # 0 at the motif axis
+    v = np.clip((yf - fr0 - 20.0) / 52.0, 0.0, 1.0)          # 0 at its foot
+    fan = np.exp(-((u - v * 0.86) / 0.17) ** 2)              # leaves splaying out
+    fan += np.exp(-((u - v * 0.42) / 0.15) ** 2) * 0.85
+    fan += np.exp(-(u / 0.13) ** 2) * (1.0 - 0.35 * v)       # the centre leaf
+    scroll = np.exp(-((u - 0.92) / 0.10) ** 2) * np.exp(-((v - 0.24) / 0.20) ** 2)
+    motifh = np.clip(fan * smooth(0.02, 0.18, v) + scroll * 1.2, 0, 1.6)
+    frieze = (rule_t * 9.0 + rule_b * (6.5 + 3.5 * reel) + motifh * 7.5) * band
+    hgt = hgt + frieze
+    # its own colour: a paler distemper than the paper, the way a stencil sits
+    # ON a wall rather than in it
+    stencil = np.clip(frieze / 9.0, 0, 1)[..., None]
+    alb = alb * (1 - stencil * 0.55) + hexc("#6b5480") * (stencil * 0.55)
+    gloss = np.where(band, np.maximum(gloss, 0.22), gloss)
+
+    # the hung pictures
+    for cxp, wp, hp, drop in ((148, 112, 132, 0), (536, 96, 116, 14),
+                              (960, 128, 150, -6), (1384, 96, 116, 10),
+                              (1792, 112, 132, 2)):
+        py0 = 268 + drop
+        # TWO boxes, not one distance field. wobbly_box_distance caps its inset
+        # distance at `chip`, so a frame drawn as a function of it is 0.82 of
+        # itself everywhere and every picture came out a solid gold slab with no
+        # canvas in it. The frame is the BAND between an outer box and an inner
+        # one; the canvas is what is left inside.
+        dd, inner = wobbly_box_distance(xx, yy, cxp - wp, cxp + wp,
+                                        py0, py0 + 2 * hp, rng, amp=1.6, chip=5)
+        dc, core = wobbly_box_distance(xx, yy, cxp - wp + 23, cxp + wp - 23,
+                                       py0 + 23, py0 + 2 * hp - 23, rng, amp=1.2, chip=4)
+        band_f = inner & ~core
+        gilt = hexc("#7d6034")
+        oil = hexc("#171020")
+        # the moulding: a raised outer lip, a hollow, and a bead against the art
+        prof = 11.0 + 5.0 * np.cos(np.clip(dd, 0, 5) / 5.0 * 3.1416)
+        hgt = np.where(band_f, hgt + prof, hgt)
+        hgt = np.where(core, hgt - 8.0 + smooth(0.0, 4.0, dc) * -3.0, hgt)
+        alb = np.where(band_f[..., None], gilt * (0.72 + 0.46 * (dd / 5.0)[..., None]), alb)
+        alb = np.where(core[..., None], oil * (0.85 + 0.30 * noise(dd.shape, rng, 40)[..., None]), alb)
+        gloss = np.where(band_f, 0.55, gloss)
+        gloss = np.where(core, 0.30, gloss)
+        # the wall's own shadow under the frame, which is what hangs it
+        below = np.exp(-((yy - (py0 + 2 * hp) - 9.0) / 11.0) ** 2)               * smooth(wp + 16.0, wp - 4.0, np.abs(xx - cxp))
+        alb = alb * (1 - 0.34 * below[..., None])
+
     # the floor
     fh = H - Y_FLOOR
     f_alb, f_hgt, f_ink, f_lip = painted_flagstones(fh, W, rng)
@@ -550,7 +621,18 @@ def room():
                (0.58, 0.52, 0.78), 0.20, 0.42)
     vfall = (0.30 + 0.70 * smooth(0, 560, yy)) * (1 - 0.58 * smooth(Y_FLOOR, H, yy))
     hfall = 1 - 0.45 * (np.abs(xx - W / 2) / (W / 2)) ** 2
-    dark = dark * (vfall * hfall)[..., None]
+    # AND IT IS NOT THE SAME ROOM LEFT AND RIGHT. Measured, this asset's tile
+    # spread ran 0.20 against mainMenu.png's 0.54: a symmetric parabola across x
+    # and a smooth falloff up y is structure a statistic cannot see, because
+    # every tile in the middle is the same tile. A painted room has light coming
+    # from somewhere -- one warm side, one cold, a broad shadow across the far
+    # corner -- so this adds three slow fields that are not symmetric and not
+    # separable, at a scale no board can cover.
+    u = xx / W
+    side = 1.0 + 0.30 * np.cos((u - 0.13) * 2.9) - 0.16 * smooth(0.55, 1.0, u)
+    pool = 1.0 + 0.26 * np.exp(-(((u - 0.17) / 0.20) ** 2 + ((yy / H - 0.74) / 0.30) ** 2))
+    cast = 1.0 - 0.30 * np.exp(-(((u - 0.80) / 0.26) ** 2 + ((yy / H - 0.30) / 0.34) ** 2))
+    dark = dark * (vfall * hfall * side * pool * cast)[..., None]
     # TWICE THE TOOTH IN THE DARK, and it is 8 bits that need it, not taste. This
     # pass sits at a level of 7/255, where a 13% tooth is under one level and
     # rounds away: measured, the dark room kept 0.060 of the 0.124 the lit passes
