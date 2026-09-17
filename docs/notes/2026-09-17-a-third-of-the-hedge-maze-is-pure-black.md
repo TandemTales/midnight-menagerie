@@ -139,9 +139,29 @@ Clean sky, `x400-1300 y0-150`, with the vertical ramp removed:
     stars                 >110: 0.01% of area
     PURE BLACK            0.00%
 
-**His night sky is a nearly pure linear navy ramp.** Remarkably plain: its
-quality is that it is a smooth, saturated, non-zero field, not that it has
-weather in it. Adding clouds would be inventing drama he does not have.
+**His night sky is a nearly pure linear navy ramp**, and its quality is that it
+is a smooth, saturated, non-zero field.
+
+**Corrected after round 8's judges, who both asked the winner for cloud banks
+"as in mainMenu.png".** That reading and this measurement both hold, because the
+variation is not uniform over the sky: measured in clean patches only,
+
+    upper band       x400-1300  y0-150     level 17.4   variation 3.4%
+    right of house   x1430-1650 y100-300   level 21.6   variation 8.1%
+    right of house   x1430-1650 y200-330   level 25.0   variation 8.6%
+
+so it RAMPS, roughly 3.4% at the top to ~8.6% near the roofline -- and the two
+patches that measure 22% and 38% contain the towers and the gnarled tree, which
+is what the contamination above was about. Autocorrelation puts the structure's
+scale at 30-60 px and finds it close to ISOTROPIC (horizontal 0.71 at lag 16
+against vertical 0.52, but 0.13 against 0.35 at lag 64), so it is soft blobs
+rather than horizontal banding.
+
+The honest specification is therefore a variation term that ramps 0.034 to about
+0.09 toward the horizon at a 30-60 px scale, not a flat 0.034 -- and still
+nothing like the 34% the contaminated patch suggested. A judge calling our
+smooth ramp "a single airbrushed blue band" is the render tell: at the top of
+the frame plain is right, and lower down it needs that structure.
 
 A CPU prototype (`sky_proto.py`, this session's scratchpad) hits every axis:
 
@@ -239,3 +259,36 @@ compositions with a lit subject in them. Lowering `amb` darkens everything the
 plates sit on, and Settings already scores 3-4 on background -- the lowest in
 the pass -- partly for being hard to read. The amount belongs to a 1:1 look with
 a board in front of it, which is the standing lesson of this pass.
+
+## The sweep did its job: the Study's numbers fell and the Study got better
+
+Round 8 merged VERDIGRIS and the seventeen-room sweep ran again against this
+baseline. Aggregate: **ink depth 0.077 -> 0.098, tooth 0.277 -> 0.288**, with
+eight rooms substantially better -- kitchens 0.023 -> 0.111, passages
+0.011 -> 0.036, kennels 0.025 -> 0.054, hedge 0.149 -> 0.226, nursery and
+pumpkin both more than doubled.
+
+One room went the other way on every axis:
+
+    study    inkDp 0.013 -> 0.011    tooth 0.234 -> 0.225    void% 10.28 -> 16.92
+
+**And it is the most improved room in the sweep to look at.** The baseline is a
+generic panelled hall with a damask upper wall; the merge gives it
+floor-to-ceiling bookcases with legible spines on the far wall and both sides.
+"The Grand Study and Library" now reads as one. What the numbers caught is that
+bookcase RELIEF is darker than the lit damask it replaced, plus the two
+instrument caveats SOOT documented in the same round: `inkDepth` is a median
+over the top 3% of gradients, so forty mid-strength lines move the median off a
+handful of strong troughs; and `_edge_profile` takes the 97th percentile
+INSIDE the crop, so on a very dark wall the axis never samples the masonry at
+all.
+
+So the sweep is worth running and it is not worth obeying. It caught the one
+room to go and look at, which is all a screening instrument should do.
+
+**What the sweep proves the round did NOT fix:** `hedge` void% 31.61 -> 31.61
+and sky level 0.6 -> 0.6, unchanged to two decimal places. The winner did not
+touch the void. BISTRE did, and found the cause this note had measured but not
+explained: **a region with `room.h = 0` was handed a 6.4 m ceiling by a
+fallback**, so a region open to the night had its frame crushed and painted no
+sky at all. That is the graft.
