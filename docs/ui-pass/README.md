@@ -17,8 +17,20 @@ ARE those paintings; this pass is everything else.
    under a NEUTRAL code (never "BASE": a judge who can tell which candidate is
    today's game is not blind).
 2. **Three builds per track.** One `git worktree` per builder, created OUTSIDE
-   OneDrive (a checkout per builder inside the synced folder is a sync storm),
-   with `GIT_LFS_SKIP_SMUDGE=1`. Each builder runs its own
+   OneDrive (a checkout per builder inside the synced folder is a sync storm)
+   and under a SHORT root -- `C:/UILOOP/<round>` is the one to use -- with
+   `GIT_LFS_SKIP_SMUDGE=1`.
+
+   **The short root is not a preference.** `LongPathsEnabled` is 0 on this
+   machine, so 260 characters is a hard ceiling for Python and for the edit
+   tools, and the longest tracked path in the repo is 84
+   (`docs/notes/2026-08-25-frontend-round-8-....md`). A session scratchpad is
+   ~148 characters before `/wt/<round>-<track>-<slot>` is added, which puts the
+   checkout at 262 and `git worktree add` fails outright with `Filename too
+   long` -- r8 hit exactly that. Rounds 5-7 fitted only because their track keys
+   were two characters shorter, at 259 of 260. `C:/UILOOP/r8/wt/r8-background-a`
+   is 31, and the judging folders survive the session instead of dying with its
+   temp directory. Each builder runs its own
    `python tools/devserver.py <port>` and photographs itself with
    `python tools/shot.py ... --port <port>`. Each gets a different design angle.
 3. **Two blind judges per track.** Images only — the samples and the candidates'
