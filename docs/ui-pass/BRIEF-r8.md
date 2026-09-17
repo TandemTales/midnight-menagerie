@@ -174,9 +174,18 @@ Work it in order. It is what the measurements and the captures actually say.
 
 ## THE PERFORMANCE BUDGET — a hard limit
 
-`python tools/gpuprof.py --scene combat --w 1600 --h 900` on the target GPU
-currently reads **13.95 ms / 59 fps** at tier medium, the backdrop 8.8 ms of it
-and the grade 3.4 ms.
+```
+python tools/on_port.py PORT tools/gpuprof.py --scene combat --w 1600 --h 900
+```
+
+**Through `on_port.py`, always.** `gpuprof.py` hard-codes `localhost:8777`, which
+is the MAIN checkout's server, so run directly from your worktree it profiles
+`dev` and not your branch -- three builders would report the same number and the
+budget below would measure nothing. `on_port.py` rewrites the port in memory and
+works on any script that names 8777, gpuprof included.
+
+On the target GPU that currently reads **13.95 ms / 59 fps** at tier medium, the
+backdrop 8.8 ms of it and the grade 3.4 ms.
 
 **Your build must stay at or under 15.5 ms, and you must report the number**
 (three runs; it moves ~1 ms between calls). A background that costs the fight
@@ -202,8 +211,11 @@ behind the quality tier the way `MM_TOOTH` is (off at `low`).
 - **Line endings.** The edit tools normalise a MIXED file on write and the
   working tree can hold CRLF where git holds LF without `git status` noticing.
   Run `python tools/endings_guard.py --base <base>` before committing.
-- **A test run from a worktree tests `dev`.** All the test scripts hard-code
-  `:8777`. Use `python tools/on_port.py <your port> <test>`.
+- **Anything run from a worktree drives `dev`, not your branch.** All 102 test
+  scripts hard-code `:8777`, and so does `tools/gpuprof.py`. Use
+  `python tools/on_port.py <your port> <script> [args]` for every one of them.
+  A green test or a 13.95 ms reading obtained without it tells you nothing about
+  your own work.
 
 ## WHAT IS NOT YOURS THIS ROUND
 
@@ -215,7 +227,8 @@ change breaks a screen outside your track, that is still your bug.
 
 - the endings guard printing `ENDINGS OK`;
 - your commits on your branch;
-- `tools/gpuprof.py` three times, the numbers in `notes_for_merger`;
+- `tools/gpuprof.py` three times **via `on_port.py` on your own port**, the
+  three numbers in `notes_for_merger`;
 - `python tests/shader-literals/check.py` green;
 - the canonical screenshots in `JUDGING/CODE/`, under exactly these names, each
   one also taken with `--w 1280 --h 800` and saved as `<name>-1280.png`.
