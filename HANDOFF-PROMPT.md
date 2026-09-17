@@ -616,6 +616,14 @@ Big Scare** (`3a12203`).
 - **NO BACKGROUND ART** (09-17, and it replaces the 09-12 call that he would
   paint them). The procedural room is final; the loop's job is to take it as far
   as procedure goes. `docs/art/background-prompts.md` is retired.
+- **A BACKGROUND'S COLOUR IS NOT HELD TO `UI/*.png`** (09-17, and it closes the
+  only question round 8 left open). *"it is way more important that it just look
+  appropriate for the setting and as accurately presented with readable objects
+  that make sense and are drawn with care and attention (straight lines,
+  appropriate scale, etc)"*. The Greenhouse stays green, the Ballroom plum, the
+  Passages magenta; `midHue`/`midSat` are not targets. The samples are still the
+  reference for CRAFT, not for hue. Round 9 is re-weighted around it:
+  `BRIEF-r9.md`, `RUBRIC-r9.md`.
 - **The Carnivorous Conservatory is the Greenhouse boss** (09-12), and the Head
   Gardener is "just a big scare".
 - **The SS sheets are never committed** (standing). That includes the Kid sheets.

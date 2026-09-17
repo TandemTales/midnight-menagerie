@@ -223,6 +223,26 @@ Ink depth tracks how MUCH line a room carries, not how well a line survives its
 surface. The low-ink rooms have fewer drawn lines, not buried ones -- which is
 the same fix the round is already briefed for, and not a new one.
 
+**PALETTE: RULED, 2026-09-17.** Josh, after seeing the comparison page:
+*"dont limit yourself to the colors of the UI image examples for the background
+so closely. it is way more important that it just look appropriate for the
+setting and as accurately presented with readable objects that make sense and
+are drawn with care and attention (straight lines, appropriate scale, etc) ...
+and as accurately presented as possible"*
+
+So the answer to the question this note and round 8's fix 8 were holding open is
+**no change**: the Greenhouse stays green, the Ballroom stays plum, the Passages
+stays magenta. A background's colour needs to suit its setting and is not held
+to `UI/*.png`. **`midHue` and `midSat` are no longer targets.** The samples
+remain the reference for CRAFT -- drawn density, the line round a form, candle
+falloff, how black the darks go -- and not for hue or saturation.
+
+And it re-weighted the round: readable objects that make sense, accurately
+presented, drawn with care (straight lines, appropriate scale), appropriate to
+the setting -- in that order. `BRIEF-r9.md` and `RUBRIC-r9.md` are rewritten
+around it, and the rubric redefines what `palette` and `fits_between_samples`
+mean rather than changing the verdict schema.
+
 ## And the OTHER room: the ground pass fixed one of its three passes
 
 Measured with the new axis, the CSS room behind the boards and dialogs

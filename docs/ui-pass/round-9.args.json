@@ -10,7 +10,7 @@
   "rubrics": [
     "docs/ui-pass/RUBRIC.md",
     "docs/ui-pass/RUBRIC-r1.md",
-    "docs/ui-pass/RUBRIC-r8.md"
+    "docs/ui-pass/RUBRIC-r9.md"
   ],
   "samples": [
     "UI/title.png",
@@ -37,19 +37,19 @@
           "slot": "a",
           "code": "GALLNUT",
           "port": 8881,
-          "angle": "THE LINE. Fix 1 is your whole round: an ink CONTOUR round every form, in all seventeen regions. Both judges raised it on every screen and one called it 'the single cheapest thing that would move these from render to painting'. We ink the HOLLOWS of relief steps and nothing else, so a form standing in front of another form has no line between them -- prop silhouettes, arch mouldings, the stair, railings, headstones, and the junction where a floor meets a wall. Then fix 2 (the staircase is a wireframe: treads, strings, newels and handrail need painted mass, a lit top edge with a dark line under it) and fix 3 (one pitch is a stamped tile; break every even run). Mind the ink HIERARCHY trap: repeating joints 0.10-0.21, big forms 0.5-0.9, and mmDrawn saturates at 0.26 per pixel so setting them equal makes a wall read as scaffolding."
+          "angle": "MEASURE EVERY OBJECT. Fix 1 is your round: the dimension table, and an audit of what is already built against it. The height field is in metres so this is checkable, not a matter of taste -- go and find every form whose measurements are wrong and correct it, starting with the Foyer's staircase (riser 0.17-0.19, going 0.25-0.30, so the rake is ~33 degrees and CONSTANT; handrail 0.90-1.00 above the pitch line; baluster gap under 0.10) and the Crypt's loculi (a 0.60 x 0.40 opening, not a 1.35 m recess). Then fix 2: straight lines where the thing is straight and regular spacing where it is regular -- the Graveyard's roof needs a ridge, straight eaves and a constant pitch instead of two smoothstep humps. Put the metre figure you used beside the table's figure for every object, in notes_for_merger. Do not touch a palette."
         },
         {
           "slot": "b",
           "code": "UMBER",
           "port": 8882,
-          "angle": "THE LIGHT IS ON THE WRONG SURFACE. Fix 5 is your round, and it is four separate things the table in the brief separates: the bright band belongs on the FLOOR and ours is on the WALL (Foyer band2 39.8 against its floor 21.0, where mainMenu is 39.6 at the floor); our rooms are two to three times darker in the median than the samples (6.4-9.2 against 11.5-21.1); our lit area is half his and our light is MORE concentrated, not less (focus 0.32-0.41 against 0.22-0.28), so a few small pools carry everything and nothing else is lit at all; and the top of the frame is still half as bright as his. Do fix 4 as part of this -- combat's balustrade hairlines cross behind the enemy nameplates and the room must sit BEHIND the board -- and fix 8, the motes, which no sample contains a single one of. Set every amount by looking at a 1:1 crop beside the sample, never by the number."
+          "angle": "MAKE EVERY OBJECT NAMEABLE. Judges are being asked to point at each thing in the frame and say what it is, and the ones that fail today are named in the brief: the Greenhouse's planting reads as cauliflower, the Hedge Maze's hedges as mossy sarcophagi, the Study's shelving as scaffolding, the Graveyard's fence palings as traffic cones, the Foyer's chest and armchair and wardrobe as pale grey slabs. Take those in that order and make each one recognisably the thing it is supposed to be, built the way that thing is built -- a hedge is a 1.8 m mass with a scalloped top, planting has leaves and stems and a rim, shelves have board thickness and uprights and things standing on them at different heights. FOLIAGE is the weakest of the six wall modes and its three recorded failure modes are in fix 9; check anything you add to a foliage mass against masonry first. A green glasshouse is fine -- Josh has ruled -- so spend nothing on colour."
         },
         {
           "slot": "c",
           "code": "CARMINE",
           "port": 8883,
-          "angle": "THE THINGS IN THE ROOM. Fix 7 is your round: the props are pale grey slabs with no contour and no contents, on every screen, and the two reasons are already known and must not be re-derived. You cannot light a prop that is at its ceiling, so drawn marks on props must be DARK -- a highlight added as a highlight executes in the right shape and changes nothing. And a prop is GREY BY CONSTRUCTION: it takes the key and the fill at the same CINE_PROP 0.26 and in most palettes those are equal-and-opposite hues, which no chroma cap can fix because a cap changes saturation and not hue. lights.js has `kind` on the light object but does not publish it in the packed payload; publish it and let a prop take the fill at about a third of the key. Then fix 6, the side walls, which round 8's winner says it never wrote a subject for -- graft SOOT's panel courses, dado and bracketed cornice from ui/r8-background-a. Remember the Foyer's cabinet and clock occupy ~180 px, so parts DO read there."
+          "angle": "A LINE ROUND EVERY FORM, AND LIGHT ENOUGH TO SEE IT BY. Fix 4 first: we ink the HOLLOWS of relief steps and nothing else, so a form standing IN FRONT of another form has no line between them -- prop silhouettes, arch mouldings, the stair, railings, headstones, the wall/floor junction. Both judges raised it on every screen and one called it the single cheapest thing that would move these from render to painting. Mind the hierarchy: mmDrawn saturates at 0.26 of height per pixel, so repeating joints belong at 0.10-0.21 and big forms at 0.5-0.9. Then fix 8 as CRAFT and not as colour-matching: our rooms are two to three times darker in the median than the samples with half the lit area and light MORE concentrated, so a few small pools carry everything and the rest of the room is unlit rather than dim -- and a room nobody can see the objects in fails the round's first question. A floor is nearer the light and flatter than a wall, which is why his pictures are brightest at the bottom and ours across the middle. Also fix 7: on combat the balustrade's hairlines cross behind the enemy nameplates."
         }
       ]
     }
