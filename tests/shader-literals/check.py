@@ -88,6 +88,59 @@ def literals(src):
         i = e + 1
 
 
+def comment_faults(rel, src, start, body):
+    """An unterminated /* in the GLSL, which is the SILENT fault.
+
+    Round 8's BISTRE lost a capture cycle to this and it is the worst failure
+    mode in this file, because nothing looks wrong. Every backtick trap above
+    breaks the PAGE, so `shot.py` writes a black frame and says `state: no MM`.
+    A broken GLSL comment does not: the module parses, the page renders, the
+    room draws with the last program that linked, and the numbers off that
+    capture look entirely plausible.
+
+    GLSL has NO nested comments (GLSL ES 3.00 s3.4), and that cuts both ways:
+
+      an unterminated /*   swallows the rest of the shader, usually including
+                           main(), and the program fails to link. This is the
+                           fault.
+      a /* inside a /*     is NOT a fault, it is just text, and the first */
+                           ends the comment. The first version of this check
+                           called it an error and immediately fired on
+                           `a prop in UI/*.png reads 0.19-0.43` -- a path, in a
+                           comment, whose `/` and `*` are adjacent. Do not
+                           reinstate it.
+      a stray */           outside any comment IS a syntax error.
+
+    A `//` line comment hides both, so those lines are skipped.
+    """
+    out, i, n = [], 0, len(body)
+    nl = chr(10)
+    while i < n - 1:
+        two = body[i:i + 2]
+        if two == "//":
+            j = body.find(nl, i)
+            i = n if j < 0 else j + 1
+            continue
+        if two == "/*":
+            j = body.find("*/", i + 2)
+            if j < 0:
+                out.append("%s:%d  an unterminated /* in the GLSL: it swallows "
+                           "the rest of the shader and the program will not "
+                           "link, but the PAGE still renders and the capture "
+                           "looks plausible"
+                           % (rel, line_of(src, start + i)))
+                break
+            i = j + 2
+            continue
+        if two == "*/":
+            out.append("%s:%d  a */ in the GLSL that closes no comment"
+                       % (rel, line_of(src, start + i)))
+            i += 2
+            continue
+        i += 1
+    return out
+
+
 def line_of(src, idx):
     return src.count("\n", 0, idx) + 1
 
@@ -135,6 +188,7 @@ def check(root, verbose=False):
                 for m in re.finditer(r"\$\{(?![\s]*[A-Za-z_])", body):
                     problems.append("%s:%d  a bare ${ inside a shader literal"
                                     % (rel, line_of(src, start + m.start())))
+                problems.extend(comment_faults(rel, src, start, body))
             if verbose:
                 print("  scanned", rel)
     return files, lits, problems
