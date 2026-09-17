@@ -110,6 +110,7 @@ so round 2 runs six at once, as round 1 did.
 | 6 | COMBAT, three boards | CAMPION 7.33 · HAWTHORN 7.17 · the screen before 6.50 · JUNIPER 6.00 | CAMPION, both judges; HAWTHORN's enemy condition tray grafted in | `4718b54` |
 | 7 | DIALOGS opening / Settings / pile viewer | SORLEY 7.67 · PLOVER 7.17 · MEADOW 7.00 · the screens before 5.17 | SORLEY, both judges, all three screens. **+2.50**, the largest gain since round 3; its Settings scored 8.0 | `d5cd11f` |
 | 7 | KIDS' PLACES Lobby / Clubhouse / Atlas | HARROW 7.56 · TINDER 7.33 · SEDGE 7.00 · the screens before 6.44 | per screen, 3 judges: Lobby HARROW, Clubhouse TINDER, Atlas HARROW | `40b2a1b`, `05c1916` |
+| 8 | **BACKGROUNDS** — three ROOMS with no interface on them (foyer / crypt / graveyard) plus combat, combat-boss, rest | VERDIGRIS 5.83 · SOOT 4.92 · BISTRE 4.42 · the screens before 4.25 | VERDIGRIS, both judges, **and it beats the baseline on all six screens**. +1.58. `fits_between_samples` FALSE for every candidate on every screen | `d94cf23`, then the sky graft `5f0da30` |
 
 **Scores anchor to the candidates beside them.** Round 0's winner scored 7.0 in
 round 0 and 5.58 as round 1's baseline: the judges grew stricter as the field
@@ -127,6 +128,7 @@ Against their own baselines:
 | 5 | POLISH +0.83, COMBAT +0.44, DIALOGS +1.33, KIDS' PLACES +1.00 | — |
 | 6 | **POLISH +0.00**, COMBAT +0.83 | — |
 | 7 | DIALOGS **+2.50**, KIDS' PLACES +1.11 | — |
+| 8 | BACKGROUNDS **+1.58** | — |
 
 Converting a screen moves it about four points. Refining one moves it half a point
 to two points, more when the brief names concrete defects the judges can see
@@ -275,3 +277,85 @@ The one axis still an order of magnitude short is **ink depth** -- 0.009-0.080
 against mainMenu.png's 0.248 -- and his depth comes from drawn subject matter,
 masonry joints and tracery and ironwork, not from a heavier line. Tooth and edge
 width are already at his figures on an isolated room.
+
+### Round 8: the room, with no art coming, 2026-09-17
+
+The first round whose subject was the BACKGROUND itself, and the first in which
+three captures carried no interface at all. Josh had just retired the painting
+plan -- "there will be no background art ... make it as good as it can be
+without it" -- so the brief aimed at the one axis measurement said was short by
+an order of magnitude: ink DEPTH, drawn subject matter on the wall.
+
+**VERDIGRIS won on one idea: a region names a SUBJECT, and it is drawn into the
+wall's RELIEF rather than its colour.** Seventeen subjects, no two shared --
+stair, toyshelf, wardrobe, range, terrace, fence, bookcase, rafters, bench,
+mirrors, niches, topiary, timber, dado, pens, coping, hearth -- so each arrives
+with the recess occlusion, the ink in its hollows, the lip on its crests and the
+room's own candlelight for free. Fix 1 and fix 5 in one move, at no frame cost,
+because fix 6's ceiling saving paid for it.
+
+Across all seventeen rooms: ink depth 0.077 -> 0.098, tooth 0.277 -> 0.288, with
+kitchens 0.023 -> 0.111, passages 0.011 -> 0.036 and kennels 0.025 -> 0.054.
+
+**Four things this round taught, and three of them are about the instruments.**
+
+- **A SCREENING SWEEP IS WORTH RUNNING AND NOT WORTH OBEYING.** The round
+  photographs three rooms of seventeen, so all seventeen were swept at BASE and
+  again after the merge. It flagged exactly one room worse on every axis -- the
+  Study, ink 0.013 -> 0.011, tooth 0.234 -> 0.225, void 10.3 -> 16.9% -- and the
+  Study is the most improved room in the sweep to LOOK at: a generic panelled
+  hall became a library with floor-to-ceiling bookcases. Bookcase relief is
+  darker than the lit damask it replaced. The sweep did its whole job by naming
+  the one room to go and look at.
+- **TWO MEASUREMENTS THAT CONTRADICT EACH OTHER CAN BOTH BE RIGHT.** The sky
+  measured too DARK at the zenith (level 2.7, and 71.5% of the Hedge Maze's
+  upper third pure black) and too BRIGHT in its visible band (three to four
+  times the moonlit paving under it). The gradient climbed to a full horizon
+  colour low down and to raw masonry-colour at the top: wrong in both directions
+  at once. His sky is a narrow horizon band on a never-black navy field.
+- **CHECK WHICH POPULATION YOU MEASURED. Twice in one day.** A "cloud variation
+  of 34% of level" in `mainMenu.png` turned out to be the tower spires inside
+  the patch; the clean sky is 3.4% at the zenith rising to 8.6% near the
+  roofline. And a finding that the CSS room's two LIT passes never reach black
+  was retracted before it was built: `kit.css` masks them to the candle pools,
+  so they are the room INSIDE a light pool and must not be black. Acting on it
+  would have darkened every candle pool in the game.
+- **A FIX LIST CAN BE WRONG, and this round proved it a second way.** Fix 6 told
+  builders the near-black top of the frame was deliberate, "all four samples go
+  near-black at the top". Near-black and black are not the same thing, and the
+  difference was the round's own subject. Worse, BISTRE's angle quoted
+  "mainMenu: 3.6% above L192" -- the true figure is 0.001%, its brightest pixel
+  is L230 -- so it was told to build highlights its reference does not contain,
+  and the judges marked it last for pale washed forms. Round 6 wrote this lesson
+  down already: when judges punish a candidate for doing what you asked, the ask
+  was the defect.
+
+**Kept from the losing branches**, because a candidate can lose the round and
+still be right about something:
+
+- `tools/valuemetrics.py` (BISTRE) measures where the LIGHT is, which
+  `bgmetrics.py` does not. Its headline survives the merge and is round 9's:
+  mainMenu's five horizontal bands run 14.9 / 28.7 / 29.8 / 29.6 / 39.6,
+  brightest at the FLOOR, while our Foyer runs 7.2 / 13.7 / 39.8 / 19.9 / 21.0,
+  brightest at the WALL. **Every sample lights the floor. Every room here lights
+  the wall.**
+- **The sky fix** (BISTRE), which the sweep proved the winner never touched
+  (hedge void 31.61 -> 31.61, unchanged to two decimals). The sky was painted
+  only for the EXTERIOR arch mode and the Hedge Maze is arch 3 with room.h = 0,
+  so it got unlit plane. Merged as `5f0da30`: hedge void 31.6 -> 3.4%, its upper
+  third 72.6 -> 0.0%, sky level 0.6 -> 19.5 against mainMenu's 16.5; graveyard
+  and pumpkin tooth 0.145/0.137 -> 0.280 against his 0.226, because those two
+  never lacked tooth -- a third of the frame at zero was dividing it away. All
+  thirteen interiors identical to three decimals.
+- Six additive one-knob overrides in `backdrop-room.js`, and a gap in
+  `tests/shader-literals/check.py`: an unterminated GLSL comment is the one
+  fault in that family that does NOT break the page, so the room draws with the
+  last program that linked and the capture looks plausible.
+
+**Nobody reached the bar.** `fits_between_samples` is false for every candidate
+on every screen, and the best room scored 7. The two judges agree on what is
+left, and they name it in the same order: the Foyer's staircase is drawn in
+hairlines and reads as a wireframe on wallpaper; the Crypt's loculi repeat at
+one pitch and read as a stamped tile; nothing carries an ink contour ("the
+samples outline everything"); and on `combat` the balustrade's hairlines cross
+straight behind the enemy nameplates, so the room competes with the board.
