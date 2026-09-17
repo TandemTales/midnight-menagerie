@@ -22,7 +22,37 @@ async () => {
     if (v !== undefined) window.MM.__bgOver[k] = parseFloat(v);
   }
   ctx.clock.scale = 1;
-  window.MM.showcase.set(region, true);
+  /* seed=N TRIES to make the prop layout reproducible and DOES NOT SUCCEED --
+     left here with this note so the next person does not spend the same hour.
+
+     Measured: two mounts of one region differ over 17% of their pixels. With
+     the props hidden 13.4 points of that remain, so most of it is the particle
+     field spawning over time from a stream the clock freeze cannot rewind --
+     `motes=0` below did not remove it either. The remaining ~3.6 points are
+     the props themselves moving: atmosphere._seed is derived from the region
+     key and is deterministic in principle, but everything in the region draws
+     from the same `_rand()` stream, so anything that consumes a different
+     number of draws reshuffles the layout.
+
+     `setMood(region, { seed })` has accepted an explicit seed all along, and
+     forwarding it here has no effect, most likely because setMood early-returns
+     when the mood already matches the target -- showcase.set() has already set
+     it by then.
+
+     WHAT THIS COSTS: structural A/B (a floor, a wall, a paper, the sky) is
+     reliable, because those changes are far larger than the noise and cover
+     the frame. A single small PROP cannot be A/B'd: it may not be in the same
+     place, and motes drift over it. Fixing that means giving the showcase its
+     own RNG for the layout, separate from the particle stream -- the right fix,
+     and not a small one. */
+  const seed = (q.match(/seed=([A-Za-z0-9_-]+)/) || [])[1];
+  if (seed !== undefined) {
+    ctx.atmosphere.setMood(region, { instant: true, seed });
+    window.MM.showcase.set(region, true);
+    ctx.atmosphere.setMood(region, { instant: true, seed });
+  } else {
+    window.MM.showcase.set(region, true);
+  }
   /* props=0 in the hash hides the props, and actor=0 the stand-in figure, so a
      difference against the full frame gives each layer's own pixels. Measuring
      "the props" from a rectangle instead put the showcase's own stand-in
@@ -40,6 +70,18 @@ async () => {
     for (const m of ctxBd.frames) m.visible = false;
   }
   if ((q.match(/shafts=([01])/) || [])[1] === '0') ctxBd.shafts.visible = false;
+  /* motes=0 hides the particle field, and it is the toggle that makes a
+     capture REPRODUCIBLE. Measured: two mounts of one region with the same
+     seed differ over 17% of their pixels, and 13.4 of those points are still
+     there with the props hidden -- the dust, embers and wisps spawn over time
+     from a stream the clock freeze cannot rewind. Without them off, no
+     before/after of a single prop means anything. */
+  if ((q.match(/motes=([01])/) || [])[1] === '0') {
+    const pf = ctx.atmosphere.particles;
+    if (pf && pf.points) pf.points.visible = false;
+    else if (pf && pf.mesh) pf.mesh.visible = false;
+    else if (pf && pf.group) pf.group.visible = false;
+  }
   window.MM.showcase.showProps(showProps && window.MM.__bgProps !== false);
   if (window.MM.showcase.showActor) window.MM.showcase.showActor(showActor);
   await new Promise(r => setTimeout(r, 1400));

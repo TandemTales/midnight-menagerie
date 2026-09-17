@@ -155,6 +155,19 @@ house had a line darker than both sides** (0.000 against their 0.04-0.39).
   everywhere else. The gate also checks that every `${SPLICE}` is a name the file
   actually imports -- `${NOISE}` in a file that imports only `GLSL_LIB` took the
   whole game down for seven captures.
+- **A PROP PASS NEEDS AN RNG FIX FIRST, and that is the finding to carry.** Two
+  mounts of one region differ over **17% of their pixels** -- 13.4 points of it
+  the particle field (which `motes=0` does not stop), ~3.6 the props moving,
+  because everything in a region draws from one `_rand()` stream and anything
+  that consumes a different number of draws reshuffles the layout.
+  `setMood(region, { seed })` takes a seed and forwarding it from the showcase
+  does nothing (setMood almost certainly early-returns when the mood matches).
+  **Structural A/B is reliable; a single small prop cannot be A/B'd at all.**
+  Give the layout its own RNG separate from the particle stream before touching
+  another silhouette. Five of the twenty are done (plant, shrub, column, statue,
+  cabinet); the unimproved ones still carry 44 headstones, 35 chairs, 33 drapes,
+  30 crates, 25 candelabra. A batch written blind regressed and was reverted --
+  at thirty pixels the recognisable CUE beats the parts.
 - **Still Josh's to paint:** the samples' rooms are near-black with ORNAMENT on
   them and props with drawn detail. Procedure now gets the surfaces, the
   structure, the light and the ink; what it cannot invent is a painting's

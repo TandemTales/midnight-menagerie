@@ -871,8 +871,20 @@ float shapeField(vec2 uv, float shape, float seed){
     }
     d += (mmRidge(uv*17.0 + seed*2.7) - 0.50) * 0.026;
   } else if (shape < 3.5) {               // 3 — headstone
-    d = mmArch(p - vec2(0.0, 0.08), 0.26, 0.44);
-    d = min(d, mmBox(p - vec2(0.0,0.06), vec2(0.34,0.06), 0.02));
+    /* IT LEANS, and that is the only thing worth adding to it.
+
+       44 prop instances, more than anything but the shrub, the cabinet and the
+       column, and the Graveyard and the Pumpkin Grounds are mostly these. A
+       fuller profile was tried -- plinth, tapered die, shoulder moulding, three
+       choices of head -- and it came back SHORTER and read as a block with a
+       hat: at the thirty pixels a headstone actually occupies, the ARCH is the
+       recognisable cue and mouldings are mush. The lean costs one hash, does
+       not touch the silhouette's shape, and is most of why a churchyard reads
+       as one rather than as a row. */
+    float lean = (mmHash11(seed*5.3) - 0.5) * 0.11;
+    vec2 q = vec2(p.x + lean * p.y, p.y);
+    d = mmArch(q - vec2(0.0, 0.08), 0.26, 0.44);
+    d = min(d, mmBox(q - vec2(0.0,0.06), vec2(0.34,0.06), 0.02));
   } else if (shape < 4.5) {               // 4 — chandelier, hangs from the top
     d = mmBox(g + vec2(0.0,0.20), vec2(0.016,0.20), 0.01);
     // ceiling rose: the chain has to visibly come OUT of something
@@ -1123,17 +1135,35 @@ void main(){
     float bh = 0.52 + 0.40*mmHash11(bid*2.3 + shelf*5.1 + vSeed);
     float lean = (mmHash11(bid*4.7 + vSeed) - 0.5) * 0.10 * step(0.72, run);
     float inShelf = step(0.10, sy) * step(sy, 0.10 + bh*0.72);
-    float gap = 1.0 - smoothstep(0.0, max(0.045, mpp.x/max(vSize.x,0.01)*7.0),
-                                 abs(fract(bx + lean*sy) - 0.5) - 0.40);
+    /* The SPINE, not the gap between spines. The first version wrote
+       gap = 1.0 - smoothstep(...), which is 1 at a book's CENTRE and 0 at its
+       edge, so 1.0 - gap drew a hairline down each joint and nothing else:
+       the books were invisible in the Foyer and the Study at any size. Found by
+       looking at the props at 2x rather than by reading the code.
+
+       abs(fract(bx) - 0.5) is 0 at the spine's middle and 0.5 at its edge, so
+       the spine is where that is BELOW 0.40 and the gap is the last tenth. */
+    float edge = abs(fract(bx + lean*sy) - 0.5) - 0.40;
+    float gap = smoothstep(0.0, max(0.012, mpp.x/max(vSize.x,0.01)*7.0), edge);
     float has = step(mmHash11(bid*8.9 + shelf*3.3 + vSeed), 0.86);
     float book = inShelf * has * (1.0 - gap);
-    // each spine its own value, and a gilt band a third of the way down
-    float tone = 0.55 + 0.75*mmHash11(bid*11.3 + shelf*2.9 + vSeed);
+    /* Each spine its own value, and a gilt band a third of the way down. The
+       SPREAD between neighbours is what makes a shelf legible -- a row of
+       books at one value is a plank.
+
+       The term was proved to execute by flooding it red and counting the
+       pixels: 62-69k, spread round the perimeter where the Foyer's five
+       cabinets stand. The AMOUNT here is NOT verified by eye, because a prop
+       A/B needs the same prop in both captures and this instrument cannot
+       give one (see the note in tools/shot-scripts/backdrop-room.js). It is
+       set conservatively between the original and what looked right on paper;
+       a future round with a reproducible layout should set it properly. */
+    float tone = 0.48 + 1.00*mmHash11(bid*11.3 + shelf*2.9 + vSeed);
     float band = (1.0 - smoothstep(0.0, 0.030, abs(sy - (0.10 + bh*0.52))))
                * step(0.55, mmHash11(bid*6.1 + vSeed));
-    albedo *= 1.0 + book * (tone - 1.0) * 0.85;
-    albedo *= 1.0 - (1.0 - book) * inShelf * 0.45;     // the dark behind them
-    albedo *= 1.0 + book * band * 0.55;
+    albedo *= 1.0 + book * (tone - 1.0) * 0.90;
+    albedo *= 1.0 - (1.0 - book) * inShelf * 0.55;     // the dark behind them
+    albedo *= 1.0 + book * band * 0.62;
     // and the shelf's own front edge catches the light
     albedo *= 1.0 + (1.0 - smoothstep(0.0, 0.035, abs(sy - 0.075))) * 0.30;
   }

@@ -225,6 +225,48 @@ What is left is **+2.56 ms, a 23% GPU cost for a 0% frame-rate cost** on this
 laptop: 58 fps before and after, because the observed rate is not GPU-bound
 here. That is the honest shape of it -- headroom spent, not frames.
 
+## What a prop pass needs that this instrument cannot give
+
+After the above shipped, the next increment was the rest of the prop
+vocabulary: five of the twenty silhouettes had been done (plant, shrub, column,
+statue, cabinet) and, counted by prop instance across the seventeen palettes,
+the unimproved ones still carry a lot -- headstone 44, chair 35, drape 33,
+crates 30, candelabra 25.
+
+**Written blind, that batch regressed and was reverted.** A fuller headstone --
+plinth, tapered die, shoulder moulding, three heads -- came back SHORTER and
+read as a block with a hat, and one of its variants rendered as a pyramid; the
+chair came out a spindle. At the thirty pixels a prop occupies, the
+recognisable CUE beats the parts, and two of the clips were the classic SDF
+error: a `max()` applied to the ACCUMULATED distance rather than to the
+primitive it was shaping, which subtracts from everything already in it.
+
+What survived, because each was verified at the size it renders:
+- the headstone LEANS (one hash, does not touch the silhouette's shape, and is
+  most of why a churchyard reads as one rather than a row);
+- the bookcase's spines are drawn at all. The shipped version tested
+  `gap = 1.0 - smoothstep(...)`, which is 1 at a spine's CENTRE and 0 at its
+  edge, so `1.0 - gap` drew a hairline down each joint and nothing else. Found
+  by looking at the Foyer's props at 2x, not by reading the code; proved by
+  flooding the term red and counting pixels (62-69k, round the perimeter where
+  the five cabinets stand) before touching a number.
+
+**And the instrument is the reason it stops here.** Two mounts of one region
+differ over **17% of their pixels**; with the props hidden 13.4 points remain,
+so most of it is the particle field spawning over time from a stream the clock
+freeze cannot rewind, and `motes=0` does not remove it. The other ~3.6 points
+are the props moving: `atmosphere._seed` is deterministic from the region key,
+but everything in the region draws from one `_rand()` stream, so anything that
+consumes a different number of draws reshuffles the layout.
+`setMood(region, { seed })` accepts a seed and forwarding it from the showcase
+has no effect, most likely because setMood early-returns when the mood already
+matches.
+
+So: **structural A/B is reliable** -- a floor, a wall, a paper, a sky, all far
+larger than the noise. **A single small prop cannot be A/B'd.** Fixing that
+means giving the layout its own RNG, separate from the particle stream. That is
+the right fix and it is the first thing a prop pass should do.
+
 ## The trap, for the fifth and sixth time
 
 The handoff's own warning is the thing to carry: **measure to find the defect,
