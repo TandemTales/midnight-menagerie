@@ -52,5 +52,6 @@
         }
       ]
     }
-  ]
+  ],
+  "_correction": "BISTRE's angle as run quotes 'mainMenu: 49.7% of pixels below L32, 3.6% above L192'. BOTH figures are wrong, measured after the round with tools/valuemetrics.py (Rec.709 luma, whole image): mainMenu is 70.09% below L32 and 0.001% above L192 -- its brightest pixel is L230 and only 0.21% of it is above L128. Across all four samples: below L32 65.2-81.1%, above L192 0.00-1.75%. So the samples are considerably DARKER than the angle said and have far FEWER bright accents, and BISTRE was told to build highlights its reference does not contain. It placed last (4.42 against the baseline's 4.25) and was marked down for pale, washed forms -- 'a single pale grey wedge', material 3. The angle text is left exactly as it was sent; this field records that it was wrong. Round 9 must quote the valuemetrics numbers."
 }

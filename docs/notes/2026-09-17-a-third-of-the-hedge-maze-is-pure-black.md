@@ -292,3 +292,49 @@ touch the void. BISTRE did, and found the cause this note had measured but not
 explained: **a region with `room.h = 0` was handed a 6.4 m ceiling by a
 fallback**, so a region open to the night had its frame crushed and painted no
 sky at all. That is the graft.
+
+## I gave one builder a false number and it came last
+
+BISTRE's angle, as sent: *"The samples are DARK pictures with a few bright
+accents (mainMenu: 49.7% of pixels below L32, 3.6% above L192)."*
+
+Both figures are wrong. Measured with `tools/valuemetrics.py` (Rec.709 luma,
+whole image), which BISTRE itself wrote and which is grafted in here:
+
+| | below L32 | above L192 | p95 |
+|---|---|---|---|
+| mainMenu | **70.09%** | **0.00%** | 78.7 |
+| selectKid | 81.06% | 0.19% | 93.4 |
+| selectCompanion | 65.23% | 1.75% | 147.2 |
+| title | 78.09% | 1.47% | 124.0 |
+
+`mainMenu.png`'s brightest pixel is L230 and **0.21% of the image is above
+L128 at all**. So the samples are considerably DARKER than the angle said, and
+have far FEWER bright accents -- and BISTRE was told to build highlights its
+own reference does not contain.
+
+**BISTRE placed last**, 4.42 against the baseline's 4.25, and the judges marked
+it down for exactly that: "a single pale grey wedge with no roofline", material
+3, "the row of solid black cones reads as a line of traffic cones" -- pale forms
+against crushed darks, which is what chasing 3.6% above L192 in a picture that
+has 0.00% will do.
+
+This is round 6's lesson a second time, and it was written down: *"A fix list
+can be wrong; when judges punish a candidate for doing what you asked, the ask
+was the defect."* The angle text is left exactly as it was sent, with the
+correction recorded in `round-8.args.json`'s `_correction` field, because what
+was run is what the scores mean.
+
+**And BISTRE's instrument is the answer to it.** `tools/valuemetrics.py`
+measures where the light IS -- deep-shadow and accent shares, how big the lit
+area is, how concentrated, the luma centroid, and five horizontal bands. Its
+headline finding survives into the merged build:
+
+    band0..band4, top of frame to bottom
+    mainMenu           14.9  28.7  29.8  29.6  39.6     the FLOOR is brightest
+    selectKid          25.5  22.1  20.3  20.4  18.6
+    foyer   (merged)    7.2  13.7  39.8  19.9  21.0     the WALL is brightest
+    graveyard(merged)   3.9  54.6  55.6  10.8  18.8     middle distance 3x the foreground
+
+**Every sample lights the floor. Every room here lights the wall.** That is
+round 9's headline, and it is measurable.
