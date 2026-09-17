@@ -1,4 +1,4 @@
-# Handoff — round 7 is merged; every screen has now been through the loop, and the backgrounds are the wall
+# Handoff — round 7 merged, and the procedural ground has been taken as far as it goes
 
 You are picking up Midnight Menagerie on `dev`. Everything below is pushed.
 
@@ -33,10 +33,25 @@ So there is no track with an unspent fix list any more. What a round 8 would be:
   is a render, not a painting at mainMenu.png's level, which pins the background
   score at 5-6 everywhere and holds the whole track near 7."
 
-**2. Where every round's verdicts live.** Round 7: `wby5zlql9.output` in THIS
-session's tasks folder. Round 6: `wei4yfxc4.output`, same place. Rounds 4-5:
-`w4c312fpu.output` and `wcudg6f1y.output` in session `f921e739`'s. All read with
-`tools/ui_pass_digest.py <file> <track> [--worst CODE] [--notes CODE,...]`.
+**2. Where every round's verdicts live**, as absolute paths, because they are in
+another session's scratch and you will not be able to guess them. Under
+`%TEMP%\claude\C--Users-Josh-OneDrive-Desktop-Tandem-Tales-Midnight-Menagerie\`:
+
+  rounds 6 and 7   `5a602355-7630-4c23-94f4-dfeaea93a0a4\tasks\`
+                   `wby5zlql9.output` (r7 DIALOGS + KIDS' PLACES)
+                   `wei4yfxc4.output` (r6 POLISH + COMBAT)
+  rounds 4 and 5   `f921e739-3596-4b9f-b0d2-9e78e6b37796\tasks\`
+                   `w4c312fpu.output`, `wcudg6f1y.output`
+
+All read with `python tools/ui_pass_digest.py <file> <track> [--worst CODE]
+[--notes CODE,...]`; set `PYTHONIOENCODING=utf-8` first, the judges write curly
+quotes. **If those folders have been cleaned, the verdicts are gone** -- the
+README's results table and the per-round `docs/ui-pass/BRIEF-r*.md` fix lists are
+then the whole record, which is why each brief quotes its judges verbatim.
+
+The UILOOP (worktrees `wt/` and every capture a judge has seen, `judging/r0`..`r7`)
+is at `5a602355-.../scratchpad/ui-loop`. A new session moves the worktrees into
+its own scratchpad with `git worktree move` and copies `judging/` across.
 
 `docs/ui-pass/BRIEF-r7.md`, `RUBRIC-r7.md` and `round-7.args.json` are the
 template: copy to `-r8`, keep the two-track shape, and keep the paragraphs about
@@ -60,22 +75,37 @@ is 9 from every judge. **It cannot be reached by more rounds of this kind.**
   "The bar, and what is holding it" is the wording.
 - This is worth telling Josh again whenever he asks what is left. It is the one
   thing that lifts every screen at once, and it is not something an agent can do.
-- **What the procedural ground CAN do was done on 09-16 (`57da26a`), and it is
-  measured.** Our darkest tenth ran rgb(7.8,5.2,7.8) against the samples'
-  rgb(0.3,0.2,0.2)..(3.8,3.4,3.7): every screen sat five levels off the floor, and
-  because saturation is (max-min)/max that ALSO capped our colour at 0.73 against
-  their 0.85-1.00. One floor, both symptoms. Taking it out moved the min channel
-  to 2.0-3.4, shadow saturation to 0.48-0.62 and the dynamic range to 21-32x.
-  README's "And a measured account of WHY" carries the numbers and the method.
-- **The trap in that work, which cost an hour:** cutting combat's full-frame
-  violet wash gave the best black-floor number of the pass and turned the fight
-  SEPIA — the render under it is warm brown and that violet is the only thing
-  tying it to a purple-black house. **Put before and after side by side. A metric
-  moving the right way is not the same as the screen improving.**
-- Still short of the samples: the ground's column-to-column spread is 0.021-0.024
-  against their 0.034-0.082. Their light pools harder across the width. That is
-  the next procedural thing worth trying, and it is in the light-slot positions
-  the scenes set (`--wl*-x/y` in `.kit-ground__warm`), not in the texture.
+- **The procedural half is DONE, 2026-09-16, and it is measured.** Two defects,
+  both found by measuring our screens against `UI/*.png` rather than by taste:
+  - **`57da26a` the black floor.** Our darkest tenth ran rgb(7.8,5.2,7.8) against
+    the samples' rgb(0.3,0.2,0.2)..(3.8,3.4,3.7): every screen sat five levels off
+    the floor, and because saturation is (max-min)/max the same lift ALSO capped
+    our colour at 0.73 against their 0.85-1.00. One floor, both symptoms. After:
+    min channel 2.0-3.4, shadow saturation 0.48-0.62, range 21-32x.
+  - **`cc59d6e` + `16e608d` the tooth.** Measured on FLAT surfaces only (one
+    width, tiled, only tiles with no edge in them), as high-frequency energy over
+    the surface's own level: Josh 0.185/0.325/0.318/0.498, ours 0.015-0.019. An
+    order of magnitude, and the whole of "a render, not a painting". His incident
+    is flat across every octave from 0.8px to 12px; ours was weakest at the fine
+    end. The room now carries 1/f tooth (beta 1.1) modulated by a slow wear field,
+    at x1.9 in the dark pass because at 7/255 a 13% tooth rounds away in 8 bits.
+    **The ground went 0.029 -> 0.139, a sixth of his lowest to three quarters.**
+- **THE TRAP, three times in one day, and it is the lesson to carry:** the metric
+  pointed past the right answer every time. Cutting combat's violet wash gave the
+  best black-floor number of the pass and turned the fight SEPIA. The tooth's own
+  amplitude reached his figure at 0.20 and read as film grain. The wear field kept
+  improving at 0.55 and turned the wall blotchy. **Every one was caught by putting
+  the crop beside the old one at 1:1, and none by the number.** Measure to find
+  the defect; look to set the amount.
+- **What is left is NOT worth doing procedurally.** The bare ground's
+  column-to-column spread is 0.021-0.024 against the samples' 0.034-0.082, but our
+  FULL screens already run 0.045-0.155 against their 0.034-0.082 -- more varied
+  than theirs. The flatness is only in the wall with nothing on it, which is not
+  what a judge sees. Chasing it means moving the scenes' candle positions
+  (`--wl*-x/y`), which is a design change nobody asked for. The remaining grain
+  gap (0.139 against 0.185) closes only by making the wall noisier, which was
+  tried and rejected. **The ground is as far as procedure takes it. The rest is
+  paint.**
 
 **4. The enemies animate (09-15); round 6's COMBAT brief says how, and round 7's
 must keep saying it.** Josh's call was "do it after round 5 merges". His sheets in
