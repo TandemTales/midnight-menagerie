@@ -22,20 +22,50 @@ since round 3** — winning all three screens from both judges, with Settings at
 8.0, a score only one other screen in the pass has reached. KIDS' PLACES gained
 +1.11 and merged per screen: Lobby HARROW, Clubhouse TINDER, Atlas HARROW.
 
-So there is no track with an unspent fix list any more. What a round 8 would be:
+So there is no track with an unspent fix list any more, and round 8 went to the
+thing every judge had blamed for seven rounds instead: the ROOM (item 3).
 
-- **DIALOGS and KIDS' PLACES again**, from round 7's own verdicts. Read them with
-  `python tools/ui_pass_digest.py <wby5zlql9.output> dialogs --worst SORLEY` and
-  `... kids --worst HARROW` (and `--worst TINDER` for the Clubhouse, which is
-  TINDER's screen now). The fix lists are short and specific — SORLEY's toggle
-  knobs hang outside their tracks, its CLEAR plate is an orphan in the filter
-  rail, the EXPEDITION panel's lower half is empty.
-- **POLISH is still converged** (see round 6, below) and COMBAT has had no round
-  since 6. Neither is where the value is.
-- **Honestly: the loop is now bounded by 3 below.** Round 7's judges said it
-  outright — "the ceiling is the ground: every wall, floor and corkboard here
-  is a render, not a painting at mainMenu.png's level, which pins the background
-  score at 5-6 everywhere and holds the whole track near 7."
+**ROUND 8 IS RUNNING as of 2026-09-17.** One track, 3 builders + 2 judges.
+
+    run          wf_75ec8ee9-95d
+    base         27f7028
+    UILOOP       C:/UILOOP/r8   (SHORT root -- see item 3d, it is not optional)
+    codes        SOOT a:8871 / VERDIGRIS b:8872 / BISTRE c:8873, baseline TALLOW
+    screens      room-foyer, room-crypt, room-graveyard, combat, combat-boss, rest
+    artifacts    docs/ui-pass/BRIEF-r8.md, RUBRIC-r8.md, round-8.args.json
+    merge        docs/ui-pass/MERGE-r8.md  -- READ THIS BEFORE MERGING
+
+Three of its six captures have no interface on them at all: a room,
+photographed by `tools/shot-scripts/backdrop-room.js`, judged as a painting.
+
+**When it lands, `MERGE-r8.md` is the procedure**, and it exists because of
+round 6: a converged field plus the ranking tiebreak once returned a candidate
+whose mean was below the screens it started from. Two disqualifiers first (the
+15.5 ms budget, and a sweep of all seventeen rooms against the baseline, because
+the round photographs three), then a test per briefed fix.
+
+**Two fixes are already diagnosed and QUEUED BEHIND THE MERGE. Do not
+re-derive them** -- `docs/notes/2026-09-17-a-third-of-the-hedge-maze-is-pure-black.md`
+has the measurements and the constants:
+
+- **A painted sky**, for the open-sky shell AND the glass ceilings. 71.5% of the
+  Hedge Maze's upper third is PURE black where mainMenu.png, also a night sky,
+  has none; ours is 4x-20x too dark and its stars up to 11x too HOT. His sky is
+  a nearly pure linear navy ramp: (3,11,26) to (13,24,44), variation 3.4% of
+  level, stars 0.01% of area above L110. A CPU prototype hits every axis. The
+  bound: any variation term above ~0.34 drives the sky back to pure black at
+  the low end of its own modulation.
+- **The CSS room's two lit passes never reach black.** `lit()`'s `amb` is a hard
+  floor and `57da26a` only lowered the unlit one, so `room-warm` and `room-moon`
+  read minCh 10.16 / 11.03 against the samples' 0.00-2.32. Set the amount by eye
+  with a board in front of it. (And `room.webp` has the highest ink depth of any
+  surface in the project, 0.337 against mainMenu's 0.248 -- the CSS room's base
+  painting is not this game's weak part.)
+
+**POLISH is still converged** (see round 6) and COMBAT has had no round since 6.
+Round 7's judges' own words for why the room was the right target: "the ceiling
+is the ground: every wall, floor and corkboard here is a render, not a painting
+at mainMenu.png's level, which pins the background score at 5-6 everywhere."
 
 **2. Where every round's verdicts live**, as absolute paths, because they are in
 another session's scratch and you will not be able to guess them. Under
@@ -172,6 +202,18 @@ inside a `/* glsl */` template literal ends it, and what you get is
 and an empty `.console.txt`. It cost four cycles in one afternoon because this
 codebase quotes identifiers in backticks everywhere else. The gate also checks
 every `${SPLICE}` against what the file imports.
+
+**3d. UI-pass worktrees need a SHORT root, and `git worktree add` simply fails
+without one.** Use `C:/UILOOP/<round>/{wt,judging}`. `LongPathsEnabled` is 0 in
+the registry on this machine, so 260 characters is a hard ceiling for Python and
+the edit tools (and enabling it is a system setting, not ours to change). A
+session scratchpad path is ~148 characters before `/wt/<round>-<track>-<slot>`;
+with the repo's longest tracked path (84) that wants 262, and round 8 hit exactly
+that -- three half-made checkouts and three dangling branches, which
+`git worktree remove` will not clean up (`git branch -D`, `rm -rf`, then
+`git worktree prune`). Rounds 5-7 fitted only because their track keys were two
+characters shorter: 259 of 260, by luck. `C:/UILOOP/r8/wt/r8-background-a` is 31,
+needs no permission prompt, and its judging folders outlive the session.
 
 **4. The enemies animate (09-15); round 6's COMBAT brief says how, and round 7's
 must keep saying it.** Josh's call was "do it after round 5 merges". His sheets in
