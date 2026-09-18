@@ -91,21 +91,33 @@ def main():
     ap.add_argument('--wait', type=float, default=7)
     ap.add_argument('--out')
     ap.add_argument('--width', type=int, default=1600, help='sheet width in px')
+    ap.add_argument('--min-panels', dest='min_panels', type=int, default=0,
+                    help='refuse to write a sheet with fewer panels than this '
+                         '(default: all the seeds you asked for)')
     args = ap.parse_args()
 
     from PIL import Image, ImageDraw
 
     seeds = [s.strip() for s in args.seeds.split(',') if s.strip()]
+    if not args.min_panels:
+        args.min_panels = len(seeds)
     tiles = []
     for s in seeds:
         p = capture(args.region, s, args.port, args.tier, args.wait)
         if p:
             tiles.append((s, p))
-    if not tiles:
-        sys.exit('no tile drew; nothing to compare')
-    if len(tiles) < len(seeds):
-        print(f'warn: {len(seeds) - len(tiles)} of {len(seeds)} tiles never drew '
-              f'and are missing from the sheet', file=sys.stderr)
+    if len(tiles) < args.min_panels:
+        msg = [
+            f'ONLY {len(tiles)} OF {len(seeds)} ROOMS DREW, so no sheet was written.',
+            '  A sheet with fewer panels than asked for is not a weaker sheet, it is',
+            '  a DIFFERENT ARTEFACT: at one panel it is an ordinary screenshot, and',
+            '  the question this round asks -- do these read as different rooms --',
+            '  cannot be put to a judge at all. Round 11 nearly shipped four',
+            '  single-panel baselines, each of which looked entirely normal alone.',
+            "  This machine's GPU degrades across a long session and recovers when",
+            '  left alone. Rest it and run this again.',
+        ]
+        sys.exit(chr(10).join(msg))
 
     ims = [Image.open(p).convert('RGB') for _, p in tiles]
     tw = args.width
