@@ -5,7 +5,36 @@ Read `RUBRIC.md` first for the 0–10 scale and the blindness rules, then
 for this round.** Where it disagrees with `RUBRIC.md` or `RUBRIC-r8.md`, this
 one wins. The score fields you return are unchanged; what you put in them is not.
 
-## THE CHANGE, in one paragraph
+## THE ROUND'S SUBJECT IS THE THINGS IN THE ROOMS
+
+Josh, 2026-09-17, setting the priority himself: *"im very concerned that nothing
+in the greenhouse looks like plants, and the ballroom seems to be occupied by
+statues or oversized oscar awards or something. this needs to be fixed at the
+highest priority. dont stop until each room makes sense with what it has inside
+and those things look as well painted/detailed as the characters and mansion in
+the UI example images and are up to the standards of a modern steam game."*
+
+**So your first and heaviest judgment is on the OBJECTS.** Two questions, and
+they are separate:
+
+1. **Does the room make sense with what it has inside it?** Would a person
+   walking into that room find these things there, in this quantity? A ballroom
+   full of statues on plinths does not make sense; a ballroom has mirrors,
+   seating, chandeliers. Score this under `coherence` and say so in
+   `worst_problem`.
+2. **Is each object drawn and detailed to the standard of `UI/*.png`?** The bar
+   is explicit: as well painted as **the mansion and the characters** in the
+   sample images, and up to a modern Steam game's standard. Open
+   `mainMenu.png` at 1:1: its cat statues are ~60 px and have ears, a seated
+   pose, a tail and a carved plinth; its windows have tracery at 30 px; its ivy
+   is individual leaves. Score this under `ornament` and `material`.
+
+**A featureless form is the failure.** A smooth, correctly-shaped standing
+figure with a uniform surface is an award statuette, not a statue. A mass of
+correctly-shaped fronds that shades as one lobed blob is not a plant. Mark those
+hard, on every screen they appear.
+
+## THE OTHER CHANGE, in one paragraph
 
 Rounds 0–8 asked "could this have been painted by the hand that painted
 `UI/*.png`", and judges correctly marked rooms down for using colours the
@@ -21,11 +50,12 @@ not read as planting.
 
 ## WHAT TO ASK, in this order
 
-1. **Can you name everything you can see?** Point at each object in the frame
-   and say what it is. Anything you cannot name, or that you name wrongly before
-   correcting yourself ("that's a cauliflower — no, a broken tomb"), is the
-   round's central failure. A room of unnameable shapes scores low however
-   beautifully it is lit.
+1. **Can you name everything you can see, and does it belong here?** Point at
+   each object in the frame and say what it is. Anything you cannot name, or
+   that you name wrongly before correcting yourself ("that's a cauliflower — no,
+   a broken tomb"), is the round's central failure. Then ask whether the thing
+   you named belongs in this room at all. A room of unnameable shapes scores low
+   however beautifully it is lit.
 2. **Is each thing built the way that thing is built?** A staircase has treads
    and risers of one repeated size, a stringer carrying them, balusters at a
    regular pitch, a handrail parallel to the rake. A roof has a ridge, straight
@@ -49,10 +79,13 @@ not read as planting.
 
 ## HOW THE EIGHT FIELDS ARE SCORED THIS ROUND
 
-- **`ornament`** — the density and QUALITY of drawn detail. Not how much noise
-  is on a surface: how much of it is a thing a hand put there deliberately, and
-  drawn correctly. A wall of accurate coursed ashlar scores above a wall of
-  ornate nonsense.
+- **`ornament`** — the density and QUALITY of drawn detail, **and this round it
+  is mostly about the OBJECTS, not the walls.** Not how much noise is on a
+  surface: how much of it is a thing a hand put there deliberately, and drawn
+  correctly. Does a statue have carved features and drapery folds, a pot a rim
+  and a foot, a leaf a midrib, a cabinet door a panel? A wall of accurate
+  coursed ashlar scores above a wall of ornate nonsense, and a room of detailed
+  objects scores above both.
 - **`palette`** — **does the colour suit the SETTING**: a decayed Victorian
   house at night, this region being what it is. **Not** whether it matches
   `UI/*.png`. A green glasshouse, a plum ballroom and a magenta passage are all
@@ -71,7 +104,9 @@ not read as planting.
   and its type still read against the room. On the three bare rooms, whether the
   objects are legible.
 - **`coherence`** — does the whole read as one built place, lit by one set of
-  lights, rather than as several good surfaces next to each other.
+  lights, rather than as several good surfaces next to each other — **and does
+  its CONTENT hang together**: are these the things that belong in this
+  particular room.
 
 ## `fits_between_samples`
 
@@ -94,12 +129,13 @@ of "the background is flat", which has been written eight times.
 
 ## What these six captures are
 
-- **`room-foyer`, `room-crypt`, `room-graveyard`** — a room photographed on its
-  own: no HUD, no board, no cards, no creature. **Judge these as drawings.**
-  They are the round's subject.
-- **`combat`, `combat-boss`** — a real fight, so you are judging whether the
-  room survives having a board in front of it: whether it still reads as a place
-  and whether it sits behind the fight instead of competing with it.
+- **`room-greenhouse`, `room-ballroom`, `room-foyer`, `room-graveyard`** — a
+  room photographed on its own: no HUD, no board, no cards, no creature.
+  **Judge these as drawings, and judge their CONTENTS hardest.** The Greenhouse
+  and the Ballroom are the two Josh named, and they are the round's subject.
+- **`combat`** — a real fight, so you are judging whether the room survives
+  having a board in front of it: whether it still reads as a place and whether
+  it sits behind the fight instead of competing with it.
 - **`rest`** — a board, and a different room entirely (the boards' background is
   a separate system from combat's). Judge it as a papered wall behind a plate.
 
@@ -108,7 +144,10 @@ of "the background is flat", which has been written eight times.
 - **The prop ARRANGEMENT may differ.** Furniture is placed procedurally per
   region, so a builder who changed a room's proportions gets a different
   arrangement. Judge the props themselves — silhouette, construction, size,
-  surface — not which corner one landed in.
+  surface, detail — not which corner one landed in.
+- **But WHICH objects a room contains IS a builder's choice this round**, and a
+  deliberate one. If a candidate has replaced a ballroom's statues with mirrors
+  and seating, that is the round's work and not a difference to discount.
 - **The creatures are animated** and will be on a different frame in every
   candidate. Do not score them.
 - **The HUD, cards, plates and type** are identical in every candidate.

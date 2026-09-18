@@ -24,11 +24,11 @@
       "name": "BACKGROUNDS",
       "rule": "refine",
       "screens": [
+        "room-greenhouse",
+        "room-ballroom",
         "room-foyer",
-        "room-crypt",
         "room-graveyard",
         "combat",
-        "combat-boss",
         "rest"
       ],
       "baseline": "SORREL",
@@ -37,19 +37,19 @@
           "slot": "a",
           "code": "GALLNUT",
           "port": 8881,
-          "angle": "MEASURE EVERY OBJECT. Fix 1 is your round: the dimension table, and an audit of what is already built against it. The height field is in metres so this is checkable, not a matter of taste -- go and find every form whose measurements are wrong and correct it, starting with the Foyer's staircase (riser 0.17-0.19, going 0.25-0.30, so the rake is ~33 degrees and CONSTANT; handrail 0.90-1.00 above the pitch line; baluster gap under 0.10) and the Crypt's loculi (a 0.60 x 0.40 opening, not a 1.35 m recess). Then fix 2: straight lines where the thing is straight and regular spacing where it is regular -- the Graveyard's roof needs a ridge, straight eaves and a constant pitch instead of two smoothstep humps. Put the metre figure you used beside the table's figure for every object, in notes_for_merger. Do not touch a palette."
+          "angle": "GIVE A PROP AN INTERIOR. Fix 1 is the whole cause and it is yours: shapeField() returns a 2D coverage mask and the fragment shader builds its normal from the COVERAGE GRADIENT alone, so every prop in this game is a rounded slab with material noise on it -- which is exactly what an award statuette is. Round 8 solved this for the WALL by drawing subjects into RELIEF instead of colour, so they inherited recess occlusion, ink in their hollows and a lip on their crests. Props never got it. Build the companion relief field, author it in metres off vSize the way wallH does, derive N from coverage AND relief, and let mmDrawn ink the interior lines. Then prove it on the statue (used by the Ballroom, Graveyard, Crypt and Heart, so it pays four times): brow, nose and chin, vertical drapery channels, a plinth moulding, marble with a vein and a chipped edge. Remember marks on a prop must be DARK -- it already sits at its luminance ceiling, and a highlight added as a highlight does nothing on screen."
         },
         {
           "slot": "b",
           "code": "UMBER",
           "port": 8882,
-          "angle": "MAKE EVERY OBJECT NAMEABLE. Judges are being asked to point at each thing in the frame and say what it is, and the ones that fail today are named in the brief: the Greenhouse's planting reads as cauliflower, the Hedge Maze's hedges as mossy sarcophagi, the Study's shelving as scaffolding, the Graveyard's fence palings as traffic cones, the Foyer's chest and armchair and wardrobe as pale grey slabs. Take those in that order and make each one recognisably the thing it is supposed to be, built the way that thing is built -- a hedge is a 1.8 m mass with a scalloped top, planting has leaves and stems and a rim, shelves have board thickness and uprights and things standing on them at different heights. FOLIAGE is the weakest of the six wall modes and its three recorded failure modes are in fix 9; check anything you add to a foliage mass against masonry first. A green glasshouse is fine -- Josh has ruled -- so spend nothing on colour."
+          "angle": "NOTHING IN THE GREENHOUSE LOOKS LIKE PLANTS. Fix 2a is yours and it is the first thing Josh named. Its prop SET is already right -- plants, shrubs, a lamp post, a column, thirty of them on a terrace -- so this is purely drawing, and round 8 attacked the silhouette three times and stopped there. The silhouette is not the problem, the interior is: one rounded-slab normal across a whole frond mass is the blob. A pot needs a rim that oversails, a belly, a foot, visible soil and a saucer; a leaf needs its own midrib as relief so it catches light on one side and loses it on the other, plus a curl so they do not all face the camera; a leaf crossing in front of another must be DARKER where it covers it; the ragged edge belongs at leaf scale, not mass scale; and a neglected glasshouse has a few dead fronds. Then do the Hedge Maze, which shares the foliage material and reads as mossy sarcophagi -- its three recorded failure modes are in fix 2a, and check anything you add against masonry first, because a hollow all the way round every clump is how a dry stone wall reads."
         },
         {
           "slot": "c",
           "code": "CARMINE",
           "port": 8883,
-          "angle": "A LINE ROUND EVERY FORM, AND LIGHT ENOUGH TO SEE IT BY. Fix 4 first: we ink the HOLLOWS of relief steps and nothing else, so a form standing IN FRONT of another form has no line between them -- prop silhouettes, arch mouldings, the stair, railings, headstones, the wall/floor junction. Both judges raised it on every screen and one called it the single cheapest thing that would move these from render to painting. Mind the hierarchy: mmDrawn saturates at 0.26 of height per pixel, so repeating joints belong at 0.10-0.21 and big forms at 0.5-0.9. Then fix 8 as CRAFT and not as colour-matching: our rooms are two to three times darker in the median than the samples with half the lit area and light MORE concentrated, so a few small pools carry everything and the rest of the room is unlit rather than dim -- and a room nobody can see the objects in fails the round's first question. A floor is nearer the light and flatter than a wall, which is why his pictures are brightest at the bottom and ours across the middle. Also fix 7: on combat the balustrade's hairlines cross behind the enemy nameplates."
+          "angle": "THE BALLROOM IS OCCUPIED BY OSCAR AWARDS, and that is a CONTENT failure before it is a drawing one. Fix 2b is yours. Thirty props on a colonnade layout led by a tall narrow statue is literally a row of award statuettes, in a room called The Ballroom and Velvet Suites whose own wall subject is already `mirrors`. A ballroom has pier mirrors and their frames, gilt chairs and settles round the walls, chandeliers, candelabra, a piano, a curtained dais. Change what is IN the room, add the silhouettes it needs and does not have, and cut the statues back or out. Then audit the other sixteen prop sets against fix 4's table the same way -- an armchair and a bookcase in the kennels, a headstone in a hedge maze -- and say in notes_for_merger which rooms you judged fine and why. Twenty silhouettes cover seventeen rooms, so a MISSING object type is a legitimate finding and worth adding when it is the difference between a room making sense and not."
         }
       ]
     }
