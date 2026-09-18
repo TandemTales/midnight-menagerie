@@ -25,7 +25,56 @@ since round 3** — winning all three screens from both judges, with Settings at
 So there is no track with an unspent fix list any more, and round 8 went to the
 thing every judge had blamed for seven rounds instead: the ROOM (item 3).
 
-**ROUND 8 IS RUNNING as of 2026-09-17.** One track, 3 builders + 2 judges.
+**ROUNDS 8 AND 9 ARE MERGED AND VERIFIED (2026-09-18).** Round 9 is the one to
+read: **+2.71, the largest gain of the pass**, and it is where the props stopped
+being slabs. `docs/ui-pass/README.md` has the full account; the short version:
+
+- Josh, after looking at the rooms: *"nothing in the greenhouse looks like
+  plants, and the ballroom seems to be occupied by statues or oversized oscar
+  awards"*, at **highest priority**, to the standard of the mansion and
+  characters in `UI/*.png`. Both judges then scored the baseline **2/10** on
+  both rooms unprompted. They merged at 7 and 6.5.
+- **THE CAUSE: a prop had no interior.** `shapeField()` returned a coverage mask
+  and the normal came from its gradient, so every prop was a rounded slab with
+  material noise on it -- which is exactly what an award statuette is.
+  `reliefH()` now returns metres of relief inside the outline for all twenty
+  silhouettes. Props got CHEAPER doing it (1.04-1.17 ms vs 1.19-1.25).
+- **Four findings that explain years of symptoms, and DO NOT re-derive them:** a
+  column's flutes had never rendered in any round (the shaft coordinate spanned
+  the whole quad, giving 1.5 flutes per drum); the prop luminance ceiling is a
+  COMPRESSOR and the diffuse loop sits inside it, mapping pre-grade 0.6 and 1.5
+  to a nine-per-cent spread, which is why five rounds of Greenhouse work only
+  changed its outline; props were half the size their rooms needed (a flat +-5%
+  spread on all twenty shapes); and recess occlusion darkens NEGATIVE relief
+  only, so a shape must subtract its own mid-height or its relief shows nothing.
+- **The Ballroom was a CONTENT failure in the region data.** `shapes[0]` is used
+  for both files of a `colonnade`, so `[15,4,7,6,0]` at count 30 built thirty
+  tall narrow figures on plinths. Josh was describing the data. It now has a
+  pier glass (shape 20) and a grand piano (21, `props.solo`), grafted from
+  CARMINE which won that screen.
+- Frame 13.5-14.2 ms against the 15.5 budget. Battery: 101 gates, 3 red, all
+  three pre-existing (HALO clips, Archivo seed / `_losePatience`, steam-deck).
+
+**WHAT ROUND 10 SHOULD TAKE**, from both judges and the last sweep:
+`fits_between_samples` is still FALSE everywhere and the best room is 7. The
+Foyer is furnished but still bare below the dado and its handrails are
+one-pixel stepped diagonals (UMBER's branch `ui/r9-bg2-b` fixed those and scored
+7 on it); the Greenhouse's pots are rimless dark tubs with no lip or soil line,
+so a 2 m specimen grows out of a shadow; the piano's lid underside wants more
+shade. `docs/ui-pass/BRIEF-r9.md` and `RUBRIC-r9.md` are the right shape to
+re-use -- objects first, colour explicitly not a target.
+
+**AND THE TRAP THAT COST AN EVENING: a capture with no GPU is not a regression.**
+A seventeen-room sweep came back all dead with `VALIDATE_STATUS false`, which
+reads as "the round broke the shader". Six captures at three commits settled it:
+the round's own BASE failed 4 of 6. This machine's GPU process degrades across a
+few hundred Chromium launches in a session and cannot create a context;
+**it recovers when left to idle**, and the same sweep next morning got 17 of 17.
+`tools/shot.py` now flags a void capture and exits 2 -- and note the second
+correction, that a live GL context is NOT proof the frame drew, so the test is
+the frame's own std (void under 5, darkest real room 29, threshold 8).
+
+**ROUND 8, for the record, ran as of 2026-09-17.** One track, 3 builders + 2 judges.
 
     run          wf_75ec8ee9-95d
     base         27f7028
