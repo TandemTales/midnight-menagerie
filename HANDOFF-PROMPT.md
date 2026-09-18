@@ -25,6 +25,45 @@ since round 3** — winning all three screens from both judges, with Settings at
 So there is no track with an unspent fix list any more, and round 8 went to the
 thing every judge had blamed for seven rounds instead: the ROOM (item 3).
 
+**ROUND 11 IS READY AND BLOCKED ON THE MACHINE, NOT THE WORK (2026-09-18).**
+
+Everything is committed and pushed: `BRIEF-r11.md`, `RUBRIC-r11.md`,
+`round-11.args.json`, `tools/variant_sheet.py`, and three worktrees cut at
+`3a32fc0` (`ui/r11-vary-{a,b,c}`, ports 8901-8903). The probe dry-runs clean at
+5 agents. **The only thing missing is its baselines.**
+
+TO FINISH IT, after the machine has been restarted:
+
+    bash <scratchpad>/baseline_r11.sh      # skips what exists, retries voids
+
+It needs 8 files in `C:/UILOOP/r11/judging/r11/vary/QUILL/`: four SHEETS
+(foyer, ballroom, greenhouse, graveyard -- three rooms each) and combat, rest,
+each at both sizes. Two are already there (`rest`, `rest-1280`). Then launch
+with `round-11.args.json` plus repo, `uiloop: C:/UILOOP/r11`, `base: 3a32fc0`.
+
+WHY IT IS BLOCKED. This machine's GPU process degrades across a long session of
+Chromium launches and eventually cannot draw: `glStd` pins at 1.85-1.98 where a
+healthy capture of the same region reads 27-48. It used to recover after a rest
+-- a 17-room sweep failed one evening and ran 17 of 17 the next morning on the
+same commit -- but by the end of 2026-09-18 it was managing only one or two
+captures per rest. **That is a restart, not a wait.**
+
+WHAT THE ROUND IS. Josh: *"i want variation between backgrounds within sections
+of the mansion as well, multiple different foyer, ballroom, greenhouse, etc.
+rooms so that different encounters within the same section wont feel stale."*
+The machinery already exists and must not be rebuilt -- `combat.js` passes
+`setMood(region, { seed: roomName })` and `_vary()` re-rolls layout, prop count,
+room proportions, every lamp and the shafts, and three Foyers differ in 51-55%
+of their pixels. **What it never touches is `pal.cam`, `subject`,
+`floorPattern` and the prop shape set**, so every Foyer shows the same staircase
+on the same wall from the same camera. That is the staleness. Fix order, which
+is also cheapest-first: the camera, where the subject sits, a subject POOL per
+wing, then floor and prop families.
+
+AND THE ONE THAT NEARLY SHIPPED BROKEN: all four baseline sheets came back with
+ONE PANEL each and every one looked like a normal screenshot. `variant_sheet.py`
+now refuses to write a sheet shorter than the seeds asked for (`75528b7`).
+
 **ROUND 10 IS MERGED (2026-09-18) AND TWO GRAFTS ARE OUTSTANDING AND VALUABLE.**
 
 OAKGALL merged as `f39dbc6`, 2 of 3 judges, 5.78 against the baseline's 4.06 --
