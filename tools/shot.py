@@ -208,6 +208,31 @@ async def run(a):
         #
         # So say so loudly, and exit 2, so a caller can tell a void capture
         # from a real page error.
+        # -- DID THE WEBGL LAYER DRAW AT ALL? --------------------------------
+        # The UI is a DOM layer over the #gl canvas, so a frame whose backdrop
+        # never drew still looks busy: the board and cards keep whole-frame
+        # variance high and every other check passes. GALLNUT's combat-1280
+        # shipped exactly that way -- healthy context, no console errors, 41 fps,
+        # and no room -- and both round 9 judges made it their number one
+        # blocking fix for a bug that does not exist.
+        #
+        # So measure the gl canvas ON ITS OWN. A scene that deliberately stops
+        # the WebGL layer reads ~0 here too, so this RECORDS and warns rather
+        # than failing; the number is the evidence.
+        try:
+            _el = await page.query_selector("#gl")
+            if _el:
+                _b = await _el.screenshot()
+                from PIL import Image as _GI
+                import io as _gio
+                _g = _GI.open(_gio.BytesIO(_b)).convert("L")
+                _hh = _g.histogram()
+                _nn = sum(_hh) or 1
+                _mu = sum(i * c for i, c in enumerate(_hh)) / _nn
+                _vv = sum((i - _mu) ** 2 * c for i, c in enumerate(_hh)) / _nn
+                perf["glStd"] = round(_vv ** 0.5, 2)
+        except Exception:
+            pass
         void = (not gl) or str(gl) in ("none", "?", "None")
         # ...AND A CONTEXT IS NOT ENOUGH. A capture can hold a live GL context
         # and still draw NOTHING: the greenhouse came back gl-present, mean 8.8,
@@ -241,6 +266,12 @@ async def run(a):
     soft = " [SOFTWARE RASTERISER - fps not representative]" if perf.get("software") else ""
     print("fps:", perf.get("fps"), soft, "| gl:", str(perf.get("gl"))[:70])
     print("state:", str(state)[:280])
+    _gs = perf.get("glStd")
+    if _gs is not None and _gs < 1.0:
+        print("warn: the WEBGL LAYER is blank (glStd %s). If this screen should have"
+              % _gs, file=sys.stderr)
+        print("  a room behind it, the backdrop did not draw and the capture is not", file=sys.stderr)
+        print("  evidence. Re-take it. (A scene that stops the WebGL layer reads 0 too.)", file=sys.stderr)
     if void:
         print("VOID CAPTURE: the page never got a GPU context (gl=%s)."
               % perf.get("gl"), file=sys.stderr)
