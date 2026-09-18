@@ -1,0 +1,57 @@
+{
+  "round": "r10",
+  "maxBuilders": 3,
+  "briefs": [
+    "docs/ui-pass/BRIEF-r0.md",
+    "docs/ui-pass/BRIEF-r1.md",
+    "docs/ui-pass/BRIEF-r9.md",
+    "docs/ui-pass/BRIEF-r10.md"
+  ],
+  "rubrics": [
+    "docs/ui-pass/RUBRIC.md",
+    "docs/ui-pass/RUBRIC-r1.md",
+    "docs/ui-pass/RUBRIC-r9.md"
+  ],
+  "samples": [
+    "UI/title.png",
+    "UI/mainMenu.png",
+    "UI/selectCompanion.png",
+    "UI/selectKid.png"
+  ],
+  "tracks": [
+    {
+      "key": "bg3",
+      "name": "BACKGROUNDS",
+      "rule": "refine",
+      "screens": [
+        "room-greenhouse",
+        "room-ballroom",
+        "room-foyer",
+        "room-graveyard",
+        "combat",
+        "rest"
+      ],
+      "baseline": "TANSY",
+      "builders": [
+        {
+          "slot": "a",
+          "code": "OAKGALL",
+          "port": 8891,
+          "angle": "A LIGHT YOU CAN SEE NEEDS A FITTING. Fix 1 is yours and it is one root cause behind complaints from both judges in two rooms each. The backdrop draws a visible flame at every practical light -- correctly, so the flicker that drives the illumination drives the source you can see -- but nothing draws the FITTING, so a light placed in mid-air is a pale oval attached to nothing. Verified before it was briefed: the Ballroom's three lights sit at x -6.5, +6.5, 0.0 and y 5.40, 5.40, 6.20, and its capture holds exactly three bright blobs at x 30.0%, 70.8%, 50.6%, all at y about 41%. Give each light a body -- a chandelier with arms, candle cups and a chain to a ceiling rose; a sconce with a backplate and an arm -- or stop drawing a flame for a light that has no fitting. Then confirm whether the Graveyard's SECOND MOON is the same thing: its one cold practical sits at y 8.00 in open air, the small disc measures 323 px against the moon's 3424, and motes=0 and shafts=0 both leave it untouched, so it is neither. Then fix 4, the statue's face, hands and drapery folds, which pays four times over because the Ballroom, Crypt, Graveyard and Heart all use it."
+        },
+        {
+          "slot": "b",
+          "code": "SORREL2",
+          "port": 8892,
+          "angle": "THE GREENHOUSE, FINISHED. Fixes 2 and 3 are yours. The plants themselves are good now -- round 9 gave them real leaves -- so this is everything they stand in and stand among. Every container is a dark rimless tub with no rolled lip, no foot and no soil line, so a 2 m specimen appears to grow out of a shadow on the brick: give each a rolled rim with a visible inner ellipse, a foot, and a soil line at the crown, and split the run between terracotta and lead cisterns so they are not one silhouette. The mid-ground masses are mottled lumps with no leaf edges and read as moss boulders: give them the construction the potted fans have, or replace them with a coursed brick planting bed holding more fans. The leaves are flat cut-paper with a uniform fill and read as one plane at 1:1: add a specular roll along each midrib, let outer leaves curl over and overlap their neighbours, and give each species its own edge. And the ceiling is a flat black band -- a glasshouse roof is GLAZED, so carry the glazing bars over the top in perspective to a ridge and give the shafts a source."
+        },
+        {
+          "slot": "c",
+          "code": "BISTRE2",
+          "port": 8893,
+          "angle": "THE GRAVEYARD IS A CATHEDRAL FORECOURT, AND THE FOYER IS EMPTY BELOW THE DADO. Fixes 5, 6 and 8. Both judges: a graveyard paved wall-to-wall in brick courses makes its headstones read as bollards -- lay turf and earth with kerbed plots, a settled mound with a disturbed edge round each stone, and keep paving only for a gravel path back to the railings. The house behind it is a stack of uniform full-width horizontal stripes with windows like glowing bread loaves: stagger the joints into individual stones with a header course, and give each window a mullion and a sill drip. Then the Foyer, whose lower 40% is unlit floor carrying one small bench: graft UMBER's glazed vitrines with glazing bars and cornice, its torchere and its buttoned hall chair from ui/r9-bg2-b, add a stair runner up the axis, and fix the handrails, which are one-pixel stepped diagonals that read at 1:1 as an aliased staircase icon -- UMBER fixed exactly that and won the screen at 7."
+        }
+      ]
+    }
+  ]
+}
