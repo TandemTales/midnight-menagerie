@@ -111,6 +111,7 @@ so round 2 runs six at once, as round 1 did.
 | 7 | DIALOGS opening / Settings / pile viewer | SORLEY 7.67 · PLOVER 7.17 · MEADOW 7.00 · the screens before 5.17 | SORLEY, both judges, all three screens. **+2.50**, the largest gain since round 3; its Settings scored 8.0 | `d5cd11f` |
 | 7 | KIDS' PLACES Lobby / Clubhouse / Atlas | HARROW 7.56 · TINDER 7.33 · SEDGE 7.00 · the screens before 6.44 | per screen, 3 judges: Lobby HARROW, Clubhouse TINDER, Atlas HARROW | `40b2a1b`, `05c1916` |
 | 8 | **BACKGROUNDS** — three ROOMS with no interface on them (foyer / crypt / graveyard) plus combat, combat-boss, rest | VERDIGRIS 5.83 · SOOT 4.92 · BISTRE 4.42 · the screens before 4.25 | VERDIGRIS, both judges, **and it beats the baseline on all six screens**. +1.58. `fits_between_samples` FALSE for every candidate on every screen | `d94cf23`, then the sky graft `5f0da30` |
+| 9 | **THE THINGS IN THE ROOMS** — greenhouse / ballroom / foyer / graveyard / combat / rest | GALLNUT 6.42 · UMBER 5.71 · CARMINE 5.21 · the screens before **3.71** | GALLNUT, both judges. **+2.71, the largest gain of the pass.** The baseline scored **2/10** on both rooms Josh named; they merged at 7 and 6.5 | `5cf3efd` + the ballroom graft `723dc2b` |
 
 **Scores anchor to the candidates beside them.** Round 0's winner scored 7.0 in
 round 0 and 5.58 as round 1's baseline: the judges grew stricter as the field
@@ -129,6 +130,7 @@ Against their own baselines:
 | 6 | **POLISH +0.00**, COMBAT +0.83 | — |
 | 7 | DIALOGS **+2.50**, KIDS' PLACES +1.11 | — |
 | 8 | BACKGROUNDS **+1.58** | — |
+| 9 | THE THINGS IN THE ROOMS **+2.71** | — |
 
 Converting a screen moves it about four points. Refining one moves it half a point
 to two points, more when the brief names concrete defects the judges can see
@@ -359,3 +361,138 @@ hairlines and reads as a wireframe on wallpaper; the Crypt's loculi repeat at
 one pitch and read as a stamped tile; nothing carries an ink contour ("the
 samples outline everything"); and on `combat` the balustrade's hairlines cross
 straight behind the enemy nameplates, so the room competes with the board.
+
+### Round 9: the things in the rooms, 2026-09-17/18
+
+Josh, having looked at the palette comparison and then at the rooms themselves:
+*"colors are fine but im very concerned that nothing in the greenhouse looks
+like plants, and the ballroom seems to be occupied by statues or oversized oscar
+awards or something. this needs to be fixed at the highest priority."* With the
+bar set explicitly: as well painted as **the mansion and the characters** in
+`UI/*.png`, and up to a modern Steam game's standard.
+
+**The first round the rooms he named were even LOOKED at.** The round already
+running when he said it had six judged screens and neither the Greenhouse nor
+the Ballroom was among them, so it was stopped and rebuilt. Both judges then
+scored the baseline **2/10** on both rooms, unprompted: *"the planting is a
+field of smooth pale-grey popcorn lobes on stubs standing in grey slab tubs ...
+the Impossible Greenhouse contains no recognisable plant at all"*, and *"still
+occupied by award statuettes: six smooth featureless standing figures on stepped
+plinths ... standing about 2.5 m to the top of the head — taller than the
+doorway on the back wall"*.
+
+**ONE CAUSE UNDER BOTH COMPLAINTS, and it was structural.** `shapeField()`
+returned a 2D coverage mask and nothing else; the fragment shader built each
+prop's normal from the *coverage gradient* — outward at the outline, toward the
+camera in the middle — plus one fbm wobble and four bands of material noise
+that know nothing about the object's form. That is a rounded slab. **A smooth,
+featureless, correctly-shaped standing figure with a uniform metallic surface
+IS an award statuette**; it was not a taste problem, it was the only thing the
+prop shader could draw. The same cause made thirty separate plant fronds shade
+as one lobed blob.
+
+Round 8 had solved exactly this for the WALL, when subjects stopped being drawn
+in colour and moved into RELIEF. Props were the last surface in the house still
+lit as a silhouette. `reliefH()` now returns METRES of relief inside the outline
+for all twenty silhouettes, positions in uv and amplitudes off `vSize` the way
+`wallH` authors the wall; the normal comes from coverage AND carving; a recess
+is darker than the face it is cut into; `mmDrawn` inks the interior lines.
+
+**Props got CHEAPER doing it** — 1.04–1.17 ms against 1.19–1.25 — because
+replacing six smin'd circles per frond with one distance to its axis paid for
+the new branch. Frame 13.5–14.2 ms against the 15.5 budget.
+
+**FOUR THINGS IT FOUND THAT EXPLAIN YEARS OF SYMPTOMS:**
+
+- **A column's flutes had never rendered, in any round.** Round 8 wrote the
+  groove, set its width in pixels, gated it on resolvability and looked at the
+  capture — and the shaft coordinate was `(vUv.x - 0.5)*2.0`, which spans the
+  whole QUAD. The shaft is 0.132 of the quad, so that reaches ±0.264, and
+  `asin` of it times 5.0 is **one and a half flutes across an entire drum**.
+  That is why every column in this house read as a post.
+- **The prop luminance ceiling is a COMPRESSOR, and the diffuse loop sits
+  inside it.** On the Greenhouse's numbers (propCeil 0.569, exposure 1.67) it
+  maps pre-grade 0.6 and 1.5 to 0.299 and 0.325 — **nine per cent**. Any value
+  a prop's interior created through its normal was crushed before it reached the
+  screen, **which is why five rounds of work on the Greenhouse only ever changed
+  its outline**. Relief has to be drawn as SHADE on the far side of both
+  ceilings.
+- **Props were half the size their rooms needed** — a correct fix applied with
+  one wrong constant. Pinning each to its real metres is right, but it shipped
+  with a flat ±5% spread on all twenty shapes, so thirty 1.43 m plants in a
+  30×26×10.5 m glasshouse photographed as an EMPTY room. Living things get a
+  real spread now (plant 0.62, shrub 0.48) and joinery does not: a chair is
+  0.88 m in every house on the street, a conservatory palm is whatever it has
+  grown to.
+- **Recess occlusion darkens NEGATIVE relief only.** CARMINE's first foliage was
+  built entirely from positive height, so it got a normal, an ink line and no
+  shadow anywhere — "a cauliflower with veins on it". A shape must subtract its
+  own mid-height or its relief executes and shows nothing.
+
+**THE BALLROOM WAS A CONTENT FAILURE BEFORE A DRAWING ONE**, and nobody had
+ever asked whether a room's contents make sense. Its data said
+`shapes: [15,4,7,6,0], count: 30, layout: 'colonnade'` — and a colonnade takes
+`shapes[0]` for both receding files, so the room was literally thirty tall
+narrow figures on plinths. **Josh was describing the DATA.** The winner removed
+the statues and put nothing back (judge: *"under-furnished and mis-scaled ... no
+mirror, no chandelier and no piano in a 20 m hall"*), so CARMINE's contents were
+grafted in: a **pier glass** (the object a ballroom has most of, and a dark sunk
+arch with no reflection is a DOORWAY, which is how the wall's own `mirrors`
+subject had been reading) and a **grand piano** whose propped lid is a
+TRAPEZOID — the hinge lies flat on the case for its whole length and only the
+free edge rises. A 2 cm lid board is one pixel at that distance and
+photographed as a wire over a bench; a sheared slab lifts the hinge off the
+case at the tail.
+
+Three content bugs came with it: the prop picker is UNIFORM, so a piano in the
+list means three or four pianos; a room's one-of-something must be PLACED rather
+than dealt, or it lands 24 m back behind a column; and the colonnade dealt its
+remaining props from a pack that still contained the column it is made of, then
+scattered them to the back wall where a 0.95 m gilt chair is fifteen pixels.
+
+**VERIFIED ACROSS ALL SEVENTEEN ROOMS** (and the sweep had to wait overnight for
+the GPU — see the trap below): ink depth 0.097 → 0.106, ink share 0.514 →
+0.525, tooth 0.299 → 0.310, void 11.38% → 11.25%. Hedge 0.179 → 0.257,
+graveyard 0.089 → 0.121, pumpkin and heart both roughly doubled. Three rooms
+read lower and none is a regression: the **Foyer** (0.203 → 0.124) traded a few
+very strong troughs on a bare wall for many mid-strength drawn lines, which is
+what a median does, and its judges went 3.5 → 6.75; the **Ballroom** is a
+different room now; the **bathhouse** still carries the highest ink in the
+house.
+
+**STILL SHORT.** `fits_between_samples` is false for every candidate on every
+screen and the best room is 7. What both judges name next: the Foyer is
+*furnished* but still under-furnished below the dado and its handrails are
+one-pixel stepped diagonals, the Greenhouse's pots are rimless dark tubs with no
+lip or soil line so a 2 m specimen grows out of a shadow, and the piano's lid
+underside wants more shade.
+
+### The trap this round paid for: a capture with no GPU is not a regression
+
+The verification sweep came back with **all seventeen frames dead** and
+`VALIDATE_STATUS false` on every one, which reads exactly like "the round broke
+the shader". It was not. Repetition at three commits, six captures each, is what
+settled it — the round's own BASE failed 4 of 6, GALLNUT 5 of 6, the tip 5 of 6,
+and the base ran FIRST when the GPU was least degraded. This machine's GPU
+process degrades across a few hundred Chromium launches in one session and
+eventually cannot create a context; **it recovers when left to idle**, and the
+same sweep the next morning captured 17 of 17 with no voids at all.
+
+The signature: `gl` comes back `none`, and the console errors name three.js's own
+`MeshStandardMaterial` alongside ours — if OUR program were over a hardware
+limit, three's stock material would still link. `tools/shot.py` now detects it
+and **exits 2**, so a sweep can tell a void capture from a page error.
+
+And the correction that followed, because the first version of that check was
+also wrong: **a live GL context is not proof the frame drew.** It passed a
+Greenhouse capture with a healthy context, mean 8.8 and std 4.84, after which
+`bgmetrics` reported that room's ink depth as 0.000 — "the round destroyed the
+room it was written to fix". The test is the PIXELS now: void frames sit under
+std 5 whether they fail white or black, the darkest real room measures 29, and
+the threshold is 8.
+
+**Three instruments lied in one session** — a "cloud variation" that was the
+tower spires inside the crop, a CSS-room defect that dissolved once `kit.css`
+showed those assets are masked to the candle pools, and a sweep with no GPU
+attached. Measure to find the defect; then check what population you measured,
+and check the instrument was alive.
