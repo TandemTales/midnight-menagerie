@@ -91,13 +91,17 @@ export const DEFAULT_ROOM = {
  *  19   birdcage stand  1.60 m                 --
  */
 const SHAPE_M = [1.20, 2.00, 1.30, 1.00, 2.00, 2.00, 3.32, 2.60, 1.17, 1.33,
-                 1.56, 1.30, 2.16, 1.50, 2.00, 2.44, 1.27, 0.97, 3.09, 1.56];
+                 1.56, 1.30, 2.16, 1.50, 2.00, 2.44, 1.27, 0.97, 3.09, 1.56,
+                 2.80, 2.05
+];
 /* ...and a width ratio, so a column is a column and not a capital-T. Four of
  * these were wrong by enough to change what the object was: a longcase clock
  * 0.23 m wide (a stick), a bath 0.99 m long (a basin), a four-poster 2.76 m
  * wide, and a column at h/12.3 when the table says h/8 to h/10. */
 const SHAPE_W = [1.15, 0.48, 1.00, 0.95, 0.72, 0.80, 0.47, 0.85, 0.90, 1.35,
-                 1.30, 1.20, 0.87, 1.14, 0.77, 0.78, 1.80, 2.24, 0.50, 0.62];
+                 1.30, 1.20, 0.87, 1.14, 0.77, 0.78, 1.80, 2.24, 0.50, 0.62,
+                 0.72, 1.62
+];
 /* HOW MUCH ONE OF THESE VARIES FROM THE NEXT, as a +-fraction of SHAPE_M.
  *
  * Pinning every prop to its real height in metres is right -- BRIEF-r9's
@@ -116,9 +120,15 @@ const SHAPE_W = [1.15, 0.48, 1.00, 0.95, 0.72, 0.80, 0.47, 0.85, 0.90, 1.35,
  * reading as a stamped tile, which is fix 5's complaint about the Crypt's
  * loculi in a different room. */
 const SHAPE_VAR = [0.06, 0.08, 0.62, 0.20, 0.10, 0.08, 0.10, 0.10, 0.16, 0.48,
-                   0.06, 0.06, 0.06, 0.06, 0.06, 0.14, 0.14, 0.06, 0.08, 0.08];
+                   0.06, 0.06, 0.06, 0.06, 0.06, 0.14, 0.14, 0.06, 0.08, 0.08,
+                 0.06, 0.04
+];
 // Which shapes hang from the ceiling rather than stand on the floor.
 export const HANGING = { 4: 1, 7: 1 };
+/* ...and which stand AGAINST A WALL rather than out on the floor. A tall
+   mirror marooned in the middle of a dance floor reads as a slab; against a
+   wall it reads as the thing a ballroom is lined with. */
+export const WALLSIDE = { 20: 1 };
 
 /**
  * THE SUBJECT of a room, by name. A region's `subject` picks one; `subjectH` in
@@ -600,7 +610,20 @@ export class Backdrop {
     const H = P.height ?? 2.2;
     const ceil = room.h > 0 ? room.h : 7.0;
     const out = [];
-    const pick = () => shapes[(rand() * shapes.length) | 0];
+    /* SOME THINGS A ROOM HAS EXACTLY ONE OF, and pick() is UNIFORM over the
+       region's shape list -- so a grand piano in the list meant three or four
+       grand pianos in the ballroom, which is the same content failure as
+       thirty statues arrived at by another route. A shape named in
+       props.solo is dealt once and then withdrawn from the pack. */
+    const solo = new Set(P.solo || []);
+    const dealt = new Set();
+    const pick = () => {
+      for (let tries = 0; tries < 8; tries++) {
+        const s = shapes[(rand() * shapes.length) | 0];
+        if (!solo.has(s) || !dealt.has(s)) { if (solo.has(s)) dealt.add(s); return s; }
+      }
+      return shapes.find((s) => !solo.has(s)) ?? shapes[0];
+    };
     /* A CHAIR IS 0.9 m IN EVERY ROOM IN THE HOUSE. The size now comes from
        SHAPE_M, the object's own height in metres, and the two things that used
        to set it outright are demoted to variation:
@@ -751,9 +774,35 @@ export class Backdrop {
         push(shapes[0], -x0 * (1 - t * 0.14), z, 1.24 - t * 0.16, 0.30 + t * 0.55);
         if (out.length < n) push(shapes[0], x0 * (1 - t * 0.14), z + (rand() - 0.5) * 0.5, 1.24 - t * 0.16, 0.30 + t * 0.55);
       }
+      /* A SOLO PROP IS THE ROOM'S ONE OF SOMETHING, so it is PLACED and not
+         dealt: there is a single chance at it, and a piano 24 m back behind a
+         column is not in the room as far as the picture is concerned. Left of
+         centre, a few metres in, where a piano stands in a room used for
+         dancing. */
+      for (const sp of (P.solo || [])) {
+        if (out.length >= n || !shapes.includes(sp)) continue;
+        dealt.add(sp);
+        push(sp, -halfW * 0.145, -3.3 - rand() * 1.2, 1.0, 0.58);
+      }
+      /* ...AND THE FURNITURE BETWEEN THE COLUMNS, with two corrections.
+         This dealt from the whole pack INCLUDING shapes[0], which is the shape
+         the colonnade is already made of, so a share of the remainder came back
+         as more columns. And it spread them uniformly to the back wall, where a
+         0.95 m gilt chair 22 m down a 34 m room under a 47 degree lens is
+         fifteen pixels -- the Ballroom's whole contents were a few dark specks
+         along the far wall while the colonnade carried the frame.
+         So: the rest of the pack, biased hard toward the front, and pushed OUT
+         toward the side walls, which is not a composition trick -- it is where
+         a ballroom's seating goes. The middle of the floor is what the room is
+         FOR, and it stays clear. */
+      const rest = shapes.length > 2 ? shapes.slice(1) : shapes;
       while (out.length < n) {
-        const s = pick();
-        push(s, (rand() * 2 - 1) * halfW * 0.86, -3 - rand() * (room.d - 4), 1.0, 0.25 + rand() * 0.6);
+        const s = rest[(rand() * rest.length) | 0];
+        if (solo.has(s) && dealt.has(s)) continue;
+        if (solo.has(s)) dealt.add(s);
+        const t2 = rand() * rand();
+        push(s, (rand() < 0.5 ? -1 : 1) * halfW * (0.32 + 0.60 * rand()),
+             -2.2 - t2 * (room.d - 4.0), 1.0, 0.42 + t2 * 0.48);
       }
 
     } else if (layout === 'rows') {

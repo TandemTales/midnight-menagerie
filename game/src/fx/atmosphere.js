@@ -448,7 +448,7 @@ export const REGIONS = {
      The biggest room in the house: 34 m wide, 10.5 m to a plastered rose, a
      mirror-polished checker floor and a colonnade of COLUMNS down both sides.
 
-     It used to say "a colonnade of statuary", and that is what it built: prop
+     It used to say "a colonnade, mirrors and seating", and that is what it built: prop
      shape 15 at SHAPE_H 1.10 and SHAPE_W 0.60 is a tall narrow standing
      figure, the colonnade layout stands shapes[0] in two receding files, and
      thirty tall narrow figures on plinths down a ballroom is, quite literally,
@@ -472,7 +472,7 @@ export const REGIONS = {
        five put THREE chairs in a 34 m ballroom. Two entries of shape 0 make
        seating two fifths of the loose props, which is what a ballroom has
        round its walls, plus the chandeliers and the candelabra. */
-    props: { shapes: [6, 0, 0, 4, 1], count: 32, height: 2.9, layout: 'colonnade' },
+    props: { shapes: [6, 0, 20, 4, 0, 1, 7, 21], solo: [21], count: 34, height: 2.9, layout: 'colonnade' },
     particles: { mix: [[PTYPE.DUST, 0.58], [PTYPE.EMBER, 0.26], [PTYPE.WISP, 0.16]],
                  tint: '#ffe8c0', wispTint: '#d8a8ff', emberTint: '#ffc95a',
                  speed: 0.9, scale: 1.1, wind: 0.8, density: 1.0 },
