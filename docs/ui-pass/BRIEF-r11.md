@@ -126,12 +126,32 @@ All of `BRIEF-r10.md`'s section applies. The two that matter most here:
 python tools/on_port.py PORT tools/gpuprof.py --scene combat --w 1600 --h 900
 ```
 
-Through `on_port.py` always, in a quiet window, three runs. **15.5 ms.** The
-build you started from measured 13.5–14.2 ms.
+Through `on_port.py` always, in a quiet window, three runs. **15.5 ms is hard.**
 
-Variation is mostly free — a different camera or a different subject costs what
-the old one cost. If a subject pool grows the shader's branch count, say so:
-`shapeField` already has 22 branches and round 8 lost a pass to program size.
+**READ THIS BEFORE YOU ADD ANYTHING.** The build you start from measures
+**14.4–14.8 ms**, backdrop 9.26–9.33, props 1.35–1.41 — four runs with nothing
+else on the GPU. That is **under a millisecond of headroom**, where round 10
+started with 1.3 ms. Round 10 spent about +0.9 ms (props +0.3, backdrop +0.2,
+the rest elsewhere) on chandeliers, sconces, lanterns and a carved statue, and
+it was worth it — but it means this round cannot spend the same way.
+
+Two consequences, and they shape the round:
+
+- **Camera and placement variation is FREE.** A different vantage, a
+  subject moved along a wall, a floor pattern chosen from a family: each costs
+  exactly what the thing it replaced cost. Fixes 1, 2 and most of 4 are free,
+  which is another reason they come first.
+- **A SUBJECT POOL IS NOT FREE.** Every new subject is another branch in
+  `subjectH`, and `shapeField` already carries 22. Round 8 lost a whole pass to
+  program size and round 9 measured shot-to-shot going 28 s → 37 s on link time
+  alone. If you add branches, **find the cost first**: a pool selected by a
+  uniform costs one branch taken per pixel, not N. Report the delta against
+  BASE measured in the same window, not the absolute, and say what you paid for
+  it with.
+
+A candidate over 15.5 ms does not win however good it looks — and if you believe
+the budget is wrong, say so in `notes_for_merger` rather than quietly breaking
+it.
 
 ## THE TRAPS
 
