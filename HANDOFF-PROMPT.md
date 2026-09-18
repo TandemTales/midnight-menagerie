@@ -25,6 +25,50 @@ since round 3** — winning all three screens from both judges, with Settings at
 So there is no track with an unspent fix list any more, and round 8 went to the
 thing every judge had blamed for seven rounds instead: the ROOM (item 3).
 
+**ROUND 10 IS MERGED (2026-09-18) AND TWO GRAFTS ARE OUTSTANDING AND VALUABLE.**
+
+OAKGALL merged as `f39dbc6`, 2 of 3 judges, 5.78 against the baseline's 4.06 --
+**but read that as +0.93, not +1.72**: the baseline's own combat capture was a
+blown white frame (33.6% of pixels above L200, a transition flash caught in the
+composite while the #gl layer drew fine) and all three judges scored it 1 of 10.
+Excluding that screen: 5.60 against 4.67. The test that catches it is `81c49b4`.
+
+It fixed what the brief diagnosed -- every practical light drew a flame and
+nothing drew the FITTING, so a light in mid-air was a pale oval attached to
+nothing -- and a judge on the merged build confirms "the three floating ovals
+are now real chandeliers: ceiling rose, rod, two scrolled arms, candle cups,
+drop finial". The statue also gained a face, hands, folded wings and cloth,
+which pays four times (Ballroom, Crypt, Graveyard, Heart).
+
+**TWO GRAFTS, AND THEY ARE THE FIRST `fits_between_samples: true` IN ELEVEN
+ROUNDS.** Both lost the round overall and both won their own screen:
+
+- **SORREL2's GREENHOUSE** (`ff71330` on `ui/r10-bg3-b`) -- 3 of 3 judges, 7,
+  fits TRUE. Containers with rolled rims and soil lines, leaves with secondary
+  veining, planting beds, and a GLAZED roof.
+- **BISTRE2's FOYER** (`8e096b2` on `ui/r10-bg3-c`) -- 2 of 3, 7, fits TRUE.
+  The hall's furniture, a stair runner, and a handrail with real thickness.
+
+**Neither could be cherry-picked**: five conflict regions, two of them 100+
+lines of GLSL where OAKGALL and SORREL2 both rewrote the same plant branches.
+Hand-resolving semantic GLSL conflicts is how a silent defect gets in, so it was
+aborted deliberately. **Give it to a BUILDER with a dev server**, the way round
+9's ballroom graft was done -- it is the single highest-value piece of work
+outstanding, because it is the only thing in the pass a judge has ever said
+could pass for a painting.
+
+**And a negative result worth more than most positive ones.** SORREL2 built the
+same fitting layer as a NEW instanced mesh and reverted it: the chandeliers
+appeared in one capture of five or six, frames otherwise byte-identical, with
+instance data verified correct at render time (instanceCount 10, aPos on the
+lamp), and it ruled out shader size, quad extent, `visible`, dynamic instance
+count, depthTest, blending and renderOrder. Its conclusion: **a mesh ADDED to
+that group after core/renderer.js has warmed the scene is unreliable**, while the
+flame, prop, shaft and shadow meshes -- the same pattern, same group -- never
+miss. OAKGALL independently put its fittings on the PROP layer (shape 22,
+inserted before the MAX_PROPS slice) and they render byte-identically across
+repeat captures. **Put a new object on the prop layer, not a new mesh.**
+
 **ROUNDS 8 AND 9 ARE MERGED AND VERIFIED (2026-09-18).** Round 9 is the one to
 read: **+2.71, the largest gain of the pass**, and it is where the props stopped
 being slabs. `docs/ui-pass/README.md` has the full account; the short version:
