@@ -140,7 +140,9 @@ export const SUBJECT = {
 const NLIGHT = 5;
 /** How much of a cinematic (key/fill) light reaches a PROP. See syncLights. */
 const CINE_PROP = 0.26;
-/** ...and how much of the COLD half of that reaches one. See syncLights. */
+/** ...and how much of the cinematic FILL, when it opposes the key in colour
+ *  temperature, reaches one. That opposition is what makes a prop grey by
+ *  construction: see syncLights. */
 const CINE_FILL_PROP = 0.38;
 function v4arr(n = NLIGHT) { return Array.from({ length: n }, () => new THREE.Vector4()); }
 function colArr(n = NLIGHT) { return Array.from({ length: n }, () => new THREE.Color()); }
@@ -1220,6 +1222,13 @@ export class Backdrop {
     }
     const pl = this.propMat.uniforms.uLights.value, pc = this.propMat.uniforms.uLightCol.value;
     const pi = this.propMat.uniforms.uLightInt.value;
+    /* Which way round the cinematic pair is. The key is the cine light that is
+       not the fill; the Pumpkin Grounds' key is a cold moon and its fill is
+       warm, so "cold means fill" would have damped the wrong one there. */
+    let keyCold = false, haveKey = false;
+    for (let i = 0; i < NLIGHT; i++) {
+      if (rig.cine[i] && !rig.isFill[i]) { keyCold = rig.cold[i]; haveKey = true; break; }
+    }
     for (let i = 0; i < NLIGHT; i++) {
       pl[i].copy(rig.worldPos[i]); pc[i].copy(rig.colors[i]);
       /* A KEY LIGHT LIGHTS THE SUBJECT, NOT THE SET.
@@ -1241,8 +1250,8 @@ export class Backdrop {
          saturation and not hue. So the CINEMATIC FILL -- not the practical
          lamps, which are the room's own light and belong on the prop at full
          strength -- reaches a prop at about a third of the key. */
-      const cold = rig.cine[i] && rig.cold[i] ? CINE_FILL_PROP : 1;
-      pi[i] = rig.inten[i] * (rig.cine[i] ? CINE_PROP : 1) * cold;
+      const opposed = haveKey && rig.isFill[i] && rig.cold[i] !== keyCold;
+      pi[i] = rig.inten[i] * (rig.cine[i] ? CINE_PROP : 1) * (opposed ? CINE_FILL_PROP : 1);
     }
     this.propMat.uniforms.uKeyDir.value.copy(rig.keyDir);
   }

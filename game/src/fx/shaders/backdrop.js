@@ -2410,7 +2410,7 @@ float reliefH(vec2 uv, vec2 msz, vec2 mpp, float shape, float seed, out float ti
     h -= 0.026 * pR(uv.y - 0.129, 0.005);
     float sx = abs(uv.x - 0.5);
     float door = pB(uv.y, 0.144, 0.882) * (1.0 - smoothstep(0.272, 0.296, sx));
-    h -= 0.038 * door;                                        // the pane, set back
+    h -= 0.024 * door;                                        // the pane, set back
     h += 0.038 * door * (1.0 - smoothstep(0.022, 0.036, abs(sx - 0.014)));   // stiles
     h += 0.038 * door * (1.0 - smoothstep(0.022, 0.036, abs(sx - 0.268)));
     h += 0.038 * door * (1.0 - smoothstep(0.011, 0.022, abs(uv.y - 0.152)));  // rails
@@ -2430,14 +2430,17 @@ float reliefH(vec2 uv, vec2 msz, vec2 mpp, float shape, float seed, out float ti
        catching the light on one flank and losing it on the other. The drum's
        own curvature goes in here too, because the coverage normal turns at the
        OUTLINE and a column is round all the way across. */
-    float u = (uv.x - 0.5)*2.0;
+    /* Across the SHAFT, not across the quad -- see the note on the albedo
+       flutes further down, which is the same bug and the reason a fluted
+       column has rendered as a post for eight rounds. */
+    float u = clamp((uv.x - 0.5)/0.135, -1.0, 1.0);
     float onShaft = smoothstep(0.135, 0.200, uv.y) * (1.0 - smoothstep(0.800, 0.856, uv.y));
     float bend = asin(clamp(u, -0.999, 0.999)) / 1.5708;
     float fl = abs(fract(bend*5.0 + 0.5) - 0.5)*2.0;
-    float arcP = 3.1416 * 0.132 * msz.x / 24.0;               // one flute, in metres
-    h += 0.055 * (1.0 - u*u) * onShaft;                       // the drum is ROUND
-    h -= 0.020 * (1.0 - smoothstep(0.26, 0.92, fl)) * onShaft
-               * (1.0 - smoothstep(0.80, 0.97, abs(u))) * pRes(arcP, mpp.x);
+    float arcP = 0.270 * msz.x / 10.0;                        // one flute, in metres
+    h += 0.075 * (1.0 - u*u) * onShaft;                       // the drum is ROUND
+    h -= 0.026 * (1.0 - smoothstep(0.26, 0.92, fl)) * onShaft
+               * (1.0 - smoothstep(0.86, 0.99, abs(u))) * pRes(arcP, mpp.x);
     h += 0.032 * pB(uv.y, 0.930, 0.968);                      // abacus
     h -= 0.026 * pR(uv.y - 0.928, 0.005);
     h += 0.024 * pB(uv.y, 0.868, 0.928);                      // echinus
@@ -2910,7 +2913,7 @@ void main(){
        contents were faint streaks at the 290 px this cabinet occupies in the
        foreground of four of this round's captures. */
     albedo *= 1.0 + book * (tone - 1.0) * 1.15;
-    albedo *= 1.0 - (1.0 - book) * inShelf * 0.78;     // the dark behind them
+    albedo *= 1.0 - (1.0 - book) * inShelf * 0.58;     // the dark behind them
     albedo *= 1.0 + book * band * 0.72;
     // and the shelf's own front edge catches the light
     albedo *= 1.0 + (1.0 - smoothstep(0.0, 0.035, abs(sy - 0.075))) * 0.34;
@@ -2938,10 +2941,19 @@ void main(){
        near prop's output is mostly the additive rim and ambient terms below
        plus a luminance knee that compresses whatever albedo does. 0.86 is what
        a drawn line on a lit prop costs. */
-    albedo *= 1.0 - bars * 0.86;
-    albedo *= 1.0 - clamp(stile, 0.0, 1.0) * 0.72;
-    albedo *= 1.0 - (1.0 - smoothstep(0.0, 0.015, abs(vUv.y - 0.095))) * 0.80;
-    albedo *= 1.0 - (1.0 - smoothstep(0.0, 0.015, abs(vUv.y - 0.905))) * 0.72;
+    /* HALVED, BECAUSE THE RELIEF NOW DRAWS THESE SAME LINES. Round 8 set
+       0.86 and 0.72 here with the note "what a drawn line on a lit prop
+       costs" -- and it was right for a LIT prop, because at the time albedo
+       was the only channel a bar could be drawn in. The glazing bars and the
+       stiles are now relief (reliefH shape 5), so they arrive with recess
+       occlusion and mmDrawn's ink as well, and the two systems stacked on the
+       Foyer's cabinet -- 180 px, in the dark end of a dim room -- crushed the
+       whole carcass to black. Measured by cropping it at 2x and looking: the
+       joinery was correct and invisible. */
+    albedo *= 1.0 - bars * 0.44;
+    albedo *= 1.0 - clamp(stile, 0.0, 1.0) * 0.38;
+    albedo *= 1.0 - (1.0 - smoothstep(0.0, 0.015, abs(vUv.y - 0.095))) * 0.46;
+    albedo *= 1.0 - (1.0 - smoothstep(0.0, 0.015, abs(vUv.y - 0.905))) * 0.40;
   }
 
   /* THE CLOCK'S DIAL AND ITS DOOR. Shape 14 stands in the Foyer, the Study and
@@ -2980,10 +2992,18 @@ void main(){
      line in this file, so they survive the back of the room; and they fall
      away at the neck and the base the way a real flute stops short. */
   if (vShape > 5.5 && vShape < 6.5) {
-    float u = (vUv.x - 0.5) * 2.0;                 // -1 .. 1 across the shaft
+    /* -1 TO 1 ACROSS THE SHAFT, WHICH IS NOT ACROSS THE QUAD, and that one
+       line is why no column in this game has ever had a visible flute. The
+       shaft's half-width in shapeField is 0.132 of the quad, so
+       (vUv.x - 0.5)*2.0 only reaches +-0.264 on it: asin of that is +-0.17,
+       times the 5.0 below is +-0.85, i.e. ONE AND A HALF flutes across the
+       whole drum instead of the ten that make twenty round it. Round 8 wrote
+       the groove, set its width in pixels, gated it on resolvability and
+       looked at the capture, and what it was looking at was a smooth slab. */
+    float u = clamp((vUv.x - 0.5)/0.135, -1.0, 1.0);
     float bend = asin(clamp(u, -0.999, 0.999)) / 1.5708;   // round the cylinder
     float fl = abs(fract(bend*5.0 + 0.5) - 0.5)*2.0;
-    float fw = max(0.30, mpp.x / max(vSize.x, 0.01) * 5.0);
+    float fw = max(0.30, mpp.x / max(vSize.x*0.27, 0.01) * 5.0);
     float groove = 1.0 - smoothstep(fw*0.45, fw, fl);
     float onShaft = smoothstep(0.13, 0.19, vUv.y) * (1.0 - smoothstep(0.80, 0.86, vUv.y));
     float toward = 0.45 + 0.55*clamp(u*sign(uKeyDir.x + 0.001), 0.0, 1.0);

@@ -1176,7 +1176,7 @@ export class Atmosphere {
       const L = src[i];
       this.rig.add({
         kind: L.kind, color: L.color, intensity: L.intensity, radius: L.radius,
-        flicker: L.flicker !== false, cine: i < 2,
+        flicker: L.flicker !== false, cine: i < 2, fill: i === 1,
         pos: this._v3b.set(L.x, L.y, L.z),
       });
     }
