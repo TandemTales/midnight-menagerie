@@ -100,7 +100,7 @@ const PROP_MATERIAL = {
      which is precisely the "material noise that knows nothing about the
      object's form" BRIEF-r9 names as half the defect. The bank read as popcorn
      until these came down. Grain stays: it is the leaf surface itself. */
-  foliage: { mix: [0.24, 0.18, 0.05, 0.03], freq: [2.60, 2.60], ao: 1.06, sat: 0.34 },
+  foliage: { mix: [0.16, 0.18, 0.05, 0.03], freq: [2.60, 2.60], ao: 1.06, sat: 0.34 },
 };
 /* `sat` is the prop chroma ceiling (PROP_FRAG, next to the luminance one). One
    value for the whole house was measured against UI/*.png and set at 0.14 by

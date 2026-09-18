@@ -2038,7 +2038,14 @@ float shapeField(vec2 uv, float shape, float seed){
        than the mass itself, plus a few leaves standing out of it -- and that
        edge is most of what tells foliage from stone at this distance, colour
        or no colour. */
-    d += (mmRidge(uv*13.0 + seed*4.1) - 0.50) * 0.048;
+    /* ...and the RAGGED EDGE is smooth noise now, not a ridge. mmRidge is
+       abs(2*value-1) over a bilinear noise, so its creases are straight
+       segments, and at 13 cycles with 0.048 of amplitude those segments were
+       14 px of chewed margin: cropped at 2x the bank's outline looked bitten
+       rather than leafy. The leaf-scale reading comes from pLeaf's relief now,
+       so the silhouette only has to be irregular, not jagged. */
+    d += (mmFbm3(uv*9.0 + seed*4.1) - 0.50) * 0.052;
+    d += (mmFbm3(uv*21.0 - seed*2.6) - 0.50) * 0.020;
     for (int i = 0; i < 4; i++){
       float f = mmHash11(seed*5.7 + float(i)*2.3);
       float a = (f - 0.5) * 2.4;
@@ -2354,7 +2361,7 @@ float reliefH(vec2 uv, vec2 msz, vec2 mpp, float shape, float seed, out float ti
          pitch as the notches in the silhouette above so the two agree. At the
          old 0.048 m this was a 4 px comb, i.e. a texture, not leaflets. */
       float lp = (len*msz.y)/11.0;
-      hh -= 0.014 * pR(mod(t*len*msz.y, lp) - lp*0.5, lp*0.22)
+      hh -= 0.009 * pR(mod(t*len*msz.y, lp) - lp*0.5, lp*0.22)
                   * smoothstep(0.08, 0.28, t) * pRes(lp, mpp.y);
       hh *= on;
       if (hh > fh) { fh = hh; lead = float(i); }
