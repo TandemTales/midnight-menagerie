@@ -108,7 +108,7 @@ const MESH_K = 0.95;
 export class AtmoLight {
   /** kind: 'warm' | 'cold' */
   constructor(scene, { kind = 'warm', pos, color, intensity = 1, radius = 6, flicker = true,
-                       glow = null, glowSize = null, cine = false } = {}) {
+                       glow = null, glowSize = null, cine = false, fill = false } = {}) {
     this.id = ++_uid;
     this.kind = kind;
     /* CINEMATIC vs PRACTICAL. A practical is a lamp that exists in the room and
@@ -119,6 +119,12 @@ export class AtmoLight {
        lit props with it at full strength, which is why a shallow room's props
        came out five times brighter than a deep room's. */
     this.cine = !!cine;
+    /* WHICH of the two cinematic lights this is. Atmosphere builds them as
+       [key, fill, ...lamps], so the role is known exactly and does not have to
+       be inferred from colour temperature -- which would be wrong in the
+       Pumpkin Grounds, whose KEY is the cold moon and whose fill is the warm
+       one. Backdrop.syncLights needs the role to damp the fill on props. */
+    this.isFill = !!fill;
     /* Is this lamp a THING IN THE ROOM or a cinematic light? A candle you can see
        is what puts real highlights in the frame and gives bloom something honest
        to bloom; a key light is invisible. Round 1 had no visible sources at all,
@@ -177,6 +183,18 @@ export class LightRig {
     this.inten    = new Array(this.slots).fill(0);
     this.active   = new Array(this.slots).fill(null);
     this.cine     = new Array(this.slots).fill(false);
+    /* IS THIS SLOT A COLD LIGHT? `kind` has been on every AtmoLight since
+       round 1 and was never published in the packed payload, so no shader
+       could tell a warm key from a cold fill. BRIEF-r9 fix 1: a prop takes
+       the key and the fill at the SAME damped strength, and in most palettes
+       those two are equal-and-opposite hues (the Foyer's warm #e2b271 key
+       against its cold #79afce fill), so a prop is GREY BY CONSTRUCTION --
+       which no chroma cap can fix, because a cap changes saturation and not
+       hue. Backdrop.syncLights uses this to let a prop take the fill at about
+       a third of the key. */
+    this.cold     = new Array(this.slots).fill(false);
+    /** ...and which slot is the cinematic FILL, as opposed to the key. */
+    this.isFill   = new Array(this.slots).fill(false);
 
     this.keyDir = new THREE.Vector2(0, 1);   // 2D direction toward the key light
     this.keyColor = new THREE.Color(0xffb64a);
@@ -231,10 +249,14 @@ export class LightRig {
         this.colors[s].copy(l.color);
         this.inten[s] = l.live;
         this.cine[s] = l.cine;
+        this.cold[s] = (l.kind === 'cold');
+        this.isFill[s] = l.isFill;
         if (l.kind === 'warm' && (!bestWarm || l.live > bestWarm.live)) bestWarm = l;
       } else {
         this.inten[s] = 0;
         this.cine[s] = false;
+        this.cold[s] = false;
+        this.isFill[s] = false;
         this.worldPos[s].set(0, 0, 0, 1);
       }
     }

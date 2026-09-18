@@ -32,7 +32,13 @@ import {
   SHADOW_VERT, SHADOW_FRAG, FLAME_VERT, FLAME_FRAG,
 } from './shaders/backdrop.js';
 
-const MAX_PROPS = 52, MAX_SHAFTS = 6, MAX_POOLS = 4, MAX_FLAMES = 10;
+/* 52 WAS BEING SPENT BEFORE THE ROOM WAS FURNISHED. The terrace layout pushes
+ * a run of masonry planting beds per tier AS WELL AS its props, and the whole
+ * lot is then sliced to MAX_PROPS -- so the Greenhouse was pushing 36 beds and
+ * 30 plants, 66 entries, and losing the last 14, which are the BACK TIER's
+ * plants. That is a large part of why the room that is meant to be the most
+ * crowded in the house photographed as an empty hall with two columns in it. */
+const MAX_PROPS = 72, MAX_SHAFTS = 6, MAX_POOLS = 4, MAX_FLAMES = 10;
 /* The night every region's sky is carried toward. It is the Graveyard's own
    `deep`, which is the one open-air region whose sky was tuned against
    mainMenu.png: measured, it comes out at hue 216 and a sky level of 7.8-16.9
@@ -45,16 +51,72 @@ export const DEFAULT_ROOM = {
   w: 24, d: 19, h: 6.6, side: 0.0, ceilPattern: 3, wallPad: 7.0,
 };
 
-// Per-shape height correction so a candlestick is not the size of a wardrobe.
-//  0 chair       1 candelabra  2 plant     3 headstone  4 chandelier
-//  5 cabinet     6 column      7 drape     8 crates     9 shrub
-// 10 cot        11 rocking horse 12 bed    13 range    14 longcase clock
-// 15 statue     16 sarcophagus 17 bath     18 lamp post 19 birdcage
-const SHAPE_H = [0.85, 0.50, 1.00, 0.62, 0.80, 1.05, 1.25, 1.00, 0.66, 0.80,
-                 0.72, 0.70, 1.05, 0.95, 1.15, 1.10, 0.60, 0.68, 1.30, 1.00];
-// ...and a width ratio, so a column is a column and not a capital-T.
-const SHAPE_W = [1.15, 0.55, 1.00, 0.95, 1.20, 0.80, 0.34, 0.85, 1.10, 1.35,
-                 1.30, 1.20, 1.60, 1.00, 0.42, 0.60, 1.50, 1.30, 0.34, 0.62];
+/* THE REAL HEIGHT OF EACH PROP, IN METRES.
+ *
+ * This used to be `SHAPE_H`, a unitless multiplier on the region's authored
+ * `props.height`, and the result was that a prop's size depended on which room
+ * it was standing in. In the Foyer (height 2.5) shape 0 came out at
+ * 2.5 * 0.85 * (0.80..1.24) = 1.70-2.65 m of quad for an ARMCHAIR, whose SDF
+ * fills 0.74 of its quad -- so the game was drawing chairs 1.3 to 2.0 m tall.
+ * BRIEF-r9's item-1 table says a chair is 0.85-1.00 m overall, and its rubric
+ * question 3 says a room where one object is at the wrong size makes every
+ * other object in it suspect. Both judges called the Foyer's props "pale grey
+ * slabs"; part of why is that they are the size of slabs.
+ *
+ * So these are METRES OF QUAD, chosen as (the real object's height) / (the
+ * fraction of the quad that shape's SDF actually fills in shapeField), which
+ * is why some of them look tall: an armchair's SDF tops out at uv.y 0.74, so
+ * 0.88 m of chair needs 1.20 m of quad.
+ *
+ *   #   object          real height            table row
+ *   0   armchair        0.88 m overall         chair back 0.85-1.00
+ *   1   candelabrum     1.55 m floor stand     --
+ *   2   potted palm     1.30 m                 --
+ *   3   headstone       0.78 m                 headstone 0.60-0.90
+ *   4   chandelier      1.10 m of drop         --
+ *   5   cabinet         1.95 m                 --
+ *   6   column          3.30 m, dia h/8.9      column dia = h/8 to h/10
+ *   7   drape           set from the ceiling   --
+ *   8   crate stack     0.95 m                 --
+ *   9   shrub           1.20 m                 --
+ *  10   cot             0.95 m to the rail     --
+ *  11   rocking horse   1.05 m                 --
+ *  12   four-poster     2.30 m to the tester   --
+ *  13   range           1.70 m with its flue   --
+ *  14   longcase clock  2.10 m                 --
+ *  15   statue          2.15 m, figure 1.69    --
+ *  16   chest tomb      0.80 m                 headstone family
+ *  17   clawfoot bath   0.78 m                 --
+ *  18   lamp standard   3.40 m                 --
+ *  19   birdcage stand  1.60 m                 --
+ */
+const SHAPE_M = [1.20, 2.00, 1.30, 1.00, 2.00, 2.00, 3.32, 2.60, 1.17, 1.33,
+                 1.56, 1.30, 2.16, 1.50, 2.00, 2.44, 1.27, 0.97, 3.09, 1.56];
+/* ...and a width ratio, so a column is a column and not a capital-T. Four of
+ * these were wrong by enough to change what the object was: a longcase clock
+ * 0.23 m wide (a stick), a bath 0.99 m long (a basin), a four-poster 2.76 m
+ * wide, and a column at h/12.3 when the table says h/8 to h/10. */
+const SHAPE_W = [1.15, 0.48, 1.00, 0.95, 0.72, 0.80, 0.47, 0.85, 0.90, 1.35,
+                 1.30, 1.20, 0.87, 1.14, 0.77, 0.78, 1.80, 2.24, 0.50, 0.62];
+/* HOW MUCH ONE OF THESE VARIES FROM THE NEXT, as a +-fraction of SHAPE_M.
+ *
+ * Pinning every prop to its real height in metres is right -- BRIEF-r9's
+ * rubric question 3 -- but it was applied with a flat +-5% to all twenty
+ * shapes, and the first capture of the Greenhouse after it showed what that
+ * costs: thirty plants at 1.43 m +-5% standing in a 30 x 26 x 10.5 m glasshouse
+ * read as an EMPTY room, where the same room with the old (wrong) 3 m plants at
+ * least read as planted. Both captures are wrong, and for opposite reasons.
+ *
+ * A MANUFACTURED OBJECT COMES IN STANDARD SIZES AND A LIVING ONE DOES NOT. A
+ * dining chair is 0.88 m in every house on the street; the palms in a
+ * conservatory run from a 0.4 m pot on the staging to a 4 m specimen with its
+ * head in the glass, and a hedge is whatever it has grown to since it was last
+ * cut. So the organic shapes -- plant, shrub -- get a real spread and the
+ * joinery does not. This is also what stops a terrace of identical plants
+ * reading as a stamped tile, which is fix 5's complaint about the Crypt's
+ * loculi in a different room. */
+const SHAPE_VAR = [0.06, 0.08, 0.62, 0.20, 0.10, 0.08, 0.10, 0.10, 0.16, 0.48,
+                   0.06, 0.06, 0.06, 0.06, 0.06, 0.14, 0.14, 0.06, 0.08, 0.08];
 // Which shapes hang from the ceiling rather than stand on the floor.
 export const HANGING = { 4: 1, 7: 1 };
 
@@ -78,6 +140,10 @@ export const SUBJECT = {
 const NLIGHT = 5;
 /** How much of a cinematic (key/fill) light reaches a PROP. See syncLights. */
 const CINE_PROP = 0.26;
+/** ...and how much of the cinematic FILL, when it opposes the key in colour
+ *  temperature, reaches one. That opposition is what makes a prop grey by
+ *  construction: see syncLights. */
+const CINE_FILL_PROP = 0.38;
 function v4arr(n = NLIGHT) { return Array.from({ length: n }, () => new THREE.Vector4()); }
 function colArr(n = NLIGHT) { return Array.from({ length: n }, () => new THREE.Color()); }
 /**
@@ -535,9 +601,28 @@ export class Backdrop {
     const ceil = room.h > 0 ? room.h : 7.0;
     const out = [];
     const pick = () => shapes[(rand() * shapes.length) | 0];
+    /* A CHAIR IS 0.9 m IN EVERY ROOM IN THE HOUSE. The size now comes from
+       SHAPE_M, the object's own height in metres, and the two things that used
+       to set it outright are demoted to variation:
+       - the region's authored `props.height` becomes a nudge inside +-6%, so a
+         room can still feel slightly grander without a 2.5 m armchair in it;
+       - the LAYOUT's per-instance `scale` is compressed toward 1. It ran
+         0.25-1.35 and was mostly being used to make far props smaller and near
+         props bigger, which is perspective's job and not the object's -- a
+         colonnade whose columns were authored at 1.24 down to 1.08 was a file
+         of columns of five different heights standing on one floor. */
+    const nudge = Math.min(Math.max(H / 2.4, 0.94), 1.06);
     const sized = (shape, scale) => {
-      const h = H * scale * (SHAPE_H[shape] ?? 1) * (0.80 + rand() * 0.44);
-      return { h, w: h * (SHAPE_W[shape] ?? 1) * (0.66 + rand() * 0.38) };
+      const sc = 1 + (Math.min(Math.max(scale ?? 1, 0.55), 1.30) - 1) * 0.26;
+      /* Skewed toward the small end and with a long tail up, which is how a
+         planting actually reads: many small pots, a few big specimens. A
+         symmetric spread gives every plant the average size, which is the same
+         even-rhythm failure in another guise. */
+      const v = SHAPE_VAR[shape] ?? 0.06;
+      const r = rand();
+      const spread = 1 + v * (r * r * 2.6 - 0.9);
+      const h = (SHAPE_M[shape] ?? 1.2) * nudge * sc * spread;
+      return { h, w: h * (SHAPE_W[shape] ?? 1) * (0.78 + rand() * 0.24) };
     };
     /* Keep props inside the lens. A prop at x = +-halfW in a 34 m ballroom is
        simply off-screen, which is how round 1 ended up with a props crop that
@@ -584,6 +669,18 @@ export class Backdrop {
       if (s === 7) {
         h = Math.min(Math.max(h, ceil * 0.58), ceil * 0.86);
         w = h * (SHAPE_W[7] ?? 0.85) * (0.62 + rand() * 0.30);
+      }
+      /* A COLUMN REACHES THE CEILING, because that is what a column is FOR.
+         SHAPE_M pins it at 3.32 m, which is right in a 4.9 m crypt and plainly
+         wrong in a 10.5 m ballroom: the capture showed eight stumps standing
+         in the middle of the floor, holding nothing up, topping out at 55% of
+         the frame -- and BRIEF-r9's rubric question 3 says a room where one
+         object is at the wrong size makes every other object in it suspect.
+         The order's PROPORTION is preserved for free, because the width is a
+         ratio of the height and the table asks for diameter = h/8 to h/10. */
+      if (s === 6) {
+        h = Math.min(Math.max(h, ceil * 0.60), ceil * 0.86);
+        w = h * (SHAPE_W[6] ?? 0.47) * (0.90 + rand() * 0.14);
       }
       let y = atY ?? 0.02;
       /* Half the frame at this prop's own depth, measured at BOTH ends of it —
@@ -712,19 +809,30 @@ export class Backdrop {
          stands on a real masonry bed that runs the full width of the frame —
          architecture, so it is allowed to reach the edges — and the lift is
          capped at 1.25 m, because a 2.1 m "step" is a wall. */
-      const tiers = 3;
+      /* FOUR TIERS ACROSS THE FRONT HALF OF THE ROOM, not three across all of
+         it. Prop sizes are true metres now (SHAPE_M), so a 1.5 m plant on a
+         tier 24 m back is twenty-five pixels tall: the two far tiers were
+         drawing plants nobody could see and leaving the middle distance of a
+         crowded glasshouse as bare floor. A conservatory's staging is banked up
+         toward the back wall over a few metres and then you are AT the wall. */
+      const tiers = 4;
       const per = Math.ceil(n / tiers);
       const bedShape = 16;   // the chest SDF: a masonry planting bed
       for (let t = 0; t < tiers && out.length - archN < n; t++) {
         const f = t / (tiers - 1);
-        const z = -3.0 - f * (room.d - 4.5);
+        const z = -2.6 - f * (room.d * 0.56);
         const lift = f * Math.min((room.h > 0 ? room.h : 8) * 0.16, 1.25);
         if (lift > 0.22) {
           const span = Math.min(halfW * 0.98, frameX(z + 0.6, lift));
           /* Enough beds that each one keeps roughly its own shape's proportions.
              Three beds across a 30 m greenhouse meant one 9 m x 1.2 m quad, and
              a chest SDF stretched 7:1 reads as a green blob, not as masonry. */
-          const beds = Math.max(3, Math.round((span * 2) / Math.max(lift * 2.0, 1.2)));
+          /* ...and FEWER, WIDER beds. At lift*2.0 floored at 1.2 m a tier came
+             out as 24 blocks of 1.2 m across a 30 m glasshouse, which is 24 of
+             the 52 prop slots spent on a kerb. 2.26 m blocks read as ashlar
+             (the relief in reliefH courses them at 0.30 m) and leave the slots
+             for the planting. */
+          const beds = Math.max(3, Math.round((span * 2) / Math.max(lift * 2.6, 2.2)));
           for (let i = 0; i < beds; i++) {
             pushArch(bedShape, ((i + 0.5) / beds - 0.5) * 2 * span,
                      z + 0.6, (span * 2) / beds + 0.25, lift, 0.30 + f * 0.42);
@@ -1114,6 +1222,13 @@ export class Backdrop {
     }
     const pl = this.propMat.uniforms.uLights.value, pc = this.propMat.uniforms.uLightCol.value;
     const pi = this.propMat.uniforms.uLightInt.value;
+    /* Which way round the cinematic pair is. The key is the cine light that is
+       not the fill; the Pumpkin Grounds' key is a cold moon and its fill is
+       warm, so "cold means fill" would have damped the wrong one there. */
+    let keyCold = false, haveKey = false;
+    for (let i = 0; i < NLIGHT; i++) {
+      if (rig.cine[i] && !rig.isFill[i]) { keyCold = rig.cold[i]; haveKey = true; break; }
+    }
     for (let i = 0; i < NLIGHT; i++) {
       pl[i].copy(rig.worldPos[i]); pc[i].copy(rig.colors[i]);
       /* A KEY LIGHT LIGHTS THE SUBJECT, NOT THE SET.
@@ -1125,7 +1240,18 @@ export class Backdrop {
          the entire difference between the two halves of the bimodal split a
          reviewer found. Practical lamps light props; cinematic lights barely
          do. */
-      pi[i] = rig.inten[i] * (rig.cine[i] ? CINE_PROP : 1);
+      /* AND A PROP IS GREY BY CONSTRUCTION, which is the other half of
+         BRIEF-r9's fix 1. The key and the fill reach a prop at the SAME
+         CINE_PROP, and in most palettes they are equal-and-opposite hues --
+         the Foyer's warm #e2b271 key against its cold #79afce fill, the
+         Ballroom's #e5c07e against its violet #a984cd. Two opposite hues at
+         equal weight make grey, a smooth grey standing figure is an award
+         statuette, and no chroma cap can help because a cap changes
+         saturation and not hue. So the CINEMATIC FILL -- not the practical
+         lamps, which are the room's own light and belong on the prop at full
+         strength -- reaches a prop at about a third of the key. */
+      const opposed = haveKey && rig.isFill[i] && rig.cold[i] !== keyCold;
+      pi[i] = rig.inten[i] * (rig.cine[i] ? CINE_PROP : 1) * (opposed ? CINE_FILL_PROP : 1);
     }
     this.propMat.uniforms.uKeyDir.value.copy(rig.keyDir);
   }
