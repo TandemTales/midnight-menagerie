@@ -251,6 +251,21 @@ async def run(a):
             if _var ** 0.5 < 8.0:
                 void = True
                 perf["voidStd"] = round(_var ** 0.5, 2)
+            # ...AND A BLOWN FRAME IS VOID TOO. The fourth distinct way a
+            # capture has corrupted a verdict in this pass: the page screenshot
+            # can catch a WHITE TRANSITION FLASH while the #gl layer underneath
+            # is drawing perfectly. Round 10 shipped exactly that as its
+            # BASELINE combat screen -- glStd 41.79, void False, and 33.6% of
+            # its pixels above L200 -- and all three judges scored it 1 of 10,
+            # which inflated the round's margin from +0.93 to +1.72.
+            #
+            # The separation is not marginal: every legitimate screen in that
+            # round and all four samples sit at or below 1.58% above L200, and
+            # mainMenu.png is 0.00%. 8% is five times the highest real value.
+            _hi = sum(_h[201:]) / _nn * 100.0
+            if _hi > 8.0:
+                void = True
+                perf["voidBlown"] = round(_hi, 2)
         except Exception:
             pass
         open(os.path.join(SHOTS, f"{a.name}.state.json"), "w", encoding="utf-8").write(
