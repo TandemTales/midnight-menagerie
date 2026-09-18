@@ -93,7 +93,14 @@ const PROP_MATERIAL = {
   tile:    { mix: [0.07, 0.20, 0.42, 0.08], freq: [1.60, 1.60], ao: 0.86, sat: 0.14 },
   cloth:   { mix: [0.38, 0.15, 0.07, 0.03], freq: [2.10, 0.28], ao: 1.12, sat: 0.20 },
   metal:   { mix: [0.15, 0.11, 0.32, 0.05], freq: [0.32, 1.95], ao: 0.84, sat: 0.13 },
-  foliage: { mix: [0.20, 0.44, 0.05, 0.16], freq: [2.60, 2.60], ao: 1.06, sat: 0.34 },
+  /* FOLIAGE'S NOISE STOOD DOWN when the leaves arrived. speckle 0.16 is a
+     hash on 0.0625 m cells, i.e. a 6 px dot at the size a Greenhouse plant
+     renders, and blotch 0.44 is a 0.38 m patch -- with pLeaf now drawing
+     actual leaves both of them were high-frequency noise ON TOP of the form,
+     which is precisely the "material noise that knows nothing about the
+     object's form" BRIEF-r9 names as half the defect. The bank read as popcorn
+     until these came down. Grain stays: it is the leaf surface itself. */
+  foliage: { mix: [0.24, 0.18, 0.05, 0.03], freq: [2.60, 2.60], ao: 1.06, sat: 0.34 },
 };
 /* `sat` is the prop chroma ceiling (PROP_FRAG, next to the luminance one). One
    value for the whole house was measured against UI/*.png and set at 0.14 by
@@ -284,7 +291,12 @@ export const REGIONS = {
     rimCol: '#a8e29b', shaft: '#9ecfb8', floorDeep: '#101619', floorMid: '#203529',
     ambient: '#152222', propAlb: '#2a4233', propHi: '#57825e',
     gloss: 0.55, grime: 0.50, open: '#64bd9b', openGlow: 0.78, coolFill: 1.2,
-    props: { shapes: [2, 9, 2, 19, 6], count: 30, height: 2.6, layout: 'terrace' },
+    /* CROWDED. BRIEF-r9 fix 4 asks whether a person walking into this room
+       would find these things in it IN THIS QUANTITY, and the answer for a
+       Victorian glasshouse with thirty plants spread over three tiers of a
+       30 x 26 m floor is no: a conservatory is packed, which is the whole
+       reason you walk down an aisle in one. 44 is what fills the three tiers. */
+    props: { shapes: [2, 9, 2, 19, 6], count: 44, height: 2.6, layout: 'terrace' },
     particles: { mix: [[PTYPE.SPORE, 0.52], [PTYPE.DUST, 0.30], [PTYPE.WISP, 0.18]],
                  tint: '#d9ffcf', wispTint: '#7fffc9', emberTint: '#cfff6a',
                  speed: 0.85, scale: 1.35, wind: 0.7, density: 0.95 },
@@ -425,7 +437,17 @@ export const REGIONS = {
 
   /* ── 10. The Ballroom and Velvet Suites ────────────────────────────────────
      The biggest room in the house: 34 m wide, 10.5 m to a plastered rose, a
-     colonnade of statuary and a mirror-polished checker floor. */
+     mirror-polished checker floor and a colonnade of COLUMNS down both sides.
+
+     It used to say "a colonnade of statuary", and that is what it built: prop
+     shape 15 at SHAPE_H 1.10 and SHAPE_W 0.60 is a tall narrow standing
+     figure, the colonnade layout stands shapes[0] in two receding files, and
+     thirty tall narrow figures on plinths down a ballroom is, quite literally,
+     a row of award statuettes -- which is exactly what Josh saw and named on
+     2026-09-17. This is BRIEF-r9's fix 2b, and it is a CONTENT fix: a ballroom
+     has pier mirrors (this room's wall subject already IS `mirrors`), gilt
+     chairs and settles round the walls, chandeliers, candelabra and curtained
+     windows. The colonnade is now made of the thing a colonnade is made of. */
   ballroom: {
     label: 'The Ballroom and Velvet Suites',
     propMat: 'cloth', propCeil: 0.474,
@@ -436,7 +458,12 @@ export const REGIONS = {
     rimCol: '#d9be7b', shaft: '#dcc89a', floorDeep: '#140d1a', floorMid: '#382633',
     ambient: '#1e1220', propAlb: '#4c2c3b', propHi: '#8c5a6a',
     gloss: 0.86, grime: 0.38, open: '#ae5f7a', openGlow: 0.6,
-    props: { shapes: [15, 4, 7, 6, 0], count: 30, height: 2.9, layout: 'colonnade' },
+    /* SEATING, and plenty of it. The colonnade layout files shapes[0] down
+       both sides and picks the remainder at random, so a set with one chair in
+       five put THREE chairs in a 34 m ballroom. Two entries of shape 0 make
+       seating two fifths of the loose props, which is what a ballroom has
+       round its walls, plus the chandeliers and the candelabra. */
+    props: { shapes: [6, 0, 0, 4, 1], count: 32, height: 2.9, layout: 'colonnade' },
     particles: { mix: [[PTYPE.DUST, 0.58], [PTYPE.EMBER, 0.26], [PTYPE.WISP, 0.16]],
                  tint: '#ffe8c0', wispTint: '#d8a8ff', emberTint: '#ffc95a',
                  speed: 0.9, scale: 1.1, wind: 0.8, density: 1.0 },
@@ -494,7 +521,11 @@ export const REGIONS = {
     rimCol: '#c4b479', shaft: '#b8ae8b', floorDeep: '#100e12', floorMid: '#27221b',
     ambient: '#171519', propAlb: '#323021', propHi: '#615d45',
     gloss: 0.28, grime: 0.95, coolFill: 0.95, wallFog: 0.22, open: '#a39e6d', openGlow: 0.25,
-    props: { shapes: [9, 9, 2, 3, 9], count: 32, height: 2.4, layout: 'clutter' },
+    /* A HEADSTONE IN A HEDGE MAZE (BRIEF-r9 fix 4) was the second set I would
+       question: defensible in a haunted house, but a formal maze's set piece
+       is a GARDEN STATUE on a plinth at the turn of a walk, and shape 15 now
+       has carved features, drapery and a moulded base to bring to it. */
+    props: { shapes: [9, 9, 2, 15, 9], count: 42, height: 2.4, layout: 'clutter' },
     particles: { mix: [[PTYPE.SPORE, 0.44], [PTYPE.ASH, 0.30], [PTYPE.DUST, 0.26]],
                  tint: '#e0d8a8', wispTint: '#b08fd8', emberTint: '#d8a04a',
                  speed: 0.75, scale: 1.3, wind: 1.4, density: 0.95 },
@@ -581,7 +612,12 @@ export const REGIONS = {
     rimCol: '#dbb882', shaft: '#d9bd92', floorDeep: '#120e13', floorMid: '#2f241c',
     ambient: '#191315', propAlb: '#3d2d24', propHi: '#6e5339',
     gloss: 0.38, grime: 0.62, open: '#649aa6', openGlow: 0.5,
-    props: { shapes: [19, 8, 0, 5, 9], count: 28, height: 1.6, layout: 'rows' },
+    /* AN ARMCHAIR AND A BOOKCASE IN THE KENNELS (BRIEF-r9 fix 4) -- the third
+       set I would question, and the one I would not defend. What is in a kennel
+       run is BARRED PENS (shape 10 is a barred crib, which at this scale reads
+       as exactly that), straw, packing cases and a lamp over the yard. The
+       region's wall subject is already `pens`, so the floor now agrees with it. */
+    props: { shapes: [19, 8, 10, 8, 9], count: 28, height: 1.6, layout: 'rows' },
     particles: { mix: [[PTYPE.DUST, 0.70], [PTYPE.ASH, 0.20], [PTYPE.EMBER, 0.10]],
                  tint: '#ffdfae', wispTint: '#8fd9ec', emberTint: '#ffb64a',
                  speed: 0.8, scale: 1.1, wind: 0.6, density: 0.95 },

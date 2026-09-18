@@ -177,6 +177,16 @@ export class LightRig {
     this.inten    = new Array(this.slots).fill(0);
     this.active   = new Array(this.slots).fill(null);
     this.cine     = new Array(this.slots).fill(false);
+    /* IS THIS SLOT A COLD LIGHT? `kind` has been on every AtmoLight since
+       round 1 and was never published in the packed payload, so no shader
+       could tell a warm key from a cold fill. BRIEF-r9 fix 1: a prop takes
+       the key and the fill at the SAME damped strength, and in most palettes
+       those two are equal-and-opposite hues (the Foyer's warm #e2b271 key
+       against its cold #79afce fill), so a prop is GREY BY CONSTRUCTION --
+       which no chroma cap can fix, because a cap changes saturation and not
+       hue. Backdrop.syncLights uses this to let a prop take the fill at about
+       a third of the key. */
+    this.cold     = new Array(this.slots).fill(false);
 
     this.keyDir = new THREE.Vector2(0, 1);   // 2D direction toward the key light
     this.keyColor = new THREE.Color(0xffb64a);
@@ -231,10 +241,12 @@ export class LightRig {
         this.colors[s].copy(l.color);
         this.inten[s] = l.live;
         this.cine[s] = l.cine;
+        this.cold[s] = (l.kind === 'cold');
         if (l.kind === 'warm' && (!bestWarm || l.live > bestWarm.live)) bestWarm = l;
       } else {
         this.inten[s] = 0;
         this.cine[s] = false;
+        this.cold[s] = false;
         this.worldPos[s].set(0, 0, 0, 1);
       }
     }
