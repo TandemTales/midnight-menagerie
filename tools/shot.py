@@ -186,9 +186,32 @@ async def run(a):
         perf["gl"] = gl
         perf["software"] = "SwiftShader" in str(gl)
 
+        # -- IS THIS CAPTURE VOID? ------------------------------------------
+        # A capture whose page never got a GPU CONTEXT is not evidence of
+        # anything -- and it looks exactly like a catastrophic art regression:
+        # a blank white frame with the scene label still on it.
+        #
+        # This cost most of an evening. A seventeen-room sweep came back with
+        # every frame dead and VALIDATE_STATUS false on all seventeen, which
+        # reads as "the shader is broken". It was not. The same rooms captured
+        # singly were byte-identical to the commit before, and a six-capture
+        # trial at three commits -- including the one BEFORE the round under
+        # suspicion -- failed 4, 5 and 5 of 6. This machine's GPU process
+        # degrades across a few hundred Chromium launches in one session and
+        # eventually cannot create a context at all; it recovers when left to
+        # idle.
+        #
+        # The signature is unmistakable once you know it: gl comes back "none",
+        # and the console errors name three.js's own MeshStandardMaterial as
+        # well as ours. If OUR program were over a hardware limit, three's
+        # stock material would still link.
+        #
+        # So say so loudly, and exit 2, so a caller can tell a void capture
+        # from a real page error.
+        void = (not gl) or str(gl) in ("none", "?", "None")
         open(os.path.join(SHOTS, f"{a.name}.state.json"), "w", encoding="utf-8").write(
             json.dumps({"url": url, "state": state, "perf": perf,
-                        "errors": errors[:40], "logs": logs[-60:]}, indent=1))
+                        "void": bool(void), "errors": errors[:40], "logs": logs[-60:]}, indent=1))
         await browser.close()
 
     if errors:
@@ -199,6 +222,13 @@ async def run(a):
     soft = " [SOFTWARE RASTERISER - fps not representative]" if perf.get("software") else ""
     print("fps:", perf.get("fps"), soft, "| gl:", str(perf.get("gl"))[:70])
     print("state:", str(state)[:280])
+    if void:
+        print("VOID CAPTURE: the page never got a GPU context (gl=%s)."
+              % perf.get("gl"), file=sys.stderr)
+        print("  This PNG is a blank frame and is NOT evidence that the art", file=sys.stderr)
+        print("  regressed. Leave the machine to idle, or reboot, and re-take it.", file=sys.stderr)
+        print("  Exit 2 means VOID; exit 1 means the page threw.", file=sys.stderr)
+        return 2
     return 1 if errors else 0
 
 
