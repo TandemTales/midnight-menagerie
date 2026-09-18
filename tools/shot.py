@@ -209,6 +209,25 @@ async def run(a):
         # So say so loudly, and exit 2, so a caller can tell a void capture
         # from a real page error.
         void = (not gl) or str(gl) in ("none", "?", "None")
+        # ...AND A CONTEXT IS NOT ENOUGH. A capture can hold a live GL context
+        # and still draw NOTHING: the greenhouse came back gl-present, mean 8.8,
+        # std 4.84 and a nonsense tooth of 1.624, and the gl==none test above
+        # passed it as real. So test the PIXELS too. No screen in this game is
+        # that flat -- the darkest room in the house measures std 29 and the
+        # boards far more -- while every void frame seen so far sits under 5,
+        # whether it failed white (mean 255) or black (mean 9).
+        try:
+            from PIL import Image as _I
+            _px = _I.open(os.path.join(SHOTS, f"{a.name}.png")).convert("L")
+            _h = _px.histogram()
+            _n = sum(_h) or 1
+            _mean = sum(i * c for i, c in enumerate(_h)) / _n
+            _var = sum((i - _mean) ** 2 * c for i, c in enumerate(_h)) / _n
+            if _var ** 0.5 < 8.0:
+                void = True
+                perf["voidStd"] = round(_var ** 0.5, 2)
+        except Exception:
+            pass
         open(os.path.join(SHOTS, f"{a.name}.state.json"), "w", encoding="utf-8").write(
             json.dumps({"url": url, "state": state, "perf": perf,
                         "void": bool(void), "errors": errors[:40], "logs": logs[-60:]}, indent=1))
