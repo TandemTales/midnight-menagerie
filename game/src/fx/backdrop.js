@@ -169,7 +169,7 @@ const SHAPE_PENDANT = 22, SHAPE_STANDARD = 23;
 /** How far a chandelier's bowl and finial hang BELOW its candle cups, and how
  *  far a lantern's cap stands above its flame. Both fix where the flame sprite
  *  lands inside the body, so they are shared with the shader. */
-const PEND_BELOW = 0.62, LAMP_ABOVE = 0.34;
+const PEND_BELOW = 0.62, LAMP_ABOVE = 0.46;
 
 /**
  * WHICH FITTING A PRACTICAL LIGHT HANGS IN, or 'none' if it should not be

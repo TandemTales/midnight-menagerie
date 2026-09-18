@@ -3510,9 +3510,15 @@ void main(){
        uPropMax, which is the shoulder that stops this from clipping.
 
        A candle behind old glass is warm and uneven, not a white panel. */
-    vec3 brass = mix(uAlbedoHi, vec3(1.00, 0.82, 0.50), 0.44) * 1.05;
-    albedo = mix(brass * (0.80 + 0.40*mmFbm3(sm*5.0 + vSeed*2.3)),
-                 brass * vec3(2.30, 1.78, 1.12) * (0.70 + 0.46*mmFbm3(sm*7.0 + vSeed)),
+    /* DARK METAL ROUND A BRIGHT PANE, which is the whole read of a lamp. The
+       first Foyer capture with these in it came back as a white obelisk and a
+       white chain: the metal was as bright as the glass, so the cage that says
+       "lantern" and the links that say "chain" had nothing to be seen against.
+       A lantern's frame is black iron; the samples draw every form as a light
+       body inside a dark line and this is the same instruction. */
+    vec3 brass = mix(uAlbedoHi, vec3(1.00, 0.82, 0.50), 0.44) * 0.50;
+    albedo = mix(brass * (0.78 + 0.44*mmFbm3(sm*5.0 + vSeed*2.3)),
+                 brass * vec3(4.60, 3.30, 1.90) * (0.70 + 0.46*mmFbm3(sm*7.0 + vSeed)),
                  clamp(glass, 0.0, 1.0));
     /* A CHANDELIER'S ARMS ARE LIT BY ITS OWN CANDLES, and the room's per-pixel
        term cannot say so: the lamp sits AT the middle of the fitting, so ldir
@@ -3522,7 +3528,7 @@ void main(){
        out up the chain. */
     vec2  soc = (vShape < 22.5) ? vec2(0.0, 0.62) : vec2(0.0, vSize.y - 0.46);
     float burn = exp(-length(sm - soc)/0.44);
-    albedo *= 1.0 + 1.30 * burn;
+    albedo *= 1.0 + 0.45 * burn;
     /* ...AND IT HAS TO BE EMISSION, NOT ALBEDO. The Ballroom's third
        chandelier is its weakest lamp (base 0.88 against 1.35 and 1.19) and the
        rig packs only the five strongest into the shader's light slots, so that
@@ -3538,8 +3544,8 @@ void main(){
        chandelier correctly came back in the Foyer as a white-hot post with an
        hourglass of light round it. Expressed as a fraction of the ceiling the
        burner sits just under it in every room in the house. */
-    fitEmit = mix(uRim, vec3(1.00, 0.80, 0.52), 0.45) * uPropMax
-            * (0.30 + 1.05*burn) * (0.30 + 1.05*clamp(glass, 0.0, 1.0));
+    fitEmit = mix(uRim, vec3(1.00, 0.80, 0.52), 0.55) * uPropMax
+            * (0.16 + 0.78*burn) * (0.26 + 1.40*clamp(glass, 0.0, 1.0));
   }
 
   /* Occlusion. A prop is a volume: it is darker where it meets the floor and
