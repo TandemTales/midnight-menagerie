@@ -53,7 +53,7 @@ being slabs. `docs/ui-pass/README.md` has the full account; the short version:
   pier glass (shape 20) and a grand piano (21, `props.solo`), grafted from
   CARMINE which won that screen.
 - Frame 13.5-14.2 ms against the 15.5 budget. Battery: 101 gates, 3 red, all
-  three pre-existing (HALO clips, Archivo seed / `_losePatience`, steam-deck).
+  three pre-existing (HALO clips, Archivist seed / `_losePatience`, steam-deck).
 
 **WHAT ROUND 10 SHOULD TAKE**, from both judges and the last sweep:
 `fits_between_samples` is still FALSE everywhere and the best room is 7. The
