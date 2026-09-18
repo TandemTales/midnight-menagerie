@@ -60,7 +60,7 @@
 import * as THREE from 'three';
 import { clock } from '../core/clock.js';
 import { Save } from '../core/save.js';
-import { Backdrop } from './backdrop.js';
+import { Backdrop, fittingFor, FIT } from './backdrop.js';
 import { LightRig } from './lights.js';
 import { ParticleField, PTYPE } from './particles.js';
 
@@ -1186,6 +1186,29 @@ export class Atmosphere {
       this.rig.add({
         kind: L.kind, color: L.color, intensity: L.intensity, radius: L.radius,
         flicker: L.flicker !== false, cine: i < 2, fill: i === 1,
+        /* A LIGHT YOU CAN SEE NEEDS A FITTING, and the first half of BRIEF-r10
+           fix 1 is that half of them were never meant to be seen at all. Every
+           region in the table above authors `glow: 0` on its key and its fill
+           -- the two CINEMATIC lights, which lights.js's own header says are
+           "invisible, cast no flame" -- and this call has never passed `glow`
+           through, so AtmoLight fell back to its default of 1.0 for a warm
+           light and 0.55 for a cold one and syncFlames drew a candle at both.
+           Verified in the Greenhouse, whose key at x -4.4, z 2.8 lands INSIDE
+           the frame at that depth: the pale oval on the left wall of every
+           capture of that room is the key light's flame. The Ballroom's two
+           happen to fall a few centimetres outside the lens, which is why the
+           count there came to exactly three. The authored intent was right for
+           nine rounds and was being dropped on the floor. */
+        /* ...and the OTHER half: a light with no fitting draws no flame.
+           Backdrop.fittingFor is the single classifier -- Backdrop._fixtures
+           builds a body from it and this suppresses the source of anything it
+           calls 'none', so a light can never end up with a flame and nothing
+           holding it, which is the whole of fix 1. It is also what stops the
+           Graveyard drawing a SECOND MOON: that region's one cold practical
+           sits at y 8.00 in open air, which is the moon the sky already draws.
+           Confirmed with flames=0 before it was changed -- the small disc's
+           box went from 255 to 18 and the real moon did not move. */
+        glow: (i < 2 || fittingFor(L, pal.room) === FIT.NONE) ? 0 : L.glow,
         pos: this._v3b.set(L.x, L.y, L.z),
       });
     }

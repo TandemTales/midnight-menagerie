@@ -1853,7 +1853,27 @@ varying vec2  vSize;
 varying float vShape, vSeed, vTone, vFog;
 
 /* Soft coverage field in local uv space; > 0 is inside the silhouette. */
-float shapeField(vec2 uv, float shape, float seed){
+/* A STROKE ON A SEGMENT, vertical and then between two arbitrary points. The
+   first is a lamp standard's stem and a chandelier's chain; the second is an
+   arm sweeping out of that chandelier's stem and up to its candle. Both live
+   in WALL_FRAG too -- these are separate programs and neither can see the
+   other's helpers, which is what the first compile of shapes 22 and 23 found
+   out. */
+float mmSeg(vec2 p, float h, float th){
+  return length(vec2(p.x, max(abs(p.y) - h, 0.0))) - th;
+}
+float mmSeg2(vec2 p, vec2 a, vec2 b, float th){
+  vec2 pa = p - a, ba = b - a;
+  float t = clamp(dot(pa, ba) / max(dot(ba, ba), 1e-6), 0.0, 1.0);
+  return length(pa - ba*t) - th;
+}
+
+/* msz is the quad in METRES, and it arrived with the fittings (shapes 22 and
+   23). Every other shape here is authored in fractions of its own quad, which
+   is right for an object that comes in one size; a chandelier's CHAIN is as
+   long as the ceiling is high and its body is not, so a fitting has to be
+   authored in metres or the corona stretches with the drop. */
+float shapeField(vec2 uv, vec2 msz, float shape, float seed){
   vec2 p = uv - vec2(0.5, 0.0);          // origin at bottom centre
   vec2 g = uv - vec2(0.5, 1.0);          // origin at top centre (hanging props)
   float d = 1e3;
@@ -2111,10 +2131,57 @@ float shapeField(vec2 uv, float shape, float seed){
     // neck and head
     d = mmSmin(d, mmCaps(p - vec2(0.012, 0.745), 0.022, 0.030), 0.020);
     d = mmSmin(d, mmCircle(p - vec2(0.018, 0.815), 0.068), 0.018);
-    // one arm down across the drapery, one forearm raised
-    d = mmSmin(d, mmCaps(p - vec2(-0.125, 0.585), 0.105, 0.036), 0.030);
-    d = mmSmin(d, mmCaps(p - vec2(0.140, 0.640), 0.085, 0.032), 0.030);
-    d = min(d, mmCircle(p - vec2(0.152, 0.735), 0.042));
+    /* ARMS THAT END IN HANDS, AND A WREATH IN THEM. BRIEF-r10 fix 4, both
+       judges: "the arms end as truncated cylinders where hands should be".
+       They did -- literally: two VERTICAL capsules stuck on beside the torso
+       with a ball above one of them, which is a coat stand. A mourning figure
+       brings both forearms in to the chest and holds something, and the thing
+       it holds is the cue that reads at the thirty pixels this object gets in
+       the middle distance: a ring is legible when a finger never will be. */
+    d = mmSmin(d, mmSeg2(p, vec2(-0.146, 0.702), vec2(-0.124, 0.598), 0.038), 0.028);
+    d = mmSmin(d, mmSeg2(p, vec2( 0.146, 0.702), vec2( 0.124, 0.598), 0.036), 0.028);
+    d = mmSmin(d, mmSeg2(p, vec2(-0.124, 0.598), vec2(-0.052, 0.545), 0.032), 0.024);
+    d = mmSmin(d, mmSeg2(p, vec2( 0.124, 0.598), vec2( 0.052, 0.545), 0.030), 0.024);
+    // the hands: two masses meeting over the wreath, with a notch between them
+    d = mmSmin(d, mmCircle(p - vec2(-0.048, 0.540), 0.042), 0.016);
+    d = mmSmin(d, mmCircle(p - vec2( 0.046, 0.538), 0.040), 0.016);
+    // the wreath itself, an annulus held against the body
+    d = min(d, abs(mmCircle(p - vec2(0.0, 0.462), 0.078)) - 0.024);
+    /* WINGS ON HALF OF THEM. "no face, no wings, no folded arm" -- and a
+       churchyard full of identical figures is the stamped-tile failure in
+       another guise, which is why this is seeded rather than always on. Folded
+       wings behind the shoulders: a thick root at the shoulder blade tapering
+       to a tip above the head. 1e3 on the other half costs one mix and keeps
+       the branch out of the loop. */
+    /* FOLDED, AND BROAD. The first pass sent them up as two thin spikes above
+       the head and the capture came back with a figure wearing ANTLERS -- at
+       this size a 2 cm taper rising past the crown is a horn, not a wing. A
+       folded wing is a wide blade: it leaves the shoulder blade, arches to
+       just under the top of the head, and falls back down the body to the
+       hip, and it is WIDER than the arm it hides. */
+    /* A BLADE THAT COMES TO A POINT, and the second thing this shape had to be
+       taught. Version one sent two thin tapers past the crown and photographed
+       as ANTLERS; version two gave them round caps at head height and
+       photographed as a figure with THREE HEADS, because mmSeg2's cap is a
+       disc and the head is a disc of the same size beside it. A folded wing is
+       a leaf: widest at the shoulder blade, scalloped down its trailing edge,
+       and POINTED where it passes the ear. One stroke with a width that is a
+       function of its own length, exactly as the Greenhouse's fronds are. */
+    float ang = step(0.46, mmHash11(seed*7.7 + 1.3));
+    for (int i = 0; i < 2; i++){
+      float sx = float(i)*2.0 - 1.0;
+      vec2  wb = vec2(sx*0.062, 0.500);
+      vec2  wt = vec2(sx*0.158, 0.762);
+      vec2  wv = wt - wb;
+      float wl = length(wv);
+      vec2  wdir = wv / max(wl, 1e-4);
+      float wt2 = clamp(dot(p - wb, wdir)/max(wl, 1e-4), 0.0, 1.0);
+      vec2  wax = wb + wdir*wl*wt2;
+      // broad at the root, a point at the tip, with feathers scalloped out of
+      // the trailing edge so the margin is not a smooth arc
+      float ww = 0.092 * (1.0 - 0.92*wt2*wt2) * (0.88 + 0.12*cos(wt2*24.0));
+      d = mmSmin(d, (length(p - wax) - ww) + (1.0 - ang)*1e3, 0.020);
+    }
   } else if (shape < 16.5) {              // 16 — sarcophagus chest
     d = mmBox(p - vec2(0.0,0.20), vec2(0.46,0.20), 0.03);
     d = min(d, mmBox(p - vec2(0.0,0.44), vec2(0.50,0.055), 0.03));
@@ -2171,7 +2238,7 @@ float shapeField(vec2 uv, float shape, float seed){
     d = min(d, mmCircle(p - vec2(0.0, 0.900), 0.068));
     d = min(d, mmCaps(p - vec2(-0.132, 0.842), 0.052, 0.019));
     d = min(d, mmCaps(p - vec2( 0.132, 0.842), 0.052, 0.019));
-  } else {                                // 21 -- grand piano, lid propped
+  } else if (shape < 21.5) {              // 21 -- grand piano, lid propped
     /* ...AND A BALLROOM HAS A PIANO. ONE of them, which is why the region data
        can deal a shape at most once: the picker is uniform, and three grand
        pianos in a room is the same content failure as thirty statues by
@@ -2201,8 +2268,110 @@ float shapeField(vec2 uv, float shape, float seed){
     d = min(d, mmBox(p - vec2(0.336, 0.690), vec2(0.011, 0.150), 0.006));  // prop stick
     d = min(d, mmBox(p - vec2(-0.230, 0.610), vec2(0.070, 0.048), 0.008)); // music desk
     d = min(d, mmBox(p - vec2(-0.408, 0.480), vec2(0.034, 0.072), 0.008)); // the cheek
+
+  } else if (shape < 22.5) {              // 22 -- PENDANT FITTING ON A CHAIN
+    /* BRIEF-r10 fix 1. Both judges, in two rooms each: the room draws a flame
+       at every practical light and NOTHING draws the lamp, so a light hung in
+       mid-air is a pale oval attached to nothing. This is the body.
+
+       AUTHORED IN METRES, because the drop is not a property of the fitting --
+       it is the distance from this lamp up to this room's ceiling, 5.1 m in the
+       Ballroom and 1.7 m in the Kitchens. A body authored in fractions of the
+       quad would come out five times bigger in the taller room. _fixtures
+       sets the quad: its TOP is the ceiling and its bottom is PEND_BELOW under
+       the light, so sk below is where the flame sprite lands, exactly. */
+    vec2  mm = p * msz;                   // metres from the bottom centre
+    float H  = msz.y;                     // ceiling to finial
+    float R  = max(msz.x*0.5 - 0.17, 0.26);   // the corona's radius
+    float sk = 0.62;                      // PEND_BELOW -- the flame is HERE
+    /* A DRAWN LINE'S WIDTH IS IN PIXELS -- round 8's rule, and the first
+       capture of this shape is what it costs to ignore. A chain of 5 cm and an
+       arm of 5 cm are 1.4 px across a 34 m ballroom, and a 1.4 px stroke comes
+       out of the coverage antialias at 28% alpha over a black ceiling: the
+       chandelier's arms measured 26/255 against a ceiling of 145 while its
+       globe measured 253. Metres per pixel is one derivative of the quad's own
+       uv, so the thin members can carry a floor of about two and a half
+       pixels wherever the fitting stands. */
+    float mppx = max(length(vec2(dFdx(uv.x), dFdy(uv.x))) * msz.x, 1.0e-5);
+    float wire = max(0.026, mppx*1.70);   // the chain
+    float limb = max(0.034, mppx*1.95);   // an arm
+    /* THE CEILING ROSE. "no chain, no ceiling rose and no fitting" -- a chain
+       that fades out at the top of its quad is the same floating object one
+       storey up, so the rose is the first thing drawn and it is wide enough to
+       read at the 6 px it occupies across a ballroom. */
+    d = mmBox(mm - vec2(0.0, H - 0.055), vec2(0.335, 0.055), 0.022);
+    d = min(d, mmBox(mm - vec2(0.0, H - 0.150), vec2(0.155, 0.050), 0.022));
+    d = min(d, mmBox(mm - vec2(0.0, H - 0.222), vec2(0.072, 0.028), 0.014));
+    /* THE CHAIN. One stroke; reliefH cuts the links into it. */
+    float c0 = sk + 0.36, c1 = H - 0.240;
+    d = min(d, mmSeg(vec2(mm.x, mm.y - (c0 + c1)*0.5),
+                     max((c1 - c0)*0.5, 0.0), wire));
+    /* THE STEM AND THE CORONA. Six arms sweeping out of a turned stem and up
+       to a drip pan and a shade. A ring hung above eye level is an ellipse
+       seen nearly edge-on, so the vertical spread is an eighth of the
+       horizontal one -- a circle here would read as a wheel. */
+    d = min(d, mmSeg(vec2(mm.x, mm.y - (sk + 0.16)), 0.18, max(0.042, mppx*1.5)));
+    d = min(d, mmCircle(mm - vec2(0.0, sk + 0.355), 0.070));
+    /* THE RING IS SYMMETRICAL ABOUT ITS OWN CHAIN. The first version phased
+       the six arms on the seed and the capture came back with one arm sloping
+       down on the left and one up on the right -- a bent chandelier. A ring
+       hangs level; only WHICH WAY ROUND it hangs is arbitrary, and that is a
+       reflection, not a rotation. */
+    for (int i = 0; i < 6; i++){
+      float a  = float(i)/6.0*6.2831;
+      float ex = cos(a)*R;
+      float ey = sk + 0.045 + sin(a)*0.082;
+      d = min(d, mmSeg2(mm, vec2(ex*0.17, sk + 0.02), vec2(ex*0.74, ey - 0.050), limb));
+      d = min(d, mmSeg2(mm, vec2(ex*0.74, ey - 0.050), vec2(ex, ey + 0.058), limb*0.92));
+      /* the scroll an arm curls into where it leaves the stem */
+      d = min(d, mmCircle(mm - vec2(ex*0.30, sk - 0.020), limb*1.55));
+      d = min(d, mmBox(mm - vec2(ex, ey + 0.098), vec2(0.072, max(0.017, mppx)), 0.010));
+      d = min(d, mmBox(mm - vec2(ex, ey + 0.160), vec2(0.046, 0.050), 0.032));
+    }
+    /* THE CENTRAL GLOBE, and it is the reason this is a gasolier and not a
+       candle chandelier. The room draws ONE flame sprite per light and the
+       light is at the middle of its own fitting, so a ring of six candles
+       with a flame hanging in the air between them is the same defect with an
+       extra step. A Victorian gasolier hangs an etched glass globe at its
+       centre, the flame lives inside it, and the halo the sprite already draws
+       is what a lit globe does. */
+    d = min(d, mmCircle((mm - vec2(0.0, sk))*vec2(1.0, 0.92), 0.212));
+    d = min(d, mmBox(mm - vec2(0.0, sk + 0.198), vec2(0.102, 0.028), 0.014));
+    /* the bowl and the finial hanging under it, on a short drop so the three
+       do not read as a stack of separate lozenges */
+    d = min(d, mmSeg(vec2(mm.x, mm.y - (sk - 0.250)), 0.075, wire*1.25));
+    d = min(d, mmBox(mm - vec2(0.0, sk - 0.322), vec2(0.148, 0.052), 0.046));
+    d = min(d, mmCircle(mm - vec2(0.0, sk - 0.440), 0.056));
+    d /= max(msz.x, 0.02);                // back into fractions of the quad
+
+  } else {                                // 23 -- A LIGHT STANDARD
+    /* The other half of fix 1: a lamp too low to hang. A stepped foot, a stem
+       as long as the light is high, and a glazed lantern with the flame inside
+       it. Indoors it is the hall lamp beside the stair; in the churchyard it
+       is the lantern on the path. Metres again, and for the same reason: the
+       STEM is the variable and the lantern is not. */
+    vec2  mm = p * msz;
+    float H  = msz.y;
+    float sk = H - 0.46;                  // LAMP_ABOVE -- the flame is HERE
+    float mppx = max(length(vec2(dFdx(uv.x), dFdy(uv.x))) * msz.x, 1.0e-5);
+    float wire = max(0.032, mppx*1.75);   // the stem, floored at ~3.5 px
+    d = mmBox(mm - vec2(0.0, 0.030), vec2(0.182, 0.030), 0.012);
+    d = min(d, mmBox(mm - vec2(0.0, 0.080), vec2(0.128, 0.030), 0.016));
+    d = min(d, mmBox(mm - vec2(0.0, 0.124), vec2(0.080, 0.026), 0.014));
+    float s0 = 0.145, s1 = max(sk - 0.24, 0.22);
+    d = min(d, mmSeg(vec2(mm.x, mm.y - (s0 + s1)*0.5),
+                     max((s1 - s0)*0.5, 0.0), wire));
+    d = min(d, mmCircle(mm - vec2(0.0, (s0 + s1)*0.5), 0.058));
+    d = min(d, mmBox(mm - vec2(0.0, sk - 0.208), vec2(0.116, 0.024), 0.010));
+    d = min(d, mmBox(mm - vec2(0.0, sk), vec2(0.128, 0.170), 0.015));   // the glass
+    d = min(d, mmBox(mm - vec2(0.0, sk + 0.202), vec2(0.158, 0.030), 0.012));
+    d = min(d, mmArch(mm - vec2(0.0, sk + 0.226), 0.076, 0.070));
+    d = min(d, mmCircle(mm - vec2(0.0, sk + 0.334), 0.028));
+    d /= max(msz.x, 0.02);
   }
-  d += (mmFbm3(uv*5.0 + seed*17.0) - 0.5) * 0.022;   // erode the CG-clean edge
+  /* A BRASS FITTING HAS NO ERODED EDGE. The fbm below is what keeps stone and
+     timber off a CG-clean outline; on a 2.7 cm chain it is most of the chain. */
+  d += (mmFbm3(uv*5.0 + seed*17.0) - 0.5) * (shape > 21.5 ? 0.0035 : 0.022);
   return -d;
 }
 
@@ -2693,7 +2862,14 @@ float reliefH(vec2 uv, vec2 msz, vec2 mpp, float shape, float seed, out float ti
        statue at the back of the Graveyard gets three channels and not moire. */
     float body = pB(uv.y, 0.186, 0.664);
     float flare = 1.0 + 0.58*smoothstep(0.52, 0.20, uv.y);
-    float fold = 0.062;                                       // metres between folds
+    /* THREE OR FOUR FOLDS, NOT TWENTY. BRIEF-r10 fix 4: "replace the vertical
+       striations with three or four drawn robe folds that follow the body". At
+       6.2 cm this was a groove every two pixels down a 0.9 m skirt, which is a
+       corduroy texture and not cloth -- and at the back of a churchyard the
+       resolvability gate simply turned it off, so the figure had no surface at
+       all. 0.155 m puts three or four channels across the skirt, each wide
+       enough to carry its own light side and shadow side. */
+    float fold = 0.155;                                       // metres between folds
     /* THE FOLDS WANDER, and that is not decoration. The first version put a
        groove every 6.2 cm on a dead-straight vertical line at one depth, and
        at 2x the figure came back wearing a BARCODE -- perfectly parallel,
@@ -2701,8 +2877,14 @@ float reliefH(vec2 uv, vec2 msz, vec2 mpp, float shape, float seed, out float ti
        Crypt's loculi, applied to cloth. Real drapery wanders off the vertical,
        and each fold is its own depth. The phase also turns with the seed so no
        two statues in a churchyard wear the same cloth. */
+    /* ...AND THEY FOLLOW THE BODY. A fold hangs from where the cloth is caught
+       -- the shoulder, the waist, the raised knee -- so it leans OUT as the
+       skirt flares and wanders across the form instead of running plumb. The
+       wander is four times what it was, which is what makes the same three
+       channels read as cloth over a leg rather than as a barcode. */
     float fx = (uv.x - 0.5)*msz.x / flare
-             + 0.018*sin(uv.y*7.4 + seed*3.1) + seed*0.37;
+             + 0.072*sin(uv.y*4.3 + seed*3.1)
+             + 0.040*sin(uv.y*9.1 + seed*1.7) + seed*0.37;
     float fu = mod(fx, fold) - fold*0.5;
     float fid = floor(fx/fold);
     float deep = 0.36 + 0.64*mmHash11(fid*2.7 + seed);
@@ -2712,9 +2894,18 @@ float reliefH(vec2 uv, vec2 msz, vec2 mpp, float shape, float seed, out float ti
        form at 0.5-0.9. These were at a big form's weight, which is why they
        read as a set of black lines rather than as cloth. Deepest at the hem,
        closing up toward the gathered waist, which is how a skirt falls. */
-    float fdeep = (0.013 + 0.019*deep) * (0.45 + 0.55*smoothstep(0.60, 0.22, uv.y));
-    h -= fdeep * pR(fu, fold*0.30) * body * fres;
-    h += 0.011 * pR(abs(fu) - fold*0.42, fold*0.16) * body * fres;
+    float fdeep = (0.019 + 0.026*deep) * (0.45 + 0.55*smoothstep(0.60, 0.22, uv.y));
+    h -= fdeep * pR(fu, fold*0.26) * body * fres;
+    h += 0.015 * pR(abs(fu) - fold*0.40, fold*0.18) * body * fres;
+    /* TWO CATENARIES ACROSS THE SKIRT. Cloth gathered at the waist does not
+       only hang -- it swags, and a swag is the one mark that says the vertical
+       channels are cloth and not fluting. */
+    for (int i = 0; i < 2; i++){
+      float sy = 0.300 + 0.150*float(i) + 0.030*mmHash11(seed*4.1 + float(i));
+      float cat = uv.y - sy - 0.085*(uv.x - 0.5)*(uv.x - 0.5)*4.0;
+      h -= 0.022 * pR(cat, 0.016) * body;
+      h += 0.010 * pR(cat - 0.026, 0.012) * body;
+    }
     h += 0.032 * pB(uv.y, 0.192, 0.226);                      // the hem's roll
     h -= 0.030 * pR(uv.y - 0.189, 0.005);
     h -= 0.036 * pR(uv.y - 0.545, 0.022);                     // the drapery is gathered
@@ -2728,34 +2919,94 @@ float reliefH(vec2 uv, vec2 msz, vec2 mpp, float shape, float seed, out float ti
        tip, a mouth, a chin, and the hair mass behind all of it with a hard
        hairline. Every one of them DARK, because a highlight on a prop at its
        luminance ceiling is a no-op. */
+    /* CARVED IN PLANES, NOT MODELLED IN BUMPS. Judge 2: "the face is a
+       noise-pitted oval". It was built as a set of soft blobs at 1.3-2.8 cm on
+       a head that is sixteen pixels across a churchyard, and nothing that
+       shallow survives the material break-up sitting on top of it. A carver
+       cuts a face as FLAT PLANES meeting at hard arrises: a brow shelf that
+       overhangs, two sockets sunk under it, a nose wedge standing between
+       them, and one shadow under the nose and one under the lip. Every mark
+       here is at least twice what it was and the ones that matter are DARK,
+       which is the only kind of mark a prop at its luminance ceiling shows. */
     vec2  hd = (uv - vec2(0.518, 0.815)) / 0.068;
     float inHd = 1.0 - smoothstep(0.88, 1.06, length(hd));
     float faceR = length(hd*vec2(1.10, 0.92) + vec2(0.0, 0.10));
     float face = (1.0 - smoothstep(0.62, 0.78, faceR)) * inHd;
-    h += 0.024 * inHd;
-    h += 0.026 * (1.0 - face) * inHd;                         // the hair mass
-    h -= 0.022 * pR(faceR - 0.70, 0.060) * inHd;              // the hairline
-    h += 0.016 * pR(hd.y - 0.24, 0.13) * face;                // the brow ridge
-    float eye = max(1.0 - smoothstep(0.0, 0.27, length((hd - vec2( 0.30, 0.06))*vec2(0.82, 1.55))),
-                    1.0 - smoothstep(0.0, 0.27, length((hd - vec2(-0.30, 0.06))*vec2(0.82, 1.55))));
-    h -= 0.030 * eye * face;
-    tint -= 0.55 * eye * face;
-    h += 0.028 * (1.0 - smoothstep(0.05, 0.17, abs(hd.x))) * pB(hd.y, -0.36, 0.22) * face;
-    h += 0.015 * (1.0 - smoothstep(0.0, 0.15, length(hd - vec2(0.0, -0.32)))) * face;
-    h -= 0.018 * (1.0 - smoothstep(0.02, 0.16, abs(hd.y + 0.46))) * face;   // the mouth
-    h += 0.013 * (1.0 - smoothstep(0.0, 0.24, length((hd - vec2(0.0, -0.68))*vec2(0.9, 1.2)))) * face;
+    h += 0.026 * inHd;
+    h += 0.030 * (1.0 - face) * inHd;                         // the hair mass
+    h -= 0.030 * pR(faceR - 0.70, 0.055) * inHd;              // the hairline
+    h += 0.026 * pR(hd.y - 0.26, 0.11) * face;                // the brow shelf
+    h -= 0.026 * pR(hd.y - 0.10, 0.055) * face;               // and its undercut
+    float eye = max(1.0 - smoothstep(0.0, 0.30, length((hd - vec2( 0.30, 0.02))*vec2(0.80, 1.45))),
+                    1.0 - smoothstep(0.0, 0.30, length((hd - vec2(-0.30, 0.02))*vec2(0.80, 1.45))));
+    h -= 0.048 * eye * face;                                  // the sockets, sunk
+    tint -= 0.80 * eye * face;
+    // the nose: a wedge from the brow to the tip, with its own shadow under it
+    h += 0.040 * (1.0 - smoothstep(0.04, 0.15, abs(hd.x))) * pB(hd.y, -0.34, 0.24) * face;
+    h += 0.020 * (1.0 - smoothstep(0.0, 0.13, length(hd - vec2(0.0, -0.30)))) * face;
+    h -= 0.030 * (1.0 - smoothstep(0.02, 0.13, abs(hd.y + 0.40)))
+               * (1.0 - smoothstep(0.10, 0.22, abs(hd.x))) * face;
+    h -= 0.022 * (1.0 - smoothstep(0.03, 0.17, abs(hd.y + 0.56))) * face;   // the mouth
+    h += 0.020 * (1.0 - smoothstep(0.0, 0.26, length((hd - vec2(0.0, -0.76))*vec2(0.9, 1.2)))) * face;
+    /* the cheekbones, which is what gives a stone face its two lit planes */
+    h += 0.018 * (1.0 - smoothstep(0.10, 0.34, abs(abs(hd.x) - 0.40)))
+               * pB(hd.y, -0.40, -0.02) * face;
 
     /* ---- THE ARMS, AND THE LINE BETWEEN THEM AND THE BODY. Fix 5: we ink the
        HOLLOWS of relief steps and nothing else, so a form in FRONT of another
        has no line between them -- and an arm laid across drapery is exactly
        that case, which is why the old figure's arms disappeared into its
        torso and left a lumpy column. */
-    float arm = min(mmCaps(p - vec2(-0.125, 0.585), 0.105, 0.036),
-                    min(mmCaps(p - vec2(0.140, 0.640), 0.085, 0.032),
-                        mmCircle(p - vec2(0.152, 0.735), 0.042)));
+    float arm = min(min(mmSeg2(p, vec2(-0.146, 0.702), vec2(-0.124, 0.598), 0.038),
+                        mmSeg2(p, vec2( 0.146, 0.702), vec2( 0.124, 0.598), 0.036)),
+                    min(mmSeg2(p, vec2(-0.124, 0.598), vec2(-0.052, 0.545), 0.032),
+                        mmSeg2(p, vec2( 0.124, 0.598), vec2( 0.052, 0.545), 0.030)));
+    float hand = min(mmCircle(p - vec2(-0.048, 0.540), 0.042),
+                     mmCircle(p - vec2( 0.046, 0.538), 0.040));
+    arm = min(arm, hand);
     float onArm = smoothstep(0.004, -0.012, arm);
-    h += 0.046 * onArm;
-    h -= 0.034 * pR(arm - 0.013, 0.013) * (1.0 - onArm);
+    h += 0.052 * onArm;
+    h -= 0.038 * pR(arm - 0.013, 0.013) * (1.0 - onArm);
+    /* THE KNUCKLES. Three grooves across each hand is what separates a hand
+       from the truncated cylinder the judges named; they are gated on
+       resolvability so a statue at the back of the yard gets a mass instead. */
+    float kn = pR(mod((p.x + 0.5)*msz.x, 0.036) - 0.018, 0.009)
+             * smoothstep(0.006, -0.010, hand) * pRes(0.036, mpp.x);
+    h -= 0.014 * kn;
+    /* THE WREATH, proud of the drapery behind it with a bound rim, and the
+       leaves cut across it. */
+    float wre = abs(mmCircle(p - vec2(0.0, 0.462), 0.078)) - 0.024;
+    float onWre = smoothstep(0.004, -0.010, wre);
+    h += 0.044 * onWre;
+    h -= 0.030 * pR(wre - 0.012, 0.012) * (1.0 - onWre);
+    float th2 = atan(p.x, p.y - 0.462);
+    h -= 0.016 * pR(fract(th2*2.4) - 0.5, 0.17) * onWre;
+    /* THE WINGS: a root that stands proud of the shoulder, then three ranks of
+       feathers running down the blade. Seeded exactly as the silhouette is, so
+       the relief lands only on the figures that have them. */
+    float ang2 = step(0.46, mmHash11(seed*7.7 + 1.3));
+    float wg = 1e3, wAcr = 0.0;
+    for (int i = 0; i < 2; i++){
+      float sx = float(i)*2.0 - 1.0;
+      vec2  wb = vec2(sx*0.062, 0.500);
+      vec2  wt = vec2(sx*0.158, 0.762);
+      vec2  wv = wt - wb;
+      float wl = length(wv);
+      vec2  wdir = wv / max(wl, 1e-4);
+      float wt2 = clamp(dot(p - wb, wdir)/max(wl, 1e-4), 0.0, 1.0);
+      vec2  wax = wb + wdir*wl*wt2;
+      float ww = 0.092 * (1.0 - 0.92*wt2*wt2) * (0.88 + 0.12*cos(wt2*24.0));
+      float wd = length(p - wax) - ww;
+      if (wd < wg) { wg = wd; wAcr = clamp(1.0 - abs(wd)/max(ww, 1e-4), 0.0, 1.0); }
+    }
+    float onWg = smoothstep(0.004, -0.014, wg) * ang2;
+    /* The wing is a shallow ROOF over its own quill: proud along the middle,
+       falling to both margins, which is what turns a flat blade into a wing. */
+    h += 0.052 * onWg * (0.35 + 0.65*wAcr);
+    float fp2 = 0.062;                                         // metres per feather
+    h -= 0.022 * pR(mod((uv.y - 0.5)*msz.y + 0.5*fp2, fp2) - fp2*0.5, fp2*0.24)
+               * onWg * pRes(fp2, mpp.y);
+    h -= 0.030 * pR(wg + 0.004, 0.012) * ang2;                 // in behind the shoulder
 
     /* ---- MARBLE: a vein and the dirt that gathers at a statue's foot. Both
        DARK. "A smooth gradient reads as plastic." */
@@ -2855,7 +3106,7 @@ float reliefH(vec2 uv, vec2 msz, vec2 mpp, float shape, float seed, out float ti
        and the room is candlelit and dark, so the glass reads as glass rather
        than as a hole in the wall. */
     tint += 0.30 * smoothstep(0.006, -0.010, gl);
-  } else {                                // 21 -- grand piano, lid propped
+  } else if (shape < 21.5) {              // 21 -- grand piano, lid propped
     h += 0.048 * pB(uv.y, 0.538, 0.568);                        // the case rim
     h -= 0.024 * pB(uv.y, 0.510, 0.540);                        // under it
     h += 0.030 * smoothstep(0.006, -0.010,
@@ -2877,13 +3128,86 @@ float reliefH(vec2 uv, vec2 msz, vec2 mpp, float shape, float seed, out float ti
        which is what the judge called a drafting set-square on three legs. */
     tint -= 0.34 * pB(uv.y, 0.560, 0.930);
     h += 0.020 * pR(uv.y - 0.558, 0.012);                       // the hinge line
+
+  } else if (shape < 22.5) {              // 22 -- pendant fitting on a chain
+    /* Everything here is in METRES off the bottom centre, like the silhouette,
+       and every mark is DARK: a fitting hangs in the brightest part of its own
+       room and a prop at its luminance ceiling cannot show a highlight. */
+    float H = msz.y, sk = 0.62;
+    float R = max(msz.x*0.5 - 0.17, 0.26);
+    /* THE ROSE: a moulded disc, so it reads as plaster and not as a tab. */
+    h += 0.020 * pB(m.y, H - 0.110, H - 0.006);
+    h -= 0.026 * pR(m.y - (H - 0.112), 0.010);
+    h += 0.014 * pR(abs(m.x) - 0.200, 0.030) * pB(m.y, H - 0.110, H - 0.006);
+    h += 0.016 * pB(m.y, H - 0.200, H - 0.104);
+    /* THE CHAIN IS LINKS, not a rod. One groove per link, gated on
+       resolvability -- at the back of a room this is two pixels wide and a
+       repeat finer than three pixels draws bands instead of a chain. */
+    float onCh = pB(m.y, sk + 0.34, H - 0.235) * pR(m.x, 0.046);
+    float lk = 0.058;
+    h += 0.014 * onCh;
+    h -= 0.013 * pR(mod(m.y, lk) - lk*0.5, lk*0.22) * onCh * pRes(lk, mpp.y);
+    /* THE GLOBE IS A SPHERE: proud in the middle, falling away all round, with
+       two etched bands cut into it. This is the piece the flame sits inside,
+       so it is the piece that has to read as glass rather than as a disc. */
+    vec2  gq = (m - vec2(0.0, sk)) * vec2(1.0, 1.09);
+    float gr = length(gq) / 0.212;
+    float onG = 1.0 - smoothstep(0.90, 1.02, gr);
+    h += 0.085 * sqrt(max(1.0 - gr*gr, 0.0)) * onG;
+    h -= 0.020 * pR(gr - 0.62, 0.075) * onG;
+    h -= 0.020 * pR(gr - 0.86, 0.055) * onG;
+    /* THE ARMS ARE TUBES and the drip pans are dishes. A ridge down each arm
+       is what turns a flat stroke into round brass. */
+    for (int i = 0; i < 6; i++){
+      float a  = float(i)/6.0*6.2831;
+      float ex = cos(a)*R;
+      float ey = sk + 0.045 + sin(a)*0.082;
+      float ad = min(mmSeg2(m, vec2(ex*0.17, sk + 0.02), vec2(ex*0.74, ey - 0.050), 0.034),
+                     mmSeg2(m, vec2(ex*0.74, ey - 0.050), vec2(ex, ey + 0.058), 0.031));
+      h += 0.026 * (1.0 - smoothstep(0.0, 0.030, ad + 0.030));
+      h -= 0.014 * pR(ad - 0.010, 0.012);
+      h += 0.020 * pR(m.y - (ey + 0.106), 0.014) * pR(m.x - ex, 0.074);
+    }
+    /* the stem's knops, and the gadroons round the bowl */
+    h += 0.020 * pR(m.y - (sk + 0.355), 0.055) * pR(m.x, 0.080);
+    h += 0.024 * pR(m.y - (sk - 0.300), 0.040) * pR(m.x, 0.150);
+    float gp = 0.062;
+    h -= 0.012 * pR(mod(m.x + gp*0.5, gp) - gp*0.5, gp*0.24)
+               * pB(m.y, sk - 0.350, sk - 0.255) * pRes(gp, mpp.x);
+    tint -= 0.30 * smoothstep(sk - 0.20, sk - 0.46, m.y);        // soot under the bowl
+
+  } else {                                // 23 -- a light standard
+    float H = msz.y, sk = H - 0.46;
+    /* THE FOOT is three steps, and each step's underside is a dark line. */
+    h += 0.018 * pB(m.y, 0.000, 0.060);
+    h -= 0.022 * pR(m.y - 0.062, 0.006);
+    h += 0.016 * pB(m.y, 0.062, 0.108);
+    h -= 0.020 * pR(m.y - 0.110, 0.006);
+    /* THE STEM IS ROUND, and fluted, which is what a cast-iron standard is. */
+    float onSt = pB(m.y, 0.145, sk - 0.23) * (1.0 - smoothstep(0.028, 0.040, abs(m.x)));
+    h += 0.030 * (1.0 - clamp(abs(m.x)/0.034, 0.0, 1.0)) * onSt;
+    float fp = 0.022;
+    h -= 0.007 * pR(mod(m.x + fp*0.5, fp) - fp*0.5, fp*0.26) * onSt * pRes(fp, mpp.x);
+    h += 0.018 * pR(m.y - (0.145 + max(sk - 0.385, 0.04)), 0.052) * pR(m.x, 0.064);
+    /* THE LANTERN: four panes behind glazing bars, set back inside their
+       frame, with the cap oversailing and a hard shadow under it. At the 20-40
+       px this head occupies it is the only part of the object anybody reads. */
+    float lan = pB(m.y, sk - 0.168, sk + 0.168) * (1.0 - smoothstep(0.110, 0.130, abs(m.x)));
+    h -= 0.038 * lan;
+    h += 0.038 * lan * (1.0 - smoothstep(0.013, 0.025, abs(m.x)));
+    h += 0.038 * lan * (1.0 - smoothstep(0.013, 0.025, abs(abs(m.x) - 0.106)));
+    h += 0.032 * lan * (1.0 - smoothstep(0.011, 0.022, abs(m.y - sk)));
+    h += 0.034 * pB(m.y, sk + 0.172, sk + 0.252);               // the cap
+    h -= 0.030 * pR(m.y - (sk + 0.170), 0.006);
+    h += 0.016 * pR(m.y - (sk + 0.300), 0.040) * pR(m.x, 0.070);
+    tint -= 0.34 * smoothstep(0.24, 0.02, m.y/max(H, 0.1));
   }
 
   return h;
 }
 
 void main(){
-  float f = shapeField(vUv, vShape, vSeed);
+  float f = shapeField(vUv, vSize, vShape, vSeed);
   /* The coverage field's own screen gradient turns it into a DISTANCE IN
      PIXELS from the silhouette, which is the only scale an edge treatment can
      honestly be authored in: the old 0.014 of local uv was half a pixel on a
@@ -2892,7 +3216,15 @@ void main(){
   vec2  gr   = vec2(dFdx(f), dFdy(f));
   float glen = length(gr) + 1e-7;
   float fpx  = f / glen;
-  float mask = smoothstep(0.0, 1.45, fpx);
+  /* A BRASS FITTING HAS A HARD EDGE, and a drawn line is OPAQUE. 1.45 px of
+     ramp is right for stone and foliage, whose margins really are soft -- and
+     it is what held the chandeliers' chains and arms at a quarter of their
+     colour: a 2.5 px member never gets more than about 0.3 of coverage under
+     it, so the emission below was landing on a surface that was three quarters
+     background. Measured before it was changed: a 10x change in the emission
+     moved the chain from 7.5 to 10.9. Shapes 22 and 23 take a 0.55 px ramp,
+     which is an antialiased edge and nothing more. */
+  float mask = smoothstep(0.0, (vShape > 21.5) ? 0.55 : 1.45, fpx);
   if (mask < 0.004) discard;
 
   /* METRES, and METRES PER PIXEL. Both were computed further down for the
@@ -3125,11 +3457,101 @@ void main(){
     albedo *= 1.0 + (1.0 - groove) * onShaft * 0.16 * toward;
   }
 
+  /* THE GLASS IN A FITTING, AND ITS BRASS. Shapes 22 and 23 are the only props
+     in the house made of two materials at once, and the difference between
+     them is the whole object: a lit globe or a glazed lantern is the brightest
+     thing on the prop and the metalwork holding it is the darkest.
+
+     reliefH's tint cannot do the bright half -- main() reads it as
+     clamp(-rTint, 0, 1), so a POSITIVE tint is discarded and the pier
+     glass's tint += 0.30 has never done anything. Albedo can, and it is the
+     same channel the cabinet's books and the clock's dial are drawn in. */
+  vec3 fitEmit = vec3(0.0);
+  if (vShape > 21.5) {
+    vec2  sm = (vUv - vec2(0.5, 0.0)) * vSize;
+    float glass;
+    if (vShape < 22.5) {
+      float gr2 = length((sm - vec2(0.0, 0.62)) * vec2(1.0, 1.09)) / 0.212;
+      glass = 1.0 - smoothstep(0.86, 1.00, gr2);
+      // the two etched bands cut into it stay unlit, so the globe is a moulded
+      // object catching light and not a flat disc of it
+      glass *= 1.0 - 0.75*(1.0 - smoothstep(0.045, 0.085, abs(gr2 - 0.62)))
+                   - 0.55*(1.0 - smoothstep(0.035, 0.070, abs(gr2 - 0.86)));
+      /* the six shades on the arms are glass too, just smaller */
+      for (int i = 0; i < 6; i++){
+        float a = float(i)/6.0*6.2831;
+        float ex = cos(a) * max(vSize.x*0.5 - 0.17, 0.26);
+        float ey = 0.62 + 0.045 + sin(a)*0.082;
+        glass = max(glass, 1.0 - smoothstep(0.052, 0.070,
+                    length((sm - vec2(ex, ey + 0.158)) * vec2(1.0, 0.86))));
+      }
+    } else {
+      /* FOUR PANES, NOT ONE WHITE BOX. The first Foyer capture with a standard
+         in it came back with a white-hot obelisk on the floor, because the
+         whole lantern was being treated as glass: a lantern is a dark metal
+         cage with lit panes INSIDE it, and the cage is most of what says
+         lantern at the thirty pixels the head occupies. The bars here are the
+         same three the relief cuts, so the two agree. */
+      float sk = vSize.y - 0.46;
+      float inLan = (1.0 - smoothstep(0.146, 0.162, abs(sm.y - sk)))
+                  * (1.0 - smoothstep(0.094, 0.110, abs(sm.x)));
+      float bar = max(1.0 - smoothstep(0.014, 0.026, abs(sm.x)),
+                  max(1.0 - smoothstep(0.014, 0.026, abs(abs(sm.x) - 0.106)),
+                      1.0 - smoothstep(0.012, 0.023, abs(sm.y - sk))));
+      glass = inLan * (1.0 - clamp(bar, 0.0, 1.0));
+    }
+    /* BRASS, NOT THE REGION'S SHADOW COLOUR. Every other prop takes uAlbedo,
+       which is the dark end of the region's own palette, because every other
+       prop is a piece of furniture standing in a dim room. A fitting is the
+       only object in the house that is ALWAYS beside a flame -- it is the
+       thing holding the flame -- and the first capture of these came back at
+       a body luminance of 35/255 against a ceiling of 145: a black wire
+       against a black ceiling. Measured, not guessed: 5.7x of headroom under
+       uPropMax, which is the shoulder that stops this from clipping.
+
+       A candle behind old glass is warm and uneven, not a white panel. */
+    vec3 brass = mix(uAlbedoHi, vec3(1.00, 0.82, 0.50), 0.44) * 1.05;
+    albedo = mix(brass * (0.80 + 0.40*mmFbm3(sm*5.0 + vSeed*2.3)),
+                 brass * vec3(2.30, 1.78, 1.12) * (0.70 + 0.46*mmFbm3(sm*7.0 + vSeed)),
+                 clamp(glass, 0.0, 1.0));
+    /* A CHANDELIER'S ARMS ARE LIT BY ITS OWN CANDLES, and the room's per-pixel
+       term cannot say so: the lamp sits AT the middle of the fitting, so ldir
+       comes out radial, N is the quad's, and every part of the object takes
+       the same 0.30 of wrapped diffuse whatever its distance from the flame.
+       This is the falloff a painter puts in -- brightest at the burner, dying
+       out up the chain. */
+    vec2  soc = (vShape < 22.5) ? vec2(0.0, 0.62) : vec2(0.0, vSize.y - 0.46);
+    float burn = exp(-length(sm - soc)/0.44);
+    albedo *= 1.0 + 1.30 * burn;
+    /* ...AND IT HAS TO BE EMISSION, NOT ALBEDO. The Ballroom's third
+       chandelier is its weakest lamp (base 0.88 against 1.35 and 1.19) and the
+       rig packs only the five strongest into the shader's light slots, so that
+       fitting is lit by NOTHING that is actually inside it: its albedo was
+       being multiplied by an ambient term of about 0.12 and the body vanished
+       while the other two read. A lamp is not a surface that happens to be
+       near a light. It emits, whether or not the rig had a slot spare -- and
+       the luminance shoulder below still stops it clipping. */
+    /* SCALED TO THE REGION'S OWN PROP CEILING, which is the one number that
+       makes a fitting look the same in two rooms. uPropMax is propCeil divided
+       by the region's exposure, and those run 0.134 in the Ballroom against
+       0.286 in the Foyer -- so the absolute value that lit a ballroom
+       chandelier correctly came back in the Foyer as a white-hot post with an
+       hourglass of light round it. Expressed as a fraction of the ceiling the
+       burner sits just under it in every room in the house. */
+    fitEmit = mix(uRim, vec3(1.00, 0.80, 0.52), 0.45) * uPropMax
+            * (0.30 + 1.05*burn) * (0.30 + 1.05*clamp(glass, 0.0, 1.0));
+  }
+
   /* Occlusion. A prop is a volume: it is darker where it meets the floor and
      darker in the last few millimetres before its own silhouette. Without these
      two the lit face is one even wash, which is the other half of "cuboid". */
   float inner = smoothstep(0.0, 0.09, f);
-  albedo *= mix(1.0 - 0.44*uAO, 1.0, smoothstep(0.0, 0.26, vUv.y));
+  /* A FITTING DOES NOT MEET THE FLOOR. This term darkens the bottom quarter of
+     a quad because that is where a cabinet meets the boards -- and the bottom
+     of a pendant's quad is the chandelier itself, five metres up, with the
+     room's own lamp burning inside it. Shapes 22 and 23 keep their own base
+     dark with relief and soot instead. */
+  if (vShape < 21.5) albedo *= mix(1.0 - 0.44*uAO, 1.0, smoothstep(0.0, 0.26, vUv.y));
   albedo *= mix(1.0 - 0.30*uAO, 1.0, inner);
 
   /* --- A RECESS IS DARKER THAN THE FACE IT IS CUT INTO ----------------------
@@ -3185,6 +3607,7 @@ void main(){
      calibrated in one place. */
   vec3 col = albedo * (uAmbient + uAccent * 0.13 + diff) + spec * 0.85;
   col *= uGain;
+  col += fitEmit;                 // a lamp emits: see the fitting block above
 
   /* --- the outline, then the rim ------------------------------------------
      The samples separate a form from its ground with a DARK line all the way
@@ -3239,9 +3662,16 @@ void main(){
     col = mix(vec3(Lc), col, want / max(sat, 1e-4));
   }
 
-  col = mix(col, uFog, vFog);
+  /* A LAMP CUTS THROUGH THE HAZE. Distance fog is right for a chest of drawers
+     twenty-four metres back and wrong for the thing emitting the light: the
+     Ballroom's three chandeliers hang at z -11, -11.5 and -15, and the deepest
+     one was arriving at 43% fog against the other two's 14% -- which is most of
+     why two of the three read and the middle of the dance floor still showed a
+     pale oval attached to nothing. */
+  float fFog = (vShape > 21.5) ? vFog*0.26 : vFog;
+  col = mix(col, uFog, fFog);
   col = mmDesat(col, uDread*0.5) * (1.0 - uDread*0.22);
-  gl_FragColor = vec4(col, mask*(1.0 - vFog*0.30));
+  gl_FragColor = vec4(col, mask*(1.0 - fFog*0.30));
 }`;
 
 /* ------------------------------------------------------------ contact shadow */

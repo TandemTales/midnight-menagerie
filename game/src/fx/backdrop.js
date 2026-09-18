@@ -89,10 +89,18 @@ export const DEFAULT_ROOM = {
  *  17   clawfoot bath   0.78 m                 --
  *  18   lamp standard   3.40 m                 --
  *  19   birdcage stand  1.60 m                 --
+ *  20   pier glass      2.80 m                 --
+ *  21   grand piano     2.05 m of quad         --
+ *  22   pendant fitting SIZED BY ITS DROP      -- see _fixtures
+ *  23   light standard  SIZED BY ITS LAMP      -- see _fixtures
+ *
+ * The last two are FITTINGS and are never dealt from a region's prop pack:
+ * `_fixtures` places one at each practical light and sizes it from the room,
+ * because a chandelier's chain is as long as the ceiling is high.
  */
 const SHAPE_M = [1.20, 2.00, 1.30, 1.00, 2.00, 2.00, 3.32, 2.60, 1.17, 1.33,
                  1.56, 1.30, 2.16, 1.50, 2.00, 2.44, 1.27, 0.97, 3.09, 1.56,
-                 2.80, 2.05
+                 2.80, 2.05, 2.60, 1.70
 ];
 /* ...and a width ratio, so a column is a column and not a capital-T. Four of
  * these were wrong by enough to change what the object was: a longcase clock
@@ -100,7 +108,7 @@ const SHAPE_M = [1.20, 2.00, 1.30, 1.00, 2.00, 2.00, 3.32, 2.60, 1.17, 1.33,
  * wide, and a column at h/12.3 when the table says h/8 to h/10. */
 const SHAPE_W = [1.15, 0.48, 1.00, 0.95, 0.72, 0.80, 0.47, 0.85, 0.90, 1.35,
                  1.30, 1.20, 0.87, 1.14, 0.77, 0.78, 1.80, 2.24, 0.50, 0.62,
-                 0.72, 1.62
+                 0.72, 1.62, 0.62, 0.34
 ];
 /* HOW MUCH ONE OF THESE VARIES FROM THE NEXT, as a +-fraction of SHAPE_M.
  *
@@ -121,14 +129,74 @@ const SHAPE_W = [1.15, 0.48, 1.00, 0.95, 0.72, 0.80, 0.47, 0.85, 0.90, 1.35,
  * loculi in a different room. */
 const SHAPE_VAR = [0.06, 0.08, 0.62, 0.20, 0.10, 0.08, 0.10, 0.10, 0.16, 0.48,
                    0.06, 0.06, 0.06, 0.06, 0.06, 0.14, 0.14, 0.06, 0.08, 0.08,
-                 0.06, 0.04
+                 0.06, 0.04, 0.00, 0.00
 ];
 // Which shapes hang from the ceiling rather than stand on the floor.
-export const HANGING = { 4: 1, 7: 1 };
+export const HANGING = { 4: 1, 7: 1, 22: 1 };
 /* ...and which stand AGAINST A WALL rather than out on the floor. A tall
    mirror marooned in the middle of a dance floor reads as a slab; against a
    wall it reads as the thing a ballroom is lined with. */
 export const WALLSIDE = { 20: 1 };
+
+/* ══════════════ A LIGHT YOU CAN SEE NEEDS A FITTING ═══════════════════════
+   BRIEF-r10 fix 1, and it is one root cause behind complaints from both judges
+   in two rooms each: "the white ovals hovering at head height have no chain,
+   no ceiling rose and no fitting, so they are unnameable objects in otherwise
+   built rooms", and "three pale ovals float in front of the wall attached to
+   nothing".
+
+   `Backdrop.syncFlames` draws a visible flame at every practical light, which
+   is right -- the flicker that drives the illumination has to drive the source
+   you can see, or the room reads as lit by nothing. What was missing is the
+   LAMP. These two shapes are the body: a chandelier whose chain runs up to a
+   ceiling rose, and a standard whose stem runs down to the floor. Both are
+   authored in METRES off vSize rather than in fractions of their quad, because
+   the drop and the stem are as long as the room needs them to be and a body
+   authored as a fraction would stretch with them.
+
+   THE OTHER HALF IS THAT SOME OF THOSE LIGHTS SHOULD NOT BE DRAWING A SOURCE
+   AT ALL, and the Graveyard's "two moons" is the proof. Measured: a 3424 px
+   disc and a 323 px one, both deterministic, both untouched by motes=0 and
+   shafts=0. The small one is the flame sprite of the region's one cold
+   practical, which sits at y 8.00 in open air over a churchyard -- i.e. it is
+   the moon, already drawn as the moon by the sky, and a second mottled disc
+   with a halo is drawn on top of it. Confirmed before it was fixed, with
+   flames=0 on the backdrop-room hash: the small disc's box goes from 255 to
+   18 and the real moon does not move. */
+export const FIT = { NONE: 'none', CHANDELIER: 'chandelier', LAMP: 'lamp' };
+/** Shape ids for the two fittings. */
+const SHAPE_PENDANT = 22, SHAPE_STANDARD = 23;
+/** How far a chandelier's bowl and finial hang BELOW its candle cups, and how
+ *  far a lantern's cap stands above its flame. Both fix where the flame sprite
+ *  lands inside the body, so they are shared with the shader. */
+const PEND_BELOW = 0.62, LAMP_ABOVE = 0.34;
+
+/**
+ * WHICH FITTING A PRACTICAL LIGHT HANGS IN, or 'none' if it should not be
+ * drawing a visible source at all.
+ *
+ * One classifier used twice -- `Backdrop._fixtures` builds the body from it and
+ * `Atmosphere._buildLights` suppresses the flame of anything that comes back
+ * 'none' -- so a light can never end up with a flame and no fitting, which is
+ * the whole defect. A region may name `fit` on a light and that always wins.
+ */
+export function fittingFor(L, room) {
+  if (!L) return FIT.NONE;
+  if (L.fit) return L.fit;
+  if (L.glow !== undefined && L.glow <= 0.001) return FIT.NONE;
+  const ceil = room && room.h > 0 ? room.h : 0;
+  /* OPEN AIR -- the Graveyard, the Hedge Maze, the Pumpkin Grounds, the Title.
+     There is no ceiling to hang anything from, so a light up in the sky is the
+     moon or nothing; down at head height it is a lamp somebody set on a path. */
+  if (ceil <= 0.01) return L.y > 3.2 ? FIT.NONE : FIT.LAMP;
+  /* A COLD LIGHT INDOORS IS MOONLIGHT THROUGH A GLAZED WALL, not a lamp. There
+     is no object in the room holding it and there should be no disc where it
+     is: the pale blue oval in the Foyer's top right and the two on the
+     Greenhouse's glass are this light and nothing else. A region whose cold
+     lamps ARE lamps -- the Lampworks -- says so with `fit`. */
+  if (L.kind === 'cold') return FIT.NONE;
+  return L.y >= Math.max(2.6, ceil * 0.34) ? FIT.CHANDELIER : FIT.LAMP;
+}
 
 /**
  * THE SUBJECT of a room, by name. A region's `subject` picks one; `subjectH` in
@@ -946,12 +1014,69 @@ export class Backdrop {
     return out.slice(0, MAX_PROPS);
   }
 
+  /**
+   * A BODY FOR EVERY LIGHT THE ROOM DRAWS A FLAME AT.
+   *
+   * Placed from `pal.lights`, which is the very array `Atmosphere._buildLights`
+   * turns into the rig a few lines later -- and after `_vary` has moved them,
+   * because that runs on the palette before `build()` is called. So the fitting
+   * cannot drift away from its flame: it is the same number.
+   *
+   * These are NOT clamped into the frame the way `push` clamps a prop. A prop
+   * pushed back inside the lens is still that prop; a chandelier moved half a
+   * metre off its own candles is the defect again with an extra step.
+   */
+  _fixtures(pal, room) {
+    const out = [];
+    const lights = pal.lights || [];
+    const ceil = room.h > 0 ? room.h : 0;
+    const depth = Math.max(room.d, 1);
+    for (let i = 0; i < lights.length; i++) {
+      const L = lights[i];
+      const fit = fittingFor(L, room);
+      if (fit === FIT.NONE) continue;
+      /* Nothing in front of the action plane. Every practical in the house is
+         authored deep in the room; a fitting at z > 0 would be between the
+         camera and the actors and fill the screen. */
+      if (L.z > -0.5) continue;
+      /* A FITTING IS NOT FURNITURE IN A DARK CORNER. `tone` is the region's
+         depth ramp on a prop's albedo, and a fitting is the object the room's
+         own lamp is INSIDE: it takes the top of the range wherever it stands. */
+      const tone = 0.86 + 0.12 * Math.min(-L.z / depth, 1);
+      const seed = (i * 2.731 + 0.37) % 10;
+      if (fit === FIT.CHANDELIER && ceil > 0.01) {
+        /* The cups sit exactly at the light. The bowl hangs PEND_BELOW under
+           them and the chain runs from the corona up to a rose on the ceiling,
+           so the drop is whatever this room's ceiling leaves. */
+        const h = Math.max(ceil - (L.y - PEND_BELOW), 1.30);
+        /* A ballroom's chandelier is wider than a corridor's. Tied to the
+           lamp's reach, which is the only measure of "how big a light this is"
+           the data carries, and clamped to the sizes a real one comes in. */
+        const w = Math.min(Math.max(0.55 + 0.115 * (L.radius || 6), 1.05), 2.30);
+        out.push({ x: L.x, z: L.z, w, h, shape: SHAPE_PENDANT, seed,
+                   tone, y: L.y - PEND_BELOW, hang: true, fixture: true });
+      } else {
+        /* A standard stands ON THE FLOOR and its head is at the light, so the
+           stem is as long as the lamp is high. */
+        const h = Math.max(L.y - 0.02 + LAMP_ABOVE, 0.95);
+        const w = Math.min(Math.max(0.34 + 0.055 * h, 0.44), 0.78);
+        out.push({ x: L.x, z: L.z, w, h, shape: SHAPE_STANDARD, seed,
+                   tone, y: 0.02, hang: false, fixture: true });
+      }
+    }
+    return out;
+  }
+
   /** Rebuild props, contact shadows and shafts for a region. */
   build(pal, rand = Math.random) {
     const room = Object.assign({}, DEFAULT_ROOM, pal.room);
     this._applyRoom(room);
 
-    const placed = this._layoutProps(pal, room, rand);
+    /* The fittings go in FIRST so the MAX_PROPS slice can never drop one: a
+       room with a flame and no lamp in it is the thing this round is fixing,
+       and the Greenhouse deals 44 loose props plus its planting beds. */
+    const placed = this._fixtures(pal, room)
+      .concat(this._layoutProps(pal, room, rand)).slice(0, MAX_PROPS);
     const off = this._propOffset.array, sc = this._propScale.array,
       sh = this._propShape.array, sd = this._propSeed.array, tn = this._propTone.array;
     const so2 = this._shdOffset.array, ss2 = this._shdScale.array, st2 = this._shdStr.array;
@@ -1327,7 +1452,13 @@ export class Backdrop {
     let dPos = false, dCol = false, dPar = false, dSeed = false;
     for (let i = 0; i < ls.length && k < MAX_FLAMES; i++) {
       const l = ls[i];
-      if (!l.enabled || l.glow <= 0.001 || l.live <= 0.01) continue;
+      /* ...and BELT AND BRACES on the cinematic pair. The comment above has
+         said since round 2 that a key light casts no flame; the filter never
+         said it, and the region data that did say it (`glow: 0`) was not being
+         passed through by Atmosphere._buildLights. Both are fixed now, and a
+         key light that someone later authors without a `glow` still draws
+         nothing: `l.cine` is the fact, not the colour. */
+      if (!l.enabled || l.cine || l.glow <= 0.001 || l.live <= 0.01) continue;
       const p3 = k * 3;
       if (pos[p3] !== l.pos.x || pos[p3 + 1] !== l.pos.y || pos[p3 + 2] !== l.pos.z) {
         pos[p3] = l.pos.x; pos[p3 + 1] = l.pos.y; pos[p3 + 2] = l.pos.z; dPos = true;
