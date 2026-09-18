@@ -165,6 +165,31 @@
 }
 .kit-board.has-backdrop .kit-ground::after { opacity: 1; }
 .kit-board.has-backdrop .kit-ground::before { opacity: 0; }
+/* ── ground, the paper carried below the picture rail ───────────────────────
+   BRIEF-r10 item 9: "carry the fan damask down from the picture rail to the
+   dado at reduced contrast instead of stopping in a band at the top." The band
+   is painted into room.webp and stops dead at the rail, so the whole middle of
+   every board's wall -- the largest area on the Safe Room -- is a plain wash,
+   and a plain wash is what round 1's judges called a flat void.
+
+   The kit already owns the paper (damask.webp, the samples' own scrollwork,
+   which .kit-panel--damask lays under its words). This is the same tile at a
+   TENTH of its strength in soft-light, masked to start under the rail and die
+   out at the dado, so it reads as the same paper going on down in shadow
+   rather than as a second pattern. `.kit-ground::before` was already referenced
+   by the has-backdrop rule directly above and never defined anywhere, so a
+   board that has a real painting hides this for free. */
+.kit-ground::before {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  background: url("../../assets/ui/kit/damask.webp") 50% 0 / 164px auto repeat;
+  -webkit-mask-image: linear-gradient(180deg,
+    transparent 0 23%, rgba(0, 0, 0, .92) 31%, rgba(0, 0, 0, .58) 54%, transparent 72%);
+          mask-image: linear-gradient(180deg,
+    transparent 0 23%, rgba(0, 0, 0, .92) 31%, rgba(0, 0, 0, .58) 54%, transparent 72%);
+  opacity: .105;
+  mix-blend-mode: soft-light;
+  transition: opacity var(--t-slow) var(--ease-out);
+}
 .kit-board .rm-vig {
   background:
     radial-gradient(115% 92% at 50% 44%, transparent 40%, color-mix(in srgb, var(--kit-void) 94%, transparent) 100%),
