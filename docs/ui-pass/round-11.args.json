@@ -1,0 +1,58 @@
+{
+  "round": "r11",
+  "maxBuilders": 3,
+  "briefs": [
+    "docs/ui-pass/BRIEF-r0.md",
+    "docs/ui-pass/BRIEF-r1.md",
+    "docs/ui-pass/BRIEF-r9.md",
+    "docs/ui-pass/BRIEF-r10.md",
+    "docs/ui-pass/BRIEF-r11.md"
+  ],
+  "rubrics": [
+    "docs/ui-pass/RUBRIC.md",
+    "docs/ui-pass/RUBRIC-r9.md",
+    "docs/ui-pass/RUBRIC-r11.md"
+  ],
+  "samples": [
+    "UI/title.png",
+    "UI/mainMenu.png",
+    "UI/selectCompanion.png",
+    "UI/selectKid.png"
+  ],
+  "tracks": [
+    {
+      "key": "vary",
+      "name": "VARIATION",
+      "rule": "refine",
+      "screens": [
+        "sheet-foyer",
+        "sheet-ballroom",
+        "sheet-greenhouse",
+        "sheet-graveyard",
+        "combat",
+        "rest"
+      ],
+      "baseline": "QUILL",
+      "builders": [
+        {
+          "slot": "a",
+          "code": "LIMEWASH",
+          "port": 8901,
+          "angle": "LITERAL. Work the fix list 1 to 4 in order and exactly as written, and do not rebuild what already exists -- _vary() in fx/atmosphere.js re-rolls layout, prop count, room proportions, every lamp and the shafts per room already, and three Foyers differ in 51-55% of their pixels while still reading as one room. Fix 1 is the camera, because _vary() never touches pal.cam and one vantage re-composes everything in the room for free. Mind its own trap: the camera rig is authored against each region's proportions and the prop layout clamps to the visible half-width, so a camera that swings must not leave the furniture outside the lens, and a corridor will not take the same swing as a ballroom. Then fix 2 (the subject is gated to the far wall and centred by uFar), then 3, then 4. Work in sheets with tools/variant_sheet.py from the first change, not at the end."
+        },
+        {
+          "slot": "b",
+          "code": "CAMBER",
+          "port": 8902,
+          "angle": "A WING HAS SEVERAL KINDS OF ROOM. Fix 3 is your round and it is the real answer to what Josh asked for: subject is one value per region today, so every Foyer draws the same staircase. Make it a small POOL the room seed picks from, authored per region out of what that wing actually contains -- a Foyer that leads with a staircase, or a fireplace and overmantel, or an arcade of doors; a Crypt with loculi, or a tomb chest and a grille, or a stair down; a Greenhouse with planting terraces, or staging and a potting bench, or a vine frame. It reuses the relief system round 9 built (subjectH, reliefH) rather than adding machinery, so most of the work is authoring the subjects and being strict about which wing each belongs to. The rubric will score a candidate BELOW the baseline if it buys variety by breaking a region's identity, so every subject in a pool must be a thing that hall, that vault or that glasshouse would really have. Say in notes_for_merger how many branches you added to shapeField or subjectH: round 8 lost a pass to program size."
+        },
+        {
+          "slot": "c",
+          "code": "MADDER",
+          "port": 8903,
+          "angle": "WHERE YOU ARE STANDING. Treat this as staging rather than set-dressing: fixes 1 and 2 are yours and you should push them further than the literal reading -- not just a nudge to pal.cam per room, but a small set of authored VANTAGES per region (beside the stair rather than square to it, up on the landing, back in the doorway), each with the subject placed to suit it. A hall entered beside its staircase is a different hall from the same one entered facing it, and that costs no new geometry. Then fix 4: floorPattern is fixed per region -- give it a family the way LAYOUT_FAMILY works for layouts -- and let the room seed swap one or two entries of props.shapes from a per-region pool so one Foyer has a longcase clock where another has a vitrine, keeping each wing's signature props in every room. Check all seventeen regions as sheets, because a vantage that flatters the Foyer may put a corridor's camera inside its own wall."
+        }
+      ]
+    }
+  ]
+}
