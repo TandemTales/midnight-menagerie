@@ -919,11 +919,17 @@ export const ROOM_KINDS = {
   foyer: {
     kinds: [
       { subject: 'stair' },
-      /* the doors go to the sides because the fire takes the axis */
-      { subject: 'chimney', doorX: 6.40, near: FOYER_NEAR_HEARTH,
-        cam: { y: -0.30, z: -1.6, look: 0.35, fov: 2 } },
-      { subject: 'arcade', near: FOYER_NEAR_GALLERY,
-        cam: { y: 0.45, z: 1.2, look: -0.10, fov: 3 } },
+      /* the doors go to the sides because the fire takes the axis. A hall
+         built round its fire is SHALLOWER than the stair hall (0.8 of its
+         depth), and it is come up to on the level: tilted up at it, the lens
+         spent 38% of the frame on bare ceiling. It has no window on its fire
+         wall, so the pack's window drapes are hall chairs here. */
+      { subject: 'chimney', doorX: 6.40, near: FOYER_NEAR_HEARTH, room: { d: 0.80 },
+        swap: [[7, 0]], ceil: 3, ceilGain: 0.55, cam: { y: -0.25, z: -1.2, look: -0.25, fov: 0 } },
+      /* a gallery is long and narrow, so its arcade runs away down both
+         sides; it is paved in flags and vaulted bay by bay */
+      { subject: 'arcade', near: FOYER_NEAR_GALLERY, room: { w: 0.84, d: 1.10 },
+        floor: 2, ceil: 4, cam: { y: 0.45, z: 1.2, look: -0.10, fov: 3 } },
     ],
     names: [
       [/receiving chamber|stair|landing|entry|vestibule|foyer|tutorial/i, 0],
@@ -939,7 +945,13 @@ export const ROOM_KINDS = {
          seating round its walls (`wings`), the lounge massed to one side of
          its stage (`nook`); in both, the column is dealt as a chair and the
          loose pier glass as a candelabrum (the glasses are on the walls). */
-      { subject: 'mirrors', layout: 'wings', swap: [[6, 0], [20, 1]],
+      /* ...and a mirror hall is a GALLERY, not a ballroom: 0.74 of the
+         ballroom's depth, so its wall of glasses and girandoles is near
+         enough to be the room, under a vault. Its walls carry their own
+         drapery between the glasses, so the pack's window drapes hang as
+         chandeliers: dealt to the nearer back wall, a 7 m curtain panel was
+         a black slab across the glasses. */
+      { subject: 'mirrors', layout: 'wings', swap: [[6, 0], [20, 1], [7, 4]], room: { d: 0.74 }, ceil: 4, ceilGain: 0.35,
         lamps: [{ i: 2, x: 0.0, z: 0.78 }],
         cam: { y: 0.25, z: 0.6, look: -0.2, fov: 2 } },
       /* The back wall of a 26 m ballroom is past the reach of every lamp in
@@ -949,9 +961,11 @@ export const ROOM_KINDS = {
          gallery is looked UP at from nearer the floor's middle. */
       { subject: 'music', lamps: [{ i: 2, x: 0.0, z: 0.80 }],
         cam: { y: -0.30, z: -1.1, look: 0.55, fov: -1 } },
-      /* the stage takes the axis, and there is no door through a stage */
+      /* the stage takes the axis, and there is no door through a stage; a
+         lounge or a suite's state room is smaller than the ballroom, and its
+         drapery is the stage's own (the pack's drapes stand as candelabra) */
       { subject: 'dais', doorX: -1, lamps: [{ i: 2, x: 0.0, z: 0.76 }],
-        layout: 'nook', swap: [[6, 0], [20, 1]],
+        layout: 'nook', swap: [[6, 0], [20, 1], [7, 1]], room: { w: 0.90, d: 0.80 }, ceilGain: 0.45,
         cam: { y: -0.40, z: -1.4, look: -0.1, fov: -3 } },
     ],
     names: [
@@ -968,14 +982,18 @@ export const ROOM_KINDS = {
          along the walk where the lamps are, and its columns are the iron
          ones on its walls, so the pack deals palms where the hall deals a
          classical column */
-      /* ...and it deals 60% of the wing's count: an avenue brings every plant
-         within 16 m of the lens, and the Greenhouse is the wing with the
-         least frame to spare (BRIEF-r11) -- the conservatory's tiers carry
-         the same plants over twice the depth. */
-      { subject: 'palm', layout: 'aisle', aisle: [0.14, 0.44], swap: [[6, 2]], countScale: 0.6,
+      /* ...all within 7 m of the action plane. Laid out to the wing's own
+         16 m, the far half of the avenue stood 20-25 m from the lens, where
+         this wing's fog takes a pot entirely, and the first Palm House showed
+         eight plants in an empty hall. 90% of the wing's count, because the
+         Greenhouse is the wing with the least frame time to spare
+         (BRIEF-r11): the Palm House fight is profiled on its own. */
+      { subject: 'palm', layout: 'aisle', aisle: [0.12, 0.40], swap: [[6, 2]], countScale: 0.9, depth: 7,
         cam: { y: -0.20, z: -0.6, look: 0.35, fov: 2 } },
-      /* and a vinery's floor is bedded out in rows under the rods */
-      { subject: 'vine', layout: 'rows', swap: [[6, 24]],
+      /* and a vinery's floor is bedded out in rows under the rods; it is a
+         lean-to against the garden wall, so it is shallower than the great
+         house (0.7 of its depth) and that wall is near enough to read */
+      { subject: 'vine', layout: 'rows', swap: [[6, 24]], room: { d: 0.70 },
         cam: { y: 0.35, z: 0.6, look: -0.2 } },
     ],
     names: [
@@ -1048,6 +1066,16 @@ export const ROOM_KINDS = {
     kinds: [{ subject: 'rafters' }, { subject: 'bookcase' }],
     names: [
       [/library|chart|archive|watcher/i, 1],
+      [/./, 0],
+    ],
+  },
+  /* The kennel block's clinical rooms are TILED: its wash room, grooming
+     room, animal kitchen, veterinary room and quarantine ward have the tiled
+     dado and brass standpipes the Bathhouse draws, and no pens. */
+  kennels: {
+    kinds: [{ subject: 'pens' }, { subject: 'dado' }],
+    names: [
+      [/wash|groom|veterinar|quarantine|kitchen/i, 1],
       [/./, 0],
     ],
   },
@@ -1472,6 +1500,27 @@ export class Atmosphere {
       if (kind.layout) pal.props.layout = kind.layout;
       if (kind.countScale) pal.props.count = Math.max(6, Math.round(pal.props.count * kind.countScale));
       if (kind.aisle) pal.props.aisle = kind.aisle;
+      if (kind.depth) pal.props.depth = kind.depth;
+      /* A DIFFERENT ROOM IS A DIFFERENT SHAPE. `room` scales the wing's own
+         shell (after the +-9% above): a hall built round its fire is shallower
+         than the stair hall, so the chimneypiece fills the wall the stair
+         fills; a gallery is long and narrow, so its arcade runs away down both
+         sides. Every lamp stays inside the room it now has. */
+      if (kind.room) {
+        R.w *= kind.room.w ?? 1;
+        R.d *= kind.room.d ?? 1;
+        if (R.h > 0) R.h *= kind.room.h ?? 1;
+        for (const L of pal.lights) {
+          L.z = Math.max(L.z, -(R.d - 0.9));
+          L.x = Math.max(-(R.w / 2 - 0.9), Math.min(R.w / 2 - 0.9, L.x));
+        }
+      }
+      /* ...and what it is floored and ceiled with, from the patterns the house
+         already draws: a gallery paved in marble flags, a hall with a fire under
+         a beamed ceiling. */
+      if (kind.floor !== undefined) pal.floorPattern = kind.floor;
+      if (kind.ceil !== undefined) R.ceilPattern = kind.ceil;
+      if (kind.ceilGain !== undefined) pal.ceilGain = kind.ceilGain;
       /* a lamp the room itself places (z as a fraction of the room's depth) */
       for (const m of (kind.lamps || [])) {
         const L = pal.lights[m.i];
@@ -1660,7 +1709,7 @@ export class Atmosphere {
          a cross-fade onto a coursed stone wall is neither room. */
       L.arch = T.arch; L.floorPattern = T.floorPattern; L.sides = T.sides; L.room = T.room;
       L.subject = T.subject;
-      L.doorX = T.doorX; L.houseX = T.houseX; L.moonX = T.moonX;
+      L.doorX = T.doorX; L.houseX = T.houseX; L.moonX = T.moonX; L.ceilGain = T.ceilGain;
       this.backdrop.applyPalette(L);
       this._applyGrade(L, k);
       if (this._fade >= 1) { this.live = T; this.backdrop.applyPalette(T); this._applyGrade(T, 1); }

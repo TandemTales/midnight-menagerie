@@ -235,7 +235,13 @@ export const SUBJECT = {
    variant of their own: every other subject is program 0, which is the wall as
    it was plus a few lines, and a variant is linked in the background after the
    stage has warmed (precompileRooms), so the first room of a wing finds its
-   program ready. The mirror hall is the Ballroom's because its glints are. */
+   program ready. The mirror hall is the Ballroom's because its glints are.
+   AND A VARIANT CARRIES ONLY ITS OWN WING: its architecture mode and the
+   subjects its rooms can reach (the `#if MM_ROOMS` guards in the shader), not
+   the other sixteen subjects and five modes it can never draw. Measured with
+   each program linked alone on an idle GPU (Intel UHD, ANGLE D3D11): BASE's
+   wall 6.3 s, program 0 6.6 s, a full-size variant 7.4-9.0 s -- and a guarded
+   one 0.6-1.5 s, all five in 4.6 s. Warm-up 34.7 s, BASE 34.7 s. */
 export const ROOMS_PROGRAM = {
   chimney: 1, arcade: 1,
   mirrors: 2, music: 2, dais: 2,
@@ -1452,7 +1458,10 @@ export class Backdrop {
     c.uFog.value.copy(p._fog);
     c.uAccent.value.copy(p._accent);
     c.uAmbient.value.copy(p._ambient);
-    c.uGain.value = (p.gain ?? 3.4) * 0.085;
+    /* A room kind may dim its ceiling (ROOM_KINDS' ceilGain): a vantage that
+       shows the ceiling over a room's chandeliers showed it as a flat grey
+       slab, where the wing's other rooms keep it dark. */
+    c.uGain.value = (p.gain ?? 3.4) * 0.085 * (p.ceilGain ?? 1);
 
     const pr = this.propMat.uniforms;
     pr.uAlbedo.value.copy(p._propAlb);
@@ -1530,10 +1539,10 @@ export class Backdrop {
 
   /**
    * LINK THE OTHER WINGS' WALL PROGRAMS BEHIND THE GAME, once the stage has
-   * warmed, one at a time. Measured on this machine, one wall-program link is
-   * 20-30 s (tools: a one-page probe linking BASE's WALL_FRAG and each variant
-   * with unique sources), so a wing's program linked on demand would freeze
-   * the first room of that wing for that long.
+   * warmed, one at a time. Measured on this machine with each program linked
+   * alone (a unique define defeats the program cache): a guarded variant
+   * links in 0.6-1.5 s, so a wing's program linked on demand holds the first
+   * room of that wing about a second -- where a full-size one took 7-9 s.
    *
    * ONE TARGET: the composer's. Play draws the walls only through the
    * composer; the canvas program the stage's own warm-up also links is for
