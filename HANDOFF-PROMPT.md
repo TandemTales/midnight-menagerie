@@ -16,116 +16,60 @@ loop until perfected". Two later calls narrow it and both are in force:
 `UI/*.png`** — what matters is readable, accurately drawn, well-detailed objects
 (item 3).
 
-## START HERE — 2026-09-18 evening, session 6250d1da
+## START HERE — 2026-09-19, session 6250d1da
 
-**Where it stands.** The machine was restarted (18:31) and round 11's
-baselines were taken — but they are about to be RETAKEN, because the order
-changed: the two round-10 grafts go in FIRST, so round 11 builds on the rooms
-the game will actually have, and so whichever lands second is not the one that
-runs out of the perf budget.
-
-1. **DONE: the grafts are merged** (`1045f52`): SORREL2's Greenhouse and
-   BISTRE2's Foyer, the planting bed renumbered 22 -> 24, one fitting per
-   light, and a ceiling regression SORREL2 carried fixed. Verified by eye
-   against the judged captures; captures in `C:/UILOOP/r11/judging/graft/`.
-2. **DONE: a look-neutral performance pass** (`91af9f3`): the ceiling draws
-   before the walls (early-Z discards the wall behind it) and the lens dirt
-   runs only where there is a halo. Default combat 15.52 -> **12.38 ms**, the
-   Greenhouse fight 17.32 -> **14.80 ms**; all seventeen rooms byte-identical
-   at high and medium; checked independently before merging (two rooms, fresh
-   pages, 0 pixels; two gpuprof runs each). Evidence:
-   `C:/UILOOP/r11/judging/perf/`. One non-neutral option was proposed and NOT
-   applied (prop quads shrunk to their shape's reach, -0.23/-0.39 ms, up to 30
-   px a room by >8 levels): `option-prop-boxes/` there.
-3. **DONE: batch captures are byte-exact** (`4bed128`): candle flames were
-   seeded by a page-wide light counter; now by their place in the room's rig.
-   And a batch page stops at its first failed room.
-4. **DONE: the battery** (101 gates, 2098 s): red only the two known
-   (`sprites` HALO clips, `run.py` Archivist/_losePatience). Two new reds fixed:
-   `tests/map/run.py` asked for the map while the room was still entering
-   (`2b1b927`, now 30/0), and Josh's Wardrobe Guest sheets were unbuilt
-   (`c50fe96`, enemy-clips 985/0).
-5. **RUNNING: ROUND 11**, launched 2026-09-19 ~02:10 as run `wf_e820247a-54c`
-   (task `wx1chvoya`), base `c50fe96`, UILOOP `C:/UILOOP/r11`, builders
-   LIMEWASH a:8901 / CAMBER b:8902 / MADDER c:8903, baseline QUILL retaken at
-   `c50fe96` (bands 33.1-37.6). When it lands: verify each claim on the
-   captures, check perf on BOTH frames against BASE, merge per `MERGE-r8.md`,
-   and log it in the README.
-   **STOPPED BY THE SESSION LIMIT ~08:05, RESUMED 09:15 as run
-   `wf_719a9723-1f6`** (task `wpiu7trjz`), all three builders with a `resume`
-   note saying exactly where each stopped (LIMEWASH lacked combat/rest;
-   CAMBER had an uncommitted backdrop.js change and no captures; MADDER had
-   everything but its report).
-6. **RUNNING BESIDE IT: ROUND 12, THE LAST WEB CHROME** -- stopped by the same
-   limit with VELLUM and ORMOLU finished; resumed 09:14 as run
-   `wf_d8d02503-18f` (task `wtu7zqpp5`): GESSO resumes, VELLUM and ORMOLU carry
-   their recorded results as `done` (full notes kept in this session's
-   scratchpad `r12-done-builds.json`, and in the first run's journal
-   `.../subagents/workflows/wf_8f709c50-a57/journal.jsonl`). Launched ~02:40 as
-   run `wf_8f709c50-a57` (task `wdov71w48`), base `df5dd26`, UILOOP
-   `C:/UILOOP/r12`. One EXPAND track: the coach, the hot-seat handoff veil and
-   the achievement toast -- the only screens no round had touched (parked in
-   round 7, never judged). Builders VELLUM a:8911 (the kit exactly) / GESSO
-   b:8912 (objects in the house) / ORMOLU c:8913 (type and ceremony), baseline
-   TWILL. `BRIEF-r12.md`, `RUBRIC-r12.md`, `round-12.args.json`,
-   `baseline-r12.sh`; capture recipes `tools/shot-scripts/chrome-*.js`. It
-   touches none of round 11's files; both rounds' captures queue on the GPU
-   slot. Merge EXPAND: per-screen winners, kit.css tails via
-   `tools/kitcss_merge.py`.
-
-**Four harness fixes landed today, and they change how a round runs:**
-- `fc881cf` — **the fifth way a capture lies**: a board with NO ROOM behind it
-  (warm-up ~35 s against a 40 s timeout; `shot.py` shot into phase A). Round
-  11's first combat baseline was one. A timeout is void now; `perf.band` is
-  the check (29-36 with a room, 23.6 without).
-- `9966399` — `tools/room_batch.py`: one warmed page photographs every room of
-  a sheet (equivalent to fresh captures to 0.001%). `variant_sheet.py` uses it.
-  A 17-region sweep is one launch: `python tools/room_batch.py --port P
-  --regions all --sheet out.png`.
-- `2d08cca` — `tools/gpu_slot.py`: ONE WebGL page at a time machine-wide.
-  Captures run on the Intel UHD iGPU, where one holds ~1.5 GB of shared (=
-  system) memory plus ~0.9 GB of browser, with 4.7 GB free idle — three
-  builders capturing at once was the likeliest cause of the "degradation".
-  It also makes every gpuprof run quiet by construction.
-- `BRIEF-r11.md` gained **the empty-room defect**: 4 of the 12 baseline
-  panels drew `perimeter` and are nearly empty (and the piano vanishes,
-  because only `colonnade` places `props.solo`).
-
-**THE PREVIOUS START HERE, kept for its detail:** restart the machine, then
-finish round 11's baselines and launch it.
+**Rounds 11 and 12 are merged, verified and pushed. Rounds 13 and 14 are
+briefed, their worktrees cut at `d46eec5`, and the next step is their
+baselines and launch.**
 
 ```
-bash docs/ui-pass/baseline-r11.sh      # skips what already exists, retries voids
+bash docs/ui-pass/baseline-r13.sh     # BUCKRAM: coach, handoff, toast, both sizes
+bash docs/ui-pass/baseline-r14.sh     # FUSTIAN: six sheets + combat at both sizes
 ```
 
-It needs 8 files in `C:/UILOOP/r11/judging/r11/vary/QUILL/` — four SHEETS
-(foyer, ballroom, greenhouse, graveyard, three rooms each) plus combat and rest
-at both sizes. Two are there. Then:
+Then launch each with its args file plus `repo`, `uiloop`
+(`C:/UILOOP/r13`, `C:/UILOOP/r14`) and `base: d46eec5`.
 
-```
-Workflow({ scriptPath: 'docs/ui-pass/round-workflow.js',
-           args: { ...docs/ui-pass/round-11.args.json,
-                   repo, uiloop: 'C:/UILOOP/r11', base: '3a32fc0' } })
-```
+**What merged today**
 
-Worktrees `ui/r11-vary-{a,b,c}` are already cut at `3a32fc0`, ports 8901-8903,
-and the probe dry-runs clean at 5 agents.
+1. **Round 11, CAMBER (`155133e`): a wing has several kinds of room.** +2.17,
+   and the **first sheets in the pass marked `fits_between_samples` by both
+   judges** (Foyer and Ballroom). `ROOM_KINDS` in `fx/atmosphere.js` gives each
+   wing the rooms it really has, chosen by the room's NAME or its seed; ten new
+   subjects, each compiled only into its own wing's `MM_ROOMS` variant. It also
+   fixed the empty rooms (`perimeter` is gone from the deep wings' families)
+   and places `props.solo` in every layout.
+2. **Round 12 (`57bb92f` + `90d0fad`): the last web chrome.** The coach, the
+   hot-seat handoff veil and the achievement toast went **1.44 -> 7.33 / 8.00 /
+   7.67**, the largest gain of the pass. Per screen: the coach and the toast
+   are VELLUM's, the veil is ORMOLU's (3 of 3 judges), merged EXPAND.
+3. **The harness** (see "the five ways a capture lies"): a warm-up timeout is
+   now VOID (`fc881cf`), `room_batch.py` photographs a whole sheet in one
+   warmed page and is byte-exact (`9966399`, `4bed128`), one WebGL page runs at
+   a time machine-wide (`2d08cca`, `75a49e4`), and a builder that finished
+   before a usage limit is passed back in as `done` rather than rebuilt.
 
-**Why it is blocked:** this machine's GPU process degrades across a long session
-of Chromium launches until it cannot draw — `glStd` pins at 1.85-1.98 where a
-healthy capture of the same region reads 27-48. It recovers when left alone (a
-17-room sweep failed one evening and ran 17 of 17 the next morning on the same
-commit), but by the end of 2026-09-18 it managed one or two captures per rest.
-**That is a restart, not a wait.**
+**Verified before merging, and worth repeating on the next round:** all four
+round-11 sheets photographed on the merged tree are BYTE-IDENTICAL to the
+captures the judges scored; the three chrome pieces were photographed on the
+merged tree and looked at; the battery ran 101 gates with **2 red, both
+long-known** (the seven HALO sprite clips, `run.py`'s Archivist seed and
+`_losePatience`); frame cost is **13.3 ms default and 14.3 ms in the
+Greenhouse fight**, against the hard 15.5.
 
-**THE SECOND THING, and it is the highest-value work outstanding:** two grafts
-from round 10 are the only screens in eleven rounds a judge has marked
-`fits_between_samples: true` — SORREL2's GREENHOUSE (`ff71330` on
-`ui/r10-bg3-b`, 3 of 3 judges) and BISTRE2's FOYER (`8e096b2` on
-`ui/r10-bg3-c`, 2 of 3). **Neither cherry-picks**: five conflict regions, two of
-them 100+ lines of GLSL where two builders rewrote the same plant branches. Give
-them to a BUILDER with a dev server, the way round 9's ballroom graft was done.
-Do not hand-resolve them.
+**What the next two rounds are for**
+
+- **Round 13 (CHROME, second pass)** — `BRIEF-r13.md`. Round 12's three judges
+  agreed on what stops each piece at 8: the coach's spotlight reads as a
+  selection box with nothing pointing at its target; the veil's portraits are
+  pasted cards on a painting that competes with them, and everything is named
+  twice; the toast's plate is a plain bar on the corner candle and its medal is
+  a flat vector star.
+- **Round 14 (ROOMS, second variation pass)** — `BRIEF-r14.md`. Both round-11
+  judges' first fix: the rooms differ by their back wall, "never by vantage" —
+  MADDER's authored vantages (`ui/r11-vary-c`) are the named graft, and its
+  Graveyard won that screen. Six wings still have no `ROOM_KINDS` at all;
+  two of them (Lampworks, Bathhouse) are judged for the first time.
 
 ## THE STATE OF THE PASS
 
