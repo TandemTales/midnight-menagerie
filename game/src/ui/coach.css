@@ -5,6 +5,18 @@
    POINTER EVENTS ARE THE WHOLE POINT: the overlay must never make the fight
    underneath unplayable, so only its own two buttons take a click. A tutorial
    the player has to dismiss before they can obey it is not a tutorial.
+
+   IT IS MADE OF THE BOARDS (round 12, CHROME). Every piece is the kit's, put
+   on in coach.js as classes, and this sheet only sizes and places them
+   through the coach's own classes:
+     .coach__card    .kit-panel.kit-panel--damask[data-medal=paw]  the Kid
+                     board's gold rail round dark damask, the paw on its rail
+     .coach__head    .kit-heading       spaced gold small caps, star-tipped
+     .coach__steps   .kit-stars         the lesson's pages, this one burning
+     .coach__next    .kit-btn           the lit nameplate, its ENTER keycap
+     .coach__skip    .kit-btn--quiet    the same plate, unlit
+     .coach__spot    .kit-railframe--ornate   the Kid board's portrait frame
+     .coach__glow    .kit-light--candle       a candle's pool on the target
    =========================================================================== */
 .coach {
   position: fixed; inset: 0; z-index: 60;
@@ -17,111 +29,146 @@
 .mm-reduce-motion .coach { transition: none; }
 
 /* ── the spotlight ────────────────────────────────────────────────────────── */
-/* A ring, not a hole punched in a scrim: dimming the rest of the board hides
-   the very numbers the sentence is asking the player to read. */
+/* A frame, not a hole punched in a scrim: dimming the rest of the board hides
+   the very numbers the sentence is asking the player to read. The frame is
+   hung round the thing the way the Kid board frames a face — the rail clear
+   of it, the corner scrolls just over its corners — and gilt catches the
+   candle along its whole silhouette. coach.js sizes the box (SPOT_FK there is
+   this --fk). */
 .coach__spot {
   position: fixed;
-  border-radius: var(--radius-md);
-  border: 2px solid var(--flame-300);
-  box-shadow:
-    0 0 0 1px color-mix(in srgb, var(--ink-900) 60%, transparent),
-    0 0 22px 4px color-mix(in srgb, var(--flame-glow) 34%, transparent),
-    inset 0 0 18px color-mix(in srgb, var(--flame-glow) 14%, transparent);
+  --fk: .66;
   opacity: 0;
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .85)) drop-shadow(0 0 5px color-mix(in srgb, var(--kit-candle) 38%, transparent));
   transition: opacity var(--t-quick) var(--ease-out);
-  pointer-events: none;
 }
-.coach:not(.has-spot) .coach__spot { opacity: 0 !important; }
-.coach.has-spot .coach__spot { animation: coach-pulse 2.1s var(--ease-soft) infinite; }
-@keyframes coach-pulse {
-  0%, 100% { border-color: var(--flame-300); }
-  50%      { border-color: var(--flame-200); }
+.coach:not(.has-spot) .coach__spot,
+.coach:not(.has-spot) .coach__glow { opacity: 0 !important; }
+/* the gilt breathes with the candle, a little, so the eye finds it */
+.coach.has-spot .coach__spot { animation: coach-gilt 2.6s var(--ease-soft) infinite; }
+@keyframes coach-gilt {
+  0%, 100% { filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .85)) drop-shadow(0 0 4px color-mix(in srgb, var(--kit-candle) 30%, transparent)) brightness(1); }
+  50%      { filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .85)) drop-shadow(0 0 9px color-mix(in srgb, var(--kit-candle) 55%, transparent)) brightness(1.16); }
 }
-.mm-reduce-motion .coach__spot { animation: none; transition: none; }
+/* the candle's light on the thing being taught: a pool, screened, round it */
+.coach__glow {
+  aspect-ratio: auto;
+  --light-a: 17%;
+  opacity: 0;
+  transition: opacity var(--t-base) var(--ease-out);
+}
+.mm-reduce-motion .coach__spot, .mm-reduce-motion .coach__glow { animation: none; transition: none; }
+@media (prefers-reduced-motion: reduce) {
+  :root:not([data-reduce-motion="0"]) .coach__spot,
+  :root:not([data-reduce-motion="0"]) .coach__glow { animation: none; }
+}
 
-/* ── the card ─────────────────────────────────────────────────────────────── */
+/* ── the note ─────────────────────────────────────────────────────────────── */
 .coach__card {
   position: fixed;
-  width: min(30rem, calc(100vw - 36px));
-  padding: var(--s-4) var(--s-4) var(--s-3);
-  background: linear-gradient(180deg,
-    color-mix(in srgb, var(--parchment) 97%, #fff), var(--parchment) 64%, var(--parchment-shade));
-  color: var(--ink-900);
-  border-radius: var(--radius-sm);
-  box-shadow: var(--shadow-4), 0 2px 0 rgba(255, 255, 255, .34) inset;
+  --pk: .74;
+  width: min(29rem, calc(100vw - 48px));
+  padding: 30px 22px 16px;
+  color: var(--kit-text);
   pointer-events: none;
+  /* it stands in the room: the shadow it casts on the board under it */
+  box-shadow: 0 22px 44px -16px rgba(0, 0, 0, .95), inset 0 0 26px rgba(0, 0, 0, .45);
 }
-/* the torn top edge of a note pushed across a table */
-.coach__card::before {
-  content: ''; position: absolute; left: 10%; right: 10%; top: -7px; height: 8px;
-  background: color-mix(in srgb, var(--parchment) 80%, var(--parchment-shade));
-  clip-path: polygon(0 100%, 4% 30%, 11% 92%, 19% 22%, 27% 88%, 36% 34%, 45% 96%,
-    54% 28%, 63% 90%, 72% 26%, 81% 94%, 90% 36%, 97% 88%, 100% 100%);
-  opacity: .8;
+
+.coach__head {
+  margin: 0 0 7px;
+  font-size: max(11.5px, var(--fs-xs));
+  letter-spacing: .24em;
 }
 
 .coach__text {
-  margin: 0 0 var(--s-3);
-  font-size: var(--fs-md);
-  line-height: 1.5;
+  margin: 0 0 12px;
+  font-size: max(15px, var(--fs-md));
+  line-height: 1.42;
+  color: var(--kit-text);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
+  text-wrap: pretty;
 }
 
 .coach__row {
   display: flex; align-items: center; justify-content: flex-end;
-  gap: var(--s-3);
-  min-height: 1.9em;
+  gap: 16px;
+  min-height: 42px;
 }
+/* the lesson's pages as the wordmark's own gold stars, the one being read
+   burning larger in the candle. No thread: strung on a gilt line with the lit
+   star at one end, eight stars read as a slider, which is web chrome. */
+.coach__steps {
+  --star: 15px;
+  order: 0;
+  margin-right: auto;
+  padding: 0 0 0 7px;                    /* the lit star's glow stays inside the rule */
+  gap: 2px;
+}
+.coach__steps::before { content: none; }
 
+/* what to do now, where the button would be: engraved gold small caps, the
+   boards' four-point star before it, lit by the candle so it is found */
 .coach__hint {
-  flex: 1;
-  font-family: var(--font-display);
-  font-size: var(--fs-xs);
+  order: 3;
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: var(--font-display); font-weight: 700;
+  font-size: max(12px, var(--fs-xs));
   letter-spacing: .18em;
   text-transform: uppercase;
-  color: color-mix(in srgb, var(--ink-900) 62%, var(--parchment-shade));
+  white-space: nowrap;
+  color: var(--kit-gold-hi);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .95), 0 0 12px color-mix(in srgb, var(--kit-candle) 45%, transparent);
+  animation: coach-hint 2.6s var(--ease-soft) infinite;
 }
 .coach__hint::before {
-  content: '\2192';                 /* → */
-  margin-right: .5em;
-  color: var(--flame-500);
+  content: ''; flex: none;
+  width: 11px; height: 11px;
+  background: url("../../assets/ui/kit/star4.svg") 50% 50% / 100% 100% no-repeat;
+  filter: drop-shadow(0 1px 0 rgba(0, 0, 0, .8));
+}
+@keyframes coach-hint {
+  0%, 100% { text-shadow: 0 1px 0 rgba(0, 0, 0, .95), 0 0 10px color-mix(in srgb, var(--kit-candle) 30%, transparent); }
+  50%      { text-shadow: 0 1px 0 rgba(0, 0, 0, .95), 0 0 16px color-mix(in srgb, var(--kit-candle) 70%, transparent); }
 }
 .coach__hint[hidden] { display: none; }
+.mm-reduce-motion .coach__hint { animation: none; }
+@media (prefers-reduced-motion: reduce) {
+  :root:not([data-reduce-motion="0"]) .coach__hint { animation: none; }
+}
 
+/* the ways on: the lit nameplate and its ENTER keycap, then the quiet one */
 .coach__next {
+  --plate-h: clamp(38px, 4.6vh, 42px);
+  order: 3;
+  flex: none;
+  gap: 10px;
+  white-space: nowrap;
+  padding-inline: calc(var(--plate-h) * .7);
+  font-size: max(13px, var(--fs-sm));
   pointer-events: auto;
-  appearance: none;
-  border: 1px solid color-mix(in srgb, var(--ink-900) 34%, transparent);
-  border-radius: var(--radius-sm);
-  background: color-mix(in srgb, var(--flame-300) 74%, var(--parchment));
-  color: var(--ink-900);
-  font-family: var(--font-display);
-  font-size: var(--fs-sm);
-  letter-spacing: .08em;
-  padding: var(--s-2) var(--s-4);
-  cursor: pointer;
-  transition: background-color var(--t-quick) var(--ease-out);
 }
-.coach__next:hover, .coach__next:focus-visible {
-  background: color-mix(in srgb, var(--flame-200) 86%, var(--parchment));
-}
+.coach__next[hidden] { display: none; }
+.coach__next .coach__key { font-size: 9.5px; }
 
 /* ── always available ─────────────────────────────────────────────────────── */
 /* In the card's own row, never over the board — see the note in coach.js. */
 .coach__skip {
+  --plate-h: clamp(34px, 4.1vh, 38px);
+  order: 1;
+  flex: none;
+  white-space: nowrap;
+  padding-inline: calc(var(--plate-h) * .66);
+  font-size: max(11.5px, var(--fs-xs));
+  letter-spacing: .16em;
   pointer-events: auto;
-  appearance: none;
-  border: 0;
-  background: none;
-  color: color-mix(in srgb, var(--ink-900) 54%, var(--parchment-shade));
-  font: inherit;
-  font-size: var(--fs-xs);
-  letter-spacing: .12em;
-  text-transform: uppercase;
-  padding: var(--s-2);
-  cursor: pointer;
-  text-decoration: underline;
-  text-decoration-style: dotted;
-  text-underline-offset: 3px;
-  transition: color var(--t-quick) var(--ease-out);
 }
-.coach__skip:hover, .coach__skip:focus-visible { color: var(--ink-900); }
+
+/* large text: the note grows with its words, never clips them */
+.mm-large-text .coach__card { width: min(34rem, calc(100vw - 48px)); }
+
+/* the Deck's 1280x800: the same note, a notch tighter */
+@media (max-height: 820px) {
+  .coach__card { width: min(27rem, calc(100vw - 48px)); padding: 28px 20px 14px; }
+  .coach__text { margin-bottom: 10px; line-height: 1.38; }
+}

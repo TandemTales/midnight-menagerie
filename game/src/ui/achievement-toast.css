@@ -1,31 +1,50 @@
-/* Achievement toast. OWNER: platform. Paired with ui/achievement-toast.js. */
+/* Achievement toast. OWNER: platform. Paired with ui/achievement-toast.js.
+
+   A NAMEPLATE CAST IN THE TIER'S METAL (round 12, CHROME). The card is the
+   kit's own `.kit-plate` — the Companion tiles' nameplate, name over a small
+   italic epithet — with a struck medal seated on its left end. Plate rim and
+   medal are bronze, silver or gold: plate-lit.webp and rosette.webp, re-cast
+   for the two lower tiers by tools/prep_chrome.py (chrome-*.webp). The tier
+   is lettered on the plate as well, so it is never read by colour alone.
+
+   It hangs from the HUD's foot at the top right (achievement-toast.js
+   measures the foot into --ach-top): over the board's corner candle, never on
+   the HUD's readouts, the Companion's portrait, the Nerve, the piles, the
+   hand or End Turn. It takes no pointer events. */
 
 .mm-ach {
   position: fixed;
-  left: var(--s-5); bottom: var(--s-5);
+  top: calc(var(--ach-top, 0px) + clamp(12px, 1.8vh, 20px));
+  right: clamp(26px, 2.6vw, 44px);
   z-index: var(--z-overlay);
-  display: flex; flex-direction: column; gap: var(--s-2);
+  display: flex; flex-direction: column; align-items: flex-end; gap: 16px;
   pointer-events: none;                   /* never steals a click from the board */
 }
 
+/* ── the plate ────────────────────────────────────────────────────────────── */
 .mm-ach__card {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  align-items: center;
-  gap: var(--s-3);
-  min-width: 236px; max-width: 340px;
-  padding: var(--s-2) var(--s-4) var(--s-2) var(--s-3);
-  border-radius: var(--radius-md);
-  background: linear-gradient(180deg, var(--ink-700), var(--ink-900));
-  border: 1px solid var(--ink-400);
-  box-shadow: var(--shadow-3);
-  /* Start off-screen-left and transparent; `.is-in` brings it home. */
-  transform: translateX(-18px);
+  --plate-h: clamp(76px, 9.4vh, 88px);
+  --medal: calc(var(--plate-h) * 1.06);
+  --metal: var(--kit-gold-hi);
+  position: relative;
+  display: flex; align-items: center; justify-content: center;
+  min-width: 318px; max-width: 420px;
+  min-height: var(--plate-h);
+  padding: 7px calc(var(--plate-h) * .66) 8px calc(var(--medal) * .58 + 14px);
+  margin-left: calc(var(--medal) * .44);   /* the medal overhangs the plate's end */
+  filter: drop-shadow(0 6px 8px rgba(0, 0, 0, .8));
+  /* Start off-screen-right and transparent; `.is-in` brings it home. */
+  transform: translateX(22px);
   opacity: 0;
   transition: transform var(--t-base) var(--ease-out), opacity var(--t-base) var(--ease-out);
 }
 .mm-ach__card.is-in { transform: translateX(0); opacity: 1; }
-.mm-ach__card.is-out { transform: translateX(-10px); opacity: 0; }
+.mm-ach__card.is-out { transform: translateX(12px); opacity: 0; }
+
+/* the tier's metal: the plate's rim and the medal are the kit's (.kit-plate--
+   silver / --bronze, .kit-medal--*); the tier's name is lettered in it */
+.mm-ach__card--silver { --metal: var(--kit-silver); }
+.mm-ach__card--bronze { --metal: var(--kit-bronze); }
 
 /* Reduced motion: appear and leave, do not travel. The dwell is unchanged —
    somebody who asked for less movement still has to be able to read it. */
@@ -33,43 +52,70 @@
 .mm-ach__card.is-still.is-in { transform: none; }
 .mm-ach__card.is-still.is-out { transform: none; }
 
+/* ── the medal, seated on the plate's left end ───────────────────────────── */
 .mm-ach__sigil {
-  width: 26px; height: 26px; border-radius: 50%;
-  background: radial-gradient(circle at 34% 30%, var(--flame-200), var(--flame-400));
-  box-shadow: 0 0 10px color-mix(in srgb, var(--flame-300) 55%, transparent);
+  --medal-d: var(--medal);
+  position: absolute; left: calc(var(--medal) * -.44); top: 50%;
+  translate: 0 -50%;
 }
-.mm-ach__card--silver .mm-ach__sigil {
-  background: radial-gradient(circle at 34% 30%, var(--spectre-100), var(--spectre-400));
-  box-shadow: 0 0 10px color-mix(in srgb, var(--spectre-300) 50%, transparent);
-}
-.mm-ach__card--gold .mm-ach__sigil {
-  background: radial-gradient(circle at 34% 30%, var(--flame-100), var(--flame-300));
-  box-shadow: 0 0 14px color-mix(in srgb, var(--flame-200) 70%, transparent);
+/* the candle catches the medal once as it lands */
+.mm-ach__card.is-in .mm-ach__sigil { animation: mm-ach-glint 1.4s var(--ease-out) .2s 1 both; }
+@keyframes mm-ach-glint {
+  0%   { filter: drop-shadow(0 3px 3px rgba(0, 0, 0, .85)) brightness(1); }
+  35%  { filter: drop-shadow(0 3px 3px rgba(0, 0, 0, .85)) brightness(1.35); }
+  100% { filter: drop-shadow(0 3px 3px rgba(0, 0, 0, .85)) brightness(1); }
 }
 
-.mm-ach__body { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
-.mm-ach__lbl {
-  font-family: var(--font-display); font-size: 9px;
-  letter-spacing: .18em; text-transform: uppercase; color: var(--text-lo);
+/* ── the words: the tier, the name, what it was for ──────────────────────── */
+.mm-ach__body {
+  display: flex; flex-direction: column; align-items: center; gap: 1px;
+  min-width: 0;
+  text-align: center;
 }
+.mm-ach__kind {
+  display: inline-flex; align-items: center; gap: .55em;
+  font-family: var(--font-display); font-weight: 700;
+  font-size: max(11px, var(--fs-xs)); line-height: 1.2;
+  letter-spacing: .22em; text-transform: uppercase; white-space: nowrap;
+  padding-left: .22em;                    /* the tracking hangs off the last letter */
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, .9), 0 1px 0 rgba(0, 0, 0, .6);
+}
+/* the boards' four-point star either side of the tier's name */
+.mm-ach__kind::before, .mm-ach__kind::after {
+  content: ''; flex: none; width: 8px; height: 8px;
+  background: url("../../assets/ui/kit/star4.svg") 50% 50% / 100% 100% no-repeat;
+  filter: drop-shadow(0 1px 0 rgba(0, 0, 0, .8));
+}
+.mm-ach__tier { font-style: normal; color: var(--metal); }
+.mm-ach__lbl { font-weight: 700; color: var(--kit-text-mid); }
 .mm-ach__name {
-  font-family: var(--font-display); font-size: var(--fs-sm);
-  color: var(--text-hi);
+  font-size: max(17px, calc(var(--fs-md) * 1.18));
+  line-height: 1.12;
   /* One line. A long name is clipped rather than reflowing the card mid-fade. */
+  max-width: 100%;
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
+.mm-ach__desc {
+  max-width: 100%;
+  font-size: max(13px, var(--fs-sm));
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.mm-ach__desc[hidden] { display: none; }
 
-.mm-large-text .mm-ach__name { font-size: var(--fs-md); }
-.mm-large-text .mm-ach__lbl { font-size: var(--fs-xs); }
+.mm-large-text .mm-ach__name { font-size: max(19px, calc(var(--fs-md) * 1.3)); }
+.mm-large-text .mm-ach__kind { font-size: max(12.5px, var(--fs-sm)); }
+.mm-large-text .mm-ach__card { max-width: 480px; }
 
-/* Steam Deck and any short window: hug the corner harder so the toast cannot
-   sit on top of the hand. 1280x800 is the Deck's native panel. */
+/* Steam Deck and any short window: the same plate, a notch smaller. */
 @media (max-height: 820px) {
-  .mm-ach { left: var(--s-3); bottom: var(--s-3); }
-  .mm-ach__card { min-width: 200px; max-width: 280px; }
+  .mm-ach { right: 22px; }
+  .mm-ach__card { --plate-h: 72px; min-width: 292px; max-width: 360px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .mm-ach__card { transition: opacity var(--t-quick) linear; transform: none; }
   .mm-ach__card.is-in, .mm-ach__card.is-out { transform: none; }
+  .mm-ach__card.is-in .mm-ach__sigil { animation: none; }
 }
+.mm-reduce-motion .mm-ach__card.is-in .mm-ach__sigil,
+.mm-ach__card.is-still .mm-ach__sigil { animation: none; }

@@ -14,8 +14,22 @@
  * is told nothing.
  *
  * So this is the primary notification and Steam's is the incidental duplicate.
- * It is deliberately quieter than Steam's: one line, bottom-left, four seconds,
- * no sound of its own beyond the existing UI sting.
+ * It is deliberately quieter than Steam's: four seconds, no sound of its own
+ * beyond the existing UI sting.
+ *
+ * ── IT IS A NAMEPLATE CAST IN THE TIER'S METAL (round 12, CHROME) ──────────
+ *
+ * The kit's own plate (`.kit-plate`: the Companion tiles' nameplate, the name
+ * over a small italic epithet — here the achievement over what it was for),
+ * with a struck medal seated on its end the way the boards seat a medallion
+ * on a button. Plate rim and medal are cast in the tier's metal — bronze,
+ * silver or gold, re-cast from the kit's own gilt by tools/prep_chrome.py —
+ * and the tier is lettered on it too, so it reads at a glance and never by
+ * colour alone.
+ *
+ * It hangs from the foot of the HUD at the top right, over the board's corner
+ * candle, which is dressing on every board and in every fight. It used to sit
+ * bottom-left, on top of the Companion's portrait and the Nerve.
  *
  * ── IT OBEYS THE ACCESSIBILITY SETTINGS ────────────────────────────────────
  *
@@ -30,6 +44,8 @@
 const CSS = new URL('./achievement-toast.css', import.meta.url).href;
 const DWELL = 4.2;
 const MAX_QUEUED = 4;
+/** core/achievements.js TIER, lowest first. */
+const TIERS = ['bronze', 'silver', 'gold'];
 
 function ensureCss() {
   if (document.querySelector(`link[href="${CSS}"]`)) return;
@@ -83,22 +99,32 @@ export class AchievementToast {
     this.showing = true;
 
     const host = this._ensureHost();
+    this._seat(host);
     const reduce = !!(this.ctx && this.ctx.Save && this.ctx.Save.settings
       && this.ctx.Save.settings.reduceMotion);
 
+    const tier = TIERS.includes(def.tier) ? def.tier : 'bronze';
     const card = document.createElement('div');
-    card.className = `mm-ach__card mm-ach__card--${def.tier || 'bronze'}`;
+    /* gold is the kit's own brass; the two lesser tiers are its re-cast plate
+       and medal (ui/kit.css, the coach, the veil and the toast) */
+    const metal = tier === 'gold' ? '' : ` kit-plate--${tier}`;
+    card.className = `mm-ach__card mm-ach__card--${tier} kit-plate${metal}`;
     if (reduce) card.classList.add('is-still');
     card.innerHTML =
-      `<i class="mm-ach__sigil" aria-hidden="true"></i>` +
+      `<i class="mm-ach__sigil kit-medal${tier === 'gold' ? '' : ` kit-medal--${tier}`}" aria-hidden="true"></i>` +
       `<div class="mm-ach__body">` +
-      `<b class="mm-ach__lbl">Achievement</b>` +
-      `<span class="mm-ach__name"></span>` +
+      `<span class="mm-ach__kind"><i class="mm-ach__tier"></i> <b class="mm-ach__lbl">Achievement</b></span>` +
+      `<span class="mm-ach__name kit-plate__name"></span>` +
+      `<span class="mm-ach__desc kit-plate__epithet"></span>` +
       `</div>`;
     // textContent, not innerHTML: the name comes from a data file today and
     // could come from a translation table tomorrow, and neither should be able
     // to inject markup into a live scene.
+    card.querySelector('.mm-ach__tier').textContent = tier;
     card.querySelector('.mm-ach__name').textContent = def.name;
+    const desc = card.querySelector('.mm-ach__desc');
+    desc.textContent = def.desc || '';
+    desc.hidden = !def.desc;
     host.appendChild(card);
 
     this.ctx?.audio?.play?.('ui:confirm');
@@ -116,6 +142,20 @@ export class AchievementToast {
     await wait(reduce ? 0.01 : 0.34);
     card.remove();
     this._next();
+  }
+
+  /**
+   * Hang it from the HUD's foot. The HUD is one rail at 1600 and wraps to two
+   * at the Deck's 1280, and the Title and the select boards have none, so the
+   * foot is measured each time rather than assumed.
+   */
+  _seat(host) {
+    let foot = 0;
+    for (const n of document.querySelectorAll('.mm-hud')) {
+      const b = n.getBoundingClientRect();
+      if (b.width && b.height && b.top < window.innerHeight * 0.25) foot = Math.max(foot, b.bottom);
+    }
+    host.style.setProperty('--ach-top', `${Math.round(foot)}px`);
   }
 
   destroy() {

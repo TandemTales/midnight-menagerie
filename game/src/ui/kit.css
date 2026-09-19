@@ -2931,3 +2931,36 @@ button.kit-medallion:hover, button.kit-medallion:focus-visible,
   box-shadow: none;
   filter: drop-shadow(1px 2px 1px rgba(40, 20, 8, .42)) drop-shadow(4px 9px 9px rgba(24, 10, 4, .46));
 }
+
+/* ── the coach, the veil and the toast ── */
+/* ===========================================================================
+   Round 12, CHROME: the three pieces of the game the pass had never reached,
+   built of the kit above. The coach's note is a .kit-panel with a .kit-heading,
+   .kit-stars and .kit-btn / --quiet, round a .kit-railframe--ornate spotlight
+   under a .kit-light; the hot-seat veil is a .kit-board (ground, dress, a
+   .kit-titleblock) with the next Kid in a .kit-frame over a .kit-plate beside
+   their Companion on a .kit-ledge; the achievement toast is a .kit-plate.
+   Only what the kit truly had nothing for is here: it had one metal.
+
+     .kit-plate--silver   a .kit-plate cast in silver or bronze instead of the
+     .kit-plate--bronze   samples' brass: plate-lit.webp's rim re-cast by
+                          tools/prep_chrome.py (chrome-plate-*.webp), its
+                          enamel, bevels and notched ends untouched
+     .kit-medal           a struck medal: the kit's gold star rosette
+       --silver --bronze  (rosette.webp) or its re-cast copies
+                          (chrome-medal-*.webp); --medal-d sizes it. For a
+                          tier, a rank, a thing earned; never a control
+   =========================================================================== */
+.kit-plate.kit-plate--silver { border-image-source: url("../../assets/ui/kit/chrome-plate-silver.webp"); }
+.kit-plate.kit-plate--bronze { border-image-source: url("../../assets/ui/kit/chrome-plate-bronze.webp"); }
+
+.kit-medal {
+  --medal-d: 56px;
+  display: inline-block; flex: none;
+  width: var(--medal-d); aspect-ratio: 1;
+  background: url("../../assets/ui/kit/rosette.webp") 50% 50% / 100% 100% no-repeat;
+  filter: drop-shadow(0 3px 3px rgba(0, 0, 0, .85));
+  pointer-events: none;
+}
+.kit-medal--silver { background-image: url("../../assets/ui/kit/chrome-medal-silver.webp"); }
+.kit-medal--bronze { background-image: url("../../assets/ui/kit/chrome-medal-bronze.webp"); }

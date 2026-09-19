@@ -225,6 +225,12 @@
   --kit-ink-green:       #1f4a24;   /* a gain, in green ink */
   --kit-ink-violet:      #3d2352;   /* a heading, in violet ink */
   --kit-ink-rule:        #603a18;   /* the ruled lines and the printed rules */
+
+  /* the two lesser metals, for a thing earned in tiers (round 12, CHROME: the
+     achievement toast). Their full ramps are tools/prep_chrome.py's; these are
+     the lit face, for lettering a tier's name in its own metal */
+  --kit-silver:          #dfe2ee;   /* silver in the boards' moonlight */
+  --kit-bronze:          #e2a47a;   /* bronze: a darker, redder brass */
 }
 
 /* ===========================================================================
