@@ -79,6 +79,18 @@ so round 2 runs six at once, as round 1 did.
 - **One dev server serves one capture at a time.** `tools/devserver.py` listens
   with a backlog of 5. Two `shot.py` runs at once get ERR_CONNECTION_REFUSED on
   fonts and images, and write console files that look like page errors.
+- **A board baseline with no room behind it passes every check but one.** Round
+  11's first combat baseline was the board perfectly drawn over a flat plum
+  plane: warm-up on this machine's Intel UHD is ~35 s after load, the timeout
+  was 40 s, and on a slow moment `shot.py` warned to a discarded stdout and shot
+  into phase A, where the stage draws nothing by design. `glStd` read a healthy
+  41, because Playwright's element screenshot is a clip of the PAGE (on a board
+  it measures the board) taken seconds after the snap. Since `fc881cf` a warm-up
+  timeout is void, and `perf.band` records the board's upper-middle luminance
+  (29-36 with a room, 23.6 without): **read `band` on every board baseline
+  before a round launches.** That makes five ways a capture has lied: no GPU
+  context, a dead frame, a backdrop that never drew, a blown white transition
+  frame, and this one.
 - **Prove a merge's endings commit to commit, not with the endings guard.** In the
   main checkout, `endings_guard.py` repairs every file that differs from the
   base, including files someone else has modified and not committed
@@ -112,6 +124,7 @@ so round 2 runs six at once, as round 1 did.
 | 7 | KIDS' PLACES Lobby / Clubhouse / Atlas | HARROW 7.56 · TINDER 7.33 · SEDGE 7.00 · the screens before 6.44 | per screen, 3 judges: Lobby HARROW, Clubhouse TINDER, Atlas HARROW | `40b2a1b`, `05c1916` |
 | 8 | **BACKGROUNDS** — three ROOMS with no interface on them (foyer / crypt / graveyard) plus combat, combat-boss, rest | VERDIGRIS 5.83 · SOOT 4.92 · BISTRE 4.42 · the screens before 4.25 | VERDIGRIS, both judges, **and it beats the baseline on all six screens**. +1.58. `fits_between_samples` FALSE for every candidate on every screen | `d94cf23`, then the sky graft `5f0da30` |
 | 9 | **THE THINGS IN THE ROOMS** — greenhouse / ballroom / foyer / graveyard / combat / rest | GALLNUT 6.42 · UMBER 5.71 · CARMINE 5.21 · the screens before **3.71** | GALLNUT, both judges. **+2.71, the largest gain of the pass.** The baseline scored **2/10** on both rooms Josh named; they merged at 7 and 6.5 | `5cf3efd` + the ballroom graft `723dc2b` |
+| 10 | **THE OBJECTS, FINISHED** — greenhouse / ballroom / foyer / graveyard / combat / rest | OAKGALL 5.78 · SORREL2 5.39 · BISTRE2 5.22 · the screens before 4.06 | OAKGALL, 2 of 3 (every light gets a drawn fitting, on the PROP layer). Read the margin as **+0.93, not +1.72**: the baseline's combat was a blown white frame all three judges scored 1. Per screen, SORREL2 won the Greenhouse 3 of 3 and BISTRE2 the Foyer 2 of 3 — the first `fits_between_samples: true` of the pass — grafted afterwards | `f39dbc6` |
 
 **Scores anchor to the candidates beside them.** Round 0's winner scored 7.0 in
 round 0 and 5.58 as round 1's baseline: the judges grew stricter as the field
@@ -131,6 +144,7 @@ Against their own baselines:
 | 7 | DIALOGS **+2.50**, KIDS' PLACES +1.11 | — |
 | 8 | BACKGROUNDS **+1.58** | — |
 | 9 | THE THINGS IN THE ROOMS **+2.71** | — |
+| 10 | THE OBJECTS, FINISHED **+0.93** (reported +1.72; the baseline's combat was void) | — |
 
 Converting a screen moves it about four points. Refining one moves it half a point
 to two points, more when the brief names concrete defects the judges can see

@@ -1,4 +1,8 @@
-async () => {
+async (P) => {
+  /* P.hash, when given, stands in for location.hash, so ONE warmed page can
+     photograph room after room (tools/room_batch.py). Every capture otherwise
+     pays ~45 s of load and shader warm-up to change one room. shot.py passes
+     nothing and this reads the URL as it always did. */
   const ctx = window.MM.ctx;
   for (let i = 0; i < 160 && !(ctx.atmosphere && ctx.atmosphere.ready); i++) {
     await new Promise(r => setTimeout(r, 250));
@@ -6,7 +10,7 @@ async () => {
   const m = await import('/game/src/fx/showcase.js');
   if (!window.MM.showcase) m.mountShowcase(ctx, { hideDom: true });
   if (!window.MM.showcase) throw new Error('showcase did not mount');
-  const q = location.hash;
+  const q = (P && P.hash) ? '#' + P.hash.replace(/^#/, '') : location.hash;
   const region = (q.match(/region=([A-Za-z0-9_-]+)/) || [])[1] || 'foyer';
   const tier = (q.match(/tier=([a-z]+)/) || [])[1];
   if (tier) { ctx.stage.setTier(tier, { persist: false }); await new Promise(r => setTimeout(r, 900)); }
@@ -48,6 +52,9 @@ async () => {
      big transparent quads drawn over everything, and in an open-air region a
      faint quad edge across a flat sky is very hard to attribute by eye -- this
      is how you tell which layer a seam belongs to. */
+  /* Hide-only, never forced back on: applyPalette decides these per room
+     (frame 2 is hidden under an open sky), and it runs again on every room a
+     batch switches to. A batch uses one set of flags for every room. */
   const ctxBd = ctx.atmosphere.backdrop;
   if ((q.match(/frames=([01])/) || [])[1] === '0') {
     for (const m of ctxBd.frames) m.visible = false;

@@ -94,6 +94,8 @@ def main():
     ap.add_argument('--min-panels', dest='min_panels', type=int, default=0,
                     help='refuse to write a sheet with fewer panels than this '
                          '(default: all the seeds you asked for)')
+    ap.add_argument('--per-launch', dest='per_launch', action='store_true',
+                    help='one fresh browser per room, as before tools/room_batch.py')
     args = ap.parse_args()
 
     from PIL import Image, ImageDraw
@@ -102,10 +104,20 @@ def main():
     if not args.min_panels:
         args.min_panels = len(seeds)
     tiles = []
-    for s in seeds:
-        p = capture(args.region, s, args.port, args.tier, args.wait)
-        if p:
-            tiles.append((s, p))
+    if args.per_launch:
+        for s in seeds:
+            p = capture(args.region, s, args.port, args.tier, args.wait)
+            if p:
+                tiles.append((s, p))
+    else:
+        # ONE warmed page for every room of the sheet: a third of the launches,
+        # and measured equivalent to fresh captures (room_batch.py's docstring)
+        sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+        from room_batch import capture_rooms
+        got = capture_rooms([(args.region, s) for s in seeds], port=args.port,
+                            tier=args.tier, flags='actor=0', wait=args.wait,
+                            prefix='vs-', log=print)
+        tiles = [(s, got[(args.region, s)]) for s in seeds if got[(args.region, s)]]
     if len(tiles) < args.min_panels:
         msg = [
             f'ONLY {len(tiles)} OF {len(seeds)} ROOMS DREW, so no sheet was written.',
