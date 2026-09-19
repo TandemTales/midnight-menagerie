@@ -6,6 +6,11 @@ the GPU process), so timing with performance.now() around finish() reports
 ~0.2 ms for a 45 ms frame. Timer queries are the only truthful measurement here.
 
     python tools/gpuprof.py --scene combat --w 1600 --h 900
+    python tools/gpuprof.py --scene combat --hash "encounter=gh-14&region=greenhouse"
+
+A deep-linked combat plays in `region` (default the Foyer), NOT in the region
+its encounter comes from, so a Greenhouse fight needs both. With --hash the
+output also says which room played (`mood`).
 """
 import asyncio, json, argparse
 
@@ -129,7 +134,13 @@ PROBE = r"""
 
 async def run(a):
     from playwright.async_api import async_playwright
-    url = BASE + (f"#scene={a.scene}" if a.scene else "")
+    # --hash is appended to the fragment exactly as shot.py appends it, so a
+    # profile can name the fight: `--hash "encounter=gh-14&region=greenhouse"`.
+    # Without it the URL is byte-for-byte what it always was.
+    frag = [f"scene={a.scene}"] if a.scene else []
+    if a.hash:
+        frag.append(a.hash.lstrip("#&"))
+    url = BASE + ("#" + "&".join(frag) if frag else "")
     async with async_playwright() as p:
         browser = await p.chromium.launch(args=[
             "--use-gl=angle", "--use-angle=default",
@@ -150,6 +161,15 @@ async def run(a):
         res["rafFps_before_probe"] = fps0
         res["errors"] = errs[:5]
         res["scene"] = a.scene
+        if a.hash:
+            # which room actually played, so a typo in the hash cannot pass
+            # itself off as the Greenhouse
+            res["hash"] = a.hash
+            try:
+                res["mood"] = await page.evaluate(
+                    "window.MM && window.MM.ctx.atmosphere ? window.MM.ctx.atmosphere.mood : null")
+            except Exception:
+                res["mood"] = None
         await browser.close()
     print(json.dumps(res, indent=1))
 
@@ -160,6 +180,9 @@ if __name__ == "__main__":
     ap.add_argument("--w", type=int, default=1600)
     ap.add_argument("--h", type=int, default=900)
     ap.add_argument("--wait", type=float, default=5.0)
+    ap.add_argument("--hash", default="",
+                    help="more of the URL fragment, appended after scene= the way "
+                         "shot.py --hash is, e.g. 'encounter=gh-14&region=greenhouse'")
     # A profile is only worth reading from a QUIET GPU, and with builders
     # capturing beside it no run ever was. The slot makes it quiet by
     # construction (tools/gpu_slot.py).
