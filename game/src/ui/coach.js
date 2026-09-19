@@ -58,7 +58,9 @@ const NOTE_GAP = 10;
    HUD is not in the scene root. */
 const HARD = 40;
 const KEEP_CLEAR = [
-  ['.mm-hand__cards .mm-card', 60],
+  /* the fan as it lies: a card the player is carrying, aiming or throwing
+     is in their hand, not in the fan, and the note does not dodge it */
+  ['.mm-hand__cards .mm-card:not(.is-dragging):not(.is-aiming):not(.is-flying)', 60],
   ['#end-turn', 60],
   ['.mm-hud', 60],
   ['.cb-bl', 40],
