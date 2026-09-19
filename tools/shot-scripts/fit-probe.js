@@ -10,7 +10,8 @@ async () => {
   window.MM.showcase.set(region, true);
   await new Promise(r => setTimeout(r, 900));
   const bd = ctx.atmosphere.backdrop;
-  const fx = (bd.placed || []).filter(p => p.shape >= 22).map(p => ({
+  // `fixture`, not `shape >= 22`: shape 24 is the Greenhouse's planting bed.
+  const fx = (bd.placed || []).filter(p => p.fixture).map(p => ({
     shape: p.shape, x: +p.x.toFixed(2), y: +p.y.toFixed(2), z: +p.z.toFixed(2),
     w: +p.w.toFixed(2), h: +p.h.toFixed(2), tone: +p.tone.toFixed(2) }));
   const rig = ctx.atmosphere.rig;
