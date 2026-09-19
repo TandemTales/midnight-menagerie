@@ -156,6 +156,17 @@ export class AchievementToast {
       if (b.width && b.height && b.top < window.innerHeight * 0.25) foot = Math.max(foot, b.bottom);
     }
     host.style.setProperty('--ach-top', `${Math.round(foot)}px`);
+    /* A party's fight docks its House Rules under the HUD at the top right,
+       where this hangs, and a rule is what decides the fight: so the plate
+       hangs beside that rail, never over it. */
+    let clear = 0;
+    for (const n of document.querySelectorAll('.cb-rules:not([hidden]) > *')) {
+      const b = n.getBoundingClientRect();
+      if (b.width && b.height && b.left > window.innerWidth / 2 && b.top < foot + 160) {
+        clear = Math.max(clear, window.innerWidth - b.left);
+      }
+    }
+    host.style.setProperty('--ach-clear', `${Math.round(clear)}px`);
   }
 
   destroy() {

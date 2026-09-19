@@ -209,6 +209,9 @@ export async function passTo(o = {}) {
         + `<span class="hoff__title kit-plate__epithet">${esc(comp.title || '')}</span>`
         + `</figcaption></figure>`
       : '')
+    /* the Kid board's paw, on the alcove's bottom rail under its moon, as its
+       mirror wears them */
+    + `<i class="hoff__paw" aria-hidden="true"></i>`
     + `</div>`
     + `<button type="button" class="hoff__go kit-btn"><span class="hoff__go-words">I'm ready</span>`
     + `<kbd class="hoff__key">Enter</kbd>`

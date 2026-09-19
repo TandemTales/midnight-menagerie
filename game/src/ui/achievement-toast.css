@@ -15,7 +15,7 @@
 .mm-ach {
   position: fixed;
   top: calc(var(--ach-top, 0px) + clamp(12px, 1.8vh, 20px));
-  right: clamp(26px, 2.6vw, 44px);
+  right: calc(clamp(26px, 2.6vw, 44px) + var(--ach-clear, 0px));
   z-index: var(--z-overlay);
   display: flex; flex-direction: column; align-items: flex-end; gap: 16px;
   pointer-events: none;                   /* never steals a click from the board */
@@ -108,7 +108,7 @@
 
 /* Steam Deck and any short window: the same plate, a notch smaller. */
 @media (max-height: 820px) {
-  .mm-ach { right: 22px; }
+  .mm-ach { right: calc(22px + var(--ach-clear, 0px)); }
   .mm-ach__card { --plate-h: 72px; min-width: 292px; max-width: 360px; }
 }
 

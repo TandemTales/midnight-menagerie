@@ -120,7 +120,7 @@
   --stage-medal-w: clamp(108px, 8.6vw, 140px);
   display: flex; align-items: flex-end; justify-content: center;
   gap: clamp(24px, 2.6vw, 42px);
-  margin-top: clamp(18px, 3.4vh, 34px);
+  margin-top: clamp(34px, 5.6vh, 56px);   /* the moon crest clear of the cartouche */
   padding: clamp(44px, 6.2vh, 58px) clamp(52px, 5vw, 84px) calc(var(--plate-h) * .5 + var(--foot));
 }
 /* The alcove is hung with the Companion board's flocked damask (.kit-mat--
@@ -223,10 +223,23 @@
 }
 .hoff__flame { inset: 0; }
 
+/* the paw on the alcove's bottom rail, under the moon on its top one: the
+   Kid board's mirror wears the pair (medal-paw.webp is painted on its own
+   short stretch of rail, so it lies ALONG the rail rather than on it) */
+.hoff__paw {
+  position: absolute; z-index: 3; left: 50%; bottom: 0;
+  width: clamp(92px, 7.2vw, 116px); aspect-ratio: 106 / 55;
+  translate: -50% 52%;
+  background: url("../../assets/ui/kit/medal-paw.webp") 50% 50% / 100% 100% no-repeat;
+  filter: drop-shadow(0 3px 3px rgba(0, 0, 0, .8));
+  pointer-events: none;
+}
+
 /* ── I'm ready ────────────────────────────────────────────────────────────── */
 .hoff__go {
   --plate-h: clamp(50px, 6.2vh, 58px);
   align-self: end;
+  margin-top: clamp(30px, 4.4vh, 40px);   /* clear of the paw on the rail above */
   gap: 14px;
   padding: 2px calc(var(--plate-h) * 1.34) 3px calc(var(--plate-h) * .9);
   font-size: clamp(16px, 1.25vw, 20px);
@@ -238,5 +251,5 @@
 
 /* the Deck, and any short window: the same board, the portraits a notch down */
 @media (max-height: 820px) {
-  .hoff__stage { --kid-h: clamp(220px, 42vh, 360px); }
+  .hoff__stage { --kid-h: clamp(220px, 39.5vh, 330px); }
 }
