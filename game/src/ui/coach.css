@@ -71,13 +71,18 @@
 .coach__card {
   position: fixed;
   --pk: .74;
-  width: min(29rem, calc(100vw - 48px));
+  width: min(30rem, calc(100vw - 48px));
   padding: 30px 22px 16px;
   color: var(--kit-text);
   pointer-events: none;
   /* it stands in the room: the shadow it casts on the board under it */
   box-shadow: 0 22px 44px -16px rgba(0, 0, 0, .95), inset 0 0 26px rgba(0, 0, 0, .45);
 }
+
+/* a brass guard over each corner, as the story's own pages wear them
+   (scenes/tutorial.js): the note is a thing in the house, like its page */
+.coach__fit { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
+.coach__guard { --bracket: clamp(40px, 3.1vw, 50px); }
 
 .coach__head {
   margin: 0 0 7px;
@@ -96,17 +101,18 @@
 
 .coach__row {
   display: flex; align-items: center; justify-content: flex-end;
-  gap: 16px;
+  gap: 12px;
   min-height: 42px;
 }
 /* the lesson's pages as the wordmark's own gold stars, the one being read
    burning larger in the candle. No thread: strung on a gilt line with the lit
    star at one end, eight stars read as a slider, which is web chrome. */
 .coach__steps {
-  --star: 15px;
+  --star: 13px;
   order: 0;
+  flex: none;
   margin-right: auto;
-  padding: 0 0 0 7px;                    /* the lit star's glow stays inside the rule */
+  padding: 0 0 0 13px;                   /* the lit star clear of the corner guard */
   gap: 2px;
 }
 .coach__steps::before { content: none; }
@@ -148,7 +154,7 @@
   flex: none;
   gap: 10px;
   white-space: nowrap;
-  padding-inline: calc(var(--plate-h) * .7);
+  padding-inline: calc(var(--plate-h) * .6);
   font-size: max(13px, var(--fs-sm));
   pointer-events: auto;
 }
@@ -162,7 +168,7 @@
   order: 1;
   flex: none;
   white-space: nowrap;
-  padding-inline: calc(var(--plate-h) * .66);
+  padding-inline: calc(var(--plate-h) * .56);
   font-size: max(11.5px, var(--fs-xs));
   letter-spacing: .16em;
   pointer-events: auto;
@@ -173,6 +179,8 @@
 
 /* the Deck's 1280x800: the same note, a notch tighter */
 @media (max-height: 820px) {
-  .coach__card { width: min(27rem, calc(100vw - 48px)); padding: 28px 20px 14px; }
+  .coach__card { width: min(27rem, calc(100vw - 48px)); padding: 28px 18px 14px; }
+  .coach__row { gap: 9px; }
+  .coach__steps { --star: 12px; gap: 1px; padding-left: 11px; }
   .coach__text { margin-bottom: 10px; line-height: 1.38; }
 }

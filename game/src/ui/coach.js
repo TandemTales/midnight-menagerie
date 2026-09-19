@@ -123,6 +123,7 @@ export class Coach {
       <i class="coach__glow kit-light kit-light--candle" aria-hidden="true"></i>
       <div class="coach__spot kit-railframe kit-railframe--ornate" aria-hidden="true"></div>
       <div class="coach__card kit-panel kit-panel--damask" data-medal="paw" role="status" aria-live="polite">
+        <i class="coach__fit" aria-hidden="true"><i class="kit-bracket kit-bracket--tl coach__guard"></i><i class="kit-bracket kit-bracket--tr coach__guard"></i><i class="kit-bracket kit-bracket--bl coach__guard"></i><i class="kit-bracket kit-bracket--br coach__guard"></i></i>
         <p class="coach__head kit-heading" aria-hidden="true">The First Scuffle</p>
         <p class="coach__text"></p>
         <!-- The way out lives IN the card, in its row. Parked at the bottom of
