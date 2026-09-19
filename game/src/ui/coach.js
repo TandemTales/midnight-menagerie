@@ -68,7 +68,9 @@ const KEEP_CLEAR = [
   ['.cb-rules:not([hidden]) > *', 30],
   ['.cb-enemy', 8],
   ['.cb-enemy__intent', 12],
-  ['.cb-hero', 1],
+  /* the Kid's rig draws her bottom-centre in a box far wider than she is
+     (xMidYMax meet): only the middle of it is her */
+  ['.cb-hero', 1, { x: .24, top: .06 }],
 ];
 /* the parts of a target that stand outside its box but are part of it */
 const FRAME_WITH = '.cb-enemy__intent';
@@ -338,12 +340,13 @@ export class Coach {
   /** What the note must stand clear of, as boxes with a weight each. */
   _keepOut() {
     const out = [];
-    for (const [sel, w] of KEEP_CLEAR) {
+    for (const [sel, w, inset] of KEEP_CLEAR) {
       for (const n of document.querySelectorAll(sel)) {
         if (n.closest('.coach')) continue;
         const b = n.getBoundingClientRect();
         if (!b.width || !b.height) continue;
-        out.push({ l: b.left, t: b.top, r: b.right, b: b.bottom, w });
+        const ix = inset ? b.width * inset.x : 0, it = inset ? b.height * inset.top : 0;
+        out.push({ l: b.left + ix, t: b.top + it, r: b.right - ix, b: b.bottom, w });
       }
     }
     return out;

@@ -71,8 +71,8 @@
 .coach__card {
   position: fixed;
   --pk: .74;
-  width: min(30rem, calc(100vw - 48px));
-  padding: 30px 22px 16px;
+  width: min(29rem, calc(100vw - 48px));
+  padding: 30px 20px 16px;
   color: var(--kit-text);
   pointer-events: none;
   /* it stands in the room: the shadow it casts on the board under it */
@@ -101,7 +101,7 @@
 
 .coach__row {
   display: flex; align-items: center; justify-content: flex-end;
-  gap: 12px;
+  gap: 10px;
   min-height: 42px;
 }
 /* the lesson's pages as the wordmark's own gold stars, the one being read
