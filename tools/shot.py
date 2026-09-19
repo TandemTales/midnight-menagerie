@@ -87,7 +87,23 @@ async def run(a):
         # title is lit in four seconds. So this is a TOOL problem, and the fix is
         # the one the notes keep prescribing: wait for a signal, not a number.
         # `warmStage` goes materials -> post -> done.
+        #
+        # ...AND A TIMEOUT IS A VOID CAPTURE, NOT A WARNING. This used to print
+        # "this shot may be dark" and shoot anyway, and every caller in the UI
+        # pass sends shot.py's stdout to /dev/null. Warm-up on this machine's
+        # Intel UHD is ~35 s after load (measured 2026-09-18, fresh boot, and a
+        # persistent profile does not shorten it -- the GPU program cache is
+        # never hit), against the old 40 s timeout: five seconds of margin. On
+        # any slower moment the snap landed in phase A, where render() returns
+        # early by design, so the canvas never drew and the page showed the
+        # scene's plum CSS ground under a perfectly rendered board. BISTRE2
+        # (round 10) saw "seven byte-identical plum frames at fps 55" -- byte-
+        # identical because a canvas that contributes nothing leaves only the
+        # seeded DOM -- and round 11's own first combat baseline came back
+        # exactly that way. glStd could not catch it: Playwright's element
+        # screenshot is a clip of the PAGE, so on combat it measures the board.
         warm = None
+        warm_timed_out = False
         if not a.no_warm_wait:
             try:
                 await page.wait_for_function(
@@ -98,9 +114,29 @@ async def run(a):
                     "() => { const s = window.MM && window.MM.ctx && window.MM.ctx.stage;"
                     "        return s ? (s._warmed || 0) : null; }")
             except Exception:
-                # Say so rather than shooting a half-warm stage in silence.
-                print("warn: the stage never finished warming within "
-                      f"{a.warm_timeout}s — this shot may be dark", flush=True)
+                warm_timed_out = True
+                print("VOID: the stage never finished warming within "
+                      f"{a.warm_timeout}s", flush=True)
+        # The first frames after warm-up can still hold the main thread for
+        # seconds (a program linked on first use). Wait until the frame loop is
+        # actually delivering frames again, so --wait is measured from a stage
+        # that is drawing rather than from one that is stalled.
+        settle_ms = None
+        if not warm_timed_out:
+            try:
+                t_settle = time.time()
+                await page.wait_for_function(
+                    "() => { const w = window; const now = performance.now();"
+                    "  if (!w.__shotFlow) { w.__shotFlow = { n: 0, last: now };"
+                    "    const f = (t) => { const F = w.__shotFlow;"
+                    "      F.n = (t - F.last) < 250 ? F.n + 1 : 0; F.last = t;"
+                    "      if (F.n < 20) requestAnimationFrame(f); };"
+                    "    requestAnimationFrame(f); }"
+                    "  return w.__shotFlow.n >= 20; }",
+                    timeout=60000, polling=100)
+                settle_ms = int((time.time() - t_settle) * 1000)
+            except Exception:
+                print("warn: the frame loop never delivered 20 steady frames", flush=True)
         await page.wait_for_timeout(int(a.wait * 1000))
 
         async def snap(name, full=False):
@@ -234,6 +270,12 @@ async def run(a):
         except Exception:
             pass
         void = (not gl) or str(gl) in ("none", "?", "None")
+        # the stage that never warmed (see the warm-up wait above)
+        perf["warmMs"] = warm
+        perf["settleMs"] = settle_ms
+        if warm_timed_out:
+            void = True
+            perf["warmTimeout"] = True
         # ...AND A CONTEXT IS NOT ENOUGH. A capture can hold a live GL context
         # and still draw NOTHING: the greenhouse came back gl-present, mean 8.8,
         # std 4.84 and a nonsense tooth of 1.624, and the gl==none test above
@@ -262,10 +304,21 @@ async def run(a):
             # The separation is not marginal: every legitimate screen in that
             # round and all four samples sit at or below 1.58% above L200, and
             # mainMenu.png is 0.00%. 8% is five times the highest real value.
-            _hi = sum(_h[201:]) / _nn * 100.0
+            # (this read _nn, the glStd block's count, so whenever that block
+            # failed it raised NameError into the except below and the blown-
+            # frame check silently never ran)
+            _hi = sum(_h[201:]) / _n * 100.0
             if _hi > 8.0:
                 void = True
                 perf["voidBlown"] = round(_hi, 2)
+            # BISTRE2's band: mean luminance of the frame's upper-middle, where
+            # a board's room shows between the enemies. Evidence, not a gate --
+            # it is specific to the board compositions. Combat with its room
+            # reads 29-36; the plum no-room frame read 23.6.
+            _W, _H = _px.size
+            _b = _px.crop((int(.16 * _W), int(.10 * _H), int(.84 * _W), int(.52 * _H))).histogram()
+            _bn = sum(_b) or 1
+            perf["band"] = round(sum(i * c for i, c in enumerate(_b)) / _bn, 1)
         except Exception:
             pass
         open(os.path.join(SHOTS, f"{a.name}.state.json"), "w", encoding="utf-8").write(
@@ -307,7 +360,7 @@ if __name__ == "__main__":
                     help="dev server port: a build in its own worktree runs its own server")
     ap.add_argument("--wait", type=float, default=2.2,
                     help="settle time AFTER the 3D stage has finished warming")
-    ap.add_argument("--warm-timeout", type=float, default=40,
+    ap.add_argument("--warm-timeout", type=float, default=150,
                     help="how long to give the stage's shader warm-up")
     ap.add_argument("--no-warm-wait", action="store_true",
                     help="shoot without waiting for the stage — for capturing "
