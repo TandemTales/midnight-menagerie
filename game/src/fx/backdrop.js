@@ -302,7 +302,10 @@ export class Backdrop {
         uLights: { value: v4arr() }, uLightCol: { value: colArr() },
       },
       vertexShader: WALL_VERT, fragmentShader: WALL_FRAG,
-      depthWrite: true, fog: false,
+      /* LESS, not LEQUAL: this wall now draws AFTER the ceiling and the side
+         walls, and must lose a depth tie to them exactly as it did when it
+         drew first. See OPAQUE DRAW ORDER at the ceiling below. */
+      depthWrite: true, depthFunc: THREE.LessDepth, fog: false,
     });
     this.wall = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), this.wallMat);
     this.wall.renderOrder = 0;
@@ -316,11 +319,14 @@ export class Backdrop {
       const mat = new THREE.ShaderMaterial({
         uniforms: freshLightSlots(THREE.UniformsUtils.clone(this.wallMat.uniforms)),
         vertexShader: WALL_VERT, fragmentShader: WALL_FRAG,
-        depthWrite: true, fog: false,
+        // LESS for the same reason as the far wall's: it now follows the ceiling
+        depthWrite: true, depthFunc: THREE.LessDepth, fog: false,
       });
       mat.uniforms.uSeed.value = 4.3 + i * 2.1;
       const m = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), mat);
-      m.renderOrder = 0;
+      /* After the ceiling and before the far wall: see OPAQUE DRAW ORDER at
+         the ceiling below. */
+      m.renderOrder = -1;
       this.sides.push(m);
       this.group.add(m);
     }
@@ -376,7 +382,29 @@ export class Backdrop {
     this.ceilMat.uniforms.uFogFar.value = 30;
     this.ceiling = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), this.ceilMat);
     this.ceiling.rotation.x = Math.PI / 2;
-    this.ceiling.renderOrder = 1;
+    /* OPAQUE DRAW ORDER: ceiling, side walls, far wall, floor -- the order
+       in which they hide one another, so the depth test can throw away what
+       is hidden BEFORE it is shaded.
+
+       Every wall plane runs `room.wallPad` (5-7 m) up past the ceiling, and
+       the walls used to be drawn FIRST. So every pixel of ceiling on screen
+       had already been shaded once as the wall behind it -- WALL_FRAG, the
+       most expensive program in the frame -- and was then painted over. With
+       the ceiling in the depth buffer first, early-Z rejects those fragments
+       before WALL_FRAG runs. Measured in one page on the Foyer's combat frame
+       at tier medium: 15.05 -> 13.16 ms.
+
+       THE PICTURE CANNOT CHANGE, and that has to include the seams. These are
+       opaque depth-tested planes, so the nearest one wins in any order --
+       except on a pixel where two of them quantise to EXACTLY the same depth,
+       which happens every few dozen rows along a ceiling-to-wall or a
+       wall-to-wall seam, and there LEQUAL hands the pixel to whichever drew
+       LAST. The first cut of this reversed the old winners and changed a
+       handful of seam pixels per room by up to 80 levels. So the two walls
+       that now draw later test LESS: a tie leaves the ceiling (or the side
+       wall) in the pixel, which is exactly who won it when the walls drew
+       first. The floor still draws after every wall, as it always did. */
+    this.ceiling.renderOrder = -2;
     this.group.add(this.ceiling);
 
     /* --------------------------------------------------------------- props */
