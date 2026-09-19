@@ -107,7 +107,12 @@ def gpu_slot(label='', max_wait=5400):
         if time.time() - t0 > max_wait:
             print(f'gpu_slot: waited {max_wait}s, going ahead WITHOUT the slot', file=sys.stderr)
             break
-        time.sleep(1.5)
+        # 0.1 s, not 1.5: a builder chaining capture after capture starts its
+        # next process ~0.5 s after the last one releases, and at 1.5 s a
+        # waiter lost that race over and over (round 12's ORMOLU, whose toast
+        # re-shoots kept losing to round 11's chained batches). A one-byte
+        # lock attempt ten times a second costs nothing.
+        time.sleep(0.1)
     waited = time.time() - t0
     if said:
         print(f'gpu_slot: got the GPU after {waited:.0f}s', flush=True)
@@ -138,6 +143,15 @@ def holder():
 
 
 if __name__ == '__main__':
+    # `python tools/gpu_slot.py -- <command...>` runs a command while holding
+    # the slot: a gate that launches its own browser, run while a round's
+    # builders are capturing, would otherwise land in the middle of one of
+    # their gpuprof runs.
+    if '--' in sys.argv:
+        import subprocess
+        cmd = sys.argv[sys.argv.index('--') + 1:]
+        with gpu_slot('run: ' + ' '.join(cmd)[:120]):
+            sys.exit(subprocess.run(cmd).returncode)
     busy = []
     for i in range(max(slots(), 1)):
         fh = open(_path(i), 'a+b')

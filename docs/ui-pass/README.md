@@ -131,6 +131,7 @@ so round 2 runs six at once, as round 1 did.
 | 8 | **BACKGROUNDS** — three ROOMS with no interface on them (foyer / crypt / graveyard) plus combat, combat-boss, rest | VERDIGRIS 5.83 · SOOT 4.92 · BISTRE 4.42 · the screens before 4.25 | VERDIGRIS, both judges, **and it beats the baseline on all six screens**. +1.58. `fits_between_samples` FALSE for every candidate on every screen | `d94cf23`, then the sky graft `5f0da30` |
 | 9 | **THE THINGS IN THE ROOMS** — greenhouse / ballroom / foyer / graveyard / combat / rest | GALLNUT 6.42 · UMBER 5.71 · CARMINE 5.21 · the screens before **3.71** | GALLNUT, both judges. **+2.71, the largest gain of the pass.** The baseline scored **2/10** on both rooms Josh named; they merged at 7 and 6.5 | `5cf3efd` + the ballroom graft `723dc2b` |
 | 10 | **THE OBJECTS, FINISHED** — greenhouse / ballroom / foyer / graveyard / combat / rest | OAKGALL 5.78 · SORREL2 5.39 · BISTRE2 5.22 · the screens before 4.06 | OAKGALL, 2 of 3 (every light gets a drawn fitting, on the PROP layer). Read the margin as **+0.93, not +1.72**: the baseline's combat was a blown white frame all three judges scored 1. Per screen, SORREL2 won the Greenhouse 3 of 3 and BISTRE2 the Foyer 2 of 3 — the first `fits_between_samples: true` of the pass — grafted afterwards | `f39dbc6` |
+| 12 | **THE LAST WEB CHROME** — the coach / the hot-seat handoff veil / the achievement toast (EXPAND; ran beside round 11) | VELLUM 7.33 · ORMOLU 7.11 · GESSO 6.89 · the game before **1.44** | per screen: coach VELLUM (2 of 3), handoff ORMOLU (3 of 3), toast VELLUM (2 of 3). **+5.9, the largest gain of the pass** — the three screens no round had touched. Finished as a second run after the session limit, VELLUM and ORMOLU carried in as `done` | `57bb92f` + ORMOLU's veil `90d0fad` |
 
 **Scores anchor to the candidates beside them.** Round 0's winner scored 7.0 in
 round 0 and 5.58 as round 1's baseline: the judges grew stricter as the field
@@ -151,6 +152,7 @@ Against their own baselines:
 | 8 | BACKGROUNDS **+1.58** | — |
 | 9 | THE THINGS IN THE ROOMS **+2.71** | — |
 | 10 | THE OBJECTS, FINISHED **+0.93** (reported +1.72; the baseline's combat was void) | — |
+| 12 | — | THE LAST WEB CHROME **+5.9** (per-screen winners 7.33 / 8.00 / 7.67 against 2 / 1 / 1.33) |
 
 Converting a screen moves it about four points. Refining one moves it half a point
 to two points, more when the brief names concrete defects the judges can see
