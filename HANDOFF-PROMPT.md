@@ -22,13 +22,22 @@ loop until perfected". Two later calls narrow it and both are in force:
 briefed, their worktrees cut at `d46eec5`, and the next step is their
 baselines and launch.**
 
-```
-bash docs/ui-pass/baseline-r13.sh     # BUCKRAM: coach, handoff, toast, both sizes
-bash docs/ui-pass/baseline-r14.sh     # FUSTIAN: six sheets + combat at both sizes
-```
+**BOTH ARE RUNNING** (launched 2026-09-19 ~16:35, base `d46eec5`):
 
-Then launch each with its args file plus `repo`, `uiloop`
-(`C:/UILOOP/r13`, `C:/UILOOP/r14`) and `base: d46eec5`.
+| round | run | task | UILOOP | builders |
+|---|---|---|---|---|
+| 13 CHROME (expand) | `wf_2d95488c-1ce` | `w9zkcqhwr` | `C:/UILOOP/r13` | NACRE 8921, SMALT 8922, GAMBOGE 8923, baseline BUCKRAM |
+| 14 ROOMS (refine) | `wf_6f91b3b1-825` | `wg89acajt` | `C:/UILOOP/r14` | ORPIMENT 8931, SEPIA 8932, VERMEIL 8933, baseline FUSTIAN |
+
+Their baselines are taken (`baseline-r13.sh`, `baseline-r14.sh`). **If a
+session limit stops them**, finish each as a NEW run: `resume` on every
+stopped builder saying where it stopped, and `done` (the recorded BUILD
+object from the stopped run's `journal.jsonl`) on any that had returned. That
+is how both of today's rounds finished.
+
+**One capture failed the way this machine fails**: a BUCKRAM coach capture
+came back 31.8% blown with `CONTEXT_LOST_WEBGL` in its console, and the
+retake was clean. A void capture is the GPU, not the build.
 
 **What merged today**
 
