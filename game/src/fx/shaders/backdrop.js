@@ -3654,10 +3654,17 @@ void main(){
     float rowi = floor(sp.y / 0.075);
     float colu = floor(sp.x / 0.225 + mod(rowi, 2.0)*0.5);
     float bh   = mmHash21(vec2(colu, rowi) + vSeed);
-    vec3  brick = vec3(1.00, 0.560, 0.400)
-                * (max(mmLum(albedo), 0.02)*1.02 + 0.040) * (0.72 + 0.56*bh);
+    float lum  = max(mmLum(albedo), 0.02);
+    vec3  brick = vec3(1.00, 0.575, 0.430) * (lum*0.88 + 0.034) * (0.72 + 0.56*bh);
     brick = mix(brick, vec3(mmLum(brick))*1.04, 0.30*smoothstep(0.55, 1.0, bh));
+    /* A STONE COPING ON A BRICK TROUGH, which is how one is actually built --
+       and it matters at 1280x800, where nine of these run across the middle
+       distance: all-brick, the beds were the warmest thing in a green room and
+       pulled the eye off the planting they exist to hold. */
+    vec3 cope = vec3(0.86, 0.87, 0.82) * (lum*0.80 + 0.030) * (0.86 + 0.24*bh);
     albedo = mix(albedo, brick, bedM);
+    albedo = mix(albedo, cope, smoothstep(0.250, 0.262, vUv.y)
+                             * smoothstep(0.322, 0.306, vUv.y));
   }
 
   /* WHAT IS IN THE CABINET. Shape 5 is the Foyer's and the Study's commonest
