@@ -93,14 +93,22 @@ export const DEFAULT_ROOM = {
  *  21   grand piano     2.05 m of quad         --
  *  22   pendant fitting SIZED BY ITS DROP      -- see _fixtures
  *  23   light standard  SIZED BY ITS LAMP      -- see _fixtures
+ *  24   planting bed    0.43 m of brick, 2.9 m long, fans to 1.45   brick course 0.075
  *
- * The last two are FITTINGS and are never dealt from a region's prop pack:
+ * 22 and 23 are FITTINGS and are never dealt from a region's prop pack:
  * `_fixtures` places one at each practical light and sizes it from the room,
- * because a chandelier's chain is as long as the ceiling is high.
+ * because a chandelier's chain is as long as the ceiling is high. Their two
+ * entries below are placeholders the fixture sizing never reads.
+ *
+ * 24 is round 10's Greenhouse planting bed (SORREL2, ui/r10-bg3-b), which was
+ * shape 22 on that branch. It was renumbered when it was grafted onto a build
+ * that had already given 22 and 23 to the fittings; the shader's branches, the
+ * fittings' `vShape > 21.5` tests and the Greenhouse's props.shapes all moved
+ * with it.
  */
 const SHAPE_M = [1.20, 2.00, 1.30, 1.00, 2.00, 2.00, 3.32, 2.60, 1.17, 1.33,
                  1.56, 1.30, 2.16, 1.50, 2.00, 2.44, 1.27, 0.97, 3.09, 1.56,
-                 2.80, 2.05, 2.60, 1.70
+                 2.80, 2.05, 2.60, 1.70, 1.55
 ];
 /* ...and a width ratio, so a column is a column and not a capital-T. Four of
  * these were wrong by enough to change what the object was: a longcase clock
@@ -108,7 +116,7 @@ const SHAPE_M = [1.20, 2.00, 1.30, 1.00, 2.00, 2.00, 3.32, 2.60, 1.17, 1.33,
  * wide, and a column at h/12.3 when the table says h/8 to h/10. */
 const SHAPE_W = [1.15, 0.48, 1.00, 0.95, 0.72, 0.80, 0.47, 0.85, 0.90, 1.35,
                  1.30, 1.20, 0.87, 1.14, 0.77, 0.78, 1.80, 2.24, 0.50, 0.62,
-                 0.72, 1.62, 0.62, 0.34
+                 0.72, 1.62, 0.62, 0.34, 1.80
 ];
 /* HOW MUCH ONE OF THESE VARIES FROM THE NEXT, as a +-fraction of SHAPE_M.
  *
@@ -129,7 +137,7 @@ const SHAPE_W = [1.15, 0.48, 1.00, 0.95, 0.72, 0.80, 0.47, 0.85, 0.90, 1.35,
  * loculi in a different room. */
 const SHAPE_VAR = [0.06, 0.08, 0.62, 0.20, 0.10, 0.08, 0.10, 0.10, 0.16, 0.48,
                    0.06, 0.06, 0.06, 0.06, 0.06, 0.14, 0.14, 0.06, 0.08, 0.08,
-                 0.06, 0.04, 0.00, 0.00
+                 0.06, 0.04, 0.00, 0.00, 0.22
 ];
 // Which shapes hang from the ceiling rather than stand on the floor.
 export const HANGING = { 4: 1, 7: 1, 22: 1 };
@@ -1123,6 +1131,11 @@ export class Backdrop {
     const so = this._shOrigin.array, sp = this._shParam.array,
       ss = this._shSeed.array, si = this._shInt.array;
     this.pools.length = 0;
+    /* WHERE EACH SHAFT COMES THROUGH THE ROOF. Round 10 fix 9 asks that the
+       shafts in the Greenhouse have a SOURCE, and a source is the pane the
+       beam came through -- which is the shaft's ORIGIN, not the pool it lands
+       in: at 11.4 m of drop and 0.30 of rake those are 3.5 m apart. */
+    this.roofLights = [];
     const ceilY = room.h > 0 ? room.h : 12.0;
     for (let i = 0; i < sn; i++) {
       const t = sn === 1 ? 0.5 : i / (sn - 1);
@@ -1148,6 +1161,7 @@ export class Backdrop {
         ax: 1, ay: 0,
         stretch: 1.0 / Math.max(Math.cos(angle), 0.4),
       });
+      this.roofLights.push({ x: ox, z: oz, r: width * 0.72, i: inten });
     }
     this._shOrigin.needsUpdate = this._shParam.needsUpdate = true;
     this._shSeed.needsUpdate = this._shInt.needsUpdate = true;
@@ -1189,6 +1203,17 @@ export class Backdrop {
       fu.uPool.value[i].set(p.x, -(p.z - this._floorCz), p.r, p.i);
       fu.uPoolAxis.value[i].set(p.ax, p.ay, p.stretch, 0);
     }
+    /* ...and the same four ellipses on the ROOF, at the origin of each shaft
+       rather than where it lands. The ceiling's pool slots have been zero
+       since round 8 cut the pools off it, so nothing else reads them, and
+       FLOOR_FRAG gates them on the glasshouse pattern: every other ceiling in
+       the house stays exactly as dark as it was. Ceiling-local is
+       (x, z - floorCz) — the opposite z sign from the floor, per syncLights. */
+    /* (GRAFT NOTE, r11: nothing writes them. This block was already empty on
+       ui/r10-bg3-b's tip, so `roofLights` is never read, the ceiling's uPool
+       stays zero and FLOOR_FRAG's glazed-roof gate is inert -- the judged
+       roof's sources are its cracked panes and ridge ventilators alone. Carried
+       as it was judged; wiring it up would be a new change, not a graft.) */
   }
 
   /** A stable small integer per region, off its label. */

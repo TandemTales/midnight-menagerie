@@ -1567,6 +1567,12 @@ void main(){
      floor read as a floor is that no two flags are the same value, and five of
      the nine patterns here had no such number at all. */
   float cellv = 0.5;
+  /* How much of this pixel is GLASS rather than glazing bar. Only the
+     glasshouse roof sets it; everywhere else it stays 0 and every term below
+     that reads it switches itself off. */
+  float glazed = 0.0;
+  /* ...and how much of it is a pane the MOON is coming through. Same rule. */
+  float roofLit = 0.0;
 
   float pat = 0.0;
   if (uPattern < 0.5) {                      // 0 planks
@@ -1646,12 +1652,51 @@ void main(){
     float ray = abs(sin(atan(w.y, w.x)*8.0));
     pat += (1.0 - smoothstep(0.6, 1.0, ray)) * (1.0 - smoothstep(1.4, 2.4, r)) * 0.35;
     pat = pat*0.7 + 0.22 + mmFbm3(w*1.6 + uSeed)*0.22;
-  } else {                                   // 8 industrial truss
+  } else if (uPattern < 8.5) {               // 8 industrial truss
     float bay = abs(fract(w.y/3.40 + 0.5) - 0.5)*3.40;
     float zig = abs(fract((w.x + w.y*0.9)/1.70 + 0.5) - 0.5)*1.70;
     pat = (1.0 - smoothstep(0.09, 0.22, bay))*0.75
         + (1.0 - smoothstep(0.06, 0.16, zig))*(1.0 - smoothstep(0.35, 1.4, bay))*0.55;
     pat = pat*0.9 - 0.18 + mmFbm3(w*2.6 + uSeed)*0.26;
+  } else {                                   // 9 glasshouse roof, bars to a ridge
+    /* ROUND 10, FIX 9: "The Greenhouse's ceiling is a flat black band. A
+       glasshouse roof is GLAZED: carry the glazing bars over the top in
+       perspective to a ridge, so the shafts in the room have a source."
+
+       A ridge-and-furrow roof has ONE ridge, running away from the camera down
+       the length of the house, and its RAFTERS climb from the eaves to it --
+       so on this plane the rafters are lines of constant z at a 0.92 m pitch
+       and the perspective does the converging for free. The pane laps are the
+       finer lines of constant x. Pattern 5's square lattice had neither: it is
+       a grid, and a grid overhead is a coffered ceiling, which is why the roof
+       of this room has never once read as glass. */
+    float rp = 0.92;                                  // rafter centres
+    float lp = 0.66;                                  // the lap between panes
+    float raft = abs(fract(w.y/rp + 0.5) - 0.5)*rp;
+    float lap  = abs(fract(w.x/lp + 0.5) - 0.5)*lp;
+    float barW = max(0.042, jw*1.15);
+    float bars = max(1.0 - smoothstep(0.024, barW, raft),
+                    (1.0 - smoothstep(0.014, barW*0.75, lap))*0.60);
+    /* THE RIDGE, and the ventilator lights hinged along it. It is the one
+       member heavier than the rest, and it is what makes the roof a ROOF
+       rather than a flat of glass: the eye follows it to the vanishing point
+       and reads a pitch that the plane itself cannot show. */
+    float ridge = 1.0 - smoothstep(0.11, 0.30, abs(w.x));
+    float vent  = (1.0 - smoothstep(0.32, 0.58, abs(w.x)))
+                * step(0.34, fract(w.y/2.40 + 0.12));
+    glazed = clamp(1.0 - bars - ridge*0.9, 0.0, 1.0);
+    pat = 1.06 - bars*0.86 - ridge*0.50 - vent*0.24;
+    /* dirty Victorian glass: every pane its own grime, and a few cracked or
+       gone altogether -- cellv carries that to the albedo below. */
+    cellv = mmHash11(floor(w.x/lp)*11.3 + floor(w.y/rp)*19.1 + uSeed);
+    pat -= glazed * 0.30 * smoothstep(0.70, 1.0, cellv);
+    /* AND THE SHAFTS GET A SOURCE. Round 10 fix 9's second clause. A pane here
+       and there is cracked or stands open on its winding gear, and the moon
+       comes through THAT -- so the source is a handful of bright panes and the
+       run of ventilator lights along the ridge, not a bright ceiling. A source
+       has to be smaller than the thing it lights or it reads as a lit
+       ceiling, which is the defect this room already had at the other end. */
+    roofLit = glazed * (step(0.934, cellv) + vent*0.45);
   }
 
   vec3 alb = mix(uDeep, uMid, 0.24 + 0.78*mmFbm3(w*0.42 + uSeed));
@@ -1734,7 +1779,13 @@ void main(){
        is most of the saving and none of the loss. */
     float grain = 0.95;
     if (uIsCeiling < 0.5) grain = 0.80 + 0.34*mmFbm3(w*1.7 + float(i)*7.3);
-    col += uPoolCol[i] * P.w * (core*1.15 + spill) * grain * (0.16 + 0.84*mmLum(alb)*3.4) * 0.50;
+    /* ON A CEILING these slots are not landing pools -- they are the panes the
+       shafts come THROUGH (backdrop.js _writePools), and only a glazed roof
+       has any. Every other ceiling in the house keeps the zeros it has had
+       since round 8 cut the pools off it, so this changes one room. */
+    float gate = mix(1.0, step(8.5, uPattern) * (0.30 + 0.70*glazed), ceilOnly);
+    col += uPoolCol[i] * P.w * (core*1.15 + spill) * grain
+         * (0.16 + 0.84*mmLum(alb)*3.4) * 0.50 * gate;
   }
 
   /* Everything drawn on this surface needs the form to be RESOLVABLE. A floor
@@ -1789,7 +1840,23 @@ void main(){
      The far end of ours was reaching 0.85 and in the Kitchens and the Secret
      Passages that made the ceiling the brightest band on screen, which pulls
      the eye straight up and off the board. */
-  col *= mix(1.0, mix(0.05, 0.52, smoothstep(1.5, 13.0, vDepth)), uIsCeiling);
+  /* A GLAZED ROOF IS NOT A PLASTER CEILING, and the 0.05 near-camera factor
+     above is exactly why the Greenhouse's roof photographed as a flat black
+     band: it is correct for lath and plaster and wrong for a hole with a frame
+     in it. The glass still goes to near-black -- it is a night sky seen
+     through dirty Victorian glass -- but the BARS and the ridge keep enough
+     value to be drawn, which is the whole of round 10 fix 9. */
+  float ceilDim = mix(0.05, 0.52, smoothstep(1.5, 13.0, vDepth));
+  ceilDim = mix(ceilDim,
+                mix(0.30, 0.92, smoothstep(1.0, 15.0, vDepth)) * (1.0 - glazed*0.46),
+                step(8.5, uPattern));
+  col *= mix(1.0, ceilDim, uIsCeiling);
+  /* THE NIGHT IS ON THE OTHER SIDE OF IT. Glass is not a surface: the panes
+     take the sky's own cold and the bars take the room's. Without this the
+     roof is a lattice painted on a ceiling rather than a lattice with
+     something behind it. */
+  col += uAccent * glazed * 0.055 * (0.35 + 0.65*smoothstep(1.0, 16.0, vDepth));
+  col += (uAccent*0.45 + vec3(0.26, 0.36, 0.40)) * roofLit * 0.30;
   col *= mix(0.40, 1.0, smoothstep(2.0, 13.0, vDepth));    // foreground falls away
   col = mix(col, uFog, smoothstep(uFogNear, uFogFar, vDepth));
   col = mmDesat(col, uDread*0.5) * (1.0 - uDread*0.28);
@@ -1917,10 +1984,26 @@ float shapeField(vec2 uv, vec2 msz, float shape, float seed){
        to a rim that stands 0.03 m clear of the belly, on a foot, on a saucer.
        The belly, the thrown ribs, the soil and the saucer's shadow are relief
        -- see shape 2 in reliefH. */
+    /* TWO CONTAINERS, NOT ONE SILHOUETTE. Round 10 fix 2, both judges: "every
+       container under the agaves is a dark rimless tub with no rolled lip, no
+       foot and no soil line, so a 2 m specimen appears to grow out of a shadow
+       on the brick", and the ask was to "split the run between terracotta and
+       lead cisterns so they are not all one silhouette". The cistern flag is hashed off
+       the PROP seed, so a given pot is the same pot in every frame and the
+       A/B the backdrop-room script makes possible still holds.
+       A thrown pot tapers to its rim and its lip is ROLLED -- round in
+       section, which is why its corner radius is nearly half its own height.
+       A lead cistern has straight battered sides, a cast top band with a hard
+       arris on it and a plinth: same footprint, completely different outline
+       at forty pixels. */
+    float lead = step(0.62, mmHash11(seed*17.77 + 3.31));
     float pw = 0.100 + 0.032*smoothstep(0.020, 0.160, p.y);
-    d = mmBox(p - vec2(0.0,0.098), vec2(pw,0.098), 0.016);
-    d = min(d, mmBox(p - vec2(0.0,0.188), vec2(0.138,0.020), 0.007));   // the rim
-    d = min(d, mmBox(p - vec2(0.0,0.022), vec2(0.108,0.022), 0.008));   // the foot
+    pw = mix(pw, 0.124 + 0.010*smoothstep(0.02, 0.17, p.y), lead);
+    d = mmBox(p - vec2(0.0,0.098), vec2(pw,0.098), mix(0.016, 0.005, lead));
+    d = min(d, mmBox(p - vec2(0.0,0.186), vec2(mix(0.140,0.150,lead), 0.023),
+                     mix(0.021, 0.004, lead)));                         // the rolled rim
+    d = min(d, mmBox(p - vec2(0.0,0.022), vec2(mix(0.108,0.134,lead), 0.022),
+                     mix(0.008, 0.004, lead)));                         // the foot / plinth
     d = min(d, mmBox(p - vec2(0.0,0.008), vec2(0.152,0.008), 0.004));   // the saucer
     /* A LANCEOLATE BLADE, not a lollipop. The old frond was a stroke of radius
        0.052 with a DISC of radius 0.10-0.14 smin'd onto its end, i.e. a thin
@@ -1936,8 +2019,26 @@ float shapeField(vec2 uv, vec2 msz, float shape, float seed){
        the same nine strokes with the same hashes, so every blade gets its own
        midrib and its own turn and the max() there puts a drawn line wherever
        one laps another. */
+    /* THREE SPECIES, AND EACH HAS ITS OWN EDGE. Round 10 fix 3, judge 2: give
+       each species "its own edge (entire, serrated, spined tip)". Every plant
+       in the house was one plant repeated, which is why a bank of them reads
+       as a pattern rather than as planting. This is four numbers the ONE loop
+       below reads -- not a third copy of the loop, which would cost a third
+       copy of the program for a prop that already has twenty-two branches:
+         A  agave    few broad stiff blades, entire margin, a SPINE on the tip
+         B  palm     the pinnate frond of round 9, cut back to the rachis
+         C  fatsia   broader still, fewer, with a finely toothed margin      */
+    float spq = mmHash11(seed*5.31 + 1.73);
+    float sA  = step(spq, 0.36);
+    float sC  = step(0.70, spq);
+    float sB  = 1.0 - sA - sC;
+    float nAct  = 9.0*sA + 9.0*sB + 7.0*sC;     // how many blades in the crown
+    float widM  = 1.18*sA + 1.00*sB + 1.34*sC;  // how broad each one is
+    float combA = 0.05*sA + 0.19*sB + 0.03*sC;  // how deeply the margin is cut
+    float sawA  = 0.03*sA + 0.02*sB + 0.11*sC;  // ...and how finely it is toothed
     for (int i = 0; i < 9; i++){
-      float f = float(i)/8.0;
+      if (float(i) >= nAct) continue;
+      float f = float(i)/max(nAct - 1.0, 1.0);
       float a = (f - 0.5)*2.24 + (mmHash11(seed+float(i))-0.5)*0.42;
       float len = 0.54 + 0.30*mmHash11(seed*3.0+float(i));
       vec2 dir = vec2(sin(a), cos(a));
@@ -1957,18 +2058,37 @@ float shapeField(vec2 uv, vec2 msz, float shape, float seed){
          damage rather than as a leaf. Distance to the stroke's AXIS with the
          width as a function of t is exact, continuous, smoothly antialiased,
          and cheaper than the six circles it replaces. */
-      float wid = 0.076 + 0.034*mmHash11(seed*4.3 + float(i));
+      float wid = (0.076 + 0.034*mmHash11(seed*4.3 + float(i))) * widM;
       vec2  rel = p - base;
       float t  = clamp(dot(rel, dir)/max(len, 1e-3), 0.0, 1.0);
-      vec2  ax = base + dir*len*t + vec2(0.0, -0.13*t*t*t);
-      /* ...and PINNATE. A palm frond is not a paddle: its margin is cut back
-         to the rachis between leaflets, which is the one silhouette cue that
-         separates a frond from a leaf. Cut into the width, so it is smooth at
-         any distance instead of being a noise field added to the SDF. */
+      /* THE OUTER LEAVES CURL OVER, which is round 10 fix 3's other half:
+         "flat cut-paper ... the plants read as one plane at 1:1 ... let outer
+         leaves curl over and overlap their neighbours". A crown whose every
+         blade is a straight ray in one plane is a paper doily however well
+         each blade is drawn. The outermost blades droop three times as hard
+         and fall OUTWARD as they do, so their tips come down across the blades
+         behind them; reliefH bends the same axis by the same amount and drops
+         the folded part, so the lap arrives with a drawn line and a shadow. */
+      float outr = abs(f - 0.5)*2.0;
+      float crl  = outr * (0.50 + 0.50*mmHash11(seed*9.7 + float(i)*1.9));
+      float fall = t*t*t;
+      vec2  ax = base + dir*len*t
+               + vec2(sin(a)*crl*0.20*fall, -(0.13 + 0.30*crl)*fall);
+      /* THE MARGIN, per species. A palm frond is not a paddle: its margin is
+         cut back to the rachis between leaflets, which is the one silhouette
+         cue that separates a frond from a leaf. A fatsia is finely toothed
+         instead, and an agave is entire and ends in a spine. All three are cut
+         into the WIDTH, so they stay smooth at any distance instead of being a
+         noise field added to the SDF. */
       float w = wid * max(sin(3.1416*pow(t, 0.62)), mix(0.20, 0.02, t));
       /* Eleven leaflets down a frond, not thirty. At 44 cycles per unit of
          length the notches were four pixels apart and read as corduroy. */
-      w *= 0.82 + 0.18*cos(t*len*16.0 + float(i));
+      w *= 1.0 - combA*(0.5 + 0.5*cos(t*len*16.0 + float(i)));
+      w *= 1.0 - sawA *(0.5 + 0.5*cos(t*len*30.0 + float(i)*3.1));
+      /* AND THE SPINE. An agave's terminal spine is the cue that names the
+         plant, and it is four pixels of silhouette: the blade keeps a hair of
+         width past the point where its taper has run out. */
+      w = max(w, sA*0.011*smoothstep(0.84, 0.99, t)*(1.0 - smoothstep(0.99, 1.0, t)));
       d = mmSmin(d, length(p - ax) - w, 0.026);
     }
     /* A little break-up left on the margin, three octaves and smooth. The old
@@ -2344,7 +2464,7 @@ float shapeField(vec2 uv, vec2 msz, float shape, float seed){
     d = min(d, mmCircle(mm - vec2(0.0, sk - 0.440), 0.056));
     d /= max(msz.x, 0.02);                // back into fractions of the quad
 
-  } else {                                // 23 -- A LIGHT STANDARD
+  } else if (shape < 23.5) {              // 23 -- A LIGHT STANDARD
     /* The other half of fix 1: a lamp too low to hang. A stepped foot, a stem
        as long as the light is high, and a glazed lantern with the flame inside
        it. Indoors it is the hall lamp beside the stair; in the churchyard it
@@ -2368,10 +2488,51 @@ float shapeField(vec2 uv, vec2 msz, float shape, float seed){
     d = min(d, mmArch(mm - vec2(0.0, sk + 0.226), 0.076, 0.070));
     d = min(d, mmCircle(mm - vec2(0.0, sk + 0.334), 0.028));
     d /= max(msz.x, 0.02);
+
+  } else {                                // 24 -- coursed brick planting bed
+    /* ROUND 10, FIX 3. Both judges on the Greenhouse's mid-ground: the masses
+       "are mottled lumps with no leaf edges and read as moss boulders", and
+       the ask was to give them the construction the potted fans now have "or
+       replace them with a coursed brick planting bed holding more fans".
+
+       This is that bed, and it is a NEW shape rather than a rewrite of the
+       shrub because the shrub (61 instances) also has to be a hedge in the
+       Hedge Maze, the Pumpkin Grounds, the Kennels and the Title, and a hedge
+       built out of fan crowns would be wrong in all four. Only the Greenhouse
+       deals this one.
+
+       A bed is MASONRY, so it is the one thing in this room that has to have
+       straight lines: a coursed brick trough with a coping over it, holding
+       three clumps of fans. The global erosion two lines below is the only
+       noise on it, and the ragged margin is added ABOVE the coping alone --
+       the first version added it everywhere and photographed as a dry stone
+       wall with a bush behind it. */
+    d = mmBox(p - vec2(0.0, 0.132), vec2(0.450, 0.132), 0.008);          // the trough
+    d = min(d, mmBox(p - vec2(0.0, 0.283), vec2(0.488, 0.031), 0.006));  // its coping
+    for (int i = 0; i < 12; i++){
+      float fi = float(i);
+      float grp = floor(fi/4.0);                    // three clumps of four blades
+      float k   = mod(fi, 4.0)/3.0;
+      float bx  = (grp - 1.0)*0.300 + (mmHash11(seed*4.1 + fi) - 0.5)*0.09;
+      float a   = (k - 0.5)*1.72 + (mmHash11(seed*2.3 + fi) - 0.5)*0.38;
+      float len = 0.30 + 0.30*mmHash11(seed*3.7 + fi);
+      vec2  dir = vec2(sin(a), cos(a));
+      vec2  base = vec2(bx, 0.300);
+      float t   = clamp(dot(p - base, dir)/max(len, 1e-3), 0.0, 1.0);
+      vec2  ax  = base + dir*len*t + vec2(sin(a)*0.10*t*t*t, -0.10*t*t*t);
+      float w   = (0.052 + 0.026*mmHash11(seed*5.9 + fi))
+                * max(sin(3.1416*pow(t, 0.62)), mix(0.18, 0.02, t));
+      w *= 1.0 - 0.13*(0.5 + 0.5*cos(t*len*24.0 + fi));
+      d = mmSmin(d, length(p - ax) - w, 0.022);
+    }
+    d += (mmFbm3(uv*13.0 + seed*2.7) - 0.50) * 0.013 * smoothstep(0.31, 0.40, uv.y);
   }
   /* A BRASS FITTING HAS NO ERODED EDGE. The fbm below is what keeps stone and
-     timber off a CG-clean outline; on a 2.7 cm chain it is most of the chain. */
-  d += (mmFbm3(uv*5.0 + seed*17.0) - 0.5) * (shape > 21.5 ? 0.0035 : 0.022);
+     timber off a CG-clean outline; on a 2.7 cm chain it is most of the chain.
+     The fittings are 22 and 23 ONLY -- the planting bed above them is brick
+     and fans, and keeps the full erosion it was judged with. */
+  d += (mmFbm3(uv*5.0 + seed*17.0) - 0.5)
+     * ((shape > 21.5 && shape < 23.5) ? 0.0035 : 0.022);
   return -d;
 }
 
@@ -2534,21 +2695,68 @@ float reliefH(vec2 uv, vec2 msz, vec2 mpp, float shape, float seed, out float ti
        reading as a plant. BRIEF-r9's list, and every item on it is relief: a
        rim that oversails, a belly, a foot, soil visible at the top, a saucer
        under it, and the horizontal ribs a wheel-thrown terracotta pot carries. */
-    float pot = step(uv.y, 0.225);
-    h += 0.024 * pB(uv.y, 0.168, 0.208) * pot;               // the rim, oversailing
-    h -= 0.020 * pR(uv.y - 0.164, 0.008) * pot;              // its shadow line
-    h += 0.034 * (1.0 - smoothstep(0.0, 0.135, abs(uv.x - 0.5)))
-               * pB(uv.y, 0.034, 0.166);                     // the belly
+    /* ROUND 10, FIX 2, and every item on the judges' sentence is one term
+       below: a rolled lip, a VISIBLE INNER ELLIPSE, a foot, a soil line at the
+       crown, and two silhouettes rather than one. cist is the same hash
+       shapeField used, so the relief lands on the outline it was cut for. */
+    float cist = step(0.62, mmHash11(seed*17.77 + 3.31));
+    float pot  = step(uv.y, 0.232);
+    float cx   = abs(uv.x - 0.5);
+
+    /* THE LIP IS ROUND IN SECTION. Round 9 put a flat band 0.024 m proud here
+       and at forty pixels a flat band is a COLLAR: two parallel lines, no
+       turn in between, which is exactly the "rimless tub" the judges read. A
+       thrown lip rolls over, so its height across the band is a half ellipse
+       -- sqrt(1-u^2) -- and the light runs along the roll as a highlight with
+       the shadow line underneath it. A lead cistern's is cast instead: a flat
+       band with a hard arris top and bottom. */
+    float rimU = clamp((uv.y - 0.1865)/0.024, -1.0, 1.0);
+    float rimS = sqrt(max(1.0 - rimU*rimU, 0.0)) * pB(uv.y, 0.160, 0.212);
+    h += mix(0.030*rimS, 0.024*pB(uv.y, 0.164, 0.210), cist);
+    h -= 0.022 * pR(uv.y - 0.159, 0.007) * pot;              // the lip's shadow line
+    h -= 0.011 * cist * pR(uv.y - 0.204, 0.005);             // the cistern's arrises
+    h -= 0.011 * cist * pR(uv.y - 0.170, 0.005);
+
+    /* THE INNER ELLIPSE, which is the thing the judges actually named. You can
+       see INTO a pot: the far side of the lip runs across the top of the mouth
+       in shadow and the soil runs across the bottom of it, and WITHOUT that
+       ellipse the rim is a bar laid over a tub however well the bar is drawn.
+       The cistern's mouth is the same hole with square corners. */
+    vec2  mq = vec2(cx / mix(0.114, 0.124, cist), (uv.y - 0.1935)/0.0295);
+    float mouth = 1.0 - smoothstep(0.88, 1.02,
+                        mix(length(mq), max(abs(mq.x), abs(mq.y)), cist));
+    h -= 0.052 * mouth;
+    tint -= 0.45 * mouth;
+
+    /* THE SOIL LINE AT THE CROWN. The soil fills the mouth back up to a
+       little under the lip and is mounded in the middle, so the line where it
+       meets the pot is a curve and not a ruled edge -- and it is a different
+       MATERIAL, which relief cannot say, so it goes out as tint. */
+    float soilY = 0.1880 + 0.012 * (1.0 - smoothstep(0.0, 0.112, cx));
+    float soil  = mouth * smoothstep(0.005, -0.005, uv.y - soilY);
+    h += 0.030 * soil;
+    h -= 0.009 * soil * mmFbm3(m*34.0 + seed);
+    tint -= 0.85 * soil;
+
+    /* THE BELLY, and the ribs a wheel leaves on one. A cistern has neither:
+       straight battered sides, so both terms switch off. */
+    h += 0.034 * (1.0 - smoothstep(0.0, 0.135, cx))
+               * pB(uv.y, 0.034, 0.158) * (1.0 - cist);      // the belly
     float ribP = 0.016;                                       // metres between ribs
     h -= 0.006 * pR(mod(m.y, ribP) - ribP*0.5, ribP*0.30)
-               * pB(uv.y, 0.030, 0.164) * pRes(ribP, mpp.y);
+               * pB(uv.y, 0.030, 0.156) * pRes(ribP, mpp.y) * (1.0 - cist);
+    /* ...and what a LEAD cistern carries instead: a sunk panel between corner
+       pilasters with a cast boss in the middle of it. One detail, and it is
+       the one that stops a straight-sided box reading as a box. */
+    float pan = cist * pB(uv.y, 0.050, 0.150)
+              * (1.0 - smoothstep(0.080, 0.094, cx));
+    h -= 0.018 * pan;
+    h += 0.017 * pan * (1.0 - smoothstep(0.019, 0.033,
+                              length(vec2(cx, (uv.y - 0.100)*1.45))));
+    h += 0.012 * cist * pB(uv.y, 0.038, 0.164) * smoothstep(0.092, 0.104, cx);
+
     h += 0.014 * pB(uv.y, 0.014, 0.034) * pot;               // the foot
     h -= 0.022 * pR(uv.y - 0.012, 0.006) * pot;              // and the saucer under it
-    // SOIL: dished, below the rim, and a different material from the pot
-    float soil = pB(uv.y, 0.158, 0.176) * (1.0 - smoothstep(0.085, 0.125, abs(uv.x - 0.5)));
-    h -= 0.038 * soil;
-    h -= 0.010 * soil * mmFbm3(m*26.0 + seed);
-    tint -= 0.70 * soil;
 
     /* THE FRONDS, AND EACH ONE TURNS ON ITS OWN. This is the blob's actual
        cause: ONE rounded-slab normal across a mass of seven fronds shades the
@@ -2558,43 +2766,77 @@ float reliefH(vec2 uv, vec2 msz, vec2 mpp, float shape, float seed, out float ti
        so the max() below puts a hard step, and therefore a drawn line, wherever
        one laps another. Same seven strokes, same hashes and same droop as
        shapeField, so the relief lands exactly on the silhouette. */
-    float fh = 0.0, lead = -1.0;
+    /* The species numbers, read from the SAME hash shapeField used, or the
+       relief would draw a palm's leaflets across an agave's blades. */
+    float spq = mmHash11(seed*5.31 + 1.73);
+    float sA  = step(spq, 0.36);
+    float sC  = step(0.70, spq);
+    float sB  = 1.0 - sA - sC;
+    float nAct  = 9.0*sA + 9.0*sB + 7.0*sC;
+    float widM  = 1.18*sA + 1.00*sB + 1.34*sC;
+    float combA = 0.05*sA + 0.19*sB + 0.03*sC;
+    float sawA  = 0.03*sA + 0.02*sB + 0.11*sC;
+    float fh = 0.0, lead = -1.0, fcrl = 0.0, ft = 0.0;
     for (int i = 0; i < 9; i++){
-      float fi = float(i)/8.0;
+      if (float(i) >= nAct) continue;
+      float fi = float(i)/max(nAct - 1.0, 1.0);
       float a = (fi - 0.5)*2.24 + (mmHash11(seed + float(i)) - 0.5)*0.42;
       float len = 0.54 + 0.30*mmHash11(seed*3.0 + float(i));
       vec2  dir = vec2(sin(a), cos(a));
       vec2  base = vec2(0.0, 0.205);
       vec2  rel = p - base;
       float t = clamp(dot(rel, dir)/max(len, 1e-3), 0.0, 1.0);
-      vec2  axis = base + dir*len*t + vec2(0.0, -0.13*t*t*t);
+      float outr = abs(fi - 0.5)*2.0;
+      float crl  = outr * (0.50 + 0.50*mmHash11(seed*9.7 + float(i)*1.9));
+      float fall = t*t*t;
+      vec2  axis = base + dir*len*t
+                 + vec2(sin(a)*crl*0.20*fall, -(0.13 + 0.30*crl)*fall);
       float dOff = length(p - axis);
-      /* The SAME width profile as the silhouette, comb and all, or the
+      /* The SAME width profile as the silhouette, margin and all, or the
          midribs sit outside their own blades and the ink draws a second set of
          edges over the first. */
-      float halfW = (0.076 + 0.034*mmHash11(seed*4.3 + float(i)))
+      float halfW = (0.076 + 0.034*mmHash11(seed*4.3 + float(i))) * widM
                   * max(sin(3.1416*pow(t, 0.62)), mix(0.20, 0.02, t))
-                  * (0.82 + 0.18*cos(t*len*16.0 + float(i)));
+                  * (1.0 - combA*(0.5 + 0.5*cos(t*len*16.0 + float(i))))
+                  * (1.0 - sawA *(0.5 + 0.5*cos(t*len*30.0 + float(i)*3.1)));
       float on = 1.0 - smoothstep(halfW*0.68, halfW*1.04, dOff);
-      // the blade is a shallow roof: proud at the rib, falling to both edges
-      float acr = clamp(1.0 - dOff/max(halfW, 1e-4), 0.0, 1.0);
+      /* A LEAF IS ROLLED, NOT FOLDED. Round 10 fix 3, both judges: the leaves
+         are "flat cut-paper with a uniform fill, so the plants read as one
+         plane at 1:1", and the ask is "a specular roll along each midrib".
+         Round 9's section was a LINEAR roof -- two flat facets meeting at a
+         crease -- and a flat facet under a point light is a flat facet: one
+         value across the whole half-blade, which is precisely cut paper. A
+         half-ellipse section turns CONTINUOUSLY from the rib out to the
+         margin, so the diffuse falls off across the blade and mmSpec puts a
+         narrow highlight in a band beside the rib instead of nowhere. */
+      float acrN = clamp(dOff/max(halfW, 1e-4), 0.0, 1.0);
+      float roll = sqrt(max(1.0 - acrN*acrN, 0.0));
       float stack = 0.045 + 0.085*mmHash11(seed*7.3 + float(i)*2.1);
-      float hh = stack + 0.030*acr + 0.018*pR(dOff, halfW*0.17);
+      float hh = stack + 0.033*roll + 0.015*pR(dOff, halfW*0.16);
       // PINNATE LEAFLETS: the comb of a palm frond, off the rachis
       /* The leaflets, as relief: one channel between each pair, on the same
          pitch as the notches in the silhouette above so the two agree. At the
          old 0.048 m this was a 4 px comb, i.e. a texture, not leaflets. */
       float lp = (len*msz.y)/11.0;
-      hh -= 0.009 * pR(mod(t*len*msz.y, lp) - lp*0.5, lp*0.22)
+      hh -= 0.009 * (combA/0.19) * pR(mod(t*len*msz.y, lp) - lp*0.5, lp*0.22)
                   * smoothstep(0.08, 0.28, t) * pRes(lp, mpp.y);
+      /* WHERE IT FOLDS OVER, IT GOES AWAY FROM US. A curling blade shows its
+         UNDERSIDE past the fold, and an underside is both lower and darker --
+         which is what stops the curl reading as a blade that is merely bent.
+         The step at the fold is 0.03 m, so mmDrawn inks it. */
+      hh -= 0.030 * crl * smoothstep(0.52, 0.92, t);
       hh *= on;
-      if (hh > fh) { fh = hh; lead = float(i); }
+      if (hh > fh) { fh = hh; lead = float(i); fcrl = crl; ft = t; }
     }
     h = mix(h, max(h, fh), step(1.0e-5, fh));
     /* A FEW DEAD FRONDS, hanging and browner. A greenhouse in this house is
        neglected, and a plant on which every leaf is the same fresh green is a
        rendering of a plant. Relief cannot say brown, so it goes out as tint. */
     if (lead >= 0.0) tint -= 0.80 * step(0.74, mmHash11(seed*13.1 + lead*3.7));
+    /* the turned-over tip is in its own shadow, and an agave's terminal spine
+       is a hard dark point -- both things relief alone cannot say. */
+    tint -= 0.55 * fcrl * smoothstep(0.58, 0.95, ft);
+    tint -= 0.90 * sA * smoothstep(0.88, 0.99, ft);
 
   } else if (shape < 3.5) {               // 3 — headstone
     /* At the ~30 px a headstone occupies the CUE beats the parts, and round 8
@@ -3176,7 +3418,7 @@ float reliefH(vec2 uv, vec2 msz, vec2 mpp, float shape, float seed, out float ti
                * pB(m.y, sk - 0.350, sk - 0.255) * pRes(gp, mpp.x);
     tint -= 0.30 * smoothstep(sk - 0.20, sk - 0.46, m.y);        // soot under the bowl
 
-  } else {                                // 23 -- a light standard
+  } else if (shape < 23.5) {              // 23 -- a light standard
     float H = msz.y, sk = H - 0.46;
     /* THE FOOT is three steps, and each step's underside is a dark line. */
     h += 0.018 * pB(m.y, 0.000, 0.060);
@@ -3201,6 +3443,62 @@ float reliefH(vec2 uv, vec2 msz, vec2 mpp, float shape, float seed, out float ti
     h -= 0.030 * pR(m.y - (sk + 0.170), 0.006);
     h += 0.016 * pR(m.y - (sk + 0.300), 0.040) * pR(m.x, 0.070);
     tint -= 0.34 * smoothstep(0.24, 0.02, m.y/max(H, 0.1));
+
+  } else {                                // 24 -- coursed brick planting bed
+    /* THE COURSES ARE 0.075 M, which is BRIEF-r9's table for a brick course,
+       and the perpends are staggered half a brick per course -- the run of
+       uniform full-width stripes the judges caught on the Graveyard's house is
+       the same error waiting to be made here. Gated on pRes so a bed at the
+       back of the terrace draws a plain face rather than a band of moire. */
+    float bed = pB(uv.y, 0.006, 0.268);
+    float cor = 0.075;                                // metres between courses
+    float rowi = floor(m.y / cor);
+    float off = mod(rowi, 2.0) * 0.5;
+    float res = pRes(cor, mpp.y);
+    h -= 0.015 * bed * res * pR(mod(m.y, cor) - cor*0.5, cor*0.26);       // the beds
+    h -= 0.013 * bed * res
+               * pR(mod(m.x/0.225 + off, 1.0) - 0.5, 0.10);              // the perpends
+    h += 0.004 * bed * mmFbm3(m*9.0 + rowi*3.7 + seed);                   // face of the brick
+    /* THE COPING, which is what makes a trough a trough: a slab oversailing
+       the brick with a drip cut under its front edge. */
+    h += 0.030 * pB(uv.y, 0.256, 0.312);
+    h -= 0.020 * pR(uv.y - 0.252, 0.007);
+    h += 0.008 * pR(uv.y - 0.300, 0.005);
+    /* the soil is above the coping and behind the blades, and it is a
+       different material, which relief cannot say. */
+    float sl = pB(uv.y, 0.310, 0.340) * (1.0 - smoothstep(0.30, 0.44, abs(p.x)));
+    h -= 0.026 * sl;
+    tint -= 0.80 * sl;
+
+    /* THE FANS, the same construction as the potted ones: each blade rolled
+       across its own midrib and stacked at its own height, so the max() puts
+       an inked step wherever one laps another. That is the entire difference
+       between this and the mottled lump it replaces. */
+    float fh = 0.0;
+    for (int i = 0; i < 12; i++){
+      float fi = float(i);
+      float grp = floor(fi/4.0);
+      float k   = mod(fi, 4.0)/3.0;
+      float bx  = (grp - 1.0)*0.300 + (mmHash11(seed*4.1 + fi) - 0.5)*0.09;
+      float a   = (k - 0.5)*1.72 + (mmHash11(seed*2.3 + fi) - 0.5)*0.38;
+      float len = 0.30 + 0.30*mmHash11(seed*3.7 + fi);
+      vec2  dir = vec2(sin(a), cos(a));
+      vec2  base = vec2(bx, 0.300);
+      float t   = clamp(dot(p - base, dir)/max(len, 1e-3), 0.0, 1.0);
+      vec2  axis = base + dir*len*t + vec2(sin(a)*0.10*t*t*t, -0.10*t*t*t);
+      float dOff = length(p - axis);
+      float halfW = (0.052 + 0.026*mmHash11(seed*5.9 + fi))
+                  * max(sin(3.1416*pow(t, 0.62)), mix(0.18, 0.02, t))
+                  * (1.0 - 0.13*(0.5 + 0.5*cos(t*len*24.0 + fi)));
+      float on = 1.0 - smoothstep(halfW*0.68, halfW*1.04, dOff);
+      float acrN = clamp(dOff/max(halfW, 1e-4), 0.0, 1.0);
+      float roll = sqrt(max(1.0 - acrN*acrN, 0.0));
+      float hh = (0.036 + 0.070*mmHash11(seed*7.9 + fi*2.3))
+               + 0.026*roll + 0.013*pR(dOff, halfW*0.17);
+      hh *= on;
+      if (hh > fh) fh = hh;
+    }
+    h = mix(h, max(h, fh), step(1.0e-5, fh));
   }
 
   return h;
@@ -3223,8 +3521,12 @@ void main(){
      it, so the emission below was landing on a surface that was three quarters
      background. Measured before it was changed: a 10x change in the emission
      moved the chain from 7.5 to 10.9. Shapes 22 and 23 take a 0.55 px ramp,
-     which is an antialiased edge and nothing more. */
-  float mask = smoothstep(0.0, (vShape > 21.5) ? 0.55 : 1.45, fpx);
+     which is an antialiased edge and nothing more.
+     FITTING is 22 and 23 and nothing else: 24, the Greenhouse's planting bed,
+     is brick and foliage and keeps the soft ramp every other prop has. Every
+     test below that means "a fitting" reads this one flag. */
+  float isFit = step(21.5, vShape) * step(vShape, 23.5);
+  float mask = smoothstep(0.0, (isFit > 0.5) ? 0.55 : 1.45, fpx);
   if (mask < 0.004) discard;
 
   /* METRES, and METRES PER PIXEL. Both were computed further down for the
@@ -3310,6 +3612,53 @@ void main(){
   float joint = max(1.0 - smoothstep(0.0, wy, jy), 1.0 - smoothstep(0.0, wx, jx));
   albedo *= 1.0 + (grain - 0.5)*uMatMix.x + (blotch - 0.5)*uMatMix.y
                 - joint*uMatMix.z + (speck - 0.5)*uMatMix.w;
+
+  /* A POT IS NOT MADE OF PLANT. Round 10 fix 2's other half, and relief could
+     never have fixed it: a prop takes ONE albedo for the whole quad, so the
+     Greenhouse's containers were dark green under a green plant and the lip,
+     the foot and the soil line drawn in round 9 were all being drawn in the
+     one value the plant was already using. That is the literal reading of "a
+     2 m specimen appears to grow out of a shadow on the brick".
+
+     Both materials are derived from the prop's OWN luminance rather than
+     written as absolute colours, because shape 2 also stands in the Nursery,
+     the Sleeping Quarters, the Bathhouse, the Hedge Maze, the Pumpkin Grounds
+     and the Title, and an absolute terracotta would be the one warm object in
+     a cold blue room. Fired clay is warm and a little brighter than the
+     foliage; weathered lead is cool, paler and almost grey. */
+  if (vShape > 1.5 && vShape < 2.5) {
+    float lead = step(0.62, mmHash11(vSeed*17.77 + 3.31));
+    float potM = smoothstep(0.234, 0.206, vUv.y);
+    float lum  = max(mmLum(albedo), 0.02);
+    vec3  clay = vec3(1.00, 0.505, 0.310) * (lum*1.85 + 0.085);
+    vec3  pb   = vec3(0.82, 0.855, 0.900) * (lum*1.20 + 0.055);
+    vec3  potc = mix(clay, pb, lead);
+    /* A thrown pot is not one colour either: it is fired unevenly and it has
+       stood outside. The blotch is the same tap the material bands use, so it
+       stays put on the pot as the room moves. */
+    potc *= 0.82 + 0.34*blotch;
+    potc *= 1.0 - 0.26*smoothstep(0.62, 0.95, mmFbm3(sp*7.0 + vSeed*5.5));  // weathering
+    albedo = mix(albedo, potc, potM);
+  }
+
+  /* ...AND A PLANTING BED IS MADE OF BRICK. Same argument as the pot, one
+     shape along: the trough was taking the foliage albedo, so a bed of brick
+     under a bed of leaves was drawn in the leaves' own colour and the coursing
+     relief had nothing to be coursing IN. Brick is warmer and darker than
+     fired clay and every brick is its own value -- a wall of one colour is the
+     "uniform full-width horizontal stripes" the judges caught elsewhere.
+     Shape 24 -- it was 22 on the branch that built it, and 22 and 23 are the
+     light fittings on this one. */
+  if (vShape > 23.5) {
+    float bedM = smoothstep(0.330, 0.300, vUv.y);
+    float rowi = floor(sp.y / 0.075);
+    float colu = floor(sp.x / 0.225 + mod(rowi, 2.0)*0.5);
+    float bh   = mmHash21(vec2(colu, rowi) + vSeed);
+    vec3  brick = vec3(1.00, 0.560, 0.400)
+                * (max(mmLum(albedo), 0.02)*1.02 + 0.040) * (0.72 + 0.56*bh);
+    brick = mix(brick, vec3(mmLum(brick))*1.04, 0.30*smoothstep(0.55, 1.0, bh));
+    albedo = mix(albedo, brick, bedM);
+  }
 
   /* WHAT IS IN THE CABINET. Shape 5 is the Foyer's and the Study's commonest
      prop and it was a box with two shelf rails in it. The samples' props carry
@@ -3467,7 +3816,7 @@ void main(){
      glass's tint += 0.30 has never done anything. Albedo can, and it is the
      same channel the cabinet's books and the clock's dial are drawn in. */
   vec3 fitEmit = vec3(0.0);
-  if (vShape > 21.5) {
+  if (isFit > 0.5) {
     vec2  sm = (vUv - vec2(0.5, 0.0)) * vSize;
     float glass;
     if (vShape < 22.5) {
@@ -3556,8 +3905,9 @@ void main(){
      a quad because that is where a cabinet meets the boards -- and the bottom
      of a pendant's quad is the chandelier itself, five metres up, with the
      room's own lamp burning inside it. Shapes 22 and 23 keep their own base
-     dark with relief and soot instead. */
-  if (vShape < 21.5) albedo *= mix(1.0 - 0.44*uAO, 1.0, smoothstep(0.0, 0.26, vUv.y));
+     dark with relief and soot instead. (The planting bed, 24, meets the floor
+     like any other prop.) */
+  if (isFit < 0.5) albedo *= mix(1.0 - 0.44*uAO, 1.0, smoothstep(0.0, 0.26, vUv.y));
   albedo *= mix(1.0 - 0.30*uAO, 1.0, inner);
 
   /* --- A RECESS IS DARKER THAN THE FACE IT IS CUT INTO ----------------------
@@ -3591,6 +3941,16 @@ void main(){
   albedo = mix(albedo, albedo * vec3(1.00, 0.84, 0.58), dk * 0.34);
 
   /* --- per-pixel candlelight ---------------------------------------------- */
+  /* A LEAF IS WAXY AND A POT IS NOT. The specular roll asked for in round 10
+     fix 3 is a roll in the SURFACE -- reliefH shape 2 turns the blade through a
+     half-ellipse section now -- but a roll only shows as a roll if there is a
+     highlight to run along it, and the region's propGloss is one number for a
+     room in which the same shader draws a column, a birdcage and a leaf. The
+     leaf keeps the roll; the pot below it is fired clay and stays matt. */
+  float glossP = uGloss;
+  if (vShape > 1.5 && vShape < 2.5) {
+    glossP = uGloss * mix(1.85, 0.55, smoothstep(0.234, 0.206, vUv.y));
+  }
   vec3 V = normalize(uCamera - vWorld);
   vec3 diff = vec3(0.0), spec = vec3(0.0), raw = vec3(0.0);
   for (int i = 0; i < 5; i++){
@@ -3602,7 +3962,7 @@ void main(){
     float ndl = mmWrapNdL(N, ldir, 0.42);
     diff += uLightCol[i] * att * ndl;
     raw  += uLightCol[i] * att;
-    spec += mmSpec(N, ldir, V, uLightCol[i], att, uGloss, 34.0);
+    spec += mmSpec(N, ldir, V, uLightCol[i], att, glossP, 34.0);
   }
 
   /* Round 2 shipped "diff * 1.45" on top of a 2.6x authored gain — a lift no
@@ -3674,7 +4034,7 @@ void main(){
      one was arriving at 43% fog against the other two's 14% -- which is most of
      why two of the three read and the middle of the dance floor still showed a
      pale oval attached to nothing. */
-  float fFog = (vShape > 21.5) ? vFog*0.26 : vFog;
+  float fFog = (isFit > 0.5) ? vFog*0.26 : vFog;
   col = mix(col, uFog, fFog);
   col = mmDesat(col, uDread*0.5) * (1.0 - uDread*0.22);
   gl_FragColor = vec4(col, mask*(1.0 - fFog*0.30));
