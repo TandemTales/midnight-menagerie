@@ -260,6 +260,16 @@ async def main(a):
 
         # back to the blueprint: the way-in arrow has to survive the rebuild,
         # which is where dropping the sentinel from `pathIds` would show.
+        #
+        # ...but only once the room's entrance has FINISHED. scenes.go drops a
+        # call made while it is busy (README, "traps"), and entering a room
+        # loads its enemies' animation atlases, which can outlast the fixed
+        # 2.2 s above: the map was asked for, the request was dropped, and this
+        # gate timed out on `.map-screen.is-drawn` (green in round 9's battery,
+        # red at 37de94d and after; still busy at this line when measured).
+        was_busy = await page.evaluate("() => !!window.MM.ctx.scenes.busy")
+        await page.wait_for_function("() => !window.MM.ctx.scenes.busy", timeout=30000)
+        print(f"  (scene manager busy after the room click: {was_busy})")
         await page.evaluate("""async () => {
           const r = window.MM.ctx.run;
           await r._goto('map', { region: r.region, seed: r.seed });
