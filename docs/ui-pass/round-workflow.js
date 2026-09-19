@@ -83,6 +83,10 @@ const JUDGE = {
 }
 
 const judgingOf = T => `${A.uiloop}/judging/${A.round}/${T.key}`
+// The screens that ALSO have a 1280x800 capture. Every screen did until round
+// 11, whose contact sheets exist at one size only; a track lists the rest in
+// `smallScreens`, and without it every screen has both.
+const smallOf = T => T.smallScreens || T.screens
 
 // Round 5's DIALOGS and KIDS' PLACES builders hit the weekly usage limit an hour
 // in, with their work half made in their worktrees. Set `resume` on each
@@ -128,7 +132,7 @@ function builderPrompt(T, b) {
     ...(b.resume ? [resumeNote(b, wt, branch), ``] : []),
     `Work in cycles: change, photograph with tools/shot.py on your own port, Read the PNG beside the samples, change again. Judge yourself as harshly as ${RUBRICS.join(', ')} will. Stop when you honestly believe a judge would score every one of your screens at 9, or when further changes stop improving them.`,
     ``,
-    `Finish with: endings guard printing ENDINGS OK, everything committed on ${branch} inside ${wt}, the ${T.screens.length * 2} canonical screenshots (each of ${T.screens.join(', ')} at the default size and at 1280x800, named as the brief's Deliverables say) copied into ${J}/${b.code}/, at least two screens outside your track photographed on your port and looked at, your dev server stopped. Never touch the main repository. Return the structured result.`,
+    `Finish with: endings guard printing ENDINGS OK, everything committed on ${branch} inside ${wt}, the ${T.screens.length + smallOf(T).length} canonical screenshots (each of ${T.screens.join(', ')} at the default size, and ${smallOf(T).join(', ')} also at 1280x800, named as the brief's Deliverables say) copied into ${J}/${b.code}/, at least two screens outside your track photographed on your port and looked at, your dev server stopped. Never touch the main repository. Return the structured result.`,
   ].join('\n')
 }
 
@@ -142,7 +146,7 @@ function judgePrompt(T, order, n) {
     `Candidates are named ${order.join(', ')}. View them in exactly that order on every screen:`,
   ]
   for (const s of T.screens) lines.push(`- ${s}: ` + order.map(c => `${J}/${c}/${s}.png`).join(' , '))
-  lines.push(``, `For the readability score only, also open each candidate's 1280x800 capture of the same screen (same folder, ${T.screens.map(s => s + '-1280.png').join(', ')}).`)
+  lines.push(``, `For the readability score only, also open each candidate's 1280x800 capture of ${smallOf(T).length === T.screens.length ? 'the same screen' : 'the screens that have one'} (same folder, ${smallOf(T).map(s => s + '-1280.png').join(', ')}).`)
   lines.push(``, `Score every candidate on every screen, 0-10. Use the candidate codes exactly as written. screen_winners must name exactly one candidate for each of: ${T.screens.join(', ')}. Return the structured verdict.`)
   return lines.join('\n')
 }

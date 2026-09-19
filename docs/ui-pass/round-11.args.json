@@ -32,6 +32,10 @@
         "combat",
         "rest"
       ],
+      "smallScreens": [
+        "combat",
+        "rest"
+      ],
       "baseline": "QUILL",
       "builders": [
         {
