@@ -1,0 +1,55 @@
+{
+  "round": "r13",
+  "maxBuilders": 3,
+  "briefs": [
+    "docs/ui-pass/BRIEF-r0.md",
+    "docs/ui-pass/BRIEF-r1.md",
+    "docs/ui-pass/BRIEF-r12.md",
+    "docs/ui-pass/BRIEF-r13.md"
+  ],
+  "rubrics": [
+    "docs/ui-pass/RUBRIC.md",
+    "docs/ui-pass/RUBRIC-r1.md",
+    "docs/ui-pass/RUBRIC-r12.md",
+    "docs/ui-pass/RUBRIC-r13.md"
+  ],
+  "samples": [
+    "UI/title.png",
+    "UI/mainMenu.png",
+    "UI/selectCompanion.png",
+    "UI/selectKid.png"
+  ],
+  "tracks": [
+    {
+      "key": "chrome",
+      "name": "CHROME",
+      "rule": "expand",
+      "screens": [
+        "coach",
+        "handoff",
+        "toast"
+      ],
+      "baseline": "BUCKRAM",
+      "builders": [
+        {
+          "slot": "a",
+          "code": "NACRE",
+          "port": 8921,
+          "angle": "LITERAL. Work BRIEF-r13's three fix lists in order and exactly as written -- every item in them was named by two or three judges, and a candidate that simply clears all of them should win. Take the grafts the fix lists name, and nothing the fix lists do not ask for. The contracts in BRIEF-r12 bind every change: re-photograph the coach at three steps, not one, so the new pointer and spotlight are proven against more than one target."
+        },
+        {
+          "slot": "b",
+          "code": "SMALT",
+          "port": 8922,
+          "angle": "ONE SYSTEM OUT OF THREE CANDIDATES. Round 12's judges named grafts from all three builders -- ORMOLU's Marmalade cameo and fleur-de-lis finial for the coach, ORMOLU's ribbon for the toast, GESSO's medal on a silk ribbon and its theatre valance, VELLUM's shelf of skull, books and candle and its moon and paw medallions for the veil. Read those branches (git show ui/r12-chrome-{a,b,c}:<path>) and bring the named ideas into the merged pieces so the three read as ONE family of objects -- the same cartouche, the same rule, the same metal -- rather than three builders' vocabularies side by side. Port any asset you need into tools/prep_chrome.py; do not add a second script."
+        },
+        {
+          "slot": "c",
+          "code": "GAMBOGE",
+          "port": 8923,
+          "angle": "LIGHT AND OBJECT. The judges' deepest complaint about all three pieces is that they are drawn, not lit: a spotlight that is a rectangle, a veil whose moonlit house has no candle to answer it, a medal that is a flat vector star. Lead with light and with the physical object: the coach's target stands in a pool of candlelight that falls off into the room, with filigree at its corners only; the veil gets real candlelight -- a lantern beside the portraits, candles in the lower corners -- and heavy framed portraits on a backing plate; the toast's medal is an engraved, lit object hung on a ribbon, its metal the tier. Every light must be a candle or the moon, never a CSS glow; judges have marked box-shadow glows down in every round."
+        }
+      ]
+    }
+  ]
+}
