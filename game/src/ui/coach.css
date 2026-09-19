@@ -25,6 +25,10 @@
   opacity: 1;
   transition: opacity var(--t-base) var(--ease-out);
 }
+/* and wherever it is mounted: base.css hands every direct child of #dom-layer
+   pointer events back (an id outranks this sheet's classes), and a coach
+   mounted there would take the whole fight's clicks */
+#dom-layer .coach, #dom-layer > .coach { pointer-events: none; }
 .coach.is-out { opacity: 0; }
 .mm-reduce-motion .coach { transition: none; }
 
