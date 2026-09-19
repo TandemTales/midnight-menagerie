@@ -28,18 +28,22 @@ runs out of the perf budget.
    BISTRE2's Foyer, the planting bed renumbered 22 -> 24, one fitting per
    light, and a ceiling regression SORREL2 carried fixed. Verified by eye
    against the judged captures; captures in `C:/UILOOP/r11/judging/graft/`.
-2. **RUNNING: a look-neutral performance pass** on `ui/r11-perf` (worktree
-   `C:/UILOOP/r11/wt/r11-perf`, port 8905, cut at `1045f52`). The grafts left
-   the default combat frame at 15.48 ms (+0.54 over the commit before, the
-   Foyer's near furniture) and the Greenhouse fight at 17.2 ms (16.1 before,
-   so already over). Targets: -1.0 ms default, -1.5 ms Greenhouse, with 17
-   regions proven pixel-identical at tier high AND medium. Evidence goes to
-   `C:/UILOOP/r11/judging/perf/`. Verify its claims before merging.
-3. **Then:** merge it, run the battery (`python tools/gates.py`, ~30 min,
-   nothing else on the GPU), fast-forward `ui/r11-vary-{a,b,c}` to the merge,
-   put the measured perf numbers in `BRIEF-r11.md`'s budget section, retake
+2. **DONE: a look-neutral performance pass** (`91af9f3`): the ceiling draws
+   before the walls (early-Z discards the wall behind it) and the lens dirt
+   runs only where there is a halo. Default combat 15.52 -> **12.38 ms**, the
+   Greenhouse fight 17.32 -> **14.80 ms**; all seventeen rooms byte-identical
+   at high and medium; checked independently before merging (two rooms, fresh
+   pages, 0 pixels; two gpuprof runs each). Evidence:
+   `C:/UILOOP/r11/judging/perf/`. One non-neutral option was proposed and NOT
+   applied (prop quads shrunk to their shape's reach, -0.23/-0.39 ms, up to 30
+   px a room by >8 levels): `option-prop-boxes/` there.
+3. **DONE: batch captures are byte-exact** (`4bed128`): candle flames were
+   seeded by a page-wide light counter; now by their place in the room's rig.
+   And a batch page stops at its first failed room.
+4. **Then:** the battery on the merged tree (`python tools/gates.py`, ~30 min,
+   nothing else on the GPU), fast-forward `ui/r11-vary-{a,b,c}` to dev, retake
    the baselines (`bash docs/ui-pass/baseline-r11.sh`), **check `band` on
-   combat and rest**, and launch round 11 with that merge as `base`.
+   combat and rest**, and launch round 11 with dev's head as `base`.
 
 **Four harness fixes landed today, and they change how a round runs:**
 - `fc881cf` — **the fifth way a capture lies**: a board with NO ROOM behind it

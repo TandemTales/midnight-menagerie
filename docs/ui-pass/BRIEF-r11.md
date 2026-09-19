@@ -44,10 +44,15 @@ it exists to fill. And where `_vary()` puts the warm lamp at centre (`gallery`,
 and combat's own `foyer` room) its lantern now stands ON the runner at the
 foot of the stair; decide whether that is where a hall's lamp would stand.
 
-**The performance pass (`ui/r11-perf`)** is being merged before you start,
-because the grafts left the default combat frame at the 15.5 ms line (15.48 ms
-mean, +0.54 on the commit before) and the Greenhouse fight over it (17.2 ms).
-The numbers you start from are in "THE PERFORMANCE BUDGET" below.
+**A performance pass is in (`91af9f3`)**, because the grafts left the default
+combat frame at the 15.5 ms line (15.48 ms mean) and the Greenhouse fight over
+it (17.3 ms). It changed no pixel of any room. The numbers you start from are
+in "THE PERFORMANCE BUDGET" below — the Foyer has headroom now; the Greenhouse
+has very little.
+
+**And candle flames are seeded by their place in the room's rig** (`4bed128`),
+not by a page-wide counter, so a room is byte-identical whatever the page
+showed before it — which is what makes `room_batch.py` sheets exact.
 
 ## THE MACHINERY ALREADY EXISTS. DO NOT REBUILD IT.
 
@@ -221,16 +226,27 @@ All of `BRIEF-r10.md`'s section applies. The two that matter most here:
 
 ```
 python tools/on_port.py PORT tools/gpuprof.py --scene combat --w 1600 --h 900
+python tools/on_port.py PORT tools/gpuprof.py --scene combat --w 1600 --h 900 --hash "encounter=gh-14&region=greenhouse"
 ```
 
-Through `on_port.py` always, in a quiet window, three runs. **15.5 ms is hard.**
+Through `on_port.py` always, three runs of EACH frame. Every gpuprof run holds
+the machine-wide GPU slot, so it is quiet by construction — but single runs
+still move ±0.4 ms, so compare means. **15.5 ms is hard, on both frames.**
 
-**READ THIS BEFORE YOU ADD ANYTHING.** The build you start from measures
-**14.4–14.8 ms**, backdrop 9.26–9.33, props 1.35–1.41 — four runs with nothing
-else on the GPU. That is **under a millisecond of headroom**, where round 10
-started with 1.3 ms. Round 10 spent about +0.9 ms (props +0.3, backdrop +0.2,
-the rest elsewhere) on chandeliers, sconces, lanterns and a carved statue, and
-it was worth it — but it means this round cannot spend the same way.
+**WHERE YOU START.** A look-neutral performance pass landed before this round
+(`91af9f3`: the ceiling now draws before the walls so early-Z discards the wall
+behind it, and the lens dirt is only evaluated where there is a halo — all
+seventeen rooms byte-identical). Your BASE measures:
+
+| frame | before the pass | BASE | headroom to 15.5 |
+|---|---|---|---|
+| default combat (the Foyer) | 15.52 ms | **~12.4 ms** | ~3.1 ms |
+| the Greenhouse fight (`--hash` above) | 17.32 ms | **~14.8 ms** | **~0.7 ms** |
+
+So the Foyer has room and **the Greenhouse does not**: its props alone cost
+~4.4 ms, and filling its empty rooms (see the top of this brief) puts more
+prop pixels on screen. Measure the Greenhouse frame whenever you touch that
+wing, and report both frames' deltas against BASE.
 
 Two consequences, and they shape the round:
 
@@ -239,7 +255,7 @@ Two consequences, and they shape the round:
   exactly what the thing it replaced cost. Fixes 1, 2 and most of 4 are free,
   which is another reason they come first.
 - **A SUBJECT POOL IS NOT FREE.** Every new subject is another branch in
-  `subjectH`, and `shapeField` already carries 22. Round 8 lost a whole pass to
+  `subjectH`, and `shapeField` already carries 25 shapes. Round 8 lost a whole pass to
   program size and round 9 measured shot-to-shot going 28 s → 37 s on link time
   alone. If you add branches, **find the cost first**: a pool selected by a
   uniform costs one branch taken per pixel, not N. Report the delta against
@@ -272,7 +288,9 @@ the dialog controls, gameplay, and the region palettes.
 ## DELIVERABLES
 
 - the endings guard printing `ENDINGS OK`; commits on your branch;
-- `tools/gpuprof.py` three times via `on_port.py`, quiet window;
+- `tools/gpuprof.py` via `on_port.py`, three runs of the default frame AND
+  three of the Greenhouse fight (both commands above), with BASE's in the same
+  session, reported as deltas;
 - `tests/shader-literals/check.py` green;
 - **`glStd` for every panel** in `notes_for_merger`;
 - **a sheet for all seventeen regions**, not just the four judged, with a
