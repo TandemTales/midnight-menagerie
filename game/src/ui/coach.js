@@ -36,6 +36,54 @@ import { el } from './portrait.js';
 
 const CSS = new URL('./coach.css', import.meta.url).href;
 
+/* The spotlight is the Kid board's portrait frame (frame.webp, 9-sliced by
+   `.kit-railframe--ornate`) drawn at SPOT_FK of its size: its gilt rail starts
+   ON the box's edge and runs 7px of the painting inward, and the painting
+   stands FRAME_OUT outside the box. So the box is SPOT_M clear of the target
+   on every side, and the rail never crosses what it frames. coach.css sets
+   the same --fk. */
+const SPOT_FK = 0.66;
+const SPOT_M = Math.round(8 * SPOT_FK + 4);
+const FRAME_OUT = 12 * SPOT_FK;
+/* the note's painted rail (and the paw on it) stand outside its box by this
+   much, and it keeps this much air between itself and the frame */
+const NOTE_HALO = 12;
+const NOTE_GAP = 10;
+
+/* What the note must never lie over, and how much each matters. Everything
+   weighing HARD or more it may not cover at all: the hand and End Turn, the
+   HUD's rail, the Nerve and the piles, the Companion's portrait. The rest a
+   player reads mid-turn: a note will cover a creature's toe before it covers
+   a card, but it would rather cover neither. Document-wide on purpose: the
+   HUD is not in the scene root. */
+const HARD = 40;
+const KEEP_CLEAR = [
+  /* the fan as it lies: a card the player is carrying, aiming or throwing
+     is in their hand, not in the fan, and the note does not dodge it */
+  ['.mm-hand__cards .mm-card:not(.is-dragging):not(.is-aiming):not(.is-flying)', 60],
+  ['#end-turn', 60],
+  ['.mm-hud', 60],
+  ['.cb-bl', 40],
+  ['.cb-br', 40],
+  ['.cb-player', 40],
+  ['.cb-mates > .cb-mate:not([hidden])', 30],
+  ['.cb-rules:not([hidden]) > *', 30],
+  ['.cb-enemy', 8],
+  ['.cb-enemy__intent', 12],
+  /* the Kid's rig draws her bottom-centre in a box far wider than she is
+     (xMidYMax meet): only the middle of it is her */
+  ['.cb-hero', 1, { x: .24, top: .06 }],
+];
+/* the parts of a target that stand outside its box but are part of it */
+const FRAME_WITH = '.cb-enemy__intent';
+
+/** Area two boxes share. */
+function overlap(a, b) {
+  const w = Math.min(a.r, b.r) - Math.max(a.l, b.l);
+  const h = Math.min(a.b, b.b) - Math.max(a.t, b.t);
+  return w > 0 && h > 0 ? w * h : 0;
+}
+
 export class Coach {
   /**
    * @param {object} ctx        the scene context (audio, clock)
@@ -63,29 +111,46 @@ export class Coach {
       await new Promise((r) => { link.onload = r; link.onerror = r; setTimeout(r, 600); });
     }
 
+    /* THE NOTE IS CUT FROM THE BOARDS' OWN PIECES (ui/kit.css), the way the
+       story's pages in scenes/tutorial.js are: a `.kit-panel` (the Kid board's
+       painted gold rail round dark damask, its inner double rule and brass
+       fleurons) with the Kid board's paw medallion seated on its top rail, a
+       `.kit-heading` in spaced gold small caps, the pages as the wordmark's
+       gold stars on a gilt thread (`.kit-stars`), and the two ways on as the
+       boards' nameplates (`.kit-btn`, `.kit-btn--quiet`). The spotlight is the
+       Kid board's portrait frame (`.kit-railframe--ornate`) hung round the
+       thing being taught, and the light on it is a candle's (`.kit-light`),
+       never a box-shadow. */
     const root = this.root = el('div', 'coach');
+    const stars = this.steps.map(() => '<i class="kit-stars__star coach__star"></i>').join('');
     root.innerHTML = `
-      <div class="coach__spot" aria-hidden="true"></div>
-      <div class="coach__card" role="status" aria-live="polite">
+      <i class="coach__glow kit-light kit-light--candle" aria-hidden="true"></i>
+      <div class="coach__spot kit-railframe kit-railframe--ornate" aria-hidden="true"></div>
+      <div class="coach__card kit-panel kit-panel--damask" data-medal="paw" role="status" aria-live="polite">
+        <i class="coach__fit" aria-hidden="true"><i class="kit-bracket kit-bracket--tl coach__guard"></i><i class="kit-bracket kit-bracket--tr coach__guard"></i><i class="kit-bracket kit-bracket--bl coach__guard"></i><i class="kit-bracket kit-bracket--br coach__guard"></i></i>
+        <p class="coach__head kit-heading" aria-hidden="true">The First Scuffle</p>
         <p class="coach__text"></p>
         <!-- The way out lives IN the card, in its row. Parked at the bottom of
              the screen it sat on the lowest 28px of the middle card in the fan
              and ate that click, which is the one thing this overlay promises
-             not to do; hung under the card it lands in the same place, because
-             every step puts the card just above the hand. -->
+             not to do; in the card it goes wherever the card goes, and the
+             card is never placed over the hand. -->
         <div class="coach__row">
+          <span class="coach__steps kit-stars" aria-hidden="true">${stars}</span>
           <span class="coach__hint"></span>
-          <button class="coach__skip" type="button">Skip</button>
-          <button class="coach__next" type="button">Got it</button>
+          <button class="coach__skip kit-btn kit-btn--quiet" type="button">Skip</button>
+          <button class="coach__next kit-btn" type="button">Got it<kbd class="coach__key" aria-hidden="true">Enter</kbd></button>
         </div>
       </div>`;
     this.host.appendChild(root);
 
     this.$spot = root.querySelector('.coach__spot');
+    this.$glow = root.querySelector('.coach__glow');
     this.$card = root.querySelector('.coach__card');
     this.$text = root.querySelector('.coach__text');
     this.$hint = root.querySelector('.coach__hint');
     this.$next = root.querySelector('.coach__next');
+    this.$stars = [...root.querySelectorAll('.coach__star')];
 
     const on = (n, ev, fn) => { n.addEventListener(ev, fn); this._offs.push(() => n.removeEventListener(ev, fn)); };
     on(this.$next, 'click', () => this._next());
@@ -121,10 +186,17 @@ export class Coach {
     this.$hint.hidden = !s.wait;
     this.$next.hidden = !!s.wait;
     this.root.dataset.step = String(this.i);
+    /* where you are in the lesson: the pages behind you gilt, this one burning */
+    this.$stars.forEach((star, k) => {
+      star.classList.toggle('is-past', k < this.i);
+      star.classList.toggle('is-on', k === this.i);
+    });
 
     this._sel = s.at || null;
     this._all = !!s.all;
     this.root.classList.toggle('has-spot', !!this._sel);
+    this._pos = null;                     // a new step finds its own place
+    this._sig = '';
     this._place();
 
     if (s.wait) {
@@ -160,72 +232,179 @@ export class Coach {
    */
   _rect() {
     if (!this._sel) return null;
-    if (!this._all) {
-      const n = this.host.querySelector(this._sel);
-      if (!n || !n.isConnected) return null;
-      const b = n.getBoundingClientRect();
-      return (b.width || b.height) ? b : null;
-    }
+    const nodes = this._all
+      ? [...this.host.querySelectorAll(this._sel)]
+      : [this.host.querySelector(this._sel)].filter((n) => n && n.isConnected);
     let l = Infinity, t = Infinity, rr = -Infinity, bb = -Infinity;
-    for (const n of this.host.querySelectorAll(this._sel)) {
-      const b = n.getBoundingClientRect();
-      if (!b.width && !b.height) continue;
+    const add = (b) => {
+      if (!b.width && !b.height) return;
       l = Math.min(l, b.left); t = Math.min(t, b.top);
       rr = Math.max(rr, b.right); bb = Math.max(bb, b.bottom);
+    };
+    for (const n of nodes) {
+      add(n.getBoundingClientRect());
+      /* a creature's intent hangs ABOVE its box: frame the creature as it is
+         drawn, or the gilt rail runs straight through the number it shows */
+      for (const part of n.querySelectorAll(FRAME_WITH)) add(part.getBoundingClientRect());
     }
     if (!(rr > l)) return null;
     return { left: l, top: t, right: rr, bottom: bb, width: rr - l, height: bb - t };
   }
 
   /**
-   * Put the spotlight on the target and the card somewhere it does not cover it.
+   * Hang the frame round the target and stand the note where it covers nothing
+   * the player is reading.
    *
-   * The card goes to whichever side of the target has room, preferring above /
-   * below — a fight is laid out in bands (enemies, hand, the two corners) so
-   * vertical displacement almost always keeps the thing being pointed at and
-   * the sentence about it in the same glance.
+   * The note may never lie over the thing its spotlight names, the hand or End
+   * Turn, and a player mid-turn also reads the HUD's rail, the Nerve and the
+   * piles, the Companion's portrait and the creatures. "Whichever side of the
+   * target has room" put the Nerve's note over two cards of the hand and the
+   * Companion at the Deck's 1280, and the intent's note over the very creature
+   * it was about. So the note is PLACED: every spot on the board it could
+   * stand in is scored by what it would cover, weighted by how much that thing
+   * matters (KEEP_CLEAR), and by how far it would stand from what it is talking
+   * about, and it takes the cheapest. A step's `place` is still honoured, as a
+   * preference: the board is banded — creatures across the middle, the hand
+   * along the bottom, Nerve and End Turn in the corners — so the side a step
+   * asks for is usually the right one when it is free.
+   *
+   * The search runs only when something it depends on has moved, and a note
+   * already standing somewhere good stays there rather than chasing the fan
+   * every time it re-lays.
    */
   _place() {
     const vw = window.innerWidth, vh = window.innerHeight;
     const card = this.$card;
     const cw = card.offsetWidth || 340, ch = card.offsetHeight || 120;
-    const pad = 18;
-
     const r = this._rect();
-    if (!r) {
+
+    let frame = null;
+    if (r) {
+      /* the portrait frame's gilt rail runs from the box's edge inward, so the
+         box stands SPOT_M clear of the target and the rail never crosses it */
+      const sl = r.left - SPOT_M, st = r.top - SPOT_M;
+      const sw = r.width + SPOT_M * 2, sh = r.height + SPOT_M * 2;
+      const s = this.$spot.style;
+      s.opacity = '1';
+      s.left = `${Math.round(sl)}px`; s.top = `${Math.round(st)}px`;
+      s.width = `${Math.round(sw)}px`; s.height = `${Math.round(sh)}px`;
+      /* the candle's light falls on the thing, a pool as wide as it is */
+      const g = this.$glow.style;
+      g.opacity = '1';
+      g.left = `${Math.round(r.left + r.width / 2)}px`;
+      g.top = `${Math.round(r.top + r.height / 2)}px`;
+      g.width = `${Math.round(r.width * 1.25 + 150)}px`;
+      g.height = `${Math.round(r.height * 1.3 + 150)}px`;
+      const out = FRAME_OUT + NOTE_GAP;
+      frame = { l: sl - out, t: st - out, r: sl + sw + out, b: st + sh + out };
+    } else {
       this.$spot.style.opacity = '0';
-      card.style.left = `${Math.round((vw - cw) / 2)}px`;
-      card.style.top = `${Math.round(vh * 0.34)}px`;
-      return;
+      this.$glow.style.opacity = '0';
     }
 
-    const m = 10;
-    this.$spot.style.opacity = '1';
-    this.$spot.style.left = `${Math.round(r.left - m)}px`;
-    this.$spot.style.top = `${Math.round(r.top - m)}px`;
-    this.$spot.style.width = `${Math.round(r.width + m * 2)}px`;
-    this.$spot.style.height = `${Math.round(r.height + m * 2)}px`;
-
-    const below = vh - r.bottom, above = r.top;
-    const want = this.steps[this.i]?.place;
-    let x = r.left + r.width / 2 - cw / 2;
-    let y;
-    /* A step may ASK for a side. The board is banded — enemies across the
-       middle, the hand along the bottom, Nerve and End Turn in the corners —
-       and "whichever side has room" put the card over the top edge of the hand
-       for every step above it. Asking is one word per step and needs no
-       knowledge of the fight's DOM in here. */
-    if (want === 'above' && above >= ch + pad * 2) y = r.top - ch - pad;
-    else if (want === 'below' && below >= ch + pad * 2) y = r.bottom + pad;
-    else if (below >= ch + pad * 2) y = r.bottom + pad;
-    else if (above >= ch + pad * 2) y = r.top - ch - pad;
-    else {
-      // no room either way: put it beside, on the emptier side
-      y = Math.max(pad, Math.min(vh - ch - pad, r.top + r.height / 2 - ch / 2));
-      x = (r.left > vw - r.right) ? r.left - cw - pad : r.right + pad;
+    const keep = this._keepOut();
+    const want = this.steps[this.i]?.place || null;
+    const sig = [vw, vh, cw, ch, want, frame && [frame.l, frame.t, frame.r, frame.b].map((v) => Math.round(v / 4)).join(','),
+      keep.map((k) => [k.l, k.t, k.r, k.b].map((v) => Math.round(v / 8)).join(',')).join(';')].join('|');
+    if (sig !== this._sig || !this._pos) {
+      this._sig = sig;
+      const ctx = { vw, vh, cw, ch, frame, keep, want, ceil: this._ceiling() };
+      const best = this._search(ctx);
+      /* stay put while the old spot is nearly as good: a note that hops
+         whenever a card lifts in the fan is harder to read than one that
+         stands a little further off */
+      if (this._pos && best) {
+        const was = this._cost(this._pos.x, this._pos.y, ctx);
+        if (was.hard === 0 && was.cost <= best.cost * 1.12 + 900) { this._apply(this._pos); return; }
+      }
+      this._pos = best;
     }
-    card.style.left = `${Math.round(Math.max(pad, Math.min(vw - cw - pad, x)))}px`;
-    card.style.top = `${Math.round(Math.max(pad, Math.min(vh - ch - pad, y)))}px`;
+    if (this._pos) this._apply(this._pos);
+  }
+
+  _apply(p) {
+    this.$card.style.left = `${Math.round(p.x)}px`;
+    this.$card.style.top = `${Math.round(p.y)}px`;
+  }
+
+  /** The HUD's foot: nothing of the note goes above it. */
+  _ceiling() {
+    let y = 0;
+    for (const sel of ['.mm-hud', '.cb-top']) {
+      for (const n of document.querySelectorAll(sel)) {
+        const b = n.getBoundingClientRect();
+        if (b.width && b.height && b.top < window.innerHeight * 0.25) y = Math.max(y, b.bottom);
+      }
+    }
+    return y;
+  }
+
+  /** What the note must stand clear of, as boxes with a weight each. */
+  _keepOut() {
+    const out = [];
+    for (const [sel, w, inset] of KEEP_CLEAR) {
+      for (const n of document.querySelectorAll(sel)) {
+        if (n.closest('.coach')) continue;
+        const b = n.getBoundingClientRect();
+        if (!b.width || !b.height) continue;
+        const ix = inset ? b.width * inset.x : 0, it = inset ? b.height * inset.top : 0;
+        out.push({ l: b.left + ix, t: b.top + it, r: b.right - ix, b: b.bottom, w });
+      }
+    }
+    return out;
+  }
+
+  /** What standing the note's box at (x, y) would cost. */
+  _cost(x, y, c) {
+    const b = { l: x - NOTE_HALO, t: y - NOTE_HALO, r: x + c.cw + NOTE_HALO, b: y + c.ch + NOTE_HALO };
+    let hard = 0, cost = 0;
+    if (c.frame) hard += overlap(b, c.frame);
+    for (const k of c.keep) {
+      const o = overlap(b, k);
+      if (!o) continue;
+      if (k.w >= HARD) hard += o;
+      cost += o * k.w;
+    }
+    cost += hard * 400;
+    /* how far from what it is about: a note is read WITH its target */
+    const T = c.frame || { l: c.vw / 2, r: c.vw / 2, t: c.vh * 0.38, b: c.vh * 0.38 };
+    const dx = Math.max(0, T.l - b.r, b.l - T.r), dy = Math.max(0, T.t - b.b, b.t - T.b);
+    const d = Math.hypot(dx, dy);
+    cost += d * 16 + Math.max(0, d - 120) * 26;
+    if (c.frame) {
+      const side = b.b <= T.t + 1 ? 'above' : b.t >= T.b - 1 ? 'below'
+        : (b.r <= T.l + 1 || b.l >= T.r - 1) ? 'beside' : 'over';
+      if (c.want && side !== c.want) cost += side === 'beside' ? 700 : 2200;
+      /* squarely above, below or beside it, not hanging off one corner */
+      if (side === 'above' || side === 'below') cost += Math.abs((b.l + b.r - T.l - T.r) / 2) * 1.5;
+      else if (side === 'beside') cost += Math.abs((b.t + b.b - T.t - T.b) / 2) * 1.5;
+    } else {
+      cost += Math.abs((b.l + b.r) / 2 - c.vw / 2) * 1.5;
+    }
+    return { hard, cost };
+  }
+
+  _search(c) {
+    const pad = 12;
+    const x0 = pad + NOTE_HALO, x1 = Math.max(x0, c.vw - c.cw - pad - NOTE_HALO);
+    const y0 = Math.max(pad, c.ceil + 6) + NOTE_HALO, y1 = Math.max(y0, c.vh - c.ch - pad - NOTE_HALO);
+    let best = null;
+    const probe = (x, y) => {
+      const k = this._cost(x, y, c);
+      if (!best || k.cost < best.cost) best = { x, y, cost: k.cost };
+    };
+    /* every 12px, and the far edges themselves: a note that only fits flush
+       against the screen's edge must still be tried there */
+    const steps = (a, b) => { const out = []; for (let v = a; v < b; v += 12) out.push(v); out.push(b); return out; };
+    const ys = steps(y0, y1), xs = steps(x0, x1);
+    for (const y of ys) for (const x of xs) probe(x, y);
+    if (!best) return null;
+    /* then settle it to the pixel round the best of the grid */
+    const bx = best.x, by = best.y;
+    for (let y = Math.max(y0, by - 12); y <= Math.min(y1, by + 12); y += 3) {
+      for (let x = Math.max(x0, bx - 12); x <= Math.min(x1, bx + 12); x += 3) probe(x, y);
+    }
+    return best;
   }
 
   /** Done, or dismissed. Either way it never comes back this fight. */
