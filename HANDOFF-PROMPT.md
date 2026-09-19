@@ -1,26 +1,94 @@
-# Handoff — round 7 merged, and BOTH procedural rooms are now painted
-
-**Read FIRST item 3a before you touch a background.** "The background" is two
-different systems, they share nothing, and until 2026-09-16 only one of them had
-ever been worked on.
+# Handoff — rounds 8-10 merged; round 11 is cut and waiting on one command
 
 You are picking up Midnight Menagerie on `dev`. Everything below is pushed.
 
-**Josh's standing order is the UI pass, and it is running.** His words,
-2026-09-12: "create a loop to perfect the UI of the game to look like the
-included samples in midnight menagerie/UI, as well as the backgrounds looking at
-the same level, critiqued by blind judges ... fan out agents to triplicate and
-duplicate builds and critique runs. dont stop until its perfected." On 09-13 he
-said "continue loop until perfected". The loop runs until every screen scores 9
-from every judge.
+**Read item 3a before you touch a background.** "The background" is two
+different systems that share nothing, and a change to one does not touch the
+other.
 
-## FIRST, BEFORE ANYTHING
+**Josh's standing order is the UI pass, and it is running.** 2026-09-12: *"create
+a loop to perfect the UI of the game to look like the included samples in
+midnight menagerie/UI, as well as the backgrounds looking at the same level,
+critiqued by blind judges ... fan out agents to triplicate and duplicate builds
+and critique runs. dont stop until its perfected."* Re-issued 09-13 as "continue
+loop until perfected". Two later calls narrow it and both are in force:
+**no background art is coming** and **a background's colour is NOT held to
+`UI/*.png`** — what matters is readable, accurately drawn, well-detailed objects
+(item 3).
 
-**1. Round 7 landed well, and all fifteen screens have now been through the loop.**
-DIALOGS' SORLEY took 7.67 against a 5.17 baseline — **+2.50, the largest gain
-since round 3** — winning all three screens from both judges, with Settings at
-8.0, a score only one other screen in the pass has reached. KIDS' PLACES gained
-+1.11 and merged per screen: Lobby HARROW, Clubhouse TINDER, Atlas HARROW.
+## START HERE
+
+**THE ONE THING TO DO FIRST: restart the machine, then finish round 11's
+baselines and launch it.**
+
+```
+bash docs/ui-pass/baseline-r11.sh      # skips what already exists, retries voids
+```
+
+It needs 8 files in `C:/UILOOP/r11/judging/r11/vary/QUILL/` — four SHEETS
+(foyer, ballroom, greenhouse, graveyard, three rooms each) plus combat and rest
+at both sizes. Two are there. Then:
+
+```
+Workflow({ scriptPath: 'docs/ui-pass/round-workflow.js',
+           args: { ...docs/ui-pass/round-11.args.json,
+                   repo, uiloop: 'C:/UILOOP/r11', base: '3a32fc0' } })
+```
+
+Worktrees `ui/r11-vary-{a,b,c}` are already cut at `3a32fc0`, ports 8901-8903,
+and the probe dry-runs clean at 5 agents.
+
+**Why it is blocked:** this machine's GPU process degrades across a long session
+of Chromium launches until it cannot draw — `glStd` pins at 1.85-1.98 where a
+healthy capture of the same region reads 27-48. It recovers when left alone (a
+17-room sweep failed one evening and ran 17 of 17 the next morning on the same
+commit), but by the end of 2026-09-18 it managed one or two captures per rest.
+**That is a restart, not a wait.**
+
+**THE SECOND THING, and it is the highest-value work outstanding:** two grafts
+from round 10 are the only screens in eleven rounds a judge has marked
+`fits_between_samples: true` — SORREL2's GREENHOUSE (`ff71330` on
+`ui/r10-bg3-b`, 3 of 3 judges) and BISTRE2's FOYER (`8e096b2` on
+`ui/r10-bg3-c`, 2 of 3). **Neither cherry-picks**: five conflict regions, two of
+them 100+ lines of GLSL where two builders rewrote the same plant branches. Give
+them to a BUILDER with a dev server, the way round 9's ballroom graft was done.
+Do not hand-resolve them.
+
+## THE STATE OF THE PASS
+
+Rounds 0-10 merged. Round 9 (+2.71) is the one to read: it is where props
+stopped being coverage masks and got an interior. Round 10 merged OAKGALL
+(`f39dbc6`); its reported +1.72 should be read as **+0.93**, because the
+baseline's own combat capture was a blown white frame that all three judges
+scored 1 of 10.
+
+Frame cost on the merged build, quiet window, four runs: **14.4-14.8 ms** against
+a hard 15.5, backdrop 9.26-9.33, props 1.35-1.41. Under a millisecond of
+headroom, which `BRIEF-r11.md` says out loud.
+
+`fits_between_samples` is still FALSE on every screen of every round except the
+two grafts above, and the best room has scored 7.
+
+## THE FOUR WAYS A CAPTURE LIES, all of which have cost a verdict or an evening
+
+`tools/shot.py` now detects all four and exits 2 on any of them:
+
+| signature | what it means |
+|---|---|
+| `gl: none` | the page never got a GPU context |
+| frame std < 8 | a dead frame, white or black |
+| `glStd` ~ 0 | the UI drew and the BACKDROP did not — the frame still looks busy |
+| >8% of pixels above L200 | a white transition flash caught in the composite |
+
+And `tools/variant_sheet.py` refuses to write a sheet with fewer panels than
+asked for: all four of round 11's first baselines came back with ONE panel and
+each looked like a perfectly normal screenshot.
+
+**Before briefing a round from a judge's verdict, check the capture the verdict
+was written about.** Round 9's judges both opened with a blocking fix for a bug
+that did not exist, because the capture they were shown had no backdrop.
+
+## THEN, THE REST
 
 So there is no track with an unspent fix list any more, and round 8 went to the
 thing every judge had blamed for seven rounds instead: the ROOM (item 3).
@@ -34,7 +102,7 @@ Everything is committed and pushed: `BRIEF-r11.md`, `RUBRIC-r11.md`,
 
 TO FINISH IT, after the machine has been restarted:
 
-    bash <scratchpad>/baseline_r11.sh      # skips what exists, retries voids
+    bash docs/ui-pass/baseline-r11.sh      # skips what exists, retries voids
 
 It needs 8 files in `C:/UILOOP/r11/judging/r11/vary/QUILL/`: four SHEETS
 (foyer, ballroom, greenhouse, graveyard -- three rooms each) and combat, rest,
