@@ -40,10 +40,17 @@ runs out of the perf budget.
 3. **DONE: batch captures are byte-exact** (`4bed128`): candle flames were
    seeded by a page-wide light counter; now by their place in the room's rig.
    And a batch page stops at its first failed room.
-4. **Then:** the battery on the merged tree (`python tools/gates.py`, ~30 min,
-   nothing else on the GPU), fast-forward `ui/r11-vary-{a,b,c}` to dev, retake
-   the baselines (`bash docs/ui-pass/baseline-r11.sh`), **check `band` on
-   combat and rest**, and launch round 11 with dev's head as `base`.
+4. **DONE: the battery** (101 gates, 2098 s): red only the two known
+   (`sprites` HALO clips, `run.py` Archivist/_losePatience). Two new reds fixed:
+   `tests/map/run.py` asked for the map while the room was still entering
+   (`2b1b927`, now 30/0), and Josh's Wardrobe Guest sheets were unbuilt
+   (`c50fe96`, enemy-clips 985/0).
+5. **RUNNING: ROUND 11**, launched 2026-09-19 ~02:10 as run `wf_e820247a-54c`
+   (task `wx1chvoya`), base `c50fe96`, UILOOP `C:/UILOOP/r11`, builders
+   LIMEWASH a:8901 / CAMBER b:8902 / MADDER c:8903, baseline QUILL retaken at
+   `c50fe96` (bands 33.1-37.6). When it lands: verify each claim on the
+   captures, check perf on BOTH frames against BASE, merge per `MERGE-r8.md`,
+   and log it in the README.
 
 **Four harness fixes landed today, and they change how a round runs:**
 - `fc881cf` — **the fifth way a capture lies**: a board with NO ROOM behind it
