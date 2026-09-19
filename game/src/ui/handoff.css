@@ -3,49 +3,44 @@
    next one starting, and its whole job is that the board behind it CANNOT be
    read — a hand of Tricks is the one private thing in this game.
 
-   So the scrim is opaque, not a tint, and so is everything laid on it.
-   `--scrim` is a translucent overlay and would leave the outgoing player's
-   hand legible through it, which defeats the entire point of the screen.
+   So the scrim is opaque, not a tint. `--scrim` is a translucent overlay and
+   would leave the outgoing player's hand legible through it, which defeats the
+   entire point of the screen. What is drawn IN FRONT of the scrim is opaque
+   too: the house itself, in Josh's painting of it (UI/mainMenu.png, the title
+   screen's), inside the boards' gilt rule, old threads across its corners.
 
-   IT IS ONE OF THE HOUSE'S BOARDS (round 12, CHROME). handoff.js builds it of
-   the kit's own pieces (ui/kit.css), and this sheet only sizes and places
-   them through the veil's own classes:
-     .hoff-board         .kit-board + .kit-ground + .kit-dress   the lit room,
-                         its gilt rule, corner candles, cobwebs and vines
-     .hoff__plaque       .kit-titleblock    title.png's cartouche: PASS IT OVER
-     .hoff__pic          .kit-frame--over   the Kid board's portrait frame
-     .hoff__plate        .kit-plate         a nameplate: name over epithet
-     .hoff__ledge        .kit-ledge         the carved ledge they stand on
-     .hoff__flame/pool   .kit-prop--candle, .kit-light--candle
-     .hoff__go           .kit-btn, its keycap and .kit-medallion--ornate
+   It is a title card, set the way the title sets the wordmark: the next Kid's
+   name in UI/title.png's cartouche with their Companion as its epithet, PASS
+   IT OVER on the gold ribbon hung from the plaque, the two of them in the Kid
+   board's frames under it with the Companion tiles' nameplates, and the way on
+   as the boards' lit nameplate, its Enter keycap and its round enamel confirm.
+
+   Laid out through this sheet's own classes: the kit pieces it wears
+   (.kit-board .kit-dress .kit-web .kit-titleblock .kit-cartouche__title
+   .kit-cartouche__sub .kit-ribbon .kit-frame .kit-plate .kit-btn
+   .kit-medallion .kit-light) are placed and sized here only through .hoff__*.
    ────────────────────────────────────────────────────────────────────────── */
-.mm-modal.mm-handoff {
-  padding: 0;
-}
+.mm-modal.mm-handoff { padding: 0; }
 .mm-modal.mm-handoff .mm-modal__scrim {
   background: var(--kit-void);
   opacity: 1;
   -webkit-backdrop-filter: none;
           backdrop-filter: none;
-  transition: none;
 }
+/* the whole screen, from the first frame: no slide and no scale, which on a
+   full-bleed cover would open a sliver at an edge */
 .mm-modal.mm-handoff .mm-modal__dialog {
-  z-index: 1;
-  width: 100%; height: 100%;
-  max-height: none;
+  position: absolute; inset: 0;
+  width: auto; max-height: none;
+  display: block;
   background: transparent;
   border: 0;
   box-shadow: none;
-  display: flex; flex-direction: column;
-  overflow: visible;
+  transform: none;
 }
-/* the words and the two of them come up over the board once their pictures
-   are in hand (handoff.js adds .is-painted, within half a second): the board
-   itself is opaque from the first frame, so nothing waits on the cover */
-.mm-modal.mm-handoff:not(.is-painted) .mm-modal__dialog { opacity: 0; }
 /* The dialog chrome has nothing to say here. The head's bottom rule survives
    `display:none` on the head itself when the body carries its own, so both are
-   named — a hairline across the board reads as a seam in the veil, which is
+   named — a hairline across the veil reads as a seam in it, which is
    precisely the thing this screen must not look like. */
 .mm-modal.mm-handoff .mm-modal__head,
 .mm-modal.mm-handoff .mm-modal__close { display: none; }
@@ -55,201 +50,224 @@
   background: transparent;
   padding: 0;
 }
-.mm-modal.mm-handoff .mm-modal__body {
-  flex: 1 1 auto;
-  display: flex;
-  overflow: visible;
-}
+.mm-modal.mm-handoff .mm-modal__body { position: absolute; inset: 0; overflow: hidden; }
 
-/* ── the room ─────────────────────────────────────────────────────────────── */
-.hoff-board {
-  position: absolute; inset: 0; z-index: 0;
-  overflow: hidden;
-  pointer-events: none;
-  --hud-h: 0px;                   /* the veil covers the HUD: the rule and the corners start at the top */
-  /* the candle on the ledge warms the wall behind the two of them and the
-     floor in front; moonlight falls on the room from high windows either
-     side (the kit-ground's light slots) */
-  --wl3-x: 50vw;                  --wl3-y: 46vh;
-  --wl3-w: clamp(560px, 58vw, 940px);  --wl3-h: 92vh;
-  --wl4-x: 50vw;                  --wl4-y: 98vh;
-  --wl4-w: 74vw;                  --wl4-h: 34vh;
-  --ml1-x: 50vw;                  --ml1-y: 2vh;
-  --ml1-w: 70vw;                  --ml1-h: 36vh;
-  --mb1-x: 21vw;                  --mb1-y: 8vh;
-  --mb1-w: 17vw;                  --mb1-h: 90vh;
-  --mb2-x: 79vw;                  --mb2-y: 8vh;
-  --mb2-w: 17vw;                  --mb2-h: 90vh;
-}
-.hoff-board__vig {
-  position: absolute; inset: 0; z-index: 1;
-  /* the alcove is the lit thing in the hall: the walls either side fall
-     away into the dark, so their empty panelling reads as the room and not
-     as two more frames beside the Kid's */
-  background:
-    radial-gradient(112% 94% at 50% 50%, transparent 44%, color-mix(in srgb, var(--kit-void) 86%, transparent) 100%),
-    linear-gradient(90deg, color-mix(in srgb, var(--kit-void) 72%, transparent) 0%, color-mix(in srgb, var(--kit-void) 38%, transparent) 16%, transparent 27%, transparent 73%, color-mix(in srgb, var(--kit-void) 38%, transparent) 84%, color-mix(in srgb, var(--kit-void) 72%, transparent) 100%),
-    linear-gradient(to bottom, color-mix(in srgb, var(--kit-void) 40%, transparent) 0%, transparent 22%, transparent 74%, color-mix(in srgb, var(--kit-void) 58%, transparent) 100%);
-}
-
-/* ── the board's content ──────────────────────────────────────────────────── */
+/* ── the night ─────────────────────────────────────────────────────────────── */
 .hoff {
-  position: relative;
-  flex: 1 1 auto;
-  min-height: 100%;
-  display: grid;
-  grid-template-rows: auto minmax(0, 1fr) auto;
-  justify-items: center;
-  align-items: center;
-  padding: clamp(18px, 2.8vh, 30px) 24px clamp(34px, 6.4vh, 64px);
+  position: absolute; inset: 0;
+  display: grid; place-items: center;
+  overflow: hidden;
+  isolation: isolate;
   text-align: center;
 }
-
-/* the words, on the wordmark's cartouche */
-.hoff__plaque { align-self: start; }
-.hoff__plaque .hoff__k { margin: 0; }
-.hoff__plaque .hoff__sub { margin: 2px 0 0; }
-
-/* ── the two of them, in the alcove, on the ledge, by the candle ─────────── */
-.hoff__stage {
-  --kid-h: clamp(226px, 42vh, 390px);
-  --pet-h: calc(var(--kid-h) * .84);
-  --plate-h: clamp(62px, 8.2vh, 74px);
-  --foot: clamp(18px, 2.8vh, 28px);        /* the alcove's floor, under the ledge */
-  --stage-pk: 1;
-  --stage-medal-w: clamp(108px, 8.6vw, 140px);
-  display: flex; align-items: flex-end; justify-content: center;
-  gap: clamp(24px, 2.6vw, 42px);
-  margin-top: clamp(34px, 5.6vh, 56px);   /* the moon crest clear of the cartouche */
-  padding: clamp(44px, 6.2vh, 58px) clamp(52px, 5vw, 84px) calc(var(--plate-h) * .5 + var(--foot));
+/* the name's engraving filter (handoff.js ENGRAVE): out of the grid */
+.hoff__defs { position: absolute; width: 0; height: 0; overflow: hidden; }
+.hoff__room {
+  position: absolute; inset: 0; z-index: 0;
+  --hud-h: 0px;                   /* no HUD on the veil: the rule and corners rise to the top */
 }
-/* The alcove is hung with the Companion board's flocked damask (.kit-mat--
-   flock, the samples' own scrollwork in relief), lit by the candle on the
-   ledge the way the kit lights a material — the light laid in overlay, so it
-   brings the pile up where it falls and the cloth sinks into the dark under
-   the rail and in the corners. The hall's panelling does not show through,
-   so nothing on the wall reads as an empty frame beside theirs. The kit's
-   recess (the rail's shadow, the sides falling away) is drawn over it. */
-.hoff__wall {
-  position: absolute; inset: 0; z-index: -4;
-  --mat-size: 186px 212px;
-  --mat-veil: .4;
-  --mat-edge: .72;
-  --lit-x: 50%; --lit-y: 84%;
-  --lit-w: 66%; --lit-h: 92%;
-  --lit-a: 48%;
+/* the house, as Josh painted it for the title: the front door on the centre
+   line, under the card, where the stairs come down to the path */
+.hoff__night {
+  position: absolute; inset: 0;
+  background: url("../../assets/ui/main-menu.jpg") 50% 34% / cover no-repeat, var(--kit-void);
 }
-.hoff__stage::before {
+/* The painting stands BEHIND a title card, the way it does on the title:
+   drawn down where the words are (a pool of the night's own dark round the
+   card, deepest behind the name and the lines), falling off into the corners,
+   and cool along the top where the sky is. */
+.hoff__vig {
+  position: absolute; inset: 0; pointer-events: none;
   background:
-    radial-gradient(64% 30% at 50% 0%, rgba(4, 3, 6, .5), transparent 72%),
-    linear-gradient(90deg, rgba(4, 3, 6, .42), transparent 16%, transparent 84%, rgba(4, 3, 6, .42));
-  background-clip: padding-box;
+    radial-gradient(38% 50% at 50% 55%, rgba(6, 3, 12, .64), rgba(6, 3, 12, .34) 64%, transparent 100%),
+    radial-gradient(30% 16% at 50% 26%, rgba(6, 3, 12, .5), transparent 100%),
+    radial-gradient(120% 100% at 50% 44%, transparent 50%, color-mix(in srgb, var(--kit-void) 78%, transparent) 100%),
+    linear-gradient(to bottom, color-mix(in srgb, var(--kit-void) 24%, transparent), transparent 28%, transparent 68%, color-mix(in srgb, var(--kit-void) 58%, transparent));
 }
-/* the candle's pool on the alcove's back wall, round the two of them */
-.hoff__glow {
-  left: 50%; top: 56%;
-  width: 104%; height: 108%; aspect-ratio: auto;
-  --light-a: 16%;
-  z-index: -2;
-}
-/* the carved, parcel-gilt ledge they stand on, wall to wall of the alcove;
-   the plates hang over its gilt front */
-.hoff__ledge {
-  --ledge-h: clamp(30px, 4vh, 38px);
-  position: absolute; z-index: -1;
-  left: 10px; right: 10px;
-  bottom: calc(var(--plate-h) * .5 + var(--foot) - var(--ledge-h) * 1.13);
+/* the lamps either side of the front door, carried out onto the path */
+.hoff__glow { left: 50%; top: 66%; width: clamp(520px, 46vw, 760px); --light-a: 13%; }
+.hoff__dress { z-index: 2; }
+/* old threads strung across the frame's two top corners */
+.hoff__web { --web-w: clamp(110px, 10vw, 170px); top: calc(var(--kit-edge) + 3px); opacity: .62; }
+.hoff__web--l { left: calc(var(--kit-edge) + 3px); }
+.hoff__web--r { right: calc(var(--kit-edge) + 3px); }
+
+/* ── the title card ────────────────────────────────────────────────────────── */
+.hoff__card {
+  position: relative; z-index: 3;
+  display: flex; flex-direction: column; align-items: center;
+  padding: clamp(10px, 2.2vh, 28px) clamp(16px, 4vw, 60px) clamp(10px, 2.4vh, 30px);
+  max-width: 100%;
 }
 
-.hoff__who {
-  position: relative;
-  margin: 0;
-  display: grid; justify-items: center;
-  min-width: 0;
+/* the plaque: title.png's cartouche at the size of a title card */
+.hoff__plaque {
+  --cart-h: clamp(150px, 22.5vh, 204px);
+  --rib-h: clamp(36px, 5.1vh, 48px);
+  /* the name takes the plate's upper two thirds, as MENAGERIE does, and the
+     epithet the rest, both inside the rails (19% to 87% of the painting) */
+  grid-template-rows: calc(var(--cart-h) * .655) calc(var(--cart-h) * .345) auto auto;
 }
-.hoff__pic {
-  --fk: .8;
-  box-shadow: 0 18px 30px -12px rgba(0, 0, 0, .95);
+/* the Kid's name, lettered as the wordmark is: marbled lavender, a gold edge
+   and a dark extrusion under it (#hoff-engrave, handoff.js) */
+.hoff .hoff__name {
+  font-size: min(calc(var(--cart-h) * .5), calc(64vw / var(--hoff-len, 5)));
+  line-height: .8;
+  letter-spacing: .07em;
+  margin: 0 0 calc(var(--cart-h) * .02);
+  padding-left: calc(var(--cart-pad-x) + .07em);   /* the tracking hangs off the last letter */
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--kit-lav-hi) 34%, transparent) 0%, transparent 34%, color-mix(in srgb, var(--kit-violet) 58%, transparent) 100%),
+    url("../../assets/ui/kit/marble.webp") 0 0 / 220px 220px;
+  -webkit-background-clip: text; background-clip: text;
+  filter: url("#hoff-engrave") drop-shadow(0 0 22px color-mix(in srgb, var(--kit-violet) 34%, transparent));
 }
-.hoff__pic--kid { height: var(--kid-h); aspect-ratio: 3 / 4; }
-.hoff__pic--pet { height: var(--pet-h); aspect-ratio: 1; }
-.hoff__art { position: absolute; inset: 1px; overflow: hidden; display: grid; }
-.hoff__art > * { width: 100%; height: 100%; min-height: 0; border-radius: 0; }
-.hoff__kidimg { display: block; object-fit: cover; object-position: 50% 16%; }
-.hoff__art .pf__vig { box-shadow: none; }
-
-/* a nameplate under each, hung over the ledge's gilt front: the name over its
-   small italic epithet, as the Companion board letters every tile */
-.hoff__plate {
-  --plate-h: inherit;
-  position: relative; z-index: 4;
-  margin-top: calc(var(--plate-h) * -.5);
-  min-width: 86%; max-width: 128%;
-  padding-inline: calc(var(--plate-h) * .8);
-  white-space: nowrap;
+@supports not (filter: url("#hoff-engrave")) {
+  .hoff .hoff__name {
+    filter: drop-shadow(2px 0 0 var(--kit-gold)) drop-shadow(-2px 0 0 var(--kit-gold))
+            drop-shadow(0 4px 0 #1c1029) drop-shadow(0 8px 12px rgba(0, 0, 0, .8));
+  }
 }
-.hoff__plate .hoff__name {
-  margin: 0;
-  font-size: clamp(25px, 2.25vw, 36px);
-  line-height: 1.02;
+/* their Companion, as the tiles letter an epithet: small italic, warm */
+.hoff .hoff__comp {
+  margin-top: calc(var(--cart-h) * .035);
+  font-size: clamp(17px, 1.55vw, 25px);
   letter-spacing: .02em;
+  color: var(--kit-name);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .95), 0 0 14px rgba(0, 0, 0, .8);
 }
-.hoff__plate .hoff__line {
+/* PASS IT OVER, cut into the ribbon hung from the plaque's lower rail */
+.hoff .hoff__k {
+  margin-top: calc(var(--cart-h) * -.13);
+  min-width: calc(var(--cart-h) * 1.6);
+  font-size: calc(var(--rib-h) * .5);
+  letter-spacing: .22em;
+  padding-left: calc(var(--rib-h) * 1.32 + .22em);
+}
+
+/* ── the stage: the two of them, the front door of the house between ──────── */
+.hoff__stage {
+  --fig-w: clamp(236px, min(21vw, 38vh), 336px);
+  position: relative;
+  display: flex; align-items: flex-start; justify-content: center;
+  gap: clamp(96px, 10vw, 170px);
+  margin-top: clamp(16px, 3.4vh, 36px);
+}
+.hoff__fig {
+  position: relative;
   margin: 0;
-  font-size: clamp(14px, 1.1vw, 18px);
-  line-height: 1.15;
+  width: var(--fig-w);
+  display: flex; flex-direction: column; align-items: center;
 }
-.hoff__plate--pet { --plate-h: calc(var(--kid-h) * .15 + 8px); }
-.hoff__plate--pet .hoff__comp { font-size: clamp(17px, 1.45vw, 23px); line-height: 1.05; }
-.hoff__plate--pet .hoff__title { font-size: clamp(12.5px, .95vw, 15px); }
+.hoff__frame {
+  --fk: .82;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  box-shadow: 0 22px 36px -14px rgba(0, 0, 0, .95), 0 0 0 1px rgba(0, 0, 0, .6);
+}
+.hoff__img {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  display: block;
+  object-fit: cover;
+  user-select: none; -webkit-user-drag: none;
+}
+.hoff__img--kid { object-position: 50% 17%; }
+/* the painting sinks into its frame and takes the candle from the middle */
+.hoff__frame::before {
+  content: ''; position: absolute; inset: 0; z-index: 2; pointer-events: none;
+  background:
+    radial-gradient(120% 96% at 50% 40%, transparent 50%, rgba(6, 3, 10, .62) 100%),
+    linear-gradient(to top, rgba(6, 3, 10, .55), transparent 34%);
+}
+.hoff__fig--kid .hoff__frame::before {
+  background:
+    radial-gradient(70% 90% at 100% 50%, color-mix(in srgb, var(--kit-candle) 12%, transparent), transparent 70%),
+    radial-gradient(120% 96% at 50% 40%, transparent 50%, rgba(6, 3, 10, .62) 100%),
+    linear-gradient(to top, rgba(6, 3, 10, .55), transparent 34%);
+}
+.hoff__fig--pet .hoff__frame::before {
+  background:
+    radial-gradient(70% 90% at 0% 50%, color-mix(in srgb, var(--kit-candle) 12%, transparent), transparent 70%),
+    radial-gradient(120% 96% at 50% 40%, transparent 50%, rgba(6, 3, 10, .62) 100%),
+    linear-gradient(to top, rgba(6, 3, 10, .55), transparent 34%);
+}
+/* the Companion tiles' nameplate, over the foot of the frame */
+.hoff__plate {
+  --plate-h: clamp(42px, 5.4vh, 50px);
+  position: relative; z-index: 4;
+  margin-top: calc(var(--plate-h) * -.46);
+  min-width: 72%; max-width: 112%;
+  padding-inline: calc(var(--plate-h) * .78);
+}
+.hoff__plate .kit-plate__name { font-size: max(15px, calc(var(--plate-h) * .37)); white-space: nowrap; }
+.hoff__plate .kit-plate__epithet { font-size: max(12.5px, calc(var(--plate-h) * .27)); white-space: nowrap; }
 
-/* between them, standing on the ledge under the crest: the Kid board's
-   still life, a skull on its books and a candle burning beside it */
-.hoff__still {
-  position: relative;
-  align-self: flex-end;
-  display: flex; align-items: flex-end;
-  gap: clamp(4px, .6vw, 10px);
-  margin-bottom: 1px;
+/* ── the words, and the way on ─────────────────────────────────────────────── */
+/* "Your turn." as the boards letter a heading: spaced gold small caps between
+   two short strokes, each ending in the wordmark's star */
+.hoff__line {
+  display: grid; grid-template-columns: auto auto auto; align-items: center;
+  column-gap: clamp(12px, 1.2vw, 18px);
+  margin: clamp(18px, 3.2vh, 34px) 0 0;
+  font-family: var(--font-display); font-weight: 700;
+  font-size: clamp(19px, 1.62vw, 26px);
+  letter-spacing: .2em; text-transform: uppercase;
+  color: var(--kit-gold-hi);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .95), 0 0 18px color-mix(in srgb, var(--kit-candle) 26%, transparent);
 }
-.hoff__skull {
-  position: relative;
-  width: clamp(54px, 4.3vw, 70px); aspect-ratio: 130 / 153;
-  filter: brightness(.94) drop-shadow(0 6px 6px rgba(0, 0, 0, .7));
+.hoff__line::before, .hoff__line::after {
+  content: ''; height: 11px; width: clamp(40px, 4.6vw, 76px);
+  background:
+    url("../../assets/ui/kit/star4.svg") 100% 50% / 11px 11px no-repeat,
+    linear-gradient(90deg, transparent, var(--kit-gold) 62%, var(--kit-gold-hi)) 0 5px / calc(100% - 14px) 1.5px no-repeat;
+  filter: drop-shadow(0 1px 0 rgba(0, 0, 0, .85));
 }
-.hoff__candle {
-  position: relative;
-  width: clamp(40px, 3vw, 50px); aspect-ratio: 106 / 164;
+.hoff__line::after { transform: scaleX(-1); }
+.hoff__sub {
+  margin: 6px 0 0;
+  max-width: 52ch;
+  font-family: var(--font-body); font-style: italic;
+  font-size: calc(clamp(15px, 1.2vw, 19px) * var(--type-scale, 1));
+  line-height: 1.3;
+  color: var(--kit-text-mid);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .95), 0 0 12px rgba(0, 0, 0, .9);
 }
-.hoff__flame { inset: 0; }
 
-/* the paw on the alcove's bottom rail, under the moon on its top one: the
-   Kid board's mirror wears the pair (medal-paw.webp is painted on its own
-   short stretch of rail, so it lies ALONG the rail rather than on it) */
-.hoff__paw {
-  position: absolute; z-index: 3; left: 50%; bottom: 0;
-  width: clamp(92px, 7.2vw, 116px); aspect-ratio: 106 / 55;
-  translate: -50% 52%;
-  background: url("../../assets/ui/kit/medal-paw.webp") 50% 50% / 100% 100% no-repeat;
-  filter: drop-shadow(0 3px 3px rgba(0, 0, 0, .8));
-  pointer-events: none;
+/* I'M READY: the boards' lit nameplate, its Enter keycap engraved in enamel
+   (.kit-btn kbd, kit.css) */
+.hoff__go.kit-btn {
+  --plate-h: clamp(50px, 6.4vh, 58px);
+  margin-top: clamp(18px, 3.2vh, 34px);
+  gap: 16px;
+  padding-inline: calc(var(--plate-h) * .92) calc(var(--plate-h) * 1.36);
+  font-size: clamp(17px, 1.34vw, 22px);
+  letter-spacing: .18em;
+}
+/* the round enamel confirm, seated on the plate's right end */
+.hoff__medal { --md: calc(var(--plate-h) * 1.16); right: calc(var(--plate-h) * -.46); }
+.hoff__go:hover .hoff__medal, .hoff__go:focus-visible .hoff__medal {
+  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .8)) drop-shadow(0 0 10px color-mix(in srgb, var(--kit-candle) 45%, transparent)) brightness(1.12);
+}
+.hoff__go .hoff__words { padding-left: .18em; }
+.hoff__go.is-going { filter: drop-shadow(0 4px 6px rgba(0, 0, 0, .8)) saturate(.6) brightness(.8); }
+/* the Enter key is the kit's engraved keycap (.kit-btn kbd) as it is */
+
+/* ── arriving ─────────────────────────────────────────────────────────────── */
+/* The room is up with the scrim; the card settles into it a beat later. */
+.mm-handoff.is-in .hoff__card { animation: hoff-in .7s var(--ease-out) both; }
+@keyframes hoff-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: none; }
+}
+:root[data-reduce-motion="1"] .mm-handoff .hoff__card, .mm-reduce-motion .mm-handoff .hoff__card { animation: none; }
+@media (prefers-reduced-motion: reduce) {
+  :root:not([data-reduce-motion="0"]) .mm-handoff .hoff__card { animation: none; }
 }
 
-/* ── I'm ready ────────────────────────────────────────────────────────────── */
-.hoff__go {
-  --plate-h: clamp(50px, 6.2vh, 58px);
-  align-self: end;
-  margin-top: clamp(30px, 4.4vh, 40px);   /* clear of the paw on the rail above */
-  gap: 14px;
-  padding: 2px calc(var(--plate-h) * 1.34) 3px calc(var(--plate-h) * .9);
-  font-size: clamp(16px, 1.25vw, 20px);
-  letter-spacing: .16em;
-}
-.hoff__go-words { white-space: nowrap; }
-.hoff__medal { right: calc(var(--plate-h) * -.62); --md: calc(var(--plate-h) * .9); }
-.hoff__go.is-going { opacity: .55; }
-
-/* the Deck, and any short window: the same board, the portraits a notch down */
+/* a short window (the Deck's 1280x800 and anything shorter): the same card,
+   a size down, so the button never leaves the screen */
 @media (max-height: 820px) {
-  .hoff__stage { --kid-h: clamp(220px, 39.5vh, 330px); }
+  .hoff__plaque { --cart-h: clamp(136px, 21vh, 172px); }
+  .hoff__stage { --fig-w: clamp(220px, min(20vw, 36vh), 300px); }
 }

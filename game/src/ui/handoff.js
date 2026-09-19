@@ -12,20 +12,6 @@
  * dismiss it by accident: no Escape, no backdrop click, and the scrim is
  * opaque rather than a tint.
  *
- * ── It is a board, not a black screen (round 12, CHROME) ───────────────────
- * The cover is one of the house's staged boards, built of the kit's own
- * pieces (ui/kit.css) the way the Safe Room and Expedition Over are: the lit
- * room (`.kit-board`, `.kit-ground`) with the corner candles, cobwebs, vines
- * and gilt rule every board wears (`.kit-dress`), the words on title.png's
- * cartouche (`.kit-titleblock`), the next Kid in the Kid board's portrait
- * frame over a nameplate (`.kit-frame`, `.kit-plate`) with their Companion
- * beside them, both standing on the boards' carved ledge (`.kit-ledge`) by a
- * candle (`.kit-prop--candle`, `.kit-light`) in the alcove a board's choice
- * is made in, its moon crest on the rule (`.kit-stage`), and I'M READY the boards' lit
- * nameplate with its ENTER keycap and the Kid board's round confirm medallion
- * (`.kit-btn`, `.kit-medallion--ornate`). The room is opaque paint over an
- * opaque scrim: nothing of the fight shows through any of it.
- *
  * ── This is the seam a transport replaces ───────────────────────────────────
  * With a wire, each client owns one seat for the whole expedition and never
  * hands it anywhere; the other Kid's turn happens on their own screen and this
@@ -33,57 +19,25 @@
  * to a networked session means making it answer false.
  */
 
-import { Modal, DIALOG_GLYPH } from './modal.js';
+import { Modal } from './modal.js';
 import { COMPANIONS, KIDS } from '../data/schema.js';
-import { kidImg, companionPortrait, ensureCss as ensureSheet } from './portrait.js';
+import { kidImg, thumbSrc, fullSrc } from './portrait.js';
 
 const CSS = new URL('./handoff.css', import.meta.url).href;
-const PORTRAIT_CSS = new URL('./portrait.css', import.meta.url).href;
 
 let cssReady = null;
 function ensureCss() {
   if (cssReady) return cssReady;
-  cssReady = Promise.all([
-    new Promise((res) => {
-      if (document.querySelector(`link[href="${CSS}"]`)) return res();
-      const l = document.createElement('link');
-      l.rel = 'stylesheet';
-      l.href = CSS;
-      l.onload = () => res();
-      l.onerror = () => res();          // a missing sheet must not wedge the game
-      document.head.appendChild(l);
-    }),
-    // the Companion's portrait plate (`.pf`) is drawn by ui/portrait.css
-    ensureSheet(PORTRAIT_CSS),
-  ]);
+  cssReady = new Promise((res) => {
+    if (document.querySelector(`link[href="${CSS}"]`)) return res();
+    const l = document.createElement('link');
+    l.rel = 'stylesheet';
+    l.href = CSS;
+    l.onload = () => res();
+    l.onerror = () => res();          // a missing sheet must not wedge the game
+    document.head.appendChild(l);
+  });
   return cssReady;
-}
-
-/* The board's paintings, fetched when this module loads — every scene that
-   can hand over imports it, long before a turn ends — so the first veil of a
-   game goes up painted, not as a plum field with the hall filling in behind
-   the words. The room's three layers are 1920x1080 each and a fight never
-   loads them itself. The veil NEVER waits for them: it has to be up the
-   moment a turn ends, because the board under it is the last Kid's hand. */
-const KIT = new URL('../../assets/ui/kit/', import.meta.url).href;
-const PAINTINGS = ['room.webp', 'room-warm.webp', 'room-moon.webp', 'pool.webp', 'beam.webp', 'beam-r.webp',
-  'damask.webp', 'flock.webp', 'panel.webp', 'frame.webp', 'plate-lit.webp', 'ledge.webp', 'medal-moon.webp',
-  'corner-l.webp', 'corner-r.webp', 'vine-l.webp', 'vine-r.webp', 'footscroll.webp', 'candle.webp', 'skull.webp',
-  'button-ornate.webp', 'keycap.webp', 'cart-cap-l.webp', 'cart-cap-r.webp', 'cart-band.webp', 'cart-crest.webp',
-  'marble.webp', 'grain.webp'].map((f) => KIT + f);
-const warmed = [];
-function warmPaintings() {
-  if (warmed.length || typeof Image === 'undefined') return;
-  for (const src of PAINTINGS) {
-    const img = new Image();
-    img.decoding = 'async';
-    img.src = src;
-    warmed.push(img);
-  }
-}
-if (typeof window !== 'undefined') {
-  if (window.requestIdleCallback) window.requestIdleCallback(warmPaintings, { timeout: 4000 });
-  else setTimeout(warmPaintings, 1200);
 }
 
 /**
@@ -105,28 +59,6 @@ export function shouldHandOff(run) {
    depend on ui/. If you change one, change the other. */
 
 /**
- * Which of the eight Kids is being handed the screen, for their portrait.
- *
- * The callers pass a display NAME, which a party can set to anything, so the
- * name is not trusted to be one of KIDS': the seat in the live run that
- * carries that name and Companion is asked first, then the roster by full
- * name, then by first name. A Kid nobody can place gets no portrait — the
- * nameplate still names them — rather than somebody else's face.
- */
-function kidOf(o, first) {
-  if (o.kid) return KIDS.find((k) => k.slug === o.kid) || null;
-  const run = typeof window !== 'undefined' ? window.MM?.ctx?.run : null;
-  try {
-    const seat = run?.kids?.find?.((k) => run.kidNameOf(k) === o.name
-      && (!o.companion || k.companion === o.companion));
-    if (seat) return KIDS.find((k) => k.slug === seat.kid) || null;
-  } catch { /* a run mid-teardown answers nothing; the roster still can */ }
-  const name = String(o.name || '');
-  return KIDS.find((k) => k.name === name)
-    || KIDS.find((k) => k.name.split(' ')[0] === first) || null;
-}
-
-/**
  * Cover the screen and wait for the next player.
  *
  * `onReady` runs AFTER they say they are ready but BEFORE the veil lifts, and
@@ -135,18 +67,20 @@ function kidOf(o, first) {
  * screen. Doing it after the close shows a frame of the previous Kid's hand,
  * which is precisely what this screen exists to prevent.
  *
- * @param {{name:string, companion?:string, kid?:string, line?:string, sub?:string,
+ * @param {{name:string, companion?:string, line?:string, sub?:string,
  *          onReady?:() => (void|Promise<void>)}} o
- *   `kid` (a KIDS slug) is optional: without it the Kid is found by name.
  * @returns {Promise<void>}
  */
 export async function passTo(o = {}) {
+  await ensureCss();
   const name = o.name || 'the other Kid';
   const first = String(name).split(' ')[0];
   const comp = COMPANIONS.find(c => c.slug === o.companion);
-  const kid = kidOf(o, first);
-  warmPaintings();                          // already done, unless this is very early
-  await ensureCss();
+  /* Who is being handed the machine, as a painted Kid. `name` is the display
+     name `run.kidNameOf()` gives, which is the roster's own unless a player
+     renamed their Kid; a name that is nobody's in KIDS simply has no portrait
+     and the stage keeps the Companion alone. */
+  const kid = KIDS.find(k => k.name === name) || KIDS.find(k => k.name.split(' ')[0] === first) || null;
 
   const m = new Modal({
     size: 'full',
@@ -154,79 +88,62 @@ export async function passTo(o = {}) {
     className: 'mm-handoff',
     labelledBy: 'mm-handoff-title',
   });
-  /* Modal labels every dialog by its own head's title, which the veil leaves
-     empty and hidden, and does not read `labelledBy`: so the veil points its
-     dialog at the name itself, and a screen reader says whose turn it is. */
+  /* Modal names its own (empty, hidden) head in aria-labelledby and does not
+     read `labelledBy`; the veil's title is the Kid's name, so point at it. */
   m.dialog.setAttribute('aria-labelledby', 'mm-handoff-title');
 
-  /* The room the veil is painted as: decoration only, and opaque. It stands
-     over the scrim and under the dialog, full-bleed, and it has no transition
-     of its own, so the very first frame of the veil already hides the board. */
-  const board = document.createElement('div');
-  board.className = 'hoff-board kit-board';
-  board.setAttribute('aria-hidden', 'true');
-  board.innerHTML =
-    '<div class="hoff-board__ground kit-ground"><i class="kit-ground__warm"></i><i class="kit-ground__moon"></i></div>'
-    + '<div class="hoff-board__vig"></div>'
-    + '<div class="hoff-board__dress kit-dress">'
-    + '<i class="kit-dress__floor"></i><i class="kit-dress__rule"></i><i class="kit-dress__footscroll"></i>'
-    + '<i class="kit-dress__vine kit-dress__vine--l"></i><i class="kit-dress__vine kit-dress__vine--r"></i>'
-    + '<i class="kit-dress__corner kit-dress__corner--l"></i><i class="kit-dress__corner kit-dress__corner--r"></i>'
-    + '<i class="kit-dress__flame kit-dress__flame--l"></i><i class="kit-dress__flame kit-dress__flame--r"></i>'
-    + '</div>';
-  m.el.insertBefore(board, m.dialog);
-
   const wrap = document.createElement('div');
-  wrap.className = 'hoff' + (kid ? '' : ' hoff--nokid') + (comp ? '' : ' hoff--nopet');
+  wrap.className = 'hoff';
+  wrap.style.setProperty('--hoff-len', String(Math.max(3, first.length)));
+  /* A title card, the way the title screen is one: the Kid's name in
+     UI/title.png's cartouche, lettered as MIDNIGHT MENAGERIE is, their
+     Companion as its epithet and PASS IT OVER on the gold ribbon hung from it;
+     under it the two of them in the Kid board's frames with the Companion
+     tiles' nameplates, and the way on as the boards' lit nameplate. Behind it
+     the house itself, in Josh's own painting of it (UI/mainMenu.png), inside
+     the boards' gilt rule with old threads across its top corners. All of it
+     opaque: the veil still shows nothing of the board it covers. */
   wrap.innerHTML =
-    `<header class="hoff__plaque kit-titleblock">`
-    + `<p class="hoff__k kit-cartouche__title">Pass it over</p>`
-    + (o.sub ? `<p class="hoff__sub kit-cartouche__sub">${esc(o.sub)}</p>` : '')
+    `<div class="hoff__room kit-board" aria-hidden="true">`
+    + `<i class="hoff__night"></i>`
+    + `<i class="hoff__vig"></i>`
+    + `<i class="hoff__glow kit-light kit-light--candle"></i>`
+    + `<div class="hoff__dress kit-dress">`
+    + `<i class="kit-dress__rule"></i><i class="kit-dress__footscroll"></i>`
+    + `<i class="hoff__web hoff__web--l kit-web"></i><i class="hoff__web hoff__web--r kit-web kit-web--r"></i>`
+    + `</div></div>`
+    + ENGRAVE
+    + `<div class="hoff__card">`
+    + `<header class="hoff__plaque kit-titleblock">`
+    + `<h2 class="hoff__name kit-cartouche__title" id="mm-handoff-title">${esc(first)}</h2>`
+    + (comp ? `<p class="hoff__comp kit-cartouche__sub">with ${esc(comp.name)}</p>` : '')
+    + `<p class="hoff__k kit-ribbon">Pass it over</p>`
     + `</header>`
-    + `<div class="hoff__stage kit-stage">`
-    /* the alcove's back wall, hung with the Companion board's flocked damask
-       and lit by the candle on the ledge (.kit-mat), and that candle's light */
-    + `<i class="hoff__wall kit-mat kit-mat--flock" aria-hidden="true"></i>`
-    + `<i class="hoff__glow kit-light kit-light--candle" aria-hidden="true"></i>`
-    + `<i class="hoff__ledge kit-ledge" aria-hidden="true"></i>`
-    + `<figure class="hoff__who hoff__who--kid">`
-    + (kid ? `<div class="hoff__pic hoff__pic--kid kit-frame kit-frame--over"><div class="hoff__art"></div></div>` : '')
-    + `<figcaption class="hoff__plate kit-plate">`
-    + `<h2 class="hoff__name kit-plate__name" id="mm-handoff-title">${esc(first)}</h2>`
-    + `<span class="hoff__line kit-plate__epithet">${esc(o.line || 'Your turn.')}</span>`
-    + `</figcaption></figure>`
-    + (comp
-      /* between the two of them, under the crest: the Kid board's still
-         life, a skull on its books and a candle burning beside it */
-      ? `<span class="hoff__still" aria-hidden="true">`
-        + `<i class="hoff__skull kit-prop kit-prop--skull"></i>`
-        + `<span class="hoff__candle"><i class="hoff__flame kit-prop kit-prop--candle"></i></span>`
-        + `</span>`
-        + `<figure class="hoff__who hoff__who--pet">`
-        + `<div class="hoff__pic hoff__pic--pet kit-frame kit-frame--over"><div class="hoff__art"></div></div>`
-        + `<figcaption class="hoff__plate hoff__plate--pet kit-plate">`
-        + `<b class="hoff__comp kit-plate__name">with ${esc(comp.name)}</b>`
-        + `<span class="hoff__title kit-plate__epithet">${esc(comp.title || '')}</span>`
-        + `</figcaption></figure>`
-      : '')
-    /* the Kid board's paw, on the alcove's bottom rail under its moon, as its
-       mirror wears them */
-    + `<i class="hoff__paw" aria-hidden="true"></i>`
-    + `</div>`
-    + `<button type="button" class="hoff__go kit-btn"><span class="hoff__go-words">I'm ready</span>`
-    + `<kbd class="hoff__key">Enter</kbd>`
-    + `<i class="hoff__medal kit-medallion kit-medallion--ornate kit-btn__medal" aria-hidden="true">${DIALOG_GLYPH.done}</i>`
-    + `</button>`;
+    + ((kid || comp) ? `<div class="hoff__stage" data-n="${(kid ? 1 : 0) + (comp ? 1 : 0)}"></div>` : '')
+    + `<p class="hoff__line">${esc(o.line || 'Your turn.')}</p>`
+    + (o.sub ? `<p class="hoff__sub">${esc(o.sub)}</p>` : '')
+    + `<button type="button" class="hoff__go kit-btn">`
+    + `<span class="hoff__words">I'm ready</span><kbd class="hoff__key">Enter</kbd>`
+    + `<i class="hoff__medal kit-medallion kit-btn__medal" aria-hidden="true">${TICK}</i></button>`
+    + `</div>`;
 
-  /* the two of them, drawn by ui/portrait.js as every other board draws them */
-  let pet = null;
-  if (kid) {
-    wrap.querySelector('.hoff__pic--kid .hoff__art')
-      .appendChild(kidImg(kid.slug, { className: 'kidpf hoff__kidimg', alt: '' }));
-  }
-  if (comp) {
-    pet = companionPortrait({ slug: comp.slug, variant: '-card', parallax: 0, shimmer: false, alt: '' });
-    wrap.querySelector('.hoff__pic--pet .hoff__art').appendChild(pet.el);
+  const stage = wrap.querySelector('.hoff__stage');
+  if (stage) {
+    if (kid) {
+      const img = kidImg(kid.slug, { className: 'hoff__img hoff__img--kid', alt: '' });
+      stage.appendChild(figure('kid', img, kid.name, `looking for ${kid.pet}`));
+    }
+    if (comp) {
+      const img = document.createElement('img');
+      img.className = 'hoff__img hoff__img--pet';
+      img.alt = '';
+      img.decoding = 'async';
+      img.draggable = false;
+      img.width = 560; img.height = 349;
+      img.src = thumbSrc(comp.slug, '-card');
+      img.addEventListener('error', () => { img.src = fullSrc(comp.slug); }, { once: true });
+      stage.appendChild(figure('pet', img, comp.name, comp.title));
+    }
   }
 
   m.body.appendChild(wrap);
@@ -255,19 +172,66 @@ export async function passTo(o = {}) {
 
   const p = m.open();
   requestAnimationFrame(() => go.focus());
-  /* The board is up, and opaque, from the veil's first frame. The two of them
-     are shown the moment their pictures are in hand — never more than half a
-     second — so the veil never shows an empty frame where a face should be. */
-  const pics = [...wrap.querySelectorAll('img')];
-  Promise.race([
-    Promise.all(pics.map((img) => (img.decode ? img.decode().catch(() => {}) : null))),
-    new Promise((r) => setTimeout(r, 500)),
-  ]).then(() => m.el.classList.add('is-painted'));
-  try { await p; } finally {
-    document.removeEventListener('keydown', onKey);
-    pet?.destroy();
-  }
+  try { await p; } finally { document.removeEventListener('keydown', onKey); }
 }
+
+/** One of the two on the stage: the painting in the Kid board's frame, and the
+    Companion tiles' nameplate hung over its foot (Name over italic epithet). */
+function figure(kind, img, name, epithet) {
+  const f = document.createElement('figure');
+  f.className = `hoff__fig hoff__fig--${kind}`;
+  const frame = document.createElement('div');
+  frame.className = 'hoff__frame kit-frame kit-frame--over';
+  frame.appendChild(img);
+  const cap = document.createElement('figcaption');
+  cap.className = 'hoff__plate kit-plate';
+  cap.innerHTML = `<b class="kit-plate__name">${esc(name)}</b><span class="kit-plate__epithet">${esc(epithet)}</span>`;
+  f.append(frame, cap);
+  return f;
+}
+
+/* the Kid board's confirm: a tick cast in the round enamel button's gilt */
+const TICK = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.6 12.6 5.5 9.7l4.3 4.3 8.7-9.6 2.9 2.7-11.5 12.6z"/></svg>';
+
+/* The name is lettered the way the wordmark is, at the wordmark's size: the
+   kit's #kit-engrave is tuned for a 40px plaque title, and at a hundred pixels
+   its hairline rim reads as no rim at all. The same recipe with the bevel, the
+   gold edge and the extrusion scaled to the letter. */
+const ENGRAVE = `<svg class="hoff__defs" width="0" height="0" aria-hidden="true" focusable="false">
+  <filter id="hoff-engrave" x="-8%" y="-30%" width="116%" height="175%" color-interpolation-filters="sRGB">
+    <feGaussianBlur in="SourceAlpha" stdDeviation="2.4" result="bump"/>
+    <feDiffuseLighting in="bump" surfaceScale="4.2" diffuseConstant="1.16" lighting-color="#ffffff" result="diffuse">
+      <feDistantLight azimuth="235" elevation="46"/>
+    </feDiffuseLighting>
+    <feComposite in="SourceGraphic" in2="diffuse" operator="arithmetic" k1="1.14" k2="0" k3="0" k4="0" result="shaded"/>
+    <feSpecularLighting in="bump" surfaceScale="4.2" specularConstant=".9" specularExponent="18" lighting-color="#f6ecff" result="spec">
+      <feDistantLight azimuth="235" elevation="38"/>
+    </feSpecularLighting>
+    <feComposite in="spec" in2="SourceAlpha" operator="in" result="specIn"/>
+    <feComposite in="shaded" in2="specIn" operator="arithmetic" k1="0" k2="1" k3=".75" k4="0" result="lit"/>
+    <feComposite in="lit" in2="SourceAlpha" operator="in" result="face"/>
+    <feMorphology in="SourceAlpha" operator="dilate" radius="2.1" result="rim"/>
+    <feGaussianBlur in="rim" stdDeviation=".5" result="rimSoft"/>
+    <feFlood flood-color="#b48c4a"/>
+    <feComposite in2="rimSoft" operator="in" result="gold"/>
+    <feOffset in="rimSoft" dx="-.6" dy="-1.4" result="rimUp"/>
+    <feFlood flood-color="#f3dfa8"/>
+    <feComposite in2="rimUp" operator="in" result="goldHi"/>
+    <feOffset in="rim" dy="2.5" result="rimD1"/>
+    <feOffset in="rim" dy="5" result="rimD2"/>
+    <feMerge result="rimDown"><feMergeNode in="rimD1"/><feMergeNode in="rimD2"/></feMerge>
+    <feFlood flood-color="#1d0f2b"/>
+    <feComposite in2="rimDown" operator="in" result="extrude"/>
+    <feGaussianBlur in="rim" stdDeviation="6" result="soft"/>
+    <feOffset in="soft" dy="9" result="softDown"/>
+    <feFlood flood-color="#000000" flood-opacity=".85"/>
+    <feComposite in2="softDown" operator="in" result="shadow"/>
+    <feMerge>
+      <feMergeNode in="shadow"/><feMergeNode in="extrude"/><feMergeNode in="goldHi"/>
+      <feMergeNode in="gold"/><feMergeNode in="face"/>
+    </feMerge>
+  </filter>
+</svg>`;
 
 function esc(s) {
   return String(s).replace(/[<>&"]/g, c => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;' }[c]));
