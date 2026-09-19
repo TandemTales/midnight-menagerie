@@ -32,7 +32,12 @@ async (P) => {
      per region on its own -- but it is how you get a DIFFERENT arrangement of
      the same room on purpose, which is useful when one layout happens to hide
      the prop you are trying to look at. */
-  const seed = (q.match(/seed=([A-Za-z0-9_-]+)/) || [])[1];
+  /* URL-encoded, so a room can be named the way the game names it: combat
+     passes the whole room name ("Wax Room", "Butler's Passage"), and ROOM_KINDS
+     picks a room's kind by its NAME. The old [A-Za-z0-9_-]+ stopped at the
+     first space and photographed a room called "Wax". */
+  const seedRaw = (q.match(/seed=([^&]+)/) || [])[1];
+  const seed = seedRaw === undefined ? undefined : decodeURIComponent(seedRaw);
   if (seed !== undefined) {
     ctx.atmosphere.setMood(region, { instant: true, seed });
     window.MM.showcase.set(region, true);

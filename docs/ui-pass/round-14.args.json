@@ -1,0 +1,64 @@
+{
+  "round": "r14",
+  "maxBuilders": 3,
+  "briefs": [
+    "docs/ui-pass/BRIEF-r0.md",
+    "docs/ui-pass/BRIEF-r1.md",
+    "docs/ui-pass/BRIEF-r9.md",
+    "docs/ui-pass/BRIEF-r10.md",
+    "docs/ui-pass/BRIEF-r11.md",
+    "docs/ui-pass/BRIEF-r14.md"
+  ],
+  "rubrics": [
+    "docs/ui-pass/RUBRIC.md",
+    "docs/ui-pass/RUBRIC-r9.md",
+    "docs/ui-pass/RUBRIC-r11.md",
+    "docs/ui-pass/RUBRIC-r14.md"
+  ],
+  "samples": [
+    "UI/title.png",
+    "UI/mainMenu.png",
+    "UI/selectCompanion.png",
+    "UI/selectKid.png"
+  ],
+  "tracks": [
+    {
+      "key": "rooms",
+      "name": "ROOMS",
+      "rule": "refine",
+      "screens": [
+        "sheet-foyer",
+        "sheet-ballroom",
+        "sheet-greenhouse",
+        "sheet-graveyard",
+        "sheet-lampworks",
+        "sheet-bathhouse",
+        "combat"
+      ],
+      "smallScreens": [
+        "combat"
+      ],
+      "baseline": "FUSTIAN",
+      "builders": [
+        {
+          "slot": "a",
+          "code": "ORPIMENT",
+          "port": 8931,
+          "angle": "LITERAL. Work BRIEF-r14's fix list 1 to 6 in order and exactly as written: every item in it was named by both round-11 judges, and CAMBER's merged work is the base you build on, not something to replace. Fix 1 first, because both judges put it first: a kind gets its own vantage the way it has its own subject, and MADDER's branch (ui/r11-vary-c) is the named graft. Then the Graveyard's gate, the Ballroom's piano and mirrors, the vinery, the six unvaried wings, and the combat balustrade. Work in sheets from the first change."
+        },
+        {
+          "slot": "b",
+          "code": "SEPIA",
+          "port": 8932,
+          "angle": "WHERE YOU STAND. Fix 1 is your round: bring MADDER's authored vantages (ui/r11-vary-c: vantages per region, a proscenium frame, foreground balusters, the wrought-iron gate arch) INTO CAMBER's ROOM_KINDS so every kind in every wing is seen from somewhere of its own -- the gallery from one end of its arcade, the landing from low with the stair rising to one side, the mirror hall from a corner, the plots from among the graves, the gate from under its arch. A vantage is free on the GPU and it is the thing both judges said the rooms still lack. Mind the two traps BRIEF-r11 names: the prop clamp assumes the rig, and a corridor will not take a ballroom's swing. Then fixes 2-4 as they touch your vantages."
+        },
+        {
+          "slot": "c",
+          "code": "VERMEIL",
+          "port": 8933,
+          "angle": "THE WINGS NOBODY HAS SEEN. Six wings still have no ROOM_KINDS at all -- Lampworks, Hedge Maze, Secret Passages, Bathhouse, Pumpkin Grounds, the Heart -- so every one of their rooms is one room rearranged, and two of them are judged this round for the first time. Lead with them: two or three kinds each, read straight off their real room names in state/mapgen.js ROOMS (a Steam Room, an Indoor Pool, a Pipe Gallery; a Wax Room, a Reflector Gallery, a Boiler Walk; a Moon Gate and a Glass Pumpkin House; a Whisper Room behind the walls), each a room that wing truly has, each with its own subject compiled into its own wing's MM_ROOMS variant as CAMBER did, so program 0 carries nothing. Then fixes 2-4."
+        }
+      ]
+    }
+  ]
+}

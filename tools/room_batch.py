@@ -40,8 +40,10 @@ the PREVIOUS room.
 import argparse
 import asyncio
 import os
+import re
 import sys
 import time
+import urllib.parse
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from gpu_slot import gpu_slot  # noqa: E402  one WebGL page at a time
@@ -83,8 +85,14 @@ def _hash(region, seed, tier, flags):
     if flags:
         parts.append(flags.lstrip('&'))
     if seed:
-        parts.append(f'seed={seed}')
+        # encoded, so real room names with spaces and apostrophes survive
+        parts.append('seed=' + urllib.parse.quote(seed, safe=''))
     return '&'.join(parts)
+
+
+def _slug(seed):
+    """A file-name-safe form of a room name ('Wax Room' -> 'wax-room')."""
+    return re.sub(r'[^a-z0-9]+', '-', str(seed).lower()).strip('-') or 'room'
 
 
 def _pixels(png):
@@ -128,7 +136,7 @@ async def _run(rooms, port, tier, flags, w, h, wait, warm_timeout, prefix, log):
             await page.wait_for_timeout(int(wait * 1000))
             log(f'  page warm in {time.time() - t0:.0f}s')
             for region, seed in rooms:
-                name = f'{prefix}{region}-{seed}' if seed else f'{prefix}{region}'
+                name = f'{prefix}{region}-{_slug(seed)}' if seed else f'{prefix}{region}'
                 png = os.path.join(SHOTS, name + '.png')
                 if os.path.exists(png):
                     os.remove(png)
