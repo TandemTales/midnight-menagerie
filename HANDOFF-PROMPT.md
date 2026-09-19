@@ -16,10 +16,48 @@ loop until perfected". Two later calls narrow it and both are in force:
 `UI/*.png`** — what matters is readable, accurately drawn, well-detailed objects
 (item 3).
 
-## START HERE
+## START HERE — 2026-09-18 evening, session 6250d1da
 
-**THE ONE THING TO DO FIRST: restart the machine, then finish round 11's
-baselines and launch it.**
+**Where it stands.** The machine was restarted (18:31) and round 11's
+baselines were taken — but they are about to be RETAKEN, because the order
+changed: the two round-10 grafts go in FIRST, so round 11 builds on the rooms
+the game will actually have, and so whichever lands second is not the one that
+runs out of the perf budget.
+
+1. **The graft is being built** on `ui/r11-graft` (worktree
+   `C:/UILOOP/r11/wt/r11-graft`, port 8904, cut at `fc881cf`): SORREL2's
+   Greenhouse (`ff71330` + `0092f30`) and BISTRE2's Foyer (`8e096b2`,
+   `17d0a3e`, `055f2b0`), with SORREL2's planting bed renumbered 22 -> 24
+   (OAKGALL's fittings own 22 and 23) and one fitting per light. Its captures
+   go to `C:/UILOOP/r11/judging/graft/`. Check them against
+   `C:/UILOOP/r10/judging/r10/bg3/{SORREL2/room-greenhouse,BISTRE2/room-foyer}.png`
+   before merging.
+2. **Then:** merge it, fast-forward `ui/r11-vary-{a,b,c}` to the merge, finish
+   `BRIEF-r11.md`'s "what changed under you" section and its perf numbers,
+   retake the baselines (`bash docs/ui-pass/baseline-r11.sh`, now ~4x faster),
+   **check `band` on combat and rest**, and launch round 11 with that merge as
+   `base`.
+
+**Four harness fixes landed today, and they change how a round runs:**
+- `fc881cf` — **the fifth way a capture lies**: a board with NO ROOM behind it
+  (warm-up ~35 s against a 40 s timeout; `shot.py` shot into phase A). Round
+  11's first combat baseline was one. A timeout is void now; `perf.band` is
+  the check (29-36 with a room, 23.6 without).
+- `9966399` — `tools/room_batch.py`: one warmed page photographs every room of
+  a sheet (equivalent to fresh captures to 0.001%). `variant_sheet.py` uses it.
+  A 17-region sweep is one launch: `python tools/room_batch.py --port P
+  --regions all --sheet out.png`.
+- `2d08cca` — `tools/gpu_slot.py`: ONE WebGL page at a time machine-wide.
+  Captures run on the Intel UHD iGPU, where one holds ~1.5 GB of shared (=
+  system) memory plus ~0.9 GB of browser, with 4.7 GB free idle — three
+  builders capturing at once was the likeliest cause of the "degradation".
+  It also makes every gpuprof run quiet by construction.
+- `BRIEF-r11.md` gained **the empty-room defect**: 4 of the 12 baseline
+  panels drew `perimeter` and are nearly empty (and the piano vanishes,
+  because only `colonnade` places `props.solo`).
+
+**THE PREVIOUS START HERE, kept for its detail:** restart the machine, then
+finish round 11's baselines and launch it.
 
 ```
 bash docs/ui-pass/baseline-r11.sh      # skips what already exists, retries voids

@@ -18,10 +18,13 @@ one () {
   for try in 1 2 3 4; do
     rm -f "shots/QUILL-$n.png" "shots/QUILL-$n.state.json"
     python tools/shot.py "QUILL-$n" --port 8777 "$@" >/dev/null 2>&1
+    # void, OR a board with no room behind it (band under 28: the room reads
+    # 29-36 and the no-room plum frame 23.6 -- see fc881cf)
     v=$(python -c "
 import json
 try:
-    d=json.load(open('shots/QUILL-$n.state.json')); print(1 if d.get('void') else 0)
+    d=json.load(open('shots/QUILL-$n.state.json'))
+    print(1 if d.get('void') or d.get('perf', {}).get('band', 99) < 28 else 0)
 except Exception: print(1)")
     if [ "$v" = "0" ]; then cp "shots/QUILL-$n.png" "$J/$n.png"; echo "ok   $n"; return; fi
     echo "retry $n"; sleep 25

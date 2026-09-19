@@ -33,6 +33,44 @@ re-seeded by the room's name. He is telling you they feel like one room.
 That is not a small amount, and it works: three Foyers seeded `parlor`,
 `gallery` and `landing` differ in **51–55% of their pixels**.
 
+### AND THE MACHINERY ALREADY BREAKS IN ONE PLACE: it can EMPTY a room
+
+Look at the baseline sheets before anything else. **Four of the twelve panels
+are nearly empty** — Greenhouse `palmhouse` and `vinery`, Ballroom
+`mirrorhall`, Foyer `landing` — and all four are the same defect. `_vary()`
+draws a sibling layout from `LAYOUT_FAMILY`, and all four drew
+**`perimeter`**, whose own comment is "everything lines the back wall and the
+two side walls. Empty middle." In a room ten metres deep that is a study
+lined with cases. The Greenhouse and the Ballroom are both authored 26 m
+deep, so it puts 55% of the props on a back wall more than thirty metres
+from the lens, in the dark, and clamps the rest to the frame edges — so a
+room authored with 44 plants shows a column, a shrub and a lamp. The
+Ballroom loses its piano as well, because the room's one-of-a-kind
+(`props.solo`) is only PLACED by `colonnade`; any other layout deals it like
+a chair, and `perimeter` deals it to the far wall.
+
+The Foyer, the Study and the Crypt are AUTHORED `perimeter`, and four more
+regions (Greenhouse, Lampworks, Ballroom, Heart) have it as a sibling — seven
+of seventeen can draw it. The Foyer's `props.near` (see "what changed under
+you") exists because of it: "the lower 40% of the frame is unlit floor
+carrying one small bench" was this layout's empty middle.
+
+What each seeded panel drew (reproduced from `_vary()`'s own hash):
+
+| wing | authored | room | layout | count |
+|---|---|---|---|---|
+| foyer | perimeter, 26 | parlor / gallery / **landing** | wings / wings / **perimeter** | 24 / 31 / 22 |
+| greenhouse | terrace, 44 | conservatory / **palmhouse** / **vinery** | terrace / **perimeter** / **perimeter** | 50 / 50 / 33 |
+| ballroom | colonnade, 34 | ballroom / **mirrorhall** / suite | colonnade / **perimeter** / colonnade | 35 / 42 / 42 |
+| graveyard | rows, 34 | yard / plots / gate | colonnade / rows / colonnade | 29 / 36 / 41 |
+
+This is exactly what the rubric punishes — "has variety been bought by making
+the rooms vaguer?" — and it is already in the baseline. **Whatever your angle,
+no wing may contain an empty room when you finish**: a layout family must hold
+the same KIND of space at a legible depth, and a room's solo piece must be in
+the room in every layout. Check it on the sheets for all seventeen regions,
+not on these four.
+
 **And they still read as one room, which is the whole finding.** What `_vary()`
 never touches is `pal.cam`, `subject`, `floorPattern` and the prop shape SET —
 so every Foyer shows **the same staircase, on the same wall, under the same
@@ -103,6 +141,25 @@ CURRENT build scores while still reading as one room, so a higher number proves
 nothing on its own — the judges are asked whether the panels read as different
 rooms, and that has no metric.
 
+**A sheet is ONE browser launch now** (`tools/room_batch.py`, measured
+equivalent to fresh captures to 0.001%), about 90 s for three rooms. The
+seventeen-region sweep is one launch too, and that is how you should take it:
+
+```
+python tools/room_batch.py --port PORT --regions all --seed parlor --sheet JUDGING/CODE/sweep-parlor.png
+```
+
+Run it with two or three different `--seed` values — one seed across
+seventeen regions shows you each wing once; the question is each wing's
+SPREAD.
+
+**Captures queue.** `tools/gpu_slot.py` lets one WebGL page run at a time on
+this machine, across all three builders: one capture holds ~2.4 GB on a
+laptop with ~4.7 GB free, and three at once is what degraded the GPU in
+rounds 8-10. A capture that prints `gpu_slot: waiting for the GPU` is queued
+behind another builder, not hung — do not kill it. It also means every
+`gpuprof.py` run you take is in a quiet window by construction.
+
 ## THE INSTRUMENTS, and what each lies about
 
 All of `BRIEF-r10.md`'s section applies. The two that matter most here:
@@ -115,6 +172,14 @@ All of `BRIEF-r10.md`'s section applies. The two that matter most here:
 - **A void capture is not a regression.** `shot.py` exits 2 on `gl: none` or a
   frame flatter than std 8. This machine's GPU degrades across a few hundred
   browser launches in a session and **recovers when left to idle**.
+- **`glStd` cannot see a missing room behind a BOARD.** Playwright's element
+  screenshot is a clip of the page, so on `combat` and `rest` it measures the
+  board. The first QUILL combat baseline was the board over a flat plum plane
+  — the stage never finished its ~35 s warm-up before the snap — and read
+  glStd 41. Since `fc881cf` a warm-up timeout is void (exit 2), and
+  `perf.band` in the state file is the board's upper-middle luminance: **29-36
+  with a room, 23.6 without. Check `band` on your `combat` and `rest`
+  captures.**
 - **Bisect with the layer toggles** — `motes=0`, `shafts=0`, `props=0`,
   `frames=0`, `actor=0` — before theorising about a cause.
 - **Measure to FIND the defect, LOOK to set the amount**, and check the capture
