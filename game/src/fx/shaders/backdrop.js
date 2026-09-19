@@ -83,11 +83,30 @@ void main(){
 
 export const WALL_FRAG = /* glsl */`
 precision highp float;
+/* MM_ROOMS -- which wing's round-11 rooms this program carries (ROOMS_PROGRAM
+   in fx/backdrop.js). 0 is the house as it was; each wing that has rooms of
+   its own compiles them into a variant of its own, so no one program carries
+   every wing's -- linking all of them into one cost the page 25 s of warm-up
+   on this machine, measured against BASE. */
+#ifndef MM_ROOMS
+#define MM_ROOMS 0
+#endif
 ${GLSL_LIB}
 ${LIGHT_LIB}
 uniform float uTime, uSeed, uDread, uFogAmt, uArch, uCool, uGrime, uOpen, uCeil, uGain;
 uniform float uGloss, uAlbLift, uInk, uLip, uDamask, uDamCell, uDamKind;
 uniform float uSubject, uFar;
+/* uDoorX    WHERE THE PRINCIPAL DOORWAY IS, in metres off the wall's centre
+             line: 0 is the one central door every panelled room has had,
+             a positive value is a PAIR of doors that far either side of it
+             (a chimneypiece takes the centre of a hall, and its doors flank
+             it), and a negative one is no doorway at all. A room kind picks
+             it with its subject -- see ROOM_KINDS in fx/atmosphere.js.
+   uHouse    x: how far the exterior's HOUSE stands off centre, metres, and
+             y: the same for the moon. Every Graveyard used to put the one
+             house and the one moon in the one place. */
+uniform float uDoorX;
+uniform vec2  uHouse;
 /* uSkyGlow  how bright the whole night is, per region. POST-EXPOSURE, so the
              module divides it by the palette's exposure: the Graveyard sits at
              1.33 and the Title at 1.8, and one flat number gave the Title a
@@ -122,7 +141,10 @@ varying vec3  vWorld;
    the one object in the room whose size the eye uses to measure everything else
    was reading half a metre too tall. 2.00 m wide, 2.95 m to the crown. */
 float archSD(vec2 q){
-  return mmArch(q - vec2(uSize.x*0.5, 0.10), 1.00, 1.85);
+  /* abs() then the offset: at uDoorX 0 this is exactly the one central door
+     (mmArch is symmetric), and above 0 it is two, mirrored about the axis. */
+  if (uDoorX < -0.5) return 99.0;
+  return mmArch(vec2(abs(q.x - uSize.x*0.5) - uDoorX, q.y - 0.10), 1.00, 1.85);
 }
 
 /* A DAMASK, drawn with a pen: a fleur on a brick offset inside a continuous
@@ -376,6 +398,599 @@ float mmShelf(vec2 p, float y0, float y1, float n, float kind, float sd){
   return s * inRange;
 }
 
+/* ── ROUND 11: A WING HAS SEVERAL KINDS OF ROOM ─────────────────────────────
+   Until this round a region named ONE subject, so every Foyer in the game drew
+   the same imperial staircase on the same wall, every Greenhouse the same
+   staging and every Ballroom the same pier glasses -- and Josh asked for
+   "multiple different foyer, ballroom, greenhouse, etc. rooms". These are the
+   other rooms. Each is a thing that wing really contains, picked per room by
+   ROOM_KINDS in fx/atmosphere.js (by the room's own name where the name says
+   what it is: a Parlor gets the fire, a Landing the stair, a Vinery its vines),
+   and each is drawn in the same relief vocabulary as the originals, so it
+   arrives with the same ink, occlusion and candlelight for free.
+
+   COST. Every one is selected by the uSubject UNIFORM, so a pixel runs one
+   subject and never all of them; what they cost is program size. So they share
+   the helpers below rather than each carrying its own, they run in their own
+   block under the original seventeen so no chain gets deeper than it was, and
+   the Graveyard's two new rooms run INSIDE its existing branch, sharing its
+   railing instead of repeating it.
+
+   LAYERING. A thing standing in front of another hides it, so where a subject
+   draws one object over another it MIXES to the front object's relief rather
+   than adding to it: a curtain across a dark stage is a curtain, not a curtain
+   plus a hole. */
+
+/* A SUBJECT'S MATERIAL, which relief alone cannot say. The recess occlusion
+   spans 0.42-1.12 of albedo, so a stone chimneypiece proud of a papered wall
+   comes out at 1.45:1 against it, and a portrait's canvas as the same stuff as
+   its frame. gTint lets a subject name what a thing is MADE of: toward +1 pale
+   dressed stone or marble, toward -1 a dark ground -- a varnished canvas, a
+   firebox, a velvet curtain in shadow. Written by subjectH (reset at its top),
+   read once in main(). One float, no branch. */
+float gTint;
+
+/* A picture in a heavy frame: the moulding proud, a bead inside it, the canvas
+   set back. hs is the frame's OUTER half-size, t the moulding's width. */
+float sFrame(vec2 p, vec2 hs, float t){
+  float o = mmBox(p, hs, 0.02);
+  float i = mmBox(p, hs - vec2(t), 0.01);
+  float fr = mmSolid(o);
+  return fr*0.90 - mmSolid(i)*1.15
+       + fr*(1.0 - smoothstep(0.010, 0.026, abs(i + t*0.42)))*0.26;
+}
+/* A PAIR OF PANELLED DOORS filling an opening: two leaves, the meeting stile,
+   three fielded panels a leaf (short, tall, short) and the knobs. p is on the
+   opening's axis at its foot, hw its half-width, h its height. */
+float sDoors(vec2 p, float hw, float h){
+  float leaf = mmSolid(mmBox(p - vec2(0.0, h*0.5), vec2(hw, h*0.5), 0.0));
+  float lx = abs(p.x) - hw*0.5;
+  float pw = hw*0.31;
+  float pan = mmSolid(mmBox(vec2(lx, p.y - h*0.17), vec2(pw, h*0.105), 0.01))
+            + mmSolid(mmBox(vec2(lx, p.y - h*0.52), vec2(pw, h*0.19), 0.01))
+            + mmSolid(mmBox(vec2(lx, p.y - h*0.85), vec2(pw, h*0.075), 0.01));
+  float s = leaf*0.34 - pan*0.24;
+  s -= leaf*(1.0 - smoothstep(0.008, 0.020, abs(p.x)))*0.34;
+  s += mmSolid(mmCircle(vec2(abs(p.x) - 0.075, p.y - h*0.47), 0.030))*0.55;
+  return s;
+}
+/* A POINTED ARCH: half-width w, springing at h, each side an arc of radius r
+   struck from the far side of the opening (r = 2w is an equilateral arch). */
+float sPoint(vec2 p, float w, float h, float r){
+  float body = mmBox(p - vec2(0.0, h*0.5), vec2(w, h*0.5), 0.0);
+  float arc = max(length(vec2(abs(p.x) + r - w, p.y - h)) - r, h - p.y);
+  return min(body, arc);
+}
+/* Distance to the segment a-b: a stroke that is not upright. */
+float sSegD(vec2 p, vec2 a, vec2 b){
+  vec2 pa = p - a, ba = b - a;
+  return length(pa - ba*clamp(dot(pa, ba)/dot(ba, ba), 0.0, 1.0));
+}
+
+#if MM_ROOMS == 1
+/* 18  CHIMNEYPIECE -- the Foyer as a HALL WITH A FIRE IN IT: the Parlor, the
+   Drawing Room, the Receiving Room. A baronial stone chimneypiece on a breast
+   carried to the cornice, a portrait over it, a tall panel either side, and
+   the hall's two doors flanking the lot in pedimented doorcases -- which is
+   why this subject moves the doorway (uDoorX) instead of sharing the axis
+   with one. Sized to hold the frame the way the staircase does: 5.5 m of
+   breast, a 2.6 m opening, 7.4 m to the crest. */
+float subjChimney(vec2 q, float cx, float ax, out float occ){
+  float s = 0.0;
+  float top = uCeil - 0.28;
+  /* THE BREAST, panelled above the overmantel, and the hearth slab at its foot */
+  float br = mmSolid(mmBox(vec2(cx, q.y - top*0.5), vec2(2.75, top*0.5), 0.0));
+  s += br*0.22;
+  s -= br*mmSolid(mmBox(vec2(cx, q.y - (top + 7.45)*0.5),
+                        vec2(2.05, max((top - 7.45)*0.5 - 0.20, 0.01)), 0.03))*0.22;
+  s += mmBand(q.y, 0.0, 0.13)*step(ax, 2.70)*0.55;
+  /* THE CHIMNEYPIECE ITSELF, drawn in f -- q at 1/1.25 -- so every member
+     below the shelf is authored at a domestic chimneypiece's size and comes
+     out at a hall's: jambs 0.58 m wide, a 2.58 x 1.65 m opening, the shelf at
+     2.55 m. Each jamb is a sunk panel on a plinth block under a console. */
+  vec2 f = vec2(cx, q.y)/1.25;
+  float fax = abs(f.x);
+  float jx = fax - 1.26;
+  float jamb = mmSolid(mmBox(vec2(jx, f.y - 0.84), vec2(0.23, 0.74), 0.0));
+  s += jamb*0.62;
+  s -= mmSolid(mmBox(vec2(jx, f.y - 0.88), vec2(0.11, 0.48), 0.01))*0.24;
+  s += mmSolid(mmBox(vec2(jx, f.y - 0.21), vec2(0.27, 0.10), 0.01))*0.30;
+  s += mmSolid(mmBox(vec2(jx, f.y - 1.49), vec2(0.28, 0.10), 0.01))*0.34;
+  /* THE OPENING, the darkest thing in the hall, and in it a cast fireback, a
+     basket grate and a pair of firedogs -- and the fire, banked low, which
+     main() lights: see the Foyer's fire there. */
+  float op = mmBox(vec2(f.x, f.y - 0.76), vec2(1.03, 0.66), 0.10);
+  float fire = mmSolid(op);
+  s -= fire*1.25;
+  float inF = mmSolid(op + 0.07);
+  s += inF*mmSolid(mmBox(vec2(f.x, f.y - 0.74), vec2(0.60, 0.44), 0.20))*0.30;
+  s += inF*mmSolid(mmBox(vec2(f.x, f.y - 0.44), vec2(0.56, 0.15), 0.04))
+         *(0.36 + 0.34*(1.0 - smoothstep(0.012, 0.026, mmRowX(f.y - 0.29, 0.075))));
+  s += inF*mmPost(vec2(fax, f.y), 0.76, 0.11, 0.44, 0.030)*0.75;
+  /* THE FRIEZE with a tablet at its centre, and the MANTEL SHELF oversailing
+     both jambs on its bed mould */
+  float fz = mmSolid(mmBox(vec2(f.x, f.y - 1.74), vec2(1.72, 0.15), 0.0));
+  s += fz*0.46;
+  s += mmSolid(mmBox(vec2(f.x, f.y - 1.74), vec2(0.42, 0.10), 0.05))*0.30;
+  float shelf = mmSolid(mmBox(vec2(f.x, f.y - 1.97), vec2(2.02, 0.07), 0.01));
+  s += shelf*1.00;
+  s += mmBand(f.y, 1.875, 1.90)*step(fax, 1.86)*0.45;
+  /* WHAT STANDS ON IT: a bracket clock with its dial, and a three-light
+     candelabrum and an urn each side */
+  const float G = 2.04;
+  float clk = min(mmBox(vec2(f.x, f.y - G - 0.20), vec2(0.17, 0.20), 0.02),
+                  mmCircle(vec2(f.x, f.y - G - 0.40), 0.17));
+  s += mmSolid(clk)*0.78;
+  s -= (1.0 - smoothstep(0.012, 0.030, abs(mmCircle(vec2(f.x, f.y - G - 0.30), 0.095))))*0.38;
+  s += mmSolid(mmBox(vec2(f.x, f.y - G - 0.61), vec2(0.022, 0.05), 0.01))*0.60;
+  float kx = fax - 0.95;
+  float kc = kx - clamp(floor(kx/0.16 + 0.5), -1.0, 1.0)*0.16;
+  float cand = min(mmBox(vec2(kx, f.y - G - 0.03), vec2(0.075, 0.03), 0.01),
+                   mmBox(vec2(kx, f.y - G - 0.20), vec2(0.018, 0.17), 0.0));
+  cand = min(cand, mmBox(vec2(kx, f.y - G - 0.37), vec2(0.17, 0.016), 0.01));
+  cand = min(cand, mmBox(vec2(kc, f.y - G - 0.46), vec2(0.016, 0.08), 0.0));
+  s += mmSolid(cand)*0.70;
+  float ux = fax - 1.64;
+  float urn = min(mmCircle(vec2(ux, (f.y - G - 0.20)*0.86), 0.11),
+                  mmBox(vec2(ux, f.y - G - 0.045), vec2(0.06, 0.045), 0.01));
+  urn = min(urn, mmBox(vec2(ux, f.y - G - 0.33), vec2(0.045, 0.045), 0.01));
+  urn = min(urn, mmCircle(vec2(ux, f.y - G - 0.41), 0.035));
+  s += mmSolid(urn)*0.70;
+  /* THE OVERMANTEL, in u -- q lifted to the new shelf: a portrait in a heavy
+     frame between two fluted terms, an entablature, and a broken pediment
+     with a cartouche in the break. The sitter is a pale face over a dark coat,
+     which is all a varnished portrait is from across a hall nobody lights. */
+  vec2 u = vec2(cx, q.y - 0.51);
+  vec2 pc = vec2(cx, u.y - 4.14);
+  s += sFrame(pc, vec2(1.24, 1.52), 0.20);
+  float can = mmSolid(mmBox(pc, vec2(1.04, 1.32), 0.01));
+  s += can*(mmSolid(mmCircle(vec2(cx, (u.y - 4.62)*0.80), 0.24))*0.34
+          - mmSolid(mmBox(vec2(cx, u.y - 3.45), vec2(0.80, 0.62), 0.45))*0.18);
+  float tx = ax - 1.52;
+  float terms = mmSolid(mmBox(vec2(tx, u.y - 4.14), vec2(0.13, 1.56), 0.02));
+  s += terms*0.55;
+  s -= mmSolid(mmBox(vec2(tx, u.y - 4.14), vec2(0.055, 1.30), 0.01))*0.22;
+  s += mmSolid(mmBox(vec2(tx, u.y - 5.74), vec2(0.18, 0.07), 0.01))*0.40;
+  float ent = mmSolid(mmBox(vec2(cx, u.y - 5.92), vec2(1.86, 0.12), 0.01));
+  s += ent*0.85;
+  float rake = u.y - 6.04 - (1.86 - ax)*0.36;
+  float ped = step(0.62, ax)*step(ax, 1.86)*step(6.02, u.y)
+            *(1.0 - smoothstep(0.03, 0.09, abs(rake - 0.05)));
+  s += ped*0.75;
+  vec2 cq = vec2(cx, (u.y - 6.40)*0.78);
+  float cart = mmSolid(mmCircle(cq, 0.30));
+  s += cart*0.70 - mmSolid(mmCircle(cq, 0.20))*0.30;
+  s += mmSolid(mmBox(vec2(cx, u.y - 6.78), vec2(0.03, 0.10), 0.01))*0.50;
+  /* A TALL PANEL EITHER SIDE of the breast, bolection-moulded, with the paper
+     showing in it: the upper wall's order, now the chimney sets it */
+  float tp = mmBox(vec2(ax - 3.87, q.y - 4.70), vec2(0.70, 2.30), 0.05);
+  s += (1.0 - smoothstep(0.03, 0.09, abs(tp)))*0.55;
+  /* THE HALL'S TWO DOORS, one each side in a pilastered doorcase under a
+     pediment, with a portrait hung over each. archSD cuts the openings. */
+  float dx = ax - uDoorX, adx = abs(dx);
+  float dpil = mmSolid(mmBox(vec2(adx - 1.20, q.y - 1.52), vec2(0.12, 1.50), 0.0));
+  s += dpil*0.48;
+  float dent = mmSolid(mmBox(vec2(dx, q.y - 3.16), vec2(1.42, 0.12), 0.01));
+  s += dent*0.80;
+  float dped = q.y - 3.28 - (1.42 - adx)*0.34;
+  float inPed = step(adx, 1.42)*step(3.27, q.y);
+  s += inPed*(1.0 - smoothstep(-0.015, 0.015, dped))*0.40;
+  s += inPed*(1.0 - smoothstep(0.035, 0.085, abs(dped + 0.03)))*0.50;
+  vec2 dp = vec2(dx, q.y - 5.05);
+  s += sFrame(dp, vec2(0.64, 0.80), 0.11);
+  /* WHAT IT IS MADE OF: the chimneypiece and the doorcases dressed stone,
+     the frames a little lighter than the wall, the canvases and the firebox
+     dark */
+  float stoneM = max(max(max(jamb, fz), max(shelf, terms)), max(max(ent, ped), max(dpil, dent)));
+  float canv = can + mmSolid(mmBox(dp, vec2(0.53, 0.69), 0.01));
+  gTint = stoneM*0.95 + cart*0.5 - canv*0.55 - fire*1.0;
+  occ = clamp(br + mmSolid(mmBox(vec2(dx, q.y - 2.0), vec2(1.44, 2.0), 0.0))
+            + mmSolid(mmBox(dp, vec2(0.66, 0.82), 0.0)), 0.0, 1.0);
+  return s;
+}
+
+/* 19  ARCADE -- the Foyer as a GALLERY: the Marble Gallery, the Portrait Hall,
+   the Bell Pull Gallery. A two-storey elevation: an arcade of round arches on
+   piers, each the size of the hall's own doorway (the one on the axis IS it),
+   holding panelled doors under sunburst fanlights and niches with busts on
+   pedestals; an entablature; and over it a gallery behind a balustrade, with
+   pilasters and portraits on its own wall two metres back. A hall you walk
+   THROUGH, where the staircase hall is one you climb out of. */
+float subjArcade(vec2 q, float cx, float dqm, out float occ){
+  const float BAY = 2.70, PIER = 0.35;
+  float bi = floor(cx/BAY + 0.5);
+  float bx = cx - bi*BAY;
+  float k = abs(bi);
+  float px = BAY*0.5 - abs(bx);              // 0 on a pier's axis
+  float aa = max(dqm*0.80, 0.006);
+  float s = 0.0;
+  float arch = mmArch(vec2(bx, q.y - 0.10), 1.00, 1.85);
+  float inA = mmSolid(arch);
+  float face = mmBand(q.y, 0.0, 3.22);
+  s += face*(1.0 - inA)*0.30;
+  s += face*(1.0 - smoothstep(PIER - 0.02, PIER + 0.02, px))*0.22;                   // piers
+  s += (1.0 - smoothstep(PIER + 0.05, PIER + 0.09, px))*mmBand(q.y, 0.0, 0.32)*0.28;  // bases
+  s += (1.0 - smoothstep(PIER + 0.07, PIER + 0.11, px))*mmBand(q.y, 1.86, 2.02)*0.42; // imposts
+  s += (1.0 - smoothstep(0.035, 0.12, abs(arch - 0.10)))*step(1.95, q.y)*0.70;       // archivolts
+  s += mmSolid(mmBox(vec2(bx, q.y - 3.00), vec2(0.12 + (q.y - 2.90)*0.10, 0.16), 0.01))*0.62;
+  s += (1.0 - smoothstep(0.014, 0.040, abs(mmCircle(vec2(px, q.y - 2.72), 0.17))))*0.42;
+  /* WHAT EACH BAY HOLDS: the doorway on the axis (archSD), doors in the first
+     and third bays out, and niches with busts between them */
+  float doorBay = (1.0 - step(0.5, abs(k - 1.0))) + (1.0 - step(0.5, abs(k - 3.0)));
+  float nicheBay = step(1.5, k)*(1.0 - doorBay);
+  s += doorBay*inA*step(q.y, 1.95)*sDoors(vec2(bx, q.y - 0.10), 0.95, 1.85);
+  vec2 fp = vec2(bx, q.y - 1.95);
+  float fr = length(fp);
+  float bar = fr*abs(fract(atan(fp.x, fp.y)/0.3927 + 0.5) - 0.5)*0.3927;
+  s += doorBay*inA*step(1.97, q.y)
+     *(-0.55 + 0.45*(1.0 - smoothstep(0.012, 0.030, bar)) + 0.55*mmSolid(fr - 0.26));
+  float ped = min(mmBox(vec2(bx, q.y - 0.66), vec2(0.24, 0.52), 0.01),
+                  min(mmBox(vec2(bx, q.y - 1.21), vec2(0.30, 0.05), 0.01),
+                      mmBox(vec2(bx, q.y - 0.15), vec2(0.30, 0.05), 0.01)));
+  float bust = mmSmin(mmBox(vec2(bx, q.y - 1.33), vec2(0.075, 0.07), 0.02),
+                      mmBox(vec2(bx, q.y - 1.50), vec2(0.24, 0.12), 0.11), 0.05);
+  bust = mmSmin(bust, mmCircle(vec2(bx, (q.y - 1.77)*0.86), 0.115), 0.04);
+  s += nicheBay*inA*(mmSolid(min(ped, bust))*1.20 - 0.62);
+  /* THE ENTABLATURE the gallery stands on, and its BALUSTRADE -- a pale rail
+     against the shadow of the gallery behind it, broken by a die over every
+     pier. Same set-out as the stair's: 0.98 m to the rail, 0.14 m pitch. */
+  s += mmBand(q.y, 3.22, 3.36)*0.55 + mmBand(q.y, 3.36, 3.58)*0.32
+     + mmBand(q.y, 3.58, 3.80)*0.85;
+  float sh = mmBand(q.y, 3.80, 4.84);
+  float die = 1.0 - smoothstep(0.20, 0.24, px);
+  s += sh*mix(-0.62, 0.42, die) + mmRail(q, 3.80, 0.98, 0.140, 0.021, aa)*1.50*(1.0 - die);
+  /* THE GALLERY'S OWN WALL, two metres back and a value down: pilasters over
+     the piers, a portrait in every other bay, and the paper between them */
+  float upw = step(4.84, q.y)*step(q.y, uCeil - 0.25);
+  s -= upw*0.20;
+  float pil = (1.0 - smoothstep(0.16, 0.20, px))*upw;
+  s += pil*0.55;
+  s += step(0.5, mod(k, 2.0))*upw*sFrame(vec2(bx, q.y - 6.05), vec2(0.62, 0.80), 0.11);
+  /* WHAT IT IS MADE OF: an arcade of dressed stone and a stone balustrade,
+     marble busts, the niches and the fanlights' glass dark */
+  float stone = clamp(face*(1.0 - inA) + mmBand(q.y, 3.22, 3.80) + sh*die, 0.0, 1.0);
+  float figs = nicheBay*inA*mmSolid(min(ped, bust));
+  gTint = stone*0.50 + figs*0.95 - nicheBay*inA*(1.0 - figs)*0.45
+        - doorBay*inA*step(1.97, q.y)*0.40;
+  occ = clamp(mmBand(q.y, 0.0, 4.84) + pil, 0.0, 1.0);
+  return s;
+}
+
+#endif
+#if MM_ROOMS == 2
+/* 20  MUSICIANS' GALLERY -- the Ballroom as the room the band plays in: the
+   Grand Ballroom, the Musicians' Gallery. A balcony 13 m long on carved
+   consoles, its parapet panelled with a wreath in every panel; behind it, in
+   the dark, the band's instruments -- a harp, a double bass, the music desks
+   -- under a swagged valance with a curtain tied back at each end; and under
+   it, pier glasses either side of the door, so it is still the mirrored room
+   the rest of the wing is. */
+float subjMusic(vec2 q, float cx, float ax, float dqm, out float occ){
+  const float GW = 6.60, FL = 4.40;
+  float on = 1.0 - smoothstep(GW - 0.02, GW + 0.02, ax);
+  float s = 0.0;
+  /* consoles every 1.45 m under the floor, each a scroll wider at its head */
+  float cxk = mmRowX(cx + 0.725, 1.45);
+  float t = clamp((q.y - (FL - 0.72))/0.62, 0.0, 1.0);
+  s += on*mmSolid(mmBox(vec2(cxk, q.y - (FL - 0.41)), vec2(0.06 + 0.07*t*t, 0.31), 0.03))*0.78;
+  s += on*mmSolid(mmCircle(vec2(cxk, q.y - (FL - 0.66)), 0.07))*0.30;
+  s += on*mmBand(q.y, FL - 0.14, FL)*0.60;
+  /* THE PARAPET, panelled, a wreath in every panel, under a capping rail */
+  float par = on*mmBand(q.y, FL, FL + 1.00);
+  float pxp = mod(cx, 1.45) - 0.725;
+  float pnl = mmBox(vec2(pxp, q.y - FL - 0.47), vec2(0.55, 0.30), 0.03);
+  s += par*(0.52 - mmSolid(pnl)*0.26 + (1.0 - smoothstep(0.010, 0.026, abs(pnl + 0.05)))*0.22
+          + (1.0 - smoothstep(0.014, 0.034, abs(length(vec2(pxp, q.y - FL - 0.47)) - 0.15)))*0.40);
+  s += on*mmBand(q.y, FL + 0.98, FL + 1.10)*1.00;
+  /* BEHIND IT, the gallery is deep and dark and the band's instruments stand
+     up out of it: a harp -- pillar, the neck curling over, the soundboard
+     raking back -- a double bass's neck and scroll, and the music desks */
+  /* Not a void: the gallery's back wall is lit by the band's own desk lamps
+     (main() draws them), so it is a warm mid value the instruments stand
+     against, not the black box the first draft made of it. */
+  float inG = on*mmBand(q.y, FL + 1.10, FL + 3.00);
+  s -= inG*0.36;
+  vec2 hp = vec2(cx + 3.2, q.y - FL);
+  float harp = mmBox(hp - vec2(-0.32, 0.92), vec2(0.035, 0.92), 0.01);
+  harp = min(harp, max(abs(length(hp - vec2(0.02, 1.50)) - 0.34) - 0.035, 1.50 - hp.y));
+  harp = min(harp, sSegD(hp, vec2(0.36, 1.50), vec2(-0.22, 0.10)) - 0.05);
+  vec2 bp = vec2(cx - 2.7, q.y - FL);
+  float bass = min(mmBox(bp - vec2(0.0, 1.45), vec2(0.028, 0.42), 0.01),
+                   mmCircle(bp - vec2(0.02, 1.92), 0.06));
+  bass = min(bass, mmCircle(vec2(bp.x, (bp.y - 0.82)*0.90), 0.30));
+  float msx = mod(cx + 0.45, 1.80) - 0.90;
+  float desk = min(mmBox(vec2(msx, q.y - FL - 0.60), vec2(0.012, 0.62), 0.0),
+                   mmBox(vec2(msx, q.y - FL - 1.34), vec2(0.24, 0.13), 0.01));
+  desk += step(abs(cx + 3.2), 0.95)*9.0 + step(abs(cx - 2.7), 0.85)*9.0;
+  float band = inG*mmSolid(min(min(harp, bass), desk));
+  s += band*1.05;
+  /* A VALANCE swagged between the consoles, a tassel at every junction, and a
+     curtain tied back at each end of the gallery */
+  float sw = fract(cx/1.45 + 0.5)*2.0 - 1.0;
+  float val = on*step(FL + 2.66 - 0.22*(1.0 - sw*sw), q.y)*step(q.y, FL + 3.10);
+  s = mix(s, 0.62 + 0.14*sin(cx*21.0), val);
+  s += on*mmSolid(mmBox(vec2(mmRowX(cx, 1.45), q.y - FL - 2.52), vec2(0.035, 0.12), 0.03))*0.60;
+  float ex = ax - GW + 0.45;
+  s = mix(s, 0.50 + 0.25*sin((ex + 0.48)*18.0),
+          step(abs(ex), 0.48)*mmBand(q.y, FL + 1.0, FL + 2.9));
+  /* UNDER IT, a pier glass each side of the door; and at the ends of the
+     wall, the pier glasses the wing is lined with */
+  float md = mmArch(vec2(ax - 3.60, q.y - 0.95), 0.66, 1.60);
+  float md2 = mmArch(vec2(ax - 9.70, q.y - 1.05), 0.74, 2.05);
+  s -= (mmSolid(md) + mmSolid(md2))*0.85;
+  s += (1.0 - smoothstep(0.05, 0.15, abs(md)))*1.00 + (1.0 - smoothstep(0.055, 0.165, abs(md2)))*1.05;
+  s += mmSolid(mmBox(vec2(ax - 9.70, q.y - 4.10), vec2(0.98, 0.20), 0.05))*0.95;
+  /* WHAT IT IS MADE OF: a gilt front and gilt instruments, the velvet of the
+     valance and the end curtains in shadow, the mirror glass dark */
+  gTint = par*0.55 + on*mmBand(q.y, FL + 0.98, FL + 1.10)*0.7 + band*0.75
+        - val*0.30 - (mmSolid(md) + mmSolid(md2))*0.45;
+  occ = clamp(on*mmBand(q.y, FL - 0.75, FL + 3.1) + mmSolid(md - 0.15) + mmSolid(md2 - 0.16), 0.0, 1.0);
+  return s;
+}
+
+/* 21  DAIS -- the Ballroom as the room the revels are held over: the Velvet
+   Lounge, the Mask Room, a Guest Suite's state room, the Master of Revels' own
+   hall. A stage two steps up, framed by a proscenium of fluted pilasters with
+   a mask on its entablature, hung with velvet curtains swagged back to their
+   tie-backs under a fringed valance, and in the dark behind them two chairs of
+   state and a painted moon. */
+float subjDais(vec2 q, float cx, float ax, out float occ){
+  const float HW = 4.30, TOP = 6.50, PL = 0.58, TIE = 2.45;
+  float s = 0.0;
+  s += mmBand(q.y, 0.0, 0.19)*step(ax, HW + 1.20)*0.46;
+  s += mmBand(q.y, 0.19, 0.38)*step(ax, HW + 0.85)*0.58;
+  s += mmBand(q.y, 0.38, PL)*step(ax, HW + 0.50)*0.70;
+  /* THE OPENING, dark and deep, the chairs of state and the painted moon */
+  float open = step(ax, HW)*mmBand(q.y, PL, TOP);
+  s -= open*0.80;
+  vec2 mo = vec2(cx, q.y - (TOP - 1.75));
+  float moon = open*mmSolid(max(mmCircle(mo, 0.62), -mmCircle(mo - vec2(0.26, 0.10), 0.52)));
+  s += moon*0.42;
+  float chx = ax - 1.25;
+  float chair = min(mmBox(vec2(chx, q.y - PL - 1.02), vec2(0.30, 0.56), 0.10),
+                    mmBox(vec2(chx, q.y - PL - 0.44), vec2(0.38, 0.08), 0.02));
+  chair = min(chair, mmBox(vec2(abs(chx) - 0.31, q.y - PL - 0.22), vec2(0.035, 0.22), 0.0));
+  chair = min(chair, mmCircle(vec2(chx, q.y - PL - 1.62), 0.08));
+  s += open*mmSolid(chair)*0.72;
+  /* THE CURTAINS: swagged back from the middle to a tie-back 2.45 m up and
+     falling straight to the stage below it, their folds fanning from where
+     the cloth is gathered */
+  float tt = clamp((q.y - TIE)/(TOP - TIE), 0.0, 1.0);
+  float xin = mix(HW - 0.95 + 0.30*clamp((TIE - q.y)/(TIE - PL), 0.0, 1.0),
+                  HW - 0.95 - (HW - 1.30)*pow(tt, 1.6), step(TIE, q.y));
+  float cur = smoothstep(xin - 0.02, xin + 0.02, ax)*step(ax, HW + 0.02)*mmBand(q.y, PL, TOP);
+  float u = clamp((ax - xin)/max(HW - xin, 0.25), 0.0, 1.0);
+  s = mix(s, 0.34 + 0.30*sin(u*18.85), cur);
+  s += mmSolid(mmBox(vec2(ax - HW + 0.45, q.y - TIE), vec2(0.52, 0.045), 0.02))*0.55;
+  s += mmSolid(mmBox(vec2(ax - HW + 0.98, q.y - TIE + 0.22), vec2(0.045, 0.15), 0.04))*0.70;
+  /* THE VALANCE, swagged, with its fringe's shadow under the hem */
+  float sw = fract(cx/1.43 + 0.5)*2.0 - 1.0;
+  float hem = TOP - 0.52 - 0.20*(1.0 - sw*sw);
+  s = mix(s, 0.40 + 0.12*sin(cx*23.0), step(ax, HW + 0.02)*step(hem, q.y)*step(q.y, TOP));
+  s -= step(ax, HW)*(1.0 - smoothstep(0.012, 0.030, abs(q.y - hem + 0.035)))*0.30;
+  /* THE PROSCENIUM: fluted pilasters, an entablature, a cornice, and a mask */
+  float pil = mmSolid(mmBox(vec2(ax - HW - 0.30, q.y - (PL + TOP)*0.5), vec2(0.30, (TOP - PL)*0.5), 0.0));
+  s = mix(s, 0.62 - (1.0 - smoothstep(0.012, 0.030, mmRowX(ax - HW - 0.225, 0.15)))*0.20, pil);
+  s += mmSolid(mmBox(vec2(cx, q.y - TOP - 0.24), vec2(HW + 0.72, 0.24), 0.01))*0.85;
+  s += mmSolid(mmBox(vec2(cx, q.y - TOP - 0.56), vec2(HW + 0.84, 0.08), 0.01))*0.90;
+  vec2 mq = vec2(cx, q.y - TOP - 0.25);
+  s += mmSolid(mmCircle(vec2(mq.x, mq.y*0.82), 0.30))*0.55;
+  s -= mmSolid(mmCircle(vec2(abs(mq.x) - 0.11, mq.y - 0.05), 0.055))*0.45;
+  s -= mmSolid(max(abs(length(mq - vec2(0.0, 0.02)) - 0.14) - 0.022, mq.y + 0.06))*0.40;
+  /* gilt proscenium and entablature, a pale painted moon, the stage's depth
+     dark, the velvet a little under the wall */
+  float ent = mmSolid(mmBox(vec2(cx, q.y - TOP - 0.40), vec2(HW + 0.84, 0.40), 0.01));
+  gTint = max(pil, ent)*0.62 + moon*0.85 - open*(1.0 - cur)*(1.0 - moon)*0.45 - cur*0.12;
+  occ = mmSolid(mmBox(vec2(cx, q.y - (TOP + 0.64)*0.5), vec2(HW + 0.85, (TOP + 0.64)*0.5), 0.0));
+  return s;
+}
+
+#endif
+#if MM_ROOMS == 3
+/* 22  PALM HOUSE -- the Greenhouse as a Palm House, a Winter Garden, the Great
+   Conservatory: a gallery walk carried round the glass at 4.3 m on slender
+   cast-iron columns with arched brackets, an iron balustrade of rings and
+   uprights on it, and a SPIRAL STAIR up to it -- Kew's has exactly these, and
+   a gallery and a spiral stair are what a palm house is recognised by. The
+   gallery runs round the side walls too, which is what gives the room its
+   shape; the stair stands on the back wall. */
+float subjPalm(vec2 q, float cx, float far, float dqm, out float occ){
+  const float FL = 4.30, CP = 3.60;
+  float aa = max(dqm*0.80, 0.006);
+  float s = 0.0;
+  float colx = mmRowX(cx + CP*0.5, CP);
+  float col = (1.0 - smoothstep(0.07, 0.07 + aa, colx))*step(q.y, FL);
+  s += col*0.85;
+  s += (1.0 - smoothstep(0.13, 0.13 + aa, colx))*mmBand(q.y, 0.0, 0.28)*0.55;
+  s += (1.0 - smoothstep(0.15, 0.15 + aa, colx))*mmBand(q.y, FL - 0.36, FL - 0.22)*0.60;
+  float brk = abs(length(vec2(colx - 1.00, q.y - (FL - 1.20))) - 1.00);
+  s += step(FL - 1.20, q.y)*step(q.y, FL - 0.16)*step(colx, 1.00)
+     *(1.0 - smoothstep(0.028, 0.028 + aa*1.4, brk))*0.62;
+  s += (1.0 - smoothstep(0.018, 0.018 + aa, abs(length(vec2(colx - 0.36, q.y - FL + 0.50)) - 0.15)))*0.50;
+  /* the walkway's edge beam and the balustrade on it */
+  s += mmBand(q.y, FL - 0.20, FL)*0.95;
+  float bal = mmBand(q.y, FL + 0.06, FL + 0.94);
+  s -= bal*0.30;
+  float rails = mmBandA(q.y, FL + 0.94, FL + 1.04, aa) + mmBandA(q.y, FL, FL + 0.07, aa)*0.55;
+  s += rails;
+  vec2 ip = vec2(mod(cx, 0.32) - 0.16, q.y - FL - 0.50);
+  float ring = bal*(1.0 - smoothstep(0.012, 0.012 + aa, abs(length(ip) - 0.12)));
+  float upr = bal*(1.0 - smoothstep(0.010, 0.010 + aa, abs(abs(ip.x) - 0.16)));
+  s += ring*0.62 + upr*0.50;
+  float st = 0.0;
+  if (far > 0.5) {
+    /* THE SPIRAL STAIR, 5.4 m left of the axis: a newel column, treads
+       winding round it on 0.184 m risers, and the outer string and handrail
+       as the helix they are, x = R sin(2 pi y / P), seen side-on. */
+    const float R = 1.30, P = 2.40, TW = 6.28318;
+    float sx = cx + 5.40;
+    st += (1.0 - smoothstep(0.085, 0.085 + aa, abs(sx)))*step(q.y, FL + 1.05)*0.80;
+    float ty = floor(q.y/0.184)*0.184;
+    float th = ty/P*TW;
+    float ex = R*sin(th);
+    st += mmBandA(q.y, ty, ty + 0.060, aa)*step(0.0, sx*ex)*step(abs(sx), abs(ex))
+        *step(q.y, FL)*(0.48 + 0.34*cos(th));
+    float a1 = q.y/P*TW, g1 = R*TW/P*cos(a1);
+    st += (1.0 - smoothstep(0.040, 0.040 + aa*1.3, abs(sx - R*sin(a1))/sqrt(1.0 + g1*g1)))
+        *step(q.y, FL)*0.80;
+    float a2 = (q.y - 0.90)/P*TW, g2 = R*TW/P*cos(a2);
+    st += (1.0 - smoothstep(0.045, 0.045 + aa*1.3, abs(sx - R*sin(a2))/sqrt(1.0 + g2*g2)))
+        *step(0.90, q.y)*step(q.y, FL + 0.96)*0.90;
+    s += st;
+  }
+  /* the ironwork is PAINTED, pale, as a palm house's always was: it is the
+     white lattice against the dark glass that says cast iron and not timber */
+  gTint = clamp(col + mmBand(q.y, FL - 0.20, FL) + rails + ring + upr + st, 0.0, 1.0)*0.55;
+  occ = clamp(col + mmBand(q.y, FL - 1.2, FL + 1.04) + step(0.01, st), 0.0, 1.0);
+  return s;
+}
+
+/* 23  VINERY -- the Greenhouse as a Vinery, the Ivy Bridge, the Overgrown
+   Conservatory: a vine border along the foot of the glass, and out of it an
+   old rod every 1.6 m, gnarled and thick at the stock, trained up the glass on
+   wires, a lateral both ways along every wire drooping away from its rod,
+   a cluster of broad leaves at every node (not all of them: a leaf on every
+   node of a lattice is chain mail), a dark bunch of grapes hanging under one
+   node in two, and under the roof the growth closing into a canopy.
+   DRAWN BIG. The back wall is 34 px/m, and the first cut drew 3-6 px leaves
+   with lobes a pixel apart, which aliased into static across the glass and
+   read as nothing. Here a leaf cluster is 10-14 px, a bunch 14 px, a rod 5-8 px
+   -- the structure (rods, wires, laterals, hanging bunches) is the cue, and
+   every edge is antialiased in pixels (aa). */
+float subjVine(vec2 q, float dqm, out float occ){
+  float aa = max(dqm*0.90, 0.008);
+  float s = 0.0;
+  float kerb = mmBand(q.y, 0.0, 0.50);
+  s += kerb*0.50 + mmBand(q.y, 0.50, 0.60)*0.85;
+  s -= kerb*(1.0 - smoothstep(0.010, 0.010 + aa,
+             min(mmRowX(q.x + mod(floor(q.y/0.075), 2.0)*0.11, 0.22), mmRowX(q.y, 0.075))))*0.14;
+  float wire = (1.0 - smoothstep(0.010, 0.010 + aa, mmRowX(q.y - 1.20, 0.60)))*mmBand(q.y, 1.3, 5.9);
+  s += wire*0.24;
+  float ri = floor(q.x/1.60);
+  float rx = q.x - (ri + 0.5)*1.60 + 0.10*sin(q.y*1.7 + ri*1.7) + 0.04*sin(q.y*4.1 + ri*3.1);
+  float rw = 0.075 + 0.055*smoothstep(1.4, 0.6, q.y);
+  float rod = (1.0 - smoothstep(rw, rw + aa, abs(rx)))*mmBand(q.y, 0.55, 6.0);
+  float wi = floor((q.y - 1.50)/0.60 + 0.5);
+  float ly = q.y - 1.50 - wi*0.60 + 0.07*rx*rx;
+  float lat = (1.0 - smoothstep(0.032, 0.032 + aa, abs(ly)))*step(abs(rx), 0.76)*mmBand(q.y, 1.3, 5.9);
+  float top = smoothstep(4.3, 5.4, q.y);
+  /* a cluster of three broad leaves at each node, every 0.46 m */
+  float ni = floor(rx/0.46 + 0.5);
+  float nh = mmHash11(ni*7.1 + wi*13.7 + ri*3.3 + uSeed);
+  vec2 lp = vec2(rx - ni*0.46, ly);
+  float r = (0.12 + 0.05*nh)*(1.0 + 0.30*top);
+  vec2 l1 = lp - vec2(-0.13, 0.11), l2 = lp - vec2(0.14, 0.12), l3 = lp - vec2(0.01, -0.13);
+  float d1 = length(l1*vec2(1.0, 1.15)) * (1.0 + 0.10*cos(5.0*atan(l1.y, l1.x)));
+  float d2 = length(l2*vec2(1.0, 1.15)) * (1.0 + 0.10*cos(5.0*atan(l2.y, l2.x) + 1.0));
+  float d3 = length(l3*vec2(1.1, 1.0)) * (1.0 + 0.10*cos(5.0*atan(l3.y, l3.x) + 2.0));
+  float dl = min(min(d1, d2), d3);
+  float leaf = (1.0 - smoothstep(r - aa, r + aa, dl))*step(mix(0.32, 0.05, top), nh)
+             *step(abs(ni*0.46), 0.72)*mmBand(q.y, 1.2, 6.3);
+  /* a bunch under one node in two: a hanging cone of berries 0.42 m long */
+  vec2 gp = vec2(lp.x - 0.08*(nh - 0.5), ly + 0.07);
+  float bunch = step(0.50, fract(nh*7.31))*(1.0 - top*0.7)*step(-0.42, gp.y)*step(gp.y, 0.0)
+              *(1.0 - smoothstep(0.0, aa, abs(gp.x) - 0.10*(1.0 + gp.y/0.42) - 0.012))
+              *step(abs(ni*0.46), 0.72)*mmBand(q.y, 1.5, 5.6);
+  vec2 bg = mod(gp + vec2(0.024), 0.048) - 0.024;
+  float grape = bunch*(0.55 + 0.45*(1.0 - smoothstep(0.016, 0.016 + aa, length(bg))));
+  s = mix(s, 0.80, rod);
+  s = mix(s, 0.58, lat*(1.0 - rod));
+  s = mix(s, 0.30 + 0.30*(1.0 - dl/max(r, 0.01)), leaf*(1.0 - rod*0.6));
+  s = mix(s, -0.50, grape);
+  gTint = -rod*0.35 - lat*0.25 - grape*0.95;
+  occ = clamp(rod + lat + leaf + bunch + kerb, 0.0, 1.0);
+  return s;
+}
+
+#endif
+#if MM_ROOMS == 5
+/* 26  TOMB -- the Crypt as a FAMILY CRYPT: the Family Crypt, the Memorial
+   Chamber, the Sealed Crypt, the Reliquary, the Candle Chapel. The back wall
+   is a chantry: one round-arched recess 3.8 m across holding an effigy tomb
+   -- a chest with quatrefoil panels, and lying on its lid the figure itself,
+   head on a cushion, hands joined, a dog at its feet -- behind an iron grille
+   with a gate in it, and a candle on a pricket either side. Its side walls
+   are the loculi branch's ARCOSOLIA, one in every bay: a crypt of tombs, not
+   of shelves (see subjectH). */
+float subjTomb(vec2 q, float cx, float ax, float dqm, out float occ){
+  float aa = max(dqm*0.80, 0.006);
+  float s = 0.0;
+  float rec = mmArch(vec2(cx, q.y - 0.02), 1.90, 2.30);
+  float inR = mmSolid(rec);
+  s -= inR*0.85;
+  s += (1.0 - smoothstep(0.06, 0.16, abs(rec + 0.02)))*0.80;
+  s += (1.0 - smoothstep(0.05, 0.14, abs(rec - 0.30)))*step(2.2, q.y)*0.45;
+  float chest = mmSolid(mmBox(vec2(cx, q.y - 0.56), vec2(1.24, 0.46), 0.02));
+  s = mix(s, 0.55, chest);
+  s += mmSolid(mmBox(vec2(cx, q.y - 0.07), vec2(1.34, 0.07), 0.01))*0.40;
+  s += mmSolid(mmBox(vec2(cx, q.y - 1.06), vec2(1.32, 0.06), 0.01))*0.55;
+  vec2 qf = vec2(mod(cx + 0.41, 0.82) - 0.41, q.y - 0.56);
+  float qfd = min(min(length(qf - vec2(0.0, 0.09)), length(qf + vec2(0.0, 0.09))),
+                  min(length(qf - vec2(0.09, 0.0)), length(qf + vec2(0.09, 0.0)))) - 0.085;
+  s -= chest*step(ax, 1.20)*mmSolid(qfd)*0.26;
+  vec2 e = vec2(cx, q.y - 1.12);
+  float eff = mmBox(e - vec2(0.02, 0.10), vec2(0.86, 0.085), 0.08);
+  eff = min(eff, mmCircle(e - vec2(-0.93, 0.15), 0.115));
+  eff = min(eff, mmBox(e - vec2(-1.02, 0.06), vec2(0.17, 0.06), 0.04));
+  eff = min(eff, mmBox(e - vec2(-0.32, 0.24), vec2(0.035, 0.10), 0.02));
+  eff = min(eff, mmCircle(e - vec2(0.86, 0.20), 0.075));
+  eff = min(eff, mmBox(e - vec2(1.10, 0.11), vec2(0.13, 0.08), 0.06));
+  float fig = mmSolid(eff);
+  s = mix(s, 0.70 + 0.18*smoothstep(1.12, 1.40, q.y), fig);
+  float gxr = mmRowX(cx, 0.13);
+  float bar = (1.0 - smoothstep(0.020, 0.020 + aa, gxr))*mmBand(q.y, 0.18, 2.20);
+  float rails = mmBandA(q.y, 0.18, 0.26, aa) + mmBandA(q.y, 1.40, 1.46, aa) + mmBandA(q.y, 2.14, 2.22, aa);
+  float spikes = 1.0 - smoothstep(0.0, aa, max(gxr - 0.03*(1.0 - (q.y - 2.22)/0.16), abs(q.y - 2.30) - 0.08));
+  float onG = step(ax, 1.75);
+  float grille = clamp((bar + rails*0.9 + spikes
+               + (1.0 - smoothstep(0.035, 0.035 + aa, abs(ax - 0.62)))*mmBand(q.y, 0.18, 2.30))*onG, 0.0, 1.0);
+  s = mix(s, 0.80, grille*0.9);
+  float pk = min(mmBox(vec2(ax - 2.35, q.y - 0.62), vec2(0.03, 0.62), 0.0),
+                 mmBox(vec2(ax - 2.35, q.y - 0.05), vec2(0.16, 0.05), 0.02));
+  pk = min(pk, mmBox(vec2(ax - 2.35, q.y - 1.34), vec2(0.045, 0.11), 0.01));
+  s += mmSolid(pk)*0.75;
+  gTint = chest*0.55 + fig*0.85 - inR*(1.0 - chest)*(1.0 - fig)*0.6 - grille*0.7;
+  occ = clamp(inR + mmSolid(rec - 0.35) + mmSolid(pk), 0.0, 1.0);
+  return s;
+}
+
+/* 27  OSSUARY -- the Crypt as the BONE GALLERY: the Ossuary Hall, the Bone
+   Gallery, the Skull Alcove, the Bone Pit, the Great Ossuary. Every wall is
+   bone, stacked the way the catacombs stack it: long bones laid end-on in
+   courses, their knuckle ends a pale bead each, with a course of skulls on a
+   stone ledge every 0.62 m; and on the back wall an arched way through to
+   the next gallery with a cross of skulls over it. At the far wall the
+   courses are pale beads, which is what an ossuary is at thirty metres; on
+   the side walls a metre away they are bones. */
+float subjOssuary(vec2 q, float cx, float far, out float occ){
+  float lb = mod(q.y, 0.62);
+  float row = floor(q.y/0.095);
+  float by = q.y - row*0.095 - 0.0475;
+  float bxx = mod(q.x + row*0.047, 0.094) - 0.047;
+  float bones = mmSolid(min(length(vec2(bxx - 0.019, by)), length(vec2(bxx + 0.019, by))) - 0.027)
+              * step(0.25, lb);
+  float skulls = mmShelf(vec2(q.x, lb), 0.0, 0.22, 1.0, 3.0, uSeed + floor(q.y/0.62))*step(lb, 0.24);
+  float wall = mmBand(q.y, 0.0, uCeil - 0.25);
+  float s = (-0.30 + bones*0.58 + skulls*1.10)*wall;
+  float way = 0.0;
+  if (far > 0.5) {
+    float wd = mmArch(vec2(cx, q.y), 0.95, 1.55);
+    way = mmSolid(wd);
+    s = mix(s, -1.20, way);
+    s += (1.0 - smoothstep(0.05, 0.14, abs(wd)))*0.85;
+    vec2 k = vec2(cx, q.y - 3.30);
+    float cr = mmSolid(min(mmBox(k, vec2(0.12, 0.62), 0.02), mmBox(k - vec2(0.0, 0.20), vec2(0.48, 0.12), 0.02)));
+    vec2 sg = mod(k + vec2(0.10), 0.20) - 0.10;
+    float sk = mmSolid(mmCircle(vec2(sg.x, sg.y*1.1), 0.078)) - mmSolid(mmCircle(vec2(abs(sg.x) - 0.03, sg.y - 0.01), 0.022))*0.6;
+    s = mix(s, 0.30 + 0.55*sk, cr);
+  }
+  gTint = wall*(bones*0.45 + skulls*0.55) - way*0.8;
+  occ = wall;
+  return s;
+}
+
+#endif
+
 /* The region's subject, in metres of relief. 'far' is 1 on the back wall and 0
    on the two side walls, because a staircase is a thing a room has ONE of and a
    row of ossuary niches is a thing it has forty of.
@@ -388,6 +1003,7 @@ float mmShelf(vec2 p, float y0, float y1, float n, float kind, float sd){
    chair rail have to stop where it starts. occ is what does all three. */
 float subjectH(vec2 q, float far, out float occ){
   occ = 0.0;
+  gTint = 0.0;
   if (uSubject < 0.5) return 0.0;
   /* Taken before any branching, and all the branching below is on uniforms, so
      these derivatives are defined. Below about a fifth of a metre per pixel a
@@ -403,8 +1019,37 @@ float subjectH(vec2 q, float far, out float occ){
      the generic rule was claiming the planting and the mausoleum too, so the
      moonlight stopped at them and both came back black. */
   float occSet = 0.0;
+  /* WHICH BRANCH DRAWS IT. The Graveyard's chapel (24) and mausolea (25) are
+     drawn in the Graveyard's own branch (13), because both stand behind its
+     railing and its planting, and repeating those would double the code. */
+  float sid = (uSubject > 23.5 && uSubject < 25.5) ? 13.0 : uSubject;
+  /* A ROOM'S ONE-OFF STAYS ON ITS BACK WALL. The side walls are the wing's:
+     the Ballroom's gallery and dais rooms are lined with its pier glasses
+     (10) like every other room of it, and a hall has its fire on one wall. */
+  if (far < 0.5 && sid > 19.5 && sid < 21.5) sid = 10.0;
+  if (far < 0.5 && sid > 17.5 && sid < 18.5) return 0.0;
+  /* ...and the Crypt's tomb room is lined with tombs: its side walls are the
+     loculi branch with an arcosolium in every bay. */
+  if (far < 0.5 && sid > 25.5 && sid < 26.5) sid = 3.0;
 
-  if (uSubject < 1.5) {
+  if (sid > 17.5) {
+    /* round 11's rooms, one function each, above: the two this program
+       carries (MM_ROOMS). In a program that carries none, nothing. */
+#if MM_ROOMS == 1
+    if (sid < 18.5) s = subjChimney(q, cx, ax, occ);
+    else            s = subjArcade(q, cx, dqm, occ);
+#elif MM_ROOMS == 2
+    if (sid < 20.5) s = subjMusic(q, cx, ax, dqm, occ);
+    else            s = subjDais(q, cx, ax, occ);
+#elif MM_ROOMS == 3
+    if (sid < 22.5) s = subjPalm(q, cx, far, dqm, occ);
+    else            s = subjVine(q, dqm, occ);
+#elif MM_ROOMS == 5
+    if (sid < 26.5) s = subjTomb(q, cx, ax, dqm, occ);
+    else            s = subjOssuary(q, cx, far, occ);
+#endif
+
+  } else if (sid < 1.5) {
     /* 1  STAIR -- the Forgotten Foyer. "a sweeping staircase in the
        background". An imperial stair: two flights rising from the outside to a
        landing over the doorway, a balustrade on every run, newels at the
@@ -533,7 +1178,7 @@ float subjectH(vec2 q, float far, out float occ){
     s += mmBand(q.y, 4.40, 4.55) * (1.0 - smoothstep(1.16, 1.34, ax)) * 0.85;   // the sill
     occ = clamp(occ + mmSolid(w + 0.02), 0.0, 1.0);
 
-  } else if (uSubject < 2.5) {
+  } else if (sid < 2.5) {
     /* 2  BOOKCASE -- the Grand Study and Library. Cases to the cornice, every
        bay full of spines, and the rail a rolling ladder runs on across them. */
     float bay = mmRowX(q.x, 2.35), ct = max(uCeil - 0.55, 2.2);
@@ -547,7 +1192,7 @@ float subjectH(vec2 q, float far, out float occ){
     s += mmBand(q.y, 2.28, 2.37) * 0.58;                      // the ladder rail
     s += mmBand(q.y, ct, ct + 0.20) * 0.95;                   // the case cornice
 
-  } else if (uSubject < 3.5) {
+  } else if (sid < 3.5) {
     /* 3  LOCULI -- the Crypt and Ossuary. "arched niches of neatly stacked
        skulls and bones".
 
@@ -576,6 +1221,7 @@ float subjectH(vec2 q, float far, out float occ){
     float nx = q.x + 1.30 - (bayI + 0.5)*2.60;      // -1.30..1.30 within the bay
     float anx = abs(nx);
     float bh = mmHash11(bayI*3.13 + uSeed);
+    if (uSubject > 25.5 && uSubject < 26.5) bh = 0.0;   // the tomb room: every bay a tomb
     const float SPRING = 2.34, PIER = 0.17, CLEAR = 1.13;
     /* THE ARCADE. A segmental arch and not mmArch's semicircle: a 1.13 m
        half-span capped by a 1.13 m radius would spring into the vault. */
@@ -654,7 +1300,7 @@ float subjectH(vec2 q, float far, out float occ){
        the light, so it goes back rather than carrying more coursework. */
     s -= smoothstep(SPRING + 0.70, SPRING + 1.40, q.y) * 0.22;
 
-  } else if (uSubject < 4.5) {
+  } else if (sid < 4.5) {
     /* 4  TERRACE -- the Impossible Greenhouse. "potted ferns crowding the
        edges": three stepped planting benches against the glazing, the pots on
        them, and the iron legs that carry them. */
@@ -665,7 +1311,7 @@ float subjectH(vec2 q, float far, out float occ){
     s += mmShelf(vec2(q.x + t*0.33, q.y), ty + 0.10, ty + 0.64, 1.0, 4.0, uSeed + t) * dep;
     s += (1.0 - smoothstep(0.034, 0.072, mmRowX(q.x, 1.15))) * mmBand(q.y, 0.0, 2.20) * 0.48;
 
-  } else if (uSubject < 5.5) {
+  } else if (sid < 5.5) {
     /* 5  BENCH -- the Lampworks. "workbenches of glass chimneys at the edges"
        under "rows of hanging oil lamps". */
     s += mmBand(q.y, 0.94, 1.08) * 0.90;                      // the bench top
@@ -677,7 +1323,7 @@ float subjectH(vec2 q, float far, out float occ){
     s += mmSolid(mmCircle(vec2(lx, q.y - 2.98), 0.175)) * 0.85;          // the lamps
     s += mmSolid(mmBox(vec2(lx, q.y - 3.20), vec2(0.105, 0.070), 0.02)) * 0.70;
 
-  } else if (uSubject < 6.5) {
+  } else if (sid < 6.5) {
     /* 6  WARDROBE -- the Sleeping Quarters. "tall wardrobes with doors slightly
        ajar": a carcass, a cornice over it, two panelled doors, and a black gap
        where one of them stands open. */
@@ -692,7 +1338,7 @@ float subjectH(vec2 q, float far, out float occ){
        * mmSolid(mmBox(vec2(wx - 0.44, q.y - 1.30), vec2(0.38, 1.14), 0.02)) * 1.55;
     s += mmSolid(mmCircle(vec2(abs(wx) - 0.13, q.y - 1.32), 0.042)) * 0.60;
 
-  } else if (uSubject < 7.5) {
+  } else if (sid < 7.5) {
     /* 7  PENS -- the Kennels and Animal Ward. "rows of wooden kennel pens",
        with the staves, the gate brace and the hook rail of leashes over them. */
     float i = floor(q.x/2.20), px = q.x - (i + 0.5)*2.20;
@@ -703,7 +1349,7 @@ float subjectH(vec2 q, float far, out float occ){
     s += mmBand(q.y, 1.86, 1.99) * 0.75;                      // the hook rail
     s += mmSolid(mmCircle(vec2(mmRowX(q.x, 0.44), q.y - 1.70), 0.075)) * 0.55;   // and its hooks
 
-  } else if (uSubject < 8.5) {
+  } else if (sid < 8.5) {
     /* 8  TOPIARY -- the Withered Hedge Maze. "broken topiary animals": a
        clipped ball and a cone on a standard, standing above the hedge line,
        and an arched way cut through it. */
@@ -717,7 +1363,7 @@ float subjectH(vec2 q, float far, out float occ){
     s -= mmSolid(mmArch(vec2(gx, q.y - 0.05), 1.15, 1.75)) * 1.6;               // the way through
     s += (1.0 - smoothstep(0.08, 0.22, abs(mmArch(vec2(gx, q.y - 0.05), 1.15, 1.75)))) * 0.55;
 
-  } else if (uSubject < 9.5) {
+  } else if (sid < 9.5) {
     /* 9  TIMBER -- the Secret Passages. "bare timber and brick": studs, the
        noggins between them, a peephole, and the dumbwaiter's hatch. */
     s += (1.0 - smoothstep(0.070, 0.130, mmRowX(q.x, 0.62))) * mmBand(q.y, 0.0, uCeil) * 0.70;
@@ -731,7 +1377,7 @@ float subjectH(vec2 q, float far, out float occ){
     s -= mmSolid(mmBox(vec2(hx, q.y - 1.20), vec2(0.46, 0.40), 0.02)) * 0.85;   // the hatch
     s += (1.0 - smoothstep(0.030, 0.090, abs(mmBox(vec2(hx, q.y - 1.20), vec2(0.50, 0.44), 0.02)))) * 0.90;
 
-  } else if (uSubject < 10.5) {
+  } else if (sid < 10.5) {
     /* 10  MIRRORS -- the Ballroom and Velvet Suites. A pier glass between every
        pair of windows, each under a carved pelmet, with a velvet drape falling
        either side of it. */
@@ -745,7 +1391,7 @@ float subjectH(vec2 q, float far, out float occ){
        * (1.0 - smoothstep(1.34, 1.52, abs(mx)))) * 0.80;      // the drapery folds
     s += mmBand(q.y, 0.0, 0.26) * 0.65;
 
-  } else if (uSubject < 11.5) {
+  } else if (sid < 11.5) {
     /* 11  DADO -- the Bathhouse and Rain Wing. "puddles on patterned tiles": a
        tiled dado with a bullnose cap, and the brass standpipes on it. */
     s += mmBand(q.y, 0.0, 1.52)
@@ -758,7 +1404,7 @@ float subjectH(vec2 q, float far, out float occ){
        * (mmBand(q.y, 1.86, 1.98) + mmBand(q.y, 3.30, 3.42)) * 0.75;            // pipe collars
     s += mmSolid(mmCircle(vec2(px, q.y - 1.10), 0.115)) * 0.70;                 // and a tap
 
-  } else if (uSubject < 12.5) {
+  } else if (sid < 12.5) {
     /* 12  RAFTERS -- the Moonlit Attic and Observatory. "exposed rafters" and
        "star charts pinned to beams". A rafter RAKES, so it is drawn on a sheared
        coordinate and not as another upright. */
@@ -778,7 +1424,7 @@ float subjectH(vec2 q, float far, out float occ){
     s += (1.0 - smoothstep(0.0, 0.040, abs(ch))) * 0.70;       // the pinned chart
     s += mmShelf(q, 0.20, 1.08, 2.0, 2.0, uSeed + 7.0);        // the trunks under them
 
-  } else if (uSubject < 13.5) {
+  } else if (sid < 13.5) {
     /* 13  FENCE -- the Mansion Graveyard. mainMenu.png's own iron fence: a
        plinth, spear-headed railings, piers with ball finials, and the estate
        mausoleum standing behind them. Drawn in FRONT of the house's mass, which
@@ -798,7 +1444,11 @@ float subjectH(vec2 q, float far, out float occ){
     /* ITEM 3: a run of identical bays at an even pitch reads as wallpaper. So
        the run is broken by things that belong -- a carriage gate on the centre
        line, one paling missing from a bay of its own, and a leaning section. */
-    float gate = 1.0 - step(1.55, abs(cx + 1.2));
+    /* The carriage gate and the old mausoleum belong to the FENCE room; the
+       chapel (24) and mausolea (25) rooms keep everything else in this branch
+       -- the railing, its piers and the planting are the wing. */
+    float isFence = step(uSubject, 13.5);
+    float gate = (1.0 - step(1.55, abs(cx + 1.2))) * isFence;
     float miss = step(0.88, mmHash11(floor(q.x/BARP)*2.9 + uSeed));
     float lean = (mmHash11(floor(q.x/3.10)*5.1 + uSeed) - 0.5)
                * 0.055 * smoothstep(0.45, RTOP, q.y);
@@ -838,6 +1488,88 @@ float subjectH(vec2 q, float far, out float occ){
     /* Its door is 0.90 x 2.00 m -- a door somebody can walk through (table).
        Round 8's was 0.92 m wide and 1.74 m to its crown. */
     ms -= mmSolid(mmArch(vec2(mx, q.y - 0.10), 0.45, 1.45)) * 1.7;              // its door
+    ms *= isFence;
+    /* ROUND 11: THE YARD'S OTHER ROOMS. bld is a building standing IN FRONT
+       of the railing -- the ironwork stops at it -- and dark is a door in it,
+       which stays unlit the way the ironwork does. */
+    float bld = 0.0, dark = 0.0, br = 0.0;
+#if MM_ROOMS == 4
+    if (uSubject > 23.5 && uSubject < 24.5) {
+      /* 24  CHAPEL -- the Old Chapel Yard, Bell Grave, Angel Row: the ruined
+         west end of the estate chapel, 8 m left of the axis, with the house
+         stood off to the right behind it. A 7.2 m front under a 52-degree
+         gable on stepped buttresses; a lancet west window whose tracery has
+         half gone, so the night shows through what is left of it; a pointed
+         door; and a bellcote on the apex with its bell still in it. */
+      float gx = cx + 8.0, gax = abs(gx);
+      const float EAV = 5.60;
+      float roofH = EAV + (3.95 - gax)*1.28;
+      float body = max(step(gax, 3.60)*step(q.y, EAV), step(gax, 3.95)*step(q.y, roofH));
+      body *= 1.0 - step(0.9, gx)*step(roofH - 1.30 - 1.10*mmFbm3(vec2(q.x*1.6, 3.0))
+                                        - (gx - 0.9)*0.35, q.y);         // the fallen slope
+      float bw = 0.33 - 0.08*step(1.8, q.y) - 0.08*step(3.2, q.y);
+      body = max(body, step(abs(gax - 3.88), bw)*step(q.y, 4.25));           // buttresses
+      body = max(body, step(gax, 0.45)*step(10.2, q.y)*step(q.y, 11.32 + 0.45 - gax));  // bellcote
+      body = max(body, mmSolid(min(mmBox(vec2(gx, q.y - 12.0), vec2(0.035, 0.30), 0.0),
+                                   mmBox(vec2(gx, q.y - 12.08), vec2(0.17, 0.035), 0.0))));
+      float bo = mmSolid(mmArch(vec2(gx, q.y - 10.50), 0.22, 0.38));
+      float bell = mmSolid(min(mmCircle(vec2(gx, (q.y - 10.74)*1.25), 0.13),
+                               mmBox(vec2(gx, q.y - 10.62), vec2(0.16, 0.025), 0.01)));
+      float win = sPoint(vec2(gx, q.y - 2.60), 0.95, 2.55, 1.90);
+      float trac = (1.0 - smoothstep(0.045, 0.045 + aaB, abs(gx)))*step(q.y, 5.30)
+                 + mmSolid(abs(sPoint(vec2(abs(gx) - 0.47, q.y - 2.60), 0.43, 2.35, 0.86)) - 0.04)
+                 + mmSolid(abs(mmCircle(vec2(gx, q.y - 6.12), 0.36)) - 0.04);
+      trac = clamp(trac, 0.0, 1.0)*(1.0 - step(0.10, gx)*step(4.6, q.y));
+      float door = mmSolid(sPoint(vec2(gx, q.y), 0.62, 1.75, 1.24));
+      bld = body;
+      br = body*1.25 + (1.0 - smoothstep(0.05, 0.12, abs(win - 0.10)))*step(2.4, q.y)*0.40
+         - mmSolid(win)*(1.0 - trac)*1.25*body - bo*(1.0 - bell)*1.0 - door*0.30;
+      dark = door*body;
+      gTint = body*(1.0 - door)*0.50;          // a paler stone than the house's
+    } else if (uSubject > 24.5) {
+      /* 25  MAUSOLEA -- Mausoleum Lane, the Family Plot, the Tomb Garden:
+         four monuments by four different families, right of the axis, with
+         the house stood off to the left. A temple tomb with two columns in
+         antis and a bronze door; a steep-gabled Gothic tomb with a cross; an
+         Egyptian one, battered walls under a cavetto cornice and a winged disc
+         over its door; and an obelisk. */
+      /* drawn in m, q at 1/1.2: a family mausoleum is 4-5 m across, and at
+         the yard's far edge the first draft's read as outbuildings */
+      vec2 m = vec2(cx, q.y)/1.2;
+      vec2 a = vec2(m.x - 4.6, m.y);
+      float t1 = min(mmBox(a - vec2(0.0, 0.30), vec2(2.05, 0.30), 0.0),
+                     mmBox(a - vec2(0.0, 2.10), vec2(1.70, 1.50), 0.0));
+      t1 = min(t1, mmBox(a - vec2(0.0, 3.80), vec2(1.88, 0.20), 0.0));
+      t1 = min(t1, max(abs(a.x) - 1.88, max(3.98 - a.y, a.y - 4.0 - (1.88 - abs(a.x))*0.36)));
+      float cols = mmSolid(mmBox(vec2(abs(a.x) - 0.98, a.y - 2.10), vec2(0.15, 1.50), 0.0));
+      float d1 = mmSolid(mmBox(a - vec2(0.0, 1.70), vec2(0.52, 1.10), 0.0));
+      vec2 b = vec2(m.x - 9.9, m.y);
+      float t2 = min(mmBox(b - vec2(0.0, 1.95), vec2(1.30, 1.75), 0.0),
+                     max(abs(b.x) - 1.42, max(3.66 - b.y, b.y - 3.70 - (1.42 - abs(b.x))*1.55)));
+      t2 = min(t2, min(mmBox(b - vec2(0.0, 6.05), vec2(0.035, 0.34), 0.0),
+                       mmBox(b - vec2(0.0, 6.15), vec2(0.17, 0.035), 0.0)));
+      float d2 = mmSolid(sPoint(b - vec2(0.0, 0.20), 0.45, 1.55, 0.90));
+      vec2 c = vec2(m.x - 14.5, m.y);
+      float t3 = max(abs(c.x) - (1.55 - 0.085*c.y), max(-c.y, c.y - 3.30));
+      float cav = clamp((c.y - 3.30)/0.55, 0.0, 1.0);
+      t3 = min(t3, max(abs(c.x) - (1.30 + 0.34*cav*cav), max(3.30 - c.y, c.y - 3.85)));
+      float d3 = mmSolid(max(abs(c.x) - (0.42 - 0.05*c.y), max(0.20 - c.y, c.y - 2.25)));
+      float disc = mmSolid(min(mmCircle(c - vec2(0.0, 2.80), 0.16),
+                               mmBox(c - vec2(0.0, 2.80), vec2(0.75, 0.045), 0.04)));
+      vec2 o = vec2(m.x - 18.4, m.y);
+      float t4 = min(mmBox(o - vec2(0.0, 0.28), vec2(0.62, 0.28), 0.0),
+                     max(abs(o.x) - (0.36 - 0.02*(o.y - 0.56)), max(0.56 - o.y, o.y - 6.30)));
+      t4 = min(t4, max(abs(o.x) - (6.75 - o.y)*0.55, max(6.30 - o.y, o.y - 6.75)));
+      float tombs = mmSolid(min(min(t1, t2), min(t3, t4)));
+      float doors = clamp(d1 + d2 + d3, 0.0, 1.0)*tombs;
+      bld = tombs;
+      br = tombs*1.20 + cols*tombs*0.30 + disc*0.30 - doors*0.30;
+      dark = doors;
+      gTint = tombs*(1.0 - doors)*0.75;        // white marble, and a bronze door
+    }
+#endif
+    bars *= 1.0 - bld;
+    piers *= 1.0 - bld;
     /* AND WHAT GROWS AT ITS FOOT. Between the plinth and the paving there were
        two metres of pure black running the whole width of the frame -- exactly
        the "nothing on it" the rubric asks to be named. mainMenu.png has
@@ -852,10 +1584,10 @@ float subjectH(vec2 q, float far, out float occ){
     pl += mmBand(q.y, 0.0, 0.45)
         * (1.0 - smoothstep(0.011, 0.011 + aaB, min(mmRowX(q.x + mod(floor(q.y/0.22), 2.0)*0.30, 0.60),
                                                     mmRowX(q.y, 0.22)))) * -0.19;
-    s += pl + bars + piers*1.05 + ms*0.95;
-    occ = clamp(bars, 0.0, 1.0); occSet = 1.0;   // iron stays iron; stone is lit
+    s += pl + bars + piers*1.05 + ms*0.95 + br;
+    occ = clamp(bars + dark, 0.0, 1.0); occSet = 1.0;   // iron stays iron; stone is lit
 
-  } else if (uSubject < 14.5) {
+  } else if (sid < 14.5) {
     /* 14  COPING -- the Moon Courtyard and Pumpkin Grounds. "a moonlit WALLED
        courtyard": a coursed wall with a coping course along its top, buttresses
        against it, and the pumpkins heaped at its foot. */
@@ -872,7 +1604,7 @@ float subjectH(vec2 q, float far, out float occ){
     s += max(pk, 0.0) * step(0.30, hs);
     s += mmSolid(mmBox(vec2(gx, q.y - r*1.80), vec2(0.045, 0.16), 0.02)) * 0.55*step(0.30, hs);
 
-  } else if (uSubject < 15.5) {
+  } else if (sid < 15.5) {
     /* 15  TOYSHELF -- the Forgotten Nursery. "porcelain dolls on shelves", "a
        toy chest pushed to the edge": a picture-rail shelf of them at a child's
        eye level, the chests under it, and the nightlight's own little niche. */
@@ -884,7 +1616,7 @@ float subjectH(vec2 q, float far, out float occ){
     s -= mmSolid(mmArch(vec2(nx, q.y - 1.72), 0.26, 0.42)) * 0.85;              // the nightlight niche
     s += (1.0 - smoothstep(0.030, 0.085, abs(mmArch(vec2(nx, q.y - 1.72), 0.26, 0.42)))) * 0.80;
 
-  } else if (uSubject < 16.5) {
+  } else if (sid < 16.5) {
     /* 16  RANGE -- the Kitchens and Cellars. "iron ovens", "copper pots", "jam
        jars and candy jars on shelves". */
     float i = floor(q.x/5.40), rx = q.x - (i + 0.5)*5.40;
@@ -921,6 +1653,7 @@ float subjectH(vec2 q, float far, out float occ){
      moonlight the exterior mode puts on its masonry stops at the IRONWORK, so a
      railing stays a dark railing in front of a lit house. */
   occ = clamp(mix(max(occ, smoothstep(0.12, 0.46, abs(s))), occ, occSet), 0.0, 1.0) * fade;
+  gTint *= fade;
   return s * fade;
 }
 
@@ -956,7 +1689,10 @@ float wallH(vec2 q, out float occ){
     h += smoothstep(0.19, 0.15, q.y) * 0.85 * clear;                                 // skirting
     h += smoothstep(1.86, 1.90, q.y) * smoothstep(1.98, 1.94, q.y) * 0.80 * clear;   // picture rail
     vec2 qu = vec2(mod(q.x + uSeed*0.7, 2.60) - 1.30, q.y - 3.42);
-    float up = smoothstep(2.00, 2.12, q.y);
+    /* Round 11's rooms set out their own upper wall; this 2.6 m run, placed
+       off the seed, lands across their doorcases and frames. */
+    float own = max(step(uSubject, 17.5), 1.0 - uFar);   // side walls are the wing's
+    float up = smoothstep(2.00, 2.12, q.y) * own;
     h -= up * (1.0 - smoothstep(-0.02, 0.06, mmBox(qu, vec2(0.92,1.30), 0.09))) * 0.64 * clear;
     h += smoothstep(uCeil-0.30, uCeil-0.18, q.y) * smoothstep(uCeil+0.30, uCeil+0.12, q.y) * 1.10;
     /* Framed portraits, hung IN a panel and not across two. Their repeat used
@@ -975,7 +1711,10 @@ float wallH(vec2 q, out float occ){
     float fx = mod(q.x + uSeed*0.7, 7.80) - 3.90;
     float inner = mmBox(vec2(fx, q.y - py), vec2(0.62, 0.86), 0.03);
     float outer = mmBox(vec2(fx, q.y - py), vec2(0.80, 1.04), 0.05);
-    float onWall = smoothstep(2.10, 2.26, q.y) * smoothstep(uCeil-0.5, uCeil-0.9, q.y) * clear;
+    /* ...and not at all in round 11's rooms, which hang their own: a picture
+       placed on a 7.8 m repeat lands on a doorcase's pediment as often as not. */
+    float onWall = smoothstep(2.10, 2.26, q.y) * smoothstep(uCeil-0.5, uCeil-0.9, q.y) * clear
+                 * own;
     h += onWall * (smoothstep(0.03, -0.03, outer) - smoothstep(0.03, -0.03, inner)) * 1.5;
     h -= onWall * smoothstep(0.02, -0.02, inner) * 0.45;
     float a = archSD(q);
@@ -1041,7 +1780,9 @@ float wallH(vec2 q, out float occ){
   } else {
     // ---- EXTERIOR: the house's skyline, and a treeline in front of it --------
     // Only the silhouette matters here; the sky is painted in the colour pass.
-    float cx = q.x - uSize.x*0.5;
+    /* uHouse.x stands the house off centre per room, and everything below that
+       is measured from cx -- wings, towers, windows, trees -- moves with it. */
+    float cx = q.x - uSize.x*0.5 - uHouse.x;
     /* THE HOUSE, DRAWN AS A BUILDING.
        Round 8 gave it body + max(0.0, 2.15 - abs(cx + 2.6)*0.62) for a roof,
        with an fbm swell along the top and a 0.36 m smoothstep at its edge.
@@ -1204,7 +1945,7 @@ float wallH(vec2 q, out float occ){
        2.80 m. Round 8's were 0.40 x 0.76 on a 1.85 m vertical repeat: two rows
        of half-size windows stacked at half a storey's spacing, which is what
        made forty of them read as a grid of slits. */
-    vec2 wq2 = vec2(mod(q.x + uSeed, 2.80) - 1.40, wy);
+    vec2 wq2 = vec2(mod(q.x - uHouse.x + uSeed, 2.80) - 1.40, wy);
     float pa2 = mmArch(wq2 - vec2(0.0, 0.85), 0.46, 0.79);
     h += onBody * (1.0 - smoothstep(0.045, 0.045 + qpx*2.2, abs(pa2))) * 0.62;
     h -= onBody * smoothstep(0.02, -0.02, pa2) * 0.50;
@@ -1298,7 +2039,7 @@ vec3 skyColor(vec2 q, float horizon){
      halo about three times its own width. */
   /* Anchored 6 m left of centre, not at 0.30 of the plane: the plane is as
      wide as the camera needs and that is not a property of the scene. */
-  vec2 mc = vec2(uSize.x*0.5 - 6.0, 12.6);
+  vec2 mc = vec2(uSize.x*0.5 - 6.0 + uHouse.y, 12.6);
   float md = length(vec2(q.x, q.y) - mc);
   float disc = smoothstep(1.26, 1.14, md);
   float crater = 0.72 + 0.28*mmFbm3((vec2(q.x,q.y) - mc)*3.4);
@@ -1333,6 +2074,12 @@ void main(){
 
   float motif = mmFbm3(q*0.52 + uSeed*3.0);
   alb *= 0.78 + 0.46*motif;                                 // the surface's own drift
+  /* THE SUBJECT'S MATERIAL (gTint, set by subjectH): pale dressed stone is
+     the wall's own highlight, mostly desaturated and lifted; a dark ground is
+     the wall taken down. Zero everywhere a subject does not say, so no room
+     that existed before round 11 changes. */
+  alb = mix(alb, mix(uHi, vec3(mmLum(uHi)), 0.55)*1.85 + uAlbLift, clamp(gTint, 0.0, 1.0)*0.62);
+  alb *= 1.0 - clamp(-gTint, 0.0, 1.0)*0.50;
 
   /* ---- the wallpaper -----------------------------------------------------
      Drawn, not lit: it modulates albedo and hue and never enters wallH, because
@@ -1440,6 +2187,62 @@ void main(){
          * smoothstep(0.95, 0.0, abs(wd)) * smoothstep(3.30, 4.95, q.y);
   }
 
+  /* ---- the Foyer's fire ---------------------------------------------------
+     A hall with a fire in it has the fire LIT, banked low: embers in the
+     basket and their glow on the cheeks of the opening. It is the one warm
+     source on that wall that is not a candle, which is what makes the
+     chimneypiece the first thing the eye finds in that room -- the stair
+     hall's landing window does the same job in cold light. Same 1/1.25 frame
+     as the chimneypiece in subjectH. */
+#if MM_ROOMS == 1
+  if (uSubject > 17.5 && uSubject < 18.5 && uFar > 0.5) {
+    vec2 ff = vec2(q.x - uSize.x*0.5, q.y)/1.25;
+    float bed = mmSolid(mmBox(vec2(ff.x, ff.y - 0.40), vec2(0.52, 0.10), 0.04));
+    float glow = mmSolid(mmBox(vec2(ff.x, ff.y - 0.76), vec2(1.03, 0.66), 0.10))
+               * exp(-max(ff.y - 0.40, 0.0)*2.6) * (1.0 - smoothstep(0.30, 1.05, abs(ff.x)));
+    float fl = 0.62 + 0.38*mmNoise(vec2(ff.x*7.0, ff.y*5.0 - uTime*1.3));
+    float slab = mmBand(q.y, 0.0, 0.16) * exp(-abs(ff.x)*1.1);
+    col += vec3(1.0, 0.44, 0.13) * uGain * (bed*fl*0.24 + glow*0.075 + slab*0.05);
+  }
+#endif
+
+  /* ---- the Ballroom's three rooms, each lit its own way ------------------
+     The back wall of a 26 m ballroom is 35 m from the lens and past the reach
+     of every lamp in the room, so a feature drawn on it in relief alone came
+     out a dim outline behind the colonnade. Each room brings its own light to
+     its own feature, as the Foyer's fire does: the band's desk lamps along the
+     musicians' gallery, the footlights along the stage's lip and their wash up
+     the curtains, and in the mirror hall the sheen of the glasses and the
+     candle each one catches. All candle-coloured: one lighting logic. */
+#if MM_ROOMS == 2
+  if (uFar > 0.5 && uSubject > 19.5 && uSubject < 20.5) {
+    float cg = q.x - uSize.x*0.5;
+    float onG = 1.0 - smoothstep(6.45, 6.65, abs(cg));
+    float skip = max(step(abs(cg + 3.2), 0.95), step(abs(cg - 2.7), 0.85));
+    vec2 lp = vec2(mod(cg + 0.45, 1.80) - 0.90, q.y - 5.98);
+    float dl = length(vec2(lp.x, lp.y*1.5));
+    col += vec3(1.0, 0.72, 0.38) * uGain * onG * (1.0 - skip) * (exp(-dl*26.0)*0.60 + exp(-dl*3.0)*0.09);
+    col += vec3(1.0, 0.64, 0.32) * uGain * onG * mmBand(q.y, 5.50, 7.40) * 0.034;
+  }
+  if (uFar > 0.5 && uSubject > 20.5 && uSubject < 21.5) {
+    float cd = q.x - uSize.x*0.5;
+    float onS = 1.0 - smoothstep(4.05, 4.25, abs(cd));
+    vec2 fp = vec2(mod(cd + 0.30, 0.60) - 0.30, q.y - 0.66);
+    float df = length(vec2(fp.x, fp.y*1.4));
+    col += vec3(1.0, 0.70, 0.36) * uGain * onS * (exp(-df*34.0)*0.50 + exp(-df*6.0)*0.04);
+    col += vec3(1.0, 0.62, 0.32) * uGain * onS * mmBand(q.y, 0.58, 6.5) * exp(-(q.y - 0.58)*0.62) * 0.050;
+  }
+  if (uSubject > 9.5 && uSubject < 10.5) {
+    float mi = floor(q.x/4.20);
+    float mxx = q.x - (mi + 0.5)*4.20;
+    float gl = mmSolid(mmArch(vec2(mxx, q.y - 1.05), 0.74, 2.05) + 0.06);
+    float hm = mmHash11(mi*3.7 + 1.3);
+    float streak = 1.0 - smoothstep(0.0, 0.20, abs(mxx*0.9 + (q.y - 2.3)*0.34 + 0.12));
+    float spark = exp(-length(vec2(mxx - 0.30*(hm - 0.5), (q.y - 2.1 - hm*0.9)*1.3))*20.0);
+    col += gl * uGain * (vec3(0.58, 0.62, 0.86)*streak*0.040 + vec3(1.0, 0.80, 0.48)*spark*0.30);
+  }
+#endif
+
   // ---- exterior: everything above the roofline is sky ------------------------
   if (uArch > 4.5) {
     float solid = smoothstep(0.25, 0.85, h);
@@ -1450,16 +2253,16 @@ void main(){
        floor. When the relief went to a real storey height and this did not, the
        lamps lit the masonry between the windows instead of the windows. */
     float wyC = q.y - 0.55 - floor((q.y - 0.55)/3.20)*3.20;
-    vec2 wq = vec2(mod(q.x + uSeed, 2.80) - 1.40, wyC);
+    vec2 wq = vec2(mod(q.x - uHouse.x + uSeed, 2.80) - 1.40, wyC);
     float pane = mmArch(wq - vec2(0.0, 0.85), 0.46, 0.79);
     /* ...and ONLY on the house. The mask was 'solid', which is 1 on anything
        standing against the sky -- so once the treeline stood clear of the base
        mass, lit sash windows appeared in the middle of the fir wood. A window
        belongs to the footprint of a wing, which is the same test wallH uses. */
-    float cxm = q.x - uSize.x*0.5;
+    float cxm = q.x - uSize.x*0.5 - uHouse.x;
     float foot = max(1.0 - step(6.20, abs(cxm + 2.6)), 1.0 - step(9.60, abs(cxm - 3.4)));
     float onHouse = solid * foot * smoothstep(0.6, 1.1, q.y)
-                  * step(mmHash21(floor(vec2(q.x + uSeed, q.y - 0.55)/vec2(2.80, 3.20))), 0.52);
+                  * step(mmHash21(floor(vec2(q.x - uHouse.x + uSeed, q.y - 0.55)/vec2(2.80, 3.20))), 0.52);
     float lit = smoothstep(0.02, -0.03, pane) * onHouse;
     /* A LIT WINDOW IS A LAMP. uOpenGlow is the colour of what is beyond a
        DOORWAY, and in the Graveyard and the Pumpkin Grounds that is a cold moon

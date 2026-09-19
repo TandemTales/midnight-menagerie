@@ -187,7 +187,19 @@ export const REGIONS = {
     /* ...and the CHANDELIER (shape 4). The one thing every description of this
        room names after the staircase, and the Foyer was the only tall region in
        the house whose prop set had no hanging shape in it at all. */
-    props: { shapes: [14, 0, 6, 4, 5, 1, 7], count: 26, height: 2.5, layout: 'perimeter',
+    /* `file: 6` -- a Foyer that draws the colonnade layout is a hall with a
+       screen of COLUMNS down it; shapes[0] is the longcase clock, and two
+       files of clocks is not a room anybody built. And a column is ONLY in
+       the Foyer as one of a file: dealt loose it stood alone in the hall
+       holding nothing up (four of them crowded round 11's first `gallery`),
+       so the pack deals a second cabinet where it dealt a column.
+       `family`: a seeded Foyer is laid out in three depth bands along both
+       sides (`wings`) or colonnaded, and never `perimeter`, whose 55% on a
+       back wall twenty metres off left the stair hall's `landing` one of the
+       four nearly-empty rooms BRIEF-r11 opens with. The authored, unseeded
+       Foyer is unchanged. */
+    props: { shapes: [14, 0, 5, 4, 5, 1, 7], count: 26, height: 2.5, layout: 'perimeter', file: 6,
+      family: ['wings', 'wings', 'colonnade'],
       /* AND THE ENTRANCE HALL'S OWN FURNITURE, placed rather than dealt --
          round 10 fix 6. A pair of glazed vitrines down the sides, two
          torcheres standing out on the floor where the light has to come from,
@@ -348,7 +360,9 @@ export const REGIONS = {
        its other 61 instances in the Hedge Maze, the Pumpkin Grounds, the
        Kennels and the Title, where a bank of foliage is the right object; in a
        glasshouse a free-standing bush growing out of the paving never was. */
-    props: { shapes: [2, 24, 2, 19, 6], count: 44, height: 2.6, layout: 'terrace' },
+    /* depth 16: the furnishing stops where it can still be seen -- see RD in
+       Backdrop._layoutProps. The terrace's own four tiers never went past it. */
+    props: { shapes: [2, 24, 2, 19, 6], count: 44, height: 2.6, layout: 'terrace', depth: 16 },
     particles: { mix: [[PTYPE.SPORE, 0.52], [PTYPE.DUST, 0.30], [PTYPE.WISP, 0.18]],
                  tint: '#d9ffcf', wispTint: '#7fffc9', emberTint: '#cfff6a',
                  speed: 0.85, scale: 1.35, wind: 0.7, density: 0.95 },
@@ -515,7 +529,8 @@ export const REGIONS = {
        five put THREE chairs in a 34 m ballroom. Two entries of shape 0 make
        seating two fifths of the loose props, which is what a ballroom has
        round its walls, plus the chandeliers and the candelabra. */
-    props: { shapes: [6, 0, 20, 4, 0, 1, 7, 21], solo: [21], count: 34, height: 2.9, layout: 'colonnade' },
+    props: { shapes: [6, 0, 20, 4, 0, 1, 7, 21], solo: [21], count: 34, height: 2.9, layout: 'colonnade',
+             family: ['colonnade'], depth: 20 },
     particles: { mix: [[PTYPE.DUST, 0.58], [PTYPE.EMBER, 0.26], [PTYPE.WISP, 0.16]],
                  tint: '#ffe8c0', wispTint: '#d8a8ff', emberTint: '#ffc95a',
                  speed: 0.9, scale: 1.1, wind: 0.8, density: 1.0 },
@@ -819,17 +834,248 @@ const NUM_KEYS = ['coolFill', 'grime', 'openGlow', 'wallFog', 'gloss', 'rim', 'g
  * corridor twice. The authored layout is always in its own family, so an
  * unseeded `setMood()` is byte-for-byte what it was before.
  */
+/* NO SIBLING MAY EMPTY THE ROOM (BRIEF-r11). `perimeter` was a sibling of
+ * `colonnade` and of `terrace`, and its own comment is "everything lines the
+ * back wall and the two side walls. Empty middle." In a 26 m Greenhouse or
+ * Ballroom that put 55% of the props on a wall thirty metres from the lens and
+ * clamped the rest to the frame edges: Greenhouse `palmhouse` and `vinery` and
+ * Ballroom `mirrorhall` all drew it, and all three came back nearly empty --
+ * the Ballroom without its piano. So the deep rooms' families hold the same
+ * KIND of space at a legible depth: a glasshouse is banked (terrace), bedded
+ * out (rows) or walked down between two files of palms (aisle); a colonnaded
+ * hall is a colonnade, with its files moved in or out per room by _vary().
+ * `perimeter` stays the Foyer's, the Study's and the Crypt's own layout --
+ * the Foyer carries `props.near` for its empty middle -- and a sibling of
+ * nothing. */
 const LAYOUT_FAMILY = {
   wings:     ['wings', 'nook', 'clutter'],
-  colonnade: ['colonnade', 'rows', 'perimeter'],
+  colonnade: ['colonnade', 'colonnade', 'rows'],
   rows:      ['rows', 'colonnade', 'terrace'],
   aisle:     ['aisle', 'colonnade', 'nook'],
   clutter:   ['clutter', 'nook', 'wings'],
   nook:      ['nook', 'clutter', 'wings'],
-  terrace:   ['terrace', 'rows', 'perimeter'],
+  terrace:   ['terrace', 'rows', 'aisle'],
   hang:      ['hang', 'clutter', 'nook'],
   perimeter: ['perimeter', 'wings', 'colonnade'],
 };
+
+/**
+ * A WING HAS SEVERAL KINDS OF ROOM (round 11).
+ *
+ * Josh, 2026-09-18: "i want variation between backgrounds within sections of
+ * the mansion as well, multiple different foyer, ballroom, greenhouse, etc.
+ * rooms so that different encounters within the same section wont feel
+ * stale."
+ *
+ * _vary() already re-rolled the arrangement, the proportions and the lamps of
+ * every room, and three Foyers still read as ONE room, because the eye goes
+ * first to the thing on the wall and the thing on the wall was one value per
+ * region: every Foyer in the game led with the same imperial staircase. These
+ * are the rooms each wing actually contains. A kind names the SUBJECT it is
+ * drawn around (SUBJECT in backdrop.js, subjectH in the shader) and whatever
+ * else must change with it for the room to make sense -- where its doorways
+ * are, what stands in its near field, where the house and the moon stand
+ * outside, how it is laid out, and where you stand to see it.
+ *
+ * WHICH KIND a room is comes from its NAME wherever the name says: the Parlor
+ * is the hall with the fire in it, East Landing is the stair hall, the Marble
+ * Gallery is the arcade, the Vinery has vines. state/mapgen.js authors all 340
+ * names and most of them do say. `names` is checked in order and the first
+ * match wins; a name that says nothing falls to the room seed, which is still
+ * stable per room. kinds[0] is what the region always was, and an unseeded
+ * setMood() never reaches this table.
+ *
+ * EVERY SUBJECT IN A WING MUST BE A THING THAT WING HAS. A Foyer that drew
+ * ossuary niches would not be variety, it would be a bug, and the rubric
+ * scores it below the baseline. So the palette, the arch mode, the material,
+ * the lamps and the prop vocabulary never move here -- only which of the
+ * wing's own rooms this is.
+ */
+/* The Foyer's near field, per kind. Each is the round-10 list's idea -- the
+   entrance hall's own furniture standing in the lower half of the frame, where
+   a layout never puts any -- furnished for THAT room. `under: 2` is the warm
+   lamp's old torchere, which yields to the lamp's own fitting (see _layoutProps).
+   _vary() mirrors all of them with the room's lighting. No pier glass: a
+   near-field piece is clamped into the frame, which in the near half of the
+   hall is metres off the side wall, and a mirror standing out on the floor
+   reads as a slab. */
+const FOYER_NEAR_HEARTH = [
+  { shape: 0,  x: -5.20, z: -3.10, tone: 0.90 },   // a buttoned hall chair
+  { shape: 0,  x:  5.40, z: -3.50, tone: 0.90 },   // and its pair across the hall
+  { shape: 14, x: -7.50, z: -6.40, tone: 0.86 },   // the longcase clock by the wall
+  { shape: 5,  x:  7.60, z: -7.00, tone: 0.88 },   // a cabinet opposite it
+  { shape: 1,  x: -3.20, z: -5.40, tone: 0.72, under: 2 },
+  { shape: 5,  x:  6.60, z: -2.10, tone: 0.94 },   // a glazed cabinet
+];
+const FOYER_NEAR_GALLERY = [
+  { shape: 15, x: -6.10, z: -3.50, tone: 0.92 },   // a figure on its plinth
+  { shape: 15, x:  6.30, z: -3.80, tone: 0.92 },   // and its pendant
+  { shape: 5,  x: -7.50, z: -7.20, tone: 0.90 },   // vitrines further down the gallery
+  { shape: 5,  x:  7.60, z: -7.40, tone: 0.90 },
+  { shape: 1,  x: -3.20, z: -5.40, tone: 0.72, under: 2 },
+  { shape: 0,  x: -5.40, z: -1.60, tone: 0.86 },   // a hall chair by the near wall
+];
+export const ROOM_KINDS = {
+  foyer: {
+    kinds: [
+      { subject: 'stair' },
+      /* the doors go to the sides because the fire takes the axis */
+      { subject: 'chimney', doorX: 6.40, near: FOYER_NEAR_HEARTH,
+        cam: { y: -0.30, z: -1.6, look: 0.35, fov: 2 } },
+      { subject: 'arcade', near: FOYER_NEAR_GALLERY,
+        cam: { y: 0.45, z: 1.2, look: -0.10, fov: 3 } },
+    ],
+    names: [
+      [/receiving chamber|stair|landing|entry|vestibule|foyer|tutorial/i, 0],
+      [/parlou?r|drawing|reception|receiving|dining|music|cloak|coat/i, 1],
+      [/galler|portrait|marble|register|bell|passage|umbrella/i, 2],
+    ],
+  },
+  ballroom: {
+    kinds: [
+      /* A MIRROR HALL AND A VELVET LOUNGE HAVE NO COLONNADE. Two files of
+         free-standing columns down every room was what made three Ballroom
+         rooms read as one hall with different ends. The mirror hall is gilt
+         seating round its walls (`wings`), the lounge massed to one side of
+         its stage (`nook`); in both, the column is dealt as a chair and the
+         loose pier glass as a candelabrum (the glasses are on the walls). */
+      { subject: 'mirrors', layout: 'wings', swap: [[6, 0], [20, 1]],
+        lamps: [{ i: 2, x: 0.0, z: 0.78 }],
+        cam: { y: 0.25, z: 0.6, look: -0.2, fov: 2 } },
+      /* The back wall of a 26 m ballroom is past the reach of every lamp in
+         it, so a room whose feature is on that wall hangs its centre
+         chandelier (lights[2]) in front of the feature; its fitting follows
+         it (Backdrop._fixtures places from the light). The musicians'
+         gallery is looked UP at from nearer the floor's middle. */
+      { subject: 'music', lamps: [{ i: 2, x: 0.0, z: 0.80 }],
+        cam: { y: -0.30, z: -1.1, look: 0.55, fov: -1 } },
+      /* the stage takes the axis, and there is no door through a stage */
+      { subject: 'dais', doorX: -1, lamps: [{ i: 2, x: 0.0, z: 0.76 }],
+        layout: 'nook', swap: [[6, 0], [20, 1]],
+        cam: { y: -0.40, z: -1.4, look: -0.1, fov: -3 } },
+    ],
+    names: [
+      [/mirror/i, 0],
+      [/suite|velvet|lounge|bedroom|mask|revels|drawing/i, 2],
+      [/ballroom|musician|balcony|gallery|supper/i, 1],
+      [/salon|powder|dance|retiring|terrace|ladies|gentlem/i, 0],
+    ],
+  },
+  greenhouse: {
+    kinds: [
+      { subject: 'terrace' },
+      /* a palm house is walked down between two files of palms, close in
+         along the walk where the lamps are, and its columns are the iron
+         ones on its walls, so the pack deals palms where the hall deals a
+         classical column */
+      /* ...and it deals 60% of the wing's count: an avenue brings every plant
+         within 16 m of the lens, and the Greenhouse is the wing with the
+         least frame to spare (BRIEF-r11) -- the conservatory's tiers carry
+         the same plants over twice the depth. */
+      { subject: 'palm', layout: 'aisle', aisle: [0.14, 0.44], swap: [[6, 2]], countScale: 0.6,
+        cam: { y: -0.20, z: -0.6, look: 0.35, fov: 2 } },
+      /* and a vinery's floor is bedded out in rows under the rods */
+      { subject: 'vine', layout: 'rows', swap: [[6, 24]],
+        cam: { y: 0.35, z: 0.6, look: -0.2 } },
+    ],
+    names: [
+      [/overgrown|vine|ivy/i, 2],
+      [/palm|winter|great|orangery|rain|glass hall|moss|moon pool/i, 1],
+      [/greenhouse|conservator|orchid|cactus|seed|root|herb|potting|fern|tool/i, 0],
+    ],
+  },
+  graveyard: {
+    kinds: [
+      { subject: 'fence' },
+      /* the chapel stands left of the axis, so the house goes right; the
+         moon rises behind the chapel's cross */
+      { subject: 'chapel', houseX: 9.0, moonX: -2.4,
+        cam: { y: -0.45, z: -1.2, look: 0.9, fov: -2 } },
+      /* the mausolea stand right, so the house goes left and the moon over them */
+      { subject: 'mausolea', houseX: -11.5, moonX: 16.0,
+        cam: { y: 0.25, z: -0.4, look: 0.3, fov: -1 } },
+    ],
+    names: [
+      [/graveyard|gate|walk|path|shed/i, 0],
+      /* (the Crypt Steps play in the Crypt: combat.js's ROOM_MOOD) */
+      [/mausole|tomb|monument|plot|name/i, 2],
+      [/chapel|yard|bell|angel|yew|crypt/i, 1],
+      [/row|lane/i, 0],
+    ],
+  },
+  /* The Study needs no new drawing for its second room: a study with a fire
+     in it is a chimneypiece between shelves, which is exactly the Heart's
+     `hearth`. The library stacks keep the cases to the cornice. */
+  study: {
+    kinds: [
+      { subject: 'bookcase' },
+      /* no central doorway: it would open straight through the firebox */
+      { subject: 'hearth', doorX: -1, cam: { z: -0.8, look: 0.2 } },
+    ],
+    names: [
+      [/fireplace|private|writing|archivist|scribe|repair/i, 1],
+      [/librar|stack|index|reference|archive|ladder|map|globe|cabinet|vault|reading|study/i, 0],
+    ],
+  },
+  /* FOUR MORE WINGS, AND NOT ONE NEW LINE OF SHADER. Each of these reuses a
+     subject the house already draws, where the room it names genuinely has
+     one: a nursery's closets and wardrobe room are wardrobes; a bedroom has
+     a fireplace; a scullery, a dish room or a cold larder is a tiled room with
+     taps (the Bathhouse's `dado`); an observatory's library and chart room
+     are cases of books. The first kind is still what the wing always was. */
+  nursery: {
+    kinds: [{ subject: 'toyshelf' }, { subject: 'wardrobe' }],
+    names: [
+      [/wardrobe|closet|changing|blanket|sewing|mending/i, 1],
+      [/./, 0],
+    ],
+  },
+  sleeping: {
+    kinds: [{ subject: 'wardrobe' }, { subject: 'hearth', doorX: -1, cam: { z: -0.6, look: 0.15 } }],
+    names: [
+      [/bedroom|moon window|dreaming/i, 1],
+      [/./, 0],
+    ],
+  },
+  kitchens: {
+    kinds: [{ subject: 'range' }, { subject: 'dado' }],
+    names: [
+      [/scullery|dish|larder|wash|milk/i, 1],
+      [/./, 0],
+    ],
+  },
+  attic: {
+    kinds: [{ subject: 'rafters' }, { subject: 'bookcase' }],
+    names: [
+      [/library|chart|archive|watcher/i, 1],
+      [/./, 0],
+    ],
+  },
+  /* The Crypt's frame is mostly its two long side walls, so its rooms differ
+     THERE as well as on the back wall: loculi, or a tomb in every bay under a
+     chantry tomb behind a grille, or bone. */
+  crypt: {
+    kinds: [
+      { subject: 'niches' },
+      { subject: 'tomb', cam: { z: -1.0, look: 0.15 } },
+      { subject: 'ossuary', cam: { y: -0.20, z: 0.6, fov: 3 } },
+    ],
+    names: [
+      [/ossuar|bone|skull/i, 2],
+      [/family|memorial|sealed|reliquar|chapel|burial|pet crypt/i, 1],
+      [/vestibule|passage|catacomb|coffin|name vault|junction|crypt/i, 0],
+    ],
+  },
+};
+
+/** Which of its wing's rooms this is: by its name if the name says, else by seed. */
+function roomKind(regionKey, name, h) {
+  const R = ROOM_KINDS[regionKey];
+  if (!R) return null;
+  const n = String(name ?? '').split('#')[0];
+  for (const [re, i] of R.names) if (n && re.test(n)) return R.kinds[i];
+  return R.kinds[h % R.kinds.length];
+}
 
 /** 32-bit FNV-1a. A room name, a node id or a number all hash the same way. */
 function hashSeed(v) {
@@ -912,7 +1158,12 @@ export class Atmosphere {
        stacked RenderPass + UnrealBloomPass(5 mips) + grade + OutputPass with no
        warm-up anywhere, and the first composer.render() showed up as a single
        ~6 s long task on every scene. */
-    stage.warmup?.().then((ms) => { window.__MM_WARMUP_MS = ms; }).catch(() => {});
+    stage.warmup?.().then((ms) => {
+      window.__MM_WARMUP_MS = ms;
+      /* ...and then, behind the game, the wall programs that carry the other
+         wings' rooms (Backdrop.precompileRooms). */
+      this.backdrop?.precompileRooms?.(stage);
+    }).catch(() => {});
     return this;
   }
 
@@ -955,7 +1206,7 @@ export class Atmosphere {
       // happen to share a name do not share a layout.
       this._seed = (this._seed ^ hashSeed(this.roomSeed)) % 2147483647;
       if (this._seed <= 0) this._seed += 2147483646;
-      this._vary(pal, hashSeed(`${pal.regionKey}|${this.roomSeed}`));
+      this._vary(pal, hashSeed(`${pal.regionKey}|${this.roomSeed}`), opts.seed);
     }
 
     /* The lens the props have to fit inside. Round 2 hard-coded 16/9 in the
@@ -1162,13 +1413,16 @@ export class Atmosphere {
    *
    * Runs once per room entry, never per frame.
    */
-  _vary(pal, h) {
+  _vary(pal, h, name) {
     let s = h >>> 0 || 1;
     const r = () => { s = (Math.imul(s, 1664525) + 1013904223) >>> 0; return s / 4294967296; };
     const spread = (amt) => 1 + (r() * 2 - 1) * amt;    // 1±amt
 
     // ── the arrangement ────────────────────────────────────────────────────
-    const fam = LAYOUT_FAMILY[pal.props.layout] || [pal.props.layout];
+    /* A region may narrow its own family: the Ballroom's is its colonnade
+       alone (moved in and out below), because `rows` stands its columns in
+       ranks across the dance floor. */
+    const fam = pal.props.family || LAYOUT_FAMILY[pal.props.layout] || [pal.props.layout];
     pal.props = Object.assign({}, pal.props, {
       layout: fam[(r() * fam.length) | 0],
       count: Math.max(6, Math.round((pal.props.count ?? 22) * spread(0.25))),
@@ -1203,6 +1457,74 @@ export class Atmosphere {
     sh.z *= spread(0.12);
     sh.spread *= spread(0.16);
     sh.angle *= spread(0.20);
+
+    /* Everything below is round 11's, and it draws AFTER the shafts on
+       purpose: the rand() stream above is what the arrangement, the shell and
+       the lamps of every seeded room were judged with, and none of it moves. */
+
+    // ── which of the wing's rooms this is ──────────────────────────────────
+    const kind = roomKind(pal.regionKey, name, h >>> 9);
+    if (kind) {
+      pal.subject = kind.subject;
+      if (kind.doorX !== undefined) pal.doorX = kind.doorX;
+      if (kind.houseX !== undefined) pal.houseX = kind.houseX;
+      if (kind.moonX !== undefined) pal.moonX = kind.moonX;
+      if (kind.layout) pal.props.layout = kind.layout;
+      if (kind.countScale) pal.props.count = Math.max(6, Math.round(pal.props.count * kind.countScale));
+      if (kind.aisle) pal.props.aisle = kind.aisle;
+      /* a lamp the room itself places (z as a fraction of the room's depth) */
+      for (const m of (kind.lamps || [])) {
+        const L = pal.lights[m.i];
+        if (!L) continue;
+        if (m.x !== undefined) L.x = m.x;
+        if (m.z !== undefined) L.z = -R.d * m.z;
+      }
+      /* A DIFFERENT ROOM IS SEEN FROM A DIFFERENT PLACE. Offsets from the
+         wing's authored rig, and small: the rig is authored against the
+         wing's proportions and the prop clamp reads this same pal.cam, so
+         the furniture is framed for the vantage it is seen from. A hall with
+         a fire is come up to, a gallery seen from its door; a musicians'
+         gallery is looked UP at. */
+      if (kind.cam) {
+        const c = pal.cam, k = kind.cam;
+        pal.cam = { y: c.y + (k.y ?? 0), z: c.z + (k.z ?? 0),
+                    look: c.look + (k.look ?? 0), fov: c.fov + (k.fov ?? 0) };
+      }
+      if (kind.near) pal.props.near = kind.near;
+      /* a kind may deal one of the wing's shapes in place of another; the
+         wing's own vocabulary, never a shape from another wing */
+      for (const [from, to] of (kind.swap || [])) {
+        pal.props.shapes = pal.props.shapes.map((sh) => (sh === from ? to : sh));
+      }
+    }
+    /* THE NEAR FIELD IS MIRRORED WITH THE ROOM. It is placed, not dealt, so
+       without this every Foyer had the same two vitrines in the same two
+       corners; mirrored with the lighting it stays lit by the lamp it was
+       placed beside. */
+    if (pal.props.near) {
+      pal.props.near = pal.props.near.map((it) => Object.assign({}, it, { x: it.x * flip }));
+    }
+    // a colonnade's files close in or stand out by the walls, room by room
+    pal.props.fileX = [0.46, 0.58, 0.70][(r() * 3) | 0];
+    /* ...and the solo piece stands on a side and at a depth of its own */
+    const sh2 = (h >>> 5) & 1023;
+    pal.props.soloAt = { side: (sh2 & 1) ? 1 : -1, x: 0.10 + 0.16*((sh2 >> 1)/511),
+                         z: 3.4 + 2.6*(((sh2 * 37) & 255)/255) };
+
+    /* A HALL'S LAMP STANDS BESIDE ITS RUNNER, NEVER ON IT. The lamp moves
+       with the room (above), and where that put it at the centre -- `gallery`
+       and combat's own `foyer` room, BRIEF-r11 -- its lantern standard stood
+       in the middle of the one strip of floor everybody walks down, at the
+       foot of the stair. It keeps its side and its depth and steps off the
+       carpet, which is where a hall's lamp stands. */
+    const run = pal.runner ?? 0;
+    if (run > 0) {
+      const clear = run + 0.95;
+      for (const L of pal.lights) {
+        if (fittingFor(L, R) !== FIT.LAMP || Math.abs(L.x) >= clear) continue;
+        L.x = (Math.sign(L.x) || flip) * (clear + (clear - Math.abs(L.x)) * 0.35);
+      }
+    }
   }
 
   _readTokens() {
@@ -1338,6 +1660,7 @@ export class Atmosphere {
          a cross-fade onto a coursed stone wall is neither room. */
       L.arch = T.arch; L.floorPattern = T.floorPattern; L.sides = T.sides; L.room = T.room;
       L.subject = T.subject;
+      L.doorX = T.doorX; L.houseX = T.houseX; L.moonX = T.moonX;
       this.backdrop.applyPalette(L);
       this._applyGrade(L, k);
       if (this._fade >= 1) { this.live = T; this.backdrop.applyPalette(T); this._applyGrade(T, 1); }

@@ -221,6 +221,27 @@ export const SUBJECT = {
   none: 0, stair: 1, bookcase: 2, niches: 3, terrace: 4, bench: 5,
   wardrobe: 6, pens: 7, topiary: 8, timber: 9, mirrors: 10, dado: 11,
   rafters: 12, fence: 13, coping: 14, toyshelf: 15, range: 16, hearth: 17,
+  /* Round 11: the OTHER rooms of a wing -- see ROOM_KINDS in atmosphere.js.
+     The Foyer's hall with a fire and its arcaded gallery, the Ballroom's
+     musicians' gallery and its curtained dais, the Greenhouse's palm house
+     and its vinery, and the Graveyard's chapel yard and its mausolea. */
+  chimney: 18, arcade: 19, music: 20, dais: 21, palm: 22, vine: 23,
+  chapel: 24, mausolea: 25, tomb: 26, ossuary: 27,
+};
+/* WHICH WALL PROGRAM A SUBJECT IS DRAWN BY (MM_ROOMS in shaders/backdrop.js).
+   Round 11's rooms first went into the one wall program with everything else,
+   and linking it cost the page 25 s of warm-up against BASE on this machine
+   (50.9 -> 75.5 s, two runs each, same window). So each wing's rooms are a
+   variant of their own: every other subject is program 0, which is the wall as
+   it was plus a few lines, and a variant is linked in the background after the
+   stage has warmed (precompileRooms), so the first room of a wing finds its
+   program ready. The mirror hall is the Ballroom's because its glints are. */
+export const ROOMS_PROGRAM = {
+  chimney: 1, arcade: 1,
+  mirrors: 2, music: 2, dais: 2,
+  palm: 3, vine: 3,
+  chapel: 4, mausolea: 4,
+  tomb: 5, ossuary: 5,
 };
 
 const NLIGHT = 5;
@@ -287,6 +308,10 @@ export class Backdrop {
            of. See subjectH in shaders/backdrop.js and SUBJECT below. uFar is 1
            on the back wall and 0 on the two side walls. */
         uSubject: { value: 0 }, uFar: { value: 1 },
+        /* Where the doorway is (0 on the axis, >0 a pair that far out, <0
+           none) and where the exterior's house and moon stand -- both chosen
+           per room with its subject. See WALL_FRAG. */
+        uDoorX: { value: 0 }, uHouse: { value: new THREE.Vector2(0, 0) },
         uSkyGlow: { value: 1.0 }, uOpenSky: { value: 0 },
         uSkyDeep: { value: new THREE.Color(0x141725) },
         uDamHue: { value: new THREE.Color(0.46, 0.24, 0.66) },
@@ -302,6 +327,7 @@ export class Backdrop {
         uLights: { value: v4arr() }, uLightCol: { value: colArr() },
       },
       vertexShader: WALL_VERT, fragmentShader: WALL_FRAG,
+      defines: { MM_ROOMS: 0 },
       /* LESS, not LEQUAL: this wall now draws AFTER the ceiling and the side
          walls, and must lose a depth tie to them exactly as it did when it
          drew first. See OPAQUE DRAW ORDER at the ceiling below. */
@@ -319,6 +345,7 @@ export class Backdrop {
       const mat = new THREE.ShaderMaterial({
         uniforms: freshLightSlots(THREE.UniformsUtils.clone(this.wallMat.uniforms)),
         vertexShader: WALL_VERT, fragmentShader: WALL_FRAG,
+        defines: { MM_ROOMS: 0 },
         // LESS for the same reason as the far wall's: it now follows the ceiling
         depthWrite: true, depthFunc: THREE.LessDepth, fog: false,
       });
@@ -726,7 +753,13 @@ export class Backdrop {
        thirty statues arrived at by another route. A shape named in
        props.solo is dealt once and then withdrawn from the pack. */
     const solo = new Set(P.solo || []);
-    const dealt = new Set();
+    /* ...and it is never DEALT at all now, in any layout. Only `colonnade`
+       used to place it; every other layout dealt it like a chair, so a
+       Ballroom that drew `perimeter` put its one piano against the far wall
+       thirty metres from the lens, where it is not in the room as far as the
+       picture is concerned (BRIEF-r11). It is placed after the layout, below,
+       whichever layout this room drew. */
+    const dealt = new Set(solo);
     const pick = () => {
       for (let tries = 0; tries < 8; tries++) {
         const s = shapes[(rand() * shapes.length) | 0];
@@ -785,6 +818,14 @@ export class Backdrop {
     const vert = (y, z) => ((y - camY) * camZ - (camZ - z) * fy) / fl;
     const inFrameY = (y, z) => Math.abs(vert(y, z)) < depth(y, z) * tanV * 0.93;
     const halfW = room.w / 2;
+    /* THE FURNISHED DEPTH. A layout that spreads its props evenly to the back
+       wall spends half of them past the props' own fog (12-30 m from the
+       lens) in a room as deep as the Greenhouse: its Palm House, laid out as
+       an `aisle`, placed all fifty-one of them in frame and showed six. A
+       region may say how deep its furnishing legibly goes; the layouts that
+       spread through the depth -- wings, aisle, rows, clutter, nook, hang --
+       stop there. perimeter keeps the back wall: lining it is what it is. */
+    const RD = Math.min(room.d, P.depth ?? room.d);
     const openSky = room.h <= 0.01;
     const floorFallback = shapes.find((s) => HANGING[s] !== 1) ?? 5;
 
@@ -876,23 +917,20 @@ export class Backdrop {
 
     if (layout === 'colonnade') {
       // Two receding files of heavy verticals. Reads as depth, not as clutter.
+      /* OF WHAT, and HOW FAR APART, are the room's to say. `file` is the shape
+         the files are made of -- shapes[0] unless a region names one, because
+         the Foyer's shapes[0] is its longcase clock and two files of clocks
+         down a hall is not a colonnade. `fileX` is where they stand across the
+         room, which _vary() moves per room: a colonnade close in, or out by
+         the walls, is a different room from the same one at 0.58. */
       const rows = Math.max(3, Math.round(n / 4));
-      const x0 = halfW * 0.58;
+      const x0 = halfW * (P.fileX ?? 0.58);
+      const file = P.file ?? shapes[0];
       for (let r = 0; r < rows && out.length < n; r++) {
         const t = r / Math.max(rows - 1, 1);
         const z = -1.6 - t * (room.d - 3.4);
-        push(shapes[0], -x0 * (1 - t * 0.14), z, 1.24 - t * 0.16, 0.30 + t * 0.55);
-        if (out.length < n) push(shapes[0], x0 * (1 - t * 0.14), z + (rand() - 0.5) * 0.5, 1.24 - t * 0.16, 0.30 + t * 0.55);
-      }
-      /* A SOLO PROP IS THE ROOM'S ONE OF SOMETHING, so it is PLACED and not
-         dealt: there is a single chance at it, and a piano 24 m back behind a
-         column is not in the room as far as the picture is concerned. Left of
-         centre, a few metres in, where a piano stands in a room used for
-         dancing. */
-      for (const sp of (P.solo || [])) {
-        if (out.length >= n || !shapes.includes(sp)) continue;
-        dealt.add(sp);
-        push(sp, -halfW * 0.145, -3.3 - rand() * 1.2, 1.0, 0.58);
+        push(file, -x0 * (1 - t * 0.14), z, 1.24 - t * 0.16, 0.30 + t * 0.55);
+        if (out.length < n) push(file, x0 * (1 - t * 0.14), z + (rand() - 0.5) * 0.5, 1.24 - t * 0.16, 0.30 + t * 0.55);
       }
       /* ...AND THE FURNITURE BETWEEN THE COLUMNS, with two corrections.
          This dealt from the whole pack INCLUDING shapes[0], which is the shape
@@ -905,11 +943,11 @@ export class Backdrop {
          toward the side walls, which is not a composition trick -- it is where
          a ballroom's seating goes. The middle of the floor is what the room is
          FOR, and it stays clear. */
-      const rest = shapes.length > 2 ? shapes.slice(1) : shapes;
+      const rest0 = shapes.length > 2 ? shapes.filter((s) => s !== file) : shapes;
+      const rest = rest0.filter((s) => !solo.has(s));
+      if (!rest.length) rest.push(file);
       while (out.length < n) {
         const s = rest[(rand() * rest.length) | 0];
-        if (solo.has(s) && dealt.has(s)) continue;
-        if (solo.has(s)) dealt.add(s);
         const t2 = rand() * rand();
         push(s, (rand() < 0.5 ? -1 : 1) * halfW * (0.32 + 0.60 * rand()),
              -2.2 - t2 * (room.d - 4.0), 1.0, 0.42 + t2 * 0.48);
@@ -921,7 +959,7 @@ export class Backdrop {
       const per = Math.ceil(n / ranks);
       for (let r = 0; r < ranks && out.length < n; r++) {
         const t = r / (ranks - 1);
-        const z = -2.2 - t * (room.d - 3.0);
+        const z = -2.2 - t * (RD - 3.0);
         for (let i = 0; i < per && out.length < n; i++) {
           const jitter = (r % 2) * 0.5;
           const x = ((i + jitter) / per - 0.5) * 2 * halfW * 0.94 + (rand() - 0.5) * 0.8;
@@ -931,18 +969,22 @@ export class Backdrop {
 
     } else if (layout === 'aisle') {
       // Massive props hugging the frame edges up close, thinning fast with depth.
+      /* ...or, where a room says so (`aisle: [inner, outer]` as fractions of
+         the half-width), two files lining a walk down its middle: a palm house
+         is walked through between its palms, not past them at the walls. */
+      const [a0, a1] = P.aisle || [0.52, 0.96];
       for (let i = 0; i < n; i++) {
         const t = Math.pow(i / Math.max(n - 1, 1), 0.72);
         const s = Math.sign(rand() - 0.5) || 1;
-        const x = s * (halfW * (0.52 + 0.44 * rand())) * (1 - t * 0.18);
-        const z = -1.0 - t * (room.d - 2.0);
+        const x = s * (halfW * (a0 + (a1 - a0) * rand())) * (1 - t * 0.18);
+        const z = -1.0 - t * (RD - 2.0);
         push(pick(), x, z, 1.55 - t * 0.72, 0.10 + t * 0.78);
       }
 
     } else if (layout === 'clutter') {
       // Dense, small, everywhere including the centre — but short enough to see over.
       for (let i = 0; i < n; i++) {
-        const z = -1.2 - rand() * (room.d - 1.8);
+        const z = -1.2 - rand() * (RD - 1.8);
         const depth = (-z) / room.d;
         const x = (rand() * 2 - 1) * halfW * 0.95;
         push(pick(), x, z, 0.62 + rand() * 0.42, 0.14 + depth * 0.72);
@@ -957,7 +999,7 @@ export class Backdrop {
         const x = heavy
           ? s * halfW * (0.26 + 0.68 * t)
           : -s * halfW * (0.72 + 0.22 * t);
-        const z = -1.4 - rand() * (room.d - 2.2);
+        const z = -1.4 - rand() * (RD - 2.2);
         push(pick(), x, z, heavy ? 1.1 + rand() * 0.5 : 0.85, 0.14 + (-z / room.d) * 0.72);
       }
 
@@ -1012,7 +1054,7 @@ export class Backdrop {
         const overhead = hangShapes.length && rand() < 0.62;
         const pool = overhead ? hangShapes : (floorShapes.length ? floorShapes : shapes);
         const s = pool[(rand() * pool.length) | 0];
-        const z = -2.0 - rand() * (room.d - 3.0);
+        const z = -2.0 - rand() * (RD - 3.0);
         const x = (rand() * 2 - 1) * halfW * (overhead ? 0.90 : 0.82);
         push(s, x, z, overhead ? 1.15 : 1.0, 0.16 + (-z / room.d) * 0.7);
       }
@@ -1035,9 +1077,9 @@ export class Backdrop {
     } else {
       // 'wings' — the original: three depth bands biased to the sides.
       const bands = [
-        { z: -room.d * 0.84, spread: 0.94, scale: 0.95, tone: 0.85, gap: 0.14 },
-        { z: -room.d * 0.56, spread: 0.82, scale: 1.10, tone: 0.50, gap: 0.26 },
-        { z: -room.d * 0.28, spread: 0.70, scale: 1.28, tone: 0.22, gap: 0.38 },
+        { z: -RD * 0.84, spread: 0.94, scale: 0.95, tone: 0.85, gap: 0.14 },
+        { z: -RD * 0.56, spread: 0.82, scale: 1.10, tone: 0.50, gap: 0.26 },
+        { z: -RD * 0.28, spread: 0.70, scale: 1.28, tone: 0.22, gap: 0.38 },
       ];
       let k = 0;
       for (let b = 0; b < bands.length && k < n; b++) {
@@ -1052,6 +1094,18 @@ export class Backdrop {
           push(s, x, band.z + (rand() - 0.5) * 1.8, band.scale, band.tone * (0.7 + rand() * 0.6));
         }
       }
+    }
+    /* A SOLO PROP IS THE ROOM'S ONE OF SOMETHING, so it is PLACED and not
+       dealt, in every layout (it used to be colonnade's alone): a piano 24 m
+       back behind a column is not in the room as far as the picture is
+       concerned. A few metres in and off the axis, where a piano stands in a
+       room used for dancing -- on the side, and at the distance, _vary()
+       chose for this room (`soloAt`: side, fraction of the half-width, depth),
+       so the one piano is not in the same place in every room of the wing. */
+    for (const sp of (P.solo || [])) {
+      if (!shapes.includes(sp) || out.length >= MAX_PROPS) continue;
+      const at = P.soloAt || { side: -1, x: 0.145, z: 3.3 };
+      push(sp, at.side * halfW * at.x, -at.z - rand() * 1.2, 1.0, 0.58);
     }
     /* NEAR-FIELD FURNITURE, PLACED BY HAND. Round 10 fix 6, both judges: "the
        lower 40% of the frame is unlit floor carrying one small bench, with no
@@ -1342,8 +1396,11 @@ export class Backdrop {
     w.uDamCell.value = p.damaskCell ?? (kind === 2 ? 0.74 : 0.92);
     w.uArch.value = arch;
     const subj = SUBJECT[p.subject] ?? 0;
+    this._setRoomsProgram(ROOMS_PROGRAM[p.subject] ?? 0);
     w.uSubject.value = subj;
     w.uFar.value = 1;
+    w.uDoorX.value = p.doorX ?? 0;
+    w.uHouse.value.set(p.houseX ?? 0, p.moonX ?? 0);
     w.uCool.value = p.coolFill ?? 0.9;
     w.uGrime.value = p.grime ?? 0.7;
     w.uOpen.value = p.openGlow ?? 0.5;
@@ -1426,6 +1483,8 @@ export class Backdrop {
       su.uDamCell.value = w.uDamCell.value;
       su.uSubject.value = subj;
       su.uFar.value = 0;                        // one staircase, forty niches
+      su.uDoorX.value = 0;                      // the side walls keep their own door
+      su.uHouse.value.copy(w.uHouse.value);
       su.uCool.value = (p.coolFill ?? 0.9) * 0.85;
       su.uGrime.value = Math.min(1, (p.grime ?? 0.7) + 0.12);
       su.uOpen.value = 0;                       // no doorway on the side walls
@@ -1457,6 +1516,55 @@ export class Backdrop {
       m.material.uniforms.uRim.value.copy(p._rim);
       m.material.uniforms.uAmount.value = p.frameAmount ?? 0.92;
     }
+  }
+
+  /** Switch the three wall planes to the program that carries this subject. */
+  _setRoomsProgram(n) {
+    if (this._roomsProg === n) return;
+    this._roomsProg = n;
+    for (const m of [this.wallMat, this.sides[0].material, this.sides[1].material]) {
+      m.defines = Object.assign({}, m.defines, { MM_ROOMS: n });
+      m.needsUpdate = true;
+    }
+  }
+
+  /**
+   * LINK THE OTHER WINGS' WALL PROGRAMS BEHIND THE GAME, once the stage has
+   * warmed: one variant at a time, for both targets the stage renders to (the
+   * same two the stage's own warm-up compiles for, because they are different
+   * program keys). Only where KHR_parallel_shader_compile exists: there the
+   * link runs off the main thread, and without it a background link would be
+   * a multi-second stall on whatever screen is up -- so there a wing's program
+   * is linked the first time one of its rooms is shown, as every program was
+   * before stage.warmup existed. The materials are KEPT: disposing one would
+   * release the program it holds.
+   */
+  precompileRooms(stage) {
+    if (this._pre || !stage?.renderer) return;
+    this._pre = [];
+    const R = stage.renderer;
+    let gl = null;
+    try { gl = R.getContext(); } catch { gl = null; }
+    if (!gl || !gl.getExtension('KHR_parallel_shader_compile')) return;
+    const targets = [null, stage.composer?.renderTarget1].filter((t) => t !== undefined);
+    (async () => {
+      for (const n of [1, 2, 3, 4, 5]) {
+        if (n === this._roomsProg) continue;
+        const m = this.wallMat.clone();
+        m.defines = Object.assign({}, this.wallMat.defines, { MM_ROOMS: n });
+        const mesh = new THREE.Mesh(this.wall.geometry, m);
+        for (const rt of targets) {
+          const prev = R.getRenderTarget();
+          R.setRenderTarget(rt);
+          let done = null;
+          try { done = R.compileAsync(mesh, stage.camera, stage.scene); } catch { done = null; }
+          R.setRenderTarget(prev);
+          try { await done; } catch { /* keep going */ }
+          await new Promise((r) => setTimeout(r, 0));
+        }
+        this._pre.push(m);
+      }
+    })();
   }
 
   /**
@@ -1637,6 +1745,7 @@ export class Backdrop {
     this.scene.remove(this.group);
     for (const m of this.sides) { m.geometry.dispose(); m.material.dispose(); }
     this.wall.geometry.dispose(); this.wallMat.dispose();
+    for (const m of (this._pre || [])) m.dispose();
     this.floor.geometry.dispose(); this.floorMat.dispose();
     this.ceiling.geometry.dispose(); this.ceilMat.dispose();
     this.propGeo.dispose(); this.propMat.dispose();
