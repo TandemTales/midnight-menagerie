@@ -21,9 +21,14 @@ about a room needs a fresh page: `backdrop-room.js` switches the room with
 the shot, and a pinned capture is byte-reproducible. So warm ONE page and walk
 it through the rooms.
 
-EQUIVALENCE, measured before this was used for anything: a room photographed
-second in a batch, after a different region, against the same room photographed
-in a fresh browser -- see the commit that added this file for the numbers.
+EQUIVALENCE: a room photographed anywhere in a batch is BYTE-IDENTICAL to the
+same room photographed in a fresh browser (measured: the Foyer shot second,
+after the Ballroom, 0 pixels; the Ballroom shot first and again third in one
+page, 0 pixels). That took one game fix -- candle flames were seeded by a
+page-wide light counter, so their phase depended on how many rooms the page
+had built -- and one rule here: a page stops at its first failed room, because
+rooms shot after a half-run failure in the same page came back relit (830,004
+pixels, up to 232 levels, in round 11's performance pass).
 
 EVERY ROOM IS CHECKED, the same tests shot.py applies: a frame flatter than
 std 8 is dead, a frame with >8% of pixels above L200 caught a white flash, a
@@ -137,7 +142,7 @@ async def _run(rooms, port, tier, flags, w, h, wait, warm_timeout, prefix, log):
                     out.append(dict(region=region, seed=seed, png=None, void=True,
                                     why=f'{type(e).__name__}: {str(e)[:160]}'))
                     log(f'  VOID  {region}/{seed}: {type(e).__name__}')
-                    continue
+                    break      # a half-run room leaves the page untrustworthy
                 std, hi = _pixels(png)
                 why = []
                 if std < 8.0:
@@ -150,14 +155,27 @@ async def _run(rooms, port, tier, flags, w, h, wait, warm_timeout, prefix, log):
                     why.append(f"page shows room {where.get('roomSeed')!r}, not {want_seed!r}")
                 if region in REGIONS and where.get('mood') != region:
                     why.append(f"page shows region {where.get('mood')!r}, not {region!r}")
-                if len(errors) > n_err:
-                    why.append('console error: ' + errors[n_err][:120])
+                # an uncaught exception may have left the page half-changed, so
+                # it voids the shot; an ordinary console message is recorded, as
+                # shot.py has always done
+                new = errors[n_err:]
+                if any(e.startswith('PAGEERROR') for e in new):
+                    why.append('page error: ' + next(e for e in new if e.startswith('PAGEERROR'))[:120])
                 void = bool(why)
                 out.append(dict(region=region, seed=seed, png=None if void else png,
                                 void=void, why='; '.join(why), std=round(std, 2),
-                                mood=where.get('mood')))
+                                mood=where.get('mood'), errors=new[:5]))
                 log(f"  {'VOID ' if void else 'ok   '} {region}/{seed or '-':<12} std {std:5.1f}"
-                    + (f'  -- {out[-1]["why"]}' if void else ''))
+                    + (f'  -- {out[-1]["why"]}' if void else '')
+                    + (f'  ({len(new)} console error(s))' if new and not void else ''))
+                if void:
+                    # A PAGE THAT HAS FAILED ONCE IS NOT TRUSTED AGAIN. Round 11's
+                    # performance builder found rooms shot after a failed room in
+                    # the same page differing from a fresh page by 830,004 pixels
+                    # (up to 232 levels, all lighting) with no code change; a clean
+                    # batch differs only in candle phase. So stop here, and let
+                    # capture_rooms() carry on in a fresh page.
+                    break
         finally:
             await browser.close()
     return out
@@ -167,28 +185,34 @@ def capture_rooms(rooms, port=8777, tier='high', flags='actor=0', w=1600, h=900,
                   wait=7.0, warm_timeout=150, prefix='vs-', tries=3, log=print):
     """Photograph rooms [(region, seed-or-None), ...] in as few pages as it takes.
 
-    A room that comes back void is retried in a fresh page, up to `tries` pages
-    in all, after a rest. Returns {(region, seed): png path or None}."""
+    A page stops at its first void room; that room and everything after it go on
+    in a fresh page, after a rest. A room that fails `tries` pages in a row is
+    given up on. Returns {(region, seed): png path or None}."""
     os.makedirs(SHOTS, exist_ok=True)
     todo = list(rooms)
-    got = {}
-    for attempt in range(1, tries + 1):
-        if not todo:
-            break
-        if attempt > 1:
-            log(f'  retrying {len(todo)} room(s) in a fresh page after a rest')
+    got, fails = {}, {}
+    pages = 0
+    while todo:
+        if pages:
+            log(f'  continuing {len(todo)} room(s) in a fresh page after a rest')
             time.sleep(20)
+        pages += 1
         with gpu_slot(f'room_batch {len(todo)} rooms from {todo[0][0]}'):
             res = asyncio.run(_run(todo, port, tier, flags, w, h, wait, warm_timeout, prefix, log))
-        todo = []
+        done = 0
         for r in res:
             key = (r['region'], r['seed'])
-            if r['void']:
-                todo.append(key)
-            else:
+            if not r['void']:
                 got[key] = r['png']
-    for key in todo:
-        got[key] = None
+                done += 1
+                continue
+            fails[key] = fails.get(key, 0) + 1
+            if fails[key] >= tries:
+                log(f"  GAVE UP on {key[0]}/{key[1] or '-'} after {tries} pages: {r.get('why')}")
+                got[key] = None
+                done += 1
+            break          # everything after a void room goes to a fresh page
+        todo = todo[done:]
     return got
 
 

@@ -1583,7 +1583,13 @@ export class Backdrop {
       if (par[p3] !== size || par[p3 + 1] !== inten || par[p3 + 2] !== wick) {
         par[p3] = size; par[p3 + 1] = inten; par[p3 + 2] = wick; dPar = true;
       }
-      const seed = l.id * 0.37;
+      /* Seeded by the light's place in THIS room's rig, not by `l.id`: ids
+         come from a page-wide counter that keeps climbing with every room the
+         page builds, so the same room's candles flickered in a different phase
+         depending on how many rooms had been shown before it -- which is the
+         one thing that made a room captured mid-batch differ from the same
+         room in a fresh page (643 pixels, all flames; tools/room_batch.py). */
+      const seed = (i + 1) * 0.37;
       if (sd[k] !== seed) { sd[k] = seed; dSeed = true; }
       k++;
     }
