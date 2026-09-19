@@ -51,6 +51,17 @@ runs out of the perf budget.
    `c50fe96` (bands 33.1-37.6). When it lands: verify each claim on the
    captures, check perf on BOTH frames against BASE, merge per `MERGE-r8.md`,
    and log it in the README.
+6. **RUNNING BESIDE IT: ROUND 12, THE LAST WEB CHROME**, launched ~02:40 as
+   run `wf_8f709c50-a57` (task `wdov71w48`), base `df5dd26`, UILOOP
+   `C:/UILOOP/r12`. One EXPAND track: the coach, the hot-seat handoff veil and
+   the achievement toast -- the only screens no round had touched (parked in
+   round 7, never judged). Builders VELLUM a:8911 (the kit exactly) / GESSO
+   b:8912 (objects in the house) / ORMOLU c:8913 (type and ceremony), baseline
+   TWILL. `BRIEF-r12.md`, `RUBRIC-r12.md`, `round-12.args.json`,
+   `baseline-r12.sh`; capture recipes `tools/shot-scripts/chrome-*.js`. It
+   touches none of round 11's files; both rounds' captures queue on the GPU
+   slot. Merge EXPAND: per-screen winners, kit.css tails via
+   `tools/kitcss_merge.py`.
 
 **Four harness fixes landed today, and they change how a round runs:**
 - `fc881cf` — **the fifth way a capture lies**: a board with NO ROOM behind it
