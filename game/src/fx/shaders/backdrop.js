@@ -2302,20 +2302,36 @@ void main(){
                * exp(-max(ff.y - 0.40, 0.0)*2.6) * (1.0 - smoothstep(0.30, 1.05, abs(ff.x)));
     float fl = 0.62 + 0.38*mmNoise(vec2(ff.x*7.0, ff.y*5.0 - uTime*1.3));
     float slab = mmBand(q.y, 0.0, 0.16) * exp(-abs(ff.x)*1.1);
-    /* ...and a fire that is BURNING, not a strip of embers: five low tongues
-       licking up off the bed, each its own height, narrowing to a point and
-       swaying with the clock. At the hall's distance a tongue is 8-14 px, and
-       the flame is what names the thing round it a fireplace. */
-    float tc = ff.x/0.19;
-    float ti = floor(tc + 0.5);
-    float tx = (tc - ti)*0.19 + 0.025*sin(uTime*2.3 + ti*1.9 + ff.y*9.0);
-    float tht = (0.17 + 0.15*mmHash11(ti*3.1 + 7.0)) * (0.82 + 0.18*sin(uTime*3.1 + ti*2.4));
-    float ty = ff.y - 0.47;
-    float tk = clamp(ty/max(tht, 0.01), 0.0, 1.0);
-    float tongue = step(0.0, ty) * step(ty, tht) * step(abs(ti), 2.5)
-                 * (1.0 - smoothstep(0.0, 0.012, abs(tx) - 0.075*(1.0 - tk)*(0.6 + 0.4*(1.0 - tk))));
-    col += vec3(1.0, 0.44, 0.13) * uGain * (bed*fl*0.24 + glow*0.11 + slab*0.05);
-    col += mix(vec3(1.0, 0.78, 0.40), vec3(1.0, 0.42, 0.10), tk) * uGain * tongue * (0.42 - 0.22*tk);
+    /* ...and a fire that is BURNING, not a strip of embers: tongues licking up
+       off the bed in two overlapping ranks, each its own width, height and
+       lean, bending more the higher it goes, soft at the edge and swaying with
+       the clock -- orange at the root, red toward a dark tip, and only a
+       little yellow at the heart of the bed. The first cut was five even
+       pale spikes, which at 1:1 read as a row of teeth. At the hall's
+       distance a tongue is 8-16 px, and the flame is what names the thing
+       round it a fireplace. */
+    float ty = ff.y - 0.46;
+    float tongue = 0.0, tkS = 0.0;
+    for (int k = 0; k < 2; k++) {
+      float pit = k == 0 ? 0.21 : 0.15;
+      float off = k == 0 ? 0.0 : 0.075;
+      float tc = (ff.x + off)/pit;
+      float ti = floor(tc + 0.5) + float(k)*17.0;
+      float hs = mmHash11(ti*3.1 + 7.0);
+      float tht = (k == 0 ? 0.20 : 0.12)*(0.55 + 0.90*hs)*(0.84 + 0.16*sin(uTime*3.1 + ti*2.4));
+      float tk = clamp(ty/max(tht, 0.01), 0.0, 1.0);
+      float lean = (hs - 0.5)*0.10 + 0.020*sin(uTime*2.3 + ti*1.9 + ff.y*11.0);
+      float tx = (tc - floor(tc + 0.5))*pit - lean*tk*tk;
+      float hw = (k == 0 ? 0.078 : 0.058)*(0.75 + 0.5*fract(hs*7.3))*pow(1.0 - tk, 0.8);
+      float t1 = step(0.0, ty)*(1.0 - smoothstep(tht*0.85, tht, ty))
+               *(1.0 - smoothstep(-0.006, 0.018, abs(tx) - hw))*step(abs(ff.x), 0.50);
+      tkS = max(tkS, t1*tk);
+      tongue = max(tongue, t1*(k == 0 ? 1.0 : 0.8));
+    }
+    vec3 fcol = mix(vec3(1.0, 0.50, 0.12), vec3(0.80, 0.16, 0.04), tkS);
+    fcol = mix(fcol, vec3(1.0, 0.74, 0.30), (1.0 - smoothstep(0.0, 0.08, ty))*(1.0 - smoothstep(0.10, 0.32, abs(ff.x))));
+    col += vec3(1.0, 0.44, 0.13) * uGain * (bed*fl*0.24 + glow*0.12 + slab*0.05);
+    col += fcol * uGain * tongue * (0.26 - 0.12*tkS);
   }
 #endif
 
