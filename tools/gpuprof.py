@@ -160,4 +160,11 @@ if __name__ == "__main__":
     ap.add_argument("--w", type=int, default=1600)
     ap.add_argument("--h", type=int, default=900)
     ap.add_argument("--wait", type=float, default=5.0)
-    asyncio.run(run(ap.parse_args()))
+    # A profile is only worth reading from a QUIET GPU, and with builders
+    # capturing beside it no run ever was. The slot makes it quiet by
+    # construction (tools/gpu_slot.py).
+    import os, sys
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    from gpu_slot import gpu_slot
+    with gpu_slot("gpuprof.py"):
+        asyncio.run(run(ap.parse_args()))

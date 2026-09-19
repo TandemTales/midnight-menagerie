@@ -377,4 +377,9 @@ if __name__ == "__main__":
         # A multi-line setup is a file, not a shell-quoting exercise.
         with open(os.path.join(ROOT, args.script[1:]), encoding="utf-8") as f:
             args.script = f.read()
-    sys.exit(asyncio.run(run(args)))
+    # one WebGL page at a time on this machine (tools/gpu_slot.py)
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    from gpu_slot import gpu_slot
+    with gpu_slot(f"shot.py {args.name}"):
+        rc = asyncio.run(run(args))
+    sys.exit(rc)

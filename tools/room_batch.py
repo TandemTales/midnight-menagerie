@@ -38,6 +38,9 @@ import os
 import sys
 import time
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from gpu_slot import gpu_slot  # noqa: E402  one WebGL page at a time
+
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SHOTS = os.path.join(ROOT, 'shots')
 SCRIPT = os.path.join(ROOT, 'tools', 'shot-scripts', 'backdrop-room.js')
@@ -175,7 +178,8 @@ def capture_rooms(rooms, port=8777, tier='high', flags='actor=0', w=1600, h=900,
         if attempt > 1:
             log(f'  retrying {len(todo)} room(s) in a fresh page after a rest')
             time.sleep(20)
-        res = asyncio.run(_run(todo, port, tier, flags, w, h, wait, warm_timeout, prefix, log))
+        with gpu_slot(f'room_batch {len(todo)} rooms from {todo[0][0]}'):
+            res = asyncio.run(_run(todo, port, tier, flags, w, h, wait, warm_timeout, prefix, log))
         todo = []
         for r in res:
             key = (r['region'], r['seed'])
