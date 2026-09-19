@@ -24,19 +24,22 @@ changed: the two round-10 grafts go in FIRST, so round 11 builds on the rooms
 the game will actually have, and so whichever lands second is not the one that
 runs out of the perf budget.
 
-1. **The graft is being built** on `ui/r11-graft` (worktree
-   `C:/UILOOP/r11/wt/r11-graft`, port 8904, cut at `fc881cf`): SORREL2's
-   Greenhouse (`ff71330` + `0092f30`) and BISTRE2's Foyer (`8e096b2`,
-   `17d0a3e`, `055f2b0`), with SORREL2's planting bed renumbered 22 -> 24
-   (OAKGALL's fittings own 22 and 23) and one fitting per light. Its captures
-   go to `C:/UILOOP/r11/judging/graft/`. Check them against
-   `C:/UILOOP/r10/judging/r10/bg3/{SORREL2/room-greenhouse,BISTRE2/room-foyer}.png`
-   before merging.
-2. **Then:** merge it, fast-forward `ui/r11-vary-{a,b,c}` to the merge, finish
-   `BRIEF-r11.md`'s "what changed under you" section and its perf numbers,
-   retake the baselines (`bash docs/ui-pass/baseline-r11.sh`, now ~4x faster),
-   **check `band` on combat and rest**, and launch round 11 with that merge as
-   `base`.
+1. **DONE: the grafts are merged** (`1045f52`): SORREL2's Greenhouse and
+   BISTRE2's Foyer, the planting bed renumbered 22 -> 24, one fitting per
+   light, and a ceiling regression SORREL2 carried fixed. Verified by eye
+   against the judged captures; captures in `C:/UILOOP/r11/judging/graft/`.
+2. **RUNNING: a look-neutral performance pass** on `ui/r11-perf` (worktree
+   `C:/UILOOP/r11/wt/r11-perf`, port 8905, cut at `1045f52`). The grafts left
+   the default combat frame at 15.48 ms (+0.54 over the commit before, the
+   Foyer's near furniture) and the Greenhouse fight at 17.2 ms (16.1 before,
+   so already over). Targets: -1.0 ms default, -1.5 ms Greenhouse, with 17
+   regions proven pixel-identical at tier high AND medium. Evidence goes to
+   `C:/UILOOP/r11/judging/perf/`. Verify its claims before merging.
+3. **Then:** merge it, run the battery (`python tools/gates.py`, ~30 min,
+   nothing else on the GPU), fast-forward `ui/r11-vary-{a,b,c}` to the merge,
+   put the measured perf numbers in `BRIEF-r11.md`'s budget section, retake
+   the baselines (`bash docs/ui-pass/baseline-r11.sh`), **check `band` on
+   combat and rest**, and launch round 11 with that merge as `base`.
 
 **Four harness fixes landed today, and they change how a round runs:**
 - `fc881cf` — **the fifth way a capture lies**: a board with NO ROOM behind it

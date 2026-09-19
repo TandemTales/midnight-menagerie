@@ -17,6 +17,38 @@ screens are contact sheets of three rooms in one wing.
 A wing contains many encounters. Every one of them draws the same region,
 re-seeded by the room's name. He is telling you they feel like one room.
 
+## WHAT CHANGED UNDER YOU
+
+This brief was first written against `3a32fc0`. Your BASE is later, and two
+things in it are yours to keep and one is yours to fix.
+
+**The two round-10 grafts are in (`1045f52`)** — the only screens in eleven
+rounds a blind judge has marked `fits_between_samples`. Do not lose them:
+
+- **The Greenhouse** (SORREL2's): pots with a rolled rim, a mouth and soil, in
+  clay or lead; three leaf species with rolled sections and curling outer
+  leaves; coursed-brick planting beds with a stone coping (prop shape **24** —
+  OAKGALL's fittings own 22 and 23, and "is a fitting" is one flag now, never
+  a shape-number comparison); a ridge-and-furrow GLAZED roof (`ceilPattern 9`).
+- **The Foyer** (BISTRE2's): `props.near`, an authored near-field furniture
+  list — two glazed vitrines, a console with its pier glass, the buttoned
+  hall chair, torchères — plus the hall runner (`uRunner`) and a moulded
+  handrail with a reveal under it. One light, one fitting: the warm lamp
+  always gets OAKGALL's lantern standard.
+
+**And the graft adds a staleness of its own, which is yours:** `props.near` is
+dealt after the layout and NEVER re-randomised, so every Foyer now has the
+same vitrines in the same two corners. Vary it — mirror it, swap members from
+a pool of things a hall has, re-place it — without emptying the lower frame
+it exists to fill. And where `_vary()` puts the warm lamp at centre (`gallery`,
+and combat's own `foyer` room) its lantern now stands ON the runner at the
+foot of the stair; decide whether that is where a hall's lamp would stand.
+
+**The performance pass (`ui/r11-perf`)** is being merged before you start,
+because the grafts left the default combat frame at the 15.5 ms line (15.48 ms
+mean, +0.54 on the commit before) and the Greenhouse fight over it (17.2 ms).
+The numbers you start from are in "THE PERFORMANCE BUDGET" below.
+
 ## THE MACHINERY ALREADY EXISTS. DO NOT REBUILD IT.
 
 `scenes/combat.js` already calls `setMood(region, { seed: this.roomName })`, and
