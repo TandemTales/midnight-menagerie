@@ -1263,10 +1263,14 @@ export class Backdrop {
        the house stays exactly as dark as it was. Ceiling-local is
        (x, z - floorCz) — the opposite z sign from the floor, per syncLights. */
     /* (GRAFT NOTE, r11: nothing writes them. This block was already empty on
-       ui/r10-bg3-b's tip, so `roofLights` is never read, the ceiling's uPool
-       stays zero and FLOOR_FRAG's glazed-roof gate is inert -- the judged
-       roof's sources are its cracked panes and ridge ventilators alone. Carried
-       as it was judged; wiring it up would be a new change, not a graft.) */
+       ui/r10-bg3-b's tip, so `roofLights` is never read. And the ceiling's
+       slots are NOT zero: unwritten, each is THREE.Vector4's default
+       (0, 0, 0, 1), which FLOOR_FRAG reads as a flat white wash over the whole
+       ceiling -- the accidental light round 8 measured and put back. On the
+       glasshouse roof FLOOR_FRAG's gate lets that wash through the panes and
+       30% of it onto the bars, which is the roof as judged; on every other
+       ceiling the gate is 1.0, as on dev. Wiring real roof pools up here
+       would be a new change, not a graft.) */
   }
 
   /** A stable small integer per region, off its label. */

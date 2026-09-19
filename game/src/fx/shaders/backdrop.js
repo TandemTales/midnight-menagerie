@@ -1883,7 +1883,18 @@ void main(){
        shafts come THROUGH (backdrop.js _writePools), and only a glazed roof
        has any. Every other ceiling in the house keeps the zeros it has had
        since round 8 cut the pools off it, so this changes one room. */
-    float gate = mix(1.0, step(8.5, uPattern) * (0.30 + 0.70*glazed), ceilOnly);
+    /* GRAFT CORRECTION, round 11 -- the comment above is not what happens.
+       Nothing writes the ceiling's slots, and an unwritten slot is
+       THREE.Vector4's default (0, 0, 0, 1): w = 1 and a zero axis, so ALONG
+       and ACROSS are 0, r is 0 on every pixel and each slot is a flat white
+       wash over the whole ceiling. That wash is the light "MEASURED, AND PUT
+       BACK" above is talking about, and as written on ui/r10-bg3-b this gate
+       switched it OFF on every ceiling but the glasshouse's: measured on the
+       Foyer, the ceiling band went from a mean of 7-12 to under 1 (SORREL2's
+       own judged Foyer shows it). So the gate applies to the glazed roof ONLY
+       -- exactly SORREL2's 0.30 + 0.70*glazed there -- and is 1.0 everywhere
+       else, as on dev. */
+    float gate = mix(1.0, 0.30 + 0.70*glazed, ceilOnly * step(8.5, uPattern));
     col += uPoolCol[i] * P.w * (core*1.15 + spill) * grain
          * (0.16 + 0.84*mmLum(alb)*3.4) * 0.50 * gate;
   }
