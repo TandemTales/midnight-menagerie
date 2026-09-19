@@ -1530,14 +1530,41 @@ export class Backdrop {
 
   /**
    * LINK THE OTHER WINGS' WALL PROGRAMS BEHIND THE GAME, once the stage has
-   * warmed: one variant at a time, for both targets the stage renders to (the
-   * same two the stage's own warm-up compiles for, because they are different
-   * program keys). Only where KHR_parallel_shader_compile exists: there the
-   * link runs off the main thread, and without it a background link would be
-   * a multi-second stall on whatever screen is up -- so there a wing's program
-   * is linked the first time one of its rooms is shown, as every program was
-   * before stage.warmup existed. The materials are KEPT: disposing one would
-   * release the program it holds.
+   * warmed, one at a time. Measured on this machine, one wall-program link is
+   * 20-30 s (tools: a one-page probe linking BASE's WALL_FRAG and each variant
+   * with unique sources), so a wing's program linked on demand would freeze
+   * the first room of that wing for that long.
+   *
+   * ONE TARGET: the composer's. Play draws the walls only through the
+   * composer; the canvas program the stage's own warm-up also links is for
+   * its show-the-room-while-post-warms phase, which a variant never sees --
+   * and linking both doubled the work done behind the game.
+   *
+   * THE FOYER'S FIRST, AND AT ONCE. Every expedition starts in the Foyer, and
+   * fourteen of its twenty rooms are its hall with a fire or its gallery
+   * (program 1), so that is the program a player meets first; begun as soon
+   * as the stage has warmed and calibrated, it is linked while the title and
+   * the selects are still up. A draft waited 45 s first, so that a capture
+   * deep-linked into another wing would link its own program alone -- which
+   * bought a faster screenshot with the player's first fight. A room shown
+   * before its program is ready links it on demand, as every program was
+   * before stage.warmup existed: slower with this running beside it, never a
+   * different picture. Measured behind a running Foyer fight on this machine
+   * (Intel UHD, ANGLE D3D11): all five variants linked 69 s after the
+   * warm-up, the frame loop held 29 fps throughout, and its worst gap was
+   * 2.6 s -- BASE's own worst in the same slot, with nothing linking, 7.0 s.
+   *
+   * EVERY variant is kept here, the live room's included: three.js releases a
+   * program when the last material using it moves off it, so a variant held
+   * only by the live walls would be thrown away at the next room of another
+   * kind and linked again at the one after.
+   *
+   * Only where KHR_parallel_shader_compile exists: there the link runs off
+   * the main thread, and without it a background link would be a multi-second
+   * stall on whatever screen is up -- so there a wing's program is linked the
+   * first time one of its rooms is shown, as every program was before
+   * stage.warmup existed. The materials are KEPT: disposing one would release
+   * the program it holds.
    */
   precompileRooms(stage) {
     if (this._pre || !stage?.renderer) return;
@@ -1546,10 +1573,10 @@ export class Backdrop {
     let gl = null;
     try { gl = R.getContext(); } catch { gl = null; }
     if (!gl || !gl.getExtension('KHR_parallel_shader_compile')) return;
-    const targets = [null, stage.composer?.renderTarget1].filter((t) => t !== undefined);
+    const targets = [stage.composer?.renderTarget1 ?? null];
     (async () => {
+      await new Promise((r) => setTimeout(r, 1500));
       for (const n of [1, 2, 3, 4, 5]) {
-        if (n === this._roomsProg) continue;
         const m = this.wallMat.clone();
         m.defines = Object.assign({}, this.wallMat.defines, { MM_ROOMS: n });
         const mesh = new THREE.Mesh(this.wall.geometry, m);
