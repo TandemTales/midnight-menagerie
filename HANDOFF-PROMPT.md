@@ -51,7 +51,17 @@ runs out of the perf budget.
    `c50fe96` (bands 33.1-37.6). When it lands: verify each claim on the
    captures, check perf on BOTH frames against BASE, merge per `MERGE-r8.md`,
    and log it in the README.
-6. **RUNNING BESIDE IT: ROUND 12, THE LAST WEB CHROME**, launched ~02:40 as
+   **STOPPED BY THE SESSION LIMIT ~08:05, RESUMED 09:15 as run
+   `wf_719a9723-1f6`** (task `wpiu7trjz`), all three builders with a `resume`
+   note saying exactly where each stopped (LIMEWASH lacked combat/rest;
+   CAMBER had an uncommitted backdrop.js change and no captures; MADDER had
+   everything but its report).
+6. **RUNNING BESIDE IT: ROUND 12, THE LAST WEB CHROME** -- stopped by the same
+   limit with VELLUM and ORMOLU finished; resumed 09:14 as run
+   `wf_d8d02503-18f` (task `wtu7zqpp5`): GESSO resumes, VELLUM and ORMOLU carry
+   their recorded results as `done` (full notes kept in this session's
+   scratchpad `r12-done-builds.json`, and in the first run's journal
+   `.../subagents/workflows/wf_8f709c50-a57/journal.jsonl`). Launched ~02:40 as
    run `wf_8f709c50-a57` (task `wdov71w48`), base `df5dd26`, UILOOP
    `C:/UILOOP/r12`. One EXPAND track: the coach, the hot-seat handoff veil and
    the achievement toast -- the only screens no round had touched (parked in

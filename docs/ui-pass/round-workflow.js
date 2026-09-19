@@ -246,10 +246,21 @@ async function buildSlot(label, run) {
   }
 }
 
+// A builder that FINISHED in a run a usage limit stopped carries its recorded
+// result as `done` (the BUILD object from that run's journal) and is not built
+// again: round 12's session limit stopped one builder and every judge while two
+// builders had returned. `resumeFromRunId` would replay them only if they were
+// called in the same order with byte-identical prompts, and round 5 showed how
+// that goes wrong, so the result is passed in explicitly instead.
 async function track(T) {
-  const built = await parallel(T.builders.map(b => () =>
-    buildSlot(`${T.name} build ${b.code}`, () =>
-      agent(builderPrompt(T, b), { label: `${T.name} build ${b.code}`, phase: 'Build', schema: BUILD }))))
+  const built = await parallel(T.builders.map(b => () => {
+    if (b.done) {
+      log(`${T.name} build ${b.code}: finished in an earlier run, using its recorded result (${b.done.commit})`)
+      return Promise.resolve(b.done)
+    }
+    return buildSlot(`${T.name} build ${b.code}`, () =>
+      agent(builderPrompt(T, b), { label: `${T.name} build ${b.code}`, phase: 'Build', schema: BUILD }))
+  }))
   const builds = built.filter(Boolean)
   log(`${T.name}: ${builds.length}/${T.builders.length} builders returned: ` + builds.map(b => `${b.code} self ${b.self_score ?? '?'}, endings ${b.endings_ok ? 'ok' : 'NOT OK'}, ${b.console_errors} console errors`).join('; '))
   if (!builds.length) return { track: T.name, rule: T.rule, builds, verdicts: [], winner: null, screenWinners: {}, summary: [] }

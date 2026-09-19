@@ -76,6 +76,12 @@ so round 2 runs six at once, as round 1 did.
   - Run only the unfinished tracks, as a new run. `resumeFromRunId` replays a
     finished agent only when it is called in the same order, and round 5's
     resume re-ran POLISH's and COMBAT's four judges on byte-identical prompts.
+  - A builder that FINISHED before the limit carries its recorded result as
+    `done` (the BUILD object from the stopped run's `journal.jsonl`) and is not
+    built again. Rounds 11 and 12 (2026-09-19) were both stopped by the session
+    limit about six hours in: all three round-11 builders in their final
+    captures, and in round 12 one builder and every judge, with two builders
+    already returned. Both finished as new runs the same morning.
 - **One dev server serves one capture at a time.** `tools/devserver.py` listens
   with a backlog of 5. Two `shot.py` runs at once get ERR_CONNECTION_REFUSED on
   fonts and images, and write console files that look like page errors.
