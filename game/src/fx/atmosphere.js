@@ -175,6 +175,9 @@ export const REGIONS = {
     label: 'The Forgotten Foyer',
     propMat: 'wood', propCeil: 0.5,
     arch: 0, floorPattern: 0, subject: 'stair',
+    /* A HALL RUNNER up the axis, half-width in metres. Round 10 fix 6: the
+       lower 40% of this frame was unlit boards carrying one bench. */
+    runner: 1.32,
     room: { w: 26, d: 21, h: 8.6, side: 0.03, ceilPattern: 7, wallPad: 6.0 },
     cam: { y: 2.55, z: 9.4, look: 2.9, fov: 40 },
     deep: '#1c1424', mid: '#37252f', hi: '#5f3f31', accent: '#52768e',
@@ -184,7 +187,35 @@ export const REGIONS = {
     /* ...and the CHANDELIER (shape 4). The one thing every description of this
        room names after the staircase, and the Foyer was the only tall region in
        the house whose prop set had no hanging shape in it at all. */
-    props: { shapes: [14, 0, 6, 4, 5, 1, 7], count: 26, height: 2.5, layout: 'perimeter' },
+    props: { shapes: [14, 0, 6, 4, 5, 1, 7], count: 26, height: 2.5, layout: 'perimeter',
+      /* AND THE ENTRANCE HALL'S OWN FURNITURE, placed rather than dealt --
+         round 10 fix 6. A pair of glazed vitrines down the sides, two
+         torcheres standing out on the floor where the light has to come from,
+         a buttoned hall chair by the right-hand wall, and the console with its
+         pier glass over it. Everything here is a shape the house already has;
+         what was missing was anything at all standing in the near half of this
+         frame. */
+      near: [
+        { shape: 5,  x: -6.35, z: -3.40, tone: 0.94 },   // vitrine, left
+        { shape: 5,  x:  6.35, z: -3.60, tone: 0.94 },   // vitrine, right
+        { shape: 20, x: -7.60, z: -6.60, tone: 0.88 },   // console and pier glass
+        /* ...and this one stands EXACTLY under the warm practical at
+           (-3.2, 1.30, -5.4). Round 10 fix 1 is another builder's, but a
+           torchere placed under a flame is a fitting for it, and a torchere
+           placed anywhere else in this hall is an unlit object in an unlit
+           corner -- which is the half of fix 6 that is about light. */
+        /* GRAFT, round 11: on this build that lamp already HAS its fitting --
+           Backdrop._fixtures stands OAKGALL's glazed lantern under it, placed
+           from the lamp itself, so it follows the lamp through _vary() into
+           every seeded room where this fixed spot cannot. `under: 2` (the
+           warm practical is pal.lights[2]) says this piece was the lamp's
+           fitting, so it yields to that one in every room -- one light, one
+           fitting -- and is kept only so the room deals the same rand() stream
+           it was judged with. The other torchere below is furniture and stays. */
+        { shape: 1,  x: -3.20, z: -5.40, tone: 0.72, under: 2 },   // torchere, lit
+        { shape: 1,  x:  5.55, z: -3.15, tone: 0.94 },   // torchere, beside it
+        { shape: 0,  x:  4.65, z: -1.30, tone: 0.86 },   // the buttoned hall chair
+      ] },
     particles: { mix: [[PTYPE.DUST, 0.80], [PTYPE.WISP, 0.12], [PTYPE.EMBER, 0.08]],
                  tint: '#ffe6bc', wispTint: '#7fd9ec', emberTint: '#ffb64a',
                  speed: 0.85, scale: 1.05, wind: 0.7, density: 0.85 },
