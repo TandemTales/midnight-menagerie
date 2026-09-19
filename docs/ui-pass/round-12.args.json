@@ -1,0 +1,53 @@
+{
+  "round": "r12",
+  "maxBuilders": 3,
+  "briefs": [
+    "docs/ui-pass/BRIEF-r0.md",
+    "docs/ui-pass/BRIEF-r1.md",
+    "docs/ui-pass/BRIEF-r12.md"
+  ],
+  "rubrics": [
+    "docs/ui-pass/RUBRIC.md",
+    "docs/ui-pass/RUBRIC-r1.md",
+    "docs/ui-pass/RUBRIC-r12.md"
+  ],
+  "samples": [
+    "UI/title.png",
+    "UI/mainMenu.png",
+    "UI/selectCompanion.png",
+    "UI/selectKid.png"
+  ],
+  "tracks": [
+    {
+      "key": "chrome",
+      "name": "CHROME",
+      "rule": "expand",
+      "screens": [
+        "coach",
+        "handoff",
+        "toast"
+      ],
+      "baseline": "TWILL",
+      "builders": [
+        {
+          "slot": "a",
+          "code": "VELLUM",
+          "port": 8911,
+          "angle": "THE KIT, EXACTLY. Every piece of kit.css has already been judged, and the most coherent candidate is usually the one that invents least. Build all three out of what exists: the coach note as a .kit-panel with its heading in .kit-heading and its two buttons as .kit-btn and .kit-btn--quiet, the spotlight drawn with the same gilt edge the kit's frames use; the veil as a staged board -- the next Kid in a .kit-frame over a .kit-plate, the Companion beside them, the I'm ready control a .kit-btn with its medallion -- on a painted ground that hides the fight entirely; the toast as a .kit-enamel or .kit-plate plaque whose rim is the tier's metal, moved clear of the Companion's portrait. Add a class only where the kit truly has nothing, and say which in notes_for_merger."
+        },
+        {
+          "slot": "b",
+          "code": "GESSO",
+          "port": 8912,
+          "angle": "THINGS IN THE HOUSE. Make each piece an object that could exist in this mansion rather than a panel that floats over it. The coach is a note in Marmalade's hand -- a card, a torn page, a luggage tag -- held by something (a brass tack, a ribbon, propped on a candle), and the spotlight is a pool of candlelight rather than an outlined box. The veil is something drawn across the room: heavy velvet curtains, a door, a folding screen, with the next Kid's portrait hung or pinned on it and their Companion waiting. The toast is a medal on a ribbon, or a rosette, whose metal IS the tier. Every object must still keep its contract from the brief -- the note never covers what it points at, the veil hides the board completely, the toast stays off the HUD -- and every object must sit in the kit's palette, not in the colour of the real material (round 6's warning)."
+        },
+        {
+          "slot": "c",
+          "code": "ORMOLU",
+          "port": 8913,
+          "angle": "CEREMONY, AND THE TYPE FIRST. These three are mostly words, and the samples' strongest device is the title cartouche: engraved serif display, a gold ribbon with star glyphs, spaced small caps. Lead with typography and ceremony: the veil is a title card -- the next Kid's name set the way title.png sets MIDNIGHT MENAGERIE, their portrait and Companion staged under it, PASS IT OVER on a ribbon -- because handing the machine across is a small ceremony between two people on a sofa; the toast is a ribbon banner unfurling with the achievement's name, the tier as the medallion that pins it; the coach is Marmalade speaking, her portrait in a medallion beside a speech plate, with the type hierarchy of the samples rather than a paragraph in a box. Check every word at 1280x800."
+        }
+      ]
+    }
+  ]
+}
