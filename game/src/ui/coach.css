@@ -160,19 +160,17 @@
 .coach__say { grid-column: 2; display: contents; }
 .coach__say > * { grid-column: 2; }
 
+/* THE LESSON'S NAME, in the wordmark's own lavender with a gold edge cut
+   under it. Not #kit-engrave: that filter is tuned for a 40px plaque title
+   and its 2px gold rim swallows a 16px line whole, which read as plain
+   brass. Not the marble either -- at 16px a picture averages to its own dark
+   ground, and the line measured 4.36:1 on the panel behind it. */
 .coach__head {
   grid-row: 1;
   margin: 0 0 8px;
   font-size: max(16px, calc(var(--fs-md) * 1.08));
   letter-spacing: .2em;
-}
-/* the wordmark's own lettering: the title's marbled lavender with a gold edge
-   under it. NOT #kit-engrave -- that filter is cut for a 40px plaque title and
-   its 2px gold rim swallows a 16px line whole, which read as plain brass. */
-.coach__head {
   color: var(--kit-lav);
-  /* a solid lavender ramp, not the marble: at 16px the marble averages to its
-     own dark ground and the line measured 4.4:1 on the panel behind it */
   background: linear-gradient(180deg,
     var(--kit-lav-hi) 0%, var(--kit-lav) 46%,
     color-mix(in oklab, var(--kit-violet) 46%, var(--kit-lav)) 100%);
