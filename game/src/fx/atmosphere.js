@@ -1252,6 +1252,9 @@ export const ROOM_KINDS = {
         vantage: { at: 'along', off: 0.14, wall: 4.0, fwd: 1.6, yaw: 12, wide: 3 } },
     ],
     names: [
+      /* the wing's own main room -- the Hedge Maze fight -- is the maze as it
+         was, not the walk the next rule would make of it */
+      [/^hedge(-maze)?$/i, 0],
       [/fountain|rotunda|court|garden|gazebo|arbor/i, 1],
       [/gate/i, 2],
       [/walk|path|row|tunnel|maze|hedge|orchard/i, 3],
@@ -1851,7 +1854,9 @@ export class Atmosphere {
       if (kind.houseS !== undefined) pal.houseS = kind.houseS;
       /* where a walk or a runner runs (to the gate in the railing, to the
          chapel door), or none at all (a family plot off the path) */
-      if (kind.runX !== undefined) pal.runX = kind.runX;
+      /* (the gate's walk runs off the axis to the house; the fight's own
+         churchyard keeps its walk up the middle) */
+      if (kind.runX !== undefined && !isMain) pal.runX = kind.runX;
       if (kind.runner !== undefined) pal.runner = kind.runner;
       if (kind.layout) pal.props.layout = kind.layout;
       if (kind.countScale) pal.props.count = Math.max(6, Math.round(pal.props.count * kind.countScale));
@@ -1862,7 +1867,10 @@ export class Atmosphere {
          than the stair hall, so the chimneypiece fills the wall the stair
          fills; a gallery is long and narrow, so its arcade runs away down both
          sides. Every lamp stays inside the room it now has. */
-      if (kind.room) {
+      /* (never the wing's own main room, whose shell the fight is framed in:
+         the Foyer's stair kind is 0.86 x 0.92 for its landing, and applied to
+         'foyer' it narrowed the canonical fight's hall) */
+      if (kind.room && !isMain) {
         R.w *= kind.room.w ?? 1;
         R.d *= kind.room.d ?? 1;
         if (R.h > 0) R.h *= kind.room.h ?? 1;
