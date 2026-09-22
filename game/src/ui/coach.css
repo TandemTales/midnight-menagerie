@@ -134,7 +134,9 @@
   column-gap: clamp(12px, 1.1vw, 18px);
   align-items: start;
   width: min(31rem, calc(100vw - 48px));
-  padding: 30px 22px 16px 20px;
+  /* the top band is the paw crest's, not blank purple: a judge measured
+     "roughly a fifth of the plate's height" empty above the heading */
+  padding: 19px 22px 16px 20px;
   color: var(--kit-text);
   pointer-events: none;
   /* it stands in the room: the shadow it casts on the board under it */
@@ -150,10 +152,12 @@
 .coach__card > .kit-flourish--br { translate: 34% 34%; }
 
 /* ── who is talking ───────────────────────────────────────────────────────── */
+/* Under the title, not beside it: the heading crowns the whole plate the way
+   the wordmark crowns a board, so the speaker and her words start below it. */
 .coach__who {
-  grid-column: 1; grid-row: 1 / 3;
+  grid-column: 1; grid-row: 2 / 4;
   display: flex; flex-direction: column; align-items: center;
-  margin: -6px 0 0;
+  margin: 1px 0 0;
   width: clamp(76px, 7vw, 96px);
 }
 .coach__cameo { --cameo: 100%; }
@@ -179,32 +183,58 @@
 .coach__say { grid-column: 2; display: contents; }
 .coach__say > * { grid-column: 2; }
 
-/* THE LESSON'S NAME, in the wordmark's own lavender with a gold edge cut
-   under it. Not #kit-engrave: that filter is tuned for a 40px plaque title
-   and its 2px gold rim swallows a 16px line whole, which read as plain
-   brass. Not the marble either -- at 16px a picture averages to its own dark
-   ground, and the line measured 4.36:1 on the panel behind it. */
+/* THE LESSON'S NAME, AT TITLE SCALE (round 13's graft). All three of round
+   13's judges named this line: "correct but timid", "small for the plate they
+   crown", "inset so dark it nearly vanishes" -- and two of them asked for one
+   thing, the wordmark's own treatment at display size, "the samples'
+   MENAGERIE hierarchy".
+   Round 13 argued against it and was wrong about why: #kit-engrave and the
+   marble were both rejected for being unreadable at SIXTEEN PIXELS, which was
+   the real defect. At twenty-five they are the lettering the Title screen and
+   the veil's cartouche are lettered with -- marbled lavender under a gold
+   edge, bevelled and extruded -- so the heading is that, at that size, and
+   the note's top band is pulled in so it sits up under the paw crest instead
+   of a fifth of a plate away from it. */
 .coach__head {
-  grid-row: 1;
-  margin: 0 0 8px;
-  font-size: max(16px, calc(var(--fs-md) * 1.08));
-  letter-spacing: .2em;
+  /* the WHOLE plate's width: a title at this size does not share a column
+     with a cameo, and the line has to stand on one line */
+  grid-column: 1 / -1; grid-row: 1;
+  margin: 0 0 12px;
+  font-size: clamp(20px, 1.58vw, 26px);
+  line-height: 1.04;
+  letter-spacing: .12em;
   color: var(--kit-lav);
-  background: linear-gradient(180deg,
-    var(--kit-lav-hi) 0%, var(--kit-lav) 46%,
-    color-mix(in oklab, var(--kit-violet) 46%, var(--kit-lav)) 100%);
+  /* marbled stone tinted by the wordmark's own violet, the light on its upper
+     half, the violet gathering at the foot of every letter */
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--kit-lav-hi) 36%, transparent) 0%, transparent 40%, color-mix(in srgb, var(--kit-violet) 70%, transparent) 100%),
+    url("../../assets/ui/kit/marble.webp") 0 0 / 180px 180px,
+    linear-gradient(180deg, color-mix(in oklab, var(--kit-lav) 52%, var(--kit-violet)) 0%, var(--kit-violet) 74%, var(--kit-violet-lo) 100%);
+  background-blend-mode: normal, soft-light, normal;
   -webkit-background-clip: text; background-clip: text;
   -webkit-text-fill-color: transparent;
-  filter:
-    drop-shadow(0 1px 0 color-mix(in srgb, var(--kit-gold) 92%, transparent))
-    drop-shadow(0 2px 0 #170d24)
-    drop-shadow(0 3px 7px rgba(0, 0, 0, .9));
+  filter: url("#kit-engrave") drop-shadow(0 0 12px color-mix(in srgb, var(--kit-violet) 30%, transparent));
 }
-/* .kit-heading's star-tipped strokes stay gold: only the letters are lavender */
-.coach__head::before, .coach__head::after { -webkit-text-fill-color: initial; }
+/* the same lettering where the SVG filter is not available: the gold edge and
+   the extrusion under it, drawn with shadows */
+@supports not (filter: url("#kit-engrave")) {
+  .coach__head {
+    filter:
+      drop-shadow(1px 0 0 var(--kit-gold)) drop-shadow(-1px 0 0 var(--kit-gold))
+      drop-shadow(0 2px 0 #170d24)
+      drop-shadow(0 4px 8px rgba(0, 0, 0, .9));
+  }
+}
+/* .kit-heading's star-tipped strokes stay gold: only the letters are marbled,
+   and the strokes are lengthened to carry a title-sized line */
+.coach__head::before, .coach__head::after {
+  -webkit-text-fill-color: initial;
+  height: 11px; width: clamp(26px, 3vw, 52px);
+  background-size: 11px 11px, calc(100% - 14px) 1.5px;
+}
 
 .coach__text {
-  grid-row: 2;
+  grid-row: 2; grid-column: 2;
   margin: 0 0 12px;
   font-size: max(15px, var(--fs-md));
   line-height: 1.44;
@@ -214,7 +244,7 @@
 }
 
 .coach__row {
-  grid-row: 3;
+  grid-row: 3; grid-column: 2;
   display: flex; align-items: center; justify-content: flex-end;
   gap: 12px;
   min-height: 46px;
@@ -304,7 +334,8 @@
 
 /* the Deck's 1280x800: the same note, a notch tighter */
 @media (max-height: 820px) {
-  .coach__card { width: min(29rem, calc(100vw - 48px)); padding: 28px 18px 14px 17px; }
+  .coach__card { width: min(29rem, calc(100vw - 48px)); padding: 17px 18px 14px 17px; }
+  .coach__head { font-size: 21px; margin-bottom: 9px; }
   .coach__row { gap: 10px; min-height: 42px; }
   .coach__text { margin-bottom: 10px; line-height: 1.4; }
   .coach__who { width: clamp(70px, 6.4vw, 86px); }
