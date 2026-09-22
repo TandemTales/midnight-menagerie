@@ -18,8 +18,8 @@ never a new hue family.
   chrome-plate-bronze.webp   207x72, slices 12 53 12 46) with its rim re-cast
   chrome-medal-silver.webp   rosette.webp (the kit's gold star medal, 96 px)
   chrome-medal-bronze.webp   re-cast whole
-  chrome-rect-silver.webp    plate-rect.webp (the bracketed plaque's gilt double
-  chrome-rect-bronze.webp    rule, 240x80, slices 34) with its metal re-cast
+  chrome-panel-silver.webp   panel.webp (the Kid board's painted gold rail,
+  chrome-panel-bronze.webp   452x223, slices 44) with its metal re-cast
 
 Gold needs no copy: it IS plate-lit.webp and rosette.webp.
 
@@ -434,7 +434,7 @@ def main():
     for metal in ("silver", "bronze"):
         save(recast("plate-lit.webp", metal), f"chrome-plate-{metal}.webp")
         save(recast("rosette.webp", metal), f"chrome-medal-{metal}.webp")
-        save(recast("plate-rect.webp", metal), f"chrome-rect-{metal}.webp")
+        save(recast("panel.webp", metal), f"chrome-panel-{metal}.webp")
     for metal in ("gold", "silver", "bronze"):
         save(paint_award(metal), f"chrome-award-{metal}.webp")
     return 0

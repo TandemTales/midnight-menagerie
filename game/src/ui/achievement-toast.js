@@ -24,11 +24,10 @@
  * bar", and the medal "a flat vector star on a gradient disc". So it is now
  * an OBJECT hung on the wall:
  *
- *   - the plaque is the kit's bracketed gilt plaque (`.kit-plaque`: a double
- *     gold rule and a corner mount at each mitre, round fired enamel), cast
- *     in the tier's metal, with the tier lettered on the boards' own gold
- *     ribbon straddling its top rail, so the tier reads in words as well as
- *     in metal;
+ *   - the plaque is the Kid board's own painted gold rail (`.kit-panel`) with
+ *     the wordmark's star struck into each end, cast in the tier's metal, and
+ *     the tier lettered on the boards' own gold ribbon straddling its top
+ *     rail -- so the tier reads in words as well as in metal;
  *   - the medal is STRUCK, not drawn: a bevelled rim, a ring of beads and
  *     the wordmark's star standing proud of the field, lit from the upper
  *     left, and it hangs from a purple silk ribbon on a pin bar the way a
@@ -121,7 +120,7 @@ export class AchievementToast {
     if (reduce) card.classList.add('is-still');
     card.innerHTML =
       `<i class="mm-ach__award kit-award${m && ` kit-award${m}`}" aria-hidden="true"></i>` +
-      `<div class="mm-ach__plaque kit-plaque${m && ` kit-plaque${m}`}">` +
+      `<div class="mm-ach__plaque kit-panel${m && ` kit-panel${m}`}">` +
       `<span class="sr-only">Achievement unlocked.</span>` +
       `<span class="mm-ach__kind kit-ribbon"><i class="mm-ach__tier"></i></span>` +
       `<span class="mm-ach__name kit-plate__name"></span>` +

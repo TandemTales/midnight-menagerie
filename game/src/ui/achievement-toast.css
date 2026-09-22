@@ -5,11 +5,12 @@
    two things: "the plate is a plain dark bar", and "the medal is a flat
    vector star on a gradient disc". So this is an object now.
 
-   The plaque is the kit's bracketed gilt plaque (.kit-plaque: plate-rect's
-   double gold rule and its corner mounts round fired enamel), cast in the
-   tier's metal (.kit-plaque--silver / --bronze, chrome-rect-*.webp), with the
-   boards' own gold ribbon straddling its top rail carrying the tier in
-   engraved caps -- so the tier is read in words as well as in metal. Hung on
+   The plaque is the Kid board's own painted gold rail (.kit-panel), the same
+   frame the boards are built of, cast in the tier's metal (.kit-panel--silver
+   / --bronze, chrome-panel-*.webp) round fired enamel, with the wordmark's
+   star struck into each end and the boards' own gold ribbon straddling its
+   top rail carrying the tier in engraved caps -- so the tier is read in words
+   as well as in metal. Hung on
    its left end is .kit-award: a struck medal with a bevelled rim, a ring of
    beads and the wordmark's star standing proud of its field, lit from the
    upper left, on a purple silk ribbon and a pin bar, painted three times over
@@ -31,7 +32,7 @@
 
 /* ── the object ───────────────────────────────────────────────────────────── */
 .mm-ach__card {
-  --plate-h: clamp(78px, 9.2vh, 90px);
+  --plate-h: clamp(88px, 10.4vh, 102px);
   --award-h: calc(var(--plate-h) * 1.92);
   --award-w: calc(var(--award-h) * 260 / 400);
   position: relative;
@@ -54,9 +55,11 @@
   position: relative;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   gap: 2px;
-  min-width: 300px; max-width: 372px;
+  --pk: .62;
+  --rule: none;
+  min-width: 316px; max-width: 392px;
   min-height: var(--plate-h);
-  padding: calc(var(--plate-h) * .28) calc(var(--plate-h) * .46) calc(var(--plate-h) * .17);
+  padding: calc(var(--plate-h) * .24) calc(var(--plate-h) * .44) calc(var(--plate-h) * .18);
   /* fired enamel, lit by the board's candle from the upper left -- round 12's
      plate was read by all three judges as a plain dark bar */
   --mat: url("../../assets/ui/kit/enamel.webp");
@@ -74,8 +77,8 @@
   background: url("../../assets/ui/kit/star4.svg") 50% 50% / 100% 100% no-repeat;
   filter: drop-shadow(0 1px 0 rgba(0, 0, 0, .85)) drop-shadow(0 0 5px color-mix(in srgb, var(--kit-candle) 40%, transparent));
 }
-.mm-ach__plaque::before { left: calc(var(--plate-h) * .17); }
-.mm-ach__plaque::after  { right: calc(var(--plate-h) * .17); }
+.mm-ach__plaque::before { left: calc(var(--plate-h) * .19); }
+.mm-ach__plaque::after  { right: calc(var(--plate-h) * .19); }
 
 /* the tier, cut into the boards' gold ribbon, straddling the plaque's top
    rail the way a banner is hung on a board (the graft two judges named) */
@@ -124,7 +127,7 @@
 /* Steam Deck and any short window: the same object, a notch smaller. */
 @media (max-height: 820px) {
   .mm-ach { right: clamp(20px, 1.8vw, 30px); }
-  .mm-ach__card { --plate-h: 74px; }
+  .mm-ach__card { --plate-h: 84px; }
   .mm-ach__plaque { min-width: 272px; max-width: 322px; }
 }
 

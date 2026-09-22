@@ -3005,8 +3005,8 @@ button.kit-medallion:hover, button.kit-medallion:focus-visible,
                       medallion on the crown and its paw on the foot. The
                       picture goes inside as an <img>; the element's WIDTH
                       sizes it (it carries its own aspect)
-     .kit-plaque--silver  the bracketed gilt plaque's double rule and corner
-     .kit-plaque--bronze  mounts, cast in the same two metals
+     .kit-panel--silver   the Kid board's painted rail, cast in the same two
+     .kit-panel--bronze   metals, for a fitting whose METAL is information
      .kit-valance     a gathered velvet swag with a gilt bullion rope and a
                       tassel at every gather, repeating across the top of a
                       board: the thing that comes DOWN. Sized by its height
@@ -3157,11 +3157,12 @@ button.kit-medallion:hover, button.kit-medallion:focus-visible,
   background: url("../../assets/ui/kit/moth-mirror.webp") 50% 50% / 100% 100% no-repeat;
 }
 
-/* ── plaque, in the other two metals ──
-   .kit-plaque's gilt double rule and corner mounts (plate-rect.webp), cast in
-   silver or bronze by tools/prep_chrome.py. Its enamel field is untouched. */
-.kit-plaque.kit-plaque--silver { border-image-source: url("../../assets/ui/kit/chrome-rect-silver.webp"); }
-.kit-plaque.kit-plaque--bronze { border-image-source: url("../../assets/ui/kit/chrome-rect-bronze.webp"); }
+/* ── panel, in the other two metals ──
+   .kit-panel's painted rail (panel.webp), cast in silver or bronze by
+   tools/prep_chrome.py. Only the metal changes: the rail's own carving, its
+   scrolled corners and its shadows are the painting's. */
+.kit-panel.kit-panel--silver { border-image-source: url("../../assets/ui/kit/chrome-panel-silver.webp"); }
+.kit-panel.kit-panel--bronze { border-image-source: url("../../assets/ui/kit/chrome-panel-bronze.webp"); }
 
 /* ── valance ──
    chrome-valance.webp is 340x240: one gather to the next, with the gathers ON
