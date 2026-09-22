@@ -1183,18 +1183,26 @@ export const ROOM_KINDS = {
     kinds: [
       { subject: 'bench' },
       /* THE WAX ROOM -- the chandlery: the vat on its furnace, the dipping
-         frames hung with tapers; its floor stood with the wax stoves and the
-         candle stands, not the gas standards; seen low, among the racks */
+         frames hung with tapers under their hoods; its floor stood with the
+         wax stoves and the candle stands, not the gas standards; seen low,
+         among the racks, under its timber roof */
       { subject: 'wax', layout: 'wings', swap: [[18, 13], [6, 1]], room: { w: 0.80, d: 0.56 },
+        ceil: 6, ceilGain: 1.9,
         vantage: { at: 'among', low: 0.72, fwd: 4.2, pitch: 3.0, off: 0.14, yaw: 12, wide: 4 } },
-      /* THE REFLECTOR GALLERY -- long and narrow, its dishes down both walls
-         and its file of lamp standards down the floor; seen from one end */
-      { subject: 'reflector', layout: 'colonnade', file: 18, fileX: 0.60, swap: [[6, 18]],
-        room: { w: 0.78, d: 1.12 },
-        vantage: { at: 'along', off: 0.26, wall: 2.4, fwd: 1.2, yaw: 26, wide: 4 } },
+      /* THE REFLECTOR GALLERY -- round 14, one judge, VERMEIL's: "a receding
+         passage with reflectors down BOTH side walls and one lit lantern at
+         the far end". So it is narrower and longer than the lamp store, its
+         lamp standards file down both sides of the walk, and the eye stands
+         almost on its axis a little to one side: at 26 degrees of yaw the
+         far wall filled the frame and one run of dishes went off the edge. */
+      { subject: 'reflector', layout: 'aisle', aisle: [0.62, 0.94],
+        file: 18, swap: [[6, 18], [5, 18], [8, 18]], countScale: 0.62,
+        room: { w: 0.58, d: 1.18 }, ceilGain: 1.9,
+        vantage: { at: 'along', off: 0.10, wall: 2.0, fwd: 1.8, yaw: 7, wide: 5 } },
       /* THE BOILER WALK -- from the catwalk the room is named for, its iron
          rail across the foot of the view, the boilers below */
-      { subject: 'boiler', layout: 'aisle', swap: [[1, 8], [5, 8]], rail: 'iron', room: { d: 0.60 },
+      { subject: 'boiler', layout: 'aisle', swap: [[1, 8], [5, 8], [6, 18]], rail: 'iron', room: { d: 0.60 },
+        ceilGain: 1.9,
         vantage: { at: 'above', rise: 2.4, drop: 0.2, fwd: 2.4, ahead: 5.0 } },
     ],
     names: [
@@ -1207,23 +1215,40 @@ export const ROOM_KINDS = {
   bathhouse: {
     kinds: [
       { subject: 'dado' },
-      /* THE STEAM ROOM -- small, low and hot, benched to the ceiling and full
-         of steam; seen from the lowest bench */
-      { subject: 'steam', layout: 'nook', swap: [[17, 2], [7, 6]], countScale: 0.40,
-        room: { w: 0.70, d: 0.64, h: 0.74 }, atmos: { wallFog: 0.34 },
-        vantage: { at: 'among', low: 0.62, fwd: 1.0, pitch: 3.0, off: 0.06, wide: 3, frame: 'steam' } },
-      /* THE INDOOR POOL -- a basin of water sunk in the floor, columns round
-         it, the great window and the lion's mask at its far end; seen from
-         the gallery over its near end */
-      { subject: 'pool', layout: 'colonnade', file: 6, fileX: 0.62, swap: [[17, 2], [7, 2]],
-        room: { w: 1.10, d: 1.30 }, rail: 'iron',
-        pool: { hw: 3.8, z0: -3.2, back: 0.45 },
-        vantage: { at: 'above', rise: 2.0, drop: 0.7, fwd: 0.4, ahead: 6.0 } },
-      /* THE PIPE GALLERY -- a long service passage of pipes and a cistern;
-         seen down its length */
-      { subject: 'pipes', layout: 'aisle', swap: [[17, 8], [2, 8], [7, 8]], countScale: 0.7,
-        room: { w: 0.66, d: 1.10 },
-        vantage: { at: 'along', off: 0.24, wall: 1.9, fwd: 1.0, yaw: 21, wide: 4 } },
+      /* THE STEAM ROOM -- small, low and hot, tiled to its vault, an arcade of
+         niches with their basins and taps over two stepped benches, and full
+         of steam; seen from the lowest bench. Round 14, both judges: the loose
+         STEAM PIPES lying about its floor are the wing's own baths dealt low
+         (swap), which at this size is what a length of large-bore pipe on a
+         tiled floor looks like -- there is no pipe prop, and a hot room has no
+         columns, curtains or palms in it. */
+      { subject: 'steam', layout: 'nook', swap: [[6, 17], [7, 17], [2, 17]], countScale: 0.30,
+        room: { w: 0.76, d: 0.62, h: 0.76 }, ceil: 4, ceilGain: 2.1, atmos: { wallFog: 0.34 },
+        vantage: { at: 'among', low: 0.66, fwd: 1.4, pitch: 3.0, off: 0.06, wide: 3, frame: 'steam' } },
+      /* THE INDOOR POOL -- round 14, both judges' first instruction: "a sunk
+         rectangular basin with a proud stone coping, a clear step down to the
+         water, a fountain niche on the end wall and a clock above it". The
+         basin is the FLOOR (FLOOR_FRAG's uWater) and it is a BATH's
+         proportions now -- 11 m across a 23 m hall and 16 m of it, where the
+         old 7.6 m strip down a 22 m room read as a dark rug -- and it starts
+         near enough to the eye to be the room. Seen from the gallery over its
+         near end, high enough to look down INTO it. */
+      { subject: 'pool', layout: 'colonnade', file: 6, fileX: 0.74, swap: [[17, 2], [7, 2]],
+        room: { w: 1.10, d: 1.24 }, rail: 'iron', ceil: 4, ceilGain: 2.4,
+        pool: { hw: 5.6, z0: -1.4, back: 3.4 },
+        /* the hall's cold light stands over the far end of the water, which is
+           where its glazed screen is: a cold light indoors is moonlight through
+           glass (fittingFor), and without it the fountain niche and the clock
+           at the end of a 21 m hall were past the reach of every lamp in it */
+        lamps: [{ i: 2, x: 0.0, z: 0.86 }],
+        vantage: { at: 'above', lift: 0.68, rise: 2.8, drop: 1.05, fwd: 0.2, ahead: 7.0 } },
+      /* THE PIPE GALLERY -- a long, low service passage: the mains at two
+         heights down both tiled walls with their valves and gauges, the
+         cistern at the end of it. Almost nothing stands in a service passage,
+         so what does is crates. Seen down its length. */
+      { subject: 'pipes', layout: 'aisle', swap: [[17, 8], [2, 8], [7, 8], [6, 8]], countScale: 0.35,
+        room: { w: 0.46, d: 1.20, h: 0.70 }, ceil: 3, ceilGain: 4.4,
+        vantage: { at: 'along', off: 0.22, wall: 1.7, fwd: 1.2, yaw: 19, wide: 4 } },
     ],
     names: [
       [/steam|sauna|drying/i, 1],
