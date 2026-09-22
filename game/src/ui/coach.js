@@ -427,12 +427,16 @@ export class Coach {
     const reach = Math.hypot(bx - ax, by - ay) - Math.hypot(sx - ax, sy - ay) - Math.hypot(tx - bx, ty - by);
     this.root.classList.toggle('has-tail', reach > 22);
     if (!(reach > 22)) return;
+    /* the thread starts a little way OUT from the plate, so the fleur stands
+       clear of whatever corner scroll it happens to be leaving beside */
+    const out = 13;
+    const ox = sx + Math.cos(ang) * out, oy = sy + Math.sin(ang) * out;
     const st = this.$tail.style;
-    st.left = `${Math.round(sx)}px`; st.top = `${Math.round(sy)}px`;
-    st.setProperty('--tail-len', `${Math.round(gap)}px`);
+    st.left = `${Math.round(ox)}px`; st.top = `${Math.round(oy)}px`;
+    st.setProperty('--tail-len', `${Math.round(Math.max(0, gap - out))}px`);
     st.setProperty('--tail-a', `${(ang * 180 / Math.PI).toFixed(1)}deg`);
     const pt = this.$point.style;
-    pt.left = `${Math.round(sx)}px`; pt.top = `${Math.round(sy)}px`;
+    pt.left = `${Math.round(ox)}px`; pt.top = `${Math.round(oy)}px`;
     /* the fleur's point is up in the painting, so it turns a quarter past the
        line it stands on to look down it */
     pt.setProperty('--finial-a', `${(ang * 180 / Math.PI + 90).toFixed(1)}deg`);
