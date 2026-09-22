@@ -102,3 +102,9 @@ gates through `on_port.py`, ENDINGS OK. Captures and gpuprof runs queue on the
 machine's GPU slot; **hold it for one capture or one batch at a time, not for
 a whole session** — round 11's builders held it for 35-90 minutes each, and
 everything else on the machine, their fellow builders included, waited.
+
+**Stop only the processes you started, by the PID you recorded when you
+started them.** Never kill by name or command-line pattern (`python`,
+`perf.sh`, `gpuprof`, `on_port.py`): other builders run the same tools at
+the same time. A round-14 builder stopped its own profile script by pattern
+and took three or four processes that were not its own with it.
