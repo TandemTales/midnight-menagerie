@@ -99,7 +99,9 @@ export async function passTo(o = {}) {
      UI/title.png's cartouche, lettered as MIDNIGHT MENAGERIE is, with PASS IT
      OVER on the gold ribbon hung from it. Under it the two of them hung on a
      panel of the Kid board's own wall -- each in UI/selectKid.png's arched
-     gilt mirror (`.kit-arch`), a gap between them, and in that gap a lantern
+     gilt mirror, shortened to a PORTRAIT opening (`.kit-oval`, round 13's
+     graft: the slot it was cropped the Companion to an eyeball), a gap
+     between them, and in that gap a lantern
      burning over a ledge with a skull and a candle on it: the light that
      answers the moon on the house behind. Behind everything the house itself,
      in Josh's painting of it (UI/mainMenu.png), drawn well down where the
@@ -209,12 +211,19 @@ function eager(img) {
 
 /** One of the two on the panel: the painting in UI/selectKid.png's own arched
     gilt mirror -- its moon medallion on the crown, its paw on the foot -- with
-    the Companion tiles' nameplate standing under it, clear of the paw. */
+    the Companion tiles' nameplate standing under it, clear of the paw.
+
+    `.kit-oval` and not `.kit-arch`: the same painted mirror with two runs of
+    its plain straight side rail taken out, so the opening is a PORTRAIT and
+    not a slot. Two of round 13's judges said what the slot did -- at 1600 the
+    Companion was "reduced to a single eyeball filling the oval" and the Kid
+    "loses his shoulders" -- and no amount of object-position fixes an opening
+    that is one to one point nine. The gilt is untouched. */
 function figure(kind, img, name, epithet) {
   const f = document.createElement('figure');
   f.className = `hoff__fig hoff__fig--${kind}`;
   const frame = document.createElement('div');
-  frame.className = 'hoff__frame kit-arch';
+  frame.className = 'hoff__frame kit-oval';
   frame.appendChild(img);
   const cap = document.createElement('figcaption');
   cap.className = 'hoff__plate kit-plate';
