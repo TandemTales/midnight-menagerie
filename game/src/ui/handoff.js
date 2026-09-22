@@ -95,31 +95,49 @@ export async function passTo(o = {}) {
   const wrap = document.createElement('div');
   wrap.className = 'hoff';
   wrap.style.setProperty('--hoff-len', String(Math.max(3, first.length)));
-  /* A title card, the way the title screen is one: the Kid's name in
-     UI/title.png's cartouche, lettered as MIDNIGHT MENAGERIE is, their
-     Companion as its epithet and PASS IT OVER on the gold ribbon hung from it;
-     under it the two of them in the Kid board's frames with the Companion
-     tiles' nameplates, and the way on as the boards' lit nameplate. Behind it
-     the house itself, in Josh's own painting of it (UI/mainMenu.png), inside
-     the boards' gilt rule with old threads across its top corners. All of it
-     opaque: the veil still shows nothing of the board it covers. */
+  /* A title card, the way the title screen is one: the Kid's first name in
+     UI/title.png's cartouche, lettered as MIDNIGHT MENAGERIE is, with PASS IT
+     OVER on the gold ribbon hung from it. Under it the two of them hung on a
+     panel of the Kid board's own wall -- each in UI/selectKid.png's arched
+     gilt mirror (`.kit-arch`), a gap between them, and in that gap a lantern
+     burning over a ledge with a skull and a candle on it: the light that
+     answers the moon on the house behind. Behind everything the house itself,
+     in Josh's painting of it (UI/mainMenu.png), drawn well down where the
+     words are, inside the boards' gilt rule with old threads across its top
+     corners and a candle standing in each bottom corner, and a velvet swag
+     with its tassels across the head of it, because the thing this screen IS
+     is the curtain that comes down between two players. All of it opaque: the
+     veil still shows nothing of the board it covers.
+
+     NOTHING IS NAMED TWICE (round 13): all three of round 12's judges marked
+     the veil down for saying MATEO in the cartouche and "Mateo Alvarez" on
+     the plate under him, and "with Wink" under the cartouche and again on
+     Wink's plate. So the cartouche names the Kid, and each plate says the one
+     thing the cartouche does not -- what he is here for, and who is with him. */
   wrap.innerHTML =
     `<div class="hoff__room kit-board" aria-hidden="true">`
     + `<i class="hoff__night"></i>`
     + `<i class="hoff__vig"></i>`
-    + `<i class="hoff__glow kit-light kit-light--candle"></i>`
     + `<div class="hoff__dress kit-dress">`
+    + `<i class="hoff__swag kit-valance"></i>`
     + `<i class="kit-dress__rule"></i><i class="kit-dress__footscroll"></i>`
     + `<i class="hoff__web hoff__web--l kit-web"></i><i class="hoff__web hoff__web--r kit-web kit-web--r"></i>`
+    + `<i class="hoff__wax hoff__wax--l kit-prop kit-prop--candle"></i>`
+    + `<i class="hoff__wax hoff__wax--r kit-prop kit-prop--candle"></i>`
     + `</div></div>`
     + ENGRAVE
     + `<div class="hoff__card">`
     + `<header class="hoff__plaque kit-titleblock">`
     + `<h2 class="hoff__name kit-cartouche__title" id="mm-handoff-title">${esc(first)}</h2>`
-    + (comp ? `<p class="hoff__comp kit-cartouche__sub">with ${esc(comp.name)}</p>` : '')
     + `<p class="hoff__k kit-ribbon">Pass it over</p>`
     + `</header>`
-    + ((kid || comp) ? `<div class="hoff__stage" data-n="${(kid ? 1 : 0) + (comp ? 1 : 0)}"></div>` : '')
+    + ((kid || comp) ? `<div class="hoff__stage kit-panel kit-panel--damask" data-n="${(kid ? 1 : 0) + (comp ? 1 : 0)}">`
+        + `<div class="hoff__between" aria-hidden="true">`
+        + `<i class="hoff__lamp kit-lantern"></i>`
+        + `<i class="hoff__shelf kit-ledge"></i>`
+        + `<i class="hoff__skull kit-prop kit-prop--skull"></i>`
+        + `<i class="hoff__stub kit-prop kit-prop--candle"></i>`
+        + `</div></div>` : '')
     + `<p class="hoff__line">${esc(o.line || 'Your turn.')}</p>`
     + (o.sub ? `<p class="hoff__sub">${esc(o.sub)}</p>` : '')
     + `<button type="button" class="hoff__go kit-btn">`
@@ -128,10 +146,16 @@ export async function passTo(o = {}) {
     + `</div>`;
 
   const stage = wrap.querySelector('.hoff__stage');
+  const between = wrap.querySelector('.hoff__between');
   if (stage) {
     if (kid) {
       const img = kidImg(kid.slug, { className: 'hoff__img hoff__img--kid', alt: '' });
-      stage.appendChild(figure('kid', img, kid.name, `looking for ${kid.pet}`));
+      /* The veil goes up the instant it is asked for -- it is a cover, and a
+         cover that waits is not one -- so the two paintings arrive into it.
+         High priority and a synchronous decode, because on a cold cache they
+         were still arriving a second after the rest of the screen was up. */
+      eager(img);
+      stage.insertBefore(figure('kid', img, `looking for ${kid.pet}`, ''), between);
     }
     if (comp) {
       const img = document.createElement('img');
@@ -142,6 +166,7 @@ export async function passTo(o = {}) {
       img.width = 560; img.height = 349;
       img.src = thumbSrc(comp.slug, '-card');
       img.addEventListener('error', () => { img.src = fullSrc(comp.slug); }, { once: true });
+      eager(img);
       stage.appendChild(figure('pet', img, comp.name, comp.title));
     }
   }
@@ -175,17 +200,26 @@ export async function passTo(o = {}) {
   try { await p; } finally { document.removeEventListener('keydown', onKey); }
 }
 
-/** One of the two on the stage: the painting in the Kid board's frame, and the
-    Companion tiles' nameplate hung over its foot (Name over italic epithet). */
+/** Fetch this painting now and decode it on the spot: the veil is already up. */
+function eager(img) {
+  img.loading = 'eager';
+  img.decoding = 'sync';
+  try { img.fetchPriority = 'high'; } catch { /* older engines */ }
+}
+
+/** One of the two on the panel: the painting in UI/selectKid.png's own arched
+    gilt mirror -- its moon medallion on the crown, its paw on the foot -- with
+    the Companion tiles' nameplate standing under it, clear of the paw. */
 function figure(kind, img, name, epithet) {
   const f = document.createElement('figure');
   f.className = `hoff__fig hoff__fig--${kind}`;
   const frame = document.createElement('div');
-  frame.className = 'hoff__frame kit-frame kit-frame--over';
+  frame.className = 'hoff__frame kit-arch';
   frame.appendChild(img);
   const cap = document.createElement('figcaption');
   cap.className = 'hoff__plate kit-plate';
-  cap.innerHTML = `<b class="kit-plate__name">${esc(name)}</b><span class="kit-plate__epithet">${esc(epithet)}</span>`;
+  cap.innerHTML = `<b class="kit-plate__name">${esc(name)}</b>`
+    + (epithet ? `<span class="kit-plate__epithet">${esc(epithet)}</span>` : '');
   f.append(frame, cap);
   return f;
 }

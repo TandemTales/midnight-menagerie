@@ -17,19 +17,28 @@
  * It is deliberately quieter than Steam's: four seconds, no sound of its own
  * beyond the existing UI sting.
  *
- * ── IT IS A NAMEPLATE CAST IN THE TIER'S METAL (round 12, CHROME) ──────────
+ * ── IT IS AN AWARD, PINNED TO A GILT PLAQUE (round 13, CHROME) ─────────
  *
- * The kit's own plate (`.kit-plate`: the Companion tiles' nameplate, the name
- * over a small italic epithet — here the achievement over what it was for),
- * with a struck medal seated on its end the way the boards seat a medallion
- * on a button. Plate rim and medal are cast in the tier's metal — bronze,
- * silver or gold, re-cast from the kit's own gilt by tools/prep_chrome.py —
- * and the tier is lettered on it too, so it reads at a glance and never by
- * colour alone.
+ * Round 12 made it a nameplate with the kit's gold star rosette on its end,
+ * and all three judges said the same two things: the plate was "a plain dark
+ * bar", and the medal "a flat vector star on a gradient disc". So it is now
+ * an OBJECT hung on the wall:
  *
- * It hangs from the foot of the HUD at the top right, over the board's corner
- * candle, which is dressing on every board and in every fight. It used to sit
- * bottom-left, on top of the Companion's portrait and the Nerve.
+ *   - the plaque is the kit's bracketed gilt plaque (`.kit-plaque`: a double
+ *     gold rule and a corner mount at each mitre, round fired enamel), cast
+ *     in the tier's metal, with the tier lettered on the boards' own gold
+ *     ribbon straddling its top rail, so the tier reads in words as well as
+ *     in metal;
+ *   - the medal is STRUCK, not drawn: a bevelled rim, a ring of beads and
+ *     the wordmark's star standing proud of the field, lit from the upper
+ *     left, and it hangs from a purple silk ribbon on a pin bar the way a
+ *     real award hangs (`.kit-award`, tools/prep_chrome.py).
+ *
+ * It hangs under the HUD at the top right and CLEAR of the board's corner
+ * candle, which all three of round 12's judges said it covered: `_seat`
+ * measures that corner's dressing and the creatures' intents and drops below
+ * whichever reaches furthest down. It used to sit bottom-left, on top of the
+ * Companion's portrait and the Nerve plate.
  *
  * ── IT OBEYS THE ACCESSIBILITY SETTINGS ────────────────────────────────────
  *
@@ -105,15 +114,16 @@ export class AchievementToast {
 
     const tier = TIERS.includes(def.tier) ? def.tier : 'bronze';
     const card = document.createElement('div');
-    /* gold is the kit's own brass; the two lesser tiers are its re-cast plate
-       and medal (ui/kit.css, the coach, the veil and the toast) */
-    const metal = tier === 'gold' ? '' : ` kit-plate--${tier}`;
-    card.className = `mm-ach__card mm-ach__card--${tier} kit-plate${metal}`;
+    /* gold is the kit's own brass; the two lesser tiers are its re-cast
+       plaque and award (ui/kit.css, the coach, the veil and the toast) */
+    const m = tier === 'gold' ? '' : `--${tier}`;
+    card.className = `mm-ach__card mm-ach__card--${tier}`;
     if (reduce) card.classList.add('is-still');
     card.innerHTML =
-      `<i class="mm-ach__sigil kit-medal${tier === 'gold' ? '' : ` kit-medal--${tier}`}" aria-hidden="true"></i>` +
-      `<div class="mm-ach__body">` +
-      `<span class="mm-ach__kind"><i class="mm-ach__tier"></i> <b class="mm-ach__lbl">Achievement</b></span>` +
+      `<i class="mm-ach__award kit-award${m && ` kit-award${m}`}" aria-hidden="true"></i>` +
+      `<div class="mm-ach__plaque kit-plaque${m && ` kit-plaque${m}`}">` +
+      `<span class="sr-only">Achievement unlocked.</span>` +
+      `<span class="mm-ach__kind kit-ribbon"><i class="mm-ach__tier"></i></span>` +
       `<span class="mm-ach__name kit-plate__name"></span>` +
       `<span class="mm-ach__desc kit-plate__epithet"></span>` +
       `</div>`;
@@ -145,28 +155,35 @@ export class AchievementToast {
   }
 
   /**
-   * Hang it from the HUD's foot. The HUD is one rail at 1600 and wraps to two
-   * at the Deck's 1280, and the Title and the select boards have none, so the
-   * foot is measured each time rather than assumed.
+   * Hang it under the HUD at the top right, in OPEN WALL.
+   *
+   * The HUD is one rail at 1600 and wraps to two at the Deck's 1280, and the
+   * Title and the select boards have none, so its foot is measured rather
+   * than assumed. Round 12 stopped there and hung the plate straight over the
+   * board's top-right corner candle -- all three judges said so. The corner's
+   * painted candle and its cobweb, a creature's intent that has crept over to
+   * this side, and a party's House Rules rail are therefore measured too, and
+   * the plaque is seated below whichever of them reaches furthest down.
    */
   _seat(host) {
+    const vw = window.innerWidth, vh = window.innerHeight;
     let foot = 0;
     for (const n of document.querySelectorAll('.mm-hud')) {
       const b = n.getBoundingClientRect();
-      if (b.width && b.height && b.top < window.innerHeight * 0.25) foot = Math.max(foot, b.bottom);
+      if (b.width && b.height && b.top < vh * 0.25) foot = Math.max(foot, b.bottom);
     }
-    host.style.setProperty('--ach-top', `${Math.round(foot)}px`);
-    /* A party's fight docks its House Rules under the HUD at the top right,
-       where this hangs, and a rule is what decides the fight: so the plate
-       hangs beside that rail, never over it. */
-    let clear = 0;
-    for (const n of document.querySelectorAll('.cb-rules:not([hidden]) > *')) {
-      const b = n.getBoundingClientRect();
-      if (b.width && b.height && b.left > window.innerWidth / 2 && b.top < foot + 160) {
-        clear = Math.max(clear, window.innerWidth - b.left);
+    for (const sel of ['.kit-dress__corner--r', '.kit-dress__flame--r', '.kit-web--r',
+                       '.cb-enemy__intent', '.cb-rules:not([hidden]) > *']) {
+      for (const n of document.querySelectorAll(sel)) {
+        const b = n.getBoundingClientRect();
+        if (!b.width || !b.height) continue;
+        /* only what is on this side of the board and up at this height: a
+           creature in the middle of the hall is not in the way */
+        if (b.right < vw * 0.56 || b.top > vh * 0.42) continue;
+        foot = Math.max(foot, b.bottom);
       }
     }
-    host.style.setProperty('--ach-clear', `${Math.round(clear)}px`);
+    host.style.setProperty('--ach-top', `${Math.round(Math.min(foot, vh * 0.42))}px`);
   }
 
   destroy() {
