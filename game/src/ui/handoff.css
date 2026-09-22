@@ -159,8 +159,8 @@
 
 /* ── the wall the two of them hang on ─────────────────────────────────────── */
 /* A panel of the Kid board's own wall — its painted gold rail, its engraved
-   double rule and its crinkled suede — with a GAP between the mirrors, which
-   is what round 12's judges asked for in as many words. */
+   double rule and the boards' purple damask — with a GAP between the two
+   mirrors, which is what round 12's judges asked for in as many words. */
 .hoff__stage {
   --pk: .84;
   --fig-w: clamp(126px, min(11.4vw, 20.4vh), 184px);

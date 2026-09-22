@@ -1,4 +1,13 @@
-"""The tier metals for round 12's CHROME pass: the achievement toast's plaque.
+"""The pieces round 12 and 13's CHROME pass needed and the kit did not have.
+
+TWO JOBS. The first is the TIER METALS: the kit only ever cast its fittings in
+one metal, the samples' antique brass, and an achievement has a tier that a
+player should read at a glance. The second (round 13) is three pieces PAINTED
+here rather than cut from a sample, because no sample has one: a struck medal
+on a silk ribbon, the gilt socket with its glass knocked out so a face can sit
+behind it, and the velvet swag that crowns the veil.
+
+-- the tier metals ---------------------------------------------------------
 
 An achievement has a tier -- bronze, silver or gold -- and the tier is the one
 thing a player should read at a glance. The kit only ever cast its fittings in
@@ -21,7 +30,18 @@ never a new hue family.
   chrome-panel-silver.webp   panel.webp (the Kid board's painted gold rail,
   chrome-panel-bronze.webp   452x223, slices 44) with its metal re-cast
 
-Gold needs no copy: it IS plate-lit.webp and rosette.webp.
+Gold needs no copy: it IS plate-lit.webp, rosette.webp and panel.webp.
+
+-- the painted pieces ------------------------------------------------------
+
+  chrome-award-gold.webp     a struck medal hung from a purple silk ribbon on
+  chrome-award-silver.webp   a pin bar, 260x400: a height field lit from the
+  chrome-award-bronze.webp   upper left, cast three times (see below)
+  chrome-cameo.webp          socket-filigree.webp with its opaque enamel glass
+                             cut out, so a portrait can sit behind the ring
+  chrome-valance.webp        one gather to the next of a gathered velvet swag
+                             with a gilt bullion rope and its tassels, 520x250,
+                             tiling along its width
 
     python tools/prep_chrome.py
 """
