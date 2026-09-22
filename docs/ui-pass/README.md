@@ -97,6 +97,24 @@ so round 2 runs six at once, as round 1 did.
   before a round launches.** That makes five ways a capture has lied: no GPU
   context, a dead frame, a backdrop that never drew, a blown white transition
   frame, and this one.
+- **`gpuprof`'s default 5 s wait measures ANGLE LINKING, not the frame** (round
+  14, and it reframes every perf number that round reported). Its window sits
+  inside the ~35 s warm-up, so a build that adds shader variants reads about
+  +0.5 ms that is the compiler threads taking GPU time from the stage, not
+  steady-state cost. Interleaved at `--wait 40`, the same build read equal or
+  faster on both frames. **A/B at a long wait before believing a regression**,
+  and remember this machine read BASE itself ~0.9 ms slow all of 2026-09-22:
+  compare deltas, never a number against the brief's absolute.
+- **A builder must stop only the processes it started, by PID.** A round-14
+  builder killed its own profile script by command-line pattern (`perf.sh`,
+  `gpuprof`) and took three or four processes belonging to other builders with
+  it. Every round runs three builders using the same tool names at the same
+  time. In the brief from round 13 on (`858417a`).
+- **A big new shader variant is a stall the first time its room is shown.**
+  Round 14's winner links a `stones` variant in ~15 s on this iGPU, behind the
+  game; a graveyard, crypt, hedge, pumpkin or conservatory room shown before
+  the background queue drains stalls on first show, and one batch VOIDed that
+  way until the wall variants were moved back to the front of the queue.
 - **Prove a merge's endings commit to commit, not with the endings guard.** In the
   main checkout, `endings_guard.py` repairs every file that differs from the
   base, including files someone else has modified and not committed
@@ -134,6 +152,8 @@ so round 2 runs six at once, as round 1 did.
 | 11 | **VARIATION** — contact sheets of three rooms per wing (foyer / ballroom / greenhouse / graveyard) plus combat and rest | CAMBER 6.67 · MADDER 6.00 · LIMEWASH 5.83 · the screens before 4.50 | CAMBER, 2 of 2, and 5 of 6 screens 2 of 2: **fits TRUE on the Foyer and Ballroom sheets** — ROOM_KINDS gives each wing the rooms it really has (ten new subjects). MADDER won the Graveyard (7, fits TRUE): its vantages are a graft. Finished as a second run after the session limit | `155133e` |
 | 12 | **THE LAST WEB CHROME** — the coach / the hot-seat handoff veil / the achievement toast (EXPAND; ran beside round 11) | VELLUM 7.33 · ORMOLU 7.11 · GESSO 6.89 · the game before **1.44** | per screen: coach VELLUM (2 of 3), handoff ORMOLU (3 of 3), toast VELLUM (2 of 3). **+5.9, the largest gain of the pass** — the three screens no round had touched. Finished as a second run after the session limit, VELLUM and ORMOLU carried in as `done` | `57bb92f` + ORMOLU's veil `90d0fad` |
 
+| 14 | **WHERE YOU STAND** — sheets of three rooms per wing for six wings (foyer / ballroom / greenhouse / graveyard, plus lampworks and bathhouse judged for the first time) and combat | ORPIMENT 7.07 · VERMEIL 6.86 · SEPIA 5.71 · the screens before **3.43** | ORPIMENT, 2 of 2, six of seven sheets. **+3.64, the largest gain of the pass**, and its Graveyard is `fits TRUE`. A kind now carries a VANTAGE (MADDER's rig grafted), a wing's MAIN room keeps its authored shell and camera, and the six wings with no `ROOM_KINDS` got rooms. VERMEIL won the Bathhouse (8.0, fits TRUE) and both judges demand that graft | `c1c32a5` |
+
 **Scores anchor to the candidates beside them.** Round 0's winner scored 7.0 in
 round 0 and 5.58 as round 1's baseline: the judges grew stricter as the field
 improved. Compare a winner with the baseline IN ITS OWN ROUND (round 1 REFINE:
@@ -155,6 +175,7 @@ Against their own baselines:
 | 10 | THE OBJECTS, FINISHED **+0.93** (reported +1.72; the baseline's combat was void) | — |
 | 11 | VARIATION **+2.17** (sheets 3-3.5 -> 6-7) | — |
 | 12 | — | THE LAST WEB CHROME **+5.9** (per-screen winners 7.33 / 8.00 / 7.67 against 2 / 1 / 1.33) |
+| 14 | WHERE YOU STAND **+3.64** (two of its six wings had never been judged, and the baseline scored 2.0 on both) | — |
 
 Converting a screen moves it about four points. Refining one moves it half a point
 to two points, more when the brief names concrete defects the judges can see
@@ -520,3 +541,42 @@ tower spires inside the crop, a CSS-room defect that dissolved once `kit.css`
 showed those assets are masked to the candle pools, and a sweep with no GPU
 attached. Measure to find the defect; then check what population you measured,
 and check the instrument was alive.
+
+### Round 14: where you stand, 2026-09-22
+
+**ORPIMENT, 2 of 2 judges, 7.07 against a 3.43 baseline — +3.64, the largest
+gain of the pass** (`c1c32a5`, run `wf_4588259d-501`). Six of the seven sheets,
+and its Graveyard is only the third sheet ever marked `fits_between_samples`.
+Read the margin knowing two of its six wings — Lampworks and Bathhouse — had
+never been judged and scored 2.0 as the baseline, because they had no
+`ROOM_KINDS` at all: every room of theirs was one room rearranged.
+
+- **A kind now carries a VANTAGE, not just a back wall.** Both round-11 judges
+  had put this first: three panels shot "from the same centred tripod" differ
+  by wall feature only. MADDER's rig (`ui/r11-vary-c`) is grafted into
+  `renderer.js` `setCameraRig`, which takes and eases `x / lookX / lookZ`, all
+  defaulting to 0 so every existing region rig is untouched. A kind says where
+  you stand — among, along, corner, threshold, above.
+- **A wing's MAIN room keeps its authored shell, walk, layout and camera.** A
+  room named for its wing that resolves to `kinds[0]` ignores `kind.room` and
+  `kind.view`, so `foyer-14` and `gh-14` play in exactly the rooms they did.
+  This is not a detail: before the last commit of the round, a landing kind's
+  0.86 x 0.92 room scale had leaked into the canonical Foyer fight.
+- **All three builders converged on the same shape** — vantage per kind, rooms
+  for the six unvaried wings, subjects compiled only into their own wing's
+  `MM_ROOMS` variant — and were separated by DRAWING. ORPIMENT won on leaves
+  with midribs in pots with rims, chest tombs with carved panels, a chapel with
+  courses and tracery, and mirrors that are glazed and mullioned rather than a
+  white smear in an arch.
+- **What beat it where it lost:** VERMEIL's Bathhouse, 8.0 and `fits TRUE` —
+  the only unmistakable pool in the round (a sunk tank with a proud coping and
+  a step down to the water), a steam room of arched niches with basins and
+  taps, boilers with grates and gauges, pipe runs with spoked handwheels.
+  **Both judges independently made that graft their first instruction**, and
+  ORPIMENT's own Bathhouse (6.0) is its weakest sheet.
+- **The fixes both judges name next**, beyond the graft: the mansion behind the
+  graveyard railing is a flat slab of one repeated window; the Ballroom suite
+  panel is letterboxed inside black margins while its neighbours fill the
+  frame; the vinery is thin stems on empty brick; the Foyer landing's hangings
+  and pictures are undrawn rectangles; and the Foyer's left and right thirds
+  fall to near-black and swallow nameable objects.

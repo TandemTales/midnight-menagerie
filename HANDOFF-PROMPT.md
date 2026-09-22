@@ -1,6 +1,7 @@
-# Handoff — rounds 0-12 merged; rounds 13 and 14 are ready to launch, one at a time
+# Handoff — round 14 merged and unverified; round 13 is running
 
-You are picking up Midnight Menagerie on `dev`. Everything below is pushed.
+You are picking up Midnight Menagerie on `dev`. Everything below is pushed
+EXCEPT round 14's merge and this file — see START HERE.
 
 **Read item 3a before you touch a background.** "The background" is two
 different systems that share nothing, and a change to one does not touch the
@@ -16,28 +17,75 @@ loop until perfected". Two later calls narrow it and both are in force:
 `UI/*.png`** — what matters is readable, accurately drawn, well-detailed objects
 (item 3).
 
-## START HERE — 2026-09-22
+## START HERE — 2026-09-22 evening
 
-**THE NEXT ACTION: relaunch round 14, and when its builders have returned,
-round 13. ONE ROUND AT A TIME.**
+**ROUND 14 IS MERGED BUT NOT VERIFIED AND NOT PUSHED (`c1c32a5`), and ROUND 13
+IS RUNNING** (run `wf_35dbc3c9-39a`, task `w14dilmiy`, launched 11:52 MDT,
+NACRE / SMALT / GAMBOGE on 8921-8923 against the BUCKRAM baselines).
 
-Both were launched 2026-09-19 ~16:35 and stopped about five minutes in by the
-WEEKLY usage limit (Pro plan). Nothing of theirs was kept: all six worktrees
-were reset clean at `d46eec5` on 2026-09-22, the leftover builder dev servers
-were stopped, and **their baselines are taken and intact** (6 BUCKRAM, 8
-FUSTIAN). The limit reset on 2026-09-22; the next weekly reset is 2026-09-29
-09:00 UTC.
+**THE NEXT ACTIONS, in order:**
+
+1. **When round 13's builders return, verify round 14's merge.** It is merged
+   on `dev` with only the two cheap gates run (endings commit-to-commit
+   IDENTICAL, shader-literals 22/22 green). Still owed, and both need the GPU,
+   which is why they waited for the builders:
+   - photograph all six sheets and combat on the merged tree with
+     `BRIEF-r14.md`'s Deliverables commands on 8777, and compare them with
+     ORPIMENT's judged captures in `C:/UILOOP/r14/judging/r14/rooms/ORPIMENT/`
+     — round 11's standard was BYTE-IDENTICAL;
+   - the battery (`python tools/gates.py`, ~30 min), red expected only on the
+     three long-known rows.
+   Then push, and only then.
+2. **Then the BATHHOUSE GRAFT, which both judges made their first
+   instruction** — see "What round 14 decided" below. Give it to a single
+   builder with a dev server, as round 9's ballroom graft was done.
+3. **Then merge round 13** (EXPAND: per screen), and brief round 15 from the
+   judges' fix lists, which are already listed below.
+
+**Usage (Pro plan), 2026-09-22:** round 14's three builders cost about 16% of
+the weekly allowance in 6.5 hours; the week stood at 16% when round 13
+launched. Next weekly reset 2026-09-29 09:00 UTC. Read `get_usage` before any
+launch and keep to ONE round at a time.
+
+**What round 14 decided.** ORPIMENT won 2 of 2 judges, **7.07 against the
+baseline's 3.43, +3.64, the largest gain of the pass**, on six of seven sheets;
+its Graveyard is the third sheet ever marked `fits_between_samples`. A kind now
+carries a VANTAGE (MADDER's `x/lookX/lookZ` rig), a wing's MAIN room keeps its
+authored shell and camera, and the six wings that had no `ROOM_KINDS` have
+rooms. **Both judges' first instruction is the same graft: VERMEIL's BATHHOUSE
+(`ui/r14-rooms-c`, 8.0 and fits TRUE, against ORPIMENT's 6.0, its weakest
+sheet)** — the sunk pool with a proud stone coping and a step down to the
+water, the steam room's arched niches with basins and taps, boilers with
+grates, gauges and a sight glass, pipe runs with spoked handwheels. Both also
+name VERMEIL's Reflector Gallery corridor vantage and SEPIA's wax-room dipping
+hoods and hanging tapers.
+
+**What both judges say to fix after that**, and it is round 15's list: the
+mansion behind the graveyard railing is a flat slab of one repeated window;
+the Ballroom suite panel is letterboxed in black margins while its neighbours
+fill the frame; the vinery is thin stems on empty brick; the Foyer landing's
+hangings and pictures are undrawn rectangles; the Foyer's left and right
+thirds fall to near-black and swallow nameable objects; and combat's left wall
+is flat door panels with no architrave, plinth or handle.
+
+**Two instrument findings from round 14, both now in the README's traps:**
+`gpuprof`'s default 5 s wait measures ANGLE LINKING rather than the frame (it
+sits inside the ~35 s warm-up), so A/B at `--wait 40` before believing a
+regression — and this machine read BASE itself ~0.9 ms slow all day, so
+compare deltas, never an absolute against the brief. And a builder must stop
+only the processes it started, BY PID: a round-14 builder killed by
+command-line pattern and took three or four of other builders' processes with
+it (`858417a` puts that in the brief from round 13 on).
 
 **Why one at a time.** Last week's whole allowance went in about two and a
 half days, most of it on two six-builder rounds run in parallel (rounds 11 and
 12 cost ~7.5M subagent tokens between them, with a graft and a performance
-pass on top). A round of three builders and two judges costs roughly 2.5-3.5M.
+pass on top). A round of three builders and two judges costs roughly 2.5-3.5M,
+and round 14 measured 1.42M subagent tokens for 5 agents over 6.6 hours.
 **Check `get_usage` (the ccd_session_mgmt tool) before each launch**, and do
 not start a round with the weekly figure much above half.
 
-**Why 14 first.** It is Josh's own request (2026-09-18: variation between the
-rooms of a wing) and both round-11 judges put the same fix at the top of its
-list; round 13 refines chrome that already scores 7.3-8.0.
+How a round is launched — round 14's call, which round 13's copied:
 
 ```
 Workflow({ scriptPath: "docs/ui-pass/round-workflow.js",
@@ -46,9 +94,12 @@ Workflow({ scriptPath: "docs/ui-pass/round-workflow.js",
                    uiloop: "C:/UILOOP/r14", base: "d46eec5" } })
 ```
 
-and round 13 the same way with `round-13.args.json` and `uiloop:
-"C:/UILOOP/r13"`. The main checkout's dev server must be up on 8777 first
+The main checkout's dev server must be up on 8777 first
 (`python tools/devserver.py 8777`); builders start their own on 8921-8933.
+**Take one capture on 8777 before launching** and read its `band`: this
+machine's GPU degrades across long sessions of Chromium launches, and a round
+whose captures cannot draw is a wasted round. It read 34.3 before round 14,
+the same as the baseline, and every capture that round drew.
 
 **If a limit stops a round again**, finish it as a NEW run: `resume` on each
 stopped builder (a sentence saying exactly where it stopped: its commits,
@@ -92,34 +143,31 @@ long-known** (the seven HALO sprite clips, `run.py`'s Archivist seed and
 `_losePatience`); frame cost is **13.3 ms default and 14.3 ms in the
 Greenhouse fight**, against the hard 15.5.
 
-**What the next two rounds are for**
-
-- **Round 13 (CHROME, second pass)** — `BRIEF-r13.md`. Round 12's three judges
-  agreed on what stops each piece at 8: the coach's spotlight reads as a
-  selection box with nothing pointing at its target; the veil's portraits are
-  pasted cards on a painting that competes with them, and everything is named
-  twice; the toast's plate is a plain bar on the corner candle and its medal is
-  a flat vector star.
-- **Round 14 (ROOMS, second variation pass)** — `BRIEF-r14.md`. Both round-11
-  judges' first fix: the rooms differ by their back wall, "never by vantage" —
-  MADDER's authored vantages (`ui/r11-vary-c`) are the named graft, and its
-  Graveyard won that screen. Six wings still have no `ROOM_KINDS` at all;
-  two of them (Lampworks, Bathhouse) are judged for the first time.
+**What round 13 is for** — `BRIEF-r13.md`. Round 12's three judges agreed on
+what stops each piece at 8: the coach's spotlight reads as a selection box
+with nothing pointing at its target; the veil's portraits are pasted cards on
+a painting that competes with them, and everything is named twice; the toast's
+plate is a plain bar on the corner candle and its medal is a flat vector star.
+It is an EXPAND track, so it merges per screen.
 
 ## THE STATE OF THE PASS
 
-Rounds 0-12 merged (2026-09-19), plus round 10's two grafts (`1045f52`) and a
-look-neutral performance pass (`91af9f3`). The rounds to read: 9 (+2.71, props
-got an interior), 11 (+2.17, a wing has several kinds of room) and 12 (+5.9,
-the last web chrome).
+Rounds 0-14 merged (round 14 on 2026-09-22, unverified and unpushed), plus
+round 10's two grafts (`1045f52`) and a look-neutral performance pass
+(`91af9f3`). The rounds to read: 9 (+2.71, props got an interior), 12 (+5.9,
+the last web chrome) and 14 (+3.64, a room is seen from somewhere).
 
 **`fits_between_samples` has been TRUE from both judges on two screens**:
-round 11's Foyer and Ballroom sheets. Round 10's two grafts earned it from
-some judges. Everything else is still FALSE, and the best screens score 7-8.
+round 11's Foyer and Ballroom sheets. Round 14 added ORPIMENT's Graveyard and
+VERMEIL's Bathhouse from one judge each. Everything else is still FALSE, and
+the best screens score 7-8.
 
-Frame cost on the merged build: **13.3 ms default combat, 14.3 ms in the
+Frame cost before round 14: **13.3 ms default combat, 14.3 ms in the
 Greenhouse fight**, against a hard 15.5 on both. `gpuprof.py --hash
-"encounter=gh-14&region=greenhouse"` names the Greenhouse fight.
+"encounter=gh-14&region=greenhouse"` names the Greenhouse fight. **Round 14's
+own figures are not comparable with those**: the machine read BASE ~0.9 ms
+slow all day, and the default 5 s wait profiles ANGLE linking rather than the
+frame. Re-measure the merge at `--wait 40` against `d46eec5`.
 
 ## THE FIVE WAYS A CAPTURE LIES, all of which have cost a verdict or an evening
 
