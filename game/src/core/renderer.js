@@ -294,31 +294,42 @@ export class Stage {
    * Point the camera for a region. `rig` is {y, z, look, fov}; the rooms differ
    * in proportion so the eye has to differ with them. StS2 frames "epic rather
    * than intimate", so these sit close with a high horizon and little bare floor.
+   *
+   * WHERE YOU ARE STANDING (round 14, MADDER's round-11 rig grafted): `x` moves
+   * the eye across the room and `lookX` / `lookZ` put the point it looks at off
+   * the room's axis, so a room kind can be seen from one end of its arcade or
+   * from a corner instead of always square from the middle of the floor. All
+   * three default to 0, which is exactly the rig every region was authored
+   * against -- and what every fight in a wing's own main room still gets.
    */
   setCameraRig(rig = {}, dur = 0.7) {
     const to = {
-      y: rig.y ?? 2.3, z: rig.z ?? 9.6,
-      look: rig.look ?? 2.4, fov: rig.fov ?? 42,
+      x: rig.x ?? 0, y: rig.y ?? 2.3, z: rig.z ?? 9.6,
+      lookX: rig.lookX ?? 0, look: rig.look ?? 2.4, lookZ: rig.lookZ ?? 0,
+      fov: rig.fov ?? 42,
     };
     this._camRig = to;
-    const apply = (y, z, look, fov) => {
-      this._camBase.set(0, y, z);
-      this.lookAt.set(0, look, 0);
+    const apply = (x, y, z, lx, look, lz, fov) => {
+      this._camBase.set(x, y, z);
+      this.lookAt.set(lx, look, lz);
       if (Math.abs(this.camera.fov - fov) > 0.01) {
         this.camera.fov = fov;
         this.camera.updateProjectionMatrix();
       }
     };
     if (dur <= 0 || Save.settings?.reduceMotion) {
-      apply(to.y, to.z, to.look, to.fov);
-      this.camera.position.set(0, to.y, to.z);
+      apply(to.x, to.y, to.z, to.lookX, to.look, to.lookZ, to.fov);
+      this.camera.position.set(to.x, to.y, to.z);
       return;
     }
-    const from = { y: this._camBase.y, z: this._camBase.z, look: this.lookAt.y, fov: this.camera.fov };
+    const from = {
+      x: this._camBase.x, y: this._camBase.y, z: this._camBase.z,
+      lookX: this.lookAt.x, look: this.lookAt.y, lookZ: this.lookAt.z, fov: this.camera.fov,
+    };
     clock.ramp(dur, (v) => {
       const k = v * v * (3 - 2 * v);
-      apply(from.y + (to.y - from.y) * k, from.z + (to.z - from.z) * k,
-            from.look + (to.look - from.look) * k, from.fov + (to.fov - from.fov) * k);
+      const m = (key) => from[key] + (to[key] - from[key]) * k;
+      apply(m('x'), m('y'), m('z'), m('lookX'), m('look'), m('lookZ'), m('fov'));
     });
   }
 
