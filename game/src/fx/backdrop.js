@@ -94,6 +94,8 @@ export const DEFAULT_ROOM = {
  *  22   pendant fitting SIZED BY ITS DROP      -- see _fixtures
  *  23   light standard  SIZED BY ITS LAMP      -- see _fixtures
  *  24   planting bed    0.43 m of brick, 2.9 m long, fans to 1.45   brick course 0.075
+ *  25   fountain        2.6 m to its finial, basin 3.4 m across  (round 14)
+ *  26   bust on a term  1.85 m, the bust 0.8 of it          (round 14)
  *
  * 22 and 23 are FITTINGS and are never dealt from a region's prop pack:
  * `_fixtures` places one at each practical light and sizes it from the room,
@@ -108,7 +110,7 @@ export const DEFAULT_ROOM = {
  */
 const SHAPE_M = [1.20, 2.00, 1.30, 1.00, 2.00, 2.00, 3.32, 2.60, 1.17, 1.33,
                  1.56, 1.30, 2.16, 1.50, 2.00, 2.44, 1.27, 0.97, 3.09, 1.56,
-                 2.80, 2.05, 2.60, 1.70, 1.55
+                 2.80, 2.05, 2.60, 1.70, 1.55, 2.70, 1.92
 ];
 /* ...and a width ratio, so a column is a column and not a capital-T. Four of
  * these were wrong by enough to change what the object was: a longcase clock
@@ -116,7 +118,7 @@ const SHAPE_M = [1.20, 2.00, 1.30, 1.00, 2.00, 2.00, 3.32, 2.60, 1.17, 1.33,
  * wide, and a column at h/12.3 when the table says h/8 to h/10. */
 const SHAPE_W = [1.15, 0.55, 1.00, 0.95, 0.72, 0.80, 0.47, 0.85, 0.90, 1.35,
                  1.30, 1.20, 0.87, 1.14, 0.77, 0.78, 1.80, 2.24, 0.50, 0.62,
-                 0.72, 1.62, 0.62, 0.34, 1.80
+                 0.72, 1.62, 0.62, 0.34, 1.80, 1.75, 0.34
 ];
 /* HOW MUCH ONE OF THESE VARIES FROM THE NEXT, as a +-fraction of SHAPE_M.
  *
@@ -137,7 +139,7 @@ const SHAPE_W = [1.15, 0.55, 1.00, 0.95, 0.72, 0.80, 0.47, 0.85, 0.90, 1.35,
  * loculi in a different room. */
 const SHAPE_VAR = [0.06, 0.08, 0.62, 0.20, 0.10, 0.08, 0.10, 0.10, 0.16, 0.48,
                    0.06, 0.06, 0.06, 0.06, 0.06, 0.14, 0.14, 0.06, 0.08, 0.08,
-                 0.06, 0.04, 0.00, 0.00, 0.22
+                 0.06, 0.04, 0.00, 0.00, 0.22, 0.00, 0.04
 ];
 // Which shapes hang from the ceiling rather than stand on the floor.
 export const HANGING = { 4: 1, 7: 1, 22: 1 };
@@ -227,6 +229,9 @@ export const SUBJECT = {
      and its vinery, and the Graveyard's chapel yard and its mausolea. */
   chimney: 18, arcade: 19, music: 20, dais: 21, palm: 22, vine: 23,
   chapel: 24, mausolea: 25, tomb: 26, ossuary: 27,
+  /* Round 14: the Lampworks' chandlery, reflector gallery and boiler walk,
+     and the Bathhouse's steam room, pool and pipe gallery. */
+  wax: 28, reflector: 29, boiler: 30, steam: 31, pool: 32, pipes: 33,
 };
 /* WHICH WALL PROGRAM A SUBJECT IS DRAWN BY (MM_ROOMS in shaders/backdrop.js).
    Round 11's rooms first went into the one wall program with everything else,
@@ -248,7 +253,38 @@ export const ROOMS_PROGRAM = {
   palm: 3, vine: 3,
   chapel: 4, mausolea: 4,
   tomb: 5, ossuary: 5,
+  wax: 6, reflector: 6, boiler: 6,
+  steam: 7, pool: 7, pipes: 7,
 };
+
+/**
+ * THE LENS, FOR ANY VANTAGE (MADDER, round 11; grafted into the room kinds in
+ * round 14).
+ *
+ * Until then every camera in the house stood on the room's centre line and
+ * looked straight down it, so "half the visible width at this depth" was one
+ * symmetric number and the layout clamp could say x = +-lim. A vantage that
+ * stands down one side of the room and turns across it has a frame whose
+ * middle is NOT x = 0 at any depth, so the clamp needs the real interval. This
+ * is the camera's own basis -- eye, forward, right, up -- built from the same
+ * rig `setCameraRig` is given, with no roll, which is all a layout needs to
+ * ask "which x at this height and depth is in shot".
+ */
+export function lensOf(cam = {}, aspect = 16 / 9) {
+  const ex = cam.x ?? 0, ey = cam.y ?? 2.3, ez = cam.z ?? 9.6;
+  const tx = cam.lookX ?? 0, ty = cam.look ?? 2.4, tz = cam.lookZ ?? 0;
+  let fx = tx - ex, fy = ty - ey, fz = tz - ez;
+  const fl = Math.hypot(fx, fy, fz) || 1;
+  fx /= fl; fy /= fl; fz /= fl;
+  // right = forward x worldUp, horizontal by construction
+  let rx = -fz, rz = fx;
+  const rl = Math.hypot(rx, rz) || 1;
+  rx /= rl; rz /= rl;
+  // the camera's own up = right x forward
+  const ux = -rz * fy, uy = rz * fx - rx * fz, uz = rx * fy;
+  const tanV = Math.tan(((cam.fov ?? 42) * Math.PI) / 360);
+  return { ex, ey, ez, fx, fy, fz, rx, rz, ux, uy, uz, tanV, tanH: tanV * aspect };
+}
 
 const NLIGHT = 5;
 /** How much of a cinematic (key/fill) light reaches a PROP. See syncLights. */
@@ -318,6 +354,10 @@ export class Backdrop {
            none) and where the exterior's house and moon stand -- both chosen
            per room with its subject. See WALL_FRAG. */
         uDoorX: { value: 0 }, uHouse: { value: new THREE.Vector2(0, 0) },
+        /* Where the subject stands on its wall and which kind of stair it is,
+           and how big the exterior's house is (round 14). See WALL_FRAG. */
+        uSubjX: { value: 0 }, uSubjMode: { value: 0 }, uSubjDir: { value: 1 },
+        uHouseS: { value: 1 }, uQuiet: { value: 0 },
         uSkyGlow: { value: 1.0 }, uOpenSky: { value: 0 },
         uSkyDeep: { value: new THREE.Color(0x141725) },
         uDamHue: { value: new THREE.Color(0.46, 0.24, 0.66) },
@@ -377,7 +417,8 @@ export class Backdrop {
       uInk: { value: 0.80 }, uLip: { value: 0.45 }, uWet: { value: 0.26 },
       /* A hall runner's HALF-WIDTH in metres, 0 for none. Authored per region
          (`runner`), and only the floor ever gets a non-zero one. */
-      uRunner: { value: 0 },
+      uRunner: { value: 0 }, uRunX: { value: 0 },
+      uWater: { value: new THREE.Vector4(0, 0, 0, 0) },
       uSpan: { value: new THREE.Vector2(30, 34) },
       uDeep: { value: new THREE.Color(0x090711) },
       uMid: { value: new THREE.Color(0x1c1622) },
@@ -392,6 +433,8 @@ export class Backdrop {
 
     this.floorMat = new THREE.ShaderMaterial({
       uniforms: surfaceUniforms(),
+      /* the room-kind floors are a variant of their own: _setSurfaceProgram */
+      defines: { MM_FLOORX: 0 },
       vertexShader: FLOOR_VERT, fragmentShader: FLOOR_FRAG,
       depthWrite: true, fog: false,
     });
@@ -405,6 +448,7 @@ export class Backdrop {
     // room, which is what stops the top of the frame reading as an empty void.
     this.ceilMat = new THREE.ShaderMaterial({
       uniforms: surfaceUniforms(),
+      defines: { MM_FLOORX: 0 },
       vertexShader: FLOOR_VERT, fragmentShader: FLOOR_FRAG,
       depthWrite: true, fog: false,
     });
@@ -492,7 +536,16 @@ export class Backdrop {
            the split tone, bloom and halation all put colour back, and the
            measured chain turns a linear cap of 0.04 into 0.22 on screen. */
         uPropSat: { value: 0.14 }, uPropSatMax: { value: 0.20 },
+        /* WHICH WAY THE LENS FACES, as its right vector in XZ (MADDER, round
+           11). A prop is a drawn flat and it is drawn FRONT-ON, so when a
+           vantage turns the camera the flats turn with it -- a cabinet drawn
+           square and then seen 25 degrees off its face is only a narrower
+           cabinet, not a cabinet seen from the side. (1, 0) is the square rig
+           every region was authored against, and there it is the old quad. */
+        uYaw: { value: new THREE.Vector2(1, 0) },
       },
+      /* the grounds' carved stone, and the gallery's bust: _setPropProgram */
+      defines: { MM_STONES: 0, MM_BUST: 0 },
       vertexShader: PROP_VERT, fragmentShader: PROP_FRAG,
       transparent: true, depthWrite: false, side: THREE.DoubleSide, fog: false,
     });
@@ -625,6 +678,16 @@ export class Backdrop {
        mask was provably zero. Bounds below are the analytic maxima of each mask
        (mmFbm3 <= 0.9625, mmRidge <= 0.9375) plus margin. */
     this.frames = [];
+    /* THE NEAR FRAME TRAVELS WITH THE EYE (MADDER, round 11). It was authored
+       at a fixed spot in each room, which was the same thing as "just in
+       front of the lens" while every camera stood on the centre line. A
+       vantage moves the eye, so the frame rides in this group, which
+       _setVantage places at the eye; on the square rig the group sits at the
+       origin and every quad is exactly where it always was. */
+    this.frameRig = new THREE.Group();
+    this.frameRig.name = 'near-frame';
+    this.group.add(this.frameRig);
+    this._frameShow = [true, true, true, true];
     //          mode, uMin, uMax, vMin, vMax
     const FRAME_CROP = [
       [0, 0.00, 0.24, 0.00, 1.00],   // left drape:  mask needs p.x < 0.218
@@ -652,6 +715,8 @@ export class Backdrop {
           uColor: { value: new THREE.Color(0x06050c) },
           uRim: { value: new THREE.Color(0xffb64a) },
         },
+        /* modes 0-2 only: the portals are a program of their own */
+        defines: { MM_PORTAL: 0 },
         vertexShader: FRAME_VERT, fragmentShader: FRAME_FRAG,
         transparent: true, depthWrite: false, depthTest: false,
         side: THREE.DoubleSide, fog: false,
@@ -665,8 +730,42 @@ export class Backdrop {
          outside the frustum entirely and cost nothing at all. */
       m.frustumCulled = true;
       this.frames.push(m);
-      this.group.add(m);
+      this.frameRig.add(m);
     }
+    /* THE DOORWAY, THE GALLERY RAIL AND THE CHURCHYARD GATE (MADDER, round
+       11): FRAME_FRAG modes 3, 4 and 5. Three vantages put a piece of the
+       house between you and the room -- the door you are standing back in,
+       the rail you lean on, the gate you have just come through -- and each is
+       drawn on one quad the size of the view, a metre in front of the lens.
+       They ride in their own group, which follows the LIVE camera every frame
+       (syncCamera): the stage breathes the eye by up to a quarter of a metre,
+       and a quad a metre from the lens that did not follow it slid a quarter
+       of the frame. Hidden everywhere else, which costs nothing. */
+    this.portalRig = new THREE.Group();
+    this.portalRig.name = 'portal';
+    this.group.add(this.portalRig);
+    /* ...and mode 6, the STEAM of a steam room, on the same lens (round 14) */
+    this.portals = [3, 4, 5, 6].map((mode, k) => {
+      const mat = new THREE.ShaderMaterial({
+        uniforms: {
+          uTime: { value: 0 }, uSeed: { value: 5.1 + k * 2.3 },
+          uMode: { value: mode }, uAmount: { value: 1.0 }, uDread: { value: 0 },
+          uAspect: { value: 16 / 9 }, uDoorKind: { value: 0 },
+          uColor: { value: new THREE.Color(0x06050c) },
+          uRim: { value: new THREE.Color(0xffb64a) },
+        },
+        defines: { MM_PORTAL: 1 },
+        vertexShader: FRAME_VERT, fragmentShader: FRAME_FRAG,
+        transparent: true, depthWrite: false, depthTest: false,
+        side: THREE.DoubleSide, fog: false,
+      });
+      const m = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), mat);
+      m.renderOrder = 8;
+      m.visible = false;
+      m.frustumCulled = false;
+      this.portalRig.add(m);
+      return m;
+    });
 
     this._tmpV2 = new THREE.Vector2();
     this._applyRoom(this.room);
@@ -727,6 +826,8 @@ export class Backdrop {
       this.ceiling.position.set(0, room.h, cz);
       this.ceilMat.uniforms.uSpan.value.set(room.w, spanZ);
       this.ceilMat.uniforms.uPattern.value = room.ceilPattern ?? 3;
+      /* a vinery's roof (12) is drawn by the room-kind variant */
+      this._setSurfaceProgram(this.ceilMat, (room.ceilPattern ?? 3) > 11.5);
     }
     this._floorCz = cz;
     this._wallZ = -room.d;
@@ -822,7 +923,33 @@ export class Backdrop {
     const frameX = (z, y = camY) => Math.max(depth(y, z) * tanH * 0.94, 1.2);
     // signed height above the frame centre line, same view basis (no roll)
     const vert = (y, z) => ((y - camY) * camZ - (camZ - z) * fy) / fl;
-    const inFrameY = (y, z) => Math.abs(vert(y, z)) < depth(y, z) * tanV * 0.93;
+    let inFrameY = (y, z) => Math.abs(vert(y, z)) < depth(y, z) * tanV * 0.93;
+    /* THE FRAME AS AN INTERVAL, [lo, hi] in world x at a height and depth
+       (MADDER, round 11). On the square rig it is +-frameX, exactly as before.
+       A vantage that stands off the centre line or turns has a frame whose
+       middle is not x = 0 at any depth, so the interval comes from the lens's
+       own basis: solve u = +-k*d along the line of constant y and z, where u
+       is the lens's right coordinate and d its depth, both linear in x. */
+    let spanAt = (z, y) => { const f = frameX(z, y); return [-f, f]; };
+    const offAxis = !!(cam.x || cam.lookX || cam.lookZ);
+    if (offAxis) {
+      const L = lensOf(cam, aspect);
+      const k = L.tanH * 0.94;
+      spanAt = (z, y = L.ey) => {
+        const a = Math.max((y - L.ey) * L.fy + (z - L.ez) * L.fz, 0.6);
+        const b = (z - L.ez) * L.rz;
+        const xl = L.ex + (-k * a - b) / (L.rx + k * L.fx);
+        const xr = L.ex + (k * a - b) / (L.rx - k * L.fx);
+        let lo = Math.min(xl, xr), hi = Math.max(xl, xr);
+        if (hi - lo < 2.4) { const c = (lo + hi) / 2; lo = c - 1.2; hi = c + 1.2; }
+        return [lo, hi];
+      };
+      inFrameY = (y, z, x = L.ex) => {
+        const dx = x - L.ex, dy = y - L.ey, dz = z - L.ez;
+        const d = Math.max(dx * L.fx + dy * L.fy + dz * L.fz, 0.6);
+        return Math.abs(dx * L.ux + dy * L.uy + dz * L.uz) < d * L.tanV * 0.93;
+      };
+    }
     const halfW = room.w / 2;
     /* THE FURNISHED DEPTH. A layout that spreads its props evenly to the back
        wall spends half of them past the props' own fog (12-30 m from the
@@ -835,7 +962,25 @@ export class Backdrop {
     const openSky = room.h <= 0.01;
     const floorFallback = shapes.find((s) => HANGING[s] !== 1) ?? 5;
 
-    const push = (shape, x, z, scale, tone, atY) => {
+    /* A STAIR HUNG ON A SIDE WALL TAKES THAT WALL (MADDER, round 11): +1 the
+       right wall, -1 the left, 0 when the room's one-off is on the back wall. */
+    const stairWall = pal.subjWall === 'right' ? 1 : pal.subjWall === 'left' ? -1 : 0;
+    const push = (shape, x, z, scale, tone, atY, how) => {
+      /* Nothing stands in the pool (round 14): a piece dealt into the water
+         stands on the far side of its coping instead. */
+      if (pal.pool && HANGING[shape] !== 1) {
+        const pl = pal.pool;
+        if (Math.abs(x) < pl.hw + 0.8 && z < pl.z0 + 0.8 && z > pl.z1 - 0.8) {
+          x = (Math.sign(x) || 1) * (pl.hw + 1.0 + Math.abs(x) * 0.25);
+        }
+      }
+      /* Nothing stands in front of a flight, and a stair runs the depth of the
+         wall it climbs. So a piece the layout put against that wall goes to
+         the BACK wall instead, mostly on the side away from the stair. */
+      if (stairWall && Math.sign(x) === stairWall && Math.abs(x) > halfW * 0.40) {
+        x = (rand() < 0.7 ? -stairWall : stairWall) * halfW * (0.14 + 0.62 * rand());
+        z = -room.d + 0.9 + rand() * 1.6;
+      }
       /* Nothing hangs from an open sky. The Graveyard, the Hedge Maze and the
          Pumpkin Grounds have no ceiling at all; a drape or a chandelier placed
          there is a rectangle floating against the stars. */
@@ -866,8 +1011,16 @@ export class Backdrop {
       /* Half the frame at this prop's own depth, measured at BOTH ends of it —
          a tall prop's head and its foot are at different view depths under a
          pitched camera, and the narrower of the two is the one that cuts. */
-      const limAt = (zz) => Math.max(
-        Math.min(halfW * 0.98, frameX(zz, y), frameX(zz, y + h)) - w * 0.5, 0.4);
+      /* ...as an INTERVAL since round 14 (MADDER): [lo, hi] for the prop's
+         centre, inside the room's walls and both ends of the frame, less half
+         the prop. On the square rig lo = -hi and this is the old +-lim. */
+      const bandAt = (zz) => {
+        const [a0, a1] = spanAt(zz, y), [b0, b1] = spanAt(zz, y + h);
+        let lo = Math.max(-halfW * 0.98, a0, b0) + w * 0.5;
+        let hi = Math.min(halfW * 0.98, a1, b1) - w * 0.5;
+        if (hi - lo < 0.8) { const c = (lo + hi) / 2; lo = c - 0.4; hi = c + 0.4; }
+        return [lo, hi];
+      };
       if (hang) {
         /* A DRAPE HANGS ON A WALL. Meeting the ceiling plane exactly is not
            enough: a curtain panel in the middle of an open floor reads as a
@@ -886,9 +1039,10 @@ export class Backdrop {
              `limAt` and not a separate calculation, so the general clamp below
              cannot then pull the curtain back off its wall and into mid-air —
              which is exactly what three of them did. */
-          const side = limAt(z);
+          const [slo, shi] = bandAt(z);
+          const side = x >= 0 ? shi : -slo;
           if (Math.abs(x) > room.w * 0.30 && side > room.w * 0.34) {
-            x = Math.sign(x || 1) * side;
+            x = x >= 0 ? shi : slo;
           } else {
             z = -room.d + 0.35 + rand() * 0.8;
           }
@@ -899,7 +1053,7 @@ export class Backdrop {
            floating panels this round is fixing. Walk it back until the fixing
            is inside the frame. */
         let guard = 0;
-        while (guard++ < 30 && !inFrameY(y + h, z) && z > -room.d + 0.5) {
+        while (guard++ < 30 && !inFrameY(y + h, z, x) && z > -room.d + 0.5) {
           z = Math.max(z - 0.55, -room.d + 0.4);
         }
       }
@@ -907,8 +1061,34 @@ export class Backdrop {
          centre, so anything wider than nothing could still hang half of itself
          past the edge of frame — which is exactly how the Nursery shipped a
          curtain cut in two by the viewport edge. */
-      const lim = limAt(z);
-      if (Math.abs(x) > lim) x = Math.sign(x || 1) * lim * (0.62 + 0.34 * rand());
+      /* A PIECE STAGED AGAINST A WALL STAYS AGAINST IT (MADDER, round 11):
+         it walks BACK along its wall until the wall is in shot at that depth,
+         and stands at the frame's edge -- pulled in to a random 62-96% it
+         stood in the middle of the floor, which is the knot of free-standing
+         cases the first side vantage showed. Only pieces a vantage restaged
+         (`how` 'wall'), so no room seen square moves. */
+      if (how === 'wall' && !hang) {
+        let [wlo, whi] = bandAt(z);
+        let g2 = 0;
+        while (g2++ < 40 && (x > whi || x < wlo) && z > -room.d + 1.4) {
+          z = Math.max(z - 0.6, -room.d + 1.2);
+          [wlo, whi] = bandAt(z);
+        }
+        if (x > whi) x = whi; else if (x < wlo) x = wlo;
+      }
+      const [lo, hi] = bandAt(z);
+      if (x > hi || x < lo) {
+        if (how === 'file' && offAxis) {
+          /* A COLONNADE'S FILE STAYS A FILE. From a vantage off the centre
+             line the near file broke up when every column was pulled in to a
+             random fraction of the frame; one the lens cannot hold stands at
+             its edge, in line with the next. */
+          x = x > hi ? hi : lo;
+        } else {
+          const c = (lo + hi) / 2;
+          x = c + (x > hi ? hi - c : lo - c) * (0.62 + 0.34 * rand());
+        }
+      }
       out.push({ x, z, w, h, shape: s, seed: rand() * 10, tone, y, hang });
     };
     /** Architecture: sized directly, allowed to run off the frame edges.
@@ -920,6 +1100,12 @@ export class Backdrop {
                  hang: false, arch: true });
     };
     const layout = P.layout || 'wings';
+    /* A ROOM'S CENTREPIECE GOES IN FIRST (round 14): the Greenhouse fills its
+       whole prop budget with planting and kerbs, and the conservatory's
+       fountain, dealt last with the near set, was sliced off at MAX_PROPS. */
+    for (const it of (P.near || [])) {
+      if (it.centre) push(it.shape, it.x, it.z, it.scale ?? 1.0, it.tone ?? 0.9, it.y);
+    }
 
     if (layout === 'colonnade') {
       // Two receding files of heavy verticals. Reads as depth, not as clutter.
@@ -932,11 +1118,17 @@ export class Backdrop {
       const rows = Math.max(3, Math.round(n / 4));
       const x0 = halfW * (P.fileX ?? 0.58);
       const file = P.file ?? shapes[0];
+      /* WHERE THE FIRST PAIR STANDS (round 14). A room may start its files a
+         bay or two further in (`fileZ0`, metres, default -1.6): the Ballroom's
+         musicians' gallery was cropped to its middle third by the two nearest
+         columns, and both round-11 judges asked for them pulled back a bay so
+         the gallery is the feature. The far pair stands where it always did. */
+      const z0 = P.fileZ0 ?? -1.6, zFar = -room.d + 1.8;
       for (let r = 0; r < rows && out.length < n; r++) {
         const t = r / Math.max(rows - 1, 1);
-        const z = -1.6 - t * (room.d - 3.4);
-        push(file, -x0 * (1 - t * 0.14), z, 1.24 - t * 0.16, 0.30 + t * 0.55);
-        if (out.length < n) push(file, x0 * (1 - t * 0.14), z + (rand() - 0.5) * 0.5, 1.24 - t * 0.16, 0.30 + t * 0.55);
+        const z = z0 + t * (zFar - z0);
+        push(file, -x0 * (1 - t * 0.14), z, 1.24 - t * 0.16, 0.30 + t * 0.55, undefined, 'file');
+        if (out.length < n) push(file, x0 * (1 - t * 0.14), z + (rand() - 0.5) * 0.5, 1.24 - t * 0.16, 0.30 + t * 0.55, undefined, 'file');
       }
       /* ...AND THE FURNITURE BETWEEN THE COLUMNS, with two corrections.
          This dealt from the whole pack INCLUDING shapes[0], which is the shape
@@ -963,12 +1155,32 @@ export class Backdrop {
       // A field: staggered ranks across the FULL width, low, marching back.
       const ranks = 5;
       const per = Math.ceil(n / ranks);
+      /* ...across the width the LENS sees at that rank, out of doors (MADDER,
+         round 11). A churchyard is 52 m wide and the lens holds a third of it
+         at the front rank, so a rank spread over the whole yard put two stones
+         in shot and clamped the rest into a huddle at each edge of the frame
+         -- the "headstones as bollards" yard, empty in the middle. Indoors a
+         rank still reaches its walls. And the stones keep off the gravel walk
+         to the gate, where there is one (round 14). */
+      const openYard = room.h <= 0.01;
+      const walkHW = (openYard && pal.floorPattern === 11 && (pal.runner ?? 0) > 0) ? pal.runner + 0.55 : 0;
+      const walkX = pal.runX ?? 0;
       for (let r = 0; r < ranks && out.length < n; r++) {
         const t = r / (ranks - 1);
         const z = -2.2 - t * (RD - 3.0);
+        let x0 = -halfW * 0.94, x1 = halfW * 0.94;
+        if (openYard) {
+          const [f0, f1] = spanAt(z, 0.4);
+          x0 = Math.max(x0, f0 * 1.04); x1 = Math.min(x1, f1 * 1.04);
+        }
         for (let i = 0; i < per && out.length < n; i++) {
           const jitter = (r % 2) * 0.5;
-          const x = ((i + jitter) / per - 0.5) * 2 * halfW * 0.94 + (rand() - 0.5) * 0.8;
+          let x = openYard
+            ? x0 + ((i + jitter) / per) * (x1 - x0) + (rand() - 0.5) * 0.8
+            : ((i + jitter) / per - 0.5) * 2 * halfW * 0.94 + (rand() - 0.5) * 0.8;
+          if (walkHW && Math.abs(x - walkX) < walkHW) {
+            x = walkX + (Math.sign(x - walkX) || 1) * (walkHW + Math.abs(x - walkX) * 0.6);
+          }
           push(pick(), x, z + (rand() - 0.5) * 1.1, 1.06 - t * 0.22, 0.16 + t * 0.7);
         }
       }
@@ -1024,13 +1236,20 @@ export class Backdrop {
          toward the back wall over a few metres and then you are AT the wall. */
       const tiers = 4;
       const per = Math.ceil(n / tiers);
-      const bedShape = 16;   // the chest SDF: a masonry planting bed
+      /* the chest SDF: a masonry planting bed. 16.25 since round 14, when shape
+         16 became a carved table tomb: the kerb keeps its own old drawing. */
+      const bedShape = 16.25;
       for (let t = 0; t < tiers && out.length - archN < n; t++) {
         const f = t / (tiers - 1);
         const z = -2.6 - f * (room.d * 0.56);
         const lift = f * Math.min((room.h > 0 ? room.h : 8) * 0.16, 1.25);
         if (lift > 0.22) {
-          const span = Math.min(halfW * 0.98, frameX(z + 0.6, lift));
+          /* The frame's own interval at the bed's depth (MADDER): +-frameX on
+             the square rig, so a vantage off the centre line still gets beds
+             that run the width of the FRAME, not of the room. */
+          const [s0, s1] = spanAt(z + 0.6, lift);
+          const bLo = Math.max(-halfW * 0.98, s0), bHi = Math.min(halfW * 0.98, s1);
+          const span = (bHi - bLo) / 2, bMid = (bLo + bHi) / 2;
           /* Enough beds that each one keeps roughly its own shape's proportions.
              Three beds across a 30 m greenhouse meant one 9 m x 1.2 m quad, and
              a chest SDF stretched 7:1 reads as a green blob, not as masonry. */
@@ -1041,13 +1260,23 @@ export class Backdrop {
              for the planting. */
           const beds = Math.max(3, Math.round((span * 2) / Math.max(lift * 2.6, 2.2)));
           for (let i = 0; i < beds; i++) {
-            pushArch(bedShape, ((i + 0.5) / beds - 0.5) * 2 * span,
+            pushArch(bedShape, bMid + ((i + 0.5) / beds - 0.5) * 2 * span,
                      z + 0.6, (span * 2) / beds + 0.25, lift, 0.30 + f * 0.42);
           }
         }
         for (let i = 0; i < per && out.length - archN < n; i++) {
-          const x = ((i + 0.5) / per - 0.5) * 2 * halfW * 0.88 + (rand() - 0.5) * 0.9;
-          push(pick(), x, z + (rand() - 0.5) * 0.8, 1.15 - f * 0.18, 0.20 + f * 0.66,
+          let x = ((i + 0.5) / per - 0.5) * 2 * halfW * 0.88 + (rand() - 0.5) * 0.9;
+          /* the floor round a centrepiece is kept clear (round 14: the
+             conservatory's fountain), on the tiers in front of it */
+          if (P.clearX && f < 0.5 && Math.abs(x) < P.clearX) {
+            x = (Math.sign(x) || 1) * (P.clearX + Math.abs(x) * 0.45);
+          }
+          /* `props.backOnly` (MADDER): shapes that stand on the back tiers
+             only -- the conservatory's columns, which from its end gallery
+             stood between the lens and the planting it looks down on */
+          let sh = pick();
+          for (let tries = 0; tries < 4 && f < 0.5 && (P.backOnly || []).includes(sh); tries++) sh = pick();
+          push(sh, x, z + (rand() - 0.5) * 0.8, 1.15 - f * 0.18, 0.20 + f * 0.66,
                0.02 + lift);
         }
       }
@@ -1147,6 +1376,7 @@ export class Backdrop {
        ceiling seeds draw from next, is exactly what it would have been. */
     const standing = fixtures.filter((f) => !f.hang);
     const yields = (it, p) => {
+      if (it.centre) return false;         // a room's centrepiece keeps its place
       if (it.under !== undefined && fixtures.some((f) => f.light === it.under)) return true;
       return standing.some((f) => {
         const dx = Math.abs(f.x - p.x), dz = Math.abs(f.z - p.z);
@@ -1156,7 +1386,8 @@ export class Backdrop {
     };
     for (const it of (P.near || [])) {
       if (out.length >= MAX_PROPS) break;
-      push(it.shape, it.x, it.z, it.scale ?? 1.0, it.tone ?? 0.16);
+      if (it.skip || it.centre) continue;
+      push(it.shape, it.x, it.z, it.scale ?? 1.0, it.tone ?? 0.16, it.y, it.wall ? 'wall' : undefined);
       if (yields(it, out[out.length - 1])) out.pop();
     }
     return out.slice(0, MAX_PROPS);
@@ -1215,10 +1446,102 @@ export class Backdrop {
     return out;
   }
 
+  /**
+   * WHERE YOU ARE STANDING (MADDER, round 11; driven by the room kind since
+   * round 14). Two things follow the vantage `_vary()` chose for this room,
+   * and neither costs a pixel of new geometry:
+   *
+   *  - the drawn flats turn to face the lens (`uYaw`), because every prop in
+   *    the house is drawn front-on and a flat seen 25 degrees off its face is
+   *    only a narrower flat;
+   *  - the near frame rides with the eye: `pal.cam0` is the wing's authored
+   *    rig and `pal.cam` this room's, and the frame keeps the offset from the
+   *    eye it was authored with, turned with the camera.
+   *
+   * A vantage that stands IN something -- a doorway, at a gallery rail, in a
+   * churchyard gate -- shows that instead of the near frame (`pal.frame`).
+   * On the square rig every quad is exactly where it always was.
+   */
+  _setVantage(pal) {
+    const cam = pal.cam || {};
+    const cam0 = pal.cam0 || cam;
+    const aspect = Math.min(pal.aspect || (16 / 9), 16 / 9);
+    const lens = lensOf(cam, aspect);
+    this.lens = lens;
+    this.propMat.uniforms.uYaw.value.set(lens.rx, lens.rz);
+    const rig = this.frameRig;
+    const FRAME_Y = 2.08, FRAME_Z = 7.2;
+    const mode = pal.frame || 'room';
+    /* a door, a rail and a gate REPLACE the near frame; steam hangs in the
+       air of a room that keeps its own (round 14) */
+    const joinery = mode === 'door' || mode === 'rail' || mode === 'gate';
+    const own = joinery || mode === 'steam';
+    this._frameShow = (joinery || mode === 'none') ? [false, false, false, false]
+                                                   : [true, true, true, true];
+    this.portals[0].visible = mode === 'door';
+    this.portals[1].visible = mode === 'rail';
+    this.portals[2].visible = mode === 'gate';
+    this.portals[3].visible = mode === 'steam';
+    this._portalOn = own;
+    this._portalLens = null;
+    this.frames.forEach((m, i) => {
+      m.position.set(0, FRAME_Y, FRAME_Z + i * 0.01);
+      m.scale.set(i === 1 ? -1 : 1, 1, 1);
+    });
+    /* A room with no vantage of its own keeps the frame where its wing
+       authored it -- including the rooms whose kind only nudges the tripod
+       (ROOM_KINDS' `cam`), which is where round 11 left them. */
+    const square = (!pal.vantageKind || pal.vantageKind === 'square') && !(cam.x || cam.lookX || cam.lookZ) && !own;
+    if (square) {
+      rig.position.set(0, 0, 0);
+      rig.rotation.set(0, 0, 0);
+      return;
+    }
+    if (own) {
+      /* THE CAMERA'S OWN SPACE: the portal is a quad the size of the view a
+         metre in front of the eye, turned with the whole camera, so a door's
+         jambs are at the edges of the picture whatever the lens. Sized from
+         the LIVE aspect: this is drawn ON the screen, not fitted into it. */
+      const live = pal.aspect || (16 / 9);
+      const eye = new THREE.Vector3(lens.ex, lens.ey, lens.ez);
+      const at = new THREE.Vector3(cam.lookX ?? 0, cam.look ?? 2.4, cam.lookZ ?? 0);
+      this.portalRig.position.copy(eye);
+      this.portalRig.quaternion.setFromRotationMatrix(
+        new THREE.Matrix4().lookAt(eye, at, new THREE.Vector3(0, 1, 0)));
+      rig.position.set(0, 0, 0);
+      rig.rotation.set(0, 0, 0);
+      this._portalLens = { fov: cam.fov ?? 42, aspect: live, fovNow: NaN, aspNow: NaN };
+      this._sizePortals(this._portalLens.fov, live);
+      if (joinery) return;
+    }
+    /* The eye moved and may have turned: carry the frame by the same move,
+       about the eye, and turn it by the camera's yaw (not its pitch -- a lintel
+       is level whichever way you tilt your head). */
+    rig.position.set(lens.ex, lens.ey, lens.ez);
+    rig.rotation.set(0, Math.atan2(-lens.rz, lens.rx), 0);
+    const e0y = cam0.y ?? 2.3, e0z = cam0.z ?? 9.6;
+    this.frames.forEach((m, i) => {
+      m.position.set(0, FRAME_Y - e0y, FRAME_Z + i * 0.01 - e0z);
+    });
+  }
+
+  /** The portal quads, sized to the whole view one metre in front of the eye:
+   *  half the view's height at 1 m is tan(fov / 2), as lensOf computes it. */
+  _sizePortals(fov, aspect) {
+    const hh = Math.tan((fov * Math.PI) / 360);
+    for (const m of this.portals) {
+      m.position.set(0, 0, -1.0);
+      m.scale.set(2 * hh * aspect * 1.002, 2 * hh * 1.002, 1);
+      m.material.uniforms.uAspect.value = aspect;
+    }
+    if (this._portalLens) { this._portalLens.fovNow = fov; this._portalLens.aspNow = aspect; }
+  }
+
   /** Rebuild props, contact shadows and shafts for a region. */
   build(pal, rand = Math.random) {
     const room = Object.assign({}, DEFAULT_ROOM, pal.room);
     this._applyRoom(room);
+    this._setVantage(pal);
 
     /* The fittings go in FIRST so the MAX_PROPS slice can never drop one: a
        room with a flame and no lamp in it is the thing this round is fixing,
@@ -1226,6 +1549,7 @@ export class Backdrop {
     const fixtures = this._fixtures(pal, room);
     const placed = fixtures
       .concat(this._layoutProps(pal, room, rand, fixtures)).slice(0, MAX_PROPS);
+    this._setPropProgram(placed);
     const off = this._propOffset.array, sc = this._propScale.array,
       sh = this._propShape.array, sd = this._propSeed.array, tn = this._propTone.array;
     const so2 = this._shdOffset.array, ss2 = this._shdScale.array, st2 = this._shdStr.array;
@@ -1404,9 +1728,19 @@ export class Backdrop {
     const subj = SUBJECT[p.subject] ?? 0;
     this._setRoomsProgram(ROOMS_PROGRAM[p.subject] ?? 0);
     w.uSubject.value = subj;
-    w.uFar.value = 1;
+    /* WHICH WALL CARRIES THE ROOM'S ONE-OFF (round 14). uFar has always
+       meant "this is the wall with the staircase on it"; it was simply always
+       the back one. A kind may hang its stair on a side wall instead
+       (pal.subjWall), and then that wall is the one with uFar = 1. */
+    const sWall = p.subjWall || 'back';
+    w.uFar.value = sWall === 'back' ? 1 : 0;
     w.uDoorX.value = p.doorX ?? 0;
     w.uHouse.value.set(p.houseX ?? 0, p.moonX ?? 0);
+    w.uSubjX.value = sWall === 'back' ? (p.subjX ?? 0) : 0;
+    w.uSubjMode.value = p.subjMode ?? 0;
+    w.uSubjDir.value = p.subjDir ?? 1;
+    w.uHouseS.value = p.houseS ?? 1;
+    w.uQuiet.value = p.quietStair ? 1 : 0;
     w.uCool.value = p.coolFill ?? 0.9;
     w.uGrime.value = p.grime ?? 0.7;
     w.uOpen.value = p.openGlow ?? 0.5;
@@ -1442,7 +1776,19 @@ export class Backdrop {
 
     const f = this.floorMat.uniforms;
     f.uPattern.value = p.floorPattern ?? 0;
+    /* parquet (10), turf (11) and a pool are drawn by the room-kind variant */
+    this._setSurfaceProgram(this.floorMat, (p.floorPattern ?? 0) > 9.5 || !!p.pool);
     f.uRunner.value = p.runner ?? 0;
+    /* the runner leads to the door, wherever the subject took it */
+    f.uRunX.value = p.runX ?? (p.subjX ?? 0);
+    /* a pool sunk in the floor, in floor-local metres (see syncLights) */
+    if (p.pool) {
+      const cz = this._floorCz ?? 0;
+      /* w: 1 an indoor bath (its window lies in it), 2 a pond under the sky */
+      f.uWater.value.set(p.pool.hw, -(p.pool.z0 - cz), -(p.pool.z1 - cz), p.pool.open ? 2 : 1);
+    } else {
+      f.uWater.value.set(0, 0, 0, 0);
+    }
     f.uGloss.value = p.gloss ?? 0.5;
     f.uGain.value = (p.gain ?? 3.4) * 0.58;
     f.uDeep.value.copy(p._floorDeep);
@@ -1491,9 +1837,19 @@ export class Backdrop {
       su.uDamKind.value = kind;
       su.uDamCell.value = w.uDamCell.value;
       su.uSubject.value = subj;
-      su.uFar.value = 0;                        // one staircase, forty niches
+      /* One staircase, forty niches: a side wall carries the one-off only
+         when the room's kind has hung it there. sides[0] is the left wall,
+         whose own metres run from the front toward the back, and the right
+         wall's the other way (see syncLights). */
+      const mine = sWall === (i === 0 ? 'left' : 'right');
+      su.uFar.value = mine ? 1 : 0;
       su.uDoorX.value = 0;                      // the side walls keep their own door
       su.uHouse.value.copy(w.uHouse.value);
+      const at = p.subjAt ?? -this.room.d * 0.45, d = this.room.d;
+      su.uSubjX.value = mine ? (i === 0 ? (FLOOR_FRONT - d) / 2 - at : at + (d - FLOOR_FRONT) / 2) : 0;
+      su.uSubjMode.value = mine ? (p.subjMode ?? 0) : 0;
+      su.uSubjDir.value = mine ? (i === 0 ? -(p.subjDir ?? 1) : (p.subjDir ?? 1)) : 1;
+      su.uHouseS.value = w.uHouseS.value;
       su.uCool.value = (p.coolFill ?? 0.9) * 0.85;
       su.uGrime.value = Math.min(1, (p.grime ?? 0.7) + 0.12);
       su.uOpen.value = 0;                       // no doorway on the side walls
@@ -1520,11 +1876,55 @@ export class Backdrop {
     const openSky = (p.room?.h ?? p.ceil ?? 6.4) <= 0.01;
     for (let i = 0; i < this.frames.length; i++) {
       const m = this.frames[i];
-      m.visible = !(openSky && i === 2);
+      m.visible = this._frameShow[i] !== false && !(openSky && i === 2);
       m.material.uniforms.uColor.value.copy(p._frame);
       m.material.uniforms.uRim.value.copy(p._rim);
       m.material.uniforms.uAmount.value = p.frameAmount ?? 0.92;
     }
+    /* The doorway, the rail and the gate are the house's own joinery seen
+       against the lit room: the region's darkest value with its own rim on the
+       lit edge, and SOLID -- a vignette is translucent, a door jamb is not.
+       A rail is timber or cast iron (`rail`), a door an arch or a doorcase
+       under a cornice (`door`). */
+    for (const m of this.portals) {
+      m.material.uniforms.uColor.value.copy(p._frame).lerp(p._deep, 0.35);
+      m.material.uniforms.uRim.value.copy(p._rim);
+      m.material.uniforms.uDoorKind.value = m === this.portals[1]
+        ? (p.rail === 'iron' ? 1 : 0)
+        : (p.door === 'case' ? 1 : 0);
+    }
+  }
+
+  /** The floor's or the ceiling's program: the room-kind floors (parquet,
+   *  turf, a vinery's roof, a pool) are compiled only where they are laid
+   *  (MM_FLOORX in shaders/backdrop.js). */
+  _setSurfaceProgram(mat, x) {
+    const n = x ? 1 : 0;
+    if (mat.defines && mat.defines.MM_FLOORX === n) return;
+    mat.defines = Object.assign({}, mat.defines, { MM_FLOORX: n });
+    mat.needsUpdate = true;
+  }
+
+  /** The props' program, by what this room deals (round 14): the grounds'
+   *  carved stone -- the churchyard's stones and table tombs (3, and 16 below
+   *  16.1; 16.25 is the terrace's kerb, drawn as it always was) and the
+   *  fountain (25) -- and the gallery's bust (26) are compiled only into the
+   *  rooms that have them. In every program they took the prop link from
+   *  9.0 s to 16.7 s and the stage's warm-up from ~47 s to ~70 s. Two
+   *  variants, so no room needs one that was not linked behind the game:
+   *  the hedge's fountain court has stones AND a fountain, and those are one
+   *  variant; nothing that has a bust has either. */
+  _setPropProgram(placed) {
+    let stones = 0, bust = 0;
+    for (const p of placed) {
+      const s = p.shape;
+      if ((s > 2.5 && s < 3.5) || (s > 15.5 && s < 16.1) || (s > 24.5 && s < 25.5)) stones = 1;
+      else if (s > 25.5) bust = 1;
+    }
+    const d = this.propMat.defines || {};
+    if (d.MM_STONES === stones && d.MM_BUST === bust) return;
+    this.propMat.defines = Object.assign({}, d, { MM_STONES: stones, MM_BUST: bust });
+    this.propMat.needsUpdate = true;
   }
 
   /** Switch the three wall planes to the program that carries this subject. */
@@ -1583,12 +1983,29 @@ export class Backdrop {
     try { gl = R.getContext(); } catch { gl = null; }
     if (!gl || !gl.getExtension('KHR_parallel_shader_compile')) return;
     const targets = [stage.composer?.renderTarget1 ?? null];
+    /* THE WALLS FIRST, in the order they always were: a wall variant is a
+       0.6-1.5 s link, and holding them back behind round 14's heavier ones
+       left the Graveyard's plots (wall 4) linking on demand in a batch -- the
+       one VOID in its check sheet. Then round 14's: the portal (the Foyer's
+       parlor is seen from a doorway), the props with the gallery's busts
+       (MM_BUST), the room-kind floor, and last the grounds' carved stone
+       (MM_STONES, a 15 s link on this machine), whose first wing is the
+       Greenhouse, the third. */
+    const wall = (n) => [this.wall.geometry, this.wallMat, { MM_ROOMS: n }];
+    const jobs = [
+      wall(1), wall(2), wall(3), wall(4), wall(5), wall(6), wall(7),
+      [this.portals[0].geometry, this.portals[0].material, null],
+      [this.propGeo, this.propMat, { MM_STONES: 0, MM_BUST: 1 }],
+      [this.floor.geometry, this.floorMat, { MM_FLOORX: 1 }],
+      [this.propGeo, this.propMat, { MM_STONES: 1, MM_BUST: 0 }],
+    ];
     (async () => {
       await new Promise((r) => setTimeout(r, 1500));
-      for (const n of [1, 2, 3, 4, 5]) {
-        const m = this.wallMat.clone();
-        m.defines = Object.assign({}, this.wallMat.defines, { MM_ROOMS: n });
-        const mesh = new THREE.Mesh(this.wall.geometry, m);
+      for (const [geo, mat, defs] of jobs) {
+        const m = mat.clone();
+        if (defs) m.defines = Object.assign({}, mat.defines, defs);
+        const mesh = new THREE.Mesh(geo, m);
+        mesh.frustumCulled = false;
         for (const rt of targets) {
           const prev = R.getRenderTarget();
           R.setRenderTarget(rt);
@@ -1745,7 +2162,22 @@ export class Backdrop {
   }
 
   /** Every lit surface needs the eye position for its specular term. */
-  syncCamera(pos) {
+  syncCamera(pos, quat, camera) {
+    /* A portal is drawn ON the lens, so it follows the eye exactly --
+       breathing included -- and it is the size of the LIVE lens: the stage
+       ramps its fov over 0.7 s from the last room's, and a window can be
+       resized mid-fight. Within a hair of the built lens it keeps the built
+       size exactly, so a settled frame is the frame it was built as. */
+    if (quat && this._portalOn) {
+      this.portalRig.position.copy(pos);
+      this.portalRig.quaternion.copy(quat);
+      const L = this._portalLens;
+      if (L && camera) {
+        const fov = Math.abs(camera.fov - L.fov) > 0.02 ? camera.fov : L.fov;
+        const asp = Math.abs(camera.aspect - L.aspect) > 0.001 ? camera.aspect : L.aspect;
+        if (fov !== L.fovNow || asp !== L.aspNow) this._sizePortals(fov, asp);
+      }
+    }
     this.wallMat.uniforms.uCamera.value.copy(pos);
     this.floorMat.uniforms.uCamera.value.copy(pos);
     this.ceilMat.uniforms.uCamera.value.copy(pos);
@@ -1762,6 +2194,7 @@ export class Backdrop {
     this.shaftMat.uniforms.uDread.value = v;
     this.flameMat.uniforms.uDread.value = v;
     for (const m of this.frames) m.material.uniforms.uDread.value = v;
+    for (const m of this.portals) m.material.uniforms.uDread.value = v;
   }
 
   setSway(v) { this.propMat.uniforms.uSway.value = v; }
@@ -1775,6 +2208,7 @@ export class Backdrop {
     this.shaftMat.uniforms.uTime.value = t;
     this.flameMat.uniforms.uTime.value = t;
     for (const m of this.frames) m.material.uniforms.uTime.value = t;
+    for (const m of this.portals) m.material.uniforms.uTime.value = t;
   }
 
   dispose() {
@@ -1789,6 +2223,7 @@ export class Backdrop {
     this.shaftGeo.dispose(); this.shaftMat.dispose();
     this.flameGeo.dispose(); this.flameMat.dispose();
     for (const m of this.frames) { m.geometry.dispose(); m.material.dispose(); }
+    for (const m of this.portals) { m.geometry.dispose(); m.material.dispose(); }
   }
 }
 
