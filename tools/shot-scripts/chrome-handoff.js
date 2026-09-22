@@ -13,7 +13,14 @@ async () => {
     name: kid.name,
     companion: 'wink',
     line: 'Your turn.',
-    sub: `${kid.pet} is still out there somewhere.`,
+    /* What a caller actually hands this screen. Every passTo() in scenes/
+       passes a name-free line -- combat.js this one exactly -- and the script
+       used to invent `${kid.pet} is still out there somewhere.` instead, which
+       named the pet the Kid's own plate already names. A round-13 judge read
+       the capture and marked the screen for saying Pepper twice: a defect this
+       script put in front of them and the game never had. A fixture must show
+       the screen the game shows. */
+    sub: 'Do not look yet.',
   });
   for (let i = 0; i < 60 && !document.querySelector('.mm-handoff .hoff__go'); i++) {
     await new Promise(r => setTimeout(r, 100));

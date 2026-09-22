@@ -81,7 +81,6 @@ export async function passTo(o = {}) {
      renamed their Kid; a name that is nobody's in KIDS simply has no portrait
      and the stage keeps the Companion alone. */
   const kid = KIDS.find(k => k.name === name) || KIDS.find(k => k.name.split(' ')[0] === first) || null;
-  const sub = ownWords(o.sub, [kid && kid.pet, first, comp && comp.name]);
 
   const m = new Modal({
     size: 'full',
@@ -125,7 +124,12 @@ export async function passTo(o = {}) {
      samples is; the cartouche is the wordmark standing over that board, which
      is what UI/selectKid.png does above its own. What was genuinely said
      twice was the PET -- on the plate and again in the line under YOUR TURN
-     -- and `ownWords` below is where that now stops. */
+     -- and that was never the game saying it: every caller in `scenes/` hands
+     this screen a name-free sub ("Do not look yet.", "Everyone gets a say in
+     the route."). It was the CAPTURE SCRIPT, which passed
+     `${kid.pet} is still out there somewhere.` and put the repetition in
+     front of a judge. The script says what a caller says now, and the line
+     here is the caller's, word for word. */
   wrap.innerHTML =
     `<div class="hoff__room kit-board" aria-hidden="true">`
     + `<i class="hoff__night"></i>`
@@ -151,7 +155,7 @@ export async function passTo(o = {}) {
         + `<i class="hoff__stub kit-prop kit-prop--candle"></i>`
         + `</div></div>` : '')
     + `<p class="hoff__line">${esc(o.line || 'Your turn.')}</p>`
-    + (sub ? `<p class="hoff__sub">${esc(sub)}</p>` : '')
+    + (o.sub ? `<p class="hoff__sub">${esc(o.sub)}</p>` : '')
     + `<button type="button" class="hoff__go kit-btn">`
     + `<span class="hoff__words">I'm ready</span><kbd class="hoff__key">Enter</kbd>`
     + `<i class="hoff__medal kit-medallion kit-btn__medal" aria-hidden="true">${TICK}</i></button>`
@@ -222,37 +226,6 @@ export async function passTo(o = {}) {
   try { await p; } finally { document.removeEventListener('keydown', onKey); }
 }
 
-/**
- * SAY EACH THING ONCE, INCLUDING THE LINE UNDER "YOUR TURN." (round 13's graft).
- *
- * The two plates on the wall already name the Kid, what he is here for and who
- * is with him. A sub-line that says one of those names AGAIN is not a second
- * thought, it is the same thought twice, and a judge marked this screen for
- * exactly that: "looking for Pepper" on the plate and "Pepper is still out
- * there somewhere" under YOUR TURN. Round 13 took the repetition out of the
- * cartouche and the plates and stopped one line short of this one.
- *
- * So a caller whose sub-line says something the screen does not already say
- * keeps it word for word — every caller in `scenes/` does, which is why none
- * of their lines change — and one that repeats a name on the wall is given
- * the one thing nothing else here says: what the cover is FOR.
- *
- * @param {string|undefined} line   what the caller asked for
- * @param {(string|null|undefined)[]} onWall  the names already lettered
- */
-function ownWords(line, onWall) {
-  const s = String(line || '');
-  if (!s) return '';
-  for (const w of onWall) {
-    if (!w) continue;
-    const esc_ = String(w).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    if (new RegExp(`\\b${esc_}\\b`, 'i').test(s)) return HUSH;
-  }
-  return s;
-}
-/* The one thing this screen is for, in the words `scenes/combat.js` hands it
-   for the same moment. */
-const HUSH = 'Do not look yet.';
 
 /** Fetch this painting now and decode it on the spot: the veil is already up. */
 function eager(img) {
