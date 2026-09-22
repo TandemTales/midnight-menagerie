@@ -123,6 +123,8 @@ export class AchievementToast {
       `<div class="mm-ach__plaque kit-panel${m && ` kit-panel${m}`}">` +
       `<span class="sr-only">Achievement unlocked.</span>` +
       `<span class="mm-ach__kind kit-ribbon"><i class="mm-ach__tier"></i></span>` +
+      `<i class="mm-ach__star mm-ach__star--l" aria-hidden="true"></i>` +
+      `<i class="mm-ach__star mm-ach__star--r" aria-hidden="true"></i>` +
       `<span class="mm-ach__name kit-plate__name"></span>` +
       `<span class="mm-ach__desc kit-plate__epithet"></span>` +
       `</div>`;

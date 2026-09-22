@@ -50,10 +50,16 @@ const SPOT_M = 14;
    falls away from it before it stops darkening */
 const POOL_OUT = 168;
 const FALL_OUT = 300;
-/* the note's painted rail (and the paw on it) stand outside its box by this
-   much, and it keeps this much air between itself and the lit thing */
+/* The note's painted rail (and the paw on it) stand outside its box by
+   NOTE_HALO, and NOTE_GAP is the air it must keep between itself and the lit
+   thing -- a HARD clearance, so it can never stand on what it is teaching.
+   TAIL_WANT is how far it would LIKE to stand off, which is the length of the
+   thread between them: a preference, not a rule, because at 1280x800 there is
+   not always that much room beside a creature and a note that insisted would
+   have to go somewhere worse. */
 const NOTE_HALO = 12;
-const NOTE_GAP = 98;
+const NOTE_GAP = 16;
+const TAIL_WANT = 88;
 /* the speaker: the tutorial's other pages are Marmalade's (`figure:
    'marmalade'` in scenes/tutorial.js), so the note is hers too */
 const SPEAKER = 'marmalade';
@@ -475,7 +481,8 @@ export class Coach {
     const T = c.frame || { l: c.vw / 2, r: c.vw / 2, t: c.vh * 0.38, b: c.vh * 0.38 };
     const dx = Math.max(0, T.l - b.r, b.l - T.r), dy = Math.max(0, T.t - b.b, b.t - T.b);
     const d = Math.hypot(dx, dy);
-    cost += d * 16 + Math.max(0, d - 120) * 26;
+    /* close enough to be read WITH its target, far enough for the thread */
+    cost += d * 16 + Math.max(0, d - 120) * 26 + Math.max(0, TAIL_WANT - d) * 26;
     if (c.frame) {
       const side = b.b <= T.t + 1 ? 'above' : b.t >= T.b - 1 ? 'below'
         : (b.r <= T.l + 1 || b.l >= T.r - 1) ? 'beside' : 'over';

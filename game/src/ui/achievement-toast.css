@@ -70,15 +70,17 @@
 }
 
 /* the wordmark's four-point star struck into each end of the plaque, inside
-   the gilt rule, the way the samples star the ends of a banner */
-.mm-ach__plaque::before, .mm-ach__plaque::after {
-  content: ''; position: absolute; top: 50%; z-index: 1;
-  width: 13px; height: 13px; translate: 0 -50%;
+   the painted rail, the way the samples star the ends of a banner. Elements
+   and not pseudos: .kit-panel::after is the panel's own inner double rule and
+   a ::after here would inherit its inset, its border and its fleurons. */
+.mm-ach__star {
+  position: absolute; top: 50%; z-index: 1;
+  width: 14px; height: 14px; translate: 0 -50%;
   background: url("../../assets/ui/kit/star4.svg") 50% 50% / 100% 100% no-repeat;
-  filter: drop-shadow(0 1px 0 rgba(0, 0, 0, .85)) drop-shadow(0 0 5px color-mix(in srgb, var(--kit-candle) 40%, transparent));
+  filter: drop-shadow(0 1px 0 rgba(0, 0, 0, .85)) drop-shadow(0 0 6px color-mix(in srgb, var(--kit-candle) 46%, transparent));
 }
-.mm-ach__plaque::before { left: calc(var(--plate-h) * .19); }
-.mm-ach__plaque::after  { right: calc(var(--plate-h) * .19); }
+.mm-ach__star--l { left: calc(var(--plate-h) * .18); }
+.mm-ach__star--r { right: calc(var(--plate-h) * .18); }
 
 /* the tier, cut into the boards' gold ribbon, straddling the plaque's top
    rail the way a banner is hung on a board (the graft two judges named) */

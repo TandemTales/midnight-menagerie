@@ -2997,7 +2997,7 @@ button.kit-medallion:hover, button.kit-medallion:focus-visible,
                       note is about: --tail-len long, turned --tail-a, drawn
                       from its own left edge outward
      .kit-cameo       a face in the Kid board's round gilt filigree socket
-                      (socket-filigree.webp), crested, its oval glazed and lit
+                      (chrome-cameo.webp), crested, its oval glazed and lit
                       from the left. --cameo sizes the whole piece; the <img>
                       inside is laid in the oval by the class itself
      .kit-arch        UI/selectKid.png's own arched gilt mirror (moth-
@@ -3005,8 +3005,8 @@ button.kit-medallion:hover, button.kit-medallion:focus-visible,
                       medallion on the crown and its paw on the foot. The
                       picture goes inside as an <img>; the element's WIDTH
                       sizes it (it carries its own aspect)
-     .kit-panel--silver   the Kid board's painted rail, cast in the same two
-     .kit-panel--bronze   metals, for a fitting whose METAL is information
+     .kit-panel--silver   the Kid board's painted rail, cast in silver or in
+     .kit-panel--bronze   bronze, for a fitting whose METAL is information
      .kit-valance     a gathered velvet swag with a gilt bullion rope and a
                       tassel at every gather, repeating across the top of a
                       board: the thing that comes DOWN. Sized by its height
