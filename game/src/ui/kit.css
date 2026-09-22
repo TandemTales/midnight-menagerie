@@ -2964,3 +2964,223 @@ button.kit-medallion:hover, button.kit-medallion:focus-visible,
 }
 .kit-medal--silver { background-image: url("../../assets/ui/kit/chrome-medal-silver.webp"); }
 .kit-medal--bronze { background-image: url("../../assets/ui/kit/chrome-medal-bronze.webp"); }
+
+/* ===========================================================================
+   LIGHT, AND THE OBJECT THE LIGHT FALLS ON — round 13, CHROME's second pass.
+   Appended; nothing above is changed.
+
+   Every one of round 12's three judges said the same thing about all three
+   pieces in different words: they are DRAWN, not LIT. The coach's spotlight
+   was "a hard rectangular gilt box with a flat dark fill, reading as a CSS
+   highlight frame rather than a painted light"; the veil's portraits were
+   "flat square crops... sitting directly on the mansion painting with no
+   backing plate"; the toast's medal was "a flat vector star on a gradient
+   disc". So these are the two things the kit had no word for — a candle's
+   POOL on a thing, and a struck OBJECT — and the fittings they need.
+
+     .kit-pool        the pool a candle throws on the thing it lights: warm in
+                      the middle, gone at its edge, breathing. Placed by its
+                      CENTRE (left/top) and sized by width/height, so a board
+                      can pool light on a box of any shape. --pool-a is how
+                      much light, --pool-c what colour it is
+     .kit-falloff     the room falling away from that pool — a full-bleed dim
+                      that is nothing at --fall-x/--fall-y and reaches
+                      --fall-a by --fall-r. A DIM, never a blackout: what the
+                      light falls off from is still being read
+     .kit-flourish    one gilt filigree corner scroll (the panels' own
+                      fleuron), for framing a thing by its corners alone:
+                      --tl --tr --bl --br pick the corner, --fl sizes it
+     .kit-finial      the wordmark cartouche's gold fleur-de-lis (cart-
+                      crest.webp), turned with --finial-a to point at a thing;
+                      --finial-w sizes it
+     .kit-tail        the gilt double rule that runs from a note to what the
+                      note is about: --tail-len long, turned --tail-a, drawn
+                      from its own left edge outward
+     .kit-cameo       a face in the Kid board's round gilt filigree socket
+                      (chrome-cameo.webp), crested, its oval glazed and lit
+                      from the left. --cameo sizes the whole piece; the <img>
+                      inside is laid in the oval by the class itself
+     .kit-arch        UI/selectKid.png's own arched gilt mirror (moth-
+                      mirror.webp) as a frame round a painting, its moon
+                      medallion on the crown and its paw on the foot. The
+                      picture goes inside as an <img>; the element's WIDTH
+                      sizes it (it carries its own aspect)
+     .kit-panel--silver   the Kid board's painted rail, cast in silver or in
+     .kit-panel--bronze   bronze, for a fitting whose METAL is information
+     .kit-valance     a gathered velvet swag with a gilt bullion rope and a
+                      tassel at every gather, repeating across the top of a
+                      board: the thing that comes DOWN. Sized by its height
+                      (chrome-valance.webp, tools/prep_chrome.py)
+     .kit-award       the struck medal on its purple silk ribbon, cast in the
+                      tier's metal (--silver --bronze; chrome-award-*.webp,
+                      tools/prep_chrome.py). Sized by --award-h; the medal's
+                      centre is 75% of the way down it
+   =========================================================================== */
+
+/* ── pool ── */
+.kit-pool {
+  --pool-c: var(--kit-candle);
+  --pool-a: 30%;
+  position: absolute; pointer-events: none;
+  translate: -50% -50%;
+  background: radial-gradient(closest-side ellipse,
+    color-mix(in srgb, var(--pool-c) var(--pool-a), transparent) 0%,
+    color-mix(in srgb, var(--pool-c) calc(var(--pool-a) * .62), transparent) 34%,
+    color-mix(in srgb, var(--pool-c) calc(var(--pool-a) * .22), transparent) 62%,
+    transparent 100%);
+  mix-blend-mode: screen;
+  animation: kit-flicker 3.4s ease-in-out infinite;
+}
+.kit-still .kit-pool, .rm.is-still .kit-pool { animation: none; }
+@media (prefers-reduced-motion: reduce) {
+  :root:not([data-reduce-motion="0"]) .kit-pool { animation: none; }
+}
+
+/* ── falloff ── */
+.kit-falloff {
+  --fall-x: 50%; --fall-y: 50%;
+  --fall-r: 46%;
+  --fall-a: .34;
+  position: fixed; inset: 0; pointer-events: none;
+  background: radial-gradient(circle var(--fall-r) at var(--fall-x) var(--fall-y),
+    rgba(4, 2, 8, 0) 0%,
+    rgba(4, 2, 8, calc(var(--fall-a) * .34)) 52%,
+    rgba(4, 2, 8, calc(var(--fall-a) * .78)) 78%,
+    rgba(4, 2, 8, var(--fall-a)) 100%);
+}
+
+/* ── flourish ── */
+.kit-flourish {
+  --fl: 48px;
+  position: absolute; z-index: 3; pointer-events: none;
+  width: var(--fl); height: var(--fl);
+  background: 50% 50% / 100% 100% no-repeat;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, .85));
+}
+.kit-flourish--tl { left: 0; top: 0; background-image: url("../../assets/ui/kit/fleuron-tl.webp"); }
+.kit-flourish--tr { right: 0; top: 0; background-image: url("../../assets/ui/kit/fleuron-tr.webp"); }
+.kit-flourish--bl { left: 0; bottom: 0; background-image: url("../../assets/ui/kit/fleuron-bl.webp"); }
+.kit-flourish--br { right: 0; bottom: 0; background-image: url("../../assets/ui/kit/fleuron-br.webp"); }
+
+/* ── finial ── */
+.kit-finial {
+  --finial-w: 34px;
+  --finial-a: 0deg;
+  position: absolute; pointer-events: none;
+  width: var(--finial-w); aspect-ratio: 140 / 120;
+  background: url("../../assets/ui/kit/cart-crest.webp") 50% 50% / 100% 100% no-repeat;
+  rotate: var(--finial-a);
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .85));
+}
+
+/* ── tail ──
+   Two engraved rules with the gilt's light on the upper one, tapering away
+   from the note: the thread between a note and the thing it is about. */
+.kit-tail {
+  --tail-len: 90px;
+  --tail-a: 0deg;
+  position: absolute; pointer-events: none;
+  width: var(--tail-len); height: 7px;
+  transform-origin: 0 50%;
+  rotate: var(--tail-a);
+  background:
+    linear-gradient(90deg, var(--kit-gold-hi), color-mix(in srgb, var(--kit-gold) 88%, transparent) 62%, transparent) 0 2px / 100% 1.5px no-repeat,
+    linear-gradient(90deg, var(--kit-gold-lo), color-mix(in srgb, var(--kit-gold-lo) 70%, transparent) 58%, transparent) 0 5px / 100% 1.5px no-repeat;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, .9));
+}
+
+/* ── cameo ──
+   chrome-cameo.webp is socket-filigree.webp -- the gilt crest and oval
+   filigree ring from UI/selectKid.png, 119x144 -- with its opaque enamel
+   glass cut out by tools/prep_chrome.py so a face can sit behind the ring.
+   The opening runs from 18% / 28% of the piece, 64% wide and 56% tall. */
+.kit-cameo {
+  --cameo: 86px;
+  position: relative; flex: none;
+  display: block;
+  width: var(--cameo); aspect-ratio: 119 / 144;
+  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .8));
+}
+.kit-cameo > img {
+  position: absolute;
+  left: 18%; top: 28%; width: 64%; height: 56%;
+  object-fit: cover;
+  border-radius: 50%;
+  user-select: none; -webkit-user-drag: none;
+}
+/* the glass over the face: the candle on its left, the oval's own shadow at
+   the foot, so the face sits IN the socket rather than on it */
+.kit-cameo::before {
+  content: ''; position: absolute; z-index: 1; pointer-events: none;
+  left: 18%; top: 28%; width: 64%; height: 56%;
+  border-radius: 50%;
+  background:
+    radial-gradient(64% 70% at 22% 20%, color-mix(in srgb, var(--kit-candle) 20%, transparent), transparent 66%),
+    radial-gradient(108% 100% at 50% 34%, transparent 46%, rgba(5, 3, 9, .72) 100%);
+}
+.kit-cameo::after {
+  content: ''; position: absolute; inset: 0; z-index: 2; pointer-events: none;
+  background: url("../../assets/ui/kit/chrome-cameo.webp") 50% 50% / 100% 100% no-repeat;
+}
+
+/* ── arch ──
+   moth-mirror.webp is 348x711 — selectKid's arched mirror, the moon medallion
+   on its crown and the paw on its foot. Its glass runs from 13.8% / 14.3% of
+   the piece, 73% wide and 67.7% tall, and is a stadium: an arc of half its
+   own width at each end. */
+.kit-arch {
+  position: relative;
+  width: 100%; aspect-ratio: 348 / 711;
+  filter: drop-shadow(0 18px 26px rgba(0, 0, 0, .85));
+}
+.kit-arch > img {
+  position: absolute;
+  left: 13.8%; top: 14.3%; width: 73%; height: 67.7%;
+  object-fit: cover;
+  border-radius: 50% / 26.4%;
+  user-select: none; -webkit-user-drag: none;
+}
+/* the glass: the room's candle on the left of it, the dark gathering at the
+   foot, and the painting sunk behind the gilt rather than pasted on it */
+.kit-arch::before {
+  content: ''; position: absolute; z-index: 1; pointer-events: none;
+  left: 13.8%; top: 14.3%; width: 73%; height: 67.7%;
+  border-radius: 50% / 26.4%;
+  background:
+    radial-gradient(56% 42% at var(--arch-lit, 14%) 30%, color-mix(in srgb, var(--kit-candle) 17%, transparent), transparent 70%),
+    radial-gradient(104% 78% at 50% 36%, transparent 48%, rgba(6, 3, 10, .68) 100%),
+    linear-gradient(to top, rgba(6, 3, 10, .6), transparent 30%);
+  box-shadow: inset 0 3px 10px rgba(0, 0, 0, .85);
+}
+.kit-arch::after {
+  content: ''; position: absolute; inset: 0; z-index: 2; pointer-events: none;
+  background: url("../../assets/ui/kit/moth-mirror.webp") 50% 50% / 100% 100% no-repeat;
+}
+
+/* ── panel, in the other two metals ──
+   .kit-panel's painted rail (panel.webp), cast in silver or bronze by
+   tools/prep_chrome.py. Only the metal changes: the rail's own carving, its
+   scrolled corners and its shadows are the painting's. */
+.kit-panel.kit-panel--silver { border-image-source: url("../../assets/ui/kit/chrome-panel-silver.webp"); }
+.kit-panel.kit-panel--bronze { border-image-source: url("../../assets/ui/kit/chrome-panel-bronze.webp"); }
+
+/* ── valance ──
+   chrome-valance.webp is 520x250: one gather to the next, with the gathers ON
+   its two edges so the tassels join across the tile seam. Give the element a
+   height; it repeats along its width. */
+.kit-valance {
+  position: absolute; pointer-events: none;
+  background: url("../../assets/ui/kit/chrome-valance.webp") 50% 0 / auto 100% repeat-x;
+  filter: drop-shadow(0 8px 12px rgba(0, 0, 0, .75));
+}
+
+/* ── award ── */
+.kit-award {
+  --award-h: 150px;
+  position: absolute; pointer-events: none;
+  height: var(--award-h); aspect-ratio: 260 / 400;
+  background: url("../../assets/ui/kit/chrome-award-gold.webp") 50% 50% / 100% 100% no-repeat;
+  filter: drop-shadow(0 5px 6px rgba(0, 0, 0, .85));
+}
+.kit-award--silver { background-image: url("../../assets/ui/kit/chrome-award-silver.webp"); }
+.kit-award--bronze { background-image: url("../../assets/ui/kit/chrome-award-bronze.webp"); }

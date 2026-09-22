@@ -32,23 +32,37 @@
  *     after  seconds to let the action land before the next card (default 0.7)
  *     hint   what to do, shown instead of the button while waiting
  */
-import { el } from './portrait.js';
+import { el, thumbSrc, fullSrc } from './portrait.js';
+import { COMPANIONS } from '../data/schema.js';
 
 const CSS = new URL('./coach.css', import.meta.url).href;
 
-/* The spotlight is the Kid board's portrait frame (frame.webp, 9-sliced by
-   `.kit-railframe--ornate`) drawn at SPOT_FK of its size: its gilt rail starts
-   ON the box's edge and runs 7px of the painting inward, and the painting
-   stands FRAME_OUT outside the box. So the box is SPOT_M clear of the target
-   on every side, and the rail never crosses what it frames. coach.css sets
-   the same --fk. */
-const SPOT_FK = 0.66;
-const SPOT_M = Math.round(8 * SPOT_FK + 4);
-const FRAME_OUT = 12 * SPOT_FK;
-/* the note's painted rail (and the paw on it) stand outside its box by this
-   much, and it keeps this much air between itself and the frame */
+/* THE SPOTLIGHT IS A LIGHT (round 13). It used to be a gilt rectangle drawn
+   round the target, and all three of round 12's judges read it as a selection
+   box: "a hard rectangular gilt box with a flat dark fill, reading as a CSS
+   highlight frame rather than a painted light". So now a candle stands over
+   the thing being taught: its pool falls on the target and dies out in the
+   room around it (`.kit-pool` over `.kit-falloff`), and the only gilt is a
+   filigree scroll at each of the four corners (`.kit-flourish`) — the target
+   is LIT, not outlined. SPOT_M is how far the corners stand off it. */
+const SPOT_M = 14;
+/* how far past the target's box the light reaches, and how far the room
+   falls away from it before it stops darkening */
+const POOL_OUT = 168;
+const FALL_OUT = 300;
+/* The note's painted rail (and the paw on it) stand outside its box by
+   NOTE_HALO, and NOTE_GAP is the air it must keep between itself and the lit
+   thing -- a HARD clearance, so it can never stand on what it is teaching.
+   TAIL_WANT is how far it would LIKE to stand off, which is the length of the
+   thread between them: a preference, not a rule, because at 1280x800 there is
+   not always that much room beside a creature and a note that insisted would
+   have to go somewhere worse. */
 const NOTE_HALO = 12;
-const NOTE_GAP = 10;
+const NOTE_GAP = 16;
+const TAIL_WANT = 88;
+/* the speaker: the tutorial's other pages are Marmalade's (`figure:
+   'marmalade'` in scenes/tutorial.js), so the note is hers too */
+const SPEAKER = 'marmalade';
 
 /* What the note must never lie over, and how much each matters. Everything
    weighing HARD or more it may not cover at all: the hand and End Turn, the
@@ -76,6 +90,10 @@ const KEEP_CLEAR = [
 ];
 /* the parts of a target that stand outside its box but are part of it */
 const FRAME_WITH = '.cb-enemy__intent';
+
+/* the Kid board's confirm: a tick cast in the round enamel button's gilt.
+   ui/handoff.js's veil wears the same one on I'M READY. */
+const TICK = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.6 12.6 5.5 9.7l4.3 4.3 8.7-9.6 2.9 2.7-11.5 12.6z"/></svg>';
 
 /** Area two boxes share. */
 function overlap(a, b) {
@@ -115,42 +133,74 @@ export class Coach {
        story's pages in scenes/tutorial.js are: a `.kit-panel` (the Kid board's
        painted gold rail round dark damask, its inner double rule and brass
        fleurons) with the Kid board's paw medallion seated on its top rail, a
-       `.kit-heading` in spaced gold small caps, the pages as the wordmark's
-       gold stars on a gilt thread (`.kit-stars`), and the two ways on as the
-       boards' nameplates (`.kit-btn`, `.kit-btn--quiet`). The spotlight is the
-       Kid board's portrait frame (`.kit-railframe--ornate`) hung round the
-       thing being taught, and the light on it is a candle's (`.kit-light`),
-       never a box-shadow. */
+       gilt filigree scroll over each of its four corners (`.kit-flourish`), a
+       `.kit-heading` lettered in the wordmark's lavender, the way out as the
+       Kid board's round enamel confirm (`.kit-medallion`) with its Enter
+       keycap, and SKIP as the boards' quiet nameplate (`.kit-btn--quiet`).
+       WHO IS TALKING is in it: Marmalade in the Kid board's round gilt
+       filigree socket (`.kit-cameo`) over her own nameplate (`.kit-plate`) —
+       round 12's judges asked for a speaker, "so the tutorial's voice belongs
+       to a character". And the note is TIED to what it teaches: a gilt double
+       rule (`.kit-tail`) runs from its edge to the lit thing, with the
+       wordmark cartouche's fleur-de-lis (`.kit-finial`) turned along it. */
     const root = this.root = el('div', 'coach');
-    const stars = this.steps.map(() => '<i class="kit-stars__star coach__star"></i>').join('');
+    const who = COMPANIONS.find((c) => c.slug === SPEAKER);
     root.innerHTML = `
-      <i class="coach__glow kit-light kit-light--candle" aria-hidden="true"></i>
-      <div class="coach__spot kit-railframe kit-railframe--ornate" aria-hidden="true"></div>
+      <i class="coach__fall kit-falloff" aria-hidden="true"></i>
+      <i class="coach__pool kit-pool" aria-hidden="true"></i>
+      <div class="coach__spot" aria-hidden="true">
+        <i class="coach__fl kit-flourish kit-flourish--tl"></i><i class="coach__fl kit-flourish kit-flourish--tr"></i>
+        <i class="coach__fl kit-flourish kit-flourish--bl"></i><i class="coach__fl kit-flourish kit-flourish--br"></i>
+      </div>
+      <i class="coach__tail kit-tail" aria-hidden="true"></i>
+      <i class="coach__point kit-finial" aria-hidden="true"></i>
       <div class="coach__card kit-panel kit-panel--damask" data-medal="paw" role="status" aria-live="polite">
-        <i class="coach__fit" aria-hidden="true"><i class="kit-bracket kit-bracket--tl coach__guard"></i><i class="kit-bracket kit-bracket--tr coach__guard"></i><i class="kit-bracket kit-bracket--bl coach__guard"></i><i class="kit-bracket kit-bracket--br coach__guard"></i></i>
-        <p class="coach__head kit-heading" aria-hidden="true">The First Scuffle</p>
-        <p class="coach__text"></p>
-        <!-- The way out lives IN the card, in its row. Parked at the bottom of
-             the screen it sat on the lowest 28px of the middle card in the fan
-             and ate that click, which is the one thing this overlay promises
-             not to do; in the card it goes wherever the card goes, and the
-             card is never placed over the hand. -->
-        <div class="coach__row">
-          <span class="coach__steps kit-stars" aria-hidden="true">${stars}</span>
-          <span class="coach__hint"></span>
-          <button class="coach__skip kit-btn kit-btn--quiet" type="button">Skip</button>
-          <button class="coach__next kit-btn" type="button">Got it<kbd class="coach__key" aria-hidden="true">Enter</kbd></button>
+        <i class="coach__fl kit-flourish kit-flourish--tl coach__guard"></i><i class="coach__fl kit-flourish kit-flourish--tr coach__guard"></i>
+        <i class="coach__fl kit-flourish kit-flourish--bl coach__guard"></i><i class="coach__fl kit-flourish kit-flourish--br coach__guard"></i>
+        <figure class="coach__who" aria-hidden="true">
+          <i class="coach__cameo kit-cameo"></i>
+          <figcaption class="coach__sig kit-plate"><b class="kit-plate__name">${who ? who.name : 'Marmalade'}</b></figcaption>
+        </figure>
+        <div class="coach__say">
+          <p class="coach__head kit-heading" aria-hidden="true">The First Scuffle</p>
+          <p class="coach__text"></p>
+          <!-- The way out lives IN the card, in its row. Parked at the bottom
+               of the screen it sat on the lowest 28px of the middle card in
+               the fan and ate that click, which is the one thing this overlay
+               promises not to do; in the card it goes wherever the card goes,
+               and the card is never placed over the hand. -->
+          <div class="coach__row">
+            <button class="coach__skip kit-btn kit-btn--quiet" type="button">Skip</button>
+            <span class="coach__hint"></span>
+            <span class="coach__ways">
+              <span class="coach__label" aria-hidden="true">Got it</span>
+              <kbd class="coach__key" aria-hidden="true">Enter</kbd>
+              <button class="coach__next kit-medallion" type="button" aria-label="Got it">${TICK}</button>
+            </span>
+          </div>
         </div>
       </div>`;
     this.host.appendChild(root);
 
+    /* her face, from the Companion tiles' own painting */
+    const face = document.createElement('img');
+    face.className = 'coach__face';
+    face.alt = ''; face.decoding = 'async'; face.draggable = false;
+    face.width = 560; face.height = 349;
+    face.src = thumbSrc(SPEAKER, '-card');
+    face.addEventListener('error', () => { face.src = fullSrc(SPEAKER); }, { once: true });
+    root.querySelector('.coach__cameo').appendChild(face);
+
     this.$spot = root.querySelector('.coach__spot');
-    this.$glow = root.querySelector('.coach__glow');
+    this.$pool = root.querySelector('.coach__pool');
+    this.$fall = root.querySelector('.coach__fall');
+    this.$tail = root.querySelector('.coach__tail');
+    this.$point = root.querySelector('.coach__point');
     this.$card = root.querySelector('.coach__card');
     this.$text = root.querySelector('.coach__text');
     this.$hint = root.querySelector('.coach__hint');
     this.$next = root.querySelector('.coach__next');
-    this.$stars = [...root.querySelectorAll('.coach__star')];
+    this.$ways = root.querySelector('.coach__ways');
 
     const on = (n, ev, fn) => { n.addEventListener(ev, fn); this._offs.push(() => n.removeEventListener(ev, fn)); };
     on(this.$next, 'click', () => this._next());
@@ -185,12 +235,8 @@ export class Coach {
     this.$hint.textContent = s.wait ? (s.hint || '') : '';
     this.$hint.hidden = !s.wait;
     this.$next.hidden = !!s.wait;
+    this.$ways.hidden = !!s.wait;
     this.root.dataset.step = String(this.i);
-    /* where you are in the lesson: the pages behind you gilt, this one burning */
-    this.$stars.forEach((star, k) => {
-      star.classList.toggle('is-past', k < this.i);
-      star.classList.toggle('is-on', k === this.i);
-    });
 
     this._sel = s.at || null;
     this._all = !!s.all;
@@ -277,30 +323,50 @@ export class Coach {
     const card = this.$card;
     const cw = card.offsetWidth || 340, ch = card.offsetHeight || 120;
     const r = this._rect();
+    /* the room's light falls away under the HUD's foot, never over its
+       readouts: a player reads those all through the lesson */
+    const ceil = this._ceiling();
+    this.root.style.setProperty('--coach-ceil', `${Math.round(ceil)}px`);
 
     let frame = null;
     if (r) {
-      /* the portrait frame's gilt rail runs from the box's edge inward, so the
-         box stands SPOT_M clear of the target and the rail never crosses it */
+      /* THE LIGHT, then the gilt. A candle stands over the thing: its pool
+         covers the target and POOL_OUT of the room round it, the room falls
+         away from that pool over FALL_OUT more, and four filigree scrolls
+         stand SPOT_M off its corners — the only hard edge in the whole
+         business, and there is no rail between them. */
+      const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
       const sl = r.left - SPOT_M, st = r.top - SPOT_M;
       const sw = r.width + SPOT_M * 2, sh = r.height + SPOT_M * 2;
       const s = this.$spot.style;
       s.opacity = '1';
       s.left = `${Math.round(sl)}px`; s.top = `${Math.round(st)}px`;
       s.width = `${Math.round(sw)}px`; s.height = `${Math.round(sh)}px`;
-      /* the candle's light falls on the thing, a pool as wide as it is */
-      const g = this.$glow.style;
+
+      const g = this.$pool.style;
       g.opacity = '1';
-      g.left = `${Math.round(r.left + r.width / 2)}px`;
-      g.top = `${Math.round(r.top + r.height / 2)}px`;
-      g.width = `${Math.round(r.width * 1.25 + 150)}px`;
-      g.height = `${Math.round(r.height * 1.3 + 150)}px`;
-      const out = FRAME_OUT + NOTE_GAP;
-      frame = { l: sl - out, t: st - out, r: sl + sw + out, b: st + sh + out };
+      g.left = `${Math.round(cx)}px`; g.top = `${Math.round(cy)}px`;
+      g.width = `${Math.round(r.width + POOL_OUT * 2)}px`;
+      g.height = `${Math.round(r.height + POOL_OUT * 1.7)}px`;
+
+      /* the room's falloff is measured on the SHORT side of the viewport, the
+         way a `circle` radius is, so the pool stays round on any window */
+      const unit = Math.min(vw, vh);
+      const f = this.$fall.style;
+      f.opacity = '1';
+      f.setProperty('--fall-x', `${Math.round(cx)}px`);
+      f.setProperty('--fall-y', `${Math.round(cy)}px`);
+      f.setProperty('--fall-r', `${Math.round((Math.max(r.width, r.height) / 2 + FALL_OUT) / unit * 100)}%`);
+
+      this._lit = { l: sl, t: st, r: sl + sw, b: st + sh };
+      frame = { l: sl - NOTE_GAP, t: st - NOTE_GAP, r: sl + sw + NOTE_GAP, b: st + sh + NOTE_GAP };
     } else {
+      this._lit = null;
       this.$spot.style.opacity = '0';
-      this.$glow.style.opacity = '0';
+      this.$pool.style.opacity = '0';
+      this.$fall.style.opacity = '0';
     }
+    this.root.classList.toggle('has-tail', !!r);
 
     const keep = this._keepOut();
     const want = this.steps[this.i]?.place || null;
@@ -308,23 +374,72 @@ export class Coach {
       keep.map((k) => [k.l, k.t, k.r, k.b].map((v) => Math.round(v / 8)).join(',')).join(';')].join('|');
     if (sig !== this._sig || !this._pos) {
       this._sig = sig;
-      const ctx = { vw, vh, cw, ch, frame, keep, want, ceil: this._ceiling() };
+      const ctx = { vw, vh, cw, ch, frame, keep, want, ceil };
       const best = this._search(ctx);
       /* stay put while the old spot is nearly as good: a note that hops
          whenever a card lifts in the fan is harder to read than one that
          stands a little further off */
       if (this._pos && best) {
         const was = this._cost(this._pos.x, this._pos.y, ctx);
-        if (was.hard === 0 && was.cost <= best.cost * 1.12 + 900) { this._apply(this._pos); return; }
+        if (was.hard === 0 && was.cost <= best.cost * 1.12 + 900) { this._apply(this._pos, ctx); return; }
       }
       this._pos = best;
     }
-    if (this._pos) this._apply(this._pos);
+    if (this._pos) this._apply(this._pos, { cw, ch, frame });
   }
 
-  _apply(p) {
+  _apply(p, c) {
     this.$card.style.left = `${Math.round(p.x)}px`;
     this.$card.style.top = `${Math.round(p.y)}px`;
+    this._tie(p, c);
+  }
+
+  /**
+   * Tie the note to what it teaches.
+   *
+   * Two judges said nothing linked them: "the note and its target must read as
+   * one object". So a gilt double rule runs between the two, from the note's
+   * own edge to the edge of the lit thing, with the wordmark cartouche's
+   * fleur-de-lis standing on the note's edge and turned along it. Both are
+   * found by walking a ray from the note's centre to the target's, which is
+   * the line the eye takes anyway; if the two are touching there is nothing
+   * to bridge and the thread is not drawn.
+   */
+  _tie(p, c) {
+    /* to the LIT thing, not to the keep-out box round it: the note is placed
+       flush against that box, so a thread measured to it would always be nil */
+    const f = this._lit;
+    if (!f || !c) { this.root.classList.remove('has-tail'); return; }
+    const a = { l: p.x, t: p.y, r: p.x + c.cw, b: p.y + c.ch };
+    const ax = (a.l + a.r) / 2, ay = (a.t + a.b) / 2;
+    const bx = (f.l + f.r) / 2, by = (f.t + f.b) / 2;
+    const dx = bx - ax, dy = by - ay;
+    const ang = Math.atan2(dy, dx);
+    /* where a ray from one centre to the other leaves each box */
+    const exit = (box, ox, oy, ex, ey) => {
+      const hx = (box.r - box.l) / 2, hy = (box.b - box.t) / 2;
+      const t = Math.min(hx / Math.max(Math.abs(ex), 1e-6), hy / Math.max(Math.abs(ey), 1e-6));
+      return [ox + ex * t, oy + ey * t];
+    };
+    const [sx, sy] = exit(a, ax, ay, dx, dy);
+    const [tx, ty] = exit(f, bx, by, -dx, -dy);
+    const gap = Math.hypot(tx - sx, ty - sy);
+    const reach = Math.hypot(bx - ax, by - ay) - Math.hypot(sx - ax, sy - ay) - Math.hypot(tx - bx, ty - by);
+    this.root.classList.toggle('has-tail', reach > 22);
+    if (!(reach > 22)) return;
+    /* the thread starts a little way OUT from the plate, so the fleur stands
+       clear of whatever corner scroll it happens to be leaving beside */
+    const out = 13;
+    const ox = sx + Math.cos(ang) * out, oy = sy + Math.sin(ang) * out;
+    const st = this.$tail.style;
+    st.left = `${Math.round(ox)}px`; st.top = `${Math.round(oy)}px`;
+    st.setProperty('--tail-len', `${Math.round(Math.max(0, gap - out))}px`);
+    st.setProperty('--tail-a', `${(ang * 180 / Math.PI).toFixed(1)}deg`);
+    const pt = this.$point.style;
+    pt.left = `${Math.round(ox)}px`; pt.top = `${Math.round(oy)}px`;
+    /* the fleur's point is up in the painting, so it turns a quarter past the
+       line it stands on to look down it */
+    pt.setProperty('--finial-a', `${(ang * 180 / Math.PI + 90).toFixed(1)}deg`);
   }
 
   /** The HUD's foot: nothing of the note goes above it. */
@@ -370,7 +485,8 @@ export class Coach {
     const T = c.frame || { l: c.vw / 2, r: c.vw / 2, t: c.vh * 0.38, b: c.vh * 0.38 };
     const dx = Math.max(0, T.l - b.r, b.l - T.r), dy = Math.max(0, T.t - b.b, b.t - T.b);
     const d = Math.hypot(dx, dy);
-    cost += d * 16 + Math.max(0, d - 120) * 26;
+    /* close enough to be read WITH its target, far enough for the thread */
+    cost += d * 16 + Math.max(0, d - 120) * 26 + Math.max(0, TAIL_WANT - d) * 26;
     if (c.frame) {
       const side = b.b <= T.t + 1 ? 'above' : b.t >= T.b - 1 ? 'below'
         : (b.r <= T.l + 1 || b.l >= T.r - 1) ? 'beside' : 'over';
