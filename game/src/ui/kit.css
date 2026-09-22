@@ -3165,7 +3165,7 @@ button.kit-medallion:hover, button.kit-medallion:focus-visible,
 .kit-panel.kit-panel--bronze { border-image-source: url("../../assets/ui/kit/chrome-panel-bronze.webp"); }
 
 /* ── valance ──
-   chrome-valance.webp is 340x240: one gather to the next, with the gathers ON
+   chrome-valance.webp is 520x250: one gather to the next, with the gathers ON
    its two edges so the tassels join across the tile seam. Give the element a
    height; it repeats along its width. */
 .kit-valance {
