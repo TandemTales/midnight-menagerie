@@ -1094,9 +1094,16 @@ float subjOssuary(vec2 q, float cx, float far, out float occ){
    drawn here in the wing's own iron, brick and glass, lit by its own lamps. */
 
 /* The wall is BRICK behind all three: stretcher bond in 0.075 m courses. */
+/* THE JOINTS ARE FINER THAN A PIXEL across a chandlery: a 75 mm course is
+   five pixels at 12 m and its joint a fraction of one, and the wall's normal
+   is the SCREEN derivative of this height -- each 2x2 quad caught one edge of
+   a joint or the other, and the Wax Room's back wall beat into a fan of moire
+   round its lamp. Drawn where a course is ten pixels or more, gone by five:
+   past that a wall of brick is a wall, as a painter would leave it. */
 float lwBrick(vec2 q, float aa){
-  return 1.0 - smoothstep(0.006, 0.006 + aa*0.8,
+  float j = 1.0 - smoothstep(0.006, 0.006 + aa*0.8,
                           min(mmRowX(q.x + mod(floor(q.y/0.075), 2.0)*0.1125, 0.225), mmRowX(q.y, 0.075)));
+  return j * (1.0 - smoothstep(0.0060, 0.0110, aa));
 }
 
 /* 28  WAX -- the Wax Room, the Candle Room, the Wick Room, the Glow Chamber:
@@ -1143,17 +1150,17 @@ float subjWax(vec2 q, float cx, float ax, float far, float dqm, out float occ){
               + (1.0 - smoothstep(0.020, 0.020 + aa, abs(q.y - 2.10)))) * onF;
   /* the tapers: a pair every 0.10 m on each rod, each pair dipped to its own
      length, tapering to its foot, hung by its wick; one pair in nine gone */
-  float ti = floor(q.x/0.10);
-  float tx = q.x - (ti + 0.5)*0.10;
+  float ti = floor(q.x/0.12);
+  float tx = q.x - (ti + 0.5)*0.12;
   float ry = mix(2.10, 3.05, step(2.17, q.y));
   float th = mmHash11(ti*3.7 + ry*11.1 + uSeed);
-  float tl = 0.22 + 0.18*th;
+  float tl = 0.30 + 0.24*th;
   float tt = clamp((ry - 0.05 - q.y)/tl, 0.0, 1.0);
-  float tw = 0.0135*(1.0 - 0.30*tt);
-  float pair = min(abs(tx - 0.022), abs(tx + 0.022));
+  float tw = 0.019*(1.0 - 0.30*tt);
+  float pair = min(abs(tx - 0.026), abs(tx + 0.026));
   float taper = (1.0 - smoothstep(tw, tw + aa, pair)) * step(ry - 0.05 - tl, q.y)
               * step(q.y, ry - 0.05) * onF * step(0.11, th) * (1.0 - step(abs(px), 0.08));
-  float wick = (1.0 - smoothstep(0.0035, 0.0035 + aa, min(abs(tx - 0.022), abs(tx + 0.022))))
+  float wick = (1.0 - smoothstep(0.0035, 0.0035 + aa, min(abs(tx - 0.026), abs(tx + 0.026))))
              * mmBand(q.y, ry - 0.06, ry) * onF * step(0.11, th);
   s = mix(s, 0.62, post);
   s = mix(s, 0.78, rods);
@@ -1174,12 +1181,13 @@ float subjWax(vec2 q, float cx, float ax, float far, float dqm, out float occ){
   /* WHAT IT IS MADE OF: pale wax, copper, the furnace's brick, soot */
   float copper = clamp(vbody + vrim + hood*0.6, 0.0, 1.0);
   float brickM = fb * (1.0 - mouth);
-  gCol = taper*vec3(0.62, 0.55, 0.41) + copper*(1.0 - taper)*vec3(0.30, 0.15, 0.08)
+  gCol = taper*vec3(0.50, 0.44, 0.33) + copper*(1.0 - taper)*vec3(0.30, 0.15, 0.08)
        + brickM*(1.0 - copper)*vec3(0.30, 0.14, 0.09) + post*(1.0 - taper)*vec3(0.20, 0.13, 0.08);
   gColAmt = clamp(taper + copper + brickM + post*0.8, 0.0, 1.0);
   gTint = -mouth*0.95 - flue*0.10;
-  occ = clamp(fb + vbody + vrim + hood + flue + post + rods + taper + bench + moulds
-              + step(0.02, shelves), 0.0, 1.0);
+  /* the chandlery is the wall to 5 m: the industrial mode's rails and ring
+     brackets stay above it, where the room's iron is */
+  occ = clamp(mmBand(q.y, -0.10, 5.00) + fb + vbody + vrim + hood + flue, 0.0, 1.0);
   return s;
 }
 
@@ -1261,7 +1269,7 @@ float subjBoiler(vec2 q, float cx, float ax, float far, float dqm, out float occ
   float br = length(bp);
   const float BR = 1.36;
   float front = (1.0 - smoothstep(BR - aa, BR + aa, br)) * far;
-  s = mix(s, 0.52, front);
+  s = mix(s, 0.30, front);
   /* the flange ring and two rings of rivets */
   s += (1.0 - smoothstep(0.035, 0.035 + aa, abs(br - BR + 0.035))) * far * 0.90;
   float ang = atan(bp.y, bp.x);
@@ -1307,8 +1315,10 @@ float subjBoiler(vec2 q, float cx, float ax, float far, float dqm, out float occ
   float iron = clamp(front + grate + stanch + rails + brk, 0.0, 1.0);
   float brassB = clamp(wheel + spokes + gg + (1.0 - smoothstep(0.022, 0.022 + aa, abs(gd - 0.19)))*far, 0.0, 1.0);
   float copperP = clamp(spipe + mains, 0.0, 1.0)*(1.0 - brassB);
-  gCol = iron*(1.0 - brassB)*(1.0 - copperP)*vec3(0.075, 0.075, 0.085)
-       + brassB*vec3(0.40, 0.29, 0.12) + copperP*vec3(0.24, 0.13, 0.07);
+  /* (in the wing's own linear values: its walls are 0.02-0.05, and iron at
+     0.075 made the boiler fronts the palest things in the room) */
+  gCol = iron*(1.0 - brassB)*(1.0 - copperP)*vec3(0.017, 0.017, 0.020)
+       + brassB*vec3(0.26, 0.19, 0.08) + copperP*vec3(0.18, 0.10, 0.05);
   gColAmt = clamp(iron + brassB + copperP, 0.0, 1.0);
   gTint = -door*0.30;
   occ = clamp(front + spipe + mains + grate + brk + stanch + rails + flue + wheel + gg, 0.0, 1.0);
@@ -1344,7 +1354,10 @@ float subjSteam(vec2 q, float cx, float ax, float far, float dqm, out float occ)
     float riser = mmBand(q.y, yk - 0.46, yk - 0.07);
     bench = max(bench, max(slab, riser*0.8));
     nose = max(nose, slab);
-    s = mix(s, 0.62 - riser*0.18 + slab*0.30, max(slab, riser)*onB);
+    s = mix(s, 0.52 - riser*0.24 + slab*0.34, max(slab, riser)*onB);
+    /* the shadow under each slab's nosing: what makes three tiers of one
+       stone read as three benches and not a band */
+    s -= (1.0 - smoothstep(0.0, 0.05 + aa, (yk - 0.07) - q.y)) * step(q.y, yk - 0.07) * onB * 0.30;
   }
   s -= (1.0 - smoothstep(0.006, 0.006 + aa, mmRowX(q.x, 0.90))) * mmBand(q.y, 0.0, 1.38) * onB * 0.20;
   s -= (1.0 - smoothstep(0.008, 0.008 + aa, abs(mod(q.y, 0.46) - 0.07))) * mmBand(q.y, 0.0, 1.40) * onB * 0.16;
@@ -1373,7 +1386,8 @@ float subjSteam(vec2 q, float cx, float ax, float far, float dqm, out float occ)
   gCol = marble*vec3(0.42, 0.41, 0.39) + copper*vec3(0.36, 0.18, 0.10) + basket*(1.0 - copper)*vec3(0.12, 0.11, 0.11);
   gColAmt = clamp(marble*0.85 + copper + basket, 0.0, 1.0);
   gTint = -niche*0.45 + tj*0.0;
-  occ = clamp(bench*onB + basket + legs + hood + flue + niche, 0.0, 1.0);
+  /* tiled to the ceiling: the glazed mode's mullions have no place here */
+  occ = 1.0;
   return s;
 }
 
@@ -1492,7 +1506,8 @@ float subjPipes(vec2 q, float cx, float ax, float far, float dqm, out float occ)
        + brassW*vec3(0.46, 0.34, 0.14) + tank*(1.0 - pipes)*vec3(0.13, 0.14, 0.15);
   gColAmt = clamp(pipes + brassW + tank, 0.0, 1.0);
   gTint = -smoothstep(0.30, 0.0, mod(q.y + 0.20, 1.05))*0.10*(1.0 - pipes) + hi*0.30;
-  occ = clamp(pipes + riser + wheel + brk + tank + gauge, 0.0, 1.0);
+  /* a service passage is tiled, not glazed */
+  occ = 1.0;
   return s;
 }
 
@@ -3063,10 +3078,15 @@ void main(){
     float front = step(length(vec2(bx, bq.y - 1.62)), 1.36);
     float gap = (1.0 - smoothstep(0.0, 0.035, abs(dd))) * front;
     float ash = mmSolid(mmBox(vec2(abs(bx) - 0.56, bq.y - 0.62), vec2(0.20, 0.05), 0.02)) * front;
-    col += fire*uGain*(gap*0.30 + ash*0.24)*flick;
-    col += fire*uGain*0.035*exp(-max(dd, 0.0)*5.0)*front*flick;
+    col += fire*uGain*(gap*0.55 + ash*0.40)*flick;
+    /* the fire lights the plate round its doors, not the whole front: a
+       Lancashire boiler's front is black iron, and at 4/m the glow reached
+       its flange and the pair came out as two pale discs */
+    col += fire*uGain*0.050*exp(-max(dd, 0.0)*11.0)*front*flick;
     float gd = length(vec2(bx, bq.y - 2.36));
-    col = mix(col, vec3(0.70, 0.66, 0.56)*uGain*0.045, mmSolid(gd - 0.17)*step(abs(bx), 0.5));
+    col = mix(col, vec3(0.78, 0.74, 0.62)*uGain*0.070, mmSolid(gd - 0.17)*step(abs(bx), 0.5));
+    /* ...and its needle */
+    col *= 1.0 - (1.0 - smoothstep(0.010, 0.022, abs(bx*0.60 - (bq.y - 2.36)))) * step(gd, 0.15) * step(0.0, bq.y - 2.36) * 0.7;
   }
 #endif
 #if MM_ROOMS == 7
@@ -3077,7 +3097,7 @@ void main(){
        steam room and not a tiled room with benches in it */
     float drift = mmFbm3(vec2(q.x*0.35 + uTime*0.05, q.y*0.55 - uTime*0.03) + uSeed);
     float steam = smoothstep(0.30, 0.85, drift) * (0.35 + 0.65*smoothstep(0.4, 4.0, q.y));
-    vec3 sc = mix(uHi, vec3(0.80, 0.84, 0.86), 0.62) * uGain * 0.13;
+    vec3 sc = mix(uHi, vec3(0.80, 0.84, 0.86), 0.62) * uGain * 0.26;
     col = mix(col, sc, steam*0.85);
     if (uFar > 0.5) {
       float cxs = q.x - uSize.x*0.5 - uSubjX;
@@ -3085,6 +3105,18 @@ void main(){
       vec2  stn = vec2(mod(cxs + 0.09, 0.18) - 0.09, mod(q.y - 0.46, 0.16) - 0.08);
       float gl = (1.0 - smoothstep(0.02, 0.07, length(stn))) * bsk;
       col += vec3(1.0, 0.40, 0.10)*uGain*gl*0.10*(0.7 + 0.3*mmNoise(vec2(uTime, cxs*4.0)));
+      /* ...and off the hot stones the steam RISES, in a plume that widens
+         and sways as it climbs to the hood: the source of the room's air,
+         and the one shape in it that could only be steam */
+      float py = q.y - 1.08;
+      float pw = 0.50 + max(py, 0.0)*0.34;
+      float sw = cxs + 0.20*sin(py*2.4 - uTime*0.85)*smoothstep(0.0, 1.0, py);
+      float plume = (1.0 - smoothstep(pw*0.40, pw, abs(sw)))
+                  * smoothstep(0.0, 0.22, py) * (1.0 - smoothstep(0.95, 1.22, py));
+      plume *= 0.40 + 0.80*mmNoise(vec2(sw*3.2, py*2.0 - uTime*0.7) + uSeed);
+      /* (brighter than the lit tile behind it, or it is the tile: at the
+         wall's own 0.13 the plume and the room's painted steam both vanished) */
+      col = mix(col, vec3(0.80, 0.84, 0.88)*uGain*0.42, clamp(plume, 0.0, 1.0)*0.80);
     }
   }
   if (uFar > 0.5 && uSubject > 31.5 && uSubject < 32.5) {
@@ -3608,7 +3640,9 @@ void main(){
     pat -= (1.0 - smoothstep(0.0, max(mp*2.0, 0.02), abs(dOut))) * 0.40;    // the coping's inner arris
     float stp = step(w.y, uWater.y + 1.05) * water;
     float stE = 1.0 - smoothstep(0.0, max(jw, 0.02), abs(fract((w.y - uWater.y)/0.35) - 0.5)*0.35);
-    pat = mix(pat, 0.30 + stE*0.25, water);
+    /* (the step edges only where the steps are: across the whole basin they
+       ruled the water in lines every 0.35 m like the tiles it covers) */
+    pat = mix(pat, 0.30 + stE*0.25*stp, water);
     pat += stp * (0.20 - stE*0.10);
     cellv = mix(cellv, 0.55, coping);
     cellv = mix(cellv, 0.25, water);
@@ -3685,10 +3719,15 @@ void main(){
        floor -- and no sample has anything like it. Kept, because a flagged
        hall does hold a sheen, but at a quarter of its old weight and broken by
        the same smear field rather than laid on smooth. */
-    float streak = exp(-abs(d.x + rip*0.35*water)*smear*(1.0 + water*1.6)) * exp(-max(d.y, 0.0)*(0.30 - water*0.18));
-    col += alb * uLightCol[i] * att * streak * uGloss * 3.4 * uWet * wetK;
+    /* (on water a lamp's image is a narrow broken column, not a smear) */
+    float streak = exp(-abs(d.x + rip*0.35*water)*smear*(1.0 + water*4.5)) * exp(-max(d.y, 0.0)*(0.30 - water*0.18));
+    /* (water gives back the LAMP, not its own dark albedo times the lamp) */
+    col += mix(alb, vec3(0.085, 0.110, 0.120), water) * uLightCol[i] * att * streak * uGloss * 3.4 * uWet * wetK;
     vec3 ldir = normalize(vec3(-d.x, 3.0, d.y));
-    col += mmSpec(N, ldir, V, uLightCol[i], att, uGloss*0.9, 30.0) * wetK;
+    /* (and a lamp on water is a glint, not a sheen: tighter and brighter) */
+    float spk = 1.0;
+    if (water > 0.001) spk = mix(1.0, 0.25 + 1.5*smoothstep(0.40, 0.80, mmNoise(vec2(w.x*5.0, w.y*12.0 + uTime*0.8))), water);
+    col += mmSpec(N, ldir, V, uLightCol[i], att, uGloss*0.9, mix(30.0, 90.0, water)) * wetK * (1.0 + water*1.2) * spk;
   }
 
   /* ---- shaft pools: the bright ellipse where a light shaft LANDS ----------
@@ -3733,6 +3772,24 @@ void main(){
     /* (a shaft does not pool on WATER: the light goes into it) */
     col += uPoolCol[i] * P.w * (core*1.15 + spill) * grain
          * (0.16 + 0.84*mmLum(alb)*3.4) * 0.50 * gate * (1.0 - water*0.90);
+  }
+
+  /* ---- THE WINDOW IN THE WATER (round 14) ---------------------------------
+     What says water at night is the room lying IN it. A dark basin under a
+     dark floor's light is a dark rug; the pool's great window (subjPool, on
+     the back wall over the water) lies in it as a long pale shape drawn out
+     toward you, its glazing bars with it, broken by the ripples -- strongest
+     far off, where water seen at a slant is nearly a mirror. The lamps' own
+     long reflections are the loop above. (Before uGain, as the floor is.) */
+  if (water > 0.001) {
+    float rxw = w.x - uRunX + rip*0.30;
+    float glassW = 1.0 - smoothstep(1.40, 1.80, abs(rxw));
+    float barsW = 1.0 - (1.0 - smoothstep(0.03, 0.08, abs(mod(rxw + 0.30, 0.60) - 0.30))) * 0.55;
+    float farW = smoothstep(uWater.y, uWater.z, w.y);
+    float brk = 0.70 + 0.30*mmNoise(vec2(w.x*9.0, w.y*1.3 + uTime*0.25));
+    vec3 nightW = mix(uAccent, vec3(0.62, 0.72, 0.95), 0.55);
+    col += nightW * glassW * barsW * brk * (0.020 + 0.150*farW*farW) * water;
+    col += nightW * 0.005 * farW * water;             // the sheen at that slant
   }
 
   /* Everything drawn on this surface needs the form to be RESOLVABLE. A floor
@@ -6634,6 +6691,28 @@ void main(){
       col *= 1.0 - (1.0 - smoothstep(0.0, px * 1.4, abs(dOpen - rv - 0.042))) * 0.55;
       col *= 1.0 - (1.0 - smoothstep(0.0, px * 1.4, abs(dKey))) * 0.60;
       a = max(smoothstep(-px, px, dOpen), leaf);
+    } else if (uMode > 5.5) {
+      /* 6  STEAM (round 14), hanging in the room between you and everything
+         in it -- the walls, the benches, the black of the ceiling: soft banks
+         of it drifting, thickest up in the room and thinning toward the
+         floor at your feet, a little of the room's lamplight in it. Painted
+         on the walls alone it never reached the ceiling or the floor, and a
+         steam room without steam in its air is a tiled room with benches. */
+      /* Calibrated through the grade, which raises the frame to ~1.6 before
+         its tone curve: a veil at the wall's own lit value (0.06) came out
+         23/255 over the black ceiling, i.e. nothing. Steam lit by a room's
+         lamps is the palest thing in the air, so it is drawn at about twice
+         the lit tile and left to the grade. */
+      /* SMOOTH noise, two octaves: fbm's fine octaves printed a mottle on
+         the air that read as a stained ceiling, and steam has no grain --
+         it is soft banks with soft edges, and it moves */
+      vec2 sp2 = vec2(s.x*1.5 + uTime*0.030, s.y*2.3 - uTime*0.014);
+      float n = mmNoise(sp2 + uSeed) * 0.62
+              + mmNoise(sp2*2.1 - uSeed + vec2(uTime*0.021, 0.0)) * 0.38;
+      float bank = smoothstep(0.36, 0.72, n);                 // the billows
+      float up = smoothstep(-0.55, 0.40, s.y);                 // thick up in the room
+      a = clamp(0.04 + 0.12*up + bank*(0.26 + 0.40*up), 0.0, 0.78);
+      col = mix(vec3(0.66, 0.70, 0.74), uRim, 0.16) * (0.36 + 0.16*bank);
     } else if (uMode > 4.5) {
       /* 5  THE CHURCHYARD GATE. Out of doors there is no door to stand in; you
          stand in the gateway instead: a stone pier each side -- coursed,

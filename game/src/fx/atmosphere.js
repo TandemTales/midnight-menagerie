@@ -1186,7 +1186,7 @@ export const ROOM_KINDS = {
          frames hung with tapers; its floor stood with the wax stoves and the
          candle stands, not the gas standards; seen low, among the racks */
       { subject: 'wax', layout: 'wings', swap: [[18, 13], [6, 1]], room: { w: 0.80, d: 0.56 },
-        vantage: { at: 'among', low: 0.70, fwd: 2.2, pitch: 3.0, off: 0.14, yaw: 12, wide: 4 } },
+        vantage: { at: 'among', low: 0.72, fwd: 4.2, pitch: 3.0, off: 0.14, yaw: 12, wide: 4 } },
       /* THE REFLECTOR GALLERY -- long and narrow, its dishes down both walls
          and its file of lamp standards down the floor; seen from one end */
       { subject: 'reflector', layout: 'colonnade', file: 18, fileX: 0.60, swap: [[6, 18]],
@@ -1211,7 +1211,7 @@ export const ROOM_KINDS = {
          of steam; seen from the lowest bench */
       { subject: 'steam', layout: 'nook', swap: [[17, 2], [7, 6]], countScale: 0.40,
         room: { w: 0.70, d: 0.64, h: 0.74 }, atmos: { wallFog: 0.34 },
-        vantage: { at: 'among', low: 0.62, fwd: 1.0, pitch: 3.0, off: 0.06, wide: 3 } },
+        vantage: { at: 'among', low: 0.62, fwd: 1.0, pitch: 3.0, off: 0.06, wide: 3, frame: 'steam' } },
       /* THE INDOOR POOL -- a basin of water sunk in the floor, columns round
          it, the great window and the lion's mask at its far end; seen from
          the gallery over its near end */
@@ -2048,6 +2048,18 @@ export class Atmosphere {
         const off = L.x - rx;
         if (fittingFor(L, R) !== FIT.LAMP || Math.abs(off) >= clear) continue;
         L.x = rx + (Math.sign(off) || flip) * (clear + (clear - Math.abs(off)) * 0.35);
+      }
+    }
+    /* ...AND A POOL'S LAMP STANDS BY ITS WATER, NEVER IN IT (round 14): the
+       Indoor Pool's lantern standard came up out of the middle of the basin.
+       It keeps its depth and steps out past the coping on its own side. */
+    if (pal.pool) {
+      const P = pal.pool, edge = P.hw + 0.40 + 0.55;
+      for (const L of pal.lights) {
+        if (fittingFor(L, R) !== FIT.LAMP) continue;
+        const z = L.z ?? 0;
+        if (Math.abs(L.x) >= edge || z > P.z0 + 0.95 || z < P.z1 - 0.95) continue;
+        L.x = (Math.sign(L.x) || flip) * edge;
       }
     }
   }

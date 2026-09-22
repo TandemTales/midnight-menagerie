@@ -737,7 +737,8 @@ export class Backdrop {
     this.portalRig = new THREE.Group();
     this.portalRig.name = 'portal';
     this.group.add(this.portalRig);
-    this.portals = [3, 4, 5].map((mode, k) => {
+    /* ...and mode 6, the STEAM of a steam room, on the same lens (round 14) */
+    this.portals = [3, 4, 5, 6].map((mode, k) => {
       const mat = new THREE.ShaderMaterial({
         uniforms: {
           uTime: { value: 0 }, uSeed: { value: 5.1 + k * 2.3 },
@@ -1461,12 +1462,16 @@ export class Backdrop {
     const rig = this.frameRig;
     const FRAME_Y = 2.08, FRAME_Z = 7.2;
     const mode = pal.frame || 'room';
-    const own = mode === 'door' || mode === 'rail' || mode === 'gate';
-    this._frameShow = (own || mode === 'none') ? [false, false, false, false]
-                                               : [true, true, true, true];
+    /* a door, a rail and a gate REPLACE the near frame; steam hangs in the
+       air of a room that keeps its own (round 14) */
+    const joinery = mode === 'door' || mode === 'rail' || mode === 'gate';
+    const own = joinery || mode === 'steam';
+    this._frameShow = (joinery || mode === 'none') ? [false, false, false, false]
+                                                   : [true, true, true, true];
     this.portals[0].visible = mode === 'door';
     this.portals[1].visible = mode === 'rail';
     this.portals[2].visible = mode === 'gate';
+    this.portals[3].visible = mode === 'steam';
     this._portalOn = own;
     this._portalLens = null;
     this.frames.forEach((m, i) => {
@@ -1497,7 +1502,7 @@ export class Backdrop {
       rig.rotation.set(0, 0, 0);
       this._portalLens = { fov: cam.fov ?? 42, aspect: live, fovNow: NaN, aspNow: NaN };
       this._sizePortals(this._portalLens.fov, live);
-      return;
+      if (joinery) return;
     }
     /* The eye moved and may have turned: carry the frame by the same move,
        about the eye, and turn it by the camera's yaw (not its pitch -- a lintel
