@@ -1,4 +1,4 @@
-# Handoff — rounds 8-10 merged; round 11 is cut and waiting on one command
+# Handoff — rounds 0-12 merged; rounds 13 and 14 are ready to launch, one at a time
 
 You are picking up Midnight Menagerie on `dev`. Everything below is pushed.
 
@@ -16,30 +16,56 @@ loop until perfected". Two later calls narrow it and both are in force:
 `UI/*.png`** — what matters is readable, accurately drawn, well-detailed objects
 (item 3).
 
-## START HERE — 2026-09-19, session 6250d1da
+## START HERE — 2026-09-22
 
-**Rounds 11 and 12 are merged, verified and pushed. Rounds 13 and 14 are
-briefed, their worktrees cut at `d46eec5`, and the next step is their
-baselines and launch.**
+**THE NEXT ACTION: relaunch round 14, and when its builders have returned,
+round 13. ONE ROUND AT A TIME.**
 
-**BOTH ARE RUNNING** (launched 2026-09-19 ~16:35, base `d46eec5`):
+Both were launched 2026-09-19 ~16:35 and stopped about five minutes in by the
+WEEKLY usage limit (Pro plan). Nothing of theirs was kept: all six worktrees
+were reset clean at `d46eec5` on 2026-09-22, the leftover builder dev servers
+were stopped, and **their baselines are taken and intact** (6 BUCKRAM, 8
+FUSTIAN). The limit reset on 2026-09-22; the next weekly reset is 2026-09-29
+09:00 UTC.
 
-| round | run | task | UILOOP | builders |
-|---|---|---|---|---|
-| 13 CHROME (expand) | `wf_2d95488c-1ce` | `w9zkcqhwr` | `C:/UILOOP/r13` | NACRE 8921, SMALT 8922, GAMBOGE 8923, baseline BUCKRAM |
-| 14 ROOMS (refine) | `wf_6f91b3b1-825` | `wg89acajt` | `C:/UILOOP/r14` | ORPIMENT 8931, SEPIA 8932, VERMEIL 8933, baseline FUSTIAN |
+**Why one at a time.** Last week's whole allowance went in about two and a
+half days, most of it on two six-builder rounds run in parallel (rounds 11 and
+12 cost ~7.5M subagent tokens between them, with a graft and a performance
+pass on top). A round of three builders and two judges costs roughly 2.5-3.5M.
+**Check `get_usage` (the ccd_session_mgmt tool) before each launch**, and do
+not start a round with the weekly figure much above half.
 
-Their baselines are taken (`baseline-r13.sh`, `baseline-r14.sh`). **If a
-session limit stops them**, finish each as a NEW run: `resume` on every
-stopped builder saying where it stopped, and `done` (the recorded BUILD
-object from the stopped run's `journal.jsonl`) on any that had returned. That
-is how both of today's rounds finished.
+**Why 14 first.** It is Josh's own request (2026-09-18: variation between the
+rooms of a wing) and both round-11 judges put the same fix at the top of its
+list; round 13 refines chrome that already scores 7.3-8.0.
 
-**One capture failed the way this machine fails**: a BUCKRAM coach capture
-came back 31.8% blown with `CONTEXT_LOST_WEBGL` in its console, and the
-retake was clean. A void capture is the GPU, not the build.
+```
+Workflow({ scriptPath: "docs/ui-pass/round-workflow.js",
+           args: { ...docs/ui-pass/round-14.args.json,
+                   repo: "C:/Users/Josh/OneDrive/Desktop/Tandem Tales/Midnight Menagerie",
+                   uiloop: "C:/UILOOP/r14", base: "d46eec5" } })
+```
 
-**What merged today**
+and round 13 the same way with `round-13.args.json` and `uiloop:
+"C:/UILOOP/r13"`. The main checkout's dev server must be up on 8777 first
+(`python tools/devserver.py 8777`); builders start their own on 8921-8933.
+
+**If a limit stops a round again**, finish it as a NEW run: `resume` on each
+stopped builder (a sentence saying exactly where it stopped: its commits,
+uncommitted files, which deliverables exist) and `done` on any builder that
+had returned (its BUILD object from the stopped run's `journal.jsonl`, under
+`~/.claude/projects/<project>/<session>/subagents/workflows/<run>/`). That is
+how rounds 11 and 12 finished. Never `resumeFromRunId`. And stop any dev
+server a stopped builder left on its port before relaunching.
+
+Where the last session's results live, in case you need a judge's words:
+`%TEMP%/claude/C--Users-Josh-OneDrive-Desktop-Tandem-Tales-Midnight-Menagerie/6250d1da-a012-4d71-b507-8b213fa9253d/tasks/`
+-- round 11 `wpiu7trjz.output`, round 12 `wtu7zqpp5.output` (read with
+`python tools/ui_pass_digest.py <file> <track>`, `PYTHONIOENCODING=utf-8`),
+and round 12's two carried builds in that session's
+`scratchpad/r12-done-builds.json`.
+
+**What merged on 2026-09-19**
 
 1. **Round 11, CAMBER (`155133e`): a wing has several kinds of room.** +2.17,
    and the **first sheets in the pass marked `fits_between_samples` by both
@@ -82,29 +108,34 @@ Greenhouse fight**, against the hard 15.5.
 
 ## THE STATE OF THE PASS
 
-Rounds 0-10 merged. Round 9 (+2.71) is the one to read: it is where props
-stopped being coverage masks and got an interior. Round 10 merged OAKGALL
-(`f39dbc6`); its reported +1.72 should be read as **+0.93**, because the
-baseline's own combat capture was a blown white frame that all three judges
-scored 1 of 10.
+Rounds 0-12 merged (2026-09-19), plus round 10's two grafts (`1045f52`) and a
+look-neutral performance pass (`91af9f3`). The rounds to read: 9 (+2.71, props
+got an interior), 11 (+2.17, a wing has several kinds of room) and 12 (+5.9,
+the last web chrome).
 
-Frame cost on the merged build, quiet window, four runs: **14.4-14.8 ms** against
-a hard 15.5, backdrop 9.26-9.33, props 1.35-1.41. Under a millisecond of
-headroom, which `BRIEF-r11.md` says out loud.
+**`fits_between_samples` has been TRUE from both judges on two screens**:
+round 11's Foyer and Ballroom sheets. Round 10's two grafts earned it from
+some judges. Everything else is still FALSE, and the best screens score 7-8.
 
-`fits_between_samples` is still FALSE on every screen of every round except the
-two grafts above, and the best room has scored 7.
+Frame cost on the merged build: **13.3 ms default combat, 14.3 ms in the
+Greenhouse fight**, against a hard 15.5 on both. `gpuprof.py --hash
+"encounter=gh-14&region=greenhouse"` names the Greenhouse fight.
 
-## THE FOUR WAYS A CAPTURE LIES, all of which have cost a verdict or an evening
+## THE FIVE WAYS A CAPTURE LIES, all of which have cost a verdict or an evening
 
-`tools/shot.py` now detects all four and exits 2 on any of them:
+`tools/shot.py` detects all five and exits 2 on any of them:
 
 | signature | what it means |
 |---|---|
 | `gl: none` | the page never got a GPU context |
 | frame std < 8 | a dead frame, white or black |
 | `glStd` ~ 0 | the UI drew and the BACKDROP did not — the frame still looks busy |
-| >8% of pixels above L200 | a white transition flash caught in the composite |
+| >8% of pixels above L200 | a white transition flash, or a lost GPU context (`CONTEXT_LOST_WEBGL` in the console) |
+| `perf.warmTimeout`, or a board's `perf.band` under ~28 | the stage never finished its ~35 s warm-up, so a board was shot with NO ROOM behind it (fixed as void in `fc881cf`) |
+
+`glStd` is NOT the backdrop's own std on a board: Playwright's element
+screenshot is a clip of the PAGE, so on combat it measures the board. Read
+`band` (29-36 with a room) on every board baseline.
 
 And `tools/variant_sheet.py` refuses to write a sheet with fewer panels than
 asked for: all four of round 11's first baselines came back with ONE panel and
@@ -115,6 +146,10 @@ was written about.** Round 9's judges both opened with a blocking fix for a bug
 that did not exist, because the capture they were shown had no backdrop.
 
 ## THEN, THE REST
+
+*Everything from here to "THE UI PASS" is the history of preparing rounds 8
+to 11 — all of it DONE by 2026-09-19 (round 11 launched and merged, round 10's
+grafts merged as `1045f52`). Read it for its findings, not as a to-do list.*
 
 So there is no track with an unspent fix list any more, and round 8 went to the
 thing every judge had blamed for seven rounds instead: the ROOM (item 3).
