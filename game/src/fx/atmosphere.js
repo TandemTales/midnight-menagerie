@@ -1961,7 +1961,8 @@ export class Atmosphere {
       /* a pool sunk in the floor: its half-width, its near edge, and how far
          short of the back wall its far edge stops (world metres) */
       if (kind.pool) {
-        pal.pool = { hw: kind.pool.hw, z0: kind.pool.z0, z1: -R.d + (kind.pool.back ?? 0.5) };
+        pal.pool = { hw: kind.pool.hw, z0: kind.pool.z0, z1: -R.d + (kind.pool.back ?? 0.5),
+                     open: !(R.h > 0.01) };
       }
       /* and the air in it: a steam room is full of steam. Atmosphere only --
          the wing's colour, lamps and material never move here. */

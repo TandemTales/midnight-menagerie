@@ -3283,6 +3283,14 @@ export const FLOOR_FRAG = /* glsl */`
 precision highp float;
 ${GLSL_LIB}
 ${LIGHT_LIB}
+/* THE ROOM-KIND FLOORS (round 14) -- herringbone parquet (10), turf with its
+   walk (11), a vinery's roof (12) and a pool sunk in the floor -- are
+   compiled only into the rooms that lay them (Backdrop._setSurfaceProgram).
+   In every other room's program they cost the Foyer fight's floor half a
+   millisecond and this program's link 0.6 s. Undefined means everything. */
+#ifndef MM_FLOORX
+#define MM_FLOORX 1
+#endif
 uniform float uTime, uSeed, uDread, uFogNear, uFogFar, uGloss, uPattern, uGain, uAlbLift;
 uniform float uInk, uLip, uWet;
 uniform float uRunner;         // half-width of the hall runner, metres; 0 = none
@@ -3342,6 +3350,7 @@ void main(){
   float vineR = 0.0;
 
   float pat = 0.0;
+#if MM_FLOORX == 1
   if (uPattern > 9.5 && uPattern < 11.5) {
     if (uPattern < 10.5) {                   // 10 herringbone parquet
       /* LIMEWASH's, round 11 (named by both judges as the graft for the
@@ -3411,7 +3420,9 @@ void main(){
         cellv = mix(cellv, 0.52 + 0.18*grit, walk);
       }
     }
-  } else if (uPattern < 0.5) {                      // 0 planks
+  } else
+#endif
+  if (uPattern < 0.5) {                      // 0 planks
     float row = floor(w.y/0.95);
     float ox  = mmHash11(row+uSeed)*2.0;
     /* Boards of unequal width, laid with a wandering joint and worn at their
@@ -3533,6 +3544,7 @@ void main(){
        has to be smaller than the thing it lights or it reads as a lit
        ceiling, which is the defect this room already had at the other end. */
     roofLit = glazed * (step(0.934, cellv) + vent*0.45);
+#if MM_FLOORX == 1
     if (uPattern > 11.5) {
       /* 12  THE VINERY'S ROOF (round 14, both judges: "running vines along
          the rafters changes the planting, not only the wall"): a vine led
@@ -3555,6 +3567,7 @@ void main(){
       roofLit *= 1.0 - vineR;
       pat = mix(pat, 0.34 + 0.30*lh, vineR);
     }
+#endif
   }
 
   /* ---- A HALL RUNNER -------------------------------------------------------
@@ -3630,6 +3643,7 @@ void main(){
      takes the lamps as long broken reflections (below), which is what water
      at night is. */
   float water = 0.0, coping = 0.0;
+#if MM_FLOORX == 1
   if (uWater.w > 0.5 && uIsCeiling < 0.5) {
     vec2  pc = vec2(abs(w.x) - uWater.x, max(uWater.y - w.y, w.y - uWater.z));
     float dOut = max(pc.x, pc.y);
@@ -3647,6 +3661,7 @@ void main(){
     cellv = mix(cellv, 0.55, coping);
     cellv = mix(cellv, 0.25, water);
   }
+#endif
 
   vec3 alb = mix(uDeep, uMid, 0.24 + 0.78*mmFbm3(w*0.42 + uSeed));
   /* PER STONE. Value, and then hue: in selectKid's floor no two flags are the
@@ -3657,12 +3672,14 @@ void main(){
   /* GRASS IS GREEN AND EARTH IS BROWN -- material facts, like the foliage
      props' green, laid over the region's own ground colour and not in place
      of it: at night under a moon both go most of the way to its grey. */
+#if MM_FLOORX == 1
   alb *= mix(vec3(1.0), vec3(0.80, 1.05, 0.76), turf*0.85);
   alb = mix(alb, vec3(0.050, 0.110, 0.034)*(0.70 + 0.60*cellv), vineR*0.85);
   /* water is dark and green-blue; the coping pale stone */
   alb = mix(alb, vec3(0.018, 0.040, 0.050), water*0.92);
   alb = mix(alb, vec3(mmLum(alb))*1.35 + 0.012, coping*0.55);
   alb *= mix(vec3(1.0), vec3(1.10, 0.95, 0.80), earth*0.70);
+#endif
   alb *= 0.55 + 0.90*pat;
   alb += uAlbLift;
   alb *= mix(0.58, 1.0, smoothstep(uSpan.x*0.52, uSpan.x*0.24, abs(w.x)));   // creeps into shadow at the walls
@@ -3703,8 +3720,26 @@ void main(){
   /* ...and WATER mirrors a lamp far harder than a wet tile, the image broken
      up by the ripples on it */
   float rip = 0.0;
-  if (water > 0.001) rip = mmNoise(vec2(w.x*2.6, w.y*7.0 + uTime*0.6)) - 0.5;
-  wetK = mix(wetK, 1.25*(0.70 + 0.60*rip), water);
+  /* ...and what the water does to each lamp, taken ONCE here and not inside
+     the lamp loop: exactly the tile's terms wherever there is no water */
+  vec3  reflA = alb;
+  float ripX = 0.0, wideK = 1.0, lenK = 0.30, specP = 30.0, specK = 1.0;
+#if MM_FLOORX == 1
+  if (water > 0.001) {
+    rip = mmNoise(vec2(w.x*2.6, w.y*7.0 + uTime*0.6)) - 0.5;
+    wetK = mix(wetK, 1.25*(0.70 + 0.60*rip), water);
+    /* water gives back the LAMP, not its own dark albedo times the lamp;
+       its image is a narrow broken column, not a smear; and a lamp on it
+       is a glint, tighter and brighter, broken into sparkle */
+    reflA = mix(alb, vec3(0.085, 0.110, 0.120), water);
+    ripX = rip*0.35*water;
+    wideK = 1.0 + water*4.5;
+    lenK = 0.30 - water*0.18;
+    specP = mix(30.0, 90.0, water);
+    specK = (1.0 + water*1.2)
+          * mix(1.0, 0.25 + 1.5*smoothstep(0.40, 0.80, mmNoise(vec2(w.x*5.0, w.y*12.0 + uTime*0.8))), water);
+  }
+#endif
 
   for (int i = 0; i < 5; i++){
     vec4 L = uLights[i];
@@ -3719,15 +3754,10 @@ void main(){
        floor -- and no sample has anything like it. Kept, because a flagged
        hall does hold a sheen, but at a quarter of its old weight and broken by
        the same smear field rather than laid on smooth. */
-    /* (on water a lamp's image is a narrow broken column, not a smear) */
-    float streak = exp(-abs(d.x + rip*0.35*water)*smear*(1.0 + water*4.5)) * exp(-max(d.y, 0.0)*(0.30 - water*0.18));
-    /* (water gives back the LAMP, not its own dark albedo times the lamp) */
-    col += mix(alb, vec3(0.085, 0.110, 0.120), water) * uLightCol[i] * att * streak * uGloss * 3.4 * uWet * wetK;
+    float streak = exp(-abs(d.x + ripX)*smear*wideK) * exp(-max(d.y, 0.0)*lenK);
+    col += reflA * uLightCol[i] * att * streak * uGloss * 3.4 * uWet * wetK;
     vec3 ldir = normalize(vec3(-d.x, 3.0, d.y));
-    /* (and a lamp on water is a glint, not a sheen: tighter and brighter) */
-    float spk = 1.0;
-    if (water > 0.001) spk = mix(1.0, 0.25 + 1.5*smoothstep(0.40, 0.80, mmNoise(vec2(w.x*5.0, w.y*12.0 + uTime*0.8))), water);
-    col += mmSpec(N, ldir, V, uLightCol[i], att, uGloss*0.9, mix(30.0, 90.0, water)) * wetK * (1.0 + water*1.2) * spk;
+    col += mmSpec(N, ldir, V, uLightCol[i], att, uGloss*0.9, specP) * wetK * specK;
   }
 
   /* ---- shaft pools: the bright ellipse where a light shaft LANDS ----------
@@ -3781,16 +3811,24 @@ void main(){
      toward you, its glazing bars with it, broken by the ripples -- strongest
      far off, where water seen at a slant is nearly a mirror. The lamps' own
      long reflections are the loop above. (Before uGain, as the floor is.) */
+#if MM_FLOORX == 1
   if (water > 0.001) {
-    float rxw = w.x - uRunX + rip*0.30;
-    float glassW = 1.0 - smoothstep(1.40, 1.80, abs(rxw));
-    float barsW = 1.0 - (1.0 - smoothstep(0.03, 0.08, abs(mod(rxw + 0.30, 0.60) - 0.30))) * 0.55;
     float farW = smoothstep(uWater.y, uWater.z, w.y);
     float brk = 0.70 + 0.30*mmNoise(vec2(w.x*9.0, w.y*1.3 + uTime*0.25));
     vec3 nightW = mix(uAccent, vec3(0.62, 0.72, 0.95), 0.55);
-    col += nightW * glassW * barsW * brk * (0.020 + 0.150*farW*farW) * water;
-    col += nightW * 0.005 * farW * water;             // the sheen at that slant
+    if (uWater.w < 1.5) {
+      float rxw = w.x - uRunX + rip*0.30;
+      float glassW = 1.0 - smoothstep(1.40, 1.80, abs(rxw));
+      float barsW = 1.0 - (1.0 - smoothstep(0.03, 0.08, abs(mod(rxw + 0.30, 0.60) - 0.30))) * 0.55;
+      col += nightW * glassW * barsW * brk * (0.020 + 0.150*farW*farW) * water;
+      col += nightW * 0.005 * farW * water;           // the sheen at that slant
+    } else {
+      /* A POND OUT OF DOORS has no window over it: it has the night sky,
+         a sheen that brightens with the slant (uWater.w 2) */
+      col += nightW * brk * (0.006 + 0.040*farW*farW) * water;
+    }
   }
+#endif
 
   /* Everything drawn on this surface needs the form to be RESOLVABLE. A floor
      or a ceiling seen nearly edge-on packs whole slabs into one pixel, so the
@@ -3907,6 +3945,19 @@ export const PROP_FRAG = /* glsl */`
 precision highp float;
 ${GLSL_LIB}
 ${LIGHT_LIB}
+/* TWO PARTS OF THIS PROGRAM ARE COMPILED ONLY INTO THE ROOMS THAT DEAL THEM
+   (round 14; Backdrop._setPropProgram): the grounds' carved stone -- the
+   churchyard's stones and table tombs and the conservatory's fountain
+   (MM_STONES) -- and the Foyer gallery's bust (MM_BUST). Linked into every
+   room's program they took this program's link from 9.0 s to 16.7 s on this
+   machine (Intel UHD, ANGLE D3D11) and the stage's warm-up from ~47 s to
+   ~70 s. Undefined means everything. */
+#ifndef MM_STONES
+#define MM_STONES 1
+#endif
+#ifndef MM_BUST
+#define MM_BUST 1
+#endif
 uniform vec3  uAlbedo, uAlbedoHi, uFog, uRim, uAccent, uAmbient, uCamera;
 uniform float uRimAmt, uDread, uGain, uGloss, uInk;
 uniform vec2  uYaw;      // the lens's right vector in XZ; see PROP_VERT
@@ -3957,6 +4008,7 @@ float mmSeg2(vec2 p, vec2 a, vec2 b, float th){
    on a die, a pointed Gothic head, a tablet under a pediment -- and one in
    seven has lost its top. q is the stone's own frame (lean applied), in
    fractions of its quad, origin at the foot of its axis. */
+#if MM_STONES == 1
 float hsKind(float seed){ return mmHash11(seed*3.71 + 0.13); }
 float hsSD(vec2 q, float k, float seed){
   float d;
@@ -4025,6 +4077,7 @@ float ctSD(vec2 m, vec2 msz, float seed){
   }
   return d;
 }
+#endif
 
 /* msz is the quad in METRES, and it arrived with the fittings (shapes 22 and
    23). Every other shape here is authored in fractions of its own quad, which
@@ -4232,8 +4285,13 @@ float shapeField(vec2 uv, vec2 msz, float shape, float seed){
        as one rather than as a row. */
     float lean = (mmHash11(seed*5.3) - 0.5) * 0.11;
     vec2 q = vec2(p.x + lean * p.y, p.y);
+#if MM_STONES == 1
     /* ...and since round 14 it is one of four forms, some broken: hsSD */
     d = hsSD(q, hsKind(seed), seed);
+#else
+    d = mmArch(q - vec2(0.0, 0.08), 0.26, 0.44);
+    d = min(d, mmBox(q - vec2(0.0,0.06), vec2(0.34,0.06), 0.02));
+#endif
   } else if (shape < 4.5) {               // 4 — chandelier, hangs from the top
     d = mmBox(g + vec2(0.0,0.20), vec2(0.016,0.20), 0.01);
     // ceiling rose: the chain has to visibly come OUT of something
@@ -4427,18 +4485,22 @@ float shapeField(vec2 uv, vec2 msz, float shape, float seed){
       d = mmSmin(d, (length(p - wax) - ww) + (1.0 - ang)*1e3, 0.020);
     }
   } else if (shape < 16.5) {              // 16 — sarcophagus chest
+#if MM_STONES == 1
     if (shape > 16.1) {
+#endif
       /* 16.25: the Greenhouse terrace's masonry kerb, exactly as it was */
       d = mmBox(p - vec2(0.0,0.20), vec2(0.46,0.20), 0.03);
       d = min(d, mmBox(p - vec2(0.0,0.44), vec2(0.50,0.055), 0.03));
       d = min(d, mmCircle(p - vec2(0.0,0.52), 0.11));
       d = min(d, mmBox(p - vec2(-0.34,0.06), vec2(0.05,0.06), 0.01));
       d = min(d, mmBox(p - vec2( 0.34,0.06), vec2(0.05,0.06), 0.01));
+#if MM_STONES == 1
     } else {
       /* a TABLE TOMB, in metres (round 14): see ctSD. Divided back into the
          quad's own units, which is what coverage is measured in. */
       d = ctSD(p*msz, msz, seed) / msz.y;
     }
+#endif
   } else if (shape < 17.5) {              // 17 — clawfoot bath
     d = mmBox(p - vec2(0.0,0.34), vec2(0.46,0.20), 0.18);
     d = max(d, -mmBox(p - vec2(0.0,0.52), vec2(0.40,0.16), 0.12));    // hollow it
@@ -4657,6 +4719,7 @@ float shapeField(vec2 uv, vec2 msz, float shape, float seed){
       d = mmSmin(d, length(p - ax) - w, 0.022);
     }
     d += (mmFbm3(uv*13.0 + seed*2.7) - 0.50) * 0.013 * smoothstep(0.31, 0.40, uv.y);
+#if MM_STONES == 1
   } else if (shape < 25.5) {              // 25 -- a conservatory fountain
     /* ROUND 14, both judges: "the conservatory is unchanged from before round
        11: give it its own centre of interest (a fountain, a stove-pipe heater,
@@ -4684,7 +4747,9 @@ float shapeField(vec2 uv, vec2 msz, float shape, float seed){
     float w2 = abs(abs(m.x) - (0.37 - 0.06*smoothstep(2.27, 1.70, m.y))) - 0.014;
     fd = min(fd, max(w2, max(m.y - 2.27, 1.70 - m.y)));
     d = fd / msz.y;
-  } else {                                // 26 -- a bust on a term pedestal
+#endif
+#if MM_BUST == 1
+  } else if (shape < 26.5) {              // 26 -- a bust on a term pedestal
     /* ROUND 14, both judges: the Foyer gallery's near figures were "dark
        armoured figures ... unreadable silhouettes: light them or make them
        the busts the gallery already has" (its niches hold busts). A marble
@@ -4703,6 +4768,7 @@ float shapeField(vec2 uv, vec2 msz, float shape, float seed){
     bd = min(bd, mmCircle(vec2(m.x, (m.y - 1.64)*0.78), 0.105));                 // the head
     bd = min(bd, mmCircle(vec2(m.x + 0.012, (m.y - 1.70)*0.90), 0.108));         // its hair
     d = bd / msz.y;
+#endif
   }
   /* A BRASS FITTING HAS NO ERODED EDGE. The fbm below is what keeps stone and
      timber off a CG-clean outline; on a 2.7 cm chain it is most of the chain.
@@ -5036,6 +5102,7 @@ float reliefH(vec2 uv, vec2 msz, vec2 mpp, float shape, float seed, out float ti
        thing it has never had -- a dark mark a hand made in it. 44 instances. */
     float lean = (mmHash11(seed*5.3) - 0.5) * 0.11;
     vec2  q = vec2(p.x + lean*p.y, p.y);
+#if MM_STONES == 1
     /* ROUND 14: a stone is one of four forms (hsSD), and seen from among the
        graves it is 150-250 px tall, where a hand's marks read. Every one has
        a DRESSED MARGIN -- the face worked back a finger's width inside its
@@ -5099,6 +5166,20 @@ float reliefH(vec2 uv, vec2 msz, vec2 mpp, float shape, float seed, out float ti
     tint -= 0.34 * smoothstep(0.26, 0.05, uv.y);
     tint -= 0.26 * smoothstep(0.60, 0.80, mmFbm3(q*vec2(11.0, 8.0) + seed*3.0));
     tint -= 0.14 * pR(q.x - 0.10*(mmHash11(seed*2.2) - 0.5), 0.05) * smoothstep(0.30, 0.70, q.y);
+#else
+    float pnl = mmBox(q - vec2(0.0, 0.270), vec2(0.155, 0.135), 0.018);
+    h -= 0.032 * smoothstep(0.008, -0.004, pnl);
+    h += 0.013 * pR(pnl - 0.015, 0.015);
+    float lp = 0.082;                                         // metres per line
+    h -= 0.011 * pR(mod(q.y*msz.y - 0.24, lp) - lp*0.5, lp*0.17)
+               * smoothstep(0.004, -0.020, pnl) * pRes(lp, mpp.y);
+    h += 0.018 * pB(uv.y, 0.112, 0.138);                      // the plinth's wash
+    h -= 0.018 * pR(uv.y - 0.110, 0.005);
+    float ro = length(q - vec2(0.0, 0.452));
+    h -= 0.016 * pR(ro - 0.048, 0.014);                       // a carved rosette
+    h += 0.014 * (1.0 - smoothstep(0.0, 0.040, ro));
+    tint -= 0.34 * smoothstep(0.26, 0.05, uv.y);              // lichen at the foot
+#endif
 
   } else if (shape < 4.5) {               // 4 — chandelier
     vec2 g = uv - vec2(0.5, 1.0);
@@ -5498,7 +5579,9 @@ float reliefH(vec2 uv, vec2 msz, vec2 mpp, float shape, float seed, out float ti
     tint -= 0.26 * smoothstep(0.34, 0.02, uv.y);
 
   } else if (shape < 16.5) {              // 16 — chest tomb / masonry bed
+#if MM_STONES == 1
     if (shape > 16.1) {
+#endif
     /* 16.25 -- the Greenhouse's planting kerbs, drawn as they always were.
        This is ALSO the Greenhouse's planting beds -- the terrace layout pushes
        shape 16 in as its masonry -- so it has to read as coursed stone at both
@@ -5519,6 +5602,7 @@ float reliefH(vec2 uv, vec2 msz, vec2 mpp, float shape, float seed, out float ti
     h -= 0.040 * smoothstep(0.008, -0.004, pan) * step(uv.y, 0.380);
     h += 0.015 * pR(pan - 0.016, 0.016) * step(uv.y, 0.380);
     tint -= 0.30 * smoothstep(0.22, 0.03, uv.y);
+#if MM_STONES == 1
     } else {
     if (ctKind(seed) < 0.66) {
       /* A TABLE TOMB, CARVED (round 14; ctSD for its outline, in metres). A
@@ -5599,6 +5683,7 @@ float reliefH(vec2 uv, vec2 msz, vec2 mpp, float shape, float seed, out float ti
       tint -= 0.24 * smoothstep(0.60, 0.80, mmFbm3(m*vec2(4.5, 6.0) + seed*3.0));
     }
     }
+#endif
 
   } else if (shape < 17.5) {              // 17 — clawfoot bath
     h += 0.034 * pR(mmCircle(p - vec2(0.0, 0.345), 0.455) + 0.045, 0.030);   // the roll rim
@@ -5822,6 +5907,7 @@ float reliefH(vec2 uv, vec2 msz, vec2 mpp, float shape, float seed, out float ti
       if (hh > fh) fh = hh;
     }
     h = mix(h, max(h, fh), step(1.0e-5, fh));
+#if MM_STONES == 1
   } else if (shape < 25.5) {              // 25 -- a conservatory fountain
     /* CARVED, in the same metres shapeField draws it in: the basin panelled
        between pilasters with a mask in each panel and a moulded rim; the
@@ -5861,7 +5947,9 @@ float reliefH(vec2 uv, vec2 msz, vec2 mpp, float shape, float seed, out float ti
     tint -= 0.30 * pR(m.y - 0.56, 0.05) * step(ax2, 1.66);                      // the waterline, green
     tint -= 0.28 * smoothstep(0.22, 0.02, m.y);
     tint -= 0.22 * smoothstep(0.62, 0.82, mmFbm3(m*vec2(4.0, 6.0) + seed*3.0)) * (1.0 - clamp(sheet, 0.0, 1.0));
-  } else {                                // 26 -- a bust on a term pedestal
+#endif
+#if MM_BUST == 1
+  } else if (shape < 26.5) {              // 26 -- a bust on a term pedestal
     /* the term's sunk panel and its cap's mouldings; the bust's drapery
        falling from the shoulders in folds, the brow, the eye sockets, the
        nose and the chin cut into the head, and the hair in curls -- marble,
@@ -5884,6 +5972,7 @@ float reliefH(vec2 uv, vec2 msz, vec2 mpp, float shape, float seed, out float ti
     float hair = step(0.030, f.y) * (1.0 - smoothstep(0.100, 0.112, length(vec2(f.x + 0.012, (f.y - 0.06)*0.90))));
     h -= 0.008 * hair * (1.0 - smoothstep(0.004, 0.012, abs(length(mod(f*vec2(1.0, 1.2), 0.035) - 0.0175) - 0.010)));
     tint -= 0.22 * smoothstep(0.20, 0.02, m.y);
+#endif
   }
 
   return h;
@@ -6057,6 +6146,7 @@ void main(){
      as the palms round it. Pale weathered stone off the prop's own luminance,
      as the bed's coping is, and the falling sheet a cool, lighter grey-blue. */
   float waterM = 0.0;
+#if MM_STONES == 1 || MM_BUST == 1
   if (vShape > 24.5) {
     vec2  fm   = (vUv - vec2(0.5, 0.0)) * vSize;
     float lum  = max(mmLum(albedo), 0.02);
@@ -6069,6 +6159,7 @@ void main(){
            * step(vShape, 25.5);          // (26, the bust, is marble and dry)
     albedo = mix(albedo, vec3(0.62, 0.74, 0.80) * (lum*1.30 + 0.05), waterM*0.85);
   }
+#endif
 
   /* WHAT IS IN THE CABINET. Shape 5 is the Foyer's and the Study's commonest
      prop and it was a box with two shelf rails in it. The samples' props carry
@@ -6581,6 +6672,12 @@ void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(p
 export const FRAME_FRAG = /* glsl */`
 precision highp float;
 ${GLSL_LIB}
+/* THE PORTALS (modes 3-6) are their own program (MM_PORTAL 1, the four
+   portal materials); the near frame's is modes 0-2 alone. Undefined means
+   everything. */
+#ifndef MM_PORTAL
+#define MM_PORTAL 1
+#endif
 uniform vec3  uColor, uRim;
 uniform float uTime, uSeed, uMode, uAmount, uDread;
 /* Modes 3, 4 and 5 (MADDER, round 11; driven by the room kinds in round 14)
@@ -6599,6 +6696,7 @@ varying vec2  vUv;
 void main(){
   vec2 p = vUv;
   float m = 0.0;
+#if MM_PORTAL == 1
   if (uMode > 2.5) {
     vec2 s = vec2((p.x - 0.5) * uAspect, p.y - 0.5);
     float px = fwidth(s.y) * 1.2;           // a pixel, for every edge below
@@ -6814,6 +6912,7 @@ void main(){
     gl_FragColor = vec4(col, a * uAmount);
     return;
   }
+#endif
   if (uMode < 0.5) {
     // side drapery, anchored to x = 0
     float fold = 0.030*sin(p.y*11.0 + uSeed*7.0 + sin(uTime*0.30)*0.30);

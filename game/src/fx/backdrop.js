@@ -433,6 +433,8 @@ export class Backdrop {
 
     this.floorMat = new THREE.ShaderMaterial({
       uniforms: surfaceUniforms(),
+      /* the room-kind floors are a variant of their own: _setSurfaceProgram */
+      defines: { MM_FLOORX: 0 },
       vertexShader: FLOOR_VERT, fragmentShader: FLOOR_FRAG,
       depthWrite: true, fog: false,
     });
@@ -446,6 +448,7 @@ export class Backdrop {
     // room, which is what stops the top of the frame reading as an empty void.
     this.ceilMat = new THREE.ShaderMaterial({
       uniforms: surfaceUniforms(),
+      defines: { MM_FLOORX: 0 },
       vertexShader: FLOOR_VERT, fragmentShader: FLOOR_FRAG,
       depthWrite: true, fog: false,
     });
@@ -541,6 +544,8 @@ export class Backdrop {
            every region was authored against, and there it is the old quad. */
         uYaw: { value: new THREE.Vector2(1, 0) },
       },
+      /* the grounds' carved stone, and the gallery's bust: _setPropProgram */
+      defines: { MM_STONES: 0, MM_BUST: 0 },
       vertexShader: PROP_VERT, fragmentShader: PROP_FRAG,
       transparent: true, depthWrite: false, side: THREE.DoubleSide, fog: false,
     });
@@ -710,6 +715,8 @@ export class Backdrop {
           uColor: { value: new THREE.Color(0x06050c) },
           uRim: { value: new THREE.Color(0xffb64a) },
         },
+        /* modes 0-2 only: the portals are a program of their own */
+        defines: { MM_PORTAL: 0 },
         vertexShader: FRAME_VERT, fragmentShader: FRAME_FRAG,
         transparent: true, depthWrite: false, depthTest: false,
         side: THREE.DoubleSide, fog: false,
@@ -747,6 +754,7 @@ export class Backdrop {
           uColor: { value: new THREE.Color(0x06050c) },
           uRim: { value: new THREE.Color(0xffb64a) },
         },
+        defines: { MM_PORTAL: 1 },
         vertexShader: FRAME_VERT, fragmentShader: FRAME_FRAG,
         transparent: true, depthWrite: false, depthTest: false,
         side: THREE.DoubleSide, fog: false,
@@ -818,6 +826,8 @@ export class Backdrop {
       this.ceiling.position.set(0, room.h, cz);
       this.ceilMat.uniforms.uSpan.value.set(room.w, spanZ);
       this.ceilMat.uniforms.uPattern.value = room.ceilPattern ?? 3;
+      /* a vinery's roof (12) is drawn by the room-kind variant */
+      this._setSurfaceProgram(this.ceilMat, (room.ceilPattern ?? 3) > 11.5);
     }
     this._floorCz = cz;
     this._wallZ = -room.d;
@@ -1539,6 +1549,7 @@ export class Backdrop {
     const fixtures = this._fixtures(pal, room);
     const placed = fixtures
       .concat(this._layoutProps(pal, room, rand, fixtures)).slice(0, MAX_PROPS);
+    this._setPropProgram(placed);
     const off = this._propOffset.array, sc = this._propScale.array,
       sh = this._propShape.array, sd = this._propSeed.array, tn = this._propTone.array;
     const so2 = this._shdOffset.array, ss2 = this._shdScale.array, st2 = this._shdStr.array;
@@ -1765,13 +1776,16 @@ export class Backdrop {
 
     const f = this.floorMat.uniforms;
     f.uPattern.value = p.floorPattern ?? 0;
+    /* parquet (10), turf (11) and a pool are drawn by the room-kind variant */
+    this._setSurfaceProgram(this.floorMat, (p.floorPattern ?? 0) > 9.5 || !!p.pool);
     f.uRunner.value = p.runner ?? 0;
     /* the runner leads to the door, wherever the subject took it */
     f.uRunX.value = p.runX ?? (p.subjX ?? 0);
     /* a pool sunk in the floor, in floor-local metres (see syncLights) */
     if (p.pool) {
       const cz = this._floorCz ?? 0;
-      f.uWater.value.set(p.pool.hw, -(p.pool.z0 - cz), -(p.pool.z1 - cz), 1);
+      /* w: 1 an indoor bath (its window lies in it), 2 a pond under the sky */
+      f.uWater.value.set(p.pool.hw, -(p.pool.z0 - cz), -(p.pool.z1 - cz), p.pool.open ? 2 : 1);
     } else {
       f.uWater.value.set(0, 0, 0, 0);
     }
@@ -1881,6 +1895,38 @@ export class Backdrop {
     }
   }
 
+  /** The floor's or the ceiling's program: the room-kind floors (parquet,
+   *  turf, a vinery's roof, a pool) are compiled only where they are laid
+   *  (MM_FLOORX in shaders/backdrop.js). */
+  _setSurfaceProgram(mat, x) {
+    const n = x ? 1 : 0;
+    if (mat.defines && mat.defines.MM_FLOORX === n) return;
+    mat.defines = Object.assign({}, mat.defines, { MM_FLOORX: n });
+    mat.needsUpdate = true;
+  }
+
+  /** The props' program, by what this room deals (round 14): the grounds'
+   *  carved stone -- the churchyard's stones and table tombs (3, and 16 below
+   *  16.1; 16.25 is the terrace's kerb, drawn as it always was) and the
+   *  fountain (25) -- and the gallery's bust (26) are compiled only into the
+   *  rooms that have them. In every program they took the prop link from
+   *  9.0 s to 16.7 s and the stage's warm-up from ~47 s to ~70 s. Two
+   *  variants, so no room needs one that was not linked behind the game:
+   *  the hedge's fountain court has stones AND a fountain, and those are one
+   *  variant; nothing that has a bust has either. */
+  _setPropProgram(placed) {
+    let stones = 0, bust = 0;
+    for (const p of placed) {
+      const s = p.shape;
+      if ((s > 2.5 && s < 3.5) || (s > 15.5 && s < 16.1) || (s > 24.5 && s < 25.5)) stones = 1;
+      else if (s > 25.5) bust = 1;
+    }
+    const d = this.propMat.defines || {};
+    if (d.MM_STONES === stones && d.MM_BUST === bust) return;
+    this.propMat.defines = Object.assign({}, d, { MM_STONES: stones, MM_BUST: bust });
+    this.propMat.needsUpdate = true;
+  }
+
   /** Switch the three wall planes to the program that carries this subject. */
   _setRoomsProgram(n) {
     if (this._roomsProg === n) return;
@@ -1937,12 +1983,29 @@ export class Backdrop {
     try { gl = R.getContext(); } catch { gl = null; }
     if (!gl || !gl.getExtension('KHR_parallel_shader_compile')) return;
     const targets = [stage.composer?.renderTarget1 ?? null];
+    /* THE WALLS FIRST, in the order they always were: a wall variant is a
+       0.6-1.5 s link, and holding them back behind round 14's heavier ones
+       left the Graveyard's plots (wall 4) linking on demand in a batch -- the
+       one VOID in its check sheet. Then round 14's: the portal (the Foyer's
+       parlor is seen from a doorway), the props with the gallery's busts
+       (MM_BUST), the room-kind floor, and last the grounds' carved stone
+       (MM_STONES, a 15 s link on this machine), whose first wing is the
+       Greenhouse, the third. */
+    const wall = (n) => [this.wall.geometry, this.wallMat, { MM_ROOMS: n }];
+    const jobs = [
+      wall(1), wall(2), wall(3), wall(4), wall(5), wall(6), wall(7),
+      [this.portals[0].geometry, this.portals[0].material, null],
+      [this.propGeo, this.propMat, { MM_STONES: 0, MM_BUST: 1 }],
+      [this.floor.geometry, this.floorMat, { MM_FLOORX: 1 }],
+      [this.propGeo, this.propMat, { MM_STONES: 1, MM_BUST: 0 }],
+    ];
     (async () => {
       await new Promise((r) => setTimeout(r, 1500));
-      for (const n of [1, 2, 3, 4, 5, 6, 7]) {
-        const m = this.wallMat.clone();
-        m.defines = Object.assign({}, this.wallMat.defines, { MM_ROOMS: n });
-        const mesh = new THREE.Mesh(this.wall.geometry, m);
+      for (const [geo, mat, defs] of jobs) {
+        const m = mat.clone();
+        if (defs) m.defines = Object.assign({}, mat.defines, defs);
+        const mesh = new THREE.Mesh(geo, m);
+        mesh.frustumCulled = false;
         for (const rt of targets) {
           const prev = R.getRenderTarget();
           R.setRenderTarget(rt);
