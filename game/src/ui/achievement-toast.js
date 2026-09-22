@@ -173,6 +173,10 @@ export class AchievementToast {
     // to inject markup into a live scene.
     card.querySelector('.mm-ach__tier').textContent = tier;
     card.querySelector('.mm-ach__name').textContent = def.name;
+    /* How long the banner has to be. The plaque's WIDTH is what `_seat` has to
+       find a wall for, so a long name is lettered smaller rather than widening
+       the object; the sheet divides the banner's room by this. */
+    card.style.setProperty('--ach-len', String(Math.max(10, String(def.name || '').length)));
     const desc = card.querySelector('.mm-ach__desc');
     desc.textContent = def.desc || '';
     desc.hidden = !def.desc;

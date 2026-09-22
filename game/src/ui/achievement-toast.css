@@ -173,7 +173,15 @@
   /* never less than the banner's own notched ends (52 and 47 of its 49 rows)
      plus a breath, or the name runs into the fold and its star */
   padding-inline: calc(var(--rib-h) * 1.26);
-  font-size: max(14px, calc(var(--rib-h) * .47));
+  /* The banner is as long as the plaque lets it be and no longer, because the
+     plaque's WIDTH is what `_seat` finds a wall for. So a long name is
+     lettered smaller rather than widening the object or being cut off: the
+     names in core/achievements.js run from 8 to 22 characters, and this set
+     of caps measures about .735em each, so --ach-len (achievement-toast.js)
+     divides the room between them. The same trick the veil letters a Kid's
+     name with (--hoff-len, ui/handoff.css). */
+  font-size: max(12px, min(max(14px, calc(var(--rib-h) * .47)),
+                           calc(var(--ach-room, 272px) / var(--ach-len, 18))));
   letter-spacing: .05em;
 }
 .mm-ach__name {
@@ -215,7 +223,7 @@
     padding: 13px 16px 12px calc(var(--award-w) * .68 + 18px);
   }
   .mm-ach__award { left: 10px; }
-  .mm-ach__banner { --rib-h: 27px; font-size: 13px; letter-spacing: .03em; }
+  .mm-ach__banner { --rib-h: 27px; --ach-room: 236px; letter-spacing: .03em; }
   .mm-ach__desc { font-size: 11.5px; margin-top: 4px; }
   .mm-ach__kind { font-size: 10px; letter-spacing: .2em; margin-bottom: 2px; }
 }
