@@ -1,0 +1,62 @@
+{
+  "round": "r15",
+  "maxBuilders": 3,
+  "briefs": [
+    "docs/ui-pass/BRIEF-r0.md",
+    "docs/ui-pass/BRIEF-r1.md",
+    "docs/ui-pass/BRIEF-r9.md",
+    "docs/ui-pass/BRIEF-r10.md",
+    "docs/ui-pass/BRIEF-r11.md",
+    "docs/ui-pass/BRIEF-r15.md"
+  ],
+  "rubrics": [
+    "docs/ui-pass/RUBRIC.md",
+    "docs/ui-pass/RUBRIC-r9.md",
+    "docs/ui-pass/RUBRIC-r11.md",
+    "docs/ui-pass/RUBRIC-r15.md"
+  ],
+  "samples": [
+    "UI/title.png",
+    "UI/mainMenu.png",
+    "UI/selectCompanion.png",
+    "UI/selectKid.png"
+  ],
+  "tracks": [
+    {
+      "key": "rooms",
+      "name": "ROOMS",
+      "rule": "refine",
+      "screens": [
+        "sheet-foyer",
+        "sheet-ballroom",
+        "sheet-greenhouse",
+        "sheet-graveyard",
+        "combat"
+      ],
+      "smallScreens": [
+        "combat"
+      ],
+      "baseline": "DIMITY",
+      "builders": [
+        {
+          "slot": "a",
+          "code": "REALGAR",
+          "port": 8941,
+          "angle": "LITERAL. Work BRIEF-r15's fix list 1 to 7 in order and exactly as written. Every item in it was written by a round-14 judge about the build you are starting from, and the first five were named by BOTH judges; a candidate that simply clears all seven should win. This is the angle that won round 14: its builder worked the list in order and took nothing the list did not ask for. Start with the mansion behind the graveyard railing, because both judges named it on all three panels of that sheet, and finish with combat's left wall. Photograph in sheets from the first change, so you always see the set the judges will see."
+        },
+        {
+          "slot": "b",
+          "code": "AZURITE",
+          "port": 8942,
+          "angle": "THE HOUSE AND ITS HORIZON. Fixes 1 and 2 are your round: everything in these panels that is ARCHITECTURE rather than furniture. The mansion behind the graveyard railing is a flat slab of one repeated window and must be built to the standard of the chapel on the same sheet -- a projecting gabled bay, a ridge and eaves, reveals and sills, more than one window size, one dark window among the lit -- and it must scale and move with the vantage instead of sitting at one size on one horizon in all three panels. Then the panel's own frame: find why the ballroom suite's vantage renders short of its tile and leaves black margins on three sides, fix it at the cause, and sweep every kind in every wing for the same fault. Then fix 6, the bent parquet, which is the same family of defect: a projection drawn wrong. Only then the rest."
+        },
+        {
+          "slot": "c",
+          "code": "MASSICOT",
+          "port": 8943,
+          "angle": "NAME EVERYTHING AT THE EDGES. Fixes 3, 4 and 5 are your round, and they are one idea: a room whose centre is finished and whose edges are not. Sweep every panel's left and right thirds and its upper half for objects lost to flat black, and for the placeholders -- the landing's hangings and pictures, and any other rounded rectangle with a faint edge standing in for a drawn thing, in any wing. Then the vinery and the palmhouse's mid-distance beds, where the near planting is right and the middle distance falls back to flat cut-outs. READ FIX 3'S TRAP FIRST AND OBEY IT: do not lift the blacks. This game's colour lives in its darks and a grey room scores below a dark one. Light the OBJECT -- a candle beside it, a lit rim, a reflected highlight, a lighter material -- and leave the room dark."
+        }
+      ]
+    }
+  ]
+}
