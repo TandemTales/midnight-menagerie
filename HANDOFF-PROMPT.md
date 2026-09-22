@@ -19,33 +19,58 @@ loop until perfected". Two later calls narrow it and both are in force:
 
 ## START HERE — 2026-09-22 evening
 
-**ROUND 14 IS MERGED BUT NOT VERIFIED AND NOT PUSHED (`c1c32a5`), and ROUND 13
-IS RUNNING** (run `wf_35dbc3c9-39a`, task `w14dilmiy`, launched 11:52 MDT,
-NACRE / SMALT / GAMBOGE on 8921-8923 against the BUCKRAM baselines).
+**ROUNDS 14 AND 13 ARE BOTH MERGED AND VERIFIED** — round 14 ORPIMENT
+(`c1c32a5`, +3.64) and round 13 GAMBOGE (`1e69f27`, +2.22).
 
 **THE NEXT ACTIONS, in order:**
 
-1. **When round 13's builders return, verify round 14's merge.** It is merged
-   on `dev` with only the two cheap gates run (endings commit-to-commit
-   IDENTICAL, shader-literals 22/22 green). Still owed, and both need the GPU,
-   which is why they waited for the builders:
-   - photograph all six sheets and combat on the merged tree with
-     `BRIEF-r14.md`'s Deliverables commands on 8777, and compare them with
-     ORPIMENT's judged captures in `C:/UILOOP/r14/judging/r14/rooms/ORPIMENT/`
-     — round 11's standard was BYTE-IDENTICAL;
-   - the battery (`python tools/gates.py`, ~30 min), red expected only on the
-     three long-known rows.
-   Then push, and only then.
-2. **Then the BATHHOUSE GRAFT, which both judges made their first
-   instruction** — see "What round 14 decided" below. Give it to a single
-   builder with a dev server, as round 9's ballroom graft was done.
-3. **Then merge round 13** (EXPAND: per screen), and brief round 15 from the
-   judges' fix lists, which are already listed below.
+1. **The two GRAFTS the judges asked for, which are the whole of what those
+   rounds left owed.** Both are single-builder jobs with a dev server, as
+   round 9's ballroom graft was done, and they touch disjoint files (the WebGL
+   room versus the web chrome), so they can run side by side:
+   - **round 14's BATHHOUSE**, both judges' first instruction — see "What
+     round 14 decided" below;
+   - **round 13's TOAST**, all three judges' first instruction — see "What
+     round 13 decided".
+2. **Then brief round 15** from the fix lists below, which are already
+   collected from every judge.
+
+**How both merges were verified, and the standard has changed.** Round 11's
+rule was BYTE-IDENTICAL captures on the merged tree. That is the wrong test
+for an animated screen and it cost an hour here: six of round 14's eight
+captures "differed". What actually settles it, in this order — (a)
+`git diff <winner's branch> HEAD -- <the files it owns>` must be EMPTY, which
+is the real proof the merge took the judged work; (b) compare CONTENT rather
+than hashes (the six sheets read mean |difference| 0.00 and no pixel off by
+more than 8); (c) take a SAME-TREE A/B of any live screen first and use it as
+the noise floor — combat differs from itself by 18% of pixels, so
+merged-versus-judged at 15% is a pass; (d) for chrome over a board, crop to
+the object the round built: round 13's builders worked from `d46eec5`, so
+their captures show the OLD room, and inside the toast plate merged versus
+judged is 0.00.
 
 **Usage (Pro plan), 2026-09-22:** round 14's three builders cost about 16% of
-the weekly allowance in 6.5 hours; the week stood at 16% when round 13
-launched. Next weekly reset 2026-09-29 09:00 UTC. Read `get_usage` before any
-launch and keep to ONE round at a time.
+the weekly allowance in 6.5 hours (1.42M subagent tokens) and round 13's about
+8% in 2.6 hours (2.01M with its three judges); the week stood at 24% with both
+rounds judged. Next weekly reset 2026-09-29 09:00 UTC. Read `get_usage` before
+any launch and keep to ONE round at a time — chrome rounds are much cheaper
+than room rounds, because a shader round spends its hours on captures.
+
+**What round 13 decided.** GAMBOGE won 3 of 3 judges, **7.89 against the
+baseline's 5.67, +2.22**: the coach and the veil 3 of 3, and the toast on the
+rankings after three judges named three different winners. Two judges say its
+veil could be cut into a trailer beside the samples (8.67, the best screen of
+the pass). **The toast is the graft all three judges asked for**: NACRE's gold
+ribbon banner carrying the achievement name (`ui/r13-chrome-a`, the round's
+only `fits_between_samples`) on SMALT's plate — double gold rule, corner
+studs, a painted inner ground (`ui/r13-chrome-b`) — at SMALT's 1600 anchor,
+the only placement clear of the bell, the sconce and every HUD readout. Two
+more, named by two judges each: **the veil's oval frames crop their subjects**
+(at 1600 the Companion is "reduced to a single eyeball", the Kid loses his
+shoulders) — the most damaging thing on the best screen in the round; and
+**the coach's GOT IT is bare text while SKIP sits in a cartouche**, so the
+primary control reads as the weaker one (SMALT's row is the graft, with the
+ENTER keycap set inside it).
 
 **What round 14 decided.** ORPIMENT won 2 of 2 judges, **7.07 against the
 baseline's 3.43, +3.64, the largest gain of the pass**, on six of seven sheets;
@@ -143,7 +168,7 @@ long-known** (the seven HALO sprite clips, `run.py`'s Archivist seed and
 `_losePatience`); frame cost is **13.3 ms default and 14.3 ms in the
 Greenhouse fight**, against the hard 15.5.
 
-**What round 13 is for** — `BRIEF-r13.md`. Round 12's three judges agreed on
+**Round 13 ran and merged; this is what it was for** -- `BRIEF-r13.md`. Round 12's three judges agreed on
 what stops each piece at 8: the coach's spotlight reads as a selection box
 with nothing pointing at its target; the veil's portraits are pasted cards on
 a painting that competes with them, and everything is named twice; the toast's

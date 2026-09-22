@@ -154,6 +154,8 @@ so round 2 runs six at once, as round 1 did.
 
 | 14 | **WHERE YOU STAND** — sheets of three rooms per wing for six wings (foyer / ballroom / greenhouse / graveyard, plus lampworks and bathhouse judged for the first time) and combat | ORPIMENT 7.07 · VERMEIL 6.86 · SEPIA 5.71 · the screens before **3.43** | ORPIMENT, 2 of 2, six of seven sheets. **+3.64, the largest gain of the pass**, and its Graveyard is `fits TRUE`. A kind now carries a VANTAGE (MADDER's rig grafted), a wing's MAIN room keeps its authored shell and camera, and the six wings with no `ROOM_KINDS` got rooms. VERMEIL won the Bathhouse (8.0, fits TRUE) and both judges demand that graft | `c1c32a5` |
 
+| 13 | **CHROME, second pass** — the coach / the veil / the toast, told they are DRAWN and not LIT (EXPAND) | GAMBOGE 7.89 · SMALT 6.67 · NACRE 6.44 · round 12's screens 5.67 | GAMBOGE, 3 of 3 judges; coach and veil 3 of 3, and the toast on the rankings after three judges named three different winners. Two judges say its veil "could be cut into a trailer beside the samples". NACRE's toast is the round's only `fits TRUE` and is the graft all three judges asked for | `1e69f27` |
+
 **Scores anchor to the candidates beside them.** Round 0's winner scored 7.0 in
 round 0 and 5.58 as round 1's baseline: the judges grew stricter as the field
 improved. Compare a winner with the baseline IN ITS OWN ROUND (round 1 REFINE:
@@ -175,6 +177,7 @@ Against their own baselines:
 | 10 | THE OBJECTS, FINISHED **+0.93** (reported +1.72; the baseline's combat was void) | — |
 | 11 | VARIATION **+2.17** (sheets 3-3.5 -> 6-7) | — |
 | 12 | — | THE LAST WEB CHROME **+5.9** (per-screen winners 7.33 / 8.00 / 7.67 against 2 / 1 / 1.33) |
+| 13 | CHROME, second pass **+2.22** (coach 6.0 -> 8.0, veil 6.0 -> 8.67, toast 5.0 -> 7.0) | — |
 | 14 | WHERE YOU STAND **+3.64** (two of its six wings had never been judged, and the baseline scored 2.0 on both) | — |
 
 Converting a screen moves it about four points. Refining one moves it half a point
@@ -580,3 +583,47 @@ never been judged and scored 2.0 as the baseline, because they had no
   frame; the vinery is thin stems on empty brick; the Foyer landing's hangings
   and pictures are undrawn rectangles; and the Foyer's left and right thirds
   fall to near-black and swallow nameable objects.
+
+### Round 13: light, and the object the light falls on, 2026-09-22
+
+**GAMBOGE, 3 of 3 judges, 7.89 against 5.67 — +2.22** (`1e69f27`, run
+`wf_35dbc3c9-39a`). Round 12 converted the coach, the veil and the toast;
+round 13 told all three builders the judges' real complaint, which was that
+the pieces are DRAWN and not LIT. The winner's angle was exactly that.
+
+- **The coach's spotlight is a wash of candlelight inside four filigree corner
+  scrolls**, not a gilt box ruled over the room, with a tapered gold leader
+  running from the note to the thing it teaches — the two fixes round 12's
+  three judges all named.
+- **Its veil is the best single screen of the pass so far**: two judges say it
+  could be cut into a trailer beside the samples, and it scored 8.67.
+- **The toast is its weakest piece and did not really win.** Three judges named
+  three different winners; GAMBOGE took it on the rankings, and it is the one
+  screen where the round behaved like round 6's converged POLISH. The
+  difference from round 6 is that GAMBOGE is never below second on any judge's
+  ranking and has the highest mean, so the tiebreak is not an accident — but
+  all three judges then named the same repair, which makes it a graft and not
+  a win: NACRE's gold ribbon banner (the samples' own device, and the round's
+  only `fits_between_samples`) on SMALT's plate, at SMALT's anchor.
+
+**The verification trap this round paid for, and it is a general one.**
+Round 11's standard was BYTE-IDENTICAL captures on the merged tree, and on an
+animated screen that standard is wrong. Six of round 14's eight captures
+"differed" and both chrome screens differed by 20-30% of pixels. Three things
+were going on, and only a discriminator separated them:
+
+- **The sheets were fine.** Mean |difference| 0.00 and no pixel off by more
+  than 8: the builder's last two commits were genuinely look-neutral, and only
+  the PNG bytes differed. Compare CONTENT, not hashes.
+- **A live board never repeats.** Two captures of the SAME tree differ by 18%
+  of pixels on combat and by 11-18% on the chrome screens. **Take the same-tree
+  A/B first and use it as the noise floor**; merged-vs-judged inside that
+  floor is a pass.
+- **A later round changes the room behind an earlier round's captures.** Round
+  13's builders worked from `d46eec5`, so their judged captures show the OLD
+  room; round 14 had already merged. The veil matched to 0.02 because it covers
+  the whole board, while the coach and the toast sit over a live room. Cropped
+  to the toast plate itself, merged versus judged is 0.00. **Compare the OBJECT
+  the round built, not the frame it sits in** — and confirm with
+  `git diff <winner's branch> HEAD -- <the files it owns>`, which is the real
+  proof that a merge took the judged work.
