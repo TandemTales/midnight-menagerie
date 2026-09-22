@@ -1,7 +1,6 @@
-# Handoff — round 14 merged and unverified; round 13 is running
+# Handoff — rounds 13 and 14 merged; two grafts running, round 15 briefed
 
-You are picking up Midnight Menagerie on `dev`. Everything below is pushed
-EXCEPT round 14's merge and this file — see START HERE.
+You are picking up Midnight Menagerie on `dev`. Everything below is pushed.
 
 **Read item 3a before you touch a background.** "The background" is two
 different systems that share nothing, and a change to one does not touch the
@@ -24,16 +23,34 @@ loop until perfected". Two later calls narrow it and both are in force:
 
 **THE NEXT ACTIONS, in order:**
 
-1. **The two GRAFTS the judges asked for, which are the whole of what those
-   rounds left owed.** Both are single-builder jobs with a dev server, as
-   round 9's ballroom graft was done, and they touch disjoint files (the WebGL
-   room versus the web chrome), so they can run side by side:
+1. **The two GRAFTS are RUNNING** (launched 2026-09-22 ~15:45), one builder
+   each, in `C:/UILOOP/r14/wt/r14-graft` (branch `ui/r14-graft`, port 8934)
+   and `C:/UILOOP/r13/wt/r13-graft` (`ui/r13-graft`, port 8924), both cut from
+   `17c2f5e`. They touch disjoint files — the WebGL room versus the web
+   chrome — so they run side by side.
    - **round 14's BATHHOUSE**, both judges' first instruction — see "What
-     round 14 decided" below;
-   - **round 13's TOAST**, all three judges' first instruction — see "What
-     round 13 decided".
-2. **Then brief round 15** from the fix lists below, which are already
-   collected from every judge.
+     round 14 decided" below. Captures land in `C:/UILOOP/r14/judging/r14/graft/`.
+   - **round 13's TOAST**, all three judges' first instruction, plus the
+     veil's cropped portrait ovals and the coach's button row — see "What
+     round 13 decided". Captures in `C:/UILOOP/r13/judging/r13/graft/`.
+   When they return: look at the two sheets against VERMEIL's
+   (`C:/UILOOP/r14/judging/r14/rooms/VERMEIL/`) and the three chrome screens
+   against GAMBOGE's, merge each with `--no-ff`, and re-run the battery once
+   for both.
+2. **ROUND 15 IS BRIEFED AND READY** (`35d0fdc`): `BRIEF-r15.md`,
+   `RUBRIC-r15.md`, `round-15.args.json` (REALGAR / AZURITE / MASSICOT on
+   8941-8943 against a DIMITY baseline, four sheets and combat), and
+   `baseline-r15.sh`. The probe dry-runs clean at 5 agents. **It is waiting on
+   one thing only: the grafts must merge first**, because the baseline and the
+   worktrees must both be cut from the tree the builders start from. Then:
+   ```
+   bash docs/ui-pass/baseline-r15.sh          # after the grafts merge
+   GIT_LFS_SKIP_SMUDGE=1 git worktree add -b ui/r15-rooms-<slot> "C:/UILOOP/r15/wt/r15-rooms-<slot>" <commit>
+   Workflow({ scriptPath: "docs/ui-pass/round-workflow.js",
+              args: { ...docs/ui-pass/round-15.args.json, repo, uiloop: "C:/UILOOP/r15", base: "<commit>" } })
+   ```
+   Take one capture on 8777 and read its `band` before launching, and read
+   `get_usage`.
 
 **How both merges were verified, and the standard has changed.** Round 11's
 rule was BYTE-IDENTICAL captures on the merged tree. That is the wrong test
@@ -85,13 +102,24 @@ grates, gauges and a sight glass, pipe runs with spoked handwheels. Both also
 name VERMEIL's Reflector Gallery corridor vantage and SEPIA's wax-room dipping
 hoods and hanging tapers.
 
-**What both judges say to fix after that**, and it is round 15's list: the
-mansion behind the graveyard railing is a flat slab of one repeated window;
-the Ballroom suite panel is letterboxed in black margins while its neighbours
-fill the frame; the vinery is thin stems on empty brick; the Foyer landing's
-hangings and pictures are undrawn rectangles; the Foyer's left and right
-thirds fall to near-black and swallow nameable objects; and combat's left wall
-is flat door panels with no architrave, plinth or handle.
+**What both judges say to fix after that is now `BRIEF-r15.md`'s fix list**,
+seven items, the first five named by both: the mansion behind the graveyard
+railing is a flat slab of one repeated window; the Ballroom suite panel is
+letterboxed in black margins while its neighbours fill the frame; the edges
+and upper halves fall to black and swallow nameable objects; the Foyer
+landing's hangings and pictures are undrawn rectangles; the vinery is wired
+rather than planted; the Mirror Hall's parquet bends in an arc, which is a
+projection drawn wrong; and combat's left wall is flat door panels with no
+architrave, plinth or handle.
+
+**The trap inside that list, and it is the one to hold on to:** the answer to
+"the edges go black" is NOT to lift the blacks. The measured floor of
+2026-09-16 found that nothing in this game was ever black and that the
+samples' colour lives in their darks — and that a minimum channel which cannot
+reach 0 caps saturation at 0.73. Raising ambient would undo all of it. **Light
+the OBJECT, not the room**, and `RUBRIC-r15.md` makes the judges the
+counterweight: a candidate whose darkest corners have gone milky scores below
+a dark one.
 
 **Two instrument findings from round 14, both now in the README's traps:**
 `gpuprof`'s default 5 s wait measures ANGLE LINKING rather than the frame (it
