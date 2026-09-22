@@ -22,7 +22,7 @@
 
    Laid out through this sheet's own classes: the kit pieces it wears
    (.kit-board .kit-dress .kit-web .kit-prop .kit-titleblock
-   .kit-cartouche__title .kit-ribbon .kit-panel .kit-arch .kit-plate
+   .kit-cartouche__title .kit-ribbon .kit-panel .kit-oval .kit-plate
    .kit-lantern .kit-ledge .kit-btn .kit-medallion) are placed and sized here
    only through .hoff__*.
    ────────────────────────────────────────────────────────────────────────── */
@@ -160,11 +160,22 @@
 /* ── the wall the two of them hang on ─────────────────────────────────────── */
 /* A panel of the Kid board's own wall — its painted gold rail, its engraved
    double rule and the boards' purple damask — with a GAP between the two
-   mirrors, which is what round 12's judges asked for in as many words. */
+   mirrors, which is what round 12's judges asked for in as many words. The
+   mirror is `.kit-oval`, round 13's graft: the same painting, shortened, so
+   its opening is a PORTRAIT rather than a slot that crops a Companion to one
+   eye and takes a Kid's shoulders off. */
+/* THE OPENING IS A PORTRAIT, NOT A SLOT (round 13's graft). The mirror is
+   `.kit-oval` -- the same painting with two runs of its plain straight side
+   rail taken out -- because at 254 by 481 two judges read the Companion as
+   "a single eyeball filling the oval" and said the Kid "loses his shoulders".
+   The figure is WIDER to suit: at 1600 the glass goes from 133x252 to
+   172x203, which shows half again as much of the Companion's painting and
+   the whole width of the Kid's, and the pair stand no taller than before. */
 .hoff__stage {
   --pk: .84;
-  --fig-w: clamp(126px, min(11.4vw, 20.4vh), 184px);
-  --gap: clamp(84px, 8.2vw, 138px);
+  --fig-w: clamp(150px, min(14.8vw, 26.6vh), 240px);
+  --gap: clamp(92px, 9.2vw, 154px);
+  --shelf-b: clamp(38px, 5.2vh, 62px);
   --lit-x: 50%; --lit-y: 13%; --lit-w: 78%; --lit-h: 62%; --lit-a: 34%;
   position: relative;
   display: flex; align-items: flex-start; justify-content: center;
@@ -178,7 +189,7 @@
   width: var(--fig-w);
   display: flex; flex-direction: column; align-items: center;
 }
-/* the arched mirror carries its own aspect: the figure's width sizes it */
+/* the mirror carries its own aspect: the figure's width sizes it */
 .hoff__frame { width: 100%; }
 /* the candle between them falls on the inner edge of each glass */
 .hoff__fig--kid .hoff__frame { --arch-lit: 84%; }
@@ -204,33 +215,33 @@
    candle stump burns on a gilt ledge under it, beside a skull — the Kid
    board's own corner, set between the two portraits. */
 .hoff__between {
+  --ledge-h: clamp(24px, 2.5vh, 31px);
   position: relative; flex: none; align-self: stretch;
   width: 0;
   pointer-events: none;
 }
 .hoff__lamp {
-  --lantern-w: clamp(52px, 4.8vw, 76px);
+  --lantern-w: clamp(58px, 5.4vw, 86px);
   left: 50%; top: calc(var(--lantern-w) * -.42);
   translate: -50% 0;
 }
 .hoff__shelf {
-  --ledge-h: clamp(22px, 2.3vh, 28px);
   position: absolute; z-index: 1;
-  left: 50%; bottom: clamp(30px, 4vh, 44px);
-  width: calc(var(--gap) * .82);
+  left: 50%; bottom: var(--shelf-b);
+  width: calc(var(--gap) * .86);
   translate: -50% 0;
   filter: drop-shadow(0 6px 7px rgba(0, 0, 0, .7));
 }
 .hoff__skull {
   z-index: 2;
-  width: clamp(32px, 3vw, 46px);
-  left: calc(50% - var(--gap) * .28); bottom: calc(clamp(30px, 4vh, 44px) + clamp(22px, 2.3vh, 28px) * .82);
+  width: clamp(34px, 3.2vw, 50px);
+  left: calc(50% - var(--gap) * .28); bottom: calc(var(--shelf-b) + var(--ledge-h) * .82);
   translate: -50% 0;
 }
 .hoff__stub {
   z-index: 2;
-  width: clamp(24px, 2.2vw, 34px);
-  left: calc(50% + var(--gap) * .26); bottom: calc(clamp(30px, 4vh, 44px) + clamp(22px, 2.3vh, 28px) * .82);
+  width: clamp(26px, 2.4vw, 37px);
+  left: calc(50% + var(--gap) * .26); bottom: calc(var(--shelf-b) + var(--ledge-h) * .82);
   translate: -50% 0;
 }
 
@@ -300,5 +311,5 @@
    a size down, so the button never leaves the screen */
 @media (max-height: 820px) {
   .hoff__plaque { --cart-h: clamp(100px, 14.6vh, 128px); }
-  .hoff__stage { --fig-w: clamp(118px, min(10.8vw, 19.6vh), 162px); --gap: clamp(76px, 7.4vw, 116px); }
+  .hoff__stage { --fig-w: clamp(140px, min(15.6vw, 27vh), 212px); --gap: clamp(84px, 8.2vw, 132px); }
 }

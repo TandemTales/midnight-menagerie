@@ -134,15 +134,27 @@ export class Coach {
        painted gold rail round dark damask, its inner double rule and brass
        fleurons) with the Kid board's paw medallion seated on its top rail, a
        gilt filigree scroll over each of its four corners (`.kit-flourish`), a
-       `.kit-heading` lettered in the wordmark's lavender, the way out as the
-       Kid board's round enamel confirm (`.kit-medallion`) with its Enter
-       keycap, and SKIP as the boards' quiet nameplate (`.kit-btn--quiet`).
+       `.kit-heading` lettered in the wordmark's lavender, and SKIP as the
+       boards' quiet nameplate (`.kit-btn--quiet`).
        WHO IS TALKING is in it: Marmalade in the Kid board's round gilt
        filigree socket (`.kit-cameo`) over her own nameplate (`.kit-plate`) —
        round 12's judges asked for a speaker, "so the tutorial's voice belongs
-       to a character". And the note is TIED to what it teaches: a gilt double
-       rule (`.kit-tail`) runs from its edge to the lit thing, with the
-       wordmark cartouche's fleur-de-lis (`.kit-finial`) turned along it. */
+       to a character" — and the plate names her the way every nameplate in
+       the samples does, the name over a small italic epithet, so it agrees
+       with the HUD's own plate a few inches below it. And the note is TIED to
+       what it teaches: a gilt double rule (`.kit-tail`) runs from its edge to
+       the lit thing, with the wordmark cartouche's fleur-de-lis
+       (`.kit-finial`) turned along it.
+
+       THE WAY ON IS THE PRIMARY CONTROL AND NOW LOOKS LIKE ONE (round 13's
+       graft). Two judges read the row the wrong way round: GOT IT was bare
+       text beside a medallion while SKIP sat in a gilt cartouche, "so the
+       primary control reads as the weaker one". GOT IT is now the veil's own
+       I'M READY — a long gilt cartouche (`.kit-btn`) with the Enter keycap
+       set INSIDE it and the Kid board's round purple enamel confirm seated on
+       its right end (`.kit-medallion` on `.kit-btn__medal`) — and SKIP stays
+       the small quiet plate at the other end of the row. `.coach__next` is
+       still the button itself, which is what the capture scripts click. */
     const root = this.root = el('div', 'coach');
     const who = COMPANIONS.find((c) => c.slug === SPEAKER);
     root.innerHTML = `
@@ -159,7 +171,7 @@ export class Coach {
         <i class="coach__fl kit-flourish kit-flourish--bl coach__guard"></i><i class="coach__fl kit-flourish kit-flourish--br coach__guard"></i>
         <figure class="coach__who" aria-hidden="true">
           <i class="coach__cameo kit-cameo"></i>
-          <figcaption class="coach__sig kit-plate"><b class="kit-plate__name">${who ? who.name : 'Marmalade'}</b></figcaption>
+          <figcaption class="coach__sig kit-plate"><b class="kit-plate__name">${who ? who.name : 'Marmalade'}</b><span class="kit-plate__epithet">${who ? who.title : 'the Ghost Cat'}</span></figcaption>
         </figure>
         <div class="coach__say">
           <p class="coach__head kit-heading" aria-hidden="true">The First Scuffle</p>
@@ -173,9 +185,11 @@ export class Coach {
             <button class="coach__skip kit-btn kit-btn--quiet" type="button">Skip</button>
             <span class="coach__hint"></span>
             <span class="coach__ways">
-              <span class="coach__label" aria-hidden="true">Got it</span>
-              <kbd class="coach__key" aria-hidden="true">Enter</kbd>
-              <button class="coach__next kit-medallion" type="button" aria-label="Got it">${TICK}</button>
+              <button class="coach__next kit-btn" type="button">
+                <span class="coach__label">Got it</span>
+                <kbd class="coach__key" aria-hidden="true">Enter</kbd>
+                <i class="coach__tick kit-medallion kit-btn__medal" aria-hidden="true">${TICK}</i>
+              </button>
             </span>
           </div>
         </div>

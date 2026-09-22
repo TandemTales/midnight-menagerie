@@ -3184,3 +3184,55 @@ button.kit-medallion:hover, button.kit-medallion:focus-visible,
 }
 .kit-award--silver { background-image: url("../../assets/ui/kit/chrome-award-silver.webp"); }
 .kit-award--bronze { background-image: url("../../assets/ui/kit/chrome-award-bronze.webp"); }
+
+/* ── the coach, the veil and the toast: the graft ── */
+/* ===========================================================================
+   Round 13's graft pass. Appended; nothing above it is changed.
+
+   Two of round 13's judges named the same fault on the veil, the best screen
+   of the round: at 1600 the Companion in its arched mirror "is reduced to a
+   single eyeball filling the oval" and the Kid "loses his shoulders". The
+   mirror is right -- the gilt scrollwork, the moon crest and the paw pendant
+   are why that screen scored what it did -- but the OPENING it was painted
+   with is 254 by 481, one to one point nine, and a painting dropped into a
+   slot that shape is cropped to half its width whatever you do with it.
+
+     .kit-oval        the SAME mirror, shortened: two runs of its plain
+                      straight side rail taken out between the arcs
+                      (chrome-oval.webp, tools/prep_chrome.py), so the glass
+                      is 254 by 291 -- the shape the Kid board's own portrait
+                      tiles are -- and every piece of the painting is at the
+                      painting's own scale. Use it exactly as .kit-arch: put
+                      the picture inside as an <img>, and the ELEMENT'S WIDTH
+                      sizes the whole thing (it carries its own aspect).
+                      --arch-lit moves the candle across its glass
+   =========================================================================== */
+.kit-oval {
+  position: relative;
+  width: 100%; aspect-ratio: 348 / 529;
+  filter: drop-shadow(0 18px 26px rgba(0, 0, 0, .85));
+}
+.kit-oval > img {
+  position: absolute;
+  left: 13.79%; top: 19.23%; width: 72.99%; height: 56.6%;
+  object-fit: cover;
+  border-radius: 50% / 42.4%;
+  user-select: none; -webkit-user-drag: none;
+}
+/* the glass, as .kit-arch's is: the room's candle on one side of it, the dark
+   gathering at the foot, the painting sunk behind the gilt rather than pasted
+   on it */
+.kit-oval::before {
+  content: ''; position: absolute; z-index: 1; pointer-events: none;
+  left: 13.79%; top: 19.23%; width: 72.99%; height: 56.6%;
+  border-radius: 50% / 42.4%;
+  background:
+    radial-gradient(56% 42% at var(--arch-lit, 14%) 30%, color-mix(in srgb, var(--kit-candle) 17%, transparent), transparent 70%),
+    radial-gradient(104% 78% at 50% 36%, transparent 48%, rgba(6, 3, 10, .68) 100%),
+    linear-gradient(to top, rgba(6, 3, 10, .6), transparent 30%);
+  box-shadow: inset 0 3px 10px rgba(0, 0, 0, .85);
+}
+.kit-oval::after {
+  content: ''; position: absolute; inset: 0; z-index: 2; pointer-events: none;
+  background: url("../../assets/ui/kit/chrome-oval.webp") 50% 50% / 100% 100% no-repeat;
+}

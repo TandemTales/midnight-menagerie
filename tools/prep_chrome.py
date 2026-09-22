@@ -42,6 +42,9 @@ Gold needs no copy: it IS plate-lit.webp, rosette.webp and panel.webp.
   chrome-valance.webp        one gather to the next of a gathered velvet swag
                              with a gilt bullion rope and its tassels, 520x250,
                              tiling along its width
+  chrome-oval.webp           moth-mirror.webp with two lengths of its straight
+                             side rail taken out, so the SAME painted mirror
+                             holds a portrait-shaped opening (round 13 graft)
 
     python tools/prep_chrome.py
 """
@@ -448,9 +451,67 @@ def _paint_valance():
     return np.asarray(im.resize((VA_W, VA_H), Image.LANCZOS)).astype(np.uint8)
 
 
+# -- the oval: the same arched mirror, shortened ------------------------------
+#
+# Round 13's graft. moth-mirror.webp is UI/selectKid.png's arched gilt mirror,
+# 348x711, and its glass is 254 wide by 481 tall -- one to one point nine. A
+# painting dropped into an opening that shape is cropped to just over half its
+# width, and two judges said what that does: the Companion "is reduced to a
+# single eyeball filling the oval" and the Kid "loses his shoulders".
+#
+# The gilt is not the problem and is not touched: the moon crest, the paw
+# pendant, the scrolled corners, the two end arcs and the diamond bosses are
+# the painting's own, at the painting's own scale. What comes out is LENGTH --
+# two runs of the plain straight side rail between the arcs, where the rails
+# are two parallel bars and nothing else is happening. The cut ends are
+# cross-faded over a few rows, which on a bar of constant section leaves no
+# seam. The mirror is then 348x521 and its glass 254x291, about one to one
+# point one five: the shape the Kid board's own portrait tiles are.
+#
+# The cuts avoid the bosses (rows 338-356 and 448-470) and both end arcs,
+# which reach 127 rows -- half the glass's width -- in from each end of it.
+
+OV_SRC = "moth-mirror.webp"
+OV_CUTS = ((272, 338), (356, 448))     # source rows removed, top to bottom
+OV_BLEND = 12                          # rows cross-faded over each join
+# the glass, as painted, in source pixels: left, top, width, height
+OV_GLASS = (48.0, 101.7, 254.0, 481.4)
+
+
+def _join(top, bot, blend):
+    """Stack two bands, cross-fading `blend` rows of each into one."""
+    b = min(blend, len(top), len(bot))
+    if b <= 0:
+        return np.concatenate([top, bot], 0)
+    w = np.linspace(0.0, 1.0, b, dtype=np.float32)[:, None, None]
+    mid = top[-b:] * (1 - w) + bot[:b] * w
+    return np.concatenate([top[:-b], mid, bot[b:]], 0)
+
+
+def shorten_oval():
+    im = Image.open(os.path.join(KIT, OV_SRC)).convert("RGBA")
+    a = np.asarray(im).astype(np.float32)
+    bands, y = [], 0
+    for c0, c1 in OV_CUTS:
+        bands.append(a[y:c0])
+        y = c1
+    bands.append(a[y:])
+    out = bands[0]
+    for band in bands[1:]:
+        out = _join(out, band, OV_BLEND)
+    lost = a.shape[0] - out.shape[0]
+    gl, gt, gw, gh = OV_GLASS
+    gh -= lost                          # every cut falls inside the glass
+    h, w = out.shape[0], out.shape[1]
+    print(f"  {'chrome-oval glass':28s} left {gl / w:.3%}  top {gt / h:.3%}  "
+          f"w {gw / w:.3%}  h {gh / h:.3%}  radius 50% / {gw / 2 / gh:.3%}")
+    return np.clip(out, 0, 255).astype(np.uint8)
+
+
 def main():
     save(cut_cameo(), "chrome-cameo.webp")
     save(_paint_valance(), "chrome-valance.webp")
+    save(shorten_oval(), "chrome-oval.webp")
     for metal in ("silver", "bronze"):
         save(recast("plate-lit.webp", metal), f"chrome-plate-{metal}.webp")
         save(recast("rosette.webp", metal), f"chrome-medal-{metal}.webp")

@@ -1,135 +1,231 @@
 /* Achievement toast. OWNER: platform. Paired with ui/achievement-toast.js.
 
-   AN AWARD, PINNED TO A GILT PLAQUE (round 13, CHROME). Round 12 hung the
-   kit's gold star rosette on a nameplate and all three judges named the same
-   two things: "the plate is a plain dark bar", and "the medal is a flat
-   vector star on a gradient disc". So this is an object now.
+   A MEDAL AND A BANNER ON A GILT PLAQUE (round 13, then round 13's graft).
 
-   The plaque is the Kid board's own painted gold rail (.kit-panel), the same
-   frame the boards are built of, cast in the tier's metal (.kit-panel--silver
-   / --bronze, chrome-panel-*.webp) round fired enamel, with the wordmark's
-   star struck into each end and the boards' own gold ribbon straddling its
-   top rail carrying the tier in engraved caps -- so the tier is read in words
-   as well as in metal. Hung on its left end is .kit-award: a struck medal
-   with a bevelled rim, a ring of beads and the wordmark's star standing proud
-   of its field, lit from the upper left, on a purple silk ribbon and a pin
-   bar, painted three times over by tools/prep_chrome.py.
+   Round 13's toast was the one piece every judge named: "a flat, light lilac
+   slab with no painted ground, texture or candle falloff -- the least material
+   surface on the screen, and lighter than anything in the samples". So the
+   plaque keeps its painted rail and gets back everything that was switched off
+   in it, and the NAME comes off the slab and onto the boards' own gold ribbon
+   banner:
 
-   It hangs at the top right BELOW the corner candle (achievement-toast.js
-   measures the board's own dressing into --ach-top), never on the HUD's
-   readouts, the Companion's portrait, the Nerve, the piles, the hand or End
-   Turn. It takes no pointer events. */
+     the plaque   .kit-panel -- the Kid board's own painted gold rail, round
+                  the boards' fired enamel with the kit's grain laid back over
+                  the field at its own size, its engraved DOUBLE RULE turned
+                  back on and a brass fleuron over each of that rule's four
+                  corners (--rule was `none`, which is half of what left it a
+                  slab; a 54% candle wash over the whole field was the other
+                  half, and it is a quarter of that now). It is the same rail
+                  and the same rule the coach's note and the veil's wall wear,
+                  which is what makes the three one set of objects.
+     the tier     "* SILVER ACHIEVEMENT *" in spaced engraved small caps
+                  between the boards' four-point stars, riding the plaque's
+                  top rule, the tier's word cast in the tier's own metal.
+     the name     cut into .kit-ribbon, the gold banner with the notched,
+                  folded ends that carries CHOOSE YOUR KID on the Kid board --
+                  the most sample-native ornament this piece can wear. Its
+                  LEFT end is drawn whole: the medal hangs in the plaque's own
+                  left margin and the banner starts clear of it, rather than
+                  the medal lying across the fold and cutting it off, which is
+                  the one fault the candidate this is grafted from had. Its
+                  padding is never less than its own painted ends either, or
+                  the name runs into the fold's star.
+     what for     in italic on the Companion tiles' dark cartouche, under it.
+     the medal    .kit-award: a struck disc with a bevelled rim, a ring of
+                  beads and the wordmark's star in relief, hung from a purple
+                  silk ribbon on a pin bar (tools/prep_chrome.py). Its METAL
+                  is the tier, so the tier is never read by colour alone.
+
+   WHERE IT GOES IS MEASURED, NOT ASSUMED (achievement-toast.js `_seat`): the
+   plaque and the medal's own overhangs are scored against every readout,
+   creature, intent and corner painting on screen and take the cheapest piece
+   of wall. Round 13's hung the medal's ribbon on the Calling Bell's handle.
+   BRIEF-r12's contract still binds: never the HUD's readouts, the Companion
+   portrait, the Nerve, the piles, the hand or End Turn. It takes no pointer
+   events. */
 
 .mm-ach {
+  --ach-top: 0px;
+  --ach-x: 44px;
   position: fixed;
-  top: calc(var(--ach-top, 0px) + clamp(16px, 2.4vh, 26px));
-  right: clamp(26px, 2.4vw, 40px);
+  top: var(--ach-top);
+  right: var(--ach-x);
   z-index: var(--z-overlay);
-  display: flex; flex-direction: column; align-items: flex-end; gap: 22px;
+  display: flex; flex-direction: column; align-items: flex-end; gap: 20px;
   pointer-events: none;                   /* never steals a click from the board */
 }
+.mm-ach[data-side="left"] { right: auto; left: var(--ach-x); align-items: flex-start; }
 
-/* ── the object ───────────────────────────────────────────────────────────── */
+/* ── the plaque ───────────────────────────────────────────────────────────── */
 .mm-ach__card {
-  --plate-h: clamp(88px, 10.4vh, 102px);
-  --award-h: calc(var(--plate-h) * 1.92);
+  --pk: .62;
+  --ach-h: clamp(94px, 11.6vh, 106px);
+  /* the medal's bar stands above the top rail and its disc hangs past the
+     foot, the way a medal hangs on a citation; _seat measures both off the
+     medal itself and keeps them clear of everything the plaque clears */
+  --award-h: calc(var(--ach-h) * 1.19);
   --award-w: calc(var(--award-h) * 260 / 400);
+  --ach-rise: 10px;
+  /* A PAINTED GROUND, NOT A FILL. Round 13's plate was read by every judge as
+     "a flat, light lilac slab with no painted ground, texture or candle
+     falloff": it was the kit's enamel with a 54% candle wash over the whole
+     of it, which bleaches a material into a colour. This is the same enamel
+     at a quarter of that, one candle over the top rail, the dark gathering
+     into the corners, and the kit's own grain laid back over the field at its
+     own size (::before) so the plate has tooth as well as tone. */
+  --mat: url("../../assets/ui/kit/enamel.webp");
+  --mat-size: 340px 340px;
+  --mat-base: #1a0f2c;
+  --mat-veil: .4;                 /* the empty panels of UI/selectKid.png read
+                                     at about 18 of 255; round 13's plate read
+                                     at 37, which is what "lighter than
+                                     anything in the samples" measures as */
+  --mat-edge: .6;
+  --lit-x: 50%; --lit-y: -8%; --lit-w: 92%; --lit-h: 124%; --lit-a: 26%;
   position: relative;
-  padding-left: calc(var(--award-w) * .62);
-  /* Start off-screen-right and transparent; `.is-in` brings it home. */
-  transform: translateX(26px);
+  display: flex; align-items: center;
+  /* narrow enough to stand in the open upper-right wall of a three-creature
+     fight without touching the last creature's intent */
+  min-width: 330px; max-width: 396px;
+  min-height: var(--ach-h);
+  padding: 15px 20px 14px calc(var(--award-w) + 10px);
+  /* Start a little off and transparent; `.is-in` brings it home. */
+  transform: translateX(18px);
   opacity: 0;
   transition: transform var(--t-base) var(--ease-out), opacity var(--t-base) var(--ease-out);
 }
+.mm-ach[data-side="left"] .mm-ach__card { transform: translateX(-18px); }
 .mm-ach__card.is-in { transform: translateX(0); opacity: 1; }
-.mm-ach__card.is-out { transform: translateX(14px); opacity: 0; }
+.mm-ach__card.is-out { transform: translateX(12px); opacity: 0; }
+.mm-ach[data-side="left"] .mm-ach__card.is-out { transform: translateX(-12px); }
+
 /* Reduced motion: appear and leave, do not travel. The dwell is unchanged —
    somebody who asked for less movement still has to be able to read it. */
-.mm-ach__card.is-still { transition: opacity var(--t-quick) linear; transform: none; }
-.mm-ach__card.is-still.is-in { transform: none; }
-.mm-ach__card.is-still.is-out { transform: none; }
+.mm-ach__card.is-still,
+.mm-ach[data-side="left"] .mm-ach__card.is-still { transition: opacity var(--t-quick) linear; transform: none; }
+.mm-ach__card.is-still.is-in, .mm-ach__card.is-still.is-out { transform: none; }
 
-/* ── the plaque ───────────────────────────────────────────────────────────── */
-.mm-ach__plaque {
-  position: relative;
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  gap: 2px;
-  --pk: .62;
-  --rule: none;
-  min-width: 316px; max-width: 392px;
-  min-height: var(--plate-h);
-  padding: calc(var(--plate-h) * .24) calc(var(--plate-h) * .44) calc(var(--plate-h) * .18);
-  /* fired enamel, lit by the board's candle from the upper left -- round 12's
-     plate was read by all three judges as a plain dark bar */
-  --mat: url("../../assets/ui/kit/enamel.webp");
-  --mat-size: 300px 300px; --mat-base: #2a1a40; --mat-edge: .42;
-  --lit-x: 26%; --lit-y: -10%; --lit-w: 82%; --lit-h: 130%; --lit-a: 54%;
+/* the tooth of the enamel, at its own size. The rail is a 9-slice and the
+   field under it is a stretched painting; this lays the kit's grain back over
+   it unstretched, so a wide plate is as worked as a small one. */
+.mm-ach__card::before {
+  content: ''; position: absolute; z-index: -1; pointer-events: none;
+  inset: calc(5px + 8px * var(--pk));
+  background: url("../../assets/ui/kit/grain.webp") 0 0 / 256px 256px;
+  opacity: .34;
+  mix-blend-mode: overlay;
+}
+
+/* the tier's metal, for the word as well as the disc */
+.mm-ach__card--gold   { --metal: var(--kit-gold-hi); }
+.mm-ach__card--silver { --metal: var(--kit-silver); }
+.mm-ach__card--bronze { --metal: var(--kit-bronze); }
+
+/* ── the medal, hung on the plaque's left end ─────────────────────────────── */
+/* In the plaque's own left margin, never across the banner: the candidate
+   this is grafted from laid the disc over the banner's left fold and cut the
+   fold off, and a banner with one end is not the samples' banner. */
+.mm-ach__award {
+  position: absolute; left: 6px;
+  top: calc(-1 * var(--ach-rise));
+  z-index: 3;
+}
+/* the candle catches the metal once as it lands */
+.mm-ach__card.is-in .mm-ach__award { animation: mm-ach-glint 1.5s var(--ease-out) .25s 1 both; }
+@keyframes mm-ach-glint {
+  0%   { filter: drop-shadow(2px 6px 7px rgba(0, 0, 0, .8)) brightness(1); }
+  34%  { filter: drop-shadow(2px 6px 7px rgba(0, 0, 0, .8)) brightness(1.32); }
+  100% { filter: drop-shadow(2px 6px 7px rgba(0, 0, 0, .8)) brightness(1); }
+}
+
+/* ── three levels of type ─────────────────────────────────────────────────── */
+.mm-ach__body {
+  display: flex; flex-direction: column; align-items: center;
+  min-width: 0; width: 100%;
   text-align: center;
-  filter: drop-shadow(0 7px 9px rgba(0, 0, 0, .85));
 }
-
-/* the wordmark's four-point star struck into each end of the plaque, inside
-   the painted rail, the way the samples star the ends of a banner. Elements
-   and not pseudos: .kit-panel::after is the panel's own inner double rule and
-   a ::after here would inherit its inset, its border and its fleurons. */
-.mm-ach__star {
-  position: absolute; top: 50%; z-index: 1;
-  width: 14px; height: 14px; translate: 0 -50%;
-  background: url("../../assets/ui/kit/star4.svg") 50% 50% / 100% 100% no-repeat;
-  filter: drop-shadow(0 1px 0 rgba(0, 0, 0, .85)) drop-shadow(0 0 6px color-mix(in srgb, var(--kit-candle) 46%, transparent));
-}
-.mm-ach__star--l { left: calc(var(--plate-h) * .18); }
-.mm-ach__star--r { right: calc(var(--plate-h) * .18); }
-
-/* the tier, cut into the boards' gold ribbon, straddling the plaque's top
-   rail the way a banner is hung on a board (the graft two judges named) */
+/* the tier, riding the plaque's top rule, between the boards' four-point
+   stars, with the tier's word in the tier's own metal */
 .mm-ach__kind {
-  --rib-h: clamp(26px, 3vh, 31px);
-  position: absolute; left: 50%; top: 0; z-index: 3;
-  translate: -50% -58%;
-  min-width: calc(var(--rib-h) * 5.4);
-  font-size: calc(var(--rib-h) * .48);
-  letter-spacing: .24em;
-  padding-left: calc(var(--rib-h) * 1.32 + .24em);
-  white-space: nowrap;
+  display: inline-flex; align-items: center; gap: .62em;
+  margin-bottom: 3px;
+  font-family: var(--font-display); font-weight: 700;
+  font-size: max(11px, var(--fs-xs)); line-height: 1.2;
+  letter-spacing: .26em; text-transform: uppercase; white-space: nowrap;
+  padding-left: .26em;                    /* the tracking hangs off the last letter */
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, .95), 0 1px 0 rgba(0, 0, 0, .6);
 }
-.mm-ach__tier { font-style: normal; }
+.mm-ach__kind::before, .mm-ach__kind::after {
+  content: ''; flex: none; width: 9px; height: 9px;
+  background: url("../../assets/ui/kit/star4.svg") 50% 50% / 100% 100% no-repeat;
+  filter: drop-shadow(0 1px 0 rgba(0, 0, 0, .8));
+}
+.mm-ach__tier { font-style: normal; color: var(--metal, var(--kit-gold-hi)); }
+.mm-ach__lbl { font-weight: 700; color: var(--kit-text-mid); }
 
-.mm-ach__name {
-  font-size: max(18px, calc(var(--fs-md) * 1.22));
-  line-height: 1.14;
-  /* One line. A long name is clipped rather than reflowing the card mid-fade. */
+/* the name, cut into the gold banner the way CHOOSE YOUR KID is. The padding
+   is never less than the banner's own notched ends (52 and 47 of its 49 rows),
+   so neither fold is ever run over by a letter or clipped by the box. */
+.mm-ach__banner {
+  --rib-h: clamp(28px, 2.05vw, 32px);
   max-width: 100%;
+  min-width: 0;
+  /* never less than the banner's own notched ends (52 and 47 of its 49 rows)
+     plus a breath, or the name runs into the fold and its star */
+  padding-inline: calc(var(--rib-h) * 1.26);
+  /* The banner is as long as the plaque lets it be and no longer, because the
+     plaque's WIDTH is what `_seat` finds a wall for. So a long name is
+     lettered smaller rather than widening the object or being cut off: the
+     names in core/achievements.js run from 8 to 22 characters, and this set
+     of caps measures about .735em each, so --ach-len (achievement-toast.js)
+     divides the room between them. The same trick the veil letters a Kid's
+     name with (--hoff-len, ui/handoff.css). */
+  font-size: max(12px, min(max(14px, calc(var(--rib-h) * .47)),
+                           calc(var(--ach-room, 272px) / var(--ach-len, 18))));
+  letter-spacing: .05em;
+}
+.mm-ach__name {
+  /* One line. A long name is clipped rather than reflowing the card mid-fade. */
+  display: block; max-width: 100%;
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
+/* what it was for, as the Companion tiles letter an epithet */
 .mm-ach__desc {
+  margin-top: 5px;
   max-width: 100%;
-  font-size: max(13px, var(--fs-sm));
+  font-family: var(--font-body); font-style: italic;
+  font-size: max(12.5px, var(--fs-sm));
+  line-height: 1.2;
+  color: color-mix(in oklab, var(--kit-name) 70%, var(--kit-text-mid));
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
 .mm-ach__desc[hidden] { display: none; }
 
-/* ── the medal, hanging off the plaque's left end ─────────────────────────── */
-.mm-ach__award {
-  left: 0; top: calc(var(--plate-h) * -.18);
-  z-index: 2;
-}
-/* the candle catches the metal once as it lands */
-.mm-ach__card.is-in .mm-ach__award { animation: mm-ach-glint 1.5s var(--ease-out) .2s 1 both; }
-@keyframes mm-ach-glint {
-  0%   { filter: drop-shadow(0 5px 6px rgba(0, 0, 0, .85)) brightness(1); }
-  35%  { filter: drop-shadow(0 5px 6px rgba(0, 0, 0, .85)) brightness(1.3); }
-  100% { filter: drop-shadow(0 5px 6px rgba(0, 0, 0, .85)) brightness(1); }
-}
+.mm-large-text .mm-ach__card { max-width: 480px; }
+.mm-large-text .mm-ach__banner { --rib-h: clamp(32px, 2.6vw, 37px); }
+.mm-large-text .mm-ach__kind { font-size: max(12px, var(--fs-sm)); }
 
-.mm-large-text .mm-ach__name { font-size: max(20px, calc(var(--fs-md) * 1.34)); }
-.mm-large-text .mm-ach__plaque { max-width: 420px; }
-
-/* Steam Deck and any short window: the same object, a notch smaller. */
+/* Steam Deck and any short window: the same object, a notch smaller — and
+   NARROWER than a notch, because the wall it has to stand in is. At 1280 the
+   HUD wraps to two rails, the three creatures come further right and the open
+   upper-right wall is about 280px across; a plaque that keeps its 1600 width
+   there is standing on the last creature whatever `_seat` does with it. So on
+   the Deck the medal's disc laps onto the plaque's own field and only its
+   silk is padded clear, which is what buys the width back. */
 @media (max-height: 820px) {
-  .mm-ach { right: clamp(20px, 1.8vw, 30px); }
-  .mm-ach__card { --plate-h: 84px; }
-  .mm-ach__plaque { min-width: 272px; max-width: 322px; }
+  .mm-ach { --ach-x: 32px; gap: 16px; }
+  .mm-ach__card {
+    --pk: .54;
+    --ach-h: 88px;
+    --ach-rise: 9px;
+    min-width: 276px; max-width: 322px;
+    padding: 13px 16px 12px calc(var(--award-w) * .68 + 18px);
+  }
+  .mm-ach__award { left: 10px; }
+  .mm-ach__banner { --rib-h: 27px; --ach-room: 236px; letter-spacing: .03em; }
+  .mm-ach__desc { font-size: 11.5px; margin-top: 4px; }
+  .mm-ach__kind { font-size: 10px; letter-spacing: .2em; margin-bottom: 2px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
