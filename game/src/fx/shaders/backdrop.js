@@ -560,11 +560,13 @@ vec3 sPortrait(vec2 p, vec2 hs, float sd){
   c = mix(c, vec3(0.058, 0.048, 0.042), body*smoothstep(0.14, 0.64, (n.x - turn)*key)*0.70);
   /* THE COLLAR: a band at the neck, its own value between coat and face, with
      a hard line under it -- the second pale passage, and the one that makes
-     the first a HEAD rather than a blot. */
-  vec2 cq = vec2((n.x - turn)*0.70, n.y - 0.150);
-  float coll = (1.0 - smoothstep(0.150, 0.172, length(cq)))
+     the first a HEAD rather than a blot. NARROWER than the head: at the size
+     these hang, a collar the head's own width makes the sitter a figure of
+     eight, which is what the first capture of this came back as. */
+  vec2 cq = vec2((n.x - turn)*1.30, n.y - 0.150);
+  float coll = (1.0 - smoothstep(0.135, 0.158, length(cq)))
              * (1.0 - smoothstep(0.02, 0.05, n.y - 0.245));
-  c = mix(c, vec3(0.135, 0.120, 0.104), coll*0.95);
+  c = mix(c, vec3(0.128, 0.112, 0.096), coll*0.95);
   c = mix(c, vec3(0.020, 0.017, 0.015),
           (1.0 - smoothstep(0.008, 0.024, abs(n.y - 0.098)))*coll*0.85);
   /* THE HEAD. An oval, longer than it is wide, hard at its edge. */
@@ -577,13 +579,21 @@ vec3 sPortrait(vec2 p, vec2 hs, float sd){
      hairline that dips at the temples -- so the forehead it leaves is a shape
      with a curve to it. The first cut put a circle over the middle of the
      face and took the whole sitter back to a dark blot. */
+  /* MEASURED ON THE CAPTURE: these hang at about 170 px, so the head is 25
+     px across and the first cut's cap -- the top quarter of the skull --
+     came out as six blurred pixels and the sitter was a plain pale oval
+     again. BRIEF-r9's rule for this size is that the recognisable CUE beats
+     the parts, and the cue for a head is a PALE FACE INSIDE A DARK MASS:
+     the hair takes the top two fifths of the skull and wraps down both sides
+     past the cheekbone, so what is left lit is a face SHAPE and not a disc.
+     That is also what selectKid.png's own portraits do at the same size. */
   float dxh = (n.x - turn)/0.228;
-  float hline = 0.545 - 0.075*dxh*dxh - 0.145*smoothstep(0.55, 1.0, abs(dxh));
+  float hline = 0.500 - 0.105*dxh*dxh - 0.215*smoothstep(0.42, 1.0, abs(dxh));
   float hair = skull * smoothstep(hline - 0.012, hline + 0.012, n.y);
   /* ...and the lappets at the sides, which lap a little past the skull */
-  hair = max(hair, (1.0 - smoothstep(0.240, 0.268, length(fc)))
-                 * smoothstep(0.36, 0.50, n.y));
-  c = mix(c, vec3(0.030, 0.023, 0.020), clamp(hair, 0.0, 1.0)*0.92);
+  hair = max(hair, (1.0 - smoothstep(0.248, 0.284, length(fc)))
+                 * smoothstep(0.30, 0.44, n.y));
+  c = mix(c, vec3(0.030, 0.023, 0.020), clamp(hair, 0.0, 1.0)*0.94);
   /* ONE DARK EYE SOCKET, on the shaded side, under a brow line */
   float eye = 1.0 - smoothstep(0.030, 0.044,
                 length(vec2((n.x - turn) + 0.070*key, (n.y - 0.470)*1.70)));
