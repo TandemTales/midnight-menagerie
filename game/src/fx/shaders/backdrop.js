@@ -657,6 +657,10 @@ vec3 sPortrait(vec2 p, vec2 hs, float sd, float px, vec2 fk){
   if (kLady + kGirl > 0.5) {
     torso = max(torso, abs(n.x - tx) - Sw*0.80);
     torso = min(torso, (length(vec2((dxs - (Sw - R*0.34))/(R*0.40), (n.y - (ys - R*0.85))/(R*0.52))) - 1.0)*R*0.4);
+    /* ...and below the waist the skirt goes OUT again, so a sitting woman is
+       an hourglass and not a post */
+    float yk = ys - R*2.75;
+    if (frm < 1.5) torso = min(torso, max(abs(n.x - tx) - (Sw*0.56 + max(yk - n.y, 0.0)*0.95), n.y - yk));
   }
   if (frm > 1.5) torso = min(torso, max(abs(n.x - tx) - (Sw*0.70 + max(yw - n.y, 0.0)*0.62*fem
                                                          + max(yw - n.y, 0.0)*0.10), n.y - yw));
@@ -6807,7 +6811,29 @@ float shapeField(vec2 uv, vec2 msz, float shape, float seed){
     fd = min(fd, max(length(vec2(m.x/0.38, (m.y - 2.28)/0.13)) - 1.0, m.y - 2.28));   // the upper bowl
     fd = min(fd, mmBox(m - vec2(0.0, 2.285), vec2(0.39, 0.020), 0.010));
     fd = min(fd, mmBox(m - vec2(0.0, 2.34), vec2(0.028, 0.05), 0.008));           // the knop
-    fd = min(fd, mmCircle(vec2(m.x, (m.y - 2.47)*0.78), 0.085));                  // the pineapple
+    /* ROUND 17 (the people in the house): the pineapple finial is a FIGURE
+       now -- a water-carrier in a long robe, standing on the knop with a jar
+       on her shoulder, and the upper bowl's water is what she pours. It is
+       the centre of the conservatory's centrepiece, 0.75 m of carved figure
+       on top of a 2.4 m fountain, and it is the one person in the glass. */
+    vec2 fq = m - vec2(0.0, 2.39);
+    float robe = max(abs(fq.x + 0.005) - (0.105 - 0.085*clamp(fq.y/0.42, 0.0, 1.0)*0.40),
+                     abs(fq.y - 0.21) - 0.21);                                 // the robe
+    fd = min(fd, robe);
+    fd = min(fd, mmBox(fq - vec2(0.0, 0.50), vec2(0.070, 0.10), 0.03));          // her breast
+    fd = min(fd, length(vec2(fq.x - 0.012, (fq.y - 0.665)*0.86)) - 0.052);        // her head
+    fd = min(fd, length(fq - vec2(-0.036, 0.690)) - 0.030);                        // its knot
+    fd = min(fd, mmBox(fq - vec2(0.004, 0.595), vec2(0.022, 0.030), 0.01));       // her neck
+    vec2 ja = fq - vec2(0.105, 0.620);
+    ja = vec2(ja.x*0.94 + ja.y*0.34, -ja.x*0.34 + ja.y*0.94);
+    fd = min(fd, length(vec2(ja.x/0.058, ja.y/0.080))*0.058 - 0.058);              // the jar, tipped
+    vec2 pa = fq - vec2(0.060, 0.560), ba = vec2(0.070, 0.080);
+    fd = min(fd, length(pa - ba*clamp(dot(pa, ba)/dot(ba, ba), 0.0, 1.0)) - 0.022);   // the arm up to it
+    pa = fq - vec2(-0.060, 0.560); ba = vec2(-0.010, -0.170);
+    fd = min(fd, length(pa - ba*clamp(dot(pa, ba)/dot(ba, ba), 0.0, 1.0)) - 0.020);   // the other, down
+    /* the stream from the jar's mouth, falling to the upper bowl's lip */
+    float st = abs(fq.x - (0.165 + 0.16*smoothstep(0.62, -0.08, fq.y)*smoothstep(0.62, -0.08, fq.y))) - 0.010;
+    fd = min(fd, max(st, max(fq.y - 0.60, -0.10 - fq.y)));
     /* the water: a sheet falling from each lip, curving in as it falls */
     float w1 = abs(abs(m.x) - (0.745 - 0.10*smoothstep(1.64, 0.64, m.y))) - 0.020;
     fd = min(fd, max(w1, max(m.y - 1.64, 0.62 - m.y)));
@@ -8074,10 +8100,17 @@ float reliefH(vec2 uv, vec2 msz, vec2 mpp, float shape, float seed, out float ti
     h += 0.012 * pB(m.y, 1.63, 1.70) * step(ax2, 0.76);                          // the lip
     float bowl2 = step(m.y, 2.27) * step(2.15, m.y) * step(ax2, 0.39);
     h -= 0.010 * pR(mod(m.x + 0.03, 0.06) - 0.03, 0.010) * bowl2 * pRes(0.06, mpp.x);
-    vec2 pa = vec2(m.x, (m.y - 2.47)*0.78);
-    float pin = (1.0 - smoothstep(0.080, 0.088, length(pa)));
-    h -= 0.008 * min(pR(mod(pa.x + pa.y + 0.02, 0.04) - 0.02, 0.006), 1.0) * pin;   // its scales
-    h -= 0.008 * min(pR(mod(pa.x - pa.y + 0.02, 0.04) - 0.02, 0.006), 1.0) * pin;
+    /* the figure on the top (round 17): her robe falling in three folds from
+       the girdle, the girdle itself, and the socket and the nose's shadow in
+       a face turned toward the jar */
+    vec2 pa = m - vec2(0.0, 2.39);
+    float onRobe = step(abs(pa.x), 0.11) * pB(pa.y, 0.0, 0.42);
+    h -= 0.010 * onRobe * pR(mod(pa.x + 0.035, 0.045) - 0.0225, 0.008) * pRes(0.045, mpp.x);
+    h -= 0.012 * pR(pa.y - 0.44, 0.010) * step(abs(pa.x), 0.08);
+    float fhd = 1.0 - smoothstep(0.045, 0.055, length(vec2(pa.x - 0.012, (pa.y - 0.665)*0.86)));
+    h -= 0.016 * fhd * (1.0 - smoothstep(0.006, 0.013, length(pa - vec2(0.000, 0.672))));
+    tint -= 0.80 * fhd * (1.0 - smoothstep(0.006, 0.013, length(pa - vec2(0.000, 0.672))));
+    h -= 0.008 * fhd * pR(pa.x - 0.036, 0.005) * pB(pa.y, 0.640, 0.676);
     /* the water: a smooth sheet, streaked down its fall */
     float w1 = abs(abs(m.x) - (0.745 - 0.10*smoothstep(1.64, 0.64, m.y)));
     float sheet = (1.0 - smoothstep(0.016, 0.024, w1)) * step(0.62, m.y) * step(m.y, 1.64)
