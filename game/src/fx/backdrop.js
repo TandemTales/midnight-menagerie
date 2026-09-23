@@ -94,7 +94,9 @@ export const DEFAULT_ROOM = {
  *  22   pendant fitting SIZED BY ITS DROP      -- see _fixtures
  *  23   light standard  SIZED BY ITS LAMP      -- see _fixtures
  *  24   planting bed    0.43 m of brick, 2.9 m long, fans to 1.45   brick course 0.075
- *  25   fountain        2.6 m to its finial, basin 3.4 m across  (round 14)
+ *  25   fountain        3.1 m to its figure, basin 3.4 m across  (round 14; the
+ *                       figure on the top is round 17's, and the quad grew with
+ *                       it -- SHAPE_W shrank to keep the quad the same WIDTH)
  *  26   bust on a term  1.85 m, the bust 0.8 of it          (round 14)
  *
  * 22 and 23 are FITTINGS and are never dealt from a region's prop pack:
@@ -110,7 +112,7 @@ export const DEFAULT_ROOM = {
  */
 const SHAPE_M = [1.20, 2.00, 1.30, 1.00, 2.00, 2.00, 3.32, 2.60, 1.17, 1.33,
                  1.56, 1.30, 2.16, 1.50, 2.00, 2.44, 1.27, 0.97, 3.09, 1.56,
-                 2.80, 2.05, 2.60, 1.70, 1.55, 2.70, 1.92
+                 2.80, 2.05, 2.60, 1.70, 1.55, 3.20, 1.92
 ];
 /* ...and a width ratio, so a column is a column and not a capital-T. Four of
  * these were wrong by enough to change what the object was: a longcase clock
@@ -118,7 +120,7 @@ const SHAPE_M = [1.20, 2.00, 1.30, 1.00, 2.00, 2.00, 3.32, 2.60, 1.17, 1.33,
  * wide, and a column at h/12.3 when the table says h/8 to h/10. */
 const SHAPE_W = [1.15, 0.55, 1.00, 0.95, 0.72, 0.80, 0.47, 0.85, 0.90, 1.35,
                  1.30, 1.20, 0.87, 1.14, 0.77, 0.78, 1.80, 2.24, 0.50, 0.62,
-                 0.72, 1.62, 0.62, 0.34, 1.80, 1.75, 0.34
+                 0.72, 1.62, 0.62, 0.34, 1.80, 1.476, 0.34
 ];
 /* HOW MUCH ONE OF THESE VARIES FROM THE NEXT, as a +-fraction of SHAPE_M.
  *
