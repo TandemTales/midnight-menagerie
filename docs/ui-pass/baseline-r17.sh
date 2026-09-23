@@ -10,6 +10,11 @@
 # retried while void or while its band says there is no room behind it.
 set -u
 cd "C:/Users/Josh/OneDrive/Desktop/Tandem Tales/Midnight Menagerie" || exit 1
+# Fail in one second, not twenty minutes. On 2026-09-23 the main dev server
+# died with the session that owned it, and this script retried every capture
+# against a dead port and reported "0 files" at the end.
+curl -s -m 5 -o /dev/null http://localhost:8777/ || {
+  echo "8777 is not answering. Start it:  python tools/devserver.py 8777"; exit 1; }
 J="C:/UILOOP/r17/judging/r17/rooms/TAFFETA"; mkdir -p "$J"
 sheet () {
   python tools/variant_sheet.py "$1" --port 8777 --seeds "$2" --out "$J/sheet-$1.png" 2>&1 | tail -6

@@ -1,4 +1,4 @@
-# Handoff — rounds 0-16 merged; round 17 is staged, waiting on the weekly limit
+# Handoff — rounds 0-16 merged; round 17 is running
 
 You are picking up Midnight Menagerie on `dev`. Everything below is pushed.
 
@@ -26,14 +26,12 @@ against its own branch EMPTY, its sheets photographed on the merged tree and
 compared by CONTENT (all four read mean |difference| 0.00, max 0, in both
 rounds 15 and 16), and the battery — 101 gates, 3 red, every one long-known.
 
-**THE NEXT ACTION: launch round 17, WHEN THE WEEKLY ALLOWANCE ALLOWS.**
-
-**Round 17 is briefed and staged but DELIBERATELY NOT LAUNCHED.** The weekly
-figure stood at 53% when round 16's judges finished on 2026-09-23, and the
-rule is not to start a round much above half — a round costs 15-20% and a
-limit hit mid-round costs an evening of resume bookkeeping. **The weekly
-resets 2026-09-29 09:00 UTC.** Read `get_usage` first; if it is under half,
-go.
+**ROUND 17 WAS LAUNCHED 2026-09-23** from `650ce93` (worktrees and TAFFETA
+baselines both cut from it). It had been held for the weekly limit; then Josh,
+the same morning: **"continue. no longer worry about usage."** So the
+half-week rule is RETIRED — never hold a staged round for the allowance again.
+Still run ONE round at a time, because three builders already queue on the
+machine's single GPU slot.
 
 Everything it needs exists: `BRIEF-r17.md`, `RUBRIC-r17.md`,
 `round-17.args.json` (SIENNA / LITHARGE / FOLIUM on 8961-8963 against a
@@ -84,8 +82,9 @@ judged is 0.00.
 the weekly allowance in 6.5 hours (1.42M subagent tokens) and round 13's about
 8% in 2.6 hours (2.01M with its three judges); the week stood at 24% with both
 rounds judged. Next weekly reset 2026-09-29 09:00 UTC. Read `get_usage` before
-any launch and keep to ONE round at a time — chrome rounds are much cheaper
-than room rounds, because a shader round spends its hours on captures.
+any launch — **superseded 2026-09-23: Josh said to stop worrying about
+usage.** Chrome rounds are still much cheaper than room rounds, because a
+shader round spends its hours on captures.
 
 **What round 13 decided.** GAMBOGE won 3 of 3 judges, **7.89 against the
 baseline's 5.67, +2.22**: the coach and the veil 3 of 3, and the toast on the
@@ -149,8 +148,9 @@ half days, most of it on two six-builder rounds run in parallel (rounds 11 and
 12 cost ~7.5M subagent tokens between them, with a graft and a performance
 pass on top). A round of three builders and two judges costs roughly 2.5-3.5M,
 and round 14 measured 1.42M subagent tokens for 5 agents over 6.6 hours.
-**Check `get_usage` (the ccd_session_mgmt tool) before each launch**, and do
-not start a round with the weekly figure much above half.
+~~Check `get_usage` before each launch and do not start above half~~ —
+**RETIRED 2026-09-23** ("no longer worry about usage", Josh). One round at a
+time still holds, for the GPU's sake.
 
 How a round is launched — round 14's call, which round 13's copied:
 
