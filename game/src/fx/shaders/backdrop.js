@@ -3615,7 +3615,14 @@ float wallH(vec2 q, out float occ){
     float fhas = mmHash11(fid*8.3 + uSeed*3.0);
     /* squared, so most are middling and a few are giants and a few are scrub */
     float fh = (3.60 + 9.80*fhas*fhas) * step(0.30, mmHash11(fid*11.7 + uSeed));
-    float fw = (0.62 + 0.30*mmHash11(fid*2.9 + uSeed)) * (0.55 + 0.055*fh);
+    /* A CROWN'S WIDTH IS A FRACTION OF ITS HEIGHT, which is why it could not
+       stay at the old flat 0.92-1.58 m once the heights went from a 1.7:1
+       spread to 3.7:1: a 13 m fir 1.2 m across is a mast and a 3.6 m one
+       1.2 m across is a bush. At 0.155-0.205 of the height the belt keeps its
+       density -- the tall ones lap their neighbours on the 3.4 m pitch, which
+       is what a self-sown wood does -- while the short ones sit clear in the
+       gaps and let the skyline dip. */
+    float fw = (0.155 + 0.050*mmHash11(fid*2.9 + uSeed))*fh + 0.20;
     float fn = 1.0 - clamp(abs(fx2)/max(fw, 0.02), 0.0, 1.0);
     float crown = fh * pow(fn, 0.72);
     /* THE BRANCH TIERS. A fir's outline is not a smooth cone: it is a stack
@@ -3637,7 +3644,7 @@ float wallH(vec2 q, out float occ){
     float gid = floor((cx + uSeed*2.7 + sp2*0.5) / sp2);
     float ghas = mmHash11(gid*6.1 + uSeed*1.7);
     float gh = (2.30 + 4.90*ghas*ghas) * step(0.16, mmHash11(gid*9.3 + uSeed*4.1));
-    float gw = 0.34 + 0.34*mmHash11(gid*3.3 + uSeed);
+    float gw = (0.130 + 0.050*mmHash11(gid*3.3 + uSeed))*gh + 0.14;
     float gn = 1.0 - clamp(abs(gx2)/max(gw, 0.02), 0.0, 1.0);
     float crown2 = gh * pow(gn, 0.72);
     crown2 += gw*0.30*max(0.0, sin(hq.y*6.6 - gid*1.9))*gn*step(0.4, gh);
