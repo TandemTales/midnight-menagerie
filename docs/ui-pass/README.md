@@ -160,6 +160,8 @@ so round 2 runs six at once, as round 1 did.
 
 | 16 | **FINISH THE OBJECTS** — the same four sheets and combat, on the round-15 judges' list: what is INSIDE an object, and does a repeated element vary | CINNABAR 6.70 · VERDACCIO 5.50 · MINIUM 5.10 · the screens before **4.70** | CINNABAR, 2 of 2, four of five screens. **+2.00.** Coffered ceilings, leaves with midribs, a mansion with varied bays and dark windows among the lit, and **the black inset margins gone at last** (66px -> 3px, 64px -> 2px) — the defect open since round 14. VERDACCIO won the Foyer as the only build with a real sitter in the frames, and that is the graft both judges named | `84d61d1` |
 
+| 17 | **PEOPLE IN THE HOUSE** — the same four sheets and combat: sitters, busts, musicians, and nothing repeated without variation | LITHARGE 6.65 · SIENNA 6.23 · FOLIUM 6.20 · the screens before **5.40** | LITHARGE, 2 of 2, three of five screens. **+1.25.** The only candidate that peoples the house, and with variety. It left the greenhouse and graveyard untouched, and the best work there — FOLIUM's treeline, both losers' prosceniums, SIENNA's broken panes — is round 18's graft. **The parquet was measured and is right** (21 px near, 12 px far) | `44b37fe` |
+
 **Scores anchor to the candidates beside them.** Round 0's winner scored 7.0 in
 round 0 and 5.58 as round 1's baseline: the judges grew stricter as the field
 improved. Compare a winner with the baseline IN ITS OWN ROUND (round 1 REFINE:
@@ -182,6 +184,7 @@ Against their own baselines:
 | 11 | VARIATION **+2.17** (sheets 3-3.5 -> 6-7) | — |
 | 12 | — | THE LAST WEB CHROME **+5.9** (per-screen winners 7.33 / 8.00 / 7.67 against 2 / 1 / 1.33) |
 | 13 | CHROME, second pass **+2.22** (coach 6.0 -> 8.0, veil 6.0 -> 8.67, toast 5.0 -> 7.0) | — |
+| 17 | PEOPLE IN THE HOUSE **+1.25** (the baseline had risen to 5.40, and the field sat inside 0.45) | — |
 | 16 | FINISH THE OBJECTS **+2.00** | — |
 | 15 | NAME EVERYTHING AT THE EDGES **+2.00** (and the baseline it beat was the tree with both grafts in it) | — |
 | 14 | WHERE YOU STAND **+3.64** (two of its six wings had never been judged, and the baseline scored 2.0 on both) | — |
@@ -783,3 +786,43 @@ with the floor's elliptical light pools laid over the swing to give it
 centres. **When a judge and a builder disagree about what is on the screen,
 neither one is evidence — make the next round settle it with a capture before
 it is allowed to change a line.**
+
+### Round 17: people in the house, 2026-09-23
+
+**LITHARGE, 2 of 2 judges, 6.65 against 5.40 — +1.25** (`44b37fe`, run
+`wf_8b1896a4-619`), three of five screens. For sixteen rounds this house was
+painted and unpeopled; both judges say LITHARGE is the only candidate that
+peoples it, and does so with VARIETY: sitters that differ in sex, dress, pose
+and scale, musicians behind the gallery rail, dancing couples in the
+mirror-hall glass, a veiled mourner in the graveyard, a figure in a lit
+window.
+
+- **The gain was the smallest since round 11, and that is information, not
+  failure.** The baseline had risen to 5.40 and the three candidates sat
+  inside 0.45 of each other. Both judges still agreed on the winner, so this is
+  not round 6's convergence — but read the next round's margin against it.
+- **A winner that leaves two wings untouched hands the next round a free
+  sheet.** LITHARGE's angle was people, and it did not touch the greenhouse or
+  the graveyard. The best work on those sheets was on the two losing branches,
+  and both judges named it as the graft. Round 18 gives a whole builder to
+  those two wings.
+- **A losing branch can carry a regression inside its best idea.** FOLIUM
+  rebuilt the glass roof as true pitched geometry, which judge 2 wanted — and
+  left the palmhouse's centre bay a starry void, which judge 1 scored below
+  the baseline. Its treeline, which both judges wanted, leaks thin diagonal
+  lines over the mausolea. A graft brief must name the defect to leave behind,
+  not just the idea to take.
+- **THE PARQUET IS SETTLED FOR GOOD.** Round 17's brief asked for one
+  measurement before any drawing, and FOLIUM made it: the block period, from
+  the autocorrelation of the high-passed luminance, is **21 px near and 12 px
+  far** on both BASE and its build — a ratio of ~1.75, which is
+  1/(y - horizon) for this camera. With round 16's finding that the arcs are
+  correct perspective, **two rounds of judge complaints about that floor were
+  both perceptual**, and no round changed a line of it. RUBRIC-r18 now tells
+  judges not to report it again without naming a line that misses its
+  vanishing point.
+- **A builder's dev server can die mid-round and another builder's server can
+  take its port.** LITHARGE lost its 8962 server and found a BASE server
+  listening there; it noticed, moved to 8994 and shot its canonical captures
+  from its own worktree. The merged sheets are pixel-identical to its judged
+  captures, which is the proof it got it right.

@@ -1,4 +1,4 @@
-# Handoff — rounds 0-16 merged; round 17 is running
+# Handoff — rounds 0-17 merged; round 18 is briefed and ready
 
 You are picking up Midnight Menagerie on `dev`. Everything below is pushed.
 
@@ -16,53 +16,46 @@ loop until perfected". Two later calls narrow it and both are in force:
 `UI/*.png`** — what matters is readable, accurately drawn, well-detailed objects
 (item 3).
 
-## START HERE — 2026-09-23
+## START HERE — 2026-09-23, afternoon
 
-**ROUNDS 0-16 ARE ALL MERGED, VERIFIED AND PUSHED.** The last three:
-round 15 MASSICOT (`4a47bca`, +2.00), round 16 CINNABAR (`84d61d1`, +2.00),
-and before them round 14 ORPIMENT (`c1c32a5`, +3.64, the largest of the pass)
-with both grafts. Every one was checked the same way: the winner's code diff
-against its own branch EMPTY, its sheets photographed on the merged tree and
-compared by CONTENT (all four read mean |difference| 0.00, max 0, in both
-rounds 15 and 16), and the battery — 101 gates, 3 red, every one long-known.
+**ROUNDS 0-17 ARE ALL MERGED AND VERIFIED.** Round 17 LITHARGE (`44b37fe`,
++1.25) put people in the house. Every recent merge is checked the same way:
+the winner's code diff against its own branch EMPTY, its four sheets
+photographed on the merged tree and compared by CONTENT (rounds 15, 16 and 17
+all came back mean |difference| 0.00, max 0), and the battery.
 
-**ROUND 17 WAS LAUNCHED 2026-09-23** from `650ce93` (worktrees and TAFFETA
-baselines both cut from it). It had been held for the weekly limit; then Josh,
-the same morning: **"continue. no longer worry about usage."** So the
-half-week rule is RETIRED — never hold a staged round for the allowance again.
-Still run ONE round at a time, because three builders already queue on the
-machine's single GPU slot.
+**Josh, 2026-09-23: "continue. no longer worry about usage."** Do not hold a
+round for the weekly figure. Still run ONE round at a time: three builders
+already queue on the machine's single GPU slot.
 
-Everything it needs exists: `BRIEF-r17.md`, `RUBRIC-r17.md`,
-`round-17.args.json` (SIENNA / LITHARGE / FOLIUM on 8961-8963 against a
-TAFFETA baseline, the same four sheets and combat) and `baseline-r17.sh`. The
-probe dry-runs clean at 5 agents. To go:
+**THE NEXT ACTION: round 18 — briefed and dry-run clean, launch it.**
+`BRIEF-r18.md`, `RUBRIC-r18.md`, `round-18.args.json` (WOAD / WELD / ORCHIL
+on 8971-8973 against a SARSENET baseline, the same four sheets and combat) and
+`baseline-r18.sh`. Round 17's winner left the greenhouse and the graveyard
+untouched; the best work on those sheets is on the two losing branches and is
+round 18's item 1 as named grafts, **with the two defects to leave behind**
+named beside them (FOLIUM's roofless palmhouse centre, and its tree drawing
+leaking as diagonals over the mausolea).
 
 ```
-bash docs/ui-pass/baseline-r17.sh        # from dev's tip, with 8777 up
-for s in a b c; do GIT_LFS_SKIP_SMUDGE=1 git worktree add -b ui/r17-rooms-$s   "C:/UILOOP/r17/wt/r17-rooms-$s" <that same commit>; done
+curl -s -o /dev/null http://localhost:8777/ || nohup python tools/devserver.py 8777 &
+bash docs/ui-pass/baseline-r18.sh        # from dev's tip; it checks 8777 itself now
+for s in a b c; do GIT_LFS_SKIP_SMUDGE=1 git worktree add -b ui/r18-rooms-$s   "C:/UILOOP/r18/wt/r18-rooms-$s" <that same commit>; done
 Workflow({ scriptPath: "docs/ui-pass/round-workflow.js",
-           args: { ...docs/ui-pass/round-17.args.json, repo,
-                   uiloop: "C:/UILOOP/r17", base: "<that same commit>" } })
+           args: { ...docs/ui-pass/round-18.args.json, repo,
+                   uiloop: "C:/UILOOP/r18", base: "<that same commit>" } })
 ```
 
-Take one capture on 8777 and read its `band` before launching: this machine's
-GPU degrades across long sessions of Chromium launches, and a round whose
-captures cannot draw is a wasted round.
+**The main dev server on 8777 can die with a session.** The one running since
+2026-09-18 was gone after this session restarted for a model switch, and the
+first round-17 baseline attempt spent twenty minutes retrying against a dead
+port. `baseline-r18.sh` checks the port first now.
 
-**What round 17 is for.** Round 16 finished the ROOMS; round 17 puts PEOPLE in
-them. Both judges' first instruction is VERDACCIO's painted sitter
-(`ui/r16-rooms-c`, the only finished canvas interior anyone has drawn, which
-won `sheet-foyer` 2 of 2) — brought in AND freed of its own fault, that it is
-one sitter repeated at one scale with a blank oval for a face. The same defect
-is on the gallery busts ("smooth white ovoids at 40 px"), in combat's six
-empty gilt rectangles, and behind the dais gallery. Then four repeated
-elements that do not vary, three architectural items still unfinished (the
-suite's remaining top band, the chapel's buttresses — asked three rounds
-running — and the glasshouse roof's non-converging panes), and one
-measurement: **count the parquet's block period in pixels near and far.** A
-pattern constant in metres must shrink; if the ratio is near 1 that is a
-projection bug and the most valuable thing in the round.
+**The parquet is settled — do not brief it again.** Round 15's judge saw
+arcs, round 16's saw an unshrinking unit; measured, the arcs are correct
+perspective across a wide field of view and the block period is 21 px near,
+12 px far. `RUBRIC-r18.md` tells judges not to report that floor again without
+naming a line that misses its vanishing point.
 
 **How both merges were verified, and the standard has changed.** Round 11's
 rule was BYTE-IDENTICAL captures on the merged tree. That is the wrong test

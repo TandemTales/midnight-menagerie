@@ -1,0 +1,62 @@
+{
+  "round": "r18",
+  "maxBuilders": 3,
+  "briefs": [
+    "docs/ui-pass/BRIEF-r0.md",
+    "docs/ui-pass/BRIEF-r1.md",
+    "docs/ui-pass/BRIEF-r9.md",
+    "docs/ui-pass/BRIEF-r10.md",
+    "docs/ui-pass/BRIEF-r11.md",
+    "docs/ui-pass/BRIEF-r18.md"
+  ],
+  "rubrics": [
+    "docs/ui-pass/RUBRIC.md",
+    "docs/ui-pass/RUBRIC-r9.md",
+    "docs/ui-pass/RUBRIC-r11.md",
+    "docs/ui-pass/RUBRIC-r18.md"
+  ],
+  "samples": [
+    "UI/title.png",
+    "UI/mainMenu.png",
+    "UI/selectCompanion.png",
+    "UI/selectKid.png"
+  ],
+  "tracks": [
+    {
+      "key": "rooms",
+      "name": "ROOMS",
+      "rule": "refine",
+      "screens": [
+        "sheet-foyer",
+        "sheet-ballroom",
+        "sheet-greenhouse",
+        "sheet-graveyard",
+        "combat"
+      ],
+      "smallScreens": [
+        "combat"
+      ],
+      "baseline": "SARSENET",
+      "builders": [
+        {
+          "slot": "a",
+          "code": "WOAD",
+          "port": 8971,
+          "angle": "LITERAL. Work BRIEF-r18's fix list 1 to 4 in order and exactly as written; items 1, 2 and 3 were each named by both judges. Item 1 is four grafts already built on two losing branches (FOLIUM ui/r17-rooms-c, SIENNA ui/r17-rooms-a) -- rebuild them inside the merged tree, taking the right half of each where the brief says so, and leave behind the two defects it names: FOLIUM's roofless palmhouse centre and its diagonal lines leaking over the mausolea. Then the faces, then the repeated elements, then the small ones. Take nothing the list does not ask for. The literal angle has won three of the last five rounds."
+        },
+        {
+          "slot": "b",
+          "code": "WELD",
+          "port": 8972,
+          "angle": "THE GARDEN AND THE HORIZON. Round 17's winner left the greenhouse and the graveyard exactly as they were, and a sheet the winner never touched is a sheet the next round can take outright. Items 1 and 3 on those two wings are your round: the treeline (FOLIUM's ragged-tier conifers and broadleaf trees with trunks, without its leaking diagonals), the glass roof (pitched to its ridge AND broken in unequal panes, with the palmhouse's centre bay GLAZED), the fern and the basin, and then everything in those two wings that still repeats -- the vinery's espalier stamped at one pitch, the one rosette in every trough, the pale cone behind the moon, the chapel's buttresses. Make the greenhouse and the graveyard as finished as round 17 made the foyer and the ballroom."
+        },
+        {
+          "slot": "c",
+          "code": "ORCHIL",
+          "port": 8973,
+          "angle": "FACES AT THE SIZE THEY ARE DRAWN. Item 2 is your round, everywhere a person appears. Round 17 got the people right at the scale of a figure and blank at the scale of a face: the landing sitters' faces are pale ovals at ~20 px, the gallery busts are pale blobs for the third round running (the gallery is the one Foyer room still unpeopled), the parlor's two small canvases are dim blank fields, and combat's right-wall portraits are guesswork at 1280. Give every face its three marks -- a brow, a nose line, one dark eye socket -- at the pixel size it actually renders; mainMenu.png carries them at 60 px. Vary the busts' head direction. Light the PORTRAIT, never the wall. Then the musicians (one seated, one standing, one half-hidden -- not a row of equal cut-outs) and a figure at the suite's piano. Then the arched proscenium from item 1, because it frames a person."
+        }
+      ]
+    }
+  ]
+}
