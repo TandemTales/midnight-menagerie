@@ -1,0 +1,62 @@
+{
+  "round": "r16",
+  "maxBuilders": 3,
+  "briefs": [
+    "docs/ui-pass/BRIEF-r0.md",
+    "docs/ui-pass/BRIEF-r1.md",
+    "docs/ui-pass/BRIEF-r9.md",
+    "docs/ui-pass/BRIEF-r10.md",
+    "docs/ui-pass/BRIEF-r11.md",
+    "docs/ui-pass/BRIEF-r16.md"
+  ],
+  "rubrics": [
+    "docs/ui-pass/RUBRIC.md",
+    "docs/ui-pass/RUBRIC-r9.md",
+    "docs/ui-pass/RUBRIC-r11.md",
+    "docs/ui-pass/RUBRIC-r16.md"
+  ],
+  "samples": [
+    "UI/title.png",
+    "UI/mainMenu.png",
+    "UI/selectCompanion.png",
+    "UI/selectKid.png"
+  ],
+  "tracks": [
+    {
+      "key": "rooms",
+      "name": "ROOMS",
+      "rule": "refine",
+      "screens": [
+        "sheet-foyer",
+        "sheet-ballroom",
+        "sheet-greenhouse",
+        "sheet-graveyard",
+        "combat"
+      ],
+      "smallScreens": [
+        "combat"
+      ],
+      "baseline": "CAMBRIC",
+      "builders": [
+        {
+          "slot": "a",
+          "code": "CINNABAR",
+          "port": 8951,
+          "angle": "LITERAL. Work BRIEF-r16's fix list 1 to 6 in order and exactly as written. Every item was written by a round-15 judge about the build you are starting from, and items 1, 2 and 3 were named by both. Start with the graveyard mansion, because it is the one item with a finished graft sitting on a branch (REALGAR, ui/r15-rooms-a, which won that sheet) -- read it and bring its window vocabulary in rather than inventing another. Then the unfinished interiors, then the three things drawn wrong, then combat's silhouette regression, then the placeholder sweep. Take nothing the list does not ask for, and photograph in sheets from the first change."
+        },
+        {
+          "slot": "b",
+          "code": "MINIUM",
+          "port": 8952,
+          "angle": "FINISH WHAT ROUND 15 STARTED. Fix 2 and fix 5 are your round: every object the last round FRAMED but did not FILL. The judges' sentence is 'smoke in gilt frames' -- the portraits have gilt sections and varnished grounds and a featureless pale oval where the sitter should be. Draw the sitter (shoulder line, collar, hairline, one dark eye socket; mainMenu.png carries that at 60-90 px), then the glass roof's glazing bars and purlins, the ceiling's rose and beam, the chapel's buttresses and plinth, the conifers' varied heights and trunks, and the palmhouse's three foreground rosettes. Then sweep for the placeholder class the last sweep missed -- subjChimney's flanking panels and overmantel are still plain sunk rectangles, and sPanel/sPortrait already exist. A rounded box with a faint edge and nothing inside it is always a placeholder, in a subject as much as in a mode."
+        },
+        {
+          "slot": "c",
+          "code": "VERDACCIO",
+          "port": 8953,
+          "angle": "THE THINGS THAT ARE DRAWN WRONG. Fix 3 and fix 4 are your round, and none of them is a matter of taste. FIRST, settle the mirror hall floor before touching it: draw a temporary straight test grid in the parquet's own space, photograph it, and say which is true -- the judge, who sees concentric arcs across the foreground, or round 15's builder, who says the parquet is world-space straight and what curves is the back wall drawn on an arc. Fix whichever it turns out to be. Then the suite panel, which has been letterboxed inside black margins since round 14 because the builder who owned it last round tied the baseline: find why that vantage renders short of its tile, fix it at the cause, and sweep every kind in every wing for the same fault (AZURITE's framing on ui/r15-rooms-b is the named graft). Then the parlor's floorboards, whose unit does not shrink with distance. Then combat: round 15 made the wall behind the Dust Bunny the brightest patch in the top half and the creature loses its silhouette at 1280 -- the room serves the board, so pull that bay back and check every enemy row at both sizes."
+        }
+      ]
+    }
+  ]
+}
