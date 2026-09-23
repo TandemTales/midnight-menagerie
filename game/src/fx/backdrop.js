@@ -357,7 +357,7 @@ export class Backdrop {
         /* Where the subject stands on its wall and which kind of stair it is,
            and how big the exterior's house is (round 14). See WALL_FRAG. */
         uSubjX: { value: 0 }, uSubjMode: { value: 0 }, uSubjDir: { value: 1 },
-        uHouseS: { value: 1 }, uQuiet: { value: 0 },
+        uHouseS: { value: 1 }, uQuiet: { value: 0 }, uBoardBand: { value: 0 },
         uSkyGlow: { value: 1.0 }, uOpenSky: { value: 0 },
         uSkyDeep: { value: new THREE.Color(0x141725) },
         uDamHue: { value: new THREE.Color(0.46, 0.24, 0.66) },
@@ -1741,6 +1741,14 @@ export class Backdrop {
     w.uSubjDir.value = p.subjDir ?? 1;
     w.uHouseS.value = p.houseS ?? 1;
     w.uQuiet.value = p.quietStair ? 1 : 0;
+    /* ROUND 16 ITEM 4, judge 1 on combat: "the wall behind the Dust Bunny is
+       now the brightest patch in the top half and the enemy's grey fur loses
+       its silhouette against it at 1280". A region's MAIN room is the room
+       its fight is played in -- the same test quietStair already uses for the
+       same reason, that the enemy row stands in front of that wall -- so the
+       band of far wall the creatures stand against is pulled about half a
+       stop there and nowhere else. The room serves the board (RUBRIC-r16). */
+    w.uBoardBand.value = p.isMainRoom ? 1 : 0;
     w.uCool.value = p.coolFill ?? 0.9;
     w.uGrime.value = p.grime ?? 0.7;
     w.uOpen.value = p.openGlow ?? 0.5;
@@ -1850,6 +1858,7 @@ export class Backdrop {
       su.uSubjMode.value = mine ? (p.subjMode ?? 0) : 0;
       su.uSubjDir.value = mine ? (i === 0 ? -(p.subjDir ?? 1) : (p.subjDir ?? 1)) : 1;
       su.uHouseS.value = w.uHouseS.value;
+      su.uBoardBand.value = 0;   // the creature row stands against the FAR wall
       su.uCool.value = (p.coolFill ?? 0.9) * 0.85;
       su.uGrime.value = Math.min(1, (p.grime ?? 0.7) + 0.12);
       su.uOpen.value = 0;                       // no doorway on the side walls

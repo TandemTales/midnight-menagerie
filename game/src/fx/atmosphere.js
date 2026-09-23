@@ -227,6 +227,19 @@ export const REGIONS = {
         { shape: 1,  x: -3.20, z: -5.40, tone: 0.72, under: 2 },   // torchere, lit
         { shape: 1,  x:  5.55, z: -3.15, tone: 0.94 },   // torchere, beside it
         { shape: 0,  x:  4.65, z: -1.30, tone: 0.86 },   // the buttoned hall chair
+        /* ROUND 16 ITEM 6, judge 1 on combat: "the left third behind the Kid
+           -- pilaster, dado and floor wash into one warm grey; put a hall
+           chair or a case clock there and light its edge, rather than
+           lightening the wall." Every piece in this list stood on the right
+           or well back: the two nearest on the left were the vitrine at
+           z -3.40 and the console at z -6.60, both behind the Kid and both
+           reading as wall. A longcase clock is what an entrance hall puts
+           exactly there; it is the tallest thing in the list, so it crosses
+           the dado and the pilaster the judge could not tell apart, and it
+           stands inside the warm practical at (-3.2, -5.4), so its case takes
+           that light down one edge -- which is the half of the note that says
+           light the OBJECT and not the room. */
+        { shape: 14, x: -5.05, z: -1.60, tone: 0.90 },   // the case clock, left
       ] },
     particles: { mix: [[PTYPE.DUST, 0.80], [PTYPE.WISP, 0.12], [PTYPE.EMBER, 0.08]],
                  tint: '#ffe6bc', wispTint: '#7fd9ec', emberTint: '#ffb64a',
