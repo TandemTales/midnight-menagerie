@@ -627,3 +627,57 @@ were going on, and only a discriminator separated them:
   the round built, not the frame it sits in** — and confirm with
   `git diff <winner's branch> HEAD -- <the files it owns>`, which is the real
   proof that a merge took the judged work.
+
+### The two grafts, 2026-09-22
+
+Both rounds left exactly one thing owed, and in both cases every judge had
+named the same one. Both were given to a single builder with its own dev
+server and worktree, the way round 9's ballroom graft was done, and they ran
+side by side because they touched disjoint files.
+
+**Round 14's BATHHOUSE (`60dd632`).** VERMEIL's bathhouse scored 8.0 with
+`fits_between_samples` TRUE from both judges against the winner's 6.0, and it
+could not be cherry-picked: VERMEIL and ORPIMENT had rewritten the same shader
+branches with different numbering. Rebuilt inside the merged tree instead: the
+pool is a tank with coping and its tiles, lane lines and steps drawn THROUGH
+the water; the steam room is an arcade of niches with basins and taps; the
+boilers have firebox doors with grate bars, gauges and sight glasses; the pipe
+gallery has real bores with spoked handwheels. **It added no numbers at all**
+— no new subject, floor pattern or variant — and every new function sits
+inside `#if MM_ROOMS == 6 || MM_ROOMS == 7`.
+- It was FASTER: default combat 13.46 against BASE's 13.70 at `--wait 40`.
+- Its variants link in 2.4 s and 4.3 s, against the round-14 winner's ~15 s.
+- **It measured the fix instead of eyeballing it.** "The upper half ends in
+  void" became: on the top 35% band, the share of pixels under L6 falls from
+  38.3% to 17.9% on the pool and from 61.3% to 13.0% on the reflector gallery.
+- **It proved the blast radius rather than asserting it.** The pumpkin
+  grounds' pond shares the floor's pool block, so every added term was
+  multiplied by the wing flag and moved expressions were DUPLICATED rather
+  than shared; the pond was then captured on both trees (mean |difference|
+  0.0010, max 3). The four untouched sheets read 0.0016-0.0026, and both
+  combat figures sat below their own same-tree noise floor.
+
+**Round 13's TOAST, and two more (`b66b79b`).** The toast is now the Kid
+board's gold ribbon banner on a plate with the engraved double rule, at
+SMALT's anchor; the veil's portrait ovals were fixed in the FRAME rather than
+the art (`prep_chrome.py` removes two runs of the plain side rail and
+cross-fades the joins, so the gilt is untouched); the coach's GOT IT moved
+into a long cartouche with the keycap inside it. It also took the coach
+heading to title scale — named by all three judges and missing from the
+graft's first brief, which was the briefer's error, not the builder's. Round
+13 had rejected that treatment as unreadable; it had been set at 16px, and
+16px was the defect.
+
+**AND THE CORRECTION WORTH REMEMBERING (`7332e9f`): the fixture said it, not
+the game.** A judge marked the veil for naming the pet twice — "looking for
+Pepper" on the plate and "Pepper is still out there somewhere" under YOUR
+TURN. No caller ever wrote that: all four `passTo()` callers in `scenes/` pass
+a name-free sub-line, and the sentence came from
+`tools/shot-scripts/chrome-handoff.js`, which invented one for the capture.
+The graft answered it in `handoff.js`, with a guard that silently replaced any
+caller's line that word-matched the Kid, the pet or the Companion — game code
+grown to satisfy a screenshot, which would have swallowed the first deliberate
+line a writer wrote about a Kid, with no error. The guard is gone and the
+script now passes the line `combat.js` passes for that moment. **When a judge
+names a defect, check whether the CAPTURE put it there**: the same trap cost
+round 9 an evening, and this is its second sighting.

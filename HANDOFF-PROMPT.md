@@ -18,36 +18,29 @@ loop until perfected". Two later calls narrow it and both are in force:
 
 ## START HERE — 2026-09-22 evening
 
-**ROUNDS 14 AND 13 ARE BOTH MERGED AND VERIFIED** — round 14 ORPIMENT
-(`c1c32a5`, +3.64) and round 13 GAMBOGE (`1e69f27`, +2.22).
+**ROUNDS 13 AND 14 ARE MERGED, VERIFIED AND PUSHED, AND SO ARE BOTH OF THEIR
+GRAFTS** — round 14 ORPIMENT (`c1c32a5`, +3.64) with its bathhouse graft
+(`60dd632`), round 13 GAMBOGE (`1e69f27`, +2.22) with its toast/veil/coach
+graft (`b66b79b`) and one correction (`7332e9f`). The battery on the lot:
+**101 gates, 3 red, every one long-known** — the seven HALO sprite clips,
+`run.py`'s Archivist seed and `_losePatience`, and steam-deck's Map row, which
+was A/B'd against `d46eec5` on 2026-09-22 and fails there identically, same
+row, same node, same +677px.
 
-**THE NEXT ACTIONS, in order:**
+**THE NEXT ACTION: round 15.**
 
-1. **The two GRAFTS are RUNNING** (launched 2026-09-22 ~15:45), one builder
-   each, in `C:/UILOOP/r14/wt/r14-graft` (branch `ui/r14-graft`, port 8934)
-   and `C:/UILOOP/r13/wt/r13-graft` (`ui/r13-graft`, port 8924), both cut from
-   `17c2f5e`. They touch disjoint files — the WebGL room versus the web
-   chrome — so they run side by side.
-   - **round 14's BATHHOUSE**, both judges' first instruction — see "What
-     round 14 decided" below. Captures land in `C:/UILOOP/r14/judging/r14/graft/`.
-   - **round 13's TOAST**, all three judges' first instruction, plus the
-     veil's cropped portrait ovals and the coach's button row — see "What
-     round 13 decided". Captures in `C:/UILOOP/r13/judging/r13/graft/`.
-   When they return: look at the two sheets against VERMEIL's
-   (`C:/UILOOP/r14/judging/r14/rooms/VERMEIL/`) and the three chrome screens
-   against GAMBOGE's, merge each with `--no-ff`, and re-run the battery once
-   for both.
-2. **ROUND 15 IS BRIEFED AND READY** (`35d0fdc`): `BRIEF-r15.md`,
+1. **ROUND 15 IS BRIEFED AND READY** (`35d0fdc`): `BRIEF-r15.md`,
    `RUBRIC-r15.md`, `round-15.args.json` (REALGAR / AZURITE / MASSICOT on
    8941-8943 against a DIMITY baseline, four sheets and combat), and
-   `baseline-r15.sh`. The probe dry-runs clean at 5 agents. **It is waiting on
-   one thing only: the grafts must merge first**, because the baseline and the
-   worktrees must both be cut from the tree the builders start from. Then:
+   `baseline-r15.sh`. The probe dry-runs clean at 5 agents. Its DIMITY
+   baselines were photographed from `60dd632`, the tree with both grafts in
+   it, and its worktrees are cut from the same commit — a baseline that is not
+   the tree the builders start from makes the judges score a field that was
+   never the game. Launch:
    ```
-   bash docs/ui-pass/baseline-r15.sh          # after the grafts merge
-   GIT_LFS_SKIP_SMUDGE=1 git worktree add -b ui/r15-rooms-<slot> "C:/UILOOP/r15/wt/r15-rooms-<slot>" <commit>
    Workflow({ scriptPath: "docs/ui-pass/round-workflow.js",
-              args: { ...docs/ui-pass/round-15.args.json, repo, uiloop: "C:/UILOOP/r15", base: "<commit>" } })
+              args: { ...docs/ui-pass/round-15.args.json, repo,
+                      uiloop: "C:/UILOOP/r15", base: "60dd632" } })
    ```
    Take one capture on 8777 and read its `band` before launching, and read
    `get_usage`.
