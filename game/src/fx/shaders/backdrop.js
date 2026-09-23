@@ -2853,7 +2853,14 @@ float wallH(vec2 q, out float occ){
        A dado panel is 0.60-0.90 m wide by 0.55-0.70 high on a 1.05 m pitch. */
     float wain = smoothstep(0.95, 0.91, q.y);
     vec2 qw = vec2(mod(q.x + uSeed*0.7, 1.05) - 0.525, q.y - 0.56);
-    h -= wain * (1.0 - smoothstep(-0.02, 0.05, mmBox(qw, vec2(0.37,0.29), 0.05))) * 0.55 * clear;
+    /* ROUND 15, FIX 4, swept: the dado panel was the SAME placeholder as the
+       upper wall's -- one smoothstep of a rounded mmBox, sunk 0.55, with
+       nothing inside it -- at a smaller size and a tighter pitch, running the
+       whole length of every panelled room in the house below the chair rail.
+       A wainscot panel is built exactly like the one above it, in smaller
+       members: a 0.040 m ovolo and a 0.055 m bevel on a 0.74 x 0.58 m
+       opening. */
+    h += wain * sPanel(qw, vec2(0.37, 0.29), 0.040, 0.055) * 0.72 * clear;
     h += smoothstep(0.93, 0.96, q.y) * smoothstep(1.06, 1.02, q.y) * 1.20 * clear;   // dado rail
     h += smoothstep(0.19, 0.15, q.y) * 0.85 * clear;                                 // skirting
     h += smoothstep(1.86, 1.90, q.y) * smoothstep(1.98, 1.94, q.y) * 0.80 * clear;   // picture rail
@@ -2902,7 +2909,11 @@ float wallH(vec2 q, out float occ){
                 * (1.0 - 0.55*(1.0 - smoothstep(0.0, 0.16, abs(gAcross - 0.80))));
     float gildS = hung * (sOut - sIn) * clamp(gProf, 0.0, 1.35);
     float canvS = hung * sIn;
-    gCol = mix(gCol, sPortrait(qu, vec2(0.680, 1.060), bay*1.7 + uSeed), canvS);
+    /* BRANCHED, and it is worth a branch: sPortrait carries an mmFbm3, which
+       is three noise taps, and the canvas is about a third of the bays' area
+       and none of the rest of the wall. Called unconditionally it charged the
+       whole panelled elevation for a varnish nobody can see. */
+    if (canvS > 0.002) gCol = mix(gCol, sPortrait(qu, vec2(0.680, 1.060), bay*1.7 + uSeed), canvS);
     gCol = mix(gCol, vec3(0.42, 0.305, 0.115), clamp(gildS, 0.0, 1.0));
     gColAmt = clamp(gColAmt + gildS*0.62 + canvS*0.92, 0.0, 1.0);
     gBare = max(gBare, canvS);
@@ -2976,7 +2987,7 @@ float wallH(vec2 q, out float occ){
                 * (1.0 - 0.58*(1.0 - smoothstep(0.0, 0.14, abs(fAcross - 0.82))));
     float gild = onWall * (fOut - fIn) * clamp(fProf, 0.0, 1.35);
     float canvW = onWall * fIn;
-    gCol = mix(gCol, sPortrait(fp, vec2(0.62, 0.86), floor(q.x/7.80)*2.3 + uSeed*3.1), canvW);
+    if (canvW > 0.002) gCol = mix(gCol, sPortrait(fp, vec2(0.62, 0.86), floor(q.x/7.80)*2.3 + uSeed*3.1), canvW);
     gCol = mix(gCol, vec3(0.42, 0.305, 0.115), clamp(gild, 0.0, 1.0));
     gColAmt = clamp(gColAmt + gild*0.66 + canvW*0.92, 0.0, 1.0);
     gBare = max(gBare, canvW);
