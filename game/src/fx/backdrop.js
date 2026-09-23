@@ -332,6 +332,9 @@ export class Backdrop {
         uTime: { value: 0 }, uSeed: { value: 1.7 }, uDread: { value: 0 },
         uFogAmt: { value: 0.18 }, uArch: { value: 0 }, uCool: { value: 1 },
         uGrime: { value: 0.7 }, uOpen: { value: 0.5 }, uCeil: { value: 6.4 },
+        /* 1 where the room's roof is PITCHED glass (ceilPattern 9, 12): its end
+           walls then run on up into a glazed gable (round 18). */
+        uGable: { value: 0 },
         uGain: { value: 3.4 }, uGloss: { value: 0.3 }, uAlbLift: { value: 0.012 },
         /* The drawn line — see mmDrawn in shaders/backdrop.js. Ink is how dark
            a relief hollow goes, lip how hard its crest catches the light.
@@ -824,7 +827,27 @@ export class Backdrop {
     this.ceiling.visible = !open;
     if (!open) {
       this.ceiling.geometry.dispose();
-      this.ceiling.geometry = new THREE.PlaneGeometry(room.w, spanZ);
+      /* A GLASSHOUSE ROOF IS PITCHED (round 18 item 1, FOLIUM's graft). The
+         bars, the purlins and the ridge were all drawn on a FLAT plane
+         overhead, where a ridge is a painted stripe and every bar runs
+         parallel to the picture's top edge. So the glass roofs (patterns 9
+         and 12) are built as what they are: two slopes rising from the eaves
+         on the side walls to a ridge down the middle of the house, so the
+         purlins and the ridge run away to the vanishing point. The rise stays
+         inside the walls' own pad above the eaves, so the gable ends are
+         closed by the end walls' glazing and never by sky. The plane's uv is
+         still its plan position, so every bar lands where it did in plan. */
+      const cp = room.ceilPattern ?? 3;
+      const rise = (cp === 9 || cp === 12)
+        ? Math.max(0, Math.min(room.w * 0.16, (room.wallPad ?? 5) - 0.4)) : 0;
+      const cg = new THREE.PlaneGeometry(room.w, spanZ, rise > 0 ? 2 : 1, 1);
+      if (rise > 0) {
+        const pos = cg.attributes.position;
+        for (let i = 0; i < pos.count; i++) if (Math.abs(pos.getX(i)) < 1e-4) pos.setZ(i, -rise);
+        pos.needsUpdate = true;
+        cg.computeVertexNormals();
+      }
+      this.ceiling.geometry = cg;
       this.ceiling.position.set(0, room.h, cz);
       this.ceilMat.uniforms.uSpan.value.set(room.w, spanZ);
       this.ceilMat.uniforms.uPattern.value = room.ceilPattern ?? 3;
@@ -1756,6 +1779,8 @@ export class Backdrop {
     w.uOpen.value = p.openGlow ?? 0.5;
     w.uFogAmt.value = p.wallFog ?? 0.18;
     w.uCeil.value = ceil;
+    const cpat = p.room?.ceilPattern ?? 3;
+    w.uGable.value = (p.room?.h ?? 0) > 0.01 && (cpat === 9 || cpat === 12) ? 1 : 0;
     /* A region with room.h = 0 is OPEN TO THE SKY, and uCeil cannot say so: the
        fallback hands it 6.4 m, so the Hedge Maze was crushed to a tenth above
        6.4 m and painted no sky at all -- 71.5% of its upper third pure black. */
@@ -1866,6 +1891,7 @@ export class Backdrop {
       su.uOpen.value = 0;                       // no doorway on the side walls
       su.uFogAmt.value = (p.wallFog ?? 0.18) + 0.10;
       su.uCeil.value = ceil;
+      su.uGable.value = w.uGable.value;
       su.uGain.value = (p.gain ?? 3.4) * 0.95;
       su.uGloss.value = (p.gloss ?? 0.5) * 0.4;
       su.uDeep.value.copy(p._deep); su.uMid.value.copy(p._mid); su.uHi.value.copy(p._hi);
@@ -1885,9 +1911,13 @@ export class Backdrop {
        drapes and the clutter band stay: a yard may well have a bough or a wall
        in the foreground. */
     const openSky = (p.room?.h ?? p.ceil ?? 6.4) <= 0.01;
+    /* ...nor has a GLASSHOUSE a timber beam across its roof (round 18,
+       FOLIUM's): seen looking up, the lintel quad came down into the picture
+       as a dark band laid straight across the pitched glass and its gable. */
+    const glassRoof = w.uGable.value > 0.5;
     for (let i = 0; i < this.frames.length; i++) {
       const m = this.frames[i];
-      m.visible = this._frameShow[i] !== false && !(openSky && i === 2);
+      m.visible = this._frameShow[i] !== false && !((openSky || glassRoof) && i === 2);
       m.material.uniforms.uColor.value.copy(p._frame);
       m.material.uniforms.uRim.value.copy(p._rim);
       m.material.uniforms.uAmount.value = p.frameAmount ?? 0.92;
