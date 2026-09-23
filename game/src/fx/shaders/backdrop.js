@@ -4695,7 +4695,7 @@ void main(){
        canvas already has, as a multiple of its albedo) */
     float E = mmLum(col)/max(mmLum(alb), 1e-3);
     col += alb * vec3(1.00, 0.80, 0.56) * clamp(gPtAmt, 0.0, 1.0) * prof
-         * (0.16 + max(0.62 - E, 0.0));
+         * (0.16 + max(0.78 - E, 0.0));
   }
 
   col *= uGain;
