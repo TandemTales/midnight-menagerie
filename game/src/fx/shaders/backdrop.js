@@ -2659,7 +2659,11 @@ float subjectH(vec2 q, float far, out float occ){
        the piers' own rhythm, and a moulded CORNICE on the wall just under
        uCeil. The top line is then on the wall, raking with the impost, and
        the ceiling's edge falls behind it. */
-    float frTop = max(uCeil - 0.52, 7.40);
+    /* ...and it stops CLEAR of the panelled mode's own ceiling moulding at
+       uCeil-0.30..uCeil+0.30, which is not gated on this subject's occ: two
+       bands of relief overlapping would stack into one tall bright mass and
+       the room would have two cornices a hand apart. */
+    float frTop = max(uCeil - 1.05, 7.40);
     float fr2 = mmBand(q.y, 7.08, frTop);
     s += fr2*0.30;
     float fpn = mmBox(vec2(mx, q.y - (7.08 + frTop)*0.5), vec2(MB*0.34, (frTop - 7.08)*0.30), 0.03);
