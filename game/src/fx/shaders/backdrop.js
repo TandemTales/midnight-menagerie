@@ -8538,8 +8538,23 @@ void main(){
          see any of it. Narrower, and with more of the yard's moon on their
          faces below, which is where a pier standing beside a moonlit
          churchyard actually catches it. */
-      float hw = A * 0.858;
+      /* ROUND 16 ITEM 3, the sweep clause: "find why that vantage renders
+         short of its tile, fix it at the cause, and sweep every kind in every
+         wing for the same fault." This is the same fault as the suite's, in
+         the wing next door. Measured on the gate panel: the outer 140 px of
+         each side read 6-9 against a panel mean of 24, while its two
+         neighbours bleed to their edges -- which RUBRIC-r16 calls a
+         composition defect and not a style. Round 15 narrowed the piers from
+         0.80 to 0.858 and that is not the cause either: the leftover is drawn
+         as the pier's own UNLIT mass, so it is black however narrow it is.
+         You are standing IN the gateway, so what you see of a pier is its
+         inner face, turned toward the moonlit yard and catching it at the
+         arris -- the same reading that fixed the doorway. */
+      float hw = A * 0.895;
       float ax = abs(s.x);
+      /* 0 at the arris, 1 at the frame's edge */
+      float tg = clamp((ax - hw) / max(A - hw, 1e-3), 0.0, 1.0);
+      float litG = 0.16 + 0.84 * pow(clamp(1.0 - tg, 0.0, 1.0), 1.6);
       const float CAP = 0.150;
       float pier = step(hw, ax) * step(s.y, CAP);
       float cap = step(hw - 0.018, ax) * step(CAP, s.y) * step(s.y, CAP + 0.040);
@@ -8574,13 +8589,17 @@ void main(){
       float grain = mmFbm3(s * vec2(9.0, 14.0) + uSeed);
       float blk = mmHash21(vec2(floor((ax - hw + mod(crs, 2.0) * 0.030) / 0.060), crs) + uSeed);
       col = uColor * (0.55 + 0.45 * grain);
-      col += uColor * stone * (2.6 + 1.6 * blk) * (0.75 + 0.5 * grain);
+      col += uColor * stone * (2.6 + 1.6 * blk) * (0.75 + 0.5 * grain) * (1.0 + 2.6 * litG);
       /* STONE IN THE MOON, not a black slab (round 14): the piers' faces take
          a little of the moon the yard is lit by, every block its own value,
          so the coursing reads -- dark, because you are standing in their
          shadow, but a built thing and not a hole in the picture */
+      /* ...and GRADED across the reveal (round 16 item 3). A constant term
+         over a face this wide is the flat 6-9 the measurement found: the
+         light a pier gets comes past its own arris, so it is brightest there
+         and falls away to the frame's edge, and it never reaches nothing. */
       col += uRim * stone * (0.048 + 0.052 * blk) * (0.70 + 0.60 * grain)
-           * (0.55 + 0.75*smoothstep(0.30, -0.45, s.y));
+           * (0.55 + 0.75*smoothstep(0.30, -0.45, s.y)) * (0.45 + 1.85 * litG);
       col *= 1.0 - joint * 0.55;
       float rimS = pier * (1.0 - smoothstep(0.0, 0.012, ax - hw))
                  + cap * (1.0 - smoothstep(0.0, 0.008, abs(s.y - CAP - 0.040)))
