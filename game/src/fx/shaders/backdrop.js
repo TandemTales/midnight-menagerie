@@ -6592,9 +6592,10 @@ vec4 pFrond(float seed, float i, float fi, float widM, float bVary){
    side, its own count on every frond, so the notches are leaflets and not a
    wave; the others keep the old cut. Returns the phase along the frond. */
 float pFrondCut(float seed, float i, float t, float len, float sB, float bVary){
-  float pinF = 12.0 + 8.0*mmHash11(seed*8.9 + i*2.3);
+  /* (only a palm's count is dealt: the agave and the fatsia keep the old
+     cut, which is also one hash a blade cheaper -- round 18 perf) */
   float pinC = 7.0 + 5.0*mmHash11(seed*6.7 + i*0.9);
-  return mix(t*len*16.0, t*mix(len*pinF, 6.2832*pinC, sB), bVary) + i;
+  return mix(t*len*16.0, t*6.2832*pinC, sB*bVary) + i;
 }
 
 /* WHAT GROWS IN A TROUGH (shape 24), round 18 item 3, both round-17
@@ -6614,10 +6615,9 @@ float bedForm(float seed, float grp){
   float h = mmHash11(seed*6.77 + grp*3.13 + 0.41);
   return h < 0.34 ? 0.0 : (h < 0.58 ? 1.0 : (h < 0.80 ? 2.0 : 3.0));
 }
-vec3 bedBlade(vec2 p, float seed, float fi){
+vec3 bedBlade(vec2 p, float seed, float fi, float form){
   float grp = floor(fi/4.0);
   float k   = mod(fi, 4.0)/3.0;
-  float form = bedForm(seed, grp);
   float h1 = mmHash11(seed*4.1 + fi), h2 = mmHash11(seed*2.3 + fi),
         h3 = mmHash11(seed*3.7 + fi), h4 = mmHash11(seed*5.9 + fi);
   float bx  = (grp - 1.0)*0.300 + (h1 - 0.5)*0.09;
@@ -7288,8 +7288,10 @@ float shapeField(vec2 uv, vec2 msz, float shape, float seed){
        wall with a bush behind it. */
     d = mmBox(p - vec2(0.0, 0.132), vec2(0.450, 0.132), 0.008);          // the trough
     d = min(d, mmBox(p - vec2(0.0, 0.283), vec2(0.488, 0.031), 0.006));  // its coping
+    vec3 bF = vec3(bedForm(seed, 0.0), bedForm(seed, 1.0), bedForm(seed, 2.0));
     for (int i = 0; i < 12; i++){
-      vec3 bb = bedBlade(p, seed, float(i));      // three clumps of four blades
+      float fg = float(i/4);
+      vec3 bb = bedBlade(p, seed, float(i), fg < 0.5 ? bF.x : (fg < 1.5 ? bF.y : bF.z));      // three clumps of four blades
       d = mmSmin(d, bb.x - bb.y, 0.016);
     }
     d += (mmFbm3(uv*13.0 + seed*2.7) - 0.50) * 0.013 * smoothstep(0.31, 0.40, uv.y);
@@ -8579,13 +8581,16 @@ float reliefH(vec2 uv, vec2 msz, vec2 mpp, float shape, float seed, out float ti
        an inked step wherever one laps another. That is the entire difference
        between this and the mottled lump it replaces. */
     float fh = 0.0;
+    vec3 bF = vec3(bedForm(seed, 0.0), bedForm(seed, 1.0), bedForm(seed, 2.0));
     for (int i = 0; i < 12; i++){
       float fi = float(i);
-      vec3  bb = bedBlade(p, seed, fi);
+      float fg = float(i/4);
+      float bfm = fg < 0.5 ? bF.x : (fg < 1.5 ? bF.y : bF.z);
+      vec3  bb = bedBlade(p, seed, fi, bfm);
       float dOff = bb.x, halfW = bb.y;
       float on = 1.0 - smoothstep(halfW*0.68, halfW*1.04, dOff);
       /* a trailer over the brick stands proud of it, and is a leaf */
-      if (bedForm(seed, floor(fi/4.0)) > 2.5) {
+      if (bfm > 2.5) {
         gBedLeaf = max(gBedLeaf, (1.0 - smoothstep(halfW*0.9, halfW*1.1, dOff))*step(uv.y, 0.315));
         on *= 1.0 + 0.8*step(uv.y, 0.315);
       }
