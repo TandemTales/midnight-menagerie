@@ -1,0 +1,62 @@
+{
+  "round": "r17",
+  "maxBuilders": 3,
+  "briefs": [
+    "docs/ui-pass/BRIEF-r0.md",
+    "docs/ui-pass/BRIEF-r1.md",
+    "docs/ui-pass/BRIEF-r9.md",
+    "docs/ui-pass/BRIEF-r10.md",
+    "docs/ui-pass/BRIEF-r11.md",
+    "docs/ui-pass/BRIEF-r17.md"
+  ],
+  "rubrics": [
+    "docs/ui-pass/RUBRIC.md",
+    "docs/ui-pass/RUBRIC-r9.md",
+    "docs/ui-pass/RUBRIC-r11.md",
+    "docs/ui-pass/RUBRIC-r17.md"
+  ],
+  "samples": [
+    "UI/title.png",
+    "UI/mainMenu.png",
+    "UI/selectCompanion.png",
+    "UI/selectKid.png"
+  ],
+  "tracks": [
+    {
+      "key": "rooms",
+      "name": "ROOMS",
+      "rule": "refine",
+      "screens": [
+        "sheet-foyer",
+        "sheet-ballroom",
+        "sheet-greenhouse",
+        "sheet-graveyard",
+        "combat"
+      ],
+      "smallScreens": [
+        "combat"
+      ],
+      "baseline": "TAFFETA",
+      "builders": [
+        {
+          "slot": "a",
+          "code": "SIENNA",
+          "port": 8961,
+          "angle": "LITERAL. Work BRIEF-r17's fix list 1 to 5 in order and exactly as written; items 1, 2 and 3 were each named by both judges. Start with the sitters, because that is the one item with a finished graft on a branch (VERDACCIO, ui/r16-rooms-c, which won sheet-foyer with it) -- bring it in AND fix the fault the same judges named, that it is one sitter repeated at one scale with a blank oval for a face. Then the four repeated elements, then the three unfinished architectural items, then the parquet measurement, then the small ones. Take nothing the list does not ask for. This angle has won three of the last four rounds."
+        },
+        {
+          "slot": "b",
+          "code": "LITHARGE",
+          "port": 8962,
+          "angle": "THE PEOPLE IN THE HOUSE. Item 1 is your whole round, everywhere it appears: the sitters in the landing canvases and the parlor overmantel, the busts on the gallery plinths (smooth white ovoids with no face at 40px), the six empty gilt rectangles in combat at exactly the height the eye lands after the card row, and the instrument silhouettes behind the dais gallery. Read VERDACCIO's sitter on ui/r16-rooms-c -- the only finished canvas interior anyone has drawn -- then make it a PERSON rather than a stamp: vary sex, age, pose, scale and the direction they face, and give every face its three marks (a brow, a nose line, one dark eye socket) at the size it is actually drawn. mainMenu.png carries them at 60px, so the standard is inside the samples. A house whose every portrait is the same plate is the same defect as one window repeated in two even rows."
+        },
+        {
+          "slot": "c",
+          "code": "FOLIUM",
+          "port": 8963,
+          "angle": "VARIATION AND CONVERGENCE. Items 2, 3 and 4 are your round. First MEASURE the parquet before you believe anybody: crop the mirror hall floor near and far, count the block period in pixels in each, and report both numbers -- a pattern constant in metres must shrink in pixels, and if the ratio is near 1 that is a projection bug and the most valuable thing in this round. Then the four repeated elements that do not vary (the landing's nine identical frames, the palmhouse's one frond duplicated eight times with its venation stamped at one density, the conifer belt's trunkless cones at an even pitch, the dais gallery's lit band with no balusters), then the three unfinished architectural items: the suite panel's remaining black top band with its smooth proscenium and silhouette piano, the chapel's missing buttresses and plinth -- asked for three rounds running -- and the glasshouse roof's panes, whose unit never shrinks and which has no ridge. Do not FLATTEN anything to fix something else: two of last round's candidates smoothed away a coffered ceiling while working elsewhere and both judges called it a loss."
+        }
+      ]
+    }
+  ]
+}

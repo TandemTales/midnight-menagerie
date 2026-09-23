@@ -1,4 +1,4 @@
-# Handoff — rounds 0-15 merged; round 16's fix list is written, not yet briefed
+# Handoff — rounds 0-16 merged; round 17 is staged, waiting on the weekly limit
 
 You are picking up Midnight Menagerie on `dev`. Everything below is pushed.
 
@@ -16,67 +16,55 @@ loop until perfected". Two later calls narrow it and both are in force:
 `UI/*.png`** — what matters is readable, accurately drawn, well-detailed objects
 (item 3).
 
-## START HERE — 2026-09-22 evening
+## START HERE — 2026-09-23
 
-**ROUNDS 13 AND 14 ARE MERGED, VERIFIED AND PUSHED, AND SO ARE BOTH OF THEIR
-GRAFTS** — round 14 ORPIMENT (`c1c32a5`, +3.64) with its bathhouse graft
-(`60dd632`), round 13 GAMBOGE (`1e69f27`, +2.22) with its toast/veil/coach
-graft (`b66b79b`) and one correction (`7332e9f`). The battery on the lot:
-**101 gates, 3 red, every one long-known** — the seven HALO sprite clips,
-`run.py`'s Archivist seed and `_losePatience`, and steam-deck's Map row, which
-was A/B'd against `d46eec5` on 2026-09-22 and fails there identically, same
-row, same node, same +677px.
+**ROUNDS 0-16 ARE ALL MERGED, VERIFIED AND PUSHED.** The last three:
+round 15 MASSICOT (`4a47bca`, +2.00), round 16 CINNABAR (`84d61d1`, +2.00),
+and before them round 14 ORPIMENT (`c1c32a5`, +3.64, the largest of the pass)
+with both grafts. Every one was checked the same way: the winner's code diff
+against its own branch EMPTY, its sheets photographed on the merged tree and
+compared by CONTENT (all four read mean |difference| 0.00, max 0, in both
+rounds 15 and 16), and the battery — 101 gates, 3 red, every one long-known.
 
-**ROUND 15 IS ALSO MERGED AND VERIFIED** — MASSICOT (`4a47bca`), 2 of 2
-judges, **6.60 against 4.60, +2.00**, four of five screens. All four of its
-sheets photographed on the merged tree are PIXEL-IDENTICAL to the captures the
-judges scored (max difference 0), and its code diff against the winning branch
-is empty. It won on a finding: **three of the four things making the game's
-edges and upper halves black were masks and defaults, not the room's darkness**
-— a near-frame lintel that masked 40% of the picture, every plaster ceiling
-lit by four uniforms nobody writes (an unwritten `Vector4` is `(0,0,0,1)`), and
-a vignette that hit zero before the frame's mid-edge. See the README's round-15
-section; the brief-trap-plus-rubric-counterweight lesson in it is the one to
-carry into every future brief.
+**THE NEXT ACTION: launch round 17, WHEN THE WEEKLY ALLOWANCE ALLOWS.**
 
-**THE NEXT ACTION: round 16, and its fix list is already written below.**
+**Round 17 is briefed and staged but DELIBERATELY NOT LAUNCHED.** The weekly
+figure stood at 53% when round 16's judges finished on 2026-09-23, and the
+rule is not to start a round much above half — a round costs 15-20% and a
+limit hit mid-round costs an evening of resume bookkeeping. **The weekly
+resets 2026-09-29 09:00 UTC.** Read `get_usage` first; if it is under half,
+go.
 
-1. **BRIEF ROUND 16** from "What round 15 left owed". Lead with the mansion
-   elevation and name `ui/r15-rooms-a` (REALGAR) as the graft to read, the way
-   `BRIEF-r14.md` named MADDER's vantages — REALGAR won the Graveyard sheet
-   and both judges asked for its window vocabulary, so that item does not need
-   a separate graft builder.
-2. **Then the usual**: `baseline-r16.sh` from the tree the worktrees are cut
-   from, three worktrees at that commit, probe, one capture on 8777 to read
-   its `band`, `get_usage`, launch.
+Everything it needs exists: `BRIEF-r17.md`, `RUBRIC-r17.md`,
+`round-17.args.json` (SIENNA / LITHARGE / FOLIUM on 8961-8963 against a
+TAFFETA baseline, the same four sheets and combat) and `baseline-r17.sh`. The
+probe dry-runs clean at 5 agents. To go:
 
-**What round 15 left owed**, every item from both judges:
+```
+bash docs/ui-pass/baseline-r17.sh        # from dev's tip, with 8777 up
+for s in a b c; do GIT_LFS_SKIP_SMUDGE=1 git worktree add -b ui/r17-rooms-$s   "C:/UILOOP/r17/wt/r17-rooms-$s" <that same commit>; done
+Workflow({ scriptPath: "docs/ui-pass/round-workflow.js",
+           args: { ...docs/ui-pass/round-17.args.json, repo,
+                   uiloop: "C:/UILOOP/r17", base: "<that same commit>" } })
+```
 
-- **The graveyard mansion** is still "one arched window repeated five times in
-  two even rows". REALGAR built the vocabulary both judges want on the same
-  building: an oculus in the gable, a lunette dormer, tall glazing-barred
-  sashes over short attic lights, varied bay widths, and two windows left dark.
-- **The portrait sitters are "fog in gilt frames"** — the frames and varnished
-  grounds are right, the sitter is a featureless pale oval. A shoulder line, a
-  collar edge, a hairline and one dark eye socket; a head at 60 px in
-  `mainMenu.png` carries that much.
-- **The suite panel is STILL letterboxed** inside black margins while its
-  neighbours fill theirs, and **the glass roof has no glazing bars, purlins or
-  ridge** — the brightest surface in the upper half and the only undrawn one.
-- **The mirror hall's floor is a DISPUTE, not a fix.** Judge 1 says the
-  parquet "runs in concentric arcs across the whole foreground"; MASSICOT
-  checked and says it is laid in world coordinates, straight by construction,
-  and what curves is the back wall, drawn on an arc. Settle it with a test
-  pattern before anyone changes a line.
-- Smaller, one judge each: the ballroom's new ceiling wants a rose at the
-  pendant and one beam; combat's wall behind the Dust Bunny is now the
-  brightest patch in the top half and eats the creature's silhouette at 1280;
-  the foyer gallery's upper storey is still one dark band; the chapel's flank
-  wall wants buttresses and a plinth; the parlor's floorboards do not shorten
-  with distance; and the graveyard's conifer belt is identical triangles.
-- **Round 15's own leftovers, from the winner's notes**: `subjChimney`'s tall
-  flanking panels are still the empty-rounded-box placeholder class, and
-  `sPanel`/`sPortrait` are sitting right there for them.
+Take one capture on 8777 and read its `band` before launching: this machine's
+GPU degrades across long sessions of Chromium launches, and a round whose
+captures cannot draw is a wasted round.
+
+**What round 17 is for.** Round 16 finished the ROOMS; round 17 puts PEOPLE in
+them. Both judges' first instruction is VERDACCIO's painted sitter
+(`ui/r16-rooms-c`, the only finished canvas interior anyone has drawn, which
+won `sheet-foyer` 2 of 2) — brought in AND freed of its own fault, that it is
+one sitter repeated at one scale with a blank oval for a face. The same defect
+is on the gallery busts ("smooth white ovoids at 40 px"), in combat's six
+empty gilt rectangles, and behind the dais gallery. Then four repeated
+elements that do not vary, three architectural items still unfinished (the
+suite's remaining top band, the chapel's buttresses — asked three rounds
+running — and the glasshouse roof's non-converging panes), and one
+measurement: **count the parquet's block period in pixels near and far.** A
+pattern constant in metres must shrink; if the ratio is near 1 that is a
+projection bug and the most valuable thing in the round.
 
 **How both merges were verified, and the standard has changed.** Round 11's
 rule was BYTE-IDENTICAL captures on the merged tree. That is the wrong test

@@ -158,6 +158,8 @@ so round 2 runs six at once, as round 1 did.
 
 | 15 | **NAME EVERYTHING AT THE EDGES** — the same four sheets and combat, on the round-14 judges' seven-item fix list | MASSICOT 6.60 · REALGAR 5.50 · AZURITE 4.60 · the screens before **4.60** | MASSICOT, 2 of 2, four of five screens (one judge gave it all five). **+2.00**, and it won on a FINDING: three of the four things making the edges and upper halves black were masks and defaults, not the room's darkness. REALGAR won the Graveyard and its mansion elevation is the graft both judges named | `4a47bca` |
 
+| 16 | **FINISH THE OBJECTS** — the same four sheets and combat, on the round-15 judges' list: what is INSIDE an object, and does a repeated element vary | CINNABAR 6.70 · VERDACCIO 5.50 · MINIUM 5.10 · the screens before **4.70** | CINNABAR, 2 of 2, four of five screens. **+2.00.** Coffered ceilings, leaves with midribs, a mansion with varied bays and dark windows among the lit, and **the black inset margins gone at last** (66px -> 3px, 64px -> 2px) — the defect open since round 14. VERDACCIO won the Foyer as the only build with a real sitter in the frames, and that is the graft both judges named | `84d61d1` |
+
 **Scores anchor to the candidates beside them.** Round 0's winner scored 7.0 in
 round 0 and 5.58 as round 1's baseline: the judges grew stricter as the field
 improved. Compare a winner with the baseline IN ITS OWN ROUND (round 1 REFINE:
@@ -180,6 +182,7 @@ Against their own baselines:
 | 11 | VARIATION **+2.17** (sheets 3-3.5 -> 6-7) | — |
 | 12 | — | THE LAST WEB CHROME **+5.9** (per-screen winners 7.33 / 8.00 / 7.67 against 2 / 1 / 1.33) |
 | 13 | CHROME, second pass **+2.22** (coach 6.0 -> 8.0, veil 6.0 -> 8.67, toast 5.0 -> 7.0) | — |
+| 16 | FINISH THE OBJECTS **+2.00** | — |
 | 15 | NAME EVERYTHING AT THE EDGES **+2.00** (and the baseline it beat was the tree with both grafts in it) | — |
 | 14 | WHERE YOU STAND **+3.64** (two of its six wings had never been judged, and the baseline scored 2.0 on both) | — |
 
@@ -736,3 +739,47 @@ defect it was trying to remove.**
   checked and says the parquet is laid in world coordinates and is straight by
   construction, and what curves is the back wall, drawn on an arc. One of them
   is wrong, and a test pattern on that floor settles it in ten minutes.
+
+### Round 16: finish the objects, 2026-09-23
+
+**CINNABAR, 2 of 2 judges, 6.70 against 4.70 — +2.00** (`84d61d1`, run
+`wf_b4cd7e06-518`), four of five screens. The round asked two questions of
+every panel — is the object FINISHED inside, and does a repeated element VARY
+— and both judges say CINNABAR is the only candidate that answered them on
+more than one wing: coffered beams with side faces and a moulded panel inside
+each coffer; leaves with a midrib, parallel laterals and a pinnate margin; a
+mansion with unequal bays, more than one window size, dormers, an oculus and
+several windows DARK among the lit.
+
+- **THE BLACK INSET MARGINS ARE GONE**, and this is the item to learn from: it
+  was named in round 14, stayed on round 15's list, and was not fixed there
+  because the builder who owned it finished level with the baseline. Keeping
+  an unfixed item ON the list, with the branch that got closest named beside
+  it, is what eventually spent it. Judge 2 measured the win — foyer parlor
+  66px -> 3px, ballroom suite 64px -> 2px.
+- **Round 15's regression is fixed**: the wall behind the pale Dust Bunny is
+  dark again and the board reads at 1280. A round that lights a room must
+  check the creatures still have silhouettes.
+- **Two candidates FLATTENED an object that the baseline had drawn** (the
+  ballroom's coffered ceiling went to a smooth plum field) while fixing
+  something else. Both judges marked it as a loss against the baseline. A
+  refine round can go backwards in one room while going forwards in another,
+  and only a per-screen reading catches it.
+
+**THE MIRROR HALL DISPUTE, SETTLED BY EXPERIMENT — and neither side was
+right.** Round 15's judge saw "concentric arcs across the whole foreground";
+round 15's winner said the parquet was straight by construction and the arc
+belonged to the back wall. Round 16's brief refused to pick a side and made
+settling it the first task. The builder read the code (a rigid 45-degree
+rotation of the plane's own world metres over a CONSTANT block width, no
+radial term anywhere), then tested its OWN hypothesis — a 0.16 m block crosses
+about a pixel in the middle distance, so a pattern past Nyquist is drawn at
+full strength — fitted the fade, photographed it, and found **it changed only
+the top 200 rows of 800 while the arcs across the middle and near floor stayed
+byte-identical. Ruled out by experiment**, and said so in its own commit
+message. What draws the arcs is correct perspective: two families of parallel
+world lines running to two vanishing points across a very wide field of view,
+with the floor's elliptical light pools laid over the swing to give it
+centres. **When a judge and a builder disagree about what is on the screen,
+neither one is evidence — make the next round settle it with a capture before
+it is allowed to change a line.**
