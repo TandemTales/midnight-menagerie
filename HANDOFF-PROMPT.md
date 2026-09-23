@@ -1,4 +1,4 @@
-# Handoff — rounds 13 and 14 merged; two grafts running, round 15 briefed
+# Handoff — rounds 0-15 merged; round 16's fix list is written, not yet briefed
 
 You are picking up Midnight Menagerie on `dev`. Everything below is pushed.
 
@@ -27,23 +27,56 @@ graft (`b66b79b`) and one correction (`7332e9f`). The battery on the lot:
 was A/B'd against `d46eec5` on 2026-09-22 and fails there identically, same
 row, same node, same +677px.
 
-**THE NEXT ACTION: round 15.**
+**ROUND 15 IS ALSO MERGED AND VERIFIED** — MASSICOT (`4a47bca`), 2 of 2
+judges, **6.60 against 4.60, +2.00**, four of five screens. All four of its
+sheets photographed on the merged tree are PIXEL-IDENTICAL to the captures the
+judges scored (max difference 0), and its code diff against the winning branch
+is empty. It won on a finding: **three of the four things making the game's
+edges and upper halves black were masks and defaults, not the room's darkness**
+— a near-frame lintel that masked 40% of the picture, every plaster ceiling
+lit by four uniforms nobody writes (an unwritten `Vector4` is `(0,0,0,1)`), and
+a vignette that hit zero before the frame's mid-edge. See the README's round-15
+section; the brief-trap-plus-rubric-counterweight lesson in it is the one to
+carry into every future brief.
 
-1. **ROUND 15 IS BRIEFED AND READY** (`35d0fdc`): `BRIEF-r15.md`,
-   `RUBRIC-r15.md`, `round-15.args.json` (REALGAR / AZURITE / MASSICOT on
-   8941-8943 against a DIMITY baseline, four sheets and combat), and
-   `baseline-r15.sh`. The probe dry-runs clean at 5 agents. Its DIMITY
-   baselines were photographed from `60dd632`, the tree with both grafts in
-   it, and its worktrees are cut from the same commit — a baseline that is not
-   the tree the builders start from makes the judges score a field that was
-   never the game. Launch:
-   ```
-   Workflow({ scriptPath: "docs/ui-pass/round-workflow.js",
-              args: { ...docs/ui-pass/round-15.args.json, repo,
-                      uiloop: "C:/UILOOP/r15", base: "60dd632" } })
-   ```
-   Take one capture on 8777 and read its `band` before launching, and read
-   `get_usage`.
+**THE NEXT ACTION: round 16, and its fix list is already written below.**
+
+1. **BRIEF ROUND 16** from "What round 15 left owed". Lead with the mansion
+   elevation and name `ui/r15-rooms-a` (REALGAR) as the graft to read, the way
+   `BRIEF-r14.md` named MADDER's vantages — REALGAR won the Graveyard sheet
+   and both judges asked for its window vocabulary, so that item does not need
+   a separate graft builder.
+2. **Then the usual**: `baseline-r16.sh` from the tree the worktrees are cut
+   from, three worktrees at that commit, probe, one capture on 8777 to read
+   its `band`, `get_usage`, launch.
+
+**What round 15 left owed**, every item from both judges:
+
+- **The graveyard mansion** is still "one arched window repeated five times in
+  two even rows". REALGAR built the vocabulary both judges want on the same
+  building: an oculus in the gable, a lunette dormer, tall glazing-barred
+  sashes over short attic lights, varied bay widths, and two windows left dark.
+- **The portrait sitters are "fog in gilt frames"** — the frames and varnished
+  grounds are right, the sitter is a featureless pale oval. A shoulder line, a
+  collar edge, a hairline and one dark eye socket; a head at 60 px in
+  `mainMenu.png` carries that much.
+- **The suite panel is STILL letterboxed** inside black margins while its
+  neighbours fill theirs, and **the glass roof has no glazing bars, purlins or
+  ridge** — the brightest surface in the upper half and the only undrawn one.
+- **The mirror hall's floor is a DISPUTE, not a fix.** Judge 1 says the
+  parquet "runs in concentric arcs across the whole foreground"; MASSICOT
+  checked and says it is laid in world coordinates, straight by construction,
+  and what curves is the back wall, drawn on an arc. Settle it with a test
+  pattern before anyone changes a line.
+- Smaller, one judge each: the ballroom's new ceiling wants a rose at the
+  pendant and one beam; combat's wall behind the Dust Bunny is now the
+  brightest patch in the top half and eats the creature's silhouette at 1280;
+  the foyer gallery's upper storey is still one dark band; the chapel's flank
+  wall wants buttresses and a plinth; the parlor's floorboards do not shorten
+  with distance; and the graveyard's conifer belt is identical triangles.
+- **Round 15's own leftovers, from the winner's notes**: `subjChimney`'s tall
+  flanking panels are still the empty-rounded-box placeholder class, and
+  `sPanel`/`sPortrait` are sitting right there for them.
 
 **How both merges were verified, and the standard has changed.** Round 11's
 rule was BYTE-IDENTICAL captures on the merged tree. That is the wrong test

@@ -156,6 +156,8 @@ so round 2 runs six at once, as round 1 did.
 
 | 13 | **CHROME, second pass** — the coach / the veil / the toast, told they are DRAWN and not LIT (EXPAND) | GAMBOGE 7.89 · SMALT 6.67 · NACRE 6.44 · round 12's screens 5.67 | GAMBOGE, 3 of 3 judges; coach and veil 3 of 3, and the toast on the rankings after three judges named three different winners. Two judges say its veil "could be cut into a trailer beside the samples". NACRE's toast is the round's only `fits TRUE` and is the graft all three judges asked for | `1e69f27` |
 
+| 15 | **NAME EVERYTHING AT THE EDGES** — the same four sheets and combat, on the round-14 judges' seven-item fix list | MASSICOT 6.60 · REALGAR 5.50 · AZURITE 4.60 · the screens before **4.60** | MASSICOT, 2 of 2, four of five screens (one judge gave it all five). **+2.00**, and it won on a FINDING: three of the four things making the edges and upper halves black were masks and defaults, not the room's darkness. REALGAR won the Graveyard and its mansion elevation is the graft both judges named | `4a47bca` |
+
 **Scores anchor to the candidates beside them.** Round 0's winner scored 7.0 in
 round 0 and 5.58 as round 1's baseline: the judges grew stricter as the field
 improved. Compare a winner with the baseline IN ITS OWN ROUND (round 1 REFINE:
@@ -178,6 +180,7 @@ Against their own baselines:
 | 11 | VARIATION **+2.17** (sheets 3-3.5 -> 6-7) | — |
 | 12 | — | THE LAST WEB CHROME **+5.9** (per-screen winners 7.33 / 8.00 / 7.67 against 2 / 1 / 1.33) |
 | 13 | CHROME, second pass **+2.22** (coach 6.0 -> 8.0, veil 6.0 -> 8.67, toast 5.0 -> 7.0) | — |
+| 15 | NAME EVERYTHING AT THE EDGES **+2.00** (and the baseline it beat was the tree with both grafts in it) | — |
 | 14 | WHERE YOU STAND **+3.64** (two of its six wings had never been judged, and the baseline scored 2.0 on both) | — |
 
 Converting a screen moves it about four points. Refining one moves it half a point
@@ -681,3 +684,55 @@ line a writer wrote about a Kid, with no error. The guard is gone and the
 script now passes the line `combat.js` passes for that moment. **When a judge
 names a defect, check whether the CAPTURE put it there**: the same trap cost
 round 9 an evening, and this is its second sighting.
+
+### Round 15: the edges were masked, not dark, 2026-09-22/23
+
+**MASSICOT, 2 of 2 judges, 6.60 against 4.60 — +2.00** (`4a47bca`, run
+`wf_518ef88e-dd1`), four of the five screens, and one judge gave it all five.
+The round ran the round-14 judges' own seven-item fix list, three angles: the
+list in order (REALGAR), the architecture and the projections (AZURITE), and
+the edges and placeholders (MASSICOT).
+
+**THE FINDING, and it is the reason to run a round rather than to argue about
+one. Three of the four things making this game's edges and upper halves black
+were MASKS AND DEFAULTS, not the room's own darkness** — found with the layer
+toggles BEFORE anything was changed:
+
+- **The near-frame lintel was a soft gradient mask over 40% of the picture.**
+  Hiding that one quad took the Ballroom's top four tenths from
+  9.6/7.0/3.6/6.8 to 46.1/31.0/10.4/12.9.
+- **Every plaster ceiling was lit by four uniforms nobody ever writes.**
+  `uPool[]` is never written for a ceiling and an unwritten `Vector4` is
+  `(0,0,0,1)`, so `r = 0` and each slot was a flat wash. Zeroing them took the
+  Ballroom's ceiling from 52.2 to 0.5, which is the proof the light was
+  fictitious.
+- **The grade's vignette reached zero before the frame's mid-edge**, so the
+  whole outer band was multiplied by 0.28 with no gradient left in it.
+
+**THE BRIEF'S TRAP AND THE RUBRIC'S COUNTERWEIGHT BOTH EARNED THEIR KEEP, and
+this is the transferable part.** The fix list said the edges go black; the
+obvious fix is to raise the ambient, and that would have undone the measured
+black floor of 2026-09-16 — the one rendering advance of the pass. So the
+brief said light the OBJECT and not the room, and `RUBRIC-r15.md` told the
+judges to mark a milky candidate BELOW a dark one. Judge 1 then measured it
+unprompted: MASSICOT's darkest decile sits at 0.9-2.4 against 0.1-0.6 for the
+others, **but its darks are MORE saturated (0.65 against 0.52-0.56)** — "a
+floored vignette, not a raised ambient, and I do not mark it down". Judge 2
+found the cautionary case was the BASELINE: "DIMITY's combat foyer is a milky
+grey haze through the middle." **Write the trap into the brief AND its test
+into the rubric: a fix list without a counterweight steers a round into the
+defect it was trying to remove.**
+
+- **An angle can take its fixes down with it.** Fixes 2 and 6 — the
+  letterboxed suite panel and the bent parquet — were AZURITE's, and AZURITE
+  finished level with the baseline at 4.60, so both are still outstanding in
+  the merged game. The literal builder is only insurance for the items it
+  actually reaches.
+- **The winner's notes said what it had NOT done**, which is worth asking for
+  by name in every brief: fix 1 untouched, fix 7 answered in spirit rather
+  than to the letter, and one placeholder class left in `subjChimney`.
+- **A dispute to settle, not to guess at.** Judge 1 says the mirror hall's
+  parquet "runs in concentric arcs across the whole foreground". The builder
+  checked and says the parquet is laid in world coordinates and is straight by
+  construction, and what curves is the back wall, drawn on an arc. One of them
+  is wrong, and a test pattern on that floor settles it in ten minutes.
