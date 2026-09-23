@@ -930,7 +930,12 @@ const FOYER_NEAR_HEARTH = [
 const FOYER_NEAR_GALLERY = [
   /* (busts on term pedestals, round 14: the gallery's statues read as "dark
      armoured figures"; its niches already hold busts, and so do these) */
-  { shape: 26, x: -6.10, z: -3.50, tone: 0.96 },   // a bust on its term
+  /* (round 18 item 2: "the busts on pedestals ... are still small pale
+     blobs with no brow, nose or eye socket", three rounds running. Seen
+     `along` the arcade the first of these stood three metres down the wall
+     and its head was a dozen pixels; at your elbow -- zAlong -- it is the
+     nearest thing in the gallery and its face carries its marks.) */
+  { shape: 26, x: -6.10, z: -3.50, tone: 0.96, zAlong: 2.40, scale: 1.15 },   // a bust on its term
   { shape: 26, x:  6.30, z: -3.80, tone: 0.96 },   // and its pendant
   { shape: 5,  x: -7.50, z: -7.20, tone: 0.90 },   // vitrines further down the gallery
   { shape: 5,  x:  7.60, z: -7.40, tone: 0.90 },
@@ -2064,6 +2069,7 @@ export class Atmosphere {
         const o = Object.assign({}, it);
         o.x = -camSide * R.w * (0.40 + 0.04 * nr());
         o.z = -3.0 - k * 2.8 - nr() * 0.6;
+        if (k === 0 && it.zAlong !== undefined) o.z = it.zAlong;   // (round 18)
         o.wall = true;                 // it walks back along its wall into shot
         if (k++ >= 3) o.skip = true;
         return o;

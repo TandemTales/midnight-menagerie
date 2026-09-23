@@ -1064,7 +1064,15 @@ float subjChimney(vec2 q, float cx, float ax, out float occ){
   gColAmt = clamp(gColAmt + slipC, 0.0, 1.0);
   can *= 1.0 - slipC; dcan *= 1.0 - slipC; canv = can + dcan;
   ptAsk(pc, vec2(1.04, 1.32), 3.7 + uSeed*1.3, vec2(-1.0, 1.0), can);
-  ptAsk(dp, vec2(0.53, 0.69), floor(uDoorX*3.0 + sign(dx)*5.0) + uSeed*2.3, vec2(-1.0, 0.0), dcan);
+  /* ROUND 18 ITEM 2: the two over the doors were "dim blank fields" -- two
+     more head-and-shoulders dealt dark on dark, the same pose as each other
+     at a quarter of the overmantel's size. They are other people in other
+     poses: over one door an officer in his red coat or a grey-bearded
+     elder, close and large in the canvas; over the other a girl in a pale
+     frock or a widow in her white cap, standing, small in a painted room. */
+  float dh = mmHash11(uSeed*3.71 + 0.9);
+  vec2 dfk = cx < 0.0 ? vec2(dh < 0.5 ? 5.0 : 2.0, 0.0) : vec2(dh < 0.5 ? 3.0 : 4.0, 2.0);
+  ptAsk(dp, vec2(0.53, 0.69), floor(uDoorX*3.0 + sign(dx)*5.0) + uSeed*2.3, dfk, dcan);
   gColAmt = clamp(gColAmt + canv*0.92, 0.0, 1.0);
   gBare = max(gBare, canv);
   occ = clamp(br + mmSolid(mmBox(vec2(dx, q.y - 2.0), vec2(1.44, 2.0), 0.0))
@@ -3384,7 +3392,7 @@ float subjectH(vec2 q, float far, out float occ){
          shadow, the roof darker slate still, and the gutter's lead edge */
       gTint = front*(1.0 - door)*0.40 + butt*0.30 - side*0.34 - sbut*0.20
             - roofP*(1.0 - gut)*1.0 - eShade*0.35 + gut*0.30
-            + bLit*0.80 - bShd*0.62 + bOff*0.90 + plC*0.40 + plF*0.10 - corb*0.30 + sbut*0.26
+            + bLit*1.00 - bShd*0.85 + bOff*0.90 + plC*0.40 + plF*0.10 - corb*0.30 + sbut*0.26
             /* the eaves a lit lead gutter over the dark corbel table -- the
                line against the sky (round 18, SIENNA's) */
             + gut*0.40;
@@ -3610,7 +3618,11 @@ float mmHouseWin(vec2 hq, out float wt, out float blind, out float bid){
 #endif
 
 /* Relief height field, in metres of apparent depth. One branch per mode. */
+/* How much of this pixel is the WOOD (round 18): the near belt 1, the far
+   band 0.6. main() takes the moon off it -- see there. */
+float gTreeM;
 float wallH(vec2 q, out float occ){
+  gTreeM = 0.0;
   float h = mmNoise(q*2.3 + uSeed)*0.14;   // one octave: this runs 3x per pixel
   /* Metres per pixel, taken BEFORE any branching so the derivative is defined
      whatever mode this region is. A drawn line's width is in PIXELS, so every
@@ -3817,8 +3829,12 @@ float wallH(vec2 q, out float occ){
     h += slipW*0.25;
     gild = max(gild, slipW*1.2);
     canvW *= 1.0 - slipW;
+    /* (round 18: an oval holds a PALE sitter -- a girl in her frock or a
+       widow in her white cap. Dealt dark, the one oval on the landing's
+       right wall read as "an empty oval frame" behind the hangings.) */
     ptAsk(fp, fv > 0.62 ? vec2(0.86, 0.60) : (fv < 0.30 ? vec2(0.57, 0.81) : vec2(0.62, 0.86)),
-          floor(q.x/7.80)*2.3 + uSeed*3.1, vec2(-1.0, fv > 0.62 ? 1.0 : -1.0), canvW*1.01);
+          floor(q.x/7.80)*2.3 + uSeed*3.1,
+          fv < 0.30 ? vec2(fv < 0.15 ? 3.0 : 4.0, 0.0) : vec2(-1.0, fv > 0.62 ? 1.0 : -1.0), canvW*1.01);
     gCol = mix(gCol, vec3(0.42, 0.305, 0.115), clamp(gild, 0.0, 1.0));
     gColAmt = clamp(gColAmt + gild*0.66 + canvW*0.92, 0.0, 1.0);
     gBare = max(gBare, canvW);
@@ -4147,16 +4163,24 @@ float wallH(vec2 q, out float occ){
       float fw = (0.150 + 0.060*mmHash11(fid*2.9 + uSeed))*fh + 0.20;
       if (fh < 0.1 || abs(fx2) > fw*1.75 + 0.4) continue;
       float fn = 1.0 - clamp(abs(fx2)/max(fw, 0.02), 0.0, 1.0);
-      float limbed = step(5.5, fh);
-      float skirt = limbed * max(4.20, (0.28 + 0.10*mmHash11(fid*6.3 + uSeed))*fh);
+      /* (round 18: limbed only over 7.5 m, and the skirt at no more than
+         0.26-0.36 of the height -- limbed at 5.5 m with its skirt held at
+         4.2, a small fir was a crown 1.3 m deep on a four-metre stick, which
+         came back as a flat black slab at the edge of the plots panel) */
+      float limbed = step(7.5, fh);
+      float skirt = limbed * max(3.20, (0.26 + 0.10*mmHash11(fid*6.3 + uSeed))*fh);
       /* the crown from the skirt to the leader, slightly FULL (pow 0.72),
          scalloped in whorls at about 1.2 m, and ragged */
-      float top = skirt + (fh - skirt)*pow(fn, 0.72);
-      top += fw*0.34*max(0.0, sin(hq.y*5.2 - fid*2.3))*fn*(1.0 - fn)*4.0*step(0.4, fh) + rag;
       /* its lowest branches sweep DOWN to their tips, so the underside is
          highest at the trunk and lowest at the edge of the skirt */
       float under = skirt*(1.0 - 0.30*(1.0 - fn)) - 0.35*limbed*(1.0 - fn)
                   + 0.20*rag*limbed;
+      /* (round 18: the crown's flank comes down to MEET those drooping tips.
+         Drawn from the skirt's height at the trunk instead, every limbed fir
+         stood on a flat shelf as wide as its skirt -- a cone on a plate --
+         and a big one at the frame's edge came back as a black slab.) */
+      float top = under + (fh - under)*pow(fn, 0.72);
+      top += fw*0.34*max(0.0, sin(hq.y*5.2 - fid*2.3))*fn*(1.0 - fn)*4.0*step(0.4, fh) + rag;
       float cm = smoothstep(top + hpx, top - hpx, hq.y)
                * mix(1.0, smoothstep(under - hpx, under + hpx, hq.y), limbed);
       /* the trunk: tapering, darker than the crown, from the ground up into it */
@@ -4218,9 +4242,9 @@ float wallH(vec2 q, out float occ){
       float gn = 1.0 - clamp(abs(gx2)/max(gw, 0.02), 0.0, 1.0);
       float lim2 = step(3.5, gh);
       float sk2 = lim2*(2.30 + 0.10*gh);
-      float top2 = sk2 + (gh - sk2)*pow(gn, 0.72);
-      top2 += gw*0.30*max(0.0, sin(hq.y*6.6 - gid*1.9))*gn*(1.0 - gn)*4.0*step(0.4, gh);
       float und2 = sk2*(1.0 - 0.25*(1.0 - gn));
+      float top2 = und2 + (gh - und2)*pow(gn, 0.72);
+      top2 += gw*0.30*max(0.0, sin(hq.y*6.6 - gid*1.9))*gn*(1.0 - gn)*4.0*step(0.4, gh);
       float m2 = smoothstep(top2 + hpx, top2 - hpx, hq.y)
                * mix(1.0, smoothstep(und2 - hpx, und2 + hpx, hq.y), lim2);
       float tw2 = 0.07 + 0.012*gh;
@@ -4265,6 +4289,7 @@ float wallH(vec2 q, out float occ){
     gTint += inNear * (-0.95 + 0.40*nearLit) * noSub;
     gTint -= inNear * nearTrunk * 0.30 * noSub;
     gTint += farM*(1.0 - inNear)*(1.0 - onHouse2)*(-0.60) * noSub;
+    gTreeM = clamp(inNear*(1.0 - 0.55*nearLit) + farM*(1.0 - inNear)*(1.0 - onHouse2)*0.55, 0.0, 1.0) * noSub;
     /* A STRING COURSE and QUOINS on the wings. The house is a black silhouette
        with lit windows in it, and mainMenu.png's is not: its masonry carries a
        banded course at each floor and dressed stone up every corner, and those
@@ -4664,7 +4689,13 @@ void main(){
   if (gPtAmt > 0.002) {
     vec2 pn = gPtP / max(gPtHs, vec2(1e-3));
     float prof = mix(0.30, 1.0, smoothstep(-1.1, 0.75, pn.y)) * (1.0 - 0.30*pn.x*pn.x);
-    col += alb * vec3(1.00, 0.80, 0.56) * clamp(gPtAmt, 0.0, 1.0) * prof * 0.34;
+    /* ...lifted to a FLOOR of irradiance rather than by a fixed amount: the
+       overmantel over its own fire is lit already and takes little, a
+       canvas five metres up a dark wall takes most (E is the light the
+       canvas already has, as a multiple of its albedo) */
+    float E = mmLum(col)/max(mmLum(alb), 1e-3);
+    col += alb * vec3(1.00, 0.80, 0.56) * clamp(gPtAmt, 0.0, 1.0) * prof
+         * (0.16 + max(0.62 - E, 0.0));
   }
 
   col *= uGain;
@@ -5244,7 +5275,14 @@ void main(){
        It stops at the ironwork, which is how a railing stays a railing. */
     vec3 moonlit = mix(uOpenGlow, vec3(0.74, 0.82, 1.00), 0.58);
     col += alb * moonlit * solid * (1.0 - sOcc*0.80)
-         * (0.42 + 0.95*max(nrm.y, 0.0) + 0.30*max(-nrm.x, 0.0)) * 1.55 * uGain;
+         * (0.42 + 0.95*max(nrm.y, 0.0) + 0.30*max(-nrm.x, 0.0)) * 1.55 * uGain
+         * (1.0 - 0.80*gTreeM);
+    /* (round 18: NOT on the wood. A fir is not masonry: needles hold no
+       moonlight the way a dressed stone face does, and lit like the house
+       the fifteen-metre fir on the plots panel stood rgb(25,43,74) against a
+       sky of (4,7,19) -- a pale ghost behind the moon. A wood at night is a
+       dark mass with a moonlit flank (nearLit keeps that flank), the far
+       band a step lighter than the near.) */
     /* THE GROUND BEYOND THE RAILING. Measured on round 8's capture and again on
        this one: every pixel from the railing's head down was rgb(0,0,0) -- a
        full-width band at exactly zero, which is item 9's "empty black band
@@ -8922,6 +8960,11 @@ void main(){
     vec2  fm   = (vUv - vec2(0.5, 0.0)) * vSize;
     float lum  = max(mmLum(albedo), 0.02);
     vec3  stn  = vec3(0.86, 0.87, 0.82) * (lum*0.95 + 0.034) * (0.84 + 0.30*blotch);
+    /* (round 18: a bust is WHITE MARBLE, not the room's stone. Taken off the
+       Foyer's own dark-timber luminance it came out a dark head on a dark
+       term, and no mark a face has can be drawn on a dark head -- "marks on
+       a prop must be DARK" only works on a pale one.) */
+    stn = mix(stn, vec3(0.84, 0.83, 0.78) * (0.20 + 0.08*blotch), step(25.5, vShape));
     albedo = mix(albedo, stn, 0.94);
     float w1 = abs(abs(fm.x) - (0.745 - 0.10*smoothstep(1.64, 0.64, fm.y)));
     float w2 = abs(abs(fm.x) - (0.37 - 0.06*smoothstep(2.27, 1.70, fm.y)));
