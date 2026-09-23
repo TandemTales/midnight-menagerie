@@ -646,7 +646,7 @@ vec3 sPortrait(vec2 p, vec2 hs, float sd, float px, vec2 fk){
   float wy = clamp((ys - n.y)/(R*3.1), 0.0, 1.0);
   float B  = (ys + A + 0.4)*0.5;
   float torso = mmBox(vec2(n.x - tx, n.y - (ys + R*0.30 - B)),
-                      vec2(Sw - wy*R*(frm > 1.5 ? 0.62 : 0.26 + 0.30*(kLady + kGirl)), B), R*0.80);
+                      vec2(Sw + wy*R*(frm > 1.5 ? -0.62 : 0.22 - 0.52*(kLady + kGirl)), B), R*0.80);
   /* the SLOPE of the shoulders from the neck out to the point of each, which
      is what makes a torso a person and not a post box */
   float dxs = abs(n.x - tx);
@@ -684,6 +684,9 @@ vec3 sPortrait(vec2 p, vec2 hs, float sd, float px, vec2 fk){
      TOGETHER, so the figure is a face and a pair of hands coming out of the
      shadow and not a cut-out standing on a lit card. */
   float sink = smoothstep(ys - R*1.4, ys - R*4.6, n.y);
+  /* the cloth is PAINTED: a few long strokes down its fall, and the lit
+     edge of the silhouette caught by the same light as the face */
+  coatL *= 0.80 + 0.42*mmNoise(vec2((n.x - tx)*9.0/R*0.25, n.y*1.6/R*0.25) + sd);
   coatL *= 1.0 - 0.68*sink;
   c *= 1.0 - 0.58*sink;
 
@@ -693,23 +696,23 @@ vec3 sPortrait(vec2 p, vec2 hs, float sd, float px, vec2 fk){
     float chb = min(mmBox(cp, vec2(R*0.50, R*1.60), R*0.10),
                     (length(vec2(cp.x/(R*0.50), (cp.y - R*1.55)/(R*0.34))) - 1.0)*R*0.40);
     float chC = ptC(chb, e) * (1.0 - torC);
-    c = mix(c, vec3(0.062, 0.016, 0.020), chC);
-    c = mix(c, vec3(0.30, 0.22, 0.09), ptLine(abs(chb + R*0.06), R*0.045, e)*(1.0 - torC));
+    c = mix(c, vec3(0.040, 0.013, 0.016)*(1.0 - 0.45*sink), chC);
+    /* its carved top rail catches the light; the sides go into the dark */
+    c = mix(c, vec3(0.26, 0.19, 0.08), ptLine(abs(chb + R*0.05), R*0.040, e)*(1.0 - torC)
+                                      * smoothstep(ys - R*1.2, ys - R*0.2, n.y));
   }
   /* long hair and a knot BEHIND the head (drawn before the body) */
   vec3 hairCol = h4 < 0.33 ? vec3(0.030, 0.021, 0.016)
                : (h4 < 0.66 ? vec3(0.016, 0.014, 0.013) : vec3(0.080, 0.038, 0.020));
-  hairCol = mix(hairCol, vec3(0.150, 0.112, 0.066), kGirl*step(0.5, h6));
+  hairCol = mix(hairCol, h6 < 0.5 ? vec3(0.092, 0.042, 0.020) : vec3(0.150, 0.112, 0.066), kGirl);
   hairCol = mix(hairCol, vec3(0.160, 0.156, 0.148), kOld + kOff);
   float knot = kLady*(length(vec2(u.x + f*1.00, u.y - 0.22)) - 0.44);
   if (kLady > 0.5) c = mix(c, hairCol, ptC(knot*R, e));
 
   c = mix(c, coatL, torC);
-  /* where each upper arm meets the body, a fold down from the armpit: a coat
-     without it is a post box */
-  float arm = ptLine(abs(dxs - (Sw - R*0.66)), R*0.035, e)*ptC(n.y - (ys - R*1.05), e)
-            * ptC((ys - R*3.3) - n.y, e)*torC;
-  c = mix(c, coat*0.35, arm*0.85);
+  float rim = ptLine(abs(torso + R*0.05), R*0.045, e)*torC*smoothstep(0.2, 0.9, (n.x - tx)*L/Sw)
+            *(1.0 - sink);
+  c = mix(c, coat*2.6 + vec3(0.016, 0.013, 0.010), rim*0.70);
 
   /* THE LINEN, which is what makes the dark mass under the face a COAT: its
      shape is the sitter's second mark after the shoulder line, and it is a
@@ -729,7 +732,7 @@ vec3 sPortrait(vec2 p, vec2 hs, float sd, float px, vec2 fk){
     /* the officer's cross-belt, shoulder to hip, and his epaulette */
     if (kOff > 0.5) {
       float belt = ptLine(ptSeg(n, vec2(tx + L*Sw*0.62, ys - R*0.25), vec2(tx - L*Sw*0.55, ys - R*3.6)), R*0.14, e);
-      c = mix(c, linen, belt*torC);
+      c = mix(c, linen*0.78, belt*torC);
       float ep = length(vec2((n.x - (tx + L*Sw*0.78))/(R*0.62), (n.y - (ys - R*0.30))/(R*0.26))) - 1.0;
       c = mix(c, vec3(0.34, 0.25, 0.09), ptC(ep*R*0.3, e));
     }
@@ -782,13 +785,13 @@ vec3 sPortrait(vec2 p, vec2 hs, float sd, float px, vec2 fk){
   /* THE HAIR, a mass bigger than the skull and set back on it, cut at the
      front by a hairline that dips at the temples */
   float xc = f*a*0.85;                       // the face's centre line
-  float vol = length(vec2((u.x + f*0.14)/(1.10 + 0.10*kLady + 0.06*kCap),
+  float vol = length(vec2((u.x + f*0.14)/(1.03 + 0.17*kLady + 0.13*kCap + 0.07*kGirl),
                           (u.y - 0.16)/1.30)) - 1.0;
   float hl  = 0.74 - 0.46*(u.x - xc)*(u.x - xc) + 0.14*f*(u.x - xc);
   hl = mix(hl, 0.62 - 0.62*abs(u.x - xc), kLady + kGirl);        // parted in the middle
   float hair = ptC(vol, eu)*max(step(hl, u.y), 1.0 - hdC);
   /* sideburns, and the hair over a lady's ears */
-  float side = ptC(0.52 + 0.45*(u.y - 0.20)*(u.y - 0.20) + f*u.x, eu)*ptC(-0.28 - 0.32*fem - u.y, eu);
+  float side = ptC(0.52 + 0.45*(u.y - 0.20)*(u.y - 0.20) + f*u.x, eu)*ptC(-0.02 - 0.58*fem - u.y, eu);
   hair = max(hair, ptC(vol, eu)*side);
   /* the old man is bald on the crown: his hair is two grey tufts over the ears */
   if (kOld > 0.5) {
@@ -961,10 +964,9 @@ float subjChimney(vec2 q, float cx, float ax, out float occ){
      an overmantel is: a face, a hairline, a collar and a shoulder line. */
   float can = mmSolid(mmBox(pc, vec2(1.04, 1.32), 0.01));
   s -= can*0.14;                                   // the canvas sunk in its slip
-  s += can*(1.0 - smoothstep(0.0, 0.055,
-              abs(mmCircle(vec2(cx, (u.y - 4.62)*0.92), 0.26))))*0.20;
-  s += can*(1.0 - smoothstep(0.0, 0.050,
-              abs(mmBox(vec2(cx, u.y - 3.52), vec2(0.66, 0.44), 0.16))))*0.16;
+  /* (round 17: the relief ring and box that stood in for a sitter here are
+     gone -- they printed a halo round the painted head. A painting has no
+     depth in it.) */
   float tx = ax - 1.52;
   float terms = mmSolid(mmBox(vec2(tx, u.y - 4.14), vec2(0.13, 1.56), 0.02));
   s += terms*0.55;
@@ -1029,6 +1031,15 @@ float subjChimney(vec2 q, float cx, float ax, out float occ){
      brightest-framed object on the wall must not be the emptiest -- hands in
      the lap, the back of a gilt chair behind the shoulder -- and the two over
      the doors are their own people, dealt from their own seeds. */
+  /* MINIUM's slip (round 16's named graft): a thin lit gilt fillet between
+     the moulding and the canvas, which is what separates a picture from its
+     frame at a distance */
+  float slipC = can*(1.0 - smoothstep(0.034, 0.034 + cpx, -mmBox(pc, vec2(1.04, 1.32), 0.01)))
+              + dcan*(1.0 - smoothstep(0.026, 0.026 + cpx, -mmBox(dp, vec2(0.53, 0.69), 0.01)));
+  s += slipC*0.30;
+  gCol = mix(gCol, vec3(0.50, 0.37, 0.15), clamp(slipC, 0.0, 1.0));
+  gColAmt = clamp(gColAmt + slipC, 0.0, 1.0);
+  can *= 1.0 - slipC; dcan *= 1.0 - slipC; canv = can + dcan;
   ptAsk(pc, vec2(1.04, 1.32), 3.7 + uSeed*1.3, vec2(-1.0, 1.0), can);
   ptAsk(dp, vec2(0.53, 0.69), floor(uDoorX*3.0 + sign(dx)*5.0) + uSeed*2.3, vec2(-1.0, 0.0), dcan);
   gColAmt = clamp(gColAmt + canv*0.92, 0.0, 1.0);
@@ -3498,9 +3509,13 @@ float wallH(vec2 q, out float occ){
        slip, one in five is a smaller half-length, one in six a TONDO -- a
        round slip, a head and shoulders in it -- and one in eight has had its
        picture taken down, and shows it. */
-    float bv = mmHash11(bay*5.17 + uSeed*0.61 + 1.3);
+    /* a 2D hash: the 1D one walked two neighbouring bays of the combat
+       room's right-hand wall into "removed" together, and the pair read as
+       exactly the two empty frames the judges named. A removed picture is at
+       most one bay in four. */
+    float bv = mmHash21(vec2(bay*1.37 + 0.5, uSeed*2.9 + 7.0));
     float tondo = step(bv, 0.16);
-    float gone  = step(0.16, bv)*step(bv, 0.25);
+    float gone  = step(0.16, bv)*step(bv, 0.25)*(1.0 - step(0.5, mod(bay, 4.0)));
     vec2  shs = bv > 0.78 ? vec2(0.54, 0.80) : vec2(0.680, 1.060);
     vec2  squ = qu - vec2(0.0, (bv > 0.78 ? 0.14 : 0.0) + tondo*0.12);
     float slipO = mmBox(squ, shs + vec2(0.055), 0.015);
@@ -3508,8 +3523,11 @@ float wallH(vec2 q, out float occ){
     if (tondo > 0.5) { slipO = length(squ) - 0.70; slipI = length(squ) - 0.645; }
     /* the removed one: the patch it left, the nail it hung from and nothing
        else -- so the slip and its canvas are not drawn at all */
-    float rmPatch = gone*mmSolid(mmBox(qu - vec2(0.0, 0.04), vec2(0.62, 0.98), 0.02));
+    float rmD = mmBox(qu - vec2(0.0, 0.04), vec2(0.62, 0.98), 0.02);
+    float rmPatch = gone*mmSolid(rmD);
     gPatch = max(gPatch, rmPatch*hung);
+    /* its edge is a line of old dust where the frame stood off the wall */
+    h -= gone*hung*(1.0 - smoothstep(0.012, 0.012 + qpx*1.5, abs(rmD)))*0.30;
     h += gone*hung*(1.0 - smoothstep(0.018, 0.034, length(qu - vec2(0.0, 1.30))))*0.9;
     hung *= 1.0 - gone;
     float sOut = mmSolid(slipO), sIn = mmSolid(slipI);
@@ -3614,6 +3632,11 @@ float wallH(vec2 q, out float occ){
                 * (1.0 - 0.58*(1.0 - smoothstep(0.0, 0.14, abs(fAcross - 0.82))));
     float gild = onWall * (fOut - fIn) * clamp(fProf, 0.0, 1.35);
     float canvW = onWall * fIn;
+    /* ...and MINIUM's lit gilt slip inside the moulding */
+    float slipW = canvW*(1.0 - smoothstep(0.030, 0.030 + qpx, -fInD));
+    h += slipW*0.25;
+    gild = max(gild, slipW*1.2);
+    canvW *= 1.0 - slipW;
     ptAsk(fp, fv > 0.62 ? vec2(0.86, 0.60) : (fv < 0.30 ? vec2(0.57, 0.81) : vec2(0.62, 0.86)),
           floor(q.x/7.80)*2.3 + uSeed*3.1, vec2(-1.0, fv > 0.62 ? 1.0 : -1.0), canvW*1.01);
     gCol = mix(gCol, vec3(0.42, 0.305, 0.115), clamp(gild, 0.0, 1.0));
@@ -4295,7 +4318,7 @@ void main(){
     /* where a picture hung, the paper is unworn and unfaded: the full print,
        a step lighter, with the dust line along its top edge */
     amt = mix(amt, uDamask*1.10, gPatch);
-    alb *= 1.0 + gPatch*0.14;
+    alb *= 1.0 + gPatch*0.38;
     /* The motif is its OWN colour, keyed to the wall's level rather than
        tinted from it: in the samples the scrollwork is a saturated purple
        sitting a little above a near-black plum ground, and multiplying the
@@ -4536,10 +4559,10 @@ void main(){
        lit room is a dark shape in the silver, so they are drawn dark, and
        each couple is at its own place in its glass and turning its own way. */
     float hd2 = mmHash11(bi*5.31 + 7.1 + uFar*2.3);
-    float aaD0 = max(max(abs(dFdx(q.x)), abs(dFdy(q.y)))*0.8, 0.004)/0.92;
+    float aaD0 = max(max(abs(dFdx(q.x)), abs(dFdy(q.y)))*0.8, 0.004)/1.18;
     if (hd2 < 0.36) {
       float cs = hd2 < 0.18 ? -1.0 : 1.0;
-      vec2 cp = vec2((mxx - (hd2 - 0.18)*2.2)*cs, q.y - 1.06)/0.92;
+      vec2 cp = vec2((mxx - (hd2 - 0.18)*2.2)*cs, q.y - 1.06)/1.18;
       float aaD = aaD0;
       float sk = max(abs(cp.x - 0.13) - (0.11 + 0.36*clamp((0.82 - cp.y)/0.82, 0.0, 1.0)), abs(cp.y - 0.41) - 0.41);
       float dd = min(sk, mmBox(cp - vec2(0.14, 1.00), vec2(0.095, 0.20), 0.05));      // her bodice
@@ -4807,7 +4830,7 @@ void main(){
     vec3  wbC = mmBayX(hqw.x + uSeed);
     float who = step(mmHash21(vec2(wbC.y*2.3, flrC*5.1 + 3.0) + uSeed), 0.26) * step(wTyC, 1.5);
     float wx0 = wbC.x - (mmHash11(wbC.y*1.9 + flrC) - 0.5)*0.36;
-    float wy0 = wTyC > 0.5 ? 1.38 : 1.92;
+    float wy0 = wTyC > 0.5 ? 1.64 : 1.90;
     float fgd = min(length(vec2(wx0/0.105, (wyC - wy0)/0.125)) - 1.0,
                     (max(abs(wx0) - 0.27 + 0.30*max(wyC - (wy0 - 0.20), 0.0), wyC - (wy0 - 0.12)))/0.12);
     float fg = (1.0 - smoothstep(-0.15, 0.15, fgd)) * litGlass * who;
@@ -6461,11 +6484,22 @@ float shapeField(vec2 uv, vec2 msz, float shape, float seed){
     float skirt = 0.155 - 0.052*t + 0.014*sin(p.y*22.0 + seed*7.0);
     d = min(d, mmBox(p - vec2(0.0, 0.36), vec2(skirt, 0.17), 0.018));
     // waist, then shoulders wider than it
-    d = mmSmin(d, mmBox(p - vec2(0.0, 0.575), vec2(0.088, 0.062), 0.030), 0.035);
+    /* ROUND 17 (the people in the house): a robe falls STRAIGHT from the
+       shoulders -- the 0.088 waist under a 0.135 shoulder read, on the plots
+       panel, as a dressmaker's mannequin -- and the head is VEILED: a mourner's
+       veil over the crown and down the back to the shoulders, so the head and
+       the shoulders are one draped mass with a face in it, which is the
+       silhouette every churchyard mourner has and no mannequin does. */
+    float vf = mmHash11(seed*3.9 + 0.3) < 0.5 ? -1.0 : 1.0;   // which way she bows
+    d = mmSmin(d, mmBox(p - vec2(0.0, 0.575), vec2(0.112, 0.062), 0.030), 0.035);
     d = mmSmin(d, mmBox(p - vec2(0.0, 0.680), vec2(0.135, 0.055), 0.048), 0.040);
-    // neck and head
-    d = mmSmin(d, mmCaps(p - vec2(0.012, 0.745), 0.022, 0.030), 0.020);
-    d = mmSmin(d, mmCircle(p - vec2(0.018, 0.815), 0.068), 0.018);
+    // neck and head, bowed a little toward vf
+    d = mmSmin(d, mmCaps(p - vec2(0.012*vf, 0.745), 0.022, 0.030), 0.020);
+    d = mmSmin(d, mmCircle(p - vec2(0.018*vf, 0.810), 0.068), 0.018);
+    float veil = max(mmBox(p - vec2(-vf*0.012, 0.752), vec2(0.098 - (p.y - 0.70)*0.40, 0.070), 0.02),
+                     -(p.y - 0.690));
+    veil = min(veil, mmCircle(p - vec2(-vf*0.006, 0.822), 0.078));
+    d = mmSmin(d, veil, 0.012);
     /* ARMS THAT END IN HANDS, AND A WREATH IN THEM. BRIEF-r10 fix 4, both
        judges: "the arms end as truncated cylinders where hands should be".
        They did -- literally: two VERTICAL capsules stuck on beside the torso
@@ -7592,7 +7626,13 @@ float reliefH(vec2 uv, vec2 msz, vec2 mpp, float shape, float seed, out float ti
        them, and one shadow under the nose and one under the lip. Every mark
        here is at least twice what it was and the ones that matter are DARK,
        which is the only kind of mark a prop at its luminance ceiling shows. */
-    vec2  hd = (uv - vec2(0.518, 0.815)) / 0.068;
+    float vf = mmHash11(seed*3.9 + 0.3) < 0.5 ? -1.0 : 1.0;
+    vec2  hd = (uv - vec2(0.500 + 0.018*vf, 0.810)) / 0.068;
+    /* ROUND 17: the face is TURNED toward vf and carries the three marks --
+       one dark socket on the near side, the far one only a shade, the nose
+       standing off the axis. Two equal sunk sockets side by side, frontal,
+       read at thirty pixels as the eye holes of a mask. */
+    hd.x = (hd.x - vf*0.20)*vf;
     float inHd = 1.0 - smoothstep(0.88, 1.06, length(hd));
     float faceR = length(hd*vec2(1.10, 0.92) + vec2(0.0, 0.10));
     float face = (1.0 - smoothstep(0.62, 0.78, faceR)) * inHd;
@@ -7601,8 +7641,8 @@ float reliefH(vec2 uv, vec2 msz, vec2 mpp, float shape, float seed, out float ti
     h -= 0.030 * pR(faceR - 0.70, 0.055) * inHd;              // the hairline
     h += 0.026 * pR(hd.y - 0.26, 0.11) * face;                // the brow shelf
     h -= 0.026 * pR(hd.y - 0.10, 0.055) * face;               // and its undercut
-    float eye = max(1.0 - smoothstep(0.0, 0.30, length((hd - vec2( 0.30, 0.02))*vec2(0.80, 1.45))),
-                    1.0 - smoothstep(0.0, 0.30, length((hd - vec2(-0.30, 0.02))*vec2(0.80, 1.45))));
+    float eye = max(1.0 - smoothstep(0.0, 0.30, length((hd - vec2(-0.30, 0.02))*vec2(0.80, 1.45))),
+                    0.35*(1.0 - smoothstep(0.0, 0.24, length((hd - vec2( 0.26, 0.02))*vec2(1.10, 1.45)))));
     h -= 0.048 * eye * face;                                  // the sockets, sunk
     tint -= 0.80 * eye * face;
     // the nose: a wedge from the brow to the tip, with its own shadow under it
