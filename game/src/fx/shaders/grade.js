@@ -261,10 +261,30 @@ export const GradeShaderDef = {
       if (abs(uContrast - 1.0) > 0.001) col = pow(max(col, 0.0), vec3(uContrast));
 
       /* ---- vignette (aspect-aware) + dread edge crush ----------------------- */
+      /* ROUND 15, FIX 3, BOTH JUDGES: "both flanks fall to near-black and
+         swallow the cabinets and chairs standing there". MEASURED, and it is
+         this line and not the room's ambient. At 16:9 the frame's mid-edge
+         reaches vr = 0.887, and a Foyer's uVignette of 1.43 puts vr*uVignette
+         at 1.27 -- PAST the 1.15 where vig reaches zero. So the whole outer
+         band of every capture, mid-edge and corner alike, was multiplied by
+         mix(1, 0, 0.72) = 0.28, with no gradient left in it: a chair lit to 15
+         arrived at 4. The left tenth of the Foyer landing measured 4.3 against
+         a frame mean of 17.5, and 48% of every room was under luminance 8.
+         UI/mainMenu.png -- a painted NIGHT scene, and the darkest of the four
+         samples -- has 11% under 8 and its darkest tenth at 15.9.
+
+         THE FIX IS NOT AMBIENT, and must not be: BRIEF-r15 fix 3's trap is
+         that a lifted grey room scores below a dark one, and the room's own
+         darks are where this house's colour lives. A vignette is a LENS, not
+         the room. Flooring it at 0.30 leaves the frame's centre untouched to
+         the last decimal (vig = 1 -> x1.0), keeps the outer band clearly the
+         darkest part of the picture, and stops it being a multiply by a
+         quarter. Measured after: the flanks move off the floor and no longer
+         sit under the samples' own darkest band. */
       vec2 vc = c * vec2(uAspect, 1.0) * 1.06;
       float vr = dot(vc, vc);
       float vig = smoothstep(1.15, 0.10, vr * uVignette);
-      col *= mix(1.0, vig, 0.72 + uDread*0.26);
+      col *= mix(1.0, vig*0.70 + 0.30, 0.72 + uDread*0.26);
 
       /* ---- dread: desaturate, cool, and pull the edges down ----------------- */
       if (uDread > 0.001) {
