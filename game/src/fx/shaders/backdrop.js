@@ -2895,7 +2895,6 @@ float subjectH(vec2 q, float far, out float occ){
          the wall to its right, and a SET-OFF at each stage -- the weathered
          slope where the buttress steps back, which is the one detail that
          says buttress and not pilaster. */
-      float bStep = step(1.8, q.y) + step(3.2, q.y);
       float bLit = onS*step(0.8, sx)*step(-bw*0.8*(1.0 - 0.13*st), bsx)
                  * step(bsx, -bw*0.8*(1.0 - 0.13*st) + 0.16)*step(q.y, 3.9*(1.0 - 0.13*st));
       float bShd = onS*step(0.8, sx)*step(bw*0.8*(1.0 - 0.13*st), bsx)
