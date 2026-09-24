@@ -58,8 +58,50 @@ vec3 mmSpec(vec3 n, vec3 l, vec3 v, vec3 lc, float att, float gloss, float power
    Returns (ink, lip): how dark the hollow goes and how hard the crest catches.
    rise is > 0 on a face that climbs toward the top of the screen, which is
    the face a light hung above the room reaches. */
+/* THE QUAD, AND WHY EVERY LINE IN THIS ROOM WAS DRAWN IN 2x2 BLOCKS (round 21).
+   A GPU shades pixels in 2x2 quads, and dFdx/dFdy are differences across the
+   quad. They are allowed to be COARSE -- one difference for all four pixels --
+   and on this machine they are: measured with a probe (dFdx(x*y) returns the
+   bottom row's y on both rows of every quad, and dFdy the left column's x on
+   both columns). So every term this file builds from a derivative -- the
+   wall's normal, every drawn line of mmDrawn, the props' outline -- was one
+   value per 2x2 block, and a raking stair string inked from a derivative came
+   out as a staircase of 2-pixel blocks: 2.5 screen pixels at the Deck's 0.8.
+   That is the "upscaled low-res sprite" the survey saw, and it is why forcing
+   the HIGH tier made the steps finer and did not remove them.
+
+   mmGrad(v) recovers the derivatives a FINE implementation would give, from
+   the coarse ones. Each lane knows its own v; dFdx(v*(1-x parity)) hands every
+   lane the absolute value of the reference row's left pixel, dFdy(v*(1-y
+   parity)) the reference column's bottom one, and with the coarse differences
+   that is three of the quad's four values. Two lanes of four then get both
+   of their own differences exactly, and the other two get one exactly and the
+   other from the neighbouring column or row -- a line one pixel wide instead
+   of a 2x2 block. On hardware whose derivatives are already fine (gQry and
+   gQcx then name each lane's own row and column) it returns dFdx/dFdy
+   unchanged. mmQuadInit() must run first, at the top of main(). Cost: two
+   more derivative instructions per call, no branches, no extra evaluation of
+   the relief -- which is what a finite difference would have cost. */
+float gQx, gQy, gQry, gQcx;
+void mmQuadInit(){
+  gQx = mod(floor(gl_FragCoord.x), 2.0);
+  gQy = mod(floor(gl_FragCoord.y), 2.0);
+  gQry = dFdx(gQx*gQy);          // the row the coarse dFdx is taken on
+  gQcx = dFdy(gQx*gQy);          // the column the coarse dFdy is taken on
+}
+vec2 mmGrad(float v){
+  vec2 g = vec2(dFdx(v), dFdy(v));
+  float vR = -dFdx(v*(1.0 - gQx));          // v at (0, ref row)
+  float vC = -dFdy(v*(1.0 - gQy));          // v at (ref column, 0)
+  float onRow = 1.0 - abs(gQy - gQry);
+  float onCol = 1.0 - abs(gQx - gQcx);
+  float fx = (2.0*gQx - 1.0) * (v - (vC + gQy*g.y));
+  float fy = (2.0*gQy - 1.0) * (v - (vR + gQx*g.x));
+  return vec2(mix(mix(fx, g.x, onCol), g.x, onRow),
+              mix(mix(fy, g.y, onRow), g.y, onCol));
+}
 vec2 mmDrawn(float h, float lo, float hi){
-  vec2 gs = vec2(dFdx(h), dFdy(h));
+  vec2 gs = mmGrad(h);
   float hp = length(gs);
   float stepAmt = smoothstep(lo, hi, hp);
   float rise = -gs.y / max(hp, 1e-6);
@@ -283,12 +325,28 @@ vec2 mmDamask(vec2 q, float cell, float px, float kind){
    uInk at 1.00 already reads as black wire. It is a thousand small drawn forms,
    each a value darker than both its sides. One shelf of spines is sixty. */
 
-float mmSolid(float d){ return smoothstep(0.018, -0.018, d); }
+/* THE PIXEL, in metres of wall (round 21). Every edge below was authored
+   with a transition in METRES -- 0.016 m for a band, 0.018 m for a solid --
+   and at the Deck's tier (render scale 0.8, 1280 wide) the far wall is 17-20
+   px/m, so those transitions are a third of a pixel: a hard, aliased edge,
+   which the upscale then magnifies. Set once at the top of main() from the
+   wall's own screen derivatives (q is linear, so coarse derivatives are exact
+   for it): gAAy is metres per pixel UP the wall, gAAx ACROSS it. A band's edge
+   is horizontal and is antialiased over gAAy; a solid's is isotropic and
+   takes the mean. Never narrower than the authored width, so nothing at 1.0
+   or near the camera changes -- only an edge that was sub-pixel is now a
+   pixel. */
+float gAAx = 0.0, gAAy = 0.0;
+float mmSolid(float d){
+  float e = max(0.018, 0.36*(gAAx + gAAy));
+  return smoothstep(e, -e, d);
+}
 /* Distance from the nearest member of a row repeating on 'period'. */
 float mmRowX(float x, float period){ return abs(mod(x, period) - period*0.5); }
 /* 1 between y0 and y1, with an edge sharp enough to ink at each. */
 float mmBand(float y, float y0, float y1){
-  return smoothstep(-0.016, 0.016, y - y0) * smoothstep(0.016, -0.016, y - y1);
+  float e = max(0.016, 0.66*gAAy);
+  return smoothstep(-e, e, y - y0) * smoothstep(e, -e, y - y1);
 }
 /* The same band with the edge width PASSED IN, for a feature thinner than
    mmBand's fixed 0.032 m of transition. A tread nosing is 0.025 m of
@@ -299,6 +357,7 @@ float mmBand(float y, float y0, float y1){
    max(metres-per-pixel * 0.8, 0.008) and the line is one pixel wide at any
    depth, which is the rule the whole drawn-line system runs on. */
 float mmBandA(float y, float y0, float y1, float aa){
+  aa = max(aa, 0.66*gAAy);
   return smoothstep(-aa, aa, y - y0) * smoothstep(aa, -aa, y - y1);
 }
 
@@ -2777,6 +2836,17 @@ float subjectH(vec2 q, float far, out float occ){
        every 35 cm of x, eighteen overlapping rectangles. */
     float topS = LAND - run*RAKE;
     float top = LAND - floor(run/GOING)*RISE*step(X0, ax);
+    /* THE NOSINGS ARE DRAWN WHILE THEY CAN BE (round 21). A 0.28 m going is
+       three to five pixels at the distance this wall is seen from at the
+       Deck's tier, and a sawtooth at that pitch is not a staircase, it is
+       exactly the pixel stair-stepping the survey named: nobody can tell a
+       row of four-pixel treads from an aliased diagonal. A pen at that size
+       draws the raking line THROUGH the nosings and lets the balusters and
+       the newels say "stair". So below ~9 px of going the sawtooth eases
+       into its own mean line (half a riser above the pitch line, the same
+       line the steps average to); above it every tread is drawn as before. */
+    float tRes = smoothstep(5.0*gAAx, 9.0*gAAx, GOING);
+    top = mix(min(topS + RISE*0.5, LAND), top, tRes);
     /* The stair ENDS where the flight lands, and the flight's length is derived
        and not guessed: without this the handrail and the string ran on across
        the whole wall at their clamped height. */
@@ -4827,6 +4897,9 @@ void main(){
      sample, and they also flatten the relief at grazing angles, which kills the
      shimmer the finite difference used to produce on the far wall. */
   float sOcc = 0.0;
+  mmQuadInit();
+  gAAx = length(vec2(dFdx(q.x), dFdy(q.x)));
+  gAAy = length(vec2(dFdx(q.y), dFdy(q.y)));
   /* metres per pixel, taken here in uniform control flow: a sitter's marks
      are drawn a pixel wide, and sPortrait is only called under a branch */
   float ptPx = max(abs(dFdx(q.x)), abs(dFdy(q.y)));
@@ -4834,7 +4907,7 @@ void main(){
   if (gPtAmt > 0.002)
     gCol = mix(gCol, sPortrait(gPtP, gPtHs, gPtSd, ptPx, gPtK), clamp(gPtAmt, 0.0, 1.0));
   vec2  dq = vec2(max(abs(dFdx(q.x)), 1e-4), max(abs(dFdy(q.y)), 1e-4));
-  vec2  gh = vec2(dFdx(h), dFdy(h)) / dq;
+  vec2  gh = mmGrad(h) / dq;
   vec3  nrm = normalize(vec3(-gh * 0.05, 0.42));
 
   // ---- albedo ---------------------------------------------------------------
@@ -5752,6 +5825,15 @@ uniform vec3  uLightCol[5];
 uniform vec4  uPool[4];        // xy = floor-local metres, z = radius, w = intensity
 uniform vec4  uPoolAxis[4];    // xy = elongation direction, z = stretch, w unused
 uniform vec3  uPoolCol[4];
+/* THE FIGHT, STANDING ON THIS FLOOR (round 21). Where each combatant's feet
+   meet the floor, floor-local metres (xy), the radius of its footprint (z)
+   and how much of a shadow it throws (w, 0 = no one there). Written by
+   Backdrop.setActors from the combat board's own shadow anchors, so the
+   shadow is under the DOM figure wherever the layout put it. uKeyF is the
+   key light the shadows fall AWAY from: floor-local xy and its height. */
+uniform vec4  uActor[6];
+uniform vec3  uKeyF;
+uniform vec3  uKeyCol;         // the key's colour x its strength at the stage
 uniform vec3  uCamera;
 uniform float uIsCeiling;
 varying vec2  vUv;
@@ -5765,6 +5847,7 @@ float mmRowX(float x, float period){ return abs(mod(x, period) - period*0.5); }
 #endif
 
 void main(){
+  mmQuadInit();
   vec2 w = (vUv - 0.5) * uSpan;
 
   /* METRES PER PIXEL, from the plane's own screen derivatives. Every joint,
@@ -6629,6 +6712,46 @@ void main(){
                * (1.0 - smoothstep(0.0, max(mp*11.0, 0.35), length(fract(dc) - 0.5)));
     col += col * (speck * 1.45 + dust * 0.55) * drawable;
     col *= 1.0 - speck * 0.22;                      // and each one casts its own
+  }
+
+  /* ---- WHERE THE FIGHT STANDS (round 21) --------------------------------
+     A contact shadow is not a grey ellipse laid on a floor, it is the floor's
+     own light TAKEN AWAY: dense and tight where a foot meets the boards, then
+     a cast shadow thrown away from the key lamp, as long as the lamp is low,
+     widening and letting go as it runs. Multiplying the lit floor keeps its
+     grain, its joints and its colour inside the shadow, which is what a
+     painted shadow does and a DOM ellipse cannot. */
+  if (uIsCeiling < 0.5) {
+    float occl = 0.0;
+    /* THE KEY FINDS THE FLOOR THEY STAND ON. A shadow on an unlit floor is
+       no shadow -- the boards under the creature row were within a few units
+       of black, so the first cut of this block measured as nothing. The key
+       lamp is the light that lights the fight (it sits in front of the action
+       plane for exactly that), so the floor round each combatant takes a
+       soft pool of it, and the shadow is then that light taken away. Only the
+       floor under a FIGURE: the room keeps its darks. */
+    float lit = 0.0;
+    for (int i = 0; i < 6; i++){
+      vec4 A = uActor[i];
+      if (A.w <= 0.001) continue;
+      vec2 d = w - A.xy;
+      float r0 = max(A.z, 0.08);
+      float rc = length(d * vec2(1.0, 1.35)) / r0;
+      lit = max(lit, exp(-rc*rc*0.075) * A.w);
+      float contact = exp(-rc*rc*2.4);
+      vec2 kd = A.xy - uKeyF.xy;
+      float kl = max(length(kd), 0.01);
+      kd /= kl;
+      float len = r0 * clamp(1.4 + 1.3*kl / max(uKeyF.z, 0.6), 1.6, 4.2);
+      float along = dot(d, kd), across = d.x*kd.y - d.y*kd.x;
+      float t = clamp(along/len, 0.0, 1.0);
+      float wdt = r0 * (0.62 + 0.55*t);
+      float thrown = smoothstep(-0.35*r0, 0.25*r0, along) * (1.0 - smoothstep(0.35, 1.0, t))
+                 * exp(-across*across/(wdt*wdt)*1.7);
+      occl = max(occl, max(contact*0.80, thrown*0.58) * A.w);
+    }
+    col += alb * uKeyCol * lit * (0.55 + 0.45*smear);
+    col *= 1.0 - clamp(occl, 0.0, 0.9);
   }
 
   /* ---- the drawn line ----------------------------------------------------
@@ -9119,13 +9242,14 @@ float reliefH(vec2 uv, vec2 msz, vec2 mpp, float shape, float seed, out float ti
 }
 
 void main(){
+  mmQuadInit();
   float f = shapeField(vUv, vSize, vShape, vSeed);
   /* The coverage field's own screen gradient turns it into a DISTANCE IN
      PIXELS from the silhouette, which is the only scale an edge treatment can
      honestly be authored in: the old 0.014 of local uv was half a pixel on a
      far prop and five on a near one, and the capitals in every capture were
      stair-stepped because of it. */
-  vec2  gr   = vec2(dFdx(f), dFdy(f));
+  vec2  gr   = mmGrad(f);
   float glen = length(gr) + 1e-7;
   float fpx  = f / glen;
   /* A BRASS FITTING HAS A HARD EDGE, and a drawn line is OPAQUE. 1.45 px of
@@ -9163,7 +9287,7 @@ void main(){
      authored in pixels and every feature in metres. Clamped because a 4 cm
      step across one pixel is a slope of 40 and would turn the normal inside
      out; the step still gets its drawn line from mmDrawn below. */
-  vec2 rg  = vec2(dFdx(rh), dFdy(rh));
+  vec2 rg  = mmGrad(rh);
   /* CLAMPED AT 1.25, AND THAT NUMBER WAS MEASURED. At 2.4 the Greenhouse's
      planting came back 36% darker in the mean (measured over the left bank:
      64.6 -> 41.4): a leaf edge steps 3 cm of relief across less than a pixel,
