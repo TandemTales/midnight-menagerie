@@ -393,19 +393,41 @@ export class HUD {
     this.$luck.hidden = luck <= 0;
 
     // snacks
+    this._snackRun = r;
+    this._renderSnacks(this._snackSpread !== false);
+    this._fitSoon();
+
+    this._refreshKeepsakes(r);
+  }
+
+  /* The Snack settings, and how many of them stand on the rail.
+
+     Round 19 (the rail at 1280) collapsed the EMPTY settings into one that
+     carried "×3" — and all three of that round's judges read the bare figure,
+     sitting beside "No Keepsakes", as a count of Keepsakes that contradicted
+     the plate next to it. An empty setting now holds the GHOST of a sweet (the
+     house's painted snack, drained to a shadow in the hollow), the way an
+     empty potion slot shows the bottle's outline: it says what goes there.
+     Every free setting stands on the rail while the rail has room for it
+     (`spread`); only when a full run's Keepsakes and Gear leave no room — the
+     Steam Deck's 1280 — do the free ones fold into ONE ghost setting with
+     their number on it, so the rail still holds one row. */
+  _renderSnacks(spread) {
+    const r = this._snackRun || this.data;
     const snacks = Array.isArray(r.snacks) ? r.snacks : [];
     const cap_ = num(r.snackCap, 3);
     const live = !!this.o.useSnacks;
     this._snacks = snacks;
     this.$snacks.textContent = '';
     this.$snacks.dataset.live = live ? '1' : '0';
-    /* Round 19 (the rail at 1280): the EMPTY settings collapse into ONE, which
-       carries how many are free — three dark circles in a row were a third of
-       the room the rail was short of on the Steam Deck, and said nothing the
-       one does not. A Snack you carry is its own painted sweet in its setting. */
     const free = Math.max(0, cap_ - snacks.length);
+    this._snackFree = free;
+    const folded = !spread && free > 1;
+    this.$snacks.dataset.folded = folded ? '1' : '0';
     const slots = snacks.slice(0, cap_).map((s, i) => [s, i]);
-    if (free) slots.push([null, snacks.length]);
+    if (folded) slots.push([null, snacks.length]);
+    else for (let j = 0; j < free; j++) slots.push([null, snacks.length + j]);
+    const ghost = objectUrl('snack');
     for (const [s, i] of slots) {
       // A filled slot is a real button only where eating one is a real action.
       // Everywhere else it is a focusable, hoverable read-out that says why.
@@ -421,14 +443,21 @@ export class HUD {
         slot.appendChild(o);
       } else if (s) {
         slot.appendChild(icon('res.snack'));
+      } else if (ghost) {
+        const o = document.createElement('i');
+        o.className = 'kit-obj mm-hud__snackghost';
+        o.style.setProperty('--obj', `url('${ghost}')`);
+        o.setAttribute('aria-hidden', 'true');
+        slot.appendChild(o);
       }
-      if (!s && free > 1) {
+      if (!s && folded) {
         const n = document.createElement('b');
         n.className = 'mm-hud__snackfree';
         n.textContent = `×${free}`;
         n.setAttribute('aria-hidden', 'true');
         slot.appendChild(n);
       }
+      const many = !s && folded;
       if (s) {
         slot.dataset.tipTitle = s.name || 'Snack';
         const what = s.desc || s.text || 'A one-use Snack.';
@@ -448,12 +477,53 @@ export class HUD {
           slot.setAttribute('aria-label', `${s.name || 'Snack'} in your pocket. ${what}`);
         }
       } else {
-        slot.dataset.tipTitle = free > 1 ? `${free} empty Snack slots` : 'Empty Snack slot';
+        slot.dataset.tipTitle = many ? `${free} empty Snack slots` : 'Empty Snack slot';
         slot.dataset.tip = `You can carry ${cap_} Snacks. Find them in treasure, at Mr. Moth's and in Curiosities.`;
-        slot.setAttribute('aria-label', free > 1 ? `${free} empty Snack slots` : 'Empty Snack slot');
+        slot.setAttribute('aria-label', many ? `${free} empty Snack slots` : 'Empty Snack slot');
       }
       this.$snacks.appendChild(slot);
     }
+  }
+
+  /** Does the rail hold one row with every free Snack setting standing? Tried
+   *  after layout (and again on a resize, and once the fonts are in): spread
+   *  first, fold only if the rail then overflows or wraps. */
+  _fitSoon() {
+    if (this._fitQueued) return;
+    this._fitQueued = true;
+    requestAnimationFrame(() => { this._fitQueued = false; this._fitSnacks(); });
+    if (!this._fitBound) {
+      this._fitBound = true;
+      const onResize = () => this._fitSoon();
+      window.addEventListener('resize', onResize);
+      this._offs.push(() => window.removeEventListener('resize', onResize));
+      document.fonts?.ready?.then(() => { if (this.el) this._fitSoon(); });
+    }
+  }
+
+  _fitSnacks() {
+    if (!this.el || !this.el.isConnected || !this.el.offsetWidth) return;
+    if ((this._snackFree || 0) < 2) { this._snackSpread = true; return; }
+    const tight = () => {
+      const groups = [...this.el.querySelectorAll(':scope > .mm-hud__group')].filter((g) => g.offsetWidth);
+      const tops = groups.map((g) => g.offsetTop);
+      if (Math.max(...tops) - Math.min(...tops) > 6) return true;           // a group dropped a row
+      if (this.el.scrollWidth > this.el.clientWidth + 1) return true;
+      // the Keepsakes' group is the one that gives: it shrinks (min-width 0)
+      // before anything else does, so its contents spilling is the sign
+      const keep = this.$relics.parentElement;
+      if (keep.scrollWidth > keep.clientWidth + 1) return true;
+      // the Keepsakes wrap before they overflow: a second row of settings
+      const kids = [...this.$relics.children];
+      return kids.length > 1 && kids[kids.length - 1].offsetTop > kids[0].offsetTop + 4;
+    };
+    this._renderSnacks(true);
+    const fold = tight();
+    if (fold) this._renderSnacks(false);
+    this._snackSpread = !fold;
+  }
+
+  _refreshKeepsakes(r) {
 
     /* Keepsakes and Gear — inside a Scuffle the ENGINE owns the live counters, so
        combat passes `relics:` and the same chips show the same numbers the rules
