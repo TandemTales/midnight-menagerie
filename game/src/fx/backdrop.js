@@ -316,6 +316,7 @@ function freshLightSlots(uniforms) {
   if (uniforms.uPoolAxis) uniforms.uPoolAxis.value = v4arr(MAX_POOLS);
   if (uniforms.uPoolCol) uniforms.uPoolCol.value = colArr(MAX_POOLS);
   if (uniforms.uActor) uniforms.uActor.value = zeroV4(MAX_ACTORS);
+  if (uniforms.uActorK) uniforms.uActorK.value = zeroV4(MAX_ACTORS);
   if (uniforms.uKeyF) uniforms.uKeyF.value = uniforms.uKeyF.value.clone();
   if (uniforms.uKeyCol) uniforms.uKeyCol.value = uniforms.uKeyCol.value.clone();
   if (uniforms.uSize) uniforms.uSize.value = uniforms.uSize.value.clone();
@@ -445,6 +446,7 @@ export class Backdrop {
       uPool: { value: v4arr(MAX_POOLS) }, uPoolAxis: { value: v4arr(MAX_POOLS) },
       uPoolCol: { value: colArr(MAX_POOLS) },
       uActor: { value: zeroV4(MAX_ACTORS) },
+      uActorK: { value: zeroV4(MAX_ACTORS) },
       uKeyF: { value: new THREE.Vector3(-4, 2, 3) },
       uKeyCol: { value: new THREE.Color(0, 0, 0) },
     });
@@ -2205,11 +2207,21 @@ export class Backdrop {
    * the strength of its shadow. Anything past the list is cleared.
    */
   setActors(list = []) {
-    const a = this.floorMat.uniforms.uActor.value;
+    const u = this.floorMat.uniforms;
+    const a = u.uActor.value, k = u.uActorK.value, key = u.uKeyF.value;
     for (let i = 0; i < MAX_ACTORS; i++) {
       const it = list[i];
-      if (!it) { a[i].set(0, 0, 0, 0); continue; }
-      a[i].set(it.x, -(it.z - this._floorCz), it.r, it.s);
+      if (!it) { a[i].set(0, 0, 0, 0); k[i].set(0, 0, 0, 0); continue; }
+      const fx = it.x, fy = -(it.z - this._floorCz), r = Math.max(it.r, 0.08);
+      a[i].set(fx, fy, r, it.s);
+      /* the throw: away from the key lamp, longer the lower the lamp is
+         against its distance, 1.6-4.2 footprints */
+      let dx = fx - key.x, dy = fy - key.y;
+      const kl = Math.max(Math.hypot(dx, dy), 0.01);
+      dx /= kl; dy /= kl;
+      const len = r * Math.min(4.2, Math.max(1.6, 1.4 + 1.3 * kl / Math.max(key.z, 0.6)));
+      const bound = Math.max(7.6 * r, len + 2.0 * r);
+      k[i].set(dx, dy, len, bound * bound);
     }
   }
 

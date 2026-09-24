@@ -4804,7 +4804,7 @@ vec3 skyColor(vec2 q, float horizon){
      halo about three times its own width. */
   /* Anchored 6 m left of centre, not at 0.30 of the plane: the plane is as
      wide as the camera needs and that is not a property of the scene. */
-  /* ...and 10.4 m up, not 12.6 (round 21): the fight's rig is pitched down
+  /* ...and 9.3 m up, not 12.6 (round 21): the fight's rig is pitched down
      now so the floor runs on behind the combatants (stageRig, fx/atmosphere
      .js), and the top of an open-air frame came down with it -- at 12.6 the
      Graveyard's moon sat under the rail across the top of the screen, and a
@@ -4812,7 +4812,7 @@ vec3 skyColor(vec2 q, float horizon){
      must have. And 7 m RIGHT of the axis: lowered, it would sit behind the
      main block's left gables and the corner tower (whose cap is 13.6 m), and
      over the low wing on the right (ridge 6.25 m) it has open sky under it. */
-  vec2 mc = vec2(uSize.x*0.5 + 7.0 + uHouse.y, 10.6);
+  vec2 mc = vec2(uSize.x*0.5 + 7.0 + uHouse.y, 9.3);
   float md = length(vec2(q.x, q.y) - mc);
   float disc = smoothstep(1.26, 1.14, md);
   float crater = 0.72 + 0.28*mmFbm3((vec2(q.x,q.y) - mc)*3.4);
@@ -5842,6 +5842,11 @@ uniform vec3  uPoolCol[4];
    shadow is under the DOM figure wherever the layout put it. uKeyF is the
    key light the shadows fall AWAY from: floor-local xy and its height. */
 uniform vec4  uActor[6];
+/* ...and per actor, worked out once on the CPU (Backdrop.setActors) rather
+   than per floor pixel: the unit direction its shadow is thrown (xy), how
+   long the throw is (z), and the square of the radius past which it does
+   nothing at all (w), so most of the floor skips the actor entirely. */
+uniform vec4  uActorK[6];
 uniform vec3  uKeyF;
 uniform vec3  uKeyCol;         // the key's colour x its strength at the stage
 uniform vec3  uCamera;
@@ -6571,6 +6576,11 @@ void main(){
     float along = dot(d, ax) / max(uPoolAxis[i].z, 0.001);
     float across = d.x*ax.y - d.y*ax.x;
     float r = length(vec2(along, across)) / max(P.z, 0.001);
+    /* (round 21: past 4.6 radii the spill is under 0.4% of the pool, and the
+       pitched rig puts twice the floor in shot that there was -- so the
+       grain's three noise taps are not paid for out there. A ceiling's
+       degenerate slot has r = 0 and still takes its wash.) */
+    if (r > 4.6) continue;
     float core = exp(-r*r*2.1);
     float spill = exp(-r*1.05) * 0.42;
     /* MEASURED, AND PUT BACK. Cutting the pools off the ceiling entirely took
@@ -6751,14 +6761,15 @@ void main(){
       vec4 A = uActor[i];
       if (A.w <= 0.001) continue;
       vec2 d = w - A.xy;
-      float r0 = max(A.z, 0.08);
-      float rc = length(d * vec2(1.0, 1.35)) / r0;
-      lit = max(lit, exp(-rc*rc*0.075) * A.w);
-      float contact = exp(-rc*rc*2.4);
-      vec2 kd = A.xy - uKeyF.xy;
-      float kl = max(length(kd), 0.01);
-      kd /= kl;
-      float len = r0 * clamp(1.4 + 1.3*kl / max(uKeyF.z, 0.6), 1.6, 4.2);
+      vec4 K = uActorK[i];
+      if (dot(d, d) > K.w) continue;
+      float r0 = A.z;
+      vec2 e = d * vec2(1.0, 1.35);
+      float rc2 = dot(e, e) / (r0*r0);
+      lit = max(lit, exp(-rc2*0.075) * A.w);
+      float contact = exp(-rc2*2.4);
+      vec2 kd = K.xy;
+      float len = K.z;
       float along = dot(d, kd), across = d.x*kd.y - d.y*kd.x;
       float t = clamp(along/len, 0.0, 1.0);
       float wdt = r0 * (0.62 + 0.55*t);
