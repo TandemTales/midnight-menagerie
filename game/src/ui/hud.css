@@ -316,19 +316,37 @@
 .mm-hud__snack .mm-icon { position: relative; }
 /* a Snack you carry is its own painted sweet in the setting's hollow */
 .mm-hud__snackobj { position: relative; width: 62%; }
-/* the one empty setting that stands for all the free ones says how many */
+/* an EMPTY setting holds the ghost of a sweet — the house's painted snack
+   drained to a shadow in the hollow, the way an empty potion slot shows the
+   bottle's outline — so it says what goes there (round 19 graft: a bare "×3"
+   beside "No Keepsakes" read as a Keepsake count to all three judges) */
+.mm-hud__snackghost {
+  position: relative; width: 76%;
+  opacity: .62;
+  filter: grayscale(.8) sepia(.4) brightness(.92) contrast(.9) drop-shadow(0 1px 0 rgba(0, 0, 0, .9));
+}
+/* when the rail is too full for every free setting to stand (a full run on
+   the Steam Deck), ONE ghost setting stands for them and wears their number
+   on its rim, the way a Keepsake wears its counter */
 .mm-hud__snackfree {
-  position: relative;
+  position: absolute; right: -3px; bottom: -1px;
+  min-width: 1.3em; padding: 1px .22em 0;
   font-family: var(--font-num); font-weight: 700; font-style: normal;
-  font-size: max(11px, .74em); line-height: 1; letter-spacing: .02em;
-  color: var(--kit-text-mid);
-  text-shadow: 0 -1px 0 rgba(0, 0, 0, .95), 0 1px 0 color-mix(in srgb, var(--kit-lav-hi) 16%, transparent);
+  font-size: max(11px, .72em); line-height: 1.2; letter-spacing: 0;
+  text-align: center;
+  color: var(--kit-gold-hi);
+  background: radial-gradient(closest-side, #2a1a36, #150d1c);
+  border: 1px solid color-mix(in srgb, var(--kit-gold) 80%, transparent);
+  border-radius: 999px;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .95);
 }
 .mm-hud__snack.is-empty {
   color: transparent;
   filter: drop-shadow(0 1px 2px rgba(0, 0, 0, .85)) brightness(1.3) saturate(1.05);
 }
 .mm-hud__snack.is-empty .mm-icon { opacity: 0; }
+.mm-hud__snack.is-empty:hover .mm-hud__snackghost,
+.mm-hud__snack.is-empty:focus-visible .mm-hud__snackghost { opacity: .72; }
 /* carried, but this is not a Scuffle — readable, deliberately not clickable */
 .mm-hud__snack.is-idle { color: var(--flame-200); cursor: default; }
 /* eatable right now: lit rim, shortcut badge, lifts under the pointer */

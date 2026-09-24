@@ -3271,9 +3271,11 @@ button.kit-medallion:hover, button.kit-medallion:focus-visible,
      .kit-hw-plate         a reading lettered on the plate, a boss on each end
      .kit-hw-choice        one position of several on that plate, the chosen
                            one lit (role="radio" + aria-checked)
-     .kit-hw-groove        a slider's groove, __fill the gilt run in it
+     .kit-hw-groove        a slider's groove, __fill the gilt run in it;
+                           --ticks engraves quarters along it (graft)
      .kit-hw-switch        a two-position plate, OFF | ON, the setting's well
-                           lit; __pos x2 (put [data-on="1"] on the switch)
+                           lit; __pos x2 (put [data-on="1"] on the switch),
+                           __lever thrown toward it on its pivot (graft)
      .kit-hw-dial          a list chooser: what it chooses BY engraved in its
                            upper band (__label), the choice in its window
                            (a <select class="kit-hw-dial__sel">), a finial
@@ -3451,18 +3453,38 @@ button.kit-hw-enamel:focus-visible {
   box-shadow: 0 0 6px color-mix(in srgb, var(--kit-candle) 45%, transparent);
 }
 
+/* engraved ticks along the plate under the channel (round 19 graft, after
+   KERMES's rail), gilded in the cut: a long one at each quarter and a short
+   one between. They run from --tick-in to 100% - --tick-in, so a slider can
+   set that to half its knob and a tick sits under every quarter's knob. */
+.kit-hw-groove--ticks::after {
+  --tick-in: calc(var(--groove-h) * 15 / 40);
+  content: ''; position: absolute; pointer-events: none;
+  left: var(--tick-in); right: var(--tick-in);
+  top: calc(var(--groove-h) * 27.5 / 40); height: calc(var(--groove-h) * 6 / 40);
+  background:
+    linear-gradient(90deg, color-mix(in srgb, var(--kit-gold) 85%, transparent) 0 1px, transparent 1px) 0 0 / calc((100% - 1px) / 4) 100% repeat-x,
+    linear-gradient(90deg, color-mix(in srgb, var(--kit-gold-lo) 90%, transparent) 0 1px, transparent 1px) 0 0 / calc((100% - 1px) / 8) 55% repeat-x;
+  filter: drop-shadow(0 -1px 0 rgba(0, 0, 0, .8));
+}
+
 /* ── the engraved plate: two-position switch ── */
-/* hw-switch.webp is 220x64: two wells, 15..104 and 116..205, 13..51 high */
+/* hw-switch.webp is 240x64: two wells, 15..97 and 143..225, 13..51 high, and
+   between them a brass pivot at (120, 50) with the lever's gate cut above it.
+   ROUND 19 GRAFT (after KERMES, "an engraved brass plate with a physical
+   lever on a brass pivot"): the lever (hw-lever.webp, its pivot the picture's
+   centre) is thrown toward the lit well -- and its ball stays inside the
+   plate's rim at either throw, where KERMES's stood up above it. */
 .kit-hw-switch {
   --sw-h: 30px;
   position: relative; display: block; flex: none;
-  width: calc(var(--sw-h) * 220 / 64); height: var(--sw-h);
+  width: calc(var(--sw-h) * 240 / 64); height: var(--sw-h);
   background: url("../../assets/ui/kit/hw-switch.webp") 50% 50% / 100% 100% no-repeat;
   filter: drop-shadow(0 3px 3px rgba(0, 0, 0, .8));
 }
 .kit-hw-switch__pos {
   position: absolute; top: calc(100% * 13 / 64); height: calc(100% * 38 / 64);
-  width: calc(100% * 89 / 220);
+  width: calc(100% * 82 / 240);
   display: grid; place-items: center;
   font-family: var(--font-display); font-weight: 700; font-style: normal;
   font-size: max(11px, calc(var(--sw-h) * .4)); line-height: 1;
@@ -3471,12 +3493,12 @@ button.kit-hw-enamel:focus-visible {
   text-shadow: 0 -1px 0 rgba(0, 0, 0, .95), 0 1px 0 color-mix(in srgb, var(--kit-gold) 18%, transparent);
   transition: color var(--t-quick) var(--ease-out), background var(--t-quick) var(--ease-out);
 }
-.kit-hw-switch__pos:first-child { left: calc(100% * 15 / 220); }
-.kit-hw-switch__pos:last-child  { left: calc(100% * 116 / 220); }
+.kit-hw-switch__pos:first-of-type { left: calc(100% * 15 / 240); }
+.kit-hw-switch__pos:last-of-type  { left: calc(100% * 143 / 240); }
 /* the setting's well is LIT: violet enamel glowing up through it, the word in
    pale lavender — never gold type on a gold fill */
-.kit-hw-switch:not([data-on="1"]) > .kit-hw-switch__pos:first-child,
-.kit-hw-switch[data-on="1"] > .kit-hw-switch__pos:last-child {
+.kit-hw-switch:not([data-on="1"]) > .kit-hw-switch__pos:first-of-type,
+.kit-hw-switch[data-on="1"] > .kit-hw-switch__pos:last-of-type {
   color: var(--kit-lav-hi);
   text-shadow: 0 -1px 0 rgba(0, 0, 0, .9), 0 0 8px color-mix(in srgb, var(--kit-lav) 70%, transparent);
   background:
@@ -3485,7 +3507,7 @@ button.kit-hw-enamel:focus-visible {
   box-shadow: inset 0 2px 4px rgba(0, 0, 0, .8), inset 0 -1px 0 color-mix(in srgb, var(--kit-lav) 30%, transparent);
 }
 /* ON is lit by the candle as well, so the two states never read alike */
-.kit-hw-switch[data-on="1"] > .kit-hw-switch__pos:last-child {
+.kit-hw-switch[data-on="1"] > .kit-hw-switch__pos:last-of-type {
   color: #fff4dc;
   text-shadow: 0 -1px 0 rgba(0, 0, 0, .9), 0 0 9px color-mix(in srgb, var(--kit-candle) 85%, transparent);
   background:
@@ -3494,30 +3516,45 @@ button.kit-hw-enamel:focus-visible {
     url("../../assets/ui/kit/enamel.webp") 0 0 / 120px 120px;
 }
 .kit-hw-switch[data-on="1"] { filter: drop-shadow(0 3px 3px rgba(0, 0, 0, .8)) drop-shadow(0 0 6px color-mix(in srgb, var(--kit-candle) 28%, transparent)); }
+/* the lever, thrown from its pivot toward the lit well */
+.kit-hw-switch__lever {
+  position: absolute; z-index: 1; pointer-events: none;
+  left: 50%; top: calc(100% * 50 / 64);
+  width: calc(var(--sw-h) * 1.5); height: calc(var(--sw-h) * 1.5);   /* hw-lever.webp is 96 to the plate's 64 */
+  translate: -50% -50%;
+  background: url("../../assets/ui/kit/hw-lever.webp") 50% 50% / 100% 100% no-repeat;
+  filter: drop-shadow(1px 2px 1.5px rgba(0, 0, 0, .75));
+  rotate: -25deg;
+  transition: rotate var(--t-base) var(--ease-out);   /* --t-base is 1ms under reduced motion (tokens.css) */
+}
+.kit-hw-switch[data-on="1"] > .kit-hw-switch__lever { rotate: 25deg; }
 
 /* ── the engraved plate: a dial ── */
-/* hw-dial.webp is 180x76: its upper band (0..29) carries the engraving, the
-   window runs 12..168 by 31..65; 9-slice 30 16 12 16 */
+/* ROUND 19 GRAFT: a dial is a plate of BRASS now, after KERMES ("screwed
+   brass plates with engraved labels and inset selects" -- all three judges).
+   hw-dial.webp is 200x72: what it chooses BY is engraved into the metal's
+   upper band (0..29), a lacquer window runs 29.5..170.5 by 31.5..59.5, and a
+   slotted screw holds each end; 9-slice 30 32 12 32. The name is CUT into
+   the brass -- dark in the metal, a hairline of light on its lower lip. */
 .kit-hw-dial {
   --dial-h: 50px;
   position: relative; display: inline-block;
   box-sizing: border-box;
   height: var(--dial-h);
-  padding: calc(var(--dial-h) * 31 / 76) calc(var(--dial-h) * 12 / 76) calc(var(--dial-h) * 11 / 76);
+  padding: calc(var(--dial-h) * 31.5 / 72) calc(var(--dial-h) * 30 / 72) calc(var(--dial-h) * 12.5 / 72);
   border: 0 solid transparent;
-  border-image: url("../../assets/ui/kit/hw-dial.webp") 30 16 12 16 fill / calc(var(--dial-h) * 30 / 76) calc(var(--dial-h) * 16 / 76) calc(var(--dial-h) * 12 / 76) calc(var(--dial-h) * 16 / 76) stretch;
-  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .8));
+  border-image: url("../../assets/ui/kit/hw-dial.webp") 30 32 12 32 fill / calc(var(--dial-h) * 30 / 72) calc(var(--dial-h) * 32 / 72) calc(var(--dial-h) * 12 / 72) calc(var(--dial-h) * 32 / 72) stretch;
+  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .8)) saturate(.9) brightness(.94);
 }
 .kit-hw-dial__label {
   position: absolute; left: 0; right: 0;
-  top: 0; height: calc(var(--dial-h) * 31 / 76);
+  top: calc(var(--dial-h) * 3 / 72); height: calc(var(--dial-h) * 27 / 72);
   display: grid; place-items: center;
-  padding-top: 2px;
   font-family: var(--font-display); font-weight: 700; font-style: normal;
-  font-size: max(11px, calc(var(--dial-h) * .205)); line-height: 1;
-  letter-spacing: .2em; padding-left: .2em; text-transform: uppercase; white-space: nowrap;
-  color: var(--kit-gold-hi);
-  text-shadow: 0 -1px 0 rgba(0, 0, 0, .95), 0 1px 0 color-mix(in srgb, var(--kit-gold-hi) 16%, transparent);
+  font-size: max(11.5px, calc(var(--dial-h) * .215)); line-height: 1;
+  letter-spacing: .18em; padding-left: .18em; text-transform: uppercase; white-space: nowrap;
+  color: #24140a;
+  text-shadow: 0 1px 0 rgba(255, 238, 196, .5), 0 -1px 0 rgba(20, 10, 2, .25);
   pointer-events: none;
 }
 .kit-hw-dial__sel {
@@ -3525,7 +3562,7 @@ button.kit-hw-enamel:focus-visible {
   box-sizing: border-box;
   width: 100%; height: 100%;
   margin: 0;
-  padding: 0 calc(var(--dial-h) * .4) 0 calc(var(--dial-h) * .12);
+  padding: 0 calc(var(--dial-h) * .36) 0 calc(var(--dial-h) * .08);
   border: 0; border-radius: 0;
   -webkit-appearance: none; appearance: none;
   background: none; outline: none;
@@ -3537,13 +3574,15 @@ button.kit-hw-enamel:focus-visible {
   cursor: pointer;
 }
 .kit-hw-dial__sel option { background: #17111c; color: var(--kit-text); }
+/* the finial sits at the window's right end, inside it */
 .kit-hw-dial > .kit-hw-finial {
-  position: absolute; right: calc(var(--dial-h) * .2); bottom: calc(var(--dial-h) * .16);
-  width: calc(var(--dial-h) * .3);
+  position: absolute; right: calc(var(--dial-h) * 34 / 72); top: calc(var(--dial-h) * 45.5 / 72);
+  width: calc(var(--dial-h) * .26);
+  translate: 0 -50%;
 }
-.kit-hw-dial:hover { filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .8)) brightness(1.12); }
+.kit-hw-dial:hover { filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .8)) saturate(.94) brightness(1.04); }
 .kit-hw-dial:has(> .kit-hw-dial__sel:focus-visible) {
-  filter: drop-shadow(0 0 1.5px var(--kit-gold-hi)) drop-shadow(0 0 10px color-mix(in srgb, var(--kit-candle) 55%, transparent)) drop-shadow(0 3px 4px rgba(0, 0, 0, .8)) brightness(1.18);
+  filter: drop-shadow(0 0 1.5px var(--kit-gold-hi)) drop-shadow(0 0 10px color-mix(in srgb, var(--kit-candle) 55%, transparent)) drop-shadow(0 3px 4px rgba(0, 0, 0, .8)) brightness(1.08);
 }
 /* a dial set to something other than "any" has its window lit, so the
    filters in force are found at a glance */

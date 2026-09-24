@@ -5,10 +5,10 @@
      the count        .kit-enamel          struck on the enamel cartouche a
                                            price or a rarity wears ("5 TRICKS")
      the search       .kit-hw-slip         inked on a slip of old card
-     each filter      .kit-hw-dial         a dial plate: what it sorts by
-                                           engraved on its upper band, the
-                                           choice in a sunk window, a brass
-                                           finial at the window's end
+     each filter      .kit-hw-dial         a brass dial plate screwed to the
+                                           rail: what it sorts by engraved in
+                                           the metal, the choice in a sunk
+                                           window, a finial at the window's end
      Clear            .kit-btn--quiet      a nameplate
      the case         .kit-stage           the panels' rail round a velvet-lined
                       .kit-liner           case, its floor the boards' embossed
@@ -108,14 +108,15 @@
 .mm-deck__filters::before { top: 50%; }
 /* ── each filter is one of the house's dial plates (ui/kit.css .kit-hw-dial):
    round 19's survey found "five rounded selects with chevron circles, a web
-   filter bar". A dial plate is one gilt-rimmed object: what it chooses BY is
-   engraved across its upper band, the choice is lettered in the window sunk
-   below it, and a cast brass finial at the window's end says it opens. */
+   filter bar". A dial plate is one object, a plate of brass screwed to the
+   rail (round 19 graft, after KERMES): what it chooses BY is engraved in the
+   metal, the choice is lettered in the window sunk below it, and a cast
+   brass finial at the window's end says it opens. */
 .mm-deck__sortwrap.kit-hw-dial {
   --dial-h: clamp(54px, 6.8vh, 62px);
-  min-width: calc(var(--dial-h) * 2.75);
+  min-width: calc(var(--dial-h) * 3);
 }
-.mm-deck__sortwrap .kit-hw-dial__label { font-size: max(11.5px, calc(var(--dial-h) * .19)); }
+.mm-deck__sortwrap .kit-hw-dial__label { font-size: max(12px, calc(var(--dial-h) * .215)); }
 .mm-deck__sortwrap .kit-hw-dial__sel { font-size: max(14px, calc(var(--dial-h) * .28)); }
 /* nothing to clear is still a plate, and it stands on the plates' own line —
    not on the tags' */

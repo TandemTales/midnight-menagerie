@@ -284,9 +284,10 @@
 }
 
 /* ── range: the house's groove, its brass knob, the figure ───────────────
-   The hardware (ui/kit.css, .kit-hw-groove / hw-knob.webp): a channel sunk in
-   a gilt-rimmed plate, the gilt run in it as far as the knob, and a milled
-   brass knob with a violet cabochon riding it. The input itself is the real
+   The hardware (ui/kit.css, .kit-hw-groove / hw-cog.webp): a channel sunk in
+   a gilt-rimmed plate, the gilt run in it as far as the knob, its quarters
+   engraved along it, and a cast brass cog with a violet cabochon riding it,
+   seated inside the plate (round 19 graft, after KERMES). The input itself is the real
    range, transparent over the picture, so keys, pad and tests drive it. */
 .mm-set__rangewrap { display: flex; align-items: center; justify-content: flex-end; gap: 8px; }
 .mm-set__slot {
@@ -295,7 +296,9 @@
   width: var(--slot-w); height: var(--slot-h);
 }
 .mm-set__slot > .mm-set__tube.kit-hw-groove {
-  --groove-h: calc(var(--slot-h) * .64);
+  /* round 19 graft: the plate is the slot's full height and the cog is
+     seated INSIDE it -- KERMES's knob stood up above its rail (judge 3) */
+  --groove-h: var(--slot-h);
   position: absolute; left: 0; right: 0; top: 50%;
   translate: 0 -50%;
   pointer-events: none;
@@ -305,6 +308,8 @@
   width: max(0px, calc(var(--knob) / 2 + (100% + var(--groove-h) * 30 / 40 - var(--knob)) * var(--v) - var(--groove-h) * 15 / 40));
   max-width: calc(100% - var(--groove-h) * 30 / 40);
 }
+/* a tick under the knob's centre at every quarter */
+.mm-set__slot > .mm-set__tube.kit-hw-groove--ticks::after { --tick-in: calc(var(--knob) / 2); }
 .mm-set__rangewrap input[type="range"] {
   position: relative; z-index: 1;
   display: block;
@@ -324,14 +329,14 @@
   width: var(--knob); height: var(--knob);
   margin-top: calc((var(--slot-h) - var(--knob)) / 2);
   border: 0; border-radius: 50%;
-  background: url("../../assets/ui/kit/hw-knob.webp") 50% 50% / 100% 100% no-repeat;
+  background: url("../../assets/ui/kit/hw-cog.webp") 50% 50% / 100% 100% no-repeat;
   box-shadow: 0 3px 4px rgba(0, 0, 0, .75);
   transition: box-shadow var(--t-quick) var(--ease-out);
 }
 .mm-set__rangewrap input[type="range"]::-moz-range-thumb {
   width: var(--knob); height: var(--knob);
   border: 0; border-radius: 50%;
-  background: url("../../assets/ui/kit/hw-knob.webp") 50% 50% / 100% 100% no-repeat;
+  background: url("../../assets/ui/kit/hw-cog.webp") 50% 50% / 100% 100% no-repeat;
 }
 .mm-set__rangewrap input[type="range"]:hover::-webkit-slider-thumb {
   box-shadow: 0 3px 4px rgba(0, 0, 0, .75), 0 0 10px color-mix(in srgb, var(--kit-candle) 45%, transparent);

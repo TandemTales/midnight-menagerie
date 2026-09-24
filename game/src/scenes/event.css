@@ -385,7 +385,7 @@
 }
 .ev-register .ev-opt {
   --md: clamp(42px, 5vh, 48px);
-  --nib: clamp(30px, 2.4vw, 36px);   /* the entry's enamel button, below */
+  --nib: clamp(34px, 2.7vw, 40px);   /* the entry's enamel button, below */
   min-height: 54px;
   margin-left: calc(var(--md) + 20px);
   padding: 9px calc(var(--nib) + 16px) 10px 14px;
@@ -406,9 +406,11 @@
   position: absolute; pointer-events: none;
   left: auto; right: 0; top: 50%; translate: 0 -50%; transform: none;
   width: var(--nib); height: var(--nib);
+  /* round 19 graft: a cast gilt ARROW, filled, where BICE struck a chevron
+     (judges 1 and 3: KERMES's filled arrow read as a button) */
   background:
-    var(--kit-hw-chev) 56% 50% / 50% 50% no-repeat,
     url("../../assets/ui/kit/hw-glaze.webp") 50% 50% / 100% 100% no-repeat,
+    var(--kit-hw-arrow) 54% 50% / 62% 62% no-repeat,
     url("../../assets/ui/kit/button.webp") 50% 50% / 100% 100% no-repeat;
   filter: drop-shadow(0 3px 3px rgb(40 20 6 / .65));
 }
