@@ -459,10 +459,15 @@ def room_paint_layers():
     alb = alb * (1 - stencil * 0.55) + hexc("#6b5480") * (stencil * 0.55)
     gloss = np.where(band, np.maximum(gloss, 0.22), gloss)
 
-    # the hung pictures
-    for cxp, wp, hp, drop in ((148, 112, 132, 0), (536, 96, 116, 14),
-                              (960, 128, 150, -6), (1384, 96, 116, 10),
-                              (1792, 112, 132, 2)):
+    # the hung pictures. ROUND 19: there were five, the two outer ones at the
+    # screen's edges, and the boards with windows (the Reward, the Curiosity)
+    # stand their lancets in exactly those two bays -- "a window cannot overlap
+    # a picture frame", both survey judges. Those two are gone; the three that
+    # remain are not "holes in the wall" any more but PICTURES: the grounds of
+    # UI/mainMenu.png, cut by tools/prep_ui_kit.py (hall-*.webp), laid in each
+    # canvas dimmed under an old varnish so they sit back in the room's shadow.
+    hall = {536: "hall-towers.webp", 960: "hall-gable.webp", 1384: "hall-tree.webp"}
+    for cxp, wp, hp, drop in ((536, 96, 116, 14), (960, 128, 150, -6), (1384, 96, 116, 10)):
         py0 = 268 + drop
         # TWO boxes, not one distance field. wobbly_box_distance caps its inset
         # distance at `chip`, so a frame drawn as a function of it is 0.82 of
@@ -481,7 +486,22 @@ def room_paint_layers():
         hgt = np.where(band_f, hgt + prof, hgt)
         hgt = np.where(core, hgt - 8.0 + smooth(0.0, 4.0, dc) * -3.0, hgt)
         alb = np.where(band_f[..., None], gilt * (0.72 + 0.46 * (dd / 5.0)[..., None]), alb)
-        alb = np.where(core[..., None], oil * (0.85 + 0.30 * noise(dd.shape, rng, 40)[..., None]), alb)
+        # the canvas: the picture, cover-fitted into the frame's opening, under
+        # a brown varnish that has darkened with the room
+        x0, x1 = cxp - wp + 21, cxp + wp - 21
+        y0, y1 = py0 + 21, py0 + 2 * hp - 21
+        art = Image.open(os.path.join(OUT, hall[cxp])).convert("RGB")
+        k = max((x1 - x0) / art.width, (y1 - y0) / art.height)
+        art = art.resize((int(np.ceil(art.width * k)), int(np.ceil(art.height * k))), Image.LANCZOS)
+        ox, oy = (art.width - (x1 - x0)) // 2, (art.height - (y1 - y0)) // 2
+        art = np.asarray(art, np.float32)[oy:oy + (y1 - y0), ox:ox + (x1 - x0)]
+        canvas = np.zeros_like(alb)
+        canvas[y0:y1, x0:x1] = art
+        varnish = hexc("#3a2614")
+        pic = canvas * 0.62 + varnish * 0.16
+        # a craquelure of fine dark lines and the grain of the canvas
+        pic = pic * (0.9 + 0.2 * noise(dd.shape, rng, 1.2)[..., None])
+        alb = np.where(core[..., None], pic, alb)
         gloss = np.where(band_f, 0.55, gloss)
         gloss = np.where(core, 0.30, gloss)
         # the wall's own shadow under the frame, which is what hangs it

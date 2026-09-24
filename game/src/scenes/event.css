@@ -219,7 +219,10 @@
   width: var(--md); height: var(--md);
   display: grid; place-items: center;
   border-radius: 50%;
-  background: url("../../assets/ui/kit/button.webp") 50% 50% / 100% 100% no-repeat;
+  /* the Kid board's enamel with the house's glaze (ui/kit.css "hardware") */
+  background:
+    url("../../assets/ui/kit/hw-glaze.webp") 50% 50% / 100% 100% no-repeat,
+    url("../../assets/ui/kit/button.webp") 50% 50% / 100% 100% no-repeat;
   font-family: var(--font-display); font-weight: 700; font-size: calc(var(--md) * .34); line-height: 1;
   color: var(--kit-gold-hi);
   text-shadow: 0 1px 0 rgba(0, 0, 0, .9), 0 0 8px color-mix(in srgb, var(--kit-candle) 30%, transparent);
@@ -333,14 +336,24 @@
   position: absolute; inset: 0; z-index: 0; pointer-events: none;
   border-radius: inherit;
   background:
-    linear-gradient(90deg, transparent calc(33.3% - 9px), rgb(92 56 22 / .24) calc(33.3% - 1px), rgb(255 242 212 / .42) 33.3%, rgb(92 56 22 / .2) calc(33.3% + 1px), transparent calc(33.3% + 9px)),
-    linear-gradient(90deg, transparent calc(66.6% - 9px), rgb(92 56 22 / .21) calc(66.6% - 1px), rgb(255 242 212 / .38) 66.6%, rgb(92 56 22 / .18) calc(66.6% + 1px), transparent calc(66.6% + 9px)),
-    linear-gradient(180deg, transparent calc(52% - 11px), rgb(92 56 22 / .25) calc(52% - 1px), rgb(255 242 212 / .42) 52%, rgb(92 56 22 / .19) calc(52% + 1px), transparent calc(52% + 11px));
+    linear-gradient(90deg, transparent calc(33.3% - 16px), rgb(92 56 22 / .1) calc(33.3% - 2px), rgb(255 242 212 / .12) calc(33.3% + 1px), transparent calc(33.3% + 16px)),
+    linear-gradient(90deg, transparent calc(66.6% - 16px), rgb(92 56 22 / .09) calc(66.6% - 2px), rgb(255 242 212 / .1) calc(66.6% + 1px), transparent calc(66.6% + 16px)),
+    linear-gradient(180deg, transparent calc(52% - 18px), rgb(92 56 22 / .1) calc(52% - 2px), rgb(255 242 212 / .12) calc(52% + 1px), transparent calc(52% + 18px));
 }
+/* round 19: the creases were hard bright lines through the entries; a fold
+   pressed flat again leaves a soft valley of shade and no drawn line */
 .ev-register > .ev-prose,
 .ev-register > .ev-options,
 .ev-register > .ev-outcome { position: relative; z-index: 1; }
 
+/* the lead-in on the leaf is INKED, solid, in the clerk's violet: round 19's
+   survey read the embossed pale small caps as "almost invisible on the
+   parchment" */
+.ev-register .ev-leadin {
+  font-weight: 700;
+  color: var(--kit-ink-violet);
+  text-shadow: 0 1px 0 rgb(255 242 214 / .4);
+}
 /* the entry written on the leaf, in the hand that kept it */
 .ev-register .ev-prose p {
   color: var(--ink);
@@ -372,7 +385,7 @@
 }
 .ev-register .ev-opt {
   --md: clamp(42px, 5vh, 48px);
-  --nib: clamp(23px, 2vw, 28px);
+  --nib: clamp(30px, 2.4vw, 36px);   /* the entry's enamel button, below */
   min-height: 54px;
   margin-left: calc(var(--md) + 20px);
   padding: 9px calc(var(--nib) + 16px) 10px 14px;
@@ -385,21 +398,19 @@
 .ev-register .ev-opt:first-child { border-top: 1px solid var(--rule-ink); }
 /* the number stays struck on its enamel medallion, out in the margin */
 .ev-register .ev-opt::before { left: calc(-1 * var(--md) - 20px); }
-/* and at the end of the line, the affordance: a brass socket with a gilt
-   chevron in it — an entry you may write yourself against */
+/* and at the end of the line, the affordance: the SAME glazed enamel button
+   as the numeral in the margin, a cast brass chevron struck on it — the
+   house's one button (ui/kit.css "hardware"), not a small black web disc */
 .ev-register .ev-opt::after {
-  content: '›';
+  content: '';
   position: absolute; pointer-events: none;
-  left: auto; right: 4px; top: 50%; translate: 0 -50%; transform: none;
+  left: auto; right: 0; top: 50%; translate: 0 -50%; transform: none;
   width: var(--nib); height: var(--nib);
-  display: grid; place-items: center;
-  background: url("../../assets/ui/kit/socket-round.webp") 50% 50% / 100% 100% no-repeat;
-  font-family: var(--font-display); font-weight: 700;
-  font-size: calc(var(--nib) * .74); line-height: 1;
-  color: var(--kit-gold-hi);
-  text-shadow: 0 1px 0 rgba(28, 14, 2, .95);
-  padding-bottom: calc(var(--nib) * .06);
-  filter: drop-shadow(0 2px 2px rgb(58 30 10 / .6));
+  background:
+    var(--kit-hw-chev) 56% 50% / 50% 50% no-repeat,
+    url("../../assets/ui/kit/hw-glaze.webp") 50% 50% / 100% 100% no-repeat,
+    url("../../assets/ui/kit/button.webp") 50% 50% / 100% 100% no-repeat;
+  filter: drop-shadow(0 3px 3px rgb(40 20 6 / .65));
 }
 .ev-register .ev-opt__label {
   color: var(--ink);

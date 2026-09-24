@@ -527,21 +527,10 @@
 .sh-row:hover { filter: brightness(1.12); }
 .sh-row.is-poor { filter: grayscale(.8) brightness(.72); }
 .sh-row.is-sold { opacity: .45; }
-.sh-row__sig {
-  display: grid; place-items: center;
-  width: clamp(36px, 2.8vw, 44px); height: clamp(36px, 2.8vw, 44px);
-  border-radius: 50%;
-  background: url("../../assets/ui/kit/button.webp") 50% 50% / 100% 100% no-repeat;
-  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, .8));
-}
-.sh-row__sig svg { width: 52%; height: 52%; fill: none; stroke: var(--kit-gold-hi);
-                   stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
-/* rarity reads as the colour of the sigil, the enamel and brass stay the kit's */
-.sh-row__sig[data-rarity="rare"] svg { stroke: color-mix(in oklab, var(--rarity-rare) 80%, white); }
-.sh-row__sig[data-rarity="uncommon"] svg { stroke: color-mix(in oklab, var(--rarity-uncommon) 70%, white); }
-.sh-row__sig[data-rarity="shop"] svg { stroke: var(--kit-lav-hi); }
-/* res.snack is a filled drawing (see ui/icons.js), not a stroked one. */
-.sh-row__sig--snack svg { fill: var(--flame-200); stroke: none; }
+/* the Keepsake or Snack itself, a small painted object in the kit's velvet
+   well (.kit-hw-well > .kit-obj, ui/objects.js) — never an icon-font glyph in
+   an empty ring. Rarity stays on the row's data for anything that reads it. */
+.sh-row__sig.kit-hw-well { --well: clamp(44px, 3.1vw, 50px); width: var(--well); height: var(--well); margin-top: -2px; }
 .sh-row__txt { min-width: 0; }
 .sh-row__txt b {
   display: block;
@@ -794,7 +783,7 @@
   .scene--shop .sh-row { --row-price-h: 26px; padding-block: 2px 3px; }
   .scene--shop .sh-row__txt b { font-size: 15px; }
   .scene--shop .sh-row__txt em { font-size: 13px; line-height: 1.18; }
-  .scene--shop .sh-row__sig { width: 34px; height: 34px; }
+  .scene--shop .sh-row__sig.kit-hw-well { --well: 42px; }
   .scene--shop .sh-keeper { --moth-plate: 34px; }
   .scene--shop .sh-moth__say { row-gap: 6px; }
   .scene--shop .sh-moth__line { line-height: 1.22; }

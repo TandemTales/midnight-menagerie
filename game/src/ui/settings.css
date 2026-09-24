@@ -41,8 +41,7 @@
   --hint-fs: max(12px, calc(var(--fs-xs) * 1.12));
   --slot-w: clamp(92px, 7.6vw, 124px);
   --slot-h: 30px;  --knob: 26px;         /* a slider */
-  --sw-w: clamp(108px, 8.4vw, 124px);   /* a switch: the tube, its word, its knob */
-  --sw-h: 26px;
+  --sw-h-set: 30px;                     /* a switch plate: OFF | ON */
   --read-w: clamp(68px, 4.9vw, 78px);   /* the column of readings: "100%" clear of the notched ends */
   --read-h: 30px;
   --choice-h: 34px;
@@ -64,7 +63,7 @@
   .mm-set {
     --row-pad: 4px;
     --slot-h: 26px; --knob: 22px;
-    --sw-h: 23px;
+    --sw-h-set: 27px;
     --read-h: 27px; --choice-h: 30px;
     --panel-top: 4px;
   }
@@ -192,30 +191,9 @@
    ("PLAY") the crest still sits on the ribbon's end over its painted star,
    as it does on the longer ones, instead of drifting in to show the star */
 .mm-set__legendname { display: block; flex: 1 1 auto; text-align: center; }
-/* the carved fittings are headed by a nameplate instead: the Companion tiles'
-   lit enamel plate across the carving, the name lettered in gilt, and on the
-   dangerous page in the Courage bar's red */
-.mm-set__group[data-group="seed"] > .mm-set__legend,
-.mm-set__group[data-group="expedition"] > .mm-set__legend {
-  --plate-h: calc(var(--rib-h) + 6px);
-  height: var(--plate-h);
-  min-width: 0;
-  padding: 0 calc(var(--plate-h) * 1.02) 1px calc(var(--plate-h) * .62);
-  border-image-source: url("../../assets/ui/kit/plate-lit.webp");
-  border-image-slice: 12 53 12 46 fill;
-  border-image-width: calc(var(--plate-h) * 12 / 72) calc(var(--plate-h) * 53 / 72) calc(var(--plate-h) * 12 / 72) calc(var(--plate-h) * 46 / 72);
-  color: var(--kit-gold-hi);
-  -webkit-text-stroke: 0;
-  font-size: calc(var(--rib-h) * .45);
-  letter-spacing: .2em;
-  text-shadow: 0 -1px 0 rgba(0, 0, 0, .95), 0 1px 0 color-mix(in srgb, var(--kit-gold-hi) 18%, transparent), 0 0 10px color-mix(in srgb, var(--kit-candle) 22%, transparent);
-  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .75));
-}
-.mm-set__group[data-group="seed"] > .mm-set__legend > .mm-set__crest,
-.mm-set__group[data-group="expedition"] > .mm-set__legend > .mm-set__crest {
-  margin-left: calc(var(--plate-h) * -.74);
-  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .75));
-}
+/* every page is headed by the same gold ribbon — the seed and the way out
+   too (round 19: "the SEED header is a dark plate where every other header
+   is a ribbon") — the danger page's alone in crimson */
 /* the skull on the crimson ribbon's own end, over its painted star */
 .mm-set__group[data-group="danger"] > .mm-set__legend > .mm-set__crest {
   filter: brightness(.9) saturate(1.1) drop-shadow(0 2px 2px rgba(0, 0, 0, .8));
@@ -296,26 +274,27 @@
   padding-top: 1px;
 }
 
-/* ── range: the brass tube, the enamel knob, the figure ─────────────────── */
-.mm-set__rangewrap { display: flex; align-items: center; justify-content: flex-end; gap: 6px; }
+/* ── range: the house's groove, its brass knob, the figure ───────────────
+   The hardware (ui/kit.css, .kit-hw-groove / hw-knob.webp): a channel sunk in
+   a gilt-rimmed plate, the gilt run in it as far as the knob, and a milled
+   brass knob with a violet cabochon riding it. The input itself is the real
+   range, transparent over the picture, so keys, pad and tests drive it. */
+.mm-set__rangewrap { display: flex; align-items: center; justify-content: flex-end; gap: 8px; }
 .mm-set__slot {
   --v: 0;
   position: relative;
   width: var(--slot-w); height: var(--slot-h);
 }
-.mm-set__slot > .mm-set__tube {
-  --tube-h: calc(var(--slot-h) * .5);
+.mm-set__slot > .mm-set__tube.kit-hw-groove {
+  --groove-h: calc(var(--slot-h) * .64);
   position: absolute; left: 0; right: 0; top: 50%;
   translate: 0 -50%;
   pointer-events: none;
 }
-/* a setting's amber is the enamel in the brass, a step deeper than a Courage
-   bar's, so the knob and the figure lead and the fill never reads as a meter */
-.mm-set__tube.kit-tube { filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .8)) saturate(.86) brightness(.88) hue-rotate(-4deg); }
-/* the amber runs to the middle of the knob, wherever the knob is */
-.mm-set__slot > .mm-set__tube > .kit-tube__fill {
-  right: auto;
-  width: calc(var(--knob) / 2 + (100% - var(--knob)) * var(--v) - var(--tube-h) * .2);
+/* the gilt runs to the middle of the knob, wherever the knob is */
+.mm-set__slot > .mm-set__tube > .kit-hw-groove__fill {
+  width: max(0px, calc(var(--knob) / 2 + (100% + var(--groove-h) * 30 / 40 - var(--knob)) * var(--v) - var(--groove-h) * 15 / 40));
+  max-width: calc(100% - var(--groove-h) * 30 / 40);
 }
 .mm-set__rangewrap input[type="range"] {
   position: relative; z-index: 1;
@@ -336,20 +315,17 @@
   width: var(--knob); height: var(--knob);
   margin-top: calc((var(--slot-h) - var(--knob)) / 2);
   border: 0; border-radius: 50%;
-  /* the round enamel button, a brass boss in its middle */
-  background:
-    radial-gradient(circle at 50% 46%, var(--kit-gold-hi) 0 1.5px, var(--kit-gold) 2.6px, var(--kit-gold-lo) 3.6px, transparent 4.4px),
-    url("../../assets/ui/kit/button.webp") 50% 50% / 100% 100% no-repeat;
+  background: url("../../assets/ui/kit/hw-knob.webp") 50% 50% / 100% 100% no-repeat;
   box-shadow: 0 3px 4px rgba(0, 0, 0, .75);
   transition: box-shadow var(--t-quick) var(--ease-out);
 }
 .mm-set__rangewrap input[type="range"]::-moz-range-thumb {
   width: var(--knob); height: var(--knob);
   border: 0; border-radius: 50%;
-  background: url("../../assets/ui/kit/button.webp") 50% 50% / 100% 100% no-repeat;
+  background: url("../../assets/ui/kit/hw-knob.webp") 50% 50% / 100% 100% no-repeat;
 }
 .mm-set__rangewrap input[type="range"]:hover::-webkit-slider-thumb {
-  box-shadow: 0 3px 4px rgba(0, 0, 0, .75), 0 0 10px color-mix(in srgb, var(--kit-lav) 40%, transparent);
+  box-shadow: 0 3px 4px rgba(0, 0, 0, .75), 0 0 10px color-mix(in srgb, var(--kit-candle) 45%, transparent);
 }
 .mm-set__rangewrap input[type="range"]:focus-visible { outline: none; }
 .mm-set__rangewrap input[type="range"]:focus-visible::-webkit-slider-thumb {
@@ -358,14 +334,12 @@
 /* a slider's reading lights with its knob while it is held or focused */
 .mm-set__rangewrap:focus-within .mm-set__out { filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .75)) drop-shadow(0 0 8px color-mix(in srgb, var(--kit-candle) 40%, transparent)); }
 
-/* ── toggle: ONE engraved switch, which says its own state ──────────────────
-   Round 5's judges found every row carrying a slider-switch AND a separate
-   OFF/ON pill: the control drawn twice, which is what makes a ledger line read
-   as a web form. The state is cut INTO the switch now, the way a brass rocker
-   plate is engraved — the Courage bar's tube, its amber lit the length of it
-   when the switch is on, the round enamel button riding to that end with a
-   gold check struck in it, and the word engraved in the tube's dark field at
-   the end the button is NOT. One object per line. */
+/* ── toggle: a two-position engraved plate ─────────────────────────────────
+   Round 19's survey: the switch was "a dark disc beside a thin bar with OFF
+   in it". It is the house's switch plate now (ui/kit.css .kit-hw-switch): a
+   gilt-rimmed plate with OFF and ON cut into two sunk wells, the setting's
+   well lit — violet enamel for OFF, and for ON the candle through it too. One
+   object; `aria-checked` on the button is what a reader is told. */
 .mm-set__toggle {
   display: inline-flex; align-items: center;
   justify-self: end;
@@ -375,72 +349,11 @@
   transition: filter var(--t-quick) var(--ease-out);
   cursor: pointer;
 }
-.mm-set__switch {
-  position: relative; flex: none; display: block;
-  width: var(--sw-w); height: var(--sw-h);
-}
-.mm-set__switch > .mm-set__tube {
-  --tube-h: var(--sw-h);
-  position: absolute; left: 0; right: 0; top: 50%;
-  translate: 0 -50%;
-}
-.mm-set__switch > .mm-set__tube > .kit-tube__fill {
-  transform: scaleX(0);
-  transition: transform var(--t-base) var(--ease-out);
-}
-/* the state engraved in the tube's field: OFF in front of the parked button,
-   ON behind the button once it has run to the far end. Cut, not printed — the
-   dark above the letters, a hairline of light on their lower lip. */
-.mm-set__word {
-  position: absolute; z-index: 2; top: 50%;
-  left: calc(var(--sw-h) + 2px); right: 4px;
-  translate: 0 -50%;
-  font-family: var(--font-display); font-weight: 700; font-style: normal;
-  font-size: max(11px, calc(var(--sw-h) * .46)); line-height: 1;
-  letter-spacing: .16em; padding-left: .16em; text-transform: uppercase;
-  text-align: center;
-  color: color-mix(in oklab, var(--kit-text-mid) 74%, var(--kit-gold));
-  text-shadow: 0 -1px 0 rgba(0, 0, 0, .95), 0 1px 0 color-mix(in srgb, var(--kit-gold-hi) 20%, transparent);
-  transition: color var(--t-quick) var(--ease-out), left var(--t-base) var(--ease-out), right var(--t-base) var(--ease-out);
-  pointer-events: none;
-}
-/* off: the knob parked dull at the left end of an empty tube */
-.mm-set__knob {
-  position: absolute; z-index: 3; left: -2px; top: 50%;
-  display: grid; place-items: center;
-  width: calc(var(--sw-h) + 4px); height: calc(var(--sw-h) + 4px);
-  translate: 0 -50%;
-  border-radius: 50%;
-  background: url("../../assets/ui/kit/button.webp") 50% 50% / 100% 100% no-repeat;
-  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .8)) saturate(.75) brightness(.9);
-  transition: transform var(--t-base) var(--ease-snap), filter var(--t-quick) var(--ease-out);
-}
-.mm-set__knob > svg { width: 56%; height: 56%; overflow: visible; opacity: 0; }
-.mm-set__knob > svg path {
-  fill: var(--kit-gold-hi);
-  stroke: #1d1208; stroke-width: 2.2; stroke-linejoin: round;
-  paint-order: stroke fill;
-}
-.mm-set__toggle:hover .mm-set__knob { filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .8)) saturate(.95) brightness(1.05); }
-/* on: the amber lit the length of the tube, the knob at the far end catching
-   the candle, a gold check struck in it, and ON standing behind it in lit gilt */
-.mm-set__toggle[data-on="1"] .kit-tube__fill { transform: scaleX(1); }
-/* a lit switch carries its own word, so its amber is struck a step brighter
-   than a slider's fill — ON is cut INTO the metal and has to read on it */
-.mm-set__toggle[data-on="1"] .mm-set__tube.kit-tube { filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .8)) saturate(.9) brightness(1.06) hue-rotate(-4deg); }
-.mm-set__toggle[data-on="1"] .mm-set__word {
-  left: 4px; right: calc(var(--sw-h) + 2px);
-  color: #150900;
-  text-shadow: 0 1px 0 rgba(255, 240, 205, .38);
-}
-.mm-set__toggle[data-on="1"] .mm-set__knob {
-  transform: translateX(calc(var(--sw-w) - var(--sw-h) - 2px));
-  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .8)) drop-shadow(0 0 7px color-mix(in srgb, var(--kit-candle) 60%, transparent)) brightness(1.12);
-}
-.mm-set__toggle[data-on="1"] .mm-set__knob > svg { opacity: 1; }
-.mm-set__toggle:focus-visible {
-  outline: none;
-  filter: drop-shadow(0 0 1.5px var(--kit-gold-hi)) drop-shadow(0 0 10px color-mix(in srgb, var(--kit-candle) 55%, transparent));
+.mm-set__switch.kit-hw-switch { --sw-h: calc(var(--sw-h-set, 30px)); }
+.mm-set__toggle:hover .kit-hw-switch { filter: drop-shadow(0 3px 3px rgba(0, 0, 0, .8)) brightness(1.14); }
+.mm-set__toggle:focus-visible { outline: none; }
+.mm-set__toggle:focus-visible .kit-hw-switch {
+  filter: drop-shadow(0 0 1.5px var(--kit-gold-hi)) drop-shadow(0 0 10px color-mix(in srgb, var(--kit-candle) 55%, transparent)) brightness(1.12);
 }
 
 /* ── choice: nameplates, the chosen one lit and starred ─────────────────── */
@@ -470,33 +383,24 @@
   filter: drop-shadow(0 4px 6px rgba(0, 0, 0, .8)) drop-shadow(0 0 9px color-mix(in srgb, var(--kit-candle) 26%, transparent)) brightness(1.14);
 }
 
-/* ── seed ─────────────────────────────────────────────────────────────────── */
-.mm-set__seed.kit-enamel {
-  --h: var(--read-h);
+/* ── seed ─────────────────────────────────────────────────────────────────
+   What the house tells you is ENGRAVED on brass: the expedition's seed on a
+   key tag (.kit-hw-tag), blank and unpolished when there is none. Where you
+   write is PAPER: the next seed is inked on a slip of old card (.kit-hw-slip),
+   as the pile viewer's search is. */
+.mm-set__seed.kit-hw-tag {
+  --tag-h: calc(var(--read-h) + 2px);
   justify-self: end;
-  min-width: var(--read-w);
+  min-width: calc(var(--tag-h) * 4.2);
+}
+.mm-set__seed.kit-hw-tag .kit-enamel__value { font: inherit; color: inherit; letter-spacing: inherit; text-shadow: inherit; }
+.mm-set__text.kit-hw-slip {
+  --slip-h: calc(var(--read-h) + 8px);
+  justify-self: end;
+  width: calc(var(--slip-h) * 3.9);
+  text-align: center;
   user-select: text;
 }
-.mm-set__seed .kit-enamel__value { font-size: calc(var(--read-h) * .5); letter-spacing: .08em; }
-/* no expedition, no seed: a reading with nothing to read, so the column's own
-   unlit plate, lettered like an OFF, and never a black hole in the ledger */
-.mm-set__seed.kit-enamel.is-empty {
-  border-image-source: url("../../assets/ui/kit/cartouche.webp");
-  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .75)) saturate(.35) brightness(.8);
-}
-.mm-set__seed.is-empty .kit-enamel__value { color: var(--kit-text-mid); }
-.mm-set__text.kit-field {
-  --field-h: calc(var(--read-h) + 4px);
-  justify-self: end;
-  width: calc(var(--field-h) * 3.4);
-  padding: 0 calc(var(--field-h) * .56);
-  font-size: calc(var(--field-h) * .42);
-  user-select: text;
-  /* somewhere to write is the lit enamel plate, as the pile viewer's search
-     is; the seed already struck stays on the tiles' dark cartouche above it */
-  border-image-source: url("../../assets/ui/kit/plate-lit.webp");
-}
-.mm-set__text.kit-field::placeholder { color: var(--kit-text-mid); }
 
 /* ── the expedition and the danger rows ──────────────────────────────────── */
 .mm-set__row > .kit-btn { justify-self: end; --plate-h: calc(var(--read-h) + 4px); font-size: 12.5px; }

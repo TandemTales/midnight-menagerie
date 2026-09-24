@@ -944,9 +944,10 @@ button.kit-medallion:hover, button.kit-medallion:focus-visible,
 /* ── cards, re-dressed in brass ─────────────────────────────────────────────
    `.kit-cards` on any container hangs its CardViews in the kit's metal: an
    antique brass frame for every rarity, the face in the panels' aubergine, the
-   cost as a gold coin. Rarity is still read at a glance — the crest and a thin
-   inlay inside the frame keep the rarity colour, and the rivets / set gem /
-   corner flourishes that distinguish the rarities by shape are untouched.
+   cost as a gold coin. Rarity is still read at a glance — a thin inlay inside
+   the frame keeps the rarity colour, and the rivets / set gem / corner
+   flourishes that distinguish the rarities by shape are untouched (the plain
+   card's crest and flank pips are taken off: round 19, below).
    Selectors carry [data-rarity] so they outrank card.css's own (0,3,0) rules,
    which load after this sheet.                                              */
 .kit-cards .mm-card[data-rarity] {
@@ -1052,6 +1053,13 @@ button.kit-medallion:hover, button.kit-medallion:focus-visible,
     linear-gradient(180deg, color-mix(in oklab, var(--rarity-c) 45%, var(--kit-gold-hi)) 0%, color-mix(in oklab, var(--rarity-c) 72%, var(--kit-gold)) 44%, color-mix(in oklab, var(--rarity-c) 36%, black) 100%);
 }
 .kit-cards .mm-card[data-rarity] .mm-card__crest { background: var(--kit-gold-lo); }
+/* Round 19: the plain card's rarity crest and flank pips stood out BEHIND the
+   brass frame's top rail and sides — "a grey hump and side diamonds peek out
+   behind every card's top edge", a second card back mis-registered, in the
+   pile viewer and on the reward rack alike. In brass the rarity is carried by
+   the inlay inside the frame and the set gem, so the old ornaments go. */
+.kit-cards .mm-card[data-rarity] .mm-card__crest,
+.kit-cards .mm-card[data-rarity] .mm-card__pip { display: none; }
 .kit-cards .mm-card[data-rarity="uncommon"] .mm-card__setgem { background: linear-gradient(135deg, color-mix(in oklab, var(--rarity-c) 60%, white), color-mix(in oklab, var(--rarity-c) 60%, black)); }
 /* the cost, struck as an antique gold coin */
 .kit-cards .mm-card[data-rarity] .mm-card__cost {
@@ -3236,3 +3244,339 @@ button.kit-medallion:hover, button.kit-medallion:focus-visible,
   content: ''; position: absolute; inset: 0; z-index: 2; pointer-events: none;
   background: url("../../assets/ui/kit/chrome-oval.webp") 50% 50% / 100% 100% no-repeat;
 }
+
+/* ── hardware ── */
+/* ===========================================================================
+   THE HOUSE'S HARDWARE — round 19 (BICE). Appended.
+
+   The survey found six screens whose controls were web form elements painted
+   gold, each screen with its own invention. This is ONE vocabulary for every
+   control in the house, in four materials, all painted by
+   tools/prep_ui_hardware.py with the kit's own plumbing (the brass ramp, the
+   board light from the top left, the samples' ink):
+
+   BRASS — small cast things you take hold of
+     .kit-hw-knob          a milled brass knob with a violet cabochon
+     .kit-hw-finial        a brass arrowhead on a collar: "this opens a list"
+     .kit-hw-tag           a brass key tag, figures engraved on it (a seed)
+     .kit-hw-chev          a cast brass chevron, set in enamel (--l --d: turned)
+   ENAMEL — a thing you press
+     .kit-hw-enamel        the Kid board's round violet enamel button, glazed
+                           (button.webp + hw-glaze.webp); a word or a chevron
+                           struck on it. The same glaze is laid on every round
+                           enamel button of the kit (.kit-medallion, .kit-num,
+                           .kit-price__buy).
+   ENGRAVED PLATE — a thing that holds a setting: near-black enamel in a gilt
+   rim, a well sunk in it behind a brass bead
+     .kit-hw-plate         a reading lettered on the plate, a boss on each end
+     .kit-hw-groove        a slider's groove, __fill the gilt run in it
+     .kit-hw-switch        a two-position plate, OFF | ON, the setting's well
+                           lit; __pos x2 (put [data-on="1"] on the switch)
+     .kit-hw-dial          a list chooser: what it chooses BY engraved in its
+                           upper band (__label), the choice in its window
+                           (a <select class="kit-hw-dial__sel">), a finial
+   PAPER — where you write
+     .kit-hw-slip          a torn slip of old card with an inked baseline, on
+                           an <input>; words in the clerk's brown ink
+   PAINTED OBJECT — what a thing IS
+     .kit-hw-well          a velvet hollow in a studded brass bezel, holding
+       .kit-obj            a small painted object (--obj: url(...)); ui/objects.js
+                           names the picture for a Keepsake, a Snack, a thing
+     .kit-ladder--candles  a ladder whose rungs are candle stubs, lit to the
+                           chosen one
+   =========================================================================== */
+
+/* ── enamel: one glaze on every round enamel button ── */
+.kit-medallion:not(.kit-medallion--ornate),
+.kit-num,
+.kit-price__buy,
+.kit-hw-enamel {
+  background-image: url("../../assets/ui/kit/hw-glaze.webp"), url("../../assets/ui/kit/button.webp");
+  background-position: 50% 50%, 50% 50%;
+  background-size: 100% 100%, 100% 100%;
+  background-repeat: no-repeat, no-repeat;
+}
+.kit-hw-enamel {
+  --en: 36px;
+  position: relative; flex: none;
+  display: inline-grid; place-items: center;
+  width: var(--en); height: var(--en);
+  margin: 0; padding: 1px 0 0 .04em;
+  border: 0; border-radius: 50%;
+  font-family: var(--font-display); font-weight: 700; font-style: normal;
+  font-size: max(11px, calc(var(--en) * .27)); line-height: 1;
+  letter-spacing: .08em; text-transform: uppercase; white-space: nowrap;
+  color: var(--kit-gold-hi);
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, .95), 0 1px 0 color-mix(in srgb, var(--kit-lav-hi) 22%, transparent);
+  filter: drop-shadow(0 3px 3px rgba(0, 0, 0, .8));
+  transition: filter var(--t-quick) var(--ease-out);
+}
+button.kit-hw-enamel { cursor: pointer; }
+button.kit-hw-enamel:hover:not(:disabled),
+button.kit-hw-enamel:focus-visible {
+  outline: none;
+  filter: drop-shadow(0 3px 3px rgba(0, 0, 0, .8)) drop-shadow(0 0 8px color-mix(in srgb, var(--kit-lav) 45%, transparent)) brightness(1.16);
+}
+/* a cast brass chevron: lit along its upper face, a dark cut under it */
+.kit-hw-chev {
+  display: block; flex: none;
+  width: 54%; aspect-ratio: 1;
+  background: var(--kit-hw-chev) 50% 50% / 100% 100% no-repeat;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, .7));
+}
+.kit-hw-chev--l { rotate: 180deg; }
+.kit-hw-chev--d { rotate: 90deg; }
+
+/* ── brass ── */
+.kit-hw-knob {
+  --knob: 26px;
+  display: block; flex: none;
+  width: var(--knob); height: var(--knob);
+  background: url("../../assets/ui/kit/hw-knob.webp") 50% 50% / 100% 100% no-repeat;
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .85));
+}
+.kit-hw-finial {
+  display: block; flex: none;
+  width: 16px; aspect-ratio: 1;
+  background: url("../../assets/ui/kit/hw-finial.webp") 50% 50% / 100% 100% no-repeat;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, .8));
+  pointer-events: none;
+}
+/* hw-tag.webp is 200x56: the pointed end with its eyelet is 44 px, the far
+   end 20; figures are engraved into the brass, dark in its face */
+.kit-hw-tag {
+  --tag-h: 30px;
+  box-sizing: border-box;
+  display: inline-flex; align-items: center; justify-content: center;
+  height: var(--tag-h); min-width: calc(var(--tag-h) * 3.2);
+  padding: 0 calc(var(--tag-h) * .5) 0 calc(var(--tag-h) * .9);
+  border: 0 solid transparent;
+  border-image: url("../../assets/ui/kit/hw-tag.webp") 0 20 0 44 fill / 0 calc(var(--tag-h) * 20 / 56) 0 calc(var(--tag-h) * 44 / 56) stretch;
+  font-family: var(--font-num); font-weight: 700; font-style: normal;
+  font-size: calc(var(--tag-h) * .5); line-height: 1;
+  font-variant-numeric: lining-nums tabular-nums; letter-spacing: .1em;
+  color: #2a1a09;
+  text-shadow: 0 1px 0 rgba(255, 236, 190, .45), 0 -1px 0 rgba(20, 10, 2, .35);
+  filter: drop-shadow(0 3px 3px rgba(0, 0, 0, .75));
+  user-select: text;
+}
+/* a tag with nothing engraved on it yet: the brass unpolished */
+.kit-hw-tag.is-blank { filter: drop-shadow(0 3px 3px rgba(0, 0, 0, .75)) saturate(.55) brightness(.72); color: #3a2a18; }
+
+/* ── the engraved plate: a reading ── */
+/* hw-plate.webp is 200x56: a gilt rim round near-black enamel, the corners
+   clipped, a cast boss with a violet cabochon capping each end; 9-slice
+   14 30. A reading is lettered on it in gold lining figures. */
+.kit-hw-plate {
+  --plate-h: 40px;
+  box-sizing: border-box;
+  display: inline-flex; align-items: center; justify-content: center; gap: .4em;
+  height: var(--plate-h);
+  padding: 0 calc(var(--plate-h) * .66) 1px;
+  border: 0 solid transparent;
+  border-image: url("../../assets/ui/kit/hw-plate.webp") 14 30 fill / calc(var(--plate-h) * 14 / 56) calc(var(--plate-h) * 30 / 56) stretch;
+  font-family: var(--font-num); font-weight: 600; font-style: normal;
+  font-size: max(14px, calc(var(--plate-h) * .38)); line-height: 1.1;
+  font-variant-numeric: lining-nums tabular-nums;
+  white-space: nowrap;
+  color: var(--kit-gold-hi);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .95), 0 -1px 0 rgba(0, 0, 0, .45), 0 0 10px color-mix(in srgb, var(--kit-candle) 22%, transparent);
+  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .8));
+}
+
+/* ── the engraved plate: groove ── */
+/* hw-groove.webp is 240x40, its ends 40; the channel runs 15..225 by 14..26 */
+.kit-hw-groove {
+  --groove-h: 18px;
+  position: relative; display: block;
+  height: var(--groove-h);
+  border: 0 solid transparent;
+  border-image: url("../../assets/ui/kit/hw-groove.webp") 0 40 fill / 0 var(--groove-h) stretch;
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .8));
+}
+.kit-hw-groove__fill {
+  position: absolute;
+  left: calc(var(--groove-h) * 15 / 40); top: calc(var(--groove-h) * 14 / 40); bottom: calc(var(--groove-h) * 14 / 40);
+  width: calc((100% - var(--groove-h) * 30 / 40) * var(--v, 0));   /* --v (0..1) from the element that owns the value */
+  background:
+    linear-gradient(180deg, rgba(255, 246, 214, .55) 0%, rgba(255, 246, 214, 0) 45%, rgba(40, 22, 6, .45) 100%),
+    linear-gradient(90deg, var(--kit-gold-lo), var(--kit-gold) 60%, var(--kit-gold-hi));
+  box-shadow: 0 0 6px color-mix(in srgb, var(--kit-candle) 45%, transparent);
+}
+
+/* ── the engraved plate: two-position switch ── */
+/* hw-switch.webp is 220x64: two wells, 15..104 and 116..205, 13..51 high */
+.kit-hw-switch {
+  --sw-h: 30px;
+  position: relative; display: block; flex: none;
+  width: calc(var(--sw-h) * 220 / 64); height: var(--sw-h);
+  background: url("../../assets/ui/kit/hw-switch.webp") 50% 50% / 100% 100% no-repeat;
+  filter: drop-shadow(0 3px 3px rgba(0, 0, 0, .8));
+}
+.kit-hw-switch__pos {
+  position: absolute; top: calc(100% * 13 / 64); height: calc(100% * 38 / 64);
+  width: calc(100% * 89 / 220);
+  display: grid; place-items: center;
+  font-family: var(--font-display); font-weight: 700; font-style: normal;
+  font-size: max(11px, calc(var(--sw-h) * .4)); line-height: 1;
+  letter-spacing: .16em; padding-left: .16em; text-transform: uppercase;
+  color: color-mix(in oklab, var(--kit-text-lo) 80%, var(--kit-gold-lo));
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, .95), 0 1px 0 color-mix(in srgb, var(--kit-gold) 18%, transparent);
+  transition: color var(--t-quick) var(--ease-out), background var(--t-quick) var(--ease-out);
+}
+.kit-hw-switch__pos:first-child { left: calc(100% * 15 / 220); }
+.kit-hw-switch__pos:last-child  { left: calc(100% * 116 / 220); }
+/* the setting's well is LIT: violet enamel glowing up through it, the word in
+   pale lavender — never gold type on a gold fill */
+.kit-hw-switch:not([data-on="1"]) > .kit-hw-switch__pos:first-child,
+.kit-hw-switch[data-on="1"] > .kit-hw-switch__pos:last-child {
+  color: var(--kit-lav-hi);
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, .9), 0 0 8px color-mix(in srgb, var(--kit-lav) 70%, transparent);
+  background:
+    radial-gradient(80% 90% at 50% 60%, color-mix(in srgb, var(--kit-violet) 72%, transparent), transparent 100%),
+    url("../../assets/ui/kit/enamel.webp") 0 0 / 120px 120px;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, .8), inset 0 -1px 0 color-mix(in srgb, var(--kit-lav) 30%, transparent);
+}
+/* ON is lit by the candle as well, so the two states never read alike */
+.kit-hw-switch[data-on="1"] > .kit-hw-switch__pos:last-child {
+  color: #fff4dc;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, .9), 0 0 9px color-mix(in srgb, var(--kit-candle) 85%, transparent);
+  background:
+    radial-gradient(80% 95% at 50% 70%, color-mix(in srgb, var(--kit-candle) 46%, transparent), transparent 100%),
+    radial-gradient(90% 90% at 50% 50%, color-mix(in srgb, var(--kit-violet) 80%, transparent), transparent 100%),
+    url("../../assets/ui/kit/enamel.webp") 0 0 / 120px 120px;
+}
+.kit-hw-switch[data-on="1"] { filter: drop-shadow(0 3px 3px rgba(0, 0, 0, .8)) drop-shadow(0 0 6px color-mix(in srgb, var(--kit-candle) 28%, transparent)); }
+
+/* ── the engraved plate: a dial ── */
+/* hw-dial.webp is 180x76: its upper band (0..29) carries the engraving, the
+   window runs 12..168 by 31..65; 9-slice 30 16 12 16 */
+.kit-hw-dial {
+  --dial-h: 50px;
+  position: relative; display: inline-block;
+  box-sizing: border-box;
+  height: var(--dial-h);
+  padding: calc(var(--dial-h) * 31 / 76) calc(var(--dial-h) * 12 / 76) calc(var(--dial-h) * 11 / 76);
+  border: 0 solid transparent;
+  border-image: url("../../assets/ui/kit/hw-dial.webp") 30 16 12 16 fill / calc(var(--dial-h) * 30 / 76) calc(var(--dial-h) * 16 / 76) calc(var(--dial-h) * 12 / 76) calc(var(--dial-h) * 16 / 76) stretch;
+  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .8));
+}
+.kit-hw-dial__label {
+  position: absolute; left: 0; right: 0;
+  top: 0; height: calc(var(--dial-h) * 31 / 76);
+  display: grid; place-items: center;
+  padding-top: 2px;
+  font-family: var(--font-display); font-weight: 700; font-style: normal;
+  font-size: max(11px, calc(var(--dial-h) * .205)); line-height: 1;
+  letter-spacing: .2em; padding-left: .2em; text-transform: uppercase; white-space: nowrap;
+  color: var(--kit-gold-hi);
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, .95), 0 1px 0 color-mix(in srgb, var(--kit-gold-hi) 16%, transparent);
+  pointer-events: none;
+}
+.kit-hw-dial__sel {
+  display: block;
+  box-sizing: border-box;
+  width: 100%; height: 100%;
+  margin: 0;
+  padding: 0 calc(var(--dial-h) * .4) 0 calc(var(--dial-h) * .12);
+  border: 0; border-radius: 0;
+  -webkit-appearance: none; appearance: none;
+  background: none; outline: none;
+  font-family: var(--font-body); font-weight: 600; font-style: normal;
+  font-size: max(13px, calc(var(--dial-h) * .3)); line-height: 1;
+  text-align: center; text-align-last: center;
+  color: var(--kit-name);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
+  cursor: pointer;
+}
+.kit-hw-dial__sel option { background: #17111c; color: var(--kit-text); }
+.kit-hw-dial > .kit-hw-finial {
+  position: absolute; right: calc(var(--dial-h) * .2); bottom: calc(var(--dial-h) * .16);
+  width: calc(var(--dial-h) * .3);
+}
+.kit-hw-dial:hover { filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .8)) brightness(1.12); }
+.kit-hw-dial:has(> .kit-hw-dial__sel:focus-visible) {
+  filter: drop-shadow(0 0 1.5px var(--kit-gold-hi)) drop-shadow(0 0 10px color-mix(in srgb, var(--kit-candle) 55%, transparent)) drop-shadow(0 3px 4px rgba(0, 0, 0, .8)) brightness(1.18);
+}
+/* a dial set to something other than "any" has its window lit, so the
+   filters in force are found at a glance */
+.kit-hw-dial.is-set > .kit-hw-dial__sel { color: #fff4dc; text-shadow: 0 1px 0 rgba(0, 0, 0, .9), 0 0 9px color-mix(in srgb, var(--kit-candle) 70%, transparent); }
+
+/* ── paper: a slip to write on ── */
+/* hw-slip.webp is 300x60, 3-slice 36; its ink baseline sits 15 px off the foot */
+.kit-hw-slip {
+  --slip-h: 40px;
+  box-sizing: border-box;
+  min-width: 0; height: var(--slip-h);
+  margin: 0;
+  padding: 0 calc(var(--slip-h) * .5) calc(var(--slip-h) * .1);
+  border: 0 solid transparent;
+  border-image: url("../../assets/ui/kit/hw-slip.webp") 0 36 fill / 0 calc(var(--slip-h) * 36 / 60) stretch;
+  border-radius: 0;
+  background: none;
+  -webkit-appearance: none; appearance: none;
+  outline: none;
+  font-family: var(--font-body); font-weight: 600; font-style: italic;
+  font-size: calc(var(--slip-h) * .42); line-height: 1;
+  letter-spacing: .02em;
+  color: var(--kit-paper-ink);
+  caret-color: var(--kit-ink-oxblood);
+  text-shadow: none;
+  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .7));
+  rotate: -.6deg;
+  transition: filter var(--t-quick) var(--ease-out);
+}
+.kit-hw-slip::placeholder { color: color-mix(in oklab, var(--kit-paper-ink) 62%, var(--kit-parchment-shade)); font-weight: 400; }
+.kit-hw-slip::selection { background: color-mix(in srgb, var(--kit-candle) 45%, transparent); color: var(--kit-paper-ink); }
+.kit-hw-slip:hover { filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .7)) brightness(1.04); }
+/* a slip being written on is lit a little along its edge, as a candle
+   catches paper — a dialog puts focus in it the moment it opens, so the
+   light stays small */
+.kit-hw-slip:focus-visible {
+  outline: none;
+  filter: drop-shadow(0 0 1px color-mix(in srgb, var(--kit-candle) 90%, transparent)) drop-shadow(0 3px 4px rgba(0, 0, 0, .7));
+}
+.kit-hw-slip::-webkit-search-cancel-button { filter: sepia(1) saturate(1.6) hue-rotate(-20deg) brightness(.45); cursor: pointer; }
+
+/* ── painted objects ── */
+/* hw-well.webp is 128: a velvet hollow of radius 49 in a studded bezel of 61 */
+.kit-hw-well {
+  --well: 40px;
+  position: relative; flex: none;
+  display: inline-grid; place-items: center;
+  width: var(--well); height: var(--well);
+  background: url("../../assets/ui/kit/hw-well.webp") 50% 50% / 100% 100% no-repeat;
+  filter: drop-shadow(0 3px 3px rgba(0, 0, 0, .8));
+}
+/* the object stands a little proud of its hollow, the way the samples'
+   medallions let a crest break their rim */
+.kit-obj {
+  display: block; flex: none;
+  width: 100%; aspect-ratio: 1;
+  background: var(--obj, none) 50% 50% / 100% 100% no-repeat;
+  filter: drop-shadow(0 2px 1.5px rgba(0, 0, 0, .75));
+}
+.kit-hw-well > .kit-obj { width: 96%; }
+
+/* ── a ladder of candle stubs ── */
+/* Each rung is a candle stub in a brass dish: lit up to the chosen rung,
+   unlit past it, and the chosen one burning brightest, its number engraved
+   on the dish. A rung that cannot be chosen yet is a cold stub. */
+.kit-ladder--candles::before { top: 76%; height: 3px; }
+.kit-ladder--candles > .kit-ladder__rung,
+.kit-ladder--candles > .kit-ladder__rung[aria-checked="true"] {
+  width: var(--md); height: calc(var(--md) * 1.5);
+  border-radius: 0;
+  align-items: end;
+  padding: 0 0 calc(var(--md) * .1);
+  background: var(--obj-unlit, none) 50% 0 / 100% auto no-repeat;
+  font-size: calc(var(--md) * .34);
+  color: #2a1a09;
+  text-shadow: 0 1px 0 rgba(255, 236, 190, .45);
+}
+.kit-ladder--candles > .kit-ladder__rung::before { display: none; }
+.kit-ladder--candles > .kit-ladder__rung.is-lit { background-image: var(--obj-lit, none); }
+.kit-ladder--candles > .kit-ladder__rung[aria-checked="true"] {
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, .8)) drop-shadow(0 0 10px color-mix(in srgb, var(--kit-candle) 70%, transparent)) brightness(1.12);
+}
+.kit-ladder--candles > .kit-ladder__rung:disabled { filter: grayscale(.6) brightness(.55); }

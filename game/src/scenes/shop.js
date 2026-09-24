@@ -22,12 +22,12 @@ import { bus } from '../core/bus.js';
 import { TERMS, NodeType } from '../data/schema.js';
 import { cardById } from '../data/cards.js';
 import { word } from '../util/plural.js';
-import { relicById, relicSigil } from '../data/relics.js';
+import { relicById } from '../data/relics.js';
 import { RoomScene, esc } from './reward.js';
 import { act, ACT, deckIndex } from '../net/actions.js';
 import { INPUT } from '../net/session.js';
 import { el, ensureCss, rovingFocus } from '../ui/portrait.js';
-import { iconSvg } from '../ui/icons.js';
+import { objectHtml, keepsakeKey, snackKey } from '../ui/objects.js';
 import { fitCardToSlot } from './_cardfit.js';
 
 const CSS_SHOP = new URL('./shop.css', import.meta.url).href;
@@ -239,8 +239,9 @@ export class ShopScene extends RoomScene {
       row.setAttribute('role', 'listitem');
       row.dataset.key = key;
       row.innerHTML = `
-        <span class="sh-row__sig" data-rarity="${esc(def.rarity)}">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="${relicSigil(def.id)}"/></svg>
+        <span class="sh-row__sig kit-hw-well" data-rarity="${esc(def.rarity)}" aria-hidden="true">
+          <!-- the Keepsake itself, painted (ui/objects.js), in the kit's velvet well -->
+          ${objectHtml(keepsakeKey(def.id), { well: false })}
         </span>
         <span class="sh-row__txt">
           <b>${esc(def.name)}</b>
@@ -261,9 +262,9 @@ export class ShopScene extends RoomScene {
       row.setAttribute('role', 'listitem');
       row.dataset.key = key;
       row.innerHTML = `
-        <span class="sh-row__sig sh-row__sig--snack" aria-hidden="true">
-          <!-- the shared res.snack drawing, so a Snack looks the same here and in the HUD -->
-          ${iconSvg('res.snack')}
+        <span class="sh-row__sig sh-row__sig--snack kit-hw-well" aria-hidden="true">
+          <!-- each Snack its own painted sweet (ui/objects.js), never one shared glyph -->
+          ${objectHtml(snackKey(item.id), { well: false })}
         </span>
         <span class="sh-row__txt"><b>${esc(item.name)}</b><em>${esc(item.desc)}</em></span>`;
       // Fullness is recomputed in `_syncAffordable()`, not frozen here: buying

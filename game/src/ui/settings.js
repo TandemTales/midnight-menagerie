@@ -219,12 +219,13 @@ export async function openSettings(ctx = {}) {
   // Same notation as Select, the HUD and Game Over — see formatSeed() in ui/portrait.js.
   const rawSeed = ctx.run ? ctx.run.seed : (Save?.data?.nextSeed ?? null);
   const curSeed = (rawSeed === undefined || rawSeed === null) ? '—' : formatSeed(rawSeed);
-  // the seed struck on the Companion tiles' dark enamel cartouche
+  // the seed ENGRAVED on a brass key tag (the house's hardware, ui/kit.css
+  // .kit-hw-tag) — a tag left blank and unpolished when there is none
   cur.innerHTML =
     `<div class="mm-set__label"><span>Current expedition</span>` +
     `<span class="mm-set__hint">A seed reproduces a run exactly: the same rooms, rewards and shop stock.</span></div>` +
     `<i class="kit-leader mm-set__lead" aria-hidden="true"></i>` +
-    `<output class="mm-set__seed kit-enamel kit-enamel--dark${rawSeed == null ? ' is-empty' : ''}"><b class="kit-enamel__value">${escape_(curSeed)}</b></output>`;
+    `<output class="mm-set__seed kit-hw-tag${rawSeed == null ? ' is-empty is-blank' : ''}"><b class="kit-enamel__value">${escape_(curSeed)}</b></output>`;
   seedFs.appendChild(cur);
 
   const entry = document.createElement('div');
@@ -235,7 +236,8 @@ export async function openSettings(ctx = {}) {
     `<i class="kit-leader mm-set__lead" aria-hidden="true"></i>`;
   const seedIn = document.createElement('input');
   seedIn.type = 'text';
-  seedIn.className = 'mm-set__text kit-field';
+  /* somewhere to write: a slip of old card with an inked baseline */
+  seedIn.className = 'mm-set__text kit-hw-slip';
   seedIn.placeholder = 'random';
   seedIn.maxLength = 24;
   seedIn.value = Save?.data?.nextSeed ?? '';
@@ -432,10 +434,12 @@ function buildRow(ctx, Save, item, rerender) {
     wrap.className = 'mm-set__rangewrap';
     const slot = document.createElement('div');
     slot.className = 'mm-set__slot';
+    /* the groove the knob runs in (ui/kit.css .kit-hw-groove): a channel sunk
+       in a gilt-rimmed plate, a run of gilt in it as far as the knob */
     const tube = document.createElement('span');
-    tube.className = 'mm-set__tube kit-tube kit-tube--warm';
+    tube.className = 'mm-set__tube kit-hw-groove';
     tube.setAttribute('aria-hidden', 'true');
-    tube.innerHTML = '<span class="kit-tube__fill"></span>';
+    tube.innerHTML = '<span class="kit-hw-groove__fill"></span>';
     const input = document.createElement('input');
     input.type = 'range'; input.id = id;
     input.min = String(item.min); input.max = String(item.max); input.step = String(item.step);
@@ -483,11 +487,11 @@ function buildRow(ctx, Save, item, rerender) {
       const on = !!get(Save, item.key);
       btn.setAttribute('aria-checked', String(on));
       btn.dataset.on = on ? '1' : '0';
+      /* a two-position engraved plate (ui/kit.css .kit-hw-switch): OFF | ON
+         in two sunk wells, the setting's well lit */
       btn.innerHTML =
-        `<i class="mm-set__switch" aria-hidden="true">`
-        + `<i class="mm-set__tube kit-tube kit-tube--warm"><i class="kit-tube__fill"></i></i>`
-        + `<b class="mm-set__word">${on ? 'On' : 'Off'}</b>`
-        + `<i class="mm-set__knob"><svg viewBox="0 0 24 24">${LEDGER_GLYPH.check}</svg></i></i>`;
+        `<i class="mm-set__switch kit-hw-switch" data-on="${on ? 1 : 0}" aria-hidden="true">`
+        + `<b class="kit-hw-switch__pos">Off</b><b class="kit-hw-switch__pos">On</b></i>`;
     };
     btn.addEventListener('click', () => { setSetting(ctx, item.key, !get(Save, item.key)); paint(); });
     paint();

@@ -390,17 +390,21 @@
 }
 .rs-door.is-spent:not(.is-done) { opacity: .34; }
 
-/* its glyph, on the board's round enamel */
+/* what the door IS, a painted object in the house's velvet well
+   (.kit-hw-well > .kit-obj); a door with no painting keeps its line glyph on
+   the round enamel */
 .rs-door__glyph {
   display: grid; place-items: center;
-  width: clamp(44px, 3.4vw, 56px); aspect-ratio: 1;
+  width: clamp(52px, 3.9vw, 62px); aspect-ratio: 1;
   border-radius: 50%;
   background: url("../../assets/ui/kit/button.webp") 50% 50% / 100% 100% no-repeat;
   filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .8));
 }
+.rs-door__glyph.kit-hw-well { --well: clamp(52px, 3.9vw, 62px); border-radius: 0; background: url("../../assets/ui/kit/hw-well.webp") 50% 50% / 100% 100% no-repeat; }
 .rs-door__glyph svg { width: 50%; height: 50%; fill: none; stroke: var(--kit-gold-hi);
                       stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
 .rs-door.is-done .rs-door__glyph svg { stroke: var(--good-300); }
+.rs-door.is-done .rs-door__glyph.kit-hw-well { filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .8)) drop-shadow(0 0 10px color-mix(in srgb, var(--kit-candle) 60%, transparent)); }
 
 .rs-door__glyph { grid-area: glyph; }
 .rs-door__txt { display: contents; }
@@ -421,35 +425,21 @@
   color: var(--kit-text-mid);
   text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
 }
-/* the number the choice is about, on a filled plate like the Shop's (PEARL's):
-   violet enamel filled to its bevelled brass rim with notched, bowed ends
-   (cartouche.webp), catching the candle along its top and lifted off the
-   panel on its own shadow, the figures struck in gold — never a flat pill,
-   a step quieter than the name above it */
-.rs-door__read.kit-plate {
+/* the number the choice is about, lettered on the house's engraved plate
+   (.kit-hw-plate): gilt rim, near-black enamel, a cast boss capping each end —
+   never a flat lozenge — a step quieter than the name above it */
+.rs-door__read.kit-hw-plate {
   --plate-h: clamp(42px, 5vh, 48px);
   grid-area: read; justify-self: end;
-  flex-direction: row; gap: 6px;
-  min-width: calc(var(--plate-h) * 3.6); max-width: 16em;
-  padding: 0 calc(var(--plate-h) * .64) 1px;
-  white-space: nowrap;
-  border-image-source: url("../../assets/ui/kit/cartouche.webp");
-  border-image-slice: 18 34 18 34 fill;
-  border-image-width: calc(var(--plate-h) * 18 / 64) calc(var(--plate-h) * 34 / 64);
-  background: radial-gradient(70% 60% at 50% 18%, color-mix(in srgb, var(--kit-lav-hi) 16%, transparent), transparent 72%);
-  background-clip: content-box;
-  font-family: var(--font-num); font-variant-numeric: var(--num-feat);
-  font-size: max(15px, calc(var(--plate-h) * .38)); font-weight: 600; line-height: 1.1;
-  color: var(--kit-gold-hi);
-  text-shadow: 0 1px 0 rgba(0, 0, 0, .95), 0 -1px 0 rgba(0, 0, 0, .45), 0 0 10px color-mix(in srgb, var(--kit-candle) 22%, transparent);
-  filter: drop-shadow(0 4px 5px rgba(0, 0, 0, .85)) drop-shadow(0 1px 0 rgba(0, 0, 0, .6));
+  min-width: calc(var(--plate-h) * 3.8); max-width: 17em;
+  font-variant-numeric: var(--num-feat);
 }
 /* its key, 1 to 4, on a numbered enamel medallion (.kit-num) seated on the
    top rail over the choice's own glyph */
 .rs-door__key.kit-num {
   --num: clamp(28px, 2.2vw, 34px);
   position: absolute; z-index: 3;
-  left: calc(clamp(18px, 1.6vw, 28px) + clamp(44px, 3.4vw, 56px) / 2); top: 0;
+  left: calc(clamp(18px, 1.6vw, 28px) + clamp(52px, 3.9vw, 62px) / 2); top: 0;
   translate: -50% -52%;
   font-family: var(--font-num); font-weight: 700;
   font-size: calc(var(--num) * .5);
@@ -530,11 +520,7 @@
   box-shadow: inset 0 0 0 1px var(--kit-gold-hi);
 }
 .rs-forgerow.is-weak { opacity: .6; }
-.rs-forgerow__sig {
-  display: grid; place-items: center; width: 42px; height: 42px; border-radius: 50%;
-  background: url("../../assets/ui/kit/button.webp") 50% 50% / 100% 100% no-repeat;
-  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, .8));
-}
+.rs-forgerow__sig.kit-hw-well { --well: 46px; }
 .rs-forgerow__sig svg { width: 22px; height: 22px; fill: none; stroke: var(--kit-gold-hi);
                         stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
 .rs-forgerow__txt b { display: block; font-family: var(--font-body); font-weight: 600; font-size: var(--fs-md); color: var(--kit-name); }
@@ -549,7 +535,7 @@
   .rs-door { padding-block: 21px 19px; --medal-k: .66; }
   .rs-door[data-medal="moon"] { --medal-k: .44; }
   .rs-door__txt > b { font-size: 17px; letter-spacing: .07em; }
-  .rs-door__read.kit-plate { --plate-h: 40px; }
+  .rs-door__read.kit-hw-plate { --plate-h: 40px; }
   .rs-choices { gap: 20px; }
   .rs-room { padding: 22px 0 10px; gap: 30px; }
   .rs-art { --medal-k: .5; }
