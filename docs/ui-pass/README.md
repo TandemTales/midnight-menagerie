@@ -166,6 +166,8 @@ so round 2 runs six at once, as round 1 did.
 
 | 19 | **THE BOARDS AND THE CONTROLS** — six boards, two dialogs and the crowded fight, briefed from a SURVEY rather than a round's own judges | BICE 6.59 · BOLE 6.59 · KERMES 6.37 · the screens before **5.22** | BICE, 2 of 3 judges, as the most coherent SYSTEM (one house's hardware: painted objects in gilt medallions, brass toggles). **+1.37.** The screens split three ways and BICE tied BOLE on the mean; KERMES won four screens and ALL THREE judges asked for its wall paintings and brass filter plates as the graft. **The Steam Deck HUD holds one row at 1280 in every candidate** | `92025ef` |
 
+| 20 | **THE RAIL AND THE HAND** — the run strip FULL (a new stress capture, `hud-late`), the map, the shop and three fights | TYRIAN 7.63 · MALACHITE 7.21 · SAFFRON 7.04 · the screens before **5.96** | TYRIAN, 2 of 2, five of six screens 2 of 2 — the only rail that reads as ONE carved object, holding one row at 1280 under a full run's load with every fold labelled. **+1.67.** SAFFRON won combat-crowd 2 of 2 and BOTH judges asked for its hand as the graft; MALACHITE's vine inlay and end blocks for the rail's flat stretch | `1456681` |
+
 **Scores anchor to the candidates beside them.** Round 0's winner scored 7.0 in
 round 0 and 5.58 as round 1's baseline: the judges grew stricter as the field
 improved. Compare a winner with the baseline IN ITS OWN ROUND (round 1 REFINE:
@@ -188,6 +190,7 @@ Against their own baselines:
 | 11 | VARIATION **+2.17** (sheets 3-3.5 -> 6-7) | — |
 | 12 | — | THE LAST WEB CHROME **+5.9** (per-screen winners 7.33 / 8.00 / 7.67 against 2 / 1 / 1.33) |
 | 13 | CHROME, second pass **+2.22** (coach 6.0 -> 8.0, veil 6.0 -> 8.67, toast 5.0 -> 7.0) | — |
+| 20 | THE RAIL AND THE HAND **+1.67** (the baseline's hud-late scored 4.0: the Steam Deck bug no judge had seen) | — |
 | 19 | THE BOARDS AND THE CONTROLS **+1.37** (after eleven rounds away; the rooms had fallen to +0.72) | — |
 | 18 | THE GARDEN AND THE HORIZON **+0.72** (and the field inside 0.33) | — |
 | 17 | PEOPLE IN THE HOUSE **+1.25** (the baseline had risen to 5.40, and the field sat inside 0.45) | — |
@@ -891,3 +894,27 @@ round back.
   It replaced a thirteen-round-old fix list with a measured one and turned the
   loop to the screens with the most headroom. Run one whenever a track has
   gone several rounds unjudged.
+
+### Round 20: the rail and the hand, 2026-09-24
+
+**TYRIAN, 2 of 2 judges, 7.63 against 5.96 — +1.67** (`1456681`, run
+`wf_b4ee8ad1-171`). The literal angle won; the two rounds before it went to the SYSTEM angle.
+
+- **A stress capture found a bug the judged screens hid.** Round 19 held the
+  strip to one row at 1280 — with the strip EMPTY on every judged screen. Its
+  graft builder found it wrapped again at nine Keepsakes plus Gear.
+  `tools/shot-scripts/hud-late.js` fills it deterministically; the baseline
+  scored **4.0** on hud-late against 6.5 on every other screen. **Judge the
+  state a player is in mid-run, not the state a deep link opens in.**
+- **All three candidates fixed it, three ways**: TYRIAN folds Gear then
+  Keepsakes into labelled plates with a tray; MALACHITE folds both into one
+  plate at 1280; SAFFRON folds both AND moves the seed into a tooltip — and a
+  judge marked that down as the seed "silently dropped". A fold must say what
+  it holds; hiding a readout is not a fold.
+- **The hand graft is the second in a row where the angle that won a screen
+  lost the round.** SAFFRON's hand (cards 117 → 156 px at 1280, names 8 → 11+
+  px) won combat-crowd 2 of 2 but its rail was pills. The graft
+  (`ui/r20-graft`) puts SAFFRON's hand and MALACHITE's vine inlay on
+  TYRIAN's rail.
+- **Nobody fixed the floaters** (item 5b): all three stopped at "fx/ is not
+  mine". An item the brief lists must have its file on the ownership list.
