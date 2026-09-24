@@ -159,6 +159,19 @@ export class Stage {
     this._impactT  = -1;
     this.quality   = 1;
     this.deferLinks = false;    // see _gateLinks
+    /* A LOST CONTEXT IS A MISSING ROOM TOO. Measured 2026-09-23 on BASE as well
+       as here: in the first fight, 17-50 s after the warm-up, while
+       precompileRooms links the other wings' walls, the GPU process drops the
+       context (GL_CONTEXT_LOST_KHR). The canvas goes WHITE until the browser
+       restores it, and three then relinks every program -- on BASE inside the
+       first draw, a 35 s frozen page. three already asks for the restore
+       (preventDefault in its own handler); this only records the state, so
+       roomPending() can say so and combat can stand its room in meanwhile. On
+       the restore every material's program is gone, so the gate's record of
+       what it has started linking is dropped with them. */
+    this._lost = false;
+    canvas.addEventListener('webglcontextlost', () => { this._lost = true; this.lostCount = (this.lostCount || 0) + 1; }, false);
+    canvas.addEventListener('webglcontextrestored', () => { this._lost = false; this._kicked = null; }, false);
     this.stats     = { tier: this.tier, renderScale: 1, dpr: 1, frameMs: null };
 
     this.resize();
@@ -545,8 +558,9 @@ export class Stage {
    * program the driver has not finished linking -- a room kind shown before
    * Backdrop.precompileRooms reached its variant. combat.js stands the boards'
    * painted room behind the fight while this is true (CombatScene._syncColdRoom).
+   * And while the GL context is lost, and until its programs are back.
    */
-  roomPending() { return !!(this._warming || this._linking); }
+  roomPending() { return !!(this._warming || this._linking || this._lost); }
 
   /**
    * Let the scene that is up keep a new program's link off the main thread:
@@ -753,6 +767,7 @@ export class Stage {
        synchronously inside `setProgram`, which is the entire boot stall it was meant
        to paper over. Phase B puts the picture up as soon as it is genuinely ready. */
     if (this._warming) return;
+    if (this._lost) return;     // nothing can draw; three drops the call anyway
     if (this.deferLinks) { if (this._gateLinks()) return; }
     else this._linking = false;
     this.composer.render(dt);
