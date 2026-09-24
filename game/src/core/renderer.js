@@ -390,6 +390,22 @@ export class Stage {
         }
         this.warmLog.push({ o: 'BATCH', rt: 'rt', ms: +(performance.now() - s).toFixed(1), submitMs: +tSubmit.toFixed(1), n: nProg() - p0 });
       }
+      if (mode === 'par' && khr) {
+        R.setRenderTarget(targets[0]);
+        const s = performance.now(), p0 = nProg();
+        const progs = new Set();
+        for (const o of objs) {
+          try { R.compile(o, this.camera, this.scene); } catch (e) { /* keep warming */ }
+          const ms = Array.isArray(o.material) ? o.material : [o.material];
+          for (const m of ms) { const pr = m && R.properties.get(m).currentProgram; if (pr) progs.add(pr); }
+        }
+        const tSubmit = performance.now() - s;
+        while (progs.size) {
+          for (const pr of progs) if (pr.isReady()) progs.delete(pr);
+          if (progs.size) await new Promise((r) => setTimeout(r, 20));
+        }
+        this.warmLog.push({ o: 'PAR', rt: 'rt', ms: +(performance.now() - s).toFixed(1), submitMs: +tSubmit.toFixed(1), n: nProg() - p0 });
+      }
       if (!(mode === 'batch' && khr)) {
         for (const rt of targets) {
           this.renderer.setRenderTarget(rt);
@@ -455,6 +471,80 @@ export class Stage {
        the frames being measured are the frames the player will get. */
     try { await this._calibrate(); } catch (e) { /* keep the tier we guessed */ }
     return this._warmed;
+  }
+
+  /**
+   * Is the room waiting on a program that is still linking? True through the
+   * boot warm-up, and after it whenever the scene is about to draw with a
+   * program the driver has not finished linking -- a room kind shown before
+   * Backdrop.precompileRooms reached its variant. combat.js stands the boards'
+   * painted room behind the fight while this is true (CombatScene._syncColdRoom).
+   */
+  roomPending() { return !!(this._warming || this._linking); }
+
+  /**
+   * THE ROOM NEVER LINKS ON THE MAIN THREAD. Drawing a material whose program
+   * is new makes three link it inside the draw, synchronously: a room kind whose
+   * variant was not linked yet froze the page for its whole link (0.6-25 s on
+   * this machine) and then appeared. With KHR_parallel_shader_compile the link
+   * can run behind the page instead, so: find any drawable whose material is
+   * about to change program, start its link off the main thread
+   * (renderer.compile), and skip the draw until every such program reports
+   * ready. The canvas keeps its last frame meanwhile, and roomPending() says so.
+   *
+   * Costs one traversal of the visible scene per frame (a few dozen objects, a
+   * WeakMap read and an integer compare each) and nothing else once the room is
+   * linked: a material that is not changing program is skipped at the compare.
+   * Without the extension isReady() is always true, so this never skips a draw
+   * and the link happens in the draw as it always did.
+   *
+   * Returns true when this frame must not draw.
+   */
+  _gateLinks() {
+    const R = this.renderer;
+    if (this._khr === undefined) {
+      try { this._khr = !!R.getContext().getExtension('KHR_parallel_shader_compile'); }
+      catch { this._khr = false; }
+    }
+    if (!this._khr) return false;
+    const P = R.properties;
+    const kicked = this._kicked || (this._kicked = new WeakMap());
+    const stale = this._stale || (this._stale = []);
+    stale.length = 0;
+    this.scene.traverseVisible((o) => {
+      if (!(o.isMesh || o.isPoints || o.isSprite)) return;
+      const m = o.material;
+      if (!m || Array.isArray(m)) return;
+      const mp = P.get(m);
+      if (mp.currentProgram && mp.__version === m.version) return;
+      stale.push(o);
+    });
+    if (!stale.length) { this._linking = false; return false; }
+
+    /* start the links this frame has not started yet, into the composer's target
+       (the key three will ask for when RenderPass draws) */
+    let prevRT = null, kickedAny = false;
+    for (const o of stale) {
+      const m = o.material;
+      if (kicked.get(m) === m.version) continue;
+      if (!kickedAny) { prevRT = R.getRenderTarget(); R.setRenderTarget(this.composer.renderTarget1); kickedAny = true; }
+      try { R.compile(o, this.camera, this.scene); } catch (e) { /* the draw will link it */ }
+      kicked.set(m, m.version);
+    }
+    if (kickedAny) R.setRenderTarget(prevRT);
+
+    let waiting = false;
+    for (const o of stale) {
+      const pr = P.get(o.material).currentProgram;
+      if (pr && !pr.isReady()) { waiting = true; break; }
+    }
+    stale.length = 0;
+    if (!waiting) { this._linking = false; return false; }
+    const now = performance.now();
+    if (!this._linking) { this._linking = true; this._linkT0 = now; }
+    /* never hold the room back forever: past this, link it in the draw */
+    if (now - this._linkT0 > 90000) { this._linking = false; return false; }
+    return true;
   }
 
   resize() {
@@ -583,6 +673,7 @@ export class Stage {
        synchronously inside `setProgram`, which is the entire boot stall it was meant
        to paper over. Phase B puts the picture up as soon as it is genuinely ready. */
     if (this._warming) return;
+    if (this._gateLinks()) return;
     this.composer.render(dt);
   }
 
