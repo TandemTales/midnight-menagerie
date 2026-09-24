@@ -5,7 +5,7 @@
 # graft (dc30164) -- or the judges score a field that was never the game.
 #
 # A board with no room behind it means the warm-up timed out: retried while
-# void or while perf.band < 20. The Greenhouse is a dark room and bands ~26,
+# void or while perf.band < 12. The Greenhouse bands ~26 and the Ballroom ~17,
 # so round 18's 28 floor would reject a good frame here. Look at every frame.
 set -u
 cd "C:/Users/Josh/OneDrive/Desktop/Tandem Tales/Midnight Menagerie" || exit 1
@@ -23,7 +23,7 @@ one () {
 import json
 try:
     d=json.load(open('shots/CHINTZ-$n.state.json'))
-    print(1 if d.get('errors') or d.get('void') or d.get('perf', {}).get('band', 99) < 20 else 0)
+    print(1 if d.get('errors') or d.get('void') or d.get('perf', {}).get('band', 99) < 12 else 0)
 except Exception: print(1)")
     if [ "$v" = "0" ]; then cp "shots/CHINTZ-$n.png" "$J/$n.png"; echo "ok   $n"; return; fi
     echo "retry $n"; sleep 20
