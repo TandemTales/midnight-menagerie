@@ -1,4 +1,4 @@
-# Handoff — rounds 0-18 merged; a graft and a survey are running
+# Handoff — rounds 0-18 and four of Josh's fixes merged; round 19 (the boards) running
 
 You are picking up Midnight Menagerie on `dev`. Everything below is pushed.
 
@@ -16,38 +16,56 @@ loop until perfected". Two later calls narrow it and both are in force:
 `UI/*.png`** — what matters is readable, accurately drawn, well-detailed objects
 (item 3).
 
-## START HERE — 2026-09-23, evening
+## START HERE — 2026-09-24, after midnight
 
-**ROUNDS 0-18 ARE MERGED.** Round 18 WOAD (`1272403`, +0.72) is merged and
-NOT YET VERIFIED OR PUSHED — its sheet comparison and the battery are next.
-Round 17 LITHARGE (`44b37fe`) and everything before it is verified and pushed.
+**EVERYTHING THROUGH ROUND 18 IS MERGED, VERIFIED AND PUSHED (`8f02e4e`),
+and so are four things Josh asked for on 2026-09-23.** The battery on the
+combined tree: 101 gates, 3 red, all long-known (the seven HALO clips,
+`run.py`'s two seed errors, steam-deck's Map race).
 
-**Josh, 2026-09-23: "continue. no longer worry about usage."** Do not hold a
-round for the weekly figure. Run one ROUND at a time for the GPU's sake; a
-single-builder graft beside a round is fine.
+**Josh's four requests, all DONE:**
 
-**RUNNING NOW, two things:**
+1. **"I didn't see a background in the first two fight rooms"** (`aaafca5`).
+   The fight's WebGL room is not drawn until the warm-up's phase A has linked
+   every program, and that warm-up had doubled over rounds 14-18 (36 -> 64 s
+   at each round's baseline) while every capture WAITED IT OUT, so the loop
+   never saw it. Phase A linked the two giant shaders (walls 17-20 s, props
+   ~25 s) TWICE; the canvas copies are gone and the links run in parallel.
+   Combat now shows the boards' painted room whenever the stage cannot draw
+   and cross-fades. Fresh profile, first fight at 5/15/30 s: BASE a flat
+   plum plane 3 of 3; now a painted room 3 of 3. Room visible ~117 s -> ~48 s
+   (~59 s on the final tree, which carries round 18's graft).
+   `tools/coldstart.py` measures it — **add cold-start time to every perf
+   report from now on.**
+2. **"The animations are a bit choppy — extend them to 48 frames"**
+   (`bbd0bbe`). TARGET_FRAMES 22 -> 48, same even-spans + medoid; a 4 s idle
+   plays at 11.85 fps (was 5.4). Sprites 135 -> 266 MB.
+3. **"Make sure enemy sprites are facing toward the heroes"** (`ed234bd`).
+   Five of 51 were painted facing right, found BY EYE on contact sheets:
+   bedframe-beast, blanket-hydra, night-terror, nightlight-snuffer,
+   slipper-skitter — `DRAWN_FACING_RIGHT` in `ui/enemy.js` mirrors them about
+   their own feet. **A new enemy painting must be looked at and added there
+   if it faces right.**
+4. **"The floating around motion of the hero and companion can be removed"**
+   (`ed234bd`). PlayerView drew breath and bob on top of the painted figures'
+   own idle clips; now dropped for a painted figure, as EnemyView already did.
+   Measured: the Companion went from 21 distinct positions in 5 s to one.
 
-1. **Round 18's people graft**, one builder on `ui/r18-graft` (port 8974, cut
-   from `1272403`), captures into `C:/UILOOP/r18/judging/r18/graft/`. Both
-   round-18 judges asked for it: ORCHIL lost on the mean by 0.03 while winning
-   four of five screens on its PEOPLE, and those people go into WOAD's system.
-   It also restores the greenhouse gable lunette WOAD lost and hunts two
-   rendering leaks that are in the game today (lines across the graveyard's
-   masonry, green streaks across the greenhouse glazing).
-2. **THE SURVEY** (`docs/ui-pass/survey-2026-09-23.sh` → `C:/UILOOP/survey/NOW/`):
-   the fourteen screens no round has judged since rounds 6-7 — the six boards,
-   three dialogs, the Kids' three places, the boss and crowded fights —
-   photographed as they stand, for two blind judges to score, name each
-   screen's worst problem, and rank by HEADROOM. Its judge prompt is in this
-   session's scratchpad as `survey-judge-prompt.md`; copy it into
-   `docs/ui-pass/` if the session ends before it runs.
+**OPEN, AND IT MATTERS: THE GPU CONTEXT IS LOST 17-50 s AFTER WARM-UP** on
+this machine. On the old build every fight then froze the page for 32-37 s
+and went white; the fix covers it (the painted room stands in and the relink
+no longer freezes), but **the root cause is not found** — it is not the
+background variant precompile. Worth a dedicated investigation: the Steam
+Deck's GPU is a different driver entirely.
 
-**WHY THE SURVEY: the rooms are slowing.** Round 16 +2.00, 17 +1.25, 18 +0.72,
-with the baseline climbing and the field inside 0.33. Eleven straight rounds
-went to the rooms while the other screens' last fix lists are thirteen rounds
-old — and the ground behind them was rebuilt on 2026-09-16 since. **Round 19
-goes wherever the survey says the headroom is.**
+**THE LOOP: ROUND 19 IS RUNNING** — the first round in eleven not spent on
+the WebGL room. A SURVEY (`SURVEY-2026-09-23.md`) photographed the fourteen
+screens no round had judged since rounds 6-7 and two blind judges
+independently named the same shared defects; round 19 (`BRIEF-r19.md`,
+KERMES / BICE / BOLE on 8991-8993 against BAIZE, nine screens) spends itself
+on them: the HUD wrapping to two rows at 1280x800 (the Steam Deck), empty
+picture frames on the boards' wall with windows drawn over them, controls that
+are still web form elements, and the map's untraceable routes.
 
 **The main dev server on 8777 can die with a session.** The one running since
 2026-09-18 was gone after this session restarted for a model switch, and the
