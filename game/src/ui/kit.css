@@ -3496,28 +3496,31 @@ button.kit-hw-enamel:focus-visible {
 .kit-hw-switch[data-on="1"] { filter: drop-shadow(0 3px 3px rgba(0, 0, 0, .8)) drop-shadow(0 0 6px color-mix(in srgb, var(--kit-candle) 28%, transparent)); }
 
 /* ── the engraved plate: a dial ── */
-/* hw-dial.webp is 180x76: its upper band (0..29) carries the engraving, the
-   window runs 12..168 by 31..65; 9-slice 30 16 12 16 */
+/* ROUND 19 GRAFT: a dial is a plate of BRASS now, after KERMES ("screwed
+   brass plates with engraved labels and inset selects" -- all three judges).
+   hw-dial.webp is 200x72: what it chooses BY is engraved into the metal's
+   upper band (0..29), a lacquer window runs 29.5..170.5 by 31.5..59.5, and a
+   slotted screw holds each end; 9-slice 30 32 12 32. The name is CUT into
+   the brass -- dark in the metal, a hairline of light on its lower lip. */
 .kit-hw-dial {
   --dial-h: 50px;
   position: relative; display: inline-block;
   box-sizing: border-box;
   height: var(--dial-h);
-  padding: calc(var(--dial-h) * 31 / 76) calc(var(--dial-h) * 12 / 76) calc(var(--dial-h) * 11 / 76);
+  padding: calc(var(--dial-h) * 31.5 / 72) calc(var(--dial-h) * 30 / 72) calc(var(--dial-h) * 12.5 / 72);
   border: 0 solid transparent;
-  border-image: url("../../assets/ui/kit/hw-dial.webp") 30 16 12 16 fill / calc(var(--dial-h) * 30 / 76) calc(var(--dial-h) * 16 / 76) calc(var(--dial-h) * 12 / 76) calc(var(--dial-h) * 16 / 76) stretch;
-  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .8));
+  border-image: url("../../assets/ui/kit/hw-dial.webp") 30 32 12 32 fill / calc(var(--dial-h) * 30 / 72) calc(var(--dial-h) * 32 / 72) calc(var(--dial-h) * 12 / 72) calc(var(--dial-h) * 32 / 72) stretch;
+  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .8)) saturate(.9) brightness(.94);
 }
 .kit-hw-dial__label {
   position: absolute; left: 0; right: 0;
-  top: 0; height: calc(var(--dial-h) * 31 / 76);
+  top: calc(var(--dial-h) * 3 / 72); height: calc(var(--dial-h) * 27 / 72);
   display: grid; place-items: center;
-  padding-top: 2px;
   font-family: var(--font-display); font-weight: 700; font-style: normal;
-  font-size: max(11px, calc(var(--dial-h) * .205)); line-height: 1;
-  letter-spacing: .2em; padding-left: .2em; text-transform: uppercase; white-space: nowrap;
-  color: var(--kit-gold-hi);
-  text-shadow: 0 -1px 0 rgba(0, 0, 0, .95), 0 1px 0 color-mix(in srgb, var(--kit-gold-hi) 16%, transparent);
+  font-size: max(11.5px, calc(var(--dial-h) * .215)); line-height: 1;
+  letter-spacing: .18em; padding-left: .18em; text-transform: uppercase; white-space: nowrap;
+  color: #24140a;
+  text-shadow: 0 1px 0 rgba(255, 238, 196, .5), 0 -1px 0 rgba(20, 10, 2, .25);
   pointer-events: none;
 }
 .kit-hw-dial__sel {
@@ -3525,7 +3528,7 @@ button.kit-hw-enamel:focus-visible {
   box-sizing: border-box;
   width: 100%; height: 100%;
   margin: 0;
-  padding: 0 calc(var(--dial-h) * .4) 0 calc(var(--dial-h) * .12);
+  padding: 0 calc(var(--dial-h) * .36) 0 calc(var(--dial-h) * .08);
   border: 0; border-radius: 0;
   -webkit-appearance: none; appearance: none;
   background: none; outline: none;
@@ -3537,13 +3540,15 @@ button.kit-hw-enamel:focus-visible {
   cursor: pointer;
 }
 .kit-hw-dial__sel option { background: #17111c; color: var(--kit-text); }
+/* the finial sits at the window's right end, inside it */
 .kit-hw-dial > .kit-hw-finial {
-  position: absolute; right: calc(var(--dial-h) * .2); bottom: calc(var(--dial-h) * .16);
-  width: calc(var(--dial-h) * .3);
+  position: absolute; right: calc(var(--dial-h) * 34 / 72); top: calc(var(--dial-h) * 45.5 / 72);
+  width: calc(var(--dial-h) * .26);
+  translate: 0 -50%;
 }
-.kit-hw-dial:hover { filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .8)) brightness(1.12); }
+.kit-hw-dial:hover { filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .8)) saturate(.94) brightness(1.04); }
 .kit-hw-dial:has(> .kit-hw-dial__sel:focus-visible) {
-  filter: drop-shadow(0 0 1.5px var(--kit-gold-hi)) drop-shadow(0 0 10px color-mix(in srgb, var(--kit-candle) 55%, transparent)) drop-shadow(0 3px 4px rgba(0, 0, 0, .8)) brightness(1.18);
+  filter: drop-shadow(0 0 1.5px var(--kit-gold-hi)) drop-shadow(0 0 10px color-mix(in srgb, var(--kit-candle) 55%, transparent)) drop-shadow(0 3px 4px rgba(0, 0, 0, .8)) brightness(1.08);
 }
 /* a dial set to something other than "any" has its window lit, so the
    filters in force are found at a glance */

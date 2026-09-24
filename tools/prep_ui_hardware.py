@@ -18,9 +18,16 @@ outline) so the hardware is the same metal as the rails and the medallions:
   ENAMEL      the Kid board's round button (button.webp, prep_ui_kit.py) and
                                  hw-glaze.webp, the wet highlight the sample's
                                  buttons carry, laid over it so it reads fired
+              hw-cog.webp        a cast brass cog with a violet cabochon: a
+                                 slider's knob (round 19 graft, after KERMES)
+              hw-lever.webp      a switch's lever: a brass shank and ball on a
+                                 hub, thrown about the canvas's centre
   ENGRAVED    hw-switch.webp     a two-position switch plate: a gilt rim round
-  PLATE                          two sunk wells parted by a brass mullion; the
-                                 lit well is the setting (words laid over it)
+  PLATE                          two sunk wells, a brass pivot between them
+                                 with the lever's gate cut above it; the lit
+                                 well is the setting (words laid over it)
+              hw-dial.webp       a filter's dial plate: brass, screwed at each
+                                 end, its name engraved over a sunk window
               plate.webp / plate-lit.webp (prep_ui_kit / prep_ui_surfaces) for
                                  everything else lettered
   PAINTED     objects/<key>.webp a small painted object for every Keepsake
@@ -283,21 +290,73 @@ def hw_groove():
 
 def hw_switch():
     """A two-position switch plate: a gilt-rimmed plate with notched ends and
-    two sunk wells parted by a brass mullion and its rivet. The words and the
-    lit well are laid over it by the kit (.kit-hw-switch)."""
-    W, H = 220, 64
+    two sunk wells, and between them a brass boss with a GATE cut above it --
+    the arc the lever (hw-lever.webp) is thrown along. The words, the lit well
+    and the lever are laid over it by the kit (.kit-hw-switch).
+
+    ROUND 19 GRAFT: two judges preferred KERMES's switch, "an engraved brass
+    plate with a physical lever on a brass pivot", and one warned its lever
+    stood up above the plate. So the mullion is wide enough to hold a lever
+    whose ball stays INSIDE the plate at either throw: the pivot at (120, 44),
+    the gate an arc of radius 21 about it, 32 degrees either side."""
+    W, H = 240, 64
     p = Pic(seed=23, n=W, h=H)
     n = 12
     body = [(n, 3), (W - n, 3), (W - 3, n), (W - 3, H - n), (W - n, H - 3), (n, H - 3), (3, H - n), (3, n)]
     p.part(P(body), "brass", bevel=3.4, shadow=0)
     p.part(P(body), PLATE, prof="round", bevel=2.5, gloss=.1, erode=4.4, shadow=.5)
-    for x0, x1 in ((15, 104), (116, 205)):
+    for x0, x1 in ((15, 97), (143, 225)):
         p.part(R(x0 - 2.5, 10.5, x1 + 2.5, H - 10.5, 4), "brass", bevel=2, shadow=.4)
         p.part(R(x0, 13, x1, H - 13, 2.5), ("#020103", "#0d0812", "#2e2238"), prof="recess", bevel=5, gloss=.15, shadow=0)
-    p.part(E(110, H / 2, 4.2), "brass", prof="sphere", shadow=.45)
+    # the gate: a slot on an arc about the pivot, lipped in brass
+    cx, cy, rr = 120, 44, 21
+    outer = arc_pts(cx, cy, rr + 4.2, rr + 4.2, -90 - 34, -90 + 34, 24)
+    inner = arc_pts(cx, cy, rr - 4.2, rr - 4.2, -90 + 34, -90 - 34, 24)
+    p.part(P(outer + inner), "brass", bevel=1.6, shadow=.35)
+    outer = arc_pts(cx, cy, rr + 2.4, rr + 2.4, -90 - 32, -90 + 32, 24)
+    inner = arc_pts(cx, cy, rr - 2.4, rr - 2.4, -90 + 32, -90 - 32, 24)
+    p.part(P(outer + inner), ("#020103", "#0a0610", "#241a2c"), prof="recess", bevel=3, gloss=.1, shadow=0)
+    # the pivot's boss
+    p.part(E(cx, cy, 8.5), "brass", bevel=3, shadow=.45)
+    p.ink(arc_pts(cx, cy, 5.2, 5.2, 0, 360, 40), w=.8, alpha=.6)
     for x, y in ((9, 9), (W - 9, 9), (9, H - 9), (W - 9, H - 9)):
         p.part(E(x, y, 2.4), "brass", prof="sphere", shadow=.35)
     return _save_pic(p, "hw-switch.webp")
+
+
+def hw_lever():
+    """The switch's lever, standing up from its pivot: a tapered brass shank
+    and a turned ball on its end, on a hub. The pivot is the canvas's centre
+    (32, 32) so the kit can throw it by rotating the picture; the ball's top
+    is 25 units above the pivot, which on the switch plate (pivot 20 units
+    under the plate's top rim at 64) keeps it inside the rim at either throw."""
+    p = Pic(seed=30, n=64)
+    p.part(P([(29.6, 33), (34.4, 33), (33.2, 14), (30.8, 14)]), "brass", bevel=1.8, shadow=.6)
+    p.part(E(32, 11.5, 5.6), "brass", prof="sphere", shadow=.55)
+    p.paint(E(30.2, 9.6, 1.8, 1.3), "#fff6dc", .75, blur=.4)
+    p.part(E(32, 32, 5.2), "brass", prof="sphere", shadow=.5)
+    p.ink(arc_pts(32, 32, 2.0, 2.0, 0, 360, 20), w=.7, alpha=.7)
+    return _save_pic(p, "hw-lever.webp")
+
+
+def hw_cog():
+    """A slider's knob as a cast brass COG: twelve square-cut teeth round a
+    milled rim, a violet cabochon in the boss (KERMES's "cog-shaped jewelled
+    knob", round 19, in the house's own brass)."""
+    p = Pic(seed=31)
+    teeth = []
+    N = 12
+    for i in range(N):
+        a0 = 2 * math.pi * i / N
+        for da, r in ((-.2, 37), (-.12, 44.5), (.12, 44.5), (.2, 37)):
+            teeth.append((48 + r * math.cos(a0 + da), 48 + r * math.sin(a0 + da)))
+    p.part(P(teeth), "brass", bevel=5, shadow=0)
+    p.part(E(48, 48, 37.5), "brass", bevel=6, shadow=.2)
+    p.ink(arc_pts(48, 48, 29.5, 29.5, 0, 360, 60), w=1.2, alpha=.75)
+    p.part(E(48, 48, 28), "brass", prof="sphere", shadow=.3)
+    p.part(E(48, 48, 15), ("#140a22", "#4b2f78", "#b393ea"), prof="sphere", gloss=.9, power=46)
+    p.paint(E(43, 42, 4.5, 3), "#ffffff", .7, blur=.6)
+    return _save_pic(p, "hw-cog.webp")
 
 
 def hw_finial():
@@ -347,18 +406,33 @@ def hw_glaze():
 
 
 def hw_dial():
-    """A dial plate: a brass plate, clipped at its corners, with what it
-    chooses BY engraved across its upper band and a window sunk in its lower
-    part where the choice is lettered. 9-slice (30 16 12 16)."""
-    W, H = 180, 76
+    """A dial plate: a plate of BRASS, its corners clipped, with what it
+    chooses BY engraved into the metal across its upper band, a lacquer
+    window sunk in its lower part where the choice is lettered, and a slotted
+    screw at each end holding it to the rail. 9-slice (30 32 12 32).
+
+    ROUND 19 GRAFT: all three judges picked KERMES's filter plates -- "screwed
+    brass plates with engraved labels and inset selects, the most
+    object-like filter bar in the round" -- over this plate as BICE painted
+    it (near-black enamel in a gilt rim). The face is the metal now, and the
+    screws are what make it a thing fixed to something."""
+    W, H = 200, 72
     p = Pic(seed=26, n=W, h=H)
     c = 8
     body = P([(c, 2), (W - c, 2), (W - 2, c + 2), (W - 2, H - c - 2), (W - c, H - 2), (c, H - 2), (2, H - c - 2), (2, c + 2)])
-    p.part(body, "brass", bevel=3.2, shadow=0)
-    p.part(body, PLATE, prof="round", bevel=2.5, gloss=.1, erode=4.2, shadow=.5)
+    p.part(body, "brass", bevel=3.6, shadow=0)
+    # an engraved border line inside the bevel, the way the samples' plates carry one
+    p.ink([(12, 7), (W - 12, 7), (W - 7, 12), (W - 7, H - 12), (W - 12, H - 7), (12, H - 7), (7, H - 12), (7, 12)],
+          w=.8, alpha=.45, closed=True)
     # the window, its lip a brass bead, sunk in the plate's lower part
-    p.part(R(10, 29, W - 10, H - 9, 4), "brass", bevel=2, shadow=.4)
-    p.part(R(12.5, 31.5, W - 12.5, H - 11.5, 2.5), ("#020103", "#0d0812", "#2e2238"), prof="recess", bevel=5, gloss=.12, shadow=0)
+    p.part(R(27, 29, W - 27, H - 10, 4), "brass", bevel=2, shadow=.45)
+    p.part(R(29.5, 31.5, W - 29.5, H - 12.5, 2.5), ("#020103", "#0d0812", "#2e2238"), prof="recess", bevel=5, gloss=.12, shadow=0)
+    # a slotted screw at each end, level with the window
+    for x in (15, W - 15):
+        p.part(E(x, 45.5, 5.2), "brass", prof="sphere", shadow=.5)
+        a = math.radians(-35 if x < W / 2 else 25)
+        dx, dy = 4.2 * math.cos(a), 4.2 * math.sin(a)
+        p.ink([(x - dx, 45.5 - dy), (x + dx, 45.5 + dy)], w=1.1, alpha=.85)
     return _save_pic(p, "hw-dial.webp")
 
 
@@ -436,7 +510,7 @@ def hw_plate():
 
 
 def hardware():
-    hw_knob(); hw_groove(); hw_switch(); hw_finial(); hw_well(); hw_glaze(); hw_dial(); hw_tag(); hw_slip(); hw_plate()
+    hw_knob(); hw_groove(); hw_switch(); hw_lever(); hw_cog(); hw_finial(); hw_well(); hw_glaze(); hw_dial(); hw_tag(); hw_slip(); hw_plate()
 
 
 # materials (dark, body, light), all in the samples' low key
