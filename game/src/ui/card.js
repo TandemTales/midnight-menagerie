@@ -191,9 +191,9 @@ function linesAt(rows, f, W) {
 }
 
 /* A name plate's end caps and the lettering's inset, by the lines it holds,
-   in design units (CardView#fitName; scenes/combat.css draws the same). Three
-   is kept for anything that still asks, but fitName stops at two. */
-const NAME_CAPS = { 1: { cap: 19, pad: 16 }, 2: { cap: 11, pad: 12 }, 3: { cap: 11, pad: 12 } };
+   in design units (CardView#nameLadder; scenes/combat.css draws the same).
+   A crowded hand's long name may take three or four (ui/hand.js#_stripFit). */
+const NAME_CAPS = { 1: { cap: 19, pad: 16 }, 2: { cap: 11, pad: 12 }, 3: { cap: 11, pad: 12 }, 4: { cap: 11, pad: 12 } };
 
 let SEQ = 0;
 
@@ -336,7 +336,8 @@ export class CardView {
     const len = n.length + (this.state.upgraded ? 1 : 0);
     this.el.classList.toggle('is-name-long', len > 13 && len <= 18);
     this.el.classList.toggle('is-name-xlong', len > 18);
-    this._nameWords = null; this._nameFitKey = null;
+    this._nameWords = null;
+    this.textRev = (this.textRev || 0) + 1;       // a crowded hand re-fits on a new name (ui/hand.js)
     this._measureType();
     this._updateAria();
   }
@@ -355,7 +356,7 @@ export class CardView {
     if (typeEm != null && subEm != null) this.el.style.setProperty('--type-em', String(Math.round((typeEm + subEm) * 1000) / 1000));
     if (!fontsIn() && !this._emWait && typeof document !== 'undefined' && document.fonts) {
       this._emWait = true;
-      document.fonts.ready.then(() => { this._emWait = false; this._nameWords = null; this._nameFitKey = null; if (!this._dead) this._measureType(); }).catch(() => {});
+      document.fonts.ready.then(() => { this._emWait = false; this._nameWords = null; if (!this._dead) this._measureType(); }).catch(() => {});
     }
   }
 
@@ -400,37 +401,32 @@ export class CardView {
   }
 
   /**
-   * Fit the name to a plate `plateU` design units wide: one line as large as it
-   * will go (to `hi`), else TWO lines, never three. Published as `--name-fit`
-   * (in u) and `--name-lines`.
-   * ROUND 6: two lines is the floor of the ladder, not the middle of it.
-   * "Put Yourself Back Together" came off this method at three lines of 11.5u
-   * — 7px on a 1280 board — and every judge called it crushed. Two lines at
-   * `lo` is legible and a name plate can grow to hold them; three lines of
-   * type nobody can read is not a fit, it is a failure with a number on it.
-   * The search also steps in half units, so neighbouring cards in a fan land
-   * on the same rungs and the row reads as one row instead of nine sizes.
-   * The plate's notched caps come in to their full width on the rows a second
-   * and third line sit on, so a taller plate draws narrower caps and letters
-   * just inside them (NAME_CAPS; scenes/combat.css draws the same numbers).
-   * The name is measured in the display face with the plate's tracking, word
-   * by word, and wrapped the way the page wraps it (a balanced wrap keeps the
-   * greedy line count), so it never runs onto a cap.
+   * How tall (design units) the rules run wrapped into `widthU` at size `f`
+   * and line height `lh` — what a crowded hand asks before it decides how far
+   * the covered row's panels rise over their art (ui/hand.js TUNE.readPx).
+   * 0 when the words cannot be measured yet.
    */
-  fitName(plateU, { lo = 11, hi = 17.5, track = 0.02 } = {}) {
-    if (this._dead || !this.$name) return;
-    const key = Math.round(plateU * 4) + ':' + lo + ':' + hi;
-    if (this._nameFitKey === key) return;
+  rulesNeed(widthU, f, lh = 1.1) {
+    if (this._dead || !this.$rules) return 0;
+    // leave the cache to fitRules, which knows to drop it when the fonts land
+    const rows = this._fitRows || rulesBoxes(this.$rules);
+    if (!rows) return 0;
+    const n = linesAt(rows, f, widthU * 0.95);
+    return Number.isFinite(n) ? n * f * lh : 0;
+  }
+
+  /** The name's greedy line count at size f (u) in width W (u); Infinity if a word cannot fit. */
+  _nameLines(track = 0.02) {
     if (!this._nameWords) {
       const text = (this.def.name || this.def.id) + (this.state.upgraded ? '+' : '');
       const words = text.split(/\s+/).filter(Boolean);
       const ems = words.map((wd) => textEm(wd, 700, track));
       const space = textEm('a a', 700, track) - 2 * textEm('a', 700, track);
-      if (ems.some((e) => e == null) || space == null) return;
+      if (ems.some((e) => e == null) || space == null) return null;
       this._nameWords = { ems, space };
     }
     const { ems, space } = this._nameWords;
-    const lines = (f, W) => {
+    return (f, W) => {
       let n = 1, line = -1;
       for (const e of ems) {
         const w = e * f;
@@ -441,20 +437,33 @@ export class CardView {
       }
       return n;
     };
-    const largest = (maxLines, floor) => {
-      const W = (plateU - 2 * NAME_CAPS[maxLines].pad) * 0.97;
-      for (let f = hi; f >= floor; f -= 0.5) if (lines(f, W) <= maxLines) return f;
-      return 0;
-    };
-    /* ROUND 20: two lines when two lines read BIGGER. A crowded fan's plate
-       is the strip a neighbour leaves showing, and a name squeezed onto one
-       line of it came out at 14u -- 8 px on the Deck -- where the same name
-       broken in two stood a fifth larger: the plate grows up over the art
-       now (scenes/combat.css), so the second line costs the words nothing. */
-    const f1 = largest(1, lo), f2 = largest(2, lo);
-    let n = 1, f = f1;
-    if (!f1 || (f2 && f2 >= f1 * 1.2)) { n = 2; f = f2 || lo; }
-    this._nameFitKey = key;
+  }
+
+  /**
+   * Round 20: every way the name can sit on a plate `plateU` wide — for one to
+   * `maxLines` lines, the largest size (to `hi`, down to `floor`, in half
+   * units) at which it wraps into that many. A crowded hand weighs these
+   * against the room the rules need (ui/hand.js) and sets one with
+   * `setNameFit`: a taller plate is room the panel under it cannot rise into.
+   * @returns {{n:number,f:number}[]} only the line counts that fit at all.
+   */
+  nameLadder(plateU, { hi = 18.5, floor = 11, maxLines = 4 } = {}) {
+    if (this._dead || !this.$name) return [];
+    const lines = this._nameLines();
+    if (!lines) return [];
+    const out = [];
+    for (let k = 1; k <= Math.min(4, maxLines); k++) {
+      const W = (plateU - 2 * NAME_CAPS[k].pad) * 0.97;
+      for (let f = hi; f >= floor; f -= 0.5) if (lines(f, W) <= k) { out.push({ n: lines(f, W), f }); break; }
+    }
+    return out;
+  }
+
+  /** Publish a name size (u) and line count as `--name-fit` / `--name-lines`. */
+  setNameFit(f, n) {
+    if (this._dead) return;
+    if (this._nameFit && this._nameFit.f === f && this._nameFit.n === n) return;
+    this._nameFit = { f, n };
     this.el.style.setProperty('--name-fit', String(f));
     this.el.style.setProperty('--name-lines', String(n));
   }
@@ -599,6 +608,7 @@ export class CardView {
     this.el.classList.toggle('is-text-xlong', plain > 104);
     // new words: the next crowded layout fits them afresh (CardView#fitRules)
     this._fitRows = null; this._fitKey = null;
+    this.textRev = (this.textRev || 0) + 1;
     this._preview = null;
     this._updateAria();
   }

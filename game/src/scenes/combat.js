@@ -1322,20 +1322,37 @@ export class CombatScene extends Scene {
     const host = this.$handHost.getBoundingClientRect();
     if (!host.width) return;
     const GAP = Math.round(Math.max(10, host.width * 0.008));
+    /* Round 20: the Kid's column and the discard shelf stand as high as the
+       fan's top corners; Nerve with the draw pile, and END TURN, stand LOW at
+       its feet. They are handed over apart, with the height their tops stand
+       at, so the fan's outer cards may lean out over them (Hand#setBounds). */
     let left = 0, right = host.width;
-    for (const el of [this.$pl, this.$statuses, this.root.querySelector('.cb-bl')]) {
+    const low = [];
+    for (const el of [this.$pl, this.$statuses]) {
       const b = el && el.getBoundingClientRect();
       if (b && b.width) left = Math.max(left, b.right - host.left + GAP);
     }
+    const put = (side, el) => {
+      const b = el && !el.hidden && el.getBoundingClientRect();
+      if (!b || !b.width) return;
+      low.push(side === 'left'
+        ? { side, x: b.right - host.left + GAP, top: b.top - host.top }
+        : { side, x: b.left - host.left - GAP, top: b.top - host.top });
+    };
+    const bl = this.root.querySelector('.cb-bl');
+    if (bl) for (const el of bl.children) put('left', el);
     const br = this.root.querySelector('.cb-br');
     if (br) {
-      for (const el of br.querySelectorAll('.cb-endturn, .cb-pile, .cb-br__candle')) {
+      for (const el of br.querySelectorAll('.cb-pile, .cb-br__candle')) {
         if (el.hidden) continue;
         const b = el.getBoundingClientRect();
         if (b.width) right = Math.min(right, b.left - host.left - GAP);
       }
+      // END TURN in its two parts: the medallion, and the wider plate below it
+      const et = br.querySelector('.cb-endturn');
+      if (et && !et.hidden) for (const el of et.querySelectorAll('.cb-endturn__medal, .cb-endturn__k')) put('right', el);
     }
-    this.hand.setBounds({ left, right });
+    this.hand.setBounds({ left, right, low });
   }
 
   /** Hand asked to commit a card. Returning false rejects it with a shake. */
