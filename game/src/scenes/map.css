@@ -417,7 +417,7 @@
    short of the node icons"). The route now runs on under the roundel, so it
    meets the rim at any zoom. */
 .mn-pool {
-  position: absolute; inset: 9%;
+  position: absolute; inset: 14%;
   border-radius: 50%;
   background:
     radial-gradient(circle at 38% 32%, color-mix(in srgb, var(--parchment) 70%, #fff) 0%, transparent 62%),
