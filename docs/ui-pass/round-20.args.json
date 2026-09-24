@@ -1,0 +1,55 @@
+{
+  "round": "r20",
+  "maxBuilders": 3,
+  "briefs": [
+    "docs/ui-pass/BRIEF-r0.md",
+    "docs/ui-pass/BRIEF-r1.md",
+    "docs/ui-pass/BRIEF-r20.md"
+  ],
+  "rubrics": [
+    "docs/ui-pass/RUBRIC.md",
+    "docs/ui-pass/RUBRIC-r20.md"
+  ],
+  "samples": [
+    "UI/title.png",
+    "UI/mainMenu.png",
+    "UI/selectCompanion.png",
+    "UI/selectKid.png"
+  ],
+  "tracks": [
+    {
+      "key": "rail",
+      "name": "RAIL",
+      "rule": "refine",
+      "screens": [
+        "hud-late",
+        "map",
+        "shop",
+        "combat",
+        "combat-boss",
+        "combat-crowd"
+      ],
+      "baseline": "DAMASK",
+      "builders": [
+        {
+          "slot": "a",
+          "code": "TYRIAN",
+          "port": 9001,
+          "angle": "LITERAL. Work BRIEF-r20's fix list 1 to 5 in order and exactly as written. Item 1 is a Steam Deck BUG, not a style note: with hud-late's load the strip must hold ONE row at 1280x800, legible, every folded group saying what it holds. Fix it first and prove it with the hud-late capture at both sizes before you touch anything else. Then the rail as one object, then the hand. The literal angle has won most recent rounds."
+        },
+        {
+          "slot": "b",
+          "code": "MALACHITE",
+          "port": 9002,
+          "angle": "ONE CARVED RAIL. Item 2 is your round, and item 1 falls out of it: design the strip as a single carved object -- a brass-and-wood nameplate rail with ends, a surface and a shadow, built from round 19's hardware (ui/objects.js, prep_ui_hardware.py, kit.css's round-19 sections) -- with the readouts SET INTO it, and a rail that has a fixed budget at 1280 into which groups fold honestly ('10 Keepsakes' as one medallion that opens its tray). Then the boss under it (item 4), then the hand."
+        },
+        {
+          "slot": "c",
+          "code": "SAFFRON",
+          "port": 9003,
+          "angle": "THE HAND FIRST. Item 3 is your round: at nine cards every NAME readable and the rules text ~11 px or more at 1280, the fan wide into the space between the piles, overlap pushed into the art window, the hovered or focused card rising clear. Measure it -- read the rendered title and rules font sizes and the overlap per card at both sizes -- then look. Then item 1, the rail's one row at 1280 on hud-late, because it is a bug on the same fight screens, and item 4 under it."
+        }
+      ]
+    }
+  ]
+}
