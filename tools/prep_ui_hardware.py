@@ -40,9 +40,18 @@ outline) so the hardware is the same metal as the rails and the medallions:
                                  under it, outlined in the samples' dark ink.
               hw-well.webp       the plate a painted object sits in: a velvet
                                  hollow sunk in a studded brass bezel
+  RAIL        hw-rail.webp       the run strip as ONE carved object (round 20):
+  (round 20)                     brass mouldings, a plate-enamel face, one
+                                 channel sunk the length of it, cast end
+                                 blocks with a cabochon boss and a drop
+              hw-mullion.webp    a turned brass bar parting two readouts in
+                                 the channel
+              hw-tray.webp       the drawer a folded group lets down under
+                                 the rail
 
     python tools/prep_ui_hardware.py                # everything
     python tools/prep_ui_hardware.py --only objects # one group while tuning
+    python tools/prep_ui_hardware.py --only rail    # the run rail's pieces
     python tools/prep_ui_hardware.py --sheet        # + a contact sheet in shots/
 """
 import argparse
@@ -530,10 +539,18 @@ def hw_rail():
     size up), and the channel ends round against it. A lighter moulding runs
     under the face; the rail's shadow is the kit's.
 
-    1024x64, a 9-slice for `.mm-hud`'s border-image: 26 top, 26 bottom,
-    72 each end; the middle runs uniform along x so it stretches clean."""
-    W, H = 1024, 64
-    p = Pic(seed=40, n=W, h=H)
+    Under each end block a cast brass DROP hangs below the rail's foot -- a
+    pendant with a turned knob, the way a carved rail's ends are finished --
+    so the strip reads as a length of something with ends, not as the top
+    edge of the page.
+
+    1024x80: the rail is the top 64, the drops hang in the 16 under it. A
+    9-slice for `.mm-hud`'s border-image: 26 top, 42 bottom (16 of it laid
+    out BELOW the box with border-image-outset), 72 each end; the middle runs
+    uniform along x so it stretches clean."""
+    W, H0, DROP = 1024, 64, 16
+    p = Pic(seed=40, n=W, h=H0 + DROP)
+    H = H0
     e = 72                                        # the end blocks' slice
     # the face, the whole length, in the plates' enamel over a brass carcass
     p.part(R(0, 0, W, H), "brass", bevel=2.2, shadow=0, ink=0)
@@ -559,11 +576,20 @@ def hw_rail():
             blk = [(0, 3), (bx1 - c, 3), (bx1, 3 + c), (bx1, H - 3 - c), (bx1 - c, H - 3), (0, H - 3)]
         else:
             blk = [(bx0 + c, 3), (W, 3), (W, H - 3), (bx0 + c, H - 3), (bx0, H - 3 - c), (bx0, 3 + c)]
-        p.part(P(blk), "brass", bevel=3.6, shadow=.55)
         cx = (bx0 + bx1) / 2 + (1.5 if side == 0 else -1.5)
-        p.ink([(bx0 + 4, 8), (bx1 - 4, 8)], w=.8, alpha=.45)
-        p.ink([(bx0 + 4, H - 8), (bx1 - 4, H - 8)], w=.8, alpha=.45)
-        p.part(E(cx, H / 2, 13), "brass", bevel=4, shadow=.5)
+        # the drop under the block: a pendant with a knob, cast in one with it
+        pend = [(cx - 16, H - 5), (cx + 16, H - 5), (cx + 12, H + 1), (cx + 5, H + 5), (cx + 2.5, H + 10), (cx - 2.5, H + 10), (cx - 5, H + 5), (cx - 12, H + 1)]
+        p.part(P(pend), "brass", bevel=3.2, shadow=.6)
+        p.ink([(cx - 9, H + 1.5), (cx, H + 4.5), (cx + 9, H + 1.5)], w=.8, alpha=.5)
+        p.part(E(cx, H + 11.5, 3.3), "brass", prof="sphere", shadow=.55)
+        p.part(P(blk), "brass", bevel=3.6, shadow=.55)
+        # a bead engraved round the block's face, a stud in each corner
+        ix0, ix1 = (bx0 + 3.5, bx1 - 4.5) if side == 0 else (bx0 + 4.5, bx1 - 3.5)
+        p.ink([(ix0, 7), (ix1, 7), (ix1, H - 7), (ix0, H - 7)], w=.8, alpha=.5, closed=True)
+        for sx in (ix0 + 3.2, ix1 - 3.2):
+            for sy in (10.2, H - 10.2):
+                p.part(E(sx, sy, 1.7), "brass", prof="sphere", shadow=.35)
+        p.part(E(cx, H / 2, 12.5), "brass", bevel=4, shadow=.5)
         p.ink(arc_pts(cx, H / 2, 10.2, 10.2, 0, 360, 50), w=.9, alpha=.6)
         p.part(E(cx, H / 2, 7), ("#140a22", "#4b2f78", "#b393ea"), prof="sphere", gloss=.85, power=42, shadow=.35)
         p.paint(E(cx - 2.2, H / 2 - 2.6, 2.2, 1.5), "#ffffff", .7, blur=.4)

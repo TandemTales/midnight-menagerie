@@ -30,8 +30,11 @@
      channel, parted by turned brass mullions and, between groups, by a cast
      boss -- never on plates of their own. */
   border: 0 solid transparent;
-  border-image: url("../../assets/ui/kit/hw-rail.webp") 26 72 fill /
-    calc(var(--hud-h) * 26 / 64) calc(var(--hud-h) * 72 / 64) stretch;
+  /* the picture is 80 tall: the rail's 64, and under it the 16 its end
+     blocks' cast drops hang in, laid out below the box (the outset) */
+  border-image: url("../../assets/ui/kit/hw-rail.webp") 26 72 42 72 fill /
+    calc(var(--hud-h) * 26 / 64) calc(var(--hud-h) * 72 / 64) calc(var(--hud-h) * 42 / 64) /
+    0 0 calc(var(--hud-h) * 16 / 64) 0 stretch;
   background: none;
   box-shadow: 0 10px 16px -6px rgba(0, 0, 0, .92), 0 3px 4px -1px rgba(0, 0, 0, .7);
 }

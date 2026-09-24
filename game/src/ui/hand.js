@@ -1041,11 +1041,17 @@ export class Hand {
        and a crowded fan's names are fitted over a narrower band — nothing
        reaches for 17.5u when its neighbour cannot — so the row reads as one
        row. CardView#fitName caps the wrap at two lines either way. */
+    /* ROUND 20: a crowded card lifts its face into its art window
+       (scenes/combat.css, "A CROWDED HAND GIVES UP ITS ART"), so its rules
+       panel is 164u tall where it was 123u and its name plate may grow up
+       over the art. The boxes here follow: the rules fit 144u of height, and
+       the names are fitted up to 21u -- 11 px on the Deck's 1280 -- where
+       round 6 held them to 15.5u (8 px) for want of room. */
     if (F.crowded) {
       const strip = 224 * Math.min(1, F.step / F.cw);
       for (const s of this.slots) {
-        s.view.fitRules?.(s === last ? 170 : strip - 38, 104, { lo: 12.5 });
-        if (s !== last) s.view.fitName?.(strip - 19, { hi: 15.5 });
+        s.view.fitRules?.(s === last ? 170 : strip - 38, s === last ? 128 : 144, { lo: 12.5, hi: 23 });
+        if (s !== last) s.view.fitName?.(strip - 19, { lo: 12, hi: 21 });
       }
     }
 

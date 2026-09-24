@@ -446,8 +446,14 @@ export class CardView {
       for (let f = hi; f >= floor; f -= 0.5) if (lines(f, W) <= maxLines) return f;
       return 0;
     };
-    let n = 1, f = largest(1, 14);
-    if (!f) { n = 2; f = largest(2, lo) || lo; }
+    /* ROUND 20: two lines when two lines read BIGGER. A crowded fan's plate
+       is the strip a neighbour leaves showing, and a name squeezed onto one
+       line of it came out at 14u -- 8 px on the Deck -- where the same name
+       broken in two stood a fifth larger: the plate grows up over the art
+       now (scenes/combat.css), so the second line costs the words nothing. */
+    const f1 = largest(1, lo), f2 = largest(2, lo);
+    let n = 1, f = f1;
+    if (!f1 || (f2 && f2 >= f1 * 1.2)) { n = 2; f = f2 || lo; }
     this._nameFitKey = key;
     this.el.style.setProperty('--name-fit', String(f));
     this.el.style.setProperty('--name-lines', String(n));
