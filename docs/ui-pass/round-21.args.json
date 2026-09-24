@@ -1,0 +1,30 @@
+{
+  "round": "r21",
+  "maxBuilders": 3,
+  "briefs": ["docs/ui-pass/BRIEF-r0.md", "docs/ui-pass/BRIEF-r1.md", "docs/ui-pass/BRIEF-r16.md", "docs/ui-pass/BRIEF-r21.md"],
+  "rubrics": ["docs/ui-pass/RUBRIC.md", "docs/ui-pass/RUBRIC-r21.md"],
+  "samples": ["UI/title.png", "UI/mainMenu.png", "UI/selectCompanion.png", "UI/selectKid.png"],
+  "tracks": [
+    {
+      "key": "floor",
+      "name": "FLOOR",
+      "rule": "refine",
+      "screens": ["combat", "combat-boss", "fight-greenhouse", "fight-graveyard", "fight-ballroom"],
+      "baseline": "CHINTZ",
+      "builders": [
+        {
+          "slot": "a", "code": "PRUSSIAN", "port": 9011,
+          "angle": "LITERAL. Work BRIEF-r21's fix list 1 to 3 in order and exactly as written. Item 1 first: find every hard edge the room shader draws and antialias it to its own screen-space width, measuring each before and after on a Deck-tier crop at 2x nearest-neighbour AND at HIGH so nothing gets softer. Then item 2, then the sweep. The literal angle won round 20."
+        },
+        {
+          "slot": "b", "code": "OXBLOOD", "port": 9012,
+          "angle": "THE GROUND FIRST. Item 2 is your round: make the room's floor and the combatants' floor line ONE plane, in every wing -- decide from the five judged fights whether the camera rigs (each region's cam in fx/atmosphere.js) should bring the floor up, or the stage should bring the line down, and justify it with measurements of where the floor meets the line in each. Give every combatant a shadow in the room's own light and a flier a shadow under it. Then item 1, the lines, because a floor you can now see must not stair-step."
+        },
+        {
+          "slot": "c", "code": "CELADON", "port": 9013,
+          "angle": "THE INKED LINE. The samples are drawn: every edge is a crisp, smooth ink line. Treat item 1 as drawing, not filtering -- rebuild the room shader's line primitives (strings, rails, balusters, flutes, mouldings, bars) as analytic distance-field strokes with a pixel-width-aware edge, so they read as ink at 0.8 upscaled and at 1.0 alike, and never as blur. Then item 2's floor, then the sweep."
+        }
+      ]
+    }
+  ]
+}
