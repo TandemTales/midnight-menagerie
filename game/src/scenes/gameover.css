@@ -521,7 +521,10 @@
   display: grid; place-items: center;
   width: clamp(28px, 2.1vw, 34px); aspect-ratio: 1;
   border-radius: 50%;
-  background: url("../../assets/ui/kit/button.webp") 50% 50% / 100% 100% no-repeat;
+  /* the house's one enamel, glazed (ui/kit.css "hardware") */
+  background:
+    url("../../assets/ui/kit/hw-glaze.webp") 50% 50% / 100% 100% no-repeat,
+    url("../../assets/ui/kit/button.webp") 50% 50% / 100% 100% no-repeat;
   color: var(--kit-gold-hi);
   filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .8));
 }
@@ -903,12 +906,13 @@
     linear-gradient(90deg, transparent 0%, color-mix(in srgb, var(--kit-gold-lo) 66%, transparent) 22%, color-mix(in srgb, var(--kit-gold-lo) 66%, transparent) 46%, transparent 47.5%, transparent 52.5%, color-mix(in srgb, var(--kit-gold-lo) 66%, transparent) 54%, color-mix(in srgb, var(--kit-gold-lo) 66%, transparent) 78%, transparent 100%) 0 4px / 100% 1px no-repeat;
   filter: drop-shadow(0 1px 0 rgba(0, 0, 0, .8));
 }
-.go-keep__sigil {
+/* the Keepsake itself, painted, in the house's velvet well (ui/kit.css
+   .kit-hw-well > .kit-obj) */
+.go-keep__sigil.kit-hw-well {
   grid-area: i;
-  display: grid; place-items: center;
-  width: clamp(28px, 2vw, 32px); aspect-ratio: 1; border-radius: 50%;
-  background: url("../../assets/ui/kit/button.webp") 50% 50% / 100% 100% no-repeat;
-  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, .8));
+  --well: clamp(30px, 2.1vw, 34px);
+  margin-block: -2px;
+  width: var(--well); height: var(--well);
 }
 .go-keep__sigil svg { width: 54%; height: 54%; fill: none; stroke: var(--kit-gold-hi);
                       stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
@@ -1028,7 +1032,7 @@
 
 /* ── the Steam Deck and every short laptop panel ──────────────────────────── */
 @media (max-height: 860px) {
-  .go-board { --go-mvp-s: .8; }
+  .go-board { --go-mvp-s: .94; }
   .go-head { margin-top: 12px; }
   .go-head.kit-titleblock--compact { --cart-h: 82px; }
   /* the Heart's three sentences still need their taller plaque on a short
@@ -1059,11 +1063,11 @@
   .go-stats.kit-stats { margin-top: 10px; }
   .go-stats .kit-stats__value { font-size: 17px; line-height: 1.05; }
   .go-trick.go-trick { --plate-h: 22px; --coin: 17px; gap: 6px; padding: 1px 1px 2px 0; }
-  .go-trick.go-trick .go-trick__name { font-size: 11.5px; line-height: 1.12; }
+  .go-trick.go-trick .go-trick__name { font-size: 12px; line-height: 1.12; }
   .go-keep { padding-block: 1px 2px; }
   .go-keep b { font-size: 13px; line-height: 1.1; }
   .go-keep em { font-size: 12px; line-height: 1.14; }
-  .go-keep__sigil { width: 26px; }
+  .go-keep__sigil.kit-hw-well { --well: 29px; }
   /* the way home's filigree medallion reaches up past its plate: the row
      stands a little lower, and the medallion a step smaller, so it never
      crosses the last figure on the plate above */

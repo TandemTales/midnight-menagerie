@@ -23,7 +23,7 @@ import { bus } from '../core/bus.js';
 import { TERMS, NodeType, COMPANIONS } from '../data/schema.js';
 import { cardById } from '../data/cards.js';
 import { plural } from '../util/plural.js';
-import { relicSigil } from '../data/relics.js';
+import { objectHtml, keepsakeKey } from '../ui/objects.js';
 import { RoomScene, esc } from './reward.js';
 import { act, ACT, deckIndex } from '../net/actions.js';
 import { INPUT } from '../net/session.js';
@@ -597,11 +597,11 @@ export class RestScene extends RoomScene {
       // The 1-4 keys choose the first four (_bindKeys): each of those wears its
       // key on a small enamel badge at the corner of its rail.
       b.innerHTML = `${i < 4 ? `<span class="rs-door__key kit-num" aria-hidden="true">${i + 1}</span>` : ''}
-        <span class="rs-door__glyph" aria-hidden="true">${DOOR_GLYPH[o.id]}</span>
+        <span class="rs-door__glyph${DOOR_OBJECT[o.id] ? ' kit-hw-well' : ''}" aria-hidden="true">${DOOR_OBJECT[o.id] ? objectHtml(DOOR_OBJECT[o.id], { well: false }) : DOOR_GLYPH[o.id]}</span>
         <span class="rs-door__txt">
           <b>${esc(o.name)}</b>
           <em>${esc(o.blurb)}</em>
-          <span class="rs-door__read kit-plate">${o.readout}</span>
+          <span class="rs-door__read kit-hw-plate">${o.readout}</span>
           <span class="rs-door__note">${o.can ? o.note : esc(o.why)}</span>
         </span>`;
       b.addEventListener('click', () => this._choose(o));
@@ -833,7 +833,7 @@ export class RestScene extends RoomScene {
         row.setAttribute('aria-selected', 'false');
         row.dataset.id = it.id;
         row.innerHTML = `
-          <span class="rs-forgerow__sig"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="${relicSigil(it.id)}"/></svg></span>
+          <span class="rs-forgerow__sig kit-hw-well" aria-hidden="true">${objectHtml(keepsakeKey(it.id), { well: false })}</span>
           <span class="rs-forgerow__txt">
             <b>${esc(it.name)}</b>
             <span class="rs-ba">
@@ -911,6 +911,13 @@ export class RestScene extends RoomScene {
     });
   }
 }
+
+/* What each door IS, painted (ui/objects.js, tools/hw_objects.py): the house's
+   own objects in its velvet wells, not line icons in rings. DOOR_GLYPH stays
+   the fallback for a door without a painting. */
+const DOOR_OBJECT = {
+  rest: 'pillow', upgrade: 'whetstone', forge: 'forge-candle', sit: 'teacup', mend: 'mend', clone: 'clone',
+};
 
 const DOOR_GLYPH = {
   rest: '<svg viewBox="0 0 24 24"><path d="M4 17v-5a4 4 0 0 1 4-4h8a4 4 0 0 1 4 4v5M2 17h20v3H2ZM7 8V6a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2"/></svg>',

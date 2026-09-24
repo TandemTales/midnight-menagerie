@@ -65,6 +65,9 @@ import { relicSigil } from '../data/relics.js';
 // The Backpack is the authority on what Gear the kid is carrying; the engine
 // only sees the subset with combat hooks. See gearList() below.
 import { itemById } from '../data/backpack.js';
+// Round 19: a Keepsake or a Snack on the rail is the house's small painted
+// object (ui/objects.js), the same picture the Shop sells it under.
+import { objectUrl, keepsakeKey, snackKey, gearKey } from './objects.js';
 
 /* ── Gear, Clue and Luck chip styling ────────────────────────────────────────
    This belongs in ui/hud.css beside `.mm-hud__relic`, and it is here instead
@@ -113,6 +116,9 @@ const GEAR_CSS = `
   stroke-linecap: round; stroke-linejoin: round;
 }
 .mm-hud__gearchip .mm-hud__relicn { background: var(--kit-moon); }
+/* round 19: a painted item sits in the house's velvet well instead */
+.mm-hud__gearchip.has-obj { background: url("assets/ui/kit/hw-well.webp") 50% 50% / 100% 100% no-repeat; }
+.mm-hud__gearobj { width: 104%; }
 
 /* The wing sub-label. At --text-lo the chip measures 4.38:1 against the room
    behind it (tests/chrome/run.py measures real pixels, and the shorter "Wing 1"
@@ -393,14 +399,36 @@ export class HUD {
     this._snacks = snacks;
     this.$snacks.textContent = '';
     this.$snacks.dataset.live = live ? '1' : '0';
-    for (let i = 0; i < cap_; i++) {
-      const s = snacks[i];
+    /* Round 19 (the rail at 1280): the EMPTY settings collapse into ONE, which
+       carries how many are free — three dark circles in a row were a third of
+       the room the rail was short of on the Steam Deck, and said nothing the
+       one does not. A Snack you carry is its own painted sweet in its setting. */
+    const free = Math.max(0, cap_ - snacks.length);
+    const slots = snacks.slice(0, cap_).map((s, i) => [s, i]);
+    if (free) slots.push([null, snacks.length]);
+    for (const [s, i] of slots) {
       // A filled slot is a real button only where eating one is a real action.
       // Everywhere else it is a focusable, hoverable read-out that says why.
       const slot = document.createElement(s && live ? 'button' : 'div');
       slot.className = 'mm-hud__snack' + (s ? '' : ' is-empty');
       slot.tabIndex = 0;
-      slot.appendChild(icon('res.snack'));
+      const pic = s ? objectUrl(snackKey(s.id)) : null;
+      if (pic) {
+        const o = document.createElement('i');
+        o.className = 'kit-obj mm-hud__snackobj';
+        o.style.setProperty('--obj', `url('${pic}')`);
+        o.setAttribute('aria-hidden', 'true');
+        slot.appendChild(o);
+      } else if (s) {
+        slot.appendChild(icon('res.snack'));
+      }
+      if (!s && free > 1) {
+        const n = document.createElement('b');
+        n.className = 'mm-hud__snackfree';
+        n.textContent = `×${free}`;
+        n.setAttribute('aria-hidden', 'true');
+        slot.appendChild(n);
+      }
       if (s) {
         slot.dataset.tipTitle = s.name || 'Snack';
         const what = s.desc || s.text || 'A one-use Snack.';
@@ -420,9 +448,9 @@ export class HUD {
           slot.setAttribute('aria-label', `${s.name || 'Snack'} in your pocket. ${what}`);
         }
       } else {
-        slot.dataset.tipTitle = 'Empty Snack slot';
+        slot.dataset.tipTitle = free > 1 ? `${free} empty Snack slots` : 'Empty Snack slot';
         slot.dataset.tip = `You can carry ${cap_} Snacks. Find them in treasure, at Mr. Moth's and in Curiosities.`;
-        slot.setAttribute('aria-label', 'Empty Snack slot');
+        slot.setAttribute('aria-label', free > 1 ? `${free} empty Snack slots` : 'Empty Snack slot');
       }
       this.$snacks.appendChild(slot);
     }
@@ -443,7 +471,8 @@ export class HUD {
     if (!relics.length) {
       const none = document.createElement('span');
       none.className = 'mm-hud__norelics';
-      none.textContent = 'No Keepsakes yet';
+      // round 19: shorter, so the rail holds one row on the Steam Deck
+      none.textContent = 'No Keepsakes';
       none.tabIndex = 0;
       none.dataset.kw = 'keepsake';
       this.$relics.appendChild(none);
@@ -589,7 +618,7 @@ function keepsakeChip(k) {
   chip.className = 'mm-hud__relic';
   chip.setAttribute('role', 'listitem');
   chip.dataset.rarity = k.rarity || 'common';
-  chip.appendChild(sigil(k.id));
+  chip.appendChild(keepsakePicture(k.id));
   if (k.counter != null) {
     const c = document.createElement('b');
     c.className = 'mm-hud__relicn';
@@ -651,7 +680,19 @@ function gearChip(g) {
   chip.setAttribute('role', 'listitem');
   const icon = String(g.icon || g.id || '').replace(/^gear\//, '');
   chip.dataset.gear = icon;
-  chip.appendChild(packGlyph(GEAR_GLYPHS[icon]));
+  /* round 19: the item itself, painted (ui/objects.js), in the house's round
+     velvet well; the stroked glyph only for an item with no painting */
+  const pic = gearKey(icon) && objectUrl(gearKey(icon));
+  if (pic) {
+    chip.classList.add('has-obj');
+    const o = document.createElement('i');
+    o.className = 'kit-obj mm-hud__gearobj';
+    o.style.setProperty('--obj', `url('${pic}')`);
+    o.setAttribute('aria-hidden', 'true');
+    chip.appendChild(o);
+  } else {
+    chip.appendChild(packGlyph(GEAR_GLYPHS[icon]));
+  }
   if (g.counter != null) {
     const c = document.createElement('b');
     c.className = 'mm-hud__relicn';
@@ -692,6 +733,18 @@ function packGlyph(paths = null) {
   }
   span.appendChild(svg);
   return span;
+}
+
+/** A Keepsake as the house's small painted object (ui/objects.js), set in its
+ *  brass socket; the line sigil only if a Keepsake has no painting. */
+function keepsakePicture(id) {
+  const url = objectUrl(keepsakeKey(id));
+  if (!url) return sigil(id);
+  const o = document.createElement('i');
+  o.className = 'kit-obj mm-hud__relicobj';
+  o.style.setProperty('--obj', `url('${url}')`);
+  o.setAttribute('aria-hidden', 'true');
+  return o;
 }
 
 /** A Keepsake's own drawing, in an `.mm-icon` box so it sits like every other. */

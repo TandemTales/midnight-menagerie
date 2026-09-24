@@ -29,6 +29,7 @@ import {
 } from '../data/backpack.js';
 import { HAUNTS } from '../data/haunts.js';
 import { paintBackdrop } from '../ui/kitboard.js';
+import { objectUrl } from '../ui/objects.js';
 
 const CSS_KIT  = new URL('../ui/portrait.css', import.meta.url).href;
 const CSS_CLUB = new URL('./clubhouse.css', import.meta.url).href;
@@ -654,7 +655,12 @@ export class ClubhouseScene extends Scene {
     const haunt = el('div', 'cl-haunt kit-panel kit-panel--damask');
     haunt.dataset.medal = 'shield';
     haunt.innerHTML = `<h3 class="cl-haunt__h kit-heading">${TERMS.ascension}</h3>`;
-    const row = el('div', 'haunt__row kit-ladder');
+    /* the ladder's rungs are candle stubs (ui/kit.css .kit-ladder--candles):
+       lit up to the chosen Haunt, cold past it — the house's own objects, not
+       dim discs like disabled web steppers */
+    const row = el('div', 'haunt__row kit-ladder kit-ladder--candles');
+    row.style.setProperty('--obj-lit', `url('${objectUrl('candle-lit')}')`);
+    row.style.setProperty('--obj-unlit', `url('${objectUrl('candle-unlit')}')`);
     row.setAttribute('role', 'radiogroup');
     row.setAttribute('aria-label', TERMS.ascension);
     /* The SOLO ladder. The Clubhouse is the single-player meta screen — a
@@ -668,6 +674,7 @@ export class ClubhouseScene extends Scene {
       b.dataset.haunt = String(lvl);
       b.setAttribute('role', 'radio');
       b.setAttribute('aria-checked', String(lvl === this.haunt));
+      b.classList.toggle('is-lit', lvl <= this.haunt);
       b.textContent = String(lvl);
       if (lvl > maxH) { b.disabled = true; b.classList.add('is-locked'); }
       b.title = `Haunt ${lvl}: ${name}. ${desc}`;
@@ -771,7 +778,10 @@ export class ClubhouseScene extends Scene {
       const b = e.target.closest('.haunt__pip');
       if (!b || b.disabled) return;
       this.haunt = Number(b.dataset.haunt);
-      for (const p of hrow.querySelectorAll('.haunt__pip')) p.setAttribute('aria-checked', String(Number(p.dataset.haunt) === this.haunt));
+      for (const p of hrow.querySelectorAll('.haunt__pip')) {
+        p.setAttribute('aria-checked', String(Number(p.dataset.haunt) === this.haunt));
+        p.classList.toggle('is-lit', Number(p.dataset.haunt) <= this.haunt);
+      }
       this._side.querySelector('.cl-haunt__desc').innerHTML = `<b>${HAUNTS[this.haunt][1]}</b> ${HAUNTS[this.haunt][2]}`;
     };
     hrow.addEventListener('click', onHaunt);

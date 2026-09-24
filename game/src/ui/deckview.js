@@ -103,10 +103,12 @@ export class DeckView {
     bar.className = 'mm-deck__bar';
 
     /* THE LOOK IS THE KIT'S (ui/kit.css), as on the boards: the count struck on
-       the enamel cartouche a price wears, the search lettered onto a nameplate
-       (.kit-field), each filter the quiet nameplate (.kit-select), Clear a
-       nameplate button, and the Tricks in the hand's own brass
-       (.kit-cards--nerve). deckview.css only lays them out. */
+       the enamel cartouche a price wears, the search inked on a slip of old
+       card (.kit-hw-slip), each filter one of the house's dial plates — what it
+       chooses by engraved on its upper band, the choice in its sunk window, a
+       brass finial at its end (.kit-hw-dial) — Clear a nameplate button, and
+       the Tricks in the hand's own brass (.kit-cards--nerve). deckview.css
+       only lays them out. */
 
     // count
     const count = document.createElement('div');
@@ -115,9 +117,9 @@ export class DeckView {
     this.countN = count.querySelector('b');
     this.countL = count.querySelector('span');
 
-    /* search: the nameplate to write on, with the glass struck on a round
-       enamel medallion seated in its left end, the way every plate in the
-       house wears a medallion on one end rather than an icon floated on it */
+    /* search: a slip of card to write on, the glass struck on a round enamel
+       button pinned over its left end — where you write in this house is
+       paper, what you press is enamel */
     const search = document.createElement('label');
     search.className = 'mm-deck__search';
     search.innerHTML = '<span class="sr-only">Search Tricks</span>';
@@ -128,7 +130,7 @@ export class DeckView {
     search.prepend(glassCap);
     const input = document.createElement('input');
     input.type = 'search'; input.placeholder = 'Search…'; input.autocomplete = 'off';
-    input.className = 'kit-field';
+    input.className = 'kit-hw-slip';
     input.addEventListener('input', () => { this.filters.q = input.value.trim().toLowerCase(); this._apply(); });
     search.appendChild(input);
 
@@ -145,10 +147,10 @@ export class DeckView {
     );
 
     const sortWrap = document.createElement('label');
-    sortWrap.className = 'mm-deck__sortwrap kit-select-wrap';
-    sortWrap.innerHTML = '<span class="mm-deck__label kit-rubric">Sort</span>';
+    sortWrap.className = 'mm-deck__sortwrap kit-hw-dial';
+    sortWrap.innerHTML = '<span class="mm-deck__label kit-hw-dial__label">Sort</span><i class="kit-hw-finial" aria-hidden="true"></i>';
     const sortSel = document.createElement('select');
-    sortSel.className = 'mm-deck__select kit-select';
+    sortSel.className = 'mm-deck__select kit-hw-dial__sel';
     for (const [v, l] of [['name', 'Name'], ['cost', 'Nerve cost'], ['type', 'Type'], ['rarity', 'Rarity']]) {
       const op = document.createElement('option'); op.value = v; op.textContent = l; sortSel.appendChild(op);
     }
@@ -233,15 +235,20 @@ export class DeckView {
   }
 
   _select(label, key, options) {
+    /* one of the house's dial plates (ui/kit.css .kit-hw-dial): the filter's
+       name engraved on its upper band, the choice in its window, a brass
+       finial at its end; its window lights while it filters anything out */
     const wrap = document.createElement('label');
-    wrap.className = 'mm-deck__sortwrap kit-select-wrap';
-    wrap.innerHTML = `<span class="mm-deck__label kit-rubric">${label}</span>`;
+    wrap.className = 'mm-deck__sortwrap kit-hw-dial';
+    wrap.innerHTML = `<span class="mm-deck__label kit-hw-dial__label">${label}</span><i class="kit-hw-finial" aria-hidden="true"></i>`;
     const sel = document.createElement('select');
-    sel.className = 'mm-deck__select kit-select';
+    sel.className = 'mm-deck__select kit-hw-dial__sel';
     for (const [v, l] of options) {
       const op = document.createElement('option'); op.value = v; op.textContent = l; sel.appendChild(op);
     }
-    sel.addEventListener('change', () => { this.filters[key] = sel.value; this._apply(); });
+    const lit = () => wrap.classList.toggle('is-set', sel.value !== 'all');
+    this._lits = [...(this._lits || []), lit];
+    sel.addEventListener('change', () => { this.filters[key] = sel.value; lit(); this._apply(); });
     wrap.appendChild(sel);
     (this._sels ||= []).push([key, sel]);
     return wrap;
@@ -251,6 +258,7 @@ export class DeckView {
   _clearFilters() {
     this.filters = { type: 'all', cost: 'all', rarity: 'all', upgraded: 'all', q: '' };
     for (const [, sel] of this.selects) sel.value = 'all';
+    for (const lit of this._lits || []) lit();
     const q = this.el.querySelector('.mm-deck__search input');
     if (q) q.value = '';
     this._apply();

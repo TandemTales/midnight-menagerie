@@ -23,7 +23,8 @@ import { clock } from '../core/clock.js';
 import { passTo, shouldHandOff } from '../ui/handoff.js';
 import { TERMS, NodeType } from '../data/schema.js';
 import { cardById } from '../data/cards.js';
-import { relicById, relicSigil } from '../data/relics.js';
+import { relicById } from '../data/relics.js';
+import { objectHtml, keepsakeKey } from '../ui/objects.js';
 import { Run } from '../state/run.js';
 import { act, ACT } from '../net/actions.js';
 import { INPUT } from '../net/session.js';
@@ -558,7 +559,7 @@ export class RewardScene extends RoomScene {
       </div>
       ${k ? `
       <div class="rw-keepsake kit-panel" data-medal="star" data-rarity="${esc(k.rarity)}">
-        <span class="rw-keepsake__sig"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="${relicSigil(k.id)}"/></svg></span>
+        <span class="rw-keepsake__sig kit-hw-well" aria-hidden="true">${objectHtml(keepsakeKey(k.id), { well: false })}</span>
         <div>
           <span class="rw-keepsake__k">${esc(TERMS.relic)} &middot; ${esc(k.rarity)}</span>
           <b>${esc(k.name)}</b>

@@ -219,12 +219,13 @@ export async function openSettings(ctx = {}) {
   // Same notation as Select, the HUD and Game Over — see formatSeed() in ui/portrait.js.
   const rawSeed = ctx.run ? ctx.run.seed : (Save?.data?.nextSeed ?? null);
   const curSeed = (rawSeed === undefined || rawSeed === null) ? '—' : formatSeed(rawSeed);
-  // the seed struck on the Companion tiles' dark enamel cartouche
+  // the seed ENGRAVED on a brass key tag (the house's hardware, ui/kit.css
+  // .kit-hw-tag) — a tag left blank and unpolished when there is none
   cur.innerHTML =
     `<div class="mm-set__label"><span>Current expedition</span>` +
     `<span class="mm-set__hint">A seed reproduces a run exactly: the same rooms, rewards and shop stock.</span></div>` +
     `<i class="kit-leader mm-set__lead" aria-hidden="true"></i>` +
-    `<output class="mm-set__seed kit-enamel kit-enamel--dark${rawSeed == null ? ' is-empty' : ''}"><b class="kit-enamel__value">${escape_(curSeed)}</b></output>`;
+    `<output class="mm-set__seed kit-hw-tag${rawSeed == null ? ' is-empty is-blank' : ''}"><b class="kit-enamel__value">${escape_(curSeed)}</b></output>`;
   seedFs.appendChild(cur);
 
   const entry = document.createElement('div');
@@ -235,7 +236,8 @@ export async function openSettings(ctx = {}) {
     `<i class="kit-leader mm-set__lead" aria-hidden="true"></i>`;
   const seedIn = document.createElement('input');
   seedIn.type = 'text';
-  seedIn.className = 'mm-set__text kit-field';
+  /* somewhere to write: a slip of old card with an inked baseline */
+  seedIn.className = 'mm-set__text kit-hw-slip';
   seedIn.placeholder = 'random';
   seedIn.maxLength = 24;
   seedIn.value = Save?.data?.nextSeed ?? '';
@@ -423,19 +425,21 @@ function buildRow(ctx, Save, item, rerender) {
 
   if (item.type === 'range') {
     /* A REAL range input, so the keyboard, the pad and the tests drive it as
-       one. Behind its bare track lies the Courage bar's brass tube
-       (.kit-tube--warm), its amber enamel filled as far as the value; the thumb
-       is the boards' round enamel button; the value is the ledger's figure at
+       one. Behind its bare track lies the house's groove (ui/kit.css
+       .kit-hw-groove), its gilt run as far as the value; the thumb is the
+       milled brass knob (hw-knob.webp); the value is the ledger's figure at
        the end of its line, in gold lining numerals. `--v` (0..1) is the only
        thing the picture needs. */
     const wrap = document.createElement('div');
     wrap.className = 'mm-set__rangewrap';
     const slot = document.createElement('div');
     slot.className = 'mm-set__slot';
+    /* the groove the knob runs in (ui/kit.css .kit-hw-groove): a channel sunk
+       in a gilt-rimmed plate, a run of gilt in it as far as the knob */
     const tube = document.createElement('span');
-    tube.className = 'mm-set__tube kit-tube kit-tube--warm';
+    tube.className = 'mm-set__tube kit-hw-groove';
     tube.setAttribute('aria-hidden', 'true');
-    tube.innerHTML = '<span class="kit-tube__fill"></span>';
+    tube.innerHTML = '<span class="kit-hw-groove__fill"></span>';
     const input = document.createElement('input');
     input.type = 'range'; input.id = id;
     input.min = String(item.min); input.max = String(item.max); input.step = String(item.step);
@@ -466,15 +470,13 @@ function buildRow(ctx, Save, item, rerender) {
     rerender.push(() => { input.value = String(get(Save, item.key)); show(); });
 
   } else if (item.type === 'toggle') {
-    /* ONE ENGRAVED SWITCH, WHICH SAYS ITS OWN STATE. Round 5's judges found
-       every row carrying a slider-switch AND a separate OFF/ON pill beside it —
-       the control drawn twice, which is what makes a row read as a web form.
-       So the state is lettered INTO the switch, the way a brass rocker plate is
-       engraved: the Courage bar's tube, its amber lit the length of it when the
-       switch is on, the round enamel button riding to that end with a gold
-       check struck in it, and the word cut into the tube's field at the end the
-       button is NOT — ON behind it, OFF in front of it. One object; and
-       `aria-checked` on the switch itself is what a reader is told. */
+    /* ONE SWITCH PLATE, WHICH SAYS ITS OWN STATE. Round 5's judges found every
+       row carrying a slider-switch AND a separate OFF/ON pill; round 19's
+       survey found the switch that replaced them still "a dark disc beside a
+       thin bar with OFF in it". It is the house's two-position plate now
+       (ui/kit.css .kit-hw-switch): OFF and ON cut into two sunk wells of a
+       gilt-rimmed plate, the setting's well lit. One object; `aria-checked` on
+       the switch itself is what a reader is told. */
     const btn = document.createElement('button');
     btn.type = 'button'; btn.id = id;
     btn.className = 'mm-set__toggle';
@@ -483,11 +485,11 @@ function buildRow(ctx, Save, item, rerender) {
       const on = !!get(Save, item.key);
       btn.setAttribute('aria-checked', String(on));
       btn.dataset.on = on ? '1' : '0';
+      /* a two-position engraved plate (ui/kit.css .kit-hw-switch): OFF | ON
+         in two sunk wells, the setting's well lit */
       btn.innerHTML =
-        `<i class="mm-set__switch" aria-hidden="true">`
-        + `<i class="mm-set__tube kit-tube kit-tube--warm"><i class="kit-tube__fill"></i></i>`
-        + `<b class="mm-set__word">${on ? 'On' : 'Off'}</b>`
-        + `<i class="mm-set__knob"><svg viewBox="0 0 24 24">${LEDGER_GLYPH.check}</svg></i></i>`;
+        `<i class="mm-set__switch kit-hw-switch" data-on="${on ? 1 : 0}" aria-hidden="true">`
+        + `<b class="kit-hw-switch__pos">Off</b><b class="kit-hw-switch__pos">On</b></i>`;
     };
     btn.addEventListener('click', () => { setSetting(ctx, item.key, !get(Save, item.key)); paint(); });
     paint();
@@ -500,8 +502,9 @@ function buildRow(ctx, Save, item, rerender) {
     grp.setAttribute('role', 'radiogroup');
     grp.setAttribute('aria-label', item.label);
     const btns = [];
-    /* a row of the boards' nameplates: the chosen one lit gold with the
-       boards' four-point star set before its name, the rest the quiet plate */
+    /* a row of the house's engraved plates (ui/kit.css .kit-hw-choice): the
+       chosen one lit like a switch's setting, the boards' four-point star set
+       before its name, the rest the dark plate */
     const paint = () => {
       const v = get(Save, item.key);
       for (const b of btns) {
@@ -509,12 +512,11 @@ function buildRow(ctx, Save, item, rerender) {
         b.setAttribute('aria-checked', String(on));
         b.tabIndex = on ? 0 : -1;
         b.dataset.on = on ? '1' : '0';
-        b.classList.toggle('kit-btn--quiet', !on);
       }
     };
     for (const [value, text] of item.options) {
       const b = document.createElement('button');
-      b.type = 'button'; b.className = 'mm-set__choice kit-btn';
+      b.type = 'button'; b.className = 'mm-set__choice kit-hw-choice';
       b.setAttribute('role', 'radio');
       b.dataset.value = value;
       b.innerHTML = `<i class="mm-set__star" aria-hidden="true"></i><span class="mm-set__choicename">${escape_(text)}</span>`;

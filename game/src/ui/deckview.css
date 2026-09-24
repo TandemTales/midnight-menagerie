@@ -4,11 +4,11 @@
    own pieces, which deckview.js puts on as classes:
      the count        .kit-enamel          struck on the enamel cartouche a
                                            price or a rarity wears ("5 TRICKS")
-     the search       .kit-field           lettered onto a nameplate
-     each filter      .kit-select          an engraved nameplate: what it sorts
-                      .kit-select-wrap     by cut into its upper edge, the choice
-                                           lettered under it, a cast brass
-                                           chevron in an enamel boss at its end
+     the search       .kit-hw-slip         inked on a slip of old card
+     each filter      .kit-hw-dial         a dial plate: what it sorts by
+                                           engraved on its upper band, the
+                                           choice in a sunk window, a brass
+                                           finial at the window's end
      Clear            .kit-btn--quiet      a nameplate
      the case         .kit-stage           the panels' rail round a velvet-lined
                       .kit-liner           case, its floor the boards' embossed
@@ -33,6 +33,14 @@
   min-height: 0;
 }
 
+/* Round 19: a solid scrim -- the fight behind the case is put out, not
+   turned down (settings.css says why) */
+.mm-modal:has(.mm-deck) .mm-modal__scrim {
+  background:
+    radial-gradient(60% 55% at 92% 96%, color-mix(in srgb, var(--kit-candle) 8%, transparent), transparent 70%),
+    radial-gradient(90% 80% at 50% 50%, var(--kit-ground-1) 0%, var(--kit-void) 100%);
+}
+
 /* ── bar: count + search, centred on the panel like a board's plaque row ─── */
 .mm-deck__bar {
   display: flex; align-items: center; justify-content: center;
@@ -54,20 +62,15 @@
   flex: 0 1 clamp(260px, 26vw, 360px); min-width: 0;
   color: var(--kit-gold);
 }
-.mm-deck__search .kit-field {
-  --field-h: inherit;
+/* somewhere to write is a slip of old card, inked in the clerk's brown
+   (ui/kit.css .kit-hw-slip), the glass's enamel button pinned over its end */
+.mm-deck__search .kit-hw-slip {
+  --slip-h: var(--field-h);
   width: 100%;
-  padding-left: calc(var(--field-h) * 1.06);
+  padding-left: calc(var(--field-h) * 1.02);
   text-align: left;
-  font-size: calc(var(--field-h) * .4);
-  letter-spacing: .02em;
-  /* the filters' own lit enamel plate, not a black slot beside them */
-  border-image-source: url("../../assets/ui/kit/plate-lit.webp");
+  font-size: calc(var(--field-h) * .42);
 }
-.mm-deck__search .kit-field::placeholder { color: var(--kit-text-mid); }
-/* the glass is STRUCK ON A MEDALLION seated in the plate's left end, the way
-   every plate in the house wears a round enamel button on one end — it used to
-   be a bare 17px icon floated on the plate, which is a web search box */
 .mm-deck__cap.kit-medallion {
   --md: calc(var(--field-h) * 1.04);
   position: absolute; z-index: 2; left: calc(var(--field-h) * -.13); top: 50%;
@@ -102,43 +105,23 @@
 }
 .mm-deck__bar { padding-bottom: calc(var(--rub-h) * .2); }
 .mm-deck__bar::before { left: 18%; right: 18%; }
-/* the rule the plates are mounted on runs behind the PLATES, not behind the
-   plates and their tags together, so it stays on the row's carved middle */
-.mm-deck__filters::before { top: calc(50% + var(--rub-h) * .22); }
-/* ── A FILTER IS TWO OBJECTS ────────────────────────────────────────────────
-   The tag says what the plate chooses BY; the plate carries the choice. They
-   used to be one short capsule with a tiny caption crammed into its top and a
-   caret stuck on its end — which is a web select box with gilt on it. Now the
-   tag is the Companion tiles' own small notched cartouche (.kit-rubric),
-   pinned over the plate's upper rail and standing proud of it, and the plate
-   below carries one piece of lettering at a size it can be read at. */
-.mm-deck__sortwrap {
-  --field-h: clamp(42px, 5.3vh, 48px);
-  position: relative; display: block;
-  /* the tag's lower half laps ONTO the plate's top rail: pinned to it, not
-     floating over it */
-  padding-top: calc(var(--rub-h) * .44);
+.mm-deck__filters::before { top: 50%; }
+/* ── each filter is one of the house's dial plates (ui/kit.css .kit-hw-dial):
+   round 19's survey found "five rounded selects with chevron circles, a web
+   filter bar". A dial plate is one gilt-rimmed object: what it chooses BY is
+   engraved across its upper band, the choice is lettered in the window sunk
+   below it, and a cast brass finial at the window's end says it opens. */
+.mm-deck__sortwrap.kit-hw-dial {
+  --dial-h: clamp(54px, 6.8vh, 62px);
+  min-width: calc(var(--dial-h) * 2.75);
 }
-.mm-deck__label.kit-rubric {
-  position: absolute; z-index: 3; left: 50%; top: 0;
-  translate: -50% 0;
-  pointer-events: none;
-}
-.mm-deck__select.kit-select {
-  --field-h: inherit;
-  min-width: calc(var(--field-h) * 2.95);
-  padding: 1px calc(var(--field-h) * .92) 0 calc(var(--field-h) * .5);
-  text-align: center; text-align-last: center;
-  font-size: calc(var(--field-h) * .37);
-  line-height: 1.1;
-  /* the Companion tiles' lit enamel plate: a nameplate, not a slot */
-  border-image-source: url("../../assets/ui/kit/plate-lit.webp");
-}
+.mm-deck__sortwrap .kit-hw-dial__label { font-size: max(11.5px, calc(var(--dial-h) * .19)); }
+.mm-deck__sortwrap .kit-hw-dial__sel { font-size: max(14px, calc(var(--dial-h) * .28)); }
 /* nothing to clear is still a plate, and it stands on the plates' own line —
    not on the tags' */
 .mm-deck__clear.kit-btn {
-  --plate-h: clamp(42px, 5.3vh, 48px);
-  align-self: flex-end;
+  --plate-h: clamp(38px, 4.8vh, 44px);
+  align-self: center;
   border-image-source: url("../../assets/ui/kit/plate-lit.webp");
 }
 /* with nothing to clear it is still the filters' own plate, only its lettering
