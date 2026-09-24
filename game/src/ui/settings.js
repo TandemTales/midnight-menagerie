@@ -426,8 +426,9 @@ function buildRow(ctx, Save, item, rerender) {
   if (item.type === 'range') {
     /* A REAL range input, so the keyboard, the pad and the tests drive it as
        one. Behind its bare track lies the house's groove (ui/kit.css
-       .kit-hw-groove), its gilt run as far as the value; the thumb is the
-       milled brass knob (hw-knob.webp); the value is the ledger's figure at
+       .kit-hw-groove), its gilt run as far as the value and its quarters
+       engraved along it; the thumb is a cast brass cog with a violet cabochon
+       seated inside the plate (hw-cog.webp); the value is the ledger's figure at
        the end of its line, in gold lining numerals. `--v` (0..1) is the only
        thing the picture needs. */
     const wrap = document.createElement('div');
@@ -437,7 +438,7 @@ function buildRow(ctx, Save, item, rerender) {
     /* the groove the knob runs in (ui/kit.css .kit-hw-groove): a channel sunk
        in a gilt-rimmed plate, a run of gilt in it as far as the knob */
     const tube = document.createElement('span');
-    tube.className = 'mm-set__tube kit-hw-groove';
+    tube.className = 'mm-set__tube kit-hw-groove kit-hw-groove--ticks';
     tube.setAttribute('aria-hidden', 'true');
     tube.innerHTML = '<span class="kit-hw-groove__fill"></span>';
     const input = document.createElement('input');
@@ -489,7 +490,9 @@ function buildRow(ctx, Save, item, rerender) {
          in two sunk wells, the setting's well lit */
       btn.innerHTML =
         `<i class="mm-set__switch kit-hw-switch" data-on="${on ? 1 : 0}" aria-hidden="true">`
-        + `<b class="kit-hw-switch__pos">Off</b><b class="kit-hw-switch__pos">On</b></i>`;
+        + `<b class="kit-hw-switch__pos">Off</b><b class="kit-hw-switch__pos">On</b>`
+        // round 19 graft: the lever on its brass pivot, thrown toward the setting
+        + `<i class="kit-hw-switch__lever"></i></i>`;
     };
     btn.addEventListener('click', () => { setSetting(ctx, item.key, !get(Save, item.key)); paint(); });
     paint();

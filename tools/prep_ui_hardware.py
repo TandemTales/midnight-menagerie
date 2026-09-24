@@ -21,7 +21,7 @@ outline) so the hardware is the same metal as the rails and the medallions:
               hw-cog.webp        a cast brass cog with a violet cabochon: a
                                  slider's knob (round 19 graft, after KERMES)
               hw-lever.webp      a switch's lever: a brass shank and ball on a
-                                 hub, thrown about the canvas's centre
+                                 hub, thrown about the canvas's centre (96)
   ENGRAVED    hw-switch.webp     a two-position switch plate: a gilt rim round
   PLATE                          two sunk wells, a brass pivot between them
                                  with the lever's gate cut above it; the lit
@@ -296,9 +296,10 @@ def hw_switch():
 
     ROUND 19 GRAFT: two judges preferred KERMES's switch, "an engraved brass
     plate with a physical lever on a brass pivot", and one warned its lever
-    stood up above the plate. So the mullion is wide enough to hold a lever
-    whose ball stays INSIDE the plate at either throw: the pivot at (120, 44),
-    the gate an arc of radius 21 about it, 32 degrees either side."""
+    stood up above the plate. So the pivot sits low in a mullion wide enough
+    to hold a lever whose ball stays INSIDE the plate at either throw: the
+    pivot at (120, 50), the gate an arc of radius 36 about it, 25 degrees
+    either side (the kit throws it 25)."""
     W, H = 240, 64
     p = Pic(seed=23, n=W, h=H)
     n = 12
@@ -309,16 +310,16 @@ def hw_switch():
         p.part(R(x0 - 2.5, 10.5, x1 + 2.5, H - 10.5, 4), "brass", bevel=2, shadow=.4)
         p.part(R(x0, 13, x1, H - 13, 2.5), ("#020103", "#0d0812", "#2e2238"), prof="recess", bevel=5, gloss=.15, shadow=0)
     # the gate: a slot on an arc about the pivot, lipped in brass
-    cx, cy, rr = 120, 44, 21
-    outer = arc_pts(cx, cy, rr + 4.2, rr + 4.2, -90 - 34, -90 + 34, 24)
-    inner = arc_pts(cx, cy, rr - 4.2, rr - 4.2, -90 + 34, -90 - 34, 24)
+    cx, cy, rr = 120, 50, 30
+    outer = arc_pts(cx, cy, rr + 3.6, rr + 3.6, -90 - 29, -90 + 29, 24)
+    inner = arc_pts(cx, cy, rr - 3.6, rr - 3.6, -90 + 29, -90 - 29, 24)
     p.part(P(outer + inner), "brass", bevel=1.6, shadow=.35)
-    outer = arc_pts(cx, cy, rr + 2.4, rr + 2.4, -90 - 32, -90 + 32, 24)
-    inner = arc_pts(cx, cy, rr - 2.4, rr - 2.4, -90 + 32, -90 - 32, 24)
+    outer = arc_pts(cx, cy, rr + 1.9, rr + 1.9, -90 - 27, -90 + 27, 24)
+    inner = arc_pts(cx, cy, rr - 1.9, rr - 1.9, -90 + 27, -90 - 27, 24)
     p.part(P(outer + inner), ("#020103", "#0a0610", "#241a2c"), prof="recess", bevel=3, gloss=.1, shadow=0)
     # the pivot's boss
-    p.part(E(cx, cy, 8.5), "brass", bevel=3, shadow=.45)
-    p.ink(arc_pts(cx, cy, 5.2, 5.2, 0, 360, 40), w=.8, alpha=.6)
+    p.part(E(cx, cy, 7), "brass", bevel=3, shadow=.45)
+    p.ink(arc_pts(cx, cy, 4.2, 4.2, 0, 360, 40), w=.8, alpha=.6)
     for x, y in ((9, 9), (W - 9, 9), (9, H - 9), (W - 9, H - 9)):
         p.part(E(x, y, 2.4), "brass", prof="sphere", shadow=.35)
     return _save_pic(p, "hw-switch.webp")
@@ -326,16 +327,17 @@ def hw_switch():
 
 def hw_lever():
     """The switch's lever, standing up from its pivot: a tapered brass shank
-    and a turned ball on its end, on a hub. The pivot is the canvas's centre
-    (32, 32) so the kit can throw it by rotating the picture; the ball's top
-    is 25 units above the pivot, which on the switch plate (pivot 20 units
-    under the plate's top rim at 64) keeps it inside the rim at either throw."""
-    p = Pic(seed=30, n=64)
-    p.part(P([(29.6, 33), (34.4, 33), (33.2, 14), (30.8, 14)]), "brass", bevel=1.8, shadow=.6)
-    p.part(E(32, 11.5, 5.6), "brass", prof="sphere", shadow=.55)
-    p.paint(E(30.2, 9.6, 1.8, 1.3), "#fff6dc", .75, blur=.4)
-    p.part(E(32, 32, 5.2), "brass", prof="sphere", shadow=.5)
-    p.ink(arc_pts(32, 32, 2.0, 2.0, 0, 360, 20), w=.7, alpha=.7)
+    and a turned ball on its end, on a hub. 96 units, the pivot the canvas's
+    centre (48, 48), so the kit throws it by rotating the picture; drawn at
+    1.5x the plate's height it puts the pivot on the plate's (120, 50) and the
+    ball's centre 36 units above it -- 18 under the plate's rim at 25 degrees,
+    the ball inside the mullion and the rim both."""
+    p = Pic(seed=30, n=96)
+    p.part(P([(44.8, 49), (51.2, 49), (49.6, 17), (46.4, 17)]), "brass", bevel=2, shadow=.6)
+    p.part(E(48, 12, 6.2), "brass", prof="sphere", shadow=.55)
+    p.paint(E(46, 10, 2, 1.4), "#fff6dc", .75, blur=.4)
+    p.part(E(48, 48, 5.2), "brass", prof="sphere", shadow=.5)
+    p.ink(arc_pts(48, 48, 2.0, 2.0, 0, 360, 20), w=.7, alpha=.7)
     return _save_pic(p, "hw-lever.webp")
 
 
