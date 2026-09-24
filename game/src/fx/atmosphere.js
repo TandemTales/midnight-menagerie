@@ -1042,7 +1042,10 @@ export const ROOM_KINDS = {
       { subject: 'dais', doorX: -1, lamps: [{ i: 2, x: 0.0, z: 0.76 }],
         layout: 'nook', swap: [[6, 0], [20, 1], [7, 1], [21, 0]], solo: [],
         room: { w: 0.90, d: 0.80 }, ceilGain: 0.45, door: 'case',
-        stage: { shape: 21, x: 1.35, y: 0.58, back: 1.25 },
+        /* (1.00 from 1.35, round 18: the piano's quad is wider by its pianist
+           on the bench at the keyboard end, and the piano itself stands where
+           it did) */
+        stage: { shape: 21, x: 1.00, y: 0.58, back: 1.25 },
         cam: { y: -0.40, z: -1.4, look: -0.1, fov: -3 },
         vantage: { at: 'threshold', back: 2.6, lens: 0.90, dip: 0.20, dy: -0.30 } },
     ],
@@ -2035,7 +2038,7 @@ export class Atmosphere {
         const st = kind.stage;
         pal.props.near = (pal.props.near || []).concat([{
           shape: st.shape, x: st.x ?? 0, z: -R.d + (st.back ?? 1.2), y: st.y ?? 0.02,
-          tone: st.tone ?? 0.80,
+          tone: st.tone ?? 0.80, stage: true,
         }]);
       }
       /* a kind may deal one of the wing's shapes in place of another; the
@@ -2049,7 +2052,11 @@ export class Atmosphere {
        corners; mirrored with the lighting it stays lit by the lamp it was
        placed beside. */
     if (pal.props.near) {
-      pal.props.near = pal.props.near.map((it) => Object.assign({}, it, { x: it.x * flip }));
+      /* (...but not what stands ON a stage, round 18: the suite's stage is
+         set by its own drawing -- the singer stands left of the chairs of
+         state and the pianist sits at the keyboard right of them -- and a
+         mirrored piano put its pianist on the singer's spot) */
+      pal.props.near = pal.props.near.map((it) => Object.assign({}, it, { x: it.stage ? it.x : it.x * flip }));
     }
     /* ...AND STAGED FOR WHERE YOU STAND (MADDER, round 11). The near set is
        authored for the square rig, where x = +-6 is the two lower corners of

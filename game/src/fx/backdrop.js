@@ -90,7 +90,8 @@ export const DEFAULT_ROOM = {
  *  18   lamp standard   3.40 m                 --
  *  19   birdcage stand  1.60 m                 --
  *  20   pier glass      2.80 m                 --
- *  21   grand piano     2.05 m of quad         --
+ *  21   grand piano     2.05 m of quad         --  (round 18 graft, ORCHIL's: its quad is a
+ *                       quarter wider, SHAPE_W 1.62 -> 2.025, and the left fifth holds the pianist)
  *  22   pendant fitting SIZED BY ITS DROP      -- see _fixtures
  *  23   light standard  SIZED BY ITS LAMP      -- see _fixtures
  *  24   planting bed    0.43 m of brick, 2.9 m long, fans to 1.45   brick course 0.075
@@ -120,7 +121,7 @@ const SHAPE_M = [1.20, 2.00, 1.30, 1.00, 2.00, 2.00, 3.32, 2.60, 1.17, 1.33,
  * wide, and a column at h/12.3 when the table says h/8 to h/10. */
 const SHAPE_W = [1.15, 0.55, 1.00, 0.95, 0.72, 0.80, 0.47, 0.85, 0.90, 1.35,
                  1.30, 1.20, 0.87, 1.14, 0.77, 0.78, 1.80, 2.24, 0.50, 0.62,
-                 0.72, 1.62, 0.62, 0.34, 1.80, 1.476, 0.34
+                 0.72, 2.025, 0.62, 0.34, 1.80, 1.476, 0.34
 ];
 /* HOW MUCH ONE OF THESE VARIES FROM THE NEXT, as a +-fraction of SHAPE_M.
  *
@@ -332,8 +333,9 @@ export class Backdrop {
         uTime: { value: 0 }, uSeed: { value: 1.7 }, uDread: { value: 0 },
         uFogAmt: { value: 0.18 }, uArch: { value: 0 }, uCool: { value: 1 },
         uGrime: { value: 0.7 }, uOpen: { value: 0.5 }, uCeil: { value: 6.4 },
-        /* 1 where the room's roof is PITCHED glass (ceilPattern 9, 12): its end
-           walls then run on up into a glazed gable (round 18). */
+        /* the RISE, in metres, where the room's roof is PITCHED glass
+           (ceilPattern 9, 12), else 0: its end walls then run on up into a
+           glazed gable, and the gable's own feature is sized to it (round 18) */
         uGable: { value: 0 },
         uGain: { value: 3.4 }, uGloss: { value: 0.3 }, uAlbLift: { value: 0.012 },
         /* The drawn line — see mmDrawn in shaders/backdrop.js. Ink is how dark
@@ -1780,7 +1782,9 @@ export class Backdrop {
     w.uFogAmt.value = p.wallFog ?? 0.18;
     w.uCeil.value = ceil;
     const cpat = p.room?.ceilPattern ?? 3;
-    w.uGable.value = (p.room?.h ?? 0) > 0.01 && (cpat === 9 || cpat === 12) ? 1 : 0;
+    /* (the same number _room pitches the ceiling by -- WELD's, round 18) */
+    w.uGable.value = (p.room?.h ?? 0) > 0.01 && (cpat === 9 || cpat === 12)
+      ? Math.max(0, Math.min((p.room.w ?? 30) * 0.16, (p.room.wallPad ?? 5) - 0.4)) : 0;
     /* A region with room.h = 0 is OPEN TO THE SKY, and uCeil cannot say so: the
        fallback hands it 6.4 m, so the Hedge Maze was crushed to a tenth above
        6.4 m and painted no sky at all -- 71.5% of its upper third pure black. */
