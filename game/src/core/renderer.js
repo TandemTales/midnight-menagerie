@@ -355,107 +355,152 @@ export class Stage {
     const yield_ = () => new Promise((r) => setTimeout(r, 0));
     const t0 = performance.now();
     const small = () => [Math.max(innerWidth >> 3, 8), Math.max(innerHeight >> 3, 8)];
+    const R = this.renderer;
     this.warmStage = 'materials';
-    const mode = (typeof window !== 'undefined' && window.__MM_WARM_MODE) || 'base';
-    this.warmMode = mode;
+    /* WHERE THE TIME GOES, kept so the next person does not have to rebuild the
+       instrument: performance.now() at each stage, and every mesh whose compile
+       linked a program (tools/coldstart.py reads both). */
     this.warmT = { materials: t0 };
     this.warmLog = [];
-    const R = this.renderer;
     const nProg = () => (R.info.programs ? R.info.programs.length : 0);
     const label = (o) => {
       const m = Array.isArray(o.material) ? o.material[0] : o.material;
       const u = m && m.uniforms ? Object.keys(m.uniforms).slice(0, 3).join(',') : '';
-      return `${o.name || o.parent?.name || o.type}|${m ? m.type : '-'}|${u}`;
+      return `${o.name || o.parent?.name || o.type}|${u}`;
     };
     try {
-      const objs = [];
-      this.scene.traverse((o) => { if (o.isMesh || o.isPoints || o.isSprite) objs.push(o); });
-      const prevRT = this.renderer.getRenderTarget();
-      const targets = mode === 'base' ? [null, this.composer.renderTarget1] : [this.composer.renderTarget1];
+      /* ---- phase A: the scene's programs, for the COMPOSER's target only ----
+         MEASURED (tools/coldstart.py, fresh profile, Intel UHD / ANGLE D3D11,
+         2026-09-23, the machine busy with other captures): phase A was 93 s of
+         a 94 s warm-up, and two programs were nearly all of it -- the wall
+         (uSeed/uDread, 17-20 s) and the props (uSway/uRimAmt, 24-25 s) -- each
+         linked TWICE, once for the canvas and once for the composer, because a
+         program's cache key carries its target's tone map and colour space. The canvas copies existed only for phase B's
+         "show the room while post warms" draw straight to the canvas; after the
+         warm-up every frame goes through the composer, and so does every variant
+         precompileRooms links. Phase B now draws through the composer too (see
+         there), so the canvas copies are gone: half of phase A.
+
+         AND THE LINKS RUN SIDE BY SIDE. With KHR_parallel_shader_compile a link
+         runs off the main thread, so every mesh's program is submitted and then
+         all of them are waited on together, instead of one mesh at a time: the
+         two big links overlap. Two things measured on the way there:
+           - Submitted PER MESH, not as one compile(scene): the whole-scene call
+             came back "ready" with the props' program missing, and the first
+             frame linked it synchronously -- a 15 s frozen title.
+           - The room CHANGES under the warm-up. It starts at Atmosphere.init(),
+             on the Foyer; the title then sets its own mood a moment later, and
+             the props and walls change program with it. One mesh at a time hid
+             that by luck (the props came after the wall's 16-27 s link); all at
+             once, every program was linked for a room nobody would see and then
+             linked again. So wait for the scene to hold still first (SETTLE_MS
+             without a material changing, never more than SETTLE_CAP_MS), and
+             keep following it: a mesh whose material changes while the links
+             run is submitted again, and only the programs the scene holds NOW
+             are waited on.
+         Whatever still slips through is caught by _gateLinks(), which links it
+         behind the page instead of inside a draw.
+
+         Without the extension compileAsync cannot link off-thread at all, so
+         there it stays one mesh per task, as it always was: under software
+         WebGL a single compile of the whole scene was one 6 s block. */
+      const drawables = () => {
+        const a = [];
+        this.scene.traverse((o) => { if (o.isMesh || o.isPoints || o.isSprite) a.push(o); });
+        return a;
+      };
+      const matsOf = (o) => (Array.isArray(o.material) ? o.material : [o.material]).filter(Boolean);
+      const prevRT = R.getRenderTarget();
       let khr = null;
       try { khr = R.getContext().getExtension('KHR_parallel_shader_compile'); } catch { khr = null; }
-      if ((mode === 'batch' || mode === 'batch2') && khr) {
-        R.setRenderTarget(targets[0]);
-        const s = performance.now(), p0 = nProg();
-        let mats = null;
-        try { mats = R.compile(this.scene, this.camera); } catch (e) { mats = new Set(); }
-        const tSubmit = performance.now() - s;
-        const pending = new Set(mats);
-        while (pending.size) {
-          for (const m of pending) {
-            const pr = R.properties.get(m).currentProgram;
-            if (!pr || pr.isReady()) pending.delete(m);
-          }
-          if (pending.size) await new Promise((r) => setTimeout(r, 20));
+      if (khr) {
+        const SETTLE_MS = 600, SETTLE_CAP_MS = 3000;
+        const sig = () => {
+          let v = 0, n = 0;
+          for (const o of drawables()) for (const m of matsOf(o)) { v += m.version; n++; }
+          return `${n}:${v}`;
+        };
+        let last = sig(), still = performance.now();
+        while (performance.now() - still < SETTLE_MS && performance.now() - t0 < SETTLE_CAP_MS) {
+          await new Promise((r) => setTimeout(r, 50));
+          const now = sig();
+          if (now !== last) { last = now; still = performance.now(); }
         }
-        this.warmLog.push({ o: 'BATCH', rt: 'rt', ms: +(performance.now() - s).toFixed(1), submitMs: +tSubmit.toFixed(1), n: nProg() - p0 });
-      }
-      if (mode === 'par' && khr) {
-        R.setRenderTarget(targets[0]);
-        const s = performance.now(), p0 = nProg();
-        const progs = new Set();
-        for (const o of objs) {
-          try { R.compile(o, this.camera, this.scene); } catch (e) { /* keep warming */ }
-          const ms = Array.isArray(o.material) ? o.material : [o.material];
-          for (const m of ms) { const pr = m && R.properties.get(m).currentProgram; if (pr) progs.add(pr); }
-        }
-        const tSubmit = performance.now() - s;
-        while (progs.size) {
-          for (const pr of progs) if (pr.isReady()) progs.delete(pr);
-          if (progs.size) await new Promise((r) => setTimeout(r, 20));
-        }
-        this.warmLog.push({ o: 'PAR', rt: 'rt', ms: +(performance.now() - s).toFixed(1), submitMs: +tSubmit.toFixed(1), n: nProg() - p0 });
-      }
-      if (mode === 'par2' && khr) {
-        R.setRenderTarget(targets[0]);
-        const s = performance.now(), p0 = nProg();
-        const kicked = new WeakMap();
-        let passes = 0, resubmits = 0;
+        this.warmT.submit = performance.now();
+
+        const sent = new WeakMap();       // mesh -> material version it was compiled at
+        const linking = new Map();        // program -> { o, t } for the log
         for (;;) {
-          let any = false;
+          const objs = drawables();
+          let prev = null, set = false;
           for (const o of objs) {
-            const m = Array.isArray(o.material) ? o.material[0] : o.material;
-            if (!m || kicked.get(m) === m.version) continue;
+            const ms = matsOf(o);
+            const ver = ms.reduce((v, m) => v + m.version, 0);
+            if (sent.get(o) === ver) continue;
+            if (!set) { prev = R.getRenderTarget(); R.setRenderTarget(this.composer.renderTarget1); set = true; }
+            const n0 = nProg();
             try { R.compile(o, this.camera, this.scene); } catch (e) { /* keep warming */ }
-            kicked.set(m, m.version); any = true;
+            sent.set(o, ver);
+            if (nProg() === n0) continue;
+            for (const m of ms) {
+              const pr = R.properties.get(m).currentProgram;
+              if (pr && !linking.has(pr)) linking.set(pr, { o: label(o), t: performance.now() });
+            }
           }
-          if (any) { passes++; if (passes > 1) resubmits++; }
+          if (set) R.setRenderTarget(prev);
+          for (const [pr, rec] of linking) {
+            if (!pr.isReady()) continue;
+            this.warmLog.push({ o: rec.o, ms: Math.round(performance.now() - rec.t) });
+            linking.delete(pr);
+          }
           let waiting = false;
           for (const o of objs) {
-            const m = Array.isArray(o.material) ? o.material[0] : o.material;
-            const pr = m && R.properties.get(m).currentProgram;
-            if (pr && !pr.isReady()) { waiting = true; break; }
+            for (const m of matsOf(o)) {
+              const pr = R.properties.get(m).currentProgram;
+              if (pr && !pr.isReady()) { waiting = true; break; }
+            }
+            if (waiting) break;
           }
           if (!waiting) break;
           await new Promise((r) => setTimeout(r, 20));
         }
-        this.warmLog.push({ o: 'PAR2', rt: 'rt', ms: +(performance.now() - s).toFixed(1), passes, n: nProg() - p0 });
-      }
-      if (!(mode === 'batch' && khr)) {
-        for (const rt of targets) {
-          this.renderer.setRenderTarget(rt);
-          for (const o of objs) {
-            const s = performance.now(), p0 = nProg();
-            try { await this.renderer.compileAsync(o, this.camera, this.scene); }
-            catch (e) { /* keep warming */ }
-            this.warmLog.push({ o: label(o), rt: rt ? 'rt' : 'canvas', ms: +(performance.now() - s).toFixed(1), n: nProg() - p0 });
-            await yield_();
-          }
+      } else {
+        R.setRenderTarget(this.composer.renderTarget1);
+        for (const o of drawables()) {
+          const s = performance.now(), n0 = nProg();
+          try { await R.compileAsync(o, this.camera, this.scene); }
+          catch (e) { /* keep warming */ }
+          if (nProg() !== n0) this.warmLog.push({ o: label(o), ms: Math.round(performance.now() - s) });
+          await yield_();
         }
       }
-      this.renderer.setRenderTarget(prevRT);
+      R.setRenderTarget(prevRT);
       this.warmT.post = performance.now();
 
+      /* ---- phase B: show the room. Bloom and the grade are still cold, so the
+         composer runs RenderPass into its target and a stock OutputPass puts it
+         on the canvas -- ACES at the renderer's exposure and the sRGB encode,
+         the same maths the grade ends in (MM_TONEMAP), on the programs phase A
+         just linked. (The old path drew RenderPass straight to the canvas and
+         trusted three to tone-map it there; three only does that for shaders
+         that include its tonemapping chunk, and none of ours do, so that frame
+         went up linear and dark.) OutputPass is a few lines of GLSL; it is
+         switched off for good at the end of the warm-up and a disabled pass is
+         never rendered, so the chain after the warm-up is exactly what it was. */
+      if (!this.outPass) { this.outPass = new OutputPass(); this.composer.addPass(this.outPass); }
       this.bloom.enabled = false;
       this.grade.enabled = false;
-      if (mode !== 'base') {
-        if (!this.outPass) { this.outPass = new OutputPass(); this.composer.addPass(this.outPass); }
-        this.outPass.enabled = true;
-      }
+      this.outPass.enabled = true;
       this._warming = false;
       this.warmStage = 'post';
       await yield_();
 
+      /* ---- phase C/D: warm each remaining pass off-screen at 1/8 scale, then
+         switch it on. Each is its own task. A pass is switched on only once it
+         has been warmed (this used to switch the grade back on right after the
+         BLOOM's warm, so a frame drawn between the two could link the grade
+         inside the draw), and OutputPass stands in for the grade until the grade
+         is on. */
       const [sw, sh] = small();
       const cold = [this.bloom, this.grade];
       const warmed = new Set();
@@ -464,21 +509,16 @@ export class Stage {
         this.composer.renderToScreen = false;
         this.composer.setSize(sw, sh);
         this.bloom.setSize(sw, sh);
-        pass.enabled = true;
-        const others = cold.filter((p) => p !== pass);
-        for (const o of others) o.enabled = false;
-        if (this.outPass) this.outPass.enabled = !this.grade.enabled;
+        for (const p of cold) p.enabled = p === pass;
+        this.outPass.enabled = !this.grade.enabled;
         try { this.composer.render(0.016); } catch (e) { /* keep warming */ }
         await yield_();
         this.composer.renderToScreen = true;
         this.resize();
         warmed.add(pass);
-        if (mode === 'base') for (const o of others) o.enabled = true;
-        else {
-          for (const p of cold) p.enabled = warmed.has(p);
-          this.outPass.enabled = !this.grade.enabled;
-        }
-        this.warmLog.push({ o: pass === this.bloom ? 'POST:bloom' : 'POST:grade', rt: 'post', ms: +(performance.now() - s).toFixed(1) });
+        for (const p of cold) p.enabled = warmed.has(p);
+        this.outPass.enabled = !this.grade.enabled;
+        this.warmLog.push({ o: pass === this.bloom ? 'post:bloom' : 'post:grade', ms: Math.round(performance.now() - s) });
         await yield_();
       }
     } finally {

@@ -65,7 +65,8 @@ POLL = r"""
 """
 
 STAGE = """() => { const s = window.MM && window.MM.ctx && window.MM.ctx.stage;
-  return s ? { stage: s.warmStage || null, pending: !!(s.roomPending && s.roomPending()) } : null; }"""
+  return s ? { stage: s.warmStage || null, pending: !!(s.roomPending && s.roomPending()),
+               t: Math.round(performance.now()) } : null; }"""
 
 SCENE = "() => (window.MM && window.MM.state) ? window.MM.state().scene : null"
 
@@ -142,7 +143,14 @@ async def one(target, a, run_i):
                     st = await page.evaluate(STAGE)
                     cold = await page.evaluate(COLD)
                     path = os.path.join(a.out, f"{name}-r{run_i}-{int(at)}s.png")
-                    await page.screenshot(path=path, animations="allow")
+                    try:
+                        await page.screenshot(path=path, animations="allow", timeout=20000)
+                    except Exception as e:
+                        # the compositor produced no frame to capture: that is
+                        # a finding (a frozen page), not a reason to stop
+                        rec["shots"].append({"at": at, "stage": st, "cold": cold,
+                                             "error": str(e)[:120]})
+                        continue
                     mu, sd = band(path)
                     wm, ws = crop_stats(path, WALL)
                     rec["shots"].append({"at": at, "stage": st, "cold": cold,
@@ -217,6 +225,9 @@ def main():
             if a.cmd == "fight":
                 line += f"  open {rec.get('fightOpenMs')} ms"
                 for s in rec.get("shots", []):
+                    if s.get("error"):
+                        line += f" | +{s['at']:g}s NO FRAME ({s['stage'] and s['stage']['stage']})"
+                        continue
                     line += (f" | +{s['at']:g}s {s['stage'] and s['stage']['stage']}"
                              f" cold={s['cold']} wall {s['wallMean']}/{s['wallStd']}")
                 if rec.get("error"):
