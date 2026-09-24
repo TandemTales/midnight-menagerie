@@ -1,0 +1,58 @@
+{
+  "round": "r19",
+  "maxBuilders": 3,
+  "briefs": [
+    "docs/ui-pass/BRIEF-r0.md",
+    "docs/ui-pass/BRIEF-r1.md",
+    "docs/ui-pass/BRIEF-r19.md"
+  ],
+  "rubrics": [
+    "docs/ui-pass/RUBRIC.md",
+    "docs/ui-pass/RUBRIC-r19.md"
+  ],
+  "samples": [
+    "UI/title.png",
+    "UI/mainMenu.png",
+    "UI/selectCompanion.png",
+    "UI/selectKid.png"
+  ],
+  "tracks": [
+    {
+      "key": "boards",
+      "name": "BOARDS",
+      "rule": "refine",
+      "screens": [
+        "shop",
+        "reward",
+        "event",
+        "map",
+        "rest",
+        "gameover",
+        "settings",
+        "piles",
+        "combat-crowd"
+      ],
+      "baseline": "BAIZE",
+      "builders": [
+        {
+          "slot": "a",
+          "code": "KERMES",
+          "port": 8991,
+          "angle": "LITERAL. Work BRIEF-r19's fix list 1 to 5 in order and exactly as written. Every item came from a blind survey in which two judges, who never saw a candidate, independently named the same defects. Items 1 to 3 are SHARED defects -- the HUD at 1280, the board wall's empty frames and windows, the web-form controls -- and each is one fix for several screens, so do them first and check every screen they touch. The literal angle has won the most recent rounds."
+        },
+        {
+          "slot": "b",
+          "code": "BICE",
+          "port": 8992,
+          "angle": "ONE HOUSE'S HARDWARE. Item 3 is your round: every control that still reads as a web form element in gilt -- the settings toggles, sliders and seed fields, the pile viewer's selects and search, the shop's icon-font item glyphs and BUY discs, the rest room's pills and line-icon medallions, the event's chevron discs, the clubhouse's Haunt steppers. Build ONE vocabulary for all of them (one brass, one enamel, one engraved plate, one painted-object icon plate), put it in the kit, and use it everywhere. Six screens reading as one house's hardware is worth more than six clever inventions. Then item 1, the HUD at 1280, because it is the same kind of object."
+        },
+        {
+          "slot": "c",
+          "code": "BOLE",
+          "port": 8993,
+          "angle": "THE ROOM, THE ROUTES AND THE STEAM DECK. Items 1, 2 and 4 are your round. The HUD first: it must hold one legible row at 1280x800 on every in-run screen, because 1280x800 IS the Steam Deck. Then the shared board wall: every picture frame is either a dim painted picture or gone, and no window ever stands over a frame. Then the map, the highest-headroom screen on the survey: every route one continuous uncrossed ink line rim to rim, next steps bold, the rest faint, nodes on parchment roundels, the floor plan faded behind. Then the smaller items. Check everything at 1280x800 as hard as at 1600x900."
+        }
+      ]
+    }
+  ]
+}
