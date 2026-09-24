@@ -162,6 +162,8 @@ so round 2 runs six at once, as round 1 did.
 
 | 17 | **PEOPLE IN THE HOUSE** — the same four sheets and combat: sitters, busts, musicians, and nothing repeated without variation | LITHARGE 6.65 · SIENNA 6.23 · FOLIUM 6.20 · the screens before **5.40** | LITHARGE, 2 of 2, three of five screens. **+1.25.** The only candidate that peoples the house, and with variety. It left the greenhouse and graveyard untouched, and the best work there — FOLIUM's treeline, both losers' prosceniums, SIENNA's broken panes — is round 18's graft. **The parquet was measured and is right** (21 px near, 12 px far) | `44b37fe` |
 
+| 18 | **THE GARDEN AND THE HORIZON** — the same four sheets and combat, with round 17's losers' work as named grafts | WOAD 6.26 · ORCHIL 6.23 · WELD 5.93 · the screens before **5.54** | WOAD, 2 of 2 — **but on the mean by 0.03, while ORCHIL won four of five screens 2 of 2.** Both judges chose WOAD as the even SYSTEM (good on all four sheets, flattens nothing), and both asked for ORCHIL's people as the graft. **+0.72** | `1272403` |
+
 **Scores anchor to the candidates beside them.** Round 0's winner scored 7.0 in
 round 0 and 5.58 as round 1's baseline: the judges grew stricter as the field
 improved. Compare a winner with the baseline IN ITS OWN ROUND (round 1 REFINE:
@@ -184,6 +186,7 @@ Against their own baselines:
 | 11 | VARIATION **+2.17** (sheets 3-3.5 -> 6-7) | — |
 | 12 | — | THE LAST WEB CHROME **+5.9** (per-screen winners 7.33 / 8.00 / 7.67 against 2 / 1 / 1.33) |
 | 13 | CHROME, second pass **+2.22** (coach 6.0 -> 8.0, veil 6.0 -> 8.67, toast 5.0 -> 7.0) | — |
+| 18 | THE GARDEN AND THE HORIZON **+0.72** (and the field inside 0.33) | — |
 | 17 | PEOPLE IN THE HOUSE **+1.25** (the baseline had risen to 5.40, and the field sat inside 0.45) | — |
 | 16 | FINISH THE OBJECTS **+2.00** | — |
 | 15 | NAME EVERYTHING AT THE EDGES **+2.00** (and the baseline it beat was the tree with both grafts in it) | — |
@@ -826,3 +829,33 @@ window.
   listening there; it noticed, moved to 8994 and shot its canonical captures
   from its own worktree. The merged sheets are pixel-identical to its judged
   captures, which is the proof it got it right.
+
+### Round 18: the whole house, not its best room, 2026-09-23
+
+**WOAD, 2 of 2 judges, 6.26 against 5.54 — +0.72** (`1272403`, run
+`wf_3a881c5a-1cf`). **Read this one by its screens.** WOAD's mean beat ORCHIL's
+by 0.03, while ORCHIL won FOUR of the five screens, each 2 of 2, and WOAD took
+only the greenhouse on the tiebreak. The mean alone would have misled either
+way — and both judges still chose WOAD, for the reason RUBRIC-r18 asked them to
+weigh: **ORCHIL made the round's best single sheets and left one wing below
+the baseline; WOAD is good on all four and flattens nothing.** A system that
+holds everywhere beats one that peaks. Both then asked for ORCHIL's people as
+the graft, which runs on `ui/r18-graft`.
+
+- **THE GAINS ARE SHRINKING, and it is time to look elsewhere.** Round 16
+  +2.00, round 17 +1.25, round 18 +0.72, with the field inside 0.33 and the
+  baseline climbing (4.70 → 5.40 → 5.54). The rooms are not converged — both
+  judges still agreed — but eleven straight rounds have gone to them while the
+  boards, dialogs and Kids' places were last judged in rounds 6-7. See the
+  SURVEY below.
+- **THE BASELINE CARRIES DEFECTS NO BUILDER MADE**, and a judge who sees them
+  on one candidate will call them that candidate's regression. The flat
+  greenhouse ceiling over a black band, green streaks across its end-wall
+  glazing, and horizontal leak lines across the graveyard's masonry are all in
+  the merged game; ORCHIL was scored "below baseline" on the greenhouse for a
+  roof it never touched. Read a "regression" against the baseline's own
+  capture before believing it.
+- **A builder that owns one wing hands the rest of the sheet back unchanged**,
+  and the judges can see it: WELD's foyer and ballroom were pixel-identical to
+  the baseline, and both judges noticed. That is fine for a specialist angle
+  and it is why the literal angle keeps winning on the mean.

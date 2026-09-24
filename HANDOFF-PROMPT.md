@@ -1,4 +1,4 @@
-# Handoff — rounds 0-17 merged; round 18 is briefed and ready
+# Handoff — rounds 0-18 merged; a graft and a survey are running
 
 You are picking up Midnight Menagerie on `dev`. Everything below is pushed.
 
@@ -16,35 +16,38 @@ loop until perfected". Two later calls narrow it and both are in force:
 `UI/*.png`** — what matters is readable, accurately drawn, well-detailed objects
 (item 3).
 
-## START HERE — 2026-09-23, afternoon
+## START HERE — 2026-09-23, evening
 
-**ROUNDS 0-17 ARE ALL MERGED AND VERIFIED.** Round 17 LITHARGE (`44b37fe`,
-+1.25) put people in the house. Every recent merge is checked the same way:
-the winner's code diff against its own branch EMPTY, its four sheets
-photographed on the merged tree and compared by CONTENT (rounds 15, 16 and 17
-all came back mean |difference| 0.00, max 0), and the battery.
+**ROUNDS 0-18 ARE MERGED.** Round 18 WOAD (`1272403`, +0.72) is merged and
+NOT YET VERIFIED OR PUSHED — its sheet comparison and the battery are next.
+Round 17 LITHARGE (`44b37fe`) and everything before it is verified and pushed.
 
 **Josh, 2026-09-23: "continue. no longer worry about usage."** Do not hold a
-round for the weekly figure. Still run ONE round at a time: three builders
-already queue on the machine's single GPU slot.
+round for the weekly figure. Run one ROUND at a time for the GPU's sake; a
+single-builder graft beside a round is fine.
 
-**THE NEXT ACTION: round 18 — briefed and dry-run clean, launch it.**
-`BRIEF-r18.md`, `RUBRIC-r18.md`, `round-18.args.json` (WOAD / WELD / ORCHIL
-on 8971-8973 against a SARSENET baseline, the same four sheets and combat) and
-`baseline-r18.sh`. Round 17's winner left the greenhouse and the graveyard
-untouched; the best work on those sheets is on the two losing branches and is
-round 18's item 1 as named grafts, **with the two defects to leave behind**
-named beside them (FOLIUM's roofless palmhouse centre, and its tree drawing
-leaking as diagonals over the mausolea).
+**RUNNING NOW, two things:**
 
-```
-curl -s -o /dev/null http://localhost:8777/ || nohup python tools/devserver.py 8777 &
-bash docs/ui-pass/baseline-r18.sh        # from dev's tip; it checks 8777 itself now
-for s in a b c; do GIT_LFS_SKIP_SMUDGE=1 git worktree add -b ui/r18-rooms-$s   "C:/UILOOP/r18/wt/r18-rooms-$s" <that same commit>; done
-Workflow({ scriptPath: "docs/ui-pass/round-workflow.js",
-           args: { ...docs/ui-pass/round-18.args.json, repo,
-                   uiloop: "C:/UILOOP/r18", base: "<that same commit>" } })
-```
+1. **Round 18's people graft**, one builder on `ui/r18-graft` (port 8974, cut
+   from `1272403`), captures into `C:/UILOOP/r18/judging/r18/graft/`. Both
+   round-18 judges asked for it: ORCHIL lost on the mean by 0.03 while winning
+   four of five screens on its PEOPLE, and those people go into WOAD's system.
+   It also restores the greenhouse gable lunette WOAD lost and hunts two
+   rendering leaks that are in the game today (lines across the graveyard's
+   masonry, green streaks across the greenhouse glazing).
+2. **THE SURVEY** (`docs/ui-pass/survey-2026-09-23.sh` → `C:/UILOOP/survey/NOW/`):
+   the fourteen screens no round has judged since rounds 6-7 — the six boards,
+   three dialogs, the Kids' three places, the boss and crowded fights —
+   photographed as they stand, for two blind judges to score, name each
+   screen's worst problem, and rank by HEADROOM. Its judge prompt is in this
+   session's scratchpad as `survey-judge-prompt.md`; copy it into
+   `docs/ui-pass/` if the session ends before it runs.
+
+**WHY THE SURVEY: the rooms are slowing.** Round 16 +2.00, 17 +1.25, 18 +0.72,
+with the baseline climbing and the field inside 0.33. Eleven straight rounds
+went to the rooms while the other screens' last fix lists are thirteen rounds
+old — and the ground behind them was rebuilt on 2026-09-16 since. **Round 19
+goes wherever the survey says the headroom is.**
 
 **The main dev server on 8777 can die with a session.** The one running since
 2026-09-18 was gone after this session restarted for a model switch, and the
