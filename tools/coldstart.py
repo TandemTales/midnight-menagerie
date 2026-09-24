@@ -49,7 +49,12 @@ ARGS = ["--use-gl=angle", "--use-angle=default", "--enable-unsafe-swiftshader",
 POLL = r"""
 (() => {
   const T = window.__cs = {};
+  let last = performance.now();
+  T.maxGap = 0; T.maxGapAt = 0;
   const iv = setInterval(() => {
+    const now = performance.now();
+    if (now - last > T.maxGap) { T.maxGap = now - last; T.maxGapAt = last; }
+    last = now;
     const s = window.MM && window.MM.ctx && window.MM.ctx.stage;
     if (!s) return;
     const w = s.warmStage;
@@ -147,6 +152,14 @@ async def one(target, a, run_i):
         rec["postMs"] = round(cs["post"]) if "post" in cs else None
         rec["doneMs"] = round(cs["done"]) if "done" in cs else None
         rec["warmupMs"] = await page.evaluate("window.__MM_WARMUP_MS ?? null")
+        # the longest the main thread went without running a 20 ms timer, up
+        # to 'done': a frozen title screen (a program linked synchronously)
+        rec["maxStallMs"] = round(cs.get("maxGap", 0))
+        rec["maxStallAtMs"] = round(cs.get("maxGapAt", 0))
+        wt = await page.evaluate(
+            "(() => { const s = window.MM && window.MM.ctx.stage; return s && s.warmT ? s.warmT : null; })()")
+        if wt:
+            rec["inPage"] = {k: round(v) for k, v in wt.items()}
         rec["warmStartMs"] = await page.evaluate(
             "(() => { const s = window.MM && window.MM.ctx.stage; return s && s.warmT ? Math.round(s.warmT.materials) : null; })()")
         log = await page.evaluate(
@@ -190,7 +203,7 @@ def main():
             with open(jl, "a", encoding="utf-8") as f:
                 f.write(json.dumps(rec) + "\n")
             line = (f"{rec['target']:>8} r{r}  post {rec.get('postMs')} ms  done {rec.get('doneMs')} ms"
-                    f"  warmup {rec.get('warmupMs')} ms")
+                    f"  warmup {rec.get('warmupMs')} ms  stall {rec.get('maxStallMs')} ms @{rec.get('maxStallAtMs')}")
             if a.cmd == "fight":
                 line += f"  open {rec.get('fightOpenMs')} ms"
                 for s in rec.get("shots", []):

@@ -374,7 +374,7 @@ export class Stage {
       const targets = mode === 'base' ? [null, this.composer.renderTarget1] : [this.composer.renderTarget1];
       let khr = null;
       try { khr = R.getContext().getExtension('KHR_parallel_shader_compile'); } catch { khr = null; }
-      if (mode === 'batch' && khr) {
+      if ((mode === 'batch' || mode === 'batch2') && khr) {
         R.setRenderTarget(targets[0]);
         const s = performance.now(), p0 = nProg();
         let mats = null;
@@ -389,7 +389,8 @@ export class Stage {
           if (pending.size) await new Promise((r) => setTimeout(r, 20));
         }
         this.warmLog.push({ o: 'BATCH', rt: 'rt', ms: +(performance.now() - s).toFixed(1), submitMs: +tSubmit.toFixed(1), n: nProg() - p0 });
-      } else {
+      }
+      if (!(mode === 'batch' && khr)) {
         for (const rt of targets) {
           this.renderer.setRenderTarget(rt);
           for (const o of objs) {
