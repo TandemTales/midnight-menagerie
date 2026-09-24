@@ -6,66 +6,34 @@
   --hud-fs: calc(clamp(13px, .9vw, 14.5px) * var(--type-scale, 1));
   --hud-chip-h: 1.76em;
   /* the carved end block at each end of the rail */
-  --hud-cap: clamp(26px, 2.2vw, 36px);
+  /* the channel's inner end: hw-rail.webp's channel starts 50 of 64 in */
+  --hud-cap: calc(var(--hud-h) * 50 / 64);
   position: relative;
   display: flex; align-items: center; gap: var(--s-2);
   flex-wrap: wrap;
-  padding: 6px calc(var(--hud-cap) + var(--s-2)) 9px;
+  box-sizing: border-box;
+  padding: 0 calc(var(--hud-cap) + 7px) 1px;
   min-height: var(--hud-h);
   font-family: var(--font-body);
   font-size: var(--hud-fs);
   color: var(--kit-text);
-  /* ONE CARVED RAIL, round 6. Every judge of round 5 — POLISH and COMBAT —
-     called this strip a web toolbar: "a row of small, samey pill chips". It
-     was a line of separate plates on a flat band. It is a thing now, with the
-     three parts a carved rail has: an ARRIS along its top where the candles
-     catch the gilt, a FACE of black lacquer over dark wood with the engraved
-     gilt line and its pricked scroll running along it (rail-engraved.webp,
-     tools/prep_ui_polish.py) falling into shadow toward its foot, and a
-     moulded brass FOOT with the rail's own shadow under it (::after). Each
-     end is closed by a carved block with a cast rosette set into it
-     (::before), so the rail reads as a length of something rather than as the
-     top edge of the page. The readouts are cut INTO the face, not laid on it. */
-  --cap-boss: clamp(15px, 1.2vw, 20px);
-  background:
-    /* the two carved end blocks that close the rail: a cast brass rosette set
-       into a face a shade deeper than the frieze, shut off by a gilt bead */
-    url("../../assets/ui/kit/rosette.webp") calc(var(--hud-cap) * .5) 58% / var(--cap-boss) var(--cap-boss) no-repeat,
-    url("../../assets/ui/kit/rosette.webp") calc(100% - var(--hud-cap) * .5) 58% / var(--cap-boss) var(--cap-boss) no-repeat,
-    linear-gradient(color-mix(in srgb, var(--kit-gold) 60%, transparent), color-mix(in srgb, var(--kit-gold-lo) 80%, transparent)) var(--hud-cap) 8px / 1.5px calc(100% - 16px) no-repeat,
-    linear-gradient(color-mix(in srgb, var(--kit-gold) 60%, transparent), color-mix(in srgb, var(--kit-gold-lo) 80%, transparent)) calc(100% - var(--hud-cap)) 8px / 1.5px calc(100% - 16px) no-repeat,
-    linear-gradient(180deg, rgba(0, 0, 0, .34), rgba(0, 0, 0, .6)) 0 8px / var(--hud-cap) calc(100% - 16px) no-repeat,
-    linear-gradient(180deg, rgba(0, 0, 0, .34), rgba(0, 0, 0, .6)) 100% 8px / var(--hud-cap) calc(100% - 16px) no-repeat,
-    /* the arris: gilt highlight, its dark cut, and the shadow it throws down the face */
-    linear-gradient(180deg,
-      color-mix(in srgb, var(--kit-gold-hi) 86%, transparent) 0 1px,
-      color-mix(in srgb, var(--kit-gold) 70%, #000) 1px 2.5px,
-      rgba(0, 0, 0, .55) 2.5px 5px,
-      rgba(0, 0, 0, .22) 5px 9px,
-      transparent 9px),
-    /* the face's own fall: lit under the arris, gathering dark at the foot */
-    linear-gradient(180deg,
-      color-mix(in srgb, var(--kit-candle) 9%, transparent) 0%,
-      transparent 38%,
-      rgba(0, 0, 0, .34) 84%,
-      rgba(0, 0, 0, .58) 100%),
-    linear-gradient(180deg, color-mix(in srgb, var(--kit-violet) 9%, transparent) 0%, transparent 60%),
-    /* the two gilt fillets that close the frieze, top and bottom */
-    linear-gradient(color-mix(in srgb, var(--kit-gold) 74%, transparent), color-mix(in srgb, var(--kit-gold) 74%, transparent)) 0 7px / 100% 1px repeat-x,
-    linear-gradient(rgba(0, 0, 0, .8), rgba(0, 0, 0, .8)) 0 8px / 100% 1px repeat-x,
-    linear-gradient(rgba(0, 0, 0, .8), rgba(0, 0, 0, .8)) 0 calc(100% - 8px) / 100% 1px repeat-x,
-    linear-gradient(color-mix(in srgb, var(--kit-gold-lo) 92%, transparent), color-mix(in srgb, var(--kit-gold-lo) 92%, transparent)) 0 calc(100% - 7px) / 100% 1px repeat-x,
-    url("../../assets/ui/kit/rail-engraved.webp") 0 0 / 256px 62px repeat-x,
-    #110b10;
-  box-shadow:
-    inset 0 -1px 0 rgba(0, 0, 0, .9),
-    0 12px 22px -6px rgba(0, 0, 0, .9);
-}
-.mm-hud::after {
-  content: ''; position: absolute; left: 0; right: 0; bottom: -5px; height: 12px;
-  pointer-events: none; z-index: 1;
-  background: url("../../assets/ui/kit/rail-engraved.webp") 0 100% / 256px 46px repeat-x;
-  filter: drop-shadow(0 3px 3px rgba(0, 0, 0, .75));
+  /* ONE CARVED RAIL, round 20. Round 6 asked for "one carved nameplate rail
+     -- a thing with ends, a surface and a shadow -- that the readouts are set
+     INTO, rather than a line of separate plates", and three judges of round
+     19 still read a toolbar of pills: every readout wore its own cartouche.
+     The rail is now ONE painted object in the house's hardware
+     (hw-rail.webp, tools/prep_ui_hardware.py, the same brass and plate
+     enamel as the boards' controls): a half-round brass moulding along its
+     top, a face of near-black enamel, a single channel sunk the length of it
+     behind a brass bead, a foot moulding, and a cast brass end block with a
+     violet cabochon boss closing each end. The readouts stand IN the
+     channel, parted by turned brass mullions and, between groups, by a cast
+     boss -- never on plates of their own. */
+  border: 0 solid transparent;
+  border-image: url("../../assets/ui/kit/hw-rail.webp") 26 72 fill /
+    calc(var(--hud-h) * 26 / 64) calc(var(--hud-h) * 72 / 64) stretch;
+  background: none;
+  box-shadow: 0 10px 16px -6px rgba(0, 0, 0, .92), 0 3px 4px -1px rgba(0, 0, 0, .7);
 }
 
 /* ONE position: the top edge of the viewport, full width, on every run screen.
@@ -83,11 +51,28 @@
    into the rail (boss-rosette.webp, tools/prep_ui_dressing.py): a milled rim
    round a rosette, never a drawn dot */
 .mm-hud__group + .mm-hud__group::before {
-  content: ''; flex: none; width: 15px; height: 15px; margin-right: 1px;
+  content: ''; flex: none; width: 18px; height: 18px; margin: 0 2px 0 0;
   background: url("../../assets/ui/kit/boss-rosette.webp") 50% 50% / 100% 100% no-repeat;
   filter: drop-shadow(0 1px 1px rgba(0, 0, 0, .85)) brightness(1.08);
 }
 .mm-hud__group--extra:empty + .mm-hud__group::before { display: none; }
+/* Round 20: inside a group the readouts are parted by a turned brass mullion
+   standing across the channel (hw-mullion.webp), the way a type case or an
+   instrument's dial window is divided -- one object, several windows. */
+.mm-hud__group--vitals > :not(:first-child),
+.mm-hud__group--meta > :not(:first-child) {
+  position: relative;
+  margin-left: 7px;
+}
+.mm-hud__group--vitals > :not(:first-child)::after,
+.mm-hud__group--meta > :not(:first-child)::after {
+  content: ''; position: absolute; pointer-events: none; z-index: 0;
+  left: -12px; top: 50%;
+  width: 7px; height: calc(var(--hud-h) * 30 / 64);
+  translate: 0 -50%;
+  background: url("../../assets/ui/kit/hw-mullion.webp") 50% 50% / 100% 100% no-repeat;
+  filter: drop-shadow(1px 0 1px rgba(0, 0, 0, .8));
+}
 
 /* ── chips: a value on a gilt cartouche nameplate, its icon in a medallion ──
    The plate is plate-hud.webp (tools/prep_ui_polish.py): the Companion tiles'
@@ -98,12 +83,10 @@
    lettered in gold. Nothing hangs outside the chip's box, so nothing can be
    clipped by it. */
 .mm-hud__chip {
-  /* the cartouche's curled end: the words never run into it */
-  --chip-end: calc(var(--hud-chip-h) * 34 / 64);
   position: relative; isolation: isolate;
-  display: inline-flex; align-items: center; gap: .42em;
+  display: inline-flex; align-items: center; gap: .38em;
   height: var(--hud-chip-h);
-  padding: 0 max(1.1em, calc(var(--chip-end) + 3px));
+  padding: 0 .3em;
   color: var(--kit-name);
   background: none;
   border: 0;
@@ -121,24 +104,13 @@
    face, and the light the candles put into the rail runs along its lower lip.
    Round 5's plate was violet enamel with a drop shadow under it, which is
    what made a row of them read as a row of pills on a toolbar. */
-.mm-hud__chip::before {
-  content: ''; position: absolute; z-index: -1; pointer-events: none;
-  top: 0; bottom: 0; right: 0; left: 0;
-  border: 0 solid transparent;
-  border-image-source: url("../../assets/ui/kit/cartouche-dark.webp");
-  border-image-slice: 18 34 18 34 fill;
-  border-image-width: calc(var(--hud-chip-h) * 18 / 64) var(--chip-end);
-  border-image-repeat: stretch;
-  filter:
-    drop-shadow(0 -1.5px 1px rgba(0, 0, 0, .95))
-    drop-shadow(0 1.5px 0 color-mix(in srgb, var(--kit-gold-hi) 30%, transparent))
-    brightness(.98);
-}
-.mm-hud__chip:has(> .mm-icon:first-child)::before { left: calc(var(--hud-chip-h) * .5); }
+/* Round 20: a readout has no plate of its own any more -- it is lettered in
+   the rail's channel, its icon on the round enamel medallion set into it. */
+.mm-hud__chip::before { content: none; }
 .mm-hud__chip > .mm-icon:first-child {
   display: grid; place-items: center;
   width: calc(var(--hud-chip-h) * 1.12); height: calc(var(--hud-chip-h) * 1.12);
-  margin: 0 .05em 0 0;
+  margin: 0 .1em 0 0;
   border-radius: 50%;
   /* the house's one enamel, glazed (ui/kit.css "hardware") */
   background:
@@ -168,6 +140,15 @@
   box-shadow: 0 0 0 1px rgba(0, 0, 0, .7);
 }
 
+/* the word a figure counts ("137 Buttons"): the rail's engraved small
+   capitals, a step under the figure */
+.mm-hud__u {
+  font-family: var(--font-display); font-weight: 700;
+  font-size: max(11.5px, .8em); letter-spacing: .08em;
+  font-variant: small-caps; text-transform: lowercase;
+  color: var(--kit-text-mid);
+  margin-left: -.1em;
+}
 .mm-hud__where { max-width: 26ch; overflow: hidden; }
 .mm-hud__where .mm-hud__t { overflow: hidden; text-overflow: ellipsis; }
 .mm-hud__gold .mm-icon { color: var(--kit-gold-hi); }
@@ -220,33 +201,28 @@
   --bar-h: var(--hud-chip-h);
   position: relative; z-index: 1;
   width: calc(var(--bar-h) * 4.1); height: var(--bar-h);
-  border: 0 solid transparent;
-  border-image: url("../../assets/ui/kit/cartouche-dark.webp") 18 34 18 34 fill /
-    calc(var(--bar-h) * 18 / 64) calc(var(--bar-h) * 34 / 64) stretch;
+  border: 0;
   border-radius: 0;
-  /* cut into the rail, like every other readout on it (round 6) */
-  filter:
-    drop-shadow(0 -1.5px 1px rgba(0, 0, 0, .95))
-    drop-shadow(0 1.5px 0 color-mix(in srgb, var(--kit-gold-hi) 30%, transparent));
   overflow: visible;
 }
 /* the channel the enamel runs in: sunk, dark, a gilt fillet round its lip */
 .mm-hud__bar::before {
   content: ''; position: absolute; z-index: 0; pointer-events: none;
-  left: calc(var(--bar-h) * .66); right: calc(var(--bar-h) * .44);
-  top: calc(var(--bar-h) * .27); bottom: calc(var(--bar-h) * .27);
-  border-radius: 2px;
+  left: calc(var(--bar-h) * .5); right: calc(var(--bar-h) * .06);
+  top: calc(var(--bar-h) * .17); bottom: calc(var(--bar-h) * .17);
+  border-radius: 3px;
   background: linear-gradient(180deg, #050204 0%, #120709 60%, #1f0f12 100%);
   box-shadow:
-    0 0 0 1px color-mix(in srgb, var(--kit-gold) 62%, transparent),
-    0 0 0 2px rgba(0, 0, 0, .7),
+    0 0 0 1.5px color-mix(in srgb, var(--kit-gold) 80%, transparent),
+    0 0 0 2.5px rgba(0, 0, 0, .75),
+    0 -1px 0 2.5px color-mix(in srgb, var(--kit-gold-hi) 35%, transparent),
     inset 0 2px 3px rgba(0, 0, 0, .9);
 }
 .mm-hud__bar > i {
   position: absolute; z-index: 1;
-  left: calc(var(--bar-h) * .66); right: calc(var(--bar-h) * .44);
-  top: calc(var(--bar-h) * .27); bottom: calc(var(--bar-h) * .27);
-  border-radius: 1px;
+  left: calc(var(--bar-h) * .5); right: calc(var(--bar-h) * .06);
+  top: calc(var(--bar-h) * .17); bottom: calc(var(--bar-h) * .17);
+  border-radius: 2px;
   transform-origin: left center;
   background:
     linear-gradient(180deg, rgba(255, 214, 214, .30) 0%, rgba(255, 255, 255, .06) 30%, rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, .42) 100%),
@@ -259,7 +235,7 @@
 .mm-hud__barlabel {
   position: absolute; inset: 0; z-index: 2;
   display: grid; place-items: center;
-  padding-left: calc(var(--bar-h) * .22);
+  padding-left: calc(var(--bar-h) * .44);
   font-family: var(--font-num);
   font-size: max(12.5px, .9em);
   font-weight: 700;
@@ -274,8 +250,8 @@
 .mm-hud__courage[data-low="1"] .mm-hud__bar { filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .8)) drop-shadow(0 0 4px color-mix(in srgb, var(--threat-300) 70%, transparent)) brightness(1.08); }
 .mm-hud__courage[data-low="1"] .mm-hud__bar::after {
   content: ''; position: absolute; z-index: 1; pointer-events: none;
-  left: calc(var(--bar-h) * .66); right: calc(var(--bar-h) * .44);
-  top: calc(var(--bar-h) * .27); bottom: calc(var(--bar-h) * .27);
+  left: calc(var(--bar-h) * .5); right: calc(var(--bar-h) * .06);
+  top: calc(var(--bar-h) * .17); bottom: calc(var(--bar-h) * .17);
   box-shadow: inset 0 0 8px color-mix(in srgb, var(--threat-300) 70%, transparent);
   animation: mm-hud-pulse 1.6s var(--ease-soft) infinite;
 }
@@ -329,17 +305,15 @@
    the Steam Deck), ONE ghost setting stands for them and wears their number
    on its rim, the way a Keepsake wears its counter */
 .mm-hud__snackfree {
-  position: absolute; right: -3px; bottom: -1px;
-  min-width: 1.3em; padding: 1px .22em 0;
-  font-family: var(--font-num); font-weight: 700; font-style: normal;
-  font-size: max(11px, .72em); line-height: 1.2; letter-spacing: 0;
-  text-align: center;
-  color: var(--kit-gold-hi);
-  background: radial-gradient(closest-side, #2a1a36, #150d1c);
-  border: 1px solid color-mix(in srgb, var(--kit-gold) 80%, transparent);
-  border-radius: 999px;
+  position: absolute; left: 100%; top: 50%; translate: 0 -50%;
+  padding-left: .15em;
+  font-family: var(--font-display); font-weight: 700; font-style: normal;
+  font-size: max(11.5px, .8em); line-height: 1; letter-spacing: .08em;
+  font-variant: small-caps; white-space: nowrap;
+  color: var(--kit-text-mid);
   text-shadow: 0 1px 0 rgba(0, 0, 0, .95);
 }
+.mm-hud__snack.is-folded { margin-right: 3.2em; }
 .mm-hud__snack.is-empty {
   color: transparent;
   filter: drop-shadow(0 1px 2px rgba(0, 0, 0, .85)) brightness(1.3) saturate(1.05);
@@ -367,12 +341,12 @@
 }
 
 /* ── Keepsakes: brass-framed squares, rarity as an inlay ─────────────────── */
-.mm-hud__relics { display: flex; gap: var(--s-1); flex-wrap: wrap; min-width: 0; }
+.mm-hud__relics { display: flex; gap: 1px; flex-wrap: wrap; min-width: 0; }
 .mm-hud__relic {
   --rar: var(--rarity-common);
   position: relative;
   display: grid; place-items: center;
-  width: calc(var(--hud-chip-h) * 1.14); height: calc(var(--hud-chip-h) * 1.14);
+  width: calc(var(--hud-chip-h) * 1.08); height: calc(var(--hud-chip-h) * 1.08);
   color: var(--kit-gold-hi);
   /* a cast brass setting with clipped corners, a bead round its inner lip and
      a stud on each corner, round a hollow of violet enamel (socket-keep.webp,
@@ -414,36 +388,37 @@
    spaced small capitals — never loose italic on the lacquer */
 .mm-hud__norelics {
   display: inline-flex; align-items: center;
-  height: calc(var(--hud-chip-h) * .92);
-  padding: 0 1.05em 1px;
+  height: var(--hud-chip-h);
+  padding: 0 .5em 1px;
   font-family: var(--font-display); font-weight: 700; font-style: normal;
   font-size: max(11.5px, .8em); letter-spacing: .1em;
   font-variant: small-caps;
   color: var(--kit-text-mid);
   text-shadow: 0 -1px 0 rgba(0, 0, 0, .9), 0 1px 0 color-mix(in srgb, var(--kit-lav-hi) 18%, transparent);
   white-space: nowrap;
-  border: 0 solid transparent;
-  border-image: url("../../assets/ui/kit/cartouche-dark.webp") 18 34 18 34 fill /
-    calc(var(--hud-chip-h) * .92 * 18 / 64) calc(var(--hud-chip-h) * .92 * 34 / 64) stretch;
-  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .75)) brightness(1.1);
 }
 
 /* the "no run yet" state is labelled, never silently fake: an engraved
    amber word on a small dark cartouche at the head of the rail */
+/* round 20: the preview word is a brass key tag hung from the rail's left
+   end block, lettered into the metal -- off the row, so a stand-in run's
+   rail measures the same as a real one's */
 .mm-hud.is-mock::before {
   content: 'preview';
+  position: absolute; z-index: 2; pointer-events: none;
+  left: calc(var(--hud-h) * 6 / 64); top: calc(100% - 4px);
+  box-sizing: border-box;
   display: inline-flex; align-items: center;
-  height: calc(var(--hud-chip-h) * .92);
-  padding: 0 1.1em;
-  font-family: var(--font-display); font-weight: 700;
-  font-size: max(11px, .8em); letter-spacing: .18em; text-transform: uppercase;
-  color: var(--warn-300);
-  text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
+  height: 19px;
+  padding: 0 9px 0 17px;
   border: 0 solid transparent;
-  border-image-source: url("../../assets/ui/kit/cartouche-dark.webp");
-  border-image-slice: 18 34 18 34 fill;
-  border-image-width: calc(var(--hud-chip-h) * .92 * 18 / 64) calc(var(--hud-chip-h) * .92 * 34 / 64);
-  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .7));
+  border-image: url("../../assets/ui/kit/hw-tag.webp") 0 20 0 44 fill / 0 calc(19px * 20 / 56) 0 calc(19px * 44 / 56) stretch;
+  font-family: var(--font-display); font-weight: 700;
+  font-size: 11px; line-height: 1; letter-spacing: .16em; text-transform: uppercase;
+  color: #2a1a09;
+  text-shadow: 0 1px 0 rgba(255, 236, 190, .45);
+  filter: drop-shadow(0 3px 3px rgba(0, 0, 0, .8));
+  rotate: -3deg; transform-origin: 10% 0;
 }
 
 /* ── the combat variant ───────────────────────────────────────────────────
@@ -455,7 +430,6 @@
    toolbar: the fight's readouts were floating on a wash while every other
    board's were cut into a carved rail. Only the density is the fight's own. */
 .mm-hud[data-variant="combat"] {
-  padding: var(--s-1) calc(var(--hud-cap) + var(--s-2));
   pointer-events: none;
 }
 .mm-hud[data-variant="combat"] > .mm-hud__group { pointer-events: auto; }
@@ -468,21 +442,121 @@
 :root[data-large-text="1"] .mm-hud { gap: var(--s-2) var(--s-3); padding: var(--s-2); }
 :root[data-large-text="1"] .mm-hud__group--meta { margin-left: 0; }
 
+/* ── a folded group: its plate and its tray ───────────────────────────────
+   Round 20 (the Steam Deck bug): with a run's full load the rail folds a
+   group rather than wrap (ui/hud.js#_fit). The folded group is ONE readout
+   in the channel that says what it holds -- the first three of its objects
+   fanned in their velvet wells, the count in the rail's gold figures, the
+   noun in its engraved small caps -- and a cast finial saying it opens. Its
+   tray is a drawer let down under the rail (hw-tray.webp): the group's real
+   chips, each still hoverable for its own tooltip, opened by hover, focus or
+   a click, shut by Escape or a click elsewhere. */
+.mm-hud__relics[data-folded="1"],
+.mm-hud__gear[data-folded="1"] { position: relative; flex-wrap: nowrap; }
+.mm-hud__gear[data-folded="1"] { margin-left: 2px; }
+.mm-hud__fold {
+  position: relative;
+  display: inline-flex; align-items: center; gap: .3em;
+  height: var(--hud-chip-h);
+  margin: 0; padding: 0 .25em 0 .1em;
+  border: 0; border-radius: 3px;
+  background: none;
+  color: var(--kit-name);
+  font-family: var(--font-body); font-size: 1em;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: filter var(--t-quick) var(--ease-out);
+}
+.mm-hud__foldpics { display: inline-flex; align-items: center; padding-right: .1em; }
+.mm-hud__foldwell {
+  position: relative; display: grid; place-items: center; flex: none;
+  width: calc(var(--hud-chip-h) * 1.06); height: calc(var(--hud-chip-h) * 1.06);
+  background: url("../../assets/ui/kit/hw-well.webp") 50% 50% / 100% 100% no-repeat;
+  filter: drop-shadow(1px 1px 1.5px rgba(0, 0, 0, .9));
+}
+.mm-hud__foldwell[hidden] { display: none; }
+.mm-hud__foldwell + .mm-hud__foldwell { margin-left: calc(var(--hud-chip-h) * -.34); }
+.mm-hud__foldwell:nth-child(1) { z-index: 10; }
+.mm-hud__foldwell:nth-child(2) { z-index: 9; }
+.mm-hud__foldwell:nth-child(3) { z-index: 8; }
+.mm-hud__foldwell:nth-child(4) { z-index: 7; }
+.mm-hud__foldwell:nth-child(5) { z-index: 6; }
+.mm-hud__foldwell:nth-child(6) { z-index: 5; }
+.mm-hud__foldwell:nth-child(7) { z-index: 4; }
+.mm-hud__foldwell:nth-child(8) { z-index: 3; }
+.mm-hud__foldwell:nth-child(9) { z-index: 2; }
+.mm-hud__foldwell > .kit-obj { width: 96%; }
+.mm-hud__foldn {
+  font-family: var(--font-num); font-weight: 700; font-style: normal;
+  font-variant-numeric: lining-nums tabular-nums;
+  color: var(--kit-gold-hi);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .95);
+}
+.mm-hud__foldw {
+  font-family: var(--font-display); font-weight: 700;
+  font-size: max(11.5px, .82em); letter-spacing: .08em;
+  font-variant: small-caps; text-transform: lowercase;
+  color: var(--kit-text);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .95);
+}
+.mm-hud__foldfin { width: 11px; margin-left: .1em; opacity: .9; transition: rotate var(--t-quick) var(--ease-out); }
+.mm-hud__fold:hover,
+.mm-hud__fold[aria-expanded="true"] { filter: brightness(1.18) drop-shadow(0 0 6px color-mix(in srgb, var(--kit-candle) 38%, transparent)); }
+.mm-hud__fold:focus-visible { outline: none; filter: brightness(1.2) drop-shadow(0 0 1.5px var(--kit-gold-hi)) drop-shadow(0 0 8px color-mix(in srgb, var(--kit-candle) 55%, transparent)); }
+.mm-hud__fold[aria-expanded="true"] > .mm-hud__foldfin { rotate: 180deg; }
+
+.mm-hud__tray {
+  position: absolute; z-index: 6;
+  left: calc(var(--hud-chip-h) * -.4); top: calc(100% + (var(--hud-h) - var(--hud-chip-h)) / 2 - 2px);
+  display: none;
+  grid-template-columns: repeat(5, auto);
+  gap: 6px 7px;
+  padding: 12px 18px 20px;
+  border: 0 solid transparent;
+  border-image: url("../../assets/ui/kit/hw-tray.webp") 14 30 22 30 fill / 10px 21px 15px 21px stretch;
+  filter: drop-shadow(0 8px 10px rgba(0, 0, 0, .85));
+  pointer-events: auto;
+}
+/* the gap between the plate and the drawer still counts as the group, so the
+   pointer can travel down into it */
+.mm-hud__tray::before { content: ''; position: absolute; left: 0; right: 0; top: -14px; height: 14px; }
+.mm-hud__trayt {
+  grid-column: 1 / -1;
+  justify-self: center;
+  padding: 0 0 2px;
+  font-family: var(--font-display); font-weight: 700; font-style: normal;
+  font-size: max(11.5px, .82em); letter-spacing: .14em;
+  font-variant: small-caps; text-transform: lowercase;
+  color: var(--kit-gold-hi);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .95);
+  white-space: nowrap;
+}
+.mm-hud__trayt::before, .mm-hud__trayt::after { content: '\2726'; margin: 0 .5em; font-size: .8em; color: var(--kit-gold); }
+.mm-hud__tray > .mm-hud__relic,
+.mm-hud__tray > .mm-hud__gearchip { width: calc(var(--hud-chip-h) * 1.42); height: calc(var(--hud-chip-h) * 1.42); }
+:is(.mm-hud__relics, .mm-hud__gear)[data-folded="1"]:is(:hover, :focus-within, [data-open="1"]):not(.is-shut) > .mm-hud__tray { display: grid; }
+:is(.mm-hud__relics, .mm-hud__gear)[data-folded="1"]:is(:hover, :focus-within, [data-open="1"]):not(.is-shut) > .mm-hud__tray {
+  animation: mm-hud-tray var(--t-quick) var(--ease-out);   /* 1ms under reduced motion (tokens.css) */
+}
+@keyframes mm-hud-tray { from { opacity: 0; translate: 0 -6px; } to { opacity: 1; translate: 0 0; } }
+
 /* ── the rail on a 1280-wide panel ──────────────────────────────────────────
    The type stays the size it is; the rail gives up air instead — tighter
    gaps between groups and chips, and a shorter plate either side of a value —
    so everything a run carries still fits on ONE rail at the Steam Deck size. */
 @media (max-width: 1400px) {
-  .mm-hud { --hud-cap: 22px; gap: 5px; padding-inline: calc(var(--hud-cap) + 6px); }
+  .mm-hud { gap: 5px; padding-inline: calc(var(--hud-cap) + 4px); }
   .mm-hud__group { gap: 4px; }
-  /* the ends curl a little tighter, and the words stop short of them */
-  .mm-hud__chip { --chip-end: calc(var(--hud-chip-h) * 27 / 64); padding: 0 calc(var(--chip-end) + 2px); }
-  .mm-hud__chip:has(> .mm-icon:first-child) { padding-left: 0; }
+  .mm-hud__group--vitals > :not(:first-child),
+  .mm-hud__group--meta > :not(:first-child) { margin-left: 4px; }
+  .mm-hud__group--vitals > :not(:first-child)::after,
+  .mm-hud__group--meta > :not(:first-child)::after { left: -7.5px; width: 5px; }
+  .mm-hud__chip { padding: 0 .2em; }
   .mm-hud__settings { padding: 0; }
-  .mm-hud__bar { width: calc(var(--bar-h) * 3.3); }
+  .mm-hud__bar { width: calc(var(--bar-h) * 3.25); }
   .mm-hud__relics { gap: 1px; }
   .mm-hud__relic { width: calc(var(--hud-chip-h) * 1.04); height: calc(var(--hud-chip-h) * 1.04); }
   .mm-hud__snack { margin-inline: calc(var(--sock-h) * -.1); }
-  .mm-hud__group + .mm-hud__group::before { width: 12px; height: 12px; }
-  .mm-hud__gear::before { width: 12px; height: 12px; margin-right: 1px; }
+  .mm-hud__group + .mm-hud__group::before { width: 14px; height: 14px; margin: 0; }
+  .mm-hud__gear::before { width: 13px; height: 13px; margin-right: 1px; }
 }

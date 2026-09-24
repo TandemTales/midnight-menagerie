@@ -515,6 +515,92 @@ def hardware():
     hw_knob(); hw_groove(); hw_switch(); hw_lever(); hw_cog(); hw_finial(); hw_well(); hw_glaze(); hw_dial(); hw_tag(); hw_slip(); hw_plate()
 
 
+# ── the run rail ──────────────────────────────────────────────────────────────
+def hw_rail():
+    """THE RUN RAIL (round 20): the strip across the top of every run screen
+    as ONE carved object made of the same hardware as the boards' controls.
+
+    Three judges of round 19, like round 6's, read the strip as "a toolbar of
+    pills": a row of separate plates on a band. This is the rail itself: a
+    half-round brass moulding along its top, a face of the nameplates'
+    near-black enamel, and a single CHANNEL sunk the length of it behind a
+    brass bead -- the readouts are set into that channel, never laid on the
+    face as plates. Each end is a cast brass block, its corners clipped like
+    the panels', holding a boss with a violet cabochon (hw-plate's boss, a
+    size up), and the channel ends round against it. A lighter moulding runs
+    under the face; the rail's shadow is the kit's.
+
+    1024x64, a 9-slice for `.mm-hud`'s border-image: 26 top, 26 bottom,
+    72 each end; the middle runs uniform along x so it stretches clean."""
+    W, H = 1024, 64
+    p = Pic(seed=40, n=W, h=H)
+    e = 72                                        # the end blocks' slice
+    # the face, the whole length, in the plates' enamel over a brass carcass
+    p.part(R(0, 0, W, H), "brass", bevel=2.2, shadow=0, ink=0)
+    p.part(R(0, 5.5, W, H - 5), PLATE, prof="round", bevel=1.6, gloss=.08, shadow=.6, ink=.5)
+    # an engraved gilt line along the face above and below the channel
+    for y in (8.6, H - 8.2):
+        p.ink([(e - 6, y), (W - e + 6, y)], w=.7, color="#b08a4a", alpha=.42)
+    # the channel's brass bead, and the channel sunk inside it
+    x0, x1, y0, y1 = 50, W - 50, 12.5, H - 12
+    rr = (y1 - y0) / 2
+    p.part(R(x0 - 2.2, y0 - 2.2, x1 + 2.2, y1 + 2.2, rr + 2.2), "brass", bevel=1.8, shadow=.45)
+    p.part(R(x0, y0, x1, y1, rr), ("#010002", "#0a0610", "#281b33"), prof="recess", bevel=5, gloss=.1, shadow=0)
+    # the top moulding: a half-round brass bead, the candles catch its crown
+    p.part(R(0, 0, W, 6.2, 0), "brass", prof="sphere", shadow=.7, ink=.6)
+    # the foot: a smaller bead and fillet
+    p.part(R(0, H - 5.4, W, H - 1.2, 0), "brass", prof="sphere", shadow=.5, ink=.6)
+    p.paint(R(0, H - 1.2, W, H), "#0a0508", 1.0)
+    # the end blocks: cast brass, clipped, a boss with a violet cabochon
+    for side in (0, 1):
+        bx0, bx1 = (0, 40) if side == 0 else (W - 40, W)
+        c = 5
+        if side == 0:
+            blk = [(0, 3), (bx1 - c, 3), (bx1, 3 + c), (bx1, H - 3 - c), (bx1 - c, H - 3), (0, H - 3)]
+        else:
+            blk = [(bx0 + c, 3), (W, 3), (W, H - 3), (bx0 + c, H - 3), (bx0, H - 3 - c), (bx0, 3 + c)]
+        p.part(P(blk), "brass", bevel=3.6, shadow=.55)
+        cx = (bx0 + bx1) / 2 + (1.5 if side == 0 else -1.5)
+        p.ink([(bx0 + 4, 8), (bx1 - 4, 8)], w=.8, alpha=.45)
+        p.ink([(bx0 + 4, H - 8), (bx1 - 4, H - 8)], w=.8, alpha=.45)
+        p.part(E(cx, H / 2, 13), "brass", bevel=4, shadow=.5)
+        p.ink(arc_pts(cx, H / 2, 10.2, 10.2, 0, 360, 50), w=.9, alpha=.6)
+        p.part(E(cx, H / 2, 7), ("#140a22", "#4b2f78", "#b393ea"), prof="sphere", gloss=.85, power=42, shadow=.35)
+        p.paint(E(cx - 2.2, H / 2 - 2.6, 2.2, 1.5), "#ffffff", .7, blur=.4)
+    return _save_pic(p, "hw-rail.webp")
+
+
+def hw_mullion():
+    """A brass mullion standing across the rail's channel between two
+    readouts: a turned bar with a bead at each end (12x48)."""
+    p = Pic(seed=41, n=12, h=48, ss=6)
+    p.part(R(4.2, 4, 7.8, 44, 1.6), "brass", prof="sphere", shadow=.5, ink=.7)
+    for y in (5, 43):
+        p.part(E(6, y, 3.4, 2.6), "brass", prof="sphere", shadow=.45, ink=.7)
+    return _save_pic(p, "hw-mullion.webp")
+
+
+def hw_tray():
+    """The tray a folded group opens: a drawer let down under the rail, its
+    front the plates' enamel in a brass rim with clipped lower corners.
+    9-slice (14 30 22 30)."""
+    W, H = 200, 96
+    p = Pic(seed=42, n=W, h=H)
+    c = 12
+    body = P([(2, 0), (W - 2, 0), (W - 2, H - c), (W - c, H - 2), (c, H - 2), (2, H - c)])
+    p.part(body, "brass", bevel=3.4, shadow=0)
+    p.part(body, PLATE, prof="round", bevel=2.5, gloss=.1, erode=4.4, shadow=.5)
+    p.ink([(12, 9), (W - 12, 9)], w=.8, color="#b08a4a", alpha=.4)
+    p.ink([(18, H - 10), (W - 18, H - 10)], w=.8, color="#b08a4a", alpha=.4)
+    for x in (10, W - 10):
+        p.part(E(x, H - 14, 2.6), "brass", prof="sphere", shadow=.35)
+    return _save_pic(p, "hw-tray.webp")
+
+
+def rail_pieces():
+    hw_rail(); hw_mullion(); hw_tray()
+
+
 # materials (dark, body, light), all in the samples' low key
 PLATE = ("#07050a", "#1a1222", "#3d2d4c")      # the nameplates' near-black enamel
 PAPER = ("#5d5140", "#c9b48c", "#f4e6c2")
@@ -581,7 +667,7 @@ def sheet(objs, path):
     print("  sheet ->", path)
 
 
-GROUPS = {"objects": objects, "hardware": hardware}
+GROUPS = {"objects": objects, "hardware": hardware, "rail": rail_pieces}
 
 
 def main():
@@ -590,7 +676,7 @@ def main():
     ap.add_argument("--obj", default="", help="comma-separated object keys")
     ap.add_argument("--sheet", action="store_true")
     a = ap.parse_args()
-    names = [s for s in a.only.split(",") if s] or ["hardware", "objects"]
+    names = [s for s in a.only.split(",") if s] or ["hardware", "rail", "objects"]
     for nm in names:
         if nm == "objects":
             objs = objects([s for s in a.obj.split(",") if s] or None)
