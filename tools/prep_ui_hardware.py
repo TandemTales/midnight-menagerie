@@ -41,11 +41,15 @@ outline) so the hardware is the same metal as the rails and the medallions:
               hw-well.webp       the plate a painted object sits in: a velvet
                                  hollow sunk in a studded brass bezel
   RAIL        hw-rail.webp       the run strip as ONE carved object (round 20):
-  (round 20)                     brass mouldings, a plate-enamel face, one
-                                 channel sunk the length of it, cast end
-                                 blocks with a cabochon boss and a drop
-              hw-mullion.webp    a turned brass bar parting two readouts in
-                                 the channel
+  (round 20)                     brass mouldings, a brushed plate-enamel face,
+                                 one channel sunk the length of it, carved end
+                                 blocks with a rosette boss and a finial
+              hw-rail-vine.webp  (graft) an engraved gilt vine for the length
+                                 of channel no readout stands in
+              hw-rail-stud.webp  (graft) a milled brass stud parting two
+                                 readouts in the channel
+              hw-rail-well.webp  (graft) a plate sunk in the rail, where words
+                                 are engraved ("No Keepsakes")
               hw-tray.webp       the drawer a folded group lets down under
                                  the rail
 
@@ -525,85 +529,191 @@ def hardware():
 
 
 # ── the run rail ──────────────────────────────────────────────────────────────
+RAIL_H, RAIL_DROP = 64, 26       # the rail, and the finials hanging under its end blocks
+
+
+def _rail_end(p, side, W, H):
+    """One carved end block (round 20 graft, after MALACHITE's): a brass
+    pilaster the rail's height whose inner edge steps out in an ogee over the
+    face, a panel of the plates' enamel sunk in it, a milled rosette boss --
+    eight turned petals round a violet cabochon -- a stud top and foot where
+    it is fixed, and under the foot a TURNED FINIAL hanging clear of the rail:
+    a collar, a bead and a cone. Drawn for the left end; the right is its
+    mirror."""
+    def X(x):
+        return x if side == 0 else W - x
+
+    def PX(pts):
+        return P([(X(x), y) for x, y in pts])
+    cx = 22.0
+    # the finial first, so the block's foot overlaps its collar
+    p.part(R(min(X(12), X(32)), H - 2, max(X(12), X(32)), H + 3.5, 1.5), "brass", bevel=1.8, shadow=.5)
+    p.part(E(X(cx), H + 9.5, 6.4), "brass", prof="sphere", shadow=.5)
+    p.part(PX([(cx - 5.2, H + 13.5), (cx + 5.2, H + 13.5), (cx, H + RAIL_DROP - .6)]), "brass", bevel=3, shadow=.4)
+    p.part(E(X(cx), H + 13.6, 5.4, 1.3), "brass", prof="sphere", shadow=.3)
+    blk = [(0, 1.5), (40, 1.5), (40, 5), (45.5, 10), (45.5, H - 10), (40, H - 5), (40, H - 1), (0, H - 1)]
+    p.part(PX(blk), "brass", bevel=4.2, shadow=.6)
+    p.part(R(min(X(6.5), X(37.5)), 7, max(X(6.5), X(37.5)), H - 7, 2), PLATE, prof="recess", bevel=2.6, gloss=.1, shadow=0)
+
+    def knurl(xx, yy):
+        a = np.arctan2(yy - H / 2, xx - X(cx))
+        r = np.hypot(xx - X(cx), yy - H / 2)
+        return 0.6 * np.cos(a * 18) * smooth(10.5, 13, r)
+    p.part(E(X(cx), H / 2, 13.4), "brass", bevel=4.4, bump=knurl, shadow=.5)
+    for i in range(8):
+        a = math.radians(i * 45 + 22.5)
+        p.part(E(X(cx) + 6.9 * math.cos(a), H / 2 + 6.9 * math.sin(a), 3.3), "brass", prof="sphere", shadow=.25)
+    p.part(E(X(cx), H / 2, 5.2), ("#140a22", "#4b2f78", "#b393ea"), prof="sphere", gloss=.9, power=46, shadow=.35)
+    p.paint(E(X(cx) - 1.5, H / 2 - 1.6, 1.7, 1.2), "#ffffff", .7, blur=.3)
+    for y in (4.6, H - 4.4):
+        p.part(E(X(cx), y, 1.9), "brass", prof="sphere", shadow=.3)
+
+
 def hw_rail():
     """THE RUN RAIL (round 20): the strip across the top of every run screen
     as ONE carved object made of the same hardware as the boards' controls.
 
     Three judges of round 19, like round 6's, read the strip as "a toolbar of
     pills": a row of separate plates on a band. This is the rail itself: a
-    half-round brass moulding along its top, a face of the nameplates'
-    near-black enamel, and a single CHANNEL sunk the length of it behind a
-    brass bead -- the readouts are set into that channel, never laid on the
-    face as plates. Each end is a cast brass block, its corners clipped like
-    the panels', holding a boss with a violet cabochon (hw-plate's boss, a
-    size up), and the channel ends round against it. A lighter moulding runs
-    under the face; the rail's shadow is the kit's.
+    half-round brass moulding along its top over a brass fillet (the double
+    gilt rule), a face of the nameplates' near-black enamel BRUSHED along its
+    length, its upper edge caught by the light where it turns under the
+    moulding, and a single CHANNEL sunk the length of it behind a brass bead
+    -- the readouts are set into that channel, never laid on the face as
+    plates. A fillet and a smaller bead make its foot. Each end is a carved
+    end block (`_rail_end`, after MALACHITE's) with a finial hanging under it.
 
-    Under each end block a cast brass DROP hangs below the rail's foot -- a
-    pendant with a turned knob, the way a carved rail's ends are finished --
-    so the strip reads as a length of something with ends, not as the top
-    edge of the page.
+    ROUND 20 GRAFT: the judges read round 20's rail as "a flat dark capsule
+    with no bevel or cast shadow". The brushing, the lit upper bevel, the
+    double rules and MALACHITE's carved ends are its relief; the cast shadow
+    is the kit's (`.mm-hud::after`), and the dead length of channel is filled
+    with an engraved gilt vine (hw-rail-vine.webp).
 
-    1024x80: the rail is the top 64, the drops hang in the 16 under it. A
-    9-slice for `.mm-hud`'s border-image: 26 top, 42 bottom (16 of it laid
+    1024x90: the rail is the top 64, the finials hang in the 26 under it. A
+    9-slice for `.mm-hud`'s border-image: 26 top, 52 bottom (26 of it laid
     out BELOW the box with border-image-outset), 72 each end; the middle runs
     uniform along x so it stretches clean."""
-    W, H0, DROP = 1024, 64, 16
-    p = Pic(seed=40, n=W, h=H0 + DROP)
-    H = H0
+    W, H, DROP = 1024, RAIL_H, RAIL_DROP
+    p = Pic(seed=40, n=W, h=H + DROP)
     e = 72                                        # the end blocks' slice
+    rng = np.random.default_rng(4040)
+    rows = ndimage.gaussian_filter1d(rng.normal(0, 1, (H + DROP) * p.ss), .8)
+    rows /= np.abs(rows).max()
+
+    def brushed(xx, yy, c):
+        # fine streaks along the length, the way a lacquered face is rubbed
+        # down; they vary only across the rail, so the 9-slice stretches clean
+        k = np.clip((yy * p.ss).astype(int), 0, rows.size - 1)
+        return c * (1 + .16 * rows[k])[..., None]
     # the face, the whole length, in the plates' enamel over a brass carcass
     p.part(R(0, 0, W, H), "brass", bevel=2.2, shadow=0, ink=0)
-    p.part(R(0, 5.5, W, H - 5), PLATE, prof="round", bevel=1.6, gloss=.08, shadow=.6, ink=.5)
-    # an engraved gilt line along the face above and below the channel
-    for y in (8.6, H - 8.2):
-        p.ink([(e - 6, y), (W - e + 6, y)], w=.7, color="#b08a4a", alpha=.42)
+    p.part(R(0, 5.5, W, H - 5), PLATE, prof="round", bevel=1.6, gloss=.08, shadow=.6, ink=.5, tex=brushed)
+    # the face's upper bevel, lit where it turns under the moulding
+    p.paint(R(0, 7.2, W, 8.1), "#a58cc0", .55, blur=.35)
+    p.paint(R(0, H - 7.4, W, H - 6.9), "#000000", .6, blur=.3)
     # the channel's brass bead, and the channel sunk inside it
-    x0, x1, y0, y1 = 50, W - 50, 12.5, H - 12
+    x0, x1, y0, y1 = 50, W - 50, 13.5, H - 12.5
     rr = (y1 - y0) / 2
     p.part(R(x0 - 2.2, y0 - 2.2, x1 + 2.2, y1 + 2.2, rr + 2.2), "brass", bevel=1.8, shadow=.45)
     p.part(R(x0, y0, x1, y1, rr), ("#010002", "#0a0610", "#281b33"), prof="recess", bevel=5, gloss=.1, shadow=0)
-    # the top moulding: a half-round brass bead, the candles catch its crown
-    p.part(R(0, 0, W, 6.2, 0), "brass", prof="sphere", shadow=.7, ink=.6)
-    # the foot: a smaller bead and fillet
-    p.part(R(0, H - 5.4, W, H - 1.2, 0), "brass", prof="sphere", shadow=.5, ink=.6)
-    p.paint(R(0, H - 1.2, W, H), "#0a0508", 1.0)
-    # the end blocks: cast brass, clipped, a boss with a violet cabochon
+    # the light the candles put along the channel's lower lip
+    p.paint(R(x0 + rr, y1 - 1.4, x1 - rr, y1 - .5), "#5a4468", .45, blur=.4)
+    # the top: a half-round brass bead, and under it a brass fillet -- the
+    # double gilt rule that runs the rail's length
+    p.part(R(0, 0, W, 5.2, 0), "brass", prof="sphere", shadow=.7, ink=.6)
+    p.part(R(0, 5.9, W, 7.1, 0), "brass", prof="sphere", shadow=.4, ink=.4)
+    # the foot: a fillet, then a smaller bead
+    p.part(R(0, H - 6.4, W, H - 5.4, 0), "brass", prof="sphere", shadow=.35, ink=.4)
+    p.part(R(0, H - 4.8, W, H - 1.0, 0), "brass", prof="sphere", shadow=.5, ink=.6)
+    p.paint(R(0, H - 1.0, W, H), "#0a0508", 1.0)
     for side in (0, 1):
-        bx0, bx1 = (0, 40) if side == 0 else (W - 40, W)
-        c = 5
-        if side == 0:
-            blk = [(0, 3), (bx1 - c, 3), (bx1, 3 + c), (bx1, H - 3 - c), (bx1 - c, H - 3), (0, H - 3)]
-        else:
-            blk = [(bx0 + c, 3), (W, 3), (W, H - 3), (bx0 + c, H - 3), (bx0, H - 3 - c), (bx0, 3 + c)]
-        cx = (bx0 + bx1) / 2 + (1.5 if side == 0 else -1.5)
-        # the drop under the block: a pendant with a knob, cast in one with it
-        pend = [(cx - 16, H - 5), (cx + 16, H - 5), (cx + 12, H + 1), (cx + 5, H + 5), (cx + 2.5, H + 10), (cx - 2.5, H + 10), (cx - 5, H + 5), (cx - 12, H + 1)]
-        p.part(P(pend), "brass", bevel=3.2, shadow=.6)
-        p.ink([(cx - 9, H + 1.5), (cx, H + 4.5), (cx + 9, H + 1.5)], w=.8, alpha=.5)
-        p.part(E(cx, H + 11.5, 3.3), "brass", prof="sphere", shadow=.55)
-        p.part(P(blk), "brass", bevel=3.6, shadow=.55)
-        # a bead engraved round the block's face, a stud in each corner
-        ix0, ix1 = (bx0 + 3.5, bx1 - 4.5) if side == 0 else (bx0 + 4.5, bx1 - 3.5)
-        p.ink([(ix0, 7), (ix1, 7), (ix1, H - 7), (ix0, H - 7)], w=.8, alpha=.5, closed=True)
-        for sx in (ix0 + 3.2, ix1 - 3.2):
-            for sy in (10.2, H - 10.2):
-                p.part(E(sx, sy, 1.7), "brass", prof="sphere", shadow=.35)
-        p.part(E(cx, H / 2, 12.5), "brass", bevel=4, shadow=.5)
-        p.ink(arc_pts(cx, H / 2, 10.2, 10.2, 0, 360, 50), w=.9, alpha=.6)
-        p.part(E(cx, H / 2, 7), ("#140a22", "#4b2f78", "#b393ea"), prof="sphere", gloss=.85, power=42, shadow=.35)
-        p.paint(E(cx - 2.2, H / 2 - 2.6, 2.2, 1.5), "#ffffff", .7, blur=.4)
+        _rail_end(p, side, W, H)
     return _save_pic(p, "hw-rail.webp")
 
 
-def hw_mullion():
-    """A brass mullion standing across the rail's channel between two
-    readouts: a turned bar with a bead at each end (12x48)."""
-    p = Pic(seed=41, n=12, h=48, ss=6)
-    p.part(R(4.2, 4, 7.8, 44, 1.6), "brass", prof="sphere", shadow=.5, ink=.7)
-    for y in (5, 43):
-        p.part(E(6, y, 3.4, 2.6), "brass", prof="sphere", shadow=.45, ink=.7)
-    return _save_pic(p, "hw-mullion.webp")
+def hw_rail_vine():
+    """ROUND 20 GRAFT (after MALACHITE's rail face): a running vine ENGRAVED
+    in the channel's floor and gilded, for the length of channel no readout
+    stands in -- on the map and in a fight a third of the rail between "No
+    Keepsakes" and the Turn was empty. A stem waving every 64 px with a curl
+    thrown off each crest and a leaf before it, cut dark, gilt in the groove
+    and caught on its lower lip. Transparent round the cut, so the channel's
+    own floor shows; periodic in 128, so it tiles along x. 128x40, the
+    channel's inner height in the rail's 64 (y 13.5..51.5, less the lips)."""
+    W, H, ss = 128, 40, 4
+    SW, SH = W * ss, H * ss
+    im = Image.new("L", (SW, SH), 0)
+    vd = ImageDraw.Draw(im)
+    Pp, mid, amp = 64.0, 20.5, 6.4
+    pts = [(x / ss, mid + amp * math.sin(2 * math.pi * (x / ss) / Pp)) for x in range(-ss * 16, SW + ss * 16, 2)]
+    vd.line([(x * ss, y * ss) for x, y in pts], fill=255, width=int(round(1.15 * ss)))
+    for k in range(-1, int(W / Pp) + 2):
+        for side in (0, 1):
+            sg = 1 if side == 0 else -1
+            cx = k * Pp + Pp * (0.25 + 0.5 * side)
+            cy = mid - sg * amp
+            ox, oy = cx + 6.5, cy + sg * 4.8
+            curl = []
+            for i in range(60):
+                t = i / 59
+                a = -math.pi / 2 - 0.3 + t * 3.2 * math.pi
+                r = 5.1 * (1 - 0.8 * t)
+                curl.append((ox + r * math.cos(a), oy + sg * r * math.sin(a)))
+            vd.line([(x * ss, y * ss) for x, y in curl], fill=255, width=int(round(.95 * ss)), joint="curve")
+            lx = cx - 8.5
+            sy = mid + amp * math.sin(2 * math.pi * lx / Pp)
+            vd.polygon([((lx - 2.6) * ss, sy * ss), ((lx + 1.3) * ss, (sy + sg * .5) * ss),
+                        ((lx + 2.8) * ss, (sy - sg * 4.5) * ss), ((lx - 1.0) * ss, (sy - sg * 2.8) * ss)], fill=255)
+    vm = ndimage.gaussian_filter(np.asarray(im, np.float32) / 255.0, ss * .25, mode="wrap")
+    lip = np.clip(ndimage.shift(vm, (ss * 0.9, 0), order=1, mode="wrap") - vm, 0, 1)
+    wall = np.clip(ndimage.shift(vm, (-ss * 0.8, 0), order=1, mode="wrap") - vm, 0, 1)
+    col = (hexc("#8a6630")[None, None, :] * vm[..., None]
+           + hexc("#d9b870")[None, None, :] * lip[..., None]
+           + hexc("#030102")[None, None, :] * wall[..., None])
+    a = np.clip(vm * .92 + lip * .8 + wall * .7, 0, 1)
+    col = col / np.maximum(vm + lip + wall, 1e-4)[..., None]
+    out = np.dstack([down(col * a[..., None], ss) / np.maximum(down(a, ss), 1e-4)[..., None], down(a, ss) * 255])
+    save(out, "hw-rail-vine.webp", 92)
+    return out
+
+
+def hw_rail_stud():
+    """A carved stud struck into the channel between two readouts (round 20
+    graft: a judge read the turned mullions as a web page's hairline
+    separators). A milled brass boss with a bead round it, domed, the way
+    the end blocks are fixed; 24 square."""
+    p = Pic(seed=43, n=24, h=24, ss=8)
+
+    def knurl(xx, yy):
+        a = np.arctan2(yy - 12, xx - 12)
+        r = np.hypot(xx - 12, yy - 12)
+        return 0.35 * np.cos(a * 14) * smooth(7.5, 9.5, r)
+    p.part(E(12, 12, 10.2), "brass", bevel=2.6, bump=knurl, shadow=0, ink=.8)
+    p.ink(arc_pts(12, 12, 6.6, 6.6, 0, 360, 40), w=.7, alpha=.7)
+    p.part(E(12, 12, 5.6), "brass", prof="sphere", shadow=.45, ink=.6)
+    p.paint(E(10.4, 10.2, 1.6, 1.1), "#fff4d6", .75, blur=.35)
+    return _save_pic(p, "hw-rail-stud.webp")
+
+
+def hw_rail_well():
+    """A plate SUNK into the rail where words are engraved rather than a
+    readout set (round 20 graft, MALACHITE's window): a brass lip, its
+    corners clipped like the panels', round a recess of the nameplates'
+    near-black enamel whose upper wall is in the lip's shadow, a gilt
+    hairline engraved round its floor. 9-slice, 14 all round."""
+    W, H = 120, 48
+    p = Pic(seed=2022, n=W, h=H)
+    c = 7
+    lip = P([(c, 1), (W - c, 1), (W - 1, c), (W - 1, H - c), (W - c, H - 1), (c, H - 1), (1, H - c), (1, c)])
+    p.part(lip, "brass", bevel=2.2, shadow=0)
+    c2 = 5.2
+    i0, i1 = 3.6, W - 3.6
+    j0, j1 = 3.6, H - 3.6
+    rec = P([(i0 + c2, j0), (i1 - c2, j0), (i1, j0 + c2), (i1, j1 - c2), (i1 - c2, j1), (i0 + c2, j1), (i0, j1 - c2), (i0, j0 + c2)])
+    p.part(rec, ("#020103", "#0e0913", "#2c2034"), prof="recess", bevel=4.4, gloss=.12, shadow=0)
+    p.ink([(9, 7.5), (W - 9, 7.5), (W - 7.5, 9), (W - 7.5, H - 9), (W - 9, H - 7.5), (9, H - 7.5), (7.5, H - 9), (7.5, 9)],
+          w=.55, color="#8a6a36", alpha=.42, closed=True)
+    return _save_pic(p, "hw-rail-well.webp")
 
 
 def hw_tray():
@@ -624,7 +734,7 @@ def hw_tray():
 
 
 def rail_pieces():
-    hw_rail(); hw_mullion(); hw_tray()
+    hw_rail(); hw_rail_vine(); hw_rail_stud(); hw_rail_well(); hw_tray()
 
 
 # materials (dark, body, light), all in the samples' low key

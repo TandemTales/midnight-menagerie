@@ -124,7 +124,16 @@ export const TUNE = {
          ch·sinθ past its own edge, and at twelve degrees that is 42 px of band
          per side spent on tilt instead of on the cards.
      Without bounds (tests/cards-feel, any other host) nothing here applies. */
-  boundVisible: 0.6,
+  /* ROUND 20: 0.6 -> 0.47. The share each covered card keeps is a FLOOR for
+     the size solver, not the strip it gets: `_fit` sizes the cards at this
+     share, snaps the size DOWN to an eighth, and the step then opens to fill
+     the band anyway. At 0.6, nine Tricks at the Deck's 1280x800 solved to
+     0.87 of a card, snapped to 0.75, and dealt 117 px cards at a 0.73 share:
+     wide strips of 8 px names. At 0.47 the same hand solves to a whole card
+     (156 px) and the step opens to ~0.55: every letter half as large again,
+     and what the next card covers is the ART, which a covered card gives up
+     (see `riseMax`) so its name and rules keep the strip. */
+  boundVisible: 0.47,
   boundFanDeg: 8,
   boundDipMax: 32,
   boundBottomPad: 13,
@@ -133,6 +142,35 @@ export const TUNE = {
      `is-crowded`, and a scene can set the names flush left on their plates so
      they sit in the strip a neighbour leaves showing. */
   crowdAt: 0.8,
+  /* ── a crowded hand reads at 11 px (round 20) ─────────────────────────────
+     A covered card shows a strip, and a strip is narrow: a long rule wrapped
+     into it runs twice the lines it runs on a whole card. Round 19 fitted that
+     rule DOWN until it fit the rules panel, and "Put Yourself Back Together"
+     printed at 8.6 px at 1280. Now the words hold their size and the PANEL
+     grows: a covered card's name plate, type line and rules panel rise over
+     its own art — the part of the card the next one covers anyway — by as
+     many design units as its own rule needs at `readPx`, up to `riseMax` and
+     never over its cost coin (`_stripFit`); a card whose rule already fits
+     keeps its whole picture. Only past that does a rule close up, and never
+     under `floorPx`. */
+  readPx: 11,           // the rules' size a crowded hand keeps, in screen px
+  nameReadPx: 11,       // …and an open hand's long name (--name-read-u)
+  nameFloorPx: 9,       // the smallest a name that cannot keep that may go
+  floorPx: 10,          // the smallest a rule that still cannot fit may go
+  capPx: 13,            // …and the largest a short one may: the row reads as one size
+  riseMax: 44,          // design units a covered card's panel may climb its art
+  /* ROUND 20 GRAFT: the row's names read as ONE size. The fit above set a
+     short name at 18.5u, 12.9 px at 1280 and 13.9 at 1600 -- two-line
+     banners over the art for "Sit Pretty" and "Shake, Boy!" -- while "Put
+     Yourself Back Together", which cannot fit its words across a common
+     strip, fell to 9.7 px on four lines. Every covered name is capped at
+     `nameCapPx`, and the fan deals its strips UNEVENLY (`_strips`): a card
+     whose words cannot keep the row's sizes in the common strip is dealt a
+     wider one, taken from the cards whose words keep them in less ("Bite",
+     "Deal 6 damage."), never under `stripGive` of the common strip. */
+  nameCapPx: 12.5,
+  stripGive: 0.8,
+  stripTake: 1.6,
 
   // draw / add / discard / exhaust — four different signatures
   drawIn: 0.34, drawStagger: 0.055, drawFlick: 18,
@@ -436,8 +474,19 @@ export class Hand {
   setBounds(b) {
     const l = b && Number.isFinite(b.left) ? Math.round(b.left) : null;
     const r = b && Number.isFinite(b.right) ? Math.round(b.right) : null;
-    if (l === this._bL && r === this._bR) return this;
+    /* ROUND 20: furniture that stands LOW beside the fan (the draw pile at the
+       foot of the Kid's column, END TURN under the discard shelf) is given
+       separately, with the height its top stands at: an outer card leans
+       outward from its foot, so at that height its edge is still inboard of
+       its top corner, and the fan may run on over the furniture's head. */
+    const lo = (b && Array.isArray(b.low) ? b.low : [])
+      .filter((o) => o && Number.isFinite(o.x) && Number.isFinite(o.top))
+      .map((o) => ({ side: o.side === 'right' ? 'right' : 'left', x: Math.round(o.x), top: Math.round(o.top) }));
+    const loKey = lo.map((o) => o.side[0] + o.x + ':' + o.top).join(',');
+    if (l === this._bL && r === this._bR && loKey === this._bLoKey) return this;
     this._bL = l; this._bR = r;
+    this._bLoKey = loKey;
+    this._bLo = lo;
     this._fanKey = null;
     this._hitBox = null;
     this._layout();
@@ -450,8 +499,22 @@ export class Hand {
   }
 
   /** [left, right] of the band the fan lives in, in host px. */
-  _band() {
-    if (this._bounded()) return [Math.max(0, this._bL), Math.min(this.w, this._bR)];
+  _band(n = this.slots.length || 1, s = 1) {
+    if (this._bounded()) {
+      let L = this._bL, R = this._bR;
+      if (this._bLo && this._bLo.length) {
+        // the outer card, at scale s: how far its edge has come in from its
+        // top corner by the height a low piece of furniture stands at
+        const th = this._fanTh(n), ch = this.chh * s;
+        const top = this.h - TUNE.boundBottomPad - ch * Math.cos(th);
+        const inAt = (y) => clamp((y - top) / ch, 0, 1) * ch * Math.sin(th) * 0.85;
+        for (const o of this._bLo) {
+          if (o.side === 'left') L = Math.max(L, o.x - inAt(o.top));
+          else R = Math.min(R, o.x + inAt(o.top));
+        }
+      }
+      return [Math.max(0, L), Math.min(this.w, R)];
+    }
     const m = this._sideMargin();
     return [m, this.w - m];
   }
@@ -469,7 +532,7 @@ export class Hand {
     const ch = this.chh, cw = this.cw;
     let s = Math.min(1, (this.h * TUNE.maxCardHFrac) / (ch || 1));
     if (n > 1) {
-      const [bl, br] = this._band();
+      const [bl, br] = this._band(n, s);
       const band = Math.max(cw * 0.8, br - bl);
       // The outer card is ROTATED about its bottom centre, so it reaches
       // cw·cosθ/2 + ch·sinθ past its anchor — far more than half a card width.
@@ -911,13 +974,13 @@ export class Hand {
     // `_baseGeo` calls this once per card on every hit test, and the spread
     // solver below runs a bisection, so memoise on everything it depends on.
     const key = n + '|' + this.w + '|' + this.h + '|' + this.cw + '|' + this.chh
-              + '|' + (this._anyUnplayable ? 1 : 0) + '|' + this._bL + '|' + this._bR;
+              + '|' + (this._anyUnplayable ? 1 : 0) + '|' + this._bL + '|' + this._bR + '|' + this._bLoKey;
     if (this._fanKey === key && this._fanTmp) { this.fit = this._fanTmp.fit; return this._fanTmp; }
 
     const c = (n - 1) / 2;
     const fit = this._fit(n);
     const cw = this.cw * fit, ch = this.chh * fit;
-    const [bandL, bandR] = this._band();
+    const [bandL, bandR] = this._band(n, fit);
     const band = Math.max(cw, bandR - bandL);
 
     const f = this._fanTmp || (this._fanTmp = {});
@@ -1002,6 +1065,80 @@ export class Hand {
     return m === -Infinity ? 0 : m;
   }
 
+  /**
+   * Round 20: how a covered card lays its name and rules into the strip it
+   * shows. The name can sit on one to four lines (CardView#nameLadder), and
+   * every line the plate grows is room the rules panel under it can no longer
+   * rise into: the plate must stay under the cost coin (3..49u of the card,
+   * 42u of the face, plus its shadow), it is 12.5u of padding round lines at
+   * 1.04, and once the panel rises the plate also closes the 10u of art it
+   * stood over (scenes/combat.css), so it tops out at 252 - plate - bottom.
+   * Each way of setting the name is weighed by the smaller of the two sizes
+   * it leaves (the name is never set past the row's cap, so a big one-line
+   * name never outbids readable rules), and the best is taken: fewer lines
+   * on a tie. `strip` is this card's own strip, in design units.
+   * @returns {{f:number,n:number,rf:number,rise:number}|null}
+   */
+  _stripFit(view, strip, { read, floor, capU, nameCap, nameFloor }) {
+    const W = strip - 38;
+    const ladder = view.nameLadder?.(strip - 19, { hi: nameCap, floor: nameFloor, maxLines: 4 }) || [];
+    if (!ladder.length || !view.rulesNeed) return null;
+    let best = null;
+    for (const o of ladder) {
+      if (o.n === 1 && o.f < Math.min(14, nameCap * 0.9)) continue;
+      // the plate stands on the type line and may not climb past 82u, where
+      // the cost coin's shadow ends: a name on four lines is set no larger
+      // than that allows (measured: 4 x 18u lines put the plate over the coin)
+      const f = Math.min(o.f, (82 - 12.5) / (o.n * 1.04));
+      if (f < nameFloor) continue;
+      const plate = Math.max(38, o.n * f * 1.04 + 12.5);
+      let ceil = 92 - plate;
+      if (ceil < 10) ceil = Math.max(0, 82 - plate);
+      const top = clamp(ceil, 0, TUNE.riseMax);
+      let rf = floor;
+      for (let g = capU; g >= floor; g -= 0.25) if (view.rulesNeed(W, g) <= (104 + top) * 0.97) { rf = g; break; }
+      const score = Math.min(f, Math.min(rf, read * 1.1));
+      if (!best || score > best.score + 0.01) best = { score, f, n: o.n, rf, top };
+    }
+    if (!best) return null;
+    const need = view.rulesNeed(W, best.rf);
+    const rise = Math.min(best.top, Math.ceil(clamp(need / 0.97 - 104, 0, TUNE.riseMax) / 2) * 2);
+    return { f: best.f, n: best.n, rf: best.rf, rise: Math.max(0, Math.floor(rise)) };
+  }
+
+  /**
+   * ROUND 20 GRAFT: deal a crowded fan's strips by what each card's words
+   * need. `strip` is the common strip (design units) an even fan gives every
+   * covered card. A card that cannot hold the row's name size and the rules'
+   * reading size in it (`_stripFit`) asks for the least wider strip that
+   * does, up to `stripTake` of it; a card that holds both in less offers the
+   * difference, down to `stripGive` of it. The fan's width is unchanged, so
+   * only what is offered is dealt. Returns each covered card's strip, in
+   * design units, in hand order (the last card, which nothing covers, has
+   * none).
+   */
+  _strips(strip, o) {
+    const cov = this.slots.slice(0, -1);
+    const ok = (s, sw) => {
+      const p = this._stripFit(s.view, sw, o);
+      return !!p && p.f >= o.nameCap * 0.97 && p.rf >= o.read;
+    };
+    const want = cov.map((s) => {
+      if (ok(s, strip)) {
+        let lo = strip;
+        for (let sw = strip - 2; sw >= strip * TUNE.stripGive; sw -= 2) { if (ok(s, sw)) lo = sw; else break; }
+        return { need: strip, give: strip - lo };
+      }
+      for (let sw = strip + 2; sw <= strip * TUNE.stripTake; sw += 2) if (ok(s, sw)) return { need: sw, give: 0 };
+      return { need: strip * TUNE.stripTake, give: 0 };
+    });
+    const D = want.reduce((acc, w) => acc + (w.need - strip), 0);
+    const A = want.reduce((acc, w) => acc + w.give, 0);
+    const t = Math.min(D, A);
+    if (!(t > 0)) return cov.map(() => strip);
+    return want.map((w) => strip + (w.need - strip) * t / D - w.give * t / A);
+  }
+
   _layout(o = {}) {
     const n = this.slots.length;
     if (!n) { this._syncHitBox(); return; }
@@ -1040,20 +1177,67 @@ export class Hand {
        row read as nine type sizes. The rules get the width they actually have,
        and a crowded fan's names are fitted over a narrower band — nothing
        reaches for 17.5u when its neighbour cannot — so the row reads as one
-       row. CardView#fitName caps the wrap at two lines either way. */
-    /* ROUND 20: a crowded card lifts its face into its art window
-       (scenes/combat.css, "A CROWDED HAND GIVES UP ITS ART"), so its rules
-       panel is 164u tall where it was 123u and its name plate may grow up
-       over the art. The boxes here follow: the rules fit 144u of height, and
-       the names are fitted up to 21u -- 11 px on the Deck's 1280 -- where
-       round 6 held them to 15.5u (8 px) for want of room. */
-    if (F.crowded) {
+       row. (Round 20: CardView#nameLadder and Hand#_stripFit set the names.) */
+    /* ROUND 20: the sizes are held in SCREEN px (TUNE.readPx), converted to
+       design units at this hand's card width, and each covered card's panel
+       rises over its own art until its rule fits at that size (see
+       TUNE.readPx). `--card-rise` is what scenes/combat.css lifts it by: a
+       card whose rule already fits keeps its whole art window. */
+    const uPx = F.cw / 224;                          // screen px per design unit
+    let off = null;
+    if (!(uPx > 0 && Number.isFinite(uPx))) { /* not laid out yet: nothing to fit */ }
+    else if (F.crowded) {
       const strip = 224 * Math.min(1, F.step / F.cw);
+      const fo = {
+        read: T.readPx / uPx, floor: T.floorPx / uPx, capU: T.capPx / uPx,
+        nameCap: T.nameCapPx / uPx, nameFloor: T.nameFloorPx / uPx,
+      };
+      // `_layout` runs on every hover: deal and measure only when the hand,
+      // its words or the fan changed
+      const fonts = typeof document !== 'undefined' && document.fonts ? document.fonts.status : '';
+      const dealKey = this._fanKey + '|' + fonts + '|'
+        + this.slots.map((s) => s.view.el.dataset.uid + ':' + (s.view.textRev || 0)).join(',');
+      if (this._dealKey !== dealKey || !this._deal) {
+        this._dealKey = dealKey;
+        const strips = this._strips(strip, fo);
+        const x = new Array(n);
+        x[0] = -c * F.step;
+        for (let i = 1; i < n; i++) x[i] = x[i - 1] + strips[i - 1] * uPx;
+        this._deal = { n, x };
+        for (let i = 0; i < n; i++) {
+          const s = this.slots[i];
+          const covered = i < n - 1;
+          s._rise = 0;
+          s._strip = covered ? strips[i] : 0;
+          if (covered) {
+            const pick = this._stripFit(s.view, strips[i], fo);
+            if (pick) { s.view.setNameFit(pick.f, pick.n); s._rise = pick.rise; }
+            s.view.el.style.setProperty('--fan-vis', (strips[i] / 224).toFixed(3));
+          } else s.view.el.style.removeProperty('--fan-vis');
+          s.view.el.style.setProperty('--card-rise', String(s._rise));
+        }
+      }
+      off = this._deal.x;
       for (const s of this.slots) {
-        s.view.fitRules?.(s === last ? 170 : strip - 38, s === last ? 128 : 144, { lo: 12.5, hi: 23 });
-        if (s !== last) s.view.fitName?.(strip - 19, { lo: 12, hi: 21 });
+        const covered = s !== last;
+        s.view.fitRules?.(covered ? s._strip - 38 : 170, covered ? 104 + s._rise : 104, { lo: fo.floor, hi: fo.capU });
+      }
+    } else {
+      /* …and an open hand reads at the same size. Its cards are whole, but
+         card.css steps a long rule down to 12.5u, which a 1280 board prints
+         at 8.7 px ("Put Yourself Back Together" in an opening hand of five):
+         each is fitted to its own panel, 170u by 104u, between the same
+         floor and cap as a crowded hand's. */
+      for (const s of this.slots) {
+        s.view.el.style.removeProperty('--fan-vis');
+        s.view.fitRules?.(170, 104, { lo: T.floorPx / uPx, hi: T.capPx / uPx });
       }
     }
+    if (!off) { this._deal = null; this._dealKey = null; }
+    // the size, in design units, a name must keep to read at `nameReadPx`:
+    // scenes/combat.css holds a long name on an open hand's plate to it
+    const nameU = (T.nameReadPx / uPx).toFixed(2);
+    if (uPx > 0 && this._nameU !== nameU) { this._nameU = nameU; this.el.style.setProperty('--name-read-u', nameU); }
 
     const hover = this.hoverSlot;
     const hoverIdx = hover ? this.slots.indexOf(hover) : -1;
@@ -1071,7 +1255,7 @@ export class Hand {
       const d = i - c;
       const norm = c ? Math.abs(d) / c : 0;
 
-      let x = cx + d * step;
+      let x = cx + (off ? off[i] : d * step);
       let y = F.baseY + Math.pow(norm, 1.85) * dip;
       let rot = d * rotPer;
       let scale = fit;
@@ -1242,7 +1426,8 @@ export class Hand {
     const F = this._fan(n);
     const d = i - c, norm = c ? Math.abs(d) / c : 0;
     const g = this._geoTmp || (this._geoTmp = {});
-    g.x = F.cx + d * F.step;
+    const deal = this._deal;
+    g.x = F.cx + (deal && deal.n === n ? deal.x[i] : d * F.step);
     g.y = F.baseY + Math.pow(norm, 1.85) * F.dip
         + (this.slots[i].playable === false ? TUNE.unplayableDrop * F.fit : 0);
     g.rot = d * F.rotPer;

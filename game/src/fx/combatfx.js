@@ -85,7 +85,7 @@ export class CombatFX {
       d.className = 'cb-num';
       d.style.display = 'none';
       this.$nums.appendChild(d);
-      this.nums.push({ el: d, live: 0, t: 0, dur: 1, x: 0, y: 0, rise: 0, drift: 0, scale: 1 });
+      this.nums.push({ el: d, live: 0, t: 0, dur: 1, x: 0, y: 0, h: 0, rise: 0, drift: 0, scale: 1 });
     }
 
     this.col = readTokens(root);
@@ -253,7 +253,6 @@ export class CombatFX {
     s.live = 1; s.t = -(o.delay || 0);
     s.dur = 0.72 + scale * 0.24;
     s.x = x + (Math.random() - 0.5) * 26;
-    s.y = y;
     s.rise = o.rise > 0 ? Math.min(o.rise, 62 + scale * 26) : 62 + scale * 26;
     s.drift = (Math.random() - 0.5) * 34;
     s.scale = scale;
@@ -263,8 +262,31 @@ export class CombatFX {
     el.classList.toggle('is-big', scale > 1.5);
     el.style.display = '';
     el.style.opacity = '0';
-    el.style.transform = `translate3d(${x}px,${y}px,0) scale(0.4)`;
+    s.y = this._lane(s, x, y, (el.offsetHeight || 20) * scale);
+    el.style.transform = `translate3d(${x}px,${s.y}px,0) scale(0.4)`;
     return this;
+  }
+
+  /**
+   * ROUND 20 GRAFT (brief item 5b): floaters that land together STACK. A
+   * card that stacks three conditions on the boss printed "+2 Vulnerable"
+   * and "+4 Bristle" over each other at one spot, and a hit's number over
+   * the word before it. A new floater starts clear BELOW every one still
+   * climbing from near the same spot; they all rise the same way, so the
+   * one that started first stays above it the whole way up.
+   * @returns {number} the y it starts from
+   */
+  _lane(s, x, y, h) {
+    s.h = h;
+    let ny = y;
+    const near = this.nums.filter((o) => o !== s && o.live && Math.abs(o.x - x) < 130
+      && Math.max(0, o.t) < o.dur * 0.75)
+      .sort((a, b) => a.y - b.y);
+    for (const o of near) {
+      const gap = ((o.h || 20) + h) / 2 + 3;
+      if (Math.abs(o.y - ny) < gap) ny = o.y + gap;
+    }
+    return ny;
   }
 
   /** A word, not a number: "LETHAL", "BLOCKED", "Weak". */
