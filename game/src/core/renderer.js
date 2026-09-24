@@ -42,6 +42,7 @@ import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { clock } from './clock.js';
 import { Save } from './save.js';
 import { GradeShaderDef } from '../fx/shaders/grade.js';
@@ -157,6 +158,21 @@ export class Stage {
     this._tmp      = new THREE.Vector3();
     this._impactT  = -1;
     this.quality   = 1;
+    this.deferLinks = false;    // see _gateLinks
+    /* A LOST CONTEXT IS A MISSING ROOM TOO. Measured 2026-09-23 on BASE as well
+       as here (Intel UHD, the machine busy with other captures): in the first
+       fight, 17-50 s after the warm-up, the GPU process drops the context
+       (GL_CONTEXT_LOST_KHR) -- with precompileRooms switched off too, so it is
+       not that. The canvas goes WHITE until the browser restores it, and three
+       then relinks every program -- on BASE inside the first draw, a 35 s
+       frozen page. three already asks for the restore
+       (preventDefault in its own handler); this only records the state, so
+       roomPending() can say so and combat can stand its room in meanwhile. On
+       the restore every material's program is gone, so the gate's record of
+       what it has started linking is dropped with them. */
+    this._lost = false;
+    canvas.addEventListener('webglcontextlost', () => { this._lost = true; this.lostCount = (this.lostCount || 0) + 1; }, false);
+    canvas.addEventListener('webglcontextrestored', () => { this._lost = false; this._kicked = null; }, false);
     this.stats     = { tier: this.tier, renderScale: 1, dpr: 1, frameMs: null };
 
     this.resize();
@@ -354,71 +370,276 @@ export class Stage {
     const yield_ = () => new Promise((r) => setTimeout(r, 0));
     const t0 = performance.now();
     const small = () => [Math.max(innerWidth >> 3, 8), Math.max(innerHeight >> 3, 8)];
+    const R = this.renderer;
     this.warmStage = 'materials';
+    /* WHERE THE TIME GOES, kept so the next person does not have to rebuild the
+       instrument: performance.now() at each stage, and every mesh whose compile
+       linked a program (tools/coldstart.py reads both). */
+    this.warmT = { materials: t0 };
+    this.warmLog = [];
+    const nProg = () => (R.info.programs ? R.info.programs.length : 0);
+    const label = (o) => {
+      const m = Array.isArray(o.material) ? o.material[0] : o.material;
+      const u = m && m.uniforms ? Object.keys(m.uniforms).slice(0, 3).join(',') : '';
+      return `${o.name || o.parent?.name || o.type}|${u}`;
+    };
     try {
-      /* ---- phase A: scene materials, ONE MESH PER TASK -------------------
-         `compileAsync(scene)` links every program in a single task, which under
-         software WebGL is one 6 s block — exactly the thing we are removing.
-         Compiling per object costs the same in total but spreads it over as many
-         tasks as there are materials, and each task yields to the event loop. */
-      const objs = [];
-      this.scene.traverse((o) => { if (o.isMesh || o.isPoints || o.isSprite) objs.push(o); });
-      /* Both render targets. The same material compiled for the canvas and for the composer
-         has a different program cache key, so warming only one left phase C to relink the
-         entire scene in a single 2.0-2.9 s task. */
-      const prevRT = this.renderer.getRenderTarget();
-      for (const rt of [null, this.composer.renderTarget1]) {
-        this.renderer.setRenderTarget(rt);
-        for (const o of objs) {
-          try { await this.renderer.compileAsync(o, this.camera, this.scene); }
+      /* ---- phase A: the scene's programs, for the COMPOSER's target only ----
+         MEASURED (tools/coldstart.py, fresh profile, Intel UHD / ANGLE D3D11,
+         2026-09-23, the machine busy with other captures): phase A was 93 s of
+         a 94 s warm-up, and two programs were nearly all of it -- the wall
+         (uSeed/uDread, 17-20 s) and the props (uSway/uRimAmt, 24-25 s) -- each
+         linked TWICE, once for the canvas and once for the composer, because a
+         program's cache key carries its target's tone map and colour space.
+         The canvas copies existed only for phase B's "show the room while post
+         warms" draw straight to the canvas; after the warm-up every frame goes
+         through the composer, and so does every variant precompileRooms links. Phase B now draws through the composer too (see
+         there), so the canvas copies are gone: half of phase A.
+
+         AND THE LINKS RUN SIDE BY SIDE. With KHR_parallel_shader_compile a link
+         runs off the main thread, so every mesh's program is submitted and then
+         all of them are waited on together, instead of one mesh at a time: the
+         two big links overlap. Two things measured on the way there:
+           - Submitted PER MESH, not as one compile(scene): the whole-scene call
+             came back "ready" with the props' program missing, and the first
+             frame linked it synchronously -- a 15 s frozen title.
+           - The room CHANGES under the warm-up. It starts at Atmosphere.init(),
+             on the Foyer; the title then sets its own mood a moment later, and
+             the props and walls change program with it. One mesh at a time hid
+             that by luck (the props came after the wall's 16-27 s link); all at
+             once, every program was linked for a room nobody would see and then
+             linked again. So wait for the scene to hold still first (SETTLE_MS
+             without a material changing, never more than SETTLE_CAP_MS), and
+             keep following it: a mesh whose material changes while the links
+             run is submitted again, and only the programs the scene holds NOW
+             are waited on.
+         Whatever still slips through is caught by _gateLinks(), which links it
+         behind the page instead of inside a draw.
+
+         Without the extension compileAsync cannot link off-thread at all, so
+         there it stays one mesh per task, as it always was: under software
+         WebGL a single compile of the whole scene was one 6 s block. */
+      const drawables = () => {
+        const a = [];
+        this.scene.traverse((o) => { if (o.isMesh || o.isPoints || o.isSprite) a.push(o); });
+        return a;
+      };
+      const matsOf = (o) => (Array.isArray(o.material) ? o.material : [o.material]).filter(Boolean);
+      const prevRT = R.getRenderTarget();
+      let khr = null;
+      try { khr = R.getContext().getExtension('KHR_parallel_shader_compile'); } catch { khr = null; }
+      if (khr) {
+        const SETTLE_MS = 600, SETTLE_CAP_MS = 3000;
+        const sig = () => {
+          let v = 0, n = 0;
+          for (const o of drawables()) for (const m of matsOf(o)) { v += m.version; n++; }
+          return `${n}:${v}`;
+        };
+        let last = sig(), still = performance.now();
+        while (performance.now() - still < SETTLE_MS && performance.now() - t0 < SETTLE_CAP_MS) {
+          await new Promise((r) => setTimeout(r, 50));
+          const now = sig();
+          if (now !== last) { last = now; still = performance.now(); }
+        }
+        this.warmT.submit = performance.now();
+
+        const sent = new WeakMap();       // mesh -> material version it was compiled at
+        const linking = new Map();        // program -> { o, t } for the log
+        for (;;) {
+          const objs = drawables();
+          let prev = null, set = false;
+          for (const o of objs) {
+            const ms = matsOf(o);
+            const ver = ms.reduce((v, m) => v + m.version, 0);
+            if (sent.get(o) === ver) continue;
+            if (!set) { prev = R.getRenderTarget(); R.setRenderTarget(this.composer.renderTarget1); set = true; }
+            const n0 = nProg();
+            try { R.compile(o, this.camera, this.scene); } catch (e) { /* keep warming */ }
+            sent.set(o, ver);
+            if (nProg() === n0) continue;
+            for (const m of ms) {
+              const pr = R.properties.get(m).currentProgram;
+              if (pr && !linking.has(pr)) linking.set(pr, { o: label(o), t: performance.now() });
+            }
+          }
+          if (set) R.setRenderTarget(prev);
+          for (const [pr, rec] of linking) {
+            if (!pr.isReady()) continue;
+            this.warmLog.push({ o: rec.o, ms: Math.round(performance.now() - rec.t) });
+            linking.delete(pr);
+          }
+          let waiting = false;
+          for (const o of objs) {
+            for (const m of matsOf(o)) {
+              const pr = R.properties.get(m).currentProgram;
+              if (pr && !pr.isReady()) { waiting = true; break; }
+            }
+            if (waiting) break;
+          }
+          if (!waiting) break;
+          await new Promise((r) => setTimeout(r, 20));
+        }
+      } else {
+        R.setRenderTarget(this.composer.renderTarget1);
+        for (const o of drawables()) {
+          const s = performance.now(), n0 = nProg();
+          try { await R.compileAsync(o, this.camera, this.scene); }
           catch (e) { /* keep warming */ }
+          if (nProg() !== n0) this.warmLog.push({ o: label(o), ms: Math.round(performance.now() - s) });
           await yield_();
         }
       }
-      this.renderer.setRenderTarget(prevRT);
+      R.setRenderTarget(prevRT);
+      this.warmT.post = performance.now();
 
-      /* ---- phase B: show the room. Bloom and the grade are still cold, so let
-         RenderPass be the last enabled pass and go straight to the canvas — three
-         applies its own tone map and sRGB encode on that path, so the picture is
-         up and correctly exposed while the rest warms, instead of the canvas
-         sitting black for the whole compile. */
+      /* ---- phase B: show the room. Bloom and the grade are still cold, so the
+         composer runs RenderPass into its target and a stock OutputPass puts it
+         on the canvas -- ACES at the renderer's exposure and the sRGB encode,
+         the same maths the grade ends in (MM_TONEMAP), on the programs phase A
+         just linked. (The old path drew RenderPass straight to the canvas and
+         trusted three to tone-map it there; three only does that for shaders
+         that include its tonemapping chunk, and none of ours do, so that frame
+         went up linear and dark.) OutputPass is a few lines of GLSL; it is
+         switched off for good at the end of the warm-up and a disabled pass is
+         never rendered, so the chain after the warm-up is exactly what it was. */
+      if (!this.outPass) { this.outPass = new OutputPass(); this.composer.addPass(this.outPass); }
       this.bloom.enabled = false;
       this.grade.enabled = false;
+      this.outPass.enabled = true;
       this._warming = false;
       this.warmStage = 'post';
       await yield_();
 
       /* ---- phase C/D: warm each remaining pass off-screen at 1/8 scale, then
-         switch it on. Each is its own task. */
+         switch it on. Each is its own task. A pass is switched on only once it
+         has been warmed (this used to switch the grade back on right after the
+         BLOOM's warm, so a frame drawn between the two could link the grade
+         inside the draw), and OutputPass stands in for the grade until the grade
+         is on. */
       const [sw, sh] = small();
       const cold = [this.bloom, this.grade];
+      const warmed = new Set();
       for (const pass of cold) {
+        const s = performance.now();
         this.composer.renderToScreen = false;
         this.composer.setSize(sw, sh);
         this.bloom.setSize(sw, sh);
-        pass.enabled = true;
-        const others = cold.filter((p) => p !== pass);
-        for (const o of others) o.enabled = false;
+        for (const p of cold) p.enabled = p === pass;
+        this.outPass.enabled = !this.grade.enabled;
         try { this.composer.render(0.016); } catch (e) { /* keep warming */ }
         await yield_();
         this.composer.renderToScreen = true;
         this.resize();
-        for (const o of others) o.enabled = true;
+        warmed.add(pass);
+        for (const p of cold) p.enabled = warmed.has(p);
+        this.outPass.enabled = !this.grade.enabled;
+        this.warmLog.push({ o: pass === this.bloom ? 'post:bloom' : 'post:grade', ms: Math.round(performance.now() - s) });
         await yield_();
       }
     } finally {
       this.bloom.enabled = true;
       this.grade.enabled = true;
+      if (this.outPass) this.outPass.enabled = false;
       this.composer.renderToScreen = true;
       this.resize();
       this._warming = false;
       this.warmStage = 'done';
+      this.warmT.done = performance.now();
     }
     this._warmed = Math.round(performance.now() - t0);
     /* Now that every program is linked and the chain is running at full size,
        the frames being measured are the frames the player will get. */
     try { await this._calibrate(); } catch (e) { /* keep the tier we guessed */ }
     return this._warmed;
+  }
+
+  /**
+   * Is the room waiting on a program that is still linking? True through the
+   * boot warm-up, and after it whenever the scene is about to draw with a
+   * program the driver has not finished linking -- a room kind shown before
+   * Backdrop.precompileRooms reached its variant. combat.js stands the boards'
+   * painted room behind the fight while this is true (CombatScene._syncColdRoom).
+   * And while the GL context is lost, and until its programs are back.
+   */
+  roomPending() { return !!(this._warming || this._linking || this._lost); }
+
+  /**
+   * Let the scene that is up keep a new program's link off the main thread:
+   * see _gateLinks. Combat turns it on as it enters and off as it leaves.
+   */
+  setDeferLinks(on) { this.deferLinks = !!on; return this; }
+
+  /**
+   * THE ROOM NEVER LINKS ON THE MAIN THREAD. Drawing a material whose program
+   * is new makes three link it inside the draw, synchronously: a room kind whose
+   * variant was not linked yet froze the page for its whole link (0.6-25 s on
+   * this machine) and then appeared. With KHR_parallel_shader_compile the link
+   * can run behind the page instead, so: find any drawable whose material is
+   * about to change program, start its link off the main thread
+   * (renderer.compile), and skip the draw until every such program reports
+   * ready. The canvas keeps its last frame meanwhile, and roomPending() says so.
+   *
+   * Costs one traversal of the visible scene per frame (a few dozen objects, a
+   * WeakMap read and an integer compare each) and nothing else once the room is
+   * linked: a material that is not changing program is skipped at the compare.
+   * Without the extension isReady() is always true, so this never skips a draw
+   * and the link happens in the draw as it always did.
+   *
+   * ONLY WHILE A SCENE ASKS FOR IT (`deferLinks`, set by combat -- the one
+   * scene whose room is on screen, and the one that has a room to show in its
+   * place). Everywhere else a new program still links in the draw, exactly as
+   * before: the room showcase and every capture tool built on it
+   * (variant_sheet.py, room_batch.py) set a room and photograph it a couple of
+   * seconds later, which is only right because that draw blocks until the room
+   * exists. With the gate on there, they would photograph the room before it.
+   *
+   * Returns true when this frame must not draw.
+   */
+  _gateLinks() {
+    const R = this.renderer;
+    if (this._khr === undefined) {
+      try { this._khr = !!R.getContext().getExtension('KHR_parallel_shader_compile'); }
+      catch { this._khr = false; }
+    }
+    if (!this._khr) return false;
+    const P = R.properties;
+    const kicked = this._kicked || (this._kicked = new WeakMap());
+    const stale = this._stale || (this._stale = []);
+    stale.length = 0;
+    this.scene.traverseVisible((o) => {
+      if (!(o.isMesh || o.isPoints || o.isSprite)) return;
+      const m = o.material;
+      if (!m || Array.isArray(m)) return;
+      const mp = P.get(m);
+      if (mp.currentProgram && mp.__version === m.version) return;
+      stale.push(o);
+    });
+    if (!stale.length) { this._linking = false; return false; }
+
+    /* start the links this frame has not started yet, into the composer's target
+       (the key three will ask for when RenderPass draws) */
+    let prevRT = null, kickedAny = false;
+    for (const o of stale) {
+      const m = o.material;
+      if (kicked.get(m) === m.version) continue;
+      if (!kickedAny) { prevRT = R.getRenderTarget(); R.setRenderTarget(this.composer.renderTarget1); kickedAny = true; }
+      try { R.compile(o, this.camera, this.scene); } catch (e) { /* the draw will link it */ }
+      kicked.set(m, m.version);
+    }
+    if (kickedAny) R.setRenderTarget(prevRT);
+
+    let waiting = false;
+    for (const o of stale) {
+      const pr = P.get(o.material).currentProgram;
+      if (pr && !pr.isReady()) { waiting = true; break; }
+    }
+    stale.length = 0;
+    if (!waiting) { this._linking = false; return false; }
+    const now = performance.now();
+    if (!this._linking) { this._linking = true; this._linkT0 = now; }
+    /* never hold the room back forever: past this, link it in the draw */
+    if (now - this._linkT0 > 90000) { this._linking = false; return false; }
+    return true;
   }
 
   resize() {
@@ -547,6 +768,9 @@ export class Stage {
        synchronously inside `setProgram`, which is the entire boot stall it was meant
        to paper over. Phase B puts the picture up as soon as it is genuinely ready. */
     if (this._warming) return;
+    if (this._lost) return;     // nothing can draw; three drops the call anyway
+    if (this.deferLinks) { if (this._gateLinks()) return; }
+    else this._linking = false;
     this.composer.render(dt);
   }
 

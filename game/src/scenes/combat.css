@@ -45,6 +45,17 @@
    Z 8: above the room's own arena light (6), under the field (20), the hand
    (200) and every panel. Nothing here takes a pointer event. */
 .cb-defs { position: absolute; width: 0; height: 0; overflow: hidden; }
+/* THE STAND-IN ROOM (combat.js _syncColdRoom). The boards' painted room, with
+   the two corner candles' light every board wears (.kit-board's --wl1/--wl2),
+   under everything -- Z 0, below the arena light -- while the WebGL room
+   cannot draw: a cold boot's warm-up, or a room kind still linking. It fades
+   to the WebGL room and then leaves the tree. */
+.cb-coldroom {
+  position: absolute; inset: 0; z-index: 0; pointer-events: none;
+  --kit-edge: clamp(8px, .7vw, 12px);
+  transition: opacity calc(var(--t-slow) * 2) var(--ease-soft);
+}
+.cb-coldroom.is-gone { opacity: 0; }
 .cb-dress {
   --kit-edge: clamp(8px, .7vw, 12px);
   --kit-vine-w: clamp(34px, 3vw, 52px);

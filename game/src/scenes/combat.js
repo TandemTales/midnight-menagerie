@@ -204,6 +204,11 @@ export class CombatScene extends Scene {
        at 57% of pixels), so it never pauses the stage — and it says so out loud
        rather than trusting that whatever came before unpaused on its way out. */
     try { ctx.stage?.setPaused?.(false); } catch { /* no stage */ }
+    /* ...and while it is up, a room kind still linking links BEHIND the page
+       instead of freezing it inside a draw, with the stand-in room showing
+       meanwhile (Stage._gateLinks, _syncColdRoom). Before setMood, which is
+       what changes the room's programs. */
+    try { ctx.stage?.setDeferLinks?.(true); } catch { /* no stage */ }
 
     // THE ROOM, not "the region". See ROOM_MOOD at the top of this file.
     ctx.atmosphere?.setMood?.(this.mood || this.region || 'foyer',
@@ -685,6 +690,15 @@ export class CombatScene extends Scene {
             <feComposite in="lit" in2="SourceAlpha" operator="in"/>
           </filter>
         </svg>
+        <!-- THE ROOM WHILE THE WEBGL ROOM CANNOT DRAW. On a cold boot the stage links its
+             programs for a minute or more before it draws anything, and a room kind
+             whose program is not linked yet waits for it too; behind a fight that was
+             the board over a flat plum plane. This is the boards' own painted room
+             (ui/kit.css .kit-ground, the one every screen between fights stands in),
+             up only while Stage.roomPending() says so. See _syncColdRoom. -->
+        <div class="cb-coldroom kit-board" aria-hidden="true"${this._roomIsCold() ? '' : ' hidden'}>
+          <div class="kit-ground"><i class="kit-ground__warm"></i><i class="kit-ground__moon"></i></div>
+        </div>
         <!-- THE STAGE'S FRAME. The room behind is the WebGL atmosphere until Josh's
              combat paintings arrive; this is the board's own gilt rule round it,
              the Kid board's corner candles and cobwebs, and the dark the edges fall
@@ -888,6 +902,7 @@ export class CombatScene extends Scene {
 
     const $ = (s) => this.root.querySelector(s);
     this.$cb = $('.cb');
+    this.$coldRoom = $('.cb-coldroom');
     this.$field = $('.cb-field');
     this.$enemies = $('.cb-enemies');
     this.$room = $('.cb-room');
@@ -3927,7 +3942,42 @@ export class CombatScene extends Scene {
    */
 
   /* ══ frame ══════════════════════════════════════════════════════════════ */
+  /** Can the WebGL room NOT be drawn right now? (Stage.roomPending, core/renderer.js) */
+  _roomIsCold() {
+    const st = this.ctx.stage;
+    if (!st) return false;
+    try { return st.warmStage === 'materials' || !!st.roomPending?.(); } catch { return false; }
+  }
+
+  /**
+   * THE ROOM IS NEVER MISSING. While the stage cannot draw this fight's room --
+   * the boot warm-up is still linking, or the room kind's program is linking
+   * behind the game -- the boards' painted room stands behind the fight; once
+   * the WebGL room has drawn for a few frames it cross-fades out and leaves the
+   * tree, so a warm fight is exactly the frame it always was. It comes straight
+   * back (no fade: it is covering a frozen or empty canvas) if the room goes
+   * cold again.
+   */
+  _syncColdRoom(dt) {
+    const el = this.$coldRoom;
+    if (!el) return;
+    if (this._roomIsCold()) {
+      this._roomLive = 0;
+      if (el.hidden || el.classList.contains('is-gone')) {
+        el.classList.remove('is-gone');
+        el.hidden = false;
+      }
+      return;
+    }
+    if (el.hidden) return;
+    this._roomLive = (this._roomLive || 0) + dt;
+    /* three frames' grace so the WebGL room is on the canvas before the fade */
+    if (this._roomLive > 0.05 && !el.classList.contains('is-gone')) el.classList.add('is-gone');
+    if (this._roomLive > 1.2) el.hidden = true;
+  }
+
   _frame(dt, t) {
+    this._syncColdRoom(dt);
     if (!this.engine) return;
     for (const v of this.views.values()) v.update(dt, t);
     this.hero?.update(dt, t);
@@ -3966,6 +4016,7 @@ export class CombatScene extends Scene {
     this.coach?.destroy();
     this.coach = null;
     this._offFrame?.();
+    try { this.ctx.stage?.setDeferLinks?.(false); } catch { /* no stage */ }
     this.hero?.destroy();
     this.hero = null;
     if (window.__MM_CLIPS?._scene === this) delete window.__MM_CLIPS;
