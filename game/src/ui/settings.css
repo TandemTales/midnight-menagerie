@@ -373,6 +373,7 @@
   padding: 6px 0 3px;
 }
 .mm-set__choice.kit-hw-choice { --plate-h: var(--choice-h); font-size: 11.5px; }
+@media (max-width: 1400px) { .mm-set__choice.kit-hw-choice { font-size: 11px; letter-spacing: .05em; gap: 5px; } }
 /* the boards' four-point star, set before the chosen palette's name */
 .mm-set__star {
   display: none; flex: none;

@@ -425,9 +425,13 @@ def hw_plate():
     p.part(body, PLATE, prof="round", bevel=2.5, gloss=.1, erode=4.4, shadow=.5)
     p.ink([(26, 9), (W - 26, 9)], w=.8, color="#b08a4a", alpha=.35)
     p.ink([(26, H - 9), (W - 26, H - 9)], w=.8, color="#b08a4a", alpha=.35)
+    plain = p.result()
     for x in (14, W - 14):
         p.part(E(x, H / 2, 8), "brass", bevel=3, shadow=.45)
         p.part(E(x, H / 2, 3.6), ("#140a22", "#4b2f78", "#b393ea"), prof="sphere", gloss=.8, power=40, shadow=.3)
+    # the same plate without its bosses, for a row of positions where the
+    # lettering needs the plate's whole length (.kit-hw-choice)
+    save(plain, "hw-plate-plain.webp", 92)
     return _save_pic(p, "hw-plate.webp")
 
 

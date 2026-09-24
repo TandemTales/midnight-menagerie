@@ -395,12 +395,12 @@
    the round enamel */
 .rs-door__glyph {
   display: grid; place-items: center;
-  width: clamp(52px, 3.9vw, 62px); aspect-ratio: 1;
+  width: clamp(44px, 3.7vw, 62px); aspect-ratio: 1;
   border-radius: 50%;
   background: url("../../assets/ui/kit/hw-glaze.webp") 50% 50% / 100% 100% no-repeat, url("../../assets/ui/kit/button.webp") 50% 50% / 100% 100% no-repeat;
   filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .8));
 }
-.rs-door__glyph.kit-hw-well { --well: clamp(52px, 3.9vw, 62px); border-radius: 0; background: url("../../assets/ui/kit/hw-well.webp") 50% 50% / 100% 100% no-repeat; }
+.rs-door__glyph.kit-hw-well { --well: clamp(44px, 3.7vw, 62px); border-radius: 0; background: url("../../assets/ui/kit/hw-well.webp") 50% 50% / 100% 100% no-repeat; }
 .rs-door__glyph svg { width: 50%; height: 50%; fill: none; stroke: var(--kit-gold-hi);
                       stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
 .rs-door.is-done .rs-door__glyph svg { stroke: var(--good-300); }
@@ -439,7 +439,7 @@
 .rs-door__key.kit-num {
   --num: clamp(28px, 2.2vw, 34px);
   position: absolute; z-index: 3;
-  left: calc(clamp(18px, 1.6vw, 28px) + clamp(52px, 3.9vw, 62px) / 2); top: 0;
+  left: calc(clamp(18px, 1.6vw, 28px) + clamp(44px, 3.7vw, 62px) / 2); top: 0;
   translate: -50% -52%;
   font-family: var(--font-num); font-weight: 700;
   font-size: calc(var(--num) * .5);
@@ -535,7 +535,7 @@
   .rs-door { padding-block: 21px 19px; --medal-k: .66; }
   .rs-door[data-medal="moon"] { --medal-k: .44; }
   .rs-door__txt > b { font-size: 17px; letter-spacing: .07em; }
-  .rs-door__read.kit-hw-plate { --plate-h: 40px; }
+  .rs-door__read.kit-hw-plate { --plate-h: 40px; min-width: calc(var(--plate-h) * 3.3); }
   .rs-choices { gap: 20px; }
   .rs-room { padding: 22px 0 10px; gap: 30px; }
   .rs-art { --medal-k: .5; }

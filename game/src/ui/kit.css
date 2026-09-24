@@ -3387,8 +3387,8 @@ button.kit-hw-enamel:focus-visible {
 }
 
 /* ── the engraved plate: one position of several ── */
-/* A radio's option on the engraved reading plate (hw-plate.webp), the same
-   near-black enamel in its gilt rim with a boss on each end; the chosen one
+/* A radio's option on the engraved reading plate without its bosses
+   (hw-plate-plain.webp), the same near-black enamel in its gilt rim; the chosen one
    is LIT the way a switch's setting is (.kit-hw-switch) — violet enamel
    glowing up through it, lettered in pale lavender — never a stadium pill.
    Put role="radio" + aria-checked on it. */
@@ -3399,13 +3399,13 @@ button.kit-hw-enamel:focus-visible {
   display: inline-flex; align-items: center; justify-content: center; gap: 7px;
   height: var(--plate-h); min-width: 0;
   margin: 0;
-  padding: 0 calc(var(--plate-h) * .78) 1px;
+  padding: 0 calc(var(--plate-h) * .4) 1px;
   border: 0 solid transparent;
-  border-image: url("../../assets/ui/kit/hw-plate.webp") 14 30 fill / calc(var(--plate-h) * 14 / 56) calc(var(--plate-h) * 30 / 56) stretch;
+  border-image: url("../../assets/ui/kit/hw-plate-plain.webp") 14 30 fill / calc(var(--plate-h) * 14 / 56) calc(var(--plate-h) * 30 / 56) stretch;
   background: none;
   font-family: var(--font-display); font-weight: 700; font-style: normal;
   font-size: max(11px, calc(var(--plate-h) * .33)); line-height: 1;
-  letter-spacing: .12em; text-transform: uppercase; white-space: nowrap;
+  letter-spacing: .09em; text-transform: uppercase; white-space: nowrap;
   color: color-mix(in oklab, var(--kit-text-lo) 86%, var(--kit-gold-lo));
   text-shadow: 0 -1px 0 rgba(0, 0, 0, .95), 0 1px 0 color-mix(in srgb, var(--kit-gold) 16%, transparent);
   filter: drop-shadow(0 3px 3px rgba(0, 0, 0, .8));
@@ -3414,7 +3414,7 @@ button.kit-hw-enamel:focus-visible {
 }
 .kit-hw-choice::before {
   content: ''; position: absolute; z-index: -1; pointer-events: none;
-  left: calc(var(--plate-h) * .52); right: calc(var(--plate-h) * .52);
+  left: calc(var(--plate-h) * .22); right: calc(var(--plate-h) * .22);
   top: calc(var(--plate-h) * .2); bottom: calc(var(--plate-h) * .2);
   opacity: 0;
   background:
