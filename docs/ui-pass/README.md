@@ -164,6 +164,8 @@ so round 2 runs six at once, as round 1 did.
 
 | 18 | **THE GARDEN AND THE HORIZON** — the same four sheets and combat, with round 17's losers' work as named grafts | WOAD 6.26 · ORCHIL 6.23 · WELD 5.93 · the screens before **5.54** | WOAD, 2 of 2 — **but on the mean by 0.03, while ORCHIL won four of five screens 2 of 2.** Both judges chose WOAD as the even SYSTEM (good on all four sheets, flattens nothing), and both asked for ORCHIL's people as the graft. **+0.72** | `1272403` |
 
+| 19 | **THE BOARDS AND THE CONTROLS** — six boards, two dialogs and the crowded fight, briefed from a SURVEY rather than a round's own judges | BICE 6.59 · BOLE 6.59 · KERMES 6.37 · the screens before **5.22** | BICE, 2 of 3 judges, as the most coherent SYSTEM (one house's hardware: painted objects in gilt medallions, brass toggles). **+1.37.** The screens split three ways and BICE tied BOLE on the mean; KERMES won four screens and ALL THREE judges asked for its wall paintings and brass filter plates as the graft. **The Steam Deck HUD holds one row at 1280 in every candidate** | `92025ef` |
+
 **Scores anchor to the candidates beside them.** Round 0's winner scored 7.0 in
 round 0 and 5.58 as round 1's baseline: the judges grew stricter as the field
 improved. Compare a winner with the baseline IN ITS OWN ROUND (round 1 REFINE:
@@ -186,6 +188,7 @@ Against their own baselines:
 | 11 | VARIATION **+2.17** (sheets 3-3.5 -> 6-7) | — |
 | 12 | — | THE LAST WEB CHROME **+5.9** (per-screen winners 7.33 / 8.00 / 7.67 against 2 / 1 / 1.33) |
 | 13 | CHROME, second pass **+2.22** (coach 6.0 -> 8.0, veil 6.0 -> 8.67, toast 5.0 -> 7.0) | — |
+| 19 | THE BOARDS AND THE CONTROLS **+1.37** (after eleven rounds away; the rooms had fallen to +0.72) | — |
 | 18 | THE GARDEN AND THE HORIZON **+0.72** (and the field inside 0.33) | — |
 | 17 | PEOPLE IN THE HOUSE **+1.25** (the baseline had risen to 5.40, and the field sat inside 0.45) | — |
 | 16 | FINISH THE OBJECTS **+2.00** | — |
@@ -859,3 +862,32 @@ the graft, which runs on `ui/r18-graft`.
   and the judges can see it: WELD's foyer and ballroom were pixel-identical to
   the baseline, and both judges noticed. That is fine for a specialist angle
   and it is why the literal angle keeps winning on the mean.
+
+### Round 19: the boards and the controls, 2026-09-24
+
+**BICE, 2 of 3 judges, 6.59 against 5.22 — +1.37** (`92025ef`, run
+`wf_d2236dbd-8a6`). The first round in eleven not spent on the WebGL room,
+and the first briefed from a SURVEY (`SURVEY-2026-09-23.md`) instead of from
+a previous round's judges. **The survey was right about where the headroom
+was**: the rooms had fallen to +0.72, and the boards gave +1.37 on their first
+round back.
+
+- **Every candidate fixed the Steam Deck bug.** The run HUD wrapped to two
+  rows at 1280x800 on the baseline; all three builders hold it to one. A
+  layout defect on the target hardware, found by a survey no round had run.
+- **Read it by its screens.** BICE and BOLE tied on the mean to three
+  decimals; the nine screens split three ways (BICE 3, KERMES 4, BOLE 1, one
+  tie). Two judges named BICE as the SYSTEM — one vocabulary of painted
+  objects in gilt medallions and brass controls across the boards — which is
+  exactly what the brief's second angle asked for.
+- **The system angle won, and the literal angle's pieces are the graft.**
+  KERMES worked the list literally and won four screens on individual pieces;
+  all three judges asked for its wall paintings and its brass filter plates,
+  two for its lever toggles. BICE's round spent nothing on the board wall, so
+  its merged walls still carry the empty black frames the survey flagged
+  first. The graft (`ui/r19-graft`) rebuilds KERMES's pieces in BICE's
+  vocabulary.
+- **A survey is a round's baseline with no builders**, and cost two judges.
+  It replaced a thirteen-round-old fix list with a measured one and turned the
+  loop to the screens with the most headroom. Run one whenever a track has
+  gone several rounds unjudged.
