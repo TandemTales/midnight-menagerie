@@ -397,7 +397,7 @@
   display: grid; place-items: center;
   width: clamp(52px, 3.9vw, 62px); aspect-ratio: 1;
   border-radius: 50%;
-  background: url("../../assets/ui/kit/button.webp") 50% 50% / 100% 100% no-repeat;
+  background: url("../../assets/ui/kit/hw-glaze.webp") 50% 50% / 100% 100% no-repeat, url("../../assets/ui/kit/button.webp") 50% 50% / 100% 100% no-repeat;
   filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .8));
 }
 .rs-door__glyph.kit-hw-well { --well: clamp(52px, 3.9vw, 62px); border-radius: 0; background: url("../../assets/ui/kit/hw-well.webp") 50% 50% / 100% 100% no-repeat; }

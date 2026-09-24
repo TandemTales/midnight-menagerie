@@ -425,9 +425,9 @@ function buildRow(ctx, Save, item, rerender) {
 
   if (item.type === 'range') {
     /* A REAL range input, so the keyboard, the pad and the tests drive it as
-       one. Behind its bare track lies the Courage bar's brass tube
-       (.kit-tube--warm), its amber enamel filled as far as the value; the thumb
-       is the boards' round enamel button; the value is the ledger's figure at
+       one. Behind its bare track lies the house's groove (ui/kit.css
+       .kit-hw-groove), its gilt run as far as the value; the thumb is the
+       milled brass knob (hw-knob.webp); the value is the ledger's figure at
        the end of its line, in gold lining numerals. `--v` (0..1) is the only
        thing the picture needs. */
     const wrap = document.createElement('div');
@@ -470,15 +470,13 @@ function buildRow(ctx, Save, item, rerender) {
     rerender.push(() => { input.value = String(get(Save, item.key)); show(); });
 
   } else if (item.type === 'toggle') {
-    /* ONE ENGRAVED SWITCH, WHICH SAYS ITS OWN STATE. Round 5's judges found
-       every row carrying a slider-switch AND a separate OFF/ON pill beside it —
-       the control drawn twice, which is what makes a row read as a web form.
-       So the state is lettered INTO the switch, the way a brass rocker plate is
-       engraved: the Courage bar's tube, its amber lit the length of it when the
-       switch is on, the round enamel button riding to that end with a gold
-       check struck in it, and the word cut into the tube's field at the end the
-       button is NOT — ON behind it, OFF in front of it. One object; and
-       `aria-checked` on the switch itself is what a reader is told. */
+    /* ONE SWITCH PLATE, WHICH SAYS ITS OWN STATE. Round 5's judges found every
+       row carrying a slider-switch AND a separate OFF/ON pill; round 19's
+       survey found the switch that replaced them still "a dark disc beside a
+       thin bar with OFF in it". It is the house's two-position plate now
+       (ui/kit.css .kit-hw-switch): OFF and ON cut into two sunk wells of a
+       gilt-rimmed plate, the setting's well lit. One object; `aria-checked` on
+       the switch itself is what a reader is told. */
     const btn = document.createElement('button');
     btn.type = 'button'; btn.id = id;
     btn.className = 'mm-set__toggle';
@@ -504,8 +502,9 @@ function buildRow(ctx, Save, item, rerender) {
     grp.setAttribute('role', 'radiogroup');
     grp.setAttribute('aria-label', item.label);
     const btns = [];
-    /* a row of the boards' nameplates: the chosen one lit gold with the
-       boards' four-point star set before its name, the rest the quiet plate */
+    /* a row of the house's engraved plates (ui/kit.css .kit-hw-choice): the
+       chosen one lit like a switch's setting, the boards' four-point star set
+       before its name, the rest the dark plate */
     const paint = () => {
       const v = get(Save, item.key);
       for (const b of btns) {
@@ -513,12 +512,11 @@ function buildRow(ctx, Save, item, rerender) {
         b.setAttribute('aria-checked', String(on));
         b.tabIndex = on ? 0 : -1;
         b.dataset.on = on ? '1' : '0';
-        b.classList.toggle('kit-btn--quiet', !on);
       }
     };
     for (const [value, text] of item.options) {
       const b = document.createElement('button');
-      b.type = 'button'; b.className = 'mm-set__choice kit-btn';
+      b.type = 'button'; b.className = 'mm-set__choice kit-hw-choice';
       b.setAttribute('role', 'radio');
       b.dataset.value = value;
       b.innerHTML = `<i class="mm-set__star" aria-hidden="true"></i><span class="mm-set__choicename">${escape_(text)}</span>`;

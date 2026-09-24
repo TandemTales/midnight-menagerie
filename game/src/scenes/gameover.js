@@ -806,10 +806,14 @@ export class GameOverScene extends Scene {
     const s = this.summary;
     let list = Array.isArray(s.relics) ? s.relics : null;
     if (!list) list = s.mocked ? await this._mockKeepsakes() : [];
-    // Each Keepsake wears its own sigil on the board's round enamel, as it does
-    // under Mr. Moth's glass. The table is optional; a blank roundel is not.
-    let sigil = null;
-    try { sigil = (await import('../data/relics.js')).relicSigil || null; } catch { sigil = null; }
+    // Each Keepsake is its own small painted object in the house's velvet well,
+    // as it is under Mr. Moth's glass (round 19: two of them used to fall back
+    // to a placeholder star). The table is optional; a blank roundel is not.
+    let pic = null;
+    try {
+      const o = await import('../ui/objects.js');
+      pic = (id) => o.objectHtml(o.keepsakeKey(id), { well: false });
+    } catch { pic = null; }
     if (this._dead || !this._keepHost) return;
 
     if (!list.length) {
@@ -822,8 +826,7 @@ export class GameOverScene extends Scene {
       this._keepHost.setAttribute('role', 'list');
       this._keepHost.innerHTML = list.map((r) => `
         <span class="go-keep" role="listitem" data-rarity="${esc(r.rarity || 'common')}">
-          <i class="go-keep__sigil" aria-hidden="true">${sigil && r.id
-            ? `<svg viewBox="0 0 24 24"><path d="${sigil(r.id)}"/></svg>` : ''}</i>
+          <i class="go-keep__sigil kit-hw-well" aria-hidden="true">${pic && r.id ? pic(r.id) : ''}</i>
           <b>${esc(r.name ?? r.id)}</b>
           <em>${esc(r.desc ?? r.text ?? '')}</em>
         </span>`).join('');

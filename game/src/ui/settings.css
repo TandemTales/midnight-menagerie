@@ -10,22 +10,31 @@
                                                 a bell, an hourglass, a book …
      a line              .kit-leader            the ledger's brass dots, from a
                                                 setting's name to its control
-     a slider / switch   .kit-tube--warm        the Courage bar's brass tube, its
-                                                amber enamel filled to the value,
-                                                the round enamel button its knob
+     a slider            .kit-hw-groove         the house's groove and brass knob
+     a switch            .kit-hw-switch         the two-position plate, OFF | ON
      a reading           .kit-enamel            every line ends in the ledger's
                                                 column of readings: a figure or a
                                                 state (90%, ON, OFF) in gold on
                                                 the boards' enamel cartouche
      a choice            .kit-btn / --quiet     nameplates, the chosen one lit and
                                                 starred
-     the seed            .kit-enamel--dark      struck on the tiles' cartouche
-     the next seed       .kit-field             lettered onto a nameplate
+     the seed            .kit-hw-tag            engraved on a brass key tag
+     the next seed       .kit-hw-slip           inked on a slip of old card
      save / reset        .kit-btn               nameplates
    Every control is still the real element — a range input, a switch button, a
    text input — so the keyboard, the pad and assistive tech drive it as one.
    This sheet lays the ledger out and seats those pieces; it paints no frame. */
 
+/* Round 19, both survey judges: "the screen behind shows through at the
+   edges -- a solid scrim". The ledger is a board of its own, so the room
+   behind it is put out, not turned down: the boards' void, with the frame's
+   candle still warming its lower right. (The pile viewer, deckview.css, the
+   same.) */
+.mm-settings-modal .mm-modal__scrim {
+  background:
+    radial-gradient(60% 55% at 92% 96%, color-mix(in srgb, var(--kit-candle) 8%, transparent), transparent 70%),
+    radial-gradient(90% 80% at 50% 50%, var(--kit-ground-1) 0%, var(--kit-void) 100%);
+}
 /* the ledger: wide enough for three columns of pages, the map showing round it */
 .mm-settings-modal .mm-modal__dialog { width: min(100%, 88rem); }
 /* its name on a plaque a size smaller than a board's, so the pages get the height */
@@ -356,19 +365,14 @@
   filter: drop-shadow(0 0 1.5px var(--kit-gold-hi)) drop-shadow(0 0 10px color-mix(in srgb, var(--kit-candle) 55%, transparent)) brightness(1.12);
 }
 
-/* ── choice: nameplates, the chosen one lit and starred ─────────────────── */
+/* ── choice: the house's engraved plates, the chosen one lit and starred ── */
 .mm-set__row:has(> .mm-set__choices) { grid-template-columns: minmax(0, 1fr); grid-template-areas: "name" "ctrl" "hint"; }
 .mm-set__choices {
   display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 6px 10px;
   padding: 6px 0 3px;
 }
-.mm-set__choice.kit-btn {
-  --plate-h: var(--choice-h);
-  gap: 7px;
-  font-size: 11.5px; letter-spacing: .11em;
-  padding-inline: calc(var(--plate-h) * .62);
-}
+.mm-set__choice.kit-hw-choice { --plate-h: var(--choice-h); font-size: 11.5px; }
 /* the boards' four-point star, set before the chosen palette's name */
 .mm-set__star {
   display: none; flex: none;
@@ -378,10 +382,7 @@
   filter: drop-shadow(0 1px 0 rgba(0, 0, 0, .85)) drop-shadow(0 0 5px color-mix(in srgb, var(--kit-candle) 55%, transparent));
 }
 .mm-set__choice[data-on="1"] .mm-set__star { display: block; }
-/* the chosen plate is the one the candle has caught */
-.mm-set__choice.kit-btn[data-on="1"]:not(:focus-visible) {
-  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, .8)) drop-shadow(0 0 9px color-mix(in srgb, var(--kit-candle) 26%, transparent)) brightness(1.14);
-}
+
 
 /* ── seed ─────────────────────────────────────────────────────────────────
    What the house tells you is ENGRAVED on brass: the expedition's seed on a

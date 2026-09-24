@@ -33,6 +33,14 @@
   min-height: 0;
 }
 
+/* Round 19: a solid scrim -- the fight behind the case is put out, not
+   turned down (settings.css says why) */
+.mm-modal:has(.mm-deck) .mm-modal__scrim {
+  background:
+    radial-gradient(60% 55% at 92% 96%, color-mix(in srgb, var(--kit-candle) 8%, transparent), transparent 70%),
+    radial-gradient(90% 80% at 50% 50%, var(--kit-ground-1) 0%, var(--kit-void) 100%);
+}
+
 /* ── bar: count + search, centred on the panel like a board's plaque row ─── */
 .mm-deck__bar {
   display: flex; align-items: center; justify-content: center;

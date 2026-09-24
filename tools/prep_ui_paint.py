@@ -498,7 +498,7 @@ def room_paint_layers():
         canvas = np.zeros_like(alb)
         canvas[y0:y1, x0:x1] = art
         varnish = hexc("#3a2614")
-        pic = canvas * 0.62 + varnish * 0.16
+        pic = canvas * 1.05 + varnish * 0.14
         # a craquelure of fine dark lines and the grain of the canvas
         pic = pic * (0.9 + 0.2 * noise(dd.shape, rng, 1.2)[..., None])
         alb = np.where(core[..., None], pic, alb)

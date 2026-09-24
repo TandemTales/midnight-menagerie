@@ -377,7 +377,7 @@
    way the shop and the reward room draw them. */
 .mm-hud__relic .mm-icon { width: 1.15em; height: 1.15em; }
 /* a Keepsake is its own painted object (ui/objects.js), a little proud of its hollow */
-.mm-hud__relicobj { position: relative; width: 84%; }
+.mm-hud__relicobj { position: relative; width: 112%; max-width: none; }
 .mm-hud__relic .mm-icon svg { fill: none; stroke: currentColor; stroke-width: 1.6;
   stroke-linecap: round; stroke-linejoin: round; }
 .mm-hud__relic:hover { transform: translateY(-2px); filter: brightness(1.2); }

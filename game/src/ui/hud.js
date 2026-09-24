@@ -118,7 +118,7 @@ const GEAR_CSS = `
 .mm-hud__gearchip .mm-hud__relicn { background: var(--kit-moon); }
 /* round 19: a painted item sits in the house's velvet well instead */
 .mm-hud__gearchip.has-obj { background: url("assets/ui/kit/hw-well.webp") 50% 50% / 100% 100% no-repeat; }
-.mm-hud__gearobj { width: 86%; }
+.mm-hud__gearobj { width: 104%; }
 
 /* The wing sub-label. At --text-lo the chip measures 4.38:1 against the room
    behind it (tests/chrome/run.py measures real pixels, and the shorter "Wing 1"

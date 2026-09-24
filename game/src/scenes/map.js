@@ -132,7 +132,10 @@ const FIT_PAD = 34;
    parchment survey with a wash of the source bitmap under the vectors — and not
    of the plan. */
 const PLAN = {
-  ink:   0.74,        // the linework's weight against the paper
+  // Round 19: both survey judges -- "fade the floor plan behind the routes to
+  // half contrast". The plan is the ground the route is read against, so it
+  // sits back at half the weight it had (0.74).
+  ink:   0.4,         // the linework's weight against the paper
   wash:  0.09,        // the SOURCE bitmap under it all: grain, ornament, tone
 };
 
@@ -867,6 +870,11 @@ export class MapScene extends Scene {
     // Printed to be READ from the fitted sheet, which is drawn at 0.57x on a
     // 1280x800 panel: every line here is sized for that, and set in the plan's
     // own ink at nearly full strength rather than greyed back into the paper.
+    // Round 19, both survey judges: the title block and the margin notes were
+    // "ghost type". The rules stay in the plan's blue; the LETTERING is inked
+    // in the draughtsman's own dark iron-gall, solid, as a title block is.
+    const letter = '#241910';
+    ink = letter;
     g.fillStyle = hexA(ink, 0.97);
     g.font = '700 32px Cinzel, Georgia, serif'; spaced('2px');
     g.fillText(meta.name.toUpperCase(), tx + 22, ty + 42);
@@ -897,7 +905,7 @@ export class MapScene extends Scene {
     g.translate(w - 58, WIN.y + WIN.h / 2);
     g.rotate(Math.PI / 2);
     g.textAlign = 'center'; g.textBaseline = 'middle';
-    g.fillStyle = hexA('#3d3833', 0.62);
+    g.fillStyle = hexA(letter, 0.84);
     g.font = '600 14px Cinzel, Georgia, serif'; spaced('3px');
     g.fillText('DRAG TO PAN  \u00b7  SCROLL TO ZOOM  \u00b7  ARROWS CHOOSE  \u00b7  ENTER GOES', 0, 0);
     spaced('0px');
@@ -982,8 +990,10 @@ export class MapScene extends Scene {
       <radialGradient id="mm-wax-boon" cx="38%" cy="32%" r="72%">
         <stop offset="0" stop-color="#8fd3df"/><stop offset=".45" stop-color="#2f7f96"/><stop offset="1" stop-color="#123745"/>
       </radialGradient>
-      <marker id="mm-arrow" viewBox="0 0 12 12" refX="9" refY="6" markerWidth="7" markerHeight="7"
-              orient="auto-start-reverse">
+      <!-- the line runs on under its room's roundel (round 19), so the head is
+           set back along it to land on the roundel's rim, not under it -->
+      <marker id="mm-arrow" viewBox="0 0 12 12" refX="16" refY="6" markerWidth="7" markerHeight="7"
+              orient="auto-start-reverse" overflow="visible">
         <path class="mi-arrowhead" d="M1 1 L11 6 L1 11 L3.6 6 Z"/>
       </marker>
     </defs>`);
@@ -1122,15 +1132,24 @@ export class MapScene extends Scene {
       // with a continuous pencil the sheet turned into a field of unattached
       // arcs, which is a WORSE answer to "which node leads where" than the one
       // it replaced.  A route has to touch the rooms it joins.
+      //
+      // ROUND 19: "loose, same-weight brush strokes that stop short of the node
+      // icons and cross one another mid-field, so you cannot trace which room
+      // leads to which" (both survey judges). Three causes, three fixes: every
+      // room now stands on an opaque parchment ROUNDEL with an inked rim
+      // (map.css .mn-pool), and the line runs on under it -- so a route meets
+      // its rooms rim to rim at any zoom instead of fading out in a soft
+      // clearing 60px short; the hand's bow is taken out of the line (a bowed
+      // leg crosses its neighbour where a straight one does not); and the
+      // tiers are weighted apart in map.css.
       const L = Math.hypot((b.x - a.x) * this.SW, (b.y - a.y) * this.SH) || 1;
-      const t1 = Math.min(ra + 4, L * 0.21), t2 = Math.min(rb + 7, L * 0.23);
+      const t1 = Math.min(ra * 0.5, L * 0.2), t2 = Math.min(rb * 0.5, L * 0.2);
       const [x1, y1, x2, y2] = trim(a.x * this.SW, a.y * this.SH, b.x * this.SW, b.y * this.SH, t1, t2);
       const long = b.row - a.row > 1;
       put(e.from, e.to,
-        // inked by hand, not ruled: a little more tremble and a shorter step
-        // than a straightedge would leave
+        // inked by hand, not ruled -- but drawn straight: a steady hand's line
         pencilStroke(seedOf(e.from + e.to), x1, y1, x2, y2,
-          { bow: long ? 17 : 11, tremble: 2.9, step: long ? 24 : 18 }),
+          { bow: long ? 3 : 1.5, tremble: 0.9, step: long ? 30 : 24 }),
         long ? ' mi-edge--long' : '');
     }
 

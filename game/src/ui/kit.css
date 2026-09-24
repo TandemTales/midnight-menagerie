@@ -3269,6 +3269,8 @@ button.kit-medallion:hover, button.kit-medallion:focus-visible,
    ENGRAVED PLATE — a thing that holds a setting: near-black enamel in a gilt
    rim, a well sunk in it behind a brass bead
      .kit-hw-plate         a reading lettered on the plate, a boss on each end
+     .kit-hw-choice        one position of several on that plate, the chosen
+                           one lit (role="radio" + aria-checked)
      .kit-hw-groove        a slider's groove, __fill the gilt run in it
      .kit-hw-switch        a two-position plate, OFF | ON, the setting's well
                            lit; __pos x2 (put [data-on="1"] on the switch)
@@ -3382,6 +3384,51 @@ button.kit-hw-enamel:focus-visible {
   color: var(--kit-gold-hi);
   text-shadow: 0 1px 0 rgba(0, 0, 0, .95), 0 -1px 0 rgba(0, 0, 0, .45), 0 0 10px color-mix(in srgb, var(--kit-candle) 22%, transparent);
   filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .8));
+}
+
+/* ── the engraved plate: one position of several ── */
+/* A radio's option on the engraved reading plate (hw-plate.webp), the same
+   near-black enamel in its gilt rim with a boss on each end; the chosen one
+   is LIT the way a switch's setting is (.kit-hw-switch) — violet enamel
+   glowing up through it, lettered in pale lavender — never a stadium pill.
+   Put role="radio" + aria-checked on it. */
+.kit-hw-choice {
+  --plate-h: 34px;
+  position: relative; isolation: isolate;
+  box-sizing: border-box;
+  display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+  height: var(--plate-h); min-width: 0;
+  margin: 0;
+  padding: 0 calc(var(--plate-h) * .78) 1px;
+  border: 0 solid transparent;
+  border-image: url("../../assets/ui/kit/hw-plate.webp") 14 30 fill / calc(var(--plate-h) * 14 / 56) calc(var(--plate-h) * 30 / 56) stretch;
+  background: none;
+  font-family: var(--font-display); font-weight: 700; font-style: normal;
+  font-size: max(11px, calc(var(--plate-h) * .33)); line-height: 1;
+  letter-spacing: .12em; text-transform: uppercase; white-space: nowrap;
+  color: color-mix(in oklab, var(--kit-text-lo) 86%, var(--kit-gold-lo));
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, .95), 0 1px 0 color-mix(in srgb, var(--kit-gold) 16%, transparent);
+  filter: drop-shadow(0 3px 3px rgba(0, 0, 0, .8));
+  cursor: pointer;
+  transition: filter var(--t-quick) var(--ease-out), color var(--t-quick) var(--ease-out);
+}
+.kit-hw-choice::before {
+  content: ''; position: absolute; z-index: -1; pointer-events: none;
+  left: calc(var(--plate-h) * .52); right: calc(var(--plate-h) * .52);
+  top: calc(var(--plate-h) * .2); bottom: calc(var(--plate-h) * .2);
+  opacity: 0;
+  background:
+    radial-gradient(80% 110% at 50% 60%, color-mix(in srgb, var(--kit-violet) 78%, transparent), transparent 100%),
+    url("../../assets/ui/kit/enamel.webp") 0 0 / 120px 120px;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, .8);
+  transition: opacity var(--t-quick) var(--ease-out);
+}
+.kit-hw-choice:hover { color: var(--kit-text); filter: drop-shadow(0 3px 3px rgba(0, 0, 0, .8)) brightness(1.12); }
+.kit-hw-choice[aria-checked="true"] { color: var(--kit-lav-hi); text-shadow: 0 -1px 0 rgba(0, 0, 0, .9), 0 0 8px color-mix(in srgb, var(--kit-lav) 70%, transparent); }
+.kit-hw-choice[aria-checked="true"]::before { opacity: 1; }
+.kit-hw-choice:focus-visible {
+  outline: none;
+  filter: drop-shadow(0 0 1.5px var(--kit-gold-hi)) drop-shadow(0 0 10px color-mix(in srgb, var(--kit-candle) 55%, transparent)) brightness(1.12);
 }
 
 /* ── the engraved plate: groove ── */
@@ -3562,18 +3609,22 @@ button.kit-hw-enamel:focus-visible {
 /* Each rung is a candle stub in a brass dish: lit up to the chosen rung,
    unlit past it, and the chosen one burning brightest, its number engraved
    on the dish. A rung that cannot be chosen yet is a cold stub. */
-.kit-ladder--candles::before { top: 76%; height: 3px; }
+/* the rod runs under the dishes, and each rung's number is engraved under
+   the rod in the plates' small caps, never across it */
+.kit-ladder--candles::before { top: calc(var(--md) * .3 + var(--md) * .84); height: 3px; translate: 0 0; }
 .kit-ladder--candles > .kit-ladder__rung,
 .kit-ladder--candles > .kit-ladder__rung[aria-checked="true"] {
-  width: var(--md); height: calc(var(--md) * 1.5);
+  width: var(--md); height: calc(var(--md) * 1.55);
   border-radius: 0;
   align-items: end;
-  padding: 0 0 calc(var(--md) * .1);
+  padding: 0;
   background: var(--obj-unlit, none) 50% 0 / 100% auto no-repeat;
-  font-size: calc(var(--md) * .34);
-  color: #2a1a09;
-  text-shadow: 0 1px 0 rgba(255, 236, 190, .45);
+  font-family: var(--font-num); font-weight: 700;
+  font-size: max(11px, calc(var(--md) * .34));
+  color: var(--kit-text-mid);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .95);
 }
+.kit-ladder--candles > .kit-ladder__rung[aria-checked="true"] { color: var(--kit-gold-hi); }
 .kit-ladder--candles > .kit-ladder__rung::before { display: none; }
 .kit-ladder--candles > .kit-ladder__rung.is-lit { background-image: var(--obj-lit, none); }
 .kit-ladder--candles > .kit-ladder__rung[aria-checked="true"] {

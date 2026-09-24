@@ -295,8 +295,8 @@
 }
 .mi-ghost.is-open   { stroke: var(--mark); stroke-width: 4.2; opacity: .62; }
 .mi-ghost.is-walked { stroke-width: 4.8; opacity: .70; }
-.mi-ghost.is-dead   { stroke-width: 3.2; opacity: .46; }
-.mi-ghost.is-cold   { stroke-width: 2.2; opacity: .22; }
+.mi-ghost.is-dead   { stroke-width: 2.2; opacity: .2; }
+.mi-ghost.is-cold   { stroke-width: 1.6; opacity: .1; }
 
 .mi-edge {
   fill: none; stroke: var(--graphite);
@@ -311,9 +311,11 @@
   stroke: var(--pencil); stroke-width: 7.4; opacity: 1;
 }
 /* still ahead of you on some route — the layer you plan on */
-.mi-edge.is-dead { opacity: .86; stroke-width: 5.4; }
+/* Round 19: the tiers are weighted APART, so the next step is the bold line
+   and the rest recede -- "reachable next steps bold and the rest faint" */
+.mi-edge.is-dead { opacity: .58; stroke-width: 3.6; }
 /* no route from where you are standing — pale graphite, never invisible */
-.mi-edge.is-cold { stroke: var(--graphite-soft); opacity: .62; stroke-width: 3.6; }
+.mi-edge.is-cold { stroke: var(--graphite-soft); opacity: .4; stroke-width: 2.8; }
 
 /* a passage that skips a row: the same pencil, leaning further off the straight */
 .mi-edge--long { stroke-width: 5.6; }
@@ -322,9 +324,10 @@
 .mi-edge--entry { stroke: var(--mark); opacity: .9; }
 .mi-edge--entry.is-dead { stroke: var(--graphite-soft); opacity: .3; }
 .mi-in {
-  font-family: var(--font-display); font-size: 27px; font-weight: 600;
+  font-family: var(--font-display); font-size: 27px; font-weight: 700;
   letter-spacing: .3em; text-anchor: middle;
-  fill: var(--mark); opacity: .8;
+  /* inked solid (round 19: "the margin notes ... are ghost type") */
+  fill: color-mix(in srgb, var(--mark) 45%, #241910); opacity: 1;
 }
 .map-screen.is-underway .mi-entries { opacity: 0; }
 .mi-entries { transition: opacity var(--t-base); }
@@ -347,7 +350,10 @@
 .mi-zone--boon { color: #2f6680; }
 /* round 5: the stain itself (map.js STAIN), multiplied into the paper the way
    a glaze sinks into it, so the plan's ink and the paper's grain show through */
-.mi-zone-stain { opacity: 1; }
+/* round 19: the wash sits back (it read as "unexplained watercolour blobs"),
+   and it is TIED TO ITS KEY: the same wax seal is pressed on the wing's
+   condition plate in the bar below (.note-ico) */
+.mi-zone-stain { opacity: .52; }
 .mi-zone-hatch { opacity: .1; }
 /* The wing's keyed symbol.  Same mark as the bar's note wears, so the plan and
    the margin legend read as one thing. */
@@ -404,14 +410,23 @@
   transform-origin: 50% 50%;
 }
 
-.mn-pool {                                  /* parchment clearing under the mark */
-  position: absolute; inset: -12%;
+/* Round 19: every room stands on a PARCHMENT ROUNDEL -- an opaque disc of
+   clean paper inside an inked double rim, the way a surveyor stamps a station
+   on a plan. It used to be a soft white clearing that faded out 60px from the
+   mark, and every route faded out with it, short of its room ("routes stop
+   short of the node icons"). The route now runs on under the roundel, so it
+   meets the rim at any zoom. */
+.mn-pool {
+  position: absolute; inset: 9%;
   border-radius: 50%;
-  background: radial-gradient(circle closest-side,
-    color-mix(in srgb, var(--parchment) 99%, #fff) 0%,
-    color-mix(in srgb, var(--parchment) 97%, #fff) 44%,
-    color-mix(in srgb, var(--parchment) 82%, transparent) 68%,
-    transparent 84%);
+  background:
+    radial-gradient(circle at 38% 32%, color-mix(in srgb, var(--parchment) 70%, #fff) 0%, transparent 62%),
+    radial-gradient(circle closest-side, color-mix(in srgb, var(--parchment) 96%, #fff) 0%, var(--parchment) 72%, color-mix(in srgb, var(--parchment) 86%, var(--graphite)) 100%);
+  box-shadow:
+    0 0 0 2.4px color-mix(in srgb, var(--graphite) 86%, transparent),
+    0 0 0 5px color-mix(in srgb, var(--parchment) 94%, transparent),
+    0 0 0 6.2px color-mix(in srgb, var(--graphite) 52%, transparent),
+    1.5px 3px 5px 5px rgba(60, 36, 14, .22);
 }
 .mn-art { position: relative; overflow: visible; }
 .mn-art .s { fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; }
@@ -613,6 +628,7 @@
    warm paper, not white, and a slow bloom breathes off the wax. */
 .map-node--boss .mn-pool {
   inset: -42%;
+  box-shadow: none;   /* the boss's clearing is its candle's, not a roundel */
   background: radial-gradient(circle closest-side,
     color-mix(in srgb, var(--parchment) 78%, var(--flame-100)) 0%,
     color-mix(in srgb, var(--parchment) 86%, var(--flame-200)) 38%,
@@ -776,7 +792,7 @@
 .lg-ico {
   display: grid; place-items: center; flex: none;
   width: 24px; height: 24px;
-  background: url("../../assets/ui/kit/button.webp") 50% 50% / 100% 100% no-repeat;
+  background: url("../../assets/ui/kit/hw-glaze.webp") 50% 50% / 100% 100% no-repeat, url("../../assets/ui/kit/button.webp") 50% 50% / 100% 100% no-repeat;
   color: var(--kit-gold-hi);
 }
 .lg-ico svg { width: 15px; height: 15px; }
@@ -842,10 +858,20 @@
   letter-spacing: .1em; text-transform: uppercase;
   text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
 }
+/* the wing's mark on the SAME wax seal the plan presses beside the wing
+   (map.js .mi-seal), so a seal on the sheet is keyed by the plate below */
 .note-ico {
   display: grid; place-items: center; flex: none;
-  width: 26px; height: 26px;
-  background: url("../../assets/ui/kit/button.webp") 50% 50% / 100% 100% no-repeat;
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  color: #ffe7dc;
+  background: radial-gradient(circle at 38% 32%, #e87a6a 0%, #b0343a 45%, #5c1520 100%);
+  box-shadow: 0 0 0 2px color-mix(in srgb, #5c1520 80%, transparent), inset 0 0 0 4px rgba(0, 0, 0, .18), 0 2px 3px rgba(0, 0, 0, .7);
+}
+.note--boon .note-ico {
+  color: #e0f6fb;
+  background: radial-gradient(circle at 38% 32%, #8fd3df 0%, #2f7f96 45%, #123745 100%);
+  box-shadow: 0 0 0 2px color-mix(in srgb, #123745 80%, transparent), inset 0 0 0 4px rgba(0, 0, 0, .18), 0 2px 3px rgba(0, 0, 0, .7);
 }
 .note-ico svg { width: 15px; height: 15px; }
 .note-ico svg .s { fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
@@ -967,7 +993,7 @@
 .tip-ico {
   display: grid; place-items: center; flex: none;
   width: 44px; height: 44px;
-  background: url("../../assets/ui/kit/button.webp") 50% 50% / 100% 100% no-repeat;
+  background: url("../../assets/ui/kit/hw-glaze.webp") 50% 50% / 100% 100% no-repeat, url("../../assets/ui/kit/button.webp") 50% 50% / 100% 100% no-repeat;
   color: var(--kit-gold-hi);
 }
 .tip-ico svg { width: 26px; height: 26px; }
