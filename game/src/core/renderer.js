@@ -160,11 +160,12 @@ export class Stage {
     this.quality   = 1;
     this.deferLinks = false;    // see _gateLinks
     /* A LOST CONTEXT IS A MISSING ROOM TOO. Measured 2026-09-23 on BASE as well
-       as here: in the first fight, 17-50 s after the warm-up, while
-       precompileRooms links the other wings' walls, the GPU process drops the
-       context (GL_CONTEXT_LOST_KHR). The canvas goes WHITE until the browser
-       restores it, and three then relinks every program -- on BASE inside the
-       first draw, a 35 s frozen page. three already asks for the restore
+       as here (Intel UHD, the machine busy with other captures): in the first
+       fight, 17-50 s after the warm-up, the GPU process drops the context
+       (GL_CONTEXT_LOST_KHR) -- with precompileRooms switched off too, so it is
+       not that. The canvas goes WHITE until the browser restores it, and three
+       then relinks every program -- on BASE inside the first draw, a 35 s
+       frozen page. three already asks for the restore
        (preventDefault in its own handler); this only records the state, so
        roomPending() can say so and combat can stand its room in meanwhile. On
        the restore every material's program is gone, so the gate's record of
@@ -389,10 +390,10 @@ export class Stage {
          a 94 s warm-up, and two programs were nearly all of it -- the wall
          (uSeed/uDread, 17-20 s) and the props (uSway/uRimAmt, 24-25 s) -- each
          linked TWICE, once for the canvas and once for the composer, because a
-         program's cache key carries its target's tone map and colour space. The canvas copies existed only for phase B's
-         "show the room while post warms" draw straight to the canvas; after the
-         warm-up every frame goes through the composer, and so does every variant
-         precompileRooms links. Phase B now draws through the composer too (see
+         program's cache key carries its target's tone map and colour space.
+         The canvas copies existed only for phase B's "show the room while post
+         warms" draw straight to the canvas; after the warm-up every frame goes
+         through the composer, and so does every variant precompileRooms links. Phase B now draws through the composer too (see
          there), so the canvas copies are gone: half of phase A.
 
          AND THE LINKS RUN SIDE BY SIDE. With KHR_parallel_shader_compile a link
