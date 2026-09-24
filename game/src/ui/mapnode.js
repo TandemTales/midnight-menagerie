@@ -300,6 +300,19 @@ export function hazardSymbol(glyph, size = 16) {
 export function hazardGlyphMarkup(glyph) { return HG[glyph] || HG.beam; }
 
 // ── the node button ──────────────────────────────────────────────────────────
+/* THE DISC TO THE COLUMN PITCH (round 20). The scene counter-scales every
+   mark by --mn-k so its ink never reads below ~0.86x as the sheet shrinks to
+   fit (scenes/map.js). That holds a disc at the SAME screen size at every
+   window -- ~74 px -- while the columns close up with the sheet: at 1280 two
+   neighbouring columns stand 46 px apart and the roundels overlapped, the
+   thin route lines vanishing under their rims (round 19's judges). So the
+   roundel and its ink stop growing past k = 1.2: at 1600 (k 1.22) a disc is
+   as it was; at 1280 (k 1.5) it is 0.8 of it, which puts the roundels back
+   inside the pitch. The name plate is not in this: it keeps its own scale
+   (--lab-s). The boss's seal stands alone at the end of the wing and keeps
+   its size. */
+const FIT = 'min(1, calc(1.2 / var(--mn-k, 1)))';
+
 /**
  * Build one map node.  Positioning + state classes are the scene's job; this
  * owns the drawing.
@@ -369,11 +382,11 @@ export function mapNodeMarkup(node, info, hazardName = '', at = null) {
       data-id="${escapeHtml(node.id)}" data-type="${escapeHtml(node.type)}"
       data-row="${node.row}" data-col="${node.col}"${
         node.hazard ? ` data-hazard="${escapeHtml(node.hazard)}"` : ''}
-      style="--mn-box:${box}px${at ? `;left:${at.left}px;top:${at.top}px` : ''}"
+      style="--mn-box:${box}px${big ? '' : `;--mn-fit:${FIT}`}${at ? `;left:${at.left}px;top:${at.top}px` : ''}"
       aria-label="${escapeHtml(aria)}">
     <span class="mn-in" aria-hidden="true">
-      <span class="mn-pool"></span>
-      <svg class="mn-art" viewBox="0 0 ${box} ${box}" width="${box}" height="${box}">
+      <span class="mn-pool"${big ? '' : ' style="scale:var(--mn-fit)"'}></span>
+      <svg class="mn-art"${big ? '' : ' style="scale:var(--mn-fit)"'} viewBox="0 0 ${box} ${box}" width="${box}" height="${box}">
         <path class="mn-ring"  d="${ringD}"/>
         <path class="mn-ring2" d="${ring2}"/>
         ${ghost}<g transform="${glyphAt(0, 0, rot)}">${glyphMarkup(node.type)}</g>

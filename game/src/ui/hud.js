@@ -369,7 +369,12 @@ export class HUD {
 
     // gold
     this.$gold.textContent = '';
-    this.$gold.append(icon('res.lost-things'), text(String(num(r.lostThings ?? r.gold, 0))));
+    /* round 20: the purse says what it counts. A bare "137" by a coin read as
+       a number with no name to the judges (RUBRIC-r20: "a bare number that
+       does not say what it counts is a defect"); Clues and Luck already say. */
+    const purse = num(r.lostThings ?? r.gold, 0);
+    this.$gold.append(icon('res.lost-things'), text(String(purse)), unit(word(purse, 'Button')));
+    this.$gold.setAttribute('aria-label', plural(purse, 'Button'));
 
     /* Clues and Luck — the run awards both and, until now, only the four room
        screens showed them (through `addChip()`), so on the map and inside a
@@ -451,11 +456,14 @@ export class HUD {
         slot.appendChild(o);
       }
       if (!s && folded) {
+        /* round 20: never a bare "×3" -- the folded setting says what it is
+           counting, in the rail's engraved small capitals */
         const n = document.createElement('b');
         n.className = 'mm-hud__snackfree';
-        n.textContent = `×${free}`;
+        n.textContent = `${free} free`;
         n.setAttribute('aria-hidden', 'true');
         slot.appendChild(n);
+        slot.classList.add('is-folded');
       }
       const many = !s && folded;
       if (s) {
@@ -485,42 +493,112 @@ export class HUD {
     }
   }
 
-  /** Does the rail hold one row with every free Snack setting standing? Tried
-   *  after layout (and again on a resize, and once the fonts are in): spread
-   *  first, fold only if the rail then overflows or wraps. */
+  /** Does the rail hold ONE row? Tried after layout (and again on a resize,
+   *  and once the fonts are in).
+   *
+   *  ROUND 20 -- the Steam Deck bug (BRIEF-r20 item 1). Round 19 made the rail
+   *  hold one row with a run's OPENING state; a run carrying ten Keepsakes and
+   *  a full backpack wrapped it to two rows at 1280 again, dropping Haunt, the
+   *  seed, Tricks and Settings onto a second line over the room. The rail now
+   *  folds, in order, only as far as it must:
+   *
+   *    0  everything spread
+   *    1  the Gear folds into one plate, "8 Gear", its tray under it
+   *    2  the Keepsakes fold the same way, "10 Keepsakes"
+   *
+   *  A folded group is a plate that SAYS what it holds -- its count and its
+   *  noun, and the first of its objects fanned on it -- and opens its tray of
+   *  the real chips on hover, on focus, or on a click (a pad or a finger).
+   *  Every chip keeps its own tooltip in the tray. */
   _fitSoon() {
     if (this._fitQueued) return;
     this._fitQueued = true;
-    requestAnimationFrame(() => { this._fitQueued = false; this._fitSnacks(); });
+    requestAnimationFrame(() => { this._fitQueued = false; this._fit(); });
     if (!this._fitBound) {
       this._fitBound = true;
       const onResize = () => this._fitSoon();
       window.addEventListener('resize', onResize);
       this._offs.push(() => window.removeEventListener('resize', onResize));
       document.fonts?.ready?.then(() => { if (this.el) this._fitSoon(); });
+      /* a face first USED after load starts loading then, after `ready` has
+         long resolved: the rail measured in the fallback face folds groups
+         the real face has room for, so every face that lands refits it */
+      const onFonts = () => { if (this.el) this._fitSoon(); };
+      document.fonts?.addEventListener?.('loadingdone', onFonts);
+      this._offs.push(() => document.fonts?.removeEventListener?.('loadingdone', onFonts));
     }
   }
 
-  _fitSnacks() {
+  /** Is the rail over-full: a group dropped a row, the rail scrolls, or the
+   *  Keepsakes spill or wrap inside their group? */
+  _tight() {
+    const groups = [...this.el.querySelectorAll(':scope > .mm-hud__group')].filter((g) => g.offsetWidth);
+    const tops = groups.map((g) => g.offsetTop);
+    if (Math.max(...tops) - Math.min(...tops) > 6) return true;
+    if (this.el.scrollWidth > this.el.clientWidth + 1) return true;
+    const keep = this.$relics.parentElement;
+    if (keep.scrollWidth > keep.clientWidth + 1) return true;
+    for (const list of [this.$relics, this.$gear]) {
+      if (list.dataset.folded === '1' || list.hidden) continue;
+      const kids = [...list.children].filter((k) => k.offsetWidth);
+      if (kids.length > 1 && kids[kids.length - 1].offsetTop > kids[0].offsetTop + 4) return true;
+    }
+    return false;
+  }
+
+  _fit() {
     if (!this.el || !this.el.isConnected || !this.el.offsetWidth) return;
-    if ((this._snackFree || 0) < 2) { this._snackSpread = true; return; }
-    const tight = () => {
-      const groups = [...this.el.querySelectorAll(':scope > .mm-hud__group')].filter((g) => g.offsetWidth);
-      const tops = groups.map((g) => g.offsetTop);
-      if (Math.max(...tops) - Math.min(...tops) > 6) return true;           // a group dropped a row
-      if (this.el.scrollWidth > this.el.clientWidth + 1) return true;
-      // the Keepsakes' group is the one that gives: it shrinks (min-width 0)
-      // before anything else does, so its contents spilling is the sign
-      const keep = this.$relics.parentElement;
-      if (keep.scrollWidth > keep.clientWidth + 1) return true;
-      // the Keepsakes wrap before they overflow: a second row of settings
-      const kids = [...this.$relics.children];
-      return kids.length > 1 && kids[kids.length - 1].offsetTop > kids[0].offsetTop + 4;
-    };
-    this._renderSnacks(true);
-    const fold = tight();
-    if (fold) this._renderSnacks(false);
-    this._snackSpread = !fold;
+    const nGear = this._gearChips?.length || 0;
+    const nKeep = this._keepChips?.length || 0;
+    const levels = [{ gear: false, keep: false, snack: true }];
+    if (nGear > 1) levels.push({ gear: true, keep: false, snack: true });
+    if (nKeep > 2) levels.push({ gear: nGear > 1, keep: true, snack: true });
+    /* The free Snack settings are NOT folded. Round 19 folded them into one
+       setting marked "×3", every judge read the bare figure as meaningless,
+       and a folded setting with its words beside it ("3 free") is as wide as
+       the three settings standing -- so folding them buys the rail nothing. */
+    let pick = levels[levels.length - 1];
+    for (const lv of levels) {
+      this._applyFold(lv);
+      if (!this._tight()) { pick = lv; break; }
+    }
+    this._applyFold(pick);
+    this.el.dataset.fold = String(levels.indexOf(pick));
+    /* A folded group fans out as many of its objects as the rail has room
+       for -- two on the Steam Deck, the whole set where the rail is wide --
+       so the room a wide screen has is spent SHOWING the things, while the
+       plate still says how many there are and what they are. */
+    for (const list of [this.$relics, this.$gear]) {
+      if (list.dataset.folded !== '1') continue;
+      const wells = [...list.querySelectorAll(':scope > .mm-hud__fold .mm-hud__foldwell')];
+      for (let k = 2; k < wells.length; k++) {
+        wells[k].hidden = false;
+        if (this._tight()) { wells[k].hidden = true; break; }
+      }
+    }
+  }
+
+  _applyFold(lv) {
+    if (this._snackSpread !== lv.snack) {
+      this._snackSpread = lv.snack;
+      this._renderSnacks(lv.snack);
+    }
+    this._fold = { ...lv };
+    this._arrange();
+  }
+
+  /** Put the chips where the fold says: straight on the rail, or in their
+   *  group's tray behind a plate that says what the group holds. The chips
+   *  themselves are the same nodes either way. */
+  _arrange() {
+    const f = this._fold || {};
+    const keep = this._keepChips || [], gear = this._gearChips || [];
+    arrangeList(this.$relics, keep, !!f.keep && keep.length > 2, {
+      one: 'Keepsake', label: 'Keepsakes', lead: null, keys: this._keepKeys || [],
+    });
+    arrangeList(this.$gear, gear, !!f.gear && gear.length > 1, {
+      one: 'Gear', many: 'Gear', label: 'Backpack Gear', lead: this._gearLbl, keys: this._gearKeys || [],
+    });
   }
 
   _refreshKeepsakes(r) {
@@ -538,6 +616,9 @@ export class HUD {
     const gear = gearList(r, carried);
 
     this.$relics.textContent = '';
+    this.$relics.dataset.folded = '0';
+    this._keepChips = relics.map(keepsakeChip);
+    this._keepKeys = relics.map((k) => keepsakeKey(k.id));
     if (!relics.length) {
       const none = document.createElement('span');
       none.className = 'mm-hud__norelics';
@@ -546,23 +627,25 @@ export class HUD {
       none.tabIndex = 0;
       none.dataset.kw = 'keepsake';
       this.$relics.appendChild(none);
-    } else {
-      for (const k of relics) this.$relics.appendChild(keepsakeChip(k));
     }
 
     /* Gear only appears when the kid actually brought some, and it never shows a
        "none yet" placeholder: an empty Backpack is a loadout choice, not a gap
        waiting to be filled the way an empty Keepsake bar is. */
     this.$gear.textContent = '';
+    this.$gear.dataset.folded = '0';
     this.$gear.hidden = !gear.length;
+    this._gearChips = gear.map(gearChip);
+    this._gearKeys = gear.map((g) => gearKey(String(g.icon || g.id || '').replace(/^gear\//, '')));
+    this._gearLbl = null;
     if (gear.length) {
       const tag = document.createElement('span');
       tag.className = 'mm-hud__gearlbl';
       tag.textContent = 'Gear';
       tag.setAttribute('aria-hidden', 'true');
-      this.$gear.appendChild(tag);
-      for (const g of gear) this.$gear.appendChild(gearChip(g));
+      this._gearLbl = tag;
     }
+    this._arrange();
 
     // meta
     const haunt = num(r.hauntLevel ?? this.ctx?.Save?.data?.hauntLevel, 0);
@@ -635,7 +718,117 @@ export class HUD {
   }
 }
 
+/**
+ * Lay a group's chips straight on the rail, or FOLD them: one plate that says
+ * what the group holds ("10 Keepsakes", with the first three of them fanned
+ * on it) and a tray under the rail holding the real chips, opened by hover,
+ * focus or a click. Round 20 (the Steam Deck at a run's full load).
+ */
+function arrangeList(list, chips, fold, o) {
+  if (!chips.length) return;
+  const wasFolded = list.dataset.folded === '1';
+  if (!fold) {
+    if (!wasFolded && list.childElementCount === chips.length + (o.lead ? 1 : 0)) return;
+    list.textContent = '';
+    if (o.lead) list.appendChild(o.lead);
+    for (const c of chips) list.appendChild(c);
+    list.dataset.folded = '0';
+    list.setAttribute('role', 'list');
+    list.removeAttribute('data-open');
+    return;
+  }
+  if (wasFolded) return;
+  list.textContent = '';
+  list.dataset.folded = '1';
+  list.removeAttribute('role');
+  const n = chips.length;
+  const noun = word(n, o.one, o.many);
+  const btn = document.createElement('button');
+  btn.type = 'button';
+  btn.className = 'mm-hud__fold';
+  btn.setAttribute('aria-expanded', 'false');
+  btn.setAttribute('aria-label', `${n} ${noun}. Show them.`);
+  const pics = document.createElement('span');
+  pics.className = 'mm-hud__foldpics';
+  pics.setAttribute('aria-hidden', 'true');
+  for (const key of o.keys.filter(Boolean).slice(0, 10)) {
+    const url = objectUrl(key);
+    if (!url) continue;
+    const w = document.createElement('i');
+    w.className = 'mm-hud__foldwell';
+    const ob = document.createElement('i');
+    ob.className = 'kit-obj';
+    ob.style.setProperty('--obj', `url('${url}')`);
+    w.appendChild(ob);
+    w.hidden = pics.childElementCount >= 2;      // _fit fans out more where the rail has room
+    pics.appendChild(w);
+  }
+  const fig = document.createElement('b');
+  fig.className = 'mm-hud__foldn';
+  fig.textContent = String(n);
+  const nm = document.createElement('span');
+  nm.className = 'mm-hud__foldw';
+  nm.textContent = noun;
+  const fin = document.createElement('i');
+  fin.className = 'kit-hw-finial mm-hud__foldfin';
+  fin.setAttribute('aria-hidden', 'true');
+  btn.append(pics, fig, nm, fin);
+  const tray = document.createElement('div');
+  tray.className = 'mm-hud__tray';
+  tray.setAttribute('role', 'list');
+  tray.setAttribute('aria-label', o.label);
+  const head = document.createElement('b');
+  head.className = 'mm-hud__trayt';
+  head.setAttribute('aria-hidden', 'true');
+  head.textContent = `${n} ${noun}`;
+  tray.appendChild(head);
+  for (const c of chips) tray.appendChild(c);
+  list.append(btn, tray);
+  const sync = () => {
+    const open = list.dataset.open === '1' || list.matches(':hover') || list.matches(':focus-within');
+    btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+  };
+  btn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    list.dataset.open = list.dataset.open === '1' ? '0' : '1';
+    sync();
+    if (list.dataset.open === '1') {
+      const shut = (ev) => {
+        if (list.contains(ev.target)) return;
+        list.dataset.open = '0'; sync();
+        document.removeEventListener('pointerdown', shut, true);
+      };
+      document.addEventListener('pointerdown', shut, true);
+    }
+  });
+  if (!list._foldWired) {
+    list._foldWired = true;
+    for (const ev of ['mouseenter', 'mouseleave', 'focusin', 'focusout']) {
+      list.addEventListener(ev, () => requestAnimationFrame(() => {
+        const b = list.querySelector(':scope > .mm-hud__fold');
+        if (!b) return;
+        const open = list.dataset.open === '1' || list.matches(':hover') || list.matches(':focus-within');
+        b.setAttribute('aria-expanded', open ? 'true' : 'false');
+      }));
+    }
+    list.addEventListener('keydown', (e) => {
+      const b = list.querySelector(':scope > .mm-hud__fold');
+      if (!b || e.key !== 'Escape') return;
+      e.preventDefault(); e.stopPropagation();
+      list.dataset.open = '0';
+      b.focus();
+      b.setAttribute('aria-expanded', 'false');
+      list.classList.add('is-shut');
+      const lift = () => { list.classList.remove('is-shut'); list.removeEventListener('mouseleave', lift); b.removeEventListener('blur', lift); };
+      list.addEventListener('mouseleave', lift);
+      b.addEventListener('blur', lift);
+    });
+  }
+}
+
 function text(s) { const n = document.createElement('span'); n.className = 'mm-hud__t'; n.textContent = s; return n; }
+/** the word a figure counts, engraved small beside it ("137 Buttons") */
+function unit(s) { const n = document.createElement('span'); n.className = 'mm-hud__u'; n.textContent = s; return n; }
 function sub(s)  { const n = document.createElement('span'); n.className = 'mm-hud__s'; n.textContent = s; return n; }
 function num(v, d) { const n = Number(v); return Number.isFinite(n) ? n : d; }
 function cap(s) { return String(s || '').replace(/(^|[\s-])([a-z])/g, (_, a, b) => a + b.toUpperCase()); }

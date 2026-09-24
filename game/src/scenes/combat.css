@@ -2145,6 +2145,29 @@
 .cb-handhost.kit-cards .mm-hand.is-crowded .mm-card[data-rarity][data-type][data-uid].is-fan-last:not(.is-hover):not(.is-selected):not(.is-dragging):not(.is-aiming):not(.is-hero) .mm-card__name { text-align: center; padding-left: calc(12 * var(--u)); padding-right: calc(12 * var(--u)); }
 .cb-handhost.kit-cards .mm-hand.is-crowded .mm-card[data-rarity][data-type][data-uid].is-fan-last:not(.is-hover):not(.is-selected):not(.is-dragging):not(.is-aiming):not(.is-hero) .mm-card__type { justify-content: center; padding-left: 0; }
 .cb-handhost.kit-cards .mm-hand.is-crowded .mm-card[data-rarity][data-type][data-uid].is-fan-last:not(.is-hover):not(.is-selected):not(.is-dragging):not(.is-aiming):not(.is-hero) .mm-card__rules { left: calc(12 * var(--u)); right: calc(12 * var(--u)); align-items: center; text-align: center; top: calc(173 * var(--u)); bottom: calc(20 * var(--u)); padding: 0 calc(8 * var(--u)); }
+/* A CROWDED HAND GIVES UP ITS ART, NOT ITS WORDS (round 20). Past six Tricks
+   the fan's cards overlap, and the only thing a card can spend on its name
+   and its rules is its own height: at 1280 a nine-card hand set its names
+   at 8 px and its longest rule at 8.6 px, in a panel that started where it
+   does on a whole card, under a full art window. So while the hand is
+   crowded every card in the fan -- the last one too, so the row reads as one
+   row -- lifts its face up INTO the art window: the name plate stands 40u
+   higher over the art, the rules panel and its type line rise with it, and
+   the words get a panel 164u tall instead of 123u. The art keeps its top two
+   thirds, cost medallion and all, and a card lifted out of the fan (hovered,
+   focused, held, played) lays out whole again. ui/hand.js fits the names
+   and the rules to the bigger boxes. */
+.cb-handhost.kit-cards .mm-hand.is-crowded .mm-card[data-rarity][data-type][data-uid]:not(.is-hover):not(.is-selected):not(.is-dragging):not(.is-aiming):not(.is-hero) .mm-card__banner { top: auto; bottom: calc(200 * var(--u)); }
+.cb-handhost.kit-cards .mm-hand.is-crowded .mm-card[data-rarity][data-type][data-uid]:not(.is-fan-last):not(.is-hover):not(.is-selected):not(.is-dragging):not(.is-aiming):not(.is-hero) .mm-card__banner { bottom: calc(200 * var(--u)); }
+.cb-handhost.kit-cards .mm-hand.is-crowded .mm-card[data-rarity][data-type][data-uid]:not(.is-hover):not(.is-selected):not(.is-dragging):not(.is-aiming):not(.is-hero) .mm-card__type { top: calc(105 * var(--u)); }
+.cb-handhost.kit-cards .mm-hand.is-crowded .mm-card[data-rarity][data-type][data-uid]:not(.is-hover):not(.is-selected):not(.is-dragging):not(.is-aiming):not(.is-hero) .mm-card__art { clip-path: inset(0 0 calc(22 * var(--u)) 0); }
+.cb-handhost.kit-cards .mm-hand.is-crowded .mm-card[data-rarity][data-type][data-uid]:not(.is-hover):not(.is-selected):not(.is-dragging):not(.is-aiming):not(.is-hero) .mm-card__artline { top: calc(103 * var(--u)); }
+.cb-handhost.kit-cards .mm-hand.is-crowded .mm-card[data-rarity][data-type][data-uid]:not(.is-hover):not(.is-selected):not(.is-dragging):not(.is-aiming):not(.is-hero) .mm-card__face::before { top: calc(102 * var(--u)); }
+.cb-handhost.kit-cards .mm-hand.is-crowded .mm-card[data-rarity][data-type][data-uid]:not(.is-hover):not(.is-selected):not(.is-dragging):not(.is-aiming):not(.is-hero) .mm-card__face::after { top: calc(105 * var(--u)); }
+.cb-handhost.kit-cards .mm-hand.is-crowded .mm-card[data-rarity][data-type][data-uid]:not(.is-hover):not(.is-selected):not(.is-dragging):not(.is-aiming):not(.is-hero) .mm-card__rules { top: calc(131 * var(--u)); bottom: calc(17 * var(--u)); }
+.cb-handhost.kit-cards .mm-hand.is-crowded .mm-card[data-rarity][data-type][data-uid]:not(.is-fan-last):not(.is-hover):not(.is-selected):not(.is-dragging):not(.is-aiming):not(.is-hero) .mm-card__type { font-size: calc(clamp(10.5, (var(--strip) - 46) / var(--type-em, 6), 16) * var(--u)); }
+.cb-handhost.kit-cards .mm-hand.is-crowded .mm-card[data-rarity][data-type][data-uid].is-fan-last:not(.is-hover):not(.is-selected):not(.is-dragging):not(.is-aiming):not(.is-hero) .mm-card__banner { height: calc(38 * var(--u)); }
+.cb-handhost.kit-cards .mm-hand.is-crowded .mm-card[data-rarity][data-type][data-uid].is-fan-last:not(.is-hover):not(.is-selected):not(.is-dragging):not(.is-aiming):not(.is-hero) .mm-card__rules { top: calc(133 * var(--u)); bottom: calc(20 * var(--u)); }
 /* ── the hand never hides the hit ──────────────────────────────────────────
    The played card is presented at 0.62 of the board height (ui/hand.js TUNE
    .playY) which puts a 226x314 card straight across the creature band; at the
