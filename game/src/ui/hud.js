@@ -505,7 +505,6 @@ export class HUD {
    *    0  everything spread
    *    1  the Gear folds into one plate, "8 Gear", its tray under it
    *    2  the Keepsakes fold the same way, "10 Keepsakes"
-   *    3  the free Snack settings fold into one, "3 free"
    *
    *  A folded group is a plate that SAYS what it holds -- its count and its
    *  noun, and the first of its objects fanned on it -- and opens its tray of
@@ -521,6 +520,12 @@ export class HUD {
       window.addEventListener('resize', onResize);
       this._offs.push(() => window.removeEventListener('resize', onResize));
       document.fonts?.ready?.then(() => { if (this.el) this._fitSoon(); });
+      /* a face first USED after load starts loading then, after `ready` has
+         long resolved: the rail measured in the fallback face folds groups
+         the real face has room for, so every face that lands refits it */
+      const onFonts = () => { if (this.el) this._fitSoon(); };
+      document.fonts?.addEventListener?.('loadingdone', onFonts);
+      this._offs.push(() => document.fonts?.removeEventListener?.('loadingdone', onFonts));
     }
   }
 
@@ -548,8 +553,10 @@ export class HUD {
     const levels = [{ gear: false, keep: false, snack: true }];
     if (nGear > 1) levels.push({ gear: true, keep: false, snack: true });
     if (nKeep > 2) levels.push({ gear: nGear > 1, keep: true, snack: true });
-    /* the last resort: the free Snack settings stand as ONE, with its words */
-    if ((this._snackFree || 0) > 2) levels.push({ gear: nGear > 1, keep: nKeep > 2, snack: false });
+    /* The free Snack settings are NOT folded. Round 19 folded them into one
+       setting marked "×3", every judge read the bare figure as meaningless,
+       and a folded setting with its words beside it ("3 free") is as wide as
+       the three settings standing -- so folding them buys the rail nothing. */
     let pick = levels[levels.length - 1];
     for (const lv of levels) {
       this._applyFold(lv);

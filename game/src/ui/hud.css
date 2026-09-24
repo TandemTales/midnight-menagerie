@@ -228,17 +228,21 @@
   border-radius: 2px;
   transform-origin: left center;
   background:
-    linear-gradient(180deg, rgba(255, 214, 214, .30) 0%, rgba(255, 255, 255, .06) 30%, rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, .42) 100%),
+    linear-gradient(180deg, rgba(255, 214, 214, .26) 0%, rgba(255, 255, 255, .05) 26%, rgba(0, 0, 0, 0) 46%, rgba(0, 0, 0, .46) 100%),
     url("../../assets/ui/kit/grain.webp") 0 0 / 96px 96px,
-    linear-gradient(90deg, color-mix(in oklab, var(--courage-500) 56%, #16030a), color-mix(in oklab, var(--courage-500) 62%, var(--courage-300)));
+    linear-gradient(90deg, color-mix(in oklab, var(--courage-500) 44%, #16030a), color-mix(in oklab, var(--courage-500) 56%, #2a0610));
   background-blend-mode: normal, overlay, normal;
   box-shadow: inset 0 1px 2px rgba(0, 0, 0, .55), inset -2px 0 3px rgba(0, 0, 0, .35);
   transition: transform var(--t-slow) var(--ease-out);
 }
 .mm-hud__barlabel {
-  position: absolute; inset: 0; z-index: 2;
-  display: grid; place-items: center;
-  padding-left: calc(var(--bar-h) * .44);
+  /* the figures' own box, centred on the gauge's run (round 20: the gauge
+     is sunk straight into the rail's channel now, and a label box the size
+     of the whole gauge measured the enamel, not the figures) */
+  position: absolute; z-index: 2;
+  left: calc(50% + var(--bar-h) * .22); top: 50%; translate: -50% -50%;
+  line-height: 1.05; padding: 0 .15em;
+  white-space: nowrap;
   font-family: var(--font-num);
   font-size: max(12.5px, .9em);
   font-weight: 700;
