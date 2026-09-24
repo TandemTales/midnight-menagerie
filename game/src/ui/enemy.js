@@ -109,6 +109,28 @@ const CAST_INTENTS = new Set(['buff', 'defendBuff', 'defendDebuff', 'debuff', 's
    fight waits on a download. `idle` itself is the one `ready` waits for. */
 const ENEMY_WARM = ['attack', 'hurt', 'defeat', 'cast'];
 
+/* THE PAINTINGS THAT FACE THE WRONG WAY. The Kid and the Companion stand at the
+   left of the board, so a creature must face LEFT, or out at the viewer. These
+   five were painted facing RIGHT -- away from who they are fighting -- and are
+   mirrored about their own feet (the rig's origin, where `_raiseStill` stands
+   the image), so the nameplate, the HP bar and every lunge stay where they
+   were. Chosen BY EYE over all 51 enemies' stills and idle frames, 2026-09-23
+   (Josh: "make sure enemy sprites are facing toward the heros"):
+     bedframe-beast      its toothed mouth is the foot of the bed, at the right
+     blanket-hydra       both dinosaur heads look right (the rabbit and the
+                         teddy face out, and read the same either way)
+     night-terror        crawls rightward, its glowing face at the right
+     nightlight-snuffer  looks and walks toward its lamp, at the right
+     slipper-skitter     the toes, where its eyes are, point right
+   A creature that faces the viewer -- most of them -- is left as drawn; so is
+   the carpet runner, which has no face. The clips were checked beside the
+   stills: each faces the way its still does. A new painting must be looked at
+   and added here if it faces right; no measurement can tell a face from a
+   tail. */
+const DRAWN_FACING_RIGHT = new Set([
+  'bedframe-beast', 'blanket-hydra', 'night-terror', 'nightlight-snuffer', 'slipper-skitter',
+]);
+
 const NS = 'http://www.w3.org/2000/svg';
 const TAU = Math.PI * 2;
 
@@ -1737,6 +1759,8 @@ export class EnemyView {
       this.el.dataset.art = 'still';
     }
     this.sprite = new ClipPlayer(id, { enemy: true, opening: 'idle', warm: ['idle'] });
+    // Face the heroes: mirror a painting drawn facing right about its own feet.
+    if (DRAWN_FACING_RIGHT.has(id)) this.$still.setAttribute('transform', 'scale(-1 1)');
     const fallback = () => { if (!this._stillUp && !this._dead) this._showRig(true); };
     /* ASK, DO NOT TIME -- `ready` resolves false only when there is genuinely
        nothing to draw, and true only once the image has decoded. The timer is a
@@ -2789,6 +2813,16 @@ export class PlayerView {
       if (a.nextBlink <= 0) { a.nextBlink = 2.4 + this.rnd() * 4; a.blink = 1; }
       if (a.blink > 0) a.blink -= dt * 7.5;
     }
+    /* A painted Kid and a painted Companion breathe and shift in their OWN idle
+       clips; the rig's breath and bob drawn on top of them read as the two of
+       them floating about the stage. Josh, 2026-09-23: "the 'floating around'
+       motion of the hero and companion can be removed." EnemyView made the same
+       call for a moving painting (`_clipUp`). Each is dropped only for the
+       figure that is painted, so the drawn rig -- the fallback when a sprite has
+       not loaded -- still breathes; and the beats (lean, squash, shove, swing)
+       stay, because those are the fight happening, not idle drift. */
+    if (this._kidSrc) breath = 0;
+    if (this._spriteSrc) bob = 0;
 
     if (this._flash > 0) {
       this._flash -= dt * 5;
