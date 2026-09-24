@@ -204,6 +204,11 @@ export class CombatScene extends Scene {
        at 57% of pixels), so it never pauses the stage — and it says so out loud
        rather than trusting that whatever came before unpaused on its way out. */
     try { ctx.stage?.setPaused?.(false); } catch { /* no stage */ }
+    /* ...and while it is up, a room kind still linking links BEHIND the page
+       instead of freezing it inside a draw, with the stand-in room showing
+       meanwhile (Stage._gateLinks, _syncColdRoom). Before setMood, which is
+       what changes the room's programs. */
+    try { ctx.stage?.setDeferLinks?.(true); } catch { /* no stage */ }
 
     // THE ROOM, not "the region". See ROOM_MOOD at the top of this file.
     ctx.atmosphere?.setMood?.(this.mood || this.region || 'foyer',
@@ -4011,6 +4016,7 @@ export class CombatScene extends Scene {
     this.coach?.destroy();
     this.coach = null;
     this._offFrame?.();
+    try { this.ctx.stage?.setDeferLinks?.(false); } catch { /* no stage */ }
     this.hero?.destroy();
     this.hero = null;
     if (window.__MM_CLIPS?._scene === this) delete window.__MM_CLIPS;

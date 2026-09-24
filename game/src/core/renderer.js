@@ -158,6 +158,7 @@ export class Stage {
     this._tmp      = new THREE.Vector3();
     this._impactT  = -1;
     this.quality   = 1;
+    this.deferLinks = false;    // see _gateLinks
     this.stats     = { tier: this.tier, renderScale: 1, dpr: 1, frameMs: null };
 
     this.resize();
@@ -548,6 +549,12 @@ export class Stage {
   roomPending() { return !!(this._warming || this._linking); }
 
   /**
+   * Let the scene that is up keep a new program's link off the main thread:
+   * see _gateLinks. Combat turns it on as it enters and off as it leaves.
+   */
+  setDeferLinks(on) { this.deferLinks = !!on; return this; }
+
+  /**
    * THE ROOM NEVER LINKS ON THE MAIN THREAD. Drawing a material whose program
    * is new makes three link it inside the draw, synchronously: a room kind whose
    * variant was not linked yet froze the page for its whole link (0.6-25 s on
@@ -562,6 +569,14 @@ export class Stage {
    * linked: a material that is not changing program is skipped at the compare.
    * Without the extension isReady() is always true, so this never skips a draw
    * and the link happens in the draw as it always did.
+   *
+   * ONLY WHILE A SCENE ASKS FOR IT (`deferLinks`, set by combat -- the one
+   * scene whose room is on screen, and the one that has a room to show in its
+   * place). Everywhere else a new program still links in the draw, exactly as
+   * before: the room showcase and every capture tool built on it
+   * (variant_sheet.py, room_batch.py) set a room and photograph it a couple of
+   * seconds later, which is only right because that draw blocks until the room
+   * exists. With the gate on there, they would photograph the room before it.
    *
    * Returns true when this frame must not draw.
    */
@@ -738,7 +753,8 @@ export class Stage {
        synchronously inside `setProgram`, which is the entire boot stall it was meant
        to paper over. Phase B puts the picture up as soon as it is genuinely ready. */
     if (this._warming) return;
-    if (this._gateLinks()) return;
+    if (this.deferLinks) { if (this._gateLinks()) return; }
+    else this._linking = false;
     this.composer.render(dt);
   }
 
