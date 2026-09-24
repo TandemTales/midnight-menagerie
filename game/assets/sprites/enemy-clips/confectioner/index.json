@@ -2,14 +2,14 @@
  "clips": {
   "attack": {
    "file": "attack.webp",
-   "frames": 22,
+   "frames": 48,
    "cols": 8,
-   "rows": 3,
+   "rows": 6,
    "fw": 400,
-   "fh": 270,
+   "fh": 272,
    "anchor": [
-    207.14,
-    252.6
+    202.9,
+    252.82
    ],
    "source": "SS_confectioner_attack.png",
    "sourceFrames": 81,
@@ -27,28 +27,28 @@
    "dehalo": false,
    "warm": 80.0,
    "dewhite": false,
-   "dip": 0.585,
+   "dip": 0.551,
    "untail": false,
    "deblack": false,
    "black": 0.02,
    "endIoU": 0.978,
-   "scale": 0.6349,
-   "unit": 224.13,
+   "scale": 0.6211,
+   "unit": 219.25,
    "loop": false,
-   "fps": 16.3,
+   "fps": 35.56,
    "hold": false,
    "sha1": "02cfda7a8431d63e"
   },
   "defeat": {
    "file": "defeat.webp",
-   "frames": 22,
-   "cols": 8,
-   "rows": 3,
+   "frames": 33,
+   "cols": 9,
+   "rows": 4,
    "fw": 400,
    "fh": 331,
    "anchor": [
-    202.65,
-    311.78
+    202.67,
+    311.81
    ],
    "source": "SS_confectioner_defeat.png",
    "sourceFrames": 81,
@@ -75,20 +75,20 @@
    "scale": 0.8529,
    "unit": 301.07,
    "loop": false,
-   "fps": 26.67,
+   "fps": 40.0,
    "hold": true,
    "sha1": "0bf2fffdb1567f36"
   },
   "hurt": {
    "file": "hurt.webp",
-   "frames": 22,
+   "frames": 48,
    "cols": 8,
-   "rows": 3,
+   "rows": 6,
    "fw": 400,
-   "fh": 360,
+   "fh": 363,
    "anchor": [
-    202.83,
-    354.14
+    203.75,
+    355.9
    ],
    "source": "SS_confectioner_hurt.png",
    "sourceFrames": 81,
@@ -106,28 +106,28 @@
    "dehalo": false,
    "warm": 82.0,
    "dewhite": false,
-   "dip": 0.71,
+   "dip": 0.68,
    "untail": false,
    "deblack": false,
    "black": 0.018,
-   "endIoU": 0.986,
-   "scale": 0.939,
-   "unit": 331.46,
+   "endIoU": 0.987,
+   "scale": 0.9346,
+   "unit": 329.91,
    "loop": false,
-   "fps": 16.3,
+   "fps": 35.56,
    "hold": false,
    "sha1": "8e48ccf2f066515d"
   },
   "idle": {
    "file": "idle.webp",
-   "frames": 22,
+   "frames": 48,
    "cols": 8,
-   "rows": 3,
+   "rows": 6,
    "fw": 277,
    "fh": 363,
    "anchor": [
     139.0,
-    357.89
+    357.77
    ],
    "source": "SS_confectioner_idle.png",
    "sourceFrames": 81,
@@ -145,7 +145,7 @@
    "dehalo": false,
    "warm": 82.0,
    "dewhite": false,
-   "dip": 0.806,
+   "dip": 0.799,
    "untail": false,
    "deblack": false,
    "black": 0.027,
@@ -153,7 +153,7 @@
    "scale": 1.0,
    "unit": 353.0,
    "loop": true,
-   "fps": 5.43,
+   "fps": 11.85,
    "hold": false,
    "sha1": "9394666943c31f42"
   }

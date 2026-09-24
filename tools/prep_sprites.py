@@ -220,7 +220,17 @@ ATLAS_COLS = 9
 # time: the source's own motion is lumpy (its busiest step carries 2.0-5.3x the
 # mean) and that lumpiness IS the animation's timing, so respacing the frames
 # evenly in motion respaces the beat and ruins it.
-TARGET_FRAMES = 22
+#
+# 48, NOT 22 (Josh, 2026-09-23: "the animations are a bit choppy. lets extend
+# them to 48 frames each using the same method used before"). 22 was chosen for
+# the atlas budget, and it played a 4.05 s idle at 5.4 fps -- a still every 185
+# ms, which reads as choppy however well the frames are chosen. 48 plays it at
+# 11.9 fps. The method does not change: even spans, the medoid of each, both
+# ends pinned. The cost: 48 frames pack 8x6 where 22 packed 8x3 (`atlas_grid`),
+# the same width at twice the height, so the largest atlas goes 3120x1200 ->
+# 3120x2400, ~30 MB decoded -- still under the 52 MB an 81-frame atlas decoded
+# to when every sheet was built whole.
+TARGET_FRAMES = 48
 
 # AND THE BEAT STILL TAKES AS LONG AS IT DID. `fps` is what the runtime divides
 # the frame count by, so keeping 22 of 81 frames at the authored rate would play

@@ -2,14 +2,14 @@
  "clips": {
   "attack": {
    "file": "attack.webp",
-   "frames": 22,
+   "frames": 48,
    "cols": 8,
-   "rows": 3,
-   "fw": 377,
-   "fh": 248,
+   "rows": 6,
+   "fw": 378,
+   "fh": 247,
    "anchor": [
-    192.75,
-    239.55
+    192.71,
+    238.74
    ],
    "source": "SS_blanketCreeper_attack.png",
    "sourceFrames": 81,
@@ -34,19 +34,19 @@
    "scale": 1.0,
    "unit": 226.0,
    "loop": false,
-   "fps": 16.3,
+   "fps": 35.56,
    "hold": false,
    "sha1": "8d2f9cdfc4082b6a"
   },
   "defeat": {
    "file": "defeat.webp",
-   "frames": 22,
+   "frames": 29,
    "cols": 8,
-   "rows": 3,
+   "rows": 4,
    "fw": 368,
    "fh": 230,
    "anchor": [
-    184.04,
+    184.0,
     227.08
    ],
    "source": "SS_blanketCreeper_defeat.png",
@@ -73,20 +73,20 @@
    "scale": 1.0,
    "unit": 226.0,
    "loop": false,
-   "fps": 30.34,
+   "fps": 40.0,
    "hold": true,
    "sha1": "67b94e3fa8468703"
   },
   "hurt": {
    "file": "hurt.webp",
-   "frames": 22,
+   "frames": 48,
    "cols": 8,
-   "rows": 3,
+   "rows": 6,
    "fw": 359,
-   "fh": 232,
+   "fh": 233,
    "anchor": [
     180.0,
-    228.96
+    229.96
    ],
    "source": "SS_blanketCreeper_hurt.png",
    "sourceFrames": 81,
@@ -104,27 +104,27 @@
    "dehalo": false,
    "warm": 55.0,
    "dewhite": false,
-   "dip": 0.451,
+   "dip": 0.437,
    "untail": false,
    "deblack": false,
    "endIoU": 0.995,
    "scale": 1.0,
    "unit": 226.0,
    "loop": false,
-   "fps": 16.3,
+   "fps": 35.56,
    "hold": false,
    "sha1": "56760f5164707343"
   },
   "idle": {
    "file": "idle.webp",
-   "frames": 22,
+   "frames": 48,
    "cols": 8,
-   "rows": 3,
+   "rows": 6,
    "fw": 361,
    "fh": 237,
    "anchor": [
     181.5,
-    233.7
+    233.66
    ],
    "source": "SS_blanketCreeper_idle.png",
    "sourceFrames": 81,
@@ -142,14 +142,14 @@
    "dehalo": false,
    "warm": 53.0,
    "dewhite": false,
-   "dip": 0.486,
+   "dip": 0.481,
    "untail": false,
    "deblack": false,
    "endIoU": 0.995,
    "scale": 1.0,
    "unit": 226.0,
    "loop": true,
-   "fps": 5.43,
+   "fps": 11.85,
    "hold": false,
    "sha1": "0d98db14ef715b4b"
   }

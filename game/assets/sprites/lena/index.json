@@ -2,14 +2,14 @@
  "clips": {
   "attack": {
    "file": "attack.webp",
-   "frames": 22,
+   "frames": 48,
    "cols": 8,
-   "rows": 3,
+   "rows": 6,
    "fw": 309,
    "fh": 276,
    "anchor": [
-    125.4,
-    271.58
+    126.63,
+    271.48
    ],
    "source": "SS_lena_attack.png",
    "sourceFrames": 81,
@@ -27,12 +27,12 @@
    "dehalo": false,
    "warm": 95.0,
    "dewhite": false,
-   "dip": 0.501,
+   "dip": 0.467,
    "untail": false,
    "deblack": false,
-   "endIoU": 0.987,
+   "endIoU": 0.989,
    "loop": false,
-   "fps": 16.3,
+   "fps": 35.56,
    "hold": false
   },
   "defeat": {
@@ -73,13 +73,13 @@
   },
   "hurt": {
    "file": "hurt.webp",
-   "frames": 22,
+   "frames": 48,
    "cols": 8,
-   "rows": 3,
+   "rows": 6,
    "fw": 187,
    "fh": 276,
    "anchor": [
-    96.53,
+    96.37,
     273.8
    ],
    "source": "SS_lena_hurt.png",
@@ -98,19 +98,19 @@
    "dehalo": false,
    "warm": 118.0,
    "dewhite": false,
-   "dip": 0.629,
+   "dip": 0.585,
    "untail": false,
    "deblack": false,
    "endIoU": 0.976,
    "loop": false,
-   "fps": 17.6,
+   "fps": 38.4,
    "hold": false
   },
   "idle": {
    "file": "idle.webp",
-   "frames": 22,
+   "frames": 48,
    "cols": 8,
-   "rows": 3,
+   "rows": 6,
    "fw": 162,
    "fh": 276,
    "anchor": [
@@ -138,7 +138,7 @@
    "deblack": false,
    "endIoU": 0.991,
    "loop": true,
-   "fps": 5.43,
+   "fps": 11.85,
    "hold": false
   }
  },

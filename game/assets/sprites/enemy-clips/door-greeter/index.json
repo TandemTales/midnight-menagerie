@@ -2,14 +2,14 @@
  "clips": {
   "attack": {
    "file": "attack.webp",
-   "frames": 22,
+   "frames": 48,
    "cols": 8,
-   "rows": 3,
+   "rows": 6,
    "fw": 205,
    "fh": 400,
    "anchor": [
-    94.02,
-    349.17
+    95.55,
+    344.65
    ],
    "source": "SS_doorGreeter_attack.png",
    "sourceFrames": 81,
@@ -27,14 +27,14 @@
    "dehalo": false,
    "warm": 142.0,
    "dewhite": false,
-   "dip": 0.156,
+   "dip": 0.117,
    "untail": false,
    "deblack": false,
    "endIoU": 0.982,
    "scale": 0.8214,
    "unit": 303.9,
    "loop": false,
-   "fps": 16.3,
+   "fps": 35.56,
    "hold": false,
    "sha1": "e175ae6aeeeece6f"
   },
@@ -79,14 +79,14 @@
   },
   "hurt": {
    "file": "hurt.webp",
-   "frames": 22,
+   "frames": 48,
    "cols": 8,
-   "rows": 3,
-   "fw": 272,
+   "rows": 6,
+   "fw": 276,
    "fh": 400,
    "anchor": [
-    145.61,
-    378.37
+    146.92,
+    380.04
    ],
    "source": "SS_doorGreeter_hurt.png",
    "sourceFrames": 81,
@@ -104,27 +104,27 @@
    "dehalo": false,
    "warm": 132.0,
    "dewhite": false,
-   "dip": 0.365,
+   "dip": 0.334,
    "untail": false,
    "deblack": false,
    "endIoU": 0.997,
-   "scale": 0.9901,
-   "unit": 366.34,
+   "scale": 0.9926,
+   "unit": 367.25,
    "loop": false,
-   "fps": 16.3,
+   "fps": 35.56,
    "hold": false,
    "sha1": "afdb1665a402b287"
   },
   "idle": {
    "file": "idle.webp",
-   "frames": 22,
+   "frames": 48,
    "cols": 8,
-   "rows": 3,
-   "fw": 227,
+   "rows": 6,
+   "fw": 228,
    "fh": 400,
    "anchor": [
-    102.62,
-    379.15
+    103.44,
+    379.69
    ],
    "source": "SS_doorGreeter_idle.png",
    "sourceFrames": 81,
@@ -142,14 +142,14 @@
    "dehalo": false,
    "warm": 139.0,
    "dewhite": false,
-   "dip": 0.459,
+   "dip": 0.327,
    "untail": false,
    "deblack": false,
    "endIoU": 0.996,
    "scale": 1.0,
    "unit": 370.0,
    "loop": true,
-   "fps": 5.43,
+   "fps": 11.85,
    "hold": false,
    "sha1": "144a89ac76f4d458"
   }

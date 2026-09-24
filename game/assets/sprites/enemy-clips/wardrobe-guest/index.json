@@ -2,14 +2,14 @@
  "clips": {
   "attack": {
    "file": "attack.webp",
-   "frames": 22,
+   "frames": 48,
    "cols": 8,
-   "rows": 3,
+   "rows": 6,
    "fw": 255,
-   "fh": 353,
+   "fh": 354,
    "anchor": [
-    111.86,
-    350.0
+    111.55,
+    351.0
    ],
    "source": "SS_wardrobeGuest_attack.png",
    "sourceFrames": 81,
@@ -27,14 +27,14 @@
    "dehalo": false,
    "warm": 80.0,
    "dewhite": false,
-   "dip": 0.54,
+   "dip": 0.53,
    "untail": false,
    "deblack": false,
    "endIoU": 0.996,
    "scale": 1.0,
    "unit": 346.0,
    "loop": false,
-   "fps": 16.3,
+   "fps": 35.56,
    "hold": false,
    "sha1": "cd937f1b1c64d903"
   },
@@ -79,9 +79,9 @@
   },
   "hurt": {
    "file": "hurt.webp",
-   "frames": 22,
+   "frames": 48,
    "cols": 8,
-   "rows": 3,
+   "rows": 6,
    "fw": 220,
    "fh": 353,
    "anchor": [
@@ -111,15 +111,15 @@
    "scale": 1.0,
    "unit": 346.0,
    "loop": false,
-   "fps": 16.3,
+   "fps": 35.56,
    "hold": false,
    "sha1": "7c31e9551a56b3c3"
   },
   "idle": {
    "file": "idle.webp",
-   "frames": 22,
+   "frames": 48,
    "cols": 8,
-   "rows": 3,
+   "rows": 6,
    "fw": 218,
    "fh": 352,
    "anchor": [
@@ -142,14 +142,14 @@
    "dehalo": false,
    "warm": 90.0,
    "dewhite": false,
-   "dip": 0.513,
+   "dip": 0.507,
    "untail": false,
    "deblack": false,
    "endIoU": 0.997,
    "scale": 1.0,
    "unit": 346.0,
    "loop": true,
-   "fps": 5.43,
+   "fps": 11.85,
    "hold": false,
    "sha1": "149d7fd8cd680e81"
   }

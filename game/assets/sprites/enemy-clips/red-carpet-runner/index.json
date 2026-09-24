@@ -2,14 +2,14 @@
  "clips": {
   "attack": {
    "file": "attack.webp",
-   "frames": 22,
+   "frames": 48,
    "cols": 8,
-   "rows": 3,
-   "fw": 298,
-   "fh": 337,
+   "rows": 6,
+   "fw": 305,
+   "fh": 342,
    "anchor": [
-    140.42,
-    299.51
+    146.86,
+    298.26
    ],
    "source": "SS_rug_attack.png",
    "sourceFrames": 81,
@@ -27,14 +27,14 @@
    "dehalo": false,
    "warm": 156.0,
    "dewhite": false,
-   "dip": 0.267,
+   "dip": 0.243,
    "untail": false,
    "deblack": false,
    "endIoU": 0.993,
    "scale": 0.805,
    "unit": 256.0,
    "loop": false,
-   "fps": 16.3,
+   "fps": 35.56,
    "hold": false,
    "sha1": "e05911a734ec5979"
   },
@@ -79,14 +79,14 @@
   },
   "hurt": {
    "file": "hurt.webp",
-   "frames": 22,
+   "frames": 48,
    "cols": 8,
-   "rows": 3,
-   "fw": 379,
-   "fh": 260,
+   "rows": 6,
+   "fw": 382,
+   "fh": 259,
    "anchor": [
-    153.85,
-    255.32
+    152.92,
+    255.26
    ],
    "source": "SS_rug_hurt.png",
    "sourceFrames": 81,
@@ -104,27 +104,27 @@
    "dehalo": false,
    "warm": 149.0,
    "dewhite": false,
-   "dip": 0.722,
+   "dip": 0.686,
    "untail": false,
    "deblack": false,
-   "endIoU": 0.994,
+   "endIoU": 0.993,
    "scale": 0.805,
    "unit": 256.0,
    "loop": false,
-   "fps": 16.3,
+   "fps": 35.56,
    "hold": false,
    "sha1": "53b570df86bf2624"
   },
   "idle": {
    "file": "idle.webp",
-   "frames": 22,
+   "frames": 48,
    "cols": 8,
-   "rows": 3,
-   "fw": 312,
-   "fh": 295,
+   "rows": 6,
+   "fw": 313,
+   "fh": 297,
    "anchor": [
-    157.66,
-    271.12
+    157.34,
+    269.75
    ],
    "source": "SS_rug_idle.png",
    "sourceFrames": 81,
@@ -142,14 +142,14 @@
    "dehalo": false,
    "warm": 143.0,
    "dewhite": false,
-   "dip": 0.527,
+   "dip": 0.57,
    "untail": false,
    "deblack": false,
    "endIoU": 0.978,
    "scale": 0.805,
    "unit": 256.0,
    "loop": true,
-   "fps": 5.43,
+   "fps": 11.85,
    "hold": false,
    "sha1": "0b41acbefa6f8eb3"
   }

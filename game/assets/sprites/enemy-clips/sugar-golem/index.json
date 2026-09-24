@@ -2,14 +2,14 @@
  "clips": {
   "attack": {
    "file": "attack.webp",
-   "frames": 22,
+   "frames": 48,
    "cols": 8,
-   "rows": 3,
+   "rows": 6,
    "fw": 400,
-   "fh": 289,
+   "fh": 265,
    "anchor": [
-    196.08,
-    281.71
+    191.84,
+    246.94
    ],
    "source": "SS_sugarGolem_attack.png",
    "sourceFrames": 81,
@@ -27,27 +27,27 @@
    "dehalo": false,
    "warm": 70.0,
    "dewhite": false,
-   "dip": 0.496,
+   "dip": 0.448,
    "untail": false,
    "deblack": false,
    "endIoU": 0.993,
-   "scale": 0.7782,
-   "unit": 220.23,
+   "scale": 0.6803,
+   "unit": 192.52,
    "loop": false,
-   "fps": 16.3,
+   "fps": 35.56,
    "hold": false,
    "sha1": "f5e7570e1720293c"
   },
   "defeat": {
    "file": "defeat.webp",
-   "frames": 22,
+   "frames": 29,
    "cols": 8,
-   "rows": 3,
+   "rows": 4,
    "fw": 400,
    "fh": 281,
    "anchor": [
-    200.17,
-    259.99
+    200.22,
+    260.34
    ],
    "source": "SS_sugarGolem_defeat.png",
    "sourceFrames": 81,
@@ -73,20 +73,20 @@
    "scale": 0.8097,
    "unit": 229.15,
    "loop": false,
-   "fps": 30.34,
+   "fps": 40.0,
    "hold": true,
    "sha1": "37d44115115f7cd2"
   },
   "hurt": {
    "file": "hurt.webp",
-   "frames": 22,
+   "frames": 48,
    "cols": 8,
-   "rows": 3,
+   "rows": 6,
    "fw": 400,
-   "fh": 285,
+   "fh": 286,
    "anchor": [
-    175.54,
-    278.71
+    175.48,
+    279.57
    ],
    "source": "SS_sugarGolem_hurt.png",
    "sourceFrames": 81,
@@ -104,26 +104,26 @@
    "dehalo": false,
    "warm": 82.0,
    "dewhite": false,
-   "dip": 0.391,
+   "dip": 0.392,
    "untail": false,
    "deblack": false,
    "endIoU": 0.994,
    "scale": 0.8602,
    "unit": 243.44,
    "loop": false,
-   "fps": 16.3,
+   "fps": 35.56,
    "hold": false,
    "sha1": "b63212cb8fc1ae26"
   },
   "idle": {
    "file": "idle.webp",
-   "frames": 22,
+   "frames": 48,
    "cols": 8,
-   "rows": 3,
+   "rows": 6,
    "fw": 380,
    "fh": 328,
    "anchor": [
-    190.75,
+    190.71,
     313.3
    ],
    "source": "SS_sugarGolem_idle.png",
@@ -142,14 +142,14 @@
    "dehalo": false,
    "warm": 82.0,
    "dewhite": false,
-   "dip": 0.636,
+   "dip": 0.58,
    "untail": false,
    "deblack": false,
    "endIoU": 0.994,
    "scale": 1.0,
    "unit": 283.0,
    "loop": true,
-   "fps": 5.43,
+   "fps": 11.85,
    "hold": false,
    "sha1": "e2c6a4f7b1f3b6a0"
   }

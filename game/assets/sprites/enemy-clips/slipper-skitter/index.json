@@ -2,14 +2,14 @@
  "clips": {
   "attack": {
    "file": "attack.webp",
-   "frames": 22,
+   "frames": 48,
    "cols": 8,
-   "rows": 3,
+   "rows": 6,
    "fw": 368,
-   "fh": 272,
+   "fh": 274,
    "anchor": [
-    176.1,
-    267.58
+    176.65,
+    268.5
    ],
    "source": "SS_slipperSkitter_attack.png",
    "sourceFrames": 81,
@@ -27,14 +27,14 @@
    "dehalo": false,
    "warm": 63.0,
    "dewhite": false,
-   "dip": 0.494,
+   "dip": 0.475,
    "untail": false,
    "deblack": false,
    "endIoU": 0.992,
    "scale": 1.0,
    "unit": 201.0,
    "loop": false,
-   "fps": 16.3,
+   "fps": 35.56,
    "hold": false,
    "sha1": "c21dffe2a7bda4cf"
   },
@@ -79,11 +79,11 @@
   },
   "hurt": {
    "file": "hurt.webp",
-   "frames": 22,
+   "frames": 48,
    "cols": 8,
-   "rows": 3,
+   "rows": 6,
    "fw": 378,
-   "fh": 313,
+   "fh": 314,
    "anchor": [
     173.5,
     308.0
@@ -104,27 +104,27 @@
    "dehalo": false,
    "warm": 61.0,
    "dewhite": false,
-   "dip": 0.385,
+   "dip": 0.383,
    "untail": false,
    "deblack": false,
    "endIoU": 0.994,
    "scale": 1.0,
    "unit": 201.0,
    "loop": false,
-   "fps": 16.3,
+   "fps": 35.56,
    "hold": false,
    "sha1": "e59203a89eee7755"
   },
   "idle": {
    "file": "idle.webp",
-   "frames": 22,
+   "frames": 48,
    "cols": 8,
-   "rows": 3,
+   "rows": 6,
    "fw": 349,
-   "fh": 212,
+   "fh": 213,
    "anchor": [
-    172.54,
-    203.29
+    172.64,
+    202.82
    ],
    "source": "SS_slipperSkitter_idle.png",
    "sourceFrames": 81,
@@ -142,14 +142,14 @@
    "dehalo": false,
    "warm": 59.0,
    "dewhite": false,
-   "dip": 0.633,
+   "dip": 0.625,
    "untail": false,
    "deblack": false,
    "endIoU": 0.993,
    "scale": 1.0,
    "unit": 201.0,
    "loop": true,
-   "fps": 5.43,
+   "fps": 11.85,
    "hold": false,
    "sha1": "6eb630459d1546e7"
   }

@@ -2,14 +2,14 @@
  "clips": {
   "attack": {
    "file": "attack.webp",
-   "frames": 22,
+   "frames": 48,
    "cols": 8,
-   "rows": 3,
+   "rows": 6,
    "fw": 400,
-   "fh": 225,
+   "fh": 231,
    "anchor": [
-    158.6,
-    217.35
+    158.63,
+    223.66
    ],
    "source": "SS_blanketHydra_attack.png",
    "sourceFrames": 81,
@@ -27,27 +27,27 @@
    "dehalo": false,
    "warm": 47.0,
    "dewhite": true,
-   "dip": 0.47,
+   "dip": 0.35,
    "untail": false,
    "deblack": false,
-   "endIoU": 0.992,
+   "endIoU": 0.991,
    "scale": 0.7968,
    "unit": 186.45,
    "loop": false,
-   "fps": 16.3,
+   "fps": 35.56,
    "hold": false,
    "sha1": "763b33121d2d1486"
   },
   "defeat": {
    "file": "defeat.webp",
-   "frames": 22,
-   "cols": 8,
+   "frames": 25,
+   "cols": 9,
    "rows": 3,
    "fw": 359,
    "fh": 244,
    "anchor": [
     180.0,
-    240.19
+    240.22
    ],
    "source": "SS_blanketHydra_defeat.png",
    "sourceFrames": 81,
@@ -73,20 +73,20 @@
    "scale": 1.0,
    "unit": 234.0,
    "loop": false,
-   "fps": 35.2,
+   "fps": 40.0,
    "hold": true,
    "sha1": "558c04c97ca2c6c5"
   },
   "hurt": {
    "file": "hurt.webp",
-   "frames": 22,
+   "frames": 48,
    "cols": 8,
-   "rows": 3,
-   "fw": 361,
+   "rows": 6,
+   "fw": 363,
    "fh": 268,
    "anchor": [
-    180.0,
-    261.0
+    182.0,
+    261.08
    ],
    "source": "SS_blanketHydra_hurt.png",
    "sourceFrames": 81,
@@ -104,22 +104,22 @@
    "dehalo": false,
    "warm": 50.0,
    "dewhite": false,
-   "dip": 0.483,
+   "dip": 0.477,
    "untail": false,
    "deblack": false,
    "endIoU": 0.99,
    "scale": 1.0,
    "unit": 234.0,
    "loop": false,
-   "fps": 16.3,
+   "fps": 35.56,
    "hold": false,
    "sha1": "a46a597d56c54041"
   },
   "idle": {
    "file": "idle.webp",
-   "frames": 22,
+   "frames": 48,
    "cols": 8,
-   "rows": 3,
+   "rows": 6,
    "fw": 359,
    "fh": 242,
    "anchor": [
@@ -142,14 +142,14 @@
    "dehalo": false,
    "warm": 51.0,
    "dewhite": false,
-   "dip": 0.528,
+   "dip": 0.521,
    "untail": false,
    "deblack": false,
    "endIoU": 0.991,
    "scale": 1.0,
    "unit": 234.0,
    "loop": true,
-   "fps": 5.43,
+   "fps": 11.85,
    "hold": false,
    "sha1": "34dd461b2f8c5d67"
   }

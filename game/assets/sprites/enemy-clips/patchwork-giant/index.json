@@ -2,14 +2,14 @@
  "clips": {
   "attack": {
    "file": "attack.webp",
-   "frames": 22,
+   "frames": 48,
    "cols": 8,
-   "rows": 3,
+   "rows": 6,
    "fw": 400,
-   "fh": 321,
+   "fh": 297,
    "anchor": [
-    201.36,
-    317.48
+    198.4,
+    292.97
    ],
    "source": "SS_patchworkGiant_attack.png",
    "sourceFrames": 81,
@@ -27,14 +27,14 @@
    "dehalo": false,
    "warm": 63.0,
    "dewhite": true,
-   "dip": 0.459,
+   "dip": 0.486,
    "untail": false,
    "deblack": false,
    "endIoU": 0.993,
-   "scale": 0.9828,
-   "unit": 319.41,
+   "scale": 0.907,
+   "unit": 294.78,
    "loop": false,
-   "fps": 16.3,
+   "fps": 35.56,
    "hold": false,
    "sha1": "a8d2670e44f6e8f4"
   },
@@ -79,14 +79,14 @@
   },
   "hurt": {
    "file": "hurt.webp",
-   "frames": 22,
+   "frames": 48,
    "cols": 8,
-   "rows": 3,
+   "rows": 6,
    "fw": 400,
-   "fh": 317,
+   "fh": 318,
    "anchor": [
-    211.35,
-    312.07
+    210.44,
+    312.24
    ],
    "source": "SS_patchworkGiant_hurt.png",
    "sourceFrames": 81,
@@ -104,27 +104,27 @@
    "dehalo": false,
    "warm": 69.0,
    "dewhite": false,
-   "dip": 0.362,
+   "dip": 0.347,
    "untail": false,
    "deblack": false,
    "endIoU": 0.991,
-   "scale": 0.9569,
-   "unit": 311.0,
+   "scale": 0.9547,
+   "unit": 310.26,
    "loop": false,
-   "fps": 16.3,
+   "fps": 35.56,
    "hold": false,
    "sha1": "65e1a6629e353e56"
   },
   "idle": {
    "file": "idle.webp",
-   "frames": 22,
+   "frames": 48,
    "cols": 8,
-   "rows": 3,
-   "fw": 341,
+   "rows": 6,
+   "fw": 343,
    "fh": 338,
    "anchor": [
-    172.68,
-    333.61
+    173.78,
+    333.46
    ],
    "source": "SS_patchworkGiant_idle.png",
    "sourceFrames": 81,
@@ -149,7 +149,7 @@
    "scale": 1.0,
    "unit": 325.0,
    "loop": true,
-   "fps": 5.43,
+   "fps": 11.85,
    "hold": false,
    "sha1": "c3f803e3ba4e626d"
   }

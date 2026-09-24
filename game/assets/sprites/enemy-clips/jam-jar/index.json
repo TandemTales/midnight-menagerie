@@ -2,14 +2,14 @@
  "clips": {
   "attack": {
    "file": "attack.webp",
-   "frames": 22,
+   "frames": 48,
    "cols": 8,
-   "rows": 3,
+   "rows": 6,
    "fw": 307,
-   "fh": 263,
+   "fh": 265,
    "anchor": [
     149.16,
-    259.74
+    260.08
    ],
    "source": "SS_jamJar_attack.png",
    "sourceFrames": 81,
@@ -27,14 +27,14 @@
    "dehalo": false,
    "warm": 103.0,
    "dewhite": false,
-   "dip": 0.57,
+   "dip": 0.555,
    "untail": false,
    "deblack": false,
    "endIoU": 0.981,
    "scale": 0.7464,
    "unit": 256.0,
    "loop": false,
-   "fps": 16.3,
+   "fps": 35.56,
    "hold": false,
    "sha1": "bbe615df2c25941d"
   },
@@ -79,13 +79,13 @@
   },
   "hurt": {
    "file": "hurt.webp",
-   "frames": 22,
+   "frames": 48,
    "cols": 8,
-   "rows": 3,
-   "fw": 268,
+   "rows": 6,
+   "fw": 269,
    "fh": 262,
    "anchor": [
-    134.72,
+    134.96,
     259.73
    ],
    "source": "SS_jamJar_hurt.png",
@@ -104,27 +104,27 @@
    "dehalo": false,
    "warm": 79.0,
    "dewhite": false,
-   "dip": 0.594,
+   "dip": 0.591,
    "untail": false,
    "deblack": false,
    "endIoU": 0.99,
    "scale": 0.7464,
    "unit": 256.0,
    "loop": false,
-   "fps": 16.3,
+   "fps": 35.56,
    "hold": false,
    "sha1": "f23d72d654461385"
   },
   "idle": {
    "file": "idle.webp",
-   "frames": 22,
+   "frames": 48,
    "cols": 8,
-   "rows": 3,
-   "fw": 272,
+   "rows": 6,
+   "fw": 273,
    "fh": 267,
    "anchor": [
-    132.03,
-    263.49
+    132.39,
+    263.46
    ],
    "source": "SS_jamJar_idle.png",
    "sourceFrames": 81,
@@ -142,14 +142,14 @@
    "dehalo": false,
    "warm": 78.0,
    "dewhite": false,
-   "dip": 0.74,
+   "dip": 0.669,
    "untail": false,
    "deblack": false,
    "endIoU": 0.99,
    "scale": 0.7464,
    "unit": 256.0,
    "loop": true,
-   "fps": 5.43,
+   "fps": 11.85,
    "hold": false,
    "sha1": "2dde45146fc6b687"
   }

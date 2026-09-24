@@ -2,14 +2,14 @@
  "clips": {
   "affection": {
    "file": "affection.webp",
-   "frames": 22,
+   "frames": 48,
    "cols": 8,
-   "rows": 3,
+   "rows": 6,
    "fw": 194,
    "fh": 136,
    "anchor": [
-    95.28,
-    132.99
+    95.67,
+    132.59
    ],
    "source": "SS_wink_affection.png",
    "sourceFrames": 81,
@@ -27,24 +27,24 @@
    "dehalo": false,
    "warm": -1.0,
    "dewhite": false,
-   "dip": 0.596,
+   "dip": 0.571,
    "untail": false,
    "deblack": false,
    "endIoU": 0.994,
    "loop": false,
-   "fps": 8.15,
+   "fps": 17.78,
    "hold": false
   },
   "attack": {
    "file": "attack.webp",
-   "frames": 22,
+   "frames": 48,
    "cols": 8,
-   "rows": 3,
+   "rows": 6,
    "fw": 190,
    "fh": 188,
    "anchor": [
-    92.31,
-    181.25
+    92.88,
+    183.14
    ],
    "source": "SS_wink_attack.png",
    "sourceFrames": 80,
@@ -62,23 +62,23 @@
    "dehalo": false,
    "warm": 13.0,
    "dewhite": false,
-   "dip": 0.386,
+   "dip": 0.253,
    "untail": false,
    "deblack": false,
    "endIoU": 0.994,
    "loop": false,
-   "fps": 16.5,
+   "fps": 36.0,
    "hold": false
   },
   "celebrate": {
    "file": "celebrate.webp",
-   "frames": 22,
+   "frames": 48,
    "cols": 8,
-   "rows": 3,
-   "fw": 205,
-   "fh": 153,
+   "rows": 6,
+   "fw": 207,
+   "fh": 154,
    "anchor": [
-    93.49,
+    93.53,
     149.31
    ],
    "source": "SS_wink_celebrate.png",
@@ -97,12 +97,12 @@
    "dehalo": false,
    "warm": 24.0,
    "dewhite": false,
-   "dip": 0.624,
+   "dip": 0.596,
    "untail": false,
    "deblack": false,
-   "endIoU": 0.994,
+   "endIoU": 0.995,
    "loop": false,
-   "fps": 8.15,
+   "fps": 17.78,
    "hold": false
   },
   "defeat": {
@@ -143,14 +143,14 @@
   },
   "focus": {
    "file": "focus.webp",
-   "frames": 22,
+   "frames": 48,
    "cols": 8,
-   "rows": 3,
+   "rows": 6,
    "fw": 172,
-   "fh": 165,
+   "fh": 166,
    "anchor": [
-    83.72,
-    159.04
+    84.2,
+    159.58
    ],
    "source": "SS_wink_focus.png",
    "sourceFrames": 81,
@@ -168,24 +168,24 @@
    "dehalo": false,
    "warm": 25.0,
    "dewhite": false,
-   "dip": 0.645,
+   "dip": 0.603,
    "untail": false,
    "deblack": false,
-   "endIoU": 0.992,
+   "endIoU": 0.993,
    "loop": false,
-   "fps": 8.15,
+   "fps": 17.78,
    "hold": false
   },
   "hurt": {
    "file": "hurt.webp",
-   "frames": 22,
+   "frames": 48,
    "cols": 8,
-   "rows": 3,
+   "rows": 6,
    "fw": 204,
-   "fh": 170,
+   "fh": 171,
    "anchor": [
-    105.54,
-    167.06
+    106.31,
+    168.03
    ],
    "source": "SS_wink_hurt.png",
    "sourceFrames": 81,
@@ -203,24 +203,24 @@
    "dehalo": false,
    "warm": 5.0,
    "dewhite": false,
-   "dip": 0.38,
+   "dip": 0.375,
    "untail": false,
    "deblack": false,
-   "endIoU": 0.956,
+   "endIoU": 0.958,
    "loop": false,
-   "fps": 16.3,
+   "fps": 35.56,
    "hold": false
   },
   "idle": {
    "file": "idle.webp",
-   "frames": 22,
+   "frames": 48,
    "cols": 8,
-   "rows": 3,
+   "rows": 6,
    "fw": 172,
-   "fh": 131,
+   "fh": 132,
    "anchor": [
-    85.51,
-    129.84
+    86.03,
+    129.86
    ],
    "source": "SS_wink_idle.png",
    "sourceFrames": 81,
@@ -238,24 +238,24 @@
    "dehalo": false,
    "warm": -1.0,
    "dewhite": false,
-   "dip": 0.53,
+   "dip": 0.533,
    "untail": false,
    "deblack": false,
-   "endIoU": 0.995,
+   "endIoU": 0.994,
    "loop": true,
-   "fps": 5.43,
+   "fps": 11.85,
    "hold": false
   },
   "ready": {
    "file": "ready.webp",
-   "frames": 22,
+   "frames": 48,
    "cols": 8,
-   "rows": 3,
+   "rows": 6,
    "fw": 202,
    "fh": 173,
    "anchor": [
     91.62,
-    170.83
+    171.22
    ],
    "source": "SS_wink_ready.png",
    "sourceFrames": 81,
@@ -273,24 +273,24 @@
    "dehalo": false,
    "warm": 17.0,
    "dewhite": false,
-   "dip": 0.557,
+   "dip": 0.542,
    "untail": false,
    "deblack": false,
    "endIoU": 0.994,
    "loop": false,
-   "fps": 10.86,
+   "fps": 23.7,
    "hold": false
   },
   "trick": {
    "file": "trick.webp",
-   "frames": 22,
+   "frames": 48,
    "cols": 8,
-   "rows": 3,
-   "fw": 213,
+   "rows": 6,
+   "fw": 223,
    "fh": 180,
    "anchor": [
-    104.7,
-    174.62
+    108.72,
+    174.76
    ],
    "source": "SS_wink_trick.png",
    "sourceFrames": 81,
@@ -308,24 +308,24 @@
    "dehalo": false,
    "warm": 15.0,
    "dewhite": false,
-   "dip": 0.33,
+   "dip": 0.329,
    "untail": false,
    "deblack": false,
    "endIoU": 0.994,
    "loop": false,
-   "fps": 13.04,
+   "fps": 28.44,
    "hold": false
   },
   "webbing": {
    "file": "webbing.webp",
-   "frames": 22,
+   "frames": 48,
    "cols": 8,
-   "rows": 3,
-   "fw": 286,
+   "rows": 6,
+   "fw": 299,
    "fh": 183,
    "anchor": [
-    122.43,
-    180.13
+    135.6,
+    179.86
    ],
    "source": "SS_wink_webbing.png",
    "sourceFrames": 81,
@@ -343,12 +343,12 @@
    "dehalo": false,
    "warm": 21.0,
    "dewhite": false,
-   "dip": 0.28,
+   "dip": 0.281,
    "untail": false,
    "deblack": false,
    "endIoU": 0.994,
    "loop": false,
-   "fps": 13.04,
+   "fps": 28.44,
    "hold": false
   }
  },

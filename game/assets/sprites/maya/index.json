@@ -2,14 +2,14 @@
  "clips": {
   "attack": {
    "file": "attack.webp",
-   "frames": 22,
+   "frames": 48,
    "cols": 8,
-   "rows": 3,
+   "rows": 6,
    "fw": 204,
-   "fh": 269,
+   "fh": 270,
    "anchor": [
-    123.74,
-    266.11
+    123.85,
+    267.0
    ],
    "source": "SS_maya_attack.png",
    "sourceFrames": 81,
@@ -27,12 +27,12 @@
    "dehalo": false,
    "warm": 101.0,
    "dewhite": false,
-   "dip": 0.808,
+   "dip": 0.804,
    "untail": false,
    "deblack": false,
    "endIoU": 0.987,
    "loop": false,
-   "fps": 16.3,
+   "fps": 35.56,
    "hold": false
   },
   "defeat": {
@@ -73,10 +73,10 @@
   },
   "hurt": {
    "file": "hurt.webp",
-   "frames": 22,
+   "frames": 48,
    "cols": 8,
-   "rows": 3,
-   "fw": 210,
+   "rows": 6,
+   "fw": 211,
    "fh": 268,
    "anchor": [
     124.22,
@@ -98,19 +98,19 @@
    "dehalo": false,
    "warm": 76.0,
    "dewhite": false,
-   "dip": 0.812,
+   "dip": 0.737,
    "untail": false,
    "deblack": false,
    "endIoU": 0.984,
    "loop": false,
-   "fps": 16.3,
+   "fps": 35.56,
    "hold": false
   },
   "idle": {
    "file": "idle.webp",
-   "frames": 22,
+   "frames": 48,
    "cols": 8,
-   "rows": 3,
+   "rows": 6,
    "fw": 128,
    "fh": 268,
    "anchor": [
@@ -133,12 +133,12 @@
    "dehalo": false,
    "warm": 73.0,
    "dewhite": false,
-   "dip": 0.775,
+   "dip": 0.767,
    "untail": false,
    "deblack": false,
    "endIoU": 0.988,
    "loop": true,
-   "fps": 5.43,
+   "fps": 11.85,
    "hold": false
   }
  },

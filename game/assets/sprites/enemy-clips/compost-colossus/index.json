@@ -2,14 +2,14 @@
  "clips": {
   "attack": {
    "file": "attack.webp",
-   "frames": 22,
+   "frames": 48,
    "cols": 8,
-   "rows": 3,
+   "rows": 6,
    "fw": 400,
-   "fh": 224,
+   "fh": 217,
    "anchor": [
-    213.87,
-    221.47
+    212.68,
+    214.6
    ],
    "source": "SS_compostColossus_attack.png",
    "sourceFrames": 81,
@@ -27,27 +27,27 @@
    "dehalo": false,
    "warm": 61.0,
    "dewhite": false,
-   "dip": 0.533,
+   "dip": 0.494,
    "untail": false,
    "deblack": false,
    "endIoU": 0.988,
-   "scale": 0.7533,
-   "unit": 213.94,
+   "scale": 0.7299,
+   "unit": 207.3,
    "loop": false,
-   "fps": 16.3,
+   "fps": 35.56,
    "hold": false,
    "sha1": "c778d53b429561f4"
   },
   "defeat": {
    "file": "defeat.webp",
-   "frames": 22,
-   "cols": 8,
+   "frames": 27,
+   "cols": 9,
    "rows": 3,
    "fw": 400,
    "fh": 267,
    "anchor": [
-    202.31,
-    261.53
+    202.19,
+    261.57
    ],
    "source": "SS_compostColossus_defeat.png",
    "sourceFrames": 81,
@@ -73,20 +73,20 @@
    "scale": 0.8351,
    "unit": 237.16,
    "loop": false,
-   "fps": 32.59,
+   "fps": 40.0,
    "hold": true,
    "sha1": "f462207d930b33b7"
   },
   "hurt": {
    "file": "hurt.webp",
-   "frames": 22,
+   "frames": 48,
    "cols": 8,
-   "rows": 3,
+   "rows": 6,
    "fw": 400,
-   "fh": 256,
+   "fh": 254,
    "anchor": [
-    199.51,
-    253.62
+    200.18,
+    251.26
    ],
    "source": "SS_compostColossus_hurt.png",
    "sourceFrames": 81,
@@ -104,27 +104,27 @@
    "dehalo": false,
    "warm": 60.0,
    "dewhite": false,
-   "dip": 0.517,
+   "dip": 0.472,
    "untail": false,
    "deblack": false,
    "endIoU": 0.992,
-   "scale": 0.8511,
-   "unit": 241.7,
+   "scale": 0.8403,
+   "unit": 238.66,
    "loop": false,
-   "fps": 16.3,
+   "fps": 35.56,
    "hold": false,
    "sha1": "a86e7fd23437dafa"
   },
   "idle": {
    "file": "idle.webp",
-   "frames": 22,
+   "frames": 48,
    "cols": 8,
-   "rows": 3,
+   "rows": 6,
    "fw": 400,
    "fh": 285,
    "anchor": [
     193.85,
-    280.99
+    280.96
    ],
    "source": "SS_compostColossus_idle.png",
    "sourceFrames": 81,
@@ -142,14 +142,14 @@
    "dehalo": false,
    "warm": 58.0,
    "dewhite": false,
-   "dip": 0.462,
+   "dip": 0.46,
    "untail": false,
    "deblack": false,
    "endIoU": 0.992,
    "scale": 0.9456,
    "unit": 268.56,
    "loop": true,
-   "fps": 5.43,
+   "fps": 11.85,
    "hold": false,
    "sha1": "9da6c153d7ac3018"
   }

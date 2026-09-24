@@ -2,14 +2,14 @@
  "clips": {
   "attack": {
    "file": "attack.webp",
-   "frames": 22,
+   "frames": 48,
    "cols": 8,
-   "rows": 3,
+   "rows": 6,
    "fw": 296,
    "fh": 276,
    "anchor": [
-    146.5,
-    273.49
+    143.88,
+    273.43
    ],
    "source": "SS_samir_attack.png",
    "sourceFrames": 81,
@@ -23,12 +23,12 @@
    "dehalo": true,
    "warm": 28.0,
    "dewhite": true,
-   "dip": 0.424,
+   "dip": 0.348,
    "untail": false,
    "deblack": false,
-   "endIoU": 0.756,
+   "endIoU": 0.757,
    "loop": false,
-   "fps": 16.3,
+   "fps": 35.56,
    "hold": false
   },
   "defeat": {
@@ -65,14 +65,14 @@
   },
   "hurt": {
    "file": "hurt.webp",
-   "frames": 22,
+   "frames": 48,
    "cols": 8,
-   "rows": 3,
+   "rows": 6,
    "fw": 156,
    "fh": 278,
    "anchor": [
-    81.27,
-    275.01
+    81.4,
+    275.17
    ],
    "source": "SS_samir_hurt.png",
    "sourceFrames": 81,
@@ -86,19 +86,19 @@
    "dehalo": true,
    "warm": 27.0,
    "dewhite": false,
-   "dip": 0.551,
+   "dip": 0.511,
    "untail": false,
    "deblack": false,
    "endIoU": 0.985,
    "loop": false,
-   "fps": 16.3,
+   "fps": 35.56,
    "hold": false
   },
   "idle": {
    "file": "idle.webp",
-   "frames": 22,
+   "frames": 48,
    "cols": 8,
-   "rows": 3,
+   "rows": 6,
    "fw": 148,
    "fh": 278,
    "anchor": [
@@ -121,12 +121,12 @@
    "dehalo": false,
    "warm": 185.0,
    "dewhite": false,
-   "dip": 0.479,
+   "dip": 0.476,
    "untail": false,
    "deblack": false,
    "endIoU": 0.991,
    "loop": true,
-   "fps": 5.43,
+   "fps": 11.85,
    "hold": false
   }
  },

@@ -2,14 +2,14 @@
  "clips": {
   "attack": {
    "file": "attack.webp",
-   "frames": 22,
+   "frames": 48,
    "cols": 8,
-   "rows": 3,
+   "rows": 6,
    "fw": 202,
-   "fh": 276,
+   "fh": 277,
    "anchor": [
-    98.6,
-    269.34
+    98.41,
+    269.67
    ],
    "source": "SS_prya_attack.png",
    "sourceFrames": 81,
@@ -27,12 +27,12 @@
    "dehalo": false,
    "warm": 127.0,
    "dewhite": false,
-   "dip": 0.601,
+   "dip": 0.532,
    "untail": false,
    "deblack": false,
-   "endIoU": 0.986,
+   "endIoU": 0.987,
    "loop": false,
-   "fps": 16.3,
+   "fps": 35.56,
    "hold": false
   },
   "defeat": {
@@ -73,14 +73,14 @@
   },
   "hurt": {
    "file": "hurt.webp",
-   "frames": 22,
+   "frames": 48,
    "cols": 8,
-   "rows": 3,
-   "fw": 155,
-   "fh": 266,
+   "rows": 6,
+   "fw": 157,
+   "fh": 269,
    "anchor": [
-    86.62,
-    263.39
+    86.17,
+    264.2
    ],
    "source": "SS_prya_hurt.png",
    "sourceFrames": 81,
@@ -101,21 +101,21 @@
    "dip": 0.683,
    "untail": false,
    "deblack": false,
-   "endIoU": 0.959,
+   "endIoU": 0.957,
    "loop": false,
-   "fps": 16.3,
+   "fps": 35.56,
    "hold": false
   },
   "idle": {
    "file": "idle.webp",
-   "frames": 22,
+   "frames": 48,
    "cols": 8,
-   "rows": 3,
-   "fw": 131,
+   "rows": 6,
+   "fw": 132,
    "fh": 267,
    "anchor": [
-    66.69,
-    264.82
+    67.42,
+    264.88
    ],
    "source": "SS_prya_idle.png",
    "sourceFrames": 81,
@@ -133,12 +133,12 @@
    "dehalo": false,
    "warm": 92.0,
    "dewhite": false,
-   "dip": 0.736,
+   "dip": 0.727,
    "untail": false,
    "deblack": false,
-   "endIoU": 0.981,
+   "endIoU": 0.982,
    "loop": true,
-   "fps": 5.43,
+   "fps": 11.85,
    "hold": false
   }
  },

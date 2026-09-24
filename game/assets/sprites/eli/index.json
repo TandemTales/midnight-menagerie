@@ -2,14 +2,14 @@
  "clips": {
   "attack": {
    "file": "attack.webp",
-   "frames": 22,
+   "frames": 48,
    "cols": 8,
-   "rows": 3,
+   "rows": 6,
    "fw": 288,
    "fh": 275,
    "anchor": [
-    149.91,
-    270.78
+    149.72,
+    270.75
    ],
    "source": "SS_eli_attack.png",
    "sourceFrames": 81,
@@ -27,12 +27,12 @@
    "dehalo": false,
    "warm": 147.0,
    "dewhite": true,
-   "dip": 0.551,
+   "dip": 0.601,
    "untail": false,
    "deblack": false,
    "endIoU": 0.991,
    "loop": false,
-   "fps": 16.3,
+   "fps": 35.56,
    "hold": false
   },
   "defeat": {
@@ -73,14 +73,14 @@
   },
   "hurt": {
    "file": "hurt.webp",
-   "frames": 22,
+   "frames": 48,
    "cols": 8,
-   "rows": 3,
-   "fw": 207,
+   "rows": 6,
+   "fw": 208,
    "fh": 276,
    "anchor": [
-    116.62,
-    272.98
+    117.43,
+    273.01
    ],
    "source": "SS_eli_hurt.png",
    "sourceFrames": 81,
@@ -98,23 +98,23 @@
    "dehalo": false,
    "warm": 135.0,
    "dewhite": true,
-   "dip": 0.607,
+   "dip": 0.584,
    "untail": false,
    "deblack": false,
    "endIoU": 0.983,
    "loop": false,
-   "fps": 16.3,
+   "fps": 35.56,
    "hold": false
   },
   "idle": {
    "file": "idle.webp",
-   "frames": 22,
+   "frames": 48,
    "cols": 8,
-   "rows": 3,
+   "rows": 6,
    "fw": 172,
    "fh": 276,
    "anchor": [
-    81.96,
+    82.59,
     273.07
    ],
    "source": "SS_eli_idle.png",
@@ -138,7 +138,7 @@
    "deblack": false,
    "endIoU": 0.991,
    "loop": true,
-   "fps": 5.43,
+   "fps": 11.85,
    "hold": false
   }
  },
