@@ -6058,7 +6058,13 @@ void main(){
     vec2 ww = w + vec2(mmNoise(w*0.62 + uSeed) - 0.5,
                        mmNoise(w*0.62 + 13.1) - 0.5) * 0.30;
     float row = floor(ww.y/cell.y);
-    float ox  = mmHash11(row + uSeed)*cell.x;
+    /* (round 21: the stagger is dealt by a 2D hash. mmHash11 of CONSECUTIVE
+       rows is a smooth quadratic in the row number over long runs, so the
+       head joints of one course after another stepped along by nearly the
+       same amount and lined up into long raking staircases across the
+       glasshouse floor -- which, now that the floor is in shot behind the
+       fight, read as exactly the pixel stair-stepping this round removes.) */
+    float ox  = mmHash21(vec2(row*1.37, uSeed*0.61 + 4.1))*cell.x;
     vec2 g  = vec2(fract((ww.x+ox)/cell.x), fract(ww.y/cell.y));
     vec2 id = vec2(floor((ww.x+ox)/cell.x), row);
     float slab = mmHash11(id.x*17.3 + id.y*31.7 + uSeed);
@@ -6769,9 +6775,16 @@ void main(){
      darker than the flags on both sides of it, thicker where the stones sit
      unevenly. pat is the floor's relief, so the same screen-space treatment
      the wall and the props use draws it here. */
+  /* (round 21: at 0.40, not 0.85. The joints above ARE the floor's ink --
+     each is a line darker than the stones either side, drawn per pixel from
+     the pattern itself. This derivative line on top of them doubled every
+     joint with a second one taken from 2x2 quads, and a derivative across a
+     one-pixel joint breaks up into dots along any joint that runs at a slant:
+     with the floor now in shot behind the fight, the boards behind the Kid
+     came back as a woven dot-screen. It keeps the flags' and kerbs' edges.) */
   vec2 drawn = mmDrawn(pat, 0.020, 0.30) * drawable;
-  col *= 1.0 - drawn.x * uInk * 0.85;
-  col += col * drawn.y * uLip * 0.7;
+  col *= 1.0 - drawn.x * uInk * 0.40;
+  col += col * drawn.y * uLip * 0.40;
 
   col *= uGain;
   // the ceiling is the one surface the eye forgives being dark; overhead near

@@ -1523,13 +1523,26 @@ function hashSeed(v) {
    / tan(fov/2), the far wall's foot is atan(eye / distance) below level, so
    the pitch that lands it on STAGE_BASE is that angle minus the one the
    target line makes with the axis. */
-const STAGE_BASE = 0.425;
+/* ...AND AT A SIZE THE ROOM BELIEVES. Where the feet land on the floor says
+   how far away a figure is, and its height on screen then says how tall it
+   is. Measured on the Foyer at the authored 2.46 m eye: the Kid's boots
+   landed 12 m out, which made her 2.4 m tall, and the Door Greeter 3.9 m --
+   a door-creature a metre taller than the hall's own doorway. The eye comes
+   down to STAGE_EYE of its authored height (the lens stays where it was, so
+   the walls, the stair and the windows keep their size and place on the
+   screen) and the same boots land 8.9 m out: a 1.5 m Kid and a 2.3 m door.
+   Only on the wing's own square rig -- a gallery vantage is up on its
+   gallery for a reason. */
+const STAGE_BASE = 0.39;
+const STAGE_EYE = 0.72;
 function stageRig(pal) {
   const c = pal.cam, R = pal.room;
   if (!c || !R) return;
   const deg = Math.PI / 180;
   const tanV = Math.tan((c.fov ?? 42) * deg / 2);
-  const ex = c.x ?? 0, ez = c.z ?? 9.6, ey = c.y ?? 2.3;
+  const square = !pal.vantageKind || pal.vantageKind === 'square';
+  const ex = c.x ?? 0, ez = c.z ?? 9.6;
+  const ey = square ? Math.max(1.15, (c.y ?? 2.3) * STAGE_EYE) : (c.y ?? 2.3);
   const lx = c.lookX ?? 0, lz = c.lookZ ?? 0;
   const hd = Math.max(Math.hypot(lx - ex, lz - ez), 0.5);   // horizontal run to the look point
   const wallDist = Math.max(ez + R.d, 1);                   // the far wall stands at z = -d
@@ -1537,7 +1550,8 @@ function stageRig(pal) {
   const target = Math.atan((STAGE_BASE - 0.5) * 2 * tanV);  // negative: above the axis
   const pitch = below - target;                             // down, radians
   const look = ey - hd * Math.tan(pitch);
-  if (look < (c.look ?? 2.4)) pal.cam = Object.assign({}, c, { look });
+  const lookA = ey - ((c.y ?? 2.3) - (c.look ?? 2.4));        // the authored pitch, from the new eye
+  pal.cam = Object.assign({}, c, { y: ey, look: Math.min(look, lookA) });
 }
 
 function resolve(name) {
