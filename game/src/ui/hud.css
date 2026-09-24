@@ -3,7 +3,11 @@
 .mm-hud {
   /* one type size for everything on the rail, and it does not shrink with the
      window: the HUD is read at a glance on a 1280x800 panel too */
-  --hud-fs: calc(clamp(13px, .9vw, 14.5px) * var(--type-scale, 1));
+  /* round 20 graft: .9vw -> .85vw. The rail's words are set in full
+     capitals at the figures' height now and the Snack settings carry a
+     caption; at 1600 the old size spent the room a run's Keepsakes need to
+     stand spread (13.6 px there, 13 on the Deck, as before) */
+  --hud-fs: calc(clamp(13px, .85vw, 14.5px) * var(--type-scale, 1));
   --hud-chip-h: 1.76em;
   /* the carved end block at each end of the rail */
   /* the channel's inner end: hw-rail.webp's channel starts 50 of 64 in */
@@ -74,6 +78,7 @@
   opacity: .9;
   pointer-events: none;
 }
+.mm-hud__group--keepsakes[data-vine="0"]::after { visibility: hidden; }
 .mm-hud__group--extra:empty { display: none; }
 .mm-hud__group--meta { margin-left: auto; }
 /* where two lengths of the rail's plates meet, a cast brass boss is struck
@@ -599,7 +604,7 @@
 .mm-hud[data-dense="1"] .mm-hud__fold .mm-hud__foldwell:nth-child(n+2) { display: none; }
 .mm-hud[data-dense="1"] :is(.mm-hud__u, .mm-hud__foldw, .mm-hud__snackcap) { letter-spacing: 0; }
 /* the Snack settings say what they are: an engraved caption before them */
-.mm-hud__snackcap { color: var(--kit-text-mid); padding: 0 .15em 0 0; }
+.mm-hud__snackcap { color: var(--kit-text-mid); padding: 0 .15em 0 0; margin-right: calc(var(--hud-chip-h) * .12); }
 .mm-hud__fold:hover,
 .mm-hud__fold[aria-expanded="true"] { filter: brightness(1.18) drop-shadow(0 0 6px color-mix(in srgb, var(--kit-candle) 38%, transparent)); }
 .mm-hud__fold:focus-visible { outline: none; filter: brightness(1.2) drop-shadow(0 0 1.5px var(--kit-gold-hi)) drop-shadow(0 0 8px color-mix(in srgb, var(--kit-candle) 55%, transparent)); }
@@ -651,7 +656,7 @@
   .mm-hud__group--meta > :not(:first-child) { --stud: 7px; margin-left: 4px; }
   .mm-hud__group--vitals > :not(:first-child)::after,
   .mm-hud__group--meta > :not(:first-child)::after { left: -7.5px; }
-  .mm-hud__chip { padding: 0 .2em; }
+  .mm-hud__chip { padding: 0 .15em; }
   .mm-hud__settings { padding: 0; }
   .mm-hud__bar { width: calc(var(--bar-h) * 3.25); }
   .mm-hud__relics { gap: 1px; }

@@ -592,6 +592,13 @@ export class HUD {
         if (this._tight()) { wells[k].hidden = true; break; }
       }
     }
+    /* the engraved vine fills the channel left over (hud.css); a stub of it
+       shorter than a whole turn of the vine reads as a scribble, so it only
+       shows where it has room for one */
+    const keep = this.$relics.parentElement;
+    const kids = [...keep.children].filter((k) => k.offsetWidth);
+    const used = kids.reduce((a, k) => a + k.offsetWidth, 0) + (kids.length ? parseFloat(getComputedStyle(keep).columnGap) * kids.length : 0);
+    keep.dataset.vine = keep.clientWidth - used >= 72 ? '1' : '0';
   }
 
   _applyFold(lv) {
