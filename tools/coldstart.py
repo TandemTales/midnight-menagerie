@@ -22,13 +22,17 @@ boot   load the title and record, from navigation start: when stage.warmStage
 fight  boot, then go into the FIRST FIGHT of a new run as fast as the UI allows
        (title: New Expedition -> the opening: pick the first Kid, commit, turn
        every page -> the coached Foyer fight), and screenshot it --at seconds
-       after it opens (default 5,15,30). For each shot: the warm stage, whether
-       the combat scene's CSS stand-in room was up, and the luminance mean/std
-       of the band between the enemies where the room shows (shot.py's `band`).
-       A flat plum plane reads std ~2-4 there; a room reads far more.
+       after it opens (default 5,15,30), then once more --after seconds past
+       the end of the warm-up. For each shot: the warm stage, whether the
+       combat scene's stand-in room (.cb-coldroom) was up, and the luminance
+       mean/std of a patch of bare wall (WALL below): ~3 over a flat plum
+       plane, ~7 over the stand-in room, 11+ over the WebGL room. Also the
+       longest main-thread stall before the warm-up ended and after it.
 
---target NAME=PORT[:MODE]   MODE sets window.__MM_WARM_MODE before boot (a
-                            renderer experiment switch, when the build has one).
+--target NAME=PORT   (a trailing :MODE sets window.__MM_WARM_MODE before boot,
+                      for a build that carries an experiment switch; the
+                      2026-09-23 experiments used base/rt/batch/par, none of
+                      which the shipped renderer reads)
 """
 import argparse
 import asyncio
@@ -50,16 +54,17 @@ POLL = r"""
 (() => {
   const T = window.__cs = {};
   let last = performance.now();
-  T.maxGap = 0; T.maxGapAt = 0;
-  const iv = setInterval(() => {
+  T.maxGap = 0; T.maxGapAt = 0; T.maxGapAfter = 0; T.maxGapAfterAt = 0;
+  setInterval(() => {
     const now = performance.now();
-    if (now - last > T.maxGap) { T.maxGap = now - last; T.maxGapAt = last; }
+    if (!('done' in T)) {
+      if (now - last > T.maxGap) { T.maxGap = now - last; T.maxGapAt = last; }
+    } else if (now - last > T.maxGapAfter) { T.maxGapAfter = now - last; T.maxGapAfterAt = last; }
     last = now;
     const s = window.MM && window.MM.ctx && window.MM.ctx.stage;
     if (!s) return;
     const w = s.warmStage;
     if (w && !(w in T)) T[w] = performance.now();
-    if (w === 'done') clearInterval(iv);
   }, 20);
 })();
 """
@@ -166,6 +171,20 @@ async def one(target, a, run_i):
                 " && window.__MM_WARMUP_MS != null", timeout=int(a.timeout * 1000), polling=100)
         except Exception:
             rec["timeout"] = True
+        if a.cmd == "fight" and "shots" in rec and not rec.get("timeout"):
+            # and the fight AFTER the warm-up: the room kind it needs may still
+            # be linking (precompileRooms), which is where a draw used to freeze
+            await page.wait_for_timeout(int(a.after * 1000))
+            st = await page.evaluate(STAGE)
+            cold = await page.evaluate(COLD)
+            path = os.path.join(a.out, f"{name}-r{run_i}-warm+{int(a.after)}s.png")
+            try:
+                await page.screenshot(path=path, animations="allow", timeout=20000)
+                wm, ws = crop_stats(path, WALL)
+                rec["afterWarm"] = {"stage": st, "cold": cold, "wallMean": wm, "wallStd": ws,
+                                    "png": os.path.basename(path)}
+            except Exception as e:
+                rec["afterWarm"] = {"stage": st, "cold": cold, "error": str(e)[:120]}
         cs = await page.evaluate("window.__cs || {}")
         rec["postMs"] = round(cs["post"]) if "post" in cs else None
         rec["doneMs"] = round(cs["done"]) if "done" in cs else None
@@ -174,6 +193,10 @@ async def one(target, a, run_i):
         # to 'done': a frozen title screen (a program linked synchronously)
         rec["maxStallMs"] = round(cs.get("maxGap", 0))
         rec["maxStallAtMs"] = round(cs.get("maxGapAt", 0))
+        # ...and after it, while the fight plays (fight mode): a room kind
+        # linked inside a draw freezes the page here
+        rec["maxStallAfterMs"] = round(cs.get("maxGapAfter", 0))
+        rec["maxStallAfterAtMs"] = round(cs.get("maxGapAfterAt", 0))
         wt = await page.evaluate(
             "(() => { const s = window.MM && window.MM.ctx.stage; return s && s.warmT ? s.warmT : null; })()")
         if wt:
@@ -200,6 +223,8 @@ def main():
     ap.add_argument("--runs", type=int, default=3)
     ap.add_argument("--at", default="5,15,30")
     ap.add_argument("--timeout", type=float, default=240)
+    ap.add_argument("--after", type=float, default=30,
+                    help="fight: seconds to keep watching after the warm-up ends")
     ap.add_argument("--w", type=int, default=1600)
     ap.add_argument("--h", type=int, default=900)
     ap.add_argument("--out", default=os.path.join(os.path.dirname(HERE), "shots", "coldstart"))
@@ -223,13 +248,18 @@ def main():
             line = (f"{rec['target']:>8} r{r}  post {rec.get('postMs')} ms  done {rec.get('doneMs')} ms"
                     f"  warmup {rec.get('warmupMs')} ms  stall {rec.get('maxStallMs')} ms @{rec.get('maxStallAtMs')}")
             if a.cmd == "fight":
-                line += f"  open {rec.get('fightOpenMs')} ms"
+                line += (f"  open {rec.get('fightOpenMs')} ms  after-done stall {rec.get('maxStallAfterMs')} ms"
+                         f" @{rec.get('maxStallAfterAtMs')}")
                 for s in rec.get("shots", []):
                     if s.get("error"):
                         line += f" | +{s['at']:g}s NO FRAME ({s['stage'] and s['stage']['stage']})"
                         continue
                     line += (f" | +{s['at']:g}s {s['stage'] and s['stage']['stage']}"
                              f" cold={s['cold']} wall {s['wallMean']}/{s['wallStd']}")
+                aw = rec.get("afterWarm")
+                if aw:
+                    line += (f" | warm+{a.after:g}s " + (f"NO FRAME" if aw.get("error") else
+                             f"cold={aw['cold']} wall {aw['wallMean']}/{aw['wallStd']}"))
                 if rec.get("error"):
                     line += "  ERROR " + rec["error"]
             print(line, flush=True)
