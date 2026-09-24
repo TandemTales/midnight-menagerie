@@ -338,14 +338,14 @@ vec2 mmDamask(vec2 q, float cell, float px, float kind){
    pixel. */
 float gAAx = 0.0, gAAy = 0.0;
 float mmSolid(float d){
-  float e = max(0.018, 0.36*(gAAx + gAAy));
+  float e = max(0.018, 0.50*(gAAx + gAAy));
   return smoothstep(e, -e, d);
 }
 /* Distance from the nearest member of a row repeating on 'period'. */
 float mmRowX(float x, float period){ return abs(mod(x, period) - period*0.5); }
 /* 1 between y0 and y1, with an edge sharp enough to ink at each. */
 float mmBand(float y, float y0, float y1){
-  float e = max(0.016, 0.66*gAAy);
+  float e = max(0.016, 0.95*gAAy);
   return smoothstep(-e, e, y - y0) * smoothstep(e, -e, y - y1);
 }
 /* The same band with the edge width PASSED IN, for a feature thinner than
@@ -357,7 +357,7 @@ float mmBand(float y, float y0, float y1){
    max(metres-per-pixel * 0.8, 0.008) and the line is one pixel wide at any
    depth, which is the rule the whole drawn-line system runs on. */
 float mmBandA(float y, float y0, float y1, float aa){
-  aa = max(aa, 0.66*gAAy);
+  aa = max(aa, 0.95*gAAy);
   return smoothstep(-aa, aa, y - y0) * smoothstep(aa, -aa, y - y1);
 }
 
@@ -2837,15 +2837,17 @@ float subjectH(vec2 q, float far, out float occ){
     float topS = LAND - run*RAKE;
     float top = LAND - floor(run/GOING)*RISE*step(X0, ax);
     /* THE NOSINGS ARE DRAWN WHILE THEY CAN BE (round 21). A 0.28 m going is
-       three to five pixels at the distance this wall is seen from at the
-       Deck's tier, and a sawtooth at that pitch is not a staircase, it is
-       exactly the pixel stair-stepping the survey named: nobody can tell a
-       row of four-pixel treads from an aliased diagonal. A pen at that size
-       draws the raking line THROUGH the nosings and lets the balusters and
-       the newels say "stair". So below ~9 px of going the sawtooth eases
-       into its own mean line (half a riser above the pitch line, the same
-       line the steps average to); above it every tread is drawn as before. */
-    float tRes = smoothstep(5.0*gAAx, 9.0*gAAx, GOING);
+       five to eight pixels at the distance this wall is seen from at the
+       Deck's tier, with a riser of four, and a sawtooth at that pitch is not a
+       staircase: it is exactly the pixel stair-stepping the survey named --
+       nobody can tell a row of six-pixel treads from an aliased diagonal (an
+       A/B with the treads forced off read as a raked string at once). A pen at
+       that size draws the raking line THROUGH the nosings and lets the
+       balustrade and the newels say "stair". So below ~13 px of going the
+       sawtooth eases into its own mean line (half a riser above the pitch
+       line, the line the steps average to); a stair seen closer than that
+       draws every tread as before. */
+    float tRes = smoothstep(10.0*gAAx, 16.0*gAAx, GOING);
     top = mix(min(topS + RISE*0.5, LAND), top, tRes);
     /* The stair ENDS where the flight lands, and the flight's length is derived
        and not guessed: without this the handrail and the string ran on across
@@ -4802,7 +4804,15 @@ vec3 skyColor(vec2 q, float horizon){
      halo about three times its own width. */
   /* Anchored 6 m left of centre, not at 0.30 of the plane: the plane is as
      wide as the camera needs and that is not a property of the scene. */
-  vec2 mc = vec2(uSize.x*0.5 - 6.0 + uHouse.y, 12.6);
+  /* ...and 10.4 m up, not 12.6 (round 21): the fight's rig is pitched down
+     now so the floor runs on behind the combatants (stageRig, fx/atmosphere
+     .js), and the top of an open-air frame came down with it -- at 12.6 the
+     Graveyard's moon sat under the rail across the top of the screen, and a
+     graveyard at night without its moon is the one thing mainMenu.png says it
+     must have. And 7 m RIGHT of the axis: lowered, it would sit behind the
+     main block's left gables and the corner tower (whose cap is 13.6 m), and
+     over the low wing on the right (ridge 6.25 m) it has open sky under it. */
+  vec2 mc = vec2(uSize.x*0.5 + 7.0 + uHouse.y, 10.6);
   float md = length(vec2(q.x, q.y) - mc);
   float disc = smoothstep(1.26, 1.14, md);
   float crater = 0.72 + 0.28*mmFbm3((vec2(q.x,q.y) - mc)*3.4);
@@ -7875,8 +7885,19 @@ float shapeField(vec2 uv, vec2 msz, float shape, float seed){
      The fittings are 22 and 23 ONLY -- the planting bed above them is brick
      and fans, and keeps the full erosion it was judged with. */
   /* (nor does a carved fountain with a sheet of water on it: 25) */
+  /* ...AND NEITHER DOES JOINERY OR DRESSED STONE (round 21). At 0.022 of the
+     quad the erosion is a wobble of several pixels along a column's shaft or
+     a cabinet's side, and a wobble on a line that should be straight is what
+     reads, at the Deck's 0.8, as stair-stepping: the ballroom's columns and
+     the hall's cases came back with ragged, stepped verticals. The samples
+     draw a made thing with ONE straight, clean inked line; a shrub, a drape,
+     a statue, a planting bed and a weathered headstone keep their ragged
+     edge, because a real one has it. */
+  float made = (shape < 0.5 || (shape > 4.5 && shape < 6.5) || (shape > 7.5 && shape < 8.5)
+             || (shape > 9.5 && shape < 10.5) || (shape > 11.5 && shape < 14.5)
+             || (shape > 15.5 && shape < 21.5)) ? 1.0 : 0.0;
   d += (mmFbm3(uv*5.0 + seed*17.0) - 0.5)
-     * (((shape > 21.5 && shape < 23.5) || shape > 24.5) ? 0.0035 : 0.022);
+     * (((shape > 21.5 && shape < 23.5) || shape > 24.5) ? 0.0035 : mix(0.022, 0.0030, made));
   return -d;
 }
 
