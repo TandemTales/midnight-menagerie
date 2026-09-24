@@ -357,6 +357,43 @@ def painted_flagstones(h, w, rng):
     return col, hgt, np.clip(ink, 0, 1), lip
 
 
+# The portraits on the room's wall: which of the menagerie, cut from which
+# sample. (x0, y0, x1, y1) in the sample's own pixels, each close to its
+# canvas's aspect (sides 146x186, middle 210x254) and clear of the tile's gilt
+# edge and nameplate. Round 19's KERMES chose Hush and Mopsy; Hush is a black
+# ferret, and on the Reward's darker wall it was a black rectangle again, so
+# the pale ghost cat hangs in its place.
+HUNG = {
+    "marmalade": ("selectCompanion.png", (90, 198, 239, 388)),
+    "crumbula":  ("selectCompanion.png", (662, 199, 819, 388)),
+    "mopsy":     ("selectCompanion.png", (393, 706, 539, 886)),
+}
+
+
+def hung_painting(art, w, h):
+    """A portrait's canvas as ALBEDO, w x h: the sample's painting cover-fitted,
+    gone amber under old varnish, sinking into the dark toward the frame's
+    rebate, and LIFTED to the wall's albedo scale -- the samples are already
+    lit paintings, and the room's dark pass (ambient 0.2) otherwise leaves a
+    black hole where the picture is (KERMES's figures, round 19)."""
+    name, box = HUNG[art]
+    im = Image.open(os.path.join(UI, name)).convert("RGB").crop(box)
+    k = max(w / im.width, h / im.height)
+    im = im.resize((int(np.ceil(im.width * k)), int(np.ceil(im.height * k))), Image.LANCZOS)
+    ox, oy = (im.width - w) // 2, (im.height - h) // 2
+    pic = np.asarray(im, np.float32)[oy:oy + h, ox:ox + w]
+    # old varnish: a warm glaze, a little of the colour drained out of it
+    l = lum(pic)[..., None]
+    pic = pic * 0.78 + l * 0.22
+    pic = pic * np.array([1.06, 0.98, 0.84], np.float32)
+    # the canvas sinks into the dark toward the frame's rebate
+    vy = np.abs(np.linspace(-1, 1, h))[:, None]
+    vx = np.abs(np.linspace(-1, 1, w))[None, :]
+    sink = 1 - 0.42 * np.clip(np.maximum(vx, vy) - 0.55, 0, None) / 0.45
+    pic = pic * sink[..., None]
+    return np.clip(pic * 1.55 + 4.0, 0, 255)
+
+
 def room_paint_layers():
     rng = np.random.default_rng(1881)
     W, H = ROOM_W, ROOM_H
@@ -463,10 +500,16 @@ def room_paint_layers():
     # screen's edges, and the boards with windows (the Reward, the Curiosity)
     # stand their lancets in exactly those two bays -- "a window cannot overlap
     # a picture frame", both survey judges. Those two are gone; the three that
-    # remain are not "holes in the wall" any more but PICTURES: the grounds of
-    # UI/mainMenu.png, cut by tools/prep_ui_kit.py (hall-*.webp), laid in each
-    # canvas dimmed under an old varnish so they sit back in the room's shadow.
-    hall = {536: "hall-towers.webp", 960: "hall-gable.webp", 1384: "hall-tree.webp"}
+    # remain are not "holes in the wall" any more but PICTURES.
+    #
+    # ROUND 19 GRAFT: BICE hung the grounds of UI/mainMenu.png in them, and
+    # a navy night under a varnish, at the room's ambient 0.2, still read as
+    # "empty black rectangles" to all three judges. KERMES hung the
+    # menagerie's own portraits, lifted to the wall's albedo scale, and those
+    # read as paintings -- so the house's three portraits are its animals now
+    # (see HUNG and hung_painting above): Marmalade, Count Crumbula over the
+    # middle of the wall like the house's lord, Mopsy.
+    hall = {536: "marmalade", 960: "crumbula", 1384: "mopsy"}
     for cxp, wp, hp, drop in ((536, 96, 116, 14), (960, 128, 150, -6), (1384, 96, 116, 10)):
         py0 = 268 + drop
         # TWO boxes, not one distance field. wobbly_box_distance caps its inset
@@ -486,21 +529,14 @@ def room_paint_layers():
         hgt = np.where(band_f, hgt + prof, hgt)
         hgt = np.where(core, hgt - 8.0 + smooth(0.0, 4.0, dc) * -3.0, hgt)
         alb = np.where(band_f[..., None], gilt * (0.72 + 0.46 * (dd / 5.0)[..., None]), alb)
-        # the canvas: the picture, cover-fitted into the frame's opening, under
-        # a brown varnish that has darkened with the room
+        # the canvas: the portrait, cover-fitted into the frame's opening
+        # (a margin of 2 px under the rebate), varnished and lifted
         x0, x1 = cxp - wp + 21, cxp + wp - 21
         y0, y1 = py0 + 21, py0 + 2 * hp - 21
-        art = Image.open(os.path.join(OUT, hall[cxp])).convert("RGB")
-        k = max((x1 - x0) / art.width, (y1 - y0) / art.height)
-        art = art.resize((int(np.ceil(art.width * k)), int(np.ceil(art.height * k))), Image.LANCZOS)
-        ox, oy = (art.width - (x1 - x0)) // 2, (art.height - (y1 - y0)) // 2
-        art = np.asarray(art, np.float32)[oy:oy + (y1 - y0), ox:ox + (x1 - x0)]
         canvas = np.zeros_like(alb)
-        canvas[y0:y1, x0:x1] = art
-        varnish = hexc("#3a2614")
-        pic = canvas * 1.05 + varnish * 0.14
+        canvas[y0:y1, x0:x1] = hung_painting(hall[cxp], x1 - x0, y1 - y0)
         # a craquelure of fine dark lines and the grain of the canvas
-        pic = pic * (0.9 + 0.2 * noise(dd.shape, rng, 1.2)[..., None])
+        pic = canvas * (0.9 + 0.2 * noise(dd.shape, rng, 1.2)[..., None])
         alb = np.where(core[..., None], pic, alb)
         gloss = np.where(band_f, 0.55, gloss)
         gloss = np.where(core, 0.30, gloss)
