@@ -74,16 +74,24 @@ COLD = """() => { const c = document.querySelector('.cb-coldroom');
   return (+getComputedStyle(c).opacity).toFixed(2); }"""
 
 
-def band(path):
-    from PIL import Image
+def crop_stats(path, box):
+    from PIL import Image, ImageStat
     im = Image.open(path).convert("L")
     W, H = im.size
-    b = im.crop((int(.16 * W), int(.10 * H), int(.84 * W), int(.52 * H)))
-    h = b.histogram()
-    n = sum(h) or 1
-    mu = sum(i * c for i, c in enumerate(h)) / n
-    sd = (sum((i - mu) ** 2 * c for i, c in enumerate(h)) / n) ** .5
-    return round(mu, 1), round(sd, 1)
+    st = ImageStat.Stat(im.crop((int(box[0] * W), int(box[1] * H), int(box[2] * W), int(box[3] * H))))
+    return round(st.mean[0], 1), round(st.stddev[0], 1)
+
+
+def band(path):
+    return crop_stats(path, (.16, .10, .84, .52))
+
+
+# THE DISCRIMINATOR. shot.py's band barely moves here (27.0/32.4 over a flat
+# plane against 27.7/32.4 over a room: the board's own creature, plate and
+# brackets are most of its variance). This is bare wall on every Scuffle --
+# above the Kid, left of the enemy's brackets, under the HUD -- and it reads
+# std ~3.3 over the plum plane, ~6.9 over the stand-in room.
+WALL = (.20, .08, .44, .34)
 
 
 async def one(target, a, run_i):
@@ -136,8 +144,10 @@ async def one(target, a, run_i):
                     path = os.path.join(a.out, f"{name}-r{run_i}-{int(at)}s.png")
                     await page.screenshot(path=path, animations="allow")
                     mu, sd = band(path)
+                    wm, ws = crop_stats(path, WALL)
                     rec["shots"].append({"at": at, "stage": st, "cold": cold,
                                          "bandMean": mu, "bandStd": sd,
+                                         "wallMean": wm, "wallStd": ws,
                                          "png": os.path.basename(path)})
             except Exception as e:
                 rec["error"] = str(e)[:300]
@@ -208,7 +218,7 @@ def main():
                 line += f"  open {rec.get('fightOpenMs')} ms"
                 for s in rec.get("shots", []):
                     line += (f" | +{s['at']:g}s {s['stage'] and s['stage']['stage']}"
-                             f" cold={s['cold']} band {s['bandMean']}/{s['bandStd']}")
+                             f" cold={s['cold']} wall {s['wallMean']}/{s['wallStd']}")
                 if rec.get("error"):
                     line += "  ERROR " + rec["error"]
             print(line, flush=True)

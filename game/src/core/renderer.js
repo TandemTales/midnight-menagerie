@@ -406,6 +406,31 @@ export class Stage {
         }
         this.warmLog.push({ o: 'PAR', rt: 'rt', ms: +(performance.now() - s).toFixed(1), submitMs: +tSubmit.toFixed(1), n: nProg() - p0 });
       }
+      if (mode === 'par2' && khr) {
+        R.setRenderTarget(targets[0]);
+        const s = performance.now(), p0 = nProg();
+        const kicked = new WeakMap();
+        let passes = 0, resubmits = 0;
+        for (;;) {
+          let any = false;
+          for (const o of objs) {
+            const m = Array.isArray(o.material) ? o.material[0] : o.material;
+            if (!m || kicked.get(m) === m.version) continue;
+            try { R.compile(o, this.camera, this.scene); } catch (e) { /* keep warming */ }
+            kicked.set(m, m.version); any = true;
+          }
+          if (any) { passes++; if (passes > 1) resubmits++; }
+          let waiting = false;
+          for (const o of objs) {
+            const m = Array.isArray(o.material) ? o.material[0] : o.material;
+            const pr = m && R.properties.get(m).currentProgram;
+            if (pr && !pr.isReady()) { waiting = true; break; }
+          }
+          if (!waiting) break;
+          await new Promise((r) => setTimeout(r, 20));
+        }
+        this.warmLog.push({ o: 'PAR2', rt: 'rt', ms: +(performance.now() - s).toFixed(1), passes, n: nProg() - p0 });
+      }
       if (!(mode === 'batch' && khr)) {
         for (const rt of targets) {
           this.renderer.setRenderTarget(rt);
