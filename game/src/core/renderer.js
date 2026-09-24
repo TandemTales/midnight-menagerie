@@ -42,6 +42,7 @@ import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { clock } from './clock.js';
 import { Save } from './save.js';
 import { GradeShaderDef } from '../fx/shaders/grade.js';
@@ -355,64 +356,98 @@ export class Stage {
     const t0 = performance.now();
     const small = () => [Math.max(innerWidth >> 3, 8), Math.max(innerHeight >> 3, 8)];
     this.warmStage = 'materials';
+    const mode = (typeof window !== 'undefined' && window.__MM_WARM_MODE) || 'base';
+    this.warmMode = mode;
+    this.warmT = { materials: t0 };
+    this.warmLog = [];
+    const R = this.renderer;
+    const nProg = () => (R.info.programs ? R.info.programs.length : 0);
+    const label = (o) => {
+      const m = Array.isArray(o.material) ? o.material[0] : o.material;
+      const u = m && m.uniforms ? Object.keys(m.uniforms).slice(0, 3).join(',') : '';
+      return `${o.name || o.parent?.name || o.type}|${m ? m.type : '-'}|${u}`;
+    };
     try {
-      /* ---- phase A: scene materials, ONE MESH PER TASK -------------------
-         `compileAsync(scene)` links every program in a single task, which under
-         software WebGL is one 6 s block — exactly the thing we are removing.
-         Compiling per object costs the same in total but spreads it over as many
-         tasks as there are materials, and each task yields to the event loop. */
       const objs = [];
       this.scene.traverse((o) => { if (o.isMesh || o.isPoints || o.isSprite) objs.push(o); });
-      /* Both render targets. The same material compiled for the canvas and for the composer
-         has a different program cache key, so warming only one left phase C to relink the
-         entire scene in a single 2.0-2.9 s task. */
       const prevRT = this.renderer.getRenderTarget();
-      for (const rt of [null, this.composer.renderTarget1]) {
-        this.renderer.setRenderTarget(rt);
-        for (const o of objs) {
-          try { await this.renderer.compileAsync(o, this.camera, this.scene); }
-          catch (e) { /* keep warming */ }
-          await yield_();
+      const targets = mode === 'base' ? [null, this.composer.renderTarget1] : [this.composer.renderTarget1];
+      let khr = null;
+      try { khr = R.getContext().getExtension('KHR_parallel_shader_compile'); } catch { khr = null; }
+      if (mode === 'batch' && khr) {
+        R.setRenderTarget(targets[0]);
+        const s = performance.now(), p0 = nProg();
+        let mats = null;
+        try { mats = R.compile(this.scene, this.camera); } catch (e) { mats = new Set(); }
+        const tSubmit = performance.now() - s;
+        const pending = new Set(mats);
+        while (pending.size) {
+          for (const m of pending) {
+            const pr = R.properties.get(m).currentProgram;
+            if (!pr || pr.isReady()) pending.delete(m);
+          }
+          if (pending.size) await new Promise((r) => setTimeout(r, 20));
+        }
+        this.warmLog.push({ o: 'BATCH', rt: 'rt', ms: +(performance.now() - s).toFixed(1), submitMs: +tSubmit.toFixed(1), n: nProg() - p0 });
+      } else {
+        for (const rt of targets) {
+          this.renderer.setRenderTarget(rt);
+          for (const o of objs) {
+            const s = performance.now(), p0 = nProg();
+            try { await this.renderer.compileAsync(o, this.camera, this.scene); }
+            catch (e) { /* keep warming */ }
+            this.warmLog.push({ o: label(o), rt: rt ? 'rt' : 'canvas', ms: +(performance.now() - s).toFixed(1), n: nProg() - p0 });
+            await yield_();
+          }
         }
       }
       this.renderer.setRenderTarget(prevRT);
+      this.warmT.post = performance.now();
 
-      /* ---- phase B: show the room. Bloom and the grade are still cold, so let
-         RenderPass be the last enabled pass and go straight to the canvas — three
-         applies its own tone map and sRGB encode on that path, so the picture is
-         up and correctly exposed while the rest warms, instead of the canvas
-         sitting black for the whole compile. */
       this.bloom.enabled = false;
       this.grade.enabled = false;
+      if (mode !== 'base') {
+        if (!this.outPass) { this.outPass = new OutputPass(); this.composer.addPass(this.outPass); }
+        this.outPass.enabled = true;
+      }
       this._warming = false;
       this.warmStage = 'post';
       await yield_();
 
-      /* ---- phase C/D: warm each remaining pass off-screen at 1/8 scale, then
-         switch it on. Each is its own task. */
       const [sw, sh] = small();
       const cold = [this.bloom, this.grade];
+      const warmed = new Set();
       for (const pass of cold) {
+        const s = performance.now();
         this.composer.renderToScreen = false;
         this.composer.setSize(sw, sh);
         this.bloom.setSize(sw, sh);
         pass.enabled = true;
         const others = cold.filter((p) => p !== pass);
         for (const o of others) o.enabled = false;
+        if (this.outPass) this.outPass.enabled = !this.grade.enabled;
         try { this.composer.render(0.016); } catch (e) { /* keep warming */ }
         await yield_();
         this.composer.renderToScreen = true;
         this.resize();
-        for (const o of others) o.enabled = true;
+        warmed.add(pass);
+        if (mode === 'base') for (const o of others) o.enabled = true;
+        else {
+          for (const p of cold) p.enabled = warmed.has(p);
+          this.outPass.enabled = !this.grade.enabled;
+        }
+        this.warmLog.push({ o: pass === this.bloom ? 'POST:bloom' : 'POST:grade', rt: 'post', ms: +(performance.now() - s).toFixed(1) });
         await yield_();
       }
     } finally {
       this.bloom.enabled = true;
       this.grade.enabled = true;
+      if (this.outPass) this.outPass.enabled = false;
       this.composer.renderToScreen = true;
       this.resize();
       this._warming = false;
       this.warmStage = 'done';
+      this.warmT.done = performance.now();
     }
     this._warmed = Math.round(performance.now() - t0);
     /* Now that every program is linked and the chain is running at full size,
