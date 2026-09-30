@@ -122,7 +122,10 @@ export const DEFAULT_ROOM = {
 const SHAPE_M = [1.20, 2.00, 1.30, 1.00, 2.00, 2.00, 3.32, 2.60, 1.17, 1.33,
                  1.56, 1.30, 2.16, 1.50, 2.00, 2.44, 1.27, 0.97, 3.09, 1.56,
                  2.80, 2.05, 2.60, 1.70, 1.55, 3.20, 1.92,
-                 1.20, 3.10, 1.30
+                 1.20, 3.10, 1.30,
+                 /* graft: 30 a clipped topiary -- a spiral, a tiered stand, a
+                    cone, or a ball-tree in its box on a plinth (VANDYKE's) */
+                 2.30
 ];
 /* ...and a width ratio, so a column is a column and not a capital-T. Four of
  * these were wrong by enough to change what the object was: a longcase clock
@@ -131,7 +134,7 @@ const SHAPE_M = [1.20, 2.00, 1.30, 1.00, 2.00, 2.00, 3.32, 2.60, 1.17, 1.33,
 const SHAPE_W = [1.15, 0.55, 1.00, 0.95, 0.72, 0.80, 0.47, 0.85, 0.90, 1.35,
                  1.30, 1.20, 0.87, 1.14, 0.77, 0.78, 1.80, 2.24, 0.50, 0.62,
                  0.72, 2.025, 0.62, 0.34, 1.80, 1.476, 0.34,
-                 1.62, 1.55, 2.10
+                 1.62, 1.55, 2.10, 0.62
 ];
 /* HOW MUCH ONE OF THESE VARIES FROM THE NEXT, as a +-fraction of SHAPE_M.
  *
@@ -153,7 +156,7 @@ const SHAPE_W = [1.15, 0.55, 1.00, 0.95, 0.72, 0.80, 0.47, 0.85, 0.90, 1.35,
 const SHAPE_VAR = [0.06, 0.08, 0.62, 0.20, 0.10, 0.08, 0.10, 0.10, 0.16, 0.48,
                    0.06, 0.06, 0.06, 0.06, 0.06, 0.14, 0.14, 0.06, 0.08, 0.08,
                  0.06, 0.04, 0.00, 0.00, 0.22, 0.00, 0.04,
-                 0.34, 0.06, 0.05
+                 0.34, 0.06, 0.05, 0.16
 ];
 // Which shapes hang from the ceiling rather than stand on the floor.
 export const HANGING = { 4: 1, 7: 1, 22: 1 };
@@ -249,6 +252,9 @@ export const SUBJECT = {
   /* Round 22: the Kitchens' scullery, the Secret Passages' run behind the
      library and its false closet -- drawn by program 8 with their wings. */
   scullery: 34, backcase: 35, closet: 36,
+  /* (graft: the maze's fountain court, its hedge clipped into piers with
+     statues in niches between them -- CAPUT's) */
+  court: 37,
 };
 /* WHICH WALL PROGRAM A SUBJECT IS DRAWN BY (MM_ROOMS in shaders/backdrop.js).
    Round 11's rooms first went into the one wall program with everything else,
@@ -277,7 +283,7 @@ export const ROOMS_PROGRAM = {
      whole (see hedgeWallH and its neighbours in shaders/backdrop.js), a
      program each: carried in one program, the other three wings' walls
      cost the Pumpkin Grounds' fight a register budget it did not have */
-  topiary: 8, range: 9, scullery: 9, timber: 10, backcase: 10, closet: 10, coping: 11,
+  topiary: 8, court: 8, range: 9, scullery: 9, timber: 10, backcase: 10, closet: 10, coping: 11,
 };
 
 /**
@@ -1412,10 +1418,29 @@ export class Backdrop {
          more, which is what shapeField reads). */
       const court = P.court ?? 0;
       const ways = P.ways ?? 3;
-      const HH = 2.95;
+      /* (graft: 3.2 m, the wall program's HH -- taller than a man by half
+         again, so a run across the way is a wall and not a slab) */
+      const HH = 3.2;
       let zr = -(P.first ?? 5.4) - court;
       let side = rand() < 0.5 ? -1 : 1;
-      const statues = shapes.filter((s) => s !== 28);
+      const statues = shapes.filter((s) => s !== 28 && s !== 30);
+      const tops = shapes.filter((s) => s === 30);
+      /* THE LANDMARKS (graft, VANDYKE's, all three judges): clipped topiary
+         -- spirals, tiered stands, cones, ball-trees in their boxes on
+         plinths -- stood along both hedges down the alley, a pace off the
+         yew, leaving the walk (and the fight) the middle. Staggered, so the
+         two files are not a mirror of each other. */
+      if (tops.length) {
+        const zEnd = -(P.first ?? 5.4) - court + 0.9;
+        for (const sx of [-1, 1]) {
+          let zt = -0.8 - rand() * 1.6 - (sx > 0 ? 1.4 : 0);
+          while (zt > zEnd && zt > -RD + 1.5) {
+            push(tops[(rand() * tops.length) | 0], sx * (halfW - 1.05 - rand() * 0.25), zt,
+                 0.90 + rand() * 0.25, 0.55, undefined, 'wall');
+            zt -= 3.0 + rand() * 1.4;
+          }
+        }
+      }
       let placedStat = 0;
       for (let r = 0; r < ways && zr > -RD + 1.2; r++) {
         const [f0, f1] = spanAt(zr, 1.5);
@@ -1423,7 +1448,11 @@ export class Backdrop {
         /* the way through this run: 2.2-3.0 m, off to one side of the axis */
         const gw = 2.2 + rand() * 0.8;
         const reach = Math.max(1.2, Math.min(x1, -x0) * 0.55);
-        const gc = side * (1.3 + rand() * (reach - 1.0));
+        let gc = side * (1.3 + rand() * (reach - 1.0));
+        /* (graft: the FIRST run's way through keeps to the side, so the
+           fight's creatures stand against a face of yew and not against a
+           hedge top crossing behind them at the height of their Guard) */
+        if (r === 0) gc = side * Math.max(Math.abs(gc), Math.min(halfW - 1.4, 2.3 + gw / 2));
         /* the FIRST run is cut back on its way-through side all the way to
            the side hedge: the walk turns there, and the side wall running on
            past it is the corridor the eye follows into the maze */
@@ -1447,7 +1476,7 @@ export class Backdrop {
         }
         /* a statue at the end of the run, in front of the hedge beside the
            way through, on the first two runs */
-        if (statues.length && r < 2 && placedStat < n) {
+        if (statues.length && r < 2 && placedStat < 2) {
           const sx = gc + side * (gw / 2 + 0.9 + rand() * 1.4);
           push(statues[(rand() * statues.length) | 0], sx, zr + 0.9, 1.0, 0.5);
           placedStat++;

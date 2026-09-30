@@ -618,8 +618,13 @@ export const REGIONS = {
        walls are clipped yew (the wall program's hedge), 20 m apart, the
        floor is turf with a gravel walk (the churchyard's pattern 11), and the
        runs of yew across the way ahead are the `maze` layout. */
-    sides: true, arch: 3, floorPattern: 13, subject: 'topiary', runner: 1.35,
-    room: { w: 20, d: 24, h: 0, side: 0, ceilPattern: 0, wallPad: 0 },
+    /* (round 22 graft, VANDYKE's enclosure, all three judges: at 20 m apart
+       the side hedges stood out of frame and the maze read as "a low,
+       waist-high slab across the back behind a wide empty lawn -- a walled
+       garden". An ALLEY of the maze is 11 m between its hedges, so they rise
+       past the top of the frame on both hands, taller than the Kid.) */
+    sides: true, arch: 3, floorPattern: 13, subject: 'topiary', runner: 1.15,
+    room: { w: 11, d: 26, h: 0, side: 0, ceilPattern: 0, wallPad: 0 },
     cam: { y: 2.35, z: 9.2, look: 2.5, fov: 47 },
     deep: '#191618', mid: '#353020', hi: '#575030', accent: '#90905e',
     rimCol: '#c4b479', shaft: '#b8ae8b', floorDeep: '#100e12', floorMid: '#27221b',
@@ -630,7 +635,10 @@ export const REGIONS = {
        is a GARDEN STATUE on a plinth at the turn of a walk, and shape 15 now
        has carved features, drapery and a moulded base to bring to it. */
     /* ...and its pieces are its STATUES; the yew is dealt as architecture */
-    props: { shapes: [15, 15], count: 6, height: 2.4, layout: 'maze', family: ['maze'] },
+    /* (graft: and its landmarks are TOPIARY (30) -- spirals, tiered stands,
+       cones and ball-trees in their boxes -- stood along the hedges, with a
+       statue at a turn) */
+    props: { shapes: [15, 30, 30, 30], count: 8, height: 2.4, layout: 'maze', family: ['maze'] },
     particles: { mix: [[PTYPE.SPORE, 0.44], [PTYPE.ASH, 0.30], [PTYPE.DUST, 0.26]],
                  tint: '#e0d8a8', wispTint: '#b08fd8', emberTint: '#d8a04a',
                  speed: 0.75, scale: 1.3, wind: 1.4, density: 0.95 },
@@ -640,11 +648,15 @@ export const REGIONS = {
     lights: [
       { kind: 'cold', x: -3.0, y: 7.60, z: -12.0, color: '#a4b5cc', intensity: 2.63, radius: 14.0, flicker: false },
       { kind: 'warm', x: 3.0, y: 1.00, z: -5.0, color: '#dda358', intensity: 1.47, radius: 4.64 },
-      { kind: 'cold', x: -6.4, y: 1.20, z: -8.5, color: '#a891d0', intensity: 1.32, radius: 6.4 },
+      /* (graft: in the alley, not 6.4 m out inside the hedge -- and against
+         its side hedge, where it lights that hedge's leaf, not across the
+         walk where it laid a violet slab on the second run of yew) */
+      { kind: 'cold', x: -4.5, y: 1.20, z: -8.2, color: '#a891d0', intensity: 1.32, radius: 5.0 },
     ],
     /* Open to the sky: see the Graveyard's note. A shaft needs something to
-       come through, and there is no ceiling here. */
-    shafts: { count: 2, spread: 28, y: 9.0, z: -11.0, angle: 0.34, width: 4.4, intensity: 0.12, pool: 1.6 },
+       come through, and there is no ceiling here. (Graft: between two hedges
+       under a clear moon one read as a pale parallelogram across the stars.) */
+    shafts: { count: 2, spread: 28, y: 9.0, z: -11.0, angle: 0.34, width: 4.4, intensity: 0.0, pool: 1.6 },
   },
 
   /* ── 13. The Secret Passages ───────────────────────────────────────────────
@@ -1333,8 +1345,13 @@ export const ROOM_KINDS = {
          from the mouth of the walk that reaches it */
       /* (round 22: the court is the space the yew is held back from --
          `maze.court` -- so the fountain stands in it with the hedge round) */
-      { subject: 'topiary', layout: 'maze', maze: { court: 4.2, ways: 2 },
-        centre: { shape: 25, z: -4.6, clear: 3.2 },
+      /* (graft, CAPUT's court, two judges: the court's own hedge closes it
+         close behind the fountain, clipped into piers with a ball on each
+         and a statue in an arched niche between each pair -- subject
+         `court` -- and no runs across it; the alley opens out to it) */
+      { subject: 'court', layout: 'maze', maze: { court: 0, first: 12, ways: 0 },
+        room: { w: 1.55, d: 0.46 },
+        centre: { shape: 25, z: -5.0, clear: 3.2 },
         vantage: { at: 'among', low: 0.62, fwd: 2.0, pitch: 3.0, off: 0.04, wide: 3 } },
       /* the gate into the maze, seen from in it */
       { subject: 'topiary', layout: 'maze', maze: { gate: true, first: 4.2 },

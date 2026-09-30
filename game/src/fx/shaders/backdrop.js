@@ -4033,109 +4033,207 @@ float gBarM;
    place of a built surface". A built wall is its courses, its leaves, its
    panels: the material IS the drawing. No other wing links this program. */
 #if MM_ROOMS == 8
-/* LEAF IN SPRAYS -- the same construction as the yew prop (shape 28): a
-   clump on each of two staggered grids, the nearer winning, dark between. */
-/* x the spray's dome, y how much of it is its UPPER, moonlit side */
-vec2 wYew(vec2 q, float s, float cell){
-  q += 0.08*vec2(sin(q.y*3.7 + q.x*1.3 + s), sin(q.x*3.1 - q.y*1.9 + s*1.7));
-  vec2 c1 = q/cell, i1 = floor(c1);
-  vec2 f1 = fract(c1) - 0.5 - (mmHash22(i1 + s) - 0.5)*0.80;
-  vec2 c2 = q/cell + vec2(0.5), i2 = floor(c2);
-  vec2 f2 = fract(c2) - 0.5 - (mmHash22(i2 + s + 5.1) - 0.5)*0.80;
-  float cl = clamp(max(1.0 - dot(f1, f1)*3.4, 1.0 - dot(f2, f2)*3.4), 0.0, 1.0);
-  cl *= 0.55 + 0.45*mmNoise(q*3.1 + s*1.3);
-  vec2 fw = dot(f1, f1) < dot(f2, f2) ? f1 : f2;
-  return vec2(cl, clamp(0.25 + cl*(0.45 + 1.3*fw.y), 0.0, 1.0));
+/* ROUND 22 GRAFT: THE MAZE AS VANDYKE BUILT IT, IN CASSEL'S PROGRAM.
+   All three judges gave both hedge screens to VANDYKE's enclosure -- clipped
+   yew walls taller than the Kid on every side, cut through to the alleys off
+   them, the moon along the tops -- and named two defects of it to leave
+   behind: "a mint-green neon rim along every hedge crown" and "flat grey
+   translucent panel joints between hedge sections". So: VANDYKE's leaf (two
+   scales of lobed sprays, each a lighter body in a dark crease), on CASSEL's
+   walls (the side walls' ways through are real holes, main() discards them),
+   with the crown an IRREGULAR LEAFY SILHOUETTE whose moonlight falls only on
+   the upper faces of its sprays -- never one continuous line of light. */
+/* the nearest of four jittered lobe centres (VANDYKE's wLobes): h > 0 on a
+   lobe, its own hash in id, the offset from its centre in off */
+float wLobes(vec2 c, float jit, float sd, out float id, out vec2 off){
+  vec2 b = floor(c - 0.5);
+  float h = -1.0;
+  id = 0.0;
+  off = vec2(0.0);
+  for (int k = 0; k < 4; k++){
+    vec2 o = b + vec2(mod(float(k), 2.0), floor(float(k)*0.5));
+    vec2 hs = mmHash22(o + sd);
+    vec2 dv = c - (o + 0.5 + (hs - 0.5)*jit);
+    float hh = 0.72 + 0.22*hs.x - length(dv);
+    if (hh > h){ h = hh; id = hs.y; off = dv; }
+  }
+  return h;
 }
-/* THE HEDGE MAZE'S WALLS. Clipped yew 2.95 m high -- the prop's own height,
-   so a run across the way and the walls either side are one hedge -- its
-   top sheared level and lit by the moon, its face in sprays, its foot dark
-   where the old wood shows. The SIDE walls have their turnings: a way
-   through every few metres, cut clean through (main() discards it, and the
-   turf and the hedge beyond show through it), and above the hedge they are
-   not there at all, so the sky over them is the far wall's own. The FAR wall
-   has its ways through PAINTED -- the path running on between two dark
-   returns to the next hedge -- topiary finials standing on it against the
-   sky, and the wood over it, far off. */
+/* THE FACE OF A CLIPPED YEW: sprays a hand across, and in each its leaves,
+   each dissolving to its mean tone where it is too small to draw (mmLod).
+   Relief in metres; tone 0..1 a multiplier (the crease dark, the upper face
+   light); lit 0..1 how much of this pixel is the UPPER face of a big spray,
+   which is all the moon finds on a crown. */
+float yewFace(vec2 p, float px, float sd, out float tone, out float lit){
+  float i1, i2;
+  vec2 o1, o2;
+  float a = wLobes(p/0.34, 0.74, sd, i1, o1);
+  float l1 = mmLod(0.34, px), l2 = mmLod(0.115, px);
+  float b = -1.0;
+  if (l2 > 0.001) {
+    vec2 pr = vec2(p.x*0.92 - p.y*0.39, p.x*0.39 + p.y*0.92);
+    b = wLobes(pr/0.115, 0.82, sd + 7.3, i2, o2);
+  } else { i2 = 0.5; o2 = vec2(0.0); }
+  float up1 = clamp(o1.y*1.7 + 0.30, 0.0, 1.0);
+  float s1 = smoothstep(-0.02, 0.24, a) * (0.42 + 0.58*up1) * (0.80 + 0.40*i1);
+  float s2 = smoothstep(-0.02, 0.22, b) * (0.55 + 0.45*clamp(o2.y*1.7 + 0.30, 0.0, 1.0))
+           * (0.85 + 0.30*i2);
+  tone = mix(0.52, s1, l1) * mix(0.72, s2, l2);
+  lit = mix(0.35, smoothstep(0.05, 0.30, a) * up1 * up1, l1) * mix(0.8, 0.55 + 0.45*s2, l2);
+  return a*0.080*l1 + b*0.028*l2;
+}
+/* THE CROWN: a clipped top is level to a few centimetres, but it is LEAF --
+   against the sky its edge is the domes of the sprays along it, each its
+   own width, never a ruled line. Metres above or below HH. */
+float yewCrown(float u, float sd){
+  float c1 = fract(u/0.31 + 0.37*sin(u*0.9 + sd));
+  float c2 = fract(u/0.19 + 0.53 + 0.21*sin(u*1.7 + sd*1.3));
+  float d1 = sqrt(max(1.0 - 4.0*(c1 - 0.5)*(c1 - 0.5), 0.0));
+  float d2 = sqrt(max(1.0 - 4.0*(c2 - 0.5)*(c2 - 0.5), 0.0));
+  return 0.070*max(d1, d2*0.75) + 0.018*sin(u*0.47 + sd) - 0.035;
+}
+/* how much of this pixel's light is the hedge's leaf (for main()'s lamps:
+   a lamp on a clipped yew lights its sprays, not a smooth disc of it --
+   CASSEL's orange-and-purple blotch on the back hedge) */
+float gHedgeLeaf = 1.0, gHedgeAmt = 0.0;
+/* THE HEDGE MAZE'S WALLS. Clipped yew 3.2 m high -- the yew runs' (shape
+   28) own height, so a run across the way and the walls either side are one
+   hedge. The SIDE walls have their turnings: a way through every few metres
+   cut clean through (main() discards it, and the turf and the next hedge
+   show through), and above the hedge they are not there, so the sky over
+   them is the far wall's own. The FAR wall has its way through PAINTED --
+   the path running on between two dark returns to the next hedge --
+   topiary finials on it against the sky, and the wood over it far off. The
+   fountain COURT (subject 37, CAPUT's, two judges) is clipped into piers
+   with a ball on each, and between them arched niches cut into the yew
+   with a statue standing in each. */
 float hedgeWallH(vec2 q, float qpx, out float occ){
   occ = 0.0;
-  const float HH = 2.95;
+  const float HH = 3.20;
   float far = step(0.5, uFar);
+  float court = far * step(36.5, uSubject);
   float wx = q.x - uSize.x*0.5;                  // metres off the far wall's axis
-  float fuzz = (mmNoise(q*vec2(8.0, 2.0) + uSeed*7.0) - 0.5)*0.06
-             + (mmNoise(vec2(q.x*1.1, 0.0) + uSeed) - 0.5)*0.05;
-  float top = HH + fuzz;
-  /* the finials on the far hedge: a ball on a neck or a cone */
-  float fp = 6.5;
-  float fi = floor((wx + uSeed*3.0)/fp + 0.5);
-  float fxl = wx + uSeed*3.0 - fi*fp;
-  float fk = mmHash11(fi*7.13 + uSeed);
+  float u = far > 0.5 ? wx : q.x;
+  float sd = uSeed*3.1 + (far > 0.5 ? 0.0 : sign(vWorld.x)*5.7);
+  float top = HH + yewCrown(u, sd);
+  /* the finials on the far hedge: a ball on a neck or a cone; in the court,
+     a clipped ball on every pier, all alike */
+  float fp = court > 0.5 ? 3.4 : 6.5;
+  float fo = court > 0.5 ? 1.7 : uSeed*3.0;
+  float fi = floor((wx + fo)/fp + 0.5);
+  float fxl = wx + fo - fi*fp;
+  float fk = court > 0.5 ? 0.5 : mmHash11(fi*7.13 + uSeed);
+  /* (computed on every far-wall pixel and switched off after: a finial's
+     distance set to a constant where there is none made mmCover's gradient
+     a thousand across every cell boundary, and a half-covered pixel there) */
   float fin = 1e3;
-  if (far > 0.5 && fk > 0.35) {
+  if (far > 0.5) {
     vec2 c = vec2(fxl, q.y - HH);
     float nk = mmBox(c - vec2(0.0, 0.10), vec2(0.20, 0.16), 0.06);
-    fin = fk < 0.72 ? length(c - vec2(0.0, 0.62)) - 0.44 : wTri(c - vec2(0.0, 0.16), 0.44, 1.15);
+    float br = court > 0.5 ? 0.50 : 0.44;
+    fin = fk < 0.72 ? length(c - vec2(0.0, 0.18 + br)) - br : wTri(c - vec2(0.0, 0.16), 0.44, 1.15);
     fin = min(fin, nk) + (mmNoise(q*11.0) - 0.5)*0.05;
   }
-  /* the ways through */
+  float finOn = far * step(0.35, fk);
+  /* the ways through (none on the court's own hedge: the court is closed) */
   float gw, gx;
   if (far > 0.5) {
     gx = mod(wx + 4.2 + uSeed*2.3, 13.0) - 6.5;
-    gw = 1.20;
+    gw = 1.20*(1.0 - court);
   } else {
     gx = mod(q.x + uSeed*2.7, 8.6) - 4.3;
     gw = 1.05*step(0.30, mmHash11(floor((q.x + uSeed*2.7)/8.6)*3.1 + uSeed));
   }
   float inGap = (1.0 - smoothstep(gw - qpx, gw + qpx, abs(gx))) * step(0.01, gw);
-  /* the hedge's coverage: under its top, or in a finial */
-  float cov = max(mmCover(top - q.y), mmCover(-fin));
+  /* the hedge's coverage: under its crown, or in a finial */
+  float finC = mmCover(-fin) * finOn;
+  float cov = max(mmCover(top - q.y), finC);
   float hedge = cov * (1.0 - inGap);
+  /* above the hedge a SIDE wall is not there: skip the leaf entirely (it
+     is a third of the side walls' pixels and all of the sky over them) */
+  gWDisc = (1.0 - far) * (1.0 - hedge);
+  if (far < 0.5 && q.y > HH + 0.25) { gHedgeAmt = 0.0; return 0.0; }
   /* the face: sprays, a slow swell, the foot */
-  vec2 cy = wYew(q, uSeed, 0.26);
-  float cl = cy.x;
-  float res = mmLod(0.26, qpx);
-  float h = 1.25 + 0.34*cl*res + 0.18*(mmNoise(q*0.8 + uSeed*2.0) - 0.5);
-  h += 0.06*(mmNoise(q*24.0 + uSeed) - 0.5)*mmLod(0.05, qpx);
-  float foot = smoothstep(0.40, 0.02, q.y);
+  float tone, lit;
+  float rel = yewFace(vec2(u, q.y), qpx, sd, tone, lit);
+  float h = 1.20 + rel*3.2 + 0.14*(mmNoise(q*0.8 + uSeed*2.0) - 0.5);
+  /* the clipped shoulder: the last 0.25 m rounds over onto the top */
+  float sh = smoothstep(top - 0.30, top, q.y);
+  h -= sh*sh*0.30;
+  float foot = smoothstep(0.42, 0.02, q.y);
   h -= foot*0.45;
+  /* a court pier stands proud of the hedge between the niches, its sides
+     turning, and its ball is a dome of clipped yew */
+  float pier = court * mmCover(0.42 - abs(fxl));
+  h += pier*(0.20 - 0.10*smoothstep(0.28, 0.42, abs(fxl)));
+  vec2 bq = vec2(fxl, q.y - HH - 0.68);
+  float bdome = sqrt(max(1.0 - dot(bq, bq)/0.25, 0.0));
+  h = mix(h, 1.15 + rel*2.4 + bdome*0.6, finC*court);
   /* the painted way through, on the far wall: the path on between the two
      returns, to a hedge beyond (lower, further, darker) */
   float corr = 0.0, ret = 0.0;
-  if (far > 0.5) {
+  if (far > 0.5 && court < 0.5) {
     ret = smoothstep(gw*0.55, gw*0.95, abs(gx));
-    float beyond = mmCover(2.05 + fuzz*0.6 - q.y) * (1.0 - ret);
+    float beyond = mmCover(2.25 + yewCrown(u*1.6, sd + 3.0)*0.6 - q.y) * (1.0 - ret);
     corr = inGap * max(ret*mmCover(top - q.y), beyond);
-    float cl2 = wYew(q*1.7, uSeed + 3.0, 0.26).x;
-    h = mix(h, 1.05 + 0.20*cl2*res - 0.30*ret, corr);
+    h = mix(h, 1.05 + rel*2.0 - 0.30*ret, corr);
   }
-  /* the sheared top catches the moon: the last few centimetres under the
-     top line, a line of light the length of every run */
-  gWLit = smoothstep(top - 0.22, top - 0.04, q.y) * hedge
-        + (1.0 - smoothstep(0.0, 0.30, abs(q.y - 2.00 - fuzz*0.6))) * corr * (1.0 - ret) * 0.45;
+  /* THE MOON ON THE CROWN: only the upper faces of the sprays in the top
+     half-metre, and the upper face of a ball -- a broken, leafy catch of
+     light, never a line; the band's own fall-off keeps it off the face */
+  float crownB = smoothstep(top - 0.55, top - 0.06, q.y);
+  gWLit = crownB * lit * hedge * 0.85
+        + finC * court * smoothstep(-0.10, 0.45, bq.y) * lit * 0.8;
   float solidM = max(hedge, corr);
+  /* the niches (the court only): an arch 1.24 m wide cut 0.7 m into the yew
+     in every bay between the piers, dark inside, and in it a statue on its
+     pedestal -- a draped figure in pale stone, life size */
+  float niche = 0.0, stone = 0.0, sdome = 0.0;
+  if (court > 0.5) {
+    float nb = mod(wx + 1.7, 3.4) - 1.7;        // between the piers
+    float nd = mmArch(vec2(nb, q.y), 0.62, 2.10);
+    niche = mmCover(-nd) * (1.0 - pier);
+    float sy = q.y;
+    float ped = mmBox(vec2(nb, sy - 0.38), vec2(0.28, 0.38), 0.02);
+    float robe = mmBox(vec2(nb, sy - 1.28), vec2(0.19 + 0.06*smoothstep(1.85, 0.85, sy), 0.52), 0.12);
+    float head = length(vec2(nb + 0.01, sy - 1.98)) - 0.115;
+    float arm = mmBox(vec2(nb + 0.13, sy - 1.60), vec2(0.07, 0.24), 0.06);
+    float fig = min(min(ped, robe), min(head, arm));
+    stone = mmCover(-fig) * niche;
+    sdome = sqrt(max(1.0 - nb*nb/0.08, 0.0));
+    h = mix(h, h - 0.70, niche);
+    h = mix(h, 1.15 + sdome*0.45 - step(sy, 0.76)*0.25, stone);
+    mmPen(fig, 1.0, 0.70*niche);
+    mmPen(nd, 1.1, 0.60*(1.0 - pier));
+  }
+  /* the ink: the crown against the sky, the finials, the jambs of a way */
+  mmPen(top - q.y, 1.1, 0.55*(1.0 - inGap));
+  mmPen(fin, 1.0, 0.55*finOn);
   /* the colour: dark yew, withered brown in patches, the foot darker */
   float lum = mmLum(uMid);
   vec3 yew = vec3(0.16, 0.30, 0.14)*(lum*2.6 + 0.020);
-  float dead = smoothstep(0.62, 0.82, mmFbm3(q*0.45 + uSeed*4.0));
-  yew = mix(yew, vec3(0.34, 0.27, 0.15)*(lum*2.4 + 0.020), dead*0.50);
-  yew *= mix(1.0, 0.45, foot);
+  float dead = smoothstep(0.64, 0.82, mmFbm3(q*0.45 + uSeed*4.0));
+  yew = mix(yew, vec3(0.34, 0.27, 0.15)*(lum*2.4 + 0.020), dead*0.45);
+  yew *= 0.24 + 1.25*tone;
+  yew *= mix(1.0, 0.40, foot);
   yew *= mix(1.0, 0.50, corr*ret);
-  yew *= mix(0.85, 0.40 + 1.05*cy.y, res);
+  yew = mix(yew, yew*0.12, niche*(1.0 - stone));
+  yew = mix(yew, vec3(0.58, 0.57, 0.53)*(lum*1.6 + 0.020)*(0.55 + 0.45*sdome), stone);
   gCol = yew;
   gColAmt = solidM;
+  gHedgeLeaf = mix(1.0, (0.20 + 1.30*tone)*(1.0 - niche*0.8), hedge*(1.0 - stone));
+  gHedgeAmt = hedge*(1.0 - stone);
   /* the wood beyond, over the hedge, against the sky: firs and round crowns
      at their own heights, far off, the foot of it hidden by the hedge */
   if (far > 0.5) {
     float tp = 3.1;
     float ti = floor((wx + uSeed*5.0)/tp);
     float tx = wx + uSeed*5.0 - (ti + 0.5)*tp;
-    float th = 3.3 + 4.6*mmHash11(ti*3.7 + uSeed);
+    float th = 3.6 + 4.6*mmHash11(ti*3.7 + uSeed);
     float tx2 = tx + (mmHash11(ti*2.3 + uSeed) - 0.5)*1.2;
     float crown = (th - q.y) - abs(tx2)*(2.4 + 0.8*mmHash11(ti*6.1))*(1.0 + 0.14*sin(q.y*6.0 + ti));
     gWood = mmCover(crown*0.4) * step(0.2, mmHash11(ti*5.3 + uSeed)) * (1.0 - solidM);
   }
-  /* above the hedge a SIDE wall is not there, nor is a way through it */
-  gWDisc = (1.0 - far) * (1.0 - hedge);
   return h * solidM;
 }
 #endif
@@ -5947,6 +6045,12 @@ void main(){
      are drawn a pixel wide, and sPortrait is only called under a branch */
   float ptPx = max(abs(dFdx(q.x)), abs(dFdy(q.y)));
   float h  = wallH(q, sOcc);
+#if MM_ROOMS == 8
+  /* the sky over a side hedge is the far wall's: nothing of this wall is
+     drawn there, so it is dropped before it is lit (every quad up here is
+     all sky, so no derivative below straddles it) */
+  if (gWDisc > 0.5 && q.y > 3.6) discard;
+#endif
   if (gPtAmt > 0.002)
     gCol = mix(gCol, sPortrait(gPtP, gPtHs, gPtSd, ptPx, gPtK), clamp(gPtAmt, 0.0, 1.0));
   vec2  dq = vec2(max(abs(dFdx(q.x)), 1e-4), max(abs(dFdy(q.y)), 1e-4));
@@ -6045,6 +6149,12 @@ void main(){
     float att = mmAtten(dist, L.z, L.w);
     vec3 ldir = normalize(vec3(-d, 3.0));         // toward the light, out of the wall
     float ndl = mmWrapNdL(nrm, ldir, 0.35);
+#if MM_ROOMS == 8
+    /* (graft: a lamp on a clipped yew lights its sprays, not a smooth disc
+       of the hedge -- CASSEL's orange-and-purple blotch on the back hedge
+       was the lamp's fall-off on a face whose relief it could not see) */
+    att *= gHedgeLeaf;
+#endif
     col += alb * uLightCol[i] * att * (0.12 + 1.15*ndl);
     /* A CANVAS IS NOT A MIRROR, AND THIS IS WHY THE FIRST PORTRAITS GLOWED.
        Measured on the capture: the field inside a frame came back at luminance
@@ -6097,8 +6207,14 @@ void main(){
      with lit top edges". */
   if (uArch > 2.5 && uArch < 3.5) {
     vec3 moonH = mix(uOpenGlow, vec3(0.74, 0.82, 1.00), 0.62);
+    /* (graft, CAPUT's, one judge: the two side hedges face each other
+       across the alley, one to the moon and one to the lanterns -- their
+       leaf lit cold on one face and warm on the other) */
+    float warmSide = (1.0 - step(0.5, uFar)) * step(vWorld.x, 0.0);
+    vec3 faceC = mix(moonH, vec3(1.00, 0.70, 0.40)*0.80, warmSide*0.75);
     float solidH = smoothstep(0.25, 0.85, h);
-    col += alb * moonH * solidH * (0.10 + 0.42*max(nrm.y, 0.0) + 2.2*gWLit) * uGain;
+    col += alb * solidH * (faceC*(0.10 + 0.42*max(nrm.y, 0.0))*mix(1.0, 0.35 + 0.95*gHedgeLeaf, gHedgeAmt)
+                           + moonH*2.2*gWLit) * uGain;
   }
 #endif
 #if MM_ROOMS >= 8
@@ -8534,7 +8650,117 @@ float yewSD(vec2 m, vec2 msz, float seed){
   /* a clipped face is flat in its planes and fuzzy at its margin: small
      sprays at a leaf's scale and a slower swell where it has grown out */
   d += (mmNoise(m*11.0 + seed*7.0) - 0.5)*0.050 + (mmNoise(m*2.3 + seed*3.1) - 0.5)*0.070;
+  /* ...and its CROWN is leaf (graft): against the sky the sheared top is
+     the domes of the sprays along it, each its own width -- the same crown
+     the maze's walls have (yewCrown in the wall program) */
+  float ct = m.y - top + 0.12;
+  if (ct > 0.0 && ct < 0.30) {
+    float c1 = fract(m.x/0.31 + 0.37*sin(m.x*0.9 + seed));
+    float c2 = fract(m.x/0.19 + 0.53 + 0.21*sin(m.x*1.7 + seed*1.3));
+    float cb = max(sqrt(max(1.0 - 4.0*(c1 - 0.5)*(c1 - 0.5), 0.0)),
+                   0.75*sqrt(max(1.0 - 4.0*(c2 - 0.5)*(c2 - 0.5), 0.0)));
+    d -= (0.070*cb - 0.035) * smoothstep(0.0, 0.10, ct) * smoothstep(0.30, 0.20, ct);
+  }
   return d;
+}
+
+/* 30  CLIPPED TOPIARY (graft: VANDYKE's forms, all three judges -- "spiral
+       and tiered topiaries and potted ball-trees on plinths as landmarks").
+       What stands in a maze is CLIPPED: forms a hand made out of yew, each
+       with a silhouette named at a glance -- a cone on a hand's breadth of
+       stem, a ball on a clear stem in a Versailles box on a stone plinth, a
+       tiered stand of three discs and a ball, and the spiral, a cone with a
+       groove wound up it. x the leaf's and y the made parts' signed
+       distances, metres; gTopPart 1 the stem and box, 2 the plinth. */
+float gTopWood = 0.0, gTopPart = 0.0, gTopKind = 0.0;
+/* THE YEW'S LEAF, the wall program's own (VANDYKE's two scales of lobed
+   sprays, graft), so a run across the way, a topiary and the walls either
+   side are one hedge: tone 0..1 the crease dark and the upper face light,
+   lit how much of the pixel is the upper face of a big spray */
+float yLobes(vec2 c, float jit, float sd, out float id, out vec2 off){
+  vec2 b = floor(c - 0.5);
+  float h = -1.0;
+  id = 0.0;
+  off = vec2(0.0);
+  for (int k = 0; k < 4; k++){
+    vec2 o = b + vec2(mod(float(k), 2.0), floor(float(k)*0.5));
+    vec2 hs = mmHash22(o + sd);
+    vec2 dv = c - (o + 0.5 + (hs - 0.5)*jit);
+    float hh = 0.72 + 0.22*hs.x - length(dv);
+    if (hh > h){ h = hh; id = hs.y; off = dv; }
+  }
+  return h;
+}
+float yewFaceP(vec2 p, float px, float sd, out float tone, out float lit){
+  float i1, i2;
+  vec2 o1, o2;
+  float a = yLobes(p/0.34, 0.74, sd, i1, o1);
+  float l1 = smoothstep(2.5*px, 6.0*px, 0.34), l2 = smoothstep(2.5*px, 6.0*px, 0.115);
+  float b = -1.0;
+  if (l2 > 0.001) {
+    vec2 pr = vec2(p.x*0.92 - p.y*0.39, p.x*0.39 + p.y*0.92);
+    b = yLobes(pr/0.115, 0.82, sd + 7.3, i2, o2);
+  } else { i2 = 0.5; o2 = vec2(0.0); }
+  float up1 = clamp(o1.y*1.7 + 0.30, 0.0, 1.0);
+  float s1 = smoothstep(-0.02, 0.24, a) * (0.42 + 0.58*up1) * (0.80 + 0.40*i1);
+  float s2 = smoothstep(-0.02, 0.22, b) * (0.55 + 0.45*clamp(o2.y*1.7 + 0.30, 0.0, 1.0))
+           * (0.85 + 0.30*i2);
+  tone = mix(0.52, s1, l1) * mix(0.72, s2, l2);
+  lit = mix(0.35, smoothstep(0.05, 0.30, a) * up1 * up1, l1) * mix(0.8, 0.55 + 0.45*s2, l2);
+  return a*0.080*l1 + b*0.028*l2;
+}
+float topKind(float seed){ return mmHash11(seed*7.31 + 0.4); }
+vec2 topSD(vec2 m, vec2 msz, float seed){
+  float H = msz.y*0.95;
+  float k = topKind(seed);
+  float leaf = 9.0, wood = 9.0, stone = 9.0;
+  gTopKind = k;
+  if (k < 0.22) {
+    /* a CONE clipped from the ground on a hand's breadth of bare stem */
+    float hw = min(msz.x*0.44, H*0.27);
+    float yy = m.y - 0.14;
+    float t = clamp(yy/(H - 0.14), 0.0, 1.0);
+    leaf = max(max(abs(m.x) - hw*(1.0 - t), -yy)*0.94, yy - (H - 0.14));
+    wood = mmBox(m - vec2(0.0, 0.08), vec2(0.055, 0.08), 0.01);
+  } else if (k < 0.55) {
+    /* a BALL ON A CLEAR STEM in a Versailles box, its ball finials at the
+       corners, standing on a stone plinth */
+    float r = min(msz.x*0.40, 0.50);
+    stone = mmBox(m - vec2(0.0, 0.16), vec2(0.34, 0.16), 0.010);
+    stone = min(stone, mmBox(m - vec2(0.0, 0.335), vec2(0.38, 0.025), 0.006));
+    wood = mmBox(m - vec2(0.0, 0.60), vec2(0.27, 0.24), 0.012);
+    wood = min(wood, mmBox(m - vec2(0.0, 0.855), vec2(0.31, 0.022), 0.008));
+    wood = min(wood, length(vec2(abs(m.x) - 0.27, m.y - 0.91)) - 0.045);
+    float s0 = 0.86, s1 = H - 2.0*r + 0.06;
+    wood = min(wood, mmBox(m - vec2(0.0, (s0 + s1)*0.5), vec2(0.030, (s1 - s0)*0.5), 0.01));
+    leaf = length(m - vec2(0.0, H - r)) - r;
+  } else if (k < 0.78) {
+    /* a TIERED STAND: three clipped discs up one stem, and a ball on it */
+    wood = mmBox(m - vec2(0.0, H*0.45), vec2(0.034, H*0.45), 0.01);
+    for (int i = 0; i < 3; i++){
+      float f = float(i)/2.0;
+      float cy = mix(0.30, 0.76, f)*H;
+      vec2 rr = vec2(mix(0.47, 0.25, f)*msz.x, mix(0.21, 0.14, f));
+      leaf = min(leaf, (length((m - vec2(0.0, cy))/rr) - 1.0)*min(rr.x, rr.y));
+    }
+    leaf = min(leaf, length(m - vec2(0.0, H - 0.13)) - 0.13);
+  } else {
+    /* a SPIRAL: a cone with a groove wound up it, so its two edges are
+       notched out of step with each other -- the one topiary form nobody
+       mistakes for a tree */
+    float hw = min(msz.x*0.44, H*0.28);
+    float yy = m.y - 0.14;
+    float t = clamp(yy/(H - 0.14), 0.0, 1.0);
+    float notch = abs(sin(3.14159*(yy/0.36 + 0.5*step(0.0, m.x))));
+    leaf = max(max(abs(m.x) - hw*(1.0 - t)*(0.66 + 0.34*notch), -yy)*0.92, yy - (H - 0.14));
+    wood = mmBox(m - vec2(0.0, 0.08), vec2(0.055, 0.08), 0.01);
+  }
+  /* clipped, not smooth: a few centimetres of ragged leaf round the form */
+  leaf += (mmNoise(m*11.0 + seed*3.0) - 0.5)*0.040;
+  float made = min(wood, stone);
+  gTopWood = smoothstep(-0.006, 0.006, leaf - made);
+  gTopPart = stone < wood ? 2.0 : 1.0;
+  return vec2(leaf, made);
 }
 
 /* THE KITCHEN TABLE (29, round 22): a long scrubbed deal table on four
@@ -9370,6 +9596,9 @@ float shapeField(vec2 uv, vec2 msz, float shape, float seed){
   } else if (shape < 29.5) {              // 29 -- a kitchen table (round 22)
     float tok;
     d = tbSD(p*msz, msz, seed, tok) / msz.y;
+  } else if (shape < 30.5) {              // 30 -- a clipped topiary (graft)
+    vec2 tw = topSD(p*msz, msz, seed);
+    d = min(tw.x, tw.y) / msz.y;
 #endif
   }
   /* A BRASS FITTING HAS NO ERODED EDGE. The fbm below is what keeps stone and
@@ -10792,42 +11021,49 @@ float reliefH(vec2 uv, vec2 msz, vec2 mpp, float shape, float seed, out float ti
     }
     gPkOn = onB * (1.0 - onS); gPkLobe = lb; gPkRib = rib; gPkStem = onS;
     gPkLeaf = onL; gPkCut = cut; gPkNear = near;
-  } else if (shape < 28.5) {              // 28 -- a clipped yew (round 22)
-    /* leaf in SPRAYS: a clump of it on each of two staggered grids, the
-       nearer one winning, with the dark between them -- the sheared face of
-       a yew is a mass of small domes, not a sheet of speckle */
-    float top = yewTop(msz, seed);
+  } else if (shape < 28.5 || (shape > 29.5 && shape < 30.5)) {   // 28 a clipped yew, 30 topiary
+    /* LEAF (graft): the maze walls' own two scales of lobed sprays, each a
+       lighter body in a dark crease -- CASSEL's small sprays here read as
+       fish scale beside the walls' leaf, and a run across the way and the
+       walls either side are one hedge */
+    float topi = step(29.5, shape);
+    float top = topi > 0.5 ? 1e3 : yewTop(msz, seed);
     float mp = max(mpp.x, mpp.y);
-    /* (warped, and jittered hard, so the sprays lie as a hedge grows and
-       not on a lattice -- a regular grid of them read as fish scale) */
-    /* (a cheap warp: two sines, where two noise taps cost the Hedge Maze's
-       frame most of a millisecond across a hedge this size) */
-    vec2 mw = m + 0.08*vec2(sin(m.y*3.7 + m.x*1.3 + seed), sin(m.x*3.1 - m.y*1.9 + seed*1.7));
-    vec2 c1 = mw/0.26, i1 = floor(c1);
-    vec2 f1 = fract(c1) - 0.5 - (mmHash22(i1 + seed) - 0.5)*0.80;
-    vec2 c2 = mw/0.26 + vec2(0.5), i2 = floor(c2);
-    vec2 f2 = fract(c2) - 0.5 - (mmHash22(i2 + seed + 5.1) - 0.5)*0.80;
-    float cl = max(1.0 - dot(f1, f1)*3.4, 1.0 - dot(f2, f2)*3.4);
-    /* ...broken up, so the sprays are not a quilt: each its own size, and
-       the leaf in them at a hand's scale */
-    cl = clamp(cl, 0.0, 1.0) * (0.55 + 0.45*mmNoise(m*3.1 + seed*1.3));
-    /* and each spray is lit on its UPPER side, the way a painter sets down
-       foliage under a high light: a scallop of light over a scallop of dark */
-    vec2 fw = dot(f1, f1) < dot(f2, f2) ? f1 : f2;
-    gYewCl = mix(0.5, clamp(0.25 + cl*(0.45 + 1.3*fw.y), 0.0, 1.0), pRes(0.24, max(mpp.x, mpp.y)));
-    float res = pRes(0.24, mp);
-    h += 0.016*cl*res;
-    tint -= 0.34*(1.0 - smoothstep(0.04, 0.40, cl))*res;
-    float lfN = mmNoise(m*vec2(26.0, 34.0) + seed);
-    h += 0.008*(lfN - 0.5)*pRes(0.05, mp);
-    tint -= 0.22*smoothstep(0.55, 0.20, lfN)*pRes(0.05, mp);
-    h += 0.040*(mmNoise(m*0.9 + seed*2.0) - 0.5);
-    gYewTop  = smoothstep(top - 0.20, top - 0.04, m.y) * step(m.y, top + 0.05);
-    gYewFoot = smoothstep(0.36, 0.02, m.y);
+    /* a topiary's box, stem and plinth are not leaf */
+    float onLf = 1.0;
+    if (topi > 0.5) { topSD(m, msz, seed); onLf = 1.0 - gTopWood; }
+    float ytone, ylit;
+    float yrel = yewFaceP(m + seed*1.7, mp, seed*3.1, ytone, ylit);
+    gYewCl = mix(0.5, ytone, onLf);
+    h += yrel*0.22*onLf;
+    tint -= 0.30*(1.0 - smoothstep(0.10, 0.45, ytone))*onLf;
+    h += 0.040*(mmNoise(m*0.9 + seed*2.0) - 0.5)*onLf;
+    /* THE CROWN TAKES THE MOON ON ITS LEAVES (graft: CASSEL's was one
+       continuous band a hand deep along every run -- the "neon rim" the
+       judges named on VANDYKE's): only the upper faces of the sprays in its
+       top half-metre, so the light breaks with the leaf */
+    gYewTop  = smoothstep(top - 0.55, top - 0.05, m.y) * step(m.y, top + 0.10) * ylit;
+    gYewFoot = smoothstep(0.36, 0.02, m.y) * (1.0 - topi);
     h -= 0.040*gYewFoot;
     float ad = yewArch(m, seed);
-    gYewRev = (1.0 - smoothstep(0.02, 0.20, ad)) * step(ad, 0.20);
-    gYewDead = smoothstep(0.62, 0.84, mmNoise(m*0.55 + seed*4.0));
+    gYewRev = (1.0 - smoothstep(0.02, 0.20, ad)) * step(ad, 0.20) * (1.0 - topi);
+    gYewDead = smoothstep(0.62, 0.84, mmNoise(m*0.55 + seed*4.0)) * (1.0 - topi);
+    if (topi > 0.5) {
+      /* a clipped form is a SOLID: in shade under its own overhang and
+         toward its foot, lit across its crown */
+      tint -= 0.22*smoothstep(0.55, 0.05, uv.y)*onLf;
+      /* the spiral's groove, wound up the cone */
+      float gro = (1.0 - smoothstep(0.08, 0.16, abs(fract((m.y - 0.14 + m.x*0.62)/0.36) - 0.5)))
+                * step(0.78, gTopKind) * onLf;
+      tint -= 0.55*gro;
+      h -= 0.025*gro;
+      /* the box is PANELLED: a sunk field in each face under its rim, and
+         the plinth's top edge catches the light */
+      float pan = gTopWood*step(gTopPart, 1.5)*step(0.42, m.y)*step(m.y, 0.80)
+                * (1.0 - smoothstep(0.17, 0.19, abs(m.x)));
+      h -= pan*0.012;
+      h -= 0.010*pR(m.y - 0.36, 0.012)*gTopWood;
+    }
   } else if (shape < 29.5) {              // 29 -- a kitchen table (round 22)
     /* the top's scrubbed boards, the legs' turning, the things on it round */
     float tok;
@@ -11140,6 +11376,18 @@ void main(){
     yew = mix(yew, yew*vec3(1.55, 1.85, 2.10), gYewTop*0.85);
     yew = mix(yew, yew*vec3(0.50, 0.42, 0.36), gYewFoot*0.80);
     albedo = yew * (1.0 - gYewRev*0.85);
+  }
+  /* the topiary (30, graft): the same yew, and a Versailles box painted a
+     dark lead green on a pale stone plinth */
+  if (vShape > 29.5 && vShape < 30.5) {
+    float lum = max(mmLum(albedo), 0.02);
+    vec3 yew = vec3(0.14, 0.27, 0.12)*(lum*1.05 + 0.018);
+    yew *= 0.84 + 0.30*blotch;
+    yew *= 0.45 + 1.10*gYewCl;
+    yew = mix(yew, yew*vec3(1.55, 1.85, 2.10), gYewTop*0.60);
+    vec3 boxC = vec3(0.30, 0.36, 0.32)*(lum*1.10 + 0.022)*(0.86 + 0.28*grain);
+    vec3 stnC = vec3(0.72, 0.70, 0.64)*(lum*1.25 + 0.030)*(0.84 + 0.30*blotch);
+    albedo = mix(yew, mix(boxC, stnC, step(1.5, gTopPart)), gTopWood);
   }
 #endif
 
@@ -11496,9 +11744,16 @@ void main(){
   glossP = mix(glossP, uGloss*2.4, waterM);        // falling water catches the lamp
   /* (round 22: a sheared yew is ten thousand tiny leaves at every angle,
      so it has no sheen of its own to run along a spray) */
-  if (vShape > 27.5 && vShape < 28.5) glossP = uGloss*0.12;
+  if (vShape > 27.5 && vShape < 30.5 && (vShape < 28.5 || vShape > 29.5)) glossP = uGloss*0.12;
   vec3 V = normalize(uCamera - vWorld);
   vec3 diff = vec3(0.0), spec = vec3(0.0), raw = vec3(0.0);
+  /* a lamp on a clipped yew lights its sprays, not a smooth disc of it
+     (graft: the orange and purple blotches on the maze's runs) */
+  float leafK = 1.0;
+#if MM_WINGS == 1
+  if (vShape > 27.5 && vShape < 30.5 && (vShape < 28.5 || vShape > 29.5))
+    leafK = mix(1.0, 0.10 + 1.50*gYewCl*gYewCl, (vShape > 29.5 ? 1.0 - gTopWood : 1.0));
+#endif
   /* N is in the QUAD's frame and the lamps are in the room's, so when a
      vantage has turned the flat to face the lens the normal turns with it
      (PROP_VERT). Exactly N itself on the square rig, where uYaw is (1, 0),
@@ -11512,6 +11767,7 @@ void main(){
     vec3 ldir = Lv / max(dist, 0.001);
     float att = mmAtten(dist, uLights[i].w, uLightInt[i]);
     float ndl = mmWrapNdL(N, ldir, 0.42);
+    att *= leafK;
     diff += uLightCol[i] * att * ndl;
     raw  += uLightCol[i] * att;
     spec += mmSpec(N, ldir, V, uLightCol[i], att, glossP, 34.0);
@@ -11531,9 +11787,11 @@ void main(){
      what the samples' night gardens do -- "dark leaf masses with lit top
      edges". The same moon the wall program lays on the maze's side walls,
      so the runs across and the walls either side are one hedge. */
-  if (vShape > 27.5 && vShape < 28.5) {
+  if (vShape > 27.5 && vShape < 30.5 && (vShape < 28.5 || vShape > 29.5)) {
     vec3 moonP = mix(uAccent, vec3(0.74, 0.82, 1.00), 0.62);
-    col += albedo * moonP * (0.10 + 0.55*max(N.y, 0.0) + 2.4*gYewTop);
+    /* (graft: a topiary out in the alley is lit by nothing else, and at
+       the old 0.10 a cone was a flat dark triangle) */
+    col += albedo * moonP * (0.18 + 0.75*max(N.y, 0.0) + 1.8*gYewTop);
   }
   /* ...and on a pumpkin, lying out under the same sky: the tops of its
      lobes take the moon, so an uncarved one is a round orange thing in the
