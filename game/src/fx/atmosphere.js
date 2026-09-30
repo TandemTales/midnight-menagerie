@@ -332,7 +332,7 @@ export const REGIONS = {
     /* (round 22: the range is the WALL now, built into its chimney breast,
        so the floor no longer deals loose ranges and bookcases: it is the
        kitchen's working floor -- crates and barrels, a candle stand) */
-    props: { shapes: [8, 8, 1], count: 10, height: 2.0, layout: 'aisle' },
+    props: { shapes: [29, 8, 29, 8], count: 7, height: 2.0, layout: 'aisle' },
     particles: { mix: [[PTYPE.EMBER, 0.46], [PTYPE.DUST, 0.40], [PTYPE.PLASTER, 0.14]],
                  tint: '#ffcf9a', wispTint: '#8fd9a8', emberTint: '#ff7a28',
                  speed: 1.2, scale: 1.05, wind: 1.3, density: 0.95 },
@@ -1212,7 +1212,10 @@ export const ROOM_KINDS = {
   kitchens: {
     /* (round 22: the scullery is its own room now -- its sinks, its plate
        racks and its copper -- where it borrowed the Bathhouse's tiled dado) */
-    kinds: [{ subject: 'range' }, { subject: 'scullery' }],
+    /* ...and each is come up to: its end wall IS the room, so it stands
+       nearer (the wing's own fight keeps the wing's shell, isMain) */
+    kinds: [{ subject: 'range', room: { d: 0.80 }, cam: { z: -1.2, look: 0.10 } },
+            { subject: 'scullery', room: { d: 0.72, w: 0.86 }, cam: { z: -1.6, look: 0.10 } }],
     names: [
       [/scullery|dish|larder|wash|milk/i, 1],
       [/./, 0],

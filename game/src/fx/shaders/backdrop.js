@@ -2908,7 +2908,7 @@ float subjCoping(vec2 q, float cx, float dqm, out float occ){
   mmPen(abs(pxl) - 0.46, 1.1, 0.75*mmCover(pierTop + 0.10 - q.y)*step(q.y, pierTop + 0.10));
   mmPen(q.y - (pierTop - 0.14), 1.0, 0.65*onPier);
   h = mix(h, 1.35 + 0.25*sqrt(max(0.0, -fin/0.28)), finCov);
-  gInk = max(gInk, joint*0.55);
+  gInk = max(gInk, joint*0.55*mmCover(WH - q.y));
   gWLit = mmBandA(q.y, WH + CT - 0.07, WH + CT, px)*(1.0 - onPier)
         + mmBandA(q.y, pierTop + 0.03, pierTop + 0.10, px)*onPier;
   /* the stone's own colour: a warm grey, every stone a little different,
@@ -4119,7 +4119,7 @@ float hedgeWallH(vec2 q, float qpx, out float occ){
     float tp = 3.1;
     float ti = floor((wx + uSeed*5.0)/tp);
     float tx = wx + uSeed*5.0 - (ti + 0.5)*tp;
-    float th = 4.0 + 6.5*mmHash11(ti*3.7 + uSeed);
+    float th = 3.3 + 4.6*mmHash11(ti*3.7 + uSeed);
     float tx2 = tx + (mmHash11(ti*2.3 + uSeed) - 0.5)*1.2;
     float crown = (th - q.y) - abs(tx2)*(2.4 + 0.8*mmHash11(ti*6.1))*(1.0 + 0.14*sin(q.y*6.0 + ti));
     gWood = mmCover(crown*0.4) * step(0.2, mmHash11(ti*5.3 + uSeed)) * (1.0 - solidM);
@@ -4205,7 +4205,7 @@ float passWallH(vec2 q, float qpx, out float occ){
     float bk = mmHash11(bid*11.3 + sr*2.9);
     vec3 bcol = bk < 0.3 ? vec3(0.40, 0.10, 0.07) : (bk < 0.55 ? vec3(0.12, 0.20, 0.14)
               : (bk < 0.8 ? vec3(0.30, 0.20, 0.11) : vec3(0.12, 0.13, 0.24)));
-    bcol *= (lum*1.25 + 0.006)*(0.70 + 0.60*mmHash11(bid*6.1));
+    bcol *= (lum*2.0 + 0.009)*(0.70 + 0.60*mmHash11(bid*6.1));
     /* a gilt band across a third of the spines, a title's worth */
     float gilt = spine * step(0.55, mmHash11(bid*6.7)) * (1.0 - smoothstep(0.006, 0.006 + px, abs(sy - 0.03 - bh*0.78)));
     bcol = mix(bcol, vec3(0.70, 0.54, 0.24)*(lum*1.8 + 0.01), gilt);
@@ -4221,8 +4221,8 @@ float passWallH(vec2 q, float qpx, out float occ){
     float ajC = isCD * step(0.35, mmHash11(dci*2.9 + uSeed));
     h += isCD*0.12;
     float crack = ajC * (1.0 - smoothstep(0.016, 0.016 + px*1.2, abs(cxl - CW*0.5 + 0.02))) * step(q.y, CO0 - 0.10);
-    gWEmit = crack * (0.75 + 0.25*mmNoise(vec2(q.y*3.0, dci)));
-    gWEmit += ajC * 0.10 * exp(-abs(cxl - CW*0.5)/0.10) * (1.0 - crack) * step(q.y, CO0);
+    gWEmit = crack * (0.45 + 0.20*mmNoise(vec2(q.y*3.0, dci))) * smoothstep(CO0 - 0.1, CO0 - 0.9, q.y);
+    gWEmit += ajC * 0.08 * exp(-abs(cxl - CW*0.5)/0.10) * (1.0 - crack) * step(q.y, CO0);
     gWEmitC = vec3(1.00, 0.68, 0.32) * 0.85;
     mmPen(abs(cxl) - CW*0.5, 1.3, isCD*0.9);
   } else {
@@ -4514,7 +4514,11 @@ float kitchenWallH(vec2 q, float qpx, out float occ){
   }
   if (far > 0.5 && scul > 0.5) {
     /* ================= THE SCULLERY ================= */
-    float TD = 1.52;
+    /* (drawn at 1.25: a great house's scullery, and the end wall is 12 m
+       off, so at a domestic size its sinks were benches) */
+    const float SSC = 1.25;
+    float scx = cx/SSC, sqy = q.y/SSC, spx = px/SSC;
+    float TD = 1.52*SSC;
     float onT = mmCover(TD - q.y);
     /* glazed tile, 150 mm, white gone to ivory, a band of dark ones at its head */
     float tl = 0.15;
@@ -4526,35 +4530,54 @@ float kitchenWallH(vec2 q, float qpx, out float occ){
     tile *= 1.0 - tj*0.45;
     col = mix(col*vec3(0.95, 0.95, 0.90), tile, onT);
     gloss = max(gloss, onT*0.5);
-    h += onT*0.05;
+    /* a glazed face has no brick behind it: its own joints, and flat */
+    h = mix(h, 1.05 - 0.06*tj, onT);
+    gInk = max(gInk, tj*0.55*onT);
     mmPen(q.y - TD, 1.2, 0.8);
     /* the two sinks, each on its brick piers, its taps from the wall, its
        plate rack over it */
     for (int k = 0; k < 2; k++){
-      float sx = cx - (float(k)*2.0 - 1.0)*1.55;
-      float sink = mmBox(vec2(sx, q.y - 0.86), vec2(0.58, 0.14), 0.02);
+      float sx = scx - (float(k)*2.0 - 1.0)*1.55;
+      /* a deep brown-glazed stoneware sink -- the scullery's, which stands
+         out of the white tile the way a stoneware sink does: its thick
+         front, the dark of its bowl seen over the front rim, its back rim */
+      float sink = mmBox(vec2(sx, sqy - 0.88), vec2(0.58, 0.13), 0.03);
       float sIn = mmCover(-sink);
-      float lip = mmCover(-mmBox(vec2(sx, q.y - 0.99), vec2(0.60, 0.025), 0.01));
-      vec3 stoneC = vec3(0.56, 0.44, 0.30)*(lum*1.8 + 0.015);
-      col = mix(col, stoneC*(0.8 + 0.3*mmNoise(q*8.0)), sIn);
-      col = mix(col, stoneC*1.35, lip);
-      h += sIn*0.20 + lip*0.28;
+      float bowl = mmCover(-mmBox(vec2(sx, sqy - 1.035), vec2(0.52, 0.025), 0.01));
+      float brim = mmCover(-mmBox(vec2(sx, sqy - 1.068), vec2(0.58, 0.011), 0.005));
+      vec3 cer = vec3(0.58, 0.36, 0.18)*(lum*2.2 + 0.022);
+      col = mix(col, cer*(0.80 + 0.30*smoothstep(0.75, 1.0, sqy)), sIn);
+      col = mix(col, cer*0.18, bowl);
+      col = mix(col, cer*1.10, brim);
+      h += sIn*0.30 + brim*0.20 - bowl*0.10;
+      gloss = max(gloss, sIn*0.6);
       mmPen(sink, 1.3, 0.9);
+      mmPen(sqy - 1.01, 1.0, 0.6*step(abs(sx), 0.58));
+      /* its draining board, grooved, sloping to the sink */
+      float db = mmBox(vec2(sx - 0.94, sqy - 1.00 + (sx - 0.94)*0.03), vec2(0.34, 0.022), 0.006);
+      float onDb = mmCover(-db);
+      float grv = (1.0 - smoothstep(0.008, 0.008 + spx, mmRowX(sx, 0.07)))*onDb;
+      col = mix(col, vec3(0.50, 0.38, 0.24)*(lum*1.8 + 0.012)*(1.0 - 0.4*grv), onDb);
+      h += onDb*0.2;
+      mmPen(db, 1.0, 0.8);
       /* the piers */
-      float pier = mmCover(-mmBox(vec2(abs(sx) - 0.46, q.y - 0.36), vec2(0.10, 0.36), 0.01));
+      float pier = mmCover(-mmBox(vec2(abs(sx) - 0.46, sqy - 0.36), vec2(0.10, 0.36), 0.01));
       h += pier*0.10;
-      mmPen(mmBox(vec2(abs(sx) - 0.46, q.y - 0.36), vec2(0.10, 0.36), 0.01), 1.0, 0.8);
-      col = mix(col, col*0.45, (1.0 - pier)*mmCover(0.72 - q.y)*step(abs(sx), 0.58));   // under the sink, dark
+      mmPen(mmBox(vec2(abs(sx) - 0.46, sqy - 0.36), vec2(0.10, 0.36), 0.01), 1.0, 0.8);
+      /* under the sink, between its piers: dark, a bucket's worth of shadow */
+      col = mix(col, col*0.12, (1.0 - pier)*mmCover(0.75 - sqy)*step(abs(sx), 0.56));
+      h -= (1.0 - pier)*mmCover(0.75 - sqy)*step(abs(sx), 0.56)*0.25;
+      col = mix(col, brick*1.1, pier);
       /* the tap: brass, out from the wall and down */
-      float tapV = mmCover(-mmBox(vec2(sx - 0.18, q.y - 1.28), vec2(0.018, 0.16), 0.01));
-      float tapH = mmCover(-mmBox(vec2(sx - 0.10, q.y - 1.42), vec2(0.09, 0.018), 0.01));
-      float tapK = mmCover(-(length(vec2(sx - 0.18, q.y - 1.47)) - 0.030));
+      float tapV = mmCover(-mmBox(vec2(sx - 0.18, sqy - 1.28), vec2(0.018, 0.16), 0.01));
+      float tapH = mmCover(-mmBox(vec2(sx - 0.10, sqy - 1.42), vec2(0.09, 0.018), 0.01));
+      float tapK = mmCover(-(length(vec2(sx - 0.18, sqy - 1.47)) - 0.030));
       float tap = max(max(tapV, tapH), tapK);
       col = mix(col, vec3(0.82, 0.62, 0.28)*(lum*2.4 + 0.03), tap);
       h += tap*0.2;
       gloss = max(gloss, tap);
       /* the plate rack: its frame, its dowels, and its plates */
-      vec2 rq = vec2(sx, q.y - 2.02);
+      vec2 rq = vec2(sx, sqy - 2.02);
       float rack = mmBox(rq, vec2(0.62, 0.34), 0.01);
       float inRk = mmCover(-rack);
       float frame = inRk * (1.0 - mmCover(-mmBox(rq, vec2(0.56, 0.28), 0.01)));
@@ -4572,19 +4595,19 @@ float kitchenWallH(vec2 q, float qpx, out float occ){
       mmPen(rack, 1.0, 0.8);
     }
     /* the high window over them: small panes, the night in it */
-    vec2 wq = vec2(cx, q.y - 2.95);
+    vec2 wq = vec2(scx, sqy - 2.95);
     float win = mmBox(wq, vec2(0.66, 0.46), 0.01);
-    float inW = mmCover(-win) * step(q.y, uCeil - 0.1);
-    float wbar = max(1.0 - smoothstep(0.018, 0.018 + px, mmRowX(cx + 0.22, 0.44)),
-                     1.0 - smoothstep(0.018, 0.018 + px, mmRowX(q.y - 2.95 + 0.155, 0.31)));
-    col = mix(col, vec3(0.10, 0.14, 0.22)*(lum + 0.01), inW*(1.0 - wbar));
-    emit += inW*(1.0 - wbar)*0.10;
+    float inW = mmCover(-win) * step(sqy, uCeil - 0.1);
+    float wbar = max(1.0 - smoothstep(0.018, 0.018 + spx, mmRowX(scx + 0.22, 0.44)),
+                     1.0 - smoothstep(0.018, 0.018 + spx, mmRowX(sqy - 2.95 + 0.155, 0.31)));
+    /* moonlit glass: cold, a little above the wall it is set in */
+    col = mix(col, vec3(0.16, 0.22, 0.34)*(lum*2.2 + 0.02)*(0.8 + 0.4*smoothstep(2.5, 3.4, sqy)), inW*(1.0 - wbar));
     h = mix(h, 0.7, inW);
     mmPen(win, 1.3, 0.9);
     /* the copper, in its brick casing in the corner, its fire door below */
-    float cc = cx - 3.9;
-    float casing = mmBox(vec2(cc, q.y - 0.50), vec2(0.62, 0.50), 0.02);
-    float dome = max(length(vec2(cc, (q.y - 1.0)*1.8)) - 0.55, 1.0 - q.y);
+    float cc = scx - 3.9;
+    float casing = mmBox(vec2(cc, sqy - 0.50), vec2(0.62, 0.50), 0.02);
+    float dome = max(length(vec2(cc, (sqy - 1.0)*1.8)) - 0.55, 1.0 - sqy);
     float onCs = mmCover(-casing), onDm = mmCover(-dome);
     col = mix(col, brick*1.1, onCs);
     col = mix(col, vec3(0.86, 0.40, 0.19)*(lum*2.4 + 0.02)*(0.7 + 0.5*smoothstep(0.3, -0.2, cc)), onDm);
@@ -4592,9 +4615,9 @@ float kitchenWallH(vec2 q, float qpx, out float occ){
     gloss = max(gloss, onDm);
     mmPen(casing, 1.2, 0.9);
     mmPen(dome, 1.2, 0.8);
-    float fd = mmBox(vec2(cc, q.y - 0.24), vec2(0.16, 0.12), 0.01);
+    float fd = mmBox(vec2(cc, sqy - 0.24), vec2(0.16, 0.12), 0.01);
     col = mix(col, vec3(0.06, 0.05, 0.05), mmCover(-fd));
-    emit += mmCover(-mmBox(vec2(cc, q.y - 0.22), vec2(0.12, 0.05), 0.01)) * 0.8 * mmNoise(q*16.0);
+    emit += mmCover(-mmBox(vec2(cc, sqy - 0.22), vec2(0.12, 0.05), 0.01)) * 0.8 * mmNoise(q*16.0);
   }
   if (far < 0.5 || scul < 0.5) {
     /* ================= THE BATTERIE =================
@@ -4643,7 +4666,7 @@ float kitchenWallH(vec2 q, float qpx, out float occ){
       vec3 dcol = mix(pine, pine*1.3, top + shelf);
       dcol = mix(dcol, dcol*0.45, drr);
       dcol = mix(dcol, pine*0.40, step(0.92, q.y)*(1.0 - shelf)*(1.0 - plt));
-      dcol = mix(dcol, mix(vec3(0.82, 0.80, 0.74), vec3(0.20, 0.30, 0.60), plr)*(lum*1.35 + 0.02), plt);
+      dcol = mix(dcol, mix(vec3(0.82, 0.80, 0.74), vec3(0.20, 0.30, 0.60), plr)*(lum*2.6 + 0.04), plt);
       col = mix(col, dcol, onD);
       h += onD*(0.20 + 0.20*(top + shelf) + 0.10*plt);
       mmPen(dres, 1.3, 0.9*(1.0 - scul));
@@ -6711,9 +6734,17 @@ void main(){
      exterior mode uses, and a lower horizon because there is no roofline to
      stand the sky above -- the hedge itself is the skyline. */
   if (uOpenSky > 0.5 && uArch < 4.5) {
-#if MM_ROOMS == 0 || MM_ROOMS == 8
+#if MM_ROOMS == 0
     float solidO = smoothstep(0.25, 0.85, h);
     col = mix(skyColor(q, 0.6), col, solidO);
+#endif
+#if MM_ROOMS == 8
+    /* (round 22: the maze's night is the samples' navy -- its olive cast,
+       carried from the wing's own green, made pale khaki clouds of it) */
+    float solidO = smoothstep(0.25, 0.85, h);
+    vec3 skyM = skyColor(q, 0.6);
+    skyM = mix(skyM, mmLum(skyM)*vec3(0.60, 0.74, 1.30), 0.50);
+    col = mix(skyM, col, solidO);
 #endif
 #if MM_ROOMS == 8
     /* the wood beyond the maze, a few values under its own sky, with a
@@ -6721,7 +6752,7 @@ void main(){
     float upW = clamp((q.y - 2.0) / 15.0, 0.0, 1.0);
     vec3 skyW = (uSkyDeep * mix(6.80, 3.90, smoothstep(0.0, 0.62, upW))
                  + uOpenGlow * 0.46 * exp(-upW * 4.2)) * uSkyGlow;
-    col = mix(col, skyW * (0.34 + 0.16*motif), gWood*0.94);
+    col = mix(col, skyW * (0.24 + 0.12*motif), gWood*0.94);
 #endif
   }
 
@@ -8404,6 +8435,63 @@ float yewSD(vec2 m, vec2 msz, float seed){
   d += (mmNoise(m*11.0 + seed*7.0) - 0.5)*0.050 + (mmNoise(m*2.3 + seed*3.1) - 0.5)*0.070;
   return d;
 }
+
+/* THE KITCHEN TABLE (29, round 22): a long scrubbed deal table on four
+   turned legs, its apron under the top and a pot board across its feet, and
+   on it the things a kitchen leaves out -- an earthenware mixing bowl, a
+   white jug, a loaf, a copper pan -- each dealt from the seed, a crock on
+   the pot board. The floor of a kitchen had only crates on it. m is metres
+   from the foot of the quad's axis; ok comes back as the object a pixel is
+   (0 the table, 1 earthenware, 2 a jug, 3 a loaf, 4 copper, 5 the crock). */
+float tbSD(vec2 m, vec2 msz, float seed, out float ok){
+  float hw = msz.x*0.5 - 0.05;
+  const float TOP = 0.86;
+  ok = 0.0;
+  float d = mmBox(m - vec2(0.0, TOP - 0.04), vec2(hw, 0.045), 0.012);          // the top
+  d = min(d, mmBox(m - vec2(0.0, TOP - 0.13), vec2(hw - 0.07, 0.05), 0.005));   // its apron
+  for (int i = 0; i < 2; i++){
+    float lx = (i == 0) ? hw - 0.10 : hw - 0.34;
+    float lw = (i == 0) ? 0.040 : 0.032;
+    float t = clamp(m.y/(TOP - 0.18), 0.0, 1.0);
+    /* turned: a swell below the apron, a bead, a taper to the foot */
+    float w = lw*(0.80 + 0.45*exp(-pow((t - 0.78)*6.0, 2.0)) + 0.25*exp(-pow((t - 0.35)*10.0, 2.0)));
+    d = min(d, mmBox(vec2(abs(m.x) - lx, m.y - (TOP - 0.18)*0.5), vec2(w, (TOP - 0.18)*0.5), 0.005));
+  }
+  d = min(d, mmBox(m - vec2(0.0, 0.15), vec2(hw - 0.10, 0.018), 0.004));          // the pot board
+  /* what is on it: four places along the top */
+  for (int k = 0; k < 4; k++){
+    float kx = (float(k) - 1.5)*hw*0.46 + (mmHash11(seed*3.1 + float(k)) - 0.5)*0.18;
+    float kk = mmHash11(seed*7.7 + float(k)*1.9);
+    vec2 o = m - vec2(kx, TOP);
+    float od = 1e3, oid = 0.0;
+    if (kk < 0.28) {            // an earthenware bowl
+      od = max(length(o/vec2(0.20, 0.13)) - 1.0, -o.y)*0.13;
+      od = min(od, mmBox(o - vec2(0.0, 0.012), vec2(0.07, 0.012), 0.004));
+      oid = 1.0;
+    } else if (kk < 0.48) {     // a white jug
+      od = length((o - vec2(0.0, 0.11))/vec2(0.085, 0.10)) - 1.0;
+      od *= 0.085;
+      od = min(od, mmBox(o - vec2(0.0, 0.22), vec2(0.045, 0.035), 0.01));
+      od = min(od, mmBox(o - vec2(-0.03, 0.26), vec2(0.06, 0.012), 0.004));    // its lip and spout
+      od = min(od, abs(length(o - vec2(0.085, 0.14)) - 0.045) - 0.012);        // its handle
+      oid = 2.0;
+    } else if (kk < 0.66) {     // a loaf
+      od = max(length((o - vec2(0.0, 0.0))/vec2(0.16, 0.10)) - 1.0, -o.y)*0.10;
+      oid = 3.0;
+    } else if (kk < 0.82) {     // a copper pan, its handle out
+      od = mmBox(o - vec2(0.0, 0.055), vec2(0.13, 0.055), 0.015);
+      od = min(od, mmBox(o - vec2(0.22, 0.09), vec2(0.10, 0.012), 0.006));
+      oid = 4.0;
+    }
+    if (od < d) { d = od; ok = oid; }
+    else d = min(d, od);
+  }
+  /* a crock on the pot board */
+  float cr = mmBox(m - vec2(-hw*0.35, 0.28), vec2(0.13, 0.11), 0.05);
+  if (cr < d) { ok = 5.0; }
+  d = min(d, cr);
+  return d;
+}
 #endif
 
 float shapeField(vec2 uv, vec2 msz, float shape, float seed){
@@ -9177,6 +9265,9 @@ float shapeField(vec2 uv, vec2 msz, float shape, float seed){
     d = pd / msz.y;
   } else if (shape < 28.5) {              // 28 -- a clipped yew (round 22)
     d = yewSD(p*msz, msz, seed) / msz.y;
+  } else if (shape < 29.5) {              // 29 -- a kitchen table (round 22)
+    float tok;
+    d = tbSD(p*msz, msz, seed, tok) / msz.y;
 #endif
   }
   /* A BRASS FITTING HAS NO ERODED EDGE. The fbm below is what keeps stone and
@@ -9307,6 +9398,7 @@ float gBedLeaf;
    dark foot, and the reveal of its arch */
 float gPkOn, gPkLobe, gPkRib, gPkStem, gPkLeaf, gPkCut, gPkNear;
 float gYewTop, gYewFoot, gYewRev, gYewDead, gYewCl;
+float gTbOk;       // which of the table's things this pixel is (29)
 float reliefH(vec2 uv, vec2 msz, vec2 mpp, float shape, float seed, out float tint){
   vec2  p = uv - vec2(0.5, 0.0);          // the same frame shapeField authors in
   vec2  m = p * msz;                      // ...and the same frame in METRES
@@ -9314,7 +9406,7 @@ float reliefH(vec2 uv, vec2 msz, vec2 mpp, float shape, float seed, out float ti
   tint = 0.0;
   gBedLeaf = 0.0;
   gPkOn = 0.0; gPkLobe = 0.0; gPkRib = 0.0; gPkStem = 0.0; gPkLeaf = 0.0; gPkCut = 0.0; gPkNear = 0.0;
-  gYewTop = 0.0; gYewFoot = 0.0; gYewRev = 0.0; gYewDead = 0.0; gYewCl = 0.5;
+  gYewTop = 0.0; gYewFoot = 0.0; gYewRev = 0.0; gYewDead = 0.0; gYewCl = 0.5; gTbOk = 0.0;
 
   if (shape < 0.5) {                      // 0 — armchair / settle
     /* An armchair at its real 0.88 m occupies 120-200 px in the Ballroom's and
@@ -10629,6 +10721,17 @@ float reliefH(vec2 uv, vec2 msz, vec2 mpp, float shape, float seed, out float ti
     float ad = yewArch(m, seed);
     gYewRev = (1.0 - smoothstep(0.02, 0.20, ad)) * step(ad, 0.20);
     gYewDead = smoothstep(0.60, 0.80, mmFbm3(m*0.55 + seed*4.0));
+  } else if (shape < 29.5) {              // 29 -- a kitchen table (round 22)
+    /* the top's scrubbed boards, the legs' turning, the things on it round */
+    float tok;
+    float td = tbSD(m, msz, seed, tok);
+    gTbOk = tok;
+    float onTop = pB(m.y, 0.775, 0.865) * step(abs(m.x), msz.x*0.5 - 0.05);
+    h += 0.012*onTop;
+    h -= 0.004*onTop*pR(mod(m.x, 0.19) - 0.095, 0.006)*pRes(0.19, mpp.x);
+    h -= 0.008*pR(m.y - 0.775, 0.006);                        // under the top's edge
+    h += step(0.5, tok)*0.030*clamp(-td/0.06, 0.0, 1.0);      // the round of a bowl, a jug
+    tint -= 0.45*pR(m.y - 0.68, 0.02)*step(m.y, 0.70);        // in the apron's shadow
 #endif
   }
 
@@ -10904,6 +11007,21 @@ void main(){
     albedo = mix(albedo, albedo*vec3(1.50, 1.10, 0.66), gPkNear*0.60);
     albedo *= 1.0 - gPkCut*0.85;
     pkEmit = vec3(1.00, 0.60, 0.18)*gPkCut + vec3(1.00, 0.46, 0.12)*gPkNear*(1.0 - gPkCut)*0.16;
+  }
+  if (vShape > 28.5 && vShape < 29.5) {
+    float lum = max(mmLum(albedo), 0.02);
+    vec3 deal = vec3(0.66, 0.54, 0.38)*(lum*3.0 + 0.050)*(0.86 + 0.28*grain);
+    /* the top is SCRUBBED, the palest board in a kitchen, and seen from a
+       standing eye its face is a band of light the length of the table */
+    vec2 tm = (vUv - vec2(0.5, 0.0))*vSize;
+    deal *= 1.0 + 0.9*smoothstep(0.80, 0.84, tm.y)*step(tm.y, 0.865);
+    deal *= 1.0 - 0.45*step(tm.y, 0.77);
+    vec3 oc = gTbOk < 1.5 ? vec3(0.66, 0.32, 0.14)
+            : (gTbOk < 2.5 ? vec3(0.86, 0.85, 0.80)
+            : (gTbOk < 3.5 ? vec3(0.66, 0.42, 0.18)
+            : (gTbOk < 4.5 ? vec3(0.74, 0.30, 0.11) : vec3(0.48, 0.40, 0.30))));
+    oc *= (lum*2.1 + 0.030);
+    albedo = mix(deal, oc, step(0.5, gTbOk));
   }
   if (vShape > 27.5 && vShape < 28.5) {
     float lum = max(mmLum(albedo), 0.02);
