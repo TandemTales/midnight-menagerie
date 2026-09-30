@@ -58,14 +58,127 @@ vec3 mmSpec(vec3 n, vec3 l, vec3 v, vec3 lc, float att, float gloss, float power
    Returns (ink, lip): how dark the hollow goes and how hard the crest catches.
    rise is > 0 on a face that climbs toward the top of the screen, which is
    the face a light hung above the room reaches. */
+/* THE QUAD, AND WHY EVERY LINE IN THIS ROOM WAS DRAWN IN 2x2 BLOCKS (round 21).
+   A GPU shades pixels in 2x2 quads, and dFdx/dFdy are differences across the
+   quad. They are allowed to be COARSE -- one difference for all four pixels --
+   and on this machine they are: measured with a probe (dFdx(x*y) returns the
+   bottom row's y on both rows of every quad, and dFdy the left column's x on
+   both columns). So every term this file builds from a derivative -- the
+   wall's normal, every drawn line of mmDrawn, the props' outline -- was one
+   value per 2x2 block, and a raking stair string inked from a derivative came
+   out as a staircase of 2-pixel blocks: 2.5 screen pixels at the Deck's 0.8.
+   That is the "upscaled low-res sprite" the survey saw, and it is why forcing
+   the HIGH tier made the steps finer and did not remove them.
+
+   mmGrad(v) recovers the derivatives a FINE implementation would give, from
+   the coarse ones. Each lane knows its own v; dFdx(v*(1-x parity)) hands every
+   lane the absolute value of the reference row's left pixel, dFdy(v*(1-y
+   parity)) the reference column's bottom one, and with the coarse differences
+   that is three of the quad's four values. Two lanes of four then get both
+   of their own differences exactly, and the other two get one exactly and the
+   other from the neighbouring column or row -- a line one pixel wide instead
+   of a 2x2 block. On hardware whose derivatives are already fine (gQry and
+   gQcx then name each lane's own row and column) it returns dFdx/dFdy
+   unchanged. mmQuadInit() must run first, at the top of main(). Cost: two
+   more derivative instructions per call, no branches, no extra evaluation of
+   the relief -- which is what a finite difference would have cost. */
+float gQx, gQy, gQry, gQcx;
+void mmQuadInit(){
+  gQx = mod(floor(gl_FragCoord.x), 2.0);
+  gQy = mod(floor(gl_FragCoord.y), 2.0);
+  gQry = dFdx(gQx*gQy);          // the row the coarse dFdx is taken on
+  gQcx = dFdy(gQx*gQy);          // the column the coarse dFdy is taken on
+}
+vec2 mmGrad(float v){
+  vec2 g = vec2(dFdx(v), dFdy(v));
+  float vR = -dFdx(v*(1.0 - gQx));          // v at (0, ref row)
+  float vC = -dFdy(v*(1.0 - gQy));          // v at (ref column, 0)
+  float onRow = 1.0 - abs(gQy - gQry);
+  float onCol = 1.0 - abs(gQx - gQcx);
+  float fx = (2.0*gQx - 1.0) * (v - (vC + gQy*g.y));
+  float fy = (2.0*gQy - 1.0) * (v - (vR + gQx*g.x));
+  return vec2(mix(mix(fx, g.x, onCol), g.x, onRow),
+              mix(mix(fy, g.y, onRow), g.y, onCol));
+}
 vec2 mmDrawn(float h, float lo, float hi){
-  vec2 gs = vec2(dFdx(h), dFdy(h));
+  vec2 gs = mmGrad(h);
   float hp = length(gs);
   float stepAmt = smoothstep(lo, hi, hp);
   float rise = -gs.y / max(hp, 1e-6);
   float ink = stepAmt * (0.34 + 0.66 * clamp(-rise, 0.0, 1.0));
   float lip = stepAmt * clamp(rise, 0.0, 1.0);
   return vec2(ink, lip);
+}
+/* THE INKED EDGE (round 21, CELADON). The samples are DRAWN: every edge in
+   them is one crisp, smooth pen line, and a pen does not know which way the
+   pixel grid runs. Most of this room's edges were authored as a smoothstep
+   over a VERTICAL distance (y against a rake's height) or as a hard step():
+   level lines come out clean that way, but a rake at 55 degrees gets 0.57 of
+   the transition it was given, and a step() gets none -- a gable, a turret
+   cap or a stair string then comes back as a staircase of pixels at any
+   render scale. These three measure the edge in SCREEN PIXELS instead, from
+   the field's own gradient, so a line is the same one-pixel ink edge at every
+   angle and every tier, and never wider than that: nothing here blurs.
+
+   They take PLAIN dFdx/dFdy, not mmGrad: a distance is smooth across a
+   quad, so a coarse difference of it is already exact -- and mmGrad's
+   reconstruction, fed a line field, put a slightly different pixel size on
+   two lanes of every four, and a raking pen line came back dotted at a
+   two-pixel pitch.
+
+   mmCover(f): how much of this pixel lies where f > 0. f is any continuous
+   field (a height minus y, a signed distance); f / |grad f| is its distance
+   in pixels, which is exactly what a signed distance field is for. */
+float mmCover(float f){
+  vec2 g = vec2(dFdx(f), dFdy(f));
+  return clamp(0.5 + f / max(length(g), 1e-6), 0.0, 1.0);
+}
+/* mmStroke(d, hw): a line of half-width hw drawn along the zero of d (a signed
+   distance, in any unit). A line thinner than a pixel is not drawn thinner
+   than one; it is drawn one pixel wide and proportionally fainter, which is
+   what the eye integrates a hairline to -- and what keeps a thin raked line
+   from breaking into dots where it crosses the pixel grid. */
+float mmStroke(float d, float hw){
+  float px = max(length(vec2(dFdx(d), dFdy(d))), 1e-6);
+  float w = max(hw, 0.5*px);
+  return clamp(0.5 + (w - abs(d))/px, 0.0, 1.0) * (hw / w);
+}
+/* mmLod(period, px): 1 for a repeating detail drawn at 6 pixels or more to a
+   repeat, 0 at 2.5 or fewer. Below that a row of joints, courses or uprights
+   is not detail, it is a moire, and on a slope it is precisely the stepped
+   look the survey named. A painter draws such a run as its own mean tone,
+   and so does this: the caller mixes the detail toward its average. */
+float mmLod(float period, float px){
+  return smoothstep(2.5*px, 6.0*px, period);
+}
+/* mmRamp(f): the same edge as mmCover, but TWO pixels wide -- for RELIEF.
+   Everything this room shows of its relief (the normal, and mmDrawn's line)
+   comes from dFdx/dFdy, which are differences across a 2x2 quad: an edge in h
+   one pixel wide that falls BETWEEN two quads shows no difference at all, and
+   one inside a quad shows the whole step. Along a raking edge those two
+   cases alternate every pixel or two, and that is a dashed, toothed line --
+   the teeth on every gable and stair string at both tiers. A relief edge two
+   pixels wide is seen by every quad it crosses. The crisp line on top of it
+   is drawn separately, as ink, by mmInk. */
+float mmRamp(float f){
+  vec2 g = vec2(dFdx(f), dFdy(f));
+  return clamp(0.5 + 0.5*f / max(length(g), 1e-6), 0.0, 1.0);
+}
+/* mmInk(d, wpx): an INKED LINE wpx screen pixels wide along the zero of d,
+   with a one-pixel antialiased edge. d need only be continuous: its own
+   gradient (smooth, so exact in any quad) turns it into pixels. This is the
+   pen the samples draw with, and unlike mmDrawn it is not read back out of
+   the relief, so it cannot break up where the edge crosses the quad grid. */
+float mmInk(float d, float wpx){
+  float px = max(length(vec2(dFdx(d), dFdy(d))), 1e-6);
+  return clamp(0.5*wpx + 0.5 - abs(d)/px, 0.0, 1.0);
+}
+/* The same pen with the pixel's size PASSED IN (metres per pixel across the
+   line), for a d that is a distance with a crease in it -- abs(), a repeat.
+   Measured by a difference across its own zero, such a field reads as flat
+   and the line would break exactly where it is centred. */
+float mmInkP(float d, float px, float wpx){
+  return clamp(0.5*wpx + 0.5 - abs(d)/max(px, 1e-6), 0.0, 1.0);
 }
 `;
 
@@ -283,12 +396,45 @@ vec2 mmDamask(vec2 q, float cell, float px, float kind){
    uInk at 1.00 already reads as black wire. It is a thousand small drawn forms,
    each a value darker than both its sides. One shelf of spines is sixty. */
 
-float mmSolid(float d){ return smoothstep(0.018, -0.018, d); }
+/* THE PIXEL, in metres of wall (round 21). Every edge below was authored
+   with a transition in METRES -- 0.016 m for a band, 0.018 m for a solid --
+   and at the Deck's tier (render scale 0.8, 1280 wide) the far wall is 17-20
+   px/m, so those transitions are a third of a pixel: a hard, aliased edge,
+   which the upscale then magnifies. Set once at the top of main() from the
+   wall's own screen derivatives (q is linear, so coarse derivatives are exact
+   for it): gAAy is metres per pixel UP the wall, gAAx ACROSS it. A band's edge
+   is horizontal and is antialiased over gAAy; a solid's is isotropic and
+   takes the mean. Never narrower than the authored width, so nothing at 1.0
+   or near the camera changes -- only an edge that was sub-pixel is now a
+   pixel. */
+float gAAx = 0.0, gAAy = 0.0;
+/* INK LAID DIRECTLY by a feature (mmInk), 0-1; set to 0 at the top of main()
+   and applied with mmDrawn's ink, as the darker of the two (round 21). */
+float gInk;
+/* ...and where the pen has drawn, the relief's own derivative line and its
+   derivative normal stand down (gPen, 0-1, a band a few pixels either side
+   of every pen line): read out of 2x2 quads, a raking edge's slope comes
+   back as a row of lit and unlit teeth, and the pen line would sit in the
+   middle of them. The pen draws the edge; the relief keeps the planes. */
+float gPen;
+/* mmPen(d, wpx, k): lay a pen line of wpx pixels, at strength k, along the
+   zero of d, and quiet the relief round it. */
+void mmPen(float d, float wpx, float k){
+  float px = max(length(vec2(dFdx(d), dFdy(d))), 1e-6);
+  float a = abs(d)/px;
+  gInk = max(gInk, clamp(0.5*wpx + 0.5 - a, 0.0, 1.0) * k);
+  gPen = max(gPen, (1.0 - smoothstep(1.5, 3.0, a)) * step(0.001, k));
+}
+float mmSolid(float d){
+  float e = max(0.018, 0.50*(gAAx + gAAy));
+  return smoothstep(e, -e, d);
+}
 /* Distance from the nearest member of a row repeating on 'period'. */
 float mmRowX(float x, float period){ return abs(mod(x, period) - period*0.5); }
 /* 1 between y0 and y1, with an edge sharp enough to ink at each. */
 float mmBand(float y, float y0, float y1){
-  return smoothstep(-0.016, 0.016, y - y0) * smoothstep(0.016, -0.016, y - y1);
+  float e = max(0.016, 0.95*gAAy);
+  return smoothstep(-e, e, y - y0) * smoothstep(e, -e, y - y1);
 }
 /* The same band with the edge width PASSED IN, for a feature thinner than
    mmBand's fixed 0.032 m of transition. A tread nosing is 0.025 m of
@@ -299,6 +445,7 @@ float mmBand(float y, float y0, float y1){
    max(metres-per-pixel * 0.8, 0.008) and the line is one pixel wide at any
    depth, which is the rule the whole drawn-line system runs on. */
 float mmBandA(float y, float y0, float y1, float aa){
+  aa = max(aa, 0.95*gAAy);
   return smoothstep(-aa, aa, y - y0) * smoothstep(aa, -aa, y - y1);
 }
 
@@ -350,7 +497,12 @@ float mmRail(vec2 p, float yb, float hh, float period, float th, float aa){
   float t = clamp((p.y - yb - SHOE)/max(hh - SHOE - RAIL, 0.01), 0.0, 1.0);
   float w = th * (0.98 + 0.30*(1.0 - smoothstep(0.02, 0.30, t))
                        - 0.26*smoothstep(0.52, 1.0, t));
-  float res = smoothstep(1.9*aa, 4.4*aa, period) * (1.0 - gRailQuiet);
+  /* (round 21: 6 px to a repeat before the uprights are drawn in full, and
+     none under 2.5 -- mmLod. At 1.9-4.4 of aa, which is 0.8 px, the Foyer's
+     balusters were still drawn at 60% on a 2.8 px pitch at the Deck's tier,
+     and a raking run of half-drawn uprights on that pitch is a row of teeth:
+     the stair-stepping both survey judges saw on the staircase.) */
+  float res = mmLod(period, aa/0.8) * (1.0 - gRailQuiet);
   float bal = mix(0.40, 1.0 - smoothstep(w - aa, w + aa, x), res);
   float e = max(aa*0.80, 0.005);
   float s = mmBand(p.y, yb + SHOE, yb + hh - RAIL) * bal * 0.56;
@@ -1305,7 +1457,13 @@ float subjMusic(vec2 q, float cx, float ax, float dqm, out float occ){
   /* A VALANCE swagged between the consoles, a tassel at every junction, and a
      curtain tied back at each end of the gallery */
   float sw = fract(cx/1.45 + 0.5)*2.0 - 1.0;
-  float val = on*step(FL + 2.66 - 0.22*(1.0 - sw*sw), q.y)*step(q.y, FL + 3.10);
+  /* (round 21: the swag's hem is a CURVE, and a step() along a curve is the
+     dotted, stepped garland the Ballroom's gallery carried at the Deck's
+     tier. Its hem is now an edge in pixels, carved two pixels wide for the
+     relief and inked one pixel wide by the pen.) */
+  float swHem = q.y - (FL + 2.66 - 0.22*(1.0 - sw*sw));
+  float val = on*mmRamp(swHem)*step(q.y, FL + 3.10);
+  mmPen(swHem, 1.0, on*step(q.y, FL + 3.10)*0.45);
   s = mix(s, 0.62 + 0.14*sin(cx*21.0), val);
   s += on*mmSolid(mmBox(vec2(mmRowX(cx, 1.45), q.y - FL - 2.52), vec2(0.035, 0.12), 0.03))*0.60;
   float ex = ax - GW + 0.45;
@@ -1317,6 +1475,11 @@ float subjMusic(vec2 q, float cx, float ax, float dqm, out float occ){
   float md2 = mmArch(vec2(ax - 9.70, q.y - 1.05), 0.74, 2.05);
   s -= (mmSolid(md) + mmSolid(md2))*0.85;
   s += (1.0 - smoothstep(0.05, 0.15, abs(md)))*1.00 + (1.0 - smoothstep(0.055, 0.165, abs(md2)))*1.05;
+  /* (round 21: each glass's head is a semicircle, and a semicircle carved
+     only in relief came back stepped round its curve; the pen draws the
+     opening and the surround's outer edge.) */
+  mmPen(md, 1.0, 0.50);  mmPen(md - 0.15, 1.0, 0.35);
+  mmPen(md2, 1.0, 0.50); mmPen(md2 - 0.165, 1.0, 0.35);
   s += mmSolid(mmBox(vec2(ax - 9.70, q.y - 4.10), vec2(0.98, 0.20), 0.05))*0.95;
   /* WHAT IT IS MADE OF: a gilt front and gilt instruments, the velvet of the
      valance and the end curtains in shadow, the mirror glass dark */
@@ -2777,6 +2940,19 @@ float subjectH(vec2 q, float far, out float occ){
        every 35 cm of x, eighteen overlapping rectangles. */
     float topS = LAND - run*RAKE;
     float top = LAND - floor(run/GOING)*RISE*step(X0, ax);
+    /* THE NOSINGS ARE DRAWN WHILE THEY CAN BE (round 21). A 0.28 m going is
+       five to eight pixels at the distance this wall is seen from at the
+       Deck's tier, with a riser of four, and a sawtooth at that pitch is not a
+       staircase: it is exactly the pixel stair-stepping the survey named --
+       nobody can tell a row of six-pixel treads from an aliased diagonal (an
+       A/B with the treads forced off read as a raked string at once). A pen at
+       that size draws the raking line THROUGH the nosings and lets the
+       balustrade and the newels say "stair". So below ~13 px of going the
+       sawtooth eases into its own mean line (half a riser above the pitch
+       line, the line the steps average to); a stair seen closer than that
+       draws every tread as before. */
+    float tRes = smoothstep(10.0*gAAx, 16.0*gAAx, GOING);
+    top = mix(min(topS + RISE*0.5, LAND), top, tRes);
     /* The stair ENDS where the flight lands, and the flight's length is derived
        and not guessed: without this the handrail and the string ran on across
        the whole wall at their clamped height. */
@@ -2805,14 +2981,42 @@ float subjectH(vec2 q, float far, out float occ){
        the "pale ramp" in the captures. A Victorian cut string is 0.25-0.32 m. */
     s += mmBand(q.y, topS - 0.30, top) * 0.95 * on;
     s += mmBand(q.y, topS - 0.355, topS - 0.30) * 0.45 * on;  // its bottom moulding
+    /* THE STAIR IS INKED (round 21). Its four raking lines -- the handrail's
+       top and its shadow, the string's top and its bottom moulding -- are
+       drawn with the pen as well as carved, so each is one clean line along
+       the rake at any tier. Carved only, they reached the screen through the
+       2x2-quad derivatives, and a raking relief edge seen that way is a row
+       of teeth: the survey's "upscaled low-res sprite". */
+    float inkS = on * step(X0 - 0.02, ax) * flightHere;
+    mmPen(q.y - (topS + 0.03 + 0.95), 1.25, inkS * 0.85);
+    mmPen(q.y - (topS + 0.03 + 0.95 - 0.117), 1.0, inkS * 0.60);
+    mmPen(q.y - min(topS + RISE*0.5, LAND), 1.0, inkS * 0.75 * (1.0 - tRes));
+    mmPen(q.y - (topS - 0.355), 1.0, inkS * 0.70);
+    mmPen(q.y - (topS + 0.03), 1.0, inkS * 0.50);            // the shoe rail
+    /* ...and with the relief's derivative stood down across the flight, the
+       stair's VALUES are laid as material, which is how the samples paint a
+       balustrade: a pale rail and a pale string with the shadow of the stair
+       between them. */
+    float mRail = mmBand(q.y, topS + 0.03 + 0.95 - 0.117, topS + 0.03 + 0.95);
+    float mStr  = mmBand(q.y, topS - 0.355, min(topS + RISE*0.5, LAND));
+    float mGap  = mmBand(q.y, topS + 0.09, topS + 0.03 + 0.95 - 0.117);
+    /* ...and the whole raking run, rail to spandrel, is the pen's: between
+       the lines the carved relief still threw a row of dots on every tread
+       and baluster read out of the quads, so across the flight it keeps its
+       values and gives up its derivative line and normal. */
+    gPen = max(gPen, mmBand(q.y, topS - 0.62, topS + 1.02) * inkS);
+    gTint += inkS * (mRail*0.55 + mStr*0.35 - mGap*0.40);
     /* THE NOSING projects 0.025 m and HAS A SHADOW LINE UNDER IT (table). That
        shadow is the whole difference between a row of steps and a row of lines:
        every tread front is a value darker than both the tread above it and the
        riser below. Authored at 0.20 of relief, not 0.80 -- item 4's hierarchy:
        a repeating joint at a big form's weight is what read as scaffolding. */
     float aaN = max(dqm*0.80, 0.008);
-    s += mmBandA(q.y, top - 0.046, top + 0.025, aaN) * 0.26 * on;   // the tread end
-    s -= mmBandA(q.y, top - 0.092, top - 0.050, aaN) * 0.15 * on;   // and its shadow
+    /* (round 21: only while the treads are drawn -- along the mean line, a
+       nosing and its shadow are two more hairlines raking through the
+       string, and read out of the quads they came back as a row of dots) */
+    s += mmBandA(q.y, top - 0.046, top + 0.025, aaN) * 0.26 * on * tRes;   // the tread end
+    s -= mmBandA(q.y, top - 0.092, top - 0.050, aaN) * 0.15 * on * tRes;   // and its shadow
     /* NEWELS, 0.13 and 0.15 m square (table 0.10-0.15). Round 8's were 0.27 and
        0.30 m -- a gate pier at the foot of a domestic stair. */
     s += mmPost(vec2(ax, q.y), X0, LAND - 0.42, 1.22, 0.065) * 1.35;
@@ -2837,6 +3041,7 @@ float subjectH(vec2 q, float far, out float occ){
     s += spa * (1.0 - smoothstep(0.015, 0.045, abs(pStile - 0.33)))
              * mmBand(q.y, 1.06, topS - 0.54) * 0.20;         // the panel bead
     s += spa * mmBand(q.y, topS - 0.58, topS - 0.46) * 0.55;  // its raking top rail
+    mmPen(q.y - (topS - 0.58), 1.0, on * step(X0, ax) * flightHere * 0.40);
     /* ...and under the landing, the soffit: the hard shadow where the floor of
        the landing crosses the wall above the doorway. 0.44 m of landing
        structure under a 3.70 m landing, so it lands at 3.26 and clears the
@@ -2859,6 +3064,7 @@ float subjectH(vec2 q, float far, out float occ){
     float w = mmArch(vec2(cx, q.y - 4.55), 1.06, 1.42);
     s -= mmSolid(w) * 1.15;                                   // the opening
     s += (1.0 - smoothstep(0.050, 0.150, abs(w))) * 0.95;     // its surround
+    mmPen(w, 1.0, 0.50); mmPen(w - 0.15, 1.0, 0.35);          // inked (round 21)
     float inw = mmSolid(w + 0.095);
     /* THE TRACERY DIVIDES THE OPENING EVENLY. 2.12 m over FOUR lights of
        0.53 m, offset a half-light so the run is centred on the window: round 8
@@ -4207,8 +4413,15 @@ float wallH(vec2 q, out float occ){
     roof = max(roof, ctTop * onCT);
     roof = max(roof, (ctTop + max(0.0, (1.55 - abs(ctx))*2.19)) * step(abs(ctx), 1.55));
     roof = max(roof, (ctTop + 3.40 + 1.15) * (1.0 - step(0.050, abs(ctx))));  // its finial
-    /* THE SILHOUETTE, one pixel wide at any distance. */
-    h += smoothstep(roof + hpx, roof - hpx, hq.y) * 1.4;
+    /* THE SILHOUETTE, one pixel wide at any distance -- measured across the
+       edge in screen pixels (mmCover), not up it: a 55-degree rake given a
+       vertical transition got half a pixel of it, and every gable, dormer
+       and turret cap came back as a staircase against the sky (round 21). */
+    float roofCov = mmCover(roof - hq.y);
+    h += mmRamp(roof - hq.y) * 1.4;
+    /* ...and the pen line along it, a pixel and a quarter wide, which is the
+       edge a painter draws a roof against the sky with. */
+    mmPen(roof - hq.y, 1.25, 0.70);
     /* WHAT IS ON THE ROOF. Slate courses at a 0.30 m gauge foreshortening
        toward the ridge the way a pitched plane does, a ridge tile along the
        top, a fascia at the eaves, and a barge board down each rake of the
@@ -4227,26 +4440,36 @@ float wallH(vec2 q, out float occ){
        -- and on the low wing, whose roof came back the value of its wall
        (see onWin in main()), a stack of them read as "stray horizontal black
        lines ... belonging to no object". A slate course is a joint.) */
+    /* (round 21: a 0.30 m gauge is 3-4 pixels at the Deck's tier, and a
+       course ending on a rake every 3 pixels IS a stepped edge -- the gable's
+       barge board came back as a row of teeth. Drawn only while the gauge
+       can carry it; mmLod.) */
     h -= onRoof * (1.0 - smoothstep(0.012, 0.012 + hpx*1.6,
-                        mmRowX(pow(rt, 0.70)*(rtop - eave), 0.30))) * 0.11;
+                        mmRowX(pow(rt, 0.70)*(rtop - eave), 0.30))) * 0.11 * mmLod(0.30, hpx);
     h += smoothstep(rtop - 0.14 - hpx, rtop - 0.14, hq.y)
        * smoothstep(rtop + hpx, rtop, hq.y) * 0.85;            // the ridge tile
     h += onRoof * smoothstep(eave + 0.16, eave + 0.04, hq.y) * 0.50;   // the eaves fascia
     // the turret caps, slated at a 0.17 m gauge because a cone is much steeper
-    h -= step(rtop, hq.y) * smoothstep(roof + hpx, roof - hpx, hq.y)
-       * (1.0 - smoothstep(0.010, 0.010 + hpx*1.4, mmRowX(hq.y, 0.17))) * 0.13;
-    float grake = abs((2.45 - gax)*1.428 - (hq.y - BAYE));
-    h += onBay * step(BAYE - 0.05, hq.y) * step(hq.y, gable + 0.06)
-       * (1.0 - smoothstep(0.06, 0.06 + hpx*2.0, grake)) * 0.80;      // the barge board
+    h -= step(rtop, hq.y) * roofCov
+       * (1.0 - smoothstep(0.010, 0.010 + hpx*1.4, mmRowX(hq.y, 0.17))) * 0.13 * mmLod(0.17, hpx);
+    /* the barge board: a STROKE down each rake, its distance taken square to
+       the rake (x 0.573 = cos 55), so it is the same pen at the apex and the
+       eaves. It was a vertical band cut off by a hard step along the rake --
+       the one place on the house a hard edge cannot be. */
+    float grake = ((2.45 - gax)*1.428 - (hq.y - BAYE))*0.573;
+    float onRk = onBay * smoothstep(BAYE - 0.05 - hpx, BAYE - 0.05 + hpx, hq.y);
+    h += onRk * mmStroke(grake - 0.05, max(0.045, 1.1*hpx)) * 0.80;  // the barge board
+    mmPen(grake - 0.05 - max(0.045, 1.1*hpx), 1.0, onRk * 0.55);
     /* THE DORMERS, BUILT: cheeks, a barge board down each rake of the gabled
        one and a moulded arch round the lunette, a sill, and the small light
        in it. A dormer that is only a bump in the skyline is the "unfinished
        object" this round is about, so both kinds carry their own members. */
     float dInRoof = onDorm * step(EAVE_A + 0.30, hq.y) * step(hq.y, dorm);
     h += dInRoof * 0.28;                                          // the dormer cheek
-    float drake = abs((1.05 - abs(dx))*1.11 - (hq.y - EAVE_A - 0.55));
-    h += onDorm * (1.0 - isLun) * step(EAVE_A + 0.50, hq.y) * step(hq.y, dorm + 0.05)
-       * (1.0 - smoothstep(0.045, 0.045 + hpx*1.8, drake)) * 0.70;
+    float drake = ((1.05 - abs(dx))*1.11 - (hq.y - EAVE_A - 0.55))*0.669;
+    h += onDorm * (1.0 - isLun) * step(EAVE_A + 0.50, hq.y)
+       * mmStroke(drake - 0.04, max(0.032, 1.1*hpx)) * 0.70;
+    mmPen(drake - 0.04 - max(0.032, 1.1*hpx), 1.0, onDorm * (1.0 - isLun) * step(EAVE_A + 0.50, hq.y) * 0.50);
     float dArcD = abs(length(vec2(dx, (hq.y - EAVE_A - 0.30)/0.62)) - 1.319)*0.62;
     h += onDorm * isLun * step(EAVE_A + 0.30, hq.y)
        * (1.0 - smoothstep(0.050, 0.050 + hpx*1.8, dArcD)) * 0.70;
@@ -4273,8 +4496,8 @@ float wallH(vec2 q, out float occ){
     h += ctIn * step(EAVE_A - 1.20, hq.y)
        * (1.0 - smoothstep(0.040, 0.040 + hpx*2.0, abs(bel))) * 0.55;
     h += onCT * mmBandA(hq.y, ctTop - 0.24, ctTop, hpx) * 0.80;     // its cornice
-    h -= step(ctTop, hq.y) * step(abs(ctx), 1.55) * smoothstep(roof + hpx, roof - hpx, hq.y)
-       * (1.0 - smoothstep(0.010, 0.010 + hpx*1.4, mmRowX(hq.y, 0.19))) * 0.15;
+    h -= step(ctTop, hq.y) * step(abs(ctx), 1.55) * roofCov
+       * (1.0 - smoothstep(0.010, 0.010 + hpx*1.4, mmRowX(hq.y, 0.19))) * 0.15 * mmLod(0.19, hpx);
     /* THE TREELINE: firs, each with a trunk and a pointed crown, at their own
        spacing. A band of ridged noise reads as a hedge at best and as nothing
        at this distance, which is what it did. */
@@ -4322,7 +4545,12 @@ float wallH(vec2 q, out float occ){
     float sp = 3.40;
     float cxs = cx + uSeed*5.1;
     float cell0 = floor(cxs/sp + 0.5);
-    float rag = 0.22 * mmFbm3(vec2(cxs*7.0, hq.y*3.0));        // ragged needles
+    /* (round 21: band-limited. At 7 cycles a metre the needles were a cycle
+       every 1.8 px at the Deck's tier, and aliased into the ragged VERTICAL
+       stripes down every crown's flank; the frequency now stops at a cycle
+       per ~8 px, where the eye still reads it as needles.) */
+    float ragF = min(7.0, 0.12/max(hpx, 1e-4));
+    float rag = 0.22 * mmFbm3(vec2(cxs*ragF, hq.y*min(3.0, ragF*0.43)));  // ragged needles
     float nearM = 0.0, nearLit = 0.0, nearTrunk = 0.0, nearRim = 0.0, nearBr = 0.0;
     for (int k = -1; k <= 1; k++){
       float fid = cell0 + float(k);
@@ -4351,7 +4579,12 @@ float wallH(vec2 q, out float occ){
          and a big one at the frame's edge came back as a black slab.) */
       float top = under + (fh - under)*pow(fn, 0.72);
       top += fw*0.34*max(0.0, sin(hq.y*5.2 - fid*2.3))*fn*(1.0 - fn)*4.0*step(0.4, fh) + rag;
-      float cm = smoothstep(top + hpx, top - hpx, hq.y)
+      /* (round 21: the crown's edge is antialiased SQUARE to the flank, as the
+         rim below already was: a fir's flank runs at 70-75 degrees, and a
+         vertical transition of two hpx across it is half a pixel, so every
+         crown's side came back as a column of stair-steps.) */
+      float slope0 = (fh - under)*0.72*pow(max(fn, 0.03), -0.28)/max(fw, 0.05);
+      float cm = clamp(0.5 + (top - hq.y)/(hpx*sqrt(1.0 + slope0*slope0)), 0.0, 1.0)
                * mix(1.0, smoothstep(under - hpx, under + hpx, hq.y), limbed);
       /* ROUND 18 (both judges): the crowns were "pure-black flat masses that
          read as holes" in the horizon. mainMenu.png's firs are a dark blue
@@ -4555,8 +4788,8 @@ float wallH(vec2 q, out float occ){
     /* ...and the same for the roof, which had no material of its own at all:
        slate is darker than dressed stone, and the gable's own slope catches
        the moon where the main slope behind it does not. */
-    gTint -= step(eave, hq.y)*step(hq.y, roof)*(1.0 - onBay)*0.34*noSub;
-    gTint += onBay*step(BAYE, hq.y)*step(hq.y, gable)*0.10*noSub;
+    gTint -= step(eave, hq.y)*roofCov*(1.0 - onBay)*0.34*noSub;
+    gTint += onBay*step(BAYE, hq.y)*mmCover(gable - hq.y)*0.10*noSub;
     /* COURSED MASONRY. Now that the moonlight gives this mode something to draw
        ON, the house can be BUILT of something: mainMenu.png's is visible blocks
        with a fine dark line round each, and ours was a smooth mass with a band
@@ -4578,9 +4811,18 @@ float wallH(vec2 q, out float occ){
     float cph = (hq.x + uSize.x*0.5 + mod(crow, 2.0)*0.525 + uSeed)/1.05;
     float cbx = abs(fract(cph + 0.5) - 0.5)*1.05;
     float sJit = mmHash11(floor(cph)*2.7 + crow*9.1 + uSeed) - 0.5;
-    h -= onBody * (1.0 - smoothstep(0.011, 0.011 + hpx*1.4, cbx)) * 0.22;
-    h -= onBody * (1.0 - smoothstep(0.011, 0.011 + hpx*1.2, mmRowX(hq.y, 0.48)))
-       * (0.035 + 0.105*mmHash11(floor(cph)*4.59 + crow*9.1 + uSeed + 4.3));
+    /* (round 21: the joints are INKED, not carved. Carved 1.4 px wide, a
+       joint reached the screen only through the 2x2 quads, and forty
+       courses of it broke up into a field of dark dashes and dots across the
+       whole elevation -- the house read as a pixel pattern. A pen line a
+       pixel wide, the bed a value lighter than the perpend as before, is the
+       fine dark line round each stone that mainMenu.png draws.) */
+    float bedK = 0.035 + 0.105*mmHash11(floor(cph)*4.59 + crow*9.1 + uSeed + 4.3);
+    /* the bed is where the course number changes (y = k x 0.48), so the
+       perpends' half-block offset turns over exactly on it */
+    float dBed = 0.24 - mmRowX(hq.y, 0.48);
+    gInk = max(gInk, onBody * noSub * max(mmInkP(cbx, hpx/0.85, 0.9) * 0.42 * smoothstep(1.0*hpx, 2.0*hpx, dBed),
+                                          mmInkP(dBed, hpx/0.85, 0.9) * (0.18 + 1.6*bedK)));
     h += onBody * sJit * 0.048;
     gTint += onBody * sJit * 0.34 * noSub;
     /* WINDOW SURROUNDS. The lit panes are painted in the colour pass and had no
@@ -4732,7 +4974,18 @@ vec3 skyColor(vec2 q, float horizon){
      halo about three times its own width. */
   /* Anchored 6 m left of centre, not at 0.30 of the plane: the plane is as
      wide as the camera needs and that is not a property of the scene. */
-  vec2 mc = vec2(uSize.x*0.5 - 6.0 + uHouse.y, 12.6);
+  /* ...and 9.3 m up, not 12.6 (round 21): the fight's rig is pitched down
+     now so the floor runs on behind the combatants (stageRig, fx/atmosphere
+     .js), and the top of an open-air frame came down with it -- at 12.6 the
+     Graveyard's moon sat under the rail across the top of the screen, and a
+     graveyard at night without its moon is the one thing mainMenu.png says it
+     must have. And 7 m RIGHT of the axis: lowered, it would sit behind the
+     main block's left gables and the corner tower (whose cap is 13.6 m), and
+     over the low wing on the right (ridge 6.25 m) it has open sky under it. */
+  /* (8.5, not 9.3: at 1280x800 the rig's slow drift still carried the
+     disc's top under the run rail; 8.5 clears the low wing's 6.25 m ridge
+     by more than the disc's own radius.) */
+  vec2 mc = vec2(uSize.x*0.5 + 7.0 + uHouse.y, 8.5);
   float md = length(vec2(q.x, q.y) - mc);
   float disc = smoothstep(1.26, 1.14, md);
   float crater = 0.72 + 0.28*mmFbm3((vec2(q.x,q.y) - mc)*3.4);
@@ -4827,6 +5080,10 @@ void main(){
      sample, and they also flatten the relief at grazing angles, which kills the
      shimmer the finite difference used to produce on the far wall. */
   float sOcc = 0.0;
+  mmQuadInit();
+  gInk = 0.0; gPen = 0.0;
+  gAAx = length(vec2(dFdx(q.x), dFdy(q.x)));
+  gAAy = length(vec2(dFdx(q.y), dFdy(q.y)));
   /* metres per pixel, taken here in uniform control flow: a sitter's marks
      are drawn a pixel wide, and sPortrait is only called under a branch */
   float ptPx = max(abs(dFdx(q.x)), abs(dFdy(q.y)));
@@ -4834,7 +5091,7 @@ void main(){
   if (gPtAmt > 0.002)
     gCol = mix(gCol, sPortrait(gPtP, gPtHs, gPtSd, ptPx, gPtK), clamp(gPtAmt, 0.0, 1.0));
   vec2  dq = vec2(max(abs(dFdx(q.x)), 1e-4), max(abs(dFdy(q.y)), 1e-4));
-  vec2  gh = vec2(dFdx(h), dFdy(h)) / dq;
+  vec2  gh = mmGrad(h) / dq * (1.0 - gPen);
   vec3  nrm = normalize(vec3(-gh * 0.05, 0.42));
 
   // ---- albedo ---------------------------------------------------------------
@@ -5694,9 +5951,12 @@ void main(){
   /* Same guard as the floor's: a side wall at a grazing angle packs a whole
      panel into a pixel, and inking a form finer than a pixel draws bands. */
   float wDraw = smoothstep(0.40, 0.08, max(dq.x, dq.y));
-  vec2 drawn = mmDrawn(h, 0.030, 0.26) * wDraw;
+  vec2 drawn = mmDrawn(h, 0.030, 0.26) * wDraw * (1.0 - gPen);
   drawn.y *= 1.0 - gBarM;                 // an iron glazing bar has no lit crest (round 18)
-  col *= 1.0 - drawn.x * uInk;
+  /* the pen's own lines (gInk, round 21) are drawn at the same strength as
+     the relief's: the darker of the two, so a feature drawn both ways is not
+     inked twice */
+  col *= 1.0 - max(drawn.x, gInk * wDraw) * uInk;
   col += col * drawn.y * uLip;
 
   // ---- painterly break-up + depth fog ---------------------------------------
@@ -5752,6 +6012,23 @@ uniform vec3  uLightCol[5];
 uniform vec4  uPool[4];        // xy = floor-local metres, z = radius, w = intensity
 uniform vec4  uPoolAxis[4];    // xy = elongation direction, z = stretch, w unused
 uniform vec3  uPoolCol[4];
+/* THE FIGHT, STANDING ON THIS FLOOR (round 21). Where each combatant's feet
+   meet the floor, floor-local metres (xy), the radius of its footprint (z)
+   and how much of a shadow it throws (w, 0 = no one there). Written by
+   Backdrop.setActors from the combat board's own shadow anchors, so the
+   shadow is under the DOM figure wherever the layout put it. uKeyF is the
+   key light the shadows fall AWAY from: floor-local xy and its height. */
+uniform vec4  uActor[6];
+/* ...and per actor, worked out once on the CPU (Backdrop.setActors) rather
+   than per floor pixel: the unit direction its shadow is thrown (xy), how
+   long the throw is (z), and the square of the radius past which it does
+   nothing at all (w), so most of the floor skips the actor entirely. */
+uniform vec4  uActorK[6];
+uniform vec3  uKeyF;
+uniform vec3  uKeyCol;         // the key's colour x its strength at the stage
+/* the box round every actor's reach (min xy, max xy), so the floor outside
+   it -- most of the floor -- skips the whole block (round 21) */
+uniform vec4  uActorBox;
 uniform vec3  uCamera;
 uniform float uIsCeiling;
 varying vec2  vUv;
@@ -5765,6 +6042,7 @@ float mmRowX(float x, float period){ return abs(mod(x, period) - period*0.5); }
 #endif
 
 void main(){
+  mmQuadInit();
   vec2 w = (vUv - 0.5) * uSpan;
 
   /* METRES PER PIXEL, from the plane's own screen derivatives. Every joint,
@@ -5965,7 +6243,13 @@ void main(){
     vec2 ww = w + vec2(mmNoise(w*0.62 + uSeed) - 0.5,
                        mmNoise(w*0.62 + 13.1) - 0.5) * 0.30;
     float row = floor(ww.y/cell.y);
-    float ox  = mmHash11(row + uSeed)*cell.x;
+    /* (round 21: the stagger is dealt by a 2D hash. mmHash11 of CONSECUTIVE
+       rows is a smooth quadratic in the row number over long runs, so the
+       head joints of one course after another stepped along by nearly the
+       same amount and lined up into long raking staircases across the
+       glasshouse floor -- which, now that the floor is in shot behind the
+       fight, read as exactly the pixel stair-stepping this round removes.) */
+    float ox  = mmHash21(vec2(row*1.37, uSeed*0.61 + 4.1))*cell.x;
     vec2 g  = vec2(fract((ww.x+ox)/cell.x), fract(ww.y/cell.y));
     vec2 id = vec2(floor((ww.x+ox)/cell.x), row);
     float slab = mmHash11(id.x*17.3 + id.y*31.7 + uSeed);
@@ -6457,13 +6741,28 @@ void main(){
        the same smear field rather than laid on smooth. */
     float streak = exp(-abs(d.x + ripX)*smear*wideK) * exp(-max(d.y, 0.0)*lenK);
     col += reflA * uLightCol[i] * att * streak * uGloss * 3.4 * uWet * wetK;
+    /* (round 21: the glint only where the lamp still reaches. Past two of
+       its radii a lamp is down to 6% and its highlight on a matt flag is
+       nothing anyone can see -- and with the rig pitched to put the floor
+       under the fight, most of the floor is out there: the normalize and the
+       power were a quarter of the floor's cost for no visible light.) */
+    float kS = dist / max(L.z, 0.001);
+    if (kS > 2.0) continue;
     vec3 ldir = normalize(vec3(-d.x, 3.0, d.y));
-    col += mmSpec(N, ldir, V, uLightCol[i], att, uGloss*0.9, specP) * wetK * specK;
+    col += mmSpec(N, ldir, V, uLightCol[i], att, uGloss*0.9, specP) * wetK * specK
+         * (1.0 - smoothstep(1.6, 2.0, kS));
   }
 
   /* ---- shaft pools: the bright ellipse where a light shaft LANDS ----------
      Without this every shaft in the game faded out in mid-air and the floor
      underneath it was the same value as the floor two metres away. */
+  /* (round 21: ONE grain field for all four pools, not one each. Four
+     mmFbm3 were twelve noise taps on every floor pixel within 4.6 radii of a
+     pool -- which, with the rig pitched to put the floor under the fight, is
+     nearly the whole floor -- and where two pools overlap nobody can tell
+     whose break-up is whose. It is the wet smear's field, already taken
+     above, and the pool's own index turns it over.) */
+  float grainF = uIsCeiling < 0.5 ? (smear - 0.55)/0.55 : 0.0;   // the smear's own fbm
   for (int i = 0; i < 4; i++){
     vec4 P = uPool[i];
     if (P.w <= 0.001) continue;
@@ -6472,6 +6771,11 @@ void main(){
     float along = dot(d, ax) / max(uPoolAxis[i].z, 0.001);
     float across = d.x*ax.y - d.y*ax.x;
     float r = length(vec2(along, across)) / max(P.z, 0.001);
+    /* (round 21: past 4.6 radii the spill is under 0.4% of the pool, and the
+       pitched rig puts twice the floor in shot that there was -- so the
+       grain's three noise taps are not paid for out there. A ceiling's
+       degenerate slot has r = 0 and still takes its wash.) */
+    if (r > 4.6) continue;
     float core = exp(-r*r*2.1);
     float spill = exp(-r*1.05) * 0.42;
     /* MEASURED, AND PUT BACK. Cutting the pools off the ceiling entirely took
@@ -6483,7 +6787,7 @@ void main(){
        see at 8.5% of gain. So the ellipses stay and the grain does not, which
        is most of the saving and none of the loss. */
     float grain = 0.95;
-    if (uIsCeiling < 0.5) grain = 0.80 + 0.34*mmFbm3(w*1.7 + float(i)*7.3);
+    if (uIsCeiling < 0.5) grain = 0.80 + 0.34*mix(grainF, 1.0 - grainF, mod(float(i), 2.0));
     /* ON A CEILING these slots are not landing pools -- they are the panes the
        shafts come THROUGH (backdrop.js _writePools), and only a glazed roof
        has any. Every other ceiling in the house keeps the zeros it has had
@@ -6631,14 +6935,62 @@ void main(){
     col *= 1.0 - speck * 0.22;                      // and each one casts its own
   }
 
+  /* ---- WHERE THE FIGHT STANDS (round 21) --------------------------------
+     A contact shadow is not a grey ellipse laid on a floor, it is the floor's
+     own light TAKEN AWAY: dense and tight where a foot meets the boards, then
+     a cast shadow thrown away from the key lamp, as long as the lamp is low,
+     widening and letting go as it runs. Multiplying the lit floor keeps its
+     grain, its joints and its colour inside the shadow, which is what a
+     painted shadow does and a DOM ellipse cannot. */
+  if (uIsCeiling < 0.5 && all(greaterThan(w, uActorBox.xy)) && all(lessThan(w, uActorBox.zw))) {
+    float occl = 0.0;
+    /* THE KEY FINDS THE FLOOR THEY STAND ON. A shadow on an unlit floor is
+       no shadow -- the boards under the creature row were within a few units
+       of black, so the first cut of this block measured as nothing. The key
+       lamp is the light that lights the fight (it sits in front of the action
+       plane for exactly that), so the floor round each combatant takes a
+       soft pool of it, and the shadow is then that light taken away. Only the
+       floor under a FIGURE: the room keeps its darks. */
+    float lit = 0.0;
+    for (int i = 0; i < 6; i++){
+      vec4 A = uActor[i];
+      if (A.w <= 0.001) continue;
+      vec2 d = w - A.xy;
+      vec4 K = uActorK[i];
+      if (dot(d, d) > K.w) continue;
+      float r0 = A.z;
+      vec2 e = d * vec2(1.0, 1.35);
+      float rc2 = dot(e, e) / (r0*r0);
+      lit = max(lit, exp(-rc2*0.075) * A.w);
+      float contact = exp(-rc2*2.4);
+      vec2 kd = K.xy;
+      float len = K.z;
+      float along = dot(d, kd), across = d.x*kd.y - d.y*kd.x;
+      float t = clamp(along/len, 0.0, 1.0);
+      float wdt = r0 * (0.62 + 0.55*t);
+      float thrown = smoothstep(-0.35*r0, 0.25*r0, along) * (1.0 - smoothstep(0.35, 1.0, t))
+                 * exp(-across*across/(wdt*wdt)*1.7);
+      occl = max(occl, max(contact*0.80, thrown*0.58) * A.w);
+    }
+    col += alb * uKeyCol * lit * (0.55 + 0.45*smear);
+    col *= 1.0 - clamp(occl, 0.0, 0.9);
+  }
+
   /* ---- the drawn line ----------------------------------------------------
      Every joint in the samples' floors is ink, not a darker stone: a line
      darker than the flags on both sides of it, thicker where the stones sit
      unevenly. pat is the floor's relief, so the same screen-space treatment
      the wall and the props use draws it here. */
+  /* (round 21: at 0.40, not 0.85. The joints above ARE the floor's ink --
+     each is a line darker than the stones either side, drawn per pixel from
+     the pattern itself. This derivative line on top of them doubled every
+     joint with a second one taken from 2x2 quads, and a derivative across a
+     one-pixel joint breaks up into dots along any joint that runs at a slant:
+     with the floor now in shot behind the fight, the boards behind the Kid
+     came back as a woven dot-screen. It keeps the flags' and kerbs' edges.) */
   vec2 drawn = mmDrawn(pat, 0.020, 0.30) * drawable;
-  col *= 1.0 - drawn.x * uInk * 0.85;
-  col += col * drawn.y * uLip * 0.7;
+  col *= 1.0 - drawn.x * uInk * 0.40;
+  col += col * drawn.y * uLip * 0.40;
 
   col *= uGain;
   // the ceiling is the one surface the eye forgives being dark; overhead near
@@ -7752,8 +8104,19 @@ float shapeField(vec2 uv, vec2 msz, float shape, float seed){
      The fittings are 22 and 23 ONLY -- the planting bed above them is brick
      and fans, and keeps the full erosion it was judged with. */
   /* (nor does a carved fountain with a sheet of water on it: 25) */
+  /* ...AND NEITHER DOES JOINERY OR DRESSED STONE (round 21). At 0.022 of the
+     quad the erosion is a wobble of several pixels along a column's shaft or
+     a cabinet's side, and a wobble on a line that should be straight is what
+     reads, at the Deck's 0.8, as stair-stepping: the ballroom's columns and
+     the hall's cases came back with ragged, stepped verticals. The samples
+     draw a made thing with ONE straight, clean inked line; a shrub, a drape,
+     a statue, a planting bed and a weathered headstone keep their ragged
+     edge, because a real one has it. */
+  float made = (shape < 0.5 || (shape > 4.5 && shape < 6.5) || (shape > 7.5 && shape < 8.5)
+             || (shape > 9.5 && shape < 10.5) || (shape > 11.5 && shape < 14.5)
+             || (shape > 15.5 && shape < 21.5)) ? 1.0 : 0.0;
   d += (mmFbm3(uv*5.0 + seed*17.0) - 0.5)
-     * (((shape > 21.5 && shape < 23.5) || shape > 24.5) ? 0.0035 : 0.022);
+     * (((shape > 21.5 && shape < 23.5) || shape > 24.5) ? 0.0035 : mix(0.022, 0.0030, made));
   return -d;
 }
 
@@ -9119,13 +9482,14 @@ float reliefH(vec2 uv, vec2 msz, vec2 mpp, float shape, float seed, out float ti
 }
 
 void main(){
+  mmQuadInit();
   float f = shapeField(vUv, vSize, vShape, vSeed);
   /* The coverage field's own screen gradient turns it into a DISTANCE IN
      PIXELS from the silhouette, which is the only scale an edge treatment can
      honestly be authored in: the old 0.014 of local uv was half a pixel on a
      far prop and five on a near one, and the capitals in every capture were
      stair-stepped because of it. */
-  vec2  gr   = vec2(dFdx(f), dFdy(f));
+  vec2  gr   = mmGrad(f);
   float glen = length(gr) + 1e-7;
   float fpx  = f / glen;
   /* A BRASS FITTING HAS A HARD EDGE, and a drawn line is OPAQUE. 1.45 px of
@@ -9163,7 +9527,7 @@ void main(){
      authored in pixels and every feature in metres. Clamped because a 4 cm
      step across one pixel is a slope of 40 and would turn the normal inside
      out; the step still gets its drawn line from mmDrawn below. */
-  vec2 rg  = vec2(dFdx(rh), dFdy(rh));
+  vec2 rg  = mmGrad(rh);
   /* CLAMPED AT 1.25, AND THAT NUMBER WAS MEASURED. At 2.4 the Greenhouse's
      planting came back 36% darker in the mean (measured over the left bank:
      64.6 -> 41.4): a leaf edge steps 3 cm of relief across less than a pixel,
@@ -9185,6 +9549,15 @@ void main(){
      from the single sample we already have. */
   vec2  g  = gr / glen;                                     // points inward
   float edge = 1.0 - smoothstep(0.0, 0.085, f);
+  /* (round 21: NOT ON A COLUMN. The coverage normal tilts over 0.085 of the
+     quad in from the outline, and a column's shaft is only 0.135 wide: so
+     the whole shaft was "edge", and where the shaft's side meets the torus
+     the gradient of the field turns a corner -- its medial axis, a line at
+     45 degrees up from every base -- and the normal flipped across it. Lit
+     by a lamp to one side, every column in the house came back with a hard
+     STEPPED diagonal shadow across its foot. A column is round because
+     reliefH's drum says so; its outline keeps the last four pixels.) */
+  if (vShape > 5.5 && vShape < 6.5) edge = 1.0 - smoothstep(0.0, 4.0, fpx);
   vec3  N  = normalize(vec3(-g * edge * 1.75, 0.62 + 0.38*(1.0 - edge)));
   /* ...and now it turns with the CARVING as well as with the outline. */
   N = normalize(N + vec3(-rsl * 0.55, 0.0));

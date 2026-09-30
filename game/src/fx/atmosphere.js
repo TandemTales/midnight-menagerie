@@ -1496,6 +1496,64 @@ function hashSeed(v) {
   return h >>> 0;
 }
 
+/* ── EVERYONE STANDS ON THE FLOOR (round 21, item 2) ──────────────────────
+   The Kid, the Companion and the creatures are DOM drawn over this room, on a
+   floor line of their own a little below the middle of the screen (the Kid's
+   boots at 0.575 of the height, a creature's at ~0.50, at 1280x800 and at
+   1600x900 alike). Every rig in the house looked LEVEL or UP at its far wall
+   -- the Foyer's eye at 2.55 m on a look point at 2.90 -- so the horizon sat
+   at or below the middle of the frame, the far wall's foot at 0.64-0.72, and
+   the only thing behind anybody's feet was WALL. A figure whose feet are
+   drawn above the floor's far edge is standing on the wall; the survey saw
+   exactly that, in every wing.
+
+   So the rig is PITCHED DOWN until the foot of the far wall (or the ground
+   line an open-air room runs out to) comes up to STAGE_BASE, a clear band
+   above the highest feet on the board: then the floor genuinely runs on
+   behind every combatant, and the band between the wall's foot and their
+   feet is floor seen at a real depth. Only ever down, and only the look point
+   moves: the eye keeps its height and its distance, so the room keeps its
+   proportions and its lens, and a rig that already clears the line (a
+   gallery vantage looking down, say) is left exactly as authored.
+
+   The layout clamp (Backdrop._layoutProps) and the near frame both read the
+   same pal.cam, so this runs before the room is built.
+
+   The arithmetic: y down the screen is 0.5 + 0.5 * tan(angle below the axis)
+   / tan(fov/2), the far wall's foot is atan(eye / distance) below level, so
+   the pitch that lands it on STAGE_BASE is that angle minus the one the
+   target line makes with the axis. */
+/* ...AND AT A SIZE THE ROOM BELIEVES. Where the feet land on the floor says
+   how far away a figure is, and its height on screen then says how tall it
+   is. Measured on the Foyer at the authored 2.46 m eye: the Kid's boots
+   landed 12 m out, which made her 2.4 m tall, and the Door Greeter 3.9 m --
+   a door-creature a metre taller than the hall's own doorway. The eye comes
+   down to STAGE_EYE of its authored height (the lens stays where it was, so
+   the walls, the stair and the windows keep their size and place on the
+   screen) and the same boots land 8.9 m out: a 1.5 m Kid and a 2.3 m door.
+   Only on the wing's own square rig -- a gallery vantage is up on its
+   gallery for a reason. */
+const STAGE_BASE = 0.39;
+const STAGE_EYE = 0.72;
+function stageRig(pal) {
+  const c = pal.cam, R = pal.room;
+  if (!c || !R) return;
+  const deg = Math.PI / 180;
+  const tanV = Math.tan((c.fov ?? 42) * deg / 2);
+  const square = !pal.vantageKind || pal.vantageKind === 'square';
+  const ex = c.x ?? 0, ez = c.z ?? 9.6;
+  const ey = square ? Math.max(1.15, (c.y ?? 2.3) * STAGE_EYE) : (c.y ?? 2.3);
+  const lx = c.lookX ?? 0, lz = c.lookZ ?? 0;
+  const hd = Math.max(Math.hypot(lx - ex, lz - ez), 0.5);   // horizontal run to the look point
+  const wallDist = Math.max(ez + R.d, 1);                   // the far wall stands at z = -d
+  const below = Math.atan(ey / wallDist);                   // its foot, below level
+  const target = Math.atan((STAGE_BASE - 0.5) * 2 * tanV);  // negative: above the axis
+  const pitch = below - target;                             // down, radians
+  const look = ey - hd * Math.tan(pitch);
+  const lookA = ey - ((c.y ?? 2.3) - (c.look ?? 2.4));        // the authored pitch, from the new eye
+  pal.cam = Object.assign({}, c, { y: ey, look: Math.min(look, lookA) });
+}
+
 function resolve(name) {
   const key = REGION_ALIAS[name] || (REGIONS[name] ? name : 'foyer');
   const src = REGIONS[key] || {};
@@ -1536,6 +1594,65 @@ export class Atmosphere {
     this._v3b = new THREE.Vector3();
     this._col = new THREE.Color();
     this._css = { kx: 0, ky: 0, key: '', fill: '', str: 0 };
+    this._actT = 0;
+    this._actN = 0;
+    this._actList = [];
+    this._ndc = new THREE.Vector3();
+  }
+
+  /* -- THE FIGHT'S FEET, ON THIS FLOOR (round 21) ---------------------------
+     The Kid, her Companion and the creatures are DOM drawn over the room,
+     each with a contact-shadow anchor at its feet (ui/enemy.js). Their
+     shadows belong to the ROOM's floor and its light, so every few frames the
+     anchors are read back, cast through the lens onto the floor plane, and
+     handed to the floor shader, which darkens its own lit boards there and
+     throws each shadow away from the key lamp. Off the fight -- no anchors --
+     every slot is cleared. */
+  _syncActors(dt) {
+    this._actT -= dt;
+    if (this._actT > 0) return;
+    this._actT = 0.05;
+    const list = this._actList;
+    list.length = 0;
+    const stage = this.ctx.stage;
+    const cam = stage?.camera;
+    const cv = stage?.renderer?.domElement;
+    if (cam && cv && typeof document !== 'undefined') {
+      const els = document.querySelectorAll(
+        '.cb-hero .pr-shadow, .cb-hero .pr-palset, .cb-enemy:not(.is-removed):not(.is-dead) .cb-enemy__pool');
+      if (els.length) {
+        const cr = cv.getBoundingClientRect();
+        /* the Companion stands on the Kid's own floor line: her shadow's
+           centre gives the height, the Companion's figure only its x */
+        let heroY = null;
+        for (const el of els) {
+          if (el.classList.contains('pr-shadow')) { const r = el.getBoundingClientRect(); heroY = r.top + r.height / 2; break; }
+        }
+        const tanV = Math.tan((cam.fov * Math.PI) / 360);
+        for (const el of els) {
+          if (list.length >= 6) break;
+          const r = el.getBoundingClientRect();
+          if (r.width < 2) continue;
+          const pal = el.classList.contains('pr-palset');
+          const sx = r.left + r.width / 2;
+          if (pal && heroY === null) continue;
+          const sy = pal ? heroY : r.top + r.height / 2;
+          const nx = ((sx - cr.left) / cr.width) * 2 - 1;
+          const ny = -(((sy - cr.top) / cr.height) * 2 - 1);
+          const v = this._ndc.set(nx, ny, 0.5).unproject(cam).sub(cam.position);
+          if (v.y > -1e-4) continue;                     // above the horizon: no floor there
+          const t = -cam.position.y / v.y;
+          const x = cam.position.x + v.x * t, z = cam.position.z + v.z * t;
+          const dist = Math.hypot(v.x * t, v.y * t, v.z * t);
+          const mpp = (2 * tanV * dist) / cr.height;     // metres per CSS pixel there
+          const w = pal ? Math.min(r.width, r.height * 1.4) * 0.60
+                        : r.width * (el.classList.contains('pr-shadow') ? 0.62 : 0.50);
+          list.push({ x, z, r: Math.max(0.12, Math.min(pal ? 0.6 : 1.4, w * 0.5 * mpp)), s: pal ? 0.70 : 0.85 });
+        }
+      }
+    }
+    if (list.length || this._actN) this.backdrop.setActors(list);
+    this._actN = list.length;
   }
 
   init() {
@@ -1628,6 +1745,7 @@ export class Atmosphere {
        layout clamp, so on any other window shape a prop's "visible half-width"
        was fiction. */
     pal.aspect = this.ctx.stage.camera.aspect || (16 / 9);
+    stageRig(pal);
     this.backdrop.build(pal, () => this._rand());
     // material is structural, like the geometry: it swaps with the room rather
     // than cross-fading, because a cabinet does not gradually stop being oak.
@@ -2242,6 +2360,7 @@ export class Atmosphere {
   update(dt, t) {
     if (!this.ready) return;
     this._t = t;
+    this._syncActors(dt);
     const reduce = Save.settings?.reduceMotion ? 1 : 0;
     const motion = reduce ? 0.25 : 1;
 

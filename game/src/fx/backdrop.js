@@ -297,6 +297,11 @@ const CINE_PROP = 0.26;
  *  construction: see syncLights. */
 const CINE_FILL_PROP = 0.38;
 function v4arr(n = NLIGHT) { return Array.from({ length: n }, () => new THREE.Vector4()); }
+/* An unwritten Vector4 is (0, 0, 0, 1), and w is the slot's strength: an
+   actor slot must start EMPTY, not as a shadow at the origin. */
+const MAX_ACTORS = 6;
+const STAGE_LIGHT = 0.9;
+function zeroV4(n) { return Array.from({ length: n }, () => new THREE.Vector4(0, 0, 0, 0)); }
 function colArr(n = NLIGHT) { return Array.from({ length: n }, () => new THREE.Color()); }
 /**
  * THREE.UniformsUtils.clone() only does `array.slice()`, so cloned materials end
@@ -310,6 +315,11 @@ function freshLightSlots(uniforms) {
   if (uniforms.uPool) uniforms.uPool.value = v4arr(MAX_POOLS);
   if (uniforms.uPoolAxis) uniforms.uPoolAxis.value = v4arr(MAX_POOLS);
   if (uniforms.uPoolCol) uniforms.uPoolCol.value = colArr(MAX_POOLS);
+  if (uniforms.uActor) uniforms.uActor.value = zeroV4(MAX_ACTORS);
+  if (uniforms.uActorK) uniforms.uActorK.value = zeroV4(MAX_ACTORS);
+  if (uniforms.uKeyF) uniforms.uKeyF.value = uniforms.uKeyF.value.clone();
+  if (uniforms.uKeyCol) uniforms.uKeyCol.value = uniforms.uKeyCol.value.clone();
+  if (uniforms.uActorBox) uniforms.uActorBox.value = uniforms.uActorBox.value.clone();
   if (uniforms.uSize) uniforms.uSize.value = uniforms.uSize.value.clone();
   if (uniforms.uSpan) uniforms.uSpan.value = uniforms.uSpan.value.clone();
   if (uniforms.uCamera) uniforms.uCamera.value = uniforms.uCamera.value.clone();
@@ -436,6 +446,12 @@ export class Backdrop {
       uLights: { value: v4arr() }, uLightCol: { value: colArr() },
       uPool: { value: v4arr(MAX_POOLS) }, uPoolAxis: { value: v4arr(MAX_POOLS) },
       uPoolCol: { value: colArr(MAX_POOLS) },
+      uActor: { value: zeroV4(MAX_ACTORS) },
+      uActorK: { value: zeroV4(MAX_ACTORS) },
+      uKeyF: { value: new THREE.Vector3(-4, 2, 3) },
+      uKeyCol: { value: new THREE.Color(0, 0, 0) },
+      /* empty (min > max) until setActors writes it */
+      uActorBox: { value: new THREE.Vector4(1, 1, -1, -1) },
     });
 
     this.floorMat = new THREE.ShaderMaterial({
@@ -978,6 +994,25 @@ export class Backdrop {
       };
     }
     const halfW = room.w / 2;
+    /* WHERE THE FIGHT STANDS, on the screen: the Kid's column down the left,
+       whose boots are at 0.575 of the height, and the creature row across the
+       middle, whose feet are at ~0.50. A floor piece whose foot projects below
+       STAGE_FEET in either column is standing in front of them. */
+    const LS = lensOf(cam, aspect);
+    const onStage = (px, pz, pw) => {
+      const dx = -LS.ex, dy = 0.02 - LS.ey, dz = pz - LS.ez;
+      let hit = false;
+      for (const ox of [px - pw * 0.5, px, px + pw * 0.5]) {
+        const qx = dx + ox;
+        const d = qx * LS.fx + dy * LS.fy + dz * LS.fz;
+        if (d < 0.3) return true;                   // at or behind the lens: in the way
+        const sx = 0.5 + 0.5 * (qx * LS.rx + dz * LS.rz) / (d * LS.tanH);
+        const sy = 0.5 - 0.5 * (qx * LS.ux + dy * LS.uy + dz * LS.uz) / (d * LS.tanV);
+        if (sx > -0.02 && sx < 0.29 && sy > 0.50) hit = true;
+        if (sx >= 0.29 && sx < 0.84 && sy > 0.525) hit = true;
+      }
+      return hit;
+    };
     /* THE FURNISHED DEPTH. A layout that spreads its props evenly to the back
        wall spends half of them past the props' own fog (12-30 m from the
        lens) in a room as deep as the Greenhouse: its Palm House, laid out as
@@ -1115,6 +1150,17 @@ export class Backdrop {
           const c = (lo + hi) / 2;
           x = c + (x > hi ? hi - c : lo - c) * (0.62 + 0.34 * rand());
         }
+      }
+      /* THE STAGE IS KEPT CLEAR (round 21). Now the rig is pitched to put the
+         floor under the fight (stageRig in fx/atmosphere.js), the band of
+         floor the Kid, the Companion and the creatures stand on is IN SHOT --
+         and the wings layout was dealing hall benches and column plinths into
+         it, so the Kid stood on a bench. A floor piece whose foot would land
+         in front of the combatants' own feet walks back along its line until
+         it stands behind them. */
+      if (!hang && !pal.noStage) {
+        let g3 = 0;
+        while (g3++ < 40 && onStage(x, z, w) && z > -room.d + 1.2) z -= 0.5;
       }
       out.push({ x, z, w, h, shape: s, seed: rand() * 10, tone, y, hang });
     };
@@ -2145,6 +2191,46 @@ export class Backdrop {
       pi[i] = rig.inten[i] * (rig.cine[i] ? CINE_PROP : 1) * (opposed ? CINE_FILL_PROP : 1);
     }
     this.propMat.uniforms.uKeyDir.value.copy(rig.keyDir);
+    /* the lamp the fight's shadows fall away from: the cinematic key */
+    for (let i = 0; i < NLIGHT; i++) {
+      if (rig.cine[i] && !rig.isFill[i]) {
+        const p = rig.worldPos[i];
+        this.floorMat.uniforms.uKeyF.value.set(p.x, -(p.z - this._floorCz), Math.max(p.y, 0.6));
+        /* STAGE_LIGHT: how much of the key the floor under a figure takes,
+           as a multiple of its albedo. Set by eye on the Foyer's boards. */
+        this.floorMat.uniforms.uKeyCol.value.copy(rig.colors[i]).multiplyScalar(STAGE_LIGHT * Math.min(rig.inten[i], 2.5));
+        break;
+      }
+    }
+  }
+
+  /**
+   * WHERE THE FIGHT STANDS (round 21). `list` is up to six {x, z, r, s}: a
+   * combatant's feet on the floor in WORLD metres, its footprint radius and
+   * the strength of its shadow. Anything past the list is cleared.
+   */
+  setActors(list = []) {
+    const u = this.floorMat.uniforms;
+    const a = u.uActor.value, k = u.uActorK.value, key = u.uKeyF.value;
+    let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+    for (let i = 0; i < MAX_ACTORS; i++) {
+      const it = list[i];
+      if (!it) { a[i].set(0, 0, 0, 0); k[i].set(0, 0, 0, 0); continue; }
+      const fx = it.x, fy = -(it.z - this._floorCz), r = Math.max(it.r, 0.08);
+      a[i].set(fx, fy, r, it.s);
+      /* the throw: away from the key lamp, longer the lower the lamp is
+         against its distance, 1.6-4.2 footprints */
+      let dx = fx - key.x, dy = fy - key.y;
+      const kl = Math.max(Math.hypot(dx, dy), 0.01);
+      dx /= kl; dy /= kl;
+      const len = r * Math.min(4.2, Math.max(1.6, 1.4 + 1.3 * kl / Math.max(key.z, 0.6)));
+      const bound = Math.max(7.6 * r, len + 2.0 * r);
+      k[i].set(dx, dy, len, bound * bound);
+      x0 = Math.min(x0, fx - bound); x1 = Math.max(x1, fx + bound);
+      y0 = Math.min(y0, fy - bound); y1 = Math.max(y1, fy + bound);
+    }
+    if (x0 < x1) u.uActorBox.value.set(x0, y0, x1, y1);
+    else u.uActorBox.value.set(1, 1, -1, -1);
   }
 
   /**
