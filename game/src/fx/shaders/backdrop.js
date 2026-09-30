@@ -6756,6 +6756,13 @@ void main(){
   /* ---- shaft pools: the bright ellipse where a light shaft LANDS ----------
      Without this every shaft in the game faded out in mid-air and the floor
      underneath it was the same value as the floor two metres away. */
+  /* (round 21: ONE grain field for all four pools, not one each. Four
+     mmFbm3 were twelve noise taps on every floor pixel within 4.6 radii of a
+     pool -- which, with the rig pitched to put the floor under the fight, is
+     nearly the whole floor -- and where two pools overlap nobody can tell
+     whose break-up is whose. It is the wet smear's field, already taken
+     above, and the pool's own index turns it over.) */
+  float grainF = uIsCeiling < 0.5 ? (smear - 0.55)/0.55 : 0.0;   // the smear's own fbm
   for (int i = 0; i < 4; i++){
     vec4 P = uPool[i];
     if (P.w <= 0.001) continue;
@@ -6780,7 +6787,7 @@ void main(){
        see at 8.5% of gain. So the ellipses stay and the grain does not, which
        is most of the saving and none of the loss. */
     float grain = 0.95;
-    if (uIsCeiling < 0.5) grain = 0.80 + 0.34*mmFbm3(w*1.7 + float(i)*7.3);
+    if (uIsCeiling < 0.5) grain = 0.80 + 0.34*mix(grainF, 1.0 - grainF, mod(float(i), 2.0));
     /* ON A CEILING these slots are not landing pools -- they are the panes the
        shafts come THROUGH (backdrop.js _writePools), and only a glazed roof
        has any. Every other ceiling in the house keeps the zeros it has had
