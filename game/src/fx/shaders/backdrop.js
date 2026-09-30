@@ -4526,11 +4526,14 @@ float kitchenWallH(vec2 q, float qpx, out float occ){
     vec2 tq = vec2(mod(q.x, tl), mod(q.y, tl));
     float tj = max(mmInkP(min(tq.x, tl - tq.x), px, 1.0), mmInkP(min(tq.y, tl - tq.y), px, 1.0)) * mmLod(tl, px);
     float tv = mmHash21(floor(q/tl) + uSeed);
-    vec3 tile = vec3(0.72, 0.70, 0.62)*(lum*1.25 + 0.012)*(0.88 + 0.18*tv);
+    /* (an old scullery's tile is ivory gone to grey-green with a century
+       of steam, not white: at white under the cold lamp the dado was the
+       brightest band in the room -- the "silver foil" again) */
+    vec3 tile = vec3(0.60, 0.62, 0.54)*(lum*0.80 + 0.008)*(0.88 + 0.18*tv);
     tile = mix(tile, vec3(0.18, 0.26, 0.24)*(lum*1.6 + 0.01), mmBandA(q.y, TD - 0.15, TD, px));
     tile *= 1.0 - tj*0.45;
     col = mix(col*vec3(0.95, 0.95, 0.90), tile, onT);
-    gloss = max(gloss, onT*0.5);
+    gloss = max(gloss, onT*0.22);
     /* a glazed face has no brick behind it: its own joints, and flat */
     h = mix(h, 1.05 - 0.06*tj, onT);
     gInk = max(gInk, tj*0.55*onT);
@@ -7099,7 +7102,7 @@ void main(){
            broad lobed leaves either side of it, a curl of tendril -- which is
            what the pumpkins lying about on it grew on */
         earth = 0.85;
-        float rowP = 2.1;
+        float rowP = 1.45;
         float dy = mod(w.y + 0.30*sin(w.x*1.1 + uSeed) + rowP*0.5, rowP) - rowP*0.5;
         float rid = floor((w.y + 0.30*sin(w.x*1.1 + uSeed) + rowP*0.5)/rowP);
         float res = smoothstep(0.08, 0.03, mp);
@@ -7108,9 +7111,9 @@ void main(){
         float sd = mod(li, 2.0) < 0.5 ? 1.0 : -1.0;
         vec2 lc = vec2(w.x - (li - rid*0.37 + 0.5)*0.46, dy - sd*0.15);
         float la = atan(lc.y, lc.x);
-        float lr = 0.15*(0.85 + 0.30*mmHash11(li*3.1 + rid)) * (1.0 + 0.16*cos(la*5.0));
+        float lr = 0.19*(0.85 + 0.30*mmHash11(li*3.1 + rid)) * (1.0 + 0.16*cos(la*5.0));
         float leaf = (1.0 - smoothstep(lr - mp, lr + mp, length(lc*vec2(1.0, 1.25))))
-                   * step(0.25, mmHash11(li*7.7 + rid*2.3));
+                   * step(0.12, mmHash11(li*7.7 + rid*2.3));
         /* the furrow between the rows: a darker, damper band */
         float furrow = 1.0 - smoothstep(0.25, 0.75, abs(abs(dy) - rowP*0.5)/0.6);
         vineR = clamp(max(stem, leaf), 0.0, 1.0) * mix(0.55, 1.0, res);
@@ -7700,6 +7703,14 @@ void main(){
   }
 #endif
 
+#if MM_FLOORX == 1
+  /* THE MOON ON THE PATCH (round 22): the tilled rows and their vines are
+     under the open sky, and no lamp in the rig reaches the near half of it
+     -- so the patch's own leaves were black on black. A cool top light on
+     the leaves and a little on the earth, pattern 14 only. */
+  if (uPattern > 13.5 && uPattern < 14.5 && uIsCeiling < 0.5)
+    col += alb * vec3(0.30, 0.40, 0.58) * (0.10 + 0.55*vineR) * uGain * 0.9;
+#endif
   for (int i = 0; i < 5; i++){
     vec4 L = uLights[i];
     if (L.w <= 0.001) continue;
