@@ -4028,7 +4028,7 @@ float gBarM;
    clump on each of two staggered grids, the nearer winning, dark between. */
 /* x the spray's dome, y how much of it is its UPPER, moonlit side */
 vec2 wYew(vec2 q, float s, float cell){
-  q += 0.16*vec2(mmNoise(q*1.6 + s), mmNoise(q*1.6 + s + 5.3)) - 0.08;
+  q += 0.08*vec2(sin(q.y*3.7 + q.x*1.3 + s), sin(q.x*3.1 - q.y*1.9 + s*1.7));
   vec2 c1 = q/cell, i1 = floor(c1);
   vec2 f1 = fract(c1) - 0.5 - (mmHash22(i1 + s) - 0.5)*0.80;
   vec2 c2 = q/cell + vec2(0.5), i2 = floor(c2);
@@ -10773,7 +10773,9 @@ float reliefH(vec2 uv, vec2 msz, vec2 mpp, float shape, float seed, out float ti
     float mp = max(mpp.x, mpp.y);
     /* (warped, and jittered hard, so the sprays lie as a hedge grows and
        not on a lattice -- a regular grid of them read as fish scale) */
-    vec2 mw = m + 0.16*vec2(mmNoise(m*1.6 + seed), mmNoise(m*1.6 + seed + 5.3)) - 0.08;
+    /* (a cheap warp: two sines, where two noise taps cost the Hedge Maze's
+       frame most of a millisecond across a hedge this size) */
+    vec2 mw = m + 0.08*vec2(sin(m.y*3.7 + m.x*1.3 + seed), sin(m.x*3.1 - m.y*1.9 + seed*1.7));
     vec2 c1 = mw/0.26, i1 = floor(c1);
     vec2 f1 = fract(c1) - 0.5 - (mmHash22(i1 + seed) - 0.5)*0.80;
     vec2 c2 = mw/0.26 + vec2(0.5), i2 = floor(c2);
@@ -10798,7 +10800,7 @@ float reliefH(vec2 uv, vec2 msz, vec2 mpp, float shape, float seed, out float ti
     h -= 0.040*gYewFoot;
     float ad = yewArch(m, seed);
     gYewRev = (1.0 - smoothstep(0.02, 0.20, ad)) * step(ad, 0.20);
-    gYewDead = smoothstep(0.60, 0.80, mmFbm3(m*0.55 + seed*4.0));
+    gYewDead = smoothstep(0.62, 0.84, mmNoise(m*0.55 + seed*4.0));
   } else if (shape < 29.5) {              // 29 -- a kitchen table (round 22)
     /* the top's scrubbed boards, the legs' turning, the things on it round */
     float tok;
