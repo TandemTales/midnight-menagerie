@@ -941,9 +941,11 @@ builders mid-task, and `wf_373a767b-b58`, which resumed them).
 - **The rubric's trap held.** OXBLOOD hid the steps with haze and came last
   of the three builders ("soft is the worse defect"). Write the trap into the
   rubric, not only the brief.
-- **Everyone stands on the floor now**: all three builders independently
-  measured that the creatures' feet were ABOVE the horizon, so the camera had
-  to bring the floor up (a level rig at a child's eye, a risen lens).
+- **Everyone stands on the floor now.** OXBLOOD measured why: with the
+  authored rigs every creature's feet were ABOVE the horizon, so moving the
+  line down could never work. All three builders brought the floor up with
+  the camera instead (OXBLOOD a level rig at a child's eye with a risen lens;
+  PRUSSIAN and CELADON a pitched rig).
 - A resumed round costs little: the three builders had committed 2, 7 and
   4 times before the limit; the resume note named each one's last commit
   and whether its captures predated it (OXBLOOD's did).
