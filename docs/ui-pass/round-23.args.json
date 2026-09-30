@@ -1,0 +1,63 @@
+{
+  "round": "r23",
+  "maxBuilders": 3,
+  "briefs": [
+    "docs/ui-pass/BRIEF-r0.md",
+    "docs/ui-pass/BRIEF-r1.md",
+    "docs/ui-pass/BRIEF-r11.md",
+    "docs/ui-pass/BRIEF-r16.md",
+    "docs/ui-pass/BRIEF-r21.md",
+    "docs/ui-pass/BRIEF-r22.md",
+    "docs/ui-pass/BRIEF-r23.md"
+  ],
+  "rubrics": [
+    "docs/ui-pass/RUBRIC.md",
+    "docs/ui-pass/RUBRIC-r23.md"
+  ],
+  "samples": [
+    "UI/title.png",
+    "UI/mainMenu.png",
+    "UI/selectCompanion.png",
+    "UI/selectKid.png"
+  ],
+  "tracks": [
+    {
+      "key": "wings",
+      "name": "WINGS",
+      "rule": "refine",
+      "screens": [
+        "sheet-bathhouse",
+        "sheet-lampworks",
+        "sheet-attic",
+        "sheet-kennels",
+        "fight-bathhouse",
+        "fight-lampworks"
+      ],
+      "smallScreens": [
+        "fight-bathhouse",
+        "fight-lampworks"
+      ],
+      "baseline": "NANKEEN",
+      "builders": [
+        {
+          "slot": "a",
+          "code": "VERDITER",
+          "port": 9041,
+          "angle": "LITERAL. Work BRIEF-r23's fix list 1 to 4 in order and exactly as written, one wing at a time in the order the brief lists them, finishing each wing -- its signature object, its built walls, its darks, every room of it -- before starting the next. Read how round 22 built its four wings first and do the same: a wall program and props of your own for each wing."
+        },
+        {
+          "slot": "b",
+          "code": "ULTRAMARINE",
+          "port": 9042,
+          "angle": "THE OBJECT FIRST -- the angle that won round 22. Start from the four signature objects -- the bath with its water, the hanging lamp, the telescope under its rafters, the kennel -- and make each a drawn object with a silhouette a child could name, its own shading and a contact shadow, at the scale of the Kid; then build each wing's room around it. Items 2 to 4 follow from that."
+        },
+        {
+          "slot": "c",
+          "code": "MADDERLAKE",
+          "port": 9043,
+          "angle": "THE LIGHT. Each of these four wings is defined by a kind of light: rain-grey moonlight through wet glazing over water, a room of a dozen lamp flames, moonlight down through a skylight onto a telescope, a lantern over straw. Build each wing's objects AND its lighting together so the room's own lamps and windows light its signature objects and its built walls, and every dark stays deep between the pools. Item 1 is still the test: each wing must be its name."
+        }
+      ]
+    }
+  ]
+}
