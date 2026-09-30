@@ -6026,6 +6026,9 @@ uniform vec4  uActor[6];
 uniform vec4  uActorK[6];
 uniform vec3  uKeyF;
 uniform vec3  uKeyCol;         // the key's colour x its strength at the stage
+/* the box round every actor's reach (min xy, max xy), so the floor outside
+   it -- most of the floor -- skips the whole block (round 21) */
+uniform vec4  uActorBox;
 uniform vec3  uCamera;
 uniform float uIsCeiling;
 varying vec2  vUv;
@@ -6924,7 +6927,7 @@ void main(){
      widening and letting go as it runs. Multiplying the lit floor keeps its
      grain, its joints and its colour inside the shadow, which is what a
      painted shadow does and a DOM ellipse cannot. */
-  if (uIsCeiling < 0.5) {
+  if (uIsCeiling < 0.5 && all(greaterThan(w, uActorBox.xy)) && all(lessThan(w, uActorBox.zw))) {
     float occl = 0.0;
     /* THE KEY FINDS THE FLOOR THEY STAND ON. A shadow on an unlit floor is
        no shadow -- the boards under the creature row were within a few units

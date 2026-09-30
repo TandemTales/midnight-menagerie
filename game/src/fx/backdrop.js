@@ -319,6 +319,7 @@ function freshLightSlots(uniforms) {
   if (uniforms.uActorK) uniforms.uActorK.value = zeroV4(MAX_ACTORS);
   if (uniforms.uKeyF) uniforms.uKeyF.value = uniforms.uKeyF.value.clone();
   if (uniforms.uKeyCol) uniforms.uKeyCol.value = uniforms.uKeyCol.value.clone();
+  if (uniforms.uActorBox) uniforms.uActorBox.value = uniforms.uActorBox.value.clone();
   if (uniforms.uSize) uniforms.uSize.value = uniforms.uSize.value.clone();
   if (uniforms.uSpan) uniforms.uSpan.value = uniforms.uSpan.value.clone();
   if (uniforms.uCamera) uniforms.uCamera.value = uniforms.uCamera.value.clone();
@@ -449,6 +450,8 @@ export class Backdrop {
       uActorK: { value: zeroV4(MAX_ACTORS) },
       uKeyF: { value: new THREE.Vector3(-4, 2, 3) },
       uKeyCol: { value: new THREE.Color(0, 0, 0) },
+      /* empty (min > max) until setActors writes it */
+      uActorBox: { value: new THREE.Vector4(1, 1, -1, -1) },
     });
 
     this.floorMat = new THREE.ShaderMaterial({
@@ -2209,6 +2212,7 @@ export class Backdrop {
   setActors(list = []) {
     const u = this.floorMat.uniforms;
     const a = u.uActor.value, k = u.uActorK.value, key = u.uKeyF.value;
+    let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
     for (let i = 0; i < MAX_ACTORS; i++) {
       const it = list[i];
       if (!it) { a[i].set(0, 0, 0, 0); k[i].set(0, 0, 0, 0); continue; }
@@ -2222,7 +2226,11 @@ export class Backdrop {
       const len = r * Math.min(4.2, Math.max(1.6, 1.4 + 1.3 * kl / Math.max(key.z, 0.6)));
       const bound = Math.max(7.6 * r, len + 2.0 * r);
       k[i].set(dx, dy, len, bound * bound);
+      x0 = Math.min(x0, fx - bound); x1 = Math.max(x1, fx + bound);
+      y0 = Math.min(y0, fy - bound); y1 = Math.max(y1, fy + bound);
     }
+    if (x0 < x1) u.uActorBox.value.set(x0, y0, x1, y1);
+    else u.uActorBox.value.set(1, 1, -1, -1);
   }
 
   /**
