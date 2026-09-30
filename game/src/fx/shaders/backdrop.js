@@ -9916,8 +9916,16 @@ void main(){
     float sx = abs(vUv.x - 0.5);
     float gbx = abs(fract(vUv.x*4.0) - 0.5) * 0.25;
     float gby = abs(fract(vUv.y*5.0) - 0.5) * 0.20;
-    float bars = max(1.0 - smoothstep(0.009, 0.020, gbx),
-                     1.0 - smoothstep(0.009, 0.020, gby))
+    /* (round 21 graft: each bar a box of its own width in PIXELS, never
+       under one, over exactly one pixel of edge -- a 0.011 uv ramp is a
+       third of a pixel on the cabinets behind the Calling Bell at the Deck's
+       tier, and their glazing came back as bars of uneven weight, the "far
+       stair balusters" the judges saw. Where a pane packs under six pixels
+       the bars give way to their tone, mmLod.) */
+    float pxu = max(mpp.x / max(vSize.x, 0.01), 1e-5), pxv = max(mpp.y / max(vSize.y, 0.01), 1e-5);
+    float hwu = max(0.013, 0.55*pxu), hwv = max(0.013, 0.55*pxv);
+    float bars = max(mix(0.30, clamp(0.5 + (hwu - gbx)/pxu, 0.0, 1.0), mmLod(0.25, pxu)),
+                     mix(0.30, clamp(0.5 + (hwv - gby)/pxv, 0.0, 1.0), mmLod(0.20, pxv)))
                * step(0.11, vUv.y) * step(vUv.y, 0.92);
     float stile = (1.0 - smoothstep(0.011, 0.026, sx))
                 + (1.0 - smoothstep(0.011, 0.026, abs(sx - 0.355)));
