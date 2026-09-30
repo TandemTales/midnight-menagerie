@@ -170,6 +170,8 @@ so round 2 runs six at once, as round 1 did.
 
 | 21 | **THE FIGHT'S ROOM AT THE DECK'S TIER** — five fights in four wings, every capture pinned to MEDIUM (render scale 0.8) | CELADON 6.50 · PRUSSIAN 5.50 · OXBLOOD 5.40 · the fights before **4.10** | CELADON, 2 of 2, all five screens 2 of 2 — the only room that puts every fighter on a real floor in every wing AND stayed crisp: its lines are INKED from their own distance fields, not recovered from 2x2 derivatives. **+2.40.** OXBLOOD softened its rooms to hide the steps and came last of the three, as the rubric warned. Graft: PRUSSIAN's warm flier pool, OXBLOOD's candle warmth without its haze, restrained moon shafts | `d49b788` |
 
+| 22 | **FOUR WINGS THAT ARE NOT YET THEIR NAME** — the Hedge Maze, the Kitchens, the Secret Passages, the Pumpkin Grounds (sheets at the Deck's tier) and the Heart's floor seam, briefed from the 09-30 SURVEY | VANDYKE 5.81 · CASSEL 5.74 · CAPUT 5.24 · the wings before **3.10** | CASSEL, 2 of 3, five of seven screens — the most coherent SYSTEM (each wing's signature object drawn first: a lobed, ribbed, carved pumpkin; a black-leaded range under a brick arch; jib doors in near-black oak). **+2.64** on the mean. VANDYKE won both Hedge screens and ALL THREE judges named its maze as the graft | `a11924b` |
+
 **Scores anchor to the candidates beside them.** Round 0's winner scored 7.0 in
 round 0 and 5.58 as round 1's baseline: the judges grew stricter as the field
 improved. Compare a winner with the baseline IN ITS OWN ROUND (round 1 REFINE:
@@ -192,6 +194,7 @@ Against their own baselines:
 | 11 | VARIATION **+2.17** (sheets 3-3.5 -> 6-7) | — |
 | 12 | — | THE LAST WEB CHROME **+5.9** (per-screen winners 7.33 / 8.00 / 7.67 against 2 / 1 / 1.33) |
 | 13 | CHROME, second pass **+2.22** (coach 6.0 -> 8.0, veil 6.0 -> 8.67, toast 5.0 -> 7.0) | — |
+| 22 | FOUR WINGS THAT ARE NOT YET THEIR NAME **+2.64** (the wings before scored 2.5-3.8: the survey's rooms were the headroom) | — |
 | 21 | THE FIGHT'S ROOM AT THE DECK'S TIER **+2.40** (the baseline's rooms scored 4.1 at the tier players actually get) | — |
 | 20 | THE RAIL AND THE HAND **+1.67** (the baseline's hud-late scored 4.0: the Steam Deck bug no judge had seen) | — |
 | 19 | THE BOARDS AND THE CONTROLS **+1.37** (after eleven rounds away; the rooms had fallen to +0.72) | — |
@@ -949,3 +952,27 @@ builders mid-task, and `wf_373a767b-b58`, which resumed them).
 - A resumed round costs little: the three builders had committed 2, 7 and
   4 times before the limit; the resume note named each one's last commit
   and whether its captures predated it (OXBLOOD's did).
+
+### Round 22: four wings that are not yet their name, 2026-09-30
+
+**CASSEL, 2 of 3 judges, 5.74 against 3.10** (`a11924b`, run
+`wf_25d0ef83-98b`). Briefed from the second SURVEY (`SURVEY-2026-09-30.md`),
+which put the rooms at 2-5 against the screens' 6-7.5.
+
+- **The mean and the judges disagreed again.** VANDYKE had the higher mean
+  (5.81) and won the Hedge Maze outright; CASSEL won five of seven screens
+  and two judges as the system. As in rounds 18 and 19: merge the system,
+  graft the screen.
+- **The object-first angle won a round about objects.** The brief's question
+  was "is each wing its name?", and the builder told to draw the signature
+  object first answered it best on three of four wings.
+- **A BASE server on another builder's port.** CASSEL served its BASE export
+  on 9033, builder c's port, for over an hour; Windows let both bind.
+  CAPUT's judged captures post-dated the clash, so the judging held, but a
+  builder's own iteration in that window may have looked at BASE. Name
+  BASE's port in the brief, outside every builder's range.
+- **Three builders all used wall programs 8-11 and props from 27 up** for
+  different things. The graft has to PORT, never merge; say so in its brief.
+- The Heart's seam, found by all three with a layer toggle: the near
+  frame's clutter band put its foot in shot under the Heart's far-back
+  lens. Not a lighting term.
