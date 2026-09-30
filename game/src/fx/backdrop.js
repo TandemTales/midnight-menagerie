@@ -38,7 +38,10 @@ import {
  * 30 plants, 66 entries, and losing the last 14, which are the BACK TIER's
  * plants. That is a large part of why the room that is meant to be the most
  * crowded in the house photographed as an empty hall with two columns in it. */
-const MAX_PROPS = 72, MAX_SHAFTS = 6, MAX_POOLS = 4, MAX_FLAMES = 10;
+/* MAX_SHAFTS: a room's own shafts stop at ROOM_SHAFTS, as they always did;
+   the last two slots are the raking pair a fight's room may add (round 21
+   graft, Backdrop.build). */
+const MAX_PROPS = 72, MAX_SHAFTS = 8, ROOM_SHAFTS = 6, MAX_POOLS = 4, MAX_FLAMES = 10;
 /* The night every region's sky is carried toward. It is the Graveyard's own
    `deep`, which is the one open-air region whose sky was tuned against
    mainMenu.png: measured, it comes out at hue 216 and a sky level of 7.8-16.9
@@ -1675,7 +1678,7 @@ export class Backdrop {
     /* ---- shafts: extend each beam until it reaches the floor, and record the
        elliptical pool where it lands so the floor shader can paint it. ------- */
     const S = pal.shafts || {};
-    const sn = Math.min(S.count ?? 3, MAX_SHAFTS);
+    const sn = Math.min(S.count ?? 3, ROOM_SHAFTS);
     const so = this._shOrigin.array, sp = this._shParam.array,
       ss = this._shSeed.array, si = this._shInt.array;
     this.pools.length = 0;
@@ -1711,9 +1714,54 @@ export class Backdrop {
       });
       this.roofLights.push({ x: ox, z: oz, r: width * 0.72, i: inten });
     }
+    /* RAKING SHAFTS INTO THE FIGHT (round 21 graft, CHINTZ's Greenhouse and
+       Ballroom). The room's own shafts come through the roof 13-14 m back and
+       land at the foot of the far wall; with the rig pitched to put the floor
+       under the fight (stageRig) the top of every one is above the frame, so
+       a room that used to be crossed by moonlight showed a stub of it. A room
+       that asks (`shafts.rake`) lays one or two more, NEARER: each lands on
+       the floor at a point picked ON THE SCREEN -- `at` across, `y` down,
+       behind the creature row and clear of it -- and rakes in from its own
+       side of the frame, narrower and fainter than the room's own, so it is
+       light crossing the room and never a searchlight on the fight. Their
+       landing pools compete for the floor's four slots by strength like any
+       other, so they never take the room's own pools off its floor. */
+    const RK = S.rake;
+    let rn = 0;
+    if (RK && this.lens) {
+      const L = this.lens;
+      const oy = Math.min(S.y ?? ceilY + 1.4, ceilY + 2.2);
+      for (let j = 0; j < (RK.at || []).length; j++) {
+        const at = RK.at[j];
+        const k = sn + rn;
+        if (k >= MAX_SHAFTS) break;
+        const px = (2 * at - 1) * L.tanH, py = (1 - 2 * (RK.y ?? 0.46)) * L.tanV;
+        const dx = L.fx + px * L.rx + py * L.ux, dy = L.fy + py * L.uy, dz = L.fz + px * L.rz + py * L.uz;
+        if (dy > -1e-3) continue;
+        const tt = -L.ey / dy;
+        const lx = L.ex + dx * tt, lz = L.ez + dz * tt;
+        /* rakes in from its own side of the frame, unless the room says
+           which way (`side`, +1 up to the left): a pair from one window is
+           parallel, and a right-hand beam leaning right went in behind the
+           Greenhouse's near columns and was never seen */
+        const angle = (RK.side?.[j] ?? (at < 0.5 ? 1 : -1)) * (RK.angle ?? 0.42);
+        const width = RK.width ?? 1.6;
+        so[k * 3 + 0] = lx - Math.tan(angle) * oy; so[k * 3 + 1] = oy; so[k * 3 + 2] = lz;
+        sp[k * 3 + 0] = angle; sp[k * 3 + 1] = (oy / Math.max(Math.cos(angle), 0.15)) * 1.06; sp[k * 3 + 2] = width;
+        ss[k] = rand() * 10;
+        const inten = (S.intensity ?? 0.5) * (RK.intensity ?? 0.55);
+        si[k] = inten;
+        this.pools.push({
+          x: lx, z: lz, r: width * (0.62 + Math.abs(angle) * 0.4),
+          i: inten * (S.pool ?? 1.35), ax: 1, ay: 0,
+          stretch: 1.0 / Math.max(Math.cos(angle), 0.4),
+        });
+        rn++;
+      }
+    }
     this._shOrigin.needsUpdate = this._shParam.needsUpdate = true;
     this._shSeed.needsUpdate = this._shInt.needsUpdate = true;
-    this.shaftGeo.instanceCount = sn;
+    this.shaftGeo.instanceCount = sn + rn;
     this.pools.sort((a, b) => b.i - a.i);
     this._writePools();
 

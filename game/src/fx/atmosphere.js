@@ -388,7 +388,9 @@ export const REGIONS = {
       { kind: 'warm', x: -2.8, y: 1.20, z: -4.8, color: '#e0b266', intensity: 9.83, radius: 5.68 },
       { kind: 'cold', x: 3.2, y: 1.50, z: -8.0, color: '#8edde3', intensity: 1.24, radius: 6.0 },
     ],
-    shafts: { count: 4, spread: 22, y: 11.4, z: -13, angle: 0.30, width: 3.4, intensity: 0.45, pool: 1.7 },
+    shafts: { count: 4, spread: 22, y: 11.4, z: -13, angle: 0.30, width: 3.4, intensity: 0.45, pool: 1.7,
+              /* two raking shafts into the fight's own room (round 21 graft): Backdrop.build */
+              rake: { at: [0.31, 0.69], side: [1, 1], y: 0.47, angle: 0.42, width: 2.0, intensity: 0.85 } },
     bloom: 0.92,
   },
 
@@ -563,7 +565,9 @@ export const REGIONS = {
       { kind: 'warm', x: 0.0, y: 6.20, z: -15.0, color: '#e9cd92', intensity: 0.88, radius: 9.46 },
       { kind: 'cold', x: -10.0, y: 2.00, z: -7.5, color: '#a984cd', intensity: 1.32, radius: 8.0 },
     ],
-    shafts: { count: 4, spread: 26, y: 11.4, z: -14.0, angle: 0.22, width: 3.6, intensity: 0.37, pool: 1.7 },
+    shafts: { count: 4, spread: 26, y: 11.4, z: -14.0, angle: 0.22, width: 3.6, intensity: 0.37, pool: 1.7,
+              /* two raking shafts into the fight's own room (round 21 graft): Backdrop.build */
+              rake: { at: [0.31, 0.83], y: 0.47, angle: 0.40, width: 2.0, intensity: 0.85 } },
     bloom: 1.10, warmTone: 0.06, halation: 0.85, vignette: 1.01, saturate: 0.92,
   },
 
