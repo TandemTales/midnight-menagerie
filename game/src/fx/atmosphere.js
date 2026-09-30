@@ -1634,9 +1634,25 @@ export class Atmosphere {
           const r = el.getBoundingClientRect();
           if (r.width < 2) continue;
           const pal = el.classList.contains('pr-palset');
+          /* (the Kid's contact ellipse is 52 x 12 rig units centred 5 below
+             her soles since the graft: 0.74 of its width is the 0.62 of the
+             old 62 x 16 one, so the room's shadow keeps its size) */
           const sx = r.left + r.width / 2;
           if (pal && heroY === null) continue;
-          const sy = pal ? heroY : r.top + r.height / 2;
+          let sy = pal ? heroY : r.top + r.height / 2;
+          /* (round 21 graft) A CREATURE'S CONTACT IS AT ITS FEET, and its pool
+             is not: the pool straddles the bottom of the stage, and a figure
+             is fitted 6 rig units above that (EnemyView._fitTo) -- 2.6% of
+             the stage, ~10 px on the Deck -- so the room's contact core sat
+             in open floor under the Door Greeter instead of under its sill.
+             A FLIER keeps the pool's line: it hovers, and its shadow lies on
+             the floor under it. */
+          const en = pal || el.classList.contains('pr-shadow') ? null : el.closest('.cb-enemy');
+          const fly = !!en && en.dataset.body === 'floating';
+          if (en && !fly) {
+            const st = en.querySelector('.cb-enemy__stage')?.getBoundingClientRect();
+            if (st && st.height > 4) sy = Math.min(sy, st.bottom - st.height * 0.026);
+          }
           const nx = ((sx - cr.left) / cr.width) * 2 - 1;
           const ny = -(((sy - cr.top) / cr.height) * 2 - 1);
           const v = this._ndc.set(nx, ny, 0.5).unproject(cam).sub(cam.position);
@@ -1645,9 +1661,11 @@ export class Atmosphere {
           const x = cam.position.x + v.x * t, z = cam.position.z + v.z * t;
           const dist = Math.hypot(v.x * t, v.y * t, v.z * t);
           const mpp = (2 * tanV * dist) / cr.height;     // metres per CSS pixel there
+          /* a flier's pool is most of the width it spans (PRUSSIAN's Grave
+             Moth, the grafted treatment): a clear dark ellipse under it */
           const w = pal ? Math.min(r.width, r.height * 1.4) * 0.60
-                        : r.width * (el.classList.contains('pr-shadow') ? 0.62 : 0.50);
-          list.push({ x, z, r: Math.max(0.12, Math.min(pal ? 0.6 : 1.4, w * 0.5 * mpp)), s: pal ? 0.70 : 0.85 });
+                        : r.width * (el.classList.contains('pr-shadow') ? 0.74 : fly ? 0.90 : 0.50);
+          list.push({ x, z, r: Math.max(0.12, Math.min(pal ? 0.6 : 1.4, w * 0.5 * mpp)), s: pal ? 0.70 : fly ? 0.95 : 0.85, fly });
         }
       }
     }

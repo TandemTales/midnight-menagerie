@@ -301,6 +301,9 @@ function v4arr(n = NLIGHT) { return Array.from({ length: n }, () => new THREE.Ve
    actor slot must start EMPTY, not as a shadow at the origin. */
 const MAX_ACTORS = 6;
 const STAGE_LIGHT = 0.9;
+/* ...and how much of the room's warm light the fight's own pool lays on the
+   floor round it, as a multiple of albedo (round 21 graft). Set by eye. */
+const STAGE_WASH = 1.10;
 function zeroV4(n) { return Array.from({ length: n }, () => new THREE.Vector4(0, 0, 0, 0)); }
 function colArr(n = NLIGHT) { return Array.from({ length: n }, () => new THREE.Color()); }
 /**
@@ -320,6 +323,8 @@ function freshLightSlots(uniforms) {
   if (uniforms.uKeyF) uniforms.uKeyF.value = uniforms.uKeyF.value.clone();
   if (uniforms.uKeyCol) uniforms.uKeyCol.value = uniforms.uKeyCol.value.clone();
   if (uniforms.uActorBox) uniforms.uActorBox.value = uniforms.uActorBox.value.clone();
+  if (uniforms.uStage) uniforms.uStage.value = uniforms.uStage.value.clone();
+  if (uniforms.uStageCol) uniforms.uStageCol.value = uniforms.uStageCol.value.clone();
   if (uniforms.uSize) uniforms.uSize.value = uniforms.uSize.value.clone();
   if (uniforms.uSpan) uniforms.uSpan.value = uniforms.uSpan.value.clone();
   if (uniforms.uCamera) uniforms.uCamera.value = uniforms.uCamera.value.clone();
@@ -452,6 +457,11 @@ export class Backdrop {
       uKeyCol: { value: new THREE.Color(0, 0, 0) },
       /* empty (min > max) until setActors writes it */
       uActorBox: { value: new THREE.Vector4(1, 1, -1, -1) },
+      /* THE FIGHT'S OWN POOL OF WARM LIGHT (round 21 graft): its centre and
+         radii on the floor (floor-local metres), and the room's warm lamp's
+         colour at the strength it lays there. Zero until setActors writes it. */
+      uStage: { value: new THREE.Vector4(0, 0, 1, 1) },
+      uStageCol: { value: new THREE.Color(0, 0, 0) },
     });
 
     this.floorMat = new THREE.ShaderMaterial({
@@ -2202,6 +2212,21 @@ export class Backdrop {
         break;
       }
     }
+    /* THE FIGHT IS PLAYED IN CANDLELIGHT (round 21 graft, OXBLOOD's warm
+       wash). The floor under the fight takes a broad pool of the room's WARM
+       cinematic light -- the key where the key is a lamp, the fill where the
+       key is the moon -- and the floor round it keeps the cold light it had,
+       so the stage reads warm against cold the way the samples' candle pools
+       do. It is light on the floor's own albedo, so every board, joint and
+       crumb stays drawn inside it: a pool, not a haze. */
+    const sc2 = this.floorMat.uniforms.uStageCol.value;
+    sc2.setRGB(0, 0, 0);
+    for (let i = 0; i < NLIGHT; i++) {
+      if (rig.cine[i] && !rig.cold[i]) {
+        sc2.copy(rig.colors[i]).multiplyScalar(STAGE_WASH * Math.min(rig.inten[i], 2.5));
+        break;
+      }
+    }
   }
 
   /**
@@ -2217,7 +2242,9 @@ export class Backdrop {
       const it = list[i];
       if (!it) { a[i].set(0, 0, 0, 0); k[i].set(0, 0, 0, 0); continue; }
       const fx = it.x, fy = -(it.z - this._floorCz), r = Math.max(it.r, 0.08);
-      a[i].set(fx, fy, r, it.s);
+      /* a FLIER's radius goes in negative: its shadow is a pool straight
+         under it, not a contact and a throw (FLOOR_FRAG) */
+      a[i].set(fx, fy, it.fly ? -r : r, it.s);
       /* the throw: away from the key lamp, longer the lower the lamp is
          against its distance, 1.6-4.2 footprints */
       let dx = fx - key.x, dy = fy - key.y;
@@ -2228,6 +2255,22 @@ export class Backdrop {
       k[i].set(dx, dy, len, bound * bound);
       x0 = Math.min(x0, fx - bound); x1 = Math.max(x1, fx + bound);
       y0 = Math.min(y0, fy - bound); y1 = Math.max(y1, fy + bound);
+    }
+    /* THE FIGHT'S POOL (round 21 graft): one warm ellipse over the feet of
+       everybody in it, a little wider than they stand, and the box grows to
+       hold it out to 2.2 of its radii, where it is under 1%. */
+    if (x0 < x1) {
+      let fx0 = Infinity, fy0 = Infinity, fx1 = -Infinity, fy1 = -Infinity;
+      for (let i = 0; i < MAX_ACTORS; i++) {
+        if (!(a[i].w > 0)) continue;
+        fx0 = Math.min(fx0, a[i].x); fx1 = Math.max(fx1, a[i].x);
+        fy0 = Math.min(fy0, a[i].y); fy1 = Math.max(fy1, a[i].y);
+      }
+      const cx = (fx0 + fx1) / 2, cy = (fy0 + fy1) / 2;
+      const rx = (fx1 - fx0) * 0.50 + 2.0, ry = (fy1 - fy0) * 0.50 + 1.6;
+      u.uStage.value.set(cx, cy, rx, ry);
+      x0 = Math.min(x0, cx - rx * 2.2); x1 = Math.max(x1, cx + rx * 2.2);
+      y0 = Math.min(y0, cy - ry * 2.2); y1 = Math.max(y1, cy + ry * 2.2);
     }
     if (x0 < x1) u.uActorBox.value.set(x0, y0, x1, y1);
     else u.uActorBox.value.set(1, 1, -1, -1);

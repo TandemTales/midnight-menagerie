@@ -564,11 +564,16 @@
   transform: translateX(-50%);
   border-radius: 50%;
   background:
-    /* the contact core: small, dense, unblurred at its centre */
-    radial-gradient(34% 44% at 50% 52%,
-      rgba(0, 0, 0, .92) 0%,
-      rgba(0, 0, 0, .55) 58%,
-      transparent 78%),
+    /* the contact core: small, dense, unblurred at its centre. (Round 21
+       graft: TIGHTER and darker, and up at the feet -- the judges asked the
+       Door Greeter, the Potling and the Dancing Shoe for a hard contact where
+       they meet the boards; the room's floor draws the wider cast shadow
+       round it now, in its own light. A figure is fitted 6 rig units above
+       its stage's bottom, which is the top third of this box.) */
+    radial-gradient(27% 34% at 50% 40%,
+      rgba(0, 0, 0, .96) 0%,
+      rgba(0, 0, 0, .62) 55%,
+      transparent 80%),
     /* the mass skirt */
     radial-gradient(58% 58% at 50% 50%,
       color-mix(in srgb, var(--ink-900) 78%, transparent) 0%,
@@ -1382,10 +1387,17 @@
    feet, plus the warm pool the torch throws around it. It lives on the FLOOR,
    so `PlayerView#update` slides and stretches it a fraction of her lean rather
    than moving it with her. */
-.pr-s1 { stop-color: var(--ink-900); stop-opacity: .92; }
-.pr-s2 { stop-color: var(--ink-900); stop-opacity: .55; }
+/* (round 21 graft) IN THE ROOM'S OWN LIGHT. The judges: the Kid and Bones's
+   shadow was "soft and colourless". The room now draws the cast shadow on its
+   own floor (Atmosphere._syncActors), so this is only the CONTACT: tighter and
+   denser at the soles, and a shadow in lamplight is a warm dark, not grey.
+   The pool round it is the room's KEY lamp (--atmo-key, published by
+   Atmosphere._publishCss) warmed by a candle's flame, as the creatures'
+   bounce ring is, not one flame colour in every wing. */
+.pr-s1 { stop-color: color-mix(in srgb, var(--ink-900) 86%, var(--atmo-key, var(--flame-400))); stop-opacity: .95; }
+.pr-s2 { stop-color: color-mix(in srgb, var(--ink-900) 80%, var(--atmo-key, var(--flame-400))); stop-opacity: .50; }
 .pr-s3 { stop-color: var(--ink-900); stop-opacity: 0; }
-.pr-p1 { stop-color: var(--flame-400); stop-opacity: .3; }
+.pr-p1 { stop-color: color-mix(in srgb, var(--atmo-key, var(--flame-400)) 60%, var(--flame-400)); stop-opacity: .34; }
 .pr-p2 { stop-color: var(--flame-400); stop-opacity: 0; }
 .pr-pool { mix-blend-mode: screen; }
 
