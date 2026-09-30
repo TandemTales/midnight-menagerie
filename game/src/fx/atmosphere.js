@@ -569,6 +569,9 @@ export const REGIONS = {
               /* two raking shafts into the fight's own room (round 21 graft): Backdrop.build */
               rake: { at: [0.31, 0.83], y: 0.47, angle: 0.40, width: 2.0, intensity: 0.85 } },
     bloom: 1.10, warmTone: 0.06, halation: 0.85, vignette: 1.01, saturate: 0.92,
+    /* the floor under the hand and at the frame's edges vignetted toward
+       near-black (round 21 graft, PRUSSIAN's Ballroom): FLOOR_FRAG */
+    nearDark: 0.62,
   },
 
   /* ── 11. The Crypt and Ossuary ─────────────────────────────────────────────
@@ -2406,6 +2409,7 @@ export class Atmosphere {
       L.subjWall = T.subjWall; L.subjAt = T.subjAt;
       L.houseS = T.houseS; L.floorRot = T.floorRot; L.runner = T.runner; L.runX = T.runX;
       L.door = T.door; L.rail = T.rail; L.subForm = T.subForm; L.pool = T.pool;
+      L.nearDark = T.nearDark;
       this.backdrop.applyPalette(L);
       this._applyGrade(L, k);
       if (this._fade >= 1) { this.live = T; this.backdrop.applyPalette(T); this._applyGrade(T, 1); }

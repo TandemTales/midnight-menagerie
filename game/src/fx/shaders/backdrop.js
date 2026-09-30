@@ -5973,6 +5973,7 @@ export const FLOOR_VERT = /* glsl */`
 varying vec2 vUv;
 varying float vDepth;
 varying vec3 vWorld;
+varying vec3 vClip;
 void main(){
   vUv = uv;
   vec4 wp = modelMatrix * vec4(position, 1.0);
@@ -5980,6 +5981,7 @@ void main(){
   vec4 mv = viewMatrix * wp;
   vDepth = -mv.z;
   gl_Position = projectionMatrix * mv;
+  vClip = gl_Position.xyw;
 }`;
 
 export const FLOOR_FRAG = /* glsl */`
@@ -6034,6 +6036,11 @@ uniform vec4  uActorBox;
    lays there (Backdrop.syncLights / setActors). */
 uniform vec4  uStage;
 uniform vec3  uStageCol;
+/* THE FOREGROUND GOES TO NEAR-BLACK (round 21 graft, PRUSSIAN's Ballroom):
+   how far the floor under the hand and at the frame's two edges falls, 0 for
+   a room that keeps its own. The frame's position comes from vClip. */
+uniform float uNearDark;
+varying vec3  vClip;
 uniform vec3  uCamera;
 uniform float uIsCeiling;
 varying vec2  vUv;
@@ -7062,6 +7069,16 @@ void main(){
   float ridgeUp = 1.0 - smoothstep(0.0, uSpan.x*0.5, abs(w.x));
   col += (uAccent*0.45 + vec3(0.26, 0.36, 0.40)) * roofLit * 0.30;
   col *= mix(0.40, 1.0, smoothstep(2.0, 13.0, vDepth));    // foreground falls away
+  /* ...and in a room that asks, the floor under the hand and at the two
+     edges of the frame goes down toward near-black, the way a painted room
+     is vignetted into its own dark (round 21 graft). A multiply, so the
+     checker's own contrast runs on into it; it starts below the Kid's feet
+     (0.575 of the frame, ndc -0.15), so nobody's floor is taken. */
+  if (uNearDark > 0.0) {
+    vec2 ndc = vClip.xy / max(vClip.z, 1e-4);
+    float vig = max(smoothstep(-0.24, -0.92, ndc.y), 0.75*smoothstep(0.62, 1.0, abs(ndc.x)));
+    col *= 1.0 - uNearDark * vig * (1.0 - uIsCeiling);
+  }
   float cFog = smoothstep(uFogNear, uFogFar, vDepth);
   col = mix(col, uFog, cFog);
   /* THE SKY THROUGH THE GLASS, after the fog and not under it (round 18).

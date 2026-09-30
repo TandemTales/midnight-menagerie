@@ -465,6 +465,7 @@ export class Backdrop {
          colour at the strength it lays there. Zero until setActors writes it. */
       uStage: { value: new THREE.Vector4(0, 0, 1, 1) },
       uStageCol: { value: new THREE.Color(0, 0, 0) },
+      uNearDark: { value: 0 },
     });
 
     this.floorMat = new THREE.ShaderMaterial({
@@ -1933,6 +1934,8 @@ export class Backdrop {
       f.uWater.value.set(0, 0, 0, 0);
     }
     f.uGloss.value = p.gloss ?? 0.5;
+    /* the foreground's vignette into the dark (round 21 graft): FLOOR_FRAG */
+    f.uNearDark.value = p.nearDark ?? 0;
     f.uGain.value = (p.gain ?? 3.4) * 0.58;
     f.uDeep.value.copy(p._floorDeep);
     f.uMid.value.copy(p._floorMid);
