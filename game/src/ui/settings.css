@@ -77,6 +77,22 @@
     --panel-top: 4px;
   }
 }
+/* …and at the Deck's 800 itself, a little air, never a letter. The
+   2026-09-30 survey (both judges): the right-hand column (Play, Seed,
+   Danger) stood 522px tall in a body of 507, so the last page of all three
+   columns ran under RESTORE DEFAULTS / DONE -- the Expedition's moon and the
+   Danger page's wax seal cut off by the floor. The lines close up a pixel
+   either side of their ruling; two pages keep room between them for the
+   lower one's crest (it rises 22px over its rail, the plaque's gilt stands
+   4px out below the upper one); a page's foot keeps its last line as clear
+   of the corner fleurons as its head keeps its first line of the ribbon. */
+@media (max-height: 820px) {
+  .mm-set {
+    --row-pad: 3px;
+    --stack: 13px;
+    --pad-b: 17px;
+  }
+}
 /* …and at 900 the words a step larger again, into the height 800 does not have */
 @media (min-height: 861px) and (max-height: 920px) {
   .mm-set {
@@ -103,6 +119,15 @@
   --fade: 8px;
   -webkit-mask-image: linear-gradient(to bottom, black 0, black calc(100% - var(--fade)), transparent 100%);
           mask-image: linear-gradient(to bottom, black 0, black calc(100% - var(--fade)), transparent 100%);
+}
+/* at the Deck's 800 the three columns stand whole (the block above), so the
+   body keeps room under them for the wax seal pressed over the Danger page's
+   corner (it hangs 18px under the page, the body's floor was 12px) and does not
+   fade it: nothing runs under the buttons there to fade. Large text still
+   scrolls its one column, and still fades. */
+@media (max-height: 820px) {
+  :root:not([data-large-text="1"]) .mm-settings-modal .mm-modal__body { padding-bottom: 14px; }
+  :root:not([data-large-text="1"]) .mm-modal__body:has(> .mm-set) { --fade: 0px; }
 }
 
 /* a group: one of the Kid board's railed panels, a page of the ledger */

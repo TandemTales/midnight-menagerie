@@ -317,6 +317,14 @@
    curls meet, one jewelled setting along the rail. A Snack you carry is lit in
    its hollow; an empty setting is only the setting. */
 .mm-hud__snacks { display: flex; gap: 0; align-items: center; margin-inline: -1px; }
+/* 2026-09-30 survey, both judges at 1280 and 1600: "Luck +1 •SNACKS
+   collide". Every other stud in the channel stands between a word and a
+   chip's MEDALLION, a separator in its own right; this one stands between
+   two words, and the caption began half a pixel past it -- a bullet glued to
+   SNACKS. The group opens with the inset a chip's plate has (.mm-hud__chip's
+   padding, below), so the stud stands centred, as far from "SNACKS" as from
+   "+1" and from every other word the channel parts. */
+.mm-hud__group--vitals > .mm-hud__snacks { padding-left: .3em; }
 .mm-hud__snack {
   --sock-h: calc(var(--hud-chip-h) * 1.44);
   position: relative;
@@ -657,6 +665,7 @@
   .mm-hud__group--vitals > :not(:first-child)::after,
   .mm-hud__group--meta > :not(:first-child)::after { left: -7.5px; }
   .mm-hud__chip { padding: 0 .15em; }
+  .mm-hud__group--vitals > .mm-hud__snacks { padding-left: .15em; }
   .mm-hud__settings { padding: 0; }
   .mm-hud__bar { width: calc(var(--bar-h) * 3.25); }
   .mm-hud__relics { gap: 1px; }
