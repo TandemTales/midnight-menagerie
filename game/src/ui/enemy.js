@@ -2411,9 +2411,11 @@ export class PlayerView {
              boots. It sits OUTSIDE pr-root on purpose: the rig's internal lean
              is her body leaning over her feet, and a shadow does not lean. The
              lunge itself does move it, because her feet move with it. -->
+        <!-- (round 21 graft: 52 x 12, not 62 x 16 -- only the CONTACT now; the
+             room draws the cast shadow on its own floor, in its own light) -->
         <g class="pr-cast">
           <ellipse class="pr-pool" cx="4" cy="6" rx="104" ry="30" fill="url(#${gid}p)"/>
-          <ellipse class="pr-shadow" cx="4" cy="6" rx="62" ry="16" fill="url(#${gid}s)"/>
+          <ellipse class="pr-shadow" cx="4" cy="5" rx="52" ry="12" fill="url(#${gid}s)"/>
         </g>
         <g class="pr-root">
           <!-- The Kid's own art, behind the Companion so she is never drawn over

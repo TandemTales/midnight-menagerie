@@ -38,7 +38,10 @@ import {
  * 30 plants, 66 entries, and losing the last 14, which are the BACK TIER's
  * plants. That is a large part of why the room that is meant to be the most
  * crowded in the house photographed as an empty hall with two columns in it. */
-const MAX_PROPS = 72, MAX_SHAFTS = 6, MAX_POOLS = 4, MAX_FLAMES = 10;
+/* MAX_SHAFTS: a room's own shafts stop at ROOM_SHAFTS, as they always did;
+   the last two slots are the raking pair a fight's room may add (round 21
+   graft, Backdrop.build). */
+const MAX_PROPS = 72, MAX_SHAFTS = 8, ROOM_SHAFTS = 6, MAX_POOLS = 4, MAX_FLAMES = 10;
 /* The night every region's sky is carried toward. It is the Graveyard's own
    `deep`, which is the one open-air region whose sky was tuned against
    mainMenu.png: measured, it comes out at hue 216 and a sky level of 7.8-16.9
@@ -301,6 +304,9 @@ function v4arr(n = NLIGHT) { return Array.from({ length: n }, () => new THREE.Ve
    actor slot must start EMPTY, not as a shadow at the origin. */
 const MAX_ACTORS = 6;
 const STAGE_LIGHT = 0.9;
+/* ...and how much of the room's warm light the fight's own pool lays on the
+   floor round it, as a multiple of albedo (round 21 graft). Set by eye. */
+const STAGE_WASH = 1.10;
 function zeroV4(n) { return Array.from({ length: n }, () => new THREE.Vector4(0, 0, 0, 0)); }
 function colArr(n = NLIGHT) { return Array.from({ length: n }, () => new THREE.Color()); }
 /**
@@ -320,6 +326,8 @@ function freshLightSlots(uniforms) {
   if (uniforms.uKeyF) uniforms.uKeyF.value = uniforms.uKeyF.value.clone();
   if (uniforms.uKeyCol) uniforms.uKeyCol.value = uniforms.uKeyCol.value.clone();
   if (uniforms.uActorBox) uniforms.uActorBox.value = uniforms.uActorBox.value.clone();
+  if (uniforms.uStage) uniforms.uStage.value = uniforms.uStage.value.clone();
+  if (uniforms.uStageCol) uniforms.uStageCol.value = uniforms.uStageCol.value.clone();
   if (uniforms.uSize) uniforms.uSize.value = uniforms.uSize.value.clone();
   if (uniforms.uSpan) uniforms.uSpan.value = uniforms.uSpan.value.clone();
   if (uniforms.uCamera) uniforms.uCamera.value = uniforms.uCamera.value.clone();
@@ -452,6 +460,12 @@ export class Backdrop {
       uKeyCol: { value: new THREE.Color(0, 0, 0) },
       /* empty (min > max) until setActors writes it */
       uActorBox: { value: new THREE.Vector4(1, 1, -1, -1) },
+      /* THE FIGHT'S OWN POOL OF WARM LIGHT (round 21 graft): its centre and
+         radii on the floor (floor-local metres), and the room's warm lamp's
+         colour at the strength it lays there. Zero until setActors writes it. */
+      uStage: { value: new THREE.Vector4(0, 0, 1, 1) },
+      uStageCol: { value: new THREE.Color(0, 0, 0) },
+      uNearDark: { value: 0 },
     });
 
     this.floorMat = new THREE.ShaderMaterial({
@@ -1643,9 +1657,17 @@ export class Backdrop {
          the prop's own base, and hanging props do not get one. */
       if (!p.hang) {
         const i = shadowN++;
-        so2[i * 3 + 0] = p.x; so2[i * 3 + 1] = p.y + 0.015; so2[i * 3 + 2] = p.z;
-        ss2[i * 2 + 0] = p.w * 2.0; ss2[i * 2 + 1] = p.w * 1.15;
-        st2[i] = 0.52 + 0.26 * (1 - p.tone);
+        /* A CHAIR SITS IN ITS OWN SHADOW (round 21 graft; the judges on the
+           Ballroom: "give each armchair a floor shadow"). Centred on the
+           quad's own plane, half of every contact shadow lay behind the
+           chair that cast it and the rest was a hairline at its feet. A
+           chair's -- shape 0, the house's seating -- comes a quarter of its
+           width forward onto the floor in front of its legs, and denser: it
+           stands on four feet with its seat over them, not on a plinth. */
+        const chair = p.shape === 0;
+        so2[i * 3 + 0] = p.x; so2[i * 3 + 1] = p.y + 0.015; so2[i * 3 + 2] = p.z + (chair ? p.w * 0.24 : 0);
+        ss2[i * 2 + 0] = p.w * (chair ? 1.7 : 2.0); ss2[i * 2 + 1] = p.w * (chair ? 1.05 : 1.15);
+        st2[i] = chair ? 1.10 + 0.14 * (1 - p.tone) : 0.52 + 0.26 * (1 - p.tone);
       }
     }
     this._propOffset.needsUpdate = this._propScale.needsUpdate = true;
@@ -1665,7 +1687,7 @@ export class Backdrop {
     /* ---- shafts: extend each beam until it reaches the floor, and record the
        elliptical pool where it lands so the floor shader can paint it. ------- */
     const S = pal.shafts || {};
-    const sn = Math.min(S.count ?? 3, MAX_SHAFTS);
+    const sn = Math.min(S.count ?? 3, ROOM_SHAFTS);
     const so = this._shOrigin.array, sp = this._shParam.array,
       ss = this._shSeed.array, si = this._shInt.array;
     this.pools.length = 0;
@@ -1701,9 +1723,54 @@ export class Backdrop {
       });
       this.roofLights.push({ x: ox, z: oz, r: width * 0.72, i: inten });
     }
+    /* RAKING SHAFTS INTO THE FIGHT (round 21 graft, CHINTZ's Greenhouse and
+       Ballroom). The room's own shafts come through the roof 13-14 m back and
+       land at the foot of the far wall; with the rig pitched to put the floor
+       under the fight (stageRig) the top of every one is above the frame, so
+       a room that used to be crossed by moonlight showed a stub of it. A room
+       that asks (`shafts.rake`) lays one or two more, NEARER: each lands on
+       the floor at a point picked ON THE SCREEN -- `at` across, `y` down,
+       behind the creature row and clear of it -- and rakes in from its own
+       side of the frame, narrower and fainter than the room's own, so it is
+       light crossing the room and never a searchlight on the fight. Their
+       landing pools compete for the floor's four slots by strength like any
+       other, so they never take the room's own pools off its floor. */
+    const RK = S.rake;
+    let rn = 0;
+    if (RK && this.lens) {
+      const L = this.lens;
+      const oy = Math.min(S.y ?? ceilY + 1.4, ceilY + 2.2);
+      for (let j = 0; j < (RK.at || []).length; j++) {
+        const at = RK.at[j];
+        const k = sn + rn;
+        if (k >= MAX_SHAFTS) break;
+        const px = (2 * at - 1) * L.tanH, py = (1 - 2 * (RK.y ?? 0.46)) * L.tanV;
+        const dx = L.fx + px * L.rx + py * L.ux, dy = L.fy + py * L.uy, dz = L.fz + px * L.rz + py * L.uz;
+        if (dy > -1e-3) continue;
+        const tt = -L.ey / dy;
+        const lx = L.ex + dx * tt, lz = L.ez + dz * tt;
+        /* rakes in from its own side of the frame, unless the room says
+           which way (`side`, +1 up to the left): a pair from one window is
+           parallel, and a right-hand beam leaning right went in behind the
+           Greenhouse's near columns and was never seen */
+        const angle = (RK.side?.[j] ?? (at < 0.5 ? 1 : -1)) * (RK.angle ?? 0.42);
+        const width = RK.width ?? 1.6;
+        so[k * 3 + 0] = lx - Math.tan(angle) * oy; so[k * 3 + 1] = oy; so[k * 3 + 2] = lz;
+        sp[k * 3 + 0] = angle; sp[k * 3 + 1] = (oy / Math.max(Math.cos(angle), 0.15)) * 1.06; sp[k * 3 + 2] = width;
+        ss[k] = rand() * 10;
+        const inten = (S.intensity ?? 0.5) * (RK.intensity ?? 0.55);
+        si[k] = inten;
+        this.pools.push({
+          x: lx, z: lz, r: width * (0.62 + Math.abs(angle) * 0.4),
+          i: inten * (S.pool ?? 1.35), ax: 1, ay: 0,
+          stretch: 1.0 / Math.max(Math.cos(angle), 0.4),
+        });
+        rn++;
+      }
+    }
     this._shOrigin.needsUpdate = this._shParam.needsUpdate = true;
     this._shSeed.needsUpdate = this._shInt.needsUpdate = true;
-    this.shaftGeo.instanceCount = sn;
+    this.shaftGeo.instanceCount = sn + rn;
     this.pools.sort((a, b) => b.i - a.i);
     this._writePools();
 
@@ -1875,6 +1942,8 @@ export class Backdrop {
       f.uWater.value.set(0, 0, 0, 0);
     }
     f.uGloss.value = p.gloss ?? 0.5;
+    /* the foreground's vignette into the dark (round 21 graft): FLOOR_FRAG */
+    f.uNearDark.value = p.nearDark ?? 0;
     f.uGain.value = (p.gain ?? 3.4) * 0.58;
     f.uDeep.value.copy(p._floorDeep);
     f.uMid.value.copy(p._floorMid);
@@ -2202,6 +2271,21 @@ export class Backdrop {
         break;
       }
     }
+    /* THE FIGHT IS PLAYED IN CANDLELIGHT (round 21 graft, OXBLOOD's warm
+       wash). The floor under the fight takes a broad pool of the room's WARM
+       cinematic light -- the key where the key is a lamp, the fill where the
+       key is the moon -- and the floor round it keeps the cold light it had,
+       so the stage reads warm against cold the way the samples' candle pools
+       do. It is light on the floor's own albedo, so every board, joint and
+       crumb stays drawn inside it: a pool, not a haze. */
+    const sc2 = this.floorMat.uniforms.uStageCol.value;
+    sc2.setRGB(0, 0, 0);
+    for (let i = 0; i < NLIGHT; i++) {
+      if (rig.cine[i] && !rig.cold[i]) {
+        sc2.copy(rig.colors[i]).multiplyScalar(STAGE_WASH * Math.min(rig.inten[i], 2.5));
+        break;
+      }
+    }
   }
 
   /**
@@ -2217,7 +2301,9 @@ export class Backdrop {
       const it = list[i];
       if (!it) { a[i].set(0, 0, 0, 0); k[i].set(0, 0, 0, 0); continue; }
       const fx = it.x, fy = -(it.z - this._floorCz), r = Math.max(it.r, 0.08);
-      a[i].set(fx, fy, r, it.s);
+      /* a FLIER's radius goes in negative: its shadow is a pool straight
+         under it, not a contact and a throw (FLOOR_FRAG) */
+      a[i].set(fx, fy, it.fly ? -r : r, it.s);
       /* the throw: away from the key lamp, longer the lower the lamp is
          against its distance, 1.6-4.2 footprints */
       let dx = fx - key.x, dy = fy - key.y;
@@ -2228,6 +2314,23 @@ export class Backdrop {
       k[i].set(dx, dy, len, bound * bound);
       x0 = Math.min(x0, fx - bound); x1 = Math.max(x1, fx + bound);
       y0 = Math.min(y0, fy - bound); y1 = Math.max(y1, fy + bound);
+    }
+    /* THE FIGHT'S POOL (round 21 graft): one warm ellipse over the feet of
+       everybody in it, a little wider than they stand. FLOOR_FRAG bounds it
+       by its own ellipse (2.2 radii, under 1%), NOT by growing the actors'
+       box: the six-actor loop is the floor's cost and runs only in there. */
+    if (x0 < x1) {
+      let fx0 = Infinity, fy0 = Infinity, fx1 = -Infinity, fy1 = -Infinity;
+      for (let i = 0; i < MAX_ACTORS; i++) {
+        if (!(a[i].w > 0)) continue;
+        fx0 = Math.min(fx0, a[i].x); fx1 = Math.max(fx1, a[i].x);
+        fy0 = Math.min(fy0, a[i].y); fy1 = Math.max(fy1, a[i].y);
+      }
+      const cx = (fx0 + fx1) / 2, cy = (fy0 + fy1) / 2;
+      const rx = (fx1 - fx0) * 0.50 + 2.0, ry = (fy1 - fy0) * 0.50 + 1.6;
+      u.uStage.value.set(cx, cy, rx, ry);
+    } else {
+      u.uStage.value.set(0, 0, 1, 1);
     }
     if (x0 < x1) u.uActorBox.value.set(x0, y0, x1, y1);
     else u.uActorBox.value.set(1, 1, -1, -1);

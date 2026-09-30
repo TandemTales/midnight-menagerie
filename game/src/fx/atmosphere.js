@@ -388,7 +388,9 @@ export const REGIONS = {
       { kind: 'warm', x: -2.8, y: 1.20, z: -4.8, color: '#e0b266', intensity: 9.83, radius: 5.68 },
       { kind: 'cold', x: 3.2, y: 1.50, z: -8.0, color: '#8edde3', intensity: 1.24, radius: 6.0 },
     ],
-    shafts: { count: 4, spread: 22, y: 11.4, z: -13, angle: 0.30, width: 3.4, intensity: 0.45, pool: 1.7 },
+    shafts: { count: 4, spread: 22, y: 11.4, z: -13, angle: 0.30, width: 3.4, intensity: 0.45, pool: 1.7,
+              /* two raking shafts into the fight's own room (round 21 graft): Backdrop.build */
+              rake: { at: [0.31, 0.69], side: [1, 1], y: 0.47, angle: 0.42, width: 2.0, intensity: 0.85 } },
     bloom: 0.92,
   },
 
@@ -563,8 +565,13 @@ export const REGIONS = {
       { kind: 'warm', x: 0.0, y: 6.20, z: -15.0, color: '#e9cd92', intensity: 0.88, radius: 9.46 },
       { kind: 'cold', x: -10.0, y: 2.00, z: -7.5, color: '#a984cd', intensity: 1.32, radius: 8.0 },
     ],
-    shafts: { count: 4, spread: 26, y: 11.4, z: -14.0, angle: 0.22, width: 3.6, intensity: 0.37, pool: 1.7 },
+    shafts: { count: 4, spread: 26, y: 11.4, z: -14.0, angle: 0.22, width: 3.6, intensity: 0.37, pool: 1.7,
+              /* two raking shafts into the fight's own room (round 21 graft): Backdrop.build */
+              rake: { at: [0.31, 0.83], y: 0.47, angle: 0.40, width: 2.0, intensity: 0.85 } },
     bloom: 1.10, warmTone: 0.06, halation: 0.85, vignette: 1.01, saturate: 0.92,
+    /* the floor under the hand and at the frame's edges vignetted toward
+       near-black (round 21 graft, PRUSSIAN's Ballroom): FLOOR_FRAG */
+    nearDark: 0.62,
   },
 
   /* ── 11. The Crypt and Ossuary ─────────────────────────────────────────────
@@ -1634,9 +1641,25 @@ export class Atmosphere {
           const r = el.getBoundingClientRect();
           if (r.width < 2) continue;
           const pal = el.classList.contains('pr-palset');
+          /* (the Kid's contact ellipse is 52 x 12 rig units centred 5 below
+             her soles since the graft: 0.74 of its width is the 0.62 of the
+             old 62 x 16 one, so the room's shadow keeps its size) */
           const sx = r.left + r.width / 2;
           if (pal && heroY === null) continue;
-          const sy = pal ? heroY : r.top + r.height / 2;
+          let sy = pal ? heroY : r.top + r.height / 2;
+          /* (round 21 graft) A CREATURE'S CONTACT IS AT ITS FEET, and its pool
+             is not: the pool straddles the bottom of the stage, and a figure
+             is fitted 6 rig units above that (EnemyView._fitTo) -- 2.6% of
+             the stage, ~10 px on the Deck -- so the room's contact core sat
+             in open floor under the Door Greeter instead of under its sill.
+             A FLIER keeps the pool's line: it hovers, and its shadow lies on
+             the floor under it. */
+          const en = pal || el.classList.contains('pr-shadow') ? null : el.closest('.cb-enemy');
+          const fly = !!en && en.dataset.body === 'floating';
+          if (en && !fly) {
+            const st = en.querySelector('.cb-enemy__stage')?.getBoundingClientRect();
+            if (st && st.height > 4) sy = Math.min(sy, st.bottom - st.height * 0.026);
+          }
           const nx = ((sx - cr.left) / cr.width) * 2 - 1;
           const ny = -(((sy - cr.top) / cr.height) * 2 - 1);
           const v = this._ndc.set(nx, ny, 0.5).unproject(cam).sub(cam.position);
@@ -1645,9 +1668,11 @@ export class Atmosphere {
           const x = cam.position.x + v.x * t, z = cam.position.z + v.z * t;
           const dist = Math.hypot(v.x * t, v.y * t, v.z * t);
           const mpp = (2 * tanV * dist) / cr.height;     // metres per CSS pixel there
+          /* a flier's pool is most of the width it spans (PRUSSIAN's Grave
+             Moth, the grafted treatment): a clear dark ellipse under it */
           const w = pal ? Math.min(r.width, r.height * 1.4) * 0.60
-                        : r.width * (el.classList.contains('pr-shadow') ? 0.62 : 0.50);
-          list.push({ x, z, r: Math.max(0.12, Math.min(pal ? 0.6 : 1.4, w * 0.5 * mpp)), s: pal ? 0.70 : 0.85 });
+                        : r.width * (el.classList.contains('pr-shadow') ? 0.74 : fly ? 0.90 : 0.50);
+          list.push({ x, z, r: Math.max(0.12, Math.min(pal ? 0.6 : 1.4, w * 0.5 * mpp)), s: pal ? 0.70 : fly ? 0.95 : 0.85, fly });
         }
       }
     }
@@ -2384,6 +2409,7 @@ export class Atmosphere {
       L.subjWall = T.subjWall; L.subjAt = T.subjAt;
       L.houseS = T.houseS; L.floorRot = T.floorRot; L.runner = T.runner; L.runX = T.runX;
       L.door = T.door; L.rail = T.rail; L.subForm = T.subForm; L.pool = T.pool;
+      L.nearDark = T.nearDark;
       this.backdrop.applyPalette(L);
       this._applyGrade(L, k);
       if (this._fade >= 1) { this.live = T; this.backdrop.applyPalette(T); this._applyGrade(T, 1); }
