@@ -11506,6 +11506,13 @@ void main(){
     vec3 moonP = mix(uAccent, vec3(0.74, 0.82, 1.00), 0.62);
     col += albedo * moonP * (0.10 + 0.55*max(N.y, 0.0) + 2.4*gYewTop);
   }
+  /* ...and on a pumpkin, lying out under the same sky: the tops of its
+     lobes take the moon, so an uncarved one is a round orange thing in the
+     dark and not a hole in the ground */
+  if (vShape > 26.5 && vShape < 27.5) {
+    vec3 moonK = mix(uAccent, vec3(0.74, 0.82, 1.00), 0.62);
+    col += albedo * moonK * (0.22 + 0.70*max(N.y, 0.0)) * (0.55 + 0.45*gPkLobe) * gPkOn;
+  }
 #endif
   col *= uGain;
   col += fitEmit;                 // a lamp emits: see the fitting block above
