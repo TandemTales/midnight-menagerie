@@ -638,7 +638,7 @@ export const REGIONS = {
        garden". An ALLEY of the maze is 11 m between its hedges, so they rise
        past the top of the frame on both hands, taller than the Kid.) */
     sides: true, arch: 3, floorPattern: 13, subject: 'topiary', runner: 1.15,
-    room: { w: 11, d: 26, h: 0, side: 0, ceilPattern: 0, wallPad: 0 },
+    room: { w: 11, d: 26, h: 0, side: 0, ceilPattern: 0, wallPad: 0, openW: 120 },
     cam: { y: 2.35, z: 9.2, look: 2.5, fov: 47 },
     deep: '#191618', mid: '#353020', hi: '#575030', accent: '#90905e',
     rimCol: '#c4b479', shaft: '#b8ae8b', floorDeep: '#100e12', floorMid: '#27221b',

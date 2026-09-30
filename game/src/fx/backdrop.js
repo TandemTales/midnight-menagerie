@@ -878,8 +878,10 @@ export class Backdrop {
 
        `room.w` itself is NOT changed — prop placement reads it, and widening
        the yard would scatter the props into the sky. Only the SHELL grows. */
-    const wallW = open ? Math.max(room.w, 76) : room.w + 1.2;
-    const groundW = open ? Math.max(room.w, 76) : room.w;
+    /* (round 22 graft: a room may ask for more -- the maze's walk, seen
+       along its hedge from one side, saw past the end of 76 m) */
+    const wallW = open ? Math.max(room.w, room.openW ?? 76) : room.w + 1.2;
+    const groundW = open ? Math.max(room.w, room.openW ?? 76) : room.w;
 
     this.wall.geometry.dispose();
     this.wall.geometry = new THREE.PlaneGeometry(wallW, wallH);
@@ -1525,7 +1527,12 @@ export class Backdrop {
         for (let i = 0; i < m && out.length - archN < n; i++) {
           let sx = (i + (r % 2) * 0.5 + (rand() - 0.5) * 0.8) / m;
           const zz = z + (rand() - 0.5) * 1.1;
-          if (main && (sx < 0.31 || (sx > 0.40 && sx < 0.70))) sx = 0.70 + rand() * 0.27;
+          if (main && (sx < 0.31 || (sx > 0.40 && sx < 0.70))) {
+            /* (half of them go to the flank, the rest are not dealt: the
+               flank piled with all of them was the fight's heaviest frame) */
+            if (rand() < 0.5) continue;
+            sx = 0.70 + rand() * 0.27;
+          }
           const x = x0 + sx * (x1 - x0);
           push(pick(), x, zz, (1.30 - t * 0.30) * (0.78 + rand() * 0.45), 0.18 + t * 0.62);
         }
@@ -1995,14 +2002,14 @@ export class Backdrop {
       const a = 0.30 * (i === 0 ? -1 : 1);
       const dx = -sgn * Math.cos(a), dz = Math.abs(Math.sin(a));
       fu.uWedge.value[i].set(sgn * hw, sz, dx, dz);
-      k[i] = 3.2;
+      k[i] = 13.0;
     }
     /* ...and the far door, the end of the passage, standing open on the
        room beyond: its slit at the right of the middle bay, its wedge up the
        passage toward the lens */
     if (!lib) {
       fu.uWedge.value[2].set(0.31, -d, 0.0995, 0.995);
-      k[2] = 2.6;
+      k[2] = 9.0;
     }
     fu.uWedgeK.value.set(k[0], k[1], k[2]);
   }

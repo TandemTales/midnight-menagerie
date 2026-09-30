@@ -4841,7 +4841,7 @@ float kitchenWallH(vec2 q, float qpx, out float occ){
       float sIn = mmCover(-sink);
       float bowl = mmCover(-mmBox(vec2(sx, sqy - 1.035), vec2(0.52, 0.025), 0.01));
       float brim = mmCover(-mmBox(vec2(sx, sqy - 1.068), vec2(0.58, 0.011), 0.005));
-      vec3 cer = vec3(0.58, 0.36, 0.18)*(lum*2.2 + 0.022);
+      vec3 cer = vec3(0.58, 0.36, 0.18)*(lum*1.6 + 0.016);    // (graft: a step down under the chandeliers)
       col = mix(col, cer*(0.80 + 0.30*smoothstep(0.75, 1.0, sqy)), sIn);
       col = mix(col, cer*0.18, bowl);
       col = mix(col, cer*1.10, brim);
@@ -4917,6 +4917,9 @@ float kitchenWallH(vec2 q, float qpx, out float occ){
     gloss = max(gloss, onDm);
     mmPen(casing, 1.2, 0.9);
     mmPen(dome, 1.2, 0.8);
+    /* (graft: the copper takes the glow of its own fire from below, where
+       the cold window light alone turned it violet) */
+    emit += onDm*(0.10 + 0.22*smoothstep(1.45, 1.0, sqy));
     float fd = mmBox(vec2(cc, sqy - 0.24), vec2(0.16, 0.12), 0.01);
     col = mix(col, vec3(0.06, 0.05, 0.05), mmCover(-fd));
     emit += mmCover(-mmBox(vec2(cc, sqy - 0.22), vec2(0.12, 0.05), 0.01)) * 0.8 * mmNoise(q*16.0);
@@ -5370,6 +5373,13 @@ float wallH(vec2 q, out float occ){
 
 #endif
   } else {
+#if MM_ROOMS == 11
+  /* (round 22 graft: the court's wall covers every pixel of this plane
+     under 2.4 m, and everything the house and the wood put there is
+     weighted by what the wall leaves showing -- nothing. The Pumpkin
+     Grounds' fight is the house's heaviest frame; they are not drawn.) */
+  if (q.y > 2.40) {
+#endif
 #if MM_ROOMS == 0 || MM_ROOMS == 4 || MM_ROOMS == 11
     // ---- EXTERIOR: the house's skyline, and a treeline in front of it --------
     // Only the silhouette matters here; the sky is painted in the colour pass.
@@ -6052,6 +6062,9 @@ float wallH(vec2 q, out float occ){
       gColAmt = max(gColAmt, houseM);
     }
 #endif
+#endif
+#if MM_ROOMS == 11
+  }
 #endif
   }
   return h + sub;
@@ -6837,7 +6850,12 @@ void main(){
   if (uArch > 4.5) {
 #if MM_ROOMS == 0 || MM_ROOMS == 4 || MM_ROOMS == 11
     float solid = smoothstep(0.25, 0.85, h);
+#if MM_ROOMS == 11
+    /* (graft: no sky is painted where the court's wall stands solid) */
+    if (solid < 0.9999) col = mix(skyColor(q, 2.0), col, solid);
+#else
     col = mix(skyColor(q, 2.0), col, solid);
+#endif
     /* Lit windows punched into the mass, with real spill onto the masonry.
        THE SAME SET-OUT THE RELIEF USES -- 2.80 m bays on a 3.20 m storey over a
        0.55 m plinth, a 0.92 x 1.25 m opening with its sill 0.85 m above each
@@ -8135,7 +8153,7 @@ void main(){
       float cc = v.x*dir.y - v.y*dir.x;
       float hw = 0.11 + max(dd, 0.0)*0.22;
       float inW = (1.0 - smoothstep(hw - mp, hw + mp, abs(cc))) * smoothstep(-mp, mp, dd);
-      float fall = exp(-max(dd, 0.0)/2.2) * (0.55 + 0.45*smoothstep(0.0, 0.25, dd));
+      float fall = exp(-max(dd, 0.0)/1.7) * (0.55 + 0.45*smoothstep(0.0, 0.25, dd));
       col += alb * vec3(1.00, 0.66, 0.30) * inW * fall * k * uGain;
     }
   }
@@ -8296,7 +8314,7 @@ void main(){
          the MOON lying in the water where the eye meets its mirror image,
          drawn out into a column and broken by the ripples) */
       if (uMoonW.w > 0.001) {
-        vec3 skyW = vec3(0.040, 0.066, 0.110) * (0.45 + 1.10*farW);
+        vec3 skyW = vec3(0.016, 0.028, 0.050) * (0.30 + 1.30*farW*farW);
         col += skyW * water * (0.85 + 0.30*brk);
         /* the column the moon's reflection lies in: the line on the water
            under the vertical plane through the eye and the moon, drawn out
@@ -8307,7 +8325,7 @@ void main(){
         float rip2 = (mmNoise(vec2(w.x*3.0, w.y*1.6 + uTime*0.30)) - 0.5)*0.30;
         float col2 = exp(-pow((ax + rip2)/0.34, 2.0)) * (0.35 + 0.65*farW);
         float glit = smoothstep(0.40, 0.78, mmNoise(vec2(w.x*9.0, w.y*3.0 - uTime*0.4)));
-        col += vec3(0.80, 0.86, 1.00) * col2 * (0.10 + 0.55*glit) * uMoonW.w * water;
+        col += vec3(0.80, 0.86, 1.00) * col2 * (0.14 + 0.80*glit) * uMoonW.w * water;
       }
     }
   }
@@ -9886,11 +9904,16 @@ float shapeField(vec2 uv, vec2 msz, float shape, float seed){
   } else if (shape < 27.5) {              // 27 -- a pumpkin (round 22)
     vec2 m = p*msz;
     vec3 F = pkFrame(msz, seed);
-    float z1, z2, lb;
-    float pd = pkBody(m, F, seed, z1, z2, lb);
+    float z1 = -1e3, z2 = -1e3, lb = 0.0;
+    /* (graft: the patch deals twice the pumpkins, and most of each quad is
+       night: a pixel well clear of the body's own ellipse takes that
+       ellipse's distance and skips the six lobes -- it is past the outline's
+       ink and rim either way) */
+    float bnd = (length(vec2(m.x/(F.x*1.06), (m.y - F.z)/(F.y*1.12))) - 1.0)*min(F.x, F.y);
+    float pd = bnd > 0.10*msz.y ? bnd : pkBody(m, F, seed, z1, z2, lb);
     gPkBd = pd; gPkZ1 = z1; gPkZ2 = z2; gPkLb = lb;
-    gPkSt = pkStem(m, F, msz.y, seed);
-    gPkLf = pkLeaf(m, F, msz, seed);
+    gPkSt = m.y > F.z ? pkStem(m, F, msz.y, seed) : 1e3;
+    gPkLf = m.y < 0.20*msz.y ? pkLeaf(m, F, msz, seed) : 1e3;
     d = min(pd, min(gPkSt, gPkLf)) / msz.y;
   } else if (shape < 28.5) {              // 28 -- a clipped yew (round 22)
     d = yewSD(p*msz, msz, seed) / msz.y;
@@ -11724,7 +11747,8 @@ void main(){
      dark lead green on a pale stone plinth */
   if (vShape > 29.5 && vShape < 30.5) {
     float lum = max(mmLum(albedo), 0.02);
-    vec3 yew = vec3(0.14, 0.27, 0.12)*(lum*1.05 + 0.018);
+    /* (a landmark stands out in the alley, a step over the hedge behind) */
+    vec3 yew = vec3(0.14, 0.27, 0.12)*(lum*1.60 + 0.030);
     yew *= 0.84 + 0.30*blotch;
     yew *= 0.45 + 1.10*gYewCl;
     yew = mix(yew, yew*vec3(1.55, 1.85, 2.10), gYewTop*0.60);
