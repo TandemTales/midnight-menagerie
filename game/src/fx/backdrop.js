@@ -125,7 +125,10 @@ const SHAPE_M = [1.20, 2.00, 1.30, 1.00, 2.00, 2.00, 3.32, 2.60, 1.17, 1.33,
                  1.20, 3.10, 1.30,
                  /* graft: 30 a clipped topiary -- a spiral, a tiered stand, a
                     cone, or a ball-tree in its box on a plinth (VANDYKE's) */
-                 2.30
+                 2.30,
+                 /* graft: 31 the statue on its plinth drawn clean -- shape 15's
+                    figure with a smooth, resolvable surface (the Heart, the maze) */
+                 2.44
 ];
 /* ...and a width ratio, so a column is a column and not a capital-T. Four of
  * these were wrong by enough to change what the object was: a longcase clock
@@ -134,7 +137,7 @@ const SHAPE_M = [1.20, 2.00, 1.30, 1.00, 2.00, 2.00, 3.32, 2.60, 1.17, 1.33,
 const SHAPE_W = [1.15, 0.55, 1.00, 0.95, 0.72, 0.80, 0.47, 0.85, 0.90, 1.35,
                  1.30, 1.20, 0.87, 1.14, 0.77, 0.78, 1.80, 2.24, 0.50, 0.62,
                  0.72, 2.025, 0.62, 0.34, 1.80, 1.476, 0.34,
-                 1.62, 1.55, 2.10, 0.62
+                 1.62, 1.55, 2.10, 0.62, 0.78
 ];
 /* HOW MUCH ONE OF THESE VARIES FROM THE NEXT, as a +-fraction of SHAPE_M.
  *
@@ -156,7 +159,7 @@ const SHAPE_W = [1.15, 0.55, 1.00, 0.95, 0.72, 0.80, 0.47, 0.85, 0.90, 1.35,
 const SHAPE_VAR = [0.06, 0.08, 0.62, 0.20, 0.10, 0.08, 0.10, 0.10, 0.16, 0.48,
                    0.06, 0.06, 0.06, 0.06, 0.06, 0.14, 0.14, 0.06, 0.08, 0.08,
                  0.06, 0.04, 0.00, 0.00, 0.22, 0.00, 0.04,
-                 0.34, 0.06, 0.05, 0.16
+                 0.34, 0.06, 0.05, 0.16, 0.14
 ];
 // Which shapes hang from the ceiling rather than stand on the floor.
 export const HANGING = { 4: 1, 7: 1, 22: 1 };
@@ -398,6 +401,10 @@ export class Backdrop {
            of. See subjectH in shaders/backdrop.js and SUBJECT below. uFar is 1
            on the back wall and 0 on the two side walls. */
         uSubject: { value: 0 }, uFar: { value: 1 },
+        /* the passages' one open door on this wall (round 22 graft) */
+        uAjar: { value: new THREE.Vector2(-99, 0) },
+        /* the Heart's wall under its portraits, carved as wainscot (graft) */
+        uWains: { value: 0 },
         /* Where the doorway is (0 on the axis, >0 a pair that far out, <0
            none) and where the exterior's house and moon stand -- both chosen
            per room with its subject. See WALL_FRAG. */
@@ -489,6 +496,15 @@ export class Backdrop {
       uStage: { value: new THREE.Vector4(0, 0, 1, 1) },
       uStageCol: { value: new THREE.Color(0, 0, 0) },
       uNearDark: { value: 0 },
+      /* THE PASSAGES' OPEN DOORS (round 22 graft): the wedge of lamplight
+         each one's slit throws across the floor -- the slit's world x and z,
+         and the unit direction into the room, and in uWedgeK how strong
+         (0 = none). uCrisp: the passages' boards, crisp through their pools. */
+      uWedge: { value: zeroV4(3) }, uWedgeK: { value: new THREE.Vector3(0, 0, 0) },
+      uCrisp: { value: 0 },
+      /* the moon on the Pumpkin Grounds' flags and in its pond (graft) */
+      uMoonF: { value: new THREE.Color(0, 0, 0) },
+      uMoonW: { value: new THREE.Vector4(0, 0, 0, 0) },
     });
 
     this.floorMat = new THREE.ShaderMaterial({
@@ -1485,6 +1501,36 @@ export class Backdrop {
         side = -side;
       }
 
+    } else if (layout === 'patch') {
+      /* THE PUMPKIN PATCH (round 22 graft, VANDYKE's density, two judges:
+         "many ribbed pumpkins and jack-o'-lanterns through several rows so
+         the patch fills the mid-ground; larger, brought forward"). Ranks
+         across the whole width the lens holds at each depth, closer together
+         near the lens, the near ones big. And in the FIGHT's own court (the
+         wing's main room) the Kid's side of the frame and the creature's
+         column are kept to dark flagstone -- all three judges on
+         fight-pumpkin: "clear pumpkins from the Kid's standing zone at left
+         and from directly behind the enemy; push them to the mid-ground
+         flanks" -- so a pumpkin dealt there goes to the right-hand flank. */
+      const main = !!pal.isMainRoom;
+      const ranks = P.ranks ?? 6;
+      const z0 = P.z0 ?? -1.8, z1 = -Math.min(RD, room.d - 1.2) + 0.6;
+      const per = Math.max(3, Math.ceil(n / ranks));
+      for (let r = 0; r < ranks && out.length - archN < n; r++) {
+        const t = r / (ranks - 1);
+        const z = z0 + (z1 - z0) * Math.pow(t, 1.3);
+        const [f0, f1] = spanAt(z, 0.3);
+        const x0 = Math.max(-halfW * 0.96, f0), x1 = Math.min(halfW * 0.96, f1);
+        const m = Math.max(2, Math.round(per * (0.75 + 0.5 * t)));
+        for (let i = 0; i < m && out.length - archN < n; i++) {
+          let sx = (i + (r % 2) * 0.5 + (rand() - 0.5) * 0.8) / m;
+          const zz = z + (rand() - 0.5) * 1.1;
+          if (main && (sx < 0.31 || (sx > 0.40 && sx < 0.70))) sx = 0.70 + rand() * 0.27;
+          const x = x0 + sx * (x1 - x0);
+          push(pick(), x, zz, (1.30 - t * 0.30) * (0.78 + rand() * 0.45), 0.18 + t * 0.62);
+        }
+      }
+
     } else if (layout === 'hang') {
       // Ceiling-dominant: the mass is overhead, the floor is nearly clear.
       const hangShapes = shapes.filter((s) => HANGING[s] === 1);
@@ -1902,6 +1948,63 @@ export class Backdrop {
     this.wallMat.uniforms.uSeed.value = 1 + rand() * 9;
     this.floorMat.uniforms.uSeed.value = 1 + rand() * 9;
     this.ceilMat.uniforms.uSeed.value = 1 + rand() * 9;
+    this._placeAjar(pal, room, rand);
+  }
+
+  /** THE PASSAGES' OPEN DOORS (round 22 graft). All three judges: "every
+   *  hidden door must be a panel leaf swung a few degrees open IN RELIEF ...
+   *  and a wedge of light spilling onto the floor". One hidden door on each
+   *  side wall stands open, at a depth in shot; the wall program draws it
+   *  (uAjar, in the wall's own metres) and the floor its wedge (uWedge, in
+   *  the world). A side wall's metres run from the front on the left wall
+   *  and from the back on the right (see _applyPalette), so a bay's centre
+   *  at q is z = FLOOR_FRONT - q on the left and q - d on the right. The
+   *  door bays are the panelling's every sixth (bay 3 of each run of six,
+   *  0.96 m) or the library's every fifth case (1.02 m) -- passWallH's own
+   *  set-out. Rooms that are not the passages draw none, and draw no rand. */
+  _placeAjar(pal, room, rand) {
+    const fu = this.floorMat.uniforms;
+    fu.uWedgeK.value.set(0, 0, 0);
+    fu.uCrisp.value = 0;
+    for (const m of this.sides) m.material.uniforms.uAjar.value.set(-99, 0);
+    if (!pal.ajarDoors) return;
+    fu.uCrisp.value = 1;
+    const lib = pal.subject === 'backcase';
+    const BW = lib ? 1.02 : 0.96, per = lib ? 5 : 6;
+    const d = room.d, hw = room.w / 2;
+    const k = [0, 0, 0];
+    for (let i = 0; i < 2; i++) {
+      const want = -(1.2 + rand() * 1.8) - i * 1.6;
+      let best = null;
+      /* (any bay: the wall program makes the bay it is told a door) */
+      for (let n = 0; n < 40 * per; n++) {
+        const bi = n;
+        const q = (bi + 0.5) * BW;
+        const z = i === 0 ? FLOOR_FRONT - q : q - d;
+        if (z > -0.6 || z < -(d - 2.0)) continue;
+        if (!best || Math.abs(z - want) < Math.abs(best.z - want)) best = { q, z };
+      }
+      if (!best) continue;
+      this.sides[i].material.uniforms.uAjar.value.set(best.q, BW * 0.5);
+      /* the slit is at the latch edge, the bay's +q side: toward the back on
+         the left wall, toward the front on the right */
+      const sz = i === 0 ? best.z - BW * 0.5 + 0.17 : best.z + BW * 0.5 - 0.17;
+      const sgn = i === 0 ? -1 : 1;
+      /* into the room, and swung a little toward the lens, which is the
+         side the leaf opens away from */
+      const a = 0.30 * (i === 0 ? -1 : 1);
+      const dx = -sgn * Math.cos(a), dz = Math.abs(Math.sin(a));
+      fu.uWedge.value[i].set(sgn * hw, sz, dx, dz);
+      k[i] = 3.2;
+    }
+    /* ...and the far door, the end of the passage, standing open on the
+       room beyond: its slit at the right of the middle bay, its wedge up the
+       passage toward the lens */
+    if (!lib) {
+      fu.uWedge.value[2].set(0.31, -d, 0.0995, 0.995);
+      k[2] = 2.6;
+    }
+    fu.uWedgeK.value.set(k[0], k[1], k[2]);
   }
 
   /**
@@ -1993,6 +2096,7 @@ export class Backdrop {
     const subj = SUBJECT[p.subject] ?? 0;
     this._setRoomsProgram(ROOMS_PROGRAM[p.subject] ?? 0);
     w.uSubject.value = subj;
+    w.uWains.value = p.wainscot ? 1 : 0;
     /* WHICH WALL CARRIES THE ROOM'S ONE-OFF (round 14). uFar has always
        meant "this is the wall with the staircase on it"; it was simply always
        the back one. A kind may hang its stair on a side wall instead
@@ -2069,6 +2173,14 @@ export class Backdrop {
     f.uGloss.value = p.gloss ?? 0.5;
     /* the foreground's vignette into the dark (round 21 graft): FLOOR_FRAG */
     f.uNearDark.value = p.nearDark ?? 0;
+    /* the moon on the court's flags and in its pond (round 22 graft) */
+    if (p.moonFloor) {
+      f.uMoonF.value.set(p.moonFloor[0], p.moonFloor[1], p.moonFloor[2]);
+      f.uMoonW.value.set(7.0 + w.uHouse.value.y, 8.5, -(p.room?.d ?? 24), p.moonPond ?? 0);
+    } else {
+      f.uMoonF.value.setRGB(0, 0, 0);
+      f.uMoonW.value.set(0, 0, 0, 0);
+    }
     f.uGain.value = (p.gain ?? 3.4) * 0.58;
     f.uDeep.value.copy(p._floorDeep);
     f.uMid.value.copy(p._floorMid);
@@ -2116,6 +2228,7 @@ export class Backdrop {
       su.uDamKind.value = kind;
       su.uDamCell.value = w.uDamCell.value;
       su.uSubject.value = subj;
+      su.uWains.value = 0;
       /* One staircase, forty niches: a side wall carries the one-off only
          when the room's kind has hung it there. sides[0] is the left wall,
          whose own metres run from the front toward the back, and the right
@@ -2159,9 +2272,16 @@ export class Backdrop {
        FOLIUM's): seen looking up, the lintel quad came down into the picture
        as a dark band laid straight across the pitched glass and its gable. */
     const glassRoof = w.uGable.value > 0.5;
+    /* (round 22 graft, CAPUT's, one judge: "carry the floor boards and
+       lamplight into the bottom third instead of fading to black". A room
+       whose lens stands too far back for the near frame says so
+       (nearFrame: false): the Heart's lens is 13 m out, where the frame's
+       clutter band -- whose foot was the seam -- lay across the near floor
+       as a dark lid. With no near frame there is no seam and no lid.) */
+    const noNear = p.nearFrame === false;
     for (let i = 0; i < this.frames.length; i++) {
       const m = this.frames[i];
-      m.visible = this._frameShow[i] !== false && !((openSky || glassRoof) && i === 2);
+      m.visible = this._frameShow[i] !== false && !((openSky || glassRoof) && i === 2) && !noNear;
       m.material.uniforms.uColor.value.copy(p._frame);
       m.material.uniforms.uRim.value.copy(p._rim);
       m.material.uniforms.uAmount.value = p.frameAmount ?? 0.92;
