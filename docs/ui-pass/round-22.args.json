@@ -1,0 +1,31 @@
+{
+  "round": "r22",
+  "maxBuilders": 3,
+  "briefs": ["docs/ui-pass/BRIEF-r0.md", "docs/ui-pass/BRIEF-r1.md", "docs/ui-pass/BRIEF-r11.md", "docs/ui-pass/BRIEF-r16.md", "docs/ui-pass/BRIEF-r21.md", "docs/ui-pass/BRIEF-r22.md"],
+  "rubrics": ["docs/ui-pass/RUBRIC.md", "docs/ui-pass/RUBRIC-r22.md"],
+  "samples": ["UI/title.png", "UI/mainMenu.png", "UI/selectCompanion.png", "UI/selectKid.png"],
+  "tracks": [
+    {
+      "key": "wings",
+      "name": "WINGS",
+      "rule": "refine",
+      "screens": ["sheet-hedge", "sheet-kitchens", "sheet-passages", "sheet-pumpkin", "sheet-heart", "fight-hedge", "fight-pumpkin"],
+      "smallScreens": ["fight-hedge", "fight-pumpkin"],
+      "baseline": "MUSLIN",
+      "builders": [
+        {
+          "slot": "a", "code": "VANDYKE", "port": 9031,
+          "angle": "LITERAL. Work BRIEF-r22's fix list 1 to 4 in order and exactly as written, one wing at a time in the order the brief lists them, finishing each wing -- its signature object, its built walls, its darks, every room of it -- before starting the next. Item 4, the Heart's seam, is a bug: measure the cause, fix it, prove it. The literal angle won rounds 20 and 21."
+        },
+        {
+          "slot": "b", "code": "CASSEL", "port": 9032,
+          "angle": "THE OBJECT FIRST. The judges' deepest complaint is that each wing lacks the thing its name promises. Start from the four signature objects -- the maze wall, the range, the hidden door, the pumpkin -- and make each one a drawn object with a silhouette a child could name, its own shading and a contact shadow, at the scale of the Kid; then build each wing's room around its object. Items 2 and 3 follow from that; item 4 last."
+        },
+        {
+          "slot": "c", "code": "CAPUT", "port": 9033,
+          "angle": "THE SURFACE. Item 2 is your round: the cloud-texture-with-outlines material is the defect under all four wings. Build the house's surfaces -- clipped yew, soot brick, raised panelling, a mansion's courses and slates, ribbed pumpkin rind -- as real relief with light and the round-21 pen for their lines, and keep every dark deep. With the surfaces built, give each wing its objects (item 1) out of them. Item 4 last."
+        }
+      ]
+    }
+  ]
+}
