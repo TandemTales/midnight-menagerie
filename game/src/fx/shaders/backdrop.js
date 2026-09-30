@@ -8403,6 +8403,10 @@ float ptPianist(vec2 m){
    standing prop one). shapeField, reliefH and main() read the same numbers,
    so the marks land on their own silhouette. */
 
+/* what shapeField found on a pumpkin, kept for reliefH (the same pixel,
+   the same numbers): the body's distance, the two nearest lobes' surfaces
+   and the front one's roundness, and the stem's and the leaves' distances */
+float gPkBd, gPkZ1, gPkZ2, gPkLb, gPkSt, gPkLf;
 /* A PUMPKIN (27). Seven LOBES round the stem, each a vertical ellipse
    foreshortened by its turn away from the eye -- the union of them is the
    scalloped silhouette, and where two lobes' surfaces meet is a RIB, which
@@ -8426,8 +8430,11 @@ vec3 pkFrame(vec2 msz, float seed){
 float pkBody(vec2 m, vec3 F, float seed, out float z1, out float z2, out float lb){
   float d = 1e3;
   z1 = -1e3; z2 = -1e3; lb = 0.0;
-  for (int i = 0; i < 7; i++){
-    float ph = (float(i) - 3.0)*0.43 + (mmHash11(seed*3.3 + float(i)) - 0.5)*0.07;
+  /* (six lobes, not seven: the pair at the back edge were a pixel of
+     silhouette each, and this loop runs twice for every pumpkin pixel --
+     the Pumpkin Grounds' fight is the house's heaviest frame) */
+  for (int i = 0; i < 6; i++){
+    float ph = (float(i) - 2.5)*0.50 + (mmHash11(seed*3.3 + float(i)) - 0.5)*0.07;
     float c = cos(ph);
     float a = F.x*(0.21 + 0.19*c);
     /* a lobe seen on the turn is shorter -- the body is ROUND, so its
@@ -8465,7 +8472,7 @@ float pkLeaf(vec2 m, vec3 F, vec2 msz, float seed){
   float lf = (length(q) - (1.0 + 0.17*cos(atan(q.y, q.x)*5.0 + seed)))*0.070*H;
   vec2 c2 = vec2(-sd*min(F.x*0.86 + 0.06*H, msz.x*0.5 - 0.18*H), 0.034*H);
   vec2 q2 = (m - c2)/vec2(0.14*H, 0.050*H);
-  float l2 = (length(q2) - (1.0 + 0.17*cos(atan(q2.y, q2.x)*5.0 + seed*2.0)))*0.050*H;
+  float l2 = (length(q2) - 1.0)*0.050*H;
   return min(lf, mmHash11(seed*8.8) < 0.55 ? 1e3 : l2);
 }
 /* an isosceles triangle, base on the origin, half-width w, apex at y = h */
@@ -9354,9 +9361,10 @@ float shapeField(vec2 uv, vec2 msz, float shape, float seed){
     vec3 F = pkFrame(msz, seed);
     float z1, z2, lb;
     float pd = pkBody(m, F, seed, z1, z2, lb);
-    pd = min(pd, pkStem(m, F, msz.y, seed));
-    pd = min(pd, pkLeaf(m, F, msz, seed));
-    d = pd / msz.y;
+    gPkBd = pd; gPkZ1 = z1; gPkZ2 = z2; gPkLb = lb;
+    gPkSt = pkStem(m, F, msz.y, seed);
+    gPkLf = pkLeaf(m, F, msz, seed);
+    d = min(pd, min(gPkSt, gPkLf)) / msz.y;
   } else if (shape < 28.5) {              // 28 -- a clipped yew (round 22)
     d = yewSD(p*msz, msz, seed) / msz.y;
   } else if (shape < 29.5) {              // 29 -- a kitchen table (round 22)
@@ -10757,13 +10765,13 @@ float reliefH(vec2 uv, vec2 msz, vec2 mpp, float shape, float seed, out float ti
        the stem proud and fluted, and the carved face cut in */
     float H = msz.y;
     vec3 F = pkFrame(msz, seed);
-    float z1, z2, lb;
-    float bd = pkBody(m, F, seed, z1, z2, lb);
+    float z1 = gPkZ1, z2 = gPkZ2, lb = gPkLb;
+    float bd = gPkBd;
     float ew = max(mpp.x, 0.002);
     float onB = smoothstep(ew, -ew, bd);
-    float sdS = pkStem(m, F, H, seed);
+    float sdS = gPkSt;
     float onS = smoothstep(ew, -ew, sdS);
-    float onL = smoothstep(ew, -ew, pkLeaf(m, F, msz, seed)) * (1.0 - onB);
+    float onL = smoothstep(ew, -ew, gPkLf) * (1.0 - onB);
     float rib = (1.0 - smoothstep(0.0, max(0.016*H, ew*1.6), z1 - z2)) * step(-5.0, z2) * onB;
     h += onB * lb * 0.050*H;
     h -= rib * 0.012*H;
