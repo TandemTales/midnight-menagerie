@@ -618,7 +618,7 @@ export const REGIONS = {
        walls are clipped yew (the wall program's hedge), 20 m apart, the
        floor is turf with a gravel walk (the churchyard's pattern 11), and the
        runs of yew across the way ahead are the `maze` layout. */
-    sides: true, arch: 3, floorPattern: 11, subject: 'topiary', runner: 1.35,
+    sides: true, arch: 3, floorPattern: 13, subject: 'topiary', runner: 1.35,
     room: { w: 20, d: 24, h: 0, side: 0, ceilPattern: 0, wallPad: 0 },
     cam: { y: 2.35, z: 9.2, look: 2.5, fov: 47 },
     deep: '#191618', mid: '#353020', hi: '#575030', accent: '#90905e',
@@ -669,9 +669,13 @@ export const REGIONS = {
     exposure: 1.72, contrast: 1.28,
     key:  { glow: 0, kind: 'warm', x: -1.9, y: 2.4, z: 1.8, color: '#e2b171', intensity: 3.1, radius: 5.59 },
     fill: { glow: 0, kind: 'cold', x: 1.9, y: 1.8, z: 0.8, color: '#8e78ca', intensity: 2.75, radius: 5.5, flicker: false },
+    /* (round 22: the lanterns stand AT the walls, where a passage's lamps
+       are set, so each lays its pool on the panelling beside it -- "lit
+       only in pools by the lanterns". Positions only; colours, strengths
+       and reaches as authored.) */
     lights: [
-      { kind: 'warm', x: -1.2, y: 1.90, z: -4.2, color: '#dfaa63', intensity: 1.89, radius: 4.13 },
-      { kind: 'warm', x: 1.4, y: 1.60, z: -10.0, color: '#db944d', intensity: 1.08, radius: 4.3 },
+      { kind: 'warm', x: -2.5, y: 1.90, z: -4.2, color: '#dfaa63', intensity: 1.89, radius: 4.13 },
+      { kind: 'warm', x: 2.5, y: 1.60, z: -10.0, color: '#db944d', intensity: 1.08, radius: 4.3 },
       { kind: 'cold', x: 1.8, y: 1.60, z: -16.5, color: '#8e78ca', intensity: 1.63, radius: 7.0 },
     ],
     shafts: { count: 2, spread: 4, y: 4.0, z: -11.0, angle: 0.08, width: 1.5, intensity: 0.32, pool: 2.1 },
@@ -761,7 +765,14 @@ export const REGIONS = {
        9, the shrub, tinted brown: "orange cubes of speckled noise with no
        round, ribbed pumpkin shape". Shape 27 is a pumpkin. */
     props: { shapes: [27], count: 30, height: 2.0, layout: 'rows', depth: 13,
-             family: ['rows', 'clutter'] },
+             family: ['rows', 'clutter'],
+             /* and a heap of them in the near corner, clear of the fight, big
+                enough to be the first thing the eye names */
+             near: [
+               { shape: 27, x: 6.4, z: -0.4, tone: 0.9, scale: 1.2 },
+               { shape: 27, x: 7.5, z: 0.5, tone: 0.9 },
+               { shape: 27, x: 5.6, z: 0.9, tone: 0.9 },
+             ] },
     particles: { mix: [[PTYPE.DUST, 0.40], [PTYPE.SPORE, 0.30], [PTYPE.EMBER, 0.30]],
                  tint: '#cfe0e8', wispTint: '#8fe8c0', emberTint: '#ff8a28',
                  speed: 0.9, scale: 1.25, wind: 1.1, density: 1.0 },
@@ -1377,7 +1388,7 @@ export const ROOM_KINDS = {
       /* the pumpkin patch, from down among it */
       /* (round 22: IN ROWS, on the earth they grow in -- turf worn to earth,
          pattern 11 -- where the courtyard is paved) */
-      { subject: 'coping', layout: 'rows', countScale: 1.3, floor: 11, runner: 0,
+      { subject: 'coping', layout: 'rows', countScale: 1.3, floor: 14, runner: 0,
         vantage: { at: 'among', low: 0.55, fwd: 2.6, pitch: 2.0, off: 0.05, wide: 3 } },
       /* the moon pond: water in the court, seen along its walk */
       { subject: 'coping', pool: { hw: 3.2, z0: -3.0, back: 12.0 },

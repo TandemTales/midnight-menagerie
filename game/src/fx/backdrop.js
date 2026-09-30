@@ -122,7 +122,7 @@ export const DEFAULT_ROOM = {
 const SHAPE_M = [1.20, 2.00, 1.30, 1.00, 2.00, 2.00, 3.32, 2.60, 1.17, 1.33,
                  1.56, 1.30, 2.16, 1.50, 2.00, 2.44, 1.27, 0.97, 3.09, 1.56,
                  2.80, 2.05, 2.60, 1.70, 1.55, 3.20, 1.92,
-                 1.00, 3.10, 1.30
+                 1.20, 3.10, 1.30
 ];
 /* ...and a width ratio, so a column is a column and not a capital-T. Four of
  * these were wrong by enough to change what the object was: a longcase clock
@@ -1422,7 +1422,12 @@ export class Backdrop {
         const gw = 2.2 + rand() * 0.8;
         const reach = Math.max(1.2, Math.min(x1, -x0) * 0.55);
         const gc = side * (1.3 + rand() * (reach - 1.0));
-        const runs = [[x0, gc - gw / 2], [gc + gw / 2, x1]];
+        /* the FIRST run is cut back on its way-through side all the way to
+           the side hedge: the walk turns there, and the side wall running on
+           past it is the corridor the eye follows into the maze */
+        const runs = r === 0
+          ? (side > 0 ? [[x0, gc - gw / 2]] : [[gc + gw / 2, x1]])
+          : [[x0, gc - gw / 2], [gc + gw / 2, x1]];
         for (const [a, b] of runs) {
           const len = b - a;
           if (len < 0.8) continue;

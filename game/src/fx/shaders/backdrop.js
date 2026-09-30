@@ -4028,10 +4028,11 @@ float gBarM;
    clump on each of two staggered grids, the nearer winning, dark between. */
 /* x the spray's dome, y how much of it is its UPPER, moonlit side */
 vec2 wYew(vec2 q, float s, float cell){
+  q += 0.16*vec2(mmNoise(q*1.6 + s), mmNoise(q*1.6 + s + 5.3)) - 0.08;
   vec2 c1 = q/cell, i1 = floor(c1);
-  vec2 f1 = fract(c1) - 0.5 - (mmHash22(i1 + s) - 0.5)*0.45;
+  vec2 f1 = fract(c1) - 0.5 - (mmHash22(i1 + s) - 0.5)*0.80;
   vec2 c2 = q/cell + vec2(0.5), i2 = floor(c2);
-  vec2 f2 = fract(c2) - 0.5 - (mmHash22(i2 + s + 5.1) - 0.5)*0.45;
+  vec2 f2 = fract(c2) - 0.5 - (mmHash22(i2 + s + 5.1) - 0.5)*0.80;
   float cl = clamp(max(1.0 - dot(f1, f1)*3.4, 1.0 - dot(f2, f2)*3.4), 0.0, 1.0);
   cl *= 0.55 + 0.45*mmNoise(q*3.1 + s*1.3);
   vec2 fw = dot(f1, f1) < dot(f2, f2) ? f1 : f2;
@@ -4173,7 +4174,7 @@ float passWallH(vec2 q, float qpx, out float occ){
   /* the OAK: near-black, red in its grain, each board its own value */
   float grain = mmNoise(vec2(q.x*38.0, q.y*1.6) + uSeed*3.0);
   float boardV = mmHash11(bi*5.3 + uSeed);
-  vec3 oak = vec3(0.36, 0.17, 0.08)*(lum*1.75 + 0.006)*(0.80 + 0.30*boardV)*(0.82 + 0.34*grain);
+  vec3 oak = vec3(0.36, 0.17, 0.08)*(lum*2.2 + 0.008)*(0.80 + 0.30*boardV)*(0.82 + 0.34*grain);
   float h = 1.0;
   /* ---- the frame of the wall: skirting and cornice ---- */
   float skirt = mmBandA(q.y, 0.0, SK, px);
@@ -4624,7 +4625,9 @@ float kitchenWallH(vec2 q, float qpx, out float occ){
        copper pans graduated along a rail of hooks: on the side walls their
        whole length, on the range's wall either side of the breast */
     float rY = 2.24;
-    float onRail = far > 0.5 ? smoothstep(2.55, 2.70, ax)*step(ax, 7.0) : 1.0;
+    /* (on the end wall: right of the breast, and left of it only past the
+       dresser, which stands under the left-hand run) */
+    float onRail = far > 0.5 ? smoothstep(2.55, 2.70, ax)*step(ax, 7.0)*max(step(0.0, cx), step(cx, -6.15)) : 1.0;
     onRail *= 1.0 - scul;
     float railL = (1.0 - smoothstep(0.016, 0.016 + px, abs(q.y - rY))) * onRail;
     h += railL*0.25;
@@ -4659,9 +4662,10 @@ float kitchenWallH(vec2 q, float qpx, out float occ){
       float drr = step(q.y, 0.86)*(1.0 - smoothstep(0.012, 0.012 + px, abs(mod(dxr + 1.30, 0.65) - 0.325)));
       float pli = floor((dxr + 1.3)/0.20);
       float plx2 = dxr + 1.3 - (pli + 0.5)*0.20;
-      float srow = floor((q.y - 0.92)/0.36);
-      float ply = q.y - (1.26 + srow*0.36) - 0.13;
-      float plt = mmCover(-(length(vec2(plx2, ply)) - 0.085)) * step(0.92, q.y) * step(srow, 1.5) * step(0.12, mmHash11(pli*2.1 + srow*5.0));
+      /* the plates stand ON each shelf, leaning back against the rack */
+      float srow = floor((q.y - 1.26)/0.36);
+      float ply = q.y - (1.26 + srow*0.36) - 0.10;
+      float plt = mmCover(-(length(vec2(plx2, ply)) - 0.085)) * step(1.26, q.y) * step(srow, 1.5) * step(0.12, mmHash11(pli*2.1 + srow*5.0));
       float plr = plt * smoothstep(0.055, 0.070, length(vec2(plx2, ply)));
       vec3 dcol = mix(pine, pine*1.3, top + shelf);
       dcol = mix(dcol, dcol*0.45, drr);
@@ -6988,7 +6992,9 @@ void main(){
 
   float pat = 0.0;
 #if MM_FLOORX == 1
-  if (uPattern > 9.5 && uPattern < 11.5) {
+  /* (round 22: 13, the maze's lawn, and 14, the pumpkin patch, are the
+     turf's own branch -- see there) */
+  if ((uPattern > 9.5 && uPattern < 11.5) || (uPattern > 12.5 && uPattern < 14.5)) {
     if (uPattern < 10.5) {                   // 10 herringbone parquet
       /* LIMEWASH's, round 11 (named by both judges as the graft for the
          mirror hall): parquet in HERRINGBONE, blocks 0.16 x 0.64 m (4:1) laid
@@ -7075,6 +7081,44 @@ void main(){
       pat = 0.50 + (tuft*0.24 + blade*0.24)*(1.0 - earth) - earth*0.14;
       cellv = 0.30 + 0.50*pch;
       turf = 1.0 - earth*0.65;
+      if (uPattern > 12.5 && uPattern < 13.5) {
+        /* 13 THE MAZE'S LAWN (round 22): mown in stripes 1.4 m wide, the way
+           a gardener mows the walks between his yew -- lanes of light and dark
+           grass running away to the hedge, which is also what gives a flat
+           lawn its perspective -- and kept, so the worn earth is rare */
+        float lane = w.x/1.4 + 0.25;
+        float st = smoothstep(0.46, 0.54, abs(fract(lane) - 0.5)*2.0);
+        earth *= 0.30;
+        pat = 0.50 + (tuft*0.20 + blade*0.20)*(1.0 - earth) - earth*0.14 + (st - 0.5)*0.20;
+        cellv = 0.36 + 0.30*pch + 0.18*st;
+        turf = 1.0 - earth*0.65;
+      }
+      if (uPattern > 13.5) {
+        /* 14 THE PUMPKIN PATCH (round 22): tilled earth, and the vines
+           running across it in rows -- a stem wandering along each row, its
+           broad lobed leaves either side of it, a curl of tendril -- which is
+           what the pumpkins lying about on it grew on */
+        earth = 0.85;
+        float rowP = 2.1;
+        float dy = mod(w.y + 0.30*sin(w.x*1.1 + uSeed) + rowP*0.5, rowP) - rowP*0.5;
+        float rid = floor((w.y + 0.30*sin(w.x*1.1 + uSeed) + rowP*0.5)/rowP);
+        float res = smoothstep(0.08, 0.03, mp);
+        float stem = 1.0 - smoothstep(0.018, 0.018 + mp*1.2, abs(dy));
+        float li = floor(w.x/0.46 + rid*0.37);
+        float sd = mod(li, 2.0) < 0.5 ? 1.0 : -1.0;
+        vec2 lc = vec2(w.x - (li - rid*0.37 + 0.5)*0.46, dy - sd*0.15);
+        float la = atan(lc.y, lc.x);
+        float lr = 0.15*(0.85 + 0.30*mmHash11(li*3.1 + rid)) * (1.0 + 0.16*cos(la*5.0));
+        float leaf = (1.0 - smoothstep(lr - mp, lr + mp, length(lc*vec2(1.0, 1.25))))
+                   * step(0.25, mmHash11(li*7.7 + rid*2.3));
+        /* the furrow between the rows: a darker, damper band */
+        float furrow = 1.0 - smoothstep(0.25, 0.75, abs(abs(dy) - rowP*0.5)/0.6);
+        vineR = clamp(max(stem, leaf), 0.0, 1.0) * mix(0.55, 1.0, res);
+        pat = 0.46 - furrow*0.12 + (mmNoise(w*9.0) - 0.5)*0.12*res
+            + leaf*0.10*(1.0 - smoothstep(0.0, lr, length(lc)))*res;
+        cellv = 0.30 + 0.40*pch;
+        turf = 0.15;
+      }
       if (uRunner > 0.001 && uIsCeiling < 0.5) {
         float pxd = abs(w.x - uRunX);
         float aaW = max(mpp.x*1.4, 0.012);
@@ -7544,6 +7588,23 @@ void main(){
     pat += (1.0 - smoothstep(0.0, 0.14, dOut))*step(0.0, dOut)*coping*0.20*bath;
     cellv = mix(cellv, 0.55, coping);
     cellv = mix(cellv, mix(0.25, 0.13, bath), water);
+    /* LILIES ON THE POND (round 22, the Pumpkin Grounds' moon pond: open
+       water is w 2, a bath is 1 and untouched). A pad on about half of a
+       1.1 m jittered grid, each its own size, each with the notch cut to
+       its stalk -- the thing that tells a garden pond from a dark rug. */
+    if (bath < 0.5) {
+      vec2 lc = w/1.1, li = floor(lc);
+      vec2 lf = fract(lc) - 0.5 - (mmHash22(li + 3.3) - 0.5)*0.45;
+      float lr = (0.16 + 0.12*mmHash21(li + 7.1))/1.1;
+      float la = atan(lf.y, lf.x) - mmHash21(li)*6.2832;
+      float notch = step(abs(mod(la + 3.1416, 6.2832) - 3.1416), 0.30);
+      float lmp = mp/1.1;
+      float pad = (1.0 - smoothstep(lr - lmp, lr + lmp, length(lf))) * (1.0 - notch)
+                * step(0.48, mmHash21(li + 1.7)) * water;
+      vineR = max(vineR, pad);
+      pat = mix(pat, 0.58 - 0.18*smoothstep(lr*0.6, lr, length(lf)), pad);
+      water *= 1.0 - pad;
+    }
   }
 #endif
 
@@ -7558,6 +7619,9 @@ void main(){
      of it: at night under a moon both go most of the way to its grey. */
 #if MM_FLOORX == 1
   alb *= mix(vec3(1.0), vec3(0.80, 1.05, 0.76), turf*0.85);
+  /* (round 22: the maze's lawn is a kept lawn, greener than a churchyard's
+     turf; the same value, its hue taken toward the grass) */
+  alb = mix(alb, vec3(mmLum(alb))*vec3(0.66, 1.14, 0.58), 0.55*turf*step(12.5, uPattern)*step(uPattern, 13.5));
   alb = mix(alb, vec3(0.050, 0.110, 0.034)*(0.70 + 0.60*cellv), vineR*0.85);
   /* water is dark and green-blue; the coping pale stone. A BATH'S water is
      the bath's own green over white tile rather than a pond's near-black, so
@@ -10696,10 +10760,13 @@ float reliefH(vec2 uv, vec2 msz, vec2 mpp, float shape, float seed, out float ti
        a yew is a mass of small domes, not a sheet of speckle */
     float top = yewTop(msz, seed);
     float mp = max(mpp.x, mpp.y);
-    vec2 c1 = m/0.24, i1 = floor(c1);
-    vec2 f1 = fract(c1) - 0.5 - (mmHash22(i1 + seed) - 0.5)*0.45;
-    vec2 c2 = m/0.24 + vec2(0.5), i2 = floor(c2);
-    vec2 f2 = fract(c2) - 0.5 - (mmHash22(i2 + seed + 5.1) - 0.5)*0.45;
+    /* (warped, and jittered hard, so the sprays lie as a hedge grows and
+       not on a lattice -- a regular grid of them read as fish scale) */
+    vec2 mw = m + 0.16*vec2(mmNoise(m*1.6 + seed), mmNoise(m*1.6 + seed + 5.3)) - 0.08;
+    vec2 c1 = mw/0.26, i1 = floor(c1);
+    vec2 f1 = fract(c1) - 0.5 - (mmHash22(i1 + seed) - 0.5)*0.80;
+    vec2 c2 = mw/0.26 + vec2(0.5), i2 = floor(c2);
+    vec2 f2 = fract(c2) - 0.5 - (mmHash22(i2 + seed + 5.1) - 0.5)*0.80;
     float cl = max(1.0 - dot(f1, f1)*3.4, 1.0 - dot(f2, f2)*3.4);
     /* ...broken up, so the sprays are not a quilt: each its own size, and
        the leaf in them at a hand's scale */
