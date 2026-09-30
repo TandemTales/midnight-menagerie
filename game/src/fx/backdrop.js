@@ -1657,9 +1657,17 @@ export class Backdrop {
          the prop's own base, and hanging props do not get one. */
       if (!p.hang) {
         const i = shadowN++;
-        so2[i * 3 + 0] = p.x; so2[i * 3 + 1] = p.y + 0.015; so2[i * 3 + 2] = p.z;
-        ss2[i * 2 + 0] = p.w * 2.0; ss2[i * 2 + 1] = p.w * 1.15;
-        st2[i] = 0.52 + 0.26 * (1 - p.tone);
+        /* A CHAIR SITS IN ITS OWN SHADOW (round 21 graft; the judges on the
+           Ballroom: "give each armchair a floor shadow"). Centred on the
+           quad's own plane, half of every contact shadow lay behind the
+           chair that cast it and the rest was a hairline at its feet. A
+           chair's -- shape 0, the house's seating -- comes a quarter of its
+           width forward onto the floor in front of its legs, and denser: it
+           stands on four feet with its seat over them, not on a plinth. */
+        const chair = p.shape === 0;
+        so2[i * 3 + 0] = p.x; so2[i * 3 + 1] = p.y + 0.015; so2[i * 3 + 2] = p.z + (chair ? p.w * 0.24 : 0);
+        ss2[i * 2 + 0] = p.w * (chair ? 1.7 : 2.0); ss2[i * 2 + 1] = p.w * (chair ? 1.05 : 1.15);
+        st2[i] = chair ? 1.10 + 0.14 * (1 - p.tone) : 0.52 + 0.26 * (1 - p.tone);
       }
     }
     this._propOffset.needsUpdate = this._propScale.needsUpdate = true;
@@ -2308,8 +2316,9 @@ export class Backdrop {
       y0 = Math.min(y0, fy - bound); y1 = Math.max(y1, fy + bound);
     }
     /* THE FIGHT'S POOL (round 21 graft): one warm ellipse over the feet of
-       everybody in it, a little wider than they stand, and the box grows to
-       hold it out to 2.2 of its radii, where it is under 1%. */
+       everybody in it, a little wider than they stand. FLOOR_FRAG bounds it
+       by its own ellipse (2.2 radii, under 1%), NOT by growing the actors'
+       box: the six-actor loop is the floor's cost and runs only in there. */
     if (x0 < x1) {
       let fx0 = Infinity, fy0 = Infinity, fx1 = -Infinity, fy1 = -Infinity;
       for (let i = 0; i < MAX_ACTORS; i++) {
@@ -2320,8 +2329,8 @@ export class Backdrop {
       const cx = (fx0 + fx1) / 2, cy = (fy0 + fy1) / 2;
       const rx = (fx1 - fx0) * 0.50 + 2.0, ry = (fy1 - fy0) * 0.50 + 1.6;
       u.uStage.value.set(cx, cy, rx, ry);
-      x0 = Math.min(x0, cx - rx * 2.2); x1 = Math.max(x1, cx + rx * 2.2);
-      y0 = Math.min(y0, cy - ry * 2.2); y1 = Math.max(y1, cy + ry * 2.2);
+    } else {
+      u.uStage.value.set(0, 0, 1, 1);
     }
     if (x0 < x1) u.uActorBox.value.set(x0, y0, x1, y1);
     else u.uActorBox.value.set(1, 1, -1, -1);
