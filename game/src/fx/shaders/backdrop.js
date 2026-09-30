@@ -4982,7 +4982,10 @@ vec3 skyColor(vec2 q, float horizon){
      must have. And 7 m RIGHT of the axis: lowered, it would sit behind the
      main block's left gables and the corner tower (whose cap is 13.6 m), and
      over the low wing on the right (ridge 6.25 m) it has open sky under it. */
-  vec2 mc = vec2(uSize.x*0.5 + 7.0 + uHouse.y, 9.3);
+  /* (8.5, not 9.3: at 1280x800 the rig's slow drift still carried the
+     disc's top under the run rail; 8.5 clears the low wing's 6.25 m ridge
+     by more than the disc's own radius.) */
+  vec2 mc = vec2(uSize.x*0.5 + 7.0 + uHouse.y, 8.5);
   float md = length(vec2(q.x, q.y) - mc);
   float disc = smoothstep(1.26, 1.14, md);
   float crater = 0.72 + 0.28*mmFbm3((vec2(q.x,q.y) - mc)*3.4);
