@@ -93,12 +93,18 @@
     --pad-b: 17px;
   }
 }
-/* …and at 900 the words a step larger again, into the height 800 does not have */
+/* …and at 900 the words a step larger again, into the height 800 does not have.
+   The same survey's defect stood here too, 11px of it: the Danger page's seal
+   ran under the floor and the body scrolled. The words keep their size; the
+   air between the pages and under their last lines closes as it does at 800,
+   in proportion (the crest and the fleurons are still clear). */
 @media (min-height: 861px) and (max-height: 920px) {
   .mm-set {
     --row-pad: 5px; --panel-top: 6px;
     --name-fs: calc(var(--fs-md) * 1.06);
     --hint-fs: 13.4px;
+    --stack: 14px;
+    --pad-b: 19px;
   }
 }
 
@@ -120,13 +126,18 @@
   -webkit-mask-image: linear-gradient(to bottom, black 0, black calc(100% - var(--fade)), transparent 100%);
           mask-image: linear-gradient(to bottom, black 0, black calc(100% - var(--fade)), transparent 100%);
 }
-/* at the Deck's 800 the three columns stand whole (the block above), so the
-   body keeps room under them for the wax seal pressed over the Danger page's
-   corner (it hangs 18px under the page, the body's floor was 12px) and does not
-   fade it: nothing runs under the buttons there to fade. Large text still
-   scrolls its one column, and still fades. */
+/* at the Deck's 800 and at 900 the three columns stand whole (the blocks
+   above), so the body keeps room under them for the wax seal pressed over the
+   Danger page's corner (it hangs 18px under the page at 800 and 22px at 900,
+   the body's floor was 12px) and does not fade it: nothing runs under the
+   buttons there to fade. Large text still scrolls its one column, and still
+   fades. */
 @media (max-height: 820px) {
   :root:not([data-large-text="1"]) .mm-settings-modal .mm-modal__body { padding-bottom: 14px; }
+  :root:not([data-large-text="1"]) .mm-modal__body:has(> .mm-set) { --fade: 0px; }
+}
+@media (min-height: 861px) and (max-height: 920px) {
+  :root:not([data-large-text="1"]) .mm-settings-modal .mm-modal__body { padding-bottom: 20px; }
   :root:not([data-large-text="1"]) .mm-modal__body:has(> .mm-set) { --fade: 0px; }
 }
 
