@@ -168,6 +168,8 @@ so round 2 runs six at once, as round 1 did.
 
 | 20 | **THE RAIL AND THE HAND** — the run strip FULL (a new stress capture, `hud-late`), the map, the shop and three fights | TYRIAN 7.63 · MALACHITE 7.21 · SAFFRON 7.04 · the screens before **5.96** | TYRIAN, 2 of 2, five of six screens 2 of 2 — the only rail that reads as ONE carved object, holding one row at 1280 under a full run's load with every fold labelled. **+1.67.** SAFFRON won combat-crowd 2 of 2 and BOTH judges asked for its hand as the graft; MALACHITE's vine inlay and end blocks for the rail's flat stretch | `1456681` |
 
+| 21 | **THE FIGHT'S ROOM AT THE DECK'S TIER** — five fights in four wings, every capture pinned to MEDIUM (render scale 0.8) | CELADON 6.50 · PRUSSIAN 5.50 · OXBLOOD 5.40 · the fights before **4.10** | CELADON, 2 of 2, all five screens 2 of 2 — the only room that puts every fighter on a real floor in every wing AND stayed crisp: its lines are INKED from their own distance fields, not recovered from 2x2 derivatives. **+2.40.** OXBLOOD softened its rooms to hide the steps and came last of the three, as the rubric warned. Graft: PRUSSIAN's warm flier pool, OXBLOOD's candle warmth without its haze, restrained moon shafts | `d49b788` |
+
 **Scores anchor to the candidates beside them.** Round 0's winner scored 7.0 in
 round 0 and 5.58 as round 1's baseline: the judges grew stricter as the field
 improved. Compare a winner with the baseline IN ITS OWN ROUND (round 1 REFINE:
@@ -190,6 +192,7 @@ Against their own baselines:
 | 11 | VARIATION **+2.17** (sheets 3-3.5 -> 6-7) | — |
 | 12 | — | THE LAST WEB CHROME **+5.9** (per-screen winners 7.33 / 8.00 / 7.67 against 2 / 1 / 1.33) |
 | 13 | CHROME, second pass **+2.22** (coach 6.0 -> 8.0, veil 6.0 -> 8.67, toast 5.0 -> 7.0) | — |
+| 21 | THE FIGHT'S ROOM AT THE DECK'S TIER **+2.40** (the baseline's rooms scored 4.1 at the tier players actually get) | — |
 | 20 | THE RAIL AND THE HAND **+1.67** (the baseline's hud-late scored 4.0: the Steam Deck bug no judge had seen) | — |
 | 19 | THE BOARDS AND THE CONTROLS **+1.37** (after eleven rounds away; the rooms had fallen to +0.72) | — |
 | 18 | THE GARDEN AND THE HORIZON **+0.72** (and the field inside 0.33) | — |
@@ -918,3 +921,29 @@ round back.
   TYRIAN's rail.
 - **Nobody fixed the floaters** (item 5b): all three stopped at "fx/ is not
   mine". An item the brief lists must have its file on the ownership list.
+
+### Round 21: the fight's room, as the Steam Deck draws it, 2026-09-24..30
+
+**CELADON, 2 of 2 judges, all five fights, 6.50 against 4.10 — +2.40**
+(`d49b788`, runs `wf_85fa03b2-bbd`, which hit the weekly limit with all three
+builders mid-task, and `wf_373a767b-b58`, which resumed them).
+
+- **The discriminator came first, and it moved the whole round.** This
+  machine and the Deck both run the MEDIUM tier (0.8, upscaled), and rounds
+  8-18 judged the room sheets at HIGH. Forcing HIGH made the steps finer but
+  kept them. So the fix was the drawing, not the tier, and every capture was
+  pinned to the Deck's tier. The rooms scored 4.1 there.
+- **Three candidates found the same cause three ways**: a thin relief edge
+  reaches the screen only through dFdx/dFdy over 2x2 quads. PRUSSIAN rebuilt
+  per-pixel gradients, OXBLOOD moved the raked members into flat tint,
+  CELADON INKED the lines from their own distance fields at pixel coverage
+  (`mmPen`). The pen won every screen.
+- **The rubric's trap held.** OXBLOOD hid the steps with haze and came last
+  of the three builders ("soft is the worse defect"). Write the trap into the
+  rubric, not only the brief.
+- **Everyone stands on the floor now**: all three builders independently
+  measured that the creatures' feet were ABOVE the horizon, so the camera had
+  to bring the floor up (a level rig at a child's eye, a risen lens).
+- A resumed round costs little: the three builders had committed 2, 7 and
+  4 times before the limit; the resume note named each one's last commit
+  and whether its captures predated it (OXBLOOD's did).
