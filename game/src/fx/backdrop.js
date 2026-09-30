@@ -272,10 +272,12 @@ export const ROOMS_PROGRAM = {
   tomb: 5, ossuary: 5,
   wax: 6, reflector: 6, boiler: 6,
   steam: 7, pool: 7, pipes: 7,
-  /* round 22: the Hedge Maze, the Kitchens, the Secret Passages and the
-     Pumpkin Grounds -- four wings whose walls are drawn whole (see
-     hedgeWallH and its neighbours in shaders/backdrop.js) */
-  topiary: 8, coping: 8, range: 8, scullery: 8, timber: 8, backcase: 8, closet: 8,
+  /* round 22: the Hedge Maze (8), the Kitchens (9), the Secret Passages
+     (10) and the Pumpkin Grounds (11) -- four wings whose walls are drawn
+     whole (see hedgeWallH and its neighbours in shaders/backdrop.js), a
+     program each: carried in one program, the other three wings' walls
+     cost the Pumpkin Grounds' fight a register budget it did not have */
+  topiary: 8, range: 9, scullery: 9, timber: 10, backcase: 10, closet: 10, coping: 11,
 };
 
 /**
@@ -2248,7 +2250,8 @@ export class Backdrop {
        Greenhouse, the third. */
     const wall = (n) => [this.wall.geometry, this.wallMat, { MM_ROOMS: n }];
     const jobs = [
-      wall(1), wall(2), wall(3), wall(4), wall(5), wall(6), wall(7), wall(8),
+      wall(1), wall(2), wall(3), wall(4), wall(5), wall(6), wall(7),
+      wall(8), wall(9), wall(10), wall(11),
       [this.portals[0].geometry, this.portals[0].material, null],
       [this.propGeo, this.propMat, { MM_STONES: 0, MM_BUST: 1 }],
       [this.floor.geometry, this.floorMat, { MM_FLOORX: 1 }],

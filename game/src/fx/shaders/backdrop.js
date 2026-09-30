@@ -2856,10 +2856,12 @@ float subjPipes(vec2 q, float cx, float ax, float far, float dqm, out float occ)
    gWGloss a surface that shines: copper, glazed tile, iron */
 float gWDisc, gWLit, gWood, gWEmit, gWGloss;
 vec3  gWEmitC;
-#if MM_ROOMS == 8
+#if MM_ROOMS >= 8
 float wTri(vec2 p, float w, float h){
   return max(-p.y, (abs(p.x)/w + p.y/h - 1.0)*(w*h/sqrt(w*w + h*h)));
 }
+#endif
+#if MM_ROOMS == 11
 /* THE MOON COURTYARD'S WALL (14, round 22), built: coursed ashlar, each
    stone its own value, its bed and perpend joints drawn with the pen; a
    projecting coping with its top in the moon; piers on a 6.4 m pitch with a
@@ -2870,6 +2872,13 @@ float wTri(vec2 p, float w, float h){
    names its coverage exactly (occ): the house's windows stop behind it. */
 float subjCoping(vec2 q, float cx, float dqm, out float occ){
   const float WH = 2.62, CT = 0.24;
+  /* nothing of the wall stands above 4.3 m (a pier's ball tops out at
+     4.08), and the sky and the house over it are most of this plane: they
+     skip the whole wall (the derivatives below are only undefined in quads
+     that straddle 4.3 m, where there is nothing to draw) */
+  occ = 0.0;
+  gWEmit = 0.0;
+  if (q.y > 4.3) return 0.0;
   float px = max(dqm, 0.004);
   float pp = 6.4;
   float pid = floor((cx + pp*0.5)/pp);
@@ -3846,7 +3855,7 @@ float subjectH(vec2 q, float far, out float occ){
 
 #endif
   } else if (sid < 14.5) {
-#if MM_ROOMS == 8
+#if MM_ROOMS == 11
     s = subjCoping(q, cx, dqm, occ);
     occSet = 1.0;
 #elif MM_ROOMS == 0
@@ -3928,7 +3937,7 @@ float subjectH(vec2 q, float far, out float occ){
   return s * fade;
 }
 
-#if MM_ROOMS == 0 || MM_ROOMS == 4 || MM_ROOMS == 8
+#if MM_ROOMS == 0 || MM_ROOMS == 4 || MM_ROOMS == 11
 /* THE MANSION'S WINDOW SET-OUT (round 16 item 1, both round-15 judges: "one
    arched window repeated five times in two even rows on a single plane --
    same head, same width, same spacing, both storeys"). REALGAR's vocabulary,
@@ -4129,6 +4138,8 @@ float hedgeWallH(vec2 q, float qpx, out float occ){
   gWDisc = (1.0 - far) * (1.0 - hedge);
   return h * solidM;
 }
+#endif
+#if MM_ROOMS == 10
 /* THE SECRET PASSAGES' WALLS (round 22). Both survey judges: "pale, milky
    lilac cloud texture with thin outline rectangles standing in for panels --
    the brightest and least-dark thing in any room". A passage built behind the
@@ -4338,6 +4349,8 @@ float passWallH(vec2 q, float qpx, out float occ){
   occ = 0.0;
   return h;
 }
+#endif
+#if MM_ROOMS == 9
 /* A COPPER PAN hung by its handle from a hook, seen from the front: its
    bottom a disc toward the room, a rolled rim, the handle up to the hook.
    Returns its coverage; col comes back as the pan's own colour with a
@@ -4705,15 +4718,19 @@ float wallH(vec2 q, out float occ){
      land across the middle of the staircase, three overlapping outlines deep,
      and the chair rail ran straight through the balusters. */
   occ = 0.0;
+#if MM_ROOMS >= 8 && MM_ROOMS <= 10
+  /* round 22: the three wings whose wall IS their subject draw it whole,
+     each in a program of its own (8 the maze, 9 the kitchens, 10 the
+     passages; 11 is the Pumpkin Grounds' exterior) */
+  gTint = 0.0; gCol = vec3(0.0); gColAmt = 0.0; gRailQuiet = 0.0; gBare = 0.0;
+  gPtAmt = 0.0; gPatch = 0.0; gPtP = vec2(0.0); gPtHs = vec2(1.0); gPtK = vec2(-1.0); gPtSd = 0.0;
 #if MM_ROOMS == 8
-  /* round 22: the three wings whose wall IS their subject draw it whole */
-  if (uArch > 1.5 && uArch < 4.5) {
-    gTint = 0.0; gCol = vec3(0.0); gColAmt = 0.0; gRailQuiet = 0.0; gBare = 0.0;
-    gPtAmt = 0.0; gPatch = 0.0; gPtP = vec2(0.0); gPtHs = vec2(1.0); gPtK = vec2(-1.0); gPtSd = 0.0;
-    if (uArch < 2.5) return passWallH(q, qpx, occ);
-    if (uArch < 3.5) return hedgeWallH(q, qpx, occ);
-    return kitchenWallH(q, qpx, occ);
-  }
+  return hedgeWallH(q, qpx, occ);
+#elif MM_ROOMS == 9
+  return kitchenWallH(q, qpx, occ);
+#else
+  return passWallH(q, qpx, occ);
+#endif
 #endif
   float sub = subjectH(q, uFar, occ);
   float clear = 1.0 - occ;
@@ -5095,7 +5112,7 @@ float wallH(vec2 q, out float occ){
 
 #endif
   } else {
-#if MM_ROOMS == 0 || MM_ROOMS == 4 || MM_ROOMS == 8
+#if MM_ROOMS == 0 || MM_ROOMS == 4 || MM_ROOMS == 11
     // ---- EXTERIOR: the house's skyline, and a treeline in front of it --------
     // Only the silhouette matters here; the sky is painted in the colour pass.
     /* uHouse.x stands the house off centre per room, and everything below that
@@ -5718,7 +5735,7 @@ float wallH(vec2 q, out float occ){
        the subject's starts. (Against the sky a monument is solid on its own
        relief, so nothing behind it needs the house's.) */
     h = hEx0 + (h - hEx0)*noSub*(1.0 - occ);
-#if MM_ROOMS == 8
+#if MM_ROOMS == 11
     /* ROUND 22: THE HOUSE IS STONE UNDER SLATE. Both survey judges: "the
        mansion behind is a flat teal block". It was drawn in the Pumpkin
        Grounds' own palette, whose mid and high are a green-teal meant for
@@ -5943,7 +5960,7 @@ void main(){
   alb += uAlbLift;
 
   float motif = mmFbm3(q*0.52 + uSeed*3.0);
-#if MM_ROOMS == 8
+#if MM_ROOMS >= 8
   /* (round 22: a built wall's own drawing carries its variation -- the
      metre-scale drift is what read as "a mottled cloud texture" on all four
      of these wings, so it is a third of what it is elsewhere) */
@@ -6001,7 +6018,7 @@ void main(){
   alb *= mix(0.42, 1.12, smoothstep(-0.85, 0.85, aoH));
 
   float grime = mmFbm3(q*0.30 - uSeed);
-#if MM_ROOMS == 8
+#if MM_ROOMS >= 8
   grime = mix(0.66, grime, 0.35);
 #endif
   float corner = smoothstep(1.6, 0.0, q.y)*0.7
@@ -6013,7 +6030,7 @@ void main(){
   vec3 V = normalize(uCamera - vWorld);
   vec3 col = alb * (uAmbient + uAccent * uCool * 0.11 * (0.30 + 0.70*max(nrm.y, 0.0)));
   float wGl = 1.0;
-#if MM_ROOMS == 8
+#if MM_ROOMS >= 8
   /* (round 22: brick, oak and leaf have almost no sheen -- a region's
      gloss laid over a whole brick wall is what the judges called "a pale
      silver foil sheet" -- and copper, brass and glaze keep theirs) */
@@ -6083,6 +6100,8 @@ void main(){
     float solidH = smoothstep(0.25, 0.85, h);
     col += alb * moonH * solidH * (0.10 + 0.42*max(nrm.y, 0.0) + 2.2*gWLit) * uGain;
   }
+#endif
+#if MM_ROOMS >= 8
   /* ...and what a wall gives off itself: a firebox, a crack of lamplight */
   col += gWEmitC * gWEmit * uGain;
 #endif
@@ -6502,7 +6521,7 @@ void main(){
 #endif
   // ---- exterior: everything above the roofline is sky ------------------------
   if (uArch > 4.5) {
-#if MM_ROOMS == 0 || MM_ROOMS == 4 || MM_ROOMS == 8
+#if MM_ROOMS == 0 || MM_ROOMS == 4 || MM_ROOMS == 11
     float solid = smoothstep(0.25, 0.85, h);
     col = mix(skyColor(q, 2.0), col, solid);
     /* Lit windows punched into the mass, with real spill onto the masonry.
@@ -6529,7 +6548,7 @@ void main(){
        relief (onBody) always stopped at the wall head; the lamps did not. */
     float eaveW = max((1.0 - step(6.20, abs(cxm + 2.6)))*7.05, (1.0 - step(9.60, abs(cxm - 3.4)))*4.35);
     float onWin = solid * foot * smoothstep(0.6, 1.1, hqw.y) * (1.0 - wBlindC) * step(hqw.y, eaveW - 0.10);
-#if MM_ROOMS == 8
+#if MM_ROOMS == 11
     onWin *= 1.0 - sOcc;       // (round 22: a window behind the court's wall is behind it)
 #endif
     /* WHICH WINDOWS ARE LIT (round 16 item 1: "two or three windows left DARK
