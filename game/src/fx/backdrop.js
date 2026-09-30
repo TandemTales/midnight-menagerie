@@ -102,6 +102,10 @@ export const DEFAULT_ROOM = {
  *                       figure on the top is round 17's, and the quad grew with
  *                       it -- SHAPE_W shrank to keep the quad the same WIDTH)
  *  26   bust on a term  1.85 m, the bust 0.8 of it          (round 14)
+ *  27   pumpkin         0.62 m of body in a 1.0 m quad, with its stem and
+ *                       leaves; +-46%, most small and a few prize ones (round 22)
+ *  28   clipped yew     2.9 m to its sheared top, a 4.8 m length of maze wall,
+ *                       usually placed as architecture at its own size (round 22)
  *
  * 22 and 23 are FITTINGS and are never dealt from a region's prop pack:
  * `_fixtures` places one at each practical light and sizes it from the room,
@@ -116,7 +120,8 @@ export const DEFAULT_ROOM = {
  */
 const SHAPE_M = [1.20, 2.00, 1.30, 1.00, 2.00, 2.00, 3.32, 2.60, 1.17, 1.33,
                  1.56, 1.30, 2.16, 1.50, 2.00, 2.44, 1.27, 0.97, 3.09, 1.56,
-                 2.80, 2.05, 2.60, 1.70, 1.55, 3.20, 1.92
+                 2.80, 2.05, 2.60, 1.70, 1.55, 3.20, 1.92,
+                 1.00, 3.10
 ];
 /* ...and a width ratio, so a column is a column and not a capital-T. Four of
  * these were wrong by enough to change what the object was: a longcase clock
@@ -124,7 +129,8 @@ const SHAPE_M = [1.20, 2.00, 1.30, 1.00, 2.00, 2.00, 3.32, 2.60, 1.17, 1.33,
  * wide, and a column at h/12.3 when the table says h/8 to h/10. */
 const SHAPE_W = [1.15, 0.55, 1.00, 0.95, 0.72, 0.80, 0.47, 0.85, 0.90, 1.35,
                  1.30, 1.20, 0.87, 1.14, 0.77, 0.78, 1.80, 2.24, 0.50, 0.62,
-                 0.72, 2.025, 0.62, 0.34, 1.80, 1.476, 0.34
+                 0.72, 2.025, 0.62, 0.34, 1.80, 1.476, 0.34,
+                 1.62, 1.55
 ];
 /* HOW MUCH ONE OF THESE VARIES FROM THE NEXT, as a +-fraction of SHAPE_M.
  *
@@ -145,7 +151,8 @@ const SHAPE_W = [1.15, 0.55, 1.00, 0.95, 0.72, 0.80, 0.47, 0.85, 0.90, 1.35,
  * loculi in a different room. */
 const SHAPE_VAR = [0.06, 0.08, 0.62, 0.20, 0.10, 0.08, 0.10, 0.10, 0.16, 0.48,
                    0.06, 0.06, 0.06, 0.06, 0.06, 0.14, 0.14, 0.06, 0.08, 0.08,
-                 0.06, 0.04, 0.00, 0.00, 0.22, 0.00, 0.04
+                 0.06, 0.04, 0.00, 0.00, 0.22, 0.00, 0.04,
+                 0.34, 0.06
 ];
 // Which shapes hang from the ceiling rather than stand on the floor.
 export const HANGING = { 4: 1, 7: 1, 22: 1 };
@@ -238,6 +245,9 @@ export const SUBJECT = {
   /* Round 14: the Lampworks' chandlery, reflector gallery and boiler walk,
      and the Bathhouse's steam room, pool and pipe gallery. */
   wax: 28, reflector: 29, boiler: 30, steam: 31, pool: 32, pipes: 33,
+  /* Round 22: the Kitchens' scullery, the Secret Passages' run behind the
+     library and its false closet -- drawn by program 8 with their wings. */
+  scullery: 34, backcase: 35, closet: 36,
 };
 /* WHICH WALL PROGRAM A SUBJECT IS DRAWN BY (MM_ROOMS in shaders/backdrop.js).
    Round 11's rooms first went into the one wall program with everything else,
@@ -261,6 +271,10 @@ export const ROOMS_PROGRAM = {
   tomb: 5, ossuary: 5,
   wax: 6, reflector: 6, boiler: 6,
   steam: 7, pool: 7, pipes: 7,
+  /* round 22: the Hedge Maze, the Kitchens, the Secret Passages and the
+     Pumpkin Grounds -- four wings whose walls are drawn whole (see
+     hedgeWallH and its neighbours in shaders/backdrop.js) */
+  topiary: 8, coping: 8, range: 8, scullery: 8, timber: 8, backcase: 8, closet: 8,
 };
 
 /**
@@ -582,7 +596,7 @@ export class Backdrop {
         uYaw: { value: new THREE.Vector2(1, 0) },
       },
       /* the grounds' carved stone, and the gallery's bust: _setPropProgram */
-      defines: { MM_STONES: 0, MM_BUST: 0 },
+      defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 0 },
       vertexShader: PROP_VERT, fragmentShader: PROP_FRAG,
       transparent: true, depthWrite: false, side: THREE.DoubleSide, fog: false,
     });
@@ -730,7 +744,17 @@ export class Backdrop {
       [0, 0.00, 0.24, 0.00, 1.00],   // left drape:  mask needs p.x < 0.218
       [0, 0.00, 0.24, 0.00, 1.00],   // right drape: same, mirrored by scale.x
       [1, 0.00, 1.00, 0.59, 1.00],   // top lintel:  mask needs p.y > 0.607
-      [2, 0.00, 1.00, 0.00, 0.23],   // clutter band: mask needs p.y < 0.206
+      /* clutter band: mask needs p.y < 0.206 -- and it runs on DOWN, 2.5 m
+         below the quad's old foot (round 22, the Heart's floor seam: "a hard,
+         straight lighting seam cuts across the whole floor at y~620"). The
+         band is solid below its ragged top, so its foot was never meant to
+         be seen; but a room framed from far back -- the Heart's lens stands
+         13 m out, where the band is 5.8 m from the eye instead of 2.2 --
+         brings that foot up into the picture, and the floor under it was
+         darkened by the band above the line and not below it. Measured with
+         frames=0: the step goes. Extended, the foot is off the bottom of the
+         frame in every rig; where it already was, not a pixel moves. */
+      [2, 0.00, 1.00, -0.60, 0.23],
     ];
     const FW = 7.4, FH = 4.2;
     for (let i = 0; i < 4; i++) {
@@ -1368,6 +1392,62 @@ export class Backdrop {
         }
       }
 
+    } else if (layout === 'maze') {
+      /* THE HEDGE MAZE IS A MAZE (round 22). Both survey judges: "there is no
+         maze; a flat paved plaza with knee-high noise-speckled shrub lumps
+         along the horizon". A maze seen from inside one is WALLS: clipped yew
+         taller than a man across the way ahead, each run broken by ONE way
+         through, the ways through alternating side to side so the eye goes
+         in by a zigzag -- and the room's side walls are the same yew (the
+         wall program draws them), running away with their own turnings. The
+         walls are architecture, sized directly (shape 28, the yew); the
+         region's own pieces -- its statues -- stand where a maze keeps them,
+         at the end of a run, in front of the hedge.
+         `court` holds the first run back that many metres (the fountain
+         court), `ways` says how many runs deep the maze is seen, and `gate`
+         cuts an arch through the first run's middle section (a seed of 20 or
+         more, which is what shapeField reads). */
+      const court = P.court ?? 0;
+      const ways = P.ways ?? 3;
+      const HH = 2.95;
+      let zr = -(P.first ?? 5.4) - court;
+      let side = rand() < 0.5 ? -1 : 1;
+      const statues = shapes.filter((s) => s !== 28);
+      let placedStat = 0;
+      for (let r = 0; r < ways && zr > -RD + 1.2; r++) {
+        const [f0, f1] = spanAt(zr, 1.5);
+        const x0 = Math.max(-halfW, f0 - 1.5), x1 = Math.min(halfW, f1 + 1.5);
+        /* the way through this run: 2.2-3.0 m, off to one side of the axis */
+        const gw = 2.2 + rand() * 0.8;
+        const reach = Math.max(1.2, Math.min(x1, -x0) * 0.55);
+        const gc = side * (1.3 + rand() * (reach - 1.0));
+        const runs = [[x0, gc - gw / 2], [gc + gw / 2, x1]];
+        for (const [a, b] of runs) {
+          const len = b - a;
+          if (len < 0.8) continue;
+          /* one length of yew per run: sections butted end to end showed
+             their clipped ends as seams down the hedge */
+          const nSec = 1;
+          const sl = len / nSec;
+          for (let i = 0; i < nSec; i++) {
+            const cx = a + (i + 0.5) * sl;
+            const hh = HH * (0.97 + rand() * 0.06);
+            pushArch(28, cx, zr + (rand() - 0.5) * 0.12, sl + 0.34, hh / 0.93, 0.34 + r * 0.16);
+            /* a gate section: the run with an arch cut through it */
+            if (P.gate && r === 0 && Math.abs(cx) < sl * 0.5 + 0.2) out[out.length - 1].seed = 20 + rand() * 10;
+          }
+        }
+        /* a statue at the end of the run, in front of the hedge beside the
+           way through, on the first two runs */
+        if (statues.length && r < 2 && placedStat < n) {
+          const sx = gc + side * (gw / 2 + 0.9 + rand() * 1.4);
+          push(statues[(rand() * statues.length) | 0], sx, zr + 0.9, 1.0, 0.5);
+          placedStat++;
+        }
+        zr -= 4.4 + rand() * 1.8;
+        side = -side;
+      }
+
     } else if (layout === 'hang') {
       // Ceiling-dominant: the mass is overhead, the floor is nearly clear.
       const hangShapes = shapes.filter((s) => HANGING[s] === 1);
@@ -1668,6 +1748,14 @@ export class Backdrop {
         so2[i * 3 + 0] = p.x; so2[i * 3 + 1] = p.y + 0.015; so2[i * 3 + 2] = p.z + (chair ? p.w * 0.24 : 0);
         ss2[i * 2 + 0] = p.w * (chair ? 1.7 : 2.0); ss2[i * 2 + 1] = p.w * (chair ? 1.05 : 1.15);
         st2[i] = chair ? 1.10 + 0.14 * (1 - p.tone) : 0.52 + 0.26 * (1 - p.tone);
+        /* A LENGTH OF HEDGE (28, round 22) is a wall, not a pot: its shadow
+           is a band along its foot, not an ellipse twice its length across
+           the path. A pumpkin (27) sits in a dense little pool of its own. */
+        if (p.shape === 28) {
+          ss2[i * 2 + 0] = p.w * 1.08; ss2[i * 2 + 1] = 1.5; st2[i] = 0.95;
+        } else if (p.shape === 27) {
+          ss2[i * 2 + 0] = p.w * 1.35; ss2[i * 2 + 1] = p.w * 0.62; st2[i] = 1.05;
+        }
       }
     }
     this._propOffset.needsUpdate = this._propScale.needsUpdate = true;
@@ -2075,15 +2163,16 @@ export class Backdrop {
    *  the hedge's fountain court has stones AND a fountain, and those are one
    *  variant; nothing that has a bust has either. */
   _setPropProgram(placed) {
-    let stones = 0, bust = 0;
+    let stones = 0, bust = 0, wings = 0;
     for (const p of placed) {
       const s = p.shape;
       if ((s > 2.5 && s < 3.5) || (s > 15.5 && s < 16.1) || (s > 24.5 && s < 25.5)) stones = 1;
+      else if (s > 26.5) wings = 1;          // round 22: the pumpkin and the yew
       else if (s > 25.5) bust = 1;
     }
     const d = this.propMat.defines || {};
-    if (d.MM_STONES === stones && d.MM_BUST === bust) return;
-    this.propMat.defines = Object.assign({}, d, { MM_STONES: stones, MM_BUST: bust });
+    if (d.MM_STONES === stones && d.MM_BUST === bust && d.MM_WINGS === wings) return;
+    this.propMat.defines = Object.assign({}, d, { MM_STONES: stones, MM_BUST: bust, MM_WINGS: wings });
     this.propMat.needsUpdate = true;
   }
 
@@ -2153,11 +2242,15 @@ export class Backdrop {
        Greenhouse, the third. */
     const wall = (n) => [this.wall.geometry, this.wallMat, { MM_ROOMS: n }];
     const jobs = [
-      wall(1), wall(2), wall(3), wall(4), wall(5), wall(6), wall(7),
+      wall(1), wall(2), wall(3), wall(4), wall(5), wall(6), wall(7), wall(8),
       [this.portals[0].geometry, this.portals[0].material, null],
       [this.propGeo, this.propMat, { MM_STONES: 0, MM_BUST: 1 }],
       [this.floor.geometry, this.floorMat, { MM_FLOORX: 1 }],
       [this.propGeo, this.propMat, { MM_STONES: 1, MM_BUST: 0 }],
+      /* round 22: the pumpkin and the yew, alone and with the grounds' stone
+         (the maze's fountain court deals both) */
+      [this.propGeo, this.propMat, { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 1 }],
+      [this.propGeo, this.propMat, { MM_STONES: 1, MM_BUST: 0, MM_WINGS: 1 }],
     ];
     (async () => {
       await new Promise((r) => setTimeout(r, 1500));

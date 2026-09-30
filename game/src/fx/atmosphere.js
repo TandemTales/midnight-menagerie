@@ -321,13 +321,18 @@ export const REGIONS = {
     label: 'The Kitchens and Cellars',
     propMat: 'metal', propCeil: 0.423,
     arch: 4, floorPattern: 2, subject: 'range',
-    room: { w: 22, d: 11, h: 4.4, side: 0.0, ceilPattern: 6, wallPad: 3.6 },
+    /* (round 22: 9.5 m deep, from 11 -- the range is the room, so its wall
+       comes a step nearer) */
+    room: { w: 22, d: 9.5, h: 4.4, side: 0.0, ceilPattern: 6, wallPad: 3.6 },
     cam: { y: 1.92, z: 7.0, look: 2.25, fov: 47 },
     deep: '#201419', mid: '#462c24', hi: '#70492c', accent: '#7d8d58',
     rimCol: '#cd8852', shaft: '#c6915e', floorDeep: '#140e13', floorMid: '#33231d',
     ambient: '#1c1216', propAlb: '#3c2a23', propHi: '#715133',
     gloss: 0.70, grime: 0.88, open: '#9d6941', openGlow: 0.7,
-    props: { shapes: [13, 8, 5, 1, 8], count: 22, height: 2.0, layout: 'aisle' },
+    /* (round 22: the range is the WALL now, built into its chimney breast,
+       so the floor no longer deals loose ranges and bookcases: it is the
+       kitchen's working floor -- crates and barrels, a candle stand) */
+    props: { shapes: [8, 8, 1], count: 10, height: 2.0, layout: 'aisle' },
     particles: { mix: [[PTYPE.EMBER, 0.46], [PTYPE.DUST, 0.40], [PTYPE.PLASTER, 0.14]],
                  tint: '#ffcf9a', wispTint: '#8fd9a8', emberTint: '#ff7a28',
                  speed: 1.2, scale: 1.05, wind: 1.3, density: 0.95 },
@@ -608,8 +613,13 @@ export const REGIONS = {
   hedge: {
     label: 'The Withered Hedge Maze',
     propMat: 'foliage', propCeil: 0.391,
-    sides: false, arch: 3, floorPattern: 2, subject: 'topiary',
-    room: { w: 38, d: 28, h: 0, side: 0, ceilPattern: 0, wallPad: 0 },
+    /* ROUND 22: A MAZE HAS WALLS. The yard was 38 m of open flagstones with no
+       side walls at all -- "a flat paved plaza". It is a maze now: the side
+       walls are clipped yew (the wall program's hedge), 20 m apart, the
+       floor is turf with a gravel walk (the churchyard's pattern 11), and the
+       runs of yew across the way ahead are the `maze` layout. */
+    sides: true, arch: 3, floorPattern: 11, subject: 'topiary', runner: 1.35,
+    room: { w: 20, d: 24, h: 0, side: 0, ceilPattern: 0, wallPad: 0 },
     cam: { y: 2.35, z: 9.2, look: 2.5, fov: 47 },
     deep: '#191618', mid: '#353020', hi: '#575030', accent: '#90905e',
     rimCol: '#c4b479', shaft: '#b8ae8b', floorDeep: '#100e12', floorMid: '#27221b',
@@ -619,7 +629,8 @@ export const REGIONS = {
        question: defensible in a haunted house, but a formal maze's set piece
        is a GARDEN STATUE on a plinth at the turn of a walk, and shape 15 now
        has carved features, drapery and a moulded base to bring to it. */
-    props: { shapes: [9, 9, 2, 15, 9], count: 42, height: 2.4, layout: 'clutter' },
+    /* ...and its pieces are its STATUES; the yew is dealt as architecture */
+    props: { shapes: [15, 15], count: 6, height: 2.4, layout: 'maze', family: ['maze'] },
     particles: { mix: [[PTYPE.SPORE, 0.44], [PTYPE.ASH, 0.30], [PTYPE.DUST, 0.26]],
                  tint: '#e0d8a8', wispTint: '#b08fd8', emberTint: '#d8a04a',
                  speed: 0.75, scale: 1.3, wind: 1.4, density: 0.95 },
@@ -649,7 +660,9 @@ export const REGIONS = {
     rimCol: '#d2a763', shaft: '#d6b88a', floorDeep: '#110e19', floorMid: '#201a26',
     ambient: '#181424', propAlb: '#332a3a', propHi: '#5b4e61',
     gloss: 0.45, grime: 0.92, coolFill: 0.75, wallFog: 0.12,
-    props: { shapes: [8, 5, 7, 6], count: 18, height: 1.9, layout: 'aisle' },
+    /* (round 22: a passage behind the rooms holds what was pushed into it --
+       crates, an old chair -- not a colonnade and a glazed cabinet) */
+    props: { shapes: [8], count: 6, height: 1.9, layout: 'aisle' },
     particles: { mix: [[PTYPE.DUST, 0.78], [PTYPE.PLASTER, 0.16], [PTYPE.WISP, 0.06]],
                  tint: '#ffe0b8', wispTint: '#a87fd8', emberTint: '#ffb64a',
                  speed: 0.8, scale: 0.9, wind: 0.5, density: 1.0 },
@@ -735,13 +748,20 @@ export const REGIONS = {
     label: 'The Moon Courtyard and Pumpkin Grounds',
     propMat: 'foliage', propCeil: 0.29,
     sides: false, arch: 5, floorPattern: 2, subject: 'coping',
-    room: { w: 48, d: 30, h: 0, side: 0, ceilPattern: 0, wallPad: 0 },
+    /* (round 22: 24 m deep, from 30 -- the court's wall and the house over
+       it were a strip at the top of the frame, the pumpkins on the floor
+       below them specks) */
+    room: { w: 48, d: 24, h: 0, side: 0, ceilPattern: 0, wallPad: 0 },
     cam: { y: 2.05, z: 8.2, look: 2.2, fov: 51 },
     deep: '#131723', mid: '#243335', hi: '#3c534a', accent: '#78a7be',
     rimCol: '#cf9459', shaft: '#b4c8d9', floorDeep: '#0f1219', floorMid: '#202827',
     ambient: '#151924', propAlb: '#3c3123', propHi: '#75583b',
     gloss: 0.44, grime: 0.66, coolFill: 1.15, wallFog: 0.18, open: '#86afcb', openGlow: 0.34,
-    props: { shapes: [9, 2, 3, 18, 9], count: 32, height: 2.0, layout: 'clutter' },
+    /* ROUND 22: THE PUMPKIN GROUNDS GROW PUMPKINS. Its "pumpkins" were shape
+       9, the shrub, tinted brown: "orange cubes of speckled noise with no
+       round, ribbed pumpkin shape". Shape 27 is a pumpkin. */
+    props: { shapes: [27], count: 30, height: 2.0, layout: 'rows', depth: 13,
+             family: ['rows', 'clutter'] },
     particles: { mix: [[PTYPE.DUST, 0.40], [PTYPE.SPORE, 0.30], [PTYPE.EMBER, 0.30]],
                  tint: '#cfe0e8', wispTint: '#8fe8c0', emberTint: '#ff8a28',
                  speed: 0.9, scale: 1.25, wind: 1.1, density: 1.0 },
@@ -884,6 +904,7 @@ const LAYOUT_FAMILY = {
   terrace:   ['terrace', 'rows', 'aisle'],
   hang:      ['hang', 'clutter', 'nook'],
   perimeter: ['perimeter', 'wings', 'colonnade'],
+  maze:      ['maze'],
 };
 
 /**
@@ -1189,7 +1210,9 @@ export const ROOM_KINDS = {
     ],
   },
   kitchens: {
-    kinds: [{ subject: 'range' }, { subject: 'dado' }],
+    /* (round 22: the scullery is its own room now -- its sinks, its plate
+       racks and its copper -- where it borrowed the Bathhouse's tiled dado) */
+    kinds: [{ subject: 'range' }, { subject: 'scullery' }],
     names: [
       [/scullery|dish|larder|wash|milk/i, 1],
       [/./, 0],
@@ -1294,14 +1317,18 @@ export const ROOM_KINDS = {
       { subject: 'topiary' },
       /* the maze's heart: a dead fountain in a court of hedge, seen low
          from the mouth of the walk that reaches it */
-      { subject: 'topiary', layout: 'clutter', countScale: 0.8,
-        centre: { shape: 25, z: -4.2, clear: 3.2 },
+      /* (round 22: the court is the space the yew is held back from --
+         `maze.court` -- so the fountain stands in it with the hedge round) */
+      { subject: 'topiary', layout: 'maze', maze: { court: 4.2, ways: 2 },
+        centre: { shape: 25, z: -4.6, clear: 3.2 },
         vantage: { at: 'among', low: 0.62, fwd: 2.0, pitch: 3.0, off: 0.04, wide: 3 } },
       /* the gate into the maze, seen from in it */
-      { subject: 'topiary', layout: 'rows',
+      { subject: 'topiary', layout: 'maze', maze: { gate: true, first: 4.2 },
         vantage: { at: 'threshold', back: 1.6, lens: 0.92, dip: 0.20 } },
       /* a walk between two banks of hedge, seen down its length */
-      { subject: 'topiary', layout: 'aisle', aisle: [0.18, 0.60],
+      /* (round 22: the walk's bank IS the side wall now, so the runs across
+         it stand further off, where the walk turns) */
+      { subject: 'topiary', layout: 'maze', maze: { first: 9.0, ways: 2 },
         vantage: { at: 'along', off: 0.14, wall: 4.0, fwd: 1.6, yaw: 12, wide: 3 } },
     ],
     names: [
@@ -1318,10 +1345,14 @@ export const ROOM_KINDS = {
     kinds: [
       { subject: 'timber' },
       /* behind the library: the backs of its cases line the passage */
-      { subject: 'bookcase',
+      /* (round 22: the BACKS -- boards, uprights, the library's light
+         between them -- where it drew the Study's own shelves of spines) */
+      { subject: 'backcase',
         vantage: { at: 'along', off: 0.12, wall: 1.6, fwd: 0.8, yaw: 8, wide: 2 } },
       /* a false closet, a portrait cavity: seen from its hidden door */
-      { subject: 'timber', door: 'case',
+      /* (round 22: a CLOSET, 8 m of it and not the passage's 20: its pegs
+         and its coats down both walls, its jib door out in the end one) */
+      { subject: 'closet', door: 'case', room: { d: 0.42 }, countScale: 0.5,
         vantage: { at: 'threshold', back: 2.0, lens: 0.90, dip: 0.12 } },
       /* a crawlspace or an underfloor run: crouched, well in */
       { subject: 'timber',
@@ -1341,7 +1372,9 @@ export const ROOM_KINDS = {
       { subject: 'coping',
         vantage: { at: 'threshold', back: 1.6, lens: 0.92, dip: 0.30 } },
       /* the pumpkin patch, from down among it */
-      { subject: 'coping', layout: 'clutter', countScale: 1.1,
+      /* (round 22: IN ROWS, on the earth they grow in -- turf worn to earth,
+         pattern 11 -- where the courtyard is paved) */
+      { subject: 'coping', layout: 'rows', countScale: 1.3, floor: 11, runner: 0,
         vantage: { at: 'among', low: 0.55, fwd: 2.6, pitch: 2.0, off: 0.05, wide: 3 } },
       /* the moon pond: water in the court, seen along its walk */
       { subject: 'coping', pool: { hw: 3.2, z0: -3.0, back: 12.0 },
@@ -2050,6 +2083,8 @@ export class Atmosphere {
       if (kind.layout) pal.props.layout = kind.layout;
       if (kind.countScale) pal.props.count = Math.max(6, Math.round(pal.props.count * kind.countScale));
       if (kind.aisle) pal.props.aisle = kind.aisle;
+      /* a maze's own set-out (round 22: see Backdrop's `maze` layout) */
+      if (kind.maze) Object.assign(pal.props, kind.maze);
       if (kind.depth) pal.props.depth = kind.depth;
       /* A DIFFERENT ROOM IS A DIFFERENT SHAPE. `room` scales the wing's own
          shell (after the +-9% above): a hall built round its fire is shallower
