@@ -6741,8 +6741,16 @@ void main(){
        the same smear field rather than laid on smooth. */
     float streak = exp(-abs(d.x + ripX)*smear*wideK) * exp(-max(d.y, 0.0)*lenK);
     col += reflA * uLightCol[i] * att * streak * uGloss * 3.4 * uWet * wetK;
+    /* (round 21: the glint only where the lamp still reaches. Past two of
+       its radii a lamp is down to 6% and its highlight on a matt flag is
+       nothing anyone can see -- and with the rig pitched to put the floor
+       under the fight, most of the floor is out there: the normalize and the
+       power were a quarter of the floor's cost for no visible light.) */
+    float kS = dist / max(L.z, 0.001);
+    if (kS > 2.0) continue;
     vec3 ldir = normalize(vec3(-d.x, 3.0, d.y));
-    col += mmSpec(N, ldir, V, uLightCol[i], att, uGloss*0.9, specP) * wetK * specK;
+    col += mmSpec(N, ldir, V, uLightCol[i], att, uGloss*0.9, specP) * wetK * specK
+         * (1.0 - smoothstep(1.6, 2.0, kS));
   }
 
   /* ---- shaft pools: the bright ellipse where a light shaft LANDS ----------
