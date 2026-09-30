@@ -338,14 +338,28 @@ export const REGIONS = {
                  speed: 1.2, scale: 1.05, wind: 1.3, density: 0.95 },
     exposure: 1.98, vignette: 1.56, contrast: 1.55,
     key:  { glow: 0, kind: 'warm', x: -3.6, y: 2.8, z: 2.0, color: '#db8f51', intensity: 1.39, radius: 6.88 },
-    fill: { glow: 0, kind: 'cold', x: 5.0, y: 2.2, z: 1.2, color: '#8fb2bb', intensity: 9.76, radius: 7.0, flicker: false },
+    /* (round 22 graft, all three judges: "the milky cyan moonlight pools on
+       the flagstones at the lower left and right of both rooms wash the
+       darks -- pull them to a deep blue or remove them". They were this
+       fill at 9.76 and the cold lamp at 5.24, in a pale cyan: now a deep
+       blue at a quarter and a fifth of that. A LIGHT's colour, said here
+       because it is the palette's: the darks were too pale.) */
+    fill: { glow: 0, kind: 'cold', x: 5.0, y: 2.2, z: 1.2, color: '#3d5a8c', intensity: 2.2, radius: 7.0, flicker: false },
     lights: [
-      { kind: 'warm', x: -4.0, y: 1.40, z: -5.6, color: '#d98044', intensity: 1.07, radius: 5.5 },
-      { kind: 'warm', x: 4.6, y: 2.20, z: -9.2, color: '#dc9d54', intensity: 0.7, radius: 5.85 },
-      { kind: 'warm', x: 0.4, y: 0.80, z: -2.6, color: '#e1b46e', intensity: 0.52, radius: 3.78 },
-      { kind: 'cold', x: -6.6, y: 3.20, z: -8.8, color: '#8fb2bb', intensity: 5.24, radius: 7.0 },
+      /* (graft, VANDYKE's, two judges: the kitchen's lamps are BRASS
+         CHANDELIERS hung over its range and its tables -- at 2.9 m in a 4.4 m
+         room they are fitted as chandeliers -- the warm key lights of the
+         room, not lamp posts standing on its flags) */
+      { kind: 'warm', x: -3.0, y: 2.90, z: -5.2, color: '#d98044', intensity: 1.35, radius: 5.8 },
+      { kind: 'warm', x: 3.3, y: 2.90, z: -6.0, color: '#dc9d54', intensity: 1.20, radius: 6.0 },
+      /* ...and the FIRE in the range (the kind stands it there), its glow
+         pooling out of the arch across the flags as the room's focal light;
+         its fitting is the range itself */
+      { kind: 'warm', x: 0.0, y: 0.70, z: -7.2, color: '#ffa24c', intensity: 3.0, radius: 6.0, fit: 'none' },
+      { kind: 'cold', x: -6.6, y: 3.20, z: -8.8, color: '#3d5a8c', intensity: 1.1, radius: 7.0 },
     ],
-    shafts: { count: 2, spread: 11, y: 5.0, z: -8.0, angle: 0.18, width: 2.4, intensity: 0.31, pool: 1.6 },
+    /* (no shafts: a kitchen has no window for one to come through) */
+    shafts: { count: 2, spread: 11, y: 5.0, z: -8.0, angle: 0.18, width: 2.4, intensity: 0.0, pool: 1.6 },
     bloom: 1.0, warmTone: 0.06, halation: 0.75, saturate: 0.94,
   },
 
@@ -618,8 +632,13 @@ export const REGIONS = {
        walls are clipped yew (the wall program's hedge), 20 m apart, the
        floor is turf with a gravel walk (the churchyard's pattern 11), and the
        runs of yew across the way ahead are the `maze` layout. */
-    sides: true, arch: 3, floorPattern: 13, subject: 'topiary', runner: 1.35,
-    room: { w: 20, d: 24, h: 0, side: 0, ceilPattern: 0, wallPad: 0 },
+    /* (round 22 graft, VANDYKE's enclosure, all three judges: at 20 m apart
+       the side hedges stood out of frame and the maze read as "a low,
+       waist-high slab across the back behind a wide empty lawn -- a walled
+       garden". An ALLEY of the maze is 11 m between its hedges, so they rise
+       past the top of the frame on both hands, taller than the Kid.) */
+    sides: true, arch: 3, floorPattern: 13, subject: 'topiary', runner: 1.15,
+    room: { w: 11, d: 26, h: 0, side: 0, ceilPattern: 0, wallPad: 0, openW: 120 },
     cam: { y: 2.35, z: 9.2, look: 2.5, fov: 47 },
     deep: '#191618', mid: '#353020', hi: '#575030', accent: '#90905e',
     rimCol: '#c4b479', shaft: '#b8ae8b', floorDeep: '#100e12', floorMid: '#27221b',
@@ -630,7 +649,10 @@ export const REGIONS = {
        is a GARDEN STATUE on a plinth at the turn of a walk, and shape 15 now
        has carved features, drapery and a moulded base to bring to it. */
     /* ...and its pieces are its STATUES; the yew is dealt as architecture */
-    props: { shapes: [15, 15], count: 6, height: 2.4, layout: 'maze', family: ['maze'] },
+    /* (graft: and its landmarks are TOPIARY (30) -- spirals, tiered stands,
+       cones and ball-trees in their boxes -- stood along the hedges, with a
+       statue at a turn) */
+    props: { shapes: [31, 30, 30, 30], count: 8, height: 2.4, layout: 'maze', family: ['maze'] },
     particles: { mix: [[PTYPE.SPORE, 0.44], [PTYPE.ASH, 0.30], [PTYPE.DUST, 0.26]],
                  tint: '#e0d8a8', wispTint: '#b08fd8', emberTint: '#d8a04a',
                  speed: 0.75, scale: 1.3, wind: 1.4, density: 0.95 },
@@ -640,11 +662,15 @@ export const REGIONS = {
     lights: [
       { kind: 'cold', x: -3.0, y: 7.60, z: -12.0, color: '#a4b5cc', intensity: 2.63, radius: 14.0, flicker: false },
       { kind: 'warm', x: 3.0, y: 1.00, z: -5.0, color: '#dda358', intensity: 1.47, radius: 4.64 },
-      { kind: 'cold', x: -6.4, y: 1.20, z: -8.5, color: '#a891d0', intensity: 1.32, radius: 6.4 },
+      /* (graft: in the alley, not 6.4 m out inside the hedge -- and against
+         its side hedge, where it lights that hedge's leaf, not across the
+         walk where it laid a violet slab on the second run of yew) */
+      { kind: 'cold', x: -4.5, y: 1.20, z: -8.2, color: '#a891d0', intensity: 1.32, radius: 5.0 },
     ],
     /* Open to the sky: see the Graveyard's note. A shaft needs something to
-       come through, and there is no ceiling here. */
-    shafts: { count: 2, spread: 28, y: 9.0, z: -11.0, angle: 0.34, width: 4.4, intensity: 0.12, pool: 1.6 },
+       come through, and there is no ceiling here. (Graft: between two hedges
+       under a clear moon one read as a pale parallelogram across the stars.) */
+    shafts: { count: 2, spread: 28, y: 9.0, z: -11.0, angle: 0.34, width: 4.4, intensity: 0.0, pool: 1.6 },
   },
 
   /* ── 13. The Secret Passages ───────────────────────────────────────────────
@@ -654,6 +680,9 @@ export const REGIONS = {
     label: 'The Secret Passages',
     propMat: 'wood', propCeil: 0.165,
     arch: 2, floorPattern: 0, subject: 'timber',
+    /* (round 22 graft: its hidden doors, one on each wall standing open in
+       relief with its wedge of light on the boards -- Backdrop._placeAjar) */
+    ajarDoors: true,
     room: { w: 7.5, d: 20, h: 3.4, side: 0.0, ceilPattern: 3, wallPad: 2.4 },
     cam: { y: 1.70, z: 6.8, look: 1.75, fov: 52 },
     deep: '#191525', mid: '#2e2437', hi: '#47394e', accent: '#836faf',
@@ -667,8 +696,14 @@ export const REGIONS = {
                  tint: '#ffe0b8', wispTint: '#a87fd8', emberTint: '#ffb64a',
                  speed: 0.8, scale: 0.9, wind: 0.5, density: 1.0 },
     exposure: 1.72, contrast: 1.28,
-    key:  { glow: 0, kind: 'warm', x: -1.9, y: 2.4, z: 1.8, color: '#e2b171', intensity: 3.1, radius: 5.59 },
-    fill: { glow: 0, kind: 'cold', x: 1.9, y: 1.8, z: 0.8, color: '#8e78ca', intensity: 2.75, radius: 5.5, flicker: false },
+    /* (graft, all three judges: "the violet and amber floor pools are soft
+       smears -- sharpen them"; and "pull the lit panel mid-tones from mauve
+       toward deep brown-aubergine". The key and the fill were two great soft
+       discs across the foreground and the violet fill was what turned the
+       lit oak mauve: each is now a tighter pool at under two-thirds and
+       under half its strength) */
+    key:  { glow: 0, kind: 'warm', x: -1.9, y: 2.4, z: 1.8, color: '#e2b171', intensity: 2.5, radius: 4.6 },
+    fill: { glow: 0, kind: 'cold', x: 1.9, y: 1.8, z: 0.8, color: '#8e78ca', intensity: 1.4, radius: 4.2, flicker: false },
     /* (round 22: the lanterns stand AT the walls, where a passage's lamps
        are set, so each lays its pool on the panelling beside it -- "lit
        only in pools by the lanterns". Positions only; colours, strengths
@@ -678,7 +713,8 @@ export const REGIONS = {
       { kind: 'warm', x: 2.5, y: 1.60, z: -10.0, color: '#db944d', intensity: 1.08, radius: 4.3 },
       { kind: 'cold', x: 1.8, y: 1.60, z: -16.5, color: '#8e78ca', intensity: 1.63, radius: 7.0 },
     ],
-    shafts: { count: 2, spread: 4, y: 4.0, z: -11.0, angle: 0.08, width: 1.5, intensity: 0.32, pool: 2.1 },
+    /* (graft: a passage behind the walls has no window for a shaft) */
+    shafts: { count: 2, spread: 4, y: 4.0, z: -11.0, angle: 0.08, width: 1.5, intensity: 0.0, pool: 2.1 },
     vignette: 1.36, bloom: 0.80,
   },
 
@@ -764,8 +800,10 @@ export const REGIONS = {
     /* ROUND 22: THE PUMPKIN GROUNDS GROW PUMPKINS. Its "pumpkins" were shape
        9, the shrub, tinted brown: "orange cubes of speckled noise with no
        round, ribbed pumpkin shape". Shape 27 is a pumpkin. */
-    props: { shapes: [27], count: 30, height: 2.0, layout: 'rows', depth: 13,
-             family: ['rows', 'clutter'],
+    /* (graft: in the PATCH layout -- ranks across the width, nearer and
+       bigger, the fight's court kept clear round the Kid and the creature) */
+    props: { shapes: [27], count: 40, height: 2.0, layout: 'patch', depth: 13,
+             family: ['patch'],
              /* and a heap of them in the near corner, clear of the fight, big
                 enough to be the first thing the eye names */
              near: [
@@ -785,8 +823,13 @@ export const REGIONS = {
       { kind: 'warm', x: -5.6, y: 0.70, z: -8.5, color: '#dc9f54', intensity: 1.59, radius: 4.47 },
       { kind: 'warm', x: 6.6, y: 0.70, z: -11.5, color: '#db994d', intensity: 1.21, radius: 4.13 },
     ],
-    shafts: { count: 3, spread: 22, y: 12.0, z: -12.0, angle: 0.20, width: 3.6, intensity: 0.32, pool: 1.5 },
+    /* (graft: no shafts -- under an open sky one was a pale parallelogram
+       across the stars and the patch) */
+    shafts: { count: 3, spread: 22, y: 12.0, z: -12.0, angle: 0.20, width: 3.6, intensity: 0.0, pool: 1.5 },
     bloom: 0.98,
+    /* (graft, all three judges: the moon on the court's flags, so the lower
+       two-thirds of the floor is paving and not a void, and in the pond) */
+    moonFloor: [0.30, 0.40, 0.62], moonPond: 1.0,
   },
 
   /* ── 17. The Heart of the House ────────────────────────────────────────────
@@ -802,7 +845,13 @@ export const REGIONS = {
     rimCol: '#eadcb7', shaft: '#e4d0b1', floorDeep: '#161114', floorMid: '#392d24',
     ambient: '#1d1719', propAlb: '#4a3a2b', propHi: '#876d4c',
     gloss: 0.72, grime: 0.20, open: '#dbc38e', openGlow: 0.88, coolFill: 0.7, wallFog: 0.10,
-    props: { shapes: [15, 6, 4, 0, 5], count: 24, height: 2.6, layout: 'colonnade' },
+    /* (round 22 graft, all three judges: the statues beside the columns
+       were "stair-stepped low-res silhouettes -- redraw them clean": 31 is
+       the same figure with a surface the Deck's tier can resolve; the wall
+       under the portraits is carved wainscot; and the near frame stands down,
+       so the floor runs lit to the bottom of the frame -- CAPUT's) */
+    props: { shapes: [31, 6, 4, 0, 5], count: 24, height: 2.6, layout: 'colonnade' },
+    wainscot: true, nearFrame: false,
     particles: { mix: [[PTYPE.DUST, 0.54], [PTYPE.WISP, 0.30], [PTYPE.EMBER, 0.16]],
                  tint: '#fff2d8', wispTint: '#ffd9a8', emberTint: '#ffcf7a',
                  speed: 0.55, scale: 1.15, wind: 0.35, density: 1.0 },
@@ -1225,8 +1274,17 @@ export const ROOM_KINDS = {
        racks and its copper -- where it borrowed the Bathhouse's tiled dado) */
     /* ...and each is come up to: its end wall IS the room, so it stands
        nearer (the wing's own fight keeps the wing's shell, isMain) */
-    kinds: [{ subject: 'range', room: { d: 0.80 }, cam: { z: -1.2, look: 0.10 } },
-            { subject: 'scullery', room: { d: 0.72, w: 0.86 }, cam: { z: -1.6, look: 0.10 } }],
+    /* (graft, all three judges: "bring the range, copper and worktables
+       forward so they are not tiny in the back third" -- each room a metre
+       shallower and the eye two nearer; and its lamps where the room has
+       them: the fire in the range, the scullery's chandeliers over its two
+       sinks and its copper's fire at a third of the range's) */
+    kinds: [{ subject: 'range', room: { d: 0.68 }, cam: { z: -2.6, look: 0.05 },
+              lamps: [{ i: 2, x: 0.0, z: 0.94 }] },
+            { subject: 'scullery', room: { d: 0.66, w: 0.86 }, cam: { z: -2.0, look: 0.30 },
+              swap: [[8, 29]], countScale: 0.40,
+              lamps: [{ i: 0, x: -1.95, z: 0.62 }, { i: 1, x: 1.95, z: 0.66 },
+                      { i: 2, x: 4.9, z: 0.94, k: 0.30 }, { i: 3, x: 0.0, z: 0.80 }] }],
     names: [
       [/scullery|dish|larder|wash|milk/i, 1],
       [/./, 0],
@@ -1333,8 +1391,13 @@ export const ROOM_KINDS = {
          from the mouth of the walk that reaches it */
       /* (round 22: the court is the space the yew is held back from --
          `maze.court` -- so the fountain stands in it with the hedge round) */
-      { subject: 'topiary', layout: 'maze', maze: { court: 4.2, ways: 2 },
-        centre: { shape: 25, z: -4.6, clear: 3.2 },
+      /* (graft, CAPUT's court, two judges: the court's own hedge closes it
+         close behind the fountain, clipped into piers with a ball on each
+         and a statue in an arched niche between each pair -- subject
+         `court` -- and no runs across it; the alley opens out to it) */
+      { subject: 'court', layout: 'maze', maze: { court: 0, first: 12, ways: 0 },
+        room: { w: 1.55, d: 0.46 },
+        centre: { shape: 25, z: -5.0, clear: 3.2 },
         vantage: { at: 'among', low: 0.62, fwd: 2.0, pitch: 3.0, off: 0.04, wide: 3 } },
       /* the gate into the maze, seen from in it */
       { subject: 'topiary', layout: 'maze', maze: { gate: true, first: 4.2 },
@@ -1388,10 +1451,13 @@ export const ROOM_KINDS = {
       /* the pumpkin patch, from down among it */
       /* (round 22: IN ROWS, on the earth they grow in -- turf worn to earth,
          pattern 11 -- where the courtyard is paved) */
-      { subject: 'coping', layout: 'rows', countScale: 1.3, floor: 14, runner: 0,
+      { subject: 'coping', layout: 'patch', countScale: 1.3, floor: 14, runner: 0,
         vantage: { at: 'among', low: 0.55, fwd: 2.6, pitch: 2.0, off: 0.05, wide: 3 } },
       /* the moon pond: water in the court, seen along its walk */
-      { subject: 'coping', pool: { hw: 3.2, z0: -3.0, back: 12.0 },
+      /* (graft: the moon stands over the water and the house beside it, so
+         the moon lies in the pond -- "a reflection, not a flat blue
+         rectangle") */
+      { subject: 'coping', pool: { hw: 3.2, z0: 1.2, back: 12.0 }, moonX: -7.6, houseX: 8.5,
         vantage: { at: 'along', off: 0.10, wall: 6.0, fwd: 1.4, yaw: 10, wide: 2, dy: 0.6, dlook: -0.2 } },
     ],
     names: [
@@ -2129,6 +2195,9 @@ export class Atmosphere {
         if (!L) continue;
         if (m.x !== undefined) L.x = m.x;
         if (m.z !== undefined) L.z = -R.d * m.z;
+        /* (graft: and how bright, against the wing's own: the scullery's
+           copper fire is a third of the kitchen range's) */
+        if (m.k !== undefined) L.intensity *= m.k;
       }
       /* A DIFFERENT ROOM IS SEEN FROM A DIFFERENT PLACE. Offsets from the
          wing's authored rig, and small: the rig is authored against the
