@@ -5240,6 +5240,7 @@ float bathWallH(vec2 q, float qpx, out float occ){
     float driftH = mmFbm3(vec2(q.x*0.20 + uTime*0.04, q.y*1.30 - uTime*0.025) + uSeed*1.7);
     gSteam = max(gSteam, smoothstep(0.58, 0.95, driftH)*smoothstep(2.6, 5.0, q.y)*0.40);
   }
+  float hoodM = 0.0;
   if (isSteam > 0.5) {
     /* ===== THE HOT ROOM ===== */
     vec3 marble = vec3(0.60, 0.60, 0.58)*(lum*2.4 + 0.012)
@@ -5300,51 +5301,91 @@ float bathWallH(vec2 q, float qpx, out float occ){
     col = mix(col, mix(ivory, green*0.50, star), bd);
     mmPen(q.y - 3.62, 1.1, 0.8); mmPen(q.y - 3.92, 1.1, 0.8);
     if (far > 0.5) {
-      /* ---- the stove on the axis: an iron basket of stones on its legs,
-         red hot, under a riveted copper hood and its flue ---- */
+      /* ---- the stove on the axis: an iron firebox on its legs, its door a
+         HONEYCOMB GRATE glowing red through every cell (graft, MADDERLAKE's,
+         judge 3: "a glowing furnace grate under the hood that throws orange
+         light onto the wet tiles"), the hot stones heaped on its top, under
+         a riveted copper hood and its flue ---- */
       float bsD = mmBox(vec2(cx, q.y - 0.78), vec2(0.72, 0.32), 0.05);
       float bsk = mmCover(-bsD);
       float legs = mmCover(-mmBox(vec2(abs(cx) - 0.60, q.y - 0.24), vec2(0.045, 0.24), 0.01));
-      vec2 sg = vec2(cx, q.y - 0.46)/0.17;
-      vec2 si = floor(sg + vec2(0.5*mod(floor(sg.y), 2.0), 0.0));
-      vec2 so = sg - si - 0.5 + vec2(0.5*mod(floor(sg.y), 2.0), 0.0);
-      float stn = (1.0 - smoothstep(0.34, 0.46, length(so)))*bsk*step(q.y, 1.08);
-      float hot = smoothstep(0.35, 0.8, mmNoise(si*1.7 + uTime*0.3))*stn;
       vec3 iron = vec3(0.07, 0.07, 0.08)*(lum*1.4 + 0.010);
       col = mix(col, iron, clamp(bsk + legs, 0.0, 1.0));
-      col = mix(col, vec3(0.20, 0.17, 0.16)*(lum*1.4 + 0.010)*(0.7 + 0.5*mmHash21(si)), stn);
-      h += bsk*0.35 + legs*0.30 + stn*(0.20 + 0.12*(1.0 - length(so)));
+      h += bsk*0.35 + legs*0.30;
       mmPen(bsD, 1.3, 0.9);
-      emitF += hot*0.55 + stn*0.06;
+      /* the grate: hexagonal cells in the door's frame, each a hole on the
+         fire, white-orange at the heart of the box and red at its edges */
+      float grD = mmBox(vec2(cx, q.y - 0.76), vec2(0.58, 0.22), 0.02);
+      float inGr = mmCover(-grD);
+      vec2 hp = vec2(cx, q.y - 0.76)/0.085;
+      vec2 hr = vec2(1.0, 1.732);
+      vec2 ha = mod(hp, hr) - hr*0.5, hb = mod(hp - hr*0.5, hr) - hr*0.5;
+      vec2 hg = dot(ha, ha) < dot(hb, hb) ? ha : hb;
+      vec2 hq = abs(hg);
+      float hexd = max(hq.x*0.866 + hq.y*0.5, hq.y) - 0.36;
+      float cell = (1.0 - smoothstep(-px/0.085, px/0.085, hexd))*inGr;
+      float heat = exp(-length(vec2(cx*1.4, (q.y - 0.74)*2.6))*1.6);
+      float flick = 0.85 + 0.30*mmNoise(hp*0.7 + vec2(0.0, uTime*1.3));
+      vec3 fireC = mix(vec3(0.60, 0.10, 0.02), vec3(1.00, 0.62, 0.22), heat);
+      col = mix(col, fireC*(lum*1.4 + 0.02), cell);
+      emitF += cell*(0.55 + 1.6*heat)*flick + inGr*(1.0 - cell)*0.10*heat;
+      mmPen(grD, 1.2, 0.9);
+      mmPen(grD + 0.05, 1.0, 0.6);
+      /* the stones heaped on its top, the hottest glowing in the cracks */
+      vec2 sg = vec2(cx, q.y - 1.06)/0.15;
+      vec2 si = floor(sg + vec2(0.5*mod(floor(sg.y), 2.0), 0.0));
+      vec2 so = sg - si - 0.5 + vec2(0.5*mod(floor(sg.y), 2.0), 0.0);
+      float heap = step(q.y, 1.06 + 0.26*(1.0 - (cx/0.72)*(cx/0.72)))*step(1.06, q.y)*step(abs(cx), 0.70);
+      float stn = (1.0 - smoothstep(0.34, 0.46, length(so)))*heap;
+      float hot = smoothstep(0.45, 0.85, mmNoise(si*1.7 + uTime*0.3));
+      col = mix(col, vec3(0.20, 0.17, 0.16)*(lum*1.4 + 0.010)*(0.7 + 0.5*mmHash21(si)), stn);
+      col = mix(col, vec3(0.03, 0.02, 0.02), heap*(1.0 - stn));
+      emitF += heap*(1.0 - stn)*0.45*hot + stn*hot*0.12;
+      h += stn*(0.20 + 0.12*(1.0 - length(so)));
+      /* THE HOOD (judge 3: "give the stove hood real shading"): beaten
+         copper in four tapered panels, each one round and lit down its
+         middle, dark at its lapped seams; a row of rivets down every seam
+         and two round the skirt band; the stove's red on its underside */
       float hw2 = 1.10 - (q.y - 2.00)*0.62;
       float hoodD = max(abs(cx) - max(hw2, 0.22), max(2.00 - q.y, q.y - 3.30));
       float hood = mmCover(-hoodD);
+      hoodM = hood;
       float flue = mmCover(-max(abs(cx) - 0.22, 3.28 - q.y));
-      vec3 cu = vec3(0.46, 0.15, 0.05)*(lum*0.7 + 0.004);
-      float round_ = 1.0 - abs(cx)/max(hw2, 0.22);
-      vec3 hc = cu*(0.55 + 0.75*smoothstep(0.0, 0.9, round_) - 0.25*smoothstep(0.5, 1.0, abs(cx)/max(hw2, 0.22)));
-      float seam = mmInkP(mmRowX(cx/max(hw2, 0.22), 0.25), px/max(hw2, 0.22), 1.0)*hood;
-      float riv = hood*(1.0 - smoothstep(0.018, 0.018 + px, length(vec2(mmRowX(cx, 0.16), mmRowX(q.y - 2.04, 0.34)))))*step(q.y, 2.10);
-      float band = mmBandA(q.y, 2.00, 2.10, px)*hood;
-      col = mix(col, hc*(1.0 - 0.45*seam) + riv*cu*0.8, clamp(hood + flue, 0.0, 1.0));
-      col = mix(col, cu*1.4, band);
-      h += hood*(0.35 + 0.20*round_) + flue*0.30 + band*0.15;
+      vec3 cu = vec3(0.50, 0.20, 0.08)*(lum*1.3 + 0.006);
+      float un = cx/max(hw2, 0.22);
+      float pu = fract(un*2.0 + 0.5) - 0.5;
+      float pround = sqrt(max(1.0 - 4.0*pu*pu, 0.0));
+      float side = 0.55 + 0.45*smoothstep(0.9, -0.6, un);
+      vec3 hc = cu*(0.30 + 0.85*pround)*side*(0.75 + 0.35*smoothstep(3.3, 2.1, q.y));
+      hc += cu*1.4*smoothstep(0.10, 0.0, abs(pu + 0.12))*side;
+      float seam = mmInkP(abs(pu) - 0.5, px*2.0/max(hw2, 0.22), 1.4)*hood;
+      float rivS = (1.0 - smoothstep(0.016, 0.016 + px, length(vec2((abs(pu) - 0.5)*max(hw2, 0.22)*0.5 + 0.03, mmRowX(q.y - 2.00, 0.16)))))*hood*step(2.14, q.y);
+      float band = mmBandA(q.y, 2.00, 2.14, px)*hood;
+      float rivB = band*(1.0 - smoothstep(0.018, 0.018 + px, length(vec2(mmRowX(cx, 0.15), q.y - 2.07))));
+      col = mix(col, hc*(1.0 - 0.55*seam), hood);
+      col = mix(col, iron*1.4*(0.6 + 0.6*smoothstep(0.3, -0.2, cx)), flue);
+      col = mix(col, cu*1.1*(0.8 + 0.4*smoothstep(2.0, 2.14, q.y)), band);
+      col = mix(col, cu*2.4, clamp(rivS + rivB, 0.0, 1.0));
+      gInk = max(gInk, seam*0.7);
+      h += hood*(0.35 + 0.15*pround) + flue*0.30 + band*0.20 + (rivS + rivB)*0.15;
       gloss = max(gloss, (hood + flue)*0.30);
       mmPen(hoodD, 1.4, 0.95);
+      mmPen(q.y - 2.14, 1.1, 0.8*hood);
       mmPen(abs(cx) - 0.22, 1.2, 0.9*step(3.28, q.y));
-      /* the hood takes the stones' glow from under it */
-      emitF += hood*0.05*smoothstep(2.5, 2.0, q.y);
+      /* the hood takes the fire's glow from under it */
+      emitF += (hood + band)*0.10*smoothstep(2.6, 2.0, q.y);
       /* ...and off the stones the steam RISES and spreads under the hood */
       float py = q.y - 1.08;
       float pw = 0.70 + max(py, 0.0)*0.75;
       float sw = cx + 0.20*sin(py*2.4 - uTime*0.85)*smoothstep(0.0, 1.0, py);
-      float plume = (1.0 - smoothstep(pw*0.30, pw, abs(sw))) * smoothstep(-0.05, 0.25, py) * (1.0 - smoothstep(1.05, 1.60, py));
+      float plume = (1.0 - smoothstep(pw*0.30, pw, abs(sw))) * smoothstep(0.15, 0.40, py) * (1.0 - smoothstep(0.75, 1.10, py));
       plume *= 0.35 + 0.75*mmNoise(vec2(sw*3.2, py*2.0 - uTime*0.7) + uSeed);
       gSteam = max(gSteam, clamp(plume, 0.0, 1.0)*0.85);
     }
-    /* steam hanging under the vault, drifting -- in wisps, not a fog */
+    /* steam hanging under the vault, drifting -- in wisps, not a fog, and
+       thin over the hood, whose copper is the room's one made object */
     float drift = mmFbm3(vec2(q.x*0.22 + uTime*0.05, q.y*1.50 - uTime*0.03) + uSeed);
-    gSteam = max(gSteam, smoothstep(0.50, 0.90, drift)*smoothstep(2.0, 4.0, q.y)*0.60);
+    gSteam = max(gSteam*(1.0 - 0.55*hoodM), smoothstep(0.50, 0.90, drift)*smoothstep(2.0, 4.0, q.y)*0.60*(1.0 - 0.75*hoodM));
   }
 
   if (isPool > 0.5) {
@@ -5390,12 +5431,17 @@ float bathWallH(vec2 q, float qpx, out float occ){
       float panD = mmBox(vec2(dx, q.y - 1.45), vec2(0.32, 0.50), 0.02);
       float num = mmCover(-mmBox(vec2(dx, q.y - 2.00), vec2(0.09, 0.055), 0.01));
       float head = mmBandA(q.y, 2.30, 2.42, px);
-      vec3 wood = vec3(0.30, 0.17, 0.10)*(lum*2.0 + 0.008)*(0.85 + 0.25*mmNoise(vec2(q.x*30.0, q.y)));
+      /* (graft, judge 1: "bring the left wall's lockers out of the black":
+         varnished pitch pine a stop lighter, each door lit by the gas
+         bracket over it, its brass number catching it) */
+      vec3 wood = vec3(0.36, 0.21, 0.11)*(lum*3.0 + 0.012)*(0.85 + 0.25*mmNoise(vec2(q.x*30.0, q.y)));
       col = mix(col, wood, clamp(door + part + head, 0.0, 1.0));
       col = mix(col, wood*0.70, mmCover(-panD)*door);
       col = mix(col, vec3(0.012, 0.014, 0.016), gap);
       col = mix(col, br, num*door);
       h += door*0.25 + part*0.35 + head*0.30 - gap*0.30 + num*0.15;
+      emitW += door*0.045*exp(-length(vec2(gxw - 0.34, (q.y - 2.70)*1.3))*0.9) + num*door*0.25;
+      gloss = max(gloss, door*0.45 + num);
       mmPen(doorD, 1.2, 0.9); mmPen(panD, 1.0, 0.6);
       mmPen(abs(abs(dx) - 0.60) - 0.05, 1.0, 0.7*step(q.y, 2.35));
     } else {
@@ -5467,6 +5513,11 @@ float bathWallH(vec2 q, float qpx, out float occ){
       col = mix(col, vec3(0.018, 0.020, 0.024), clamp(bars + mull, 0.0, 1.0)*scr);
       gInk = max(gInk, clamp(bars + mull, 0.0, 1.0)*scr*0.85);
       emit += glass*(0.03 + 0.03*smoothstep(GAL, CO, q.y) + wet*0.30);
+      /* (graft) the moon in the screen's glass, over the gallery on the
+         left -- the one the water breaks into ripples below it */
+      float mrr = length(vec2(cx + 3.0, q.y - 5.55));
+      float moonG = scr*(1.0 - smoothstep(0.32, 0.32 + px, mrr));
+      emit += glass*(moonG*2.2 + 0.30*exp(-mrr*2.4));
       h = mix(h, 0.6, glass);
     }
   }
@@ -5999,8 +6050,8 @@ float lampWallH(vec2 q, float qpx, out float occ){
     vec3 silver = vec3(0.56, 0.58, 0.62)*(lum*1.6 + 0.012);
     vec3 warmL = vec3(1.00, 0.70, 0.36);
     float bowl = 0.10 + 0.22*rr*rr + 0.10*smoothstep(0.2, -0.6, (dp.x*0.6 - dp.y*0.8)/R)*rr;
-    col = mix(col, silver*bowl*(0.85 + 0.15*zones), dish);
-    float ringI = exp(-pow((rr - 0.62)/0.13, 2.0));
+    col = mix(col, silver*bowl*(0.92 + 0.08*zones), dish);
+    float ringI = exp(-pow((rr - 0.60)/0.20, 2.0));
     float BR = 0.075;
     float rimA = cvN(-(r - R - BR))*(1.0 - dish)*onD;
     float rimL = 0.55 + 0.75*smoothstep(-0.7, 0.7, (-dp.x*0.5 + dp.y*0.85)/max(r, 1e-3));
@@ -6019,7 +6070,7 @@ float lampWallH(vec2 q, float qpx, out float occ){
     col = mix(col, brass*0.85, clamp(arm + lamp*(1.0 - lg), 0.0, 1.0));
     col = mix(col, vec3(0.40, 0.28, 0.16)*(lum*2.0 + 0.03), lg*onD);
     emitW += lf*2.6*onD + lg*0.35*onD*exp(-length(dp - vec2(0.0, 0.0))*16.0)
-           + dish*(1.0 - lamp)*(0.22*ringI*(0.75 + 0.25*zones) + 0.40*exp(-r*10.0) + 0.02)
+           + dish*(1.0 - lamp)*(0.16*ringI*(0.90 + 0.10*zones) + 0.40*exp(-r*10.0) + 0.02)
            + rimA*0.10 + onD*0.07*exp(-max(r - R, 0.0)*1.6)*(1.0 - dish)*(1.0 - rimA);
     /* the stand: a turned brass stem from the bench to the fork that holds
        the dish at its trunnions, and its round foot on the bench top */
@@ -9649,6 +9700,8 @@ void main(){
      no lane lines -- so every term added here is multiplied by 'bath' and
      that room draws exactly what it drew. */
   float water = 0.0, coping = 0.0, bathW = 0.0;
+  /* (round 23 graft: the swimming bath's lit kerb edge, variant 2 only) */
+  float kerbLit = 0.0;
 #if MM_FLOORX >= 1
   if (uWater.w > 0.5 && uIsCeiling < 0.5) {
     float bath = 1.0 - step(1.5, uWater.w);
@@ -9668,6 +9721,11 @@ void main(){
     float cj = 1.0 - smoothstep(0.010, max(0.024, jw), mix(cjd, cjb, bath));
     pat = mix(pat, 0.78 - cj*0.30, coping);
     pat -= (1.0 - smoothstep(0.0, max(mp*2.0, 0.02), abs(dOut))) * 0.40;    // the coping's inner arris
+#if MM_FLOORX == 2
+    /* (graft, judges 1 and 3: "a lit kerb edge") the coping's top arris over
+       the water catches the hall's light, one pen line round the bath */
+    kerbLit = (1.0 - smoothstep(0.0, max(mp*1.4, 0.012), abs(dOut - max(mp*2.6, 0.035))))*bath;
+#endif
     /* PROUD. A course of dressed stone laid ON the tiles stands a hand above
        them, so it has a lit top, a bright outer arris, and a shadow thrown
        outward across the wet floor -- which is the whole difference between a
@@ -9761,9 +9819,11 @@ void main(){
      wet floor round it, which is the judges' "darker than the wet floor". */
   alb = mix(alb, mix(vec3(0.018, 0.040, 0.050), vec3(0.030, 0.064, 0.072), bathW), water*mix(0.92, 0.94, bathW));
 #if MM_FLOORX == 2
-  /* (round 23: deep water at night is near black; what is in it is the
-     hall's reflection, laid on below) */
-  alb *= 1.0 - 0.62*water;
+  /* (round 23: deep water at night is dark; what is in it is the hall's
+     reflection, laid on below -- and, graft, judges 1 and 3: "give the
+     near-black water a TEAL DEPTH", the bath's green tile seen down through
+     it, so it is water and not a slab) */
+  alb = mix(alb, mix(alb*0.40, vec3(0.012, 0.056, 0.062), 0.45), water);
 #endif
   alb = mix(alb, vec3(mmLum(alb))*1.35 + 0.012, coping*0.55);
   alb *= mix(vec3(1.0), vec3(1.10, 0.95, 0.80), earth*0.70);
@@ -10030,6 +10090,9 @@ void main(){
      toward you, its glazing bars with it, broken by the ripples -- strongest
      far off, where water seen at a slant is nearly a mirror. The lamps' own
      long reflections are the loop above. (Before uGain, as the floor is.) */
+#if MM_FLOORX == 2
+  col += mix(uAccent, vec3(0.80, 0.86, 1.00), 0.6) * kerbLit * 0.08;
+#endif
 #if MM_FLOORX >= 1
   if (water > 0.001) {
     float farW = smoothstep(uWater.y, uWater.z, w.y);
@@ -10059,13 +10122,29 @@ void main(){
       float pane = scr*step(0.80, kr)*(1.0 - max(bars*0.8, mull*0.95));
       float dial = 1.0 - smoothstep(0.58, 0.64, kr);
       float globes = exp(-length(vec2(abs(R.x) - 3.24, (R.y - 2.80)*0.45))*7.0);
+      /* (graft, judge 3: "swap the flat pale rectangle reflection for
+         broken moon and window ripples") the moon stands in the screen's
+         glass on the left, and the water breaks every image into the
+         horizontal glints of a ripple's lit faces, darker between */
+      float moonR = 1.0 - smoothstep(0.30, 0.40, length(vec2(R.x + 3.0, R.y - 5.55)));
+      float moonH = exp(-length(vec2(R.x + 3.0, (R.y - 5.55)*0.7))*2.2);
+      float glint = smoothstep(0.15, 0.85, 0.5 + 0.5*sin(w.y*34.0 + wn*7.0 + uTime*1.1 + sin(w.x*5.0)*1.5));
       vec3 refl = nightW*pane*(0.24 + 0.16*smoothstep(uMirror.y, uMirror.z, R.y))*(0.55 + 0.65*wn)
                 + vec3(0.80, 0.78, 0.70)*dial*0.40
-                + vec3(1.00, 0.80, 0.52)*globes*2.2;
-      col += refl * (0.25 + 0.75*fres) * brk * water;
+                + vec3(1.00, 0.80, 0.52)*globes*2.2
+                + vec3(0.80, 0.86, 1.00)*(moonR*2.4 + moonH*0.30)*scr;
+      col += refl * (0.25 + 0.75*fres) * brk * water * (0.25 + 1.15*glint);
+      /* the teal of the bath under it, deepest toward you */
+      col += vec3(0.004, 0.024, 0.026) * water * (0.55 + 0.45*(1.0 - farW));
     }
 #endif
+#if MM_FLOORX == 2
+    /* (graft: the swimming bath has its mirror above; the band laid along
+       the basin was "a flat pale reflection rectangle") */
+    if (false) {
+#else
     if (uWater.w < 1.5) {
+#endif
       /* the hall's GLAZED SCREEN over its cornice, 12.8 m of it, laid out
          along the basin -- widened with the screen subjPool now draws, and on
          its 0.84 m pane pitch */
@@ -11836,7 +11915,12 @@ vec3 wgPaint(vec2 m, vec2 msz, float shape, float seed, float px, float lum,
     float rimE = wgEll(q - vec2(0.0, 0.755), vec2(0.930, 0.135));
     float inner = wgEll(q - vec2(0.0, 0.762), vec2(0.850, 0.098));
     float onRoll = step(rimE, 0.0)*step(0.0, inner);
-    col = mix(col, enamel*E*1.65*(0.70 + 0.40*smoothstep(0.70, 0.86, q.y)), onRoll);
+    col = mix(col, enamel*E*2.1*(0.70 + 0.40*smoothstep(0.70, 0.86, q.y)), onRoll);
+    /* (graft, judge 2: "give them enamel highlights and a dark rim line")
+       the roll's crest catches the windows in one hard line of light, all
+       the way round, brightest along its far lip and on the key's side */
+    float crest = (1.0 - smoothstep(0.0, 0.013 + qpx, abs(rimE + 0.030)))*onRoll;
+    emit += vec3(0.86, 0.92, 1.00)*crest*(0.10 + 0.14*smoothstep(0.74, 0.85, q.y))*(0.7 + 0.5*smoothstep(-0.4, 0.6, kq*xn));
     /* INSIDE IT: the far wall of the bath, white enamel catching the light,
        and the WATER standing in it -- dark and deep, the window's light laid
        across it in one bright rippled band */
@@ -11850,8 +11934,8 @@ vec3 wgPaint(vec2 m, vec2 msz, float shape, float seed, float px, float lum,
     col = mix(col, wc*(0.8 + 0.4*smoothstep(0.66, wl, q.y)), onW);
     emit += vec3(0.62, 0.78, 0.92)*band*onW*0.55;
     ink = max(ink, mmInkP(q.y - wl, qpx, 1.0)*inIn*0.6);
-    ink = max(ink, mmInkP(inner, qpx, 1.0)*0.8);
-    ink = max(ink, mmInkP(rimE, qpx, 1.0)*step(q.y, 2.0)*0.5);
+    ink = max(ink, mmInkP(inner, qpx, 1.2)*0.95);
+    ink = max(ink, mmInkP(rimE, qpx, 1.5)*step(q.y, 2.0)*0.95);
     ink = max(ink, mmInkP(body, qpx, 1.0)*step(q.y, 0.66)*0.8);
     /* the steam off a hot bath, translucent and pale, thinning as it rises */
     if (wgBtSteams(seed) > 0.5) {

@@ -771,7 +771,17 @@ export const REGIONS = {
     /* (round 23: the bath hall's BATHS -- 32, roll-top on claw feet -- in two
        files down the room; its palms; and no hanging sheet, which read as
        "a grey rectangle floating in front of the glazing") */
-    props: { shapes: [32, 2, 32], count: 16, height: 2.3, layout: 'nook' },
+    props: { shapes: [32, 2, 32], count: 16, height: 2.3, layout: 'nook',
+             /* (graft, ULTRAMARINE's, all three judges: "many clawfoot tubs
+                with visible water surfaces across the floor ... bring two
+                of them forward along the side walls where the Deck can see
+                them") -- set by hand at the frame's edges, where the fight
+                leaves room, and a palm with the near one */
+             near: [
+               { shape: 32, edge: 0.80, z: -0.9, tone: 0.95 },
+               { shape: 32, edge: 0.88, z: -3.8, tone: 0.93 },
+               { shape: 2, edge: 0.95, z: -2.4, tone: 0.92 },
+             ] },
     particles: { mix: [[PTYPE.RAIN, 0.58], [PTYPE.DUST, 0.26], [PTYPE.WISP, 0.16]],
                  tint: '#bfe8f5', wispTint: '#6fd9ec', emberTint: '#ffb64a',
                  speed: 1.0, scale: 1.0, wind: 1.2, density: 1.0 },
@@ -1401,7 +1411,10 @@ export const ROOM_KINDS = {
   },
   bathhouse: {
     kinds: [
-      { subject: 'baths', layout: 'colonnade', file: 32, fileX: 0.60 },
+      /* (graft: the files of baths start a bay further in, so none stands
+         behind the Kid -- "move the dark green tub and the palm out from
+         behind the Kid at left") */
+      { subject: 'baths', layout: 'colonnade', file: 32, fileX: 0.60, fileZ0: -4.6 },
       /* THE STEAM ROOM -- small, low and hot, tiled to its vault, an arcade of
          niches with their basins and taps over two stepped benches, and full
          of steam; seen from the lowest bench. Round 14, both judges: the loose
@@ -1409,8 +1422,15 @@ export const ROOM_KINDS = {
          (swap), which at this size is what a length of large-bore pipe on a
          tiled floor looks like -- there is no pipe prop, and a hot room has no
          columns, curtains or palms in it. */
-      { subject: 'steam', layout: 'nook', swap: [[6, 2], [32, 2]], countScale: 0.30,
+      /* (graft, all three judges: "the steam room must have baths or a
+         plunge" -- "it has only wall basins now"): its tubs kept, two set
+         by hand either side of the eye, and its palms gone; and the GRATE's
+         red light laid on the wet tiles in front of the stove (MADDERLAKE's)
+         -- the wing's warm lamp, brought down to the firebox */
+      { subject: 'steam', layout: 'nook', swap: [[6, 32], [2, 32]], countScale: 0.30,
         room: { w: 0.76, d: 0.62, h: 0.76 }, ceil: 4, ceilGain: 2.1, atmos: { wallFog: 0.20 },
+        near: [{ shape: 32, edge: 0.82, z: -2.6, tone: 0.95 }, { shape: 32, edge: 0.18, z: -3.4, tone: 0.93 }],
+        lampsView: [{ i: 1, x: 0.0, z: 0.86, y: 0.55, color: '#ff7330', k: 0.65, radius: 3.6 }],
         vantage: { at: 'among', low: 0.66, fwd: 1.4, pitch: 3.0, off: 0.06, wide: 3, frame: 'steam' } },
       /* THE INDOOR POOL -- round 14, both judges' first instruction: "a sunk
          rectangular basin with a proud stone coping, a clear step down to the
@@ -1420,7 +1440,9 @@ export const ROOM_KINDS = {
          old 7.6 m strip down a 22 m room read as a dark rug -- and it starts
          near enough to the eye to be the room. Seen from the gallery over its
          near end, high enough to look down INTO it. */
+      /* (graft: and a bath at the pool's corner, ULTRAMARINE's) */
       { subject: 'pool', layout: 'colonnade', file: 6, fileX: 0.74, swap: [[32, 2]],
+        near: [{ shape: 32, x: 7.4, z: -2.6, tone: 0.95, free: true }],
         room: { w: 1.10, d: 1.24 }, rail: 'iron', ceil: 4, ceilGain: 2.4,
         pool: { hw: 5.6, z0: -1.4, back: 3.4 },
         /* the hall's cold light stands over the far end of the water, which is
@@ -2329,6 +2351,12 @@ export class Atmosphere {
           if (!L) continue;
           if (m.x !== undefined) L.x = m.x * vs;
           if (m.z !== undefined) L.z = -R.d * m.z;
+          /* (round 23 graft: and a lamp the room's own fire stands for -- the
+             steam room's grate -- at its own height, colour and strength) */
+          if (m.y !== undefined) L.y = m.y;
+          if (m.color !== undefined) L.color = m.color;
+          if (m.k !== undefined) L.intensity *= m.k;
+          if (m.radius !== undefined) L.radius = m.radius;
         }
       }
       if (kind.near) pal.props.near = kind.near;
