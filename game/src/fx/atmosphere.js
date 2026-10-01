@@ -789,6 +789,10 @@ export const REGIONS = {
                { shape: 32, edge: 0.80, z: -0.9, tone: 0.95 },
                { shape: 32, edge: 0.88, z: -3.8, tone: 0.93 },
                { shape: 2, edge: 0.95, z: -2.4, tone: 0.92 },
+               /* and two more down the hall, on the left and the middle,
+                  where the files have room for them */
+               { shape: 32, x: -3.4, z: -7.4, tone: 0.92, free: true },
+               { shape: 32, x: 1.8, z: -10.2, tone: 0.90, free: true },
              ] },
     particles: { mix: [[PTYPE.RAIN, 0.58], [PTYPE.DUST, 0.26], [PTYPE.WISP, 0.16]],
                  tint: '#bfe8f5', wispTint: '#6fd9ec', emberTint: '#ffb64a',

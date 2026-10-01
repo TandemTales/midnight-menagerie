@@ -10307,6 +10307,17 @@ void main(){
          ceiling reading 1.3 needs 4.7x of input to read 16, not 12x. */
       col += alb * up * (0.55 + 1.35*mmLum(alb)*3.4) * 11.0;
     }
+#if MM_FLOORX == 2
+    /* (graft, all three judges on the attic: the boards between the
+       rafters "a warm brown so the rafters stand in relief") -- the moon's
+       cold fill turned the warm albedo back to a neutral grey, so the roof
+       keeps its timber's hue at the light it has: the boards a dark warm
+       brown, the members a stop above them, the value untouched */
+    if (uPattern > 14.5 && uPattern < 15.5 && glazed < 0.5) {
+      float Lc = mmLum(col);
+      col = mix(col, vec3(Lc)*vec3(1.42, 0.96, 0.58), 0.80);
+    }
+#endif
   }
 
   /* ---- THE WINDOW IN THE WATER (round 14) ---------------------------------
