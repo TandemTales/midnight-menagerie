@@ -7333,6 +7333,8 @@ float sleepWallH(vec2 q, float qpx, out float occ){
       float inW = step(abs(wxl), WW + 0.20)*step(0.04, q.y)*step(q.y, POLE);
       /* the slit where the two curtains do not quite meet */
       float slitW = 0.012 + 0.020*smoothstep(POLE, SILL, q.y);
+      /* (the curtains meet below; only near the head is the gap open) */
+      slitW *= smoothstep(WT - 1.10, WT - 0.30, q.y);
       float slit = (1.0 - smoothstep(slitW - px, slitW + px, abs(wxl - 0.05*sign(cx))))*step(SILL, q.y)*step(q.y, WT)*inW;
       float lit;
       vec3 night = r24Night(vec2(wxl*6.0, q.y - (SILL + WT)*0.5), vec3(0.0, 0.40, 0.30), px*6.0, lit);
@@ -7342,7 +7344,9 @@ float sleepWallH(vec2 q, float qpx, out float occ){
       velC *= 1.0 - 0.40*smoothstep(0.12, 0.0, abs(half0));
       col = mix(col, velC, inW);
       col = mix(col, night, slit);
-      emit += slit*(0.10 + 0.25*lit);
+      emit += slit*(0.05 + 0.12*lit);
+      /* the moon along the velvet's two edges where they meet */
+      emit += inW*(1.0 - slit)*0.05*exp(-abs(abs(half0) - slitW)/0.04)*smoothstep(SILL, WT, q.y);
       h = mix(h, 1.25 + 0.4*cfl, inW);
       gInk = max(gInk, inW*mmInkP(cfl - 0.05, px*6.0, 1.0)*0.35);
       gInk = max(gInk, mmInkP(abs(wxl) - WW - 0.20, px, 1.2)*step(0.04, q.y)*step(q.y, POLE));
@@ -14813,7 +14817,7 @@ float wfFourPoster(vec2 q, float px, float seed, float kq, bool paint){
   float onTop = step(edgeY, q.y);
   float drop = clamp((edgeY - q.y)/(edgeY - hem), 0.0, 1.0);
   float cf = 0.5 + 0.5*cos(q.x*(15.0 - 5.0*drop) + 2.2*sin(q.y*3.0 + seed) + drop*2.0);
-  float fold = mix(1.0, 0.25 + 0.95*cf, smoothstep(0.0, 0.25, drop));
+  float fold = mix(1.0, 0.50 + 0.62*cf, smoothstep(0.0, 0.25, drop));
   vec3 cpC = silk*(0.55 + 0.45*mix(0.6 + 0.6*puff, 1.0, 1.0 - onTop))*fold;
   float quil = mmInkP(max(abs(dfr.x), abs(dfr.y)) - 0.5, px/0.17, 1.0)*onTop*mmLod(0.17, px);
   cpC *= 1.0 - 0.35*quil;
@@ -15390,6 +15394,62 @@ float wfCharnel(vec2 q, float px, float seed, float kq, bool paint){
   return d;
 }
 
+/* ── 60 THE WARDROBE ───────────────────────────────────────────────────────
+   A mahogany wardrobe: bun feet, a plinth of two drawers with their brass
+   handles, two tall doors -- the one a long glass in a moulded frame,
+   catching the room dimly, the other fielded panels -- a cornice with its
+   carved crest. */
+float wfWardrobe(vec2 q, float px, float seed, float kq, bool paint){
+  const float HW = 0.62, TOP = 2.02;
+  float ax = abs(q.x);
+  float carc = mmBox(q - vec2(0.0, (TOP + 0.10)*0.5), vec2(HW, (TOP - 0.10)*0.5), 0.004);
+  float feet = length(vec2(ax - HW + 0.07, q.y - 0.055)) - 0.055;
+  float corn = mmBox(q - vec2(0.0, TOP + 0.05), vec2(HW + 0.05, 0.06), 0.008);
+  float crest = max(wfEll(q - vec2(0.0, TOP + 0.11), vec2(0.30, 0.13)), -(q.y - TOP - 0.11));
+  float d = min(min(carc, feet), min(corn, crest));
+  if (!paint) return d;
+
+  vec3 col = vec3(0.1);
+  float ink = 0.0;
+  vec3 maho = vec3(0.40, 0.18, 0.09)*(0.82 + 0.25*mmNoise(vec2(q.x*18.0, q.y*2.5) + seed));
+  vec3 brass = vec3(0.92, 0.68, 0.30);
+  wfLay(col, ink, feet, maho*0.7, px, 0.9);
+  /* the drawers */
+  float DR = 0.52;
+  vec3 cC = maho;
+  float drw = step(q.y, DR);
+  float dl = mmInkP(q.y - (0.10 + DR)*0.5, px, 1.0)*drw*step(ax, HW - 0.04);
+  float hnd = (1.0 - smoothstep(0.012, 0.012 + px, length(vec2(ax - 0.30, mod(q.y - 0.10, (DR - 0.10)*0.5) - (DR - 0.10)*0.25)) - 0.010))*drw*step(0.12, q.y);
+  /* the doors over them: the left a glass, the right fielded panels */
+  float onD = step(DR + 0.03, q.y)*step(q.y, TOP - 0.04)*step(ax, HW - 0.04);
+  float lx = q.x + HW*0.5, rx = q.x - HW*0.5;
+  vec2 gp = vec2(lx, q.y - (DR + TOP)*0.5);
+  float glass = mmBox(gp, vec2(HW*0.5 - 0.10, (TOP - DR)*0.5 - 0.12), 0.06);
+  float onG = wfIn(glass, px)*step(q.x, 0.0);
+  float streak = smoothstep(0.03, 0.0, abs(gp.x + gp.y*0.35 - 0.05))*0.7 + smoothstep(0.015, 0.0, abs(gp.x + gp.y*0.35 + 0.08))*0.4;
+  vec3 glC = vec3(0.10, 0.11, 0.14)*(0.8 + 0.6*smoothstep(-0.6, 0.6, gp.y)) + vec3(0.30, 0.32, 0.36)*streak;
+  vec2 pp = vec2(rx, q.y - (DR + TOP)*0.5);
+  float pv = mmBox(vec2(pp.x, abs(pp.y) - (TOP - DR)*0.25), vec2(HW*0.5 - 0.12, (TOP - DR)*0.25 - 0.10), 0.03);
+  float onPv = wfIn(pv, px)*step(0.0, q.x);
+  cC = mix(cC, maho*1.15, onPv*(0.5 + 0.5*smoothstep(-0.05, 0.0, pv + 0.03)));
+  cC = mix(cC, glC, onG);
+  cC *= 1.0 + 0.25*kq*sign(q.x)*step(HW - 0.05, ax);
+  cC = mix(cC, brass, hnd);
+  wfLay(col, ink, carc, cC, px, 0.95);
+  ink = max(ink, max(dl, mmInkP(q.y - DR, px, 1.0)*step(ax, HW))*0.8);
+  ink = max(ink, mmInkP(q.x, px, 1.2)*onD);
+  ink = max(ink, max(mmInkP(glass, px, 1.0)*step(q.x, 0.0), mmInkP(pv, px, 1.0)*step(0.0, q.x))*onD*0.8);
+  /* the escutcheon and the knob */
+  col = mix(col, brass, wfIn(length(vec2(ax - 0.05, q.y - 1.25)) - 0.018, px));
+  wfLay(col, ink, corn, maho*(1.0 + 0.5*smoothstep(TOP, TOP + 0.11, q.y)), px, 0.95);
+  float crv = 0.5 + 0.5*cos(atan(q.y - TOP - 0.11, q.x)*9.0);
+  wfLay(col, ink, crest, maho*(0.8 + 0.5*crv*step(TOP + 0.11, q.y)), px, 0.9);
+  gWfGloss = 0.25 + 0.8*onG + 0.3*wfIn(corn, px);
+  gWfMoon = 0.3*wfIn(corn, px);
+  gWfCol = col; gWfInk = ink;
+  return d;
+}
+
 /* the drawing's nominal height, metres -- its quad is scaled to it */
 float wfNom(float s){
   if (s < 45.5) return 1.95;
@@ -15406,7 +15466,8 @@ float wfNom(float s){
   if (s < 56.5) return 1.20;
   if (s < 57.5) return 1.22;
   if (s < 58.5) return 1.55;
-  return 1.35;
+  if (s < 59.5) return 1.35;
+  return 2.30;
 }
 /* which way it faces: the room's seed turns some of them round -- but a
    BED has its head to the nearer side wall */
@@ -15440,7 +15501,8 @@ float wfDraw(vec2 m, vec2 msz, float s, float seed, float px, bool paint){
   else if (s < 56.5) d = wfChair(q, qpx, seed, kq, paint);
   else if (s < 57.5) d = wfSarc(q, qpx, seed, kq, paint);
   else if (s < 58.5) d = wfCandles(q, qpx, seed, kq, paint);
-  else               d = wfCharnel(q, qpx, seed, kq, paint);
+  else if (s < 59.5) d = wfCharnel(q, qpx, seed, kq, paint);
+  else               d = wfWardrobe(q, qpx, seed, kq, paint);
   return d*sc;
 }
 #endif

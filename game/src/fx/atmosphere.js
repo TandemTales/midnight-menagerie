@@ -1461,7 +1461,8 @@ export const ROOM_KINDS = {
                       { i: 2, x: 4.0, z: 0.38, y: 1.25, color: '#eab070', k: 1.5, radius: 4.0, fit: 'none' }],
               near: [{ shape: 50, x: -2.7, z: -2.0, tone: 0.97, scale: 1.2, free: true },
                      { shape: 52, x: 4.0, z: -3.4, tone: 0.95, free: true },
-                     { shape: 0, x: 2.2, z: -5.6, tone: 0.92, free: true }],
+                     { shape: 60, x: 4.7, z: -6.4, tone: 0.93, free: true },
+                     { shape: 56, x: 2.0, z: -5.4, tone: 0.92, free: true }],
               cam: { z: -1.4, look: 0.10 } }],
     names: [
       [/bedroom|moon window|dreaming/i, 1],

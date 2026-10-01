@@ -172,7 +172,10 @@ const SHAPE_M = [1.20, 2.00, 1.30, 1.00, 2.00, 2.00, 3.32, 2.60, 1.17, 1.33,
                     mourners and its effigy on the lid, 58 a pricket stand
                     crowded with burning candles, 59 a charnel stack of
                     thighbones and skulls */
-                 1.22, 1.55, 1.35
+                 1.22, 1.55, 1.35,
+                 /* 60 a wardrobe, its glass door and its crest (the
+                    bedroom) */
+                 2.30
 ];
 /* ...and a width ratio, so a column is a column and not a capital-T. Four of
  * these were wrong by enough to change what the object was: a longcase clock
@@ -191,7 +194,8 @@ const SHAPE_W = [1.15, 0.55, 1.00, 0.95, 0.72, 0.80, 0.47, 0.85, 0.90, 1.35,
                  0.72, 1.26, 1.20, 0.96, 0.36,
                  0.96, 1.64, 0.80,
                  1.31, 0.61, 0.57, 0.71,
-                 1.80, 0.42, 1.04
+                 1.80, 0.42, 1.04,
+                 0.58
 ];
 /* HOW MUCH ONE OF THESE VARIES FROM THE NEXT, as a +-fraction of SHAPE_M.
  *
@@ -223,7 +227,8 @@ const SHAPE_VAR = [0.06, 0.08, 0.62, 0.20, 0.10, 0.08, 0.10, 0.10, 0.16, 0.48,
                  0.03, 0.05, 0.05, 0.03, 0.04,
                  0.03, 0.03, 0.04,
                  0.03, 0.05, 0.03, 0.03,
-                 0.03, 0.08, 0.06
+                 0.03, 0.08, 0.06,
+                 0.03
 ];
 /* ROUND 23 (graft): ULTRAMARINE's drawings are in metres at their own
    proportions, so their quads take no width jitter -- a telescope 22%
