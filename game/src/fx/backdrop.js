@@ -131,7 +131,10 @@ const SHAPE_M = [1.20, 2.00, 1.30, 1.00, 2.00, 2.00, 3.32, 2.60, 1.17, 1.33,
                  2.44,
                  /* round 23: 32 a roll-top bath on claw feet, 0.78 m to its
                     rim and its taps over that */
-                 1.10
+                 1.10,
+                 /* 33 a hanging lantern, the chain as long as the quad;
+                    34 a lamp-maker's bench, 0.90 m to its top */
+                 2.60, 1.30
 ];
 /* ...and a width ratio, so a column is a column and not a capital-T. Four of
  * these were wrong by enough to change what the object was: a longcase clock
@@ -141,7 +144,8 @@ const SHAPE_W = [1.15, 0.55, 1.00, 0.95, 0.72, 0.80, 0.47, 0.85, 0.90, 1.35,
                  1.30, 1.20, 0.87, 1.14, 0.77, 0.78, 1.80, 2.24, 0.50, 0.62,
                  0.72, 2.025, 0.62, 0.34, 1.80, 1.476, 0.34,
                  1.62, 1.55, 2.10, 0.62, 0.78,
-                 2.20
+                 2.20,
+                 0.26, 1.55
 ];
 /* HOW MUCH ONE OF THESE VARIES FROM THE NEXT, as a +-fraction of SHAPE_M.
  *
@@ -164,10 +168,11 @@ const SHAPE_VAR = [0.06, 0.08, 0.62, 0.20, 0.10, 0.08, 0.10, 0.10, 0.16, 0.48,
                    0.06, 0.06, 0.06, 0.06, 0.06, 0.14, 0.14, 0.06, 0.08, 0.08,
                  0.06, 0.04, 0.00, 0.00, 0.22, 0.00, 0.04,
                  0.34, 0.06, 0.05, 0.16, 0.14,
-                 0.05
+                 0.05,
+                 0.45, 0.05
 ];
 // Which shapes hang from the ceiling rather than stand on the floor.
-export const HANGING = { 4: 1, 7: 1, 22: 1 };
+export const HANGING = { 4: 1, 7: 1, 22: 1, 33: 1 };
 /* ...and which stand AGAINST A WALL rather than out on the floor. A tall
    mirror marooned in the middle of a dance floor reads as a slab; against a
    wall it reads as the thing a ballroom is lined with. */
@@ -1200,7 +1205,11 @@ export class Backdrop {
            floating panels this round is fixing. Walk it back until the fixing
            is inside the frame. */
         let guard = 0;
-        while (guard++ < 30 && !inFrameY(y + h, z, x) && z > -room.d + 0.5) {
+        /* (round 23: a lantern on its chain needs no rose in shot -- the
+           chain running up out of the picture is how a hung lamp reads, and
+           walked back to where the roof is in frame every one of them hung
+           against the end wall) */
+        while (s !== 33 && guard++ < 30 && !inFrameY(y + h, z, x) && z > -room.d + 0.5) {
           z = Math.max(z - 0.55, -room.d + 0.4);
         }
       }
@@ -2434,7 +2443,7 @@ export class Backdrop {
       wall(1), wall(2), wall(3), wall(4), wall(5), wall(6), wall(7),
       wall(8), wall(9), wall(10), wall(11),
       /* round 23 */
-      wall(12),
+      wall(12), wall(13),
       [this.portals[0].geometry, this.portals[0].material, null],
       [this.propGeo, this.propMat, { MM_STONES: 0, MM_BUST: 1 }],
       [this.floor.geometry, this.floorMat, { MM_FLOORX: 1 }],

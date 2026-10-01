@@ -5463,6 +5463,483 @@ float bathWallH(vec2 q, float qpx, out float occ){
   return h;
 }
 #endif
+#if MM_ROOMS == 13
+/* ── THE LAMPWORKS (round 23) ───────────────────────────────────────────────
+   Both survey judges: "one standing lantern is the only lamp in the
+   Lampworks"; "the machinery at right is a stack of grey boxes" on "a flat
+   blue marbled plane". A lamp-maker's works is a SOOTY BRICK shed full of
+   lamps -- made, half-made, hung up to be sold -- round the glass furnace,
+   and driven by a LINE SHAFT: an iron shaft under the roof with its pulleys,
+   and the leather belts down from them to the lathes on the benches. Three
+   rooms, one wall vocabulary:
+     lampshop  (39) the workshop: the glassblower's beehive furnace with its
+                    three glory holes on the end wall; down both sides of it
+                    the benches with their vices, chimneys and brass fonts,
+                    the tool rail over them, shelves of finished lanterns,
+                    the line shaft and its belts; on the long walls the
+                    night windows and the rails of lanterns hung for sale
+     wax       (28) the chandlery: the vat on its furnace under a copper
+                    hood, the dipping frames hung with tapers, the moulds on
+                    the bench, the boxed candles on the shelves
+     reflector (29) the reflector gallery: silvered dishes down both walls,
+                    each with its lamp lit at the focus, and at the end the
+                    Great Lantern's lens lit from within */
+/* A LANTERN: a square brass-framed box of glass on a base, a pyramid cap and
+   its ring; lit, the glass carries the flame. p is from the foot of its axis,
+   s its height in metres. Returns its coverage; glass and frame come back. */
+float lwLantern(vec2 p, float s, float px, out float glass, out float frame){
+  vec2 u = p/s;
+  float upx = px/s;
+  float body = mmBox(u - vec2(0.0, 0.50), vec2(0.30, 0.30), 0.02);
+  float base = mmBox(u - vec2(0.0, 0.12), vec2(0.38, 0.08), 0.03);
+  float cap = max(u.y - 0.80 - 0.26*(1.0 - abs(u.x)/0.40), 0.80 - u.y);
+  cap = max(cap, abs(u.x) - 0.40);
+  float ring = abs(length(u - vec2(0.0, 1.14)) - 0.07) - 0.022;
+  float d = min(min(body, base), min(cap, ring));
+  float cov = mmCover(-d*s);
+  glass = mmCover(-mmBox(u - vec2(0.0, 0.50), vec2(0.24, 0.25), 0.01)*s);
+  float bar = mmInkP(abs(u.x)*s, px, 1.2) * step(abs(u.y - 0.50), 0.26);
+  glass *= 1.0 - bar;
+  frame = cov*(1.0 - glass);
+  return cov;
+}
+/* A PULLEY on the line shaft, seen face on: rim, spokes, boss */
+float lwPulley(vec2 p, float R, float px){
+  float r = length(p);
+  float rim = mmInkP(r - R*0.90, px, max(R*0.18/px, 1.6));
+  float a = atan(p.y, p.x);
+  float sp = mmInkP(abs(fract(a/1.0472 + 0.5) - 0.5)*1.0472*r, px, 1.5) * step(r, R*0.86);
+  float boss = mmCover(-(r - R*0.22));
+  return clamp(max(max(rim, sp), boss), 0.0, 1.0);
+}
+float lampWallH(vec2 q, float qpx, out float occ){
+  occ = 0.0;
+  float far = step(0.5, uFar);
+  float px = max(qpx, 0.003);
+  float lum = mmLum(uMid);
+  float cx = q.x - uSize.x*0.5, ax = abs(cx);
+  float u = far > 0.5 ? cx : q.x;
+  float isWax = step(27.5, uSubject)*step(uSubject, 28.5);
+  float isRef = step(28.5, uSubject)*step(uSubject, 29.5);
+  float isShop = step(38.5, uSubject);
+  /* ---- SOOTY BRICK, everywhere ---- */
+  float val, glz;
+  float jt = r23Brick(q, 0.075, 0.225, px, val, glz);
+  vec3 brick = vec3(0.40, 0.21, 0.14)*(lum*2.1 + 0.007)*(0.62 + 0.50*val);
+  brick = mix(brick, vec3(mmLum(brick))*1.05, 0.30*step(0.78, val));
+  float soot = smoothstep(1.0, uCeil + 0.4, q.y)*0.55;
+  brick *= 1.0 - soot;
+  vec3 col = brick*(1.0 - jt*0.55);
+  float h = 1.0 + 0.05*val - 0.10*jt;
+  /* a plinth of blue engineering brick, and the soot-black string course */
+  float pl = mmBandA(q.y, 0.0, 0.30, px);
+  col = mix(col, vec3(0.10, 0.11, 0.13)*(lum*1.6 + 0.006)*(0.8 + 0.4*val), pl);
+  h += pl*0.20;
+  mmPen(q.y - 0.30, 1.1, 0.8);
+  float emit = 0.0, emitW = 0.0, emitF = 0.0, gloss = 0.05;
+  vec3 iron = vec3(0.055, 0.055, 0.062)*(lum*1.6 + 0.010);
+  vec3 brass = vec3(0.86, 0.62, 0.28)*(lum*2.6 + 0.020);
+  vec3 wood = vec3(0.34, 0.20, 0.11)*(lum*2.2 + 0.008);
+  vec3 glassC = vec3(0.50, 0.56, 0.58)*(lum*1.4 + 0.010);
+  vec3 wax = vec3(0.80, 0.74, 0.58)*(lum*2.0 + 0.016);
+
+  if (isShop > 0.5) {
+    /* ===== THE LINE SHAFT under the roof, on every wall ===== */
+    float SY = min(4.10, uCeil - 0.70);
+    float shaft = mmBandA(q.y, SY - 0.045, SY + 0.045, px);
+    float hang = mmInkP(mmRowX(u + 1.2, 2.4), px, 2.2)*step(SY, q.y)*step(q.y, uCeil);
+    float pi = floor((u + 1.2)/2.4);
+    float pxl = u + 1.2 - (pi + 0.5)*2.4;
+    float pR = 0.30 + 0.12*mmHash11(pi*3.1 + uSeed);
+    float pul = lwPulley(vec2(pxl, q.y - SY), pR, px);
+    col = mix(col, iron, clamp(shaft + hang, 0.0, 1.0));
+    col = mix(col, iron*1.4, pul);
+    h += shaft*0.30 + hang*0.20 + pul*0.30;
+    gInk = max(gInk, pul*0.5);
+    mmPen(q.y - SY - 0.045, 1.0, 0.8); mmPen(q.y - SY + 0.045, 1.0, 0.8);
+    /* the belts: two leather runs from every other pulley down to the bench */
+    float bOn = step(0.5, mod(pi, 2.0));
+    float bl = max(mmInkP(pxl - pR*0.86 + (SY - q.y)*0.02, px, 1.8), mmInkP(pxl + pR*0.86 - (SY - q.y)*0.02, px, 1.8))
+             * step(1.25, q.y)*step(q.y, SY)*bOn;
+    col = mix(col, vec3(0.16, 0.08, 0.04)*(lum*1.6 + 0.006), bl);
+    gInk = max(gInk, bl*0.45);
+    if (far > 0.5) {
+      /* ===== THE GLASS FURNACE: a brick beehive on the axis ===== */
+      float FW = 1.70, FH = 1.55;
+      float dome = length(vec2(cx/FW, max(q.y - FH, 0.0)/1.25)) - 1.0;
+      float fur = max(dome, -q.y);
+      float onF = mmCover(-fur*FW);
+      /* its own brick: firebrick, laid in rings round the dome */
+      float rr = length(vec2(cx, max(q.y - FH, 0.0)*FW/1.25));
+      float ring = mmInkP(mmRowX(rr, 0.15), px, 1.0)*step(FH, q.y) + mmInkP(mmRowX(q.y, 0.15), px, 1.0)*step(q.y, FH);
+      vec3 fbk = vec3(0.46, 0.24, 0.13)*(lum*2.2 + 0.008)*(0.80 + 0.30*mmHash21(floor(vec2(cx/0.25, q.y/0.15))));
+      col = mix(col, fbk*(1.0 - 0.45*ring), onF);
+      h += onF*(0.35 + 0.25*sqrt(clamp(-fur, 0.0, 1.0)));
+      mmPen(fur*FW, 1.5, 0.95);
+      /* the iron band round its waist, and its tie rods */
+      float band = mmBandA(q.y, 1.10, 1.22, px)*onF;
+      col = mix(col, iron*1.3, band);
+      h += band*0.20;
+      mmPen(q.y - 1.10, 1.0, 0.8*onF); mmPen(q.y - 1.22, 1.0, 0.8*onF);
+      /* the GLORY HOLES: three mouths, white at the heart */
+      float gh = 1e3;
+      for (int i = 0; i < 3; i++){
+        float gx = (float(i) - 1.0)*0.82;
+        float gy = 0.88 + 0.22*(1.0 - abs(float(i) - 1.0));
+        gh = min(gh, length(vec2(cx - gx, (q.y - gy)*1.10)) - 0.17);
+      }
+      float hole = mmCover(-gh);
+      float lip = mmCover(-(gh - 0.07))*(1.0 - hole)*onF;
+      col = mix(col, vec3(0.04, 0.02, 0.01), hole);
+      col = mix(col, iron*1.2, lip);
+      mmPen(gh, 1.3, 0.9); mmPen(gh - 0.07, 1.0, 0.7*onF);
+      emitF += hole*(1.4 + 1.2*exp(gh*9.0)) + onF*0.35*exp(-max(gh, 0.0)*5.0);
+      /* ...and the furnace's light on the brick round it: the one fire in
+         the shop, and what the rest of the end wall is seen by */
+      emitF += 0.10*exp(-length(vec2(cx*0.42, (q.y - 1.0)*0.55)))*(1.0 - onF);
+      /* the stoke hole and its ash at the foot */
+      float stoke = mmCover(-mmArch(vec2(cx, q.y - 0.02), 0.28, 0.20));
+      col = mix(col, vec3(0.03, 0.015, 0.01), stoke);
+      emitF += stoke*(0.35 + 0.25*mmNoise(q*14.0 + uTime));
+      /* the stack up from the crown through the roof */
+      float stD = max(ax - 0.42 - 0.10*smoothstep(FH + 1.4, FH + 1.0, q.y), FH + 1.0 - q.y);
+      float stack = mmCover(-stD);
+      col = mix(col, fbk*0.85*(1.0 - 0.5*mmInkP(mmRowX(q.y, 0.15), px, 1.0)), stack);
+      h += stack*0.40;
+      mmPen(ax - 0.42, 1.3, 0.9*step(FH + 1.4, q.y));
+      /* ===== THE BENCHES either side of it ===== */
+      float onB = step(2.30, ax);
+      float top = mmBandA(q.y, 0.86, 0.95, px)*onB;
+      float legs = mmCover(-mmBox(vec2(mmRowX(cx, 1.6) - 0.8, q.y - 0.43), vec2(0.05, 0.43), 0.01))*onB;
+      float shelfL = mmBandA(q.y, 0.24, 0.29, px)*onB;
+      float under = mmBandA(q.y, 0.29, 0.86, px)*onB*(1.0 - legs);
+      col = mix(col, col*0.30, under);
+      col = mix(col, wood*0.75, clamp(legs + shelfL, 0.0, 1.0));
+      col = mix(col, wood*(1.0 + 0.4*smoothstep(0.90, 0.95, q.y)), top);
+      h += top*0.40 + legs*0.30 + shelfL*0.20 - under*0.20;
+      mmPen(q.y - 0.86, 1.2, 0.9*onB); mmPen(q.y - 0.95, 1.0, 0.8*onB);
+      /* on the bench: every 0.46 m a lamp in the making -- a glass chimney
+         stood up, a brass font, a vice, a finished lamp lit to test it */
+      float si = floor(cx/0.46);
+      float sx = cx - (si + 0.5)*0.46;
+      float k = mmHash11(si*5.3 + uSeed);
+      vec2 bq = vec2(sx, q.y - 0.95);
+      /* (all four drawn, one kept: a derivative taken under a branch that
+         differs pixel to pixel is undefined) */
+      float w0 = step(k, 0.30), w1 = step(0.30, k)*step(k, 0.55);
+      float w2 = step(0.55, k)*step(k, 0.72), w3 = step(0.72, k);
+      /* a chimney: a glass tube with its bulb, clear, catching the light */
+      float cw = 0.045 + 0.035*exp(-pow((bq.y - 0.14)/0.06, 2.0));
+      float chD = max(abs(bq.x) - cw, max(-bq.y, bq.y - 0.34));
+      float ch = mmCover(-chD)*onB*w0;
+      float edge = mmInkP(abs(bq.x) - cw + px, px, 1.2)*ch;
+      col = mix(col, glassC*0.6, ch*0.6);
+      col = mix(col, glassC*2.2, edge);
+      /* a brass font: the oil vessel, squat, with its collar */
+      float foD = min(mmBox(bq - vec2(0.0, 0.08), vec2(0.10, 0.08), 0.05), mmBox(bq - vec2(0.0, 0.18), vec2(0.04, 0.03), 0.01));
+      float fo = mmCover(-foD)*onB*w1;
+      col = mix(col, brass*(0.70 + 0.50*smoothstep(0.0, 0.14, bq.y) - 0.3*smoothstep(0.04, 0.10, abs(bq.x))), fo);
+      mmPen(foD, 1.1, 0.85*onB*w1);
+      /* a bench vice */
+      float viD = min(mmBox(bq - vec2(0.0, 0.10), vec2(0.10, 0.07), 0.01), mmBox(bq - vec2(0.0, 0.20), vec2(0.015, 0.05), 0.005));
+      viD = min(viD, mmBox(bq - vec2(0.0, 0.25), vec2(0.09, 0.012), 0.006));
+      float vi = mmCover(-viD)*onB*w2;
+      col = mix(col, iron*1.5, vi);
+      mmPen(viD, 1.1, 0.9*onB*w2);
+      /* a finished lamp, lit on the bench to test it */
+      float lg, lf;
+      float lc = lwLantern(bq, 0.30, px, lg, lf)*onB*w3;
+      col = mix(col, brass*0.8, lf*onB*w3);
+      col = mix(col, vec3(0.95, 0.80, 0.55)*(lum*2.0 + 0.04), lg*onB*w3);
+      emitW += lg*onB*w3*(0.9 + 0.2*mmNoise(vec2(uTime*3.0, si)));
+      emitW += onB*w3*0.10*exp(-length(bq - vec2(0.0, 0.15))*5.0)*(1.0 - lc);
+      gloss = max(gloss, ch + fo);
+      float obj = ch + fo + vi + lc;
+      h += obj*0.25;
+      /* the tool rail over the bench, and its tools hung on it */
+      float tr = mmBandA(q.y, 1.70, 1.74, px)*onB;
+      float ti = floor(cx/0.21);
+      float tx = cx - (ti + 0.5)*0.21;
+      float tk = mmHash11(ti*7.1 + uSeed);
+      float tlen = 0.18 + 0.16*tk;
+      float tool = mmCover(-max(abs(tx) - (0.012 + 0.03*step(0.6, tk)*step(q.y, 1.70 - tlen + 0.06)), max(q.y - 1.70, 1.70 - tlen - q.y)))
+                 * onB * step(0.25, tk);
+      col = mix(col, iron*1.6, clamp(tr + tool, 0.0, 1.0));
+      h += tr*0.25 + tool*0.20;
+      /* the shelves of finished lanterns over it, some of them lit */
+      for (int s = 0; s < 2; s++){
+        float sy = 2.20 + float(s)*0.62;
+        float sh = mmBandA(q.y, sy - 0.04, sy, px)*onB;
+        col = mix(col, wood*0.9, sh);
+        h += sh*0.30;
+        mmPen(q.y - sy, 1.1, 0.85*onB);
+        float li = floor(cx/0.36 + float(s)*0.5);
+        float lx = cx - (li + 0.5 - float(s)*0.5)*0.36;
+        float lk = mmHash11(li*3.3 + float(s)*11.0 + uSeed);
+        float lg, lf;
+        float lc = lwLantern(vec2(lx, q.y - sy), 0.34 + 0.08*lk, px, lg, lf)*onB*step(0.12, lk);
+        float lit = step(0.70, lk);
+        col = mix(col, mix(brass*0.75, iron*1.6, step(0.80, lk)), lf*onB*step(0.12, lk));
+        col = mix(col, mix(glassC*0.5, vec3(0.95, 0.80, 0.55)*(lum*2.0 + 0.04), lit), lg*onB*step(0.12, lk));
+        emitW += lg*onB*lit*step(0.12, lk)*(0.85 + 0.25*mmNoise(vec2(uTime*2.0, li)));
+        h += lc*0.20;
+      }
+    } else {
+      /* ===== THE LONG WALLS: night windows, and the rails of lanterns ===== */
+      float WP = 4.6;
+      float wi = floor(q.x/WP);
+      float wx = q.x - (wi + 0.5)*WP;
+      float wtop = min(uCeil - 0.95, 6.0);
+      float wD = mmBox(vec2(wx, q.y - (2.70 + wtop)*0.5), vec2(1.10, (wtop - 2.70)*0.5), 0.02);
+      float win = mmCover(-wD);
+      float bars = max(mmInkP(mmRowX(wx, 0.37), px, 1.6), mmInkP(mmRowX(q.y - 2.70, 0.42), px, 1.6))*win;
+      float wet = r23Rain(q, px);
+      col = mix(col, vec3(0.020, 0.034, 0.062)*(0.7 + 0.5*smoothstep(2.7, wtop, q.y)), win*(1.0 - bars));
+      col = mix(col, iron*0.8, bars);
+      emit += win*(1.0 - bars)*(0.02 + wet*0.22);
+      h = mix(h, 0.6, win);
+      mmPen(wD, 1.4, 0.95);
+      float sill = mmBandA(q.y, 2.58, 2.70, px)*step(abs(wx), 1.25);
+      col = mix(col, vec3(0.30, 0.30, 0.30)*(lum*1.6 + 0.008), sill);
+      h += sill*0.35;
+      /* the rail of lanterns hung for sale, at 2.3 m */
+      float rail = mmBandA(q.y, 2.26, 2.31, px);
+      col = mix(col, iron*1.3, rail);
+      h += rail*0.30;
+      float li = floor(q.x/0.52);
+      float lx = q.x - (li + 0.5)*0.52;
+      float lk = mmHash11(li*4.1 + uSeed);
+      float drop = 0.08 + 0.18*lk;
+      float chain = mmInkP(lx, px, 1.1)*step(2.26 - drop, q.y)*step(q.y, 2.27);
+      float lg, lf;
+      float ls = 0.36 + 0.10*mmHash11(li*1.7);
+      float lc = lwLantern(vec2(lx, q.y - (2.26 - drop - ls*1.20)), ls, px, lg, lf)*step(0.15, lk);
+      float lit = step(0.60, lk);
+      col = mix(col, iron*1.5, chain*step(0.15, lk));
+      col = mix(col, mix(brass*0.70, iron*1.6, step(0.40, lk)*(1.0 - lit)), lf*step(0.15, lk));
+      col = mix(col, mix(glassC*0.45, vec3(0.95, 0.80, 0.55)*(lum*2.0 + 0.04), lit), lg*step(0.15, lk));
+      emitW += lg*lit*step(0.15, lk)*(0.85 + 0.25*mmNoise(vec2(uTime*2.0, li)));
+      emitW += lit*step(0.15, lk)*0.08*exp(-length(vec2(lx, q.y - (2.26 - drop - ls*0.6)))*3.0)*(1.0 - lc);
+      h += lc*0.25;
+      /* a bench along the wall under them, its glass and its fonts */
+      float top = mmBandA(q.y, 0.86, 0.95, px);
+      float under = mmBandA(q.y, 0.30, 0.86, px);
+      col = mix(col, col*0.30, under);
+      col = mix(col, wood, top);
+      h += top*0.40 - under*0.2;
+      mmPen(q.y - 0.86, 1.1, 0.85);
+      float bi = floor(q.x/0.40);
+      float bx = q.x - (bi + 0.5)*0.40;
+      float bk = mmHash11(bi*6.7 + uSeed);
+      float fo = mmCover(-min(mmBox(vec2(bx, q.y - 1.03), vec2(0.09, 0.08), 0.05), mmBox(vec2(bx, q.y - 1.13), vec2(0.035, 0.03), 0.01)))*step(0.5, bk);
+      col = mix(col, brass*0.9, fo);
+      gloss = max(gloss, fo);
+    }
+  }
+
+  if (isWax > 0.5) {
+    /* ===== THE CHANDLERY ===== */
+    float vat = step(ax, 2.30)*far;
+    float fbD = mmBox(vec2(cx, q.y - 0.57), vec2(1.24, 0.57), 0.02);
+    float fb = mmCover(-fbD)*far;
+    float moD = mmArch(vec2(cx, q.y - 0.14), 0.38, 0.30);
+    float mouth = mmCover(-moD)*far;
+    vec3 fbk = vec3(0.46, 0.24, 0.13)*(lum*2.2 + 0.008)*(0.8 + 0.3*val);
+    col = mix(col, fbk*(1.0 - jt*0.5), fb);
+    col = mix(col, vec3(0.04, 0.015, 0.01), mouth);
+    emitF += mouth*(0.9 + 0.4*mmNoise(q*10.0 + uTime*0.8)) + fb*0.25*exp(-max(moD, 0.0)*6.0);
+    h += fb*0.35;
+    mmPen(fbD, 1.3, 0.9*far); mmPen(moD, 1.2, 0.9*far);
+    /* the vat: copper, widening to its rolled rim, banded */
+    float vw = 0.80 + 0.30*clamp((q.y - 1.14)/0.74, 0.0, 1.0);
+    float vD = max(ax - vw, max(1.14 - q.y, q.y - 1.97));
+    float vbody = mmCover(-vD)*far;
+    float vrim = mmBandA(q.y, 1.86, 1.97, px)*step(ax, 1.14)*far;
+    vec3 cu = vec3(0.62, 0.24, 0.09)*(lum*1.6 + 0.008);
+    col = mix(col, cu*(0.55 + 0.75*(1.0 - ax/max(vw, 0.1))), vbody);
+    col = mix(col, cu*1.6, vrim);
+    col *= 1.0 - mmInkP(q.y - 1.50, px, 1.4)*vbody*0.6;
+    h += vbody*0.40 + vrim*0.30;
+    mmPen(vD, 1.3, 0.9*far);
+    gloss = max(gloss, vbody*0.4);
+    /* the wax in it, pale, with its skin */
+    float wv = mmBandA(q.y, 1.93, 1.97, px)*step(ax, 1.05)*far;
+    col = mix(col, wax*1.1, wv);
+    /* the hood over it narrowing to the flue */
+    float hw2 = 1.38 - (q.y - 2.62)*0.74;
+    float hoD = max(ax - max(hw2, 0.30), max(2.62 - q.y, q.y - 3.92));
+    float hood = mmCover(-hoD)*far;
+    float flue = mmCover(-max(ax - 0.30, 3.90 - q.y))*far;
+    float hseam = mmInkP(mmRowX(cx/max(hw2, 0.3), 0.25), px/max(hw2, 0.3), 1.0)*hood;
+    col = mix(col, cu*0.42*(0.6 + 0.6*(1.0 - ax/max(hw2, 0.3)))*(1.0 - 0.5*hseam), hood);
+    col = mix(col, iron*1.2, flue);
+    h += hood*0.40 + flue*0.30;
+    mmPen(hoD, 1.4, 0.9*far); mmPen(ax - 0.30, 1.1, 0.85*far*step(3.9, q.y));
+    gloss = max(gloss, hood*0.3);
+    /* THE DIPPING FRAMES: posts every 3.0 m, rods at 3.05 and 2.10 m */
+    float onF = 1.0 - vat;
+    float pxF = mmRowX(q.x, 3.0);
+    float post = mmCover(-max(pxF - 0.05, max(0.95 - q.y, q.y - 3.30)))*onF;
+    float rods = (mmBandA(q.y, 3.03, 3.07, px) + mmBandA(q.y, 2.08, 2.12, px))*onF;
+    float hoodF = mmBandA(q.y, 3.30, 3.44, px)*onF;
+    col = mix(col, wood, post);
+    col = mix(col, iron*1.4, clamp(rods + hoodF, 0.0, 1.0));
+    h += post*0.30 + rods*0.25 + hoodF*0.40;
+    mmPen(q.y - 3.30, 1.1, 0.8*onF); mmPen(q.y - 3.44, 1.1, 0.8*onF);
+    /* the tapers: a pair every 0.12 m on each rod, each pair its own length */
+    float ti = floor(q.x/0.12);
+    float tx = q.x - (ti + 0.5)*0.12;
+    float ry = mix(2.10, 3.05, step(2.17, q.y));
+    float th = mmHash11(ti*3.7 + ry*11.1 + uSeed);
+    float tl = 0.30 + 0.24*th;
+    float tt = clamp((ry - 0.05 - q.y)/tl, 0.0, 1.0);
+    float tw = 0.019*(1.0 - 0.30*tt);
+    float pair = min(abs(tx - 0.026), abs(tx + 0.026));
+    float taper = (1.0 - smoothstep(tw, tw + px, pair))*step(ry - 0.05 - tl, q.y)*step(q.y, ry - 0.05)
+                * onF*step(0.11, th)*(1.0 - step(pxF, 0.08));
+    float tsh = 0.65 + 0.55*(1.0 - smoothstep(0.0, tw, pair - 0.0))*(1.0 - 0.3*tt);
+    col = mix(col, wax*tsh, taper);
+    h += taper*0.25;
+    gInk = max(gInk, mmInkP(pair - tw, px, 1.0)*0.55*step(ry - 0.05 - tl, q.y)*step(q.y, ry - 0.05)*onF*step(0.11, th)*(1.0 - step(pxF, 0.08)));
+    /* the bench under them, its moulds and three candles burning on it */
+    float top = mmBandA(q.y, 0.86, 0.95, px)*onF;
+    float under = mmBandA(q.y, 0.30, 0.86, px)*onF;
+    col = mix(col, col*0.30, under);
+    col = mix(col, wood, top);
+    h += top*0.40;
+    mmPen(q.y - 0.86, 1.1, 0.85*onF);
+    float mdx = mmRowX(q.x + 0.75, 1.50);
+    float moulds = step(mdx, 0.52)*mmBandA(q.y, 0.95, 1.40, px)*onF;
+    float tube = mmInkP(mmRowX(q.x, 0.06), px, 1.2)*moulds;
+    col = mix(col, vec3(0.42, 0.42, 0.44)*(lum*1.8 + 0.010)*(0.8 + 0.4*tube), moulds);
+    h += moulds*0.25;
+    float ci = floor(q.x/1.5);
+    float cxl = q.x - (ci + 0.5)*1.5 + 0.0;
+    float cand = mmCover(-mmBox(vec2(cxl - 0.62, q.y - 1.10), vec2(0.025, 0.15), 0.01))*onF*step(0.5, mmHash11(ci*2.3 + uSeed));
+    float flame = mmCover(-(length(vec2(cxl - 0.62, (q.y - 1.31)*0.55)) - 0.030))*onF*step(0.5, mmHash11(ci*2.3 + uSeed));
+    col = mix(col, wax*1.2, cand);
+    emitW += flame*2.0 + onF*step(0.5, mmHash11(ci*2.3 + uSeed))*0.10*exp(-length(vec2(cxl - 0.62, q.y - 1.30))*4.0);
+    /* the shelves of boxed candles over it all */
+    for (int s = 0; s < 2; s++){
+      float sy = 3.82 + float(s)*0.58;
+      float sh = mmBandA(q.y, sy - 0.04, sy, px)*onF;
+      float bi = floor(q.x/0.30 + float(s)*0.37);
+      float bx = q.x - (bi + 0.5 - float(s)*0.37)*0.30;
+      float bh = 0.14 + 0.16*mmHash11(bi*2.1 + float(s));
+      float boD = mmBox(vec2(bx, q.y - sy - bh*0.5), vec2(0.12, bh*0.5), 0.01);
+      float box = mmCover(-boD)*onF*step(0.25, mmHash11(bi*5.7 + float(s)*3.0));
+      vec3 bc = mix(vec3(0.42, 0.34, 0.22), vec3(0.30, 0.10, 0.08), step(0.7, mmHash11(bi*9.1)))*(lum*1.8 + 0.008);
+      col = mix(col, wood*0.85, sh);
+      col = mix(col, bc*(0.8 + 0.3*mmHash11(bi)), box);
+      h += sh*0.3 + box*0.2;
+      mmPen(boD, 1.0, 0.7*onF*step(0.25, mmHash11(bi*5.7 + float(s)*3.0)));
+    }
+  }
+
+  if (isRef > 0.5) {
+    /* ===== THE REFLECTOR GALLERY ===== */
+    const float RB = 2.80, R = 0.64;
+    float onD = far > 0.5 ? step(2.95, ax) : 1.0;
+    float bi = floor(q.x/RB + 0.5);
+    float rx = q.x - bi*RB;
+    vec2 dp = vec2(rx, q.y - 2.55);
+    float r = length(dp);
+    float dish = mmCover(-(r - R))*onD;
+    float zones = 0.5 + 0.5*cos(r*38.0);
+    vec3 silver = vec3(0.62, 0.66, 0.72)*(lum*1.6 + 0.012);
+    col = mix(col, silver*(0.30 + 0.35*zones*(r/R) + 0.40*(r/R)), dish);
+    float rim = mmInkP(r - R, px, max(0.05/px, 2.0))*onD;
+    col = mix(col, brass, rim);
+    /* (a dish is spun metal: the brick's courses stop at its rim) */
+    h = mix(h, 1.10 + 0.25*(r/R), dish);
+    h += rim*0.35;
+    mmPen(r - R - 0.03, 1.2, 0.85*onD);
+    gloss = max(gloss, dish*0.8 + rim);
+    /* the lamp at the focus, its chimney, and the flame doubled in the dish */
+    float burner = mmCover(-mmBox(dp - vec2(0.0, -0.07), vec2(0.065, 0.050), 0.012))*onD;
+    float chim = mmCover(-mmBox(dp - vec2(0.0, 0.07), vec2(0.036, 0.10), 0.02))*onD;
+    col = mix(col, brass*0.9, burner);
+    col = mix(col, vec3(0.95, 0.82, 0.58)*(lum*2.0 + 0.04), chim);
+    emitW += chim*1.6 + dish*(0.30*exp(-r*4.5) + 0.10*zones*exp(-r*2.0)) + onD*0.05*exp(-r*1.4)*(1.0 - dish);
+    /* the yoke, the stem and its wall plate */
+    float yoke = mmInkP(length(vec2(rx, (q.y - 2.55)*0.92)) - (R + 0.10), px, 2.2)*step(q.y, 2.55)*onD;
+    float stem = mmCover(-mmBox(vec2(rx, q.y - 1.70), vec2(0.035, 0.20), 0.01))*onD;
+    float plate = mmCover(-mmBox(vec2(rx, q.y - 1.50), vec2(0.22, 0.035), 0.01))*onD;
+    col = mix(col, iron*1.4, clamp(yoke + stem + plate, 0.0, 1.0));
+    h += (yoke + stem + plate)*0.30;
+    /* the small dishes over the piers, each with its own little lamp lit */
+    float sx = q.x - (floor(q.x/RB) + 0.5)*RB;
+    vec2 sp = vec2(sx, q.y - 4.25);
+    float r2 = length(sp);
+    float dish2 = mmCover(-(r2 - 0.34))*onD*step(q.y, uCeil - 0.3);
+    col = mix(col, silver*(0.30 + 0.40*(r2/0.34)), dish2);
+    h = mix(h, 1.10 + 0.20*(r2/0.34), dish2);
+    col = mix(col, brass, mmInkP(r2 - 0.34, px, 1.8)*onD);
+    emitW += dish2*0.25*exp(-r2*8.0) + onD*mmCover(-(length(sp - vec2(0.0, 0.03)) - 0.035))*1.2;
+    /* the rail they hang under, and the bench below with its glasses */
+    float rl = mmBandA(q.y, 3.44, 3.54, px)*onD;
+    col = mix(col, iron*1.3, rl);
+    h += rl*0.30;
+    float top = mmBandA(q.y, 0.86, 0.95, px)*onD;
+    float under = mmBandA(q.y, 0.30, 0.86, px)*onD;
+    col = mix(col, col*0.30, under);
+    col = mix(col, wood, top);
+    h += top*0.40;
+    mmPen(q.y - 0.86, 1.1, 0.85*onD);
+    float gi = floor(q.x/0.24);
+    float gx = q.x - (gi + 0.5)*0.24;
+    float gk = mmHash11(gi*3.9 + uSeed);
+    float cw = 0.040 + 0.030*exp(-pow((q.y - 1.08)/0.05, 2.0));
+    float gl = mmCover(-max(abs(gx) - cw, max(0.95 - q.y, q.y - 1.25)))*onD*step(0.3, gk);
+    col = mix(col, glassC*(0.6 + 1.2*mmInkP(abs(gx) - cw + px, px, 1.2)), gl);
+    if (far > 0.5) {
+      /* ---- THE GREAT LANTERN at the end ---- */
+      float ped = mmCover(-mmBox(vec2(cx, q.y - 0.66), vec2(0.58, 0.56), 0.02));
+      float pbase = mmCover(-mmBox(vec2(cx, q.y - 0.08), vec2(0.80, 0.08), 0.02));
+      float ptab = mmCover(-mmBox(vec2(cx, q.y - 1.26), vec2(0.96, 0.06), 0.02));
+      float pfl = ped*mmInkP(mmRowX(cx + 0.07, 0.14), px, 1.2);
+      col = mix(col, iron*(1.3 - 0.5*pfl), clamp(ped + pbase, 0.0, 1.0));
+      col = mix(col, brass*0.8, ptab);
+      h += ped*0.35 + pbase*0.40 + ptab*0.45;
+      mmPen(mmBox(vec2(cx, q.y - 0.66), vec2(0.58, 0.56), 0.02), 1.2, 0.9);
+      float ly = q.y - 1.32;
+      const float LH = 3.40;
+      float lt = clamp(ly/LH, 0.0, 1.0);
+      float lhw = 1.30*(0.78 + 0.22*sin(3.14159*lt));
+      float lens = step(0.0, ly)*step(ly, LH)*(1.0 - smoothstep(lhw - px, lhw + px, ax));
+      float belt = mmBandA(ly, 1.24, 2.14, px);
+      float pitch = mix(0.16, 0.10, belt);
+      float pr = 0.55 + 0.45*abs(fract(ly/pitch) - 0.5)*2.0;
+      float un = cx/max(lhw, 0.01);
+      float astr = lens*mmInkP(min(abs(un), min(abs(abs(un) - 0.52), abs(abs(un) - 0.94)))*lhw, px, 2.0);
+      float hoop = lens*(mmBandA(ly, 1.20, 1.28, px) + mmBandA(ly, 2.10, 2.18, px));
+      float bull = exp(-length(vec2(cx, (ly - 1.70)*1.15))*1.5);
+      col = mix(col, vec3(0.90, 0.78, 0.55)*(lum*1.6 + 0.02)*(0.5 + 0.5*pr), lens);
+      col = mix(col, brass*0.9, clamp(astr + hoop, 0.0, 1.0));
+      /* the lens carries the lamp in its prisms: banded, brightest at the
+         bullseye, and never a white sheet */
+      emitW += lens*(1.0 - clamp(astr + hoop, 0.0, 1.0))*(0.04 + 0.16*pr*pr + 0.40*bull*bull)
+             + 0.05*exp(-max(ax - lhw, 0.0)*1.5)*step(0.0, ly)*step(ly, LH + 0.2)*(1.0 - lens);
+      h = mix(h, 1.0 + 0.15*pr, lens);
+      mmPen(ax - lhw, 1.4, 0.95*step(0.0, ly)*step(ly, LH));
+      float cy = q.y - 1.32 - LH;
+      float capW = 1.00*(1.0 - cy*0.95);
+      float cap = step(0.0, cy)*step(cy, 0.54)*(1.0 - smoothstep(capW - px, capW + px, ax));
+      float ball = mmCover(-(length(vec2(cx, cy - 0.70)) - 0.15));
+      col = mix(col, iron*1.5, clamp(cap + ball, 0.0, 1.0));
+      h += cap*0.35 + ball*0.40;
+      gloss = max(gloss, ptab + hoop);
+    }
+  }
+  gCol = col;
+  gColAmt = 1.0;
+  float emitT = emit + emitW + emitF;
+  gWEmit = emitT;
+  gWEmitC = (vec3(0.62, 0.74, 1.00)*emit + vec3(1.00, 0.74, 0.42)*emitW + vec3(1.00, 0.46, 0.14)*emitF) / max(emitT, 1e-4);
+  gWGloss = gloss;
+  return h;
+}
+#endif
 float wallH(vec2 q, out float occ){
   gTreeM = 0.0;
   gTreeN = 0.0; gTreeF = 0.0; gTreeRim = 0.0; gTreeTex = 0.5;
@@ -9758,6 +10235,88 @@ float tubSD(vec2 m, vec2 msz, float seed, out float part){
   if (taps < 0.0) part = 5.0;
   return d*S;
 }
+
+/* 33  A HANGING LANTERN on its chain, for the Lampworks' roof: a square
+   lantern of four glazed panes under a pyramid cap with its ring, or a round
+   globe lamp under a smoke shade -- the chain as long as the quad, so a dozen
+   of them hang at a dozen heights. Most are lit. m from the foot of the
+   quad's axis; part 0 iron, 1 brass, 2 glass. */
+float lantSD(vec2 m, vec2 msz, float seed, float wire, out float part){
+  float H = msz.y;
+  float kind = step(0.62, mmHash11(seed*4.3 + 0.2));
+  float S = 0.52 + 0.20*mmHash11(seed*2.9);
+  vec2 u = m/S;
+  /* the lantern sits at the foot of the quad, the chain runs up to the top */
+  float body, glass, cap;
+  if (kind < 0.5) {
+    body = mmBox(u - vec2(0.0, 0.52), vec2(0.30, 0.30), 0.02);
+    glass = mmBox(u - vec2(0.0, 0.52), vec2(0.24, 0.25), 0.01);
+    cap = max(max(u.y - 0.82 - 0.28*(1.0 - abs(u.x)/0.40), 0.82 - u.y), abs(u.x) - 0.40);
+    float base = mmBox(u - vec2(0.0, 0.16), vec2(0.36, 0.06), 0.02);
+    float fin = length(u - vec2(0.0, 0.05)) - 0.06;
+    body = min(min(body, base), fin);
+  } else {
+    body = length((u - vec2(0.0, 0.45))*vec2(1.0, 1.05)) - 0.30;
+    glass = body + 0.025;
+    cap = max(max(u.y - 0.80 - 0.10*(1.0 - abs(u.x)/0.48), 0.72 - u.y), abs(u.x) - 0.48 + (u.y - 0.72)*0.9);
+    body = min(body, mmBox(u - vec2(0.0, 0.76), vec2(0.10, 0.06), 0.02));
+  }
+  float ring = abs(length(u - vec2(0.0, 1.20)) - 0.07) - 0.024;
+  float d = min(min(body, cap), ring)*S;
+  float chain = mmSeg(vec2(m.x, m.y - (1.25*S + H)*0.5), max((H - 1.25*S)*0.5, 0.0), wire);
+  d = min(d, chain);
+  part = 0.0;
+  if (cap*S < 0.0 || ring*S < 0.0) part = 1.0;
+  if (glass < 0.0) part = 2.0;
+  /* a square lantern's panes are parted by its brass bars */
+  if (kind < 0.5 && glass < 0.0 && abs(u.x) < 0.025) part = 1.0;
+  return d;
+}
+/* 34  A LAMP-MAKER'S BENCH, standing out on the floor: a deal top on four
+   legs with a shelf under it, a vice at one end, and on the top what is
+   being made -- glass chimneys stood on end, a brass font, a finished lamp
+   lit to try it. part 0 wood, 1 iron, 2 brass, 3 glass, 4 the lit lamp. */
+float lbSD(vec2 m, vec2 msz, float seed, out float part){
+  float hw = msz.x*0.5 - 0.06;
+  const float TOP = 0.90;
+  part = 0.0;
+  float d = mmBox(m - vec2(0.0, TOP - 0.035), vec2(hw, 0.035), 0.008);
+  d = min(d, mmBox(vec2(abs(m.x) - (hw - 0.08), m.y - (TOP - 0.07)*0.5), vec2(0.040, (TOP - 0.07)*0.5), 0.006));
+  d = min(d, mmBox(m - vec2(0.0, 0.22), vec2(hw - 0.08, 0.020), 0.004));
+  d = min(d, mmBox(m - vec2(0.0, TOP - 0.11), vec2(hw - 0.08, 0.035), 0.004));
+  /* on the shelf: two crates */
+  float cr = min(mmBox(m - vec2(-hw*0.45, 0.36), vec2(0.20, 0.12), 0.01), mmBox(m - vec2(hw*0.30, 0.34), vec2(0.16, 0.10), 0.01));
+  d = min(d, cr);
+  /* the vice at the left end */
+  float vi = min(mmBox(m - vec2(-hw + 0.14, TOP + 0.09), vec2(0.10, 0.07), 0.01), mmBox(m - vec2(-hw + 0.14, TOP + 0.20), vec2(0.016, 0.06), 0.004));
+  vi = min(vi, mmBox(m - vec2(-hw + 0.14, TOP + 0.25), vec2(0.09, 0.012), 0.006));
+  /* things on the top */
+  float gl = 1e3, br = 1e3, lp = 1e3, lpG = 1e3;
+  for (int k = 0; k < 3; k++){
+    float kx = -hw*0.30 + float(k)*hw*0.52 + (mmHash11(seed*3.1 + float(k)) - 0.5)*0.12;
+    float kk = mmHash11(seed*7.7 + float(k)*1.9);
+    vec2 o = m - vec2(kx, TOP);
+    if (kk < 0.40) {
+      float cw = 0.040 + 0.030*exp(-pow((o.y - 0.12)/0.05, 2.0));
+      gl = min(gl, max(abs(o.x) - cw, max(-o.y, o.y - 0.30)));
+      gl = min(gl, max(abs(o.x - 0.11) - cw*0.9, max(-o.y, o.y - 0.26)));
+    } else if (kk < 0.70) {
+      br = min(br, min(mmBox(o - vec2(0.0, 0.07), vec2(0.09, 0.07), 0.045), mmBox(o - vec2(0.0, 0.16), vec2(0.035, 0.025), 0.008)));
+    } else {
+      lp = min(lp, min(mmBox(o - vec2(0.0, 0.06), vec2(0.08, 0.06), 0.04), mmBox(o - vec2(0.0, 0.33), vec2(0.07, 0.025), 0.01)));
+      lpG = min(lpG, max(abs(o.x) - (0.035 + 0.025*exp(-pow((o.y - 0.17)/0.05, 2.0))), max(0.11 - o.y, o.y - 0.31)));
+      lp = min(lp, lpG);
+    }
+  }
+  float dd = min(min(d, cr), min(vi, min(min(gl, br), lp)));
+  if (cr < 0.0) part = 0.5;
+  if (vi < 0.0) part = 1.0;
+  if (br < 0.0) part = 2.0;
+  if (lp < 0.0) part = 2.0;
+  if (gl < 0.0) part = 3.0;
+  if (lpG < 0.0) part = 4.0;
+  return dd;
+}
 float gW2Part = 0.0;
 #endif
 
@@ -10557,6 +11116,13 @@ float shapeField(vec2 uv, vec2 msz, float shape, float seed){
   } else if (shape < 32.5) {              // 32 -- a roll-top bath (round 23)
     float pt;
     d = tubSD(p*msz, msz, seed, pt) / msz.y;
+  } else if (shape < 33.5) {              // 33 -- a hanging lantern (round 23)
+    float pt;
+    float mppx = max(length(vec2(dFdx(uv.x), dFdy(uv.x))) * msz.x, 1.0e-5);
+    d = lantSD(p*msz, msz, seed, max(0.010, mppx*0.9), pt) / msz.x;
+  } else if (shape < 34.5) {              // 34 -- a lamp-maker's bench (round 23)
+    float pt;
+    d = lbSD(p*msz, msz, seed, pt) / msz.y;
 #endif
   }
   /* A BRASS FITTING HAS NO ERODED EDGE. The fbm below is what keeps stone and
@@ -10700,6 +11266,14 @@ float reliefH(vec2 uv, vec2 msz, vec2 mpp, float shape, float seed, out float ti
   if (shape > 31.5) {
     gBedLeaf = 0.0;
     float pt = 0.0;
+    if (shape > 32.5 && shape < 33.5) {
+      lantSD(m, msz, seed, 0.012, pt);
+      h += 0.010*step(1.5, pt);
+    } else if (shape > 33.5 && shape < 34.5) {
+      lbSD(m, msz, seed, pt);
+      h += 0.012*pR(m.y - 0.885, 0.02);
+      tint -= 0.45*pB(m.y, 0.25, 0.78)*step(pt, 0.1);
+    }
     if (shape < 32.5) {
       float sd = tubSD(m, msz, seed, pt);
       float S = msz.y/1.10;
@@ -12441,6 +13015,38 @@ void main(){
     c = mix(c, brass*(0.70 + 0.40*smoothstep(0.0, 0.20, tq.y)), step(3.5, pt));
     albedo = c;
   }
+  if (vShape > 32.5 && vShape < 34.5) {
+    /* the lantern's iron and brass and its glass, lit or not; the bench's
+       deal and what is on it */
+    float lum = max(mmLum(albedo), 0.02);
+    vec3 ironC = vec3(0.08, 0.08, 0.09)*(lum*2.0 + 0.030);
+    vec3 brassC = vec3(0.90, 0.64, 0.28)*(lum*2.8 + 0.060);
+    vec3 dealC = vec3(0.50, 0.34, 0.20)*(lum*2.6 + 0.040)*(0.86 + 0.28*grain);
+    vec3 glassC = vec3(0.55, 0.62, 0.66)*(lum*1.8 + 0.030);
+    float pt = gW2Part;
+    vec2 sm = (vUv - vec2(0.5, 0.0))*vSize;
+    if (vShape < 33.5) {
+      float lit = step(0.22, mmHash11(vSeed*9.1 + 0.3));
+      float fl = 0.85 + 0.15*mmNoise(vec2(uTime*2.6, vSeed*7.0));
+      vec3 c = mix(ironC, brassC, step(0.5, pt)*step(pt, 1.5));
+      float S = 0.52 + 0.20*mmHash11(vSeed*2.9);
+      float core = exp(-length((sm - vec2(0.0, 0.48*S))/vec2(1.0, 1.4))/(0.10*S));
+      vec3 gc = mix(glassC*0.35, vec3(1.00, 0.84, 0.58)*(lum*1.2 + 0.05), lit);
+      c = mix(c, gc, step(1.5, pt));
+      albedo = c;
+      w2Emit = vec3(1.00, 0.76, 0.44)*step(1.5, pt)*lit*fl*(0.55 + 1.10*core);
+    } else {
+      vec3 c = dealC;
+      c *= 1.0 + 0.8*smoothstep(0.86, 0.90, sm.y)*step(sm.y, 0.905);
+      c = mix(c, dealC*0.7, step(0.25, pt)*step(pt, 0.75));
+      c = mix(c, ironC*1.6, step(0.75, pt)*step(pt, 1.5));
+      c = mix(c, brassC, step(1.5, pt)*step(pt, 2.5));
+      c = mix(c, glassC*1.4, step(2.5, pt)*step(pt, 3.5));
+      c = mix(c, vec3(1.00, 0.84, 0.58)*(lum*1.2 + 0.05), step(3.5, pt));
+      albedo = c;
+      w2Emit = vec3(1.00, 0.76, 0.44)*step(3.5, pt)*(0.9 + 0.15*mmNoise(vec2(uTime*3.0, vSeed)));
+    }
+  }
 #endif
 
   /* ...AND A FOUNTAIN IS STONE, with water on it (25, round 14). It stands in
@@ -12931,7 +13537,7 @@ void main(){
      one was arriving at 43% fog against the other two's 14% -- which is most of
      why two of the three read and the middle of the dance floor still showed a
      pale oval attached to nothing. */
-  float fFog = (isFit > 0.5) ? vFog*0.26 : vFog;
+  float fFog = (isFit > 0.5 || (vShape > 32.5 && vShape < 33.5)) ? vFog*0.26 : vFog;
   col = mix(col, uFog, fFog);
   col = mmDesat(col, uDread*0.5) * (1.0 - uDread*0.22);
   gl_FragColor = vec4(col, mask*(1.0 - fFog*0.30));

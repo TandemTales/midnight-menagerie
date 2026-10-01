@@ -518,14 +518,23 @@ export const REGIONS = {
   lampworks: {
     label: 'The Lampworks',
     propMat: 'metal', propCeil: 0.239,
-    arch: 4, floorPattern: 2, subject: 'bench',
-    room: { w: 27, d: 23, h: 7.4, side: 0.0, ceilPattern: 8, wallPad: 4.8 },
+    arch: 4, floorPattern: 2, subject: 'lampshop',
+    /* (round 23: 18 m deep, from 23 -- the end wall is the furnace and its
+       benches, and 23 m off it was a row of lit specks in the dark) */
+    room: { w: 25, d: 18, h: 7.4, side: 0.0, ceilPattern: 8, wallPad: 4.8 },
     cam: { y: 2.40, z: 10.0, look: 2.6, fov: 42 },
     deep: '#151725', mid: '#273241', hi: '#3e505f', accent: '#60a9cf',
     rimCol: '#9bcce2', shaft: '#8dbcd7', floorDeep: '#0f111b', floorMid: '#1d2530',
     ambient: '#151826', propAlb: '#2e3944', propHi: '#5d717c',
     gloss: 0.66, grime: 0.80, open: '#59a5c4', openGlow: 0.7, coolFill: 1.1,
-    props: { shapes: [18, 8, 6, 1, 5], count: 28, height: 2.6, layout: 'colonnade' },
+    /* ROUND 23: A LAMPWORKS IS FULL OF LAMPS. "One standing lantern is the
+       only lamp in the Lampworks", and "the machinery is a stack of grey
+       boxes" -- which was the crate stack (8) and the cabinet (5) between
+       two files of columns. Its roof is hung with lanterns at a dozen
+       heights (33), its floor stood with lamp-makers' benches (34) and gas
+       standards (18); the machinery is the line shaft and its belts, which
+       the wall program draws. */
+    props: { shapes: [33, 34, 33, 18, 34, 33], count: 30, height: 2.6, layout: 'hang' },
     particles: { mix: [[PTYPE.EMBER, 0.42], [PTYPE.WISP, 0.30], [PTYPE.DUST, 0.28]],
                  tint: '#cfe8ff', wispTint: '#6fd9ec', emberTint: '#ff9e3c',
                  speed: 1.1, scale: 1.1, wind: 1.0, density: 1.0 },
@@ -1307,12 +1316,12 @@ export const ROOM_KINDS = {
      its own wing's program (MM_ROOMS 6 and 7) and seen from its own place. */
   lampworks: {
     kinds: [
-      { subject: 'bench' },
+      { subject: 'lampshop', layout: 'hang' },
       /* THE WAX ROOM -- the chandlery: the vat on its furnace, the dipping
          frames hung with tapers under their hoods; its floor stood with the
          wax stoves and the candle stands, not the gas standards; seen low,
          among the racks, under its timber roof */
-      { subject: 'wax', layout: 'wings', swap: [[18, 13], [6, 1]], room: { w: 0.80, d: 0.56 },
+      { subject: 'wax', layout: 'wings', swap: [[18, 34]], room: { w: 0.80, d: 0.56 },
         ceil: 6, ceilGain: 1.9,
         vantage: { at: 'among', low: 0.72, fwd: 4.2, pitch: 3.0, off: 0.14, yaw: 12, wide: 4 } },
       /* THE REFLECTOR GALLERY -- round 14, one judge, VERMEIL's: "a receding
