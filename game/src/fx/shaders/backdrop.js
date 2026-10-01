@@ -6613,7 +6613,7 @@ float nurseryWallH(vec2 q, float qpx, out float occ){
   float emit = 0.0, emitW = 0.0, gloss = 0.08;
   /* ---- the paper: a night-blue ground, gold moons and stars in a
      half-drop, printed -- every motif drawn, none of it noise ---- */
-  vec3 paperG = vec3(0.105, 0.105, 0.235)*lw*(0.90 + 0.12*mmNoise(q*0.7 + uSeed));
+  vec3 paperG = vec3(0.095, 0.085, 0.180)*lw*(0.90 + 0.12*mmNoise(q*0.7 + uSeed));
   vec3 col = paperG;
   {
     float PC = 0.36;
@@ -6795,7 +6795,7 @@ float nurseryWallH(vec2 q, float qpx, out float occ){
         float BAY = 1.15;
         float bi = floor(sxl/BAY);
         float bxl = sxl - (bi + 0.5)*BAY;
-        vec3 back = vec3(0.16, 0.08, 0.12)*lw*(0.55 + 0.35*smoothstep(0.0, SP, sy));
+        vec3 back = vec3(0.20, 0.10, 0.15)*lw*(0.60 + 0.40*smoothstep(0.0, SP, sy));
         col = back;
         h = 0.55;
         gColAmt = 1.0;
@@ -6807,7 +6807,7 @@ float nurseryWallH(vec2 q, float qpx, out float occ){
         float tk = mmHash21(vec2(bi*3.0 + ti + step(0.0, cx)*17.0, sr) + floor(uSeed*3.0));
         vec2 tp = vec2(bxl + BAY*0.5 - (ti + 0.5)*SL, sy - 0.035);
         vec3 c2 = col; float ik = 0.0;
-        float tcv = nuToy(tp, SL, tk, px, lw, c2, ik);
+        float tcv = nuToy(tp/1.3, SL/1.3, tk, px/1.3, lw*1.25, c2, ik);
         col = c2;
         gInk = max(gInk, ik*(1.0 - shelf)*(1.0 - upr));
         h = mix(h, 1.0, tcv);
@@ -7436,7 +7436,7 @@ float sleepWallH(vec2 q, float qpx, out float occ){
   gColAmt = 1.0;
   float emitT = emit + emitW;
   gWEmit = emitT;
-  gWEmitC = (vec3(0.66, 0.76, 1.00)*emit + vec3(1.00, 0.62, 0.30)*emitW) / max(emitT, 1e-4);
+  gWEmitC = (vec3(0.66, 0.76, 1.00)*emit + vec3(1.00, 0.52, 0.20)*emitW) / max(emitT, 1e-4);
   gWGloss = gloss;
   return h;
 }
@@ -7761,7 +7761,7 @@ float studyWallH(vec2 q, float qpx, out float occ){
         float w = 0.085*(1.0 - t)*(1.0 + 0.3*sin(fq.y*20.0 - uTime*6.0 + fi));
         fl = max(fl, (1.0 - smoothstep(w*0.5, w + px, abs(fq.x - fx - 0.03*sin(fq.y*9.0 + uTime*3.0))))*step(0.0, fq.y)*step(fq.y, fh)*(1.0 - 0.7*t));
       }
-      emitW += (ember*0.9 + fl*0.38)*onO + onO*0.12*exp(-max(q.y - 0.2, 0.0)*3.0);
+      emitW += (ember*0.9 + fl*0.30)*onO + onO*0.12*exp(-max(q.y - 0.2, 0.0)*3.0);
       /* the dogs: two cast-iron andirons with brass finials */
       float dogs = mmBox(vec2(ax - 0.40, q.y - 0.17), vec2(0.03, 0.17), 0.01);
       float dball = length(vec2(ax - 0.40, q.y - 0.38)) - 0.045;
@@ -7840,7 +7840,7 @@ float studyWallH(vec2 q, float qpx, out float occ){
   gColAmt = 1.0;
   float emitT = emit + emitW;
   gWEmit = emitT;
-  gWEmitC = (vec3(0.66, 0.76, 1.00)*emit + vec3(1.00, 0.62, 0.30)*emitW) / max(emitT, 1e-4);
+  gWEmitC = (vec3(0.66, 0.76, 1.00)*emit + vec3(1.00, 0.52, 0.20)*emitW) / max(emitT, 1e-4);
   gWGloss = gloss;
   return h;
 }
@@ -7959,18 +7959,31 @@ float cryptWallH(vec2 q, float qpx, out float occ){
       float crs = max(step(abs(rx + lw2*0.78), 0.012)*step(abs(ty), 0.09), step(abs(ty - 0.03), 0.012)*step(abs(rx + lw2*0.78), 0.05));
       slab *= 1.0 - 0.55*max(insc*mmLod(0.06, px), crs);
       vec3 inside = vec3(0.04, 0.04, 0.04)*lw;
-      /* a shrouded body lying in it: pale linen, the head, the feet */
-      float hq = (rx + lw2*0.70)/0.10;
-      float sh = max(abs(rx) - lw2*0.88, (ty + TH*0.5 - 0.07) - (0.10 + 0.07*smoothstep(lw2, -lw2*0.6, rx) + 0.05*exp(-hq*hq)));
+      /* a shrouded body lying in it: the head, the shoulders, the long
+         body narrowing to the feet, bound round with its bands */
+      float fy = ty + TH*0.5 - 0.07;                    // height off the niche floor
+      float hb = length(vec2((rx + lw2*0.74)/1.0, fy - 0.10)) - 0.085;
+      float tor = wfEll2(vec2(rx + lw2*0.20, fy - 0.07), vec2(lw2*0.48, 0.085));
+      float leg = wfEll2(vec2(rx - lw2*0.40, fy - 0.055), vec2(lw2*0.42, 0.060));
+      float sh = min(min(hb, tor), leg);
+      sh = max(sh, -fy + 0.005);
       float shroud = RCV(-sh);
-      float wrap = 0.5 + 0.5*cos((rx + ty*2.0)*40.0);
-      vec3 body = vec3(0.70, 0.66, 0.56)*lw*1.4*(0.70 + 0.30*wrap)*(0.6 + 0.4*smoothstep(-TH*0.5, -TH*0.2, ty));
-      /* or bones: a skull at the end, long bones laid along */
+      float wrap = 1.0 - mmInkP(abs(fract((rx - fy*0.6)/0.16) - 0.5) - 0.45, px/0.16, 1.4)*0.45*mmLod(0.16, px);
+      vec3 body = vec3(0.72, 0.68, 0.58)*lw*1.5*wrap*(0.55 + 0.50*smoothstep(0.0, 0.14, fy));
+      /* or bones: a skull at the head end, long bones jumbled along */
       float hol;
-      float sk = crSkull(vec2(rx + lw2*0.62, ty + TH*0.5 - 0.07 - 0.11), 0.20, px, hol);
-      float lb = max(abs(ty + TH*0.5 - 0.07 - 0.04 - 0.035*step(0.5, fract(rx*3.0))) - 0.018, abs(rx - lw2*0.10) - lw2*0.62);
-      float knobs = length(vec2(abs(rx - lw2*0.10) - lw2*0.62, ty + TH*0.5 - 0.07 - 0.04)) - 0.032;
-      float bones = RCV(-min(min(sk, lb), knobs));
+      float sk = crSkull(vec2(rx + lw2*0.66, fy - 0.12), 0.24, px, hol);
+      float lb = 1e3;
+      for (int k = 0; k < 3; k++){
+        float fk = float(k);
+        vec2 a = vec2(-lw2*0.40 + fk*0.10, 0.03 + 0.045*fk), b = vec2(lw2*0.60 - fk*0.12, 0.05 + 0.03*sin(fk*2.0 + bi));
+        vec2 pa = vec2(rx, fy) - a, ba = b - a;
+        float t = clamp(dot(pa, ba)/dot(ba, ba), 0.0, 1.0);
+        lb = min(lb, length(pa - ba*t) - 0.016);
+        lb = min(lb, min(length(vec2(rx, fy) - a) - 0.030, length(vec2(rx, fy) - b) - 0.030));
+      }
+      float knobs = lb;
+      float bones = RCV(-min(sk, lb));
       vec3 boneC = bone*(0.75 + 0.3*smoothstep(-0.1, 0.1, ty));
       vec3 lc = mix(inside, body, shroud*step(0.34, lk)*step(lk, 0.66));
       lc = mix(lc, boneC*(1.0 - 0.85*hol), bones*step(0.66, lk));
@@ -7979,7 +7992,19 @@ float cryptWallH(vec2 q, float qpx, out float occ){
       bayH = mix(bayH, mix(0.5, 1.0, max(step(lk, 0.34), max(shroud*step(0.34, lk), bones*step(0.66, lk)))), onLo);
       gInk = max(gInk, inBay*onLo*0.0 + inBay*mmInkP(lD, px, 1.2)*0.9*step(0.0, ti)*step(ti, 2.0));
       gInk = max(gInk, inBay*onLo*step(0.34, lk)*step(lk, 0.66)*mmInkP(sh, px, 1.0)*0.8);
-      gInk = max(gInk, inBay*onLo*step(0.66, lk)*mmInkP(min(min(sk, lb), knobs), px, 1.0)*0.8);
+      gInk = max(gInk, inBay*onLo*step(0.66, lk)*mmInkP(min(sk, lb), px, 1.0)*0.8);
+      /* in the lunette over the loculi, a skull and crossed bones carved
+         in a roundel */
+      vec2 lp = vec2(rx, ry - SPR - R*0.42);
+      float rnd = length(lp) - 0.26;
+      float sk2 = crSkull(lp - vec2(0.0, 0.03), 0.22, px, hol);
+      float xb = min(abs(lp.x*0.7 + lp.y*0.7), abs(lp.x*0.7 - lp.y*0.7)) - 0.018;
+      xb = max(xb, length(lp) - 0.21);
+      float carv = RCV(-min(sk2, xb))*RCV(-rnd);
+      bayC = mix(bayC, stone*0.95*(1.0 - 0.7*hol*RCV(-sk2)), RCV(-rnd));
+      bayC = mix(bayC, stone*1.45*(1.0 - 0.8*hol), carv);
+      bayH = mix(bayH, 1.0 + 0.2*carv, RCV(-rnd));
+      gInk = max(gInk, inBay*max(mmInkP(rnd, px, 1.2), mmInkP(min(sk2, xb), px, 1.0)*RCV(-rnd))*0.85);
       gInk = max(gInk, inBay*onLo*step(lk, 0.34)*crs*0.0);
     } else if (room < 1.5) {
       /* THE CHAPEL'S ARCOSOLIA: a tomb chest in the recess, its front
@@ -14296,8 +14321,8 @@ float wfCot(vec2 q, float px, float seed, float kq, bool paint){
   vec2 cq = q - vec2(-HX + 0.10, 1.80);
   float crown = max(wfEll(cq, vec2(0.17, 0.10)), -cq.y - 0.02 - 0.012*abs(sin(cq.x*40.0)));
   float knob = length(q - vec2(-HX + 0.10, 1.915)) - 0.022;
-  float xr = -HX + 0.15 + 0.15*smoothstep(1.76, 0.62, q.y) + 0.012*sin(q.y*42.0);
-  float hem = 0.44 + 0.03*sin(q.x*31.0 + seed*3.0);
+  float xr = -HX + 0.14 + 0.22*smoothstep(1.76, 0.90, q.y) + 0.012*sin(q.y*42.0);
+  float hem = 0.90 + 0.03*sin(q.x*31.0 + seed*3.0) - 0.10*smoothstep(-HX + 0.05, -HX - 0.09, q.x);
   float drape = max(max(-HX - 0.09 - q.x, q.x - xr), max(hem - q.y, q.y - 1.77));
   /* the mobile: its wire arm, three threads and what hangs on them */
   float arm = wfSeg(q, vec2(-HX, 1.62), vec2(0.32, 1.53), 0.006);
@@ -14395,7 +14420,7 @@ float wfHorse(vec2 q, float px, float seed, float kq, bool paint){
   /* the body, the neck, the head */
   float body = wfEll(q - vec2(0.0, 0.70), vec2(0.34, 0.135));
   float neck = wfSegT(q, vec2(0.24, 0.74), vec2(0.40, 0.98), 0.090, 0.060, t0);
-  float head = wfSegT(q, vec2(0.40, 1.02), vec2(0.60, 0.90), 0.060, 0.042, t0);
+  float head = wfSegT(q, vec2(0.40, 1.03), vec2(0.64, 0.89), 0.068, 0.048, t0);
   float ear = mmBox(q - vec2(0.38, 1.10), vec2(0.016, 0.040), 0.012);
   float horse = mmSmin(mmSmin(body, neck, 0.05), head, 0.03);
   horse = min(horse, ear);
@@ -14431,8 +14456,11 @@ float wfHorse(vec2 q, float px, float seed, float kq, bool paint){
   float dap = smoothstep(0.42, 0.30, dp)*(1.0 - smoothstep(0.22, 0.10, dp));
   vec3 grey = vec3(0.82, 0.80, 0.76)*(1.0 - 0.32*dap);
   grey *= 0.62 + 0.48*smoothstep(0.58, 0.82, q.y);
-  vec3 legC = grey*0.78;
-  wfLay(col, ink, legs, legC, px, 0.85);
+  /* the far pair a shade back, then the near pair: plain grey, darker to
+     the fetlock, round, lit on the key's side */
+  vec3 legG = vec3(0.70, 0.68, 0.64)*(0.55 + 0.35*smoothstep(0.15, 0.55, q.y));
+  wfLay(col, ink, min(lF2, lH2), legG*0.55, px, 0.6);
+  wfLay(col, ink, min(lF, lH), legG, px, 0.85);
   wfLay(col, ink, hoof, vec3(0.16, 0.14, 0.13), px, 0.9);
   wfLay(col, ink, tail, vec3(0.30, 0.27, 0.25)*(0.7 + 0.5*abs(sin(q.x*120.0 + q.y*40.0))), px, 0.7);
   wfLay(col, ink, horse, grey, px, 0.95);
@@ -14574,9 +14602,9 @@ float wfSewing(vec2 q, float px, float seed, float kq, bool paint){
   float tread = mmBox(q - vec2(0.0, 0.11), vec2(0.30, 0.028), 0.006);
   vec2 wc = q - vec2(0.36, 0.40);
   float wr = length(wc);
-  float wheel = abs(wr - 0.20) - 0.016;
+  float wheel = abs(wr - 0.16) - 0.013;
   float ang = atan(wc.y, wc.x);
-  float spoke = max(abs(fract(ang/1.0472 + 0.5) - 0.5)*1.0472*wr - 0.007, wr - 0.20);
+  float spoke = max(abs(fract(ang/1.0472 + 0.5) - 0.5)*1.0472*wr - 0.006, wr - 0.16);
   wheel = min(wheel, min(spoke, wr - 0.028));
   float rodT = wfSeg(q, vec2(0.36, 0.40), vec2(0.10, 0.12), 0.007);
   /* the head */
@@ -14605,7 +14633,7 @@ float wfSewing(vec2 q, float px, float seed, float kq, bool paint){
   wfLay(col, ink, tread, iron*1.2, px, 0.9);
   ink = max(ink, mmInkP(abs(fract(q.x/0.06) - 0.5) - 0.40, px/0.06, 1.0)*wfIn(tread, px)*0.7);
   wfLay(col, ink, wheel, iron*1.3, px, 0.9);
-  col = mix(col, vec3(0.60, 0.60, 0.62), mmInkP(wr - 0.205, px, 1.0)*step(0.0, wc.y + kq*wc.x)*wfIn(wheel, px));
+  col = mix(col, vec3(0.60, 0.60, 0.62), mmInkP(wr - 0.165, px, 1.0)*step(0.0, wc.y + kq*wc.x)*wfIn(wheel, px));
   wfLay(col, ink, rodT, iron, px, 0.5);
   /* the work: a printed cotton */
   vec2 wq = q - vec2(-0.16, TOP - 0.09);
@@ -14739,7 +14767,7 @@ float wfFourPoster(vec2 q, float px, float seed, float kq, bool paint){
   float curH = max(max(HX - 0.02 - q.x, q.x - (HX + 0.02 + cwH)), max(0.10 - q.y, q.y - (TT - 0.22)));
   float curF = max(max(q.x - (FX + 0.02), (FX - 0.02 - cwH) - q.x), max(0.10 - q.y, q.y - (TT - 0.22)));
   /* the headboard: a carved panel seen past the posts, its crest arched */
-  float hb = max(mmBox(q - vec2(HX + 0.09, 1.10), vec2(0.05, 0.55), 0.01), -(1.62 + 0.06*cos((q.x - HX)*12.0) - q.y));
+  float hb = max(mmBox(q - vec2(HX + 0.15, 1.20), vec2(0.12, 0.65), 0.01), -(1.78 + 0.08*cos((q.x - HX - 0.15)*14.0) - q.y));
   /* the bed: the mattress and the counterpane hanging to the floor */
   float hem = 0.14 + 0.025*sin(q.x*23.0 + seed);
   float cp = max(max(HX + 0.04 - q.x, q.x - FX + 0.04), max(hem - q.y, q.y - MT - 0.02*sin(q.x*3.0)));
@@ -14747,7 +14775,9 @@ float wfFourPoster(vec2 q, float px, float seed, float kq, bool paint){
   float pil2 = mmBox(q - vec2(HX + 0.30, MT + 0.29), vec2(0.22 - 0.05*abs(q.y - MT - 0.29)/0.10, 0.09), 0.07);
   float bols = mmBox(q - vec2(HX + 0.28, MT + 0.02), vec2(0.20, 0.07), 0.06);
   float pils = min(min(pil1, pil2), bols);
-  float d = min(min(posts, far), min(corn, val));
+  /* the curtain hung along the far side, between the far posts, in folds */
+  float backC = max(max(HX + 0.10 - q.x, q.x - FX + 0.10), max(MT - 0.05 - q.y, q.y - TT + 0.20));
+  float d = min(min(posts, min(far, backC)), min(corn, val));
   d = min(d, min(min(curH, curF), min(hb, min(cp, pils))));
   if (!paint) return d;
 
@@ -14757,12 +14787,14 @@ float wfFourPoster(vec2 q, float px, float seed, float kq, bool paint){
   vec3 velv = kc < 0.5 ? vec3(0.46, 0.08, 0.12) : vec3(0.12, 0.26, 0.20);
   vec3 maho = vec3(0.36, 0.17, 0.09);
   vec3 gilt = vec3(0.92, 0.68, 0.30);
-  /* the far posts, in the bed's own shadow */
+  /* the far curtain, in the bed's own shade, and the far posts */
+  float bf3 = 0.5 + 0.5*cos(q.x*22.0 + 0.7*sin(q.y*3.0 + seed));
+  wfLay(col, ink, backC, velv*(0.22 + 0.36*bf3)*(0.8 + 0.3*smoothstep(MT, TT, q.y)), px, 0.5);
   wfLay(col, ink, far, maho*0.45, px, 0.7);
   /* the headboard: mahogany, a panel and its carving */
-  vec2 hq = q - vec2(HX + 0.09, 1.10);
-  wfLay(col, ink, hb, maho*(0.65 + 0.25*smoothstep(-0.5, 0.5, hq.y)), px, 0.9);
-  ink = max(ink, mmInkP(mmBox(hq, vec2(0.03, 0.40), 0.01), px, 1.0)*0.5*wfIn(hb, px));
+  vec2 hq = q - vec2(HX + 0.15, 1.20);
+  wfLay(col, ink, hb, maho*(0.65 + 0.30*smoothstep(-0.5, 0.6, hq.y)), px, 0.9);
+  ink = max(ink, mmInkP(mmBox(hq - vec2(0.0, 0.10), vec2(0.07, 0.38), 0.02), px, 1.0)*0.6*wfIn(hb, px));
   /* the curtains: velvet in folds, darker at the inner fold, the tieback */
   float fH2 = 0.5 + 0.5*cos((q.x - HX)/max(cwH, 0.05)*9.4 + 0.8*sin(q.y*2.0));
   float fF2 = 0.5 + 0.5*cos((FX - q.x)/max(cwH, 0.05)*9.4 + 0.8*sin(q.y*2.0 + 1.0));
@@ -14866,7 +14898,7 @@ float wfDormBed(vec2 q, float px, float seed, float kq, bool paint){
   wfLay(col, ink, rail, iron*0.9, px, 0.8);
   /* the blanket: grey wool, its stripe at the hem, folds where it falls */
   float bk = mmHash11(seed*2.3);
-  vec3 wool = bk < 0.5 ? vec3(0.30, 0.33, 0.42) : vec3(0.42, 0.30, 0.26);
+  vec3 wool = bk < 0.34 ? vec3(0.34, 0.37, 0.48) : (bk < 0.67 ? vec3(0.50, 0.34, 0.28) : vec3(0.30, 0.40, 0.32));
   float edgeY = MT - 0.10;
   float drop = clamp((edgeY - q.y)/(edgeY - hem), 0.0, 1.0);
   float bf = 0.5 + 0.5*cos(q.x*(16.0 - 4.0*drop) + 2.0*sin(q.y*5.0 + seed) + drop*1.5);
@@ -15174,12 +15206,14 @@ float wfCase(vec2 q, float px, float seed, float kq, bool paint){
    and its wing, the scrolled arm, the buttoned seat and back with their
    pleats, short turned legs on castors, brass nails along the edges. */
 float wfChair(vec2 q, float px, float seed, float kq, bool paint){
-  float back = mmBox(q - vec2(-0.26, 0.72), vec2(0.12, 0.44), 0.08);
-  float wing = max(wfEll(q - vec2(-0.12, 0.98), vec2(0.22, 0.20)), -(q.y - 0.80));
-  float seat = mmBox(q - vec2(0.02, 0.40), vec2(0.36, 0.10), 0.05);
-  float arm = min(mmBox(q - vec2(0.08, 0.56), vec2(0.30, 0.10), 0.07), length(q - vec2(0.34, 0.62)) - 0.085);
-  float skirt = mmBox(q - vec2(0.02, 0.26), vec2(0.38, 0.06), 0.02);
-  float legs = min(mmBox(vec2(abs(q.x - 0.02) - 0.32, q.y - 0.10), vec2(0.025, 0.10), 0.01), 1e3);
+  /* the back, raked a little, and the WING: a panel standing forward off
+     the back's upper half, its front edge a long curve down to the arm */
+  float back = wfSeg(q, vec2(-0.28, 0.42), vec2(-0.20, 1.10), 0.075);
+  float wing = max(max(wfEll(q - vec2(-0.22, 0.66), vec2(0.27, 0.46)), -(q.x + 0.22)), -(q.y - 0.66));
+  float seat = mmBox(q - vec2(0.04, 0.44), vec2(0.30, 0.055), 0.04);
+  float arm = min(mmBox(q - vec2(0.06, 0.58), vec2(0.27, 0.075), 0.05), length(q - vec2(0.33, 0.585)) - 0.085);
+  float skirt = mmBox(q - vec2(0.02, 0.27), vec2(0.36, 0.11), 0.02);
+  float legs = mmBox(vec2(abs(q.x - 0.03) - 0.31, q.y - 0.08), vec2(0.022, 0.08), 0.01);
   float d = min(min(min(back, wing), min(seat, arm)), min(skirt, legs));
   if (!paint) return d;
 
@@ -15196,7 +15230,7 @@ float wfChair(vec2 q, float px, float seed, float kq, bool paint){
   float puff = 1.0 - 1.6*max(abs(bf.x), abs(bf.y));
   vec3 bk = lea*(0.45 + 0.50*puff)*(1.0 - 0.6*btn);
   wfLay(col, ink, back, bk*(0.85 + 0.3*smoothstep(0.3, 1.1, q.y)), px, 0.9);
-  wfLay(col, ink, wing, lea*(0.55 + 0.6*smoothstep(0.8, 1.15, q.y))*(1.0 + 0.3*kq), px, 0.9);
+  wfLay(col, ink, wing, lea*(0.50 + 0.55*smoothstep(0.66, 1.10, q.y))*(0.9 + 0.2*kq)*(1.0 - 0.3*btn), px, 0.9);
   wfLay(col, ink, skirt, lea*0.60, px, 0.85);
   wfLay(col, ink, seat, lea*(0.60 + 0.5*smoothstep(0.32, 0.50, q.y)), px, 0.9);
   wfLay(col, ink, arm, lea*(0.65 + 0.55*smoothstep(0.50, 0.68, q.y)), px, 0.95);
