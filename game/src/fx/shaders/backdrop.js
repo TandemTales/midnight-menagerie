@@ -10205,7 +10205,8 @@ void main(){
   /* ...except a planting bed (24), which is ARCHITECTURE: a run of them makes
      one coursed kerb across the room, and turned each about its own centre
      they would come apart into a sawtooth. */
-  vec2 yw = (aShape > 23.5 && aShape < 24.5) ? vec2(1.0, 0.0) : uYaw;
+  /* (round 23 graft: nor does a roof truss, 38, which spans the room) */
+  vec2 yw = ((aShape > 23.5 && aShape < 24.5) || (aShape > 37.5 && aShape < 38.5)) ? vec2(1.0, 0.0) : uYaw;
   vec3 wp = vec3(pos.x*yw.x, pos.y, pos.x*yw.y) + aOffset;
   vWorld = wp;
   vec4 mv = modelViewMatrix * vec4(wp, 1.0);
@@ -10786,6 +10787,9 @@ float tbSD(vec2 m, vec2 msz, float seed, out float ok){
 }
 #endif
 
+/* how opaque a round-23 object is here (the steam over a bath is not);
+   1 everywhere else -- read by main() in every prop program */
+float gWgAlpha = 1.0;
 #if MM_WINGS == 2
 /* ═══════════ ROUND 23: THE THINGS FOUR MORE WINGS ARE NAMED FOR ═══════════
    Both survey judges again: "noise blobs standing in for the wing's
@@ -10797,170 +10801,8 @@ float tbSD(vec2 m, vec2 msz, float seed, out float ok){
    Every one is authored in METRES from the foot of its axis, and returns
    in part which of its materials a pixel is, for main(). */
 
-/* 32  A ROLL-TOP BATH ON CLAW FEET, seen side on and a little from above:
-   its painted flank tapering to the feet, the white rolled rim rising to
-   both ends, the enamel inside it and the water, two brass pillar taps at
-   the foot end with their crossheads, and four lion's-paw feet (the near
-   pair) in gilt. part 0 flank, 1 rim, 2 enamel, 3 water, 4 feet, 5 taps. */
 uniform float uTime;
-float tubSD(vec2 m, vec2 msz, float seed, out float part){
-  float S = msz.y/1.24;
-  vec2 q = m/S;
-  float ax = abs(q.x);
-  float end = smoothstep(0.30, 0.86, ax);
-  /* the flank: rounded, narrower at the foot than at the rim */
-  float t = clamp((q.y - 0.18)/0.56, 0.0, 1.0);
-  float sc = 0.84/mix(0.64, 0.84, t);
-  float body = mmBox(vec2(q.x*sc, q.y - 0.47), vec2(0.84, 0.29), 0.17)/sc;
-  /* seen from above: the rim's far edge and the opening inside it, the ends
-     standing a little higher than the middle */
-  /* the rim in plan, foreshortened: a rounded oblong a tub's length, its
-     ends rolled up a little higher than its middle */
-  vec2 tq = (q - vec2(0.0, 0.80 + 0.03*end))/vec2(0.88, 0.105);
-  float top = (pow(pow(abs(tq.x), 4.0) + pow(abs(tq.y), 2.2), 1.0/3.0) - 1.0)*0.105;
-  vec2 iq = (q - vec2(0.0, 0.815 + 0.02*end))/vec2(0.80, 0.066);
-  float inner = (pow(pow(abs(iq.x), 4.0) + pow(abs(iq.y), 2.2), 1.0/3.0) - 1.0)*0.066;
-  /* the feet: a leg down from the flank to a paw on a ball */
-  float feet = 1e3;
-  for (int i = 0; i < 2; i++){
-    float sx = float(i)*2.0 - 1.0;
-    vec2 f = q - vec2(sx*0.58, 0.0);
-    float leg = mmBox(f - vec2(sx*0.02, 0.17), vec2(0.045 + 0.02*smoothstep(0.10, 0.26, f.y), 0.09), 0.02);
-    float paw = length((f - vec2(sx*0.035, 0.065))*vec2(0.85, 1.0)) - 0.068;
-    float toe = length(f - vec2(sx*0.10, 0.030)) - 0.030;
-    feet = min(feet, mmSmin(min(leg, paw), toe, 0.02));
-  }
-  /* the taps, at the foot end */
-  float taps = 1e3;
-  for (int i = 0; i < 2; i++){
-    float tx = 0.62 + float(i)*0.12;
-    taps = min(taps, mmBox(q - vec2(tx, 0.92), vec2(0.020, 0.075), 0.01));
-    taps = min(taps, mmBox(q - vec2(tx, 1.00), vec2(0.050, 0.013), 0.008));
-    taps = min(taps, length(q - vec2(tx, 1.03)) - 0.022);
-  }
-  float d = min(min(body, top), min(feet, taps));
-  part = 0.0;
-  if (top < 0.0 && q.y > 0.70) part = 1.0;
-  if (inner < 0.0) part = q.y < 0.812 + 0.02*end ? 3.0 : 2.0;
-  if (feet < 0.0 && body > -0.005) part = 4.0;
-  if (taps < 0.0) part = 5.0;
-  return d*S;
-}
 
-/* 33  A HANGING LANTERN on its chain, for the Lampworks' roof: a square
-   lantern of four glazed panes under a pyramid cap with its ring, or a round
-   globe lamp under a smoke shade -- the chain as long as the quad, so a dozen
-   of them hang at a dozen heights. Most are lit. m from the foot of the
-   quad's axis; part 0 iron, 1 brass, 2 glass. */
-float lantSD(vec2 m, vec2 msz, float seed, float wire, out float part){
-  float H = msz.y;
-  float kind = step(0.62, mmHash11(seed*4.3 + 0.2));
-  float S = 0.52 + 0.20*mmHash11(seed*2.9);
-  vec2 u = m/S;
-  /* the lantern sits at the foot of the quad, the chain runs up to the top */
-  float body, glass, cap;
-  if (kind < 0.5) {
-    body = mmBox(u - vec2(0.0, 0.52), vec2(0.30, 0.30), 0.02);
-    glass = mmBox(u - vec2(0.0, 0.52), vec2(0.24, 0.25), 0.01);
-    cap = max(max(u.y - 0.82 - 0.28*(1.0 - abs(u.x)/0.40), 0.82 - u.y), abs(u.x) - 0.40);
-    float base = mmBox(u - vec2(0.0, 0.16), vec2(0.36, 0.06), 0.02);
-    float fin = length(u - vec2(0.0, 0.05)) - 0.06;
-    body = min(min(body, base), fin);
-  } else {
-    body = length((u - vec2(0.0, 0.45))*vec2(1.0, 1.05)) - 0.30;
-    glass = body + 0.025;
-    cap = max(max(u.y - 0.80 - 0.10*(1.0 - abs(u.x)/0.48), 0.72 - u.y), abs(u.x) - 0.48 + (u.y - 0.72)*0.9);
-    body = min(body, mmBox(u - vec2(0.0, 0.76), vec2(0.10, 0.06), 0.02));
-  }
-  float ring = abs(length(u - vec2(0.0, 1.20)) - 0.07) - 0.024;
-  float d = min(min(body, cap), ring)*S;
-  float chain = mmSeg(vec2(m.x, m.y - (1.25*S + H)*0.5), max((H - 1.25*S)*0.5, 0.0), wire);
-  d = min(d, chain);
-  part = 0.0;
-  if (cap*S < 0.0 || ring*S < 0.0) part = 1.0;
-  if (glass < 0.0) part = 2.0;
-  /* a square lantern's panes are parted by its brass bars */
-  if (kind < 0.5 && glass < 0.0 && abs(u.x) < 0.025) part = 1.0;
-  return d;
-}
-/* 34  A LAMP-MAKER'S BENCH, standing out on the floor: a deal top on four
-   legs with a shelf under it, a vice at one end, and on the top what is
-   being made -- glass chimneys stood on end, a brass font, a finished lamp
-   lit to try it. part 0 wood, 1 iron, 2 brass, 3 glass, 4 the lit lamp. */
-float lbSD(vec2 m, vec2 msz, float seed, out float part){
-  float hw = msz.x*0.5 - 0.06;
-  const float TOP = 0.90;
-  part = 0.0;
-  float d = mmBox(m - vec2(0.0, TOP - 0.035), vec2(hw, 0.035), 0.008);
-  d = min(d, mmBox(vec2(abs(m.x) - (hw - 0.08), m.y - (TOP - 0.07)*0.5), vec2(0.040, (TOP - 0.07)*0.5), 0.006));
-  d = min(d, mmBox(m - vec2(0.0, 0.22), vec2(hw - 0.08, 0.020), 0.004));
-  d = min(d, mmBox(m - vec2(0.0, TOP - 0.11), vec2(hw - 0.08, 0.035), 0.004));
-  /* on the shelf: two crates */
-  float cr = min(mmBox(m - vec2(-hw*0.45, 0.36), vec2(0.20, 0.12), 0.01), mmBox(m - vec2(hw*0.30, 0.34), vec2(0.16, 0.10), 0.01));
-  d = min(d, cr);
-  /* the vice at the left end */
-  float vi = min(mmBox(m - vec2(-hw + 0.14, TOP + 0.09), vec2(0.10, 0.07), 0.01), mmBox(m - vec2(-hw + 0.14, TOP + 0.20), vec2(0.016, 0.06), 0.004));
-  vi = min(vi, mmBox(m - vec2(-hw + 0.14, TOP + 0.25), vec2(0.09, 0.012), 0.006));
-  /* things on the top */
-  float gl = 1e3, br = 1e3, lp = 1e3, lpG = 1e3;
-  for (int k = 0; k < 3; k++){
-    float kx = -hw*0.30 + float(k)*hw*0.52 + (mmHash11(seed*3.1 + float(k)) - 0.5)*0.12;
-    float kk = mmHash11(seed*7.7 + float(k)*1.9);
-    vec2 o = m - vec2(kx, TOP);
-    if (kk < 0.40) {
-      float cw = 0.040 + 0.030*exp(-pow((o.y - 0.12)/0.05, 2.0));
-      gl = min(gl, max(abs(o.x) - cw, max(-o.y, o.y - 0.30)));
-      gl = min(gl, max(abs(o.x - 0.11) - cw*0.9, max(-o.y, o.y - 0.26)));
-    } else if (kk < 0.70) {
-      br = min(br, min(mmBox(o - vec2(0.0, 0.07), vec2(0.09, 0.07), 0.045), mmBox(o - vec2(0.0, 0.16), vec2(0.035, 0.025), 0.008)));
-    } else {
-      lp = min(lp, min(mmBox(o - vec2(0.0, 0.06), vec2(0.08, 0.06), 0.04), mmBox(o - vec2(0.0, 0.33), vec2(0.07, 0.025), 0.01)));
-      lpG = min(lpG, max(abs(o.x) - (0.035 + 0.025*exp(-pow((o.y - 0.17)/0.05, 2.0))), max(0.11 - o.y, o.y - 0.31)));
-      lp = min(lp, lpG);
-    }
-  }
-  float dd = min(min(d, cr), min(vi, min(min(gl, br), lp)));
-  if (cr < 0.0) part = 0.5;
-  if (vi < 0.0) part = 1.0;
-  if (br < 0.0) part = 2.0;
-  if (lp < 0.0) part = 2.0;
-  if (gl < 0.0) part = 3.0;
-  if (lpG < 0.0) part = 4.0;
-  return dd;
-}
-
-/* 35  A BRASS TELESCOPE ON ITS TRIPOD: three splayed legs of oak from the
-   head, the mount, the long brass tube raised toward the window with its
-   bands and its dew cap, the eyepiece at the low end and the finder riding
-   on top. part 0 oak, 1 brass, 2 the dark of a lens or an eyepiece, 3 the
-   mount's iron. */
-float tlSD(vec2 m, vec2 msz, float seed, float wire, out float part){
-  float sd = mmHash11(seed*2.7) < 0.5 ? -1.0 : 1.0;
-  vec2 q = vec2(m.x*sd, m.y);
-  vec2 apex = vec2(0.0, 1.30);
-  float legs = min(mmSeg2(q, apex, vec2(-0.56, 0.0), max(0.032, wire)),
-                   mmSeg2(q, apex, vec2(0.50, 0.0), max(0.032, wire)));
-  legs = min(legs, mmSeg2(q, apex, vec2(0.06, 0.04), max(0.026, wire)));
-  float spread = mmSeg2(q, vec2(-0.36, 0.46), vec2(0.32, 0.46), max(0.012, wire*0.8));
-  float mount = mmBox(q - vec2(0.0, 1.36), vec2(0.09, 0.08), 0.02);
-  vec2 ax = vec2(0.848, 0.530);
-  vec2 nr = vec2(-ax.y, ax.x);
-  vec2 r = q - vec2(0.0, 1.46);
-  float al = dot(r, ax), ac = dot(r, nr);
-  float rad = mix(0.065, 0.095, clamp((al + 0.60)/1.70, 0.0, 1.0)) + 0.016*step(0.92, al);
-  float tube = max(abs(ac) - rad, max(-0.60 - al, al - 1.10));
-  float eye = max(abs(ac) - 0.030, max(-0.78 - al, al + 0.58));
-  float fnd = max(abs(ac - 0.15) - 0.028, max(-0.02 - al, al - 0.42));
-  fnd = min(fnd, max(abs(al - 0.10) - 0.012, abs(ac - 0.08) - 0.07));
-  float d = min(min(legs, spread), min(mount, min(min(tube, eye), fnd)));
-  part = 0.0;
-  if (mount < 0.0) part = 3.0;
-  if (tube < 0.0 || fnd < 0.0) part = 1.0;
-  if (eye < 0.0 || (tube < 0.0 && al > 1.07)) part = 2.0;
-  /* the bands round the tube */
-  if (tube < 0.0 && min(abs(al - 0.95), min(abs(al - 0.20), abs(al + 0.45))) < 0.022) part = 3.0;
-  return d;
-}
 /* 36  A STEAMER TRUNK: a domed lid on a canvas-and-slat box, two leather
    straps round it, brass corners and the lock plate; on half of them a
    smaller case stood on top. part 0 canvas, 1 slats and straps, 2 brass. */
@@ -11012,112 +10854,942 @@ float dsSD(vec2 m, vec2 msz, float seed){
   return d;
 }
 
-/* 38  A ROOF TRUSS of oak, spanning the attic from knee wall to knee wall
-   under the pitched roof: the two principal rafters to the ridge, the
-   collar across at half the rise, the king post from it to the ridge, and
-   the arched braces from the wall posts up to the collar's ends. The quad
-   IS the truss: its foot on the wall plates, its apex at the ridge. */
-float tsSD(vec2 m, vec2 msz){
-  float hw = msz.x*0.5, rise = msz.y;
-  const float T = 0.13;
-  float raf = min(mmSeg2(m, vec2(-hw, 0.0), vec2(0.0, rise), T), mmSeg2(m, vec2(hw, 0.0), vec2(0.0, rise), T));
-  /* (under the roof, not over it: the rafter's back is the roof line) */
-  raf = max(raf, m.y - rise*(1.0 - abs(m.x)/hw) - 0.01);
-  float cY = rise*0.52;
-  float cx0 = hw*(1.0 - cY/rise);
-  float col = mmBox(m - vec2(0.0, cY), vec2(cx0, 0.11), 0.01);
-  float king = mmBox(m - vec2(0.0, (cY + rise)*0.5), vec2(0.10, (rise - cY)*0.5), 0.01);
-  float a = hw - 0.25, ex = cx0*0.92;
-  float b = cY/sqrt(max(1.0 - (ex/a)*(ex/a), 0.05));
-  float ell = (length(m/vec2(a, b)) - 1.0)*min(a, b);
-  float brace = max(abs(ell + 0.10) - 0.10, max(-m.y, max(m.y - cY, ex - abs(m.x))));
-  float post = mmBox(vec2(abs(m.x) - (hw - 0.18), m.y - 0.15), vec2(0.13, 0.15), 0.01);
-  return min(min(raf, col), min(min(king, brace), post));
+float wgSeg(vec2 p, vec2 a, vec2 b, float r){
+  vec2 pa = p - a, ba = b - a;
+  float t = clamp(dot(pa, ba)/max(dot(ba, ba), 1e-6), 0.0, 1.0);
+  return length(pa - ba*t) - r;
+}
+/* a tapering member: radius ra at a, rb at b; t along it comes back */
+float wgSegT(vec2 p, vec2 a, vec2 b, float ra, float rb, out float t){
+  vec2 pa = p - a, ba = b - a;
+  t = clamp(dot(pa, ba)/max(dot(ba, ba), 1e-6), 0.0, 1.0);
+  return length(pa - ba*t) - mix(ra, rb, t);
+}
+float wgEll(vec2 p, vec2 r){
+  return (length(p/r) - 1.0)*min(r.x, r.y);
+}
+/* a gable: base on y = 0, half-width w, apex h above it */
+float wgTri(vec2 p, float w, float h){
+  return max(-p.y, (abs(p.x)/w + p.y/h - 1.0)*(w*h/sqrt(w*w + h*h)));
+}
+/* the round of a cylinder seen side-on: v is -1..1 across it */
+float wgRound(float v){ return sqrt(max(1.0 - v*v, 0.0)); }
+
+/* ── 32 THE HANGING LANTERN ───────────────────────────────────────────── */
+float wgLanKind(float seed){ return mmHash11(seed*5.31 + 0.7); }
+float wgLanS(float seed){ return 1.30 + 0.62*mmHash11(seed*3.73 + 1.1); }
+float wgLanLit(float seed){ return step(mmHash11(seed*8.9 + 2.3), 0.82); }
+/* the lantern in its own frame q (nominal metres, origin at its foot);
+   glass < 0 inside the glazing, wire is the distance to a guard or bar */
+float wgLanBody(vec2 q, float k, out float glass, out float wire){
+  float d;
+  if (k < 0.40) {
+    /* a STORM LANTERN: a round tin base, the glass globe caged by its wire
+       guards, a conical hood with its chimney, and the ring it hangs by */
+    float base = mmBox(q - vec2(0.0, 0.040), vec2(0.150, 0.040), 0.014);
+    float glb  = mmBox(q - vec2(0.0, 0.225), vec2(0.122, 0.150), 0.075);
+    float hood = max(abs(q.y - 0.425) - 0.050, abs(q.x) - (0.160 - (q.y - 0.375)*1.15));
+    float chim = mmBox(q - vec2(0.0, 0.500), vec2(0.046, 0.032), 0.008);
+    float ring = abs(length(q - vec2(0.0, 0.572)) - 0.040) - 0.011;
+    d = min(min(base, glb), min(hood, min(chim, ring)));
+    glass = glb + 0.014;
+    float wy = step(0.08, q.y)*step(q.y, 0.375);
+    wire = mix(1e3, min(abs(q.x), abs(abs(q.x) - 0.092)), wy);
+    wire = min(wire, max(abs(q.y - 0.118), abs(q.x) - 0.13));
+    wire = min(wire, max(abs(q.y - 0.335), abs(q.x) - 0.13));
+  } else if (k < 0.74) {
+    /* a CARRIAGE LANTERN: four panes in a frame flaring to the top, a
+       pyramid roof with its crown and ring, a pan and a drop finial */
+    float hw = 0.106 + 0.034*clamp((q.y - 0.09)/0.34, 0.0, 1.0);
+    float body = max(abs(q.y - 0.262) - 0.172, abs(q.x) - hw);
+    float pan  = mmBox(q - vec2(0.0, 0.078), vec2(0.132, 0.020), 0.006);
+    float fin  = max(abs(q.x) - (0.006 + 0.050*clamp(q.y/0.06, 0.0, 1.0)), abs(q.y - 0.030) - 0.030);
+    float roof = max(abs(q.y - 0.492) - 0.062, abs(q.x) - (0.172 - (q.y - 0.430)*1.10));
+    float crn  = mmBox(q - vec2(0.0, 0.578), vec2(0.024, 0.032), 0.006);
+    float ring = abs(length(q - vec2(0.0, 0.640)) - 0.036) - 0.010;
+    d = min(min(body, pan), min(min(fin, roof), min(crn, ring)));
+    glass = max(abs(q.y - 0.262) - 0.150, abs(q.x) - (hw - 0.022));
+    wire = min(abs(q.x), max(abs(q.y - 0.262), abs(q.x) - hw));
+  } else {
+    /* an OPAL GAS GLOBE under its brass gallery and smoke bell */
+    float glb  = length(q - vec2(0.0, 0.250)) - 0.165;
+    float gal  = mmBox(q - vec2(0.0, 0.428), vec2(0.100, 0.024), 0.008);
+    float bell = max(length((q - vec2(0.0, 0.452))/vec2(0.165, 0.090)) - 1.0, 0.452 - q.y)*0.090;
+    float knob = length(q - vec2(0.0, 0.070)) - 0.024;
+    float rod  = mmBox(q - vec2(0.0, 0.590), vec2(0.018, 0.060), 0.005);
+    d = min(min(glb, gal), min(bell, min(knob, rod)));
+    glass = glb;
+    wire = abs(q.y - 0.428);
+  }
+  return d;
+}
+float wgLanTop(float k){ return k < 0.40 ? 0.60 : (k < 0.74 ? 0.67 : 0.64); }
+float wgLanSD(vec2 m, vec2 msz, float seed){
+  float s = wgLanS(seed), k = wgLanKind(seed);
+  vec2 q = (m - vec2(0.0, 0.03))/s;
+  float g, w;
+  float d = wgLanBody(q, k, g, w)*s;
+  float y0 = 0.03 + wgLanTop(k)*s;
+  float ch = mmBox(m - vec2(0.0, (y0 + msz.y)*0.5), vec2(0.012, (msz.y - y0)*0.5 + 0.03), 0.004);
+  return min(d, ch);
 }
 
-/* 39  A KENNEL: a boarded dog house with a pitched roof oversailing it, the
-   arched door dark inside, a name plate over the door, and straw spilled
-   out over the sill. part 0 boards, 1 roof, 2 the dark door, 3 the plate,
-   4 straw. */
-float knSD(vec2 m, vec2 msz, float seed, out float part){
-  float S = 1.10 + 0.22*mmHash11(seed*3.3);
-  vec2 q = m/S;
-  float body = mmBox(q - vec2(0.0, 0.36), vec2(0.48, 0.36), 0.01);
-  float roof = max(q.y - 0.72 - 0.42*(1.0 - abs(q.x)/0.60), 0.66 - q.y);
-  roof = max(roof, abs(q.x) - 0.60);
-  float door = mmArch(q - vec2(0.0, 0.02), 0.19, 0.34);
-  float plate = mmBox(q - vec2(0.0, 0.64), vec2(0.13, 0.035), 0.01);
-  float straw = max(length((q - vec2(0.0, 0.0))/vec2(0.34, 0.06)) - 1.0, -q.y)*0.06;
-  float d = min(min(body, roof), straw)*S;
-  part = 0.0;
-  if (roof < 0.0) part = 1.0;
-  if (door < 0.0) part = 2.0;
-  if (plate < 0.0) part = 3.0;
-  if (straw < 0.0 && door > -0.01) part = 4.0;
-  return d;
+/* ── 33 THE LAMP-MAKER'S BENCH ────────────────────────────────────────── */
+/* what stands in slot i of the top: 0 a finished lamp, 1 a chimney, 2 a
+   small storm lantern, 3 a brass fount, 4 a tray of globes, 5 nothing */
+float wgBnKind(float seed, float i){
+  if (abs(i - 1.0) < 0.5) return 0.0;               // the lamp it is working by
+  float h = mmHash11(seed*4.7 + i*1.93);
+  return h < 0.20 ? 0.0 : (h < 0.40 ? 1.0 : (h < 0.56 ? 2.0 : (h < 0.74 ? 3.0 : (h < 0.90 ? 4.0 : 5.0))));
 }
-/* 40  A DOG'S BED: a wicker basket, its front dipped low to step in, a
-   plaid cushion in it, and an enamel bowl of water beside it.
-   part 0 wicker, 1 cushion, 2 enamel, 3 water. */
-float dbSD(vec2 m, vec2 msz, float seed, out float part){
-  float sd = mmHash11(seed*2.3) < 0.5 ? -1.0 : 1.0;
-  vec2 q = vec2(m.x*sd, m.y);
-  vec2 b = q - vec2(-0.14, 0.0);
-  float rim = (length((b - vec2(0.0, 0.28))/vec2(0.46, 0.10)) - 1.0)*0.10;
-  float body = max(abs(b.x) - 0.42 - 0.04*clamp(b.y/0.28, 0.0, 1.0), max(-b.y, b.y - 0.28 - 0.06*(1.0 - smoothstep(0.0, 0.30, abs(b.x)))));
-  float cush = (length((b - vec2(0.0, 0.29))/vec2(0.36, 0.07)) - 1.0)*0.07;
-  float bowl = max(length((q - vec2(0.52, 0.05))/vec2(0.13, 0.06)) - 1.0, -q.y)*0.06;
-  float d = min(min(rim, body), bowl);
-  part = 0.0;
-  if (cush < 0.0) part = 1.0;
-  if (bowl < 0.0) part = q.y > 0.085 ? 3.0 : 2.0;
-  return d;
-}
-/* 41  A GROOMING TABLE: a stout table with a rubber mat on its top, and the
-   grooming arm -- an iron post up from one end, its arm out over the table
-   and the loop hanging from it -- and a brush and a comb laid on the mat.
-   part 0 oak, 1 the mat, 2 iron, 3 brass. */
-float gtSD(vec2 m, vec2 msz, float seed, float wire, out float part){
-  float hw = min(msz.x*0.5 - 0.06, 0.60);
-  float top = mmBox(m - vec2(0.0, 0.74), vec2(hw, 0.04), 0.01);
-  float mat = mmBox(m - vec2(0.0, 0.79), vec2(hw - 0.03, 0.012), 0.005);
-  float legs = mmBox(vec2(abs(m.x) - (hw - 0.07), m.y - 0.36), vec2(0.04, 0.36), 0.008);
-  float rail = mmBox(m - vec2(0.0, 0.18), vec2(hw - 0.08, 0.02), 0.004);
-  float post = mmSeg2(m, vec2(-hw + 0.06, 0.78), vec2(-hw + 0.06, 1.62), max(0.020, wire));
-  float arm = mmSeg2(m, vec2(-hw + 0.06, 1.60), vec2(-hw + 0.48, 1.60), max(0.018, wire));
-  float loop = abs(length((m - vec2(-hw + 0.46, 1.38))/vec2(0.6, 1.0)) - 0.10) - max(0.008, wire*0.6);
-  loop = max(loop, m.y - 1.58);
-  float brush = mmBox(m - vec2(hw*0.30, 0.84), vec2(0.10, 0.03), 0.015);
-  float d = min(min(min(top, mat), min(legs, rail)), min(min(post, arm), min(loop, brush)));
-  part = 0.0;
-  if (mat < 0.0) part = 1.0;
-  if (post < 0.0 || arm < 0.0 || loop < 0.0) part = 2.0;
-  if (brush < 0.0) part = 3.0;
-  return d;
-}
-/* 42  A WASH TUB: an oval galvanised tub, its rolled rim and its two
-   pressed bands, on a wooden trestle, soap suds standing in it and a
-   scrubbing brush on the rim. part 0 zinc, 1 the trestle, 2 the rim,
-   3 the suds. */
-float wtSD(vec2 m, vec2 msz, float seed, out float part){
-  float hw = min(msz.x*0.5 - 0.05, 0.72);
-  float stand = min(mmBox(vec2(abs(m.x) - hw*0.62, m.y - 0.22), vec2(0.04, 0.22), 0.006),
-                    mmBox(m - vec2(0.0, 0.42), vec2(hw*0.80, 0.03), 0.006));
-  float t = clamp((m.y - 0.45)/0.42, 0.0, 1.0);
-  float tub = max(abs(m.x) - mix(hw*0.78, hw, t), max(0.45 - m.y, m.y - 0.88));
-  float rim = (length((m - vec2(0.0, 0.88))/vec2(hw, 0.07)) - 1.0)*0.07;
-  float suds = 1e3;
-  for (int i = 0; i < 5; i++){
-    float fx = (float(i) - 2.0)*hw*0.32 + (mmHash11(seed + float(i)) - 0.5)*0.10;
-    suds = min(suds, length(m - vec2(fx, 0.90)) - (0.08 + 0.05*mmHash11(seed*3.0 + float(i))));
+/* one object on the top, its foot at o = (0, 0); gl < 0 in its glass */
+float wgBnThing(vec2 o, float k, out float gl){
+  gl = 1e3;
+  float d = 1e3;
+  if (k < 0.5) {
+    /* a table lamp: foot, stem, fount, collar, burner, chimney */
+    d = mmBox(o - vec2(0.0, 0.014), vec2(0.070, 0.014), 0.006);
+    d = min(d, mmBox(o - vec2(0.0, 0.055), vec2(0.018, 0.035), 0.006));
+    d = min(d, wgEll(o - vec2(0.0, 0.135), vec2(0.085, 0.060)));
+    d = min(d, mmBox(o - vec2(0.0, 0.205), vec2(0.036, 0.014), 0.004));
+    float ch = min(wgEll(o - vec2(0.0, 0.265), vec2(0.046, 0.052)), mmBox(o - vec2(0.0, 0.345), vec2(0.024, 0.060), 0.008));
+    d = min(d, ch);
+    gl = ch;
+  } else if (k < 1.5) {
+    float ch = min(wgEll(o - vec2(0.0, 0.060), vec2(0.050, 0.058)), mmBox(o - vec2(0.0, 0.150), vec2(0.026, 0.080), 0.008));
+    d = ch; gl = ch;
+  } else if (k < 2.5) {
+    float g2, w2;
+    d = wgLanBody(o/0.52, 0.0, g2, w2)*0.52;
+    gl = g2*0.52;
+  } else if (k < 3.5) {
+    /* a brass fount waiting for its burner, and an oil can with its spout */
+    d = wgEll(o - vec2(-0.04, 0.060), vec2(0.075, 0.060));
+    d = min(d, mmBox(o - vec2(-0.04, 0.130), vec2(0.020, 0.014), 0.004));
+    d = min(d, mmBox(o - vec2(0.09, 0.070), vec2(0.040, 0.070), 0.010));
+    d = min(d, wgSeg(o, vec2(0.12, 0.13), vec2(0.20, 0.20), 0.008));
+  } else if (k < 4.5) {
+    d = mmBox(o - vec2(0.0, 0.010), vec2(0.17, 0.010), 0.004);
+    for (int j = 0; j < 3; j++){
+      float gx = (float(j) - 1.0)*0.105;
+      float gg = length(o - vec2(gx, 0.075)) - 0.058;
+      d = min(d, gg); gl = min(gl, gg);
+    }
   }
-  suds = max(suds, 0.86 - m.y);
-  float d = min(min(stand, tub), min(rim, suds));
-  part = 1.0;
-  if (tub < 0.0) part = 0.0;
-  if (rim < 0.0) part = 2.0;
-  if (suds < 0.0) part = 3.0;
   return d;
+}
+float wgBnSD(vec2 q, float seed){
+  float hw = 1.18, TOP = 0.90;
+  float d = mmBox(q - vec2(0.0, TOP - 0.035), vec2(hw, 0.035), 0.006);
+  d = min(d, mmBox(q - vec2(0.0, TOP - 0.110), vec2(hw - 0.07, 0.042), 0.004));
+  d = min(d, mmBox(vec2(abs(q.x) - (hw - 0.09), q.y - (TOP - 0.07)*0.5), vec2(0.048, (TOP - 0.07)*0.5), 0.006));
+  d = min(d, mmBox(q - vec2(0.0, 0.215), vec2(hw - 0.08, 0.024), 0.004));
+  /* the rack along the back: two uprights and a shelf of glass */
+  d = min(d, mmBox(vec2(abs(q.x) - (hw - 0.05), q.y - 1.16), vec2(0.028, 0.27), 0.004));
+  d = min(d, mmBox(q - vec2(0.0, 1.345), vec2(hw - 0.02, 0.020), 0.004));
+  /* the vice, bolted to the left end of the top */
+  d = min(d, mmBox(q - vec2(-hw + 0.13, TOP + 0.055), vec2(0.075, 0.055), 0.008));
+  d = min(d, mmBox(q - vec2(-hw + 0.02, TOP + 0.040), vec2(0.075, 0.011), 0.004));
+  d = min(d, mmBox(q - vec2(-hw - 0.05, TOP + 0.040), vec2(0.011, 0.060), 0.004));
+  for (int i = 0; i < 5; i++){
+    float fi = float(i);
+    float g;
+    d = min(d, wgBnThing(q - vec2((fi - 1.6)*0.42, TOP), wgBnKind(seed, fi), g));
+  }
+  /* the rack's glass: globes and chimneys in a row */
+  float rx = q.x + 1.0, ri = floor(rx/0.19);
+  float rk = mmHash11(ri*3.1 + seed*1.7);
+  vec2 ro = vec2(rx - (ri + 0.5)*0.19, q.y - 1.365);
+  float rg = rk < 0.45 ? length(ro - vec2(0.0, 0.058)) - 0.056
+           : (rk < 0.80 ? min(wgEll(ro - vec2(0.0, 0.045), vec2(0.040, 0.045)), mmBox(ro - vec2(0.0, 0.110), vec2(0.020, 0.050), 0.006)) : 1e3);
+  rg = mix(1e3, rg, step(0.0, rx)*step(rx, 2.0));
+  d = min(d, rg);
+  /* tins on the under-shelf */
+  float tx = q.x + 1.02, ti = floor(tx/0.17);
+  vec2 to = vec2(tx - (ti + 0.5)*0.17, q.y - 0.240);
+  float tn = mmBox(to - vec2(0.0, 0.070), vec2(0.056, 0.070), 0.008);
+  tn = mix(1e3, tn, step(mmHash11(ti*2.3 + seed), 0.62)*step(0.0, tx)*step(tx, 2.04));
+  return min(d, tn);
+}
+
+/* ── 34 THE TELESCOPE ─────────────────────────────────────────────────── */
+/* the tube's own frame: t along it (0 at the trunnion), v across it */
+vec2 wgTsTube(vec2 q){
+  const float A = 0.50;                         // 28.6 degrees up
+  vec2 u = vec2(cos(A), sin(A)), n = vec2(-sin(A), cos(A));
+  vec2 r = q - vec2(0.0, 1.66);
+  return vec2(dot(r, u), dot(r, n));
+}
+float wgTsR(float t){ return mix(0.060, 0.090, clamp((t + 0.80)/1.90, 0.0, 1.0)); }
+float wgTelSD(vec2 q, float seed){
+  float t0;
+  float d = wgSegT(q, vec2(-0.03, 1.33), vec2(-0.80, 0.03), 0.040, 0.026, t0);
+  d = min(d, wgSegT(q, vec2(0.03, 1.33), vec2(0.78, 0.03), 0.040, 0.026, t0));
+  d = min(d, wgSegT(q, vec2(0.0, 1.33), vec2(0.14, 0.00), 0.044, 0.030, t0));
+  /* brass shoes on its feet */
+  d = min(d, mmBox(q - vec2(-0.81, 0.030), vec2(0.036, 0.030), 0.008));
+  d = min(d, mmBox(q - vec2(0.79, 0.030), vec2(0.036, 0.030), 0.008));
+  d = min(d, mmBox(q - vec2(0.14, 0.028), vec2(0.040, 0.028), 0.008));
+  /* the spreader and its tray */
+  d = min(d, wgSeg(q, vec2(-0.43, 0.63), vec2(0.43, 0.63), 0.016));
+  d = min(d, mmBox(q - vec2(0.0, 0.66), vec2(0.22, 0.016), 0.006));
+  /* the head, the mount and the altitude arc */
+  d = min(d, mmBox(q - vec2(0.0, 1.355), vec2(0.150, 0.042), 0.016));
+  d = min(d, mmBox(q - vec2(0.0, 1.475), vec2(0.060, 0.090), 0.010));
+  d = min(d, max(abs(length(q - vec2(0.0, 1.66)) - 0.19) - 0.020, q.y - 1.62));
+  d = min(d, length(q - vec2(0.0, 1.66)) - 0.060);
+  vec2 tv = wgTsTube(q);
+  float t = tv.x, v = tv.y;
+  float tube = max(abs(v) - wgTsR(t), max(-0.80 - t, t - 1.02));
+  float dew  = max(abs(v) - 0.112, max(0.96 - t, t - 1.40));
+  float draw = max(abs(v) - 0.036, max(-1.06 - t, t + 0.78));
+  float eye  = max(abs(v) - 0.024, max(-1.20 - t, t + 1.04));
+  float knob = length(vec2(t + 0.92, v + 0.070)) - 0.026;
+  float fnd  = max(abs(v - 0.172) - 0.026, max(0.08 - t, t - 0.62));
+  fnd = min(fnd, max(abs(v - 0.172) - 0.034, max(0.54 - t, t - 0.66)));
+  float brk  = min(max(abs(t - 0.20) - 0.022, max(v - 0.172, -v)), max(abs(t - 0.52) - 0.022, max(v - 0.172, -v)));
+  d = min(d, min(min(tube, dew), min(min(draw, eye), min(knob, min(fnd, brk)))));
+  return d;
+}
+
+/* ── 35 THE ROOF TRUSS ────────────────────────────────────────────────── */
+/* An ARCH-BRACED COLLAR TRUSS, the roof of a great house's attic: the
+   principal rafters from the wall plates to the ridge, a collar across them
+   high up, the king post from the collar to the ridge, and from each wall
+   post a curved brace sweeping up under the principal to the collar -- so
+   the eye looks UNDER the trusses to the gable, where a tie beam across
+   every one of them stacked into a blind. m is metres in the quad: x from
+   the room's axis, y from the floor; the eaves at yT (the truss's seed
+   carries it), the ridge at the top of the quad. */
+float wgTrussSD(vec2 m, vec2 msz, float yT, out float mem){
+  float W = msz.x*0.5 - 0.06, yR = msz.y - 0.08;
+  float ax = abs(m.x);
+  vec2 a = vec2(W + 0.02, yT), b = vec2(0.0, yR);
+  float raf = wgSeg(vec2(ax, m.y), a, b, 0.140);
+  float yC = yT + (yR - yT)*0.58;
+  float xC = W*(1.0 - (yC - yT)/(yR - yT));
+  float col = mmBox(m - vec2(0.0, yC), vec2(xC, 0.120), 0.010);
+  float kp  = mmBox(m - vec2(0.0, (yC + yR)*0.5), vec2(0.110, (yR - yC)*0.5), 0.008);
+  /* the wall post, standing on its corbel on the knee wall */
+  float post = mmBox(vec2(ax - (W - 0.14), m.y - yT*0.5 - 0.06), vec2(0.130, yT*0.5 - 0.06), 0.008);
+  post = min(post, wgTri(vec2(ax - (W - 0.06), 0.14 - m.y)*vec2(1.0, 1.0), 0.20, 0.14));
+  /* the arch brace: a quarter-ellipse from low on the post to the collar's
+     underside, its soffit a smooth curve and its back against the rafter */
+  vec2 P1 = vec2(W - 0.27, yT - 0.60), P2 = vec2(xC*0.60, yC - 0.12);
+  vec2 C = vec2(P2.x, P1.y), rr = vec2(P1.x - P2.x, P2.y - P1.y);
+  float de = (length((vec2(ax, m.y) - C)/rr) - 1.0)*min(rr.x, rr.y);
+  float brace = max(abs(de + 0.10) - 0.10, max(C.x - ax, C.y - m.y));
+  /* purlins, end-on on the principals' backs: three a side */
+  float pur = 1e3;
+  vec2 nn = normalize(vec2(yR - yT, W + 0.02));
+  for (int i = 0; i < 3; i++){
+    float f = 0.20 + float(i)*0.27;
+    vec2 c = mix(a, b, f);
+    pur = min(pur, mmBox(vec2(ax, m.y) - (c + nn*0.21), vec2(0.105, 0.105), 0.010));
+  }
+  float d = min(min(raf, col), min(min(kp, post), min(brace, pur)));
+  /* which member this pixel is, for the paint: 1 collar, 2 principal, 3 king
+     post, 4 brace, 5 post, 7 purlin */
+  mem = 0.0;
+  float best = 1e3;
+  if (col < best) { best = col; mem = 1.0; }
+  if (raf < best) { best = raf; mem = 2.0; }
+  if (kp  < best) { best = kp;  mem = 3.0; }
+  if (brace < best) { best = brace; mem = 4.0; }
+  if (post < best) { best = post; mem = 5.0; }
+  if (pur < best) { best = pur; mem = 7.0; }
+  return d;
+}
+
+/* ── 36 THE KENNEL ────────────────────────────────────────────────────── */
+float wgKnSide(float seed){ return mmHash11(seed*2.71 + 0.3) < 0.5 ? -1.0 : 1.0; }
+float wgKnSD(vec2 q){
+  vec2 k = q - vec2(-0.16, 0.0);
+  float body = mmBox(k - vec2(0.0, 0.470), vec2(0.600, 0.385), 0.008);
+  float skid = mmBox(k - vec2(0.0, 0.040), vec2(0.560, 0.040), 0.006);
+  float roof = wgTri(k - vec2(0.0, 0.810), 0.760, 0.500);
+  float bowl = min(wgEll(q - vec2(0.78, 0.075), vec2(0.150, 0.045)),
+                   mmBox(q - vec2(0.78, 0.040), vec2(0.128, 0.040), 0.012));
+  return min(min(body, skid), min(roof, bowl));
+}
+
+/* ── 37 THE DOG'S BASKET ──────────────────────────────────────────────── */
+/* (graft: and its enamel bowl of water beside it, on the floor) */
+float wgBowlSD(vec2 q){
+  return min(wgEll(q - vec2(0.0, 0.075), vec2(0.150, 0.045)),
+             mmBox(q - vec2(0.0, 0.040), vec2(0.128, 0.040), 0.012));
+}
+float wgBkSD(vec2 q0){
+  float bowl = wgBowlSD(q0 - vec2(0.56, 0.0));
+  vec2 q = q0 + vec2(0.20, 0.0);
+  float rim  = wgEll(q - vec2(0.0, 0.330), vec2(0.510, 0.135));
+  float xs   = 0.445 + 0.065*clamp((q.y - 0.04)/0.29, 0.0, 1.0);
+  float wall = max(abs(q.y - 0.185) - 0.155, abs(q.x) - xs);
+  float back = max(wgEll(q - vec2(0.0, 0.33), vec2(0.505, 0.300)), 0.33 - q.y);
+  return min(min(min(rim, wall), back), bowl);
+}
+
+/* ── 38 THE GROOMING TABLE ────────────────────────────────────────────── */
+float wgGtSD(vec2 q){
+  float d = mmBox(q - vec2(0.0, 0.810), vec2(0.620, 0.030), 0.008);
+  d = min(d, mmBox(q - vec2(0.0, 0.852), vec2(0.590, 0.012), 0.004));
+  float t0;
+  d = min(d, wgSegT(vec2(abs(q.x), q.y), vec2(0.50, 0.79), vec2(0.58, 0.02), 0.032, 0.024, t0));
+  d = min(d, mmBox(q - vec2(0.0, 0.26), vec2(0.54, 0.018), 0.004));
+  /* the grooming arm and its loop */
+  d = min(d, mmBox(q - vec2(-0.54, 1.24), vec2(0.022, 0.40), 0.006));
+  d = min(d, mmBox(q - vec2(-0.34, 1.62), vec2(0.21, 0.020), 0.006));
+  d = min(d, abs(wgEll(q - vec2(-0.14, 1.40), vec2(0.060, 0.170))) - 0.011);
+  d = min(d, mmBox(q - vec2(-0.14, 1.585), vec2(0.010, 0.030), 0.003));
+  /* brushes and a comb on the mat, a towel over its end */
+  d = min(d, mmBox(q - vec2(0.10, 0.895), vec2(0.090, 0.032), 0.014));
+  d = min(d, mmBox(q - vec2(0.30, 0.878), vec2(0.070, 0.015), 0.004));
+  d = min(d, mmBox(q - vec2(0.56, 0.72), vec2(0.075, 0.170), 0.010));
+  /* the pail under it */
+  float pl = max(abs(q.y - 0.12) - 0.12, abs(q.x - 0.18) - (0.12 + 0.03*(q.y/0.24)));
+  d = min(d, pl);
+  d = min(d, max(abs(length(q - vec2(0.18, 0.24)) - 0.13) - 0.007, 0.24 - q.y));
+  return d;
+}
+
+/* ── 39 THE ROLL-TOP BATH, 40 THE ZINC TUB ───────────────────────────── */
+float wgBtSide(float seed){ return mmHash11(seed*6.37 + 0.5) < 0.5 ? -1.0 : 1.0; }
+float wgBtBody(vec2 q){
+  float xs = abs(q.x) - 0.11*clamp((q.y - 0.17)/0.55, 0.0, 1.0);
+  return mmBox(vec2(xs, q.y - 0.450), vec2(0.790, 0.280), 0.20);
+}
+float wgBtSteams(float seed){ return step(mmHash11(seed*9.37 + 0.4), 0.60); }
+/* the steam off a hot bath: a column that widens and sways as it rises */
+float wgBtSteam(vec2 q, float seed){
+  float t = clamp((q.y - 0.80)/0.62, 0.0, 1.0);
+  float x0 = (mmHash11(seed*3.9) - 0.5)*0.6;
+  float sw = q.x - x0 - (0.08 + 0.10*t)*sin(q.y*5.0 + seed*5.0);
+  return max(abs(sw) - (0.16 + 0.26*t), max(0.80 - q.y, q.y - 1.42));
+}
+float wgBtSD(vec2 q, float seed){
+  float d = wgBtBody(q);
+  d = min(d, wgEll(q - vec2(0.0, 0.755), vec2(0.930, 0.135)));
+  if (wgBtSteams(seed) > 0.5) d = min(d, wgBtSteam(q, seed));
+  d = min(d, mmBox(q - vec2(0.0, 0.720), vec2(0.905, 0.036), 0.034));
+  /* the claw feet: the near pair and, higher and smaller, the far pair */
+  float t0;
+  for (int i = 0; i < 2; i++){
+    float sx = float(i)*2.0 - 1.0;
+    d = min(d, wgSegT(q, vec2(sx*0.63, 0.24), vec2(sx*0.69, 0.055), 0.070, 0.046, t0));
+    d = min(d, wgEll(q - vec2(sx*0.70, 0.040), vec2(0.070, 0.040)));
+    d = min(d, wgSegT(q, vec2(sx*0.52, 0.28), vec2(sx*0.55, 0.12), 0.050, 0.036, t0));
+  }
+  /* its taps: two pillars and a spout at the plain end */
+  float sd = wgBtSide(seed);
+  vec2 tq = vec2(q.x*sd - 0.80, q.y);
+  d = min(d, mmBox(vec2(abs(tq.x + 0.0) - 0.0, tq.y - 0.845), vec2(0.020, 0.090), 0.006));
+  d = min(d, mmBox(tq - vec2(-0.10, 0.845), vec2(0.020, 0.090), 0.006));
+  d = min(d, mmBox(tq - vec2(-0.05, 0.945), vec2(0.090, 0.014), 0.006));
+  d = min(d, mmBox(tq - vec2(-0.05, 0.925), vec2(0.016, 0.040), 0.005));
+  return d;
+}
+/* (graft: the standpipe up behind it and the swan-neck tap over the tub,
+   with its cross handle -- "a tap or hose over each") */
+float wgZtTap(vec2 q){
+  float p = mmBox(q - vec2(0.80, 0.72), vec2(0.024, 0.72), 0.008);
+  float neck = max(abs(length(q - vec2(0.62, 1.40)) - 0.18) - 0.022, 1.40 - q.y);
+  float nose = mmBox(q - vec2(0.44, 1.33), vec2(0.022, 0.07), 0.008);
+  float hd = mmBox(q - vec2(0.80, 1.25), vec2(0.075, 0.014), 0.005);
+  hd = min(hd, mmBox(q - vec2(0.80, 1.22), vec2(0.014, 0.040), 0.004));
+  float clip = mmBox(q - vec2(0.80, 0.30), vec2(0.045, 0.016), 0.005);
+  return min(min(min(p, neck), nose), min(hd, clip));
+}
+float wgZtSD(vec2 q){
+  /* the tub: oval, galvanised, its rolled rim and drop handles, on a trestle */
+  float xs = abs(q.x) - 0.08*clamp((q.y - 0.50)/0.36, 0.0, 1.0);
+  float body = mmBox(vec2(xs, q.y - 0.680), vec2(0.600, 0.190), 0.12);
+  float rim = wgEll(q - vec2(0.0, 0.870), vec2(0.705, 0.085));
+  float hnd = abs(wgEll(vec2(abs(q.x) - 0.74, q.y - 0.80), vec2(0.060, 0.050))) - 0.012;
+  float t0;
+  float leg = wgSegT(vec2(abs(q.x), q.y), vec2(0.40, 0.52), vec2(0.58, 0.02), 0.030, 0.024, t0);
+  leg = min(leg, wgSegT(vec2(abs(q.x), q.y), vec2(0.40, 0.52), vec2(0.28, 0.02), 0.028, 0.022, t0));
+  float bar = mmBox(q - vec2(0.0, 0.505), vec2(0.66, 0.030), 0.006);
+  float brush = mmBox(q - vec2(-0.30, 0.975), vec2(0.100, 0.028), 0.012);
+  return min(min(min(body, rim), min(hnd, leg)), min(min(bar, brush), wgZtTap(q)));
+}
+
+/* THE NOMINAL SIZE each shape is authored at (its quad's height, metres);
+   the quad scales the drawing, so an object is never clipped by its quad.
+   Must agree with SHAPE_M in fx/backdrop.js. */
+float wgNom(float shape){
+  return shape < 33.5 ? 1.60 : (shape < 34.5 ? 2.60 : (shape < 35.5 ? 1.0
+       : (shape < 36.5 ? 1.45 : (shape < 37.5 ? 0.70 : (shape < 38.5 ? 1.72 : (shape < 39.5 ? 1.45 : 1.55))))));
+}
+float wgMirror(float shape, float seed){
+  if (shape > 35.5 && shape < 36.5) return wgKnSide(seed);
+  if (shape > 33.5 && shape < 34.5) return mmHash11(seed*2.9 + 0.1) < 0.5 ? -1.0 : 1.0;
+  if (shape > 36.5 && shape < 37.5) return mmHash11(seed*4.1 + 0.3) < 0.5 ? -1.0 : 1.0;
+  if (shape > 39.5) return mmHash11(seed*3.3 + 0.6) < 0.5 ? -1.0 : 1.0;
+  return 1.0;
+}
+float gWgMem;
+/* the silhouette, in METRES */
+float wgField(vec2 m, vec2 msz, float shape, float seed){
+  if (shape < 32.5) return wgLanSD(m, msz, seed);
+  if (shape > 34.5 && shape < 35.5) return wgTrussSD(m, msz, seed, gWgMem);
+  float sc = msz.y/wgNom(shape);
+  vec2 q = m/sc;
+  q.x *= wgMirror(shape, seed);
+  float d;
+  if (shape < 33.5)      d = wgBnSD(q, seed);
+  else if (shape < 34.5) d = wgTelSD(q, seed);
+  else if (shape < 36.5) d = wgKnSD(q);
+  else if (shape < 37.5) d = wgBkSD(q);
+  else if (shape < 38.5) d = wgGtSD(q);
+  else if (shape < 39.5) d = wgBtSD(q, seed);
+  else                   d = wgZtSD(q);
+  return d*sc;
+}
+
+/* ═══ THE PAINT ═══════════════════════════════════════════════════════════
+   One pass over the object for its LOCAL COLOUR (in the room's own light
+   level: every colour here is scaled by E, which comes off the prop's own
+   luminance the way the pumpkin's skin does, so a white bath in a dark blue
+   room is the room's white), the DRAWN LINES inside its outline (ink, in
+   pixels -- mmInkP -- so they hold at the Deck's tier), and what the object
+   GIVES OFF (a lamp's glass and flame; laid on after the prop's ceilings).
+   moon comes back as how much of this pixel is an upper face the sky or a
+   high window reaches. */
+vec3 wgPaint(vec2 m, vec2 msz, float shape, float seed, float px, float lum,
+             vec2 kd, out vec3 emit, out float ink, out float moon){
+  emit = vec3(0.0); ink = 0.0; moon = 0.0;
+  float E = lum*2.2 + 0.060;
+  vec3 col = vec3(0.3)*E;
+  float kx = kd.x >= 0.0 ? 1.0 : -1.0;               // the key's side of a form
+
+  if (shape < 32.5) {
+    /* ---- THE LANTERN ---- */
+    float s = wgLanS(seed), k = wgLanKind(seed), lit = wgLanLit(seed);
+    vec2 q = (m - vec2(0.0, 0.03))/s;
+    float g, w;
+    float bd = wgLanBody(q, k, g, w);
+    float qpx = px/s;
+    float red = step(mmHash11(seed*6.1 + 0.9), 0.45)*step(k, 0.40);
+    vec3 metal = k < 0.40 ? mix(vec3(0.10, 0.10, 0.10), vec3(0.62, 0.12, 0.08), red)
+               : (k < 0.74 ? vec3(0.09, 0.09, 0.10) : vec3(0.78, 0.56, 0.24));
+    float hw = k < 0.40 ? 0.15 : (k < 0.74 ? 0.17 : 0.17);
+    float rnd = wgRound(clamp(q.x/hw, -1.0, 1.0));
+    col = metal*E*(0.45 + 0.75*rnd)*(1.0 + 0.35*kx*clamp(q.x/hw, -1.0, 1.0));
+    /* the brass trim of a carriage lantern: its roof's rim and its pan */
+    if (k >= 0.40 && k < 0.74) {
+      float trim = max(1.0 - smoothstep(0.012, 0.012 + qpx, abs(q.y - 0.432)),
+                       step(abs(q.y - 0.078), 0.020)) * step(abs(q.x), 0.18);
+      col = mix(col, vec3(0.78, 0.56, 0.24)*E*1.2, trim);
+    }
+    float inG = clamp(0.5 - g/max(qpx, 1e-4), 0.0, 1.0);
+    float onW = mmInkP(w, qpx, 1.4)*inG;
+    /* the flame's place in the glass */
+    vec2 fc = k < 0.40 ? vec2(0.0, 0.180) : (k < 0.74 ? vec2(0.0, 0.200) : vec2(0.0, 0.230));
+    float fd = length((q - fc)/vec2(0.55, 1.0));
+    if (lit > 0.5) {
+      float glow = 0.20 + 0.75*exp(-fd/0.070);
+      /* an opal globe is lit through, evenly, brighter at its heart */
+      if (k >= 0.74) glow = 0.38 + 0.45*exp(-fd/0.12);
+      vec3 gc = mix(vec3(1.00, 0.50, 0.16), vec3(1.00, 0.80, 0.50), exp(-fd/0.06));
+      /* the glass is the flame's light, not a surface the room lights: a
+         dark pane by albedo, and all of its value given off -- lit by the
+         room it came out a pale beige box */
+      col = mix(col, gc*E*0.15, inG);
+      emit += gc*glow*inG*(1.0 - onW*0.85)*2.1;
+      /* the flame itself, a teardrop, near white */
+      float fl = length((q - fc - vec2(0.0, 0.018))/vec2(0.020, 0.040)) - 1.0;
+      emit += vec3(1.00, 0.93, 0.74)*1.8*clamp(0.5 - fl*0.020/max(qpx, 1e-4), 0.0, 1.0)*inG*step(k, 0.74);
+      /* its own metal round the glass catches it */
+      emit += metal*0.30*exp(-max(bd, 0.0)/0.06)*(1.0 - inG)*step(-0.001, -bd);
+    } else {
+      /* a cold lantern: dark glass with the room's light down one side */
+      vec3 gc = vec3(0.16, 0.20, 0.24)*E;
+      col = mix(col, gc*(0.7 + 0.9*smoothstep(0.35, 0.95, -kx*q.x/hw + 0.5)), inG);
+    }
+    col = mix(col, metal*E*0.5, onW);
+    ink = max(ink, mmInkP(g, qpx, 1.0)*0.85);
+    ink = max(ink, onW*0.70*(1.0 - lit*0.4));
+    /* the chain: links, as a pen draws them -- alternate beads of light */
+    float yc = m.y - (0.03 + wgLanTop(k)*s);
+    float onC = step(0.0, yc)*step(abs(m.x), 0.03);
+    float lk = abs(fract(yc/0.055) - 0.5);
+    col = mix(col, metal*E*(0.6 + 0.8*smoothstep(0.30, 0.05, lk)), onC);
+    ink = max(ink, onC*mmInkP(lk - 0.47, px/0.055, 1.0)*0.6);
+    return col;
+  }
+
+  if (shape > 34.5 && shape < 35.5) {
+    /* ---- THE TRUSS: sawn oak gone dark, lit from below ---- */
+    float mem;
+    float d = wgTrussSD(m, msz, seed, mem);
+    float W = msz.x*0.5 - 0.06, yT = seed, yR = msz.y - 0.08;
+    float yC = yT + (yR - yT)*0.58;
+    float xC = W*(1.0 - (yC - yT)/(yR - yT));
+    vec3 oak = vec3(0.50, 0.34, 0.20)*E*1.45;
+    float ax = abs(m.x);
+    /* the grain runs along each member */
+    vec2 gq = mem > 1.5 && mem < 2.5 ? vec2(ax*0.9 + m.y*0.45, m.y*0.9 - ax*0.45) : (mem > 2.5 && mem < 3.5 || mem > 4.5 && mem < 5.5 ? m.yx : m);
+    float gr = mmNoise(vec2(gq.x*1.2, gq.y*16.0) + seed + mem*3.1);
+    col = oak*(0.74 + 0.38*gr);
+    /* each member a square timber: its soffit -- the face turned down to the
+       lamps -- a band of warm light, its upper arris in shade */
+    float face = 0.0;
+    if (mem < 1.5) face = (yC - m.y)/0.12;
+    else if (mem < 2.5) {
+      vec2 a = vec2(W + 0.02, yT), b = vec2(0.0, yR);
+      vec2 n = normalize(vec2(b.y - a.y, a.x - b.x));
+      face = -dot(vec2(ax, m.y) - a, n)/0.14;
+    } else if (mem > 3.5 && mem < 4.5) face = 0.6;
+    col *= 0.85 + 0.75*smoothstep(-0.3, 0.9, face);
+    /* the iron straps at the joints, and their bolts */
+    float strap = step(abs(m.y - yC), 0.24)*step(ax, 0.32) + step(abs(m.y - yR + 0.40), 0.12)*step(ax, 0.22);
+    strap = clamp(strap, 0.0, 1.0)*step(d, 0.0);
+    col = mix(col, vec3(0.08, 0.08, 0.09)*E, strap*0.85);
+    float bolt = 1.0 - smoothstep(0.020, 0.020 + px, length(vec2(mod(m.x + 0.09, 0.18) - 0.09, m.y - yC)));
+    col = mix(col, vec3(0.42, 0.40, 0.36)*E, bolt*strap);
+    /* where one member meets another, the pen draws the joint */
+    float cl = mmBox(m - vec2(0.0, yC), vec2(xC, 0.120), 0.010);
+    float kp = mmBox(m - vec2(0.0, (yC + yR)*0.5), vec2(0.110, (yR - yC)*0.5), 0.008);
+    ink = max(ink, mmInkP(cl, px, 1.1)*0.8);
+    ink = max(ink, mmInkP(kp, px, 1.1)*0.7);
+    float chk = mmInkP(abs(fract(gq.y*2.0 + seed) - 0.5) - 0.47, px*2.0, 0.6)
+              * step(0.62, mmNoise(gq*0.8 + seed*3.0));
+    ink = max(ink, chk*0.40);
+    moon = smoothstep(0.1, -0.9, face)*step(mem, 2.5);
+    return col;
+  }
+
+  float sc = msz.y/wgNom(shape);
+  vec2 q = m/sc;
+  float mir = wgMirror(shape, seed);
+  q.x *= mir;
+  float qpx = px/sc;
+  float kq = kx*mir;                                   // the key's side, in q
+
+  if (shape < 33.5) {
+    /* ---- THE BENCH ---- */
+    float hw = 1.18, TOP = 0.90;
+    vec3 oak = vec3(0.50, 0.36, 0.22)*E;
+    float gr = mmNoise(vec2(q.x*2.0, q.y*26.0) + seed);
+    col = oak*(0.70 + 0.30*gr);
+    float top = mmBox(q - vec2(0.0, TOP - 0.035), vec2(hw, 0.035), 0.006);
+    /* the scrubbed top is the palest board, its front edge a line of light */
+    col = mix(col, oak*1.45*(0.85 + 0.2*gr), step(top, 0.0));
+    col = mix(col, oak*0.55, step(q.y, TOP - 0.07)*step(TOP - 0.155, q.y));    // the apron in the top's shade
+    ink = max(ink, mmInkP(q.y - (TOP - 0.07), qpx, 1.0)*step(abs(q.x), hw)*0.8);
+    ink = max(ink, mmInkP(abs(q.x) - (hw - 0.09) - 0.048, qpx, 1.0)*step(q.y, TOP - 0.07)*0.6);
+    /* the vice: black iron */
+    float vc = min(mmBox(q - vec2(-hw + 0.13, TOP + 0.055), vec2(0.075, 0.055), 0.008),
+                   min(mmBox(q - vec2(-hw + 0.02, TOP + 0.040), vec2(0.075, 0.011), 0.004),
+                       mmBox(q - vec2(-hw - 0.05, TOP + 0.040), vec2(0.011, 0.060), 0.004)));
+    col = mix(col, vec3(0.11, 0.12, 0.13)*E, step(vc, 0.0));
+    /* the tins on the shelf */
+    float tx = q.x + 1.02, ti = floor(tx/0.17);
+    vec2 to = vec2(tx - (ti + 0.5)*0.17, q.y - 0.240);
+    float tn = mmBox(to - vec2(0.0, 0.070), vec2(0.056, 0.070), 0.008);
+    float onT = step(tn, 0.0)*step(mmHash11(ti*2.3 + seed), 0.62)*step(0.0, tx)*step(tx, 2.04);
+    vec3 tin = mix(vec3(0.55, 0.56, 0.58), vec3(0.60, 0.20, 0.12), step(0.6, mmHash11(ti*5.1 + seed)));
+    col = mix(col, tin*E*(0.55 + 0.6*wgRound(clamp(to.x/0.056, -1.0, 1.0))), onT);
+    ink = max(ink, mmInkP(tn, qpx, 1.0)*step(mmHash11(ti*2.3 + seed), 0.62)*step(q.y, 0.40)*0.8);
+    /* the things on the top */
+    for (int i = 0; i < 5; i++){
+      float fi = float(i);
+      float kk = wgBnKind(seed, fi);
+      vec2 o = q - vec2((fi - 1.6)*0.42, TOP);
+      float gl;
+      float td = wgBnThing(o, kk, gl);
+      if (td < 0.02) {
+        float on = clamp(0.5 - td/max(qpx, 1e-4), 0.0, 1.0);
+        float ong = clamp(0.5 - gl/max(qpx, 1e-4), 0.0, 1.0);
+        vec3 brass = vec3(0.80, 0.58, 0.25)*E*1.25*(0.55 + 0.70*wgRound(clamp(o.x/0.09, -1.0, 1.0)))
+                   * (1.0 + 0.30*kq*clamp(o.x/0.09, -1.0, 1.0));
+        vec3 glass = vec3(0.55, 0.66, 0.72)*E*0.55;
+        vec3 c = mix(brass, glass, ong);
+        if (kk > 1.5 && kk < 2.5) c = mix(vec3(0.58, 0.12, 0.08)*E, glass, ong);
+        col = mix(col, c, on);
+        /* glass reads by its edges: a hairline of light on the key's side */
+        float edge = mmInkP(gl + 0.006, qpx, 1.0)*step(0.0, kq*o.x);
+        emit += vec3(0.60, 0.70, 0.80)*edge*0.10;
+        ink = max(ink, mmInkP(td, qpx, 1.0)*0.9);
+        ink = max(ink, mmInkP(gl, qpx, 1.0)*0.5);
+        /* the lamp it works by is burning */
+        if (kk < 0.5 && (abs(fi - 1.0) < 0.5 || mmHash11(seed*9.1 + fi) < 0.35)) {
+          float fl = length((o - vec2(0.0, 0.262))/vec2(0.018, 0.034)) - 1.0;
+          float gw = exp(-length(o - vec2(0.0, 0.27))/0.05);
+          emit += vec3(1.00, 0.66, 0.30)*ong*(0.35 + 1.1*gw);
+          emit += vec3(1.00, 0.92, 0.70)*1.6*clamp(0.5 - fl*0.018/max(qpx, 1e-4), 0.0, 1.0);
+        }
+      }
+    }
+    /* the rack's glass */
+    float rx = q.x + 1.0, ri = floor(rx/0.19);
+    float rk = mmHash11(ri*3.1 + seed*1.7);
+    vec2 ro = vec2(rx - (ri + 0.5)*0.19, q.y - 1.365);
+    float rg = rk < 0.45 ? length(ro - vec2(0.0, 0.058)) - 0.056
+             : (rk < 0.80 ? min(wgEll(ro - vec2(0.0, 0.045), vec2(0.040, 0.045)), mmBox(ro - vec2(0.0, 0.110), vec2(0.020, 0.050), 0.006)) : 1e3);
+    float onR = step(rg, 0.0)*step(0.0, rx)*step(rx, 2.0);
+    col = mix(col, vec3(0.50, 0.62, 0.70)*E*(0.55 + 0.5*smoothstep(0.02, -0.04, kq*ro.x)), onR);
+    ink = max(ink, mmInkP(rg, qpx, 1.0)*step(0.0, rx)*step(rx, 2.0)*0.6);
+    emit += vec3(0.62, 0.72, 0.84)*onR*mmInkP(rg + 0.008, qpx, 1.0)*0.08;
+    return col;
+  }
+
+  if (shape < 34.5) {
+    /* ---- THE TELESCOPE ---- */
+    vec3 brass = vec3(0.86, 0.62, 0.26);
+    vec3 wood  = vec3(0.40, 0.19, 0.10);
+    vec2 tv = wgTsTube(q);
+    float t = tv.x, v = tv.y;
+    float tube = max(abs(v) - wgTsR(t), max(-0.80 - t, t - 1.02));
+    float dew  = max(abs(v) - 0.112, max(0.96 - t, t - 1.40));
+    float draw = max(abs(v) - 0.036, max(-1.06 - t, t + 0.78));
+    float eye  = max(abs(v) - 0.024, max(-1.20 - t, t + 1.04));
+    float fnd  = max(abs(v - 0.172) - 0.026, max(0.08 - t, t - 0.62));
+    /* the legs: mahogany, rounded */
+    float t0, t1, t2;
+    float l0 = wgSegT(q, vec2(-0.03, 1.33), vec2(-0.80, 0.03), 0.040, 0.026, t0);
+    float l1 = wgSegT(q, vec2(0.03, 1.33), vec2(0.78, 0.03), 0.040, 0.026, t1);
+    float l2 = wgSegT(q, vec2(0.0, 1.33), vec2(0.14, 0.00), 0.044, 0.030, t2);
+    col = wood*E*1.3*(0.55 + 0.5*mmNoise(vec2(q.x*3.0, q.y*30.0) + seed));
+    float inLeg = step(min(l0, min(l1, l2)), 0.0);
+    col *= mix(1.0, 0.75 + 0.45*smoothstep(-0.04, 0.02, -min(l0, min(l1, l2))), inLeg);
+    ink = max(ink, mmInkP(l2, qpx, 1.0)*step(l2, 0.0 + qpx)*0.8);
+    /* the brass: head, mount, arc, shoes -- and the tube */
+    float hd = min(mmBox(q - vec2(0.0, 1.355), vec2(0.150, 0.042), 0.016), mmBox(q - vec2(0.0, 1.475), vec2(0.060, 0.090), 0.010));
+    float arc = min(max(abs(length(q - vec2(0.0, 1.66)) - 0.19) - 0.020, q.y - 1.62), length(q - vec2(0.0, 1.66)) - 0.060);
+    float shoe = min(mmBox(q - vec2(-0.81, 0.030), vec2(0.036, 0.030), 0.008),
+                 min(mmBox(q - vec2(0.79, 0.030), vec2(0.036, 0.030), 0.008), mmBox(q - vec2(0.14, 0.028), vec2(0.040, 0.028), 0.008)));
+    col = mix(col, brass*E*1.1, step(min(hd, min(arc, shoe)), 0.0));
+    col = mix(col, vec3(0.12, 0.10, 0.09)*E, step(hd, 0.0)*step(q.y, 1.40));
+    ink = max(ink, mmInkP(min(hd, arc), qpx, 1.0)*0.8);
+    float onTube = step(min(min(tube, dew), min(draw, eye)), 0.0);
+    float onF = step(fnd, 0.0);
+    if (onTube + onF > 0.5) {
+      float R = onF > 0.5 ? 0.026 : (dew < 0.0 ? 0.112 : (draw < 0.0 ? 0.036 : (eye < 0.0 ? 0.024 : wgTsR(t))));
+      float vv = onF > 0.5 ? (v - 0.172)/R : v/R;
+      /* polished brass round a cylinder: dark at both edges, a broad warm
+         body, and one hard line of light along its upper side */
+      float rs = wgRound(clamp(vv, -1.0, 1.0));
+      vec3 b = brass*E*1.35*(0.30 + 0.85*rs);
+      b += brass*E*2.2*smoothstep(0.16, 0.0, abs(vv - 0.45))*0.8;
+      b *= 1.0 - 0.45*smoothstep(0.3, 1.0, -vv);
+      col = b;
+      /* the dew shield and the eyepiece are black-lacquered */
+      if (onF < 0.5 && (dew < 0.0 || eye < 0.0)) col = vec3(0.07, 0.06, 0.06)*E*(0.8 + 1.2*rs) + vec3(0.5)*E*smoothstep(0.14, 0.0, abs(vv - 0.45));
+      /* bands round the tube */
+      float band = 0.0;
+      for (int j = 0; j < 3; j++){
+        float bt = -0.55 + float(j)*0.60;
+        band = max(band, 1.0 - smoothstep(0.018, 0.018 + qpx, abs(t - bt)));
+      }
+      band *= step(tube, 0.0);
+      col = mix(col, brass*E*1.7*(0.4 + 0.7*rs), band);
+      ink = max(ink, mmInkP(abs(t - 0.96), qpx, 1.0)*step(abs(v), 0.115)*0.9);
+      ink = max(ink, mmInkP(abs(t + 0.78), qpx, 1.0)*step(abs(v), 0.07)*0.8);
+    }
+    /* the objective: the end of the dew shield, a dark lens with a glint */
+    vec2 lo = vec2(t - 1.40, v);
+    float lens = wgEll(lo, vec2(0.030, 0.100));
+    col = mix(col, vec3(0.05, 0.08, 0.12)*E, step(lens, 0.0));
+    emit += vec3(0.55, 0.65, 0.85)*0.25*step(lens, 0.0)*smoothstep(0.03, 0.0, abs(v - 0.05));
+    ink = max(ink, mmInkP(lens, qpx, 1.0));
+    moon = step(0.0, v)*onTube*smoothstep(0.0, 1.0, v/0.1);
+    return col;
+  }
+
+  if (shape < 36.5) {
+    /* ---- THE KENNEL ---- */
+    vec2 k = q - vec2(-0.16, 0.0);
+    float pk = mmHash11(seed*3.17 + 0.4);
+    vec3 paint = pk < 0.30 ? vec3(0.52, 0.15, 0.10) : (pk < 0.52 ? vec3(0.17, 0.30, 0.20)
+               : (pk < 0.72 ? vec3(0.24, 0.31, 0.40) : vec3(0.50, 0.36, 0.20)));
+    vec3 trim  = pk < 0.72 ? vec3(0.80, 0.76, 0.64) : vec3(0.34, 0.24, 0.14);
+    float wear = mmNoise(vec2(k.x*9.0, k.y*2.2) + seed*7.0);
+    vec3 board = paint*E*1.35*(0.80 + 0.30*wear);
+    col = board;
+    float body = mmBox(k - vec2(0.0, 0.470), vec2(0.600, 0.385), 0.008);
+    float roof = wgTri(k - vec2(0.0, 0.810), 0.760, 0.500);
+    float gable = wgTri(k - vec2(0.0, 0.855), 0.600, 0.395);
+    /* the boards: vertical on the front, weatherboard in the gable */
+    float bdx = abs(fract((k.x + 0.6)/0.108) - 0.5)*0.108;
+    float onBody = step(body, 0.0);
+    ink = max(ink, mmInkP(bdx, qpx, 1.0)*onBody*step(k.y, 0.855)*0.55);
+    float wb = abs(fract((k.y - 0.855)/0.085) - 0.5)*0.085;
+    float onGab = step(gable, 0.0);
+    col *= 1.0 - 0.25*onGab*smoothstep(0.0, 0.042, fract((k.y - 0.855)/0.085)*0.085);
+    ink = max(ink, mmInkP(wb, qpx, 1.0)*onGab*0.55);
+    /* the bargeboards and the roof's edge: trim, a band along each slope */
+    float onRoof = step(roof, 0.0)*(1.0 - onGab);
+    col = mix(col, trim*E*1.25*(0.8 + 0.3*smoothstep(0.0, 0.05, -roof)), onRoof);
+    ink = max(ink, mmInkP(gable, qpx, 1.2)*0.9);
+    /* the finial at the ridge */
+    /* the door: an arched opening, and the dark inside it */
+    float door = mmArch(k - vec2(0.0, 0.080), 0.215, 0.360);
+    float inD = step(door, 0.0);
+    float dy = (k.y - 0.08)/0.57;
+    vec3 dark = vec3(0.035, 0.028, 0.030)*E*(0.8 + 0.8*smoothstep(0.0, 0.35, 0.215 - abs(k.x)));
+    col = mix(col, dark, inD);
+    ink = max(ink, mmInkP(door, qpx, 1.4));
+    /* its surround, a lighter reveal */
+    float rev = step(0.0, door)*step(door, 0.035)*step(0.08, k.y);
+    col = mix(col, trim*E*1.0, rev*0.8);
+    /* STRAW, spilling over the sill and out onto the floor */
+    float sx = k.x*38.0 + seed*9.0;
+    float strand = abs(fract(sx + 0.35*sin(k.y*60.0 + floor(sx)*1.3)) - 0.5);
+    float heap = 0.035 + 0.060*exp(-k.x*k.x/0.045) + 0.02*mmNoise(vec2(k.x*20.0, seed));
+    float onS = step(k.y, heap + 0.080)*step(0.06, k.y)*step(abs(k.x), 0.32)*step(-0.04, -abs(k.x) + 0.30 + 0.04*sin(k.y*50.0));
+    vec3 straw = vec3(0.80, 0.64, 0.30)*E*1.45*(0.65 + 0.45*smoothstep(0.5, 0.1, strand));
+    col = mix(col, straw, onS);
+    ink = max(ink, onS*smoothstep(0.30, 0.48, strand)*0.35);
+    /* ...and whose kennel it is: its dog, asleep on its paws in the door */
+    float dg = mmHash11(seed*4.9 + 1.7);
+    if (dg < 0.55) {
+      vec3 fur = dg < 0.18 ? vec3(0.62, 0.42, 0.22) : (dg < 0.34 ? vec3(0.10, 0.09, 0.09)
+               : (dg < 0.46 ? vec3(0.82, 0.78, 0.70) : vec3(0.44, 0.30, 0.20)));
+      vec2 h = k - vec2(0.02, 0.20);
+      float head = wgEll(h, vec2(0.125, 0.095));
+      float snout = wgEll(h - vec2(0.105, -0.035), vec2(0.090, 0.050));
+      float ear = wgEll(h - vec2(-0.065, 0.015), vec2(0.050, 0.090));
+      float paws = wgEll(k - vec2(0.05, 0.105), vec2(0.17, 0.032));
+      float dog = min(min(head, snout), paws);
+      float onDog = step(dog, 0.0)*inD;
+      col = mix(col, fur*E*1.30*(0.70 + 0.45*smoothstep(-0.10, 0.08, h.y + 0.02)), onDog);
+      col = mix(col, fur*E*0.55, step(ear, 0.0)*inD);
+      ink = max(ink, (mmInkP(dog, qpx, 1.2) + mmInkP(ear, qpx, 1.0)*0.8)*inD);
+      /* its shut eye and its nose */
+      float eye = abs(wgEll(h - vec2(0.030, 0.010), vec2(0.024, 0.010))) ;
+      ink = max(ink, mmInkP(eye, qpx, 1.0)*step(h.y, 0.012)*step(abs(h.x - 0.030), 0.024)*inD);
+      float nose = length(h - vec2(0.190, -0.022)) - 0.020;
+      col = mix(col, vec3(0.03)*E, step(nose, 0.0)*inD);
+    }
+    /* the name plaque in the gable: brass, and the name cut in it */
+    vec2 pq = k - vec2(0.0, 0.985);
+    float plq = mmBox(pq, vec2(0.150, 0.042), 0.010);
+    float onP = step(plq, 0.0);
+    col = mix(col, vec3(0.86, 0.64, 0.28)*E*1.55*(0.8 + 0.3*smoothstep(0.04, -0.04, pq.y)), onP);
+    ink = max(ink, mmInkP(plq, qpx, 1.1));
+    float lx = pq.x + 0.105, li = floor(lx/0.042);
+    float letter = step(0.0, lx)*step(lx, 0.21)*step(abs(pq.y), 0.016)
+                 * (1.0 - smoothstep(0.006, 0.006 + qpx, abs(lx - (li + 0.5)*0.042 + 0.010*sin(li*3.7 + seed))));
+    col = mix(col, vec3(0.10, 0.07, 0.04)*E, letter*onP);
+    /* the bowl: white enamel, a blue rim, water in it */
+    vec2 bq = q - vec2(0.78, 0.0);
+    float rim = wgEll(bq - vec2(0.0, 0.075), vec2(0.150, 0.045));
+    float bw = mmBox(bq - vec2(0.0, 0.040), vec2(0.128, 0.040), 0.012);
+    float onB = step(min(rim, bw), 0.0);
+    col = mix(col, vec3(0.82, 0.83, 0.80)*E*1.4*(0.7 + 0.4*wgRound(clamp(bq.x/0.13, -1.0, 1.0))), onB);
+    float water = wgEll(bq - vec2(0.0, 0.078), vec2(0.118, 0.030));
+    col = mix(col, vec3(0.10, 0.18, 0.22)*E, step(water, 0.0));
+    col = mix(col, vec3(0.20, 0.30, 0.62)*E*1.2, step(abs(rim), 0.012)*step(0.0, rim + 0.012)*onB);
+    emit += vec3(0.55, 0.65, 0.80)*0.12*step(water, 0.0)*smoothstep(0.012, 0.0, abs(bq.x + 0.04 - bq.y*0.5));
+    ink = max(ink, mmInkP(min(rim, bw), qpx, 1.0)*0.9);
+    /* the whole box in shade on the side away from the key, and its foot */
+    col *= 0.80 + 0.30*smoothstep(-0.6, 0.6, kq*k.x);
+    col *= 1.0 - 0.35*smoothstep(0.20, 0.0, k.y)*onBody*(1.0 - onS);
+    return col;
+  }
+
+  if (shape < 37.5) {
+    /* ---- THE BASKET ---- */
+    vec2 q0 = q;
+    q += vec2(0.20, 0.0);
+    float rim  = wgEll(q - vec2(0.0, 0.330), vec2(0.510, 0.135));
+    float inner = wgEll(q - vec2(0.0, 0.330), vec2(0.440, 0.098));
+    vec3 wick = vec3(0.66, 0.48, 0.24)*E*1.35;
+    float wv = abs(fract((q.x + q.y*0.9)/0.045) - 0.5) + abs(fract((q.x - q.y*0.9)/0.045) - 0.5);
+    col = wick*(0.70 + 0.35*smoothstep(0.3, 0.8, wv));
+    ink = max(ink, mmInkP(abs(fract((q.y)/0.042) - 0.5) - 0.46, qpx/0.042, 1.0)*0.35*step(q.y, 0.30));
+    /* the roll of its rim, a thick coil of cane */
+    float onRim = step(rim, 0.0)*step(0.0, inner);
+    col = mix(col, wick*1.25*(0.75 + 0.35*mmNoise(vec2(atan(q.y - 0.33, q.x)*18.0, 0.0))), onRim);
+    /* the cushion inside it: tartan */
+    float onC = step(inner, 0.0);
+    vec2 tq = q*vec2(1.0, 2.2);
+    float tA = step(abs(fract(tq.x/0.12) - 0.5), 0.12), tB = step(abs(fract(tq.y/0.12) - 0.5), 0.12);
+    vec3 tart = mix(vec3(0.56, 0.12, 0.10), vec3(0.10, 0.22, 0.14), max(tA, tB)*0.7);
+    tart = mix(tart, vec3(0.80, 0.70, 0.30), tA*tB*0.6);
+    col = mix(col, tart*E*1.25*(0.70 + 0.45*smoothstep(0.23, 0.36, q.y)), onC);
+    ink = max(ink, mmInkP(rim, qpx, 1.2) + mmInkP(inner, qpx, 1.0)*0.9);
+    /* and a bone on it */
+    vec2 bo = q - vec2(0.10, 0.345);
+    float bone = min(mmBox(bo, vec2(0.085, 0.014), 0.012),
+                 min(min(length(bo - vec2(-0.09, 0.012)) - 0.020, length(bo - vec2(-0.09, -0.012)) - 0.020),
+                     min(length(bo - vec2(0.09, 0.012)) - 0.020, length(bo - vec2(0.09, -0.012)) - 0.020)));
+    col = mix(col, vec3(0.86, 0.82, 0.70)*E*1.5, step(bone, 0.0));
+    ink = max(ink, mmInkP(bone, qpx, 1.0));
+    col *= 0.82 + 0.28*smoothstep(-0.5, 0.5, kq*q.x);
+    /* (graft) its bowl: white enamel, a blue rim, water in it */
+    vec2 bq = q0 - vec2(0.56, 0.0);
+    float brim = wgEll(bq - vec2(0.0, 0.075), vec2(0.150, 0.045));
+    float bw = mmBox(bq - vec2(0.0, 0.040), vec2(0.128, 0.040), 0.012);
+    float onB = step(min(brim, bw), 0.0);
+    col = mix(col, vec3(0.82, 0.83, 0.80)*E*1.4*(0.7 + 0.4*wgRound(clamp(bq.x/0.13, -1.0, 1.0))), onB);
+    float water = wgEll(bq - vec2(0.0, 0.078), vec2(0.118, 0.030));
+    col = mix(col, vec3(0.10, 0.18, 0.22)*E, step(water, 0.0));
+    col = mix(col, vec3(0.20, 0.30, 0.62)*E*1.2, step(abs(brim), 0.012)*step(0.0, brim + 0.012)*onB);
+    emit += vec3(0.55, 0.65, 0.80)*0.12*step(water, 0.0)*smoothstep(0.012, 0.0, abs(bq.x + 0.04 - bq.y*0.5));
+    ink = max(ink, mmInkP(min(brim, bw), qpx, 1.0)*0.9);
+    return col;
+  }
+
+  if (shape < 38.5) {
+    /* ---- THE GROOMING TABLE ---- */
+    vec3 wood = vec3(0.46, 0.33, 0.20)*E*1.2;
+    col = wood*(0.72 + 0.3*mmNoise(vec2(q.x*2.0, q.y*24.0) + seed));
+    float mat = mmBox(q - vec2(0.0, 0.852), vec2(0.590, 0.012), 0.004);
+    col = mix(col, vec3(0.14, 0.24, 0.16)*E*1.3, step(mat, 0.0));
+    col = mix(col, wood*1.35, step(abs(q.y - 0.81), 0.03)*step(abs(q.x), 0.62));
+    float arm = min(mmBox(q - vec2(-0.54, 1.24), vec2(0.022, 0.40), 0.006), mmBox(q - vec2(-0.34, 1.62), vec2(0.21, 0.020), 0.006));
+    float loop = abs(wgEll(q - vec2(-0.14, 1.40), vec2(0.060, 0.170))) - 0.011;
+    col = mix(col, vec3(0.60, 0.60, 0.62)*E*1.2, step(arm, 0.0));
+    col = mix(col, vec3(0.50, 0.14, 0.10)*E*1.3, step(loop, 0.0));
+    float br = mmBox(q - vec2(0.10, 0.895), vec2(0.090, 0.032), 0.014);
+    col = mix(col, vec3(0.55, 0.30, 0.14)*E*1.3, step(br, 0.0));
+    float bristle = step(abs(q.y - 0.870), 0.012)*step(abs(q.x - 0.10), 0.08)*step(0.5, fract(q.x*90.0));
+    col = mix(col, vec3(0.15)*E, bristle);
+    float comb = mmBox(q - vec2(0.30, 0.878), vec2(0.070, 0.015), 0.004);
+    col = mix(col, vec3(0.70, 0.70, 0.74)*E*1.3, step(comb, 0.0));
+    float tw = mmBox(q - vec2(0.56, 0.72), vec2(0.075, 0.170), 0.010);
+    float strp = step(abs(q.y - 0.62), 0.02) + step(abs(q.y - 0.66), 0.008);
+    col = mix(col, mix(vec3(0.86, 0.84, 0.78), vec3(0.30, 0.40, 0.66), clamp(strp, 0.0, 1.0))*E*1.45, step(tw, 0.0));
+    float pl = max(abs(q.y - 0.12) - 0.12, abs(q.x - 0.18) - (0.12 + 0.03*(q.y/0.24)));
+    col = mix(col, vec3(0.56, 0.58, 0.60)*E*(0.6 + 0.6*wgRound(clamp((q.x - 0.18)/0.14, -1.0, 1.0))), step(pl, 0.0));
+    ink = max(ink, mmInkP(min(min(arm, loop), min(br, min(comb, min(tw, pl)))), qpx, 1.0)*0.9);
+    ink = max(ink, mmInkP(q.y - 0.78, qpx, 1.0)*step(abs(q.x), 0.62)*0.8);
+    return col;
+  }
+
+  if (shape < 39.5) {
+    /* ---- THE BATH ---- */
+    float pk = mmHash11(seed*7.3 + 0.2);
+    vec3 outside = pk < 0.50 ? vec3(0.80, 0.78, 0.70) : (pk < 0.70 ? vec3(0.14, 0.26, 0.20)
+                 : (pk < 0.86 ? vec3(0.42, 0.12, 0.14) : vec3(0.08, 0.08, 0.09)));
+    vec3 enamel = vec3(0.92, 0.92, 0.88);
+    vec3 gilt = pk < 0.86 ? vec3(0.84, 0.62, 0.27) : vec3(0.12, 0.11, 0.11);
+    float body = wgBtBody(q);
+    float onBody = step(body, 0.0);
+    /* the outside: round in section, lit on the key's side, its belly in
+       its own shadow */
+    float xn = clamp(q.x/0.90, -1.0, 1.0);
+    col = outside*E*1.55*(0.50 + 0.60*wgRound(xn))*(0.80 + 0.35*smoothstep(-0.5, 0.8, kq*xn));
+    col *= 0.62 + 0.48*smoothstep(0.18, 0.66, q.y);
+    /* the roll top seen from above: a white rim round the opening */
+    float rimE = wgEll(q - vec2(0.0, 0.755), vec2(0.930, 0.135));
+    float inner = wgEll(q - vec2(0.0, 0.762), vec2(0.850, 0.098));
+    float onRoll = step(rimE, 0.0)*step(0.0, inner);
+    col = mix(col, enamel*E*1.65*(0.70 + 0.40*smoothstep(0.70, 0.86, q.y)), onRoll);
+    /* INSIDE IT: the far wall of the bath, white enamel catching the light,
+       and the WATER standing in it -- dark and deep, the window's light laid
+       across it in one bright rippled band */
+    float inIn = step(inner, 0.0);
+    float wl = 0.765 + 0.006*sin(q.x*30.0 + seed);
+    float onW = inIn*step(q.y, wl);
+    col = mix(col, enamel*E*1.25*(0.65 + 0.45*smoothstep(wl, wl + 0.07, q.y)), inIn*(1.0 - onW));
+    vec3 wc = vec3(0.04, 0.12, 0.15)*E*1.2;
+    float rip = sin(q.x*42.0 + sin(q.y*160.0)*1.4 + seed*3.0);
+    float band = smoothstep(0.014, 0.0, abs(q.y - (wl - 0.030) - 0.006*rip))*smoothstep(0.75, 0.20, abs(q.x + 0.15));
+    col = mix(col, wc*(0.8 + 0.4*smoothstep(0.66, wl, q.y)), onW);
+    emit += vec3(0.62, 0.78, 0.92)*band*onW*0.55;
+    ink = max(ink, mmInkP(q.y - wl, qpx, 1.0)*inIn*0.6);
+    ink = max(ink, mmInkP(inner, qpx, 1.0)*0.8);
+    ink = max(ink, mmInkP(rimE, qpx, 1.0)*step(q.y, 2.0)*0.5);
+    ink = max(ink, mmInkP(body, qpx, 1.0)*step(q.y, 0.66)*0.8);
+    /* the steam off a hot bath, translucent and pale, thinning as it rises */
+    if (wgBtSteams(seed) > 0.5) {
+      float st = wgBtSteam(q, seed);
+      float onSt = step(st, 0.0)*step(0.0, rimE);
+      float tt = clamp((q.y - 0.80)/0.62, 0.0, 1.0);
+      float wisp = mmNoise(vec2(q.x*5.0, q.y*3.0 - seed*2.0))*0.7 + mmNoise(vec2(q.x*11.0, q.y*7.0))*0.3;
+      col = mix(col, vec3(0.70, 0.76, 0.80)*E*1.4, onSt);
+      gWgAlpha = mix(1.0, (0.10 + 0.22*wisp)*(1.0 - tt)*smoothstep(0.0, -0.10, st), onSt);
+      ink = ink*(1.0 - onSt);
+    }
+    /* the claw feet and the taps: gilt or black iron */
+    float feet = 1e3, t0;
+    for (int i = 0; i < 2; i++){
+      float sx = float(i)*2.0 - 1.0;
+      feet = min(feet, wgSegT(q, vec2(sx*0.63, 0.24), vec2(sx*0.69, 0.055), 0.070, 0.046, t0));
+      feet = min(feet, wgEll(q - vec2(sx*0.70, 0.040), vec2(0.070, 0.040)));
+      feet = min(feet, wgSegT(q, vec2(sx*0.52, 0.28), vec2(sx*0.55, 0.12), 0.050, 0.036, t0));
+    }
+    float onF = step(feet, 0.0)*(1.0 - onBody);
+    col = mix(col, gilt*E*1.4*(0.6 + 0.5*smoothstep(0.0, 0.2, q.y)), onF);
+    /* toes on the ball */
+    float toe = mmInkP(abs(fract((abs(q.x) - 0.70)/0.035 + 0.5) - 0.5)*0.035, qpx, 1.0)*step(q.y, 0.06)*step(abs(abs(q.x) - 0.70), 0.06);
+    ink = max(ink, toe*0.7 + mmInkP(feet, qpx, 1.0)*0.8);
+    float sd = wgBtSide(seed);
+    vec2 tq = vec2(q.x*sd - 0.80, q.y);
+    float taps = min(min(mmBox(tq - vec2(0.0, 0.845), vec2(0.020, 0.090), 0.006), mmBox(tq - vec2(-0.10, 0.845), vec2(0.020, 0.090), 0.006)),
+                     min(mmBox(tq - vec2(-0.05, 0.945), vec2(0.090, 0.014), 0.006), mmBox(tq - vec2(-0.05, 0.925), vec2(0.016, 0.040), 0.005)));
+    float onTp = step(taps, 0.0)*step(0.78, q.y);
+    col = mix(col, vec3(0.86, 0.66, 0.30)*E*1.8, onTp);
+    ink = max(ink, mmInkP(taps, qpx, 1.0)*step(0.78, q.y)*0.8);
+    moon = onRoll*smoothstep(0.76, 0.88, q.y);
+    return col;
+  }
+
+  /* ---- THE ZINC TUB ---- */
+  vec3 zinc = vec3(0.62, 0.64, 0.66);
+  float xs = abs(q.x) - 0.08*clamp((q.y - 0.50)/0.36, 0.0, 1.0);
+  float body = mmBox(vec2(xs, q.y - 0.680), vec2(0.600, 0.190), 0.12);
+  float xn = clamp(q.x/0.66, -1.0, 1.0);
+  col = zinc*E*1.2*(0.45 + 0.60*wgRound(xn))*(0.85 + 0.3*smoothstep(-0.5, 0.8, kq*xn));
+  /* the pressed ribs round it, and the spangle of the galvanising */
+  float rib = 1.0 - smoothstep(0.010, 0.010 + qpx, abs(fract((q.y - 0.52)/0.11) - 0.5)*0.11);
+  col *= 1.0 + 0.25*rib*step(body, 0.0);
+  col *= 0.88 + 0.22*mmNoise(q*40.0 + seed);
+  float rim = wgEll(q - vec2(0.0, 0.870), vec2(0.705, 0.085));
+  float suds = wgEll(q - vec2(0.0, 0.875), vec2(0.62, 0.060));
+  col = mix(col, zinc*E*1.5, step(rim, 0.0));
+  float bub = step(0.45, mmNoise(q*vec2(26.0, 60.0) + seed*3.0));
+  col = mix(col, mix(vec3(0.10, 0.18, 0.20)*E, vec3(0.86, 0.88, 0.88)*E*1.5, bub), step(suds, 0.0));
+  float wood = min(wgSeg(vec2(abs(q.x), q.y), vec2(0.40, 0.52), vec2(0.58, 0.02), 0.03),
+                   min(wgSeg(vec2(abs(q.x), q.y), vec2(0.40, 0.52), vec2(0.28, 0.02), 0.028), mmBox(q - vec2(0.0, 0.505), vec2(0.66, 0.030), 0.006)));
+  col = mix(col, vec3(0.42, 0.30, 0.18)*E*1.2, step(wood, 0.0)*step(0.0, body));
+  float brush = mmBox(q - vec2(-0.30, 0.975), vec2(0.100, 0.028), 0.012);
+  col = mix(col, vec3(0.55, 0.32, 0.14)*E*1.3, step(brush, 0.0));
+  /* (graft) the water standing in it, dark, with the lamp's line across it,
+     the suds only at one end */
+  float wtr = wgEll(q - vec2(0.0, 0.880), vec2(0.60, 0.050));
+  float onWt = step(wtr, 0.0)*step(0.0, suds - 0.0)*1.0;
+  col = mix(col, vec3(0.05, 0.12, 0.14)*E*1.3, step(wtr, 0.0)*smoothstep(0.10, -0.15, q.x));
+  emit += vec3(0.62, 0.78, 0.92)*0.30*step(wtr, 0.0)*smoothstep(0.010, 0.0, abs(q.y - 0.885 - 0.006*sin(q.x*40.0 + seed)))*smoothstep(0.10, -0.15, q.x);
+  /* the standpipe and its tap: brass, round */
+  float tp = wgZtTap(q);
+  float onTp = step(tp, 0.0);
+  col = mix(col, vec3(0.86, 0.64, 0.28)*E*1.6*(0.55 + 0.6*smoothstep(-0.5, 0.5, kq)), onTp);
+  ink = max(ink, mmInkP(tp, qpx, 1.0)*0.9);
+  ink = max(ink, mmInkP(min(rim, min(suds, min(brush, wood))), qpx, 1.0)*0.8);
+  ink = max(ink, mmInkP(body, qpx, 1.0)*step(q.y, 0.84)*0.7);
+  moon = step(rim, 0.0)*0.6;
+  return col;
+}
+
+/* ── ROUND 23 GRAFT: ULTRAMARINE'S OBJECTS, AT VERDITER'S IDS ─────────────
+   All three judges asked for ULTRAMARINE's furnishing -- "ULTRAMARINE takes
+   four of the six screens on how well its objects read": filled tubs,
+   ceilings full of lanterns, doghouses and beds, a big telescope. Its
+   drawings are below as it wrote them (wgField for the silhouette, wgPaint
+   for the local colour, the inked lines and what an object gives off),
+   renamed into this block; they answer to VERDITER's prop ids through wgU,
+   so no id moves and the trunk (36) and the dust sheet (37) stay VERDITER's.
+     VERDITER  32 bath  33 lantern  34 bench  35 telescope  38 truss
+               39 kennel  40 dog's bed  41 grooming table  42 wash tub
+     drawn as  39       32          33        34            35
+               36         37             38                  40
+   0 means the shape is not one of these. */
+float wgU(float s){
+  if (s < 31.5) return 0.0;
+  if (s < 32.5) return 39.0;
+  if (s < 33.5) return 32.0;
+  if (s < 34.5) return 33.0;
+  if (s < 35.5) return 34.0;
+  if (s < 37.5) return 0.0;
+  if (s < 38.5) return 35.0;
+  if (s < 39.5) return 36.0;
+  if (s < 40.5) return 37.0;
+  if (s < 41.5) return 38.0;
+  return 40.0;
 }
 float gW2Part = 0.0;
 #endif
@@ -11915,40 +12587,13 @@ float shapeField(vec2 uv, vec2 msz, float shape, float seed){
     d = min(tw.x, tw.y) / msz.y;
 #endif
 #if MM_WINGS == 2
-  } else if (shape < 32.5) {              // 32 -- a roll-top bath (round 23)
-    float pt;
-    d = tubSD(p*msz, msz, seed, pt) / msz.y;
-  } else if (shape < 33.5) {              // 33 -- a hanging lantern (round 23)
-    float pt;
-    float mppx = max(length(vec2(dFdx(uv.x), dFdy(uv.x))) * msz.x, 1.0e-5);
-    d = lantSD(p*msz, msz, seed, max(0.010, mppx*0.9), pt) / msz.x;
-  } else if (shape < 34.5) {              // 34 -- a lamp-maker's bench (round 23)
-    float pt;
-    d = lbSD(p*msz, msz, seed, pt) / msz.y;
-  } else if (shape < 35.5) {              // 35 -- a telescope on its tripod (round 23)
-    float pt;
-    float mppx = max(length(vec2(dFdx(uv.x), dFdy(uv.x))) * msz.x, 1.0e-5);
-    d = tlSD(p*msz, msz, seed, mppx*0.9, pt) / msz.y;
-  } else if (shape < 36.5) {              // 36 -- a steamer trunk (round 23)
+  } else if (shape > 35.5 && shape < 36.5) {   // 36 -- a steamer trunk (round 23)
     float pt;
     d = trSD(p*msz, msz, seed, pt) / msz.y;
-  } else if (shape < 37.5) {              // 37 -- furniture under a dust sheet (round 23)
+  } else if (shape > 36.5 && shape < 37.5) {   // 37 -- furniture under a dust sheet (round 23)
     d = dsSD(p*msz, msz, seed) / msz.y;
-  } else if (shape < 38.5) {              // 38 -- a roof truss (round 23)
-    d = tsSD(p*msz, msz) / msz.y;
-  } else if (shape < 39.5) {              // 39 -- a kennel (round 23)
-    float pt;
-    d = knSD(p*msz, msz, seed, pt) / msz.y;
-  } else if (shape < 40.5) {              // 40 -- a dog's bed and bowl (round 23)
-    float pt;
-    d = dbSD(p*msz, msz, seed, pt) / msz.y;
-  } else if (shape < 41.5) {              // 41 -- a grooming table (round 23)
-    float pt;
-    float mppx = max(length(vec2(dFdx(uv.x), dFdy(uv.x))) * msz.x, 1.0e-5);
-    d = gtSD(p*msz, msz, seed, mppx*0.9, pt) / msz.y;
-  } else if (shape < 42.5) {              // 42 -- a wash tub (round 23)
-    float pt;
-    d = wtSD(p*msz, msz, seed, pt) / msz.y;
+  } else if (shape > 31.5) {              // 32-35, 38-42 -- ULTRAMARINE's drawings (graft)
+    d = wgField(p*msz, msz, wgU(shape), seed) / msz.y;
 #endif
   }
   /* A BRASS FITTING HAS NO ERODED EDGE. The fbm below is what keeps stone and
@@ -11968,8 +12613,10 @@ float shapeField(vec2 uv, vec2 msz, float shape, float seed){
              || (shape > 9.5 && shape < 10.5) || (shape > 11.5 && shape < 14.5)
              || (shape > 15.5 && shape < 21.5)) ? 1.0 : 0.0;
   made = max(made, cleanSt);
+  /* (graft: round 23's made things take the pen's clean edge, no erosion) */
+  float w23 = (shape > 31.5 && (shape < 35.5 || shape > 37.5)) ? 0.0 : 1.0;
   d += (mmFbm3(uv*5.0 + seed*17.0) - 0.5)
-     * (((shape > 21.5 && shape < 23.5) || shape > 24.5) ? 0.0035 : mix(0.022, 0.0030, made));
+     * (((shape > 21.5 && shape < 23.5) || shape > 24.5) ? 0.0035*w23 : mix(0.022, 0.0030, made));
   return -d;
 }
 
@@ -12088,67 +12735,22 @@ float reliefH(vec2 uv, vec2 msz, vec2 mpp, float shape, float seed, out float ti
   tint = 0.0;
 #if MM_WINGS == 2
   /* ROUND 23's objects: the part a pixel is, for main(), and the relief
-     that turns each part -- a rolled rim, a round flank, a moulded foot */
+     that turns each part. (graft: ULTRAMARINE's drawings, 32-35 and 38-42,
+     carry their form in wgPaint's own shading and lines, so they take no
+     relief here; the trunk and the dust sheet keep VERDITER's) */
   if (shape > 31.5) {
     gBedLeaf = 0.0;
     float pt = 0.0;
-    if (shape > 34.5 && shape < 35.5) {
-      tlSD(m, msz, seed, 0.03, pt);
-      /* the tube is ROUND: lit along its top, dark under it */
-      vec2 r = vec2(m.x*(mmHash11(seed*2.7) < 0.5 ? -1.0 : 1.0), m.y) - vec2(0.0, 1.46);
-      float ac = dot(r, vec2(-0.530, 0.848));
-      h += 0.020*step(0.5, pt)*step(pt, 1.5)*(1.0 - abs(ac)/0.10);
-    } else if (shape > 35.5 && shape < 36.5) {
+    if (shape > 35.5 && shape < 36.5) {
       trSD(m, msz, seed, pt);
       h += 0.010*step(0.9, pt) + 0.012*pR(m.y - 0.50, 0.02);
       tint -= 0.30*smoothstep(0.12, 0.0, m.y);
-    } else if (shape > 38.5 && shape < 39.5) {
-      knSD(m, msz, seed, pt);
-      /* the boards of its sides, up and down; the shingles of its roof */
-      float S = 1.10 + 0.22*mmHash11(seed*3.3);
-      h -= 0.010*pR(mod(m.x, 0.12*S) - 0.06*S, 0.010)*step(pt, 0.5)*pRes(0.12*S, mpp.x);
-      h -= 0.008*pR(mod(m.y + 0.5*step(0.5, fract(m.x/(0.20*S)))*0.08, 0.08*S) - 0.04*S, 0.008)*step(0.5, pt)*step(pt, 1.5)*pRes(0.08*S, mpp.y);
-      tint -= 0.30*smoothstep(0.05, 0.0, m.y)*step(pt, 0.5);
-    } else if (shape > 39.5 && shape < 40.5) {
-      dbSD(m, msz, seed, pt);
-      /* the weave of the wicker */
-      h += 0.006*abs(sin(m.x*60.0 + sin(m.y*40.0)*1.5))*step(pt, 0.5)*pRes(0.05, mpp.x);
-    } else if (shape > 40.5 && shape < 41.5) {
-      gtSD(m, msz, seed, 0.02, pt);
-      tint -= 0.40*pB(m.y, 0.20, 0.70)*step(pt, 0.5)*step(abs(m.x), msz.x*0.5 - 0.15);
-    } else if (shape > 41.5 && shape < 42.5) {
-      wtSD(m, msz, seed, pt);
-      /* the tub's pressed bands, and its round */
-      h += 0.010*(pR(m.y - 0.58, 0.015) + pR(m.y - 0.74, 0.015))*step(pt, 0.5);
-    } else if (shape > 37.5 && shape < 38.5) {
-      /* the oak's own adzed surface: the grain along each member, and the
-         peg holes at its joints */
-      h += 0.006*mmNoise(vec2(m.x*2.0, m.y*14.0) + seed);
-      tint -= 0.15*smoothstep(0.55, 0.85, mmNoise(m*3.0 + seed));
     } else if (shape > 36.5 && shape < 37.5) {
       /* the sheet's folds, falling from where it rests to the floor */
       float fx = m.x*7.0 + 0.6*sin(m.y*2.0 + seed);
       h += 0.020*abs(sin(fx))*smoothstep(1.2, 0.2, m.y);
       tint -= 0.25*(1.0 - abs(sin(fx)))*smoothstep(1.0, 0.1, m.y);
       tint -= 0.30*smoothstep(0.10, 0.0, m.y);
-    }
-    if (shape > 32.5 && shape < 33.5) {
-      lantSD(m, msz, seed, 0.012, pt);
-      h += 0.010*step(1.5, pt);
-    } else if (shape > 33.5 && shape < 34.5) {
-      lbSD(m, msz, seed, pt);
-      h += 0.012*pR(m.y - 0.885, 0.02);
-      tint -= 0.45*pB(m.y, 0.25, 0.78)*step(pt, 0.1);
-    }
-    if (shape < 32.5) {
-      float sd = tubSD(m, msz, seed, pt);
-      float S = msz.y/1.24;
-      float qy = m.y/S;
-      h += 0.030*smoothstep(0.20, 0.62, qy)*step(pt, 0.5);
-      h += 0.020*pR(qy - 0.74, 0.03)*step(pt, 1.5);
-      h -= 0.018*pR(qy - 0.70, 0.02)*step(pt, 0.5);
-      h += 0.015*step(3.5, pt);
-      tint -= 0.35*smoothstep(0.30, 0.12, qy)*step(pt, 0.5);
     }
     gW2Part = pt;
     return h;
@@ -13562,7 +14164,9 @@ void main(){
      is brick and foliage and keeps the soft ramp every other prop has. Every
      test below that means "a fitting" reads this one flag. */
   float isFit = step(21.5, vShape) * step(vShape, 23.5);
-  float mask = smoothstep(0.0, (isFit > 0.5) ? 0.55 : 1.45, fpx);
+  /* (round 23 graft: its made objects take a pen's edge, not foliage's) */
+  float w23m = step(31.5, vShape)*(1.0 - step(35.5, vShape)*step(vShape, 37.5));
+  float mask = smoothstep(0.0, (isFit > 0.5) ? 0.55 : (w23m > 0.5 ? 0.85 : 1.45), fpx);
   if (mask < 0.004) discard;
 
   /* METRES, and METRES PER PIXEL. Both were computed further down for the
@@ -13855,78 +14459,24 @@ void main(){
   /* ROUND 23: EACH OBJECT IN ITS OWN MATERIALS, off the prop's own
      luminance as the pumpkin's skin is, so each keeps its room's light */
   vec3 w2Emit = vec3(0.0);
+  /* (graft: ULTRAMARINE's drawings paint themselves -- local colour, the
+     inked lines inside the outline, and what a lamp or a bath's water gives
+     off -- see wgPaint) */
+  vec3 wgE = vec3(0.0);
+  float wgInk = 0.0, wgMoon = 0.0, wgOn = 0.0;
 #if MM_WINGS == 2
-  if (vShape > 31.5 && vShape < 32.5) {
-    float lum = max(mmLum(albedo), 0.02);
-    float S = vSize.y/1.24;
-    vec2 tq = (vUv - vec2(0.5, 0.0))*vSize/S;
-    float kc = mmHash11(vSeed*12.3 + 0.7);
-    vec3 paint = kc < 0.55 ? vec3(0.09, 0.24, 0.19) : (kc < 0.82 ? vec3(0.70, 0.68, 0.60) : vec3(0.07, 0.07, 0.08));
-    paint *= (lum*2.4 + 0.050);
-    /* the flank is ROUND: lit along its upper swell, dark under the roll
-       and toward the foot */
-    paint *= 0.50 + 0.70*smoothstep(0.18, 0.62, tq.y) - 0.40*smoothstep(0.64, 0.71, tq.y)*step(tq.y, 0.74);
-    /* a gilt line along the flank under the rim */
-    float gl = 1.0 - smoothstep(0.006, 0.014, abs(tq.y - 0.63));
-    vec3 enamel = vec3(0.86, 0.86, 0.82)*(lum*2.6 + 0.070);
-    vec3 brass = vec3(0.90, 0.64, 0.28)*(lum*2.8 + 0.060);
-    vec3 water = vec3(0.05, 0.13, 0.15)*(lum*2.0 + 0.030);
-    water += vec3(0.30, 0.38, 0.42)*(lum*2.0 + 0.03)*(1.0 - smoothstep(0.004, 0.012, abs(tq.y - 0.795 + 0.006*sin(tq.x*14.0 + uTime))))*step(abs(tq.x), 0.55);
-    float pt = gW2Part;
-    vec3 c = paint;
-    c = mix(c, brass*0.9, gl*step(pt, 0.5));
-    c = mix(c, enamel*(0.80 + 0.35*smoothstep(0.70, 0.78, tq.y)), step(0.5, pt)*step(pt, 1.5));
-    c = mix(c, enamel*(0.95 + 0.30*smoothstep(0.83, 0.87, tq.y)), step(1.5, pt)*step(pt, 2.5));
-    c = mix(c, water, step(2.5, pt)*step(pt, 3.5));
-    c = mix(c, brass*(0.70 + 0.40*smoothstep(0.0, 0.20, tq.y)), step(3.5, pt));
-    albedo = c;
+  float wgS = wgU(vShape);
+  if (wgS > 0.5) {
+    wgOn = 1.0;
+    float lumW = max(mmLum(albedo), 0.02);
+    albedo = wgPaint((vUv - vec2(0.5, 0.0))*vSize, vSize, wgS, vSeed,
+                     max(max(mpp.x, mpp.y), 1e-5), lumW, uKeyDir, wgE, wgInk, wgMoon);
   }
-  if (vShape > 32.5 && vShape < 34.5) {
-    /* the lantern's iron and brass and its glass, lit or not; the bench's
-       deal and what is on it */
-    float lum = max(mmLum(albedo), 0.02);
-    vec3 ironC = vec3(0.08, 0.08, 0.09)*(lum*2.0 + 0.030);
-    vec3 brassC = vec3(0.90, 0.64, 0.28)*(lum*2.8 + 0.060);
-    vec3 dealC = vec3(0.50, 0.34, 0.20)*(lum*2.6 + 0.040)*(0.86 + 0.28*grain);
-    vec3 glassC = vec3(0.55, 0.62, 0.66)*(lum*1.8 + 0.030);
-    float pt = gW2Part;
-    vec2 sm = (vUv - vec2(0.5, 0.0))*vSize;
-    if (vShape < 33.5) {
-      float lit = step(0.22, mmHash11(vSeed*9.1 + 0.3));
-      float fl = 0.85 + 0.15*mmNoise(vec2(uTime*2.6, vSeed*7.0));
-      vec3 c = mix(ironC, brassC, step(0.5, pt)*step(pt, 1.5));
-      float S = 0.52 + 0.20*mmHash11(vSeed*2.9);
-      float core = exp(-length((sm - vec2(0.0, 0.48*S))/vec2(1.0, 1.4))/(0.10*S));
-      vec3 gc = mix(glassC*0.35, vec3(1.00, 0.84, 0.58)*(lum*1.2 + 0.05), lit);
-      c = mix(c, gc, step(1.5, pt));
-      albedo = c;
-      w2Emit = vec3(1.00, 0.76, 0.44)*step(1.5, pt)*lit*fl*(0.55 + 1.10*core);
-    } else {
-      vec3 c = dealC;
-      c *= 1.0 + 0.8*smoothstep(0.86, 0.90, sm.y)*step(sm.y, 0.905);
-      c = mix(c, dealC*0.7, step(0.25, pt)*step(pt, 0.75));
-      c = mix(c, ironC*1.6, step(0.75, pt)*step(pt, 1.5));
-      c = mix(c, brassC, step(1.5, pt)*step(pt, 2.5));
-      c = mix(c, glassC*1.4, step(2.5, pt)*step(pt, 3.5));
-      c = mix(c, vec3(1.00, 0.84, 0.58)*(lum*1.2 + 0.05), step(3.5, pt));
-      albedo = c;
-      w2Emit = vec3(1.00, 0.76, 0.44)*step(3.5, pt)*(0.9 + 0.15*mmNoise(vec2(uTime*3.0, vSeed)));
-    }
-  }
-  if (vShape > 34.5 && vShape < 37.5) {
+  if (vShape > 35.5 && vShape < 37.5) {
     float lum = max(mmLum(albedo), 0.02);
     float pt = gW2Part;
-    vec2 sm = (vUv - vec2(0.5, 0.0))*vSize;
-    vec3 oakC = vec3(0.36, 0.22, 0.12)*(lum*2.4 + 0.040)*(0.86 + 0.28*grain);
     vec3 brassC = vec3(0.92, 0.68, 0.30)*(lum*3.0 + 0.070);
-    if (vShape < 35.5) {
-      /* the telescope: brass that shines, oak legs, the dark of its lenses */
-      vec3 c = oakC;
-      c = mix(c, brassC, step(0.5, pt)*step(pt, 1.5));
-      c = mix(c, vec3(0.03, 0.03, 0.04), step(1.5, pt)*step(pt, 2.5));
-      c = mix(c, brassC*0.55, step(2.5, pt));
-      albedo = c;
-    } else if (vShape < 36.5) {
+    if (vShape < 36.5) {
       vec3 canvas = mix(vec3(0.44, 0.36, 0.24), vec3(0.20, 0.26, 0.20), step(0.6, mmHash11(vSeed*8.3)))*(lum*2.4 + 0.035);
       vec3 c = canvas*(0.85 + 0.25*blotch);
       c = mix(c, canvas*0.75, step(0.25, pt)*step(pt, 0.75));
@@ -13937,51 +14487,6 @@ void main(){
       /* a dust sheet: pale linen gone grey, the one pale shape in the dark */
       albedo = vec3(0.66, 0.66, 0.64)*(lum*2.6 + 0.070)*(0.88 + 0.20*blotch);
     }
-  }
-  if (vShape > 37.5 && vShape < 38.5) {
-    float lum = max(mmLum(albedo), 0.02);
-    albedo = vec3(0.34, 0.21, 0.12)*(lum*2.6 + 0.045)*(0.80 + 0.30*grain);
-  }
-  if (vShape > 38.5 && vShape < 42.5) {
-    /* the kennels' things in their own stuff: boards and shingle, wicker
-       and a plaid cushion, enamel, zinc, a rubber mat, brass */
-    float lum = max(mmLum(albedo), 0.02);
-    float pt = gW2Part;
-    vec2 sm = (vUv - vec2(0.5, 0.0))*vSize;
-    vec3 oakC = vec3(0.40, 0.25, 0.13)*(lum*3.0 + 0.060)*(0.84 + 0.30*grain);
-    vec3 brassC = vec3(0.92, 0.68, 0.30)*(lum*3.0 + 0.070);
-    vec3 enam = vec3(0.80, 0.82, 0.80)*(lum*2.6 + 0.060);
-    vec3 strawC = vec3(0.72, 0.56, 0.26)*(lum*2.6 + 0.050);
-    vec3 c = oakC;
-    if (vShape < 39.5) {
-      float kc = mmHash11(vSeed*7.1);
-      vec3 paint = kc < 0.45 ? oakC : (kc < 0.75 ? vec3(0.20, 0.32, 0.20)*(lum*3.0 + 0.055) : vec3(0.50, 0.16, 0.10)*(lum*3.0 + 0.055));
-      c = paint;
-      c = mix(c, vec3(0.16, 0.13, 0.12)*(lum*2.0 + 0.025)*(0.8 + 0.4*blotch), step(0.5, pt)*step(pt, 1.5));
-      c = mix(c, vec3(0.010, 0.008, 0.008), step(1.5, pt)*step(pt, 2.5));
-      c = mix(c, brassC, step(2.5, pt)*step(pt, 3.5));
-      c = mix(c, strawC*(0.7 + 0.5*speck), step(3.5, pt));
-    } else if (vShape < 40.5) {
-      vec3 wick = vec3(0.62, 0.48, 0.28)*(lum*2.6 + 0.045)*(0.80 + 0.30*grain);
-      float plaid = step(0.5, fract(sm.x*8.0)) + step(0.5, fract(sm.y*14.0));
-      vec3 cush = mix(vec3(0.46, 0.08, 0.06), vec3(0.10, 0.22, 0.12), mod(plaid, 2.0))*(lum*2.4 + 0.040);
-      c = wick;
-      c = mix(c, cush, step(0.5, pt)*step(pt, 1.5));
-      c = mix(c, enam, step(1.5, pt)*step(pt, 2.5));
-      c = mix(c, vec3(0.20, 0.30, 0.36)*(lum*2.0 + 0.04), step(2.5, pt));
-    } else if (vShape < 41.5) {
-      c = oakC;
-      c = mix(c, vec3(0.10, 0.18, 0.14)*(lum*2.2 + 0.030), step(0.5, pt)*step(pt, 1.5));
-      c = mix(c, vec3(0.08, 0.08, 0.09)*(lum*2.0 + 0.030), step(1.5, pt)*step(pt, 2.5));
-      c = mix(c, brassC, step(2.5, pt));
-    } else {
-      vec3 zinc = vec3(0.56, 0.58, 0.60)*(lum*2.4 + 0.050)*(0.80 + 0.30*blotch);
-      zinc *= 0.65 + 0.55*smoothstep(0.45, 0.85, sm.y)*(1.0 - 0.5*abs(sm.x)/max(vSize.x*0.5, 0.1));
-      c = mix(oakC, zinc, step(pt, 0.5));
-      c = mix(c, zinc*1.3, step(1.5, pt)*step(pt, 2.5));
-      c = mix(c, vec3(0.88, 0.90, 0.92)*(lum*2.8 + 0.080), step(2.5, pt));
-    }
-    albedo = c;
   }
 #endif
 
@@ -14291,7 +14796,9 @@ void main(){
      room's own lamp burning inside it. Shapes 22 and 23 keep their own base
      dark with relief and soot instead. (The planting bed, 24, meets the floor
      like any other prop.) */
-  if (isFit < 0.5) albedo *= mix(1.0 - 0.44*uAO, 1.0, smoothstep(0.0, 0.26, vUv.y));
+  /* (round 23 graft: nor does a lantern on its chain, 33, nor a roof truss, 38) */
+  float wgUp = step(32.5, vShape)*step(vShape, 33.5) + step(37.5, vShape)*step(vShape, 38.5);
+  if (isFit < 0.5 && wgUp < 0.5) albedo *= mix(1.0 - 0.44*uAO, 1.0, smoothstep(0.0, 0.26, vUv.y));
   albedo *= mix(1.0 - 0.30*uAO, 1.0, inner);
 
   /* --- A RECESS IS DARKER THAN THE FACE IT IS CUT INTO ----------------------
@@ -14400,12 +14907,13 @@ void main(){
   }
 #endif
 #if MM_WINGS == 2
-  /* THE TELESCOPE TAKES THE MOON (round 23): it stands against the gable's
-     window, so its brass is lit from behind by the night it is pointed at --
-     a cold line along the top of the tube and down the legs' moon side */
-  if (vShape > 34.5 && vShape < 35.5) {
-    col += albedo * vec3(0.62, 0.72, 1.00) * (0.30 + 1.10*max(N.y, 0.0) + 0.6*band);
-  }
+  /* (graft, ULTRAMARINE's) the sky or a high window on an object's upper
+     faces -- the telescope's tube, a bath's roll, a tub's rim -- and each
+     wing's signature object LIT, as the samples light the thing a picture
+     is of: a share of the room's own key on its local colour, so it reads
+     at a glance in a dark room without the room being lifted */
+  col += albedo * mix(uAccent, vec3(0.74, 0.82, 1.00), 0.62) * wgMoon * 0.9;
+  col += albedo * mix(uRim, vec3(1.0, 0.92, 0.80), 0.5) * 0.30 * wgOn;
 #endif
   col *= uGain;
   col += fitEmit;                 // a lamp emits: see the fitting block above
@@ -14422,6 +14930,7 @@ void main(){
   col *= 1.0 - sil * uInk * 0.80;
   float rim = pow(band, 1.5) * (0.04 + 0.96*pow(facing, 1.9)) * mask;
   rim *= 1.0 - 0.75*step(30.5, vShape)*step(vShape, 31.5);   // (graft: see cleanS)
+  rim *= 1.0 - 0.85*step(37.5, vShape)*step(vShape, 38.5);   // (round 23 graft: a truss is timber, not chrome)
   col += (uRim * 0.07 + raw * 0.09) * rim * uRimAmt;
 
   /* --- THE CEILING --------------------------------------------------------
@@ -14478,6 +14987,10 @@ void main(){
      is the one thing on a prop allowed to be the brightest in its frame */
   col += pkEmit * uPropMax * 2.8;
   col += w2Emit * uPropMax * 2.8;
+  /* round 23's objects (graft): their inked lines on the LIT colour, as the
+     column's flutes are, and a lantern's glass and flame over everything */
+  col *= 1.0 - wgInk*0.72;
+  col += wgE * uPropMax * 2.8;
 
   /* A LAMP CUTS THROUGH THE HAZE. Distance fog is right for a chest of drawers
      twenty-four metres back and wrong for the thing emitting the light: the
@@ -14488,7 +15001,7 @@ void main(){
   float fFog = (isFit > 0.5 || (vShape > 32.5 && vShape < 33.5)) ? vFog*0.26 : vFog;
   col = mix(col, uFog, fFog);
   col = mmDesat(col, uDread*0.5) * (1.0 - uDread*0.22);
-  gl_FragColor = vec4(col, mask*(1.0 - fFog*0.30));
+  gl_FragColor = vec4(col, mask*(1.0 - fFog*0.30)*gWgAlpha);
 }`;
 
 /* ------------------------------------------------------------ contact shadow */
