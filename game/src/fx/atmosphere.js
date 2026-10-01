@@ -532,7 +532,7 @@ export const REGIONS = {
     props: { shapes: [56, 55, 56], count: 1, height: 2.7, layout: 'perimeter',
              near: [{ shape: 53, edge: 0.70, z: -1.6, tone: 0.97 },
                     { shape: 54, edge: 0.33, z: -4.4, tone: 0.95 },
-                    { shape: 56, edge: 0.92, z: -4.0, tone: 0.94 }] },
+                    { shape: 56, edge: 0.85, z: -4.6, tone: 0.94 }] },
     particles: { mix: [[PTYPE.DUST, 0.92], [PTYPE.EMBER, 0.08]],
                  tint: '#ffe6bc', wispTint: '#8fd9ec', emberTint: '#ffb64a',
                  speed: 0.6, scale: 0.95, wind: 0.4, density: 0.45 },
@@ -1417,7 +1417,9 @@ export const ROOM_KINDS = {
     /* (round 24: the library and the study with its fire, each drawn in
        program 19; the fire is the study's lamp, low in its grate) */
     kinds: [
-      { subject: 'libraryroom' },
+      /* (graft: nothing dealt, not six -- the dealt cases stood under the
+         fight frame's candles: the walls ARE the bookcases) */
+      { subject: 'libraryroom', count: 0 },
       { subject: 'studyfire', count: 1, swap: [[56, 55]], room: { d: 0.86 },
         lamps: [{ i: 0, x: 0.0, z: 0.96, y: 0.40, fit: 'none', color: '#ff9a4a', radius: 4.6, k: 1.30 }],
         near: [{ shape: 53, x: 3.0, z: -3.0, tone: 0.97, free: true },
@@ -1441,7 +1443,9 @@ export const ROOM_KINDS = {
     /* (round 24: the night nursery and its sewing and linen room, each
        drawn in program 17 -- the cots and the rocking horse give way to the
        treadle machine and the dressmaker's dummy in the sewing room) */
-    kinds: [{ subject: 'nurseryroom' },
+    /* (graft: nothing dealt in the night nursery -- its things are set by
+       hand, and a dealt cot stood at the Kid's shoulder) */
+    kinds: [{ subject: 'nurseryroom', count: 0 },
             /* (graft: the dress forms stood out where their silhouettes
                read against the shelves, a machine at the work; no toy
                chest in the sewing room) */

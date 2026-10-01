@@ -7992,7 +7992,7 @@ float studyWallH(vec2 q, float qpx, out float occ){
         gb = clamp(gb, 0.0, 1.0);
         col = mix(col, oak*1.3, arc);
         col = mix(col, mix(night, oak*0.40, gb), win);
-        emit += win*(1.0 - gb)*(lit*0.55 + 0.03);
+        emit += win*(1.0 - gb)*lit*0.30;
         h = mix(h, 1.4, arc);
         h = mix(h, 0.5, win*(1.0 - gb));
         gInk = max(gInk, max(mmInkP(wD, px, 1.2), mmInkP(wD - 0.14, px, 1.2))*0.9);
@@ -8071,9 +8071,9 @@ float studyWallH(vec2 q, float qpx, out float occ){
     float PH = 2.55;
     /* (graft: a stop darker and less blue -- the judges' "slightly milky
        teal damask"; its print is a darker green on green) */
-    vec3 green = vec3(0.045, 0.085, 0.055)*lw*(0.94 + 0.10*mmNoise(q*1.1 + uSeed));
+    vec3 green = vec3(0.050, 0.072, 0.036)*lw*(0.94 + 0.10*mmNoise(q*1.1 + uSeed));
     float dm = mmDamask(q*1.0 + vec2(uSeed, 0.0), 0.55, px, 1.0).x;
-    green = mix(green, vec3(0.10, 0.14, 0.07)*lw, dm*0.50*mmLod(0.3, px));
+    green = mix(green, vec3(0.105, 0.120, 0.055)*lw, dm*0.50*mmLod(0.3, px));
     col = mix(green, oak, step(q.y, PH));
     float BW = 0.95;
     float bxl = mod(u, BW) - BW*0.5;
@@ -8590,7 +8590,7 @@ float cryptWallH(vec2 q, float qpx, out float occ){
       vec2 lf = ln - vec2(0.03, 0.0);
       emitW += RCV(-(length(lf/vec2(0.018, 0.04)) - 1.0)*0.018)*2.6 + 0.30*exp(-length(lf)*6.0);
       rPool(vec2(ln.x, (ln.y + 0.10)*0.8), 1.55, 2.20, candleP);
-      rPool(vec2(cx, (q.y - 2.6)*0.7), 2.4, 0.55, candleP);
+      rPool(vec2(cx, (q.y - 2.2)*0.7), 2.8, 0.95, candleP);
     } else if (room < 1.5) {
       /* THE CHAPEL (graft, two judges: KERMESITE's -- the red altar set in a
          LIT LANCET NICHE within a stone ARCADE of memorial tablets; its
