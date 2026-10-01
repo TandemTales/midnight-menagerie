@@ -284,9 +284,16 @@ export const REGIONS = {
     /* the cot set by hand where the fight leaves room for it, at the
        frame's right, and the rocking horse and the toy chest beyond the
        Kid's shoulder -- the rest dealt down the two sides */
-    props: { shapes: [45, 46, 47, 45, 47], count: 6, height: 1.55, layout: 'wings',
+    /* (graft: ORPINE's nursery objects, all three judges -- the doll's
+       house (61) left of the hearth, the rocking horses grouped right of
+       it; the horse that stood just right of the Kid is gone, so the
+       Kid's column is clear) */
+    /* (the room's x runs mirrored in the frame: -x is the frame's right) */
+    props: { shapes: [47, 45, 47], count: 0, height: 1.55, layout: 'wings',
              near: [{ shape: 45, edge: 0.74, z: -1.2, tone: 0.95 },
-                    { shape: 46, edge: 0.34, z: -4.8, tone: 0.92 },
+                    { shape: 61, x: 2.35, z: -6.9, tone: 0.95, free: true },
+                    { shape: 46, x: -1.55, z: -6.8, tone: 0.94, free: true },
+                    { shape: 46, x: -2.45, z: -6.1, tone: 0.94, free: true },
                     { shape: 47, edge: 0.86, z: -5.0, tone: 0.92 }] },
     /* (round 24: dust in the moonlight, not a field of stars over the
        paper's own) */
@@ -298,8 +305,10 @@ export const REGIONS = {
     fill: { glow: 0, kind: 'cold', x: 4.4, y: 2.4, z: 1.4, color: '#9ec0d7', intensity: 3.15, radius: 7.5, flicker: false },
     lights: [
       { kind: 'warm', x: -3.6, y: 2.90, z: -4.2, color: '#e6b184', intensity: 1.80, radius: 5.0 },
-      { kind: 'cold', x: 0.6, y: 2.40, z: -7.1, color: '#a4c7dd', intensity: 1.90, radius: 6.5 },
-      { kind: 'cold', x: -4.4, y: 3.00, z: -7.3, color: '#91b6d0', intensity: 1.10, radius: 6.0 },
+      /* (graft: the hearth is the middle of the room now, its fire the
+         light there; the moon comes in at the right-hand window) */
+      { kind: 'warm', x: 0.0, y: 0.70, z: -7.7, color: '#ff9a4a', intensity: 1.60, radius: 4.4, fit: 'none' },
+      { kind: 'cold', x: 5.0, y: 2.40, z: -7.3, color: '#91b6d0', intensity: 1.40, radius: 6.0 },
       { kind: 'warm', x: 4.2, y: 3.10, z: -5.4, color: '#e7c18c', intensity: 0.90, radius: 4.6 },
     ],
     shafts: { count: 2, spread: 9, y: 5.6, z: -6.4, angle: 0.34, width: 2.6, intensity: 0.12, pool: 1.8 },
@@ -517,7 +526,10 @@ export const REGIONS = {
     shaft: '#d9bd92', floorDeep: '#151014', floorMid: '#31211c', ambient: '#1a1217',
     propAlb: '#3f2b23', propHi: '#735336', rimCol: '#d8b279',
     gloss: 0.58, grime: 0.55, open: '#527f8f', openGlow: 0.45,
-    props: { shapes: [55, 56, 55], count: 3, height: 2.7, layout: 'perimeter',
+    /* (graft, the judges: "on fight-study, keep the left bookcase clear of
+       the sconce overlay" -- the cases dealt round the frame's edges stood
+       under the chrome's candles; the walls ARE the bookcases) */
+    props: { shapes: [56, 55, 56], count: 1, height: 2.7, layout: 'perimeter',
              near: [{ shape: 53, edge: 0.70, z: -1.6, tone: 0.97 },
                     { shape: 54, edge: 0.33, z: -4.4, tone: 0.95 },
                     { shape: 56, edge: 0.92, z: -4.0, tone: 0.94 }] },
@@ -526,7 +538,9 @@ export const REGIONS = {
                  speed: 0.6, scale: 0.95, wind: 0.4, density: 0.45 },
     exposure: 2.6, vignette: 1.47, contrast: 1.67,
     key:  { glow: 0, kind: 'warm', x: -3.8, y: 3.2, z: 2.2, color: '#e2b271', intensity: 1.63, radius: 7.31 },
-    fill: { glow: 0, kind: 'cold', x: 5.0, y: 3.4, z: 1.2, color: '#769fba', intensity: 4.05, radius: 8.0, flicker: false },
+    /* (graft: the moon's pool on the boards a stop down -- the judges saw
+       the floor's grain dither in it) */
+    fill: { glow: 0, kind: 'cold', x: 5.0, y: 3.4, z: 1.2, color: '#769fba', intensity: 2.90, radius: 8.0, flicker: false },
     lights: [
       { kind: 'warm', x: -3.2, y: 3.00, z: -4.6, color: '#e0b266', intensity: 1.50, radius: 5.6 },
       { kind: 'warm', x: 3.6, y: 3.20, z: -7.0, color: '#dca254', intensity: 1.30, radius: 6.0 },
@@ -1428,9 +1442,13 @@ export const ROOM_KINDS = {
        drawn in program 17 -- the cots and the rocking horse give way to the
        treadle machine and the dressmaker's dummy in the sewing room) */
     kinds: [{ subject: 'nurseryroom' },
-            { subject: 'sewingroom', swap: [[45, 48], [46, 49]],
+            /* (graft: the dress forms stood out where their silhouettes
+               read against the shelves, a machine at the work; no toy
+               chest in the sewing room) */
+            { subject: 'sewingroom', swap: [[45, 48], [46, 49], [47, 49]], count: 1,
               near: [{ shape: 48, edge: 0.70, z: -1.6, tone: 0.95 },
-                     { shape: 49, edge: 0.30, z: -4.6, tone: 0.93 },
+                     { shape: 49, x: -2.05, z: -5.9, tone: 0.96, free: true },
+                     { shape: 48, x: 2.55, z: -5.6, tone: 0.94, free: true },
                      { shape: 49, edge: 0.92, z: -5.0, tone: 0.92 }],
               room: { d: 0.82 }, cam: { z: -1.0, look: 0.10 } }],
     names: [
@@ -1446,14 +1464,17 @@ export const ROOM_KINDS = {
               runner: 1.25, room: { d: 0.76, w: 0.78 },
               lamps: [{ i: 0, x: 0.0, z: 0.30, k: 1.4 },
                       { i: 3, x: 4.6, z: 0.66, y: 1.25, color: '#eab070', k: 1.5, radius: 4.5, fit: 'none' }],
-              near: [{ shape: 51, x: -4.2, z: -2.6, tone: 0.97, free: true },
-                     { shape: 51, x: 4.2, z: -2.8, tone: 0.97, free: true },
-                     { shape: 52, x: -5.2, z: -3.9, tone: 0.94, free: true },
-                     { shape: 51, x: -4.6, z: -4.9, tone: 0.95, free: true },
-                     { shape: 51, x: 4.6, z: -5.1, tone: 0.95, free: true },
-                     { shape: 52, x: 5.3, z: -6.1, tone: 0.92, free: true },
-                     { shape: 51, x: -4.8, z: -7.0, tone: 0.92, free: true },
-                     { shape: 51, x: 4.8, z: -7.2, tone: 0.92, free: true }],
+              /* (graft, all three judges: "bring the iron beds in from the
+                 edges into two rows down the room" -- two files either side
+                 of the aisle, a washstand between each pair of beds) */
+              near: [{ shape: 51, x: -2.9, z: -2.6, tone: 0.97, free: true },
+                     { shape: 51, x: 2.9, z: -2.8, tone: 0.97, free: true },
+                     { shape: 52, x: -3.3, z: -3.8, tone: 0.94, free: true },
+                     { shape: 52, x: 3.3, z: -4.0, tone: 0.94, free: true },
+                     { shape: 51, x: -3.1, z: -4.9, tone: 0.95, free: true },
+                     { shape: 51, x: 3.1, z: -5.1, tone: 0.95, free: true },
+                     { shape: 51, x: -3.3, z: -7.0, tone: 0.92, free: true },
+                     { shape: 51, x: 3.3, z: -7.2, tone: 0.92, free: true }],
               cam: { z: -1.6, look: 0.10 } },
             { subject: 'bedchamber', layout: 'wings', count: 0,
               room: { d: 0.80, w: 0.86 }, runner: 1.5,
