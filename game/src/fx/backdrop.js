@@ -145,7 +145,10 @@ const SHAPE_M = [1.20, 2.00, 1.30, 1.00, 2.00, 2.00, 3.32, 2.60, 1.17, 1.33,
                  /* 39 a kennel, 40 a dog's basket and its bowl, 41 a
                     grooming table with its arm, 42 a zinc wash tub on its
                     trestle with the tap over it (graft: ULTRAMARINE's) */
-                 1.70, 0.70, 1.72, 1.55
+                 1.70, 0.70, 1.72, 1.55,
+                 /* 43 a candle-dipping rack hung with its tapers (graft,
+                    MADDERLAKE's, for the wax room's floor) */
+                 1.92
 ];
 /* ...and a width ratio, so a column is a column and not a capital-T. Four of
  * these were wrong by enough to change what the object was: a longcase clock
@@ -159,7 +162,8 @@ const SHAPE_W = [1.15, 0.55, 1.00, 0.95, 0.72, 0.80, 0.47, 0.85, 0.90, 1.35,
                  0.26, 1.66,
                  1.06, 1.12, 0.85,
                  2.6,
-                 1.34, 2.30, 0.80, 1.09
+                 1.34, 2.30, 0.80, 1.09,
+                 0.76
 ];
 /* HOW MUCH ONE OF THESE VARIES FROM THE NEXT, as a +-fraction of SHAPE_M.
  *
@@ -186,13 +190,14 @@ const SHAPE_VAR = [0.06, 0.08, 0.62, 0.20, 0.10, 0.08, 0.10, 0.10, 0.16, 0.48,
                  0.00, 0.05,
                  0.04, 0.10, 0.16,
                  0.0,
-                 0.08, 0.08, 0.04, 0.06
+                 0.08, 0.08, 0.04, 0.06,
+                 0.04
 ];
 /* ROUND 23 (graft): ULTRAMARINE's drawings are in metres at their own
    proportions, so their quads take no width jitter -- a telescope 22%
    narrower than its drawing is a telescope with its objective cut off.
    (rand() is still drawn for them, so no other room's stream moves.) */
-const FIXW = { 32: 1, 33: 1, 34: 1, 35: 1, 39: 1, 40: 1, 41: 1, 42: 1 };
+const FIXW = { 32: 1, 33: 1, 34: 1, 35: 1, 39: 1, 40: 1, 41: 1, 42: 1, 43: 1 };
 // Which shapes hang from the ceiling rather than stand on the floor.
 export const HANGING = { 4: 1, 7: 1, 22: 1, 33: 1 };
 /* ...and which stand AGAINST A WALL rather than out on the floor. A tall

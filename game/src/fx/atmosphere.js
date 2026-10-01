@@ -546,7 +546,23 @@ export const REGIONS = {
        heights (33), its floor stood with lamp-makers' benches (34) and gas
        standards (18); the machinery is the line shaft and its belts, which
        the wall program draws. */
-    props: { shapes: [33, 34, 33, 18, 34, 33], count: 30, height: 2.6, layout: 'hang' },
+    props: { shapes: [33, 34, 33, 18, 34, 33], count: 30, height: 2.6, layout: 'hang',
+             /* (graft, ULTRAMARINE's -- all three judges: "lanterns, globes
+                and hurricane lamps at several heights over the floor and the
+                creature"): benches crowded with lamps set by hand at the
+                frame's edges where the fight leaves room, and the lanterns
+                hung nearest the eye, over the fight, at the height of the
+                creatures' heads and above */
+             near: [
+               { shape: 34, edge: 0.80, z: -0.8, tone: 0.95 },
+               { shape: 34, edge: 0.22, z: -4.6, tone: 0.92 },
+               { shape: 33, x: -6.0, z: -3.0, y: 3.2, tone: 0.95 },
+               { shape: 33, x: -2.6, z: -1.6, y: 3.0, tone: 0.95 },
+               { shape: 33, x: -0.8, z: -4.2, y: 3.5, tone: 0.95 },
+               { shape: 33, x: 2.4, z: -1.0, y: 3.2, tone: 0.95 },
+               { shape: 33, x: 4.6, z: -2.4, y: 2.9, tone: 0.95 },
+               { shape: 33, x: 6.6, z: -0.6, y: 3.4, tone: 0.95 },
+             ] },
     particles: { mix: [[PTYPE.EMBER, 0.42], [PTYPE.WISP, 0.30], [PTYPE.DUST, 0.28]],
                  tint: '#cfe8ff', wispTint: '#6fd9ec', emberTint: '#ff9e3c',
                  speed: 1.1, scale: 1.1, wind: 1.0, density: 1.0 },
@@ -1353,7 +1369,11 @@ export const ROOM_KINDS = {
          frames hung with tapers under their hoods; its floor stood with the
          wax stoves and the candle stands, not the gas standards; seen low,
          among the racks, under its timber roof */
-      { subject: 'wax', layout: 'wings', swap: [[18, 34]], room: { w: 0.80, d: 0.56 },
+      /* (graft, MADDERLAKE's: its floor stood with candle-dipping racks
+         hung with their tapers, 43, where the gas standard was, and two
+         set by hand where the eye is) */
+      { subject: 'wax', layout: 'wings', swap: [[18, 43]], room: { w: 0.80, d: 0.56 },
+        near: [{ shape: 43, edge: 0.78, z: -1.6, tone: 0.95 }, { shape: 43, edge: 0.24, z: -2.8, tone: 0.92 }],
         ceil: 6, ceilGain: 1.9,
         vantage: { at: 'among', low: 0.72, fwd: 4.2, pitch: 3.0, off: 0.14, yaw: 12, wide: 4 } },
       /* THE REFLECTOR GALLERY -- round 14, one judge, VERMEIL's: "a receding
