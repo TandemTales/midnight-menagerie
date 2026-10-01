@@ -7327,21 +7327,24 @@ float nurseryWallH(vec2 q, float qpx, out float occ){
 /* ── THE SLEEPING QUARTERS (round 24) ──────────────────────────────────────
    Both survey judges: "the back wall is a raw electric-blue flat colour, and
    the two beds are cardboard boxes with a quilt texture pasted on the
-   front"; "it copies the Nursery's portraits-and-cabinets template". The
-   bedrooms of this house are WALNUT: a dado of raised and fielded panels
-   to the chair rail, and over it a striped paper of deep indigo and
-   aubergine with a gilt pinstripe -- no moons, no ducks, no portraits; a
-   picture rail and a dentilled cornice. Two rooms:
-     dormroom   (46) the dormitory: two tall windows with their blinds half
-                     down on the moon and plain curtains, the panelled double
-                     door between them, the clock over it; down the sides,
-                     a sampler over every bed and the dressing gowns on their
-                     hooks
-     bedchamber (47) a bedroom with its hearth: the marble chimneypiece and
-                     its coal fire burning in the grate behind a brass fender,
-                     the mantel's clock and candlesticks, the gilt overmantel
-                     glass; the windows either side curtained against the
-                     night with the moon in the slit; landscapes on the sides */
+   front"; "it copies the Nursery's portraits-and-cabinets template". Two
+   rooms, and (graft, round 24: ORPINE's, all three judges) two WALLS -- the
+   judges marked down any candidate that re-lit one template across a
+   wing's rooms:
+     dormroom   (46) the dormitory: a plain room -- limewash over a boarded
+                     dado stained dark, a picture rail, the peg rail with
+                     the nightgowns and dressing gowns hung on it, a candle
+                     shelf over every bed; on the end wall one tall
+                     round-headed window on the moon, night blue with its
+                     bars crisp, between two panelled doors, the clock over
+                     the one and a sampler over the other, a sconce either
+                     side; tall plain windows down the sides
+     bedchamber (47) a bedroom with its hearth: a walnut dado of fielded
+                     panels under a striped silk paper in two wines, the
+                     marble chimneypiece with its fire DRAWN in the grate,
+                     the lady of the house over the mantel in her gilt frame
+                     between two sconces, green velvet at the windows,
+                     landscapes on the sides */
 /* A GARMENT HUNG BY ITS LOOP FROM A PEG (graft, ORPINE's): a nightgown or a
    dressing gown, its sleeves, its folds. p from the peg. */
 float slGown(vec2 p, float k, out float fold){
