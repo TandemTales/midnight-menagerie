@@ -14360,7 +14360,7 @@ float wfCot(vec2 q, float px, float seed, float kq, bool paint){
   vec2 dq = q - vec2(-HX + 0.10, 1.78);
   float fan = atan(dq.x, -dq.y);
   float fold = 0.5 + 0.5*cos(fan*22.0 + 1.6*sin(q.y*3.0 + seed));
-  vec3 mus = vec3(0.78, 0.60, 0.64)*(0.55 + 0.55*fold)*(0.85 + 0.25*smoothstep(0.4, 1.7, q.y));
+  vec3 mus = vec3(0.80, 0.70, 0.68)*(0.50 + 0.55*fold)*(0.85 + 0.25*smoothstep(0.4, 1.7, q.y));
   wfLay(col, ink, drape, mus, px, 0.75);
   ink = max(ink, mmInkP(fold - 0.06, px*30.0, 1.0)*0.25*wfIn(drape, px));
   /* the quilt: patchwork, a stitch line round every square */
@@ -14833,9 +14833,9 @@ float wfFourPoster(vec2 q, float px, float seed, float kq, bool paint){
   wfLay(col, ink, cp, cpC, px, 0.9);
   ink = max(ink, mmInkP(q.x - HX - 0.78, px, 1.0)*step(MT - 0.12, q.y)*wfIn(cp, px)*0.7);
   /* the pillows: white linen, plump, lit on top */
-  wfLay(col, ink, bols, vec3(0.86, 0.84, 0.80)*(0.55 + 0.45*smoothstep(MT - 0.05, MT + 0.08, q.y)), px, 0.8);
-  wfLay(col, ink, pil1, vec3(0.90, 0.88, 0.84)*(0.50 + 0.50*smoothstep(MT, MT + 0.20, q.y)), px, 0.85);
-  wfLay(col, ink, pil2, vec3(0.92, 0.90, 0.86)*(0.50 + 0.50*smoothstep(MT + 0.18, MT + 0.36, q.y)), px, 0.85);
+  wfLay(col, ink, bols, vec3(0.86, 0.84, 0.80)*(0.45 + 0.55*smoothstep(MT - 0.05, MT + 0.08, q.y)), px, 0.55);
+  wfLay(col, ink, pil1, vec3(0.90, 0.88, 0.84)*(0.40 + 0.60*smoothstep(MT, MT + 0.20, q.y)), px, 0.55);
+  wfLay(col, ink, pil2, vec3(0.92, 0.90, 0.86)*(0.40 + 0.60*smoothstep(MT + 0.18, MT + 0.36, q.y)), px, 0.55);
   /* the near posts: turned mahogany, round and lit on the key's side */
   float ux = clamp((q.x - (q.x < 0.0 ? HX : FX))/0.06, -1.0, 1.0);
   wfLay(col, ink, posts, maho*(0.45 + 0.70*wfRound(ux))*(1.0 + 0.35*kq*ux), px, 0.95);
