@@ -1,0 +1,64 @@
+{
+  "round": "r24",
+  "maxBuilders": 3,
+  "briefs": [
+    "docs/ui-pass/BRIEF-r0.md",
+    "docs/ui-pass/BRIEF-r1.md",
+    "docs/ui-pass/BRIEF-r11.md",
+    "docs/ui-pass/BRIEF-r16.md",
+    "docs/ui-pass/BRIEF-r21.md",
+    "docs/ui-pass/BRIEF-r22.md",
+    "docs/ui-pass/BRIEF-r23.md",
+    "docs/ui-pass/BRIEF-r24.md"
+  ],
+  "rubrics": [
+    "docs/ui-pass/RUBRIC.md",
+    "docs/ui-pass/RUBRIC-r24.md"
+  ],
+  "samples": [
+    "UI/title.png",
+    "UI/mainMenu.png",
+    "UI/selectCompanion.png",
+    "UI/selectKid.png"
+  ],
+  "tracks": [
+    {
+      "key": "wings",
+      "name": "WINGS",
+      "rule": "refine",
+      "screens": [
+        "sheet-nursery",
+        "sheet-sleeping",
+        "sheet-study",
+        "sheet-crypt",
+        "fight-nursery",
+        "fight-study"
+      ],
+      "smallScreens": [
+        "fight-nursery",
+        "fight-study"
+      ],
+      "baseline": "CALICO",
+      "builders": [
+        {
+          "slot": "a",
+          "code": "SMALTINE",
+          "port": 9051,
+          "angle": "LITERAL -- the angle that won rounds 20, 21 and 23. Work BRIEF-r24's fix list 1 to 4 in order and exactly as written, one wing at a time in the order the brief lists them, finishing each wing -- its drawn subject, its built walls, its darks, every room of it -- before starting the next. Read how rounds 22 and 23 built their wings first and do the same."
+        },
+        {
+          "slot": "b",
+          "code": "ORPINE",
+          "port": 9052,
+          "angle": "THE OBJECT FIRST -- the angle that won round 22 and won three screens of round 23. Start from each wing's subject -- the crib, the four-poster, the bookcase full of books, the skull niche -- and make each a drawn object with a silhouette a child could name, turned and carved detail, its own shading and a contact shadow, at the scale of the Kid; then build each room around it."
+        },
+        {
+          "slot": "c",
+          "code": "KERMESITE",
+          "port": 9053,
+          "angle": "FOUR DIFFERENT HOUSES. The survey's sharpest line was that the Sleeping Quarters 'copy the Nursery's portraits-and-cabinets template'. Give each wing its own architecture first -- a child's room of painted panelling and a frieze, a bedchamber of damask and carved wainscot, a library of galleried oak, a crypt of stone vaults -- so no two read as one template re-lit, then furnish each with its drawn subject. Item 1 is still the test."
+        }
+      ]
+    }
+  ]
+}
