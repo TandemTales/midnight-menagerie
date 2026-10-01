@@ -723,7 +723,7 @@ export const REGIONS = {
   bathhouse: {
     label: 'The Bathhouse and Rain Wing',
     propMat: 'tile', propCeil: 0.249,
-    arch: 1, floorPattern: 1, subject: 'dado',
+    arch: 1, floorPattern: 1, subject: 'baths',
     room: { w: 21, d: 17, h: 7.0, side: 0.08, ceilPattern: 5, wallPad: 4.4 },
     cam: { y: 2.62, z: 7.4, look: 2.45, fov: 52 },
     nookSide: 1,
@@ -731,7 +731,10 @@ export const REGIONS = {
     rimCol: '#bcdeec', shaft: '#9dccdd', floorDeep: '#0e141e', floorMid: '#1a2c34',
     ambient: '#131e2a', propAlb: '#29404a', propHi: '#587f8b',
     gloss: 1.05, grime: 0.48, open: '#64b5c7', openGlow: 0.7, coolFill: 1.25, wallFog: 0.26,
-    props: { shapes: [17, 6, 7, 17, 2], count: 22, height: 2.3, layout: 'nook' },
+    /* (round 23: the bath hall's BATHS -- 32, roll-top on claw feet -- in two
+       files down the room; its palms; and no hanging sheet, which read as
+       "a grey rectangle floating in front of the glazing") */
+    props: { shapes: [32, 2, 32], count: 16, height: 2.3, layout: 'nook' },
     particles: { mix: [[PTYPE.RAIN, 0.58], [PTYPE.DUST, 0.26], [PTYPE.WISP, 0.16]],
                  tint: '#bfe8f5', wispTint: '#6fd9ec', emberTint: '#ffb64a',
                  speed: 1.0, scale: 1.0, wind: 1.2, density: 1.0 },
@@ -1337,7 +1340,7 @@ export const ROOM_KINDS = {
   },
   bathhouse: {
     kinds: [
-      { subject: 'dado' },
+      { subject: 'baths', layout: 'colonnade', file: 32, fileX: 0.60 },
       /* THE STEAM ROOM -- small, low and hot, tiled to its vault, an arcade of
          niches with their basins and taps over two stepped benches, and full
          of steam; seen from the lowest bench. Round 14, both judges: the loose
@@ -1345,8 +1348,8 @@ export const ROOM_KINDS = {
          (swap), which at this size is what a length of large-bore pipe on a
          tiled floor looks like -- there is no pipe prop, and a hot room has no
          columns, curtains or palms in it. */
-      { subject: 'steam', layout: 'nook', swap: [[6, 17], [7, 17], [2, 17]], countScale: 0.30,
-        room: { w: 0.76, d: 0.62, h: 0.76 }, ceil: 4, ceilGain: 2.1, atmos: { wallFog: 0.34 },
+      { subject: 'steam', layout: 'nook', swap: [[6, 2], [32, 2]], countScale: 0.30,
+        room: { w: 0.76, d: 0.62, h: 0.76 }, ceil: 4, ceilGain: 2.1, atmos: { wallFog: 0.20 },
         vantage: { at: 'among', low: 0.66, fwd: 1.4, pitch: 3.0, off: 0.06, wide: 3, frame: 'steam' } },
       /* THE INDOOR POOL -- round 14, both judges' first instruction: "a sunk
          rectangular basin with a proud stone coping, a clear step down to the
@@ -1356,7 +1359,7 @@ export const ROOM_KINDS = {
          old 7.6 m strip down a 22 m room read as a dark rug -- and it starts
          near enough to the eye to be the room. Seen from the gallery over its
          near end, high enough to look down INTO it. */
-      { subject: 'pool', layout: 'colonnade', file: 6, fileX: 0.74, swap: [[17, 2], [7, 2]],
+      { subject: 'pool', layout: 'colonnade', file: 6, fileX: 0.74, swap: [[32, 2]],
         room: { w: 1.10, d: 1.24 }, rail: 'iron', ceil: 4, ceilGain: 2.4,
         pool: { hw: 5.6, z0: -1.4, back: 3.4 },
         /* the hall's cold light stands over the far end of the water, which is
@@ -1369,7 +1372,7 @@ export const ROOM_KINDS = {
          heights down both tiled walls with their valves and gauges, the
          cistern at the end of it. Almost nothing stands in a service passage,
          so what does is crates. Seen down its length. */
-      { subject: 'pipes', layout: 'aisle', swap: [[17, 8], [2, 8], [7, 8], [6, 8]], countScale: 0.35,
+      { subject: 'pipes', layout: 'aisle', swap: [[32, 8], [2, 8], [6, 8]], countScale: 0.35,
         room: { w: 0.46, d: 1.20, h: 0.70 }, ceil: 3, ceilGain: 4.4,
         vantage: { at: 'along', off: 0.22, wall: 1.7, fwd: 1.2, yaw: 19, wide: 4 } },
     ],
