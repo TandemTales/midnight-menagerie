@@ -6437,6 +6437,638 @@ float atticWallH(vec2 q, float qpx, out float occ){
   return h;
 }
 #endif
+#if MM_ROOMS >= 17
+/* ═══════════ ROUND 24: THE HOUSE'S OWN ROOMS, EACH IN A PROGRAM ═══════════
+   17 the Nursery, 18 the Sleeping Quarters, 19 the Study and Library, 20
+   the Crypt (ROOMS_PROGRAM in fx/backdrop.js). Rounds 22 and 23's rule,
+   kept: a wall here is BUILT -- boarding, paper, mouldings, shelves, stone
+   -- and drawn whole, its colour its own (gCol, gColAmt 1), its lines laid
+   with the pen, its darks dark, its light from the room's lamps and from
+   what it gives off itself (gWEmit). What the four share is here. */
+/* cover with the pixel passed in: a macro, as the kennels' is, because a
+   function reading a global pixel size came back empty on this compiler */
+#define RCV(f) clamp(0.5 + (f)/px, 0.0, 1.0)
+float wfEll2(vec2 p, vec2 r){ return (length(p/r) - 1.0)*min(r.x, r.y); }
+float wfRound2(float v){ return sqrt(max(1.0 - v*v, 0.0)); }
+/* a five-pointed star of outer radius R */
+float wfStar2(vec2 p, float R){
+  float k = 6.2832/5.0;
+  float an = mod(atan(p.x, p.y) + k*0.5, k) - k*0.5;
+  return (length(p) - mix(R, R*0.46, abs(an)/(k*0.5)))*0.8;
+}
+
+/* A NIGHT THROUGH GLASS: the sky deepening up, a scatter of stars, and the
+   moon where mo says (its radius in mo.z), all in metres of the pane. */
+vec3 r24Night(vec2 p, vec3 mo, float px, out float lit){
+  vec3 sky = mix(vec3(0.014, 0.022, 0.050), vec3(0.030, 0.050, 0.100), smoothstep(-1.0, 1.4, p.y));
+  vec2 sg = p*11.0;
+  vec2 si = floor(sg);
+  float st = (1.0 - smoothstep(0.05, 0.13, length(fract(sg) - 0.5 - (mmHash22(si) - 0.5)*0.6)))*step(0.91, mmHash21(si + 3.1));
+  float mr = length(p - mo.xy);
+  float moon = clamp(0.5 - (mr - mo.z)/px, 0.0, 1.0);
+  float cr = moon*smoothstep(0.50, 0.75, mmNoise((p - mo.xy)*12.0 + 3.0))*0.35;
+  lit = 0.05 + st*0.9 + moon*(2.4 - cr*2.0) + 0.45*exp(-max(mr - mo.z, 0.0)*2.2);
+  return sky;
+}
+/* VELVET HUNG IN FOLDS: x across the curtain (0 at its leading edge, w
+   its width), y down from its heading. Returns the fold's light, 0 deep in
+   a trough to 1 on a crest, and writes how wide the pleats come at the
+   heading (tight) and the hem (loose). */
+float r24Folds(float x, float y, float w, float sd){
+  float n = 5.0 + floor(w*3.0);
+  float t = x/max(w, 1e-3);
+  float ph = t*n*6.2832 + 0.9*sin(y*1.7 + sd) + 0.4*sin(t*7.0 + sd*2.0);
+  return 0.5 + 0.5*cos(ph);
+}
+#endif
+#if MM_ROOMS == 17
+/* ── THE FORGOTTEN NURSERY (round 24) ──────────────────────────────────────
+   Both survey judges: "the cribs and cots across the middle are boxy crate
+   shapes with a plank texture, under a back wall washed in pale lavender
+   light with flat grey curtain planes". A nursery of this house is a
+   PAINTED room: a dado of beaded boarding in a deep plum enamel to the
+   chair rail, a printed paper above it -- a night-blue ground with gold
+   moons and stars in a half-drop -- a picture rail, and over it the
+   nursery FRIEZE, a procession of cream ducks on a dusky rose band, under
+   the cornice. Two rooms:
+     nurseryroom (44) the night nursery: the tall sash window on the moon,
+                      velvet curtains in real folds held back on their pole,
+                      the window seat; built-in shelves either side with the
+                      toys on them -- dolls sat in a row, the Noah's ark, a
+                      drum, tin soldiers, bricks with their letters, books
+     sewingroom  (45) the sewing and linen room: the linen press open on
+                      its stacks of folded blankets and quilts, shelves of
+                      cloth on the bolt either side, the rack of cotton
+                      reels, the hoops and the shears on their nails */
+/* A TOY ON A SHELF, standing on y = 0 at x = 0 in a slot sw wide: k picks
+   what. col/ink come back through the inout, cover as the return. */
+float nuToy(vec2 p, float sw, float k, float px, float lw, inout vec3 col, inout float ink){
+  float cv = 0.0;
+  if (k < 0.22) {
+    /* a doll sat on the shelf: skirts, bodice, a face, hair, arms */
+    float sk = max(mmBox(p - vec2(0.0, 0.07), vec2(0.075 + 0.04*(0.14 - p.y), 0.07), 0.02), -p.y);
+    float bo = mmBox(p - vec2(0.0, 0.17), vec2(0.040, 0.040), 0.015);
+    float hd = length(p - vec2(0.0, 0.245)) - 0.040;
+    float hr = max(length(p - vec2(0.0, 0.255)) - 0.046, -(p.y - 0.235 + 0.02*abs(p.x)/0.04));
+    float d = min(min(sk, bo), min(hd, hr));
+    cv = RCV(-d);
+    float dk = mmHash11(k*91.0);
+    vec3 dress = dk < 0.5 ? vec3(0.62, 0.30, 0.40) : vec3(0.30, 0.40, 0.62);
+    vec3 c = mix(dress, vec3(0.92, 0.80, 0.70), RCV(-hd));
+    c = mix(c, vec3(0.40, 0.22, 0.10)*(dk < 0.3 ? 2.0 : 1.0), RCV(-hr)*step(hd, 0.0 + 1.0)*(1.0 - RCV(-hd)*step(p.y, 0.25)));
+    c = mix(c, vec3(0.90, 0.88, 0.84), RCV(-(abs(p.y - 0.008) - 0.010))*RCV(-sk));
+    col = mix(col, c*lw*1.5, cv);
+    ink = max(ink, mmInkP(d, px, 1.0)*0.8);
+    ink = max(ink, mmInkP(length(vec2(abs(p.x) - 0.015, p.y - 0.248)) - 0.004, px, 1.0)*RCV(-hd));
+  } else if (k < 0.36) {
+    /* the Noah's ark: a hull, its house and roof, two animals at the door */
+    float hull = max(mmBox(p - vec2(0.0, 0.05), vec2(0.16 + 0.06*p.y/0.10, 0.05), 0.01), -p.y);
+    float hs = mmBox(p - vec2(-0.01, 0.14), vec2(0.09, 0.045), 0.004);
+    float rf = max(abs(p.x + 0.01)*0.55 + (p.y - 0.235), -(p.y - 0.18));
+    float an = min(length(vec2(p.x - 0.12, p.y - 0.13)) - 0.022, mmBox(p - vec2(0.12, 0.11), vec2(0.008, 0.02), 0.004));
+    float d = min(min(hull, hs), min(rf, an));
+    cv = RCV(-d);
+    vec3 c = mix(vec3(0.52, 0.28, 0.14), vec3(0.80, 0.70, 0.50), RCV(-hs));
+    c = mix(c, vec3(0.60, 0.16, 0.10), RCV(-rf)*step(0.18, p.y));
+    c = mix(c, vec3(0.70, 0.64, 0.56), RCV(-an));
+    c *= 1.0 - 0.5*mmInkP(abs(fract(p.y/0.025) - 0.5) - 0.45, px/0.025, 1.0)*RCV(-hull)*mmLod(0.025, px);
+    col = mix(col, c*lw*1.5, cv);
+    ink = max(ink, mmInkP(d, px, 1.0)*0.8);
+    ink = max(ink, mmInkP(mmBox(p - vec2(-0.03, 0.13), vec2(0.016, 0.022), 0.003), px, 1.0)*RCV(-hs));
+  } else if (k < 0.50) {
+    /* a drum and a spinning top beside it */
+    float dr = mmBox(p - vec2(-0.03, 0.065), vec2(0.075, 0.065), 0.006);
+    vec2 tq = p - vec2(0.10, 0.0);
+    float tp = max(abs(tq.x)*0.9 - min(tq.y, 0.10 - (tq.y - 0.04)*0.6) + 0.00, -tq.y);
+    tp = min(max(abs(tq.x) - 0.045 + max(tq.y - 0.08, 0.0)*0.0, max(0.05 - tq.y, tq.y - 0.09)), max(abs(tq.x) - 0.006, max(-tq.y, tq.y - 0.13)));
+    tp = min(tp, max(abs(tq.x) - (tq.y)*0.9, max(-tq.y, tq.y - 0.06)));
+    float d = min(dr, tp);
+    cv = RCV(-d);
+    vec2 dq = p - vec2(-0.03, 0.065);
+    vec3 c = vec3(0.66, 0.14, 0.10);
+    float zz = mmInkP(abs(fract((dq.x + abs(dq.y)*1.1)/0.05) - 0.5), px/0.05, 1.4)*step(abs(dq.y), 0.050);
+    c = mix(c, vec3(0.92, 0.86, 0.70), zz);
+    c = mix(c, vec3(0.90, 0.68, 0.30), step(0.050, abs(dq.y)));
+    vec3 tc = mix(vec3(0.30, 0.46, 0.70), vec3(0.90, 0.78, 0.40), step(0.5, fract(tq.y/0.03)));
+    c = mix(c, tc, RCV(-tp));
+    col = mix(col, c*lw*1.5, cv);
+    ink = max(ink, mmInkP(d, px, 1.0)*0.8);
+  } else if (k < 0.64) {
+    /* a file of tin soldiers: red coats, black shakos, on a green stand */
+    float sx = mmRowX(p.x + 0.5, 0.050);
+    float bd = max(abs(p.x) - sw*0.42, 0.0);
+    float body = max(max(sx - 0.012, abs(p.y - 0.075) - 0.050), bd);
+    float sh = max(max(sx - 0.010, abs(p.y - 0.145) - 0.022), bd);
+    float st = max(mmBox(p - vec2(0.0, 0.010), vec2(sw*0.44, 0.010), 0.003), 0.0);
+    float d = min(min(body, sh), st);
+    cv = RCV(-d);
+    vec3 c = mix(vec3(0.66, 0.12, 0.10), vec3(0.06, 0.06, 0.08), step(0.123, p.y));
+    c = mix(c, vec3(0.86, 0.84, 0.80), step(p.y, 0.050)*step(0.020, p.y));
+    c = mix(c, vec3(0.20, 0.38, 0.22), step(p.y, 0.020));
+    col = mix(col, c*lw*1.5, cv);
+    ink = max(ink, mmInkP(d, px, 1.0)*0.6);
+  } else if (k < 0.80) {
+    /* a stack of wooden bricks, each a colour, its letter in a circle */
+    float bi = floor((p.x + 0.12)/0.08);
+    float rows = 2.0 + step(0.5, mmHash11(k*31.0 + bi));
+    float by = floor(p.y/0.075);
+    float inB = step(abs(p.x), 0.12)*step(0.0, p.y)*step(by, rows - 1.0 + step(abs(bi - 1.0), 0.5));
+    float bx = fract((p.x + 0.12)/0.08) - 0.5;
+    float byf = fract(p.y/0.075) - 0.5;
+    float hk = mmHash21(vec2(bi, by) + k*7.0);
+    vec3 c = hk < 0.3 ? vec3(0.70, 0.20, 0.14) : (hk < 0.55 ? vec3(0.24, 0.40, 0.64) : (hk < 0.8 ? vec3(0.86, 0.68, 0.24) : vec3(0.30, 0.52, 0.30)));
+    float lt = mmInkP(length(vec2(bx*0.08, byf*0.075)) - 0.020, px, 1.2);
+    c = mix(c, vec3(0.92, 0.88, 0.78), lt);
+    cv = inB;
+    col = mix(col, c*lw*1.5*(0.8 + 0.3*step(0.0, byf)), cv);
+    ink = max(ink, inB*max(mmInkP(abs(bx) - 0.5, px/0.08, 1.0), mmInkP(abs(byf) - 0.5, px/0.075, 1.0))*0.8);
+  } else {
+    /* picture books: upright and a few laid flat */
+    float bw = 0.030;
+    float bi = floor(p.x/bw);
+    float hk = mmHash11(bi*4.3 + k*17.0);
+    float bh = 0.16 + 0.10*hk;
+    float on = step(abs(p.x), sw*0.42)*step(p.y, bh)*step(0.0, p.y);
+    vec3 c = hk < 0.3 ? vec3(0.64, 0.20, 0.16) : (hk < 0.55 ? vec3(0.20, 0.36, 0.30) : (hk < 0.8 ? vec3(0.24, 0.26, 0.56) : vec3(0.78, 0.62, 0.30)));
+    c *= 0.6 + 0.5*wfRound2(clamp((fract(p.x/bw) - 0.5)*2.0, -1.0, 1.0));
+    cv = on;
+    col = mix(col, c*lw*1.5, cv);
+    ink = max(ink, on*mmInkP(abs(fract(p.x/bw) - 0.5) - 0.5, px/bw, 1.0)*0.7);
+  }
+  return cv;
+}
+float nurseryWallH(vec2 q, float qpx, out float occ){
+  occ = 0.0;
+  float far = step(0.5, uFar);
+  float px = max(qpx, 0.003);
+  gPx = px;
+  float lum = mmLum(uMid);
+  float lw = lum*2.4 + 0.010;
+  float cx = q.x - uSize.x*0.5, ax = abs(cx);
+  float u = far > 0.5 ? cx : q.x;
+  float sew = step(44.5, uSubject);
+  const float SK = 0.18, DR0 = 1.02, DR1 = 1.10;
+  float PR = uCeil - 0.78, CO = uCeil - 0.26;
+  float h = 1.0;
+  float emit = 0.0, emitW = 0.0, gloss = 0.08;
+  /* ---- the paper: a night-blue ground, gold moons and stars in a
+     half-drop, printed -- every motif drawn, none of it noise ---- */
+  vec3 paperG = vec3(0.105, 0.105, 0.235)*lw*(0.90 + 0.12*mmNoise(q*0.7 + uSeed));
+  vec3 col = paperG;
+  {
+    float PC = 0.36;
+    vec2 pg = vec2(u, q.y)/PC;
+    float row = floor(pg.y);
+    pg.x += 0.5*mod(row, 2.0);
+    vec2 pf = (fract(pg) - 0.5)*PC;
+    float pk = mod(floor(pg.x) + row, 2.0);
+    float mo = max(length(pf) - 0.050, -(length(pf - vec2(0.022, 0.014)) - 0.044));
+    float sta = wfStar2(pf, 0.040);
+    float mt = mix(mo, sta, pk);
+    float lod = mmLod(PC*0.5, px);
+    float onM = RCV(-mt)*lod;
+    vec3 gold = vec3(0.62, 0.48, 0.22)*lw;
+    col = mix(col, gold, onM*0.85);
+    col = mix(col, mix(paperG, gold, 0.25), (1.0 - lod)*0.5);
+    /* a hairline trellis between them, the paper's other print */
+    float tr = mmInkP(mmRowX(u + q.y, PC*1.4142), px, 1.0)*0.0;
+    col *= 1.0 - tr;
+  }
+  /* ---- the dado: beaded boarding in plum enamel ---- */
+  float dado = step(q.y, DR0);
+  float BW = 0.095;
+  float bx = mmRowX(u, BW);
+  float bead = mmInkP(bx - BW*0.5, px, 1.0)*mmLod(BW, px);
+  float beadL = mmInkP(bx - BW*0.5 + 0.012, px, 1.0)*mmLod(BW, px);
+  vec3 plum = vec3(0.30, 0.13, 0.22)*lw*(0.86 + 0.18*mmHash11(floor(u/BW)*3.7));
+  plum *= 1.0 - 0.55*bead;
+  plum = mix(plum, plum*1.9, beadL*0.6);
+  col = mix(col, plum, dado);
+  h = mix(h, 1.05 - 0.10*bead, dado);
+  gloss = mix(gloss, 0.30, dado);
+  /* the skirting and the chair rail, moulded, a darker enamel */
+  float sk = mmBandA(q.y, 0.0, SK, px);
+  float rail = mmBandA(q.y, DR0, DR1, px);
+  vec3 trim = vec3(0.22, 0.09, 0.16)*lw;
+  col = mix(col, trim*(1.0 + 0.8*mmBandA(q.y, DR1 - 0.022, DR1, px)), max(sk, rail));
+  h += sk*0.30 + rail*0.45;
+  mmPen(q.y - SK, 1.1, 0.85); mmPen(q.y - DR0, 1.1, 0.85); mmPen(q.y - DR1, 1.0, 0.7);
+  /* ---- the picture rail, the frieze and the cornice ---- */
+  float prl = mmBandA(q.y, PR - 0.05, PR, px);
+  float frz = step(PR, q.y)*step(q.y, CO);
+  vec3 rose = vec3(0.34, 0.17, 0.20)*lw;
+  vec3 fcol = rose;
+  {
+    /* the procession of ducks, cream on the rose, all walking one way */
+    float DP = 0.62;
+    float di = floor(u/DP);
+    vec2 dq = vec2(u - (di + 0.5)*DP, q.y - PR - 0.08);
+    float body = wfEll2(dq, vec2(0.13, 0.065));
+    body = max(body, -(dq.y + 0.0));
+    body = min(body, wfEll2(dq - vec2(0.0, 0.01), vec2(0.13, 0.055)));
+    float head = length(dq - vec2(0.10, 0.12)) - 0.042;
+    float neck = mmBox(dq - vec2(0.09, 0.07), vec2(0.022, 0.04), 0.01);
+    float tail = max(dq.y - 0.07 + (dq.x + 0.13)*0.6, max(-dq.x - 0.17, dq.x + 0.08));
+    tail = max(tail, -dq.y);
+    float duck = min(min(body, head), min(neck, tail));
+    float beak = max(wfEll2(dq - vec2(0.155, 0.112), vec2(0.035, 0.012)), -(dq.x - 0.12));
+    float lod = mmLod(0.13, px);
+    vec3 cream = vec3(0.86, 0.78, 0.60)*lw*1.15;
+    fcol = mix(fcol, cream, RCV(-duck)*lod);
+    fcol = mix(fcol, vec3(0.80, 0.46, 0.14)*lw*1.3, RCV(-beak)*lod);
+    fcol = mix(fcol, vec3(0.05), RCV(-(length(dq - vec2(0.112, 0.128)) - 0.008))*lod);
+    gInk = max(gInk, mmInkP(min(duck, beak), px, 1.0)*0.7*frz*lod);
+    /* a bound line above and below the band */
+    fcol = mix(fcol, vec3(0.70, 0.54, 0.26)*lw, max(mmInkP(q.y - PR - 0.035, px, 1.4), mmInkP(q.y - CO + 0.035, px, 1.4)));
+  }
+  col = mix(col, fcol, frz);
+  col = mix(col, trim*1.3, prl);
+  h += prl*0.35;
+  mmPen(q.y - PR, 1.0, 0.8); mmPen(q.y - PR + 0.05, 1.0, 0.6);
+  float corn = step(CO, q.y);
+  float cb = smoothstep(CO, uCeil, q.y);
+  vec3 cream0 = vec3(0.40, 0.34, 0.30)*lw;
+  col = mix(col, cream0*(0.55 + 0.6*abs(sin(cb*9.0))), corn);
+  h += corn*(0.3 + 0.2*cb);
+  mmPen(q.y - CO, 1.2, 0.85); mmPen(q.y - CO - 0.09, 1.0, 0.6);
+
+  if (far > 0.5) {
+    if (sew < 0.5) {
+      /* ===== THE NIGHT NURSERY'S WINDOW ===== */
+      const float WW = 0.78, SILL = 1.00;
+      float WT = min(uCeil - 1.25, 3.35);
+      float wy = q.y - SILL;
+      float opening = mmBox(vec2(cx, q.y - (SILL + WT)*0.5), vec2(WW, (WT - SILL)*0.5), 0.0);
+      float win = mmCover(-opening);
+      /* the reveal round it, the architrave */
+      float arc = mmCover(-(opening - 0.16))*(1.0 - win);
+      col = mix(col, vec3(0.42, 0.32, 0.32)*lw, arc);
+      h = mix(h, 1.35, arc);
+      mmPen(opening - 0.16, 1.2, 0.9); mmPen(opening, 1.2, 0.9);
+      /* the glazing: a sash, six over six, and its meeting rail */
+      vec2 gp = vec2(cx, q.y - SILL);
+      float gx = mmRowX(gp.x + WW, WW*2.0/3.0);
+      float MR = (WT - SILL)*0.50;
+      float gyr = min(mmRowX(gp.y, MR/2.0), abs(gp.y - MR));
+      float bar = max(mmInkP(gx, px, 1.6), mmInkP(gyr, px, 1.6));
+      bar = max(bar, mmInkP(abs(gp.y - MR) - 0.02, px, 2.0));
+      bar = clamp(bar, 0.0, 1.0);
+      float lit;
+      vec3 night = r24Night(vec2(cx, q.y - (SILL + WT)*0.5), vec3(-0.30, 0.65, 0.20), px, lit);
+      col = mix(col, night, win*(1.0 - bar));
+      col = mix(col, vec3(0.30, 0.26, 0.28)*lw, win*bar);
+      emit += win*(1.0 - bar)*lit*0.85;
+      emit += win*bar*0.10;
+      h = mix(h, 0.5, win*(1.0 - bar));
+      gInk = max(gInk, win*bar*0.6);
+      occ = max(occ, win);
+      /* the window seat under it, its cushion and two cushions on it */
+      float seat = mmBox(vec2(cx, q.y - 0.24), vec2(WW + 0.30, 0.22), 0.01);
+      float scush = mmBox(vec2(cx, q.y - 0.52), vec2(WW + 0.24, 0.07), 0.05);
+      float pil1 = wfEll2(vec2(cx + 0.50, q.y - 0.70), vec2(0.22, 0.15));
+      float pil2 = wfEll2(vec2(cx - 0.56, q.y - 0.69), vec2(0.20, 0.14));
+      float sv = mmCover(-seat);
+      col = mix(col, plum*1.05, sv);
+      float sp1 = sPanel(vec2(mod(cx + WW + 0.30, 0.60) - 0.30, q.y - 0.24), vec2(0.22, 0.14), 0.03, 0.05);
+      h = mix(h, 1.2 + 0.4*sp1*sv, sv);
+      mmPen(seat, 1.2, 0.9);
+      vec3 cush = vec3(0.50, 0.24, 0.30)*lw*(0.7 + 0.5*smoothstep(0.47, 0.58, q.y));
+      col = mix(col, cush, RCV(-scush));
+      col = mix(col, vec3(0.62, 0.52, 0.32)*lw*(0.6 + 0.6*smoothstep(0.58, 0.82, q.y)), RCV(-pil1));
+      col = mix(col, vec3(0.30, 0.38, 0.56)*lw*(0.6 + 0.6*smoothstep(0.58, 0.82, q.y)), RCV(-pil2));
+      mmPen(scush, 1.1, 0.8); mmPen(pil1, 1.0, 0.8); mmPen(pil2, 1.0, 0.8);
+      h += RCV(-scush)*0.2 + RCV(-min(pil1, pil2))*0.3;
+      /* the CURTAINS: velvet, from a brass pole with its finials, each
+         drawn back to the side by a tasselled tie at sill height, its
+         folds tight at the heading and swinging loose below the tie */
+      float POLE = WT + 0.30;
+      float pole = mmBandA(q.y, POLE - 0.025, POLE + 0.025, px)*step(ax, WW + 0.95);
+      float fin = RCV(-(length(vec2(ax - WW - 0.98, q.y - POLE)) - 0.055));
+      vec3 brass = vec3(0.86, 0.62, 0.28)*lw*2.2;
+      /* the leading edge: from the window's edge at the heading, swept to
+         the tie, and out again below it */
+      float tieY = SILL + 0.15;
+      float dyT = q.y - tieY;
+      float lead = WW - 0.25 + 0.42*smoothstep(POLE, tieY, q.y) - 0.10*smoothstep(tieY, 0.10, q.y)*0.0
+                 + 0.30*smoothstep(0.0, -1.1, dyT);
+      lead = mix(lead, WW + 0.16, smoothstep(0.0, -0.25, dyT)*smoothstep(-0.25, 0.0, dyT)*0.0);
+      float pinch = exp(-dyT*dyT/0.04);
+      lead += 0.22*pinch;
+      float outer = WW + 0.90;
+      float onCur = RCV(ax - lead)*RCV(outer - ax)*step(q.y, POLE)*step(0.04, q.y);
+      float cw = outer - lead;
+      float fx = (ax - lead)/max(cw, 0.05);
+      float fl = r24Folds(ax - lead, q.y, max(cw, 0.05), uSeed + step(0.0, cx)*3.0);
+      vec3 vel = vec3(0.40, 0.11, 0.20)*lw*(0.40 + 0.95*fl);
+      vel *= 1.0 - 0.45*smoothstep(0.2, 0.0, fx);           // the shadow in the leading fold
+      vel = mix(vel, vel*0.55, pinch);
+      col = mix(col, vel, onCur);
+      h = mix(h, 1.25 + 0.35*fl, onCur);
+      gInk = max(gInk, onCur*mmInkP(fl - 0.04, px*8.0, 1.0)*0.35);
+      gInk = max(gInk, mmInkP(ax - lead, px, 1.3)*0.9*step(q.y, POLE)*step(0.04, q.y));
+      occ = max(occ, onCur);
+      /* the hem's bullion fringe and the tieback's tassel */
+      float hemB = onCur*step(q.y, 0.16);
+      col = mix(col, vec3(0.70, 0.52, 0.24)*lw*1.3*(0.6 + 0.4*step(0.5, fract(ax/0.03))), hemB);
+      vec2 tq = vec2(ax - lead - 0.04, q.y - tieY + 0.02);
+      float tas = min(wfEll2(tq - vec2(0.0, 0.04), vec2(0.05, 0.05)), max(abs(tq.x) - 0.04 - (0.0 - tq.y)*0.15, max(tq.y - 0.02, -tq.y - 0.20)));
+      float tasC = RCV(-tas);
+      col = mix(col, vec3(0.84, 0.62, 0.26)*lw*1.6*(0.7 + 0.4*step(0.5, fract(tq.x/0.012))), tasC);
+      gInk = max(gInk, mmInkP(tas, px, 1.0)*0.8);
+      /* the pole over all */
+      col = mix(col, brass*(0.7 + 0.5*smoothstep(POLE - 0.02, POLE + 0.02, q.y)), max(pole, fin));
+      h += max(pole, fin)*0.6;
+      gloss = max(gloss, max(pole, fin));
+      mmPen(q.y - POLE + 0.025, 1.0, 0.85*step(ax, WW + 0.95)); mmPen(q.y - POLE - 0.025, 1.0, 0.85*step(ax, WW + 0.95));
+      occ = max(occ, max(pole, fin));
+      /* ===== THE TOY SHELVES either side, built in ===== */
+      float SX0 = WW + 1.05, SX1 = SX0 + 2.30;
+      float inS = step(SX0, ax)*step(ax, SX1);
+      float ST = min(uCeil - 1.10, 2.80);
+      float sxl = ax - SX0;
+      float onS = inS*step(DR1, q.y)*step(q.y, ST);
+      if (onS > 0.0) {
+        /* the carcase: its back in shadow, its uprights and shelves */
+        float SP = (ST - DR1 - 0.06)/3.0;
+        float sr = floor((q.y - DR1 - 0.03)/SP);
+        float sy = q.y - DR1 - 0.03 - sr*SP;
+        float BAY = 1.15;
+        float bi = floor(sxl/BAY);
+        float bxl = sxl - (bi + 0.5)*BAY;
+        vec3 back = vec3(0.16, 0.08, 0.12)*lw*(0.55 + 0.35*smoothstep(0.0, SP, sy));
+        col = back;
+        h = 0.55;
+        gColAmt = 1.0;
+        float shelf = 1.0 - smoothstep(0.035 - px, 0.035 + px, sy);
+        float upr = 1.0 - smoothstep(0.04 - px, 0.04 + px, abs(abs(bxl) - BAY*0.5));
+        /* the toys, three to a shelf's bay */
+        float SL = BAY/3.0;
+        float ti = floor((bxl + BAY*0.5)/SL);
+        float tk = mmHash21(vec2(bi*3.0 + ti + step(0.0, cx)*17.0, sr) + floor(uSeed*3.0));
+        vec2 tp = vec2(bxl + BAY*0.5 - (ti + 0.5)*SL, sy - 0.035);
+        vec3 c2 = col; float ik = 0.0;
+        float tcv = nuToy(tp, SL, tk, px, lw, c2, ik);
+        col = c2;
+        gInk = max(gInk, ik*(1.0 - shelf)*(1.0 - upr));
+        h = mix(h, 1.0, tcv);
+        col = mix(col, plum*1.15, max(shelf, upr));
+        h = mix(h, 1.25, max(shelf, upr));
+        gInk = max(gInk, mmInkP(sy - 0.035, px, 1.0)*0.8);
+        gInk = max(gInk, mmInkP(abs(abs(bxl) - BAY*0.5) - 0.04, px, 1.0)*0.8);
+        /* the shelf throws its shadow on the toys under it */
+        col *= 1.0 - 0.35*smoothstep(SP, SP - 0.12, sy)*(1.0 - shelf);
+      }
+      gInk = max(gInk, mmInkP(abs(ax - (SX0 + SX1)*0.5) - (SX1 - SX0)*0.5, px, 1.3)*step(DR1, q.y)*step(q.y, ST));
+      float topS = mmBandA(q.y, ST, ST + 0.10, px)*inS;
+      col = mix(col, plum*1.3, topS);
+      h += topS*0.5;
+      occ = max(occ, onS);
+    } else {
+      /* ===== THE SEWING ROOM'S LINEN PRESS ===== */
+      const float PW = 1.10;
+      float PT = min(uCeil - 0.95, 2.95);
+      float pD = mmBox(vec2(cx, q.y - PT*0.5), vec2(PW, PT*0.5), 0.01);
+      float onP = RCV(-pD);
+      vec3 maho = vec3(0.30, 0.15, 0.10)*lw;
+      /* its two doors stand open, folded back against its ends */
+      float doorL = RCV(-mmBox(vec2(ax - PW - 0.22, q.y - (PT*0.5)), vec2(0.20, PT*0.5 - 0.20), 0.01));
+      /* inside: four shelves of folded blankets and quilts */
+      float IN = PW - 0.10;
+      float inside = step(ax, IN)*step(0.30, q.y)*step(q.y, PT - 0.18);
+      float SP = (PT - 0.48)/4.0;
+      float sr = floor((q.y - 0.30)/SP);
+      float sy = q.y - 0.30 - sr*SP;
+      float shelf = (1.0 - smoothstep(0.030 - px, 0.030 + px, sy))*inside;
+      /* the stacks: three to a shelf, each of five to seven folded things */
+      float sti = floor((cx + IN)/(IN*2.0/3.0));
+      float stx = cx + IN - (sti + 0.5)*(IN*2.0/3.0);
+      float nf = 5.0 + floor(mmHash21(vec2(sti, sr) + 3.0)*3.0);
+      float fh = (SP - 0.10)/nf;
+      float fi = floor((sy - 0.03)/fh);
+      float fyl = sy - 0.03 - (fi + 0.5)*fh;
+      float sw = IN/3.0 - 0.06 - 0.03*mmHash21(vec2(sti, sr + fi));
+      float onF = step(abs(stx), sw)*step(fi, nf - 1.0)*step(0.0, fi)*inside*(1.0 - shelf);
+      float fk = mmHash21(vec2(sti*7.0 + fi, sr*3.0) + 1.7);
+      vec3 cloth = fk < 0.20 ? vec3(0.86, 0.82, 0.74) : (fk < 0.38 ? vec3(0.62, 0.28, 0.30)
+                 : (fk < 0.54 ? vec3(0.30, 0.38, 0.56) : (fk < 0.70 ? vec3(0.56, 0.60, 0.44)
+                 : (fk < 0.85 ? vec3(0.78, 0.66, 0.46) : vec3(0.46, 0.24, 0.42)))));
+      /* a quilt shows its patchwork, a blanket its stripe at the edge */
+      float pw = step(0.80, mmHash21(vec2(fi, sti) + sr));
+      cloth = mix(cloth, cloth*(0.7 + 0.5*step(0.5, fract((stx + 1.0)/0.08))), pw);
+      cloth *= 0.62 + 0.55*smoothstep(-fh*0.5, fh*0.4, fyl);
+      cloth *= 1.0 - 0.40*smoothstep(sw - 0.04, sw, abs(stx));
+      vec3 inC = maho*0.30;
+      inC = mix(inC, cloth*lw, onF);
+      inC = mix(inC, maho*1.1, shelf);
+      col = mix(col, maho*(0.9 + 0.2*mmNoise(vec2(q.x*20.0, q.y))), onP);
+      col = mix(col, inC, inside);
+      h = mix(h, 1.2, onP);
+      h = mix(h, 0.7 + 0.4*onF, inside);
+      gInk = max(gInk, onF*mmInkP(abs(fyl) - fh*0.5, px, 1.0)*0.7);
+      gInk = max(gInk, inside*mmInkP(abs(stx) - sw, px, 1.0)*step(fi, nf - 1.0)*step(0.03, sy)*0.8);
+      gInk = max(gInk, inside*mmInkP(sy - 0.030, px, 1.0)*0.8);
+      mmPen(pD, 1.3, 0.95);
+      gInk = max(gInk, mmInkP(abs(ax - IN), px, 1.2)*0.8*step(0.30, q.y)*step(q.y, PT - 0.18));
+      /* the open doors: panelled, their inner faces to us */
+      vec2 dp = vec2(ax - PW - 0.22, q.y - PT*0.5);
+      float dpn = sPanel(dp, vec2(0.14, PT*0.5 - 0.34), 0.03, 0.05);
+      col = mix(col, maho*(1.15 + 0.25*dpn), doorL);
+      h = mix(h, 1.3 + 0.5*dpn, doorL);
+      gInk = max(gInk, mmInkP(mmBox(dp, vec2(0.20, PT*0.5 - 0.20), 0.01), px, 1.2)*0.9);
+      /* the cornice over the press and its plinth */
+      float pc = mmBandA(q.y, PT - 0.14, PT + 0.06, px)*step(ax, PW + 0.08);
+      col = mix(col, maho*1.4, pc);
+      h += pc*0.5;
+      occ = max(occ, max(onP, doorL));
+      /* ===== ROLLS OF CLOTH in their pigeonholes, either side: each roll
+         seen END ON, its turns of cloth in rings round the core, a tail of
+         it hanging over the shelf's lip ===== */
+      float BX0 = PW + 0.62, BX1 = BX0 + 2.0;
+      float BTOP = min(uCeil - 1.25, 2.85);
+      float inB = step(BX0, ax)*step(ax, BX1)*step(DR1, q.y)*step(q.y, BTOP);
+      float BSP = (BTOP - DR1)/4.0;
+      float br = floor((q.y - DR1)/BSP);
+      float by = q.y - DR1 - br*BSP;
+      float CWD = 0.50;
+      float cbi = floor((ax - BX0)/CWD);
+      float cbx = ax - BX0 - (cbi + 0.5)*CWD;
+      /* two or three rolls lying in each hole, stacked */
+      float RR = 0.105;
+      float nr = 2.0 + step(0.5, mmHash21(vec2(cbi, br) + 1.0));
+      float rlx = cbx - (nr > 2.5 ? clamp(floor(cbx/(RR*2.05) + 0.5), -1.0, 1.0)*RR*2.05 : (step(0.0, cbx) - 0.5)*RR*2.05);
+      float rlyC = 0.035 + RR;
+      vec2 rq = vec2(rlx, by - rlyC);
+      float rd = length(rq);
+      float onR = (1.0 - smoothstep(RR - px, RR + px, rd))*inB;
+      float rk = mmHash21(vec2(cbi*3.0 + floor(cbx/(RR*2.05) + 0.5), br) + 5.0);
+      vec3 bc = rk < 0.18 ? vec3(0.70, 0.22, 0.24) : (rk < 0.36 ? vec3(0.26, 0.42, 0.30)
+              : (rk < 0.54 ? vec3(0.82, 0.74, 0.60) : (rk < 0.72 ? vec3(0.28, 0.32, 0.60)
+              : (rk < 0.88 ? vec3(0.66, 0.50, 0.26) : vec3(0.48, 0.20, 0.44)))));
+      /* the turns: rings, the core a dark hole, lit on the top */
+      float turns = mmInkP(abs(fract(rd/0.016) - 0.5) - 0.5, px/0.016, 1.0)*mmLod(0.016, px);
+      vec3 rc = bc*(0.60 + 0.50*smoothstep(-RR, RR, rq.y))*(1.0 - 0.30*turns);
+      rc = mix(rc, vec3(0.06, 0.04, 0.03), 1.0 - smoothstep(0.018 - px, 0.018 + px, rd));
+      vec3 bsC = vec3(0.10, 0.05, 0.07)*lw;
+      bsC = mix(bsC, rc*lw, onR);
+      /* the dividers and the shelves */
+      float bshelf = (1.0 - smoothstep(0.035 - px, 0.035 + px, by))*inB;
+      float bdiv = (1.0 - smoothstep(0.03 - px, 0.03 + px, abs(abs(cbx) - CWD*0.5)))*inB;
+      bsC = mix(bsC, maho*1.1, max(bshelf, bdiv));
+      /* in one hole in three a length has been pulled off the bottom roll:
+         it falls from the roll over the shelf's lip, and on down into the
+         top of the hole below, in soft folds */
+      float tx0 = (nr > 2.5 ? -RR*2.05 : -RR*1.025) - RR*0.80;
+      float tw = RR*1.6;
+      float inTx = step(tx0, cbx)*step(cbx, tx0 + tw);
+      float tlA = step(0.62, mmHash21(vec2(cbi, br) + 9.0));
+      float tlB = step(0.62, mmHash21(vec2(cbi, br + 1.0) + 9.0))*step(br, 2.5);
+      float wave = 0.04*sin(cbx*55.0);
+      float onT = inB*inTx*(tlA*step(by, rlyC) + tlB*step(BSP - 0.16 - wave, by));
+      float tlF = 0.5 + 0.5*cos((cbx - tx0)/tw*18.85);
+      float tk2 = mmHash21(vec2(cbi, br + tlB*(1.0 - tlA)) + 4.0);
+      vec3 tcl = tk2 < 0.5 ? vec3(0.70, 0.26, 0.32) : vec3(0.30, 0.44, 0.66);
+      bsC = mix(bsC, tcl*lw*(0.40 + 0.70*tlF), onT*(1.0 - onR*step(rq.y, 0.0)));
+      gInk = max(gInk, onT*mmInkP(abs(cbx - tx0 - tw*0.5) - tw*0.5, px, 1.0)*0.7);
+      col = mix(col, bsC, inB);
+      h = mix(h, 0.7 + 0.6*onR + 0.6*max(bshelf, bdiv), inB);
+      gInk = max(gInk, inB*mmInkP(rd - RR, px, 1.2)*0.85);
+      gInk = max(gInk, inB*mmInkP(by - 0.035, px, 1.0)*0.8);
+      gInk = max(gInk, inB*mmInkP(abs(abs(cbx) - CWD*0.5) - 0.03, px, 1.0)*0.7);
+      gInk = max(gInk, mmInkP(abs(ax - (BX0 + BX1)*0.5) - (BX1 - BX0)*0.5, px, 1.3)*step(DR1, q.y)*step(q.y, BTOP));
+      float btop = mmBandA(q.y, BTOP, BTOP + 0.08, px)*step(BX0, ax)*step(ax, BX1);
+      col = mix(col, maho*1.3, btop);
+      h += btop*0.5;
+      occ = max(occ, inB);
+      /* ===== over them, on the paper: the embroidery hoops on their nails,
+         each with its work stretched in it, and the great shears ===== */
+      float hcx = ax - (BX0 + BX1)*0.5;
+      float hy = q.y - BTOP - 0.42;
+      float hk = step(0.0, cx);
+      vec2 h1 = vec2(hcx + 0.55 - hk*0.2, hy), h2 = vec2(hcx - 0.20 + hk*0.15, hy + 0.04);
+      float R1 = 0.26, R2 = 0.18;
+      float hoop1 = abs(length(h1) - R1) - 0.018, hoop2 = abs(length(h2) - R2) - 0.016;
+      float in1 = 1.0 - smoothstep(R1 - 0.02 - px, R1 - 0.02 + px, length(h1));
+      float in2 = 1.0 - smoothstep(R2 - 0.02 - px, R2 - 0.02 + px, length(h2));
+      vec3 lin = vec3(0.80, 0.74, 0.62)*lw*1.2;
+      /* the work: a wreath of flowers in coloured silks */
+      float wr1 = length(h1);
+      float fl1 = smoothstep(0.03, 0.0, abs(wr1 - R1*0.55))*(0.5 + 0.5*sin(atan(h1.y, h1.x)*9.0));
+      float wr2 = length(h2);
+      float fl2 = smoothstep(0.025, 0.0, abs(wr2 - R2*0.50))*(0.5 + 0.5*sin(atan(h2.y, h2.x)*7.0 + 1.0));
+      vec3 w1 = mix(lin, mix(vec3(0.70, 0.20, 0.30), vec3(0.30, 0.50, 0.30), step(0.5, fract(atan(h1.y, h1.x)*1.43)))*lw*1.4, clamp(fl1*1.5, 0.0, 1.0));
+      vec3 w2 = mix(lin, mix(vec3(0.30, 0.36, 0.70), vec3(0.80, 0.62, 0.24), step(0.5, fract(atan(h2.y, h2.x)*1.11)))*lw*1.4, clamp(fl2*1.5, 0.0, 1.0));
+      vec3 hoopW = vec3(0.56, 0.38, 0.22)*lw*1.4;
+      col = mix(col, w1, in1);
+      col = mix(col, w2, in2);
+      col = mix(col, hoopW, RCV(-hoop1));
+      col = mix(col, hoopW, RCV(-hoop2));
+      gInk = max(gInk, max(mmInkP(hoop1, px, 1.0), mmInkP(hoop2, px, 1.0))*0.8);
+      h = mix(h, 1.15, max(in1, in2));
+      h = mix(h, 1.45, max(RCV(-hoop1), RCV(-hoop2)));
+      /* the shears, hung open on a nail */
+      vec2 sq2 = vec2(hcx - 0.62 + hk*0.4, hy + 0.10);
+      float bl1 = max(abs(sq2.x*0.94 - sq2.y*0.34) - 0.018 + sq2.y*0.03, max(-sq2.y - 0.05, sq2.y - 0.34));
+      float bl2 = max(abs(sq2.x*0.94 + sq2.y*0.34) - 0.018 + sq2.y*0.03, max(-sq2.y - 0.05, sq2.y - 0.34));
+      float bows = min(abs(length(sq2 - vec2(-0.05, -0.10)) - 0.045) - 0.010, abs(length(sq2 - vec2(0.05, -0.10)) - 0.045) - 0.010);
+      float sh = min(min(bl1, bl2), bows);
+      col = mix(col, vec3(0.62, 0.64, 0.68)*lw*1.6*(0.7 + 0.5*step(0.0, sq2.x)), RCV(-sh));
+      gInk = max(gInk, mmInkP(sh, px, 1.0)*0.8);
+      occ = max(occ, max(max(in1, in2), RCV(-sh)));
+    }
+  } else {
+    /* ===== THE SIDE WALLS ===== */
+    if (sew < 0.5) {
+      /* nursery prints in narrow gilt frames, two to a bay, and a shelf
+         of toys between them */
+      float FP = 3.4;
+      float fi = floor(u/FP);
+      float fxl = u - (fi + 0.5)*FP;
+      float fk = mmHash11(fi*5.3 + uSeed);
+      vec2 fp = vec2(fxl, q.y - 1.85);
+      float fo = mmBox(fp, vec2(0.36, 0.44), 0.01);
+      float fiN = mmBox(fp, vec2(0.30, 0.38), 0.005);
+      float onFr = RCV(-fo)*(1.0 - RCV(-fiN))*step(0.25, fk);
+      float onPic = RCV(-fiN)*step(0.25, fk);
+      /* in the print: a moonlit scene in a cream mount -- a hill, a tree,
+         the moon -- or a rabbit in a meadow; pale, simple, a child's */
+      vec3 mount = vec3(0.70, 0.64, 0.52)*lw;
+      vec2 ip = fp/vec2(0.24, 0.30);
+      float inI = step(abs(ip.x), 1.0)*step(abs(ip.y), 1.0);
+      vec3 pic = mix(vec3(0.12, 0.14, 0.28), vec3(0.24, 0.26, 0.40), smoothstep(-1.0, 1.0, ip.y))*lw*1.4;
+      float hill = ip.y + 0.35 - 0.25*cos(ip.x*1.6 + fk*4.0);
+      pic = mix(pic, vec3(0.16, 0.24, 0.16)*lw*1.2, step(hill, 0.0));
+      float pm = length(ip - vec2(0.45 - fk*0.9, 0.50)) - 0.16;
+      pic = mix(pic, vec3(0.90, 0.86, 0.66)*lw*2.0, RCV(-pm*0.24));
+      float rab = min(wfEll2(ip - vec2(-0.2 + fk*0.4, -0.22), vec2(0.20, 0.13)), wfEll2(ip - vec2(-0.05 + fk*0.4, -0.08), vec2(0.06, 0.18)));
+      pic = mix(pic, vec3(0.70, 0.62, 0.52)*lw*1.4, RCV(-rab*0.24)*step(0.6, fk));
+      vec3 frm = mix(mount, pic, inI);
+      col = mix(col, frm, onPic);
+      col = mix(col, vec3(0.80, 0.58, 0.26)*lw*1.6*(0.7 + 0.4*smoothstep(-0.44, 0.44, fp.y)), onFr);
+      h = mix(h, 1.15, onPic);
+      h = mix(h, 1.45, onFr);
+      gInk = max(gInk, step(0.25, fk)*max(mmInkP(fo, px, 1.2), mmInkP(fiN, px, 1.0))*0.85);
+      gInk = max(gInk, onPic*mmInkP(max(abs(ip.x), abs(ip.y)) - 1.0, px/0.24, 1.0)*0.6);
+      gBare = max(gBare, onPic);
+      occ = max(occ, RCV(-fo)*step(0.25, fk));
+      /* a peg rail at the chair rail, with a little coat and a hat on it */
+      float pegs = RCV(-(length(vec2(mmRowX(u, 0.42), q.y - DR1 - 0.10)) - 0.022));
+      col = mix(col, plum*1.5, pegs);
+      h += pegs*0.4;
+    } else {
+      /* the sewing room's walls: a long shelf of folded linen and baskets
+         at head height, and under it aprons and a half-made frock on hooks */
+      float SY = 1.95;
+      float shelf = mmBandA(q.y, SY - 0.04, SY, px);
+      float BW2 = 0.55;
+      float bi = floor(u/BW2);
+      float bxl = u - (bi + 0.5)*BW2;
+      float bk = mmHash11(bi*3.9 + uSeed);
+      float nf = 3.0 + floor(bk*4.0);
+      float fh = 0.075;
+      float fi = floor((q.y - SY)/fh);
+      float fyl = q.y - SY - (fi + 0.5)*fh;
+      float onF = step(abs(bxl), 0.20)*step(0.0, fi)*step(fi, nf - 1.0)*step(bk, 0.66);
+      float fk = mmHash21(vec2(bi, fi) + 4.0);
+      vec3 cl = fk < 0.3 ? vec3(0.84, 0.80, 0.72) : (fk < 0.5 ? vec3(0.60, 0.30, 0.32) : (fk < 0.75 ? vec3(0.34, 0.42, 0.58) : vec3(0.70, 0.62, 0.44)));
+      cl *= 0.62 + 0.55*smoothstep(-fh*0.5, fh*0.4, fyl);
+      /* or a willow basket */
+      float bas = step(0.66, bk)*RCV(-mmBox(vec2(bxl, q.y - SY - 0.14), vec2(0.20 - 0.04*(0.28 - (q.y - SY))/0.28, 0.14), 0.03));
+      vec3 wil = vec3(0.56, 0.42, 0.22)*lw*(0.7 + 0.4*step(0.5, fract((bxl + (q.y - SY)*0.5)/0.03)));
+      col = mix(col, cl*lw, onF);
+      col = mix(col, wil, bas);
+      col = mix(col, trim*1.4, shelf);
+      h += shelf*0.6 + onF*0.3 + bas*0.3;
+      gInk = max(gInk, onF*mmInkP(abs(fyl) - fh*0.5, px, 1.0)*0.6);
+      gInk = max(gInk, onF*mmInkP(abs(bxl) - 0.20, px, 1.0)*0.7);
+      mmPen(q.y - SY, 1.0, 0.8);
+      occ = max(occ, max(onF, bas));
+      /* the hooks and what hangs on them */
+      float HP = 1.6;
+      float hi = floor(u/HP);
+      float hx = u - (hi + 0.5)*HP;
+      float hk = mmHash11(hi*7.1 + uSeed);
+      float cy = q.y - 1.70;
+      float cwid = 0.16 + max(-cy, 0.0)*0.22;
+      float gar = max(abs(hx) - cwid, max(cy - 0.02 + abs(hx)*0.5, -(0.95 + 0.20*hk) - cy));
+      float onG = RCV(-gar)*step(0.25, hk);
+      float gf = 0.5 + 0.5*cos(hx*40.0 + 0.5*sin(cy*5.0));
+      vec3 gc = hk < 0.6 ? vec3(0.78, 0.74, 0.66) : vec3(0.36, 0.20, 0.32);
+      col = mix(col, gc*lw*(0.55 + 0.55*gf), onG);
+      h = mix(h, 1.1 + 0.15*gf, onG);
+      gInk = max(gInk, mmInkP(gar, px, 1.2)*0.85*step(0.25, hk));
+      occ = max(occ, onG);
+    }
+  }
+  /* the darks stay dark: the room is lit in pools by its own lamps */
+  gCol = col;
+  gColAmt = 1.0;
+  float emitT = emit + emitW;
+  gWEmit = emitT;
+  gWEmitC = (vec3(0.66, 0.76, 1.00)*emit + vec3(1.00, 0.74, 0.42)*emitW) / max(emitT, 1e-4);
+  gWGloss = gloss;
+  return h;
+}
+#endif
 /* (graft: the kennel range is program 15 and its wash room 16 -- carried in
    one program, the wash room's trough, mirror, shelves and drying frames
    cost the kennels' fight 1.3 ms of wall it never draws) */
@@ -6955,6 +7587,8 @@ float wallH(vec2 q, out float occ){
   return lampWallH(q, qpx, occ);
 #elif MM_ROOMS == 14
   return atticWallH(q, qpx, occ);
+#elif MM_ROOMS == 17
+  return nurseryWallH(q, qpx, occ);
 #else
   return kennelWallH(q, qpx, occ);
 #endif
@@ -12376,6 +13010,542 @@ float wgU(float s){
 }
 float gW2Part = 0.0;
 #endif
+#if MM_WINGS == 3
+/* ═══════════ ROUND 24: THE THINGS THE HOUSE'S OWN ROOMS ARE FOR ══════════
+   Both survey judges on the Nursery, the bedrooms, the Library and the
+   Crypt: "the cribs and cots across the middle are boxy crate shapes with a
+   plank texture", "the two beds are cardboard boxes with a quilt texture
+   pasted on the front", "the two foreground cabinets are the same crate-box
+   prop reused", "the room's only objects are two grey box tombs". These are
+   the objects, each DRAWN: its members in their own materials, every edge a
+   pen line a pixel wide at any distance, and the room's light on it.
+   Compiled only into the rooms that deal them (MM_WINGS 3,
+   Backdrop._setPropProgram), so no other wing's program moves.
+
+   ONE PASS: shapeField calls wfDraw once, which returns the silhouette and
+   leaves the paint in the globals below for main() -- local colour at unit
+   exposure (main scales it by the prop's own light level, as the pumpkin's
+   skin is), the drawn lines, what the object gives off, how much of it is
+   an upper face the moon or a high window reaches, and its sheen. Every
+   drawing is authored in METRES from the foot of its axis at its nominal
+   height (wfNom), and scaled to the quad it is dealt in. */
+vec3  gWfCol = vec3(0.0), gWfEmit = vec3(0.0);
+float gWfInk = 0.0, gWfMoon = 0.0, gWfGloss = 0.2;
+
+float wfSeg(vec2 p, vec2 a, vec2 b, float r){
+  vec2 pa = p - a, ba = b - a;
+  float t = clamp(dot(pa, ba)/max(dot(ba, ba), 1e-6), 0.0, 1.0);
+  return length(pa - ba*t) - r;
+}
+float wfSegT(vec2 p, vec2 a, vec2 b, float ra, float rb, out float t){
+  vec2 pa = p - a, ba = b - a;
+  t = clamp(dot(pa, ba)/max(dot(ba, ba), 1e-6), 0.0, 1.0);
+  return length(pa - ba*t) - mix(ra, rb, t);
+}
+float wfEll(vec2 p, vec2 r){ return (length(p/r) - 1.0)*min(r.x, r.y); }
+float wfRound(float v){ return sqrt(max(1.0 - v*v, 0.0)); }
+/* how much of this pixel is inside d, with a one-pixel edge */
+float wfIn(float d, float px){ return clamp(0.5 - d/max(px, 1e-5), 0.0, 1.0); }
+/* lay a member: its colour over what is under it, and its outline in ink */
+void wfLay(inout vec3 col, inout float ink, float d, vec3 c, float px, float k){
+  col = mix(col, c, wfIn(d, px));
+  ink = max(ink, mmInkP(d, px, 1.0)*k);
+}
+/* A TURNED SPINDLE between y0 and y1 at x = 0: a slim shaft, a bead near
+   each end and a vase swelling in the middle -- what a cot's or a bed's
+   spindles are. r0 is the shaft's radius. */
+float wfTurned(vec2 p, float y0, float y1, float r0){
+  float t = clamp((p.y - y0)/max(y1 - y0, 1e-3), 0.0, 1.0);
+  float a = (t - 0.52)/0.15, b = (t - 0.12)/0.035, c = (t - 0.88)/0.035;
+  float r = r0*(0.80 + 0.70*exp(-a*a) + 0.55*exp(-b*b) + 0.55*exp(-c*c));
+  return max(abs(p.x) - r, max(y0 - p.y, p.y - y1));
+}
+/* a five-pointed star of outer radius R */
+float wfStar(vec2 p, float R){
+  float a = atan(p.x, p.y);
+  float k = 6.2832/5.0;
+  float an = mod(a + k*0.5, k) - k*0.5;
+  float r = length(p);
+  float rr = mix(R, R*0.46, abs(an)/(k*0.5));
+  return (r - rr)*0.8;
+}
+
+/* ── 45 THE COT ────────────────────────────────────────────────────────────
+   A Victorian child's cot seen along its side: two square posts with ball
+   finials, top and bottom rails, a row of turned spindles between them, its
+   legs on castors; the bedding seen through the spindles -- a patchwork
+   quilt and the pillow at the head; over the head a brass rod carrying a
+   little crown, the muslin falling from it in folds behind the head end;
+   and from the rod a wire arm with the MOBILE turning under it -- a gilt
+   star, a moon and a bird on their threads. Painted ivory, the brass gilt. */
+float wfCot(vec2 q, float px, float seed, float kq, bool paint){
+  const float HX = 0.58, TR = 0.90, BR = 0.38;
+  float ax = abs(q.x);
+  /* the posts, square, and their finials */
+  float postH = mix(1.08, 0.98, step(0.0, q.x));
+  float post = mmBox(vec2(ax - HX, q.y - postH*0.5), vec2(0.034, postH*0.5), 0.006);
+  float fin = length(vec2(ax - HX, q.y - postH - 0.036)) - 0.040;
+  fin = min(fin, mmBox(vec2(ax - HX, q.y - postH - 0.004), vec2(0.026, 0.010), 0.004));
+  /* the rails */
+  float rails = min(mmBox(q - vec2(0.0, TR), vec2(HX, 0.024), 0.008),
+                    mmBox(q - vec2(0.0, BR), vec2(HX, 0.020), 0.006));
+  float stretch = mmBox(q - vec2(0.0, 0.17), vec2(HX, 0.012), 0.004);
+  /* the spindles */
+  float SP = 0.0835;
+  float si = clamp(floor(q.x/SP + 0.5), -6.0, 6.0);
+  float spd = wfTurned(vec2(q.x - si*SP, q.y), BR + 0.02, TR - 0.022, 0.011);
+  /* the castors */
+  float cas = length(vec2(ax - HX, q.y - 0.032)) - 0.032;
+  /* the bedding, behind the spindles */
+  float qy = 0.62 + 0.025*sin(q.x*9.0 + seed) + 0.03*smoothstep(-0.2, -0.5, q.x);
+  float quilt = max(abs(q.x) - (HX - 0.03), max(BR - q.y, q.y - qy));
+  float pil = wfEll(q - vec2(-HX + 0.20, 0.66), vec2(0.15, 0.075));
+  /* the canopy: the rod off the head post, its crown, and the muslin */
+  float rod = mmBox(q - vec2(-HX, 1.42), vec2(0.010, 0.36), 0.004);
+  vec2 cq = q - vec2(-HX + 0.10, 1.80);
+  float crown = max(wfEll(cq, vec2(0.17, 0.10)), -cq.y - 0.02 - 0.012*abs(sin(cq.x*40.0)));
+  float knob = length(q - vec2(-HX + 0.10, 1.915)) - 0.022;
+  float xr = -HX + 0.15 + 0.15*smoothstep(1.76, 0.62, q.y) + 0.012*sin(q.y*42.0);
+  float hem = 0.44 + 0.03*sin(q.x*31.0 + seed*3.0);
+  float drape = max(max(-HX - 0.09 - q.x, q.x - xr), max(hem - q.y, q.y - 1.77));
+  /* the mobile: its wire arm, three threads and what hangs on them */
+  float arm = wfSeg(q, vec2(-HX, 1.62), vec2(0.32, 1.53), 0.006);
+  vec3 mx = vec3(-0.10, 0.08, 0.25);
+  vec3 my = vec3(1.27, 1.19, 1.31);
+  float thr = 1e3;
+  for (int i = 0; i < 3; i++){
+    float tx = i == 0 ? mx.x : (i == 1 ? mx.y : mx.z);
+    float ty = i == 0 ? my.x : (i == 1 ? my.y : my.z);
+    float ay = mix(1.62, 1.53, (tx + HX)/(0.32 + HX));
+    thr = min(thr, max(abs(q.x - tx) - 0.0025, max(ty - q.y, q.y - ay)));
+  }
+  float star = wfStar(q - vec2(mx.x, my.x - 0.055), 0.065);
+  vec2 mo = q - vec2(mx.y, my.y - 0.06);
+  float moon = max(length(mo) - 0.058, -(length(mo - vec2(0.030, 0.018)) - 0.050));
+  vec2 bq = q - vec2(mx.z, my.z - 0.045);
+  float bird = min(wfEll(bq, vec2(0.050, 0.024)), wfEll(bq - vec2(0.040, 0.016), vec2(0.020, 0.018)));
+  bird = min(bird, max(wfEll(bq - vec2(-0.005, 0.03), vec2(0.035, 0.030)), -bq.y + 0.01));
+  float hang = min(min(star, moon), bird);
+  float wood = min(min(min(post, fin), rails), min(stretch, spd));
+  float d = min(min(wood, cas), min(min(quilt, pil), min(min(rod, crown), knob)));
+  d = min(d, min(drape, min(min(arm, thr), hang)));
+  if (!paint) return d;
+
+  /* ---- the paint ---- */
+  vec3 ivory = vec3(0.86, 0.80, 0.66);
+  vec3 brass = vec3(0.92, 0.66, 0.28);
+  vec3 col = vec3(0.10, 0.08, 0.09);
+  float ink = 0.0;
+  /* the muslin: pale rose, its folds fanning from the crown */
+  vec2 dq = q - vec2(-HX + 0.10, 1.78);
+  float fan = atan(dq.x, -dq.y);
+  float fold = 0.5 + 0.5*cos(fan*22.0 + 1.6*sin(q.y*3.0 + seed));
+  vec3 mus = vec3(0.78, 0.60, 0.64)*(0.55 + 0.55*fold)*(0.85 + 0.25*smoothstep(0.4, 1.7, q.y));
+  wfLay(col, ink, drape, mus, px, 0.75);
+  ink = max(ink, mmInkP(fold - 0.06, px*30.0, 1.0)*0.25*wfIn(drape, px));
+  /* the quilt: patchwork, a stitch line round every square */
+  vec2 pc = floor(vec2(q.x, q.y - 0.02)/0.075);
+  float pk = mmHash21(pc + floor(seed*7.0));
+  vec3 patchC = pk < 0.25 ? vec3(0.70, 0.36, 0.40) : (pk < 0.50 ? vec3(0.50, 0.58, 0.46)
+              : (pk < 0.75 ? vec3(0.82, 0.74, 0.58) : vec3(0.40, 0.46, 0.66)));
+  vec2 pf = fract(vec2(q.x, q.y - 0.02)/0.075) - 0.5;
+  patchC *= 0.80 + 0.20*smoothstep(0.5, 0.3, max(abs(pf.x), abs(pf.y)));
+  patchC *= 0.70 + 0.30*smoothstep(BR, qy, q.y);
+  wfLay(col, ink, quilt, patchC, px, 0.6);
+  ink = max(ink, mmInkP(max(abs(pf.x), abs(pf.y)) - 0.5, px/0.075, 1.0)*0.25*wfIn(quilt, px)*mmLod(0.075, px));
+  wfLay(col, ink, pil, vec3(0.92, 0.90, 0.86)*(0.65 + 0.40*smoothstep(0.58, 0.72, q.y)), px, 0.7);
+  /* the ivory joinery: each member round or square, lit on the key's side */
+  float u = clamp((q.x - si*SP)/0.020, -1.0, 1.0);
+  vec3 spC = ivory*(0.48 + 0.62*wfRound(u))*(1.0 + 0.30*kq*u);
+  wfLay(col, ink, spd, spC, px, 0.85);
+  float pu = clamp((ax - HX)/0.034, -1.0, 1.0);
+  wfLay(col, ink, min(post, rails), ivory*(0.82 + 0.22*kq*pu*sign(q.x)), px, 0.95);
+  ink = max(ink, mmInkP(q.y - TR + 0.010, px, 1.0)*0.5*step(ax, HX - 0.034));
+  wfLay(col, ink, stretch, ivory*0.62, px, 0.8);
+  wfLay(col, ink, fin, brass*(0.55 + 0.75*smoothstep(-0.03, 0.04, (q.y - postH - 0.036) + 0.4*kq*(ax - HX))), px, 0.9);
+  wfLay(col, ink, cas, vec3(0.20, 0.16, 0.12), px, 0.9);
+  /* the brass rod, the crown and the mobile */
+  wfLay(col, ink, rod, brass*0.9, px, 0.7);
+  wfLay(col, ink, crown, brass*(0.55 + 0.6*smoothstep(-0.10, 0.08, cq.y)), px, 0.9);
+  ink = max(ink, mmInkP(abs(fract(cq.x/0.05) - 0.5) - 0.45, px/0.05, 1.0)*0.4*wfIn(crown, px));
+  wfLay(col, ink, knob, brass*1.1, px, 0.9);
+  wfLay(col, ink, arm, brass*0.8, px, 0.5);
+  wfLay(col, ink, thr, vec3(0.70, 0.66, 0.60), px, 0.0);
+  wfLay(col, ink, star, brass*1.25, px, 0.8);
+  wfLay(col, ink, moon, vec3(0.92, 0.88, 0.74), px, 0.8);
+  wfLay(col, ink, bird, vec3(0.30, 0.42, 0.66), px, 0.8);
+  gWfGloss = 0.20 + 0.9*wfIn(min(min(fin, crown), min(knob, star)), px);
+  gWfMoon = 0.5*wfIn(min(rails, fin), px);
+  gWfCol = col; gWfInk = ink;
+  return d;
+}
+
+/* ── 46 THE ROCKING HORSE ──────────────────────────────────────────────────
+   A dapple grey at full stretch on its bow rockers: forelegs out ahead,
+   hind legs out behind, head up, a real horsehair mane and tail, a red
+   saddle on its gilt-edged cloth, a stirrup, the bridle and reins; the
+   rockers red with a gilt line and the turned stretcher between them. */
+float wfHorse(vec2 q, float px, float seed, float kq, bool paint){
+  /* the rocker: an arc of a 2.6 m circle */
+  vec2 rc = vec2(0.0, 2.62);
+  float rr = length(q - rc);
+  float rock = max(abs(rr - 2.560) - 0.042, abs(q.x) - 0.70);
+  rock = min(rock, length(vec2(abs(q.x) - 0.70, q.y - (2.62 - sqrt(max(2.565*2.565 - 0.49, 0.0))))) - 0.034);
+  float plat = mmBox(q - vec2(0.0, 0.12), vec2(0.58, 0.016), 0.006);
+  float t0;
+  /* the legs: from the body to the platform, two pairs splayed */
+  float lF = wfSegT(q, vec2(0.25, 0.64), vec2(0.50, 0.15), 0.046, 0.030, t0);
+  float lF2 = wfSegT(q, vec2(0.20, 0.64), vec2(0.42, 0.15), 0.042, 0.028, t0);
+  float lH = wfSegT(q, vec2(-0.25, 0.66), vec2(-0.50, 0.15), 0.050, 0.030, t0);
+  float lH2 = wfSegT(q, vec2(-0.20, 0.66), vec2(-0.42, 0.15), 0.046, 0.028, t0);
+  float legs = min(min(lF, lF2), min(lH, lH2));
+  float hoof = min(min(mmBox(q - vec2(0.50, 0.150), vec2(0.036, 0.022), 0.008), mmBox(q - vec2(0.42, 0.150), vec2(0.034, 0.020), 0.008)),
+                   min(mmBox(q - vec2(-0.50, 0.150), vec2(0.036, 0.022), 0.008), mmBox(q - vec2(-0.42, 0.150), vec2(0.034, 0.020), 0.008)));
+  /* the body, the neck, the head */
+  float body = wfEll(q - vec2(0.0, 0.70), vec2(0.34, 0.135));
+  float neck = wfSegT(q, vec2(0.24, 0.74), vec2(0.40, 0.98), 0.090, 0.060, t0);
+  float head = wfSegT(q, vec2(0.40, 1.02), vec2(0.60, 0.90), 0.060, 0.042, t0);
+  float ear = mmBox(q - vec2(0.38, 1.10), vec2(0.016, 0.040), 0.012);
+  float horse = mmSmin(mmSmin(body, neck, 0.05), head, 0.03);
+  horse = min(horse, ear);
+  /* the mane along the neck's crest and the tail: hair, combed in strands */
+  vec2 nn = normalize(vec2(-0.24, 0.16));
+  float mane = max(wfSeg(q, vec2(0.21, 0.84), vec2(0.38, 1.07), 0.05), -dot(q - vec2(0.30, 0.92), nn) - 0.02);
+  float tail = wfSegT(q, vec2(-0.33, 0.76), vec2(-0.50, 0.46), 0.040, 0.022, t0);
+  /* the saddle and its cloth, the stirrup */
+  float cloth = max(wfEll(q - vec2(0.02, 0.78), vec2(0.17, 0.12)), 0.70 - q.y);
+  float saddle = max(wfEll(q - vec2(0.02, 0.84), vec2(0.13, 0.06)), 0.80 - q.y);
+  saddle = min(saddle, length(q - vec2(0.13, 0.88)) - 0.025);
+  float leath = max(abs(q.x - 0.03) - 0.007, max(0.56 - q.y, q.y - 0.80));
+  float stir = max(abs(wfEll(q - vec2(0.03, 0.52), vec2(0.040, 0.040))) - 0.008, -(q.y - 0.50));
+  float d = min(min(rock, plat), min(legs, hoof));
+  d = min(d, min(horse, min(mane, tail)));
+  d = min(d, min(min(cloth, saddle), min(leath, stir)));
+  if (!paint) return d;
+
+  vec3 col = vec3(0.1);
+  float ink = 0.0;
+  vec3 red = vec3(0.62, 0.12, 0.08);
+  vec3 gilt = vec3(0.92, 0.68, 0.30);
+  /* the rockers and the platform */
+  wfLay(col, ink, rock, red*(0.62 + 0.55*smoothstep(-0.04, 0.03, 2.56 - rr)), px, 0.95);
+  col = mix(col, gilt*1.1, mmInkP(rr - 2.560, px, 1.3)*wfIn(rock, px)*0.9);
+  wfLay(col, ink, plat, red*0.8, px, 0.9);
+  /* dapple grey: pale, with darker rings round paler dapples, darker on
+     the legs and under the belly, lit on its back */
+  vec2 dg = q/0.075;
+  vec2 di = floor(dg);
+  vec2 df = fract(dg) - 0.5 - (mmHash22(di + floor(seed*5.0)) - 0.5)*0.5;
+  float dp = length(df);
+  float dap = smoothstep(0.42, 0.30, dp)*(1.0 - smoothstep(0.22, 0.10, dp));
+  vec3 grey = vec3(0.82, 0.80, 0.76)*(1.0 - 0.32*dap);
+  grey *= 0.62 + 0.48*smoothstep(0.58, 0.82, q.y);
+  vec3 legC = grey*0.78;
+  wfLay(col, ink, legs, legC, px, 0.85);
+  wfLay(col, ink, hoof, vec3(0.16, 0.14, 0.13), px, 0.9);
+  wfLay(col, ink, tail, vec3(0.30, 0.27, 0.25)*(0.7 + 0.5*abs(sin(q.x*120.0 + q.y*40.0))), px, 0.7);
+  wfLay(col, ink, horse, grey, px, 0.95);
+  /* the eye, the nostril, the mouth */
+  float eye = length(q - vec2(0.465, 1.015)) - 0.013;
+  col = mix(col, vec3(0.05, 0.04, 0.04), wfIn(eye, px));
+  col = mix(col, vec3(0.9), wfIn(length(q - vec2(0.468, 1.020)) - 0.004, px));
+  ink = max(ink, mmInkP(length(q - vec2(0.585, 0.905)) - 0.010, px, 1.0)*0.8*wfIn(horse, px));
+  /* the mane: strands */
+  float str = 0.5 + 0.5*sin(dot(q, vec2(70.0, 45.0)) + 3.0*mmNoise(q*20.0));
+  wfLay(col, ink, mane, vec3(0.20, 0.18, 0.17)*(0.6 + 0.8*str), px, 0.8);
+  /* the bridle and reins: red leather */
+  float brid = min(min(wfSeg(q, vec2(0.43, 1.06), vec2(0.52, 0.93), 0.007), wfSeg(q, vec2(0.46, 0.95), vec2(0.58, 0.92), 0.007)),
+                   wfSeg(q, vec2(0.56, 0.93), vec2(0.18, 0.86), 0.006));
+  wfLay(col, ink, brid, red*1.1, px, 0.6);
+  /* the saddle cloth, the saddle, its leather and stirrup */
+  vec2 cl = q - vec2(0.02, 0.78);
+  wfLay(col, ink, cloth, vec3(0.20, 0.24, 0.50), px, 0.8);
+  col = mix(col, gilt, mmInkP(wfEll(cl, vec2(0.17, 0.12)) + 0.015, px, 2.0)*wfIn(cloth, px)*step(0.705, q.y));
+  wfLay(col, ink, saddle, red*(0.70 + 0.5*smoothstep(0.82, 0.90, q.y)), px, 0.9);
+  wfLay(col, ink, leath, vec3(0.30, 0.10, 0.06), px, 0.5);
+  wfLay(col, ink, stir, vec3(0.70, 0.70, 0.72), px, 0.8);
+  gWfGloss = 0.35 + 0.5*wfIn(min(saddle, stir), px);
+  gWfMoon = 0.6*wfIn(horse, px)*smoothstep(0.76, 0.86, q.y);
+  gWfCol = col; gWfInk = ink;
+  return d;
+}
+
+/* ── 47 THE TOY CHEST ──────────────────────────────────────────────────────
+   A painted chest on bun feet, its lid thrown back and its toys spilling
+   over the edge -- a doll's head and arm, a drum, a ball, a soldier's
+   shako -- with a painted moon and stars on its front and iron corners; and
+   sat against it on the boards, the bear. */
+float wfChest(vec2 q, float px, float seed, float kq, bool paint){
+  float CX = -0.16, HW = 0.38, TOP = 0.52;
+  vec2 c = q - vec2(CX, 0.0);
+  float box = mmBox(c - vec2(0.0, 0.28), vec2(HW, 0.24), 0.010);
+  float feet = mmBox(vec2(abs(c.x) - HW + 0.06, c.y - 0.022), vec2(0.040, 0.024), 0.012);
+  float moul = mmBox(c - vec2(0.0, TOP - 0.010), vec2(HW + 0.012, 0.014), 0.004);
+  float lid = mmBox(c - vec2(0.0, 0.66), vec2(HW - 0.01, 0.10), 0.012);
+  /* the toys */
+  float doll = length(c - vec2(-0.20, 0.61)) - 0.058;
+  float dollA = wfSeg(c, vec2(-0.14, 0.58), vec2(-0.02, 0.66), 0.016);
+  float drum = mmBox(c - vec2(0.07, 0.58), vec2(0.085, 0.070), 0.006);
+  float ball = length(c - vec2(0.27, 0.57)) - 0.060;
+  float shako = mmBox(c - vec2(-0.05, 0.585), vec2(0.030, 0.055), 0.006);
+  float toys = min(min(doll, dollA), min(min(drum, ball), shako));
+  toys = max(toys, -(c.y - TOP + 0.005));
+  /* the bear, sat against the chest's end */
+  vec2 b = q - vec2(0.43, 0.0);
+  float bb = wfEll(b - vec2(0.0, 0.20), vec2(0.115, 0.150));
+  float bh = length(b - vec2(0.0, 0.42)) - 0.092;
+  float be = min(length(b - vec2(-0.068, 0.495)) - 0.036, length(b - vec2(0.068, 0.495)) - 0.036);
+  float bl = min(wfEll(b - vec2(-0.075, 0.055), vec2(0.060, 0.050)), wfEll(b - vec2(0.080, 0.055), vec2(0.060, 0.050)));
+  float ba = min(wfSeg(b, vec2(-0.10, 0.28), vec2(-0.15, 0.16), 0.035), wfSeg(b, vec2(0.10, 0.28), vec2(0.15, 0.16), 0.035));
+  float bear = min(min(bb, bh), min(be, min(bl, ba)));
+  float d = min(min(min(box, feet), moul), min(lid, min(toys, bear)));
+  if (!paint) return d;
+
+  vec3 col = vec3(0.1);
+  float ink = 0.0;
+  float kc = mmHash11(seed*3.3);
+  vec3 paintC = kc < 0.5 ? vec3(0.20, 0.34, 0.30) : vec3(0.46, 0.14, 0.12);
+  vec3 gilt = vec3(0.90, 0.66, 0.30);
+  /* the lid's inside, lined with a printed paper */
+  vec2 lp = c - vec2(0.0, 0.66);
+  float pp = 0.5 + 0.5*sin(lp.x*70.0)*sin(lp.y*70.0);
+  vec3 lidC = mix(paintC*0.55, mix(vec3(0.46, 0.36, 0.40), vec3(0.36, 0.28, 0.34), pp)*0.80, step(abs(lp.x), HW - 0.05)*step(abs(lp.y), 0.065));
+  wfLay(col, ink, lid, lidC, px, 0.9);
+  ink = max(ink, mmInkP(mmBox(lp, vec2(HW - 0.05, 0.065), 0.01), px, 1.0)*0.6*wfIn(lid, px));
+  /* the toys */
+  wfLay(col, ink, shako, vec3(0.12, 0.12, 0.20), px, 0.8);
+  vec2 dr = c - vec2(0.07, 0.58);
+  vec3 drC = vec3(0.70, 0.16, 0.10)*(0.6 + 0.5*wfRound(clamp(dr.x/0.085, -1.0, 1.0)));
+  float zz = mmInkP(abs(fract((dr.x + abs(dr.y - 0.0)*0.9)/0.05) - 0.5) - 0.0, px/0.05, 1.5);
+  drC = mix(drC, vec3(0.90, 0.86, 0.74), zz*step(abs(dr.y), 0.050));
+  drC = mix(drC, gilt, step(0.052, abs(dr.y)));
+  wfLay(col, ink, drum, drC, px, 0.9);
+  vec2 bq = c - vec2(0.27, 0.57);
+  float bs = step(0.0, sin(atan(bq.y, bq.x)*3.0));
+  wfLay(col, ink, ball, mix(vec3(0.80, 0.70, 0.30), vec3(0.30, 0.40, 0.70), bs)*(0.55 + 0.55*smoothstep(-0.06, 0.05, bq.y + 0.4*kq*bq.x)), px, 0.9);
+  wfLay(col, ink, dollA, vec3(0.86, 0.72, 0.62), px, 0.7);
+  vec2 dq = c - vec2(-0.20, 0.61);
+  vec3 face = vec3(0.90, 0.78, 0.68)*(0.65 + 0.45*smoothstep(-0.05, 0.05, dq.x*kq + dq.y));
+  wfLay(col, ink, doll, face, px, 0.9);
+  col = mix(col, vec3(0.30, 0.16, 0.08), wfIn(max(length(dq - vec2(0.0, 0.02)) - 0.064, -dq.y + 0.015), px));
+  col = mix(col, vec3(0.06), wfIn(min(length(dq - vec2(-0.020, 0.0)) - 0.008, length(dq - vec2(0.022, 0.0)) - 0.008), px));
+  col = mix(col, vec3(0.80, 0.30, 0.30), wfIn(length(dq - vec2(0.0, -0.030)) - 0.010, px));
+  /* the chest: painted, its panel bordered in gilt with a moon and stars */
+  vec2 bc = c - vec2(0.0, 0.28);
+  vec3 bxC = paintC*(0.75 + 0.30*mmNoise(bc*14.0 + seed));
+  float pan = mmBox(bc, vec2(HW - 0.07, 0.17), 0.02);
+  bxC = mix(bxC, gilt*0.85, mmInkP(pan, px, 1.6));
+  float mn = max(length(bc - vec2(-0.12, 0.02)) - 0.075, -(length(bc - vec2(-0.09, 0.04)) - 0.068));
+  bxC = mix(bxC, vec3(0.92, 0.84, 0.56), wfIn(mn, px));
+  float st = min(wfStar(bc - vec2(0.10, 0.06), 0.045), min(wfStar(bc - vec2(0.20, -0.06), 0.030), wfStar(bc - vec2(0.02, -0.08), 0.026)));
+  bxC = mix(bxC, gilt*1.1, wfIn(st, px));
+  /* the iron corners */
+  float corner = step(HW - 0.06, abs(bc.x))*step(0.18, abs(bc.y));
+  bxC = mix(bxC, vec3(0.14, 0.13, 0.13), corner);
+  wfLay(col, ink, box, bxC, px, 0.95);
+  wfLay(col, ink, feet, paintC*0.5, px, 0.9);
+  wfLay(col, ink, moul, paintC*1.25, px, 0.9);
+  /* the bear: brown plush, a paler muzzle, boot-button eyes, a ribbon */
+  float fur = 0.80 + 0.30*mmNoise(b*60.0);
+  vec3 bear0 = vec3(0.56, 0.38, 0.22)*fur;
+  wfLay(col, ink, min(bl, ba), bear0*0.80, px, 0.85);
+  wfLay(col, ink, bb, bear0*(0.75 + 0.35*smoothstep(0.05, 0.30, b.y)), px, 0.9);
+  wfLay(col, ink, be, bear0*0.85, px, 0.9);
+  col = mix(col, vec3(0.80, 0.62, 0.48), wfIn(min(length(b - vec2(-0.068, 0.495)) - 0.018, length(b - vec2(0.068, 0.495)) - 0.018), px));
+  wfLay(col, ink, bh, bear0, px, 0.9);
+  float muz = wfEll(b - vec2(0.0, 0.395), vec2(0.042, 0.034));
+  col = mix(col, vec3(0.82, 0.66, 0.50), wfIn(muz, px));
+  col = mix(col, vec3(0.05), wfIn(min(length(b - vec2(-0.034, 0.445)) - 0.011, min(length(b - vec2(0.034, 0.445)) - 0.011, wfEll(b - vec2(0.0, 0.41), vec2(0.014, 0.010)))), px));
+  float rib = max(abs(b.y - 0.33) - 0.016, abs(b.x) - 0.09);
+  rib = min(rib, min(wfEll(b - vec2(-0.03, 0.33), vec2(0.03, 0.025)), wfEll(b - vec2(0.03, 0.33), vec2(0.03, 0.025))));
+  wfLay(col, ink, rib, vec3(0.70, 0.18, 0.24), px, 0.7);
+  gWfGloss = 0.25 + 0.6*wfIn(min(ball, moul), px);
+  gWfMoon = 0.0;
+  gWfCol = col; gWfInk = ink;
+  return d;
+}
+
+/* ── 48 THE TREADLE SEWING MACHINE ─────────────────────────────────────────
+   Black japanned head with its gilt transfers on an oak top, a drawer at
+   the side, the work under the needle hanging over the edge; under it the
+   iron stand -- two scrolled side frames, the treadle and the big band
+   wheel with its spokes. */
+float wfSewing(vec2 q, float px, float seed, float kq, bool paint){
+  float ax = abs(q.x);
+  float TOP = 0.76;
+  float top = mmBox(q - vec2(0.0, TOP), vec2(0.52, 0.022), 0.006);
+  float drw = mmBox(q - vec2(-0.37, TOP - 0.09), vec2(0.13, 0.068), 0.006);
+  /* the iron stand */
+  float fr = min(max(abs(length(vec2(ax - 0.36, q.y - 0.44)/vec2(1.0, 1.9)) - 0.12) - 0.012, ax - 0.50),
+                 mmBox(vec2(ax - 0.40, q.y - 0.38), vec2(0.016, 0.36), 0.006));
+  fr = min(fr, mmBox(vec2(ax - 0.40, q.y - 0.025), vec2(0.10, 0.025), 0.010));
+  float tie = mmBox(q - vec2(0.0, 0.62), vec2(0.40, 0.012), 0.004);
+  float tread = mmBox(q - vec2(0.0, 0.11), vec2(0.30, 0.028), 0.006);
+  vec2 wc = q - vec2(0.36, 0.40);
+  float wr = length(wc);
+  float wheel = abs(wr - 0.20) - 0.016;
+  float ang = atan(wc.y, wc.x);
+  float spoke = max(abs(fract(ang/1.0472 + 0.5) - 0.5)*1.0472*wr - 0.007, wr - 0.20);
+  wheel = min(wheel, min(spoke, wr - 0.028));
+  float rodT = wfSeg(q, vec2(0.36, 0.40), vec2(0.10, 0.12), 0.007);
+  /* the head */
+  float bed = mmBox(q - vec2(0.0, TOP + 0.050), vec2(0.36, 0.028), 0.006);
+  float pil = mmBox(q - vec2(0.22, TOP + 0.20), vec2(0.075, 0.13), 0.04);
+  float arm = mmBox(q - vec2(-0.02, TOP + 0.300), vec2(0.27, 0.050), 0.045);
+  float nhead = mmBox(q - vec2(-0.275, TOP + 0.22), vec2(0.042, 0.100), 0.012);
+  float needle = mmBox(q - vec2(-0.275, TOP + 0.10), vec2(0.004, 0.035), 0.001);
+  float hwheel = length(q - vec2(0.33, TOP + 0.26)) - 0.090;
+  float spool = mmBox(q - vec2(0.02, TOP + 0.385), vec2(0.020, 0.034), 0.006);
+  /* the work, hanging over the front edge */
+  float work = max(mmBox(q - vec2(-0.16, TOP - 0.09), vec2(0.16, 0.12), 0.01), q.y - TOP - 0.07);
+  work = max(work, -(q.y - TOP + 0.21 - 0.03*sin(q.x*30.0)));
+  float d = min(min(min(top, drw), min(fr, tie)), min(tread, min(wheel, rodT)));
+  d = min(d, min(min(bed, pil), min(arm, nhead)));
+  d = min(d, min(min(needle, hwheel), min(spool, work)));
+  if (!paint) return d;
+
+  vec3 col = vec3(0.1);
+  float ink = 0.0;
+  vec3 iron = vec3(0.13, 0.13, 0.14);
+  vec3 oak = vec3(0.52, 0.34, 0.20);
+  vec3 gilt = vec3(0.92, 0.70, 0.32);
+  wfLay(col, ink, fr, iron*(0.8 + 0.6*kq*sign(q.x)*0.5), px, 0.9);
+  wfLay(col, ink, tie, iron, px, 0.8);
+  wfLay(col, ink, tread, iron*1.2, px, 0.9);
+  ink = max(ink, mmInkP(abs(fract(q.x/0.06) - 0.5) - 0.40, px/0.06, 1.0)*wfIn(tread, px)*0.7);
+  wfLay(col, ink, wheel, iron*1.3, px, 0.9);
+  col = mix(col, vec3(0.60, 0.60, 0.62), mmInkP(wr - 0.205, px, 1.0)*step(0.0, wc.y + kq*wc.x)*wfIn(wheel, px));
+  wfLay(col, ink, rodT, iron, px, 0.5);
+  /* the work: a printed cotton */
+  vec2 wq = q - vec2(-0.16, TOP - 0.09);
+  float sprig = smoothstep(0.012, 0.004, length(fract(wq/0.045) - 0.5) - 0.012);
+  vec3 cot = mix(vec3(0.72, 0.66, 0.56), vec3(0.62, 0.24, 0.30), sprig*0.8);
+  cot *= 0.75 + 0.30*(0.5 + 0.5*cos(wq.x*70.0 + sin(wq.y*20.0)));
+  wfLay(col, ink, drw, oak*0.80, px, 0.9);
+  col = mix(col, gilt*0.8, wfIn(length(q - vec2(-0.37, TOP - 0.09)) - 0.012, px));
+  wfLay(col, ink, top, oak*(1.0 + 0.45*smoothstep(TOP, TOP + 0.02, q.y)), px, 0.95);
+  wfLay(col, ink, work, cot, px, 0.7);
+  /* the japanned head and its transfers */
+  float hd = min(min(bed, pil), min(arm, nhead));
+  vec3 jap = vec3(0.10, 0.10, 0.11)*(1.0 + 2.2*smoothstep(0.03, 0.0, abs(q.y - TOP - 0.335)));
+  float dec = mmInkP(abs(wfEll(q - vec2(-0.02, TOP + 0.30), vec2(0.20, 0.024))), px, 1.6)
+            + mmInkP(abs(wfEll(q - vec2(0.22, TOP + 0.18), vec2(0.040, 0.080))), px, 1.4)
+            + mmInkP(abs(fract((q.x + 0.4)/0.06) - 0.5) - 0.3, px/0.06, 1.3)*step(abs(q.y - TOP - 0.05), 0.012)*step(ax, 0.32);
+  jap = mix(jap, gilt, clamp(dec, 0.0, 1.0)*0.9);
+  wfLay(col, ink, hd, jap, px, 0.9);
+  wfLay(col, ink, needle, vec3(0.70), px, 0.5);
+  wfLay(col, ink, hwheel, vec3(0.70, 0.70, 0.72)*(0.6 + 0.6*smoothstep(-0.06, 0.06, (q.y - TOP - 0.26) + kq*(q.x - 0.33))), px, 0.9);
+  ink = max(ink, mmInkP(length(q - vec2(0.33, TOP + 0.26)) - 0.060, px, 1.0)*0.6*wfIn(hwheel, px));
+  wfLay(col, ink, spool, vec3(0.72, 0.14, 0.18), px, 0.8);
+  gWfGloss = 0.35 + 0.8*wfIn(min(hd, min(hwheel, wheel)), px);
+  gWfMoon = 0.4*wfIn(top, px);
+  gWfCol = col; gWfInk = ink;
+  return d;
+}
+
+/* ── 49 THE DRESSMAKER'S DUMMY ─────────────────────────────────────────────
+   A linen-covered form -- shoulders, bust, waist, hips -- on its pole and
+   its turned tripod, the knob at the neck; its seams, a tape measure round
+   its neck and down its front, pins at the bust, and a length of plum silk
+   pinned over one shoulder and falling to the hip. */
+float wfDummyW(float y){
+  float w = 0.0;
+  w = mix(0.150, 0.110, smoothstep(0.88, 1.12, y));        // hips -> waist
+  w = mix(w, 0.160, smoothstep(1.14, 1.34, y));            // -> bust
+  w = mix(w, 0.175, smoothstep(1.34, 1.44, y));            // -> shoulder
+  w = mix(w, 0.045, smoothstep(1.46, 1.56, y));            // -> neck
+  return w;
+}
+float wfDummy(vec2 q, float px, float seed, float kq, bool paint){
+  float ax = abs(q.x);
+  float w = wfDummyW(q.y);
+  float torso = max(ax - w, max(0.80 - q.y, q.y - 1.62));
+  torso = min(torso, wfEll(q - vec2(0.0, 0.82), vec2(0.150, 0.035)));
+  float knob = length(q - vec2(0.0, 1.655)) - 0.030;
+  float pole = mmBox(q - vec2(0.0, 0.60), vec2(0.014, 0.22), 0.004);
+  float collar = mmBox(q - vec2(0.0, 0.40), vec2(0.040, 0.025), 0.010);
+  float t0;
+  float legs = min(min(wfSegT(q, vec2(0.0, 0.40), vec2(-0.27, 0.02), 0.022, 0.016, t0),
+                       wfSegT(q, vec2(0.0, 0.40), vec2(0.27, 0.02), 0.022, 0.016, t0)),
+                   wfSegT(q, vec2(0.0, 0.40), vec2(0.05, 0.0), 0.024, 0.018, t0));
+  float feet = min(length(vec2(ax - 0.27, q.y - 0.02)) - 0.022, length(q - vec2(0.05, 0.015)) - 0.020);
+  float silk = max(max(q.x*0.9 + (q.y - 1.40)*0.55 - 0.02 - 0.03*sin(q.y*18.0), -(q.x*0.6 + (q.y - 1.40)*0.9) - 0.14), max(0.86 - q.y, q.y - 1.47));
+  silk = max(silk, ax - w - 0.015);
+  float d = min(min(torso, knob), min(min(pole, collar), min(legs, feet)));
+  d = min(d, silk);
+  if (!paint) return d;
+
+  vec3 col = vec3(0.1);
+  float ink = 0.0;
+  vec3 wood = vec3(0.40, 0.24, 0.13);
+  vec3 brass = vec3(0.90, 0.66, 0.30);
+  wfLay(col, ink, legs, wood, px, 0.85);
+  wfLay(col, ink, feet, brass*0.8, px, 0.8);
+  wfLay(col, ink, pole, wood*1.1, px, 0.7);
+  wfLay(col, ink, collar, brass, px, 0.8);
+  /* the linen: round, lit on the key's side and across the bust and hip */
+  float u = clamp(q.x/max(w, 0.03), -1.0, 1.0);
+  vec3 lin = vec3(0.80, 0.72, 0.56)*(0.42 + 0.66*wfRound(u))*(1.0 + 0.30*kq*u);
+  lin *= 0.85 + 0.25*smoothstep(0.03, 0.0, abs(q.y - 1.33)) + 0.15*smoothstep(0.04, 0.0, abs(q.y - 0.95));
+  wfLay(col, ink, torso, lin, px, 0.95);
+  /* the princess seams, the waist tape */
+  float seamX = 0.06 + 0.035*sin((q.y - 0.85)*3.4);
+  ink = max(ink, mmInkP(ax - seamX, px, 1.0)*0.45*wfIn(torso, px)*step(q.y, 1.48));
+  col = mix(col, vec3(0.30, 0.22, 0.18), mmInkP(q.y - 1.12, px, 1.6)*wfIn(torso, px));
+  /* the tape measure: round the neck and down the front, yellow with ticks */
+  float tape = min(max(abs(q.x + 0.045 - (1.50 - q.y)*0.12) - 0.012, max(0.98 - q.y, q.y - 1.52)),
+                   max(abs(wfEll(q - vec2(0.0, 1.52), vec2(0.060, 0.022))) - 0.008, -(q.y - 1.50)));
+  vec3 tc = vec3(0.86, 0.74, 0.30)*(1.0 - 0.6*mmInkP(abs(fract(q.y/0.02) - 0.5) - 0.35, px/0.02, 1.0)*mmLod(0.02, px));
+  wfLay(col, ink, tape, tc, px, 0.6);
+  /* the plum silk */
+  float sv = 0.5 + 0.5*sin((q.x*0.6 + (q.y - 1.40)*0.9)*60.0 + 2.0*mmNoise(q*9.0));
+  wfLay(col, ink, silk, vec3(0.40, 0.14, 0.34)*(0.55 + 0.75*sv), px, 0.8);
+  /* the pins in the bust */
+  for (int i = 0; i < 4; i++){
+    float fi = float(i);
+    vec2 pp = vec2(-0.10 + fi*0.05 + 0.02*mmHash11(fi + seed), 1.30 + 0.04*mmHash11(fi*3.1 + seed));
+    float ph = length(q - pp) - 0.009;
+    col = mix(col, fi < 1.5 ? vec3(0.85, 0.15, 0.15) : vec3(0.20, 0.30, 0.80), wfIn(ph, px));
+  }
+  wfLay(col, ink, knob, brass*1.1, px, 0.9);
+  gWfGloss = 0.20 + 0.8*wfIn(min(knob, min(collar, feet)), px) + 0.4*wfIn(silk, px);
+  gWfMoon = 0.4*wfIn(torso, px)*smoothstep(1.38, 1.46, q.y);
+  gWfCol = col; gWfInk = ink;
+  return d;
+}
+
+/* the drawing's nominal height, metres -- its quad is scaled to it */
+float wfNom(float s){
+  if (s < 45.5) return 1.95;
+  if (s < 46.5) return 1.15;
+  if (s < 47.5) return 1.00;
+  if (s < 48.5) return 1.15;
+  return 1.70;
+}
+/* which way it faces: the room's seed turns some of them round */
+float wfMirror(float s, float seed){
+  return mmHash11(seed*3.71 + s*0.13) < 0.5 ? -1.0 : 1.0;
+}
+/* THE ONE CALL: m in metres from the foot of the quad's axis, msz the
+   quad, px metres per pixel; returns the silhouette in METRES and, with
+   paint, leaves the paint in the globals */
+float wfDraw(vec2 m, vec2 msz, float s, float seed, float px, bool paint){
+  float sc = msz.y/wfNom(s);
+  vec2 q = m/sc;
+  float mir = wfMirror(s, seed);
+  q.x *= mir;
+  float qpx = px/sc;
+  float kq = (uKeyDir.x >= 0.0 ? 1.0 : -1.0)*mir;
+  gWfCol = vec3(0.3); gWfInk = 0.0; gWfEmit = vec3(0.0); gWfMoon = 0.0; gWfGloss = 0.2;
+  float d;
+  if (s < 45.5)      d = wfCot(q, qpx, seed, kq, paint);
+  else if (s < 46.5) d = wfHorse(q, qpx, seed, kq, paint);
+  else if (s < 47.5) d = wfChest(q, qpx, seed, kq, paint);
+  else if (s < 48.5) d = wfSewing(q, qpx, seed, kq, paint);
+  else               d = wfDummy(q, qpx, seed, kq, paint);
+  return d*sc;
+}
+#endif
 
 float shapeField(vec2 uv, vec2 msz, float shape, float seed){
   vec2 p = uv - vec2(0.5, 0.0);          // origin at bottom centre
@@ -12388,6 +13558,12 @@ float shapeField(vec2 uv, vec2 msz, float shape, float seed){
   float cleanSt = 0.0;
 #if MM_WINGS == 1
   if (shape > 30.5 && shape < 31.5) { shape = 15.0; cleanSt = 1.0; }
+#endif
+#if MM_WINGS == 3
+  /* round 24: metres per pixel, taken here in uniform control flow, for
+     the drawings' pen (wfDraw) */
+  vec2 wfsp = uv*msz;
+  float wfPx = max(max(abs(dFdx(wfsp.x)), abs(dFdy(wfsp.x))), max(abs(dFdx(wfsp.y)), abs(dFdy(wfsp.y))));
 #endif
   if (shape < 0.5) {                      // 0 — armchair / settle
     /* IT HAD NO LEGS. The seat box ran to the floor, so a 0.88 m armchair was
@@ -13178,6 +14354,10 @@ float shapeField(vec2 uv, vec2 msz, float shape, float seed){
   } else if (shape > 31.5) {              // 32-35, 38-42 -- ULTRAMARINE's drawings (graft)
     d = wgField(p*msz, msz, wgU(shape), seed) / msz.y;
 #endif
+#if MM_WINGS == 3
+  } else if (shape > 44.5) {              // 45+ -- round 24's drawings, painted in the one pass
+    d = wfDraw(p*msz, msz, shape, seed, max(wfPx, 1e-5), true) / msz.y;
+#endif
   }
   /* A BRASS FITTING HAS NO ERODED EDGE. The fbm below is what keeps stone and
      timber off a CG-clean outline; on a 2.7 cm chain it is most of the chain.
@@ -13338,6 +14518,10 @@ float reliefH(vec2 uv, vec2 msz, vec2 mpp, float shape, float seed, out float ti
     gW2Part = pt;
     return h;
   }
+#endif
+#if MM_WINGS == 3
+  /* round 24's drawings carry their form in their own paint */
+  if (shape > 44.5) { gBedLeaf = 0.0; return 0.0; }
 #endif
   gBedLeaf = 0.0;
   gPkOn = 0.0; gPkLobe = 0.0; gPkRib = 0.0; gPkStem = 0.0; gPkLeaf = 0.0; gPkCut = 0.0; gPkNear = 0.0;
@@ -15072,6 +16256,16 @@ void main(){
     }
   }
 #endif
+#if MM_WINGS == 3
+  /* ROUND 24: each drawing in its own materials (wfDraw, painted in the
+     one pass), at the prop's own light level as round 23's are */
+  if (vShape > 44.5) {
+    wgOn = 1.0;
+    float Ew = max(mmLum(albedo), 0.02)*2.2 + 0.060;
+    albedo = gWfCol*Ew;
+    wgE = gWfEmit; wgInk = gWfInk; wgMoon = gWfMoon;
+  }
+#endif
 
   /* ...AND A FOUNTAIN IS STONE, with water on it (25, round 14). It stands in
      the Greenhouse, whose props are foliage: without this it came out as green
@@ -15433,6 +16627,9 @@ void main(){
      own -- on a flat quad a lamp's highlight was a pale smudge across a
      kennel's side) */
   if (vShape > 35.5 && vShape < 41.5) glossP = uGloss*0.15;
+#if MM_WINGS == 3
+  if (vShape > 44.5) glossP = uGloss*gWfGloss;
+#endif
   vec3 V = normalize(uCamera - vWorld);
   vec3 diff = vec3(0.0), spec = vec3(0.0), raw = vec3(0.0);
   /* a lamp on a clipped yew lights its sprays, not a smooth disc of it
@@ -15489,7 +16686,7 @@ void main(){
     col += albedo * moonK * (0.22 + 0.70*max(N.y, 0.0)) * (0.55 + 0.45*gPkLobe) * gPkOn;
   }
 #endif
-#if MM_WINGS == 2
+#if MM_WINGS == 2 || MM_WINGS == 3
   /* (graft, ULTRAMARINE's) the sky or a high window on an object's upper
      faces -- the telescope's tube, a bath's roll, a tub's rim -- and each
      wing's signature object LIT, as the samples light the thing a picture
@@ -15559,6 +16756,9 @@ void main(){
   float satK = uPropSat, satM = uPropSatMax;
 #if MM_WINGS == 2
   if (vShape > 31.5 && (vShape < 37.5 || vShape > 38.5)) { satK = max(uPropSat, 0.40); satM = max(uPropSatMax, 0.58); }
+#endif
+#if MM_WINGS == 3
+  if (vShape > 44.5) { satK = max(uPropSat, 0.42); satM = max(uPropSatMax, 0.62); }
 #endif
   if (sat > satK) {
     float over = sat - satK;

@@ -262,27 +262,47 @@ export const REGIONS = {
   nursery: {
     label: 'The Forgotten Nursery',
     propMat: 'paint', propCeil: 0.239,
-    arch: 0, floorPattern: 0, subject: 'toyshelf',
-    room: { w: 15, d: 12.5, h: 4.8, side: 0.0, ceilPattern: 3, wallPad: 4.0 },
+    /* ROUND 24: both survey judges -- "the cribs and cots across the middle
+       are boxy crate shapes with a plank texture, under a back wall washed
+       in pale lavender light with flat grey curtain planes". The night
+       nursery is its own wall program now (17): a plum-enamelled dado, a
+       night-blue paper printed with gold moons and stars, the frieze of
+       ducks, the sash window on the moon in velvet curtains with real folds,
+       the toy shelves; and on its floor the things a nursery has, DRAWN --
+       cots on turned spindles under their muslin (45), a dapple rocking
+       horse (46), the toy chest with the bear against it (47). */
+    /* (no damask: the paper is the program's own print) */
+    arch: 0, floorPattern: 0, subject: 'nurseryroom', damask: 0,
+    /* (round 24: 10 m deep, from 12.5 -- the window and the toy shelves ARE
+       the room, and 18 m from the lens they were a strip along the top) */
+    room: { w: 15, d: 8.5, h: 4.3, side: 0.0, ceilPattern: 3, wallPad: 4.0 },
     cam: { y: 1.62, z: 5.6, look: 1.76, fov: 44 },
     deep: '#21182b', mid: '#422d41', hi: '#744e5d', accent: '#6b8eab',
     rimCol: '#e2bc9c', shaft: '#d3bbcc', floorDeep: '#171221', floorMid: '#322731',
     ambient: '#1d182b', propAlb: '#4a3441', propHi: '#8d616a',
     gloss: 0.42, open: '#7ca3b2', openGlow: 0.55, grime: 0.48,
-    props: { shapes: [10, 11, 5, 2, 7], count: 24, height: 1.55, layout: 'clutter' },
-    particles: { mix: [[PTYPE.DUST, 0.68], [PTYPE.ASH, 0.20], [PTYPE.WISP, 0.12]],
-                 tint: '#ffdfe4', wispTint: '#a8ecf7', emberTint: '#ffc7a0',
-                 speed: 0.8, scale: 1.1, wind: 0.6, density: 0.9 },
+    /* the cot set by hand where the fight leaves room for it, at the
+       frame's right, and the rocking horse and the toy chest beyond the
+       Kid's shoulder -- the rest dealt down the two sides */
+    props: { shapes: [45, 46, 47, 45, 47], count: 6, height: 1.55, layout: 'wings',
+             near: [{ shape: 45, edge: 0.74, z: -1.2, tone: 0.95 },
+                    { shape: 46, edge: 0.34, z: -4.8, tone: 0.92 },
+                    { shape: 47, edge: 0.86, z: -5.0, tone: 0.92 }] },
+    /* (round 24: dust in the moonlight, not a field of stars over the
+       paper's own) */
+    particles: { mix: [[PTYPE.DUST, 0.86], [PTYPE.ASH, 0.14]],
+                 tint: '#ffe6d8', wispTint: '#a8ecf7', emberTint: '#ffc7a0',
+                 speed: 0.7, scale: 1.0, wind: 0.5, density: 0.40 },
     exposure: 1.43, vignette: 1.19, contrast: 1.62,
     key:  { glow: 0, kind: 'warm', x: -3.4, y: 2.9, z: 2.2, color: '#eabc97', intensity: 2.52, radius: 6.45 },
     fill: { glow: 0, kind: 'cold', x: 4.4, y: 2.4, z: 1.4, color: '#9ec0d7', intensity: 3.15, radius: 7.5, flicker: false },
     lights: [
       { kind: 'warm', x: -3.6, y: 1.10, z: -4.2, color: '#e6b184', intensity: 1.43, radius: 4.3 },
-      { kind: 'cold', x: 3.2, y: 3.40, z: -10.4, color: '#a4c7dd', intensity: 2.63, radius: 8.0 },
-      { kind: 'cold', x: -4.4, y: 3.60, z: -10.8, color: '#91b6d0', intensity: 1.71, radius: 7.0 },
-      { kind: 'warm', x: 4.6, y: 1.90, z: -6.6, color: '#e7c18c', intensity: 0.66, radius: 3.96 },
+      { kind: 'cold', x: 0.6, y: 2.40, z: -7.1, color: '#a4c7dd', intensity: 1.90, radius: 6.5 },
+      { kind: 'cold', x: -4.4, y: 3.00, z: -7.3, color: '#91b6d0', intensity: 1.10, radius: 6.0 },
+      { kind: 'warm', x: 4.2, y: 3.10, z: -5.4, color: '#e7c18c', intensity: 0.90, radius: 4.6 },
     ],
-    shafts: { count: 2, spread: 9, y: 5.6, z: -9.0, angle: 0.34, width: 2.6, intensity: 0.38, pool: 1.8 },
+    shafts: { count: 2, spread: 9, y: 5.6, z: -6.4, angle: 0.34, width: 2.6, intensity: 0.12, pool: 1.8 },
   },
 
   /* ── 3. The Sleeping Quarters ──────────────────────────────────────────────
@@ -1348,7 +1368,15 @@ export const ROOM_KINDS = {
      taps (the Bathhouse's `dado`); an observatory's library and chart room
      are cases of books. The first kind is still what the wing always was. */
   nursery: {
-    kinds: [{ subject: 'toyshelf' }, { subject: 'wardrobe' }],
+    /* (round 24: the night nursery and its sewing and linen room, each
+       drawn in program 17 -- the cots and the rocking horse give way to the
+       treadle machine and the dressmaker's dummy in the sewing room) */
+    kinds: [{ subject: 'nurseryroom' },
+            { subject: 'sewingroom', swap: [[45, 48], [46, 49]],
+              near: [{ shape: 48, edge: 0.70, z: -1.6, tone: 0.95 },
+                     { shape: 49, edge: 0.30, z: -4.6, tone: 0.93 },
+                     { shape: 49, edge: 0.92, z: -5.0, tone: 0.92 }],
+              room: { d: 0.82 }, cam: { z: -1.0, look: 0.10 } }],
     names: [
       [/wardrobe|closet|changing|blanket|sewing|mending/i, 1],
       [/./, 0],
