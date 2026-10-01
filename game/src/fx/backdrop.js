@@ -338,7 +338,8 @@ export const ROOMS_PROGRAM = {
   baths: 12, steam: 12, pool: 12,
   lampshop: 13, wax: 13, reflector: 13,
   observatory: 14, eaves: 14,
-  kennel: 15, washroom: 15,
+  /* (graft: and its wash room in a program of its own, 16) */
+  kennel: 15, washroom: 16,
 };
 
 /**
@@ -2543,7 +2544,7 @@ export class Backdrop {
       wall(1), wall(2), wall(3), wall(4), wall(5), wall(6), wall(7),
       wall(8), wall(9), wall(10), wall(11),
       /* round 23 */
-      wall(12), wall(13), wall(14), wall(15),
+      wall(12), wall(13), wall(14), wall(15), wall(16),
       [this.portals[0].geometry, this.portals[0].material, null],
       [this.propGeo, this.propMat, { MM_STONES: 0, MM_BUST: 1 }],
       [this.floor.geometry, this.floorMat, { MM_FLOORX: 1 }],

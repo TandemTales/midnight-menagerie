@@ -835,7 +835,9 @@ export const REGIONS = {
        crate stack (8). A kennel block's floor has KENNELS on it (39), dogs'
        beds with their bowls (40) and the grooming table (41); its stalls,
        straw and name plates are the wall's (program 15). */
-    props: { shapes: [39, 40, 41, 39, 40], count: 14, height: 1.6, layout: 'rows',
+    /* (graft: 11 dealt, from 14 -- the four set by hand are the big ones,
+       and the fight's frame paid for every kennel twice) */
+    props: { shapes: [39, 40, 41, 39, 40], count: 11, height: 1.6, layout: 'rows',
              /* (graft, ULTRAMARINE's, all three judges: "the peaked, lit
                 doghouses with nameplates and the oval bone-plate dog beds IN
                 FRONT of the stalls", with their water bowls) -- set by hand
@@ -844,7 +846,6 @@ export const REGIONS = {
                { shape: 39, edge: 0.80, z: -0.8, tone: 0.95 },
                { shape: 40, edge: 0.64, z: -1.9, tone: 0.95 },
                { shape: 40, edge: 0.22, z: -3.0, tone: 0.94 },
-               { shape: 39, x: -5.4, z: -5.4, tone: 0.90 },
              ] },
     /* (round 23: dust in the lamplight, not a field of sparks -- at 0.95 with
        embers in it the motes were the "speckle" over the stalls) */

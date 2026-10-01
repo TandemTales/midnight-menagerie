@@ -6437,7 +6437,10 @@ float atticWallH(vec2 q, float qpx, out float occ){
   return h;
 }
 #endif
-#if MM_ROOMS == 15
+/* (graft: the kennel range is program 15 and its wash room 16 -- carried in
+   one program, the wash room's trough, mirror, shelves and drying frames
+   cost the kennels' fight 1.3 ms of wall it never draws) */
+#if MM_ROOMS == 15 || MM_ROOMS == 16
 /* ── THE KENNELS AND ANIMAL WARD (round 23) ────────────────────────────────
    Both survey judges: "grey speckled lumps scattered through the mid-ground
    read as TV static, not straw or beds"; "the right half of the back wall
@@ -6508,7 +6511,8 @@ float kennelWallH(vec2 q, float qpx, out float occ){
   emit += win*(1.0 - wbar)*0.05;
   h = mix(h, 0.6, win);
   mmPen(wD, 1.2, 0.85*step(0.5, mod(wi, 2.0)));
-  if (isWash < 0.5) {
+#if MM_ROOMS == 15
+  {
     /* ===== THE RANGE OF STALLS ===== */
     /* (graft: the fronts a hand taller -- 1.42 m to the rail read at the
        Deck's distance as a thin band) */
@@ -6560,92 +6564,101 @@ float kennelWallH(vec2 q, float qpx, out float occ){
        and a brass latch; over it the open top of the stall behind its bars,
        and in one stall in three its dog, up at the bars, its eyes catching
        the lantern. Most doors shut; one in four stands open on the straw. */
-    float open = step(0.74, sk);
-    float DW = SW*0.5 - 0.075;
-    float DT = 1.02;
-    float inFront = step(abs(sx), DW);
-    /* the dog, up at the bars in the top of the door */
-    float dogOn = step(0.58, fract(sk*7.31))*(1.0 - open)*inFront;
-    vec2 hq = vec2(sx - 0.34*(fract(sk*3.7) - 0.5), q.y - (1.36 + 0.10*fract(sk*5.3)));
-    float hd2 = (length(vec2(hq.x/0.15, hq.y/0.12)) - 1.0)*0.12;
-    hd2 = min(hd2, (length(vec2(hq.x/0.072, (hq.y + 0.085)/0.065)) - 1.0)*0.065);
-    vec2 eq0 = vec2(abs(hq.x) - 0.10 - 0.22*(hq.y - 0.06), hq.y - 0.07);
-    float ear = max(abs(eq0.x) - 0.045*(1.0 - clamp(eq0.y/0.14, 0.0, 1.0)), max(-eq0.y, eq0.y - 0.14));
-    hd2 = min(hd2, ear);
-    hd2 = min(hd2, mmBox(hq - vec2(0.0, -0.32), vec2(0.13, 0.22), 0.08));
-    float dog = KCV(-hd2)*dogOn*step(DT, q.y);
-    float dk = fract(sk*11.7);
-    vec3 fur = dk < 0.35 ? vec3(0.62, 0.42, 0.24) : (dk < 0.65 ? vec3(0.10, 0.08, 0.07) : vec3(0.70, 0.66, 0.58));
-    vec3 dogC = fur*(lum*2.4 + 0.012)*(0.35 + 0.80*smoothstep(-0.08, 0.12, hq.y));
-    col = mix(col, dogC, dog);
-    vec2 eq = vec2(abs(hq.x) - 0.058, hq.y - 0.010);
-    float eye = (1.0 - smoothstep(0.019, 0.019 + px, length(eq)))*dogOn*step(DT, q.y);
-    col = mix(col, vec3(0.70, 0.86, 0.40)*(lum*2.0 + 0.03), eye);
-    float nose = KCV(-(length(hq - vec2(0.0, -0.13)) - 0.022))*dogOn*step(DT, q.y);
-    col = mix(col, vec3(0.01), nose);
-    emitW += eye*1.8;
-    /* the bars over the half door, round iron catching the lantern */
-    float barZ = step(DT + 0.05, q.y)*step(q.y, TOPY + 0.26)*inFront;
-    float bp = mmRowX(sx + 0.055, 0.11);
-    float bar = (1.0 - smoothstep(0.014, 0.014 + px, bp))*barZ*mmLod(0.11, px);
-    col = mix(col, iron*(1.2 + 2.2*smoothstep(0.014, 0.0, bp + 0.006)), bar);
-    gInk = max(gInk, mmInkP(bp - 0.014, px, 1.0)*barZ*0.5);
-    /* the head rail the bars run into, and the door's top rail */
-    float hr = mmBandA(q.y, TOPY + 0.20, TOPY + 0.28, px)*inFront;
-    col = mix(col, oak*1.25, hr);
-    h += bar*0.25 + hr*0.30;
-    mmPen(q.y - TOPY - 0.20, 1.1, 0.8*inFront);
-    /* THE HALF DOOR: planks, two ledges, the brace, strap hinges and latch */
-    float dD = mmBox(vec2(sx, q.y - (0.06 + DT)*0.5), vec2(DW - 0.01, (DT - 0.06)*0.5), 0.005);
-    float door = KCV(-dD)*(1.0 - open);
-    float pkI = floor((sx + DW)/0.13);
-    float pkx = sx + DW - (pkI + 0.5)*0.13;
-    vec3 plankC = oak*1.70*(0.80 + 0.32*mmHash11(pkI*3.1 + si*7.0))*(0.80 + 0.30*smoothstep(0.06, DT, q.y));
-    float pj = mmInkP(abs(pkx) - 0.065, px, 1.0)*mmLod(0.13, px);
-    float ledge = mmBandA(q.y, 0.16, 0.26, px) + mmBandA(q.y, DT - 0.14, DT - 0.04, px);
-    float bL = (q.y - 0.26) - (sx + DW)*((DT - 0.40)/(2.0*DW));
-    float brace = (1.0 - smoothstep(0.045, 0.045 + px*1.5, abs(bL)*0.77))*step(0.26, q.y)*step(q.y, DT - 0.14);
-    vec3 dc = plankC*(1.0 - 0.45*pj);
-    dc = mix(dc, oak*1.55*(0.85 + 0.25*smoothstep(-0.05, 0.05, -bL)), clamp(ledge + brace, 0.0, 1.0));
-    float hingeY = min(abs(q.y - 0.21), abs(q.y - (DT - 0.09)));
-    float hinge = (1.0 - smoothstep(0.022, 0.022 + px, hingeY))*step(-DW, sx)*step(sx, -DW + 0.55 - 0.30*smoothstep(-DW, -DW + 0.55, sx));
-    float latch = KCV(-mmBox(vec2(sx - DW + 0.16, q.y - 0.62), vec2(0.07, 0.022), 0.008));
-    dc = mix(dc, iron*1.2, hinge);
-    dc = mix(dc, brass*1.1, latch);
-    col = mix(col, dc, door);
-    h = mix(h, 1.12 + 0.10*clamp(ledge + brace, 0.0, 1.0) - 0.04*pj, door);
-    gloss = max(gloss, latch*door);
-    mmPen(dD, 1.4, 0.95*(1.0 - open));
-    mmPen(abs(bL)*0.77 - 0.045, 1.0, 0.75*step(0.26, q.y)*step(q.y, DT - 0.14)*door);
-    /* an open door stands back against its post, edge on */
-    float edge = KCV(-mmBox(vec2(sx + DW - 0.05, q.y - (0.06 + DT)*0.5), vec2(0.05, (DT - 0.06)*0.5), 0.005))*open;
-    col = mix(col, oak*1.30, edge);
-    h += edge*0.35;
-    /* THE NAME PLATE over the door: a brass oval, its name engraved */
-    vec2 np = vec2(sx, q.y - TOPY - 0.42);
-    float npD = (length(vec2(np.x/0.26, np.y/0.095)) - 1.0)*0.095;
-    float plate = mmCover(-npD);
-    float li = floor((np.x + 0.17)/0.048);
-    float letter = step(abs(np.x), 0.17)*step(abs(np.y), 0.028)
-                 * step(0.22, mmHash11(li*3.1 + si*7.0))
-                 * max(mmInkP(np.x - (li + 0.5)*0.048 + 0.17 + (mmHash11(li + si) - 0.5)*0.02, px, 1.3),
-                       mmInkP(np.y - (mmHash11(li*1.7 + si) - 0.5)*0.04, px, 1.2)*step(abs(np.x - (li + 0.5)*0.048 + 0.17), 0.016));
-    col = mix(col, brass*1.25*(0.80 + 0.35*smoothstep(-0.08, 0.08, np.y)), plate);
-    col = mix(col, vec3(0.02, 0.015, 0.01), letter*plate*0.9);
-    h += plate*0.30;
-    mmPen(npD, 1.2, 0.95);
-    gloss = max(gloss, plate);
-    emitW += plate*0.10;
-    /* the lantern's light on the fronts (judge 3: "give the runs height
-       and light"), a warm pool down every third pair of stalls */
-    float lpI0 = floor((u + SW*1.5)/(SW*3.0));
-    float lpx0 = u + SW*1.5 - (lpI0 + 0.5)*SW*3.0;
-    emitW += 0.10*exp(-length(vec2(lpx0*0.45, (q.y - 1.6)*0.70)))*(door*1.4 + bar + hr + edge*0.5 + 0.20);
-    /* the water bowl at the door, enamel */
-    float bowlD = max(length(vec2(sx - 0.45, (q.y - 0.06)*2.4)) - 0.16, -q.y);
-    float bowl = mmCover(-bowlD)*(1.0 - open);
-    col = mix(col, vec3(0.62, 0.64, 0.66)*(lum*2.0 + 0.012)*(0.7 + 0.5*smoothstep(0.0, 0.12, q.y)), bowl);
-    mmPen(bowlD, 1.0, 0.8*(1.0 - open));
+    /* (drawn with the pixel passed in and skipped above the plates: the
+       range is most of the kennels' frame) */
+    if (q.y < TOPY + 0.62) {
+      float open = step(0.74, sk);
+      float DW = SW*0.5 - 0.075;
+      float DT = 1.02;
+      float inFront = step(abs(sx), DW);
+      /* the dog, up at the bars in the top of the door */
+      float dogOn = step(0.58, fract(sk*7.31))*(1.0 - open)*inFront;
+      vec2 hq = vec2(sx - 0.34*(fract(sk*3.7) - 0.5), q.y - (1.36 + 0.10*fract(sk*5.3)));
+      /* (only where a dog is: the head, the ears, the eyes) */
+      if (dogOn > 0.5 && q.y > DT && abs(hq.x) < 0.36 && hq.y < 0.32) {
+        float hd2 = (length(vec2(hq.x/0.15, hq.y/0.12)) - 1.0)*0.12;
+        hd2 = min(hd2, (length(vec2(hq.x/0.072, (hq.y + 0.085)/0.065)) - 1.0)*0.065);
+        vec2 eq0 = vec2(abs(hq.x) - 0.10 - 0.22*(hq.y - 0.06), hq.y - 0.07);
+        float ear = max(abs(eq0.x) - 0.045*(1.0 - clamp(eq0.y/0.14, 0.0, 1.0)), max(-eq0.y, eq0.y - 0.14));
+        hd2 = min(hd2, ear);
+        hd2 = min(hd2, mmBox(hq - vec2(0.0, -0.32), vec2(0.13, 0.22), 0.08));
+        float dog = KCV(-hd2)*dogOn*step(DT, q.y);
+        float dk = fract(sk*11.7);
+        vec3 fur = dk < 0.35 ? vec3(0.62, 0.42, 0.24) : (dk < 0.65 ? vec3(0.10, 0.08, 0.07) : vec3(0.70, 0.66, 0.58));
+        vec3 dogC = fur*(lum*2.4 + 0.012)*(0.35 + 0.80*smoothstep(-0.08, 0.12, hq.y));
+        col = mix(col, dogC, dog);
+        vec2 eq = vec2(abs(hq.x) - 0.058, hq.y - 0.010);
+        float eye = (1.0 - smoothstep(0.019, 0.019 + px, length(eq)))*dogOn*step(DT, q.y);
+        col = mix(col, vec3(0.70, 0.86, 0.40)*(lum*2.0 + 0.03), eye);
+        float nose = KCV(-(length(hq - vec2(0.0, -0.13)) - 0.022))*dogOn*step(DT, q.y);
+        col = mix(col, vec3(0.01), nose);
+        emitW += eye*1.8;
+      }
+      /* the bars over the half door, round iron catching the lantern */
+      float barZ = step(DT + 0.05, q.y)*step(q.y, TOPY + 0.26)*inFront;
+      float bp = mmRowX(sx + 0.055, 0.11);
+      float bar = (1.0 - smoothstep(0.014, 0.014 + px, bp))*barZ*mmLod(0.11, px);
+      col = mix(col, iron*(1.2 + 2.2*smoothstep(0.014, 0.0, bp + 0.006)), bar);
+      gInk = max(gInk, mmInkP(bp - 0.014, px, 1.0)*barZ*0.5);
+      /* the head rail the bars run into, and the door's top rail */
+      float hr = mmBandA(q.y, TOPY + 0.20, TOPY + 0.28, px)*inFront;
+      col = mix(col, oak*1.25, hr);
+      h += bar*0.25 + hr*0.30;
+      penN(q.y - TOPY - 0.20, 1.1, 0.8*inFront);
+      /* THE HALF DOOR: planks, two ledges, the brace, strap hinges and latch */
+      float dD = mmBox(vec2(sx, q.y - (0.06 + DT)*0.5), vec2(DW - 0.01, (DT - 0.06)*0.5), 0.005);
+      float door = KCV(-dD)*(1.0 - open);
+      float pkI = floor((sx + DW)/0.13);
+      float pkx = sx + DW - (pkI + 0.5)*0.13;
+      vec3 plankC = oak*1.70*(0.80 + 0.32*mmHash11(pkI*3.1 + si*7.0))*(0.80 + 0.30*smoothstep(0.06, DT, q.y));
+      float pj = mmInkP(abs(pkx) - 0.065, px, 1.0)*mmLod(0.13, px);
+      float ledge = mmBandA(q.y, 0.16, 0.26, px) + mmBandA(q.y, DT - 0.14, DT - 0.04, px);
+      float bL = (q.y - 0.26) - (sx + DW)*((DT - 0.40)/(2.0*DW));
+      float brace = (1.0 - smoothstep(0.045, 0.045 + px*1.5, abs(bL)*0.77))*step(0.26, q.y)*step(q.y, DT - 0.14);
+      vec3 dc = plankC*(1.0 - 0.45*pj);
+      dc = mix(dc, oak*1.55*(0.85 + 0.25*smoothstep(-0.05, 0.05, -bL)), clamp(ledge + brace, 0.0, 1.0));
+      float hingeY = min(abs(q.y - 0.21), abs(q.y - (DT - 0.09)));
+      float hinge = (1.0 - smoothstep(0.022, 0.022 + px, hingeY))*step(-DW, sx)*step(sx, -DW + 0.55 - 0.30*smoothstep(-DW, -DW + 0.55, sx));
+      float latch = KCV(-mmBox(vec2(sx - DW + 0.16, q.y - 0.62), vec2(0.07, 0.022), 0.008));
+      dc = mix(dc, iron*1.2, hinge);
+      dc = mix(dc, brass*1.1, latch);
+      col = mix(col, dc, door);
+      h = mix(h, 1.12 + 0.10*clamp(ledge + brace, 0.0, 1.0) - 0.04*pj, door);
+      gloss = max(gloss, latch*door);
+      penN(dD, 1.4, 0.95*(1.0 - open));
+      penN(abs(bL)*0.77 - 0.045, 1.0, 0.75*step(0.26, q.y)*step(q.y, DT - 0.14)*door);
+      /* an open door stands back against its post, edge on */
+      float edge = KCV(-mmBox(vec2(sx + DW - 0.05, q.y - (0.06 + DT)*0.5), vec2(0.05, (DT - 0.06)*0.5), 0.005))*open;
+      col = mix(col, oak*1.30, edge);
+      h += edge*0.35;
+      /* THE NAME PLATE over the door: a brass oval, its name engraved */
+      vec2 np = vec2(sx, q.y - TOPY - 0.42);
+      if (abs(np.y) < 0.14 && abs(np.x) < 0.32) {
+        float npD = (length(vec2(np.x/0.26, np.y/0.095)) - 1.0)*0.095;
+        float plate = KCV(-npD);
+        float li = floor((np.x + 0.17)/0.048);
+        float letter = step(abs(np.x), 0.17)*step(abs(np.y), 0.028)
+                     * step(0.22, mmHash11(li*3.1 + si*7.0))
+                     * max(mmInkP(np.x - (li + 0.5)*0.048 + 0.17 + (mmHash11(li + si) - 0.5)*0.02, px, 1.3),
+                           mmInkP(np.y - (mmHash11(li*1.7 + si) - 0.5)*0.04, px, 1.2)*step(abs(np.x - (li + 0.5)*0.048 + 0.17), 0.016));
+        col = mix(col, brass*1.25*(0.80 + 0.35*smoothstep(-0.08, 0.08, np.y)), plate);
+        col = mix(col, vec3(0.02, 0.015, 0.01), letter*plate*0.9);
+        h += plate*0.30;
+        penN(npD, 1.2, 0.95);
+        gloss = max(gloss, plate);
+        emitW += plate*0.10;
+      }
+      /* the lantern's light on the fronts (judge 3: "give the runs height
+         and light"), a warm pool down every third pair of stalls */
+      float lpI0 = floor((u + SW*1.5)/(SW*3.0));
+      float lpx0 = u + SW*1.5 - (lpI0 + 0.5)*SW*3.0;
+      emitW += 0.10*exp(-length(vec2(lpx0*0.45, (q.y - 1.6)*0.70)))*(door*1.4 + bar + hr + edge*0.5 + 0.20);
+      /* the water bowl at the door, enamel */
+      float bowlD = max(length(vec2(sx - 0.45, (q.y - 0.06)*2.4)) - 0.16, -q.y);
+      float bowl = KCV(-bowlD)*(1.0 - open);
+      col = mix(col, vec3(0.62, 0.64, 0.66)*(lum*2.0 + 0.012)*(0.7 + 0.5*smoothstep(0.0, 0.12, q.y)), bowl);
+      penN(bowlD, 1.0, 0.8*(1.0 - open));
+    }
     /* ---- the rail of leads and collars above the range ---- */
     float LY = TOPY + 1.05;
     float rail = mmBandA(q.y, LY, LY + 0.05, px);
@@ -6670,7 +6683,9 @@ float kennelWallH(vec2 q, float qpx, out float occ){
     col = mix(col, iron, lan);
     col = mix(col, vec3(1.0, 0.82, 0.55)*(lum*2.0 + 0.04), lanG);
     emitW += lanG*1.3 + 0.12*exp(-length(lq*vec2(0.8, 1.0))*2.2);
-  } else {
+  }
+#else
+  {
     /* ===== THE WASH ROOM ===== */
     /* (graft, judge 2: "the bare plaster wall with red blotches reads as
        cloud stain -- build it as coursed tile or brick"): over the dado,
@@ -6893,6 +6908,7 @@ float kennelWallH(vec2 q, float qpx, out float occ){
     col = mix(col, vec3(1.0, 0.82, 0.55)*(lum*2.0 + 0.04), lanG);
     emitW += lanG*1.2 + 0.10*exp(-length(lq)*2.0);
   }
+#endif
   gCol = col;
   gColAmt = 1.0;
   float emitT = emit + emitW;
