@@ -178,7 +178,17 @@ const SHAPE_M = [1.20, 2.00, 1.30, 1.00, 2.00, 2.00, 3.32, 2.60, 1.17, 1.33,
                  2.30,
                  /* round 24 graft: 61 a doll's house on its stand (ORPINE's,
                     the nursery) */
-                 1.55
+                 1.55,
+                 /* round 25, the Foyer, drawn (MM_WINGS 4): 62 a longcase
+                    clock with its moon dial, 63 a button-back hall chair,
+                    64 a glazed vitrine of porcelain, 65 a brass torchere
+                    burning, 66 a pier table with its vase, salver and
+                    chamberstick, 67 a porcelain umbrella stand, 68 a gilt
+                    pier glass over its console; 69-71 the Greenhouse's and
+                    the Graveyard's (below); 72 the Ballroom's gilt chair */
+                 2.12, 1.04, 2.02, 1.56, 1.25, 1.08, 2.75,
+                 1.00, 1.00, 1.00,
+                 1.04
 ];
 /* ...and a width ratio, so a column is a column and not a capital-T. Four of
  * these were wrong by enough to change what the object was: a longcase clock
@@ -199,7 +209,10 @@ const SHAPE_W = [1.15, 0.55, 1.00, 0.95, 0.72, 0.80, 0.47, 0.85, 0.90, 1.35,
                  1.31, 0.61, 0.57, 0.71,
                  1.80, 0.42, 1.04,
                  0.58,
-                 0.71
+                 0.71,
+                 0.30, 0.72, 0.55, 0.31, 1.07, 0.50, 0.45,
+                 1.00, 1.00, 1.00,
+                 0.72
 ];
 /* HOW MUCH ONE OF THESE VARIES FROM THE NEXT, as a +-fraction of SHAPE_M.
  *
@@ -233,6 +246,9 @@ const SHAPE_VAR = [0.06, 0.08, 0.62, 0.20, 0.10, 0.08, 0.10, 0.10, 0.16, 0.48,
                  0.03, 0.05, 0.03, 0.03,
                  0.03, 0.08, 0.06,
                  0.03,
+                 0.03,
+                 0.02, 0.03, 0.03, 0.04, 0.03, 0.05, 0.02,
+                 0.03, 0.03, 0.03,
                  0.03
 ];
 /* ROUND 23 (graft): ULTRAMARINE's drawings are in metres at their own
@@ -242,13 +258,15 @@ const SHAPE_VAR = [0.06, 0.08, 0.62, 0.20, 0.10, 0.08, 0.10, 0.10, 0.16, 0.48,
 const FIXW = { 32: 1, 33: 1, 34: 1, 35: 1, 39: 1, 40: 1, 41: 1, 42: 1, 43: 1, 44: 1,
                /* round 24's are drawn in metres the same way */
                45: 1, 46: 1, 47: 1, 48: 1, 49: 1, 50: 1, 51: 1, 52: 1, 53: 1, 54: 1,
-               55: 1, 56: 1, 57: 1, 58: 1, 59: 1, 60: 1, 61: 1 };
+               55: 1, 56: 1, 57: 1, 58: 1, 59: 1, 60: 1, 61: 1,
+               /* and round 25's */
+               62: 1, 63: 1, 64: 1, 65: 1, 66: 1, 67: 1, 68: 1, 69: 1, 70: 1, 71: 1, 72: 1 };
 // Which shapes hang from the ceiling rather than stand on the floor.
 export const HANGING = { 4: 1, 7: 1, 22: 1, 33: 1 };
 /* ...and which stand AGAINST A WALL rather than out on the floor. A tall
    mirror marooned in the middle of a dance floor reads as a slab; against a
    wall it reads as the thing a ballroom is lined with. */
-export const WALLSIDE = { 20: 1 };
+export const WALLSIDE = { 20: 1, 68: 1 };
 
 /* ══════════════ A LIGHT YOU CAN SEE NEEDS A FITTING ═══════════════════════
    BRIEF-r10 fix 1, and it is one root cause behind complaints from both judges
@@ -367,6 +385,14 @@ export const SUBJECT = {
    each program linked alone on an idle GPU (Intel UHD, ANGLE D3D11): BASE's
    wall 6.3 s, program 0 6.6 s, a full-size variant 7.4-9.0 s -- and a guarded
    one 0.6-1.5 s, all five in 4.6 s. Warm-up 34.7 s, BASE 34.7 s. */
+/* ROUND 25: the wall programs in which round 25 drew something for one of
+   the last four wings, by wing (MM_R25W in shaders/backdrop.js): 1 the
+   Foyer, 2 the Ballroom, 3 the Greenhouse, 4 the Graveyard. A wing gets its
+   own variant of a program only where it is listed here, so the Heart, the
+   Pumpkin Grounds and every other room keep the program they had. */
+export const R25_WALLS = { 1: [0, 1] };
+/* ...and the floor programs (MM_FLOORX) in which it drew for one of them */
+export const R25_FLOORS = { 1: [0] };
 export const ROOMS_PROGRAM = {
   chimney: 1, arcade: 1,
   mirrors: 2, music: 2, dais: 2,
@@ -535,7 +561,7 @@ export class Backdrop {
         uLights: { value: v4arr() }, uLightCol: { value: colArr() },
       },
       vertexShader: WALL_VERT, fragmentShader: WALL_FRAG,
-      defines: { MM_ROOMS: 0 },
+      defines: { MM_ROOMS: 0, MM_R25W: 0 },
       /* LESS, not LEQUAL: this wall now draws AFTER the ceiling and the side
          walls, and must lose a depth tie to them exactly as it did when it
          drew first. See OPAQUE DRAW ORDER at the ceiling below. */
@@ -553,7 +579,7 @@ export class Backdrop {
       const mat = new THREE.ShaderMaterial({
         uniforms: freshLightSlots(THREE.UniformsUtils.clone(this.wallMat.uniforms)),
         vertexShader: WALL_VERT, fragmentShader: WALL_FRAG,
-        defines: { MM_ROOMS: 0 },
+        defines: { MM_ROOMS: 0, MM_R25W: 0 },
         // LESS for the same reason as the far wall's: it now follows the ceiling
         depthWrite: true, depthFunc: THREE.LessDepth, fog: false,
       });
@@ -620,7 +646,7 @@ export class Backdrop {
     this.floorMat = new THREE.ShaderMaterial({
       uniforms: surfaceUniforms(),
       /* the room-kind floors are a variant of their own: _setSurfaceProgram */
-      defines: { MM_FLOORX: 0 },
+      defines: { MM_FLOORX: 0, MM_R25W: 0 },
       vertexShader: FLOOR_VERT, fragmentShader: FLOOR_FRAG,
       depthWrite: true, fog: false,
     });
@@ -1821,7 +1847,7 @@ export class Backdrop {
       return standing.some((f) => {
         const dx = Math.abs(f.x - p.x), dz = Math.abs(f.z - p.z);
         if (dx < (f.w + p.w) * 0.35 && dz < 1.0) return true;
-        return p.shape === 1 && Math.hypot(dx, dz) < 1.6;
+        return (p.shape === 1 || p.shape === 65) && Math.hypot(dx, dz) < 1.6;
       });
     };
     for (const it of (P.near || [])) {
@@ -2287,7 +2313,8 @@ export class Backdrop {
     w.uDamCell.value = p.damaskCell ?? (kind === 2 ? 0.74 : 0.92);
     w.uArch.value = arch;
     const subj = SUBJECT[p.subject] ?? 0;
-    this._setRoomsProgram(ROOMS_PROGRAM[p.subject] ?? 0);
+    const prog = ROOMS_PROGRAM[p.subject] ?? 0;
+    this._setRoomsProgram(prog, (R25_WALLS[p.r25w] || []).includes(prog) ? p.r25w : 0);
     w.uSubject.value = subj;
     w.uWains.value = p.wainscot ? 1 : 0;
     /* WHICH WALL CARRIES THE ROOM'S ONE-OFF (round 14). uFar has always
@@ -2355,8 +2382,8 @@ export class Backdrop {
     /* parquet (10), turf (11) and a pool are drawn by the room-kind variant */
     /* (round 23: an INDOOR bath is variant 2, which lays the hall in its
        water as a mirror; the pond out of doors keeps variant 1) */
-    this._setSurfaceProgram(this.floorMat, (p.pool && !p.pool.open) ? 2
-      : ((p.floorPattern ?? 0) > 9.5 || !!p.pool));
+    const fx = (p.pool && !p.pool.open) ? 2 : (((p.floorPattern ?? 0) > 9.5 || !!p.pool) ? 1 : 0);
+    this._setSurfaceProgram(this.floorMat, fx, (R25_FLOORS[p.r25w] || []).includes(fx) ? p.r25w : 0);
     f.uRunner.value = p.runner ?? 0;
     /* the runner leads to the door, wherever the subject took it */
     f.uRunX.value = p.runX ?? (p.subjX ?? 0);
@@ -2502,10 +2529,14 @@ export class Backdrop {
   /** The floor's or the ceiling's program: the room-kind floors (parquet,
    *  turf, a vinery's roof, a pool) are compiled only where they are laid
    *  (MM_FLOORX in shaders/backdrop.js). */
-  _setSurfaceProgram(mat, x) {
+  _setSurfaceProgram(mat, x, w = null) {
     const n = x === 2 ? 2 : (x ? 1 : 0);
-    if (mat.defines && mat.defines.MM_FLOORX === n) return;
-    mat.defines = Object.assign({}, mat.defines, { MM_FLOORX: n });
+    /* (round 25: and the floor's wing, MM_R25W, where round 25 drew in that
+       floor program for one of the last four wings -- R25_FLOORS. The
+       ceiling never carries it.) */
+    const want = w === null ? {} : { MM_R25W: w };
+    if (mat.defines && mat.defines.MM_FLOORX === n && (w === null || mat.defines.MM_R25W === w)) return;
+    mat.defines = Object.assign({}, mat.defines, { MM_FLOORX: n }, want);
     mat.needsUpdate = true;
   }
 
@@ -2519,27 +2550,34 @@ export class Backdrop {
    *  the hedge's fountain court has stones AND a fountain, and those are one
    *  variant; nothing that has a bust has either. */
   _setPropProgram(placed) {
-    let stones = 0, bust = 0, wings = 0;
+    let stones = 0, bust = 0, wings = 0, w25 = 0;
     for (const p of placed) {
       const s = p.shape;
+      /* round 25: the last four wings' drawn objects (62+), in a program of
+         their own -- so no room that does not deal one moves */
+      if (s > 61.5) w25 = 1;
       if ((s > 2.5 && s < 3.5) || (s > 15.5 && s < 16.1) || (s > 24.5 && s < 25.5)) stones = 1;
       else if (s > 44.5) wings = 3;          // round 24: the house's own rooms' objects
       else if (s > 31.5) wings = Math.max(wings, 2);          // round 23: the bath, the lamp, the telescope, the kennel
       else if (s > 26.5) wings = 1;          // round 22: the pumpkin and the yew
       else if (s > 25.5) bust = 1;
     }
+    if (w25) wings = 4;
     const d = this.propMat.defines || {};
     if (d.MM_STONES === stones && d.MM_BUST === bust && d.MM_WINGS === wings) return;
     this.propMat.defines = Object.assign({}, d, { MM_STONES: stones, MM_BUST: bust, MM_WINGS: wings });
     this.propMat.needsUpdate = true;
   }
 
-  /** Switch the three wall planes to the program that carries this subject. */
-  _setRoomsProgram(n) {
-    if (this._roomsProg === n) return;
+  /** Switch the three wall planes to the program that carries this subject
+   *  -- and, round 25, the wing (MM_R25W) when it is one of the last four
+   *  and round 25 drew something in that program for it (R25_WALLS). */
+  _setRoomsProgram(n, w = 0) {
+    if (this._roomsProg === n && this._roomsW === w) return;
     this._roomsProg = n;
+    this._roomsW = w;
     for (const m of [this.wallMat, this.sides[0].material, this.sides[1].material]) {
-      m.defines = Object.assign({}, m.defines, { MM_ROOMS: n });
+      m.defines = Object.assign({}, m.defines, { MM_ROOMS: n, MM_R25W: w });
       m.needsUpdate = true;
     }
   }
@@ -2598,7 +2636,7 @@ export class Backdrop {
        (MM_BUST), the room-kind floor, and last the grounds' carved stone
        (MM_STONES, a 15 s link on this machine), whose first wing is the
        Greenhouse, the third. */
-    const wall = (n) => [this.wall.geometry, this.wallMat, { MM_ROOMS: n }];
+    const wall = (n, w = 0) => [this.wall.geometry, this.wallMat, { MM_ROOMS: n, MM_R25W: w }];
     const jobs = [
       wall(1), wall(2), wall(3), wall(4), wall(5), wall(6), wall(7),
       wall(8), wall(9), wall(10), wall(11),
@@ -2606,10 +2644,14 @@ export class Backdrop {
       wall(12), wall(13), wall(14), wall(15), wall(16),
       /* round 24 */
       wall(17), wall(18), wall(19), wall(20),
+      /* round 25: the last four wings, in the programs they share */
+      ...Object.entries(R25_WALLS).flatMap(([w, ps]) => ps.map((n) => wall(n, +w))),
       [this.portals[0].geometry, this.portals[0].material, null],
       [this.propGeo, this.propMat, { MM_STONES: 0, MM_BUST: 1 }],
-      [this.floor.geometry, this.floorMat, { MM_FLOORX: 1 }],
-      [this.floor.geometry, this.floorMat, { MM_FLOORX: 2 }],
+      [this.floor.geometry, this.floorMat, { MM_FLOORX: 1, MM_R25W: 0 }],
+      [this.floor.geometry, this.floorMat, { MM_FLOORX: 2, MM_R25W: 0 }],
+      /* round 25: the last four wings' floors */
+      ...Object.entries(R25_FLOORS).flatMap(([w, ps]) => ps.map((n) => [this.floor.geometry, this.floorMat, { MM_FLOORX: n, MM_R25W: +w }])),
       [this.ceiling.geometry, this.ceilMat, { MM_FLOORX: 2 }],
       [this.propGeo, this.propMat, { MM_STONES: 1, MM_BUST: 0 }],
       /* round 22: the pumpkin and the yew, alone and with the grounds' stone
@@ -2621,6 +2663,11 @@ export class Backdrop {
       /* round 24: the house's own rooms' objects, and with the Crypt's stone */
       [this.propGeo, this.propMat, { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 3 }],
       [this.propGeo, this.propMat, { MM_STONES: 1, MM_BUST: 0, MM_WINGS: 3 }],
+      /* round 25: the last four wings' objects; with the gallery's bust, and
+         with the conservatory's fountain */
+      [this.propGeo, this.propMat, { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 4 }],
+      [this.propGeo, this.propMat, { MM_STONES: 0, MM_BUST: 1, MM_WINGS: 4 }],
+      [this.propGeo, this.propMat, { MM_STONES: 1, MM_BUST: 0, MM_WINGS: 4 }],
     ];
     (async () => {
       await new Promise((r) => setTimeout(r, 1500));

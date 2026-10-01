@@ -173,6 +173,11 @@ export const REGIONS = {
      round 1 shipped it with zero lights, zero shafts and zero particles. */
   foyer: {
     label: 'The Forgotten Foyer',
+    /* round 25: this wing's own drawing in the shared wall programs */
+    r25w: 1,
+    /* ...and its boards drawn, not a cloud (uCrisp, as the passages'):
+       the fbm drift under the pools read as a mottled smear */
+    crispFloor: true,
     propMat: 'wood', propCeil: 0.5,
     arch: 0, floorPattern: 0, subject: 'stair',
     /* A HALL RUNNER up the axis, half-width in metres. Round 10 fix 6: the
@@ -198,7 +203,7 @@ export const REGIONS = {
        back wall twenty metres off left the stair hall's `landing` one of the
        four nearly-empty rooms BRIEF-r11 opens with. The authored, unseeded
        Foyer is unchanged. */
-    props: { shapes: [14, 0, 5, 4, 5, 1, 7], count: 26, height: 2.5, layout: 'perimeter', file: 6,
+    props: { shapes: [62, 63, 64, 4, 64, 65, 63], count: 26, height: 2.5, layout: 'perimeter', file: 6,
       family: ['wings', 'wings', 'colonnade'],
       /* AND THE ENTRANCE HALL'S OWN FURNITURE, placed rather than dealt --
          round 10 fix 6. A pair of glazed vitrines down the sides, two
@@ -208,9 +213,9 @@ export const REGIONS = {
          what was missing was anything at all standing in the near half of this
          frame. */
       near: [
-        { shape: 5,  x: -6.35, z: -3.40, tone: 0.94 },   // vitrine, left
-        { shape: 5,  x:  6.35, z: -3.60, tone: 0.94 },   // vitrine, right
-        { shape: 20, x: -7.60, z: -6.60, tone: 0.88 },   // console and pier glass
+        { shape: 64, x: -6.35, z: -3.40, tone: 0.94 },   // vitrine, left
+        { shape: 64, x:  6.35, z: -3.60, tone: 0.94 },   // vitrine, right
+        { shape: 68, x: -7.60, z: -6.60, tone: 0.88 },   // console and pier glass
         /* ...and this one stands EXACTLY under the warm practical at
            (-3.2, 1.30, -5.4). Round 10 fix 1 is another builder's, but a
            torchere placed under a flame is a fitting for it, and a torchere
@@ -224,9 +229,9 @@ export const REGIONS = {
            fitting, so it yields to that one in every room -- one light, one
            fitting -- and is kept only so the room deals the same rand() stream
            it was judged with. The other torchere below is furniture and stays. */
-        { shape: 1,  x: -3.20, z: -5.40, tone: 0.72, under: 2 },   // torchere, lit
-        { shape: 1,  x:  5.55, z: -3.15, tone: 0.94 },   // torchere, beside it
-        { shape: 0,  x:  4.65, z: -1.30, tone: 0.86 },   // the buttoned hall chair
+        { shape: 65, x: -3.20, z: -5.40, tone: 0.72, under: 2 },   // torchere, lit
+        { shape: 65, x:  5.55, z: -3.15, tone: 0.94 },   // torchere, beside it
+        { shape: 63, x:  4.65, z: -1.30, tone: 0.86 },   // the buttoned hall chair
         /* ROUND 16 ITEM 6, judge 1 on combat: "the left third behind the Kid
            -- pilaster, dado and floor wash into one warm grey; put a hall
            chair or a case clock there and light its edge, rather than
@@ -239,7 +244,13 @@ export const REGIONS = {
            stands inside the warm practical at (-3.2, -5.4), so its case takes
            that light down one edge -- which is the half of the note that says
            light the OBJECT and not the room. */
-        { shape: 14, x: -5.05, z: -1.60, tone: 0.90 },   // the case clock, left
+        { shape: 62, x: -5.05, z: -1.60, tone: 0.90 },   // the case clock, left
+        /* ROUND 25, both survey judges on the Foyer: "its empty foreground
+           floor is dressed (a rug's border, a hall table, an umbrella
+           stand)". A hall keeps its pier table against the wall by the
+           door, and its stick stand at the foot of the stair. */
+        { shape: 66, x:  6.90, z: -6.20, tone: 0.92 },   // the pier table
+        { shape: 67, x: -3.90, z: -0.40, tone: 0.92 },   // the umbrella stand
       ] },
     particles: { mix: [[PTYPE.DUST, 0.80], [PTYPE.WISP, 0.12], [PTYPE.EMBER, 0.08]],
                  tint: '#ffe6bc', wispTint: '#7fd9ec', emberTint: '#ffb64a',
@@ -253,7 +264,14 @@ export const REGIONS = {
       { kind: 'warm', x: -3.2, y: 1.30, z: -5.4, color: '#e5bf7e', intensity: 1.47, radius: 5.68 },
       { kind: 'cold', x: 4.6, y: 4.2, z: -10.5, color: '#79afce', intensity: 1.63, radius: 10.0 },
     ],
-    shafts: { count: 3, spread: 15, y: 9.6, z: -13.5, angle: 0.28, width: 3.2, intensity: 0.38, pool: 1.7 },
+    /* ROUND 25, both survey judges: "a milky purple-grey haze lies over
+       the grand stair and its landing". Bisected on the fight's own hall
+       (shafts=0, then wallFog): it was the three moon shafts falling across
+       the landing at 0.38, and the wall's own fog over the far wall at the
+       default 0.18. The beams stay -- the moon through the landing window --
+       as a breath, and the far wall keeps its darks. */
+    shafts: { count: 3, spread: 15, y: 9.6, z: -13.5, angle: 0.28, width: 3.2, intensity: 0.13, pool: 1.5 },
+    wallFog: 0.06,
     bloom: 0.80, warmTone: 0.05, halation: 0.55,
   },
 
@@ -1183,12 +1201,12 @@ const LAYOUT_FAMILY = {
    hall is metres off the side wall, and a mirror standing out on the floor
    reads as a slab. */
 const FOYER_NEAR_HEARTH = [
-  { shape: 0,  x: -5.20, z: -3.10, tone: 0.90 },   // a buttoned hall chair
-  { shape: 0,  x:  5.40, z: -3.50, tone: 0.90 },   // and its pair across the hall
-  { shape: 14, x: -7.50, z: -6.40, tone: 0.86 },   // the longcase clock by the wall
-  { shape: 5,  x:  7.60, z: -7.00, tone: 0.88 },   // a cabinet opposite it
-  { shape: 1,  x: -3.20, z: -5.40, tone: 0.72, under: 2 },
-  { shape: 5,  x:  6.60, z: -2.10, tone: 0.94 },   // a glazed cabinet
+  { shape: 63, x: -5.20, z: -3.10, tone: 0.90 },   // a buttoned hall chair
+  { shape: 63, x:  5.40, z: -3.50, tone: 0.90 },   // and its pair across the hall
+  { shape: 62, x: -7.50, z: -6.40, tone: 0.86 },   // the longcase clock by the wall
+  { shape: 64, x:  7.60, z: -7.00, tone: 0.88 },   // a cabinet opposite it
+  { shape: 65, x: -3.20, z: -5.40, tone: 0.72, under: 2 },
+  { shape: 64, x:  6.60, z: -2.10, tone: 0.94 },   // a glazed cabinet
 ];
 const FOYER_NEAR_GALLERY = [
   /* (busts on term pedestals, round 14: the gallery's statues read as "dark
@@ -1200,10 +1218,10 @@ const FOYER_NEAR_GALLERY = [
      nearest thing in the gallery and its face carries its marks.) */
   { shape: 26, x: -6.10, z: -3.50, tone: 0.96, zAlong: 2.40, scale: 1.15 },   // a bust on its term
   { shape: 26, x:  6.30, z: -3.80, tone: 0.96 },   // and its pendant
-  { shape: 5,  x: -7.50, z: -7.20, tone: 0.90 },   // vitrines further down the gallery
-  { shape: 5,  x:  7.60, z: -7.40, tone: 0.90 },
-  { shape: 1,  x: -3.20, z: -5.40, tone: 0.72, under: 2 },
-  { shape: 0,  x: -5.40, z: -1.60, tone: 0.86 },   // a hall chair by the near wall
+  { shape: 64, x: -7.50, z: -7.20, tone: 0.90 },   // vitrines further down the gallery
+  { shape: 64, x:  7.60, z: -7.40, tone: 0.90 },
+  { shape: 65, x: -3.20, z: -5.40, tone: 0.72, under: 2 },
+  { shape: 63, x: -5.40, z: -1.60, tone: 0.86 },   // a hall chair by the near wall
 ];
 /* A FAMILY PLOT AT ARM'S LENGTH (round 14): the Graveyard's plots are seen
    from AMONG the graves, and the rows layout puts its nearest rank eight metres
@@ -1242,7 +1260,7 @@ export const ROOM_KINDS = {
       /* ...and it is seen FROM ITS DOOR: a parlour is a room off the hall,
          and you stand in its doorcase looking in at the fire. */
       { subject: 'chimney', doorX: 6.40, near: FOYER_NEAR_HEARTH, room: { d: 0.80 },
-        swap: [[7, 0]], ceil: 3, ceilGain: 0.55, cam: { y: -0.25, z: -1.2, look: -0.25, fov: 0 },
+        swap: [[7, 63]], ceil: 3, ceilGain: 0.55, cam: { y: -0.25, z: -1.2, look: -0.25, fov: 0 },
         door: 'case', vantage: { at: 'threshold', back: 2.4, lens: 0.88, dip: 0.30, dy: -0.20 } },
       /* a gallery is long and narrow, so its arcade runs away down both
          sides; it is paved in flags and vaulted bay by bay */
