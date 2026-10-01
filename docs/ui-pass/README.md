@@ -174,6 +174,8 @@ so round 2 runs six at once, as round 1 did.
 
 | 23 | **FOUR MORE WINGS** — the Bathhouse, the Lampworks, the Attic, the Kennels (sheets at the Deck's tier) | VERDITER 6.23 · ULTRAMARINE 6.18 · MADDERLAKE 5.94 · the wings before **3.22** | VERDITER, 2 of 3 and the highest mean, as the SYSTEM (walls built in courses, darks kept dark, every wing its name) while the screens split three ways. **+3.01**, second only to round 14 (+3.64). All three judges asked for ULTRAMARINE's furnishing (tubs with water, ceilings of lanterns, reflectors, doghouses) and MADDERLAKE's kennel stalls and attic as the graft | `f91f47d` |
 
+| 24 | **THE HOUSE'S OWN ROOMS** — the Nursery, the Sleeping Quarters, the Study & Library, the Crypt (sheets at the Deck's tier) | SMALTINE 6.72 · KERMESITE 6.42 · ORPINE 6.14 · the wings before **2.94** | SMALTINE, 2 of 3 and the highest mean, five of six screens: each room the room it claims, each wing's rooms DISTINCT, darks dark, objects crisp. **+3.78, the largest refining gain of the pass.** All three judges asked for ORPINE's Sleeping Quarters (robes on pegs, a moon window, a red striped bedroom) and KERMESITE's nursery frieze and crypt vaults as the graft | `0fd3de7` |
+
 **Scores anchor to the candidates beside them.** Round 0's winner scored 7.0 in
 round 0 and 5.58 as round 1's baseline: the judges grew stricter as the field
 improved. Compare a winner with the baseline IN ITS OWN ROUND (round 1 REFINE:
@@ -196,6 +198,7 @@ Against their own baselines:
 | 11 | VARIATION **+2.17** (sheets 3-3.5 -> 6-7) | — |
 | 12 | — | THE LAST WEB CHROME **+5.9** (per-screen winners 7.33 / 8.00 / 7.67 against 2 / 1 / 1.33) |
 | 13 | CHROME, second pass **+2.22** (coach 6.0 -> 8.0, veil 6.0 -> 8.67, toast 5.0 -> 7.0) | — |
+| 24 | THE HOUSE'S OWN ROOMS **+3.78** (the baseline 2.94; faster on every fight) | — |
 | 23 | FOUR MORE WINGS **+3.01** (the literal angle took the system, the object angle the screens) | — |
 | 22 | FOUR WINGS THAT ARE NOT YET THEIR NAME **+2.64** (the wings before scored 2.5-3.8: the survey's rooms were the headroom) | — |
 | 21 | THE FIGHT'S ROOM AT THE DECK'S TIER **+2.40** (the baseline's rooms scored 4.1 at the tier players actually get) | — |
@@ -997,3 +1000,20 @@ Attic and the Kennels.
 - **No port clash**: BASE on each builder's port + 100 held.
 - Perf fell on three wings (Lampworks 13.4 -> 11.1, Kennels 13.8 -> 11.2):
   a wing's own program can skip what its walls never draw.
+
+### Round 24: the house's own rooms, 2026-10-01..02
+
+**SMALTINE, 2 of 3 judges, 6.72 against 2.94 — +3.78**, the largest
+refining gain of the pass (run `wf_863ea9b3-589`).
+
+- **The third wing round gained the most of the three** (+2.64, +3.01,
+  +3.78). The template held, and the baselines were the worst left in the
+  house (2.3-3.3): the survey's ranking was right about the headroom.
+- **The literal angle won again** (rounds 20, 23 and 24; 21 went to the inked line, 22 to the object). The angle built
+  to fix the survey's sharpest line — "the Sleeping Quarters copy the
+  Nursery's template" — came second, and was marked down for re-lighting
+  one template ACROSS a wing's rooms instead.
+- **Fewer drawn props were cheaper than many dealt boxes**: every fight got
+  faster (nursery 14.6 -> 11.1 ms).
+- The battery ran on the WINNER before the graft this time (round 23's
+  winner had left four dead keys that surfaced only after its graft).
