@@ -5940,6 +5940,287 @@ float lampWallH(vec2 q, float qpx, out float occ){
   return h;
 }
 #endif
+#if MM_ROOMS == 14
+/* ── THE MOONLIT ATTIC AND OBSERVATORY (round 23) ──────────────────────────
+   Both survey judges: "the rafters are diagonal lines scrawled over a blue
+   cloud texture"; "the observatory has no telescope". An attic is UNDER A
+   ROOF: low knee walls of boarding, the roof pitched up from them on its
+   rafters and purlins to the ridge (the ceiling, pattern 13), and at the
+   end the GABLE -- brick between the roof's own principal timbers, the
+   collar and the king post of the end truss standing in it, and in the
+   gable the great round window open on the moon, which is what an
+   observatory under the eaves is built round. Its telescope stands in
+   front of it (prop 35). Two rooms:
+     observatory (40) the gable's oculus on the night, star charts pinned
+                      either side of it, an orrery on its table, a shelf of
+                      instruments; the knee walls boarded, hung with charts
+     eaves       (41) the archive: the gable and the knee walls lined with
+                      cases of books to the roof, a ladder, a small round
+                      light at the apex */
+/* the gable's line: the height of the roof over a point of the end wall */
+float atRoofY(float cx){
+  return uCeil + uGable*(1.0 - clamp(abs(cx)/(uSize.x*0.5 - 0.6), 0.0, 1.0));
+}
+/* a run of books on a shelf: spines of every colour and height */
+float atBooks(vec2 q, float sy0, float pitch, float px, float lum, float sd, inout vec3 col, inout float h){
+  float sr = floor((q.y - sy0)/pitch);
+  float sy = q.y - sy0 - sr*pitch;
+  float shelf = 1.0 - smoothstep(0.024 - px, 0.024 + px, sy);
+  float bwd = 0.050 + 0.016*mmHash11(sr*3.1 + sd);
+  float bxo = q.x + sr*0.37;
+  float bid = floor(bxo/bwd);
+  float bxl = bxo - (bid + 0.5)*bwd;
+  float bh = (0.62 + 0.30*mmHash11(bid*2.3 + sr*5.1))*(pitch - 0.05);
+  float has = step(mmHash11(bid*8.9 + sr*3.3 + sd), 0.86);
+  float lean = (mmHash11(bid*4.7 + sr) - 0.5)*0.12*step(0.80, mmHash11(sr*9.1 + sd));
+  float spine = has*step(0.03, sy)*step(sy, 0.03 + bh)*(1.0 - smoothstep(bwd*0.40, bwd*0.40 + px, abs(bxl + lean*(sy - 0.03))));
+  float bk = mmHash11(bid*11.3 + sr*2.9);
+  vec3 bcol = bk < 0.24 ? vec3(0.56, 0.12, 0.08) : (bk < 0.42 ? vec3(0.14, 0.32, 0.18)
+            : (bk < 0.62 ? vec3(0.46, 0.28, 0.12) : (bk < 0.80 ? vec3(0.14, 0.18, 0.44) : vec3(0.60, 0.44, 0.16))));
+  bcol *= (lum*2.4 + 0.012)*(0.70 + 0.50*mmHash11(bid*6.1));
+  float bu = clamp((bxl + lean*(sy - 0.03))/(bwd*0.40), -1.0, 1.0);
+  bcol *= 0.55 + 0.60*sqrt(max(1.0 - bu*bu, 0.0));
+  float gilt = spine*step(0.55, mmHash11(bid*6.7))*mmInkP(sy - 0.03 - bh*0.80, px, 1.0);
+  bcol = mix(bcol, vec3(0.86, 0.66, 0.28)*(lum*2.6 + 0.02), gilt);
+  col = mix(col*0.25, bcol, spine);
+  col = mix(col, vec3(0.30, 0.18, 0.10)*(lum*2.4 + 0.010), shelf);
+  h = 1.0 + 0.22*shelf + 0.10*spine - 0.25*(1.0 - spine)*(1.0 - shelf);
+  gInk = max(gInk, mmInkP(sy - 0.03 - bh, px, 1.0)*0.5*has*step(abs(bxl), bwd*0.40));
+  return spine;
+}
+float atticWallH(vec2 q, float qpx, out float occ){
+  occ = 0.0;
+  float far = step(0.5, uFar);
+  float px = max(qpx, 0.003);
+  float lum = mmLum(uMid);
+  float cx = q.x - uSize.x*0.5, ax = abs(cx);
+  float isArch = step(40.5, uSubject);
+  float roofY = far > 0.5 ? atRoofY(cx) : uCeil;
+  /* ---- the timber: old pine boarding, dark, each board its own ---- */
+  float bw = 0.16;
+  float bi = floor(q.x/bw);
+  float bxl = q.x - (bi + 0.5)*bw;
+  float bv = mmHash11(bi*7.3 + uSeed);
+  float grain = mmNoise(vec2(q.x*30.0, q.y*1.5) + bi);
+  vec3 pine = vec3(0.30, 0.19, 0.12)*(lum*2.4 + 0.008)*(0.70 + 0.40*bv)*(0.85 + 0.25*grain);
+  float bj = mmInkP(abs(bxl) - bw*0.5, px, 1.0)*mmLod(bw, px);
+  vec3 col = pine*(1.0 - 0.60*bj);
+  float h = 1.0 + 0.04*bv - 0.10*bj;
+  float emit = 0.0, emitW = 0.0, gloss = 0.05;
+  vec3 oak = vec3(0.24, 0.14, 0.08)*(lum*2.4 + 0.008)*(0.85 + 0.25*mmNoise(vec2(q.x*8.0, q.y*20.0)));
+  vec3 brass = vec3(0.86, 0.62, 0.28)*(lum*2.6 + 0.020);
+  vec3 paper = vec3(0.62, 0.56, 0.42)*(lum*1.8 + 0.010);
+  /* the skirting board */
+  float sk = mmBandA(q.y, 0.0, 0.18, px);
+  col = mix(col, oak, sk);
+  h += sk*0.25;
+  mmPen(q.y - 0.18, 1.1, 0.8);
+  if (far > 0.5) {
+    /* ===== THE GABLE ===== brick between the roof's own timbers */
+    float val, glz;
+    float jt = r23Brick(q, 0.075, 0.225, px, val, glz);
+    vec3 brick = vec3(0.36, 0.20, 0.14)*(lum*2.0 + 0.007)*(0.66 + 0.46*val);
+    float gab = step(uCeil - 0.10, q.y);
+    col = mix(col, brick*(1.0 - 0.5*jt), gab);
+    h = mix(h, 1.0 + 0.05*val - 0.10*jt, gab);
+    /* the wall plate along the eaves, and the principal rafters up the
+       gable's two rakes to the ridge */
+    float wp = mmBandA(q.y, uCeil - 0.12, uCeil + 0.10, px);
+    float rake = (roofY - q.y);
+    float rafter = (1.0 - smoothstep(0.30 - px*2.0, 0.30 + px*2.0, rake))*step(q.y, roofY + 0.05)*step(uCeil, q.y);
+    /* the end truss: a collar across at half the rise, the king post from it
+       to the ridge, two struts down from the collar to the plate */
+    float CY = uCeil + uGable*0.50;
+    float cHW = (uSize.x*0.5 - 0.6)*0.50;
+    float collar = mmBandA(q.y, CY - 0.11, CY + 0.11, px)*step(ax, cHW);
+    float king = (1.0 - smoothstep(0.11 - px, 0.11 + px, ax))*step(CY, q.y)*step(q.y, roofY);
+    vec2 sa = vec2(cHW*0.55, CY), sb = vec2(cHW*1.25, uCeil + 0.05);
+    float strut = (1.0 - smoothstep(0.09 - px, 0.09 + px, sSegD(vec2(ax, q.y), sa, sb)))*step(uCeil, q.y);
+    float tim = clamp(wp + rafter + collar + king + strut, 0.0, 1.0);
+    col = mix(col, oak*(0.85 + 0.30*smoothstep(-0.1, 0.1, q.y - CY)), tim);
+    h = mix(h, 1.35, tim);
+    mmPen(rake - 0.30, 1.4, 0.95*step(uCeil, q.y)*step(q.y, roofY));
+    mmPen(q.y - CY + 0.11, 1.2, 0.9*step(ax, cHW)); mmPen(q.y - CY - 0.11, 1.2, 0.9*step(ax, cHW));
+    mmPen(ax - 0.11, 1.2, 0.9*step(CY, q.y)*step(q.y, roofY));
+    mmPen(sSegD(vec2(ax, q.y), sa, sb) - 0.09, 1.1, 0.85*step(uCeil, q.y));
+    /* the peg holes at the joints */
+    if (isArch < 0.5) {
+      /* ---- THE OCULUS: the great round window open on the night ---- */
+      float OY = uCeil + uGable*0.24 + 0.10, OR = min(uGable*0.30, 1.55);
+      float orr = length(vec2(cx, q.y - OY));
+      float inO = mmCover(-(orr - OR));
+      float frame = mmCover(-(orr - OR - 0.16))*(1.0 - inO);
+      col = mix(col, oak*1.1, frame);
+      h += frame*0.40;
+      mmPen(orr - OR - 0.16, 1.4, 0.95); mmPen(orr - OR, 1.2, 0.9);
+      /* the night in it: the sky deepening up, stars, the moon high in one
+         quarter -- and the window's iron: a ring and eight spokes */
+      vec2 op = vec2(cx, q.y - OY);
+      float ang = atan(op.y, op.x);
+      float spk = mmInkP(abs(fract(ang/0.7854 + 0.5) - 0.5)*0.7854*orr, px, 1.6)*step(OR*0.30, orr);
+      float rng = mmInkP(orr - OR*0.30, px, 1.8) + mmInkP(orr - OR*0.68, px, 1.4);
+      float bars = clamp(spk + rng, 0.0, 1.0)*inO;
+      vec3 sky = mix(vec3(0.012, 0.022, 0.050), vec3(0.030, 0.050, 0.090), smoothstep(OR, -OR, op.y));
+      vec2 sg = q*14.0;
+      vec2 si = floor(sg);
+      float st = (1.0 - smoothstep(0.06, 0.14, length(fract(sg) - 0.5 - (mmHash22(si) - 0.5)*0.6)))*step(0.93, mmHash21(si + 3.1));
+      vec2 mp = op - vec2(-0.45*OR, 0.38*OR);
+      float mr = length(mp);
+      float moon = mmCover(-(mr - 0.30*OR*0.62));
+      float crater = moon*smoothstep(0.55, 0.75, mmNoise(mp*9.0 + 3.0))*0.35;
+      col = mix(col, sky, inO*(1.0 - bars));
+      col = mix(col, vec3(0.025, 0.022, 0.020), bars);
+      h = mix(h, 0.5, inO*(1.0 - bars));
+      gInk = max(gInk, bars*0.9);
+      emit += inO*(1.0 - bars)*(0.04 + st*0.9 + moon*(2.2 - crater*2.0) + 0.35*exp(-mr*2.6/OR));
+      /* the moonlight on the sill and the reveal, and its spill on the
+         gable's brick and the end truss round the window */
+      emit += frame*0.10*smoothstep(OY + OR, OY - OR, q.y);
+      emit += (1.0 - inO)*(1.0 - frame)*0.035*exp(-max(orr - OR, 0.0)*0.9)*step(uCeil, q.y);
+      /* ---- the star charts pinned either side, and their pins ---- */
+      for (int k = 0; k < 2; k++){
+        float sx = (float(k)*2.0 - 1.0)*(OR + 1.30);
+        vec2 cp = vec2(cx - sx, q.y - (uCeil + 0.55));
+        float chD = mmBox(cp, vec2(0.48, 0.60), 0.01);
+        float chart = mmCover(-chD)*step(q.y, atRoofY(cx) - 0.35);
+        vec3 ink = vec3(0.10, 0.12, 0.26)*(lum*1.6 + 0.008);
+        vec2 sq = cp*16.0;
+        float cst = (1.0 - smoothstep(0.08, 0.20, length(fract(sq) - 0.5)))*step(0.80, mmHash21(floor(sq) + float(k)*7.0));
+        float rings = mmInkP(length(cp) - 0.40, px, 1.0) + mmInkP(length(cp) - 0.22, px, 1.0) + mmInkP(cp.y, px, 1.0)*step(abs(cp.x), 0.45);
+        col = mix(col, mix(ink, paper*1.2, clamp(cst + rings*0.6, 0.0, 1.0)), chart);
+        h += chart*0.15;
+        mmPen(chD, 1.0, 0.8*step(q.y, atRoofY(cx) - 0.35));
+      }
+      /* ---- the orrery on its table, left of the window ---- */
+      float tx = cx + OR + 1.30;
+      float tab = mmCover(-mmBox(vec2(tx, q.y - 0.80), vec2(0.62, 0.035), 0.01));
+      float tlegs = mmCover(-mmBox(vec2(abs(tx) - 0.52, q.y - 0.40), vec2(0.035, 0.40), 0.01));
+      col = mix(col, oak*1.2, clamp(tab + tlegs, 0.0, 1.0));
+      h += tab*0.4 + tlegs*0.3;
+      mmPen(mmBox(vec2(tx, q.y - 0.80), vec2(0.62, 0.035), 0.01), 1.0, 0.8);
+      vec2 op2 = vec2(tx, q.y - 1.40);
+      float ped = mmCover(-mmBox(vec2(tx, q.y - 1.05), vec2(0.03, 0.22), 0.01));
+      float sun = mmCover(-(length(op2) - 0.09));
+      float orb = 0.0, pl = 0.0;
+      for (int i = 0; i < 3; i++){
+        float rr2 = 0.20 + float(i)*0.14;
+        orb += mmInkP(length(op2*vec2(1.0, 3.2)) - rr2, px, 1.2)*0.8;
+        float pa = float(i)*2.1 + 0.7;
+        pl = max(pl, mmCover(-(length(op2 - vec2(cos(pa)*rr2, sin(pa)*rr2/3.2)) - 0.035 - 0.01*float(i))));
+      }
+      col = mix(col, brass, clamp(ped + orb, 0.0, 1.0));
+      col = mix(col, vec3(0.95, 0.75, 0.35)*(lum*2.6 + 0.03), sun);
+      col = mix(col, brass*1.2, pl);
+      h += (ped + sun + pl)*0.25;
+      gloss = max(gloss, ped + orb + sun + pl);
+      /* ---- a shelf of instruments right of the window: a globe, books,
+         a sextant, a brass lamp ---- */
+      float shx = cx - OR - 1.30;
+      float sh = mmBandA(q.y, 1.50, 1.55, px)*step(abs(shx), 0.75);
+      col = mix(col, oak*1.2, sh);
+      h += sh*0.35;
+      float glob = mmCover(-(length(vec2(shx + 0.40, q.y - 1.75)) - 0.18));
+      float gmer = mmInkP(length(vec2(shx + 0.40, q.y - 1.75)) - 0.22, px, 1.4)*step(1.55, q.y);
+      col = mix(col, vec3(0.42, 0.40, 0.26)*(lum*2.2 + 0.012)*(0.7 + 0.5*smoothstep(1.6, 1.9, q.y)), glob);
+      col = mix(col, brass, gmer);
+      vec3 c0 = col; float h0 = h;
+      atBooks(vec2(q.x, q.y), 1.55, 0.30, px, lum, uSeed + 2.0, col, h);
+      float onBk = step(abs(shx - 0.30), 0.38)*step(1.55, q.y)*step(q.y, 1.85);
+      col = mix(c0, col, onBk);
+      h = mix(h0, h, onBk);
+      float lmp = mmCover(-mmBox(vec2(shx + 0.40, q.y - 0.95), vec2(0.06, 0.12), 0.04));
+      emitW += lmp*1.4 + 0.12*exp(-length(vec2(shx + 0.40, q.y - 1.0))*2.5);
+      col = mix(col, vec3(1.0, 0.8, 0.5)*(lum*2.0 + 0.03), lmp);
+    } else {
+      /* ---- THE ARCHIVE'S GABLE: cases of books to the roof, stepped under
+         its rakes, a ladder, and a small round light at the apex ---- */
+      float caseTop = atRoofY(cx) - 0.40;
+      float onCase = step(0.20, q.y)*step(q.y, caseTop)*step(ax, uSize.x*0.5 - 0.7)*(1.0 - step(ax, 0.55)*step(q.y, 2.1));
+      float CW = 1.10;
+      float ci = floor(cx/CW);
+      float cxl = cx - (ci + 0.5)*CW;
+      float upr = (1.0 - smoothstep(0.045 - px, 0.045 + px, abs(abs(cxl) - CW*0.5)))*onCase;
+      vec3 c0 = col; float h0 = h;
+      atBooks(q, 0.22, 0.36, px, lum, uSeed + ci, col, h);
+      col = mix(c0, col, onCase);
+      h = mix(h0, h, onCase);
+      col = mix(col, oak*1.1, upr);
+      h += upr*0.35;
+      mmPen(abs(cxl) - CW*0.5 + 0.045, 1.0, 0.8*onCase);
+      float cap = mmBandA(q.y, caseTop, caseTop + 0.08, px)*step(ax, uSize.x*0.5 - 0.7);
+      col = mix(col, oak*1.2, cap);
+      /* the doorway through the middle into the next run of the archive */
+      float dD = mmArch(vec2(cx, q.y - 0.0), 0.55, 1.55);
+      float door = mmCover(-dD);
+      col = mix(col, vec3(0.010, 0.008, 0.008), door);
+      emitW += door*0.10*smoothstep(1.6, 0.0, q.y);
+      mmPen(dD, 1.3, 0.9);
+      /* the library ladder against the cases on its rail */
+      float lx = cx - 1.75;
+      float lad = (mmInkP(abs(lx + (q.y - 0.0)*0.12) - 0.22, px, 2.0))*step(q.y, 3.4)
+                + mmInkP(mmRowX(q.y, 0.30), px, 1.6)*step(abs(lx + q.y*0.12), 0.22)*step(q.y, 3.3);
+      col = mix(col, oak*1.4, clamp(lad, 0.0, 1.0));
+      gInk = max(gInk, clamp(lad, 0.0, 1.0)*0.35);
+      /* the round light at the apex */
+      float OY = atRoofY(0.0) - 1.05;
+      float orr = length(vec2(cx, q.y - OY));
+      float inO = mmCover(-(orr - 0.42));
+      float spk = mmInkP(abs(fract(atan(q.y - OY, cx)/0.7854 + 0.5) - 0.5)*0.7854*orr, px, 1.4);
+      col = mix(col, oak, mmCover(-(orr - 0.56))*(1.0 - inO));
+      col = mix(col, mix(vec3(0.02, 0.03, 0.06), vec3(0.03), spk), inO);
+      emit += inO*(1.0 - spk)*0.35;
+      mmPen(orr - 0.56, 1.2, 0.9);
+    }
+    /* above the roof line nothing of this wall is seen */
+    col *= step(q.y, roofY + 0.4);
+  } else {
+    /* ===== THE KNEE WALLS: boarded, a rail along their head ===== */
+    float rail = mmBandA(q.y, uCeil - 0.12, uCeil + 0.2, px);
+    col = mix(col, oak, rail);
+    h += rail*0.30;
+    mmPen(q.y - uCeil + 0.12, 1.2, 0.9);
+    if (isArch > 0.5) {
+      /* low cases of books along the knee walls */
+      float onCase = step(0.22, q.y)*step(q.y, uCeil - 0.16);
+      vec3 c0 = col; float h0 = h;
+      atBooks(q, 0.22, 0.36, px, lum, uSeed + 9.0, col, h);
+      col = mix(c0, col, onCase);
+      h = mix(h0, h, onCase);
+      float upr = (1.0 - smoothstep(0.045 - px, 0.045 + px, mmRowX(q.x, 1.10)))*onCase;
+      col = mix(col, oak*1.1, upr);
+      h += upr*0.3;
+    } else {
+      /* hung with charts and a map between the posts of the roof */
+      float PP = 3.0;
+      float pi = floor(q.x/PP);
+      float pxl = q.x - (pi + 0.5)*PP;
+      float post = (1.0 - smoothstep(0.10 - px, 0.10 + px, abs(abs(pxl) - PP*0.5)));
+      col = mix(col, oak*1.1, post);
+      h += post*0.35;
+      mmPen(abs(abs(pxl) - PP*0.5) - 0.10, 1.1, 0.85);
+      float ck = mmHash11(pi*3.7 + uSeed);
+      float chD = mmBox(vec2(pxl, q.y - 1.30), vec2(0.55, 0.42), 0.01);
+      float chart = mmCover(-chD)*step(0.35, ck);
+      vec2 sq = vec2(pxl, q.y - 1.30)*14.0;
+      float cst = (1.0 - smoothstep(0.08, 0.20, length(fract(sq) - 0.5)))*step(0.82, mmHash21(floor(sq) + pi));
+      float grid = mmInkP(mmRowX(pxl, 0.22), px, 1.0) + mmInkP(mmRowX(q.y, 0.22), px, 1.0);
+      vec3 cc = ck < 0.68 ? mix(vec3(0.10, 0.12, 0.26)*(lum*1.6 + 0.008), paper*1.2, clamp(cst + grid*0.25, 0.0, 1.0))
+                          : paper*(0.9 - 0.25*clamp(grid, 0.0, 1.0));
+      col = mix(col, cc, chart);
+      h += chart*0.12;
+      mmPen(chD, 1.0, 0.8*step(0.35, ck));
+    }
+  }
+  /* cobwebs in the angles of the roof */
+  gCol = col;
+  gColAmt = 1.0;
+  float emitT = emit + emitW;
+  gWEmit = emitT;
+  gWEmitC = (vec3(0.70, 0.78, 1.00)*emit + vec3(1.00, 0.74, 0.42)*emitW) / max(emitT, 1e-4);
+  gWGloss = gloss;
+  return h;
+}
+#endif
 float wallH(vec2 q, out float occ){
   gTreeM = 0.0;
   gTreeN = 0.0; gTreeF = 0.0; gTreeRim = 0.0; gTreeTex = 0.5;
@@ -8670,6 +8951,42 @@ void main(){
     pat = (1.0 - smoothstep(0.09, 0.22, bay))*0.75
         + (1.0 - smoothstep(0.06, 0.16, zig))*(1.0 - smoothstep(0.35, 1.4, bay))*0.55;
     pat = pat*0.9 - 0.18 + mmFbm3(w*2.6 + uSeed)*0.26;
+#if MM_FLOORX == 2
+  } else if (uPattern > 14.5 && uPattern < 15.5) {   // 15 the attic's roof (round 23)
+    /* "The rafters are diagonal lines scrawled over a blue cloud texture"
+       (both judges). The underside of a pitched roof, built: the plane is
+       pitched (Backdrop._applyRoom), so every member here runs where it runs
+       in a roof -- the COMMON RAFTERS up both slopes at a 0.5 m pitch, a
+       PRINCIPAL every 3 m, deeper, with its shadow; the PURLINS along each
+       slope at a third and two-thirds, running to the vanishing point; the
+       RIDGE beam down the middle; the boards between the rafters; and in
+       the right-hand slope a SKYLIGHT on the moon. */
+    float halfW = uSpan.x*0.5;
+    float t = abs(w.x)/max(halfW, 0.1);
+    float rj = abs(fract(w.y/0.50 + 0.5) - 0.5)*0.50;
+    float pj = abs(fract(w.y/3.0 + 0.5) - 0.5)*3.0;
+    float mR = (1.0 - smoothstep(0.040, max(0.070, jw), rj))*(1.0 - smoothstep(0.10, 0.20, mp));
+    float mRs = (1.0 - smoothstep(0.060, max(0.10, jw*1.3), abs(rj - 0.075)))*(1.0 - mR);
+    float mP = 1.0 - smoothstep(0.10, max(0.15, jw*1.5), pj);
+    float pu = min(abs(t - 0.36), abs(t - 0.70))*halfW;
+    float mPu = 1.0 - smoothstep(0.10, max(0.15, jw*1.4), pu);
+    float mRidge = 1.0 - smoothstep(0.16, max(0.22, jw*1.5), abs(w.x));
+    float bdj = abs(fract(w.x/0.17 + 0.5) - 0.5)*0.17;
+    float mB = (1.0 - smoothstep(0.006, max(0.014, jw), bdj))*(1.0 - smoothstep(0.06, 0.20, mp));
+    float timber = clamp(max(max(mR*0.85, mP), max(mPu, mRidge)), 0.0, 1.0);
+    pat = 0.04 - mB*0.04 - mRs*0.04 + timber*0.78 + mP*0.14 + mPu*0.12;
+    cellv = mmHash11(floor(w.y/0.50)*3.1 + uSeed);
+    /* the skylight: a glazed frame between two rafters on the moon side */
+    vec2 sk = vec2(vWorld.x - 2.6, vWorld.z + 8.6);
+    float skD = max(abs(sk.x) - 1.0, abs(sk.y) - 0.75);
+    float sOpen = 1.0 - smoothstep(-mp, mp, skD);
+    float sFrame = (1.0 - smoothstep(-mp, mp, skD - 0.12))*(1.0 - sOpen);
+    float sBar = (1.0 - smoothstep(0.02, max(0.035, jw), min(abs(sk.x), abs(sk.y))))*sOpen;
+    glazed = sOpen*(1.0 - sBar);
+    roofLit = glazed*1.6;
+    pat = mix(pat, 0.85, sFrame);
+    pat = mix(pat, 0.10, glazed);
+#endif
   } else {                                   // 9 glasshouse roof, bars to a ridge
     /* ROUND 10, FIX 9: "The Greenhouse's ceiling is a flat black band. A
        glasshouse roof is GLAZED: carry the glazing bars over the top in
@@ -9042,6 +9359,14 @@ void main(){
   alb *= mix(vec3(1.0), vec3(1.10, 0.95, 0.80), earth*0.70);
 #endif
   alb *= 0.55 + 0.90*pat;
+#if MM_FLOORX == 2
+  /* (round 23: the attic's roof is TIMBER -- the region's violet night
+     carried to old pine, and no cloud in it: its value is its members) */
+  if (uPattern > 14.5 && uPattern < 15.5) {
+    vec3 pine = mix(uDeep, uMid, 0.55)*vec3(1.55, 1.05, 0.62);
+    alb = pine*(0.14 + 2.10*pat)*(0.90 + 0.20*cellv);
+  }
+#endif
   alb += uAlbLift;
   alb *= mix(0.58, 1.0, smoothstep(uSpan.x*0.52, uSpan.x*0.24, abs(w.x)));   // creeps into shadow at the walls
   /* A tooth in SCREEN space: authored in metres it is 4 px at the camera's
@@ -9590,7 +9915,9 @@ void main(){
      texel density instead of the same number of stripes. */
   vSize = aScale;
   vec3 pos = vec3(position.xy * aScale, 0.0);
-  pos.x += sin(uTime*0.55 + aSeed*31.0) * uSway * (0.25 + uv.y*0.75) * aScale.y * 0.018;
+  /* (a roof truss, 38, is joinery standing on two walls: it does not sway) */
+  pos.x += sin(uTime*0.55 + aSeed*31.0) * uSway * (0.25 + uv.y*0.75) * aScale.y * 0.018
+         * (1.0 - step(37.5, aShape)*step(aShape, 38.5));
   /* ...except a planting bed (24), which is ARCHITECTURE: a run of them makes
      one coursed kerb across the room, and turned each about its own centre
      they would come apart into a sawtooth. */
@@ -10316,6 +10643,112 @@ float lbSD(vec2 m, vec2 msz, float seed, out float part){
   if (gl < 0.0) part = 3.0;
   if (lpG < 0.0) part = 4.0;
   return dd;
+}
+
+/* 35  A BRASS TELESCOPE ON ITS TRIPOD: three splayed legs of oak from the
+   head, the mount, the long brass tube raised toward the window with its
+   bands and its dew cap, the eyepiece at the low end and the finder riding
+   on top. part 0 oak, 1 brass, 2 the dark of a lens or an eyepiece, 3 the
+   mount's iron. */
+float tlSD(vec2 m, vec2 msz, float seed, float wire, out float part){
+  float sd = mmHash11(seed*2.7) < 0.5 ? -1.0 : 1.0;
+  vec2 q = vec2(m.x*sd, m.y);
+  vec2 apex = vec2(0.0, 1.30);
+  float legs = min(mmSeg2(q, apex, vec2(-0.56, 0.0), max(0.032, wire)),
+                   mmSeg2(q, apex, vec2(0.50, 0.0), max(0.032, wire)));
+  legs = min(legs, mmSeg2(q, apex, vec2(0.06, 0.04), max(0.026, wire)));
+  float spread = mmSeg2(q, vec2(-0.36, 0.46), vec2(0.32, 0.46), max(0.012, wire*0.8));
+  float mount = mmBox(q - vec2(0.0, 1.36), vec2(0.09, 0.08), 0.02);
+  vec2 ax = vec2(0.848, 0.530);
+  vec2 nr = vec2(-ax.y, ax.x);
+  vec2 r = q - vec2(0.0, 1.46);
+  float al = dot(r, ax), ac = dot(r, nr);
+  float rad = mix(0.065, 0.095, clamp((al + 0.60)/1.70, 0.0, 1.0)) + 0.016*step(0.92, al);
+  float tube = max(abs(ac) - rad, max(-0.60 - al, al - 1.10));
+  float eye = max(abs(ac) - 0.030, max(-0.78 - al, al + 0.58));
+  float fnd = max(abs(ac - 0.15) - 0.028, max(-0.02 - al, al - 0.42));
+  fnd = min(fnd, max(abs(al - 0.10) - 0.012, abs(ac - 0.08) - 0.07));
+  float d = min(min(legs, spread), min(mount, min(min(tube, eye), fnd)));
+  part = 0.0;
+  if (mount < 0.0) part = 3.0;
+  if (tube < 0.0 || fnd < 0.0) part = 1.0;
+  if (eye < 0.0 || (tube < 0.0 && al > 1.07)) part = 2.0;
+  /* the bands round the tube */
+  if (tube < 0.0 && min(abs(al - 0.95), min(abs(al - 0.20), abs(al + 0.45))) < 0.022) part = 3.0;
+  return d;
+}
+/* 36  A STEAMER TRUNK: a domed lid on a canvas-and-slat box, two leather
+   straps round it, brass corners and the lock plate; on half of them a
+   smaller case stood on top. part 0 canvas, 1 slats and straps, 2 brass. */
+float trSD(vec2 m, vec2 msz, float seed, out float part){
+  float L = min(msz.x*0.5 - 0.04, 0.46);
+  float body = mmBox(m - vec2(0.0, 0.27), vec2(L, 0.27), 0.02);
+  float lid = max(length((m - vec2(0.0, 0.50))/vec2(L, 0.12)) - 1.0, 0.50 - m.y)*0.12;
+  float d = min(body, lid);
+  float top = 0.62;
+  float small = 1e3;
+  if (mmHash11(seed*5.1) < 0.5) {
+    float L2 = L*0.66;
+    small = mmBox(m - vec2(L*0.10, top + 0.16), vec2(L2, 0.16), 0.02);
+    d = min(d, small);
+  }
+  part = 0.0;
+  float ax = abs(m.x);
+  if (abs(ax - L*0.55) < 0.040) part = 1.0;
+  if (abs(m.y - 0.30) < 0.018 || abs(m.y - 0.08) < 0.018) part = 1.0;
+  if ((ax > L - 0.08 && (m.y < 0.08 || abs(m.y - 0.50) < 0.06)) || (ax < 0.05 && abs(m.y - 0.46) < 0.05)) part = 2.0;
+  if (small < 0.0 && body > 0.0 && lid > 0.0) part = 0.5;
+  return d;
+}
+/* 37  FURNITURE UNDER A DUST SHEET: a high-backed chair, or a cheval glass,
+   or a sideboard, under one pale sheet -- its back domed, its seat a
+   shoulder, the cloth falling in folds to a hem that lies on the boards in
+   points. The ghost every attic has. */
+float dsSD(vec2 m, vec2 msz, float seed){
+  float k = mmHash11(seed*3.9);
+  float hw = msz.x*0.5 - 0.05;
+  float d;
+  if (k < 0.40) {
+    /* a chair: the back up to 1.30, the seat a shoulder at 0.72 */
+    float back = mmBox(m - vec2(-hw*0.20, 0.70), vec2(hw*0.55, 0.62), 0.22);
+    float seat = mmBox(m - vec2(hw*0.10, 0.38), vec2(hw*0.86, 0.36), 0.10);
+    d = mmSmin(back, seat, 0.12);
+  } else if (k < 0.72) {
+    /* a cheval glass: tall and narrow, its top rounded */
+    d = mmBox(m - vec2(0.0, 0.80), vec2(hw*0.55, 0.78), 0.26);
+    d = mmSmin(d, mmBox(m - vec2(0.0, 0.10), vec2(hw*0.90, 0.10), 0.05), 0.15);
+  } else {
+    /* a sideboard: broad and low, something stood on it */
+    d = mmBox(m - vec2(0.0, 0.45), vec2(hw, 0.45), 0.08);
+    d = mmSmin(d, length(m - vec2(hw*0.30, 0.98)) - 0.20, 0.10);
+  }
+  /* the hem: it flares at the floor and lies in points */
+  float flare = smoothstep(0.30, 0.0, m.y);
+  d -= flare*0.06*(1.0 + 0.6*sin(m.x*17.0 + seed*4.0));
+  return d;
+}
+
+/* 38  A ROOF TRUSS of oak, spanning the attic from knee wall to knee wall
+   under the pitched roof: the two principal rafters to the ridge, the
+   collar across at half the rise, the king post from it to the ridge, and
+   the arched braces from the wall posts up to the collar's ends. The quad
+   IS the truss: its foot on the wall plates, its apex at the ridge. */
+float tsSD(vec2 m, vec2 msz){
+  float hw = msz.x*0.5, rise = msz.y;
+  const float T = 0.13;
+  float raf = min(mmSeg2(m, vec2(-hw, 0.0), vec2(0.0, rise), T), mmSeg2(m, vec2(hw, 0.0), vec2(0.0, rise), T));
+  /* (under the roof, not over it: the rafter's back is the roof line) */
+  raf = max(raf, m.y - rise*(1.0 - abs(m.x)/hw) - 0.01);
+  float cY = rise*0.52;
+  float cx0 = hw*(1.0 - cY/rise);
+  float col = mmBox(m - vec2(0.0, cY), vec2(cx0, 0.11), 0.01);
+  float king = mmBox(m - vec2(0.0, (cY + rise)*0.5), vec2(0.10, (rise - cY)*0.5), 0.01);
+  float a = hw - 0.25, ex = cx0*0.92;
+  float b = cY/sqrt(max(1.0 - (ex/a)*(ex/a), 0.05));
+  float ell = (length(m/vec2(a, b)) - 1.0)*min(a, b);
+  float brace = max(abs(ell + 0.10) - 0.10, max(-m.y, max(m.y - cY, ex - abs(m.x))));
+  float post = mmBox(vec2(abs(m.x) - (hw - 0.18), m.y - 0.15), vec2(0.13, 0.15), 0.01);
+  return min(min(raf, col), min(min(king, brace), post));
 }
 float gW2Part = 0.0;
 #endif
@@ -11123,6 +11556,17 @@ float shapeField(vec2 uv, vec2 msz, float shape, float seed){
   } else if (shape < 34.5) {              // 34 -- a lamp-maker's bench (round 23)
     float pt;
     d = lbSD(p*msz, msz, seed, pt) / msz.y;
+  } else if (shape < 35.5) {              // 35 -- a telescope on its tripod (round 23)
+    float pt;
+    float mppx = max(length(vec2(dFdx(uv.x), dFdy(uv.x))) * msz.x, 1.0e-5);
+    d = tlSD(p*msz, msz, seed, mppx*0.9, pt) / msz.y;
+  } else if (shape < 36.5) {              // 36 -- a steamer trunk (round 23)
+    float pt;
+    d = trSD(p*msz, msz, seed, pt) / msz.y;
+  } else if (shape < 37.5) {              // 37 -- furniture under a dust sheet (round 23)
+    d = dsSD(p*msz, msz, seed) / msz.y;
+  } else if (shape < 38.5) {              // 38 -- a roof truss (round 23)
+    d = tsSD(p*msz, msz) / msz.y;
 #endif
   }
   /* A BRASS FITTING HAS NO ERODED EDGE. The fbm below is what keeps stone and
@@ -11266,6 +11710,28 @@ float reliefH(vec2 uv, vec2 msz, vec2 mpp, float shape, float seed, out float ti
   if (shape > 31.5) {
     gBedLeaf = 0.0;
     float pt = 0.0;
+    if (shape > 34.5 && shape < 35.5) {
+      tlSD(m, msz, seed, 0.03, pt);
+      /* the tube is ROUND: lit along its top, dark under it */
+      vec2 r = vec2(m.x*(mmHash11(seed*2.7) < 0.5 ? -1.0 : 1.0), m.y) - vec2(0.0, 1.46);
+      float ac = dot(r, vec2(-0.530, 0.848));
+      h += 0.020*step(0.5, pt)*step(pt, 1.5)*(1.0 - abs(ac)/0.10);
+    } else if (shape > 35.5 && shape < 36.5) {
+      trSD(m, msz, seed, pt);
+      h += 0.010*step(0.9, pt) + 0.012*pR(m.y - 0.50, 0.02);
+      tint -= 0.30*smoothstep(0.12, 0.0, m.y);
+    } else if (shape > 37.5 && shape < 38.5) {
+      /* the oak's own adzed surface: the grain along each member, and the
+         peg holes at its joints */
+      h += 0.006*mmNoise(vec2(m.x*2.0, m.y*14.0) + seed);
+      tint -= 0.15*smoothstep(0.55, 0.85, mmNoise(m*3.0 + seed));
+    } else if (shape > 36.5 && shape < 37.5) {
+      /* the sheet's folds, falling from where it rests to the floor */
+      float fx = m.x*7.0 + 0.6*sin(m.y*2.0 + seed);
+      h += 0.020*abs(sin(fx))*smoothstep(1.2, 0.2, m.y);
+      tint -= 0.25*(1.0 - abs(sin(fx)))*smoothstep(1.0, 0.1, m.y);
+      tint -= 0.30*smoothstep(0.10, 0.0, m.y);
+    }
     if (shape > 32.5 && shape < 33.5) {
       lantSD(m, msz, seed, 0.012, pt);
       h += 0.010*step(1.5, pt);
@@ -13047,6 +13513,35 @@ void main(){
       w2Emit = vec3(1.00, 0.76, 0.44)*step(3.5, pt)*(0.9 + 0.15*mmNoise(vec2(uTime*3.0, vSeed)));
     }
   }
+  if (vShape > 34.5 && vShape < 37.5) {
+    float lum = max(mmLum(albedo), 0.02);
+    float pt = gW2Part;
+    vec2 sm = (vUv - vec2(0.5, 0.0))*vSize;
+    vec3 oakC = vec3(0.36, 0.22, 0.12)*(lum*2.4 + 0.040)*(0.86 + 0.28*grain);
+    vec3 brassC = vec3(0.92, 0.68, 0.30)*(lum*3.0 + 0.070);
+    if (vShape < 35.5) {
+      /* the telescope: brass that shines, oak legs, the dark of its lenses */
+      vec3 c = oakC;
+      c = mix(c, brassC, step(0.5, pt)*step(pt, 1.5));
+      c = mix(c, vec3(0.03, 0.03, 0.04), step(1.5, pt)*step(pt, 2.5));
+      c = mix(c, brassC*0.55, step(2.5, pt));
+      albedo = c;
+    } else if (vShape < 36.5) {
+      vec3 canvas = mix(vec3(0.44, 0.36, 0.24), vec3(0.20, 0.26, 0.20), step(0.6, mmHash11(vSeed*8.3)))*(lum*2.4 + 0.035);
+      vec3 c = canvas*(0.85 + 0.25*blotch);
+      c = mix(c, canvas*0.75, step(0.25, pt)*step(pt, 0.75));
+      c = mix(c, vec3(0.18, 0.10, 0.06)*(lum*2.2 + 0.025), step(0.75, pt)*step(pt, 1.5));
+      c = mix(c, brassC*0.8, step(1.5, pt));
+      albedo = c;
+    } else {
+      /* a dust sheet: pale linen gone grey, the one pale shape in the dark */
+      albedo = vec3(0.66, 0.66, 0.64)*(lum*2.6 + 0.070)*(0.88 + 0.20*blotch);
+    }
+  }
+  if (vShape > 37.5 && vShape < 38.5) {
+    float lum = max(mmLum(albedo), 0.02);
+    albedo = vec3(0.34, 0.21, 0.12)*(lum*2.6 + 0.045)*(0.80 + 0.30*grain);
+  }
 #endif
 
   /* ...AND A FOUNTAIN IS STONE, with water on it (25, round 14). It stands in
@@ -13457,6 +13952,14 @@ void main(){
   if (vShape > 26.5 && vShape < 27.5) {
     vec3 moonK = mix(uAccent, vec3(0.74, 0.82, 1.00), 0.62);
     col += albedo * moonK * (0.22 + 0.70*max(N.y, 0.0)) * (0.55 + 0.45*gPkLobe) * gPkOn;
+  }
+#endif
+#if MM_WINGS == 2
+  /* THE TELESCOPE TAKES THE MOON (round 23): it stands against the gable's
+     window, so its brass is lit from behind by the night it is pointed at --
+     a cold line along the top of the tube and down the legs' moon side */
+  if (vShape > 34.5 && vShape < 35.5) {
+    col += albedo * vec3(0.62, 0.72, 1.00) * (0.30 + 1.10*max(N.y, 0.0) + 0.6*band);
   }
 #endif
   col *= uGain;

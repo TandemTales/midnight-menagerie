@@ -491,14 +491,26 @@ export const REGIONS = {
   attic: {
     label: 'The Moonlit Attic and Observatory',
     propMat: 'wood', propCeil: 0.264,
-    arch: 4, floorPattern: 0, subject: 'rafters',
-    room: { w: 24, d: 19, h: 7.2, side: 0.20, ceilPattern: 6, wallPad: 4.4 },
+    /* ROUND 23: AN ATTIC IS UNDER A ROOF. It was a 24 x 7.2 m box with its
+       side walls toed in and "diagonal lines scrawled over a blue cloud
+       texture" for rafters. It is 13 m across now, its knee walls 2.4 m,
+       and its ceiling the ROOF -- pitched timber (pattern 15) up 5.5 m to
+       the ridge, the gable at the end drawn by program 14 round its window
+       on the moon, and the telescope stood in front of that. */
+    arch: 4, floorPattern: 0, subject: 'observatory', ceilGain: 3.2,
+    room: { w: 13, d: 16, h: 2.4, side: 0.0, ceilPattern: 15, wallPad: 6.2 },
     cam: { y: 1.95, z: 8.6, look: 2.6, fov: 45 },
     deep: '#17152c', mid: '#2a2746', hi: '#433e69', accent: '#8592cd',
     shaft: '#b1bce4', rimCol: '#dfc191', floorDeep: '#100e1e', floorMid: '#232135',
     ambient: '#19172e', propAlb: '#342e4b', propHi: '#605b7e',
     gloss: 0.36, grime: 0.78, coolFill: 1.20, wallFog: 0.18,
-    props: { shapes: [8, 7, 5, 10, 14], count: 26, height: 2.2, layout: 'hang' },
+    /* an attic's floor: trunks (36), furniture under dust sheets (37), a
+       crate, a case, a clock -- along the knee walls, the middle kept; and
+       before the gable's window, the TELESCOPE on its tripod (35) */
+    props: { shapes: [36, 37, 8, 36, 37, 14], count: 16, height: 2.2, layout: 'perimeter',
+             family: ['perimeter', 'wings'],
+             near: [{ shape: 35, x: 0.4, z: -9.4, tone: 0.96, scale: 1.0 }],
+             trusses: { shape: 38, every: 3.4, first: 2.2 } },
     particles: { mix: [[PTYPE.DUST, 0.62], [PTYPE.WISP, 0.26], [PTYPE.ASH, 0.12]],
                  tint: '#d8dcf5', wispTint: '#b0b8ff', emberTint: '#ffcf7a',
                  speed: 0.6, scale: 1.0, wind: 0.4, density: 0.95 },
@@ -1303,7 +1315,13 @@ export const ROOM_KINDS = {
     ],
   },
   attic: {
-    kinds: [{ subject: 'rafters' }, { subject: 'bookcase' }],
+    /* (round 23: the observatory, its telescope before the gable's window;
+       and the archive under the eaves, its cases to the roof, a reading
+       table and its lamp where the telescope stood) */
+    kinds: [{ subject: 'observatory' },
+            { subject: 'eaves', swap: [[37, 5], [14, 5]],
+              near: [{ shape: 34, x: -0.8, z: -10.5, tone: 0.92 }],
+              vantage: { at: 'along', off: 0.12, wall: 2.0, fwd: 1.4, yaw: 10, wide: 3 } }],
     names: [
       [/library|chart|archive|watcher/i, 1],
       [/./, 0],

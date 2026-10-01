@@ -134,7 +134,13 @@ const SHAPE_M = [1.20, 2.00, 1.30, 1.00, 2.00, 2.00, 3.32, 2.60, 1.17, 1.33,
                  1.10,
                  /* 33 a hanging lantern, the chain as long as the quad;
                     34 a lamp-maker's bench, 0.90 m to its top */
-                 2.60, 1.30
+                 2.60, 1.30,
+                 /* 35 a telescope on its tripod, 2.2 m to the end of its
+                    tube; 36 a steamer trunk, a case on half of them; 37
+                    furniture under a dust sheet */
+                 3.00, 1.05, 1.45,
+                 /* 38 a roof truss, sized to the room it stands in */
+                 5.00
 ];
 /* ...and a width ratio, so a column is a column and not a capital-T. Four of
  * these were wrong by enough to change what the object was: a longcase clock
@@ -145,7 +151,9 @@ const SHAPE_W = [1.15, 0.55, 1.00, 0.95, 0.72, 0.80, 0.47, 0.85, 0.90, 1.35,
                  0.72, 2.025, 0.62, 0.34, 1.80, 1.476, 0.34,
                  1.62, 1.55, 2.10, 0.62, 0.78,
                  2.20,
-                 0.26, 1.55
+                 0.30, 1.55,
+                 0.92, 1.12, 0.85,
+                 2.6
 ];
 /* HOW MUCH ONE OF THESE VARIES FROM THE NEXT, as a +-fraction of SHAPE_M.
  *
@@ -169,7 +177,9 @@ const SHAPE_VAR = [0.06, 0.08, 0.62, 0.20, 0.10, 0.08, 0.10, 0.10, 0.16, 0.48,
                  0.06, 0.04, 0.00, 0.00, 0.22, 0.00, 0.04,
                  0.34, 0.06, 0.05, 0.16, 0.14,
                  0.05,
-                 0.45, 0.05
+                 0.45, 0.05,
+                 0.03, 0.10, 0.16,
+                 0.0
 ];
 // Which shapes hang from the ceiling rather than stand on the floor.
 export const HANGING = { 4: 1, 7: 1, 22: 1, 33: 1 };
@@ -946,8 +956,10 @@ export class Backdrop {
          closed by the end walls' glazing and never by sky. The plane's uv is
          still its plan position, so every bar lands where it did in plan. */
       const cp = room.ceilPattern ?? 3;
+      /* (round 23: and an ATTIC's roof (15) is pitched timber, and steep) */
       const rise = (cp === 9 || cp === 12)
-        ? Math.max(0, Math.min(room.w * 0.16, (room.wallPad ?? 5) - 0.4)) : 0;
+        ? Math.max(0, Math.min(room.w * 0.16, (room.wallPad ?? 5) - 0.4))
+        : cp === 15 ? Math.max(0, Math.min(room.w * 0.42, (room.wallPad ?? 5) - 0.4)) : 0;
       const cg = new THREE.PlaneGeometry(room.w, spanZ, rise > 0 ? 2 : 1, 1);
       if (rise > 0) {
         const pos = cg.attributes.position;
@@ -960,7 +972,7 @@ export class Backdrop {
       this.ceilMat.uniforms.uSpan.value.set(room.w, spanZ);
       this.ceilMat.uniforms.uPattern.value = room.ceilPattern ?? 3;
       /* a vinery's roof (12) is drawn by the room-kind variant */
-      this._setSurfaceProgram(this.ceilMat, (room.ceilPattern ?? 3) > 11.5);
+      this._setSurfaceProgram(this.ceilMat, (room.ceilPattern ?? 3) === 15 ? 2 : (room.ceilPattern ?? 3) > 11.5);
     }
     this._floorCz = cz;
     this._wallZ = -room.d;
@@ -1616,6 +1628,21 @@ export class Backdrop {
         }
       }
     }
+    /* THE ROOF'S TRUSSES (round 23, the Attic): an A-frame of oak every few
+       metres down the room, standing from the knee walls up under the
+       pitched roof to its ridge -- its principal rafters, the collar, the
+       king post and the arched braces. Architecture, so they are sized to
+       the room and do not count against its budget; hung (no shadow on the
+       floor), because they stand on the walls. */
+    if (P.trusses && room.h > 0.01 && room.ceilPattern === 15) {
+      const rise = Math.max(0, Math.min(room.w * 0.42, (room.wallPad ?? 5) - 0.4));
+      const every = P.trusses.every ?? 3.2;
+      for (let z = -(P.trusses.first ?? 2.6); z > -room.d + 1.4 && out.length < MAX_PROPS; z -= every) {
+        archN++;
+        out.push({ x: 0, z, w: room.w + 0.1, h: rise + 0.05, shape: P.trusses.shape ?? 38,
+                   seed: rand() * 10, tone: 0.80, y: room.h - 0.02, hang: true, arch: true });
+      }
+    }
     /* A SOLO PROP IS THE ROOM'S ONE OF SOMETHING, so it is PLACED and not
        dealt, in every layout (it used to be colonnade's alone): a piano 24 m
        back behind a column is not in the room as far as the picture is
@@ -2162,7 +2189,9 @@ export class Backdrop {
     const cpat = p.room?.ceilPattern ?? 3;
     /* (the same number _room pitches the ceiling by -- WELD's, round 18) */
     w.uGable.value = (p.room?.h ?? 0) > 0.01 && (cpat === 9 || cpat === 12)
-      ? Math.max(0, Math.min((p.room.w ?? 30) * 0.16, (p.room.wallPad ?? 5) - 0.4)) : 0;
+      ? Math.max(0, Math.min((p.room.w ?? 30) * 0.16, (p.room.wallPad ?? 5) - 0.4))
+      : (p.room?.h ?? 0) > 0.01 && cpat === 15
+        ? Math.max(0, Math.min((p.room.w ?? 30) * 0.42, (p.room.wallPad ?? 5) - 0.4)) : 0;
     /* A region with room.h = 0 is OPEN TO THE SKY, and uCeil cannot say so: the
        fallback hands it 6.4 m, so the Hedge Maze was crushed to a tenth above
        6.4 m and painted no sky at all -- 71.5% of its upper third pure black. */
@@ -2443,11 +2472,12 @@ export class Backdrop {
       wall(1), wall(2), wall(3), wall(4), wall(5), wall(6), wall(7),
       wall(8), wall(9), wall(10), wall(11),
       /* round 23 */
-      wall(12), wall(13),
+      wall(12), wall(13), wall(14),
       [this.portals[0].geometry, this.portals[0].material, null],
       [this.propGeo, this.propMat, { MM_STONES: 0, MM_BUST: 1 }],
       [this.floor.geometry, this.floorMat, { MM_FLOORX: 1 }],
       [this.floor.geometry, this.floorMat, { MM_FLOORX: 2 }],
+      [this.ceiling.geometry, this.ceilMat, { MM_FLOORX: 2 }],
       [this.propGeo, this.propMat, { MM_STONES: 1, MM_BUST: 0 }],
       /* round 22: the pumpkin and the yew, alone and with the grounds' stone
          (the maze's fountain court deals both) */
