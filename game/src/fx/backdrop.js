@@ -140,7 +140,10 @@ const SHAPE_M = [1.20, 2.00, 1.30, 1.00, 2.00, 2.00, 3.32, 2.60, 1.17, 1.33,
                     furniture under a dust sheet */
                  3.00, 1.05, 1.45,
                  /* 38 a roof truss, sized to the room it stands in */
-                 5.00
+                 5.00,
+                 /* 39 a kennel, 40 a dog's bed and its bowl, 41 a grooming
+                    table with its arm, 42 a wash tub on its trestle */
+                 1.55, 0.50, 1.75, 1.05
 ];
 /* ...and a width ratio, so a column is a column and not a capital-T. Four of
  * these were wrong by enough to change what the object was: a longcase clock
@@ -153,7 +156,8 @@ const SHAPE_W = [1.15, 0.55, 1.00, 0.95, 0.72, 0.80, 0.47, 0.85, 0.90, 1.35,
                  2.20,
                  0.30, 1.55,
                  0.92, 1.12, 0.85,
-                 2.6
+                 2.6,
+                 1.12, 3.60, 0.78, 1.55
 ];
 /* HOW MUCH ONE OF THESE VARIES FROM THE NEXT, as a +-fraction of SHAPE_M.
  *
@@ -179,7 +183,8 @@ const SHAPE_VAR = [0.06, 0.08, 0.62, 0.20, 0.10, 0.08, 0.10, 0.10, 0.16, 0.48,
                  0.05,
                  0.45, 0.05,
                  0.03, 0.10, 0.16,
-                 0.0
+                 0.0,
+                 0.08, 0.08, 0.04, 0.06
 ];
 // Which shapes hang from the ceiling rather than stand on the floor.
 export const HANGING = { 4: 1, 7: 1, 22: 1, 33: 1 };
@@ -2472,7 +2477,7 @@ export class Backdrop {
       wall(1), wall(2), wall(3), wall(4), wall(5), wall(6), wall(7),
       wall(8), wall(9), wall(10), wall(11),
       /* round 23 */
-      wall(12), wall(13), wall(14),
+      wall(12), wall(13), wall(14), wall(15),
       [this.portals[0].geometry, this.portals[0].material, null],
       [this.propGeo, this.propMat, { MM_STONES: 0, MM_BUST: 1 }],
       [this.floor.geometry, this.floorMat, { MM_FLOORX: 1 }],

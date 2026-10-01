@@ -776,8 +776,12 @@ export const REGIONS = {
   kennels: {
     label: 'The Kennels and Animal Ward',
     propMat: 'wood', propCeil: 0.19,
-    arch: 0, floorPattern: 2, subject: 'pens',
-    room: { w: 20, d: 11, h: 4.0, side: 0.0, ceilPattern: 8, wallPad: 3.2 },
+    /* (round 23: no wallpaper -- a kennel range is boarded stalls under
+       limewashed brick, drawn whole by program 15) */
+    arch: 0, floorPattern: 2, subject: 'kennel', damask: 0,
+    /* (round 23: 9 m deep, from 11 -- the range of stalls IS the room, and
+       16 m from the lens it was a strip along the top of the frame) */
+    room: { w: 20, d: 9, h: 4.0, side: 0.0, ceilPattern: 8, wallPad: 3.2 },
     cam: { y: 2.55, z: 5.4, look: 1.05, fov: 52 },
     deep: '#1c141a', mid: '#3a2b23', hi: '#614a32', accent: '#768e9b',
     rimCol: '#dbb882', shaft: '#d9bd92', floorDeep: '#120e13', floorMid: '#2f241c',
@@ -788,7 +792,12 @@ export const REGIONS = {
        run is BARRED PENS (shape 10 is a barred crib, which at this scale reads
        as exactly that), straw, packing cases and a lamp over the yard. The
        region's wall subject is already `pens`, so the floor now agrees with it. */
-    props: { shapes: [19, 8, 10, 8, 9], count: 28, height: 1.6, layout: 'rows' },
+    /* ROUND 23: "grey speckled lumps scattered through the mid-ground read
+       as TV static, not straw or beds" -- they were the shrub (9) and the
+       crate stack (8). A kennel block's floor has KENNELS on it (39), dogs'
+       beds with their bowls (40) and the grooming table (41); its stalls,
+       straw and name plates are the wall's (program 15). */
+    props: { shapes: [39, 40, 41, 39, 40], count: 14, height: 1.6, layout: 'rows' },
     particles: { mix: [[PTYPE.DUST, 0.70], [PTYPE.ASH, 0.20], [PTYPE.EMBER, 0.10]],
                  tint: '#ffdfae', wispTint: '#8fd9ec', emberTint: '#ffb64a',
                  speed: 0.8, scale: 1.1, wind: 0.6, density: 0.95 },
@@ -796,9 +805,12 @@ export const REGIONS = {
     key:  { glow: 0, kind: 'warm', x: -3.4, y: 2.6, z: 2.0, color: '#e5b57e', intensity: 1.67, radius: 6.45 },
     fill: { glow: 0, kind: 'cold', x: 5.0, y: 2.2, z: 1.2, color: '#83a6bc', intensity: 7.45, radius: 7.5, flicker: false },
     lights: [
-      { kind: 'warm', x: -3.6, y: 2.80, z: -8.0, color: '#dfaa63', intensity: 0.78, radius: 6.45 },
-      { kind: 'warm', x: 3.2, y: 1.10, z: -4.6, color: '#e6c086', intensity: 0.75, radius: 4.64 },
-      { kind: 'cold', x: 6.6, y: 2.40, z: -8.6, color: '#83a6bc', intensity: 3.23, radius: 7.0 },
+      /* (round 23: the range's lanterns light its stalls -- they were 0.78
+         and 0.75 against a cold 3.23, and the cold one alone lit the back
+         wall, "a milky grey-blue") */
+      { kind: 'warm', x: -3.6, y: 2.80, z: -8.0, color: '#dfaa63', intensity: 2.10, radius: 6.45 },
+      { kind: 'warm', x: 3.2, y: 1.10, z: -4.6, color: '#e6c086', intensity: 1.40, radius: 4.64 },
+      { kind: 'cold', x: 6.6, y: 2.40, z: -8.6, color: '#83a6bc', intensity: 1.70, radius: 7.0 },
     ],
     /* Open to the sky: see the Graveyard's note. A shaft needs something to
        come through, and there is no ceiling here. */
@@ -1521,7 +1533,9 @@ export const ROOM_KINDS = {
      room, animal kitchen, veterinary room and quarantine ward have the tiled
      dado and brass standpipes the Bathhouse draws, and no pens. */
   kennels: {
-    kinds: [{ subject: 'pens' }, { subject: 'dado' }],
+    /* (round 23: the kennel range, and its wash room with the tubs) */
+    kinds: [{ subject: 'kennel' },
+            { subject: 'washroom', swap: [[39, 42], [40, 42]], countScale: 0.75 }],
     names: [
       [/wash|groom|veterinar|quarantine|kitchen/i, 1],
       [/./, 0],
