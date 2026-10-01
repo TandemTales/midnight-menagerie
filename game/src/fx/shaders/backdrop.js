@@ -7845,6 +7845,415 @@ float studyWallH(vec2 q, float qpx, out float occ){
   return h;
 }
 #endif
+#if MM_ROOMS == 20
+/* ── THE CRYPT AND OSSUARY (round 24) ──────────────────────────────────────
+   Both survey judges: "the ossuary walls' niches and arches blur into an
+   unreadable blue texture, and the room's only objects are two grey box
+   tombs and a lamp post"; "two green shafts read as thin laser lines, not
+   light". A crypt is DRESSED STONE: big coursed blocks each its own value,
+   an arcade of round arches down both long walls on square piers with
+   their capitals, a plinth bench along the foot. And in the bays, what a
+   crypt keeps -- each thing drawn so a viewer can point at it:
+     catacombs   (50) loculi three high in every bay: sealed with their
+                      incised slabs, or open on a shrouded body, or on bones
+                      and a skull; at the end the passage on into the dark
+     cryptchapel (51) the chapel: its altar under a red frontal with the
+                      candles burning on it, the gilded triptych over it,
+                      the lancets; an arched tomb recess in every bay with
+                      its effigy, memorial tablets over
+     charnel     (52) the ossuary: walls BUILT of bone -- bands of thighbone
+                      ends, rows of skulls between, the arches picked out in
+                      skulls, a cross of skulls at the end */
+/* A SKULL, face on, s its height: the cranium, the cheekbones narrowing to
+   the jaw; holes comes back as how much of the pixel is a socket, the nose
+   or the gap between the teeth. */
+float crSkull(vec2 p, float s, float px, out float holes){
+  vec2 q = p/s;
+  float cran = length(q - vec2(0.0, 0.12)) - 0.42;
+  float face = mmBox(q - vec2(0.0, -0.18), vec2(0.28 - 0.10*smoothstep(-0.05, -0.45, q.y), 0.22), 0.10);
+  float d = min(cran, face)*s;
+  float eye = min(length(q - vec2(-0.16, 0.0)) - 0.115, length(q - vec2(0.16, 0.0)) - 0.115);
+  float nose = max(abs(q.x)*1.6 + (q.y + 0.10)*0.9 - 0.06, -(q.y + 0.24));
+  float teeth = step(abs(q.y + 0.33), 0.035)*step(abs(q.x), 0.17)*step(0.5, fract(q.x*14.0 + 0.5));
+  float spx = px/s;
+  holes = max(clamp(0.5 - eye/spx, 0.0, 1.0), clamp(0.5 - nose/spx, 0.0, 1.0));
+  holes = max(holes, teeth*mmLod(0.07*s, px));
+  return d;
+}
+float cryptWallH(vec2 q, float qpx, out float occ){
+  occ = 0.0;
+  float far = step(0.5, uFar);
+  float px = max(qpx, 0.003);
+  gPx = px;
+  float lum = mmLum(uMid);
+  float lw = lum*2.4 + 0.010;
+  float cx = q.x - uSize.x*0.5, ax = abs(cx);
+  float u = far > 0.5 ? cx : q.x;
+  float room = uSubject - 50.0;               // 0 catacombs, 1 chapel, 2 ossuary
+  float h = 1.0;
+  float emit = 0.0, emitW = 0.0, gloss = 0.05;
+  vec3 bone = vec3(0.72, 0.66, 0.52)*lw*1.5;
+  /* ---- the stone: coursed blocks, each its own value, a joint drawn ---- */
+  float CH = 0.38;
+  float row = floor(q.y/CH);
+  float bl = 0.78 + 0.24*mmHash11(row*3.1 + uSeed);
+  float xo = u + mmHash11(row*7.7 + uSeed)*bl;
+  float bc = floor(xo/bl);
+  float yl = q.y - row*CH, xl = xo - bc*bl;
+  float sv = mmHash21(vec2(bc, row) + uSeed);
+  float joint = max(mmInkP(min(yl, CH - yl), px, 1.0), mmInkP(min(xl, bl - xl), px, 1.0))*mmLod(CH, px);
+  vec3 stone = vec3(0.36, 0.36, 0.34)*lw*(0.68 + 0.40*sv)*(0.88 + 0.20*mmNoise(q*3.0 + uSeed));
+  /* damp and soot: darker toward the foot, a green bloom low down */
+  stone = mix(stone, stone*vec3(0.70, 0.80, 0.70), smoothstep(1.2, 0.0, q.y)*0.6);
+  vec3 col = stone*(1.0 - 0.45*joint);
+  h = 1.0 + 0.04*sv - 0.12*joint;
+  gInk = max(gInk, joint*0.35);
+  /* the stone bench along the foot */
+  float bench = step(q.y, 0.40);
+  col = mix(col, stone*1.15, bench);
+  h = mix(h, 1.3, bench);
+  gInk = max(gInk, mmInkP(q.y - 0.40, px, 1.2)*0.85);
+  float s = 0.0;
+  if (far < 0.5) {
+    /* ===== THE LONG WALLS: an arcade of round arches on square piers ===== */
+    float BAY = 2.80, PW = 0.26, SPR = 1.95;
+    float bi = floor(u/BAY);
+    float bx = u - (bi + 0.5)*BAY;
+    float R = BAY*0.5 - PW;
+    float archD = max(min(mmBox(vec2(bx, q.y - (SPR + 0.40)*0.5 - 0.0), vec2(R, (SPR - 0.40)*0.5), 0.0),
+                          length(vec2(bx, q.y - SPR)) - R), 0.40 - q.y);
+    float inBay = RCV(-archD);
+    float pier = (1.0 - smoothstep(R - px, R + px, abs(bx)))*0.0 + step(R, abs(bx));
+    /* the voussoirs round the arch, and the pier's capital */
+    float vr = length(vec2(bx, q.y - SPR));
+    float vous = step(SPR, q.y)*step(R, vr)*step(vr, R + 0.30);
+    float va = atan(q.y - SPR, bx);
+    float vj = mmInkP(abs(fract(va/0.2618 + 0.5) - 0.5)*0.2618*vr, px, 1.0)*vous;
+    col = mix(col, stone*1.12*(1.0 - 0.4*vj), vous);
+    h = mix(h, 1.25, vous);
+    float cap = step(R, abs(bx))*mmBandA(q.y, SPR - 0.16, SPR, px);
+    col = mix(col, stone*1.25, cap);
+    h += cap*0.3;
+    gInk = max(gInk, mmInkP(vr - R - 0.30, px, 1.2)*step(SPR, q.y)*0.85);
+    gInk = max(gInk, mmInkP(archD, px, 1.3)*0.95);
+    gInk = max(gInk, cap*0.0 + mmInkP(q.y - SPR + 0.16, px, 1.0)*step(R, abs(bx))*0.7);
+    gInk = max(gInk, mmInkP(abs(bx) - R - PW, px, 1.0)*step(q.y, SPR)*0.6);
+    /* the bay's own back, set in */
+    vec3 recess = stone*0.55;
+    float rx = bx, ry = q.y;
+    vec3 bayC = recess;
+    float bayH = 0.6;
+    if (room < 0.5) {
+      /* LOCULI, three tiers: sealed, open on a shroud, or on bones */
+      float TH = (SPR - 0.48)/3.0;
+      float ti = floor((ry - 0.48)/TH);
+      float ty = ry - 0.48 - (ti + 0.5)*TH;
+      float lw2 = R - 0.10;
+      float lD = mmBox(vec2(rx, ty), vec2(lw2, TH*0.5 - 0.07), 0.02);
+      float onLo = RCV(-lD)*step(0.0, ti)*step(ti, 2.0);
+      float lk = mmHash21(vec2(bi, ti) + uSeed);
+      /* the slab: a pale stone with its incised inscription and a cross */
+      vec3 slab = vec3(0.56, 0.56, 0.52)*lw*1.6*(0.85 + 0.2*mmNoise(vec2(rx, ty)*8.0 + bi));
+      float insc = step(abs(rx), lw2*0.6)*mmInkP(abs(fract((ty + TH*0.25)/0.06) - 0.5) - 0.42, px/0.06, 1.0)*step(abs(ty), TH*0.25)
+                 * step(0.3, mmHash21(vec2(floor(rx/0.05), floor(ty/0.06)) + bi));
+      float crs = max(step(abs(rx + lw2*0.78), 0.012)*step(abs(ty), 0.09), step(abs(ty - 0.03), 0.012)*step(abs(rx + lw2*0.78), 0.05));
+      slab *= 1.0 - 0.55*max(insc*mmLod(0.06, px), crs);
+      vec3 inside = vec3(0.04, 0.04, 0.04)*lw;
+      /* a shrouded body lying in it: pale linen, the head, the feet */
+      float hq = (rx + lw2*0.70)/0.10;
+      float sh = max(abs(rx) - lw2*0.88, (ty + TH*0.5 - 0.07) - (0.10 + 0.07*smoothstep(lw2, -lw2*0.6, rx) + 0.05*exp(-hq*hq)));
+      float shroud = RCV(-sh);
+      float wrap = 0.5 + 0.5*cos((rx + ty*2.0)*40.0);
+      vec3 body = vec3(0.70, 0.66, 0.56)*lw*1.4*(0.70 + 0.30*wrap)*(0.6 + 0.4*smoothstep(-TH*0.5, -TH*0.2, ty));
+      /* or bones: a skull at the end, long bones laid along */
+      float hol;
+      float sk = crSkull(vec2(rx + lw2*0.62, ty + TH*0.5 - 0.07 - 0.11), 0.20, px, hol);
+      float lb = max(abs(ty + TH*0.5 - 0.07 - 0.04 - 0.035*step(0.5, fract(rx*3.0))) - 0.018, abs(rx - lw2*0.10) - lw2*0.62);
+      float knobs = length(vec2(abs(rx - lw2*0.10) - lw2*0.62, ty + TH*0.5 - 0.07 - 0.04)) - 0.032;
+      float bones = RCV(-min(min(sk, lb), knobs));
+      vec3 boneC = bone*(0.75 + 0.3*smoothstep(-0.1, 0.1, ty));
+      vec3 lc = mix(inside, body, shroud*step(0.34, lk)*step(lk, 0.66));
+      lc = mix(lc, boneC*(1.0 - 0.85*hol), bones*step(0.66, lk));
+      lc = mix(lc, slab, step(lk, 0.34));
+      bayC = mix(bayC, lc, onLo);
+      bayH = mix(bayH, mix(0.5, 1.0, max(step(lk, 0.34), max(shroud*step(0.34, lk), bones*step(0.66, lk)))), onLo);
+      gInk = max(gInk, inBay*onLo*0.0 + inBay*mmInkP(lD, px, 1.2)*0.9*step(0.0, ti)*step(ti, 2.0));
+      gInk = max(gInk, inBay*onLo*step(0.34, lk)*step(lk, 0.66)*mmInkP(sh, px, 1.0)*0.8);
+      gInk = max(gInk, inBay*onLo*step(0.66, lk)*mmInkP(min(min(sk, lb), knobs), px, 1.0)*0.8);
+      gInk = max(gInk, inBay*onLo*step(lk, 0.34)*crs*0.0);
+    } else if (room < 1.5) {
+      /* THE CHAPEL'S ARCOSOLIA: a tomb chest in the recess, its front
+         carved with quatrefoils, its effigy lying on the lid */
+      float CT = 0.98;
+      float chest = step(abs(rx), R - 0.12)*step(0.42, ry)*step(ry, CT);
+      float qx = mod(rx + 0.25, 0.50) - 0.25;
+      vec2 qq = vec2(qx, ry - 0.70);
+      float qf = min(min(length(qq - vec2(0.0, 0.07)), length(qq + vec2(0.0, 0.07))), min(length(qq - vec2(0.07, 0.0)), length(qq + vec2(0.07, 0.0)))) - 0.07;
+      vec3 chC = vec3(0.50, 0.50, 0.46)*lw*1.5*(0.85 + 0.2*sv);
+      chC *= 1.0 - 0.40*smoothstep(0.012, 0.0, abs(qf))*step(abs(rx), R - 0.20);
+      chC *= 1.0 + 0.25*smoothstep(0.0, -0.05, qf)*step(abs(rx), R - 0.20);
+      /* the effigy: a pillow, a head, the body under its gown, folded
+         hands, the feet against a little dog */
+      vec2 e = vec2(rx, ry - CT);
+      float pillow = mmBox(e - vec2(-R + 0.35, 0.07), vec2(0.13, 0.06), 0.03);
+      float head = length(e - vec2(-R + 0.42, 0.17)) - 0.085;
+      float bodyE = mmBox(e - vec2(0.05, 0.08), vec2(R - 0.45, 0.08 + 0.03*cos(e.x*3.0)), 0.06);
+      float hands = length(e - vec2(-0.15, 0.20)) - 0.05;
+      float feet = mmBox(e - vec2(R - 0.38, 0.13), vec2(0.04, 0.10), 0.03);
+      float dog = length(e - vec2(R - 0.24, 0.08)) - 0.07;
+      float eff = min(min(min(pillow, head), min(bodyE, hands)), min(feet, dog));
+      float onE = RCV(-eff);
+      vec3 effC = vec3(0.70, 0.68, 0.62)*lw*1.7*(0.75 + 0.35*smoothstep(0.0, 0.20, e.y));
+      float gownF = 0.5 + 0.5*cos(e.x*45.0);
+      effC *= 1.0 - 0.18*gownF*RCV(-bodyE);
+      bayC = mix(bayC, chC, chest);
+      bayC = mix(bayC, effC, onE);
+      bayH = mix(bayH, 1.2, max(chest, onE));
+      gInk = max(gInk, inBay*max(mmInkP(abs(rx) - R + 0.12, px, 1.1)*step(0.42, ry)*step(ry, CT), mmInkP(ry - CT, px, 1.1)*step(abs(rx), R - 0.12))*0.9);
+      gInk = max(gInk, inBay*chest*mmInkP(qf, px, 1.0)*0.7*step(abs(rx), R - 0.20));
+      gInk = max(gInk, inBay*mmInkP(eff, px, 1.0)*0.85);
+      /* the memorial tablet over the arch, in marble, lettered */
+      vec2 tp = vec2(bx, q.y - SPR - R - 0.62);
+      float tab = mmBox(tp, vec2(0.48, 0.28), 0.03);
+      float onT = RCV(-tab);
+      float lines = mmInkP(abs(fract((tp.y + 0.20)/0.07) - 0.5) - 0.40, px/0.07, 1.0)*step(abs(tp.x), 0.36)*step(abs(tp.y), 0.19);
+      vec3 tC = vec3(0.70, 0.70, 0.66)*lw*1.8*(1.0 - 0.6*lines*mmLod(0.07, px));
+      col = mix(col, tC, onT);
+      h = mix(h, 1.3, onT);
+      gInk = max(gInk, mmInkP(tab, px, 1.1)*0.9);
+      occ = max(occ, onT);
+    } else {
+      /* THE OSSUARY'S BAYS: built of bone -- bands of thighbone ends,
+         rows of skulls between them */
+      float BR = 0.36;
+      float br = floor((ry - 0.40)/BR);
+      float by = ry - 0.40 - br*BR;
+      float isSkullRow = step(0.5, mod(br, 2.0));
+      float hol;
+      float SP = 0.24;
+      float sxl = mod(rx + 0.5*SP*mod(br, 2.0), SP) - SP*0.5;
+      float sk = crSkull(vec2(sxl, by - BR*0.5), 0.22, px, hol);
+      float skC = RCV(-sk);
+      /* thighbone ends: the round head and the knuckle of each, stacked */
+      vec2 fq = vec2(mod(rx, 0.085) - 0.0425, mod(by, 0.075) - 0.0375);
+      float fe = min(length(fq - vec2(-0.016, 0.0)) - 0.024, length(fq - vec2(0.016, 0.0)) - 0.024);
+      float feC = RCV(-fe)*mmLod(0.075, px) + 0.55*(1.0 - mmLod(0.075, px));
+      vec3 bones = mix(vec3(0.05, 0.04, 0.03)*lw, bone*(0.65 + 0.35*smoothstep(-0.02, 0.02, fq.y)), feC*(1.0 - isSkullRow));
+      bones = mix(bones, bone*(0.75 + 0.3*smoothstep(-0.05, 0.08, by - BR*0.5))*(1.0 - 0.88*hol), skC*isSkullRow);
+      bayC = mix(bayC, bones, step(0.40, ry));
+      bayH = mix(bayH, 0.8 + 0.3*max(feC*(1.0 - isSkullRow), skC*isSkullRow), step(0.40, ry));
+      gInk = max(gInk, inBay*isSkullRow*mmInkP(sk, px, 1.0)*0.85);
+      gInk = max(gInk, inBay*(1.0 - isSkullRow)*mmInkP(fe, px, 1.0)*0.6*mmLod(0.075, px));
+      gInk = max(gInk, inBay*mmInkP(abs(by - BR*0.5) - BR*0.5, px, 1.0)*0.7);
+      /* and the arch itself picked out in a ring of skulls */
+      float ringA = va/0.30;
+      float ra = mod(va + 0.15, 0.30) - 0.15;
+      vec2 rq = vec2(ra*(R + 0.15), vr - R - 0.15);
+      float rsk = crSkull(rq, 0.20, px, hol);
+      float onRS = RCV(-rsk)*step(SPR, q.y);
+      col = mix(col, bone*(0.8 + 0.3*smoothstep(-0.05, 0.08, rq.y))*(1.0 - 0.88*hol), onRS);
+      h = mix(h, 1.3, onRS);
+      gInk = max(gInk, mmInkP(rsk, px, 1.0)*0.85*step(SPR, q.y)*step(R, vr)*step(vr, R + 0.30));
+      /* the piers faced with bone too: a column of thighbone ends */
+      float onPier = step(R, abs(bx))*step(0.40, q.y)*step(q.y, SPR - 0.16);
+      col = mix(col, mix(vec3(0.05)*lw, bone*0.85, feC), onPier);
+      h = mix(h, 0.9 + 0.3*feC, onPier);
+    }
+    col = mix(col, bayC, inBay);
+    h = mix(h, bayH, inBay);
+    occ = max(occ, inBay);
+  } else {
+    /* ===== THE END WALL ===== */
+    if (room < 0.5) {
+      /* the passage on into the dark: a round arch, steps going down, a
+         lamp in a niche beside it */
+      float AW = 0.90, AS = 2.0;
+      float aD = max(min(mmBox(vec2(cx, q.y - AS*0.5), vec2(AW, AS*0.5), 0.0), length(vec2(cx, q.y - AS)) - AW), -q.y);
+      float onA = mmCover(-aD);
+      float vr = length(vec2(cx, q.y - AS));
+      float vous = step(AS, q.y)*step(AW, vr)*step(vr, AW + 0.32);
+      col = mix(col, stone*1.15, vous);
+      gInk = max(gInk, mmInkP(abs(fract(atan(q.y - AS, cx)/0.2618 + 0.5) - 0.5)*0.2618*vr, px, 1.0)*vous);
+      /* inside: darkness, the steps' nosings catching a little light */
+      float st = mmInkP(mmRowX(q.y, 0.18), px, 1.2)*step(q.y, 1.2)*smoothstep(1.2, 0.0, q.y);
+      vec3 dark = vec3(0.01)*lw + stone*0.12*st;
+      col = mix(col, dark, onA);
+      h = mix(h, 0.3, onA);
+      mmPen(aD, 1.3, 0.95); mmPen(vr - AW - 0.32, 1.2, 0.85*step(AS, q.y));
+      occ = max(occ, max(onA, vous));
+      /* loculi either side of it on the end wall too */
+      float side = step(AW + 0.5, ax)*step(ax, AW + 3.2);
+      float TH = 0.62;
+      float ti = floor((q.y - 0.48)/TH);
+      float ty = q.y - 0.48 - (ti + 0.5)*TH;
+      float lx2 = mod(ax - AW - 0.5, 1.35) - 0.675;
+      float lD = mmBox(vec2(lx2, ty), vec2(0.58, TH*0.5 - 0.07), 0.02);
+      float onLo = RCV(-lD)*side*step(0.0, ti)*step(ti, 3.0);
+      float lk = mmHash21(vec2(floor((ax - AW - 0.5)/1.35) + step(0.0, cx)*7.0, ti) + uSeed);
+      vec3 slab = vec3(0.56, 0.56, 0.52)*lw*1.6*(0.85 + 0.2*mmNoise(vec2(lx2, ty)*8.0));
+      float hol;
+      float sk = crSkull(vec2(lx2 + 0.25, ty + TH*0.5 - 0.17), 0.18, px, hol);
+      vec3 lc = mix(vec3(0.04)*lw, bone*(1.0 - 0.85*hol), RCV(-sk));
+      lc = mix(lc, slab, step(lk, 0.5));
+      col = mix(col, lc, onLo);
+      h = mix(h, mix(0.5, 1.0, step(lk, 0.5)), onLo);
+      gInk = max(gInk, side*mmInkP(lD, px, 1.2)*0.9*step(0.0, ti)*step(ti, 3.0));
+      occ = max(occ, onLo);
+    } else if (room < 1.5) {
+      /* THE CHAPEL: the altar under its frontal, the candles on it, the
+         gilded triptych over it, three lancets over all */
+      float AW = 1.10, AH = 1.00;
+      float alt = mmBox(vec2(cx, q.y - AH*0.5), vec2(AW, AH*0.5), 0.01);
+      float mensa = mmBox(vec2(cx, q.y - AH - 0.04), vec2(AW + 0.10, 0.05), 0.01);
+      float onAl = mmCover(-alt), onMe = mmCover(-mensa);
+      /* the frontal: deep red, a gold cross, a gold fringe */
+      vec3 red = vec3(0.40, 0.06, 0.07)*lw*1.6*(0.8 + 0.3*(0.5 + 0.5*cos(cx*30.0)));
+      float gx = step(abs(cx), 0.05)*step(abs(q.y - 0.55), 0.26) + step(abs(q.y - 0.62), 0.05)*step(abs(cx), 0.18);
+      red = mix(red, vec3(0.86, 0.66, 0.28)*lw*2.2, clamp(gx, 0.0, 1.0));
+      float fringe = step(q.y, 0.12 + 0.02*step(0.5, fract(cx/0.03)))*step(0.04, q.y);
+      red = mix(red, vec3(0.80, 0.60, 0.26)*lw*1.8, fringe);
+      red = mix(red, vec3(0.86, 0.66, 0.28)*lw*2.0, mmInkP(q.y - AH + 0.10, px, 1.8));
+      col = mix(col, red, onAl);
+      col = mix(col, stone*1.35, onMe);
+      h = mix(h, 1.3, onAl);
+      h = mix(h, 1.6, onMe);
+      mmPen(alt, 1.2, 0.9); mmPen(mensa, 1.2, 0.9);
+      occ = max(occ, max(onAl, onMe));
+      /* six tall candlesticks on the mensa and the altar cross */
+      float SY = AH + 0.09;
+      float cxx = cx;
+      float slot = clamp(floor((cxx + 0.90)/0.36 + 0.5), 0.0, 5.0);
+      float sx = cxx + 0.90 - slot*0.36;
+      float cstick = min(mmBox(vec2(sx, q.y - SY - 0.20), vec2(0.018, 0.20), 0.006), mmBox(vec2(sx, q.y - SY - 0.02), vec2(0.06, 0.02), 0.01));
+      cstick = min(cstick, mmBox(vec2(sx, q.y - SY - 0.40), vec2(0.04, 0.012), 0.004));
+      float candle = mmBox(vec2(sx, q.y - SY - 0.52), vec2(0.018, 0.11), 0.004);
+      float flame = length(vec2(sx/0.6, q.y - SY - 0.67)) - 0.022;
+      float notMid = step(0.5, abs(slot - 2.5));
+      float onCS = mmCover(-cstick)*step(abs(cx), 1.0)*notMid;
+      float onCa = mmCover(-candle)*step(abs(cx), 1.0)*notMid;
+      vec3 gilt = vec3(0.86, 0.66, 0.28)*lw*2.2;
+      col = mix(col, gilt, onCS);
+      col = mix(col, vec3(0.88, 0.84, 0.72)*lw*2.0, onCa);
+      emitW += mmCover(-flame)*step(abs(cx), 1.0)*notMid*2.4 + 0.18*exp(-length(vec2(sx, q.y - SY - 0.67))*8.0)*step(abs(cx), 1.0)*notMid;
+      float acr = min(mmBox(vec2(cx, q.y - SY - 0.36), vec2(0.022, 0.36), 0.005), mmBox(vec2(cx, q.y - SY - 0.50), vec2(0.15, 0.022), 0.005));
+      acr = min(acr, mmBox(vec2(cx, q.y - SY - 0.03), vec2(0.09, 0.03), 0.01));
+      col = mix(col, gilt*1.2, mmCover(-acr));
+      gInk = max(gInk, mmInkP(acr, px, 1.0)*0.7);
+      occ = max(occ, max(max(onCS, onCa), mmCover(-acr)));
+      /* the triptych: three gilded panels, saints on gold */
+      float TY0 = SY + 0.95, TY1 = TY0 + 1.30;
+      float tpx = cx;
+      float pnl = floor((tpx + 0.95)/0.633);
+      float pxl = tpx + 0.95 - (pnl + 0.5)*0.633;
+      float pTop = TY1 - (pnl > 0.5 && pnl < 1.5 ? 0.0 : 0.25);
+      float inT = step(abs(cx), 0.95)*step(TY0, q.y)*step(q.y, pTop);
+      float pkd = max(abs(pxl)*1.1 + (q.y - pTop + 0.28), -1.0);
+      inT *= step(pkd, 0.0) + step(q.y, pTop - 0.28);
+      inT = clamp(inT, 0.0, 1.0);
+      vec3 gold = vec3(0.80, 0.60, 0.24)*lw*2.0*(0.80 + 0.30*mmNoise(q*20.0));
+      /* a standing saint in each: a dark robe, a pale face, a halo */
+      vec2 sp = vec2(pxl, q.y - TY0);
+      float halo = abs(length(sp - vec2(0.0, 0.92)) - 0.11) - 0.012;
+      float face = length(sp - vec2(0.0, 0.92)) - 0.065;
+      float robe = max(abs(sp.x) - 0.08 - 0.10*smoothstep(0.85, 0.05, sp.y), max(sp.y - 0.84, 0.06 - sp.y));
+      vec3 robeC = (pnl > 0.5 && pnl < 1.5) ? vec3(0.12, 0.16, 0.40) : vec3(0.36, 0.08, 0.10);
+      vec3 pc = gold;
+      pc = mix(pc, robeC*lw*2.0*(0.7 + 0.4*(0.5 + 0.5*cos(sp.x*60.0))), RCV(-robe));
+      pc = mix(pc, vec3(0.80, 0.66, 0.54)*lw*2.0, RCV(-face));
+      pc = mix(pc, gold*1.3, RCV(-halo));
+      col = mix(col, pc, inT);
+      h = mix(h, 1.2, inT);
+      gInk = max(gInk, inT*max(mmInkP(robe, px, 1.0), mmInkP(face, px, 1.0))*0.8);
+      gInk = max(gInk, mmInkP(abs(pxl) - 0.316, px, 1.4)*step(abs(cx), 0.95)*step(TY0, q.y)*step(q.y, pTop - 0.1)*0.9);
+      gInk = max(gInk, mmInkP(q.y - TY0, px, 1.4)*step(abs(cx), 0.95)*0.9);
+      emitW += inT*0.05*(1.0 - RCV(-robe));
+      gloss = max(gloss, inT*0.6);
+      occ = max(occ, inT);
+      /* three lancets over it, their glass dim on the night, leaded */
+      float LY0 = TY1 + 0.25;
+      float LY1 = min(uCeil - 0.25, LY0 + 1.5);
+      float lnc = 1e3;
+      for (int i = 0; i < 3; i++){
+        float fi = float(i);
+        float lx = cx - (fi - 1.0)*0.55;
+        float top = LY1 - (abs(fi - 1.0) > 0.5 ? 0.35 : 0.0);
+        float bodyL = max(abs(lx) - 0.17, max(LY0 - q.y, q.y - top + 0.17));
+        float arcL = max(length(vec2(abs(lx) + 0.10, q.y - top + 0.17)) - 0.27, -(q.y - top + 0.17));
+        lnc = min(lnc, min(bodyL, max(arcL, abs(lx) - 0.17)));
+      }
+      float onL = mmCover(-lnc)*step(LY0, q.y);
+      vec2 gq = q*vec2(9.0, 7.0);
+      float lead = max(mmInkP(abs(fract(gq.x) - 0.5) - 0.5, px*9.0, 1.0), mmInkP(abs(fract(gq.y + 0.5*floor(gq.x)) - 0.5) - 0.5, px*7.0, 1.0));
+      float pk = mmHash21(floor(vec2(gq.x, gq.y + 0.5*floor(gq.x))));
+      vec3 glass = pk < 0.4 ? vec3(0.06, 0.10, 0.30) : (pk < 0.65 ? vec3(0.30, 0.05, 0.06) : (pk < 0.85 ? vec3(0.08, 0.20, 0.12) : vec3(0.40, 0.32, 0.10)));
+      col = mix(col, glass*lw*1.5*(1.0 - 0.9*lead), onL);
+      emit += onL*(1.0 - lead)*(0.20 + 0.25*pk);
+      h = mix(h, 0.6, onL);
+      mmPen(lnc, 1.2, 0.9);
+      occ = max(occ, onL);
+    } else {
+      /* THE OSSUARY'S END: the whole wall of bone, a skull band and a
+         bone band by turns, and in the middle a great cross of skulls on
+         the dark, under an arch picked out in skulls */
+      float BR = 0.36;
+      float br = floor((q.y - 0.40)/BR);
+      float by = q.y - 0.40 - br*BR;
+      float isSkullRow = step(0.5, mod(br, 2.0));
+      float hol;
+      float SP = 0.24;
+      float sxl = mod(cx + 0.5*SP*mod(br, 2.0), SP) - SP*0.5;
+      float sk = crSkull(vec2(sxl, by - BR*0.5), 0.22, px, hol);
+      float skC = RCV(-sk);
+      vec2 fq = vec2(mod(cx, 0.085) - 0.0425, mod(by, 0.075) - 0.0375);
+      float fe = min(length(fq - vec2(-0.016, 0.0)) - 0.024, length(fq - vec2(0.016, 0.0)) - 0.024);
+      float feC = RCV(-fe)*mmLod(0.075, px) + 0.55*(1.0 - mmLod(0.075, px));
+      vec3 bw = mix(vec3(0.05, 0.04, 0.03)*lw, bone*(0.65 + 0.35*smoothstep(-0.02, 0.02, fq.y)), feC*(1.0 - isSkullRow));
+      bw = mix(bw, bone*(0.75 + 0.3*smoothstep(-0.05, 0.08, by - BR*0.5))*(1.0 - 0.88*hol), skC*isSkullRow);
+      float onW = step(0.40, q.y);
+      /* the central arch, its ring of skulls, the cross inside on the dark */
+      float AW = 1.20, AS = 2.0;
+      float aD = max(min(mmBox(vec2(cx, q.y - AS*0.5), vec2(AW, AS*0.5), 0.0), length(vec2(cx, q.y - AS)) - AW), -q.y);
+      float inA = mmCover(-aD);
+      float vr = length(vec2(cx, q.y - AS));
+      float va = atan(q.y - AS, cx);
+      float ra = mod(va + 0.14, 0.28) - 0.14;
+      float rsk = crSkull(vec2(ra*(AW + 0.15), vr - AW - 0.15), 0.21, px, hol);
+      float onRS = RCV(-rsk)*step(AS, q.y);
+      vec3 inC = vec3(0.025, 0.02, 0.02)*lw;
+      float crossD = min(mmBox(vec2(cx, q.y - 1.30), vec2(0.13, 0.95), 0.0), mmBox(vec2(cx, q.y - 1.75), vec2(0.62, 0.13), 0.0));
+      float csx = mod(cx + 0.11, 0.22) - 0.11, csy = mod(q.y - 0.35 + 0.11, 0.22) - 0.11;
+      float hol2;
+      float csk = crSkull(vec2(csx, csy), 0.20, px, hol2);
+      float onCr = RCV(-crossD)*RCV(-csk);
+      inC = mix(inC, bone*0.95*(1.0 - 0.88*hol2), onCr);
+      emit += 0.0;
+      col = mix(col, bw, onW);
+      h = mix(h, 0.8 + 0.3*max(feC*(1.0 - isSkullRow), skC*isSkullRow), onW);
+      col = mix(col, inC, inA);
+      h = mix(h, mix(0.3, 1.0, onCr), inA);
+      col = mix(col, bone*(0.8 + 0.3*smoothstep(-0.05, 0.08, vr - AW - 0.15))*(1.0 - 0.88*hol), onRS*step(AW, vr)*step(vr, AW + 0.32));
+      gInk = max(gInk, onW*(1.0 - inA)*isSkullRow*mmInkP(sk, px, 1.0)*0.85);
+      gInk = max(gInk, onW*(1.0 - inA)*(1.0 - isSkullRow)*mmInkP(fe, px, 1.0)*0.6*mmLod(0.075, px));
+      gInk = max(gInk, onW*(1.0 - inA)*mmInkP(abs(by - BR*0.5) - BR*0.5, px, 1.0)*0.7);
+      gInk = max(gInk, inA*RCV(-crossD)*mmInkP(csk, px, 1.0)*0.8);
+      gInk = max(gInk, mmInkP(rsk, px, 1.0)*0.85*step(AS, q.y)*step(AW, vr)*step(vr, AW + 0.32));
+      mmPen(aD, 1.3, 0.95);
+      occ = max(occ, max(onW, inA));
+    }
+  }
+  /* the vault springs from a moulded string course along the top */
+  float sc = mmBandA(q.y, uCeil - 0.30, uCeil - 0.18, px);
+  col = mix(col, stone*1.3, sc);
+  h += sc*0.4;
+  gCol = col;
+  gColAmt = 1.0;
+  float emitT = emit + emitW;
+  gWEmit = emitT;
+  gWEmitC = (vec3(0.55, 0.66, 1.00)*emit + vec3(1.00, 0.66, 0.32)*emitW) / max(emitT, 1e-4);
+  gWGloss = gloss;
+  return h;
+}
+#endif
 /* (graft: the kennel range is program 15 and its wash room 16 -- carried in
    one program, the wash room's trough, mirror, shelves and drying frames
    cost the kennels' fight 1.3 ms of wall it never draws) */
@@ -8369,6 +8778,8 @@ float wallH(vec2 q, out float occ){
   return sleepWallH(q, qpx, occ);
 #elif MM_ROOMS == 19
   return studyWallH(q, qpx, occ);
+#elif MM_ROOMS == 20
+  return cryptWallH(q, qpx, occ);
 #else
   return kennelWallH(q, qpx, occ);
 #endif
@@ -14799,6 +15210,152 @@ float wfChair(vec2 q, float px, float seed, float kq, bool paint){
   return d;
 }
 
+/* a skull, face on, s its height (the wall's crSkull, for the props) */
+float crSkullP(vec2 p, float s, float px, out float holes){
+  vec2 q = p/s;
+  float cran = length(q - vec2(0.0, 0.12)) - 0.42;
+  float face = mmBox(q - vec2(0.0, -0.18), vec2(0.28 - 0.10*smoothstep(-0.05, -0.45, q.y), 0.22), 0.10);
+  float d = min(cran, face)*s;
+  float eye = min(length(q - vec2(-0.16, 0.0)) - 0.115, length(q - vec2(0.16, 0.0)) - 0.115);
+  float nose = max(abs(q.x)*1.6 + (q.y + 0.10)*0.9 - 0.06, -(q.y + 0.24));
+  float spx = px/s;
+  holes = max(clamp(0.5 - eye/spx, 0.0, 1.0), clamp(0.5 - nose/spx, 0.0, 1.0));
+  return d;
+}
+/* ── 57 THE SARCOPHAGUS ────────────────────────────────────────────────────
+   A stone tomb chest seen along its side: a moulded plinth, the side carved
+   in an arcade of little cusped niches each with a weeping figure, the
+   chamfered lid -- and lying on the lid the EFFIGY, its head on a tasselled
+   cushion, its hands joined at the breast, its gown in long folds, its
+   feet against a small dog. */
+float wfSarc(vec2 q, float px, float seed, float kq, bool paint){
+  const float HW = 1.00, LT = 0.86;
+  float plinth = mmBox(q - vec2(0.0, 0.07), vec2(HW + 0.06, 0.07), 0.01);
+  float chest = mmBox(q - vec2(0.0, 0.44), vec2(HW, 0.31), 0.005);
+  float lid = mmBox(q - vec2(0.0, LT - 0.03), vec2(HW + 0.05, 0.065), 0.02);
+  vec2 e = q - vec2(0.0, LT + 0.03);
+  float cush = mmBox(e - vec2(-HW + 0.22, 0.07), vec2(0.14, 0.07), 0.04);
+  float head = length(e - vec2(-HW + 0.30, 0.17)) - 0.085;
+  float bodyD = mmBox(e - vec2(0.02, 0.09 + 0.02*cos(e.x*2.8)), vec2(HW - 0.40, 0.08), 0.07);
+  float hands = mmBox(e - vec2(-0.30, 0.22), vec2(0.035, 0.08), 0.03);
+  float feet = mmBox(e - vec2(HW - 0.30, 0.16), vec2(0.045, 0.12), 0.04);
+  float dog = min(wfEll(e - vec2(HW - 0.14, 0.08), vec2(0.11, 0.07)), length(e - vec2(HW - 0.06, 0.15)) - 0.045);
+  float eff = min(min(min(cush, head), min(bodyD, hands)), min(feet, dog));
+  float d = min(min(plinth, chest), min(lid, eff));
+  if (!paint) return d;
+
+  vec3 col = vec3(0.1);
+  float ink = 0.0;
+  vec3 stn = vec3(0.58, 0.58, 0.54)*(0.85 + 0.20*mmNoise(q*6.0 + seed));
+  wfLay(col, ink, plinth, stn*0.70, px, 0.9);
+  /* the side: an arcade of cusped niches, a mourner in each */
+  float nx = mod(q.x + HW, 0.40) - 0.20;
+  vec2 nq = vec2(nx, q.y - 0.44);
+  float niche = max(min(mmBox(nq - vec2(0.0, -0.05), vec2(0.13, 0.17), 0.0), length(nq - vec2(0.0, 0.12)) - 0.13), -(nq.y + 0.22));
+  float fig = min(length(nq - vec2(0.0, 0.08)) - 0.035, max(abs(nq.x) - 0.04 - 0.03*smoothstep(0.04, -0.20, nq.y), max(nq.y - 0.05, -0.20 - nq.y)));
+  vec3 sC = stn*(0.85 + 0.20*smoothstep(0.13, 0.75, q.y));
+  sC *= 1.0 - 0.45*wfIn(niche, px)*(1.0 - wfIn(fig, px));
+  sC *= 1.0 + 0.25*wfIn(fig, px)*smoothstep(-0.2, 0.1, nq.y);
+  wfLay(col, ink, chest, sC, px, 0.95);
+  ink = max(ink, mmInkP(niche, px, 1.0)*wfIn(chest, px)*0.75*step(abs(q.x), HW - 0.05));
+  ink = max(ink, mmInkP(fig, px, 1.0)*wfIn(chest, px)*0.5);
+  wfLay(col, ink, lid, stn*(0.85 + 0.40*smoothstep(LT - 0.08, LT + 0.03, q.y)), px, 0.95);
+  ink = max(ink, mmInkP(q.y - LT + 0.03, px, 1.0)*wfIn(lid, px)*0.6);
+  /* the effigy: a paler marble, lit on top, the gown's folds */
+  vec3 mar = vec3(0.80, 0.78, 0.72)*(0.65 + 0.40*smoothstep(0.02, 0.22, e.y));
+  float gf = 0.5 + 0.5*cos(e.x*38.0 + 0.6*sin(e.y*20.0));
+  mar *= 1.0 - 0.18*gf*wfIn(bodyD, px);
+  wfLay(col, ink, eff, mar, px, 0.9);
+  ink = max(ink, mmInkP(min(head, min(hands, feet)), px, 1.0)*0.6*wfIn(eff, px));
+  ink = max(ink, mmInkP(cush, px, 1.0)*0.6*wfIn(eff, px));
+  col = mix(col, vec3(0.30, 0.28, 0.26), wfIn(length(e - vec2(-HW + 0.335, 0.18)) - 0.010, px));
+  gWfGloss = 0.15 + 0.25*wfIn(eff, px);
+  gWfMoon = 0.6*wfIn(min(eff, lid), px)*smoothstep(-0.05, 0.2, e.y);
+  gWfCol = col; gWfInk = ink;
+  return d;
+}
+
+/* ── 58 THE CANDLE STAND ───────────────────────────────────────────────────
+   A wrought-iron pricket stand: a tripod foot, the stem, and two tiers of
+   rings set with prickets -- a crowd of candles of every height, guttered,
+   their wax run down in tears, each burning. */
+float wfCandles(vec2 q, float px, float seed, float kq, bool paint){
+  float t0;
+  float legs = min(min(wfSegT(q, vec2(0.0, 0.30), vec2(-0.26, 0.0), 0.016, 0.012, t0), wfSegT(q, vec2(0.0, 0.30), vec2(0.26, 0.0), 0.016, 0.012, t0)),
+                   mmBox(q - vec2(0.0, 0.62), vec2(0.016, 0.42), 0.006));
+  float ring1 = mmBox(q - vec2(0.0, 0.90), vec2(0.30, 0.016), 0.006);
+  float ring2 = mmBox(q - vec2(0.0, 1.20), vec2(0.18, 0.016), 0.006);
+  float iron = min(min(legs, ring1), ring2);
+  /* the candles: five on the lower ring, three on the upper */
+  float cd = 1e3, fl = 1e3, glow = 0.0;
+  for (int i = 0; i < 8; i++){
+    float fi = float(i);
+    float up = step(4.5, fi);
+    float xi = up > 0.5 ? (fi - 6.0)*0.12 : (fi - 2.0)*0.13;
+    float base = up > 0.5 ? 1.22 : 0.92;
+    float hgt = 0.08 + 0.16*mmHash11(fi*3.7 + seed);
+    float c = mmBox(q - vec2(xi, base + hgt*0.5), vec2(0.020, hgt*0.5), 0.004);
+    /* the tears of wax down its side */
+    c = min(c, mmBox(q - vec2(xi + 0.018*sign(sin(fi*2.0)), base + hgt*0.35), vec2(0.008, hgt*0.30), 0.004));
+    cd = min(cd, c);
+    vec2 fp = q - vec2(xi, base + hgt + 0.035);
+    fl = min(fl, length(fp/vec2(0.55, 1.0)) - 0.022);
+    glow = max(glow, exp(-length(fp)/0.05));
+  }
+  float d = min(min(iron, cd), fl);
+  if (!paint) return d;
+
+  vec3 col = vec3(0.1);
+  float ink = 0.0;
+  wfLay(col, ink, iron, vec3(0.10, 0.10, 0.11), px, 0.9);
+  wfLay(col, ink, cd, vec3(0.90, 0.86, 0.72)*(0.65 + 0.45*smoothstep(-0.02, 0.02, kq*q.x)), px, 0.7);
+  float flame = wfIn(fl, px);
+  col = mix(col, vec3(1.0, 0.9, 0.6), flame);
+  gWfEmit = vec3(1.00, 0.84, 0.50)*1.7*flame + vec3(1.0, 0.62, 0.26)*0.30*glow*(1.0 - flame)*wfIn(cd, px);
+  gWfGloss = 0.2;
+  gWfMoon = 0.0;
+  gWfCol = col; gWfInk = ink;
+  return d;
+}
+
+/* ── 59 A CHARNEL STACK ────────────────────────────────────────────────────
+   Bones laid up in a mound against the dark: courses of thighbones laid
+   end-on, a course of skulls between, a skull on the top; on a low stone
+   plinth. What the ossuary is built of, stacked in the middle of its floor. */
+float wfCharnel(vec2 q, float px, float seed, float kq, bool paint){
+  float pl = mmBox(q - vec2(0.0, 0.06), vec2(0.66, 0.06), 0.01);
+  float mh = 0.98 - 0.85*pow(clamp(abs(q.x)/0.66, 0.0, 1.0), 1.6) + 0.04*sin(q.x*23.0 + seed);
+  float mound = max(q.y - mh, max(-(q.y - 0.12), abs(q.x) - 0.64));
+  float hol;
+  float topSk = crSkullP(q - vec2(0.0, 1.06), 0.20, px, hol);
+  float d = min(min(pl, mound), topSk);
+  if (!paint) return d;
+
+  vec3 col = vec3(0.1);
+  float ink = 0.0;
+  vec3 bone = vec3(0.80, 0.74, 0.58);
+  wfLay(col, ink, pl, vec3(0.44, 0.44, 0.40), px, 0.9);
+  float BR = 0.18;
+  float br = floor((q.y - 0.12)/BR);
+  float by = q.y - 0.12 - br*BR;
+  float sRow = step(0.5, mod(br, 2.0));
+  float h2;
+  float sx = mod(q.x + 0.09*mod(br, 2.0), 0.18) - 0.09;
+  float sk = crSkullP(vec2(sx, by - BR*0.5), 0.15, px, h2);
+  vec2 fq = vec2(mod(q.x, 0.075) - 0.0375, mod(by, 0.06) - 0.03);
+  float fe = min(length(fq - vec2(-0.014, 0.0)) - 0.020, length(fq - vec2(0.014, 0.0)) - 0.020);
+  vec3 mc = mix(vec3(0.05, 0.04, 0.03), bone*(0.6 + 0.4*smoothstep(-0.02, 0.02, fq.y)), wfIn(fe, px)*(1.0 - sRow));
+  mc = mix(mc, bone*(0.7 + 0.3*smoothstep(-0.04, 0.06, by - BR*0.5))*(1.0 - 0.88*h2), wfIn(sk, px)*sRow);
+  wfLay(col, ink, mound, mc, px, 0.9);
+  ink = max(ink, wfIn(mound, px)*sRow*mmInkP(sk, px, 1.0)*0.8);
+  ink = max(ink, wfIn(mound, px)*(1.0 - sRow)*mmInkP(fe, px, 1.0)*0.5*mmLod(0.06, px));
+  wfLay(col, ink, topSk, bone*(0.7 + 0.35*smoothstep(1.02, 1.20, q.y))*(1.0 - 0.88*hol), px, 0.9);
+  gWfGloss = 0.15;
+  gWfMoon = 0.4*wfIn(topSk, px);
+  gWfCol = col; gWfInk = ink;
+  return d;
+}
+
 /* the drawing's nominal height, metres -- its quad is scaled to it */
 float wfNom(float s){
   if (s < 45.5) return 1.95;
@@ -14812,7 +15369,10 @@ float wfNom(float s){
   if (s < 53.5) return 1.30;
   if (s < 54.5) return 1.15;
   if (s < 55.5) return 2.45;
-  return 1.20;
+  if (s < 56.5) return 1.20;
+  if (s < 57.5) return 1.22;
+  if (s < 58.5) return 1.55;
+  return 1.35;
 }
 /* which way it faces: the room's seed turns some of them round -- but a
    BED has its head to the nearer side wall */
@@ -14843,7 +15403,10 @@ float wfDraw(vec2 m, vec2 msz, float s, float seed, float px, bool paint){
   else if (s < 53.5) d = wfDesk(q, qpx, seed, kq, paint);
   else if (s < 54.5) d = wfGlobe(q, qpx, seed, kq, paint);
   else if (s < 55.5) d = wfCase(q, qpx, seed, kq, paint);
-  else               d = wfChair(q, qpx, seed, kq, paint);
+  else if (s < 56.5) d = wfChair(q, qpx, seed, kq, paint);
+  else if (s < 57.5) d = wfSarc(q, qpx, seed, kq, paint);
+  else if (s < 58.5) d = wfCandles(q, qpx, seed, kq, paint);
+  else               d = wfCharnel(q, qpx, seed, kq, paint);
   return d*sc;
 }
 #endif

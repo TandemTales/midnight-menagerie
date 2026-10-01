@@ -167,7 +167,12 @@ const SHAPE_M = [1.20, 2.00, 1.30, 1.00, 2.00, 2.00, 3.32, 2.60, 1.17, 1.33,
                  /* the Study and Library: 53 a pedestal desk with its green
                     reading lamp burning, 54 a library globe in its stand,
                     55 a bookcase full of books, 56 a leather wing chair */
-                 1.30, 1.15, 2.45, 1.20
+                 1.30, 1.15, 2.45, 1.20,
+                 /* the Crypt: 57 a sarcophagus, its sides arcaded with
+                    mourners and its effigy on the lid, 58 a pricket stand
+                    crowded with burning candles, 59 a charnel stack of
+                    thighbones and skulls */
+                 1.22, 1.55, 1.35
 ];
 /* ...and a width ratio, so a column is a column and not a capital-T. Four of
  * these were wrong by enough to change what the object was: a longcase clock
@@ -185,7 +190,8 @@ const SHAPE_W = [1.15, 0.55, 1.00, 0.95, 0.72, 0.80, 0.47, 0.85, 0.90, 1.35,
                  0.76, 0.70,
                  0.72, 1.26, 1.20, 0.96, 0.36,
                  0.96, 1.64, 0.80,
-                 1.31, 0.61, 0.57, 0.71
+                 1.31, 0.61, 0.57, 0.71,
+                 1.80, 0.42, 1.04
 ];
 /* HOW MUCH ONE OF THESE VARIES FROM THE NEXT, as a +-fraction of SHAPE_M.
  *
@@ -216,7 +222,8 @@ const SHAPE_VAR = [0.06, 0.08, 0.62, 0.20, 0.10, 0.08, 0.10, 0.10, 0.16, 0.48,
                  0.04, 0.03,
                  0.03, 0.05, 0.05, 0.03, 0.04,
                  0.03, 0.03, 0.04,
-                 0.03, 0.05, 0.03, 0.03
+                 0.03, 0.05, 0.03, 0.03,
+                 0.03, 0.08, 0.06
 ];
 /* ROUND 23 (graft): ULTRAMARINE's drawings are in metres at their own
    proportions, so their quads take no width jitter -- a telescope 22%
@@ -974,7 +981,11 @@ export class Backdrop {
     /* (round 22 graft: a room may ask for more -- the maze's walk, seen
        along its hedge from one side, saw past the end of 76 m) */
     const wallW = open ? Math.max(room.w, room.openW ?? 76) : room.w + 1.2;
-    const groundW = open ? Math.max(room.w, room.openW ?? 76) : room.w;
+    /* (round 24: a room may run its floor a little under its side walls --
+       floorOver, metres -- so the seam where the two planes meet edge to
+       edge cannot open on the clear colour: a one-pixel violet line ran up
+       the foot of the Crypt's walls. Only the rooms that ask move.) */
+    const groundW = open ? Math.max(room.w, room.openW ?? 76) : room.w + (room.floorOver ?? 0);
 
     this.wall.geometry.dispose();
     this.wall.geometry = new THREE.PlaneGeometry(wallW, wallH);

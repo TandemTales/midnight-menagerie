@@ -275,7 +275,7 @@ export const REGIONS = {
     arch: 0, floorPattern: 0, subject: 'nurseryroom', damask: 0,
     /* (round 24: 10 m deep, from 12.5 -- the window and the toy shelves ARE
        the room, and 18 m from the lens they were a strip along the top) */
-    room: { w: 15, d: 8.5, h: 4.3, side: 0.0, ceilPattern: 3, wallPad: 4.0 },
+    room: { w: 15, d: 8.5, h: 4.3, side: 0.0, ceilPattern: 3, wallPad: 4.0, floorOver: 0.4 },
     cam: { y: 1.62, z: 5.6, look: 1.76, fov: 44 },
     deep: '#21182b', mid: '#422d41', hi: '#744e5d', accent: '#6b8eab',
     rimCol: '#e2bc9c', shaft: '#d3bbcc', floorDeep: '#171221', floorMid: '#322731',
@@ -323,7 +323,7 @@ export const REGIONS = {
        #262238, hi #46446e -> #3a3352) and the moon's fill weaker: the
        electric blue was the cold light on a pale wall. */
     arch: 0, floorPattern: 0, subject: 'dormroom', damask: 0,
-    room: { w: 16, d: 11, h: 4.6, side: 0.04, ceilPattern: 3, wallPad: 4.0 },
+    room: { w: 16, d: 11, h: 4.6, side: 0.04, ceilPattern: 3, wallPad: 4.0, floorOver: 0.4 },
     cam: { y: 2.10, z: 6.6, look: 1.95, fov: 41 },
     nookSide: -1,
     deep: '#18162c', mid: '#262238', hi: '#3a3352', accent: '#5e76aa',
@@ -511,7 +511,7 @@ export const REGIONS = {
        on the far wall is several pixels wide and its neighbour a different
        book. */
     arch: 0, floorPattern: 0, subject: 'libraryroom', damask: 0,
-    room: { w: 14, d: 9.5, h: 7.2, side: 0.04, ceilPattern: 3, wallPad: 5.0 },
+    room: { w: 14, d: 9.5, h: 7.2, side: 0.04, ceilPattern: 3, wallPad: 5.0, floorOver: 0.4 },
     cam: { y: 2.20, z: 6.4, look: 2.7, fov: 40 },
     deep: '#1c1319', mid: '#3a2824', hi: '#614534', accent: '#5d849d',
     shaft: '#d9bd92', floorDeep: '#151014', floorMid: '#31211c', ambient: '#1a1217',
@@ -695,26 +695,44 @@ export const REGIONS = {
   crypt: {
     label: 'The Crypt and Ossuary',
     propMat: 'stone', propCeil: 0.441,
-    arch: 2, floorPattern: 2, subject: 'niches',
-    room: { w: 14, d: 25, h: 4.9, side: 0.0, ceilPattern: 4, wallPad: 3.4 },
-    cam: { y: 1.90, z: 8.0, look: 2.0, fov: 46 },
+    /* ROUND 24: both survey judges -- "the ossuary walls' niches and arches
+       blur into an unreadable blue texture, and the room's only objects are
+       two grey box tombs and a lamp post"; "two green shafts read as thin
+       laser lines, not light". Its own wall program now (20): coursed stone,
+       an arcade down both long walls, and in its bays the catacomb's loculi
+       (sealed, shrouded, or bones and a skull), the chapel's tomb recesses
+       with their effigies and its altar with candles and a triptych, the
+       ossuary's walls BUILT of skulls and thighbones; on the floor the
+       sarcophagus with its effigy (57), pricket stands of candles (58) --
+       the lamp post is gone, the candles are the light -- and charnel stacks
+       (59). 16 m deep, from 25: the end wall is a feature, not a speck. The
+       shafts are a breath of moonlight, warmer, wide and faint. */
+    arch: 2, floorPattern: 2, subject: 'catacombs', damask: 0,
+    room: { w: 11, d: 16, h: 4.9, side: 0.0, ceilPattern: 4, wallPad: 3.4, floorOver: 0.4 },
+    cam: { y: 1.90, z: 6.4, look: 2.0, fov: 46 },
     deep: '#141720', mid: '#262f33', hi: '#414c49', accent: '#5eb3b1',
-    rimCol: '#d1e6d8', shaft: '#9fd2c5', floorDeep: '#0e1018', floorMid: '#1c2226',
+    rimCol: '#d1e6d8', shaft: '#b8c6c4', floorDeep: '#0e1018', floorMid: '#1c2226',
     ambient: '#141720', propAlb: '#363e3e', propHi: '#6a756f',
     gloss: 0.42, grime: 0.88, coolFill: 1.25, wallFog: 0.26,
-    props: { shapes: [16, 3, 6, 16, 15], count: 26, height: 1.8, layout: 'perimeter' },
-    particles: { mix: [[PTYPE.DUST, 0.48], [PTYPE.WISP, 0.36], [PTYPE.ASH, 0.16]],
-                 tint: '#cfe0dc', wispTint: '#5fe8d8', emberTint: '#ffb64a',
-                 speed: 0.6, scale: 1.15, wind: 0.4, density: 0.85 },
+    props: { shapes: [57, 15, 58, 57, 6], count: 9, height: 1.8, layout: 'perimeter',
+             near: [{ shape: 58, x: -2.6, z: -4.3, tone: 0.95, free: true },
+                    { shape: 57, edge: 0.76, z: -2.8, tone: 0.96 },
+                    { shape: 58, x: 2.8, z: -9.5, tone: 0.92, free: true }] },
+    /* (round 24: dust in the candlelight -- the teal wisps were a field of
+       green specks over the bone) */
+    particles: { mix: [[PTYPE.DUST, 0.84], [PTYPE.ASH, 0.16]],
+                 tint: '#e6e0d2', wispTint: '#9fc8c0', emberTint: '#ffb64a',
+                 speed: 0.5, scale: 1.0, wind: 0.3, density: 0.40 },
     exposure: 2.46, contrast: 1.69,
     key:  { glow: 0, kind: 'warm', x: -3.0, y: 2.8, z: 2.0, color: '#e0a866', intensity: 1.61, radius: 6.88 },
     fill: { glow: 0, kind: 'cold', x: 3.6, y: 2.4, z: 1.2, color: '#6cacc8', intensity: 1.94, radius: 7.5, flicker: false },
     lights: [
-      { kind: 'warm', x: -2.4, y: 1.10, z: -4.4, color: '#dda358', intensity: 2.1, radius: 5.5 },
-      { kind: 'cold', x: 4.2, y: 2.20, z: -12.0, color: '#6cacc8', intensity: 2.63, radius: 9.5 },
-      { kind: 'cold', x: -4.6, y: 1.80, z: -18.0, color: '#5d97b4', intensity: 1.94, radius: 9.0 },
+      { kind: 'warm', x: -2.6, y: 1.40, z: -4.3, color: '#e0a35a', intensity: 2.3, radius: 5.5, fit: 'none' },
+      { kind: 'cold', x: 3.4, y: 2.20, z: -9.0, color: '#7aa9c0', intensity: 1.70, radius: 7.5 },
+      { kind: 'cold', x: -3.6, y: 1.80, z: -13.0, color: '#6c94ac', intensity: 1.40, radius: 7.0 },
+      { kind: 'warm', x: 2.8, y: 1.50, z: -9.5, color: '#e0a35a', intensity: 1.40, radius: 4.8, fit: 'none' },
     ],
-    shafts: { count: 2, spread: 6, y: 5.6, z: -13.0, angle: 0.10, width: 2.0, intensity: 0.32, pool: 1.9 },
+    shafts: { count: 1, spread: 4, y: 5.0, z: -9.0, angle: 0.10, width: 4.2, intensity: 0.07, pool: 1.2 },
     vignette: 1.28, bloom: 0.90,
   },
 
@@ -1708,10 +1726,19 @@ export const ROOM_KINDS = {
      THERE as well as on the back wall: loculi, or a tomb in every bay under a
      chantry tomb behind a grille, or bone. */
   crypt: {
+    /* (round 24: the catacomb, the chapel and the ossuary, each drawn in
+       program 20 -- the chapel's floor stood with tombs and candles, the
+       ossuary's with charnel stacks) */
     kinds: [
-      { subject: 'niches' },
-      { subject: 'tomb', cam: { z: -1.0, look: 0.15 } },
-      { subject: 'ossuary', cam: { y: -0.20, z: 0.6, fov: 3 } },
+      { subject: 'catacombs' },
+      { subject: 'cryptchapel', swap: [[6, 58]], count: 3, room: { d: 0.80 }, cam: { z: -1.0, look: 0.15 },
+        near: [{ shape: 57, edge: 0.74, z: -3.0, tone: 0.96 },
+               { shape: 58, x: -2.4, z: -6.0, tone: 0.95, free: true },
+               { shape: 58, x: 2.4, z: -9.6, tone: 0.92, free: true }] },
+      { subject: 'charnel', swap: [[57, 59], [15, 59]], count: 3, cam: { y: -0.20, z: -0.4, fov: 3 },
+        near: [{ shape: 58, x: -2.6, z: -4.3, tone: 0.95, free: true },
+               { shape: 59, edge: 0.78, z: -3.2, tone: 0.96 },
+               { shape: 58, x: 2.8, z: -9.5, tone: 0.92, free: true }] },
     ],
     names: [
       [/ossuar|bone|skull/i, 2],
