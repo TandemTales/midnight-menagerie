@@ -262,27 +262,47 @@ export const REGIONS = {
   nursery: {
     label: 'The Forgotten Nursery',
     propMat: 'paint', propCeil: 0.239,
-    arch: 0, floorPattern: 0, subject: 'toyshelf',
-    room: { w: 15, d: 12.5, h: 4.8, side: 0.0, ceilPattern: 3, wallPad: 4.0 },
+    /* ROUND 24: both survey judges -- "the cribs and cots across the middle
+       are boxy crate shapes with a plank texture, under a back wall washed
+       in pale lavender light with flat grey curtain planes". The night
+       nursery is its own wall program now (17): a plum-enamelled dado, a
+       night-blue paper printed with gold moons and stars, the frieze of
+       ducks, the sash window on the moon in velvet curtains with real folds,
+       the toy shelves; and on its floor the things a nursery has, DRAWN --
+       cots on turned spindles under their muslin (45), a dapple rocking
+       horse (46), the toy chest with the bear against it (47). */
+    /* (no damask: the paper is the program's own print) */
+    arch: 0, floorPattern: 0, subject: 'nurseryroom', damask: 0,
+    /* (round 24: 10 m deep, from 12.5 -- the window and the toy shelves ARE
+       the room, and 18 m from the lens they were a strip along the top) */
+    room: { w: 15, d: 8.5, h: 4.3, side: 0.0, ceilPattern: 3, wallPad: 4.0, floorOver: 0.4 },
     cam: { y: 1.62, z: 5.6, look: 1.76, fov: 44 },
     deep: '#21182b', mid: '#422d41', hi: '#744e5d', accent: '#6b8eab',
     rimCol: '#e2bc9c', shaft: '#d3bbcc', floorDeep: '#171221', floorMid: '#322731',
     ambient: '#1d182b', propAlb: '#4a3441', propHi: '#8d616a',
     gloss: 0.42, open: '#7ca3b2', openGlow: 0.55, grime: 0.48,
-    props: { shapes: [10, 11, 5, 2, 7], count: 24, height: 1.55, layout: 'clutter' },
-    particles: { mix: [[PTYPE.DUST, 0.68], [PTYPE.ASH, 0.20], [PTYPE.WISP, 0.12]],
-                 tint: '#ffdfe4', wispTint: '#a8ecf7', emberTint: '#ffc7a0',
-                 speed: 0.8, scale: 1.1, wind: 0.6, density: 0.9 },
+    /* the cot set by hand where the fight leaves room for it, at the
+       frame's right, and the rocking horse and the toy chest beyond the
+       Kid's shoulder -- the rest dealt down the two sides */
+    props: { shapes: [45, 46, 47, 45, 47], count: 6, height: 1.55, layout: 'wings',
+             near: [{ shape: 45, edge: 0.74, z: -1.2, tone: 0.95 },
+                    { shape: 46, edge: 0.34, z: -4.8, tone: 0.92 },
+                    { shape: 47, edge: 0.86, z: -5.0, tone: 0.92 }] },
+    /* (round 24: dust in the moonlight, not a field of stars over the
+       paper's own) */
+    particles: { mix: [[PTYPE.DUST, 0.86], [PTYPE.ASH, 0.14]],
+                 tint: '#ffe6d8', wispTint: '#a8ecf7', emberTint: '#ffc7a0',
+                 speed: 0.7, scale: 1.0, wind: 0.5, density: 0.40 },
     exposure: 1.43, vignette: 1.19, contrast: 1.62,
     key:  { glow: 0, kind: 'warm', x: -3.4, y: 2.9, z: 2.2, color: '#eabc97', intensity: 2.52, radius: 6.45 },
     fill: { glow: 0, kind: 'cold', x: 4.4, y: 2.4, z: 1.4, color: '#9ec0d7', intensity: 3.15, radius: 7.5, flicker: false },
     lights: [
-      { kind: 'warm', x: -3.6, y: 1.10, z: -4.2, color: '#e6b184', intensity: 1.43, radius: 4.3 },
-      { kind: 'cold', x: 3.2, y: 3.40, z: -10.4, color: '#a4c7dd', intensity: 2.63, radius: 8.0 },
-      { kind: 'cold', x: -4.4, y: 3.60, z: -10.8, color: '#91b6d0', intensity: 1.71, radius: 7.0 },
-      { kind: 'warm', x: 4.6, y: 1.90, z: -6.6, color: '#e7c18c', intensity: 0.66, radius: 3.96 },
+      { kind: 'warm', x: -3.6, y: 2.90, z: -4.2, color: '#e6b184', intensity: 1.80, radius: 5.0 },
+      { kind: 'cold', x: 0.6, y: 2.40, z: -7.1, color: '#a4c7dd', intensity: 1.90, radius: 6.5 },
+      { kind: 'cold', x: -4.4, y: 3.00, z: -7.3, color: '#91b6d0', intensity: 1.10, radius: 6.0 },
+      { kind: 'warm', x: 4.2, y: 3.10, z: -5.4, color: '#e7c18c', intensity: 0.90, radius: 4.6 },
     ],
-    shafts: { count: 2, spread: 9, y: 5.6, z: -9.0, angle: 0.34, width: 2.6, intensity: 0.38, pool: 1.8 },
+    shafts: { count: 2, spread: 9, y: 5.6, z: -6.4, angle: 0.34, width: 2.6, intensity: 0.12, pool: 1.8 },
   },
 
   /* ── 3. The Sleeping Quarters ──────────────────────────────────────────────
@@ -291,27 +311,42 @@ export const REGIONS = {
   sleeping: {
     label: 'The Sleeping Quarters',
     propMat: 'cloth', propCeil: 0.278,
-    arch: 0, floorPattern: 0, subject: 'wardrobe',
-    room: { w: 18, d: 16, h: 5.6, side: 0.06, ceilPattern: 3, wallPad: 4.6 },
-    cam: { y: 2.30, z: 9.0, look: 2.05, fov: 39 },
+    /* ROUND 24: both survey judges -- "the back wall is a raw electric-blue
+       flat colour, and the two beds are cardboard boxes with a quilt texture
+       pasted on the front", and the wing "copies the Nursery's
+       portraits-and-cabinets template". Its own wall program now (18): a
+       walnut dado of fielded panels and a striped indigo-and-aubergine
+       paper, the dormitory's windows with their blinds half down, the
+       bedroom's marble chimneypiece with its fire; and its BEDS drawn --
+       the iron dormitory bed (51), the four-poster (50), the washstand with
+       its candle (52). The wall's palette is a stop deeper (mid #2c2a4b ->
+       #262238, hi #46446e -> #3a3352) and the moon's fill weaker: the
+       electric blue was the cold light on a pale wall. */
+    arch: 0, floorPattern: 0, subject: 'dormroom', damask: 0,
+    room: { w: 16, d: 11, h: 4.6, side: 0.04, ceilPattern: 3, wallPad: 4.0, floorOver: 0.4 },
+    cam: { y: 2.10, z: 6.6, look: 1.95, fov: 41 },
     nookSide: -1,
-    deep: '#18162c', mid: '#2c2a4b', hi: '#46446e', accent: '#5e76aa',
-    shaft: '#a7b8e0', floorDeep: '#100f1e', floorMid: '#232339', ambient: '#19172e',
-    propAlb: '#33304f', propHi: '#5c5b86', rimCol: '#c1cbed',
-    gloss: 0.38, open: '#5873a1', openGlow: 0.42, coolFill: 1.15, wallFog: 0.22,
-    props: { shapes: [12, 5, 7, 0, 2], count: 20, height: 2.1, layout: 'nook' },
-    particles: { mix: [[PTYPE.DUST, 0.60], [PTYPE.WISP, 0.28], [PTYPE.ASH, 0.12]],
-                 tint: '#cfd8f2', wispTint: '#8fb7ff', emberTint: '#ffb64a',
-                 speed: 0.7, scale: 1.0, wind: 0.5, density: 0.8 },
+    deep: '#18162c', mid: '#262238', hi: '#3a3352', accent: '#5e76aa',
+    shaft: '#a7b8e0', floorDeep: '#100f1e', floorMid: '#232339', ambient: '#17152a',
+    propAlb: '#3a3350', propHi: '#6a6488', rimCol: '#d8c6b0',
+    gloss: 0.38, open: '#5873a1', openGlow: 0.42, coolFill: 0.80, wallFog: 0.18,
+    props: { shapes: [52, 0, 14, 0], count: 5, height: 2.1, layout: 'nook',
+             near: [{ shape: 51, x: -4.7, z: -3.6, tone: 0.95, free: true },
+                    { shape: 51, x: -5.2, z: -6.6, tone: 0.92, free: true },
+                    { shape: 51, x: 5.0, z: -6.9, tone: 0.92, free: true }] },
+    particles: { mix: [[PTYPE.DUST, 0.84], [PTYPE.ASH, 0.16]],
+                 tint: '#dfe2f2', wispTint: '#8fb7ff', emberTint: '#ffb64a',
+                 speed: 0.6, scale: 1.0, wind: 0.4, density: 0.40 },
     exposure: 1.46, contrast: 1.63,
     key:  { glow: 0, kind: 'warm', x: -4.0, y: 3.2, z: 2.4, color: '#e4ad7b', intensity: 2.99, radius: 7.31 },
     fill: { glow: 0, kind: 'cold', x: 5.4, y: 2.6, z: 1.0, color: '#92aae4', intensity: 1.78, radius: 8.5, flicker: false },
     lights: [
-      { kind: 'warm', x: -3.4, y: 1.05, z: -4.6, color: '#dda558', intensity: 3.15, radius: 4.13 },
-      { kind: 'cold', x: 5.2, y: 4.20, z: -12.6, color: '#92aae4', intensity: 2.54, radius: 11.0 },
-      { kind: 'cold', x: -6.2, y: 2.80, z: -9.6, color: '#7897ca', intensity: 1.12, radius: 7.5 },
+      { kind: 'warm', x: -3.4, y: 2.90, z: -4.6, color: '#dda558', intensity: 2.40, radius: 5.0 },
+      { kind: 'cold', x: 3.0, y: 2.60, z: -9.8, color: '#92aae4', intensity: 1.50, radius: 7.0 },
+      { kind: 'cold', x: -3.0, y: 2.60, z: -9.6, color: '#7897ca', intensity: 1.00, radius: 6.5 },
+      { kind: 'warm', x: 1.2, y: 3.00, z: -8.0, color: '#e2b070', intensity: 1.50, radius: 5.5 },
     ],
-    shafts: { count: 2, spread: 11, y: 6.4, z: -11.5, angle: 0.40, width: 3.0, intensity: 0.43, pool: 2.0 },
+    shafts: { count: 2, spread: 11, y: 6.0, z: -8.8, angle: 0.40, width: 3.0, intensity: 0.06, pool: 2.0 },
     bloom: 0.78, vignette: 1.23,
   },
 
@@ -462,27 +497,43 @@ export const REGIONS = {
   study: {
     label: 'The Grand Study and Library',
     propMat: 'wood', propCeil: 0.424,
-    arch: 0, floorPattern: 0, subject: 'bookcase',
-    room: { w: 19, d: 17, h: 8.2, side: 0.04, ceilPattern: 3, wallPad: 5.0 },
-    cam: { y: 2.20, z: 8.4, look: 2.7, fov: 43 },
+    /* ROUND 24: both survey judges -- "the bookcases filling the back wall
+       are a soft smear of vertical streaks where no shelf or spine reads";
+       "the two foreground cabinets are the same crate-box prop reused". Its
+       own wall program now (19): cases round the walls in two tiers with
+       books you can count -- each spine its own width, height and leather,
+       round, gilt-banded, some leaning, some lying flat -- the gallery on
+       its fascia and turned balustrade, the ladder on its rail; the study's
+       carved oak chimneypiece and its log fire. The crates are retired: on
+       the floor a pedestal desk with its green lamp burning (53), a globe
+       (54), a bookcase (55), a leather wing chair (56). A narrower, shallower
+       room (19 x 17 -> 14 x 9.5) under a slightly tighter lens, so a book
+       on the far wall is several pixels wide and its neighbour a different
+       book. */
+    arch: 0, floorPattern: 0, subject: 'libraryroom', damask: 0,
+    room: { w: 14, d: 9.5, h: 7.2, side: 0.04, ceilPattern: 3, wallPad: 5.0, floorOver: 0.4 },
+    cam: { y: 2.20, z: 6.4, look: 2.7, fov: 40 },
     deep: '#1c1319', mid: '#3a2824', hi: '#614534', accent: '#5d849d',
     shaft: '#d9bd92', floorDeep: '#151014', floorMid: '#31211c', ambient: '#1a1217',
     propAlb: '#3f2b23', propHi: '#735336', rimCol: '#d8b279',
     gloss: 0.58, grime: 0.55, open: '#527f8f', openGlow: 0.45,
-    props: { shapes: [5, 5, 14, 0, 6, 1], count: 26, height: 2.7, layout: 'perimeter' },
-    particles: { mix: [[PTYPE.DUST, 0.86], [PTYPE.EMBER, 0.08], [PTYPE.WISP, 0.06]],
+    props: { shapes: [55, 56, 55], count: 3, height: 2.7, layout: 'perimeter',
+             near: [{ shape: 53, edge: 0.70, z: -1.6, tone: 0.97 },
+                    { shape: 54, edge: 0.33, z: -4.4, tone: 0.95 },
+                    { shape: 56, edge: 0.92, z: -4.0, tone: 0.94 }] },
+    particles: { mix: [[PTYPE.DUST, 0.92], [PTYPE.EMBER, 0.08]],
                  tint: '#ffe6bc', wispTint: '#8fd9ec', emberTint: '#ffb64a',
-                 speed: 0.7, scale: 0.95, wind: 0.5, density: 1.0 },
+                 speed: 0.6, scale: 0.95, wind: 0.4, density: 0.45 },
     exposure: 2.6, vignette: 1.47, contrast: 1.67,
     key:  { glow: 0, kind: 'warm', x: -3.8, y: 3.2, z: 2.2, color: '#e2b271', intensity: 1.63, radius: 7.31 },
     fill: { glow: 0, kind: 'cold', x: 5.0, y: 3.4, z: 1.2, color: '#769fba', intensity: 4.05, radius: 8.0, flicker: false },
     lights: [
-      { kind: 'warm', x: -3.2, y: 1.30, z: -4.6, color: '#e0b266', intensity: 1.32, radius: 5.33 },
-      { kind: 'warm', x: 5.0, y: 2.60, z: -11.5, color: '#dca254', intensity: 0.83, radius: 6.19 },
-      { kind: 'warm', x: -6.4, y: 3.40, z: -12.4, color: '#ce9953', intensity: 0.57, radius: 5.85 },
-      { kind: 'cold', x: 3.6, y: 5.00, z: -9.6, color: '#769fba', intensity: 1.89, radius: 8.0 },
+      { kind: 'warm', x: -3.2, y: 3.00, z: -4.6, color: '#e0b266', intensity: 1.50, radius: 5.6 },
+      { kind: 'warm', x: 3.6, y: 3.20, z: -7.0, color: '#dca254', intensity: 1.30, radius: 6.0 },
+      { kind: 'warm', x: -4.0, y: 3.40, z: -7.6, color: '#ce9953', intensity: 0.90, radius: 5.5 },
+      { kind: 'cold', x: 0.6, y: 5.00, z: -8.0, color: '#769fba', intensity: 1.40, radius: 7.0 },
     ],
-    shafts: { count: 2, spread: 10, y: 9.0, z: -11.0, angle: 0.22, width: 2.8, intensity: 0.35, pool: 1.7 },
+    shafts: { count: 1, spread: 6, y: 8.0, z: -8.0, angle: 0.22, width: 2.4, intensity: 0.14, pool: 1.5 },
     warmTone: 0.06, halation: 0.68,
   },
 
@@ -644,26 +695,44 @@ export const REGIONS = {
   crypt: {
     label: 'The Crypt and Ossuary',
     propMat: 'stone', propCeil: 0.441,
-    arch: 2, floorPattern: 2, subject: 'niches',
-    room: { w: 14, d: 25, h: 4.9, side: 0.0, ceilPattern: 4, wallPad: 3.4 },
-    cam: { y: 1.90, z: 8.0, look: 2.0, fov: 46 },
+    /* ROUND 24: both survey judges -- "the ossuary walls' niches and arches
+       blur into an unreadable blue texture, and the room's only objects are
+       two grey box tombs and a lamp post"; "two green shafts read as thin
+       laser lines, not light". Its own wall program now (20): coursed stone,
+       an arcade down both long walls, and in its bays the catacomb's loculi
+       (sealed, shrouded, or bones and a skull), the chapel's tomb recesses
+       with their effigies and its altar with candles and a triptych, the
+       ossuary's walls BUILT of skulls and thighbones; on the floor the
+       sarcophagus with its effigy (57), pricket stands of candles (58) --
+       the lamp post is gone, the candles are the light -- and charnel stacks
+       (59). 16 m deep, from 25: the end wall is a feature, not a speck. The
+       shafts are a breath of moonlight, warmer, wide and faint. */
+    arch: 2, floorPattern: 2, subject: 'catacombs', damask: 0,
+    room: { w: 11, d: 16, h: 4.9, side: 0.0, ceilPattern: 4, wallPad: 3.4, floorOver: 0.4 },
+    cam: { y: 1.90, z: 6.4, look: 2.0, fov: 46 },
     deep: '#141720', mid: '#262f33', hi: '#414c49', accent: '#5eb3b1',
-    rimCol: '#d1e6d8', shaft: '#9fd2c5', floorDeep: '#0e1018', floorMid: '#1c2226',
+    rimCol: '#d1e6d8', shaft: '#b8c6c4', floorDeep: '#0e1018', floorMid: '#1c2226',
     ambient: '#141720', propAlb: '#363e3e', propHi: '#6a756f',
     gloss: 0.42, grime: 0.88, coolFill: 1.25, wallFog: 0.26,
-    props: { shapes: [16, 3, 6, 16, 15], count: 26, height: 1.8, layout: 'perimeter' },
-    particles: { mix: [[PTYPE.DUST, 0.48], [PTYPE.WISP, 0.36], [PTYPE.ASH, 0.16]],
-                 tint: '#cfe0dc', wispTint: '#5fe8d8', emberTint: '#ffb64a',
-                 speed: 0.6, scale: 1.15, wind: 0.4, density: 0.85 },
+    props: { shapes: [57, 15, 58, 57, 6], count: 9, height: 1.8, layout: 'perimeter',
+             near: [{ shape: 58, x: -2.6, z: -4.3, tone: 0.95, free: true },
+                    { shape: 57, edge: 0.76, z: -2.8, tone: 0.96 },
+                    { shape: 58, x: 2.8, z: -9.5, tone: 0.92, free: true }] },
+    /* (round 24: dust in the candlelight -- the teal wisps were a field of
+       green specks over the bone) */
+    particles: { mix: [[PTYPE.DUST, 0.84], [PTYPE.ASH, 0.16]],
+                 tint: '#e6e0d2', wispTint: '#9fc8c0', emberTint: '#ffb64a',
+                 speed: 0.5, scale: 1.0, wind: 0.3, density: 0.40 },
     exposure: 2.46, contrast: 1.69,
     key:  { glow: 0, kind: 'warm', x: -3.0, y: 2.8, z: 2.0, color: '#e0a866', intensity: 1.61, radius: 6.88 },
     fill: { glow: 0, kind: 'cold', x: 3.6, y: 2.4, z: 1.2, color: '#6cacc8', intensity: 1.94, radius: 7.5, flicker: false },
     lights: [
-      { kind: 'warm', x: -2.4, y: 1.10, z: -4.4, color: '#dda358', intensity: 2.1, radius: 5.5 },
-      { kind: 'cold', x: 4.2, y: 2.20, z: -12.0, color: '#6cacc8', intensity: 2.63, radius: 9.5 },
-      { kind: 'cold', x: -4.6, y: 1.80, z: -18.0, color: '#5d97b4', intensity: 1.94, radius: 9.0 },
+      { kind: 'warm', x: -2.6, y: 1.40, z: -4.3, color: '#e0a35a', intensity: 2.9, radius: 6.5, fit: 'none' },
+      { kind: 'cold', x: 3.4, y: 2.20, z: -9.0, color: '#7aa9c0', intensity: 1.70, radius: 7.5 },
+      { kind: 'cold', x: -3.6, y: 1.80, z: -13.0, color: '#6c94ac', intensity: 1.40, radius: 7.0 },
+      { kind: 'warm', x: 2.8, y: 1.50, z: -9.5, color: '#e0a35a', intensity: 2.10, radius: 6.0, fit: 'none' },
     ],
-    shafts: { count: 2, spread: 6, y: 5.6, z: -13.0, angle: 0.10, width: 2.0, intensity: 0.32, pool: 1.9 },
+    shafts: { count: 1, spread: 4, y: 5.0, z: -9.0, angle: 0.10, width: 4.2, intensity: 0.0, pool: 1.2 },
     vignette: 1.28, bloom: 0.90,
   },
 
@@ -1331,10 +1400,17 @@ export const ROOM_KINDS = {
      in it is a chimneypiece between shelves, which is exactly the Heart's
      `hearth`. The library stacks keep the cases to the cornice. */
   study: {
+    /* (round 24: the library and the study with its fire, each drawn in
+       program 19; the fire is the study's lamp, low in its grate) */
     kinds: [
-      { subject: 'bookcase' },
-      /* no central doorway: it would open straight through the firebox */
-      { subject: 'hearth', doorX: -1, cam: { z: -0.8, look: 0.2 } },
+      { subject: 'libraryroom' },
+      { subject: 'studyfire', count: 1, swap: [[56, 55]], room: { d: 0.86 },
+        lamps: [{ i: 0, x: 0.0, z: 0.96, y: 0.40, fit: 'none', color: '#ff9a4a', radius: 4.6, k: 1.30 }],
+        near: [{ shape: 53, x: 3.0, z: -3.0, tone: 0.97, free: true },
+               { shape: 56, x: -2.6, z: -4.8, tone: 0.95, free: true },
+               { shape: 56, x: 2.0, z: -5.4, tone: 0.95, free: true },
+               { shape: 54, x: -4.2, z: -3.2, tone: 0.95, free: true }],
+        cam: { z: -1.0, look: 0.1 } },
     ],
     names: [
       [/fireplace|private|writing|archivist|scribe|repair/i, 1],
@@ -1348,14 +1424,47 @@ export const ROOM_KINDS = {
      taps (the Bathhouse's `dado`); an observatory's library and chart room
      are cases of books. The first kind is still what the wing always was. */
   nursery: {
-    kinds: [{ subject: 'toyshelf' }, { subject: 'wardrobe' }],
+    /* (round 24: the night nursery and its sewing and linen room, each
+       drawn in program 17 -- the cots and the rocking horse give way to the
+       treadle machine and the dressmaker's dummy in the sewing room) */
+    kinds: [{ subject: 'nurseryroom' },
+            { subject: 'sewingroom', swap: [[45, 48], [46, 49]],
+              near: [{ shape: 48, edge: 0.70, z: -1.6, tone: 0.95 },
+                     { shape: 49, edge: 0.30, z: -4.6, tone: 0.93 },
+                     { shape: 49, edge: 0.92, z: -5.0, tone: 0.92 }],
+              room: { d: 0.82 }, cam: { z: -1.0, look: 0.10 } }],
     names: [
       [/wardrobe|closet|changing|blanket|sewing|mending/i, 1],
       [/./, 0],
     ],
   },
   sleeping: {
-    kinds: [{ subject: 'wardrobe' }, { subject: 'hearth', doorX: -1, cam: { z: -0.6, look: 0.15 } }],
+    /* (round 24: the dormitory, its iron beds down both sides with their
+       heads to the walls; and a bedroom with its hearth, its four-poster
+       and its washstand -- each drawn in program 18) */
+    kinds: [{ subject: 'dormroom', layout: 'wings', count: 0, swap: [[0, 51], [14, 51]],
+              runner: 1.25, room: { d: 0.76, w: 0.78 },
+              lamps: [{ i: 0, x: 0.0, z: 0.30, k: 1.4 },
+                      { i: 3, x: 4.6, z: 0.66, y: 1.25, color: '#eab070', k: 1.5, radius: 4.5, fit: 'none' }],
+              near: [{ shape: 51, x: -4.2, z: -2.6, tone: 0.97, free: true },
+                     { shape: 51, x: 4.2, z: -2.8, tone: 0.97, free: true },
+                     { shape: 52, x: -5.2, z: -3.9, tone: 0.94, free: true },
+                     { shape: 51, x: -4.6, z: -4.9, tone: 0.95, free: true },
+                     { shape: 51, x: 4.6, z: -5.1, tone: 0.95, free: true },
+                     { shape: 52, x: 5.3, z: -6.1, tone: 0.92, free: true },
+                     { shape: 51, x: -4.8, z: -7.0, tone: 0.92, free: true },
+                     { shape: 51, x: 4.8, z: -7.2, tone: 0.92, free: true }],
+              cam: { z: -1.6, look: 0.10 } },
+            { subject: 'bedchamber', layout: 'wings', count: 0,
+              room: { d: 0.80, w: 0.86 }, runner: 1.5,
+              lamps: [{ i: 0, x: 0.0, z: 0.95, y: 0.45, fit: 'none', color: '#ff9848', radius: 4.2, k: 1.10 },
+                      { i: 3, x: 3.4, z: 0.42 },
+                      { i: 2, x: 4.0, z: 0.38, y: 1.25, color: '#eab070', k: 1.5, radius: 4.0, fit: 'none' }],
+              near: [{ shape: 50, x: -2.7, z: -2.0, tone: 0.97, scale: 1.2, free: true },
+                     { shape: 52, x: 4.0, z: -3.4, tone: 0.95, free: true },
+                     { shape: 60, x: 4.7, z: -6.4, tone: 0.93, free: true },
+                     { shape: 56, x: 2.0, z: -5.4, tone: 0.92, free: true }],
+              cam: { z: -1.4, look: 0.10 } }],
     names: [
       [/bedroom|moon window|dreaming/i, 1],
       [/./, 0],
@@ -1621,10 +1730,20 @@ export const ROOM_KINDS = {
      THERE as well as on the back wall: loculi, or a tomb in every bay under a
      chantry tomb behind a grille, or bone. */
   crypt: {
+    /* (round 24: the catacomb, the chapel and the ossuary, each drawn in
+       program 20 -- the chapel's floor stood with tombs and candles, the
+       ossuary's with charnel stacks) */
     kinds: [
-      { subject: 'niches' },
-      { subject: 'tomb', cam: { z: -1.0, look: 0.15 } },
-      { subject: 'ossuary', cam: { y: -0.20, z: 0.6, fov: 3 } },
+      { subject: 'catacombs', count: 4, swap: [[57, 59], [6, 58]] },
+      { subject: 'cryptchapel', swap: [[6, 58]], count: 3, room: { d: 0.80 }, cam: { z: -1.0, look: 0.15 },
+        lamps: [{ i: 1, x: 0.0, z: 0.86, y: 1.6, color: '#e2a660', k: 0.85, fit: 'none' }],
+        near: [{ shape: 57, edge: 0.74, z: -3.0, tone: 0.96 },
+               { shape: 58, x: -2.4, z: -6.0, tone: 0.95, free: true },
+               { shape: 58, x: 2.4, z: -9.6, tone: 0.92, free: true }] },
+      { subject: 'charnel', swap: [[57, 59], [15, 59]], count: 3, cam: { y: -0.20, z: -0.4, fov: 3 },
+        near: [{ shape: 58, x: -2.6, z: -4.3, tone: 0.95, free: true },
+               { shape: 59, edge: 0.78, z: -3.2, tone: 0.96 },
+               { shape: 58, x: 2.8, z: -9.5, tone: 0.92, free: true }] },
     ],
     names: [
       [/ossuar|bone|skull/i, 2],
@@ -2282,6 +2401,9 @@ export class Atmosphere {
       if (kind.runner !== undefined) pal.runner = kind.runner;
       if (kind.layout) pal.props.layout = kind.layout;
       if (kind.countScale) pal.props.count = Math.max(6, Math.round(pal.props.count * kind.countScale));
+      /* (round 24: or exactly how many, where a room's things are set by
+         hand and the pack only fills in round them) */
+      if (kind.count !== undefined) pal.props.count = kind.count;
       if (kind.aisle) pal.props.aisle = kind.aisle;
       /* a maze's own set-out (round 22: see Backdrop's `maze` layout) */
       if (kind.maze) Object.assign(pal.props, kind.maze);
@@ -2318,6 +2440,13 @@ export class Atmosphere {
         /* (graft: and how bright, against the wing's own: the scullery's
            copper fire is a third of the kitchen range's) */
         if (m.k !== undefined) L.intensity *= m.k;
+        /* (round 24: and a lamp a room's own fire stands for -- the
+           bedroom's grate, the study's hearth -- at its height and colour,
+           with no fitting of its own: the wall draws its fire) */
+        if (m.y !== undefined) L.y = m.y;
+        if (m.color !== undefined) L.color = m.color;
+        if (m.radius !== undefined) L.radius = m.radius;
+        if (m.fit !== undefined) L.fit = m.fit;
       }
       /* A DIFFERENT ROOM IS SEEN FROM A DIFFERENT PLACE. Offsets from the
          wing's authored rig, and small: the rig is authored against the

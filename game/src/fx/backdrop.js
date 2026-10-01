@@ -151,7 +151,31 @@ const SHAPE_M = [1.20, 2.00, 1.30, 1.00, 2.00, 2.00, 3.32, 2.60, 1.17, 1.33,
                  1.92,
                  /* 44 an orrery on its table (graft, MADDERLAKE's, the
                     attic observatory) */
-                 1.60
+                 1.60,
+                 /* round 24, the Nursery: 45 a cot on its turned spindles
+                    with its half-tester and the mobile over it, 46 a dapple
+                    rocking horse on its bow rockers, 47 a painted toy chest
+                    with its lid up and the bear sat against it, 48 a treadle
+                    sewing machine on its iron stand, 49 a dressmaker's
+                    dummy on its tripod */
+                 1.95, 1.15, 1.00, 1.15, 1.70,
+                 /* the Sleeping Quarters: 50 a four-poster under its tester
+                    and curtains, 51 an iron dormitory bed made up with its
+                    pot under it, 52 a washstand, its jug and basin, the towel
+                    and the candle burning on it */
+                 2.40, 1.25, 1.25,
+                 /* the Study and Library: 53 a pedestal desk with its green
+                    reading lamp burning, 54 a library globe in its stand,
+                    55 a bookcase full of books, 56 a leather wing chair */
+                 1.30, 1.15, 2.45, 1.20,
+                 /* the Crypt: 57 a sarcophagus, its sides arcaded with
+                    mourners and its effigy on the lid, 58 a pricket stand
+                    crowded with burning candles, 59 a charnel stack of
+                    thighbones and skulls */
+                 1.22, 1.55, 1.35,
+                 /* 60 a wardrobe, its glass door and its crest (the
+                    bedroom) */
+                 2.30
 ];
 /* ...and a width ratio, so a column is a column and not a capital-T. Four of
  * these were wrong by enough to change what the object was: a longcase clock
@@ -166,7 +190,12 @@ const SHAPE_W = [1.15, 0.55, 1.00, 0.95, 0.72, 0.80, 0.47, 0.85, 0.90, 1.35,
                  1.06, 1.12, 0.85,
                  2.6,
                  1.34, 2.30, 0.80, 1.09,
-                 0.76, 0.70
+                 0.76, 0.70,
+                 0.72, 1.26, 1.20, 0.96, 0.36,
+                 0.96, 1.64, 0.80,
+                 1.31, 0.61, 0.57, 0.71,
+                 1.80, 0.42, 1.04,
+                 0.58
 ];
 /* HOW MUCH ONE OF THESE VARIES FROM THE NEXT, as a +-fraction of SHAPE_M.
  *
@@ -194,13 +223,21 @@ const SHAPE_VAR = [0.06, 0.08, 0.62, 0.20, 0.10, 0.08, 0.10, 0.10, 0.16, 0.48,
                  0.04, 0.10, 0.16,
                  0.0,
                  0.08, 0.08, 0.04, 0.06,
-                 0.04, 0.03
+                 0.04, 0.03,
+                 0.03, 0.05, 0.05, 0.03, 0.04,
+                 0.03, 0.03, 0.04,
+                 0.03, 0.05, 0.03, 0.03,
+                 0.03, 0.08, 0.06,
+                 0.03
 ];
 /* ROUND 23 (graft): ULTRAMARINE's drawings are in metres at their own
    proportions, so their quads take no width jitter -- a telescope 22%
    narrower than its drawing is a telescope with its objective cut off.
    (rand() is still drawn for them, so no other room's stream moves.) */
-const FIXW = { 32: 1, 33: 1, 34: 1, 35: 1, 39: 1, 40: 1, 41: 1, 42: 1, 43: 1, 44: 1 };
+const FIXW = { 32: 1, 33: 1, 34: 1, 35: 1, 39: 1, 40: 1, 41: 1, 42: 1, 43: 1, 44: 1,
+               /* round 24's are drawn in metres the same way */
+               45: 1, 46: 1, 47: 1, 48: 1, 49: 1, 50: 1, 51: 1, 52: 1, 53: 1, 54: 1,
+               55: 1, 56: 1, 57: 1, 58: 1, 59: 1, 60: 1 };
 // Which shapes hang from the ceiling rather than stand on the floor.
 export const HANGING = { 4: 1, 7: 1, 22: 1, 33: 1 };
 /* ...and which stand AGAINST A WALL rather than out on the floor. A tall
@@ -302,6 +339,14 @@ export const SUBJECT = {
      observatory and its archive under the eaves, the Kennels' range and
      their wash room -- each drawn by its wing's own program (12-15) */
   baths: 38, lampshop: 39, observatory: 40, eaves: 41, kennel: 42, washroom: 43,
+  /* Round 24: the house's own rooms, each wing in a program of its own
+     (17-20) -- the Nursery and its sewing room, the Sleeping Quarters'
+     dormitory and a bedroom with its hearth, the Library and the study with
+     its fire, the Crypt's catacomb, its chapel and its ossuary. Their old
+     subjects (toyshelf, wardrobe, bookcase, hearth, niches, tomb, ossuary)
+     stay where they were for the wings that still draw them. */
+  nurseryroom: 44, sewingroom: 45, dormroom: 46, bedchamber: 47,
+  libraryroom: 48, studyfire: 49, catacombs: 50, cryptchapel: 51, charnel: 52,
 };
 /* WHICH WALL PROGRAM A SUBJECT IS DRAWN BY (MM_ROOMS in shaders/backdrop.js).
    Round 11's rooms first went into the one wall program with everything else,
@@ -340,6 +385,10 @@ export const ROOMS_PROGRAM = {
   observatory: 14, eaves: 14,
   /* (graft: and its wash room in a program of its own, 16) */
   kennel: 15, washroom: 16,
+  /* round 24: the Nursery (17), the Sleeping Quarters (18), the Study and
+     Library (19) and the Crypt (20) */
+  nurseryroom: 17, sewingroom: 17, dormroom: 18, bedchamber: 18,
+  libraryroom: 19, studyfire: 19, catacombs: 20, cryptchapel: 20, charnel: 20,
 };
 
 /**
@@ -937,7 +986,11 @@ export class Backdrop {
     /* (round 22 graft: a room may ask for more -- the maze's walk, seen
        along its hedge from one side, saw past the end of 76 m) */
     const wallW = open ? Math.max(room.w, room.openW ?? 76) : room.w + 1.2;
-    const groundW = open ? Math.max(room.w, room.openW ?? 76) : room.w;
+    /* (round 24: a room may run its floor a little under its side walls --
+       floorOver, metres -- so the seam where the two planes meet edge to
+       edge cannot open on the clear colour: a one-pixel violet line ran up
+       the foot of the Crypt's walls. Only the rooms that ask move.) */
+    const groundW = open ? Math.max(room.w, room.openW ?? 76) : room.w + (room.floorOver ?? 0);
 
     this.wall.geometry.dispose();
     this.wall.geometry = new THREE.PlaneGeometry(wallW, wallH);
@@ -2465,7 +2518,8 @@ export class Backdrop {
     for (const p of placed) {
       const s = p.shape;
       if ((s > 2.5 && s < 3.5) || (s > 15.5 && s < 16.1) || (s > 24.5 && s < 25.5)) stones = 1;
-      else if (s > 31.5) wings = 2;          // round 23: the bath, the lamp, the telescope, the kennel
+      else if (s > 44.5) wings = 3;          // round 24: the house's own rooms' objects
+      else if (s > 31.5) wings = Math.max(wings, 2);          // round 23: the bath, the lamp, the telescope, the kennel
       else if (s > 26.5) wings = 1;          // round 22: the pumpkin and the yew
       else if (s > 25.5) bust = 1;
     }
@@ -2545,6 +2599,8 @@ export class Backdrop {
       wall(8), wall(9), wall(10), wall(11),
       /* round 23 */
       wall(12), wall(13), wall(14), wall(15), wall(16),
+      /* round 24 */
+      wall(17), wall(18), wall(19), wall(20),
       [this.portals[0].geometry, this.portals[0].material, null],
       [this.propGeo, this.propMat, { MM_STONES: 0, MM_BUST: 1 }],
       [this.floor.geometry, this.floorMat, { MM_FLOORX: 1 }],
@@ -2557,6 +2613,9 @@ export class Backdrop {
       [this.propGeo, this.propMat, { MM_STONES: 1, MM_BUST: 0, MM_WINGS: 1 }],
       /* round 23: the four wings' own objects */
       [this.propGeo, this.propMat, { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 2 }],
+      /* round 24: the house's own rooms' objects, and with the Crypt's stone */
+      [this.propGeo, this.propMat, { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 3 }],
+      [this.propGeo, this.propMat, { MM_STONES: 1, MM_BUST: 0, MM_WINGS: 3 }],
     ];
     (async () => {
       await new Promise((r) => setTimeout(r, 1500));
