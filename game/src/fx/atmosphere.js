@@ -497,27 +497,43 @@ export const REGIONS = {
   study: {
     label: 'The Grand Study and Library',
     propMat: 'wood', propCeil: 0.424,
-    arch: 0, floorPattern: 0, subject: 'bookcase',
-    room: { w: 19, d: 17, h: 8.2, side: 0.04, ceilPattern: 3, wallPad: 5.0 },
-    cam: { y: 2.20, z: 8.4, look: 2.7, fov: 43 },
+    /* ROUND 24: both survey judges -- "the bookcases filling the back wall
+       are a soft smear of vertical streaks where no shelf or spine reads";
+       "the two foreground cabinets are the same crate-box prop reused". Its
+       own wall program now (19): cases round the walls in two tiers with
+       books you can count -- each spine its own width, height and leather,
+       round, gilt-banded, some leaning, some lying flat -- the gallery on
+       its fascia and turned balustrade, the ladder on its rail; the study's
+       carved oak chimneypiece and its log fire. The crates are retired: on
+       the floor a pedestal desk with its green lamp burning (53), a globe
+       (54), a bookcase (55), a leather wing chair (56). A narrower, shallower
+       room (19 x 17 -> 14 x 9.5) under a slightly tighter lens, so a book
+       on the far wall is several pixels wide and its neighbour a different
+       book. */
+    arch: 0, floorPattern: 0, subject: 'libraryroom', damask: 0,
+    room: { w: 14, d: 9.5, h: 7.2, side: 0.04, ceilPattern: 3, wallPad: 5.0 },
+    cam: { y: 2.20, z: 6.4, look: 2.7, fov: 40 },
     deep: '#1c1319', mid: '#3a2824', hi: '#614534', accent: '#5d849d',
     shaft: '#d9bd92', floorDeep: '#151014', floorMid: '#31211c', ambient: '#1a1217',
     propAlb: '#3f2b23', propHi: '#735336', rimCol: '#d8b279',
     gloss: 0.58, grime: 0.55, open: '#527f8f', openGlow: 0.45,
-    props: { shapes: [5, 5, 14, 0, 6, 1], count: 26, height: 2.7, layout: 'perimeter' },
-    particles: { mix: [[PTYPE.DUST, 0.86], [PTYPE.EMBER, 0.08], [PTYPE.WISP, 0.06]],
+    props: { shapes: [55, 56, 55], count: 3, height: 2.7, layout: 'perimeter',
+             near: [{ shape: 53, edge: 0.70, z: -1.6, tone: 0.97 },
+                    { shape: 54, edge: 0.33, z: -4.4, tone: 0.95 },
+                    { shape: 56, edge: 0.92, z: -4.0, tone: 0.94 }] },
+    particles: { mix: [[PTYPE.DUST, 0.92], [PTYPE.EMBER, 0.08]],
                  tint: '#ffe6bc', wispTint: '#8fd9ec', emberTint: '#ffb64a',
-                 speed: 0.7, scale: 0.95, wind: 0.5, density: 1.0 },
+                 speed: 0.6, scale: 0.95, wind: 0.4, density: 0.45 },
     exposure: 2.6, vignette: 1.47, contrast: 1.67,
     key:  { glow: 0, kind: 'warm', x: -3.8, y: 3.2, z: 2.2, color: '#e2b271', intensity: 1.63, radius: 7.31 },
     fill: { glow: 0, kind: 'cold', x: 5.0, y: 3.4, z: 1.2, color: '#769fba', intensity: 4.05, radius: 8.0, flicker: false },
     lights: [
-      { kind: 'warm', x: -3.2, y: 1.30, z: -4.6, color: '#e0b266', intensity: 1.32, radius: 5.33 },
-      { kind: 'warm', x: 5.0, y: 2.60, z: -11.5, color: '#dca254', intensity: 0.83, radius: 6.19 },
-      { kind: 'warm', x: -6.4, y: 3.40, z: -12.4, color: '#ce9953', intensity: 0.57, radius: 5.85 },
-      { kind: 'cold', x: 3.6, y: 5.00, z: -9.6, color: '#769fba', intensity: 1.89, radius: 8.0 },
+      { kind: 'warm', x: -3.2, y: 3.00, z: -4.6, color: '#e0b266', intensity: 1.50, radius: 5.6 },
+      { kind: 'warm', x: 3.6, y: 3.20, z: -7.0, color: '#dca254', intensity: 1.30, radius: 6.0 },
+      { kind: 'warm', x: -4.0, y: 3.40, z: -7.6, color: '#ce9953', intensity: 0.90, radius: 5.5 },
+      { kind: 'cold', x: 0.6, y: 5.00, z: -8.0, color: '#769fba', intensity: 1.40, radius: 7.0 },
     ],
-    shafts: { count: 2, spread: 10, y: 9.0, z: -11.0, angle: 0.22, width: 2.8, intensity: 0.35, pool: 1.7 },
+    shafts: { count: 1, spread: 6, y: 8.0, z: -8.0, angle: 0.22, width: 2.4, intensity: 0.14, pool: 1.5 },
     warmTone: 0.06, halation: 0.68,
   },
 
@@ -1366,10 +1382,17 @@ export const ROOM_KINDS = {
      in it is a chimneypiece between shelves, which is exactly the Heart's
      `hearth`. The library stacks keep the cases to the cornice. */
   study: {
+    /* (round 24: the library and the study with its fire, each drawn in
+       program 19; the fire is the study's lamp, low in its grate) */
     kinds: [
-      { subject: 'bookcase' },
-      /* no central doorway: it would open straight through the firebox */
-      { subject: 'hearth', doorX: -1, cam: { z: -0.8, look: 0.2 } },
+      { subject: 'libraryroom' },
+      { subject: 'studyfire', count: 1, swap: [[56, 55]], room: { d: 0.86 },
+        lamps: [{ i: 0, x: 0.0, z: 0.96, y: 0.40, fit: 'none', color: '#ff9a4a', radius: 4.6, k: 1.30 }],
+        near: [{ shape: 53, x: 3.0, z: -3.0, tone: 0.97, free: true },
+               { shape: 56, x: -2.6, z: -4.8, tone: 0.95, free: true },
+               { shape: 56, x: 2.0, z: -5.4, tone: 0.95, free: true },
+               { shape: 54, x: -4.2, z: -3.2, tone: 0.95, free: true }],
+        cam: { z: -1.0, look: 0.1 } },
     ],
     names: [
       [/fireplace|private|writing|archivist|scribe|repair/i, 1],
