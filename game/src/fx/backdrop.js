@@ -128,7 +128,22 @@ const SHAPE_M = [1.20, 2.00, 1.30, 1.00, 2.00, 2.00, 3.32, 2.60, 1.17, 1.33,
                  2.30,
                  /* graft: 31 the statue on its plinth drawn clean -- shape 15's
                     figure with a smooth, resolvable surface (the Heart, the maze) */
-                 2.44
+                 2.44,
+                 /* round 23: 32 a roll-top bath on claw feet, 0.78 m to its
+                    rim and its taps over that */
+                 1.24,
+                 /* 33 a hanging lantern, the chain as long as the quad;
+                    34 a lamp-maker's bench, 0.90 m to its top */
+                 2.60, 1.30,
+                 /* 35 a telescope on its tripod, 2.2 m to the end of its
+                    tube; 36 a steamer trunk, a case on half of them; 37
+                    furniture under a dust sheet */
+                 3.00, 1.05, 1.45,
+                 /* 38 a roof truss, sized to the room it stands in */
+                 5.00,
+                 /* 39 a kennel, 40 a dog's bed and its bowl, 41 a grooming
+                    table with its arm, 42 a wash tub on its trestle */
+                 1.55, 0.50, 1.75, 1.05
 ];
 /* ...and a width ratio, so a column is a column and not a capital-T. Four of
  * these were wrong by enough to change what the object was: a longcase clock
@@ -137,7 +152,12 @@ const SHAPE_M = [1.20, 2.00, 1.30, 1.00, 2.00, 2.00, 3.32, 2.60, 1.17, 1.33,
 const SHAPE_W = [1.15, 0.55, 1.00, 0.95, 0.72, 0.80, 0.47, 0.85, 0.90, 1.35,
                  1.30, 1.20, 0.87, 1.14, 0.77, 0.78, 1.80, 2.24, 0.50, 0.62,
                  0.72, 2.025, 0.62, 0.34, 1.80, 1.476, 0.34,
-                 1.62, 1.55, 2.10, 0.62, 0.78
+                 1.62, 1.55, 2.10, 0.62, 0.78,
+                 2.20,
+                 0.30, 1.55,
+                 0.92, 1.12, 0.85,
+                 2.6,
+                 1.12, 3.60, 0.78, 1.55
 ];
 /* HOW MUCH ONE OF THESE VARIES FROM THE NEXT, as a +-fraction of SHAPE_M.
  *
@@ -159,10 +179,15 @@ const SHAPE_W = [1.15, 0.55, 1.00, 0.95, 0.72, 0.80, 0.47, 0.85, 0.90, 1.35,
 const SHAPE_VAR = [0.06, 0.08, 0.62, 0.20, 0.10, 0.08, 0.10, 0.10, 0.16, 0.48,
                    0.06, 0.06, 0.06, 0.06, 0.06, 0.14, 0.14, 0.06, 0.08, 0.08,
                  0.06, 0.04, 0.00, 0.00, 0.22, 0.00, 0.04,
-                 0.34, 0.06, 0.05, 0.16, 0.14
+                 0.34, 0.06, 0.05, 0.16, 0.14,
+                 0.05,
+                 0.45, 0.05,
+                 0.03, 0.10, 0.16,
+                 0.0,
+                 0.08, 0.08, 0.04, 0.06
 ];
 // Which shapes hang from the ceiling rather than stand on the floor.
-export const HANGING = { 4: 1, 7: 1, 22: 1 };
+export const HANGING = { 4: 1, 7: 1, 22: 1, 33: 1 };
 /* ...and which stand AGAINST A WALL rather than out on the floor. A tall
    mirror marooned in the middle of a dance floor reads as a slab; against a
    wall it reads as the thing a ballroom is lined with. */
@@ -258,6 +283,10 @@ export const SUBJECT = {
   /* (graft: the maze's fountain court, its hedge clipped into piers with
      statues in niches between them -- CAPUT's) */
   court: 37,
+  /* Round 23: the Bathhouse's bath hall, the Lampworks' workshop, the Attic's
+     observatory and its archive under the eaves, the Kennels' range and
+     their wash room -- each drawn by its wing's own program (12-15) */
+  baths: 38, lampshop: 39, observatory: 40, eaves: 41, kennel: 42, washroom: 43,
 };
 /* WHICH WALL PROGRAM A SUBJECT IS DRAWN BY (MM_ROOMS in shaders/backdrop.js).
    Round 11's rooms first went into the one wall program with everything else,
@@ -287,6 +316,14 @@ export const ROOMS_PROGRAM = {
      program each: carried in one program, the other three wings' walls
      cost the Pumpkin Grounds' fight a register budget it did not have */
   topiary: 8, court: 8, range: 9, scullery: 9, timber: 10, backcase: 10, closet: 10, coping: 11,
+  /* round 23: the Bathhouse (12) -- its hall, its hot room and its swimming
+     bath; the pipe gallery stays in 7 as it was -- the Lampworks (13, its
+     workshop, wax room and reflector gallery; the boiler walk stays in 6),
+     the Attic (14) and the Kennels (15) */
+  baths: 12, steam: 12, pool: 12,
+  lampshop: 13, wax: 13, reflector: 13,
+  observatory: 14, eaves: 14,
+  kennel: 15, washroom: 15,
 };
 
 /**
@@ -474,6 +511,9 @@ export class Backdrop {
          (`runner`), and only the floor ever gets a non-zero one. */
       uRunner: { value: 0 }, uRunX: { value: 0 },
       uWater: { value: new THREE.Vector4(0, 0, 0, 0) },
+      /* the swimming bath's end wall, for its reflection (round 23, FLOOR_FRAG
+         variant 2): the wall's z, the glazed screen's foot, head, half-width */
+      uMirror: { value: new THREE.Vector4(0, 0, 0, 0) },
       uSpan: { value: new THREE.Vector2(30, 34) },
       uDeep: { value: new THREE.Color(0x090711) },
       uMid: { value: new THREE.Color(0x1c1622) },
@@ -921,8 +961,10 @@ export class Backdrop {
          closed by the end walls' glazing and never by sky. The plane's uv is
          still its plan position, so every bar lands where it did in plan. */
       const cp = room.ceilPattern ?? 3;
+      /* (round 23: and an ATTIC's roof (15) is pitched timber, and steep) */
       const rise = (cp === 9 || cp === 12)
-        ? Math.max(0, Math.min(room.w * 0.16, (room.wallPad ?? 5) - 0.4)) : 0;
+        ? Math.max(0, Math.min(room.w * 0.16, (room.wallPad ?? 5) - 0.4))
+        : cp === 15 ? Math.max(0, Math.min(room.w * 0.42, (room.wallPad ?? 5) - 0.4)) : 0;
       const cg = new THREE.PlaneGeometry(room.w, spanZ, rise > 0 ? 2 : 1, 1);
       if (rise > 0) {
         const pos = cg.attributes.position;
@@ -935,7 +977,7 @@ export class Backdrop {
       this.ceilMat.uniforms.uSpan.value.set(room.w, spanZ);
       this.ceilMat.uniforms.uPattern.value = room.ceilPattern ?? 3;
       /* a vinery's roof (12) is drawn by the room-kind variant */
-      this._setSurfaceProgram(this.ceilMat, (room.ceilPattern ?? 3) > 11.5);
+      this._setSurfaceProgram(this.ceilMat, (room.ceilPattern ?? 3) === 15 ? 2 : (room.ceilPattern ?? 3) > 11.5);
     }
     this._floorCz = cz;
     this._wallZ = -room.d;
@@ -1180,7 +1222,11 @@ export class Backdrop {
            floating panels this round is fixing. Walk it back until the fixing
            is inside the frame. */
         let guard = 0;
-        while (guard++ < 30 && !inFrameY(y + h, z, x) && z > -room.d + 0.5) {
+        /* (round 23: a lantern on its chain needs no rose in shot -- the
+           chain running up out of the picture is how a hung lamp reads, and
+           walked back to where the roof is in frame every one of them hung
+           against the end wall) */
+        while (s !== 33 && guard++ < 30 && !inFrameY(y + h, z, x) && z > -room.d + 0.5) {
           z = Math.max(z - 0.55, -room.d + 0.4);
         }
       }
@@ -1587,6 +1633,21 @@ export class Backdrop {
         }
       }
     }
+    /* THE ROOF'S TRUSSES (round 23, the Attic): an A-frame of oak every few
+       metres down the room, standing from the knee walls up under the
+       pitched roof to its ridge -- its principal rafters, the collar, the
+       king post and the arched braces. Architecture, so they are sized to
+       the room and do not count against its budget; hung (no shadow on the
+       floor), because they stand on the walls. */
+    if (P.trusses && room.h > 0.01 && room.ceilPattern === 15) {
+      const rise = Math.max(0, Math.min(room.w * 0.42, (room.wallPad ?? 5) - 0.4));
+      const every = P.trusses.every ?? 3.2;
+      for (let z = -(P.trusses.first ?? 2.6); z > -room.d + 1.4 && out.length < MAX_PROPS; z -= every) {
+        archN++;
+        out.push({ x: 0, z, w: room.w + 0.1, h: rise + 0.05, shape: P.trusses.shape ?? 38,
+                   seed: rand() * 10, tone: 0.80, y: room.h - 0.02, hang: true, arch: true });
+      }
+    }
     /* A SOLO PROP IS THE ROOM'S ONE OF SOMETHING, so it is PLACED and not
        dealt, in every layout (it used to be colonnade's alone): a piano 24 m
        back behind a column is not in the room as far as the picture is
@@ -1972,7 +2033,9 @@ export class Backdrop {
   _placeAjar(pal, room, rand) {
     const fu = this.floorMat.uniforms;
     fu.uWedgeK.value.set(0, 0, 0);
-    fu.uCrisp.value = 0;
+    /* (round 23: a wing may lay its floor crisp as well -- the cloud of
+       drift under its pools read as "a mottled cloud texture") */
+    fu.uCrisp.value = pal.crispFloor ? 1 : 0;
     for (const m of this.sides) m.material.uniforms.uAjar.value.set(-99, 0);
     if (!pal.ajarDoors) return;
     fu.uCrisp.value = 1;
@@ -2133,7 +2196,9 @@ export class Backdrop {
     const cpat = p.room?.ceilPattern ?? 3;
     /* (the same number _room pitches the ceiling by -- WELD's, round 18) */
     w.uGable.value = (p.room?.h ?? 0) > 0.01 && (cpat === 9 || cpat === 12)
-      ? Math.max(0, Math.min((p.room.w ?? 30) * 0.16, (p.room.wallPad ?? 5) - 0.4)) : 0;
+      ? Math.max(0, Math.min((p.room.w ?? 30) * 0.16, (p.room.wallPad ?? 5) - 0.4))
+      : (p.room?.h ?? 0) > 0.01 && cpat === 15
+        ? Math.max(0, Math.min((p.room.w ?? 30) * 0.42, (p.room.wallPad ?? 5) - 0.4)) : 0;
     /* A region with room.h = 0 is OPEN TO THE SKY, and uCeil cannot say so: the
        fallback hands it 6.4 m, so the Hedge Maze was crushed to a tenth above
        6.4 m and painted no sky at all -- 71.5% of its upper third pure black. */
@@ -2165,7 +2230,10 @@ export class Backdrop {
     const f = this.floorMat.uniforms;
     f.uPattern.value = p.floorPattern ?? 0;
     /* parquet (10), turf (11) and a pool are drawn by the room-kind variant */
-    this._setSurfaceProgram(this.floorMat, (p.floorPattern ?? 0) > 9.5 || !!p.pool);
+    /* (round 23: an INDOOR bath is variant 2, which lays the hall in its
+       water as a mirror; the pond out of doors keeps variant 1) */
+    this._setSurfaceProgram(this.floorMat, (p.pool && !p.pool.open) ? 2
+      : ((p.floorPattern ?? 0) > 9.5 || !!p.pool));
     f.uRunner.value = p.runner ?? 0;
     /* the runner leads to the door, wherever the subject took it */
     f.uRunX.value = p.runX ?? (p.subjX ?? 0);
@@ -2174,6 +2242,7 @@ export class Backdrop {
       const cz = this._floorCz ?? 0;
       /* w: 1 an indoor bath (its window lies in it), 2 a pond under the sky */
       f.uWater.value.set(p.pool.hw, -(p.pool.z0 - cz), -(p.pool.z1 - cz), p.pool.open ? 2 : 1);
+      f.uMirror.value.set(-(p.room?.d ?? 17), 3.32, ceil - 0.34, 6.4);
     } else {
       f.uWater.value.set(0, 0, 0, 0);
     }
@@ -2311,7 +2380,7 @@ export class Backdrop {
    *  turf, a vinery's roof, a pool) are compiled only where they are laid
    *  (MM_FLOORX in shaders/backdrop.js). */
   _setSurfaceProgram(mat, x) {
-    const n = x ? 1 : 0;
+    const n = x === 2 ? 2 : (x ? 1 : 0);
     if (mat.defines && mat.defines.MM_FLOORX === n) return;
     mat.defines = Object.assign({}, mat.defines, { MM_FLOORX: n });
     mat.needsUpdate = true;
@@ -2331,6 +2400,7 @@ export class Backdrop {
     for (const p of placed) {
       const s = p.shape;
       if ((s > 2.5 && s < 3.5) || (s > 15.5 && s < 16.1) || (s > 24.5 && s < 25.5)) stones = 1;
+      else if (s > 31.5) wings = 2;          // round 23: the bath, the lamp, the telescope, the kennel
       else if (s > 26.5) wings = 1;          // round 22: the pumpkin and the yew
       else if (s > 25.5) bust = 1;
     }
@@ -2408,14 +2478,20 @@ export class Backdrop {
     const jobs = [
       wall(1), wall(2), wall(3), wall(4), wall(5), wall(6), wall(7),
       wall(8), wall(9), wall(10), wall(11),
+      /* round 23 */
+      wall(12), wall(13), wall(14), wall(15),
       [this.portals[0].geometry, this.portals[0].material, null],
       [this.propGeo, this.propMat, { MM_STONES: 0, MM_BUST: 1 }],
       [this.floor.geometry, this.floorMat, { MM_FLOORX: 1 }],
+      [this.floor.geometry, this.floorMat, { MM_FLOORX: 2 }],
+      [this.ceiling.geometry, this.ceilMat, { MM_FLOORX: 2 }],
       [this.propGeo, this.propMat, { MM_STONES: 1, MM_BUST: 0 }],
       /* round 22: the pumpkin and the yew, alone and with the grounds' stone
          (the maze's fountain court deals both) */
       [this.propGeo, this.propMat, { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 1 }],
       [this.propGeo, this.propMat, { MM_STONES: 1, MM_BUST: 0, MM_WINGS: 1 }],
+      /* round 23: the four wings' own objects */
+      [this.propGeo, this.propMat, { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 2 }],
     ];
     (async () => {
       await new Promise((r) => setTimeout(r, 1500));

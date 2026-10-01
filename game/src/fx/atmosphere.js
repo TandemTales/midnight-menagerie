@@ -491,17 +491,29 @@ export const REGIONS = {
   attic: {
     label: 'The Moonlit Attic and Observatory',
     propMat: 'wood', propCeil: 0.264,
-    arch: 4, floorPattern: 0, subject: 'rafters',
-    room: { w: 24, d: 19, h: 7.2, side: 0.20, ceilPattern: 6, wallPad: 4.4 },
+    /* ROUND 23: AN ATTIC IS UNDER A ROOF. It was a 24 x 7.2 m box with its
+       side walls toed in and "diagonal lines scrawled over a blue cloud
+       texture" for rafters. It is 13 m across now, its knee walls 2.4 m,
+       and its ceiling the ROOF -- pitched timber (pattern 15) up 5.5 m to
+       the ridge, the gable at the end drawn by program 14 round its window
+       on the moon, and the telescope stood in front of that. */
+    arch: 4, floorPattern: 0, subject: 'observatory', ceilGain: 3.2,
+    room: { w: 13, d: 16, h: 2.4, side: 0.0, ceilPattern: 15, wallPad: 6.2 },
     cam: { y: 1.95, z: 8.6, look: 2.6, fov: 45 },
     deep: '#17152c', mid: '#2a2746', hi: '#433e69', accent: '#8592cd',
     shaft: '#b1bce4', rimCol: '#dfc191', floorDeep: '#100e1e', floorMid: '#232135',
     ambient: '#19172e', propAlb: '#342e4b', propHi: '#605b7e',
     gloss: 0.36, grime: 0.78, coolFill: 1.20, wallFog: 0.18,
-    props: { shapes: [8, 7, 5, 10, 14], count: 26, height: 2.2, layout: 'hang' },
+    /* an attic's floor: trunks (36), furniture under dust sheets (37), a
+       crate, a case, a clock -- along the knee walls, the middle kept; and
+       before the gable's window, the TELESCOPE on its tripod (35) */
+    props: { shapes: [36, 37, 8, 36, 37, 14], count: 16, height: 2.2, layout: 'perimeter',
+             family: ['perimeter', 'wings'],
+             near: [{ shape: 35, x: 0.4, z: -9.4, tone: 0.96, scale: 1.0 }],
+             trusses: { shape: 38, every: 3.4, first: 2.2 } },
     particles: { mix: [[PTYPE.DUST, 0.62], [PTYPE.WISP, 0.26], [PTYPE.ASH, 0.12]],
                  tint: '#d8dcf5', wispTint: '#b0b8ff', emberTint: '#ffcf7a',
-                 speed: 0.6, scale: 1.0, wind: 0.4, density: 0.95 },
+                 speed: 0.6, scale: 1.0, wind: 0.4, density: 0.60 },
     exposure: 1.54, vignette: 1.32, contrast: 1.65,
     key:  { glow: 0, kind: 'warm', x: -4.0, y: 3.2, z: 2.4, color: '#e8bc8f', intensity: 6.78, radius: 7.31 },
     fill: { glow: 0, kind: 'cold', x: 5.4, y: 2.8, z: 1.4, color: '#9eabe7', intensity: 1.78, radius: 8.5, flicker: false },
@@ -518,14 +530,23 @@ export const REGIONS = {
   lampworks: {
     label: 'The Lampworks',
     propMat: 'metal', propCeil: 0.239,
-    arch: 4, floorPattern: 2, subject: 'bench',
-    room: { w: 27, d: 23, h: 7.4, side: 0.0, ceilPattern: 8, wallPad: 4.8 },
+    arch: 4, floorPattern: 2, subject: 'lampshop',
+    /* (round 23: 18 m deep, from 23 -- the end wall is the furnace and its
+       benches, and 23 m off it was a row of lit specks in the dark) */
+    room: { w: 25, d: 18, h: 7.4, side: 0.0, ceilPattern: 8, wallPad: 4.8 },
     cam: { y: 2.40, z: 10.0, look: 2.6, fov: 42 },
     deep: '#151725', mid: '#273241', hi: '#3e505f', accent: '#60a9cf',
     rimCol: '#9bcce2', shaft: '#8dbcd7', floorDeep: '#0f111b', floorMid: '#1d2530',
     ambient: '#151826', propAlb: '#2e3944', propHi: '#5d717c',
     gloss: 0.66, grime: 0.80, open: '#59a5c4', openGlow: 0.7, coolFill: 1.1,
-    props: { shapes: [18, 8, 6, 1, 5], count: 28, height: 2.6, layout: 'colonnade' },
+    /* ROUND 23: A LAMPWORKS IS FULL OF LAMPS. "One standing lantern is the
+       only lamp in the Lampworks", and "the machinery is a stack of grey
+       boxes" -- which was the crate stack (8) and the cabinet (5) between
+       two files of columns. Its roof is hung with lanterns at a dozen
+       heights (33), its floor stood with lamp-makers' benches (34) and gas
+       standards (18); the machinery is the line shaft and its belts, which
+       the wall program draws. */
+    props: { shapes: [33, 34, 33, 18, 34, 33], count: 30, height: 2.6, layout: 'hang' },
     particles: { mix: [[PTYPE.EMBER, 0.42], [PTYPE.WISP, 0.30], [PTYPE.DUST, 0.28]],
                  tint: '#cfe8ff', wispTint: '#6fd9ec', emberTint: '#ff9e3c',
                  speed: 1.1, scale: 1.1, wind: 1.0, density: 1.0 },
@@ -723,7 +744,7 @@ export const REGIONS = {
   bathhouse: {
     label: 'The Bathhouse and Rain Wing',
     propMat: 'tile', propCeil: 0.249,
-    arch: 1, floorPattern: 1, subject: 'dado',
+    arch: 1, floorPattern: 1, subject: 'baths',
     room: { w: 21, d: 17, h: 7.0, side: 0.08, ceilPattern: 5, wallPad: 4.4 },
     cam: { y: 2.62, z: 7.4, look: 2.45, fov: 52 },
     nookSide: 1,
@@ -731,7 +752,10 @@ export const REGIONS = {
     rimCol: '#bcdeec', shaft: '#9dccdd', floorDeep: '#0e141e', floorMid: '#1a2c34',
     ambient: '#131e2a', propAlb: '#29404a', propHi: '#587f8b',
     gloss: 1.05, grime: 0.48, open: '#64b5c7', openGlow: 0.7, coolFill: 1.25, wallFog: 0.26,
-    props: { shapes: [17, 6, 7, 17, 2], count: 22, height: 2.3, layout: 'nook' },
+    /* (round 23: the bath hall's BATHS -- 32, roll-top on claw feet -- in two
+       files down the room; its palms; and no hanging sheet, which read as
+       "a grey rectangle floating in front of the glazing") */
+    props: { shapes: [32, 2, 32], count: 16, height: 2.3, layout: 'nook' },
     particles: { mix: [[PTYPE.RAIN, 0.58], [PTYPE.DUST, 0.26], [PTYPE.WISP, 0.16]],
                  tint: '#bfe8f5', wispTint: '#6fd9ec', emberTint: '#ffb64a',
                  speed: 1.0, scale: 1.0, wind: 1.2, density: 1.0 },
@@ -752,8 +776,12 @@ export const REGIONS = {
   kennels: {
     label: 'The Kennels and Animal Ward',
     propMat: 'wood', propCeil: 0.19,
-    arch: 0, floorPattern: 2, subject: 'pens',
-    room: { w: 20, d: 11, h: 4.0, side: 0.0, ceilPattern: 8, wallPad: 3.2 },
+    /* (round 23: no wallpaper -- a kennel range is boarded stalls under
+       limewashed brick, drawn whole by program 15) */
+    arch: 0, floorPattern: 2, subject: 'kennel', damask: 0,
+    /* (round 23: 9 m deep, from 11 -- the range of stalls IS the room, and
+       16 m from the lens it was a strip along the top of the frame) */
+    room: { w: 20, d: 9, h: 4.0, side: 0.0, ceilPattern: 8, wallPad: 3.2 },
     cam: { y: 2.55, z: 5.4, look: 1.05, fov: 52 },
     deep: '#1c141a', mid: '#3a2b23', hi: '#614a32', accent: '#768e9b',
     rimCol: '#dbb882', shaft: '#d9bd92', floorDeep: '#120e13', floorMid: '#2f241c',
@@ -764,17 +792,27 @@ export const REGIONS = {
        run is BARRED PENS (shape 10 is a barred crib, which at this scale reads
        as exactly that), straw, packing cases and a lamp over the yard. The
        region's wall subject is already `pens`, so the floor now agrees with it. */
-    props: { shapes: [19, 8, 10, 8, 9], count: 28, height: 1.6, layout: 'rows' },
-    particles: { mix: [[PTYPE.DUST, 0.70], [PTYPE.ASH, 0.20], [PTYPE.EMBER, 0.10]],
+    /* ROUND 23: "grey speckled lumps scattered through the mid-ground read
+       as TV static, not straw or beds" -- they were the shrub (9) and the
+       crate stack (8). A kennel block's floor has KENNELS on it (39), dogs'
+       beds with their bowls (40) and the grooming table (41); its stalls,
+       straw and name plates are the wall's (program 15). */
+    props: { shapes: [39, 40, 41, 39, 40], count: 14, height: 1.6, layout: 'rows' },
+    /* (round 23: dust in the lamplight, not a field of sparks -- at 0.95 with
+       embers in it the motes were the "speckle" over the stalls) */
+    particles: { mix: [[PTYPE.DUST, 0.82], [PTYPE.ASH, 0.18]],
                  tint: '#ffdfae', wispTint: '#8fd9ec', emberTint: '#ffb64a',
-                 speed: 0.8, scale: 1.1, wind: 0.6, density: 0.95 },
+                 speed: 0.8, scale: 1.0, wind: 0.6, density: 0.50 },
     exposure: 2.4, vignette: 1.61, contrast: 1.54,
     key:  { glow: 0, kind: 'warm', x: -3.4, y: 2.6, z: 2.0, color: '#e5b57e', intensity: 1.67, radius: 6.45 },
     fill: { glow: 0, kind: 'cold', x: 5.0, y: 2.2, z: 1.2, color: '#83a6bc', intensity: 7.45, radius: 7.5, flicker: false },
     lights: [
-      { kind: 'warm', x: -3.6, y: 2.80, z: -8.0, color: '#dfaa63', intensity: 0.78, radius: 6.45 },
-      { kind: 'warm', x: 3.2, y: 1.10, z: -4.6, color: '#e6c086', intensity: 0.75, radius: 4.64 },
-      { kind: 'cold', x: 6.6, y: 2.40, z: -8.6, color: '#83a6bc', intensity: 3.23, radius: 7.0 },
+      /* (round 23: the range's lanterns light its stalls -- they were 0.78
+         and 0.75 against a cold 3.23, and the cold one alone lit the back
+         wall, "a milky grey-blue") */
+      { kind: 'warm', x: -3.6, y: 2.80, z: -8.0, color: '#dfaa63', intensity: 2.10, radius: 6.45 },
+      { kind: 'warm', x: 3.2, y: 1.10, z: -4.6, color: '#e6c086', intensity: 1.40, radius: 4.64 },
+      { kind: 'cold', x: 6.6, y: 2.40, z: -8.6, color: '#83a6bc', intensity: 1.70, radius: 7.0 },
     ],
     /* Open to the sky: see the Graveyard's note. A shaft needs something to
        come through, and there is no ceiling here. */
@@ -1291,7 +1329,13 @@ export const ROOM_KINDS = {
     ],
   },
   attic: {
-    kinds: [{ subject: 'rafters' }, { subject: 'bookcase' }],
+    /* (round 23: the observatory, its telescope before the gable's window;
+       and the archive under the eaves, its cases to the roof, a reading
+       table and its lamp where the telescope stood) */
+    kinds: [{ subject: 'observatory' },
+            { subject: 'eaves', swap: [[37, 5], [14, 5]],
+              near: [{ shape: 34, x: -0.8, z: -10.5, tone: 0.92 }],
+              vantage: { at: 'along', off: 0.12, wall: 2.0, fwd: 1.4, yaw: 10, wide: 3 } }],
     names: [
       [/library|chart|archive|watcher/i, 1],
       [/./, 0],
@@ -1304,12 +1348,12 @@ export const ROOM_KINDS = {
      its own wing's program (MM_ROOMS 6 and 7) and seen from its own place. */
   lampworks: {
     kinds: [
-      { subject: 'bench' },
+      { subject: 'lampshop', layout: 'hang' },
       /* THE WAX ROOM -- the chandlery: the vat on its furnace, the dipping
          frames hung with tapers under their hoods; its floor stood with the
          wax stoves and the candle stands, not the gas standards; seen low,
          among the racks, under its timber roof */
-      { subject: 'wax', layout: 'wings', swap: [[18, 13], [6, 1]], room: { w: 0.80, d: 0.56 },
+      { subject: 'wax', layout: 'wings', swap: [[18, 34]], room: { w: 0.80, d: 0.56 },
         ceil: 6, ceilGain: 1.9,
         vantage: { at: 'among', low: 0.72, fwd: 4.2, pitch: 3.0, off: 0.14, yaw: 12, wide: 4 } },
       /* THE REFLECTOR GALLERY -- round 14, one judge, VERMEIL's: "a receding
@@ -1337,7 +1381,7 @@ export const ROOM_KINDS = {
   },
   bathhouse: {
     kinds: [
-      { subject: 'dado' },
+      { subject: 'baths', layout: 'colonnade', file: 32, fileX: 0.60 },
       /* THE STEAM ROOM -- small, low and hot, tiled to its vault, an arcade of
          niches with their basins and taps over two stepped benches, and full
          of steam; seen from the lowest bench. Round 14, both judges: the loose
@@ -1345,8 +1389,8 @@ export const ROOM_KINDS = {
          (swap), which at this size is what a length of large-bore pipe on a
          tiled floor looks like -- there is no pipe prop, and a hot room has no
          columns, curtains or palms in it. */
-      { subject: 'steam', layout: 'nook', swap: [[6, 17], [7, 17], [2, 17]], countScale: 0.30,
-        room: { w: 0.76, d: 0.62, h: 0.76 }, ceil: 4, ceilGain: 2.1, atmos: { wallFog: 0.34 },
+      { subject: 'steam', layout: 'nook', swap: [[6, 2], [32, 2]], countScale: 0.30,
+        room: { w: 0.76, d: 0.62, h: 0.76 }, ceil: 4, ceilGain: 2.1, atmos: { wallFog: 0.20 },
         vantage: { at: 'among', low: 0.66, fwd: 1.4, pitch: 3.0, off: 0.06, wide: 3, frame: 'steam' } },
       /* THE INDOOR POOL -- round 14, both judges' first instruction: "a sunk
          rectangular basin with a proud stone coping, a clear step down to the
@@ -1356,7 +1400,7 @@ export const ROOM_KINDS = {
          old 7.6 m strip down a 22 m room read as a dark rug -- and it starts
          near enough to the eye to be the room. Seen from the gallery over its
          near end, high enough to look down INTO it. */
-      { subject: 'pool', layout: 'colonnade', file: 6, fileX: 0.74, swap: [[17, 2], [7, 2]],
+      { subject: 'pool', layout: 'colonnade', file: 6, fileX: 0.74, swap: [[32, 2]],
         room: { w: 1.10, d: 1.24 }, rail: 'iron', ceil: 4, ceilGain: 2.4,
         pool: { hw: 5.6, z0: -1.4, back: 3.4 },
         /* the hall's cold light stands over the far end of the water, which is
@@ -1369,7 +1413,7 @@ export const ROOM_KINDS = {
          heights down both tiled walls with their valves and gauges, the
          cistern at the end of it. Almost nothing stands in a service passage,
          so what does is crates. Seen down its length. */
-      { subject: 'pipes', layout: 'aisle', swap: [[17, 8], [2, 8], [7, 8], [6, 8]], countScale: 0.35,
+      { subject: 'pipes', layout: 'aisle', swap: [[32, 8], [2, 8], [6, 8]], countScale: 0.35,
         room: { w: 0.46, d: 1.20, h: 0.70 }, ceil: 3, ceilGain: 4.4,
         vantage: { at: 'along', off: 0.22, wall: 1.7, fwd: 1.2, yaw: 19, wide: 4 } },
     ],
@@ -1491,7 +1535,9 @@ export const ROOM_KINDS = {
      room, animal kitchen, veterinary room and quarantine ward have the tiled
      dado and brass standpipes the Bathhouse draws, and no pens. */
   kennels: {
-    kinds: [{ subject: 'pens' }, { subject: 'dado' }],
+    /* (round 23: the kennel range, and its wash room with the tubs) */
+    kinds: [{ subject: 'kennel' },
+            { subject: 'washroom', swap: [[39, 42], [40, 42]], countScale: 0.75 }],
     names: [
       [/wash|groom|veterinar|quarantine|kitchen/i, 1],
       [/./, 0],
