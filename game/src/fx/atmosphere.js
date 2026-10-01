@@ -513,7 +513,7 @@ export const REGIONS = {
              trusses: { shape: 38, every: 3.4, first: 2.2 } },
     particles: { mix: [[PTYPE.DUST, 0.62], [PTYPE.WISP, 0.26], [PTYPE.ASH, 0.12]],
                  tint: '#d8dcf5', wispTint: '#b0b8ff', emberTint: '#ffcf7a',
-                 speed: 0.6, scale: 1.0, wind: 0.4, density: 0.95 },
+                 speed: 0.6, scale: 1.0, wind: 0.4, density: 0.60 },
     exposure: 1.54, vignette: 1.32, contrast: 1.65,
     key:  { glow: 0, kind: 'warm', x: -4.0, y: 3.2, z: 2.4, color: '#e8bc8f', intensity: 6.78, radius: 7.31 },
     fill: { glow: 0, kind: 'cold', x: 5.4, y: 2.8, z: 1.4, color: '#9eabe7', intensity: 1.78, radius: 8.5, flicker: false },
@@ -798,9 +798,11 @@ export const REGIONS = {
        beds with their bowls (40) and the grooming table (41); its stalls,
        straw and name plates are the wall's (program 15). */
     props: { shapes: [39, 40, 41, 39, 40], count: 14, height: 1.6, layout: 'rows' },
-    particles: { mix: [[PTYPE.DUST, 0.70], [PTYPE.ASH, 0.20], [PTYPE.EMBER, 0.10]],
+    /* (round 23: dust in the lamplight, not a field of sparks -- at 0.95 with
+       embers in it the motes were the "speckle" over the stalls) */
+    particles: { mix: [[PTYPE.DUST, 0.82], [PTYPE.ASH, 0.18]],
                  tint: '#ffdfae', wispTint: '#8fd9ec', emberTint: '#ffb64a',
-                 speed: 0.8, scale: 1.1, wind: 0.6, density: 0.95 },
+                 speed: 0.8, scale: 1.0, wind: 0.6, density: 0.50 },
     exposure: 2.4, vignette: 1.61, contrast: 1.54,
     key:  { glow: 0, kind: 'warm', x: -3.4, y: 2.6, z: 2.0, color: '#e5b57e', intensity: 1.67, radius: 6.45 },
     fill: { glow: 0, kind: 'cold', x: 5.0, y: 2.2, z: 1.2, color: '#83a6bc', intensity: 7.45, radius: 7.5, flicker: false },

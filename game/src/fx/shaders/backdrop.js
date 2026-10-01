@@ -5587,30 +5587,32 @@ float lampWallH(vec2 q, float qpx, out float occ){
     }
     if (far > 0.5) {
       /* ===== THE GLASS FURNACE: a brick beehive on the axis ===== */
-      float FW = 1.70, FH = 1.55;
+      /* (drawn at a glasshouse's size: at a domestic one, 3.4 m across, it
+         was a dim hump behind the fight with three sparks in it) */
+      float FW = 2.15, FH = 1.85;
       float onF = 0.0;
-      if (ax < 2.05 && q.y < FH + 1.45) {
-      float dome = length(vec2(cx/FW, max(q.y - FH, 0.0)/1.25)) - 1.0;
+      if (ax < 2.50 && q.y < FH + 1.75) {
+      float dome = length(vec2(cx/FW, max(q.y - FH, 0.0)/1.55)) - 1.0;
       float fur = max(dome, -q.y);
       onF = cvN(-fur*FW);
       /* its own brick: firebrick, laid in rings round the dome */
-      float rr = length(vec2(cx, max(q.y - FH, 0.0)*FW/1.25));
+      float rr = length(vec2(cx, max(q.y - FH, 0.0)*FW/1.55));
       float ring = mmInkP(mmRowX(rr, 0.15), px, 1.0)*step(FH, q.y) + mmInkP(mmRowX(q.y, 0.15), px, 1.0)*step(q.y, FH);
       vec3 fbk = vec3(0.46, 0.24, 0.13)*(lum*2.2 + 0.008)*(0.80 + 0.30*mmHash21(floor(vec2(cx/0.25, q.y/0.15))));
       col = mix(col, fbk*(1.0 - 0.45*ring), onF);
       h += onF*(0.35 + 0.25*sqrt(clamp(-fur, 0.0, 1.0)));
       penN(fur*FW, 1.5, 0.95);
       /* the iron band round its waist, and its tie rods */
-      float band = mmBandA(q.y, 1.10, 1.22, px)*onF;
+      float band = mmBandA(q.y, 1.40, 1.54, px)*onF;
       col = mix(col, iron*1.3, band);
       h += band*0.20;
-      penN(q.y - 1.10, 1.0, 0.8*onF); penN(q.y - 1.22, 1.0, 0.8*onF);
+      penN(q.y - 1.40, 1.0, 0.8*onF); penN(q.y - 1.54, 1.0, 0.8*onF);
       /* the GLORY HOLES: three mouths, white at the heart */
       float gh = 1e3;
       for (int i = 0; i < 3; i++){
-        float gx = (float(i) - 1.0)*0.82;
-        float gy = 0.88 + 0.22*(1.0 - abs(float(i) - 1.0));
-        gh = min(gh, length(vec2(cx - gx, (q.y - gy)*1.10)) - 0.17);
+        float gx = (float(i) - 1.0)*1.02;
+        float gy = 1.06 + 0.28*(1.0 - abs(float(i) - 1.0));
+        gh = min(gh, length(vec2(cx - gx, (q.y - gy)*1.10)) - 0.21);
       }
       float hole = cvN(-gh);
       float lip = cvN(-(gh - 0.07))*(1.0 - hole)*onF;
@@ -5618,25 +5620,27 @@ float lampWallH(vec2 q, float qpx, out float occ){
       col = mix(col, iron*1.2, lip);
       penN(gh, 1.3, 0.9); penN(gh - 0.07, 1.0, 0.7*onF);
       emitF += hole*(1.4 + 1.2*exp(gh*9.0)) + onF*0.35*exp(-max(gh, 0.0)*5.0);
-      float stoke = cvN(-mmArch(vec2(cx, q.y - 0.02), 0.28, 0.20));
+      float stoke = cvN(-mmArch(vec2(cx, q.y - 0.02), 0.34, 0.24));
       col = mix(col, vec3(0.03, 0.015, 0.01), stoke);
       emitF += stoke*(0.35 + 0.25*mmNoise(q*14.0 + uTime));
       }
       /* ...and the furnace's light on the brick round it: the one fire in
          the shop, and what the rest of the end wall is seen by */
-      emitF += 0.10*exp(-length(vec2(cx*0.42, (q.y - 1.0)*0.55)))*(1.0 - onF);
+      emitF += 0.13*exp(-length(vec2(cx*0.38, (q.y - 1.2)*0.50)))*(1.0 - onF);
+      /* and on the dome itself, round its mouths, the firebrick glowing */
+      emitF += 0.06*onF*exp(-length(vec2(cx*0.6, q.y - 1.2)));
       /* the stack up from the crown through the roof */
-      if (ax < 0.70 && q.y > FH + 0.8) {
+      if (ax < 0.70 && q.y > FH + 1.0) {
       vec3 fbk = vec3(0.46, 0.24, 0.13)*(lum*2.2 + 0.008)*(0.80 + 0.30*mmHash21(floor(vec2(cx/0.25, q.y/0.15))));
-      float stD = max(ax - 0.42 - 0.10*smoothstep(FH + 1.4, FH + 1.0, q.y), FH + 1.0 - q.y);
+      float stD = max(ax - 0.42 - 0.10*smoothstep(FH + 1.7, FH + 1.3, q.y), FH + 1.3 - q.y);
       float stack = cvN(-stD);
       col = mix(col, fbk*0.85*(1.0 - 0.5*mmInkP(mmRowX(q.y, 0.15), px, 1.0)), stack);
       h += stack*0.40;
-      penN(ax - 0.42, 1.3, 0.9*step(FH + 1.4, q.y));
+      penN(ax - 0.42, 1.3, 0.9*step(FH + 1.7, q.y));
       }
       /* ===== THE BENCHES either side of it ===== */
-      if (ax > 2.15 && q.y < 3.30) {
-      float onB = step(2.30, ax);
+      if (ax > 2.55 && q.y < 3.30) {
+      float onB = step(2.70, ax);
       float top = mmBandA(q.y, 0.86, 0.95, px)*onB;
       float legs = cvN(-mmBox(vec2(mmRowX(cx, 1.6) - 0.8, q.y - 0.43), vec2(0.05, 0.43), 0.01))*onB;
       float shelfL = mmBandA(q.y, 0.24, 0.29, px)*onB;
@@ -10800,7 +10804,7 @@ float tbSD(vec2 m, vec2 msz, float seed, out float ok){
    pair) in gilt. part 0 flank, 1 rim, 2 enamel, 3 water, 4 feet, 5 taps. */
 uniform float uTime;
 float tubSD(vec2 m, vec2 msz, float seed, out float part){
-  float S = msz.y/1.10;
+  float S = msz.y/1.24;
   vec2 q = m/S;
   float ax = abs(q.x);
   float end = smoothstep(0.30, 0.86, ax);
@@ -12138,7 +12142,7 @@ float reliefH(vec2 uv, vec2 msz, vec2 mpp, float shape, float seed, out float ti
     }
     if (shape < 32.5) {
       float sd = tubSD(m, msz, seed, pt);
-      float S = msz.y/1.10;
+      float S = msz.y/1.24;
       float qy = m.y/S;
       h += 0.030*smoothstep(0.20, 0.62, qy)*step(pt, 0.5);
       h += 0.020*pR(qy - 0.74, 0.03)*step(pt, 1.5);
@@ -13854,7 +13858,7 @@ void main(){
 #if MM_WINGS == 2
   if (vShape > 31.5 && vShape < 32.5) {
     float lum = max(mmLum(albedo), 0.02);
-    float S = vSize.y/1.10;
+    float S = vSize.y/1.24;
     vec2 tq = (vUv - vec2(0.5, 0.0))*vSize/S;
     float kc = mmHash11(vSeed*12.3 + 0.7);
     vec3 paint = kc < 0.55 ? vec3(0.09, 0.24, 0.19) : (kc < 0.82 ? vec3(0.70, 0.68, 0.60) : vec3(0.07, 0.07, 0.08));
@@ -13944,14 +13948,14 @@ void main(){
     float lum = max(mmLum(albedo), 0.02);
     float pt = gW2Part;
     vec2 sm = (vUv - vec2(0.5, 0.0))*vSize;
-    vec3 oakC = vec3(0.40, 0.25, 0.13)*(lum*2.4 + 0.040)*(0.84 + 0.30*grain);
+    vec3 oakC = vec3(0.40, 0.25, 0.13)*(lum*3.0 + 0.060)*(0.84 + 0.30*grain);
     vec3 brassC = vec3(0.92, 0.68, 0.30)*(lum*3.0 + 0.070);
     vec3 enam = vec3(0.80, 0.82, 0.80)*(lum*2.6 + 0.060);
     vec3 strawC = vec3(0.72, 0.56, 0.26)*(lum*2.6 + 0.050);
     vec3 c = oakC;
     if (vShape < 39.5) {
       float kc = mmHash11(vSeed*7.1);
-      vec3 paint = kc < 0.45 ? oakC : (kc < 0.75 ? vec3(0.20, 0.30, 0.20)*(lum*2.4 + 0.035) : vec3(0.46, 0.16, 0.10)*(lum*2.4 + 0.035));
+      vec3 paint = kc < 0.45 ? oakC : (kc < 0.75 ? vec3(0.20, 0.32, 0.20)*(lum*3.0 + 0.055) : vec3(0.50, 0.16, 0.10)*(lum*3.0 + 0.055));
       c = paint;
       c = mix(c, vec3(0.16, 0.13, 0.12)*(lum*2.0 + 0.025)*(0.8 + 0.4*blotch), step(0.5, pt)*step(pt, 1.5));
       c = mix(c, vec3(0.010, 0.008, 0.008), step(1.5, pt)*step(pt, 2.5));

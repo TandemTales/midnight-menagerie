@@ -131,7 +131,7 @@ const SHAPE_M = [1.20, 2.00, 1.30, 1.00, 2.00, 2.00, 3.32, 2.60, 1.17, 1.33,
                  2.44,
                  /* round 23: 32 a roll-top bath on claw feet, 0.78 m to its
                     rim and its taps over that */
-                 1.10,
+                 1.24,
                  /* 33 a hanging lantern, the chain as long as the quad;
                     34 a lamp-maker's bench, 0.90 m to its top */
                  2.60, 1.30,
