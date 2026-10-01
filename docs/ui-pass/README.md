@@ -172,6 +172,8 @@ so round 2 runs six at once, as round 1 did.
 
 | 22 | **FOUR WINGS THAT ARE NOT YET THEIR NAME** — the Hedge Maze, the Kitchens, the Secret Passages, the Pumpkin Grounds (sheets at the Deck's tier) and the Heart's floor seam, briefed from the 09-30 SURVEY | VANDYKE 5.81 · CASSEL 5.74 · CAPUT 5.24 · the wings before **3.10** | CASSEL, 2 of 3, five of seven screens — the most coherent SYSTEM (each wing's signature object drawn first: a lobed, ribbed, carved pumpkin; a black-leaded range under a brick arch; jib doors in near-black oak). **+2.64** on the mean. VANDYKE won both Hedge screens and ALL THREE judges named its maze as the graft | `a11924b` |
 
+| 23 | **FOUR MORE WINGS** — the Bathhouse, the Lampworks, the Attic, the Kennels (sheets at the Deck's tier) | VERDITER 6.23 · ULTRAMARINE 6.18 · MADDERLAKE 5.94 · the wings before **3.22** | VERDITER, 2 of 3 and the highest mean, as the SYSTEM (walls built in courses, darks kept dark, every wing its name) while the screens split three ways. **+3.01**, the largest room gain of the pass. All three judges asked for ULTRAMARINE's furnishing (tubs with water, ceilings of lanterns, reflectors, doghouses) and MADDERLAKE's kennel stalls and attic as the graft | `f91f47d` |
+
 **Scores anchor to the candidates beside them.** Round 0's winner scored 7.0 in
 round 0 and 5.58 as round 1's baseline: the judges grew stricter as the field
 improved. Compare a winner with the baseline IN ITS OWN ROUND (round 1 REFINE:
@@ -194,6 +196,7 @@ Against their own baselines:
 | 11 | VARIATION **+2.17** (sheets 3-3.5 -> 6-7) | — |
 | 12 | — | THE LAST WEB CHROME **+5.9** (per-screen winners 7.33 / 8.00 / 7.67 against 2 / 1 / 1.33) |
 | 13 | CHROME, second pass **+2.22** (coach 6.0 -> 8.0, veil 6.0 -> 8.67, toast 5.0 -> 7.0) | — |
+| 23 | FOUR MORE WINGS **+3.01** (the literal angle took the system, the object angle the screens) | — |
 | 22 | FOUR WINGS THAT ARE NOT YET THEIR NAME **+2.64** (the wings before scored 2.5-3.8: the survey's rooms were the headroom) | — |
 | 21 | THE FIGHT'S ROOM AT THE DECK'S TIER **+2.40** (the baseline's rooms scored 4.1 at the tier players actually get) | — |
 | 20 | THE RAIL AND THE HAND **+1.67** (the baseline's hud-late scored 4.0: the Steam Deck bug no judge had seen) | — |
@@ -976,3 +979,21 @@ which put the rooms at 2-5 against the screens' 6-7.5.
 - The Heart's seam, found by all three with a layer toggle: the near
   frame's clutter band put its foot in shot under the Heart's far-back
   lens. Not a lighting term.
+
+### Round 23: four more wings, 2026-10-01
+
+**VERDITER, 2 of 3 judges, 6.23 against 3.22 — +3.01** (`f91f47d`, run
+`wf_212b0ae0-15c`). Round 22 again, for the Bathhouse, the Lampworks, the
+Attic and the Kennels.
+
+- **A repeated brief got a bigger gain, not a smaller one.** Round 22's
+  structure (a wall program and props per wing, the other thirteen
+  byte-identical) was the template; all three builders used it, and all
+  three cleared the name test that the baseline failed on every wing.
+- **The system and the objects split again.** VERDITER (literal) built every
+  wall and kept every dark; ULTRAMARINE (object first, round 22's winning
+  angle) won three screens on how its objects read; MADDERLAKE (the light)
+  had the best attic and kennels. Merge the system, graft the objects.
+- **No port clash**: BASE on each builder's port + 100 held.
+- Perf fell on three wings (Lampworks 13.4 -> 11.1, Kennels 13.8 -> 11.2):
+  a wing's own program can skip what its walls never draw.
