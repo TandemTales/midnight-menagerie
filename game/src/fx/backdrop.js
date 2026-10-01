@@ -2033,7 +2033,9 @@ export class Backdrop {
   _placeAjar(pal, room, rand) {
     const fu = this.floorMat.uniforms;
     fu.uWedgeK.value.set(0, 0, 0);
-    fu.uCrisp.value = 0;
+    /* (round 23: a wing may lay its floor crisp as well -- the cloud of
+       drift under its pools read as "a mottled cloud texture") */
+    fu.uCrisp.value = pal.crispFloor ? 1 : 0;
     for (const m of this.sides) m.material.uniforms.uAjar.value.set(-99, 0);
     if (!pal.ajarDoors) return;
     fu.uCrisp.value = 1;
