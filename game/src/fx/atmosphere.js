@@ -346,7 +346,7 @@ export const REGIONS = {
       { kind: 'cold', x: -3.0, y: 2.60, z: -9.6, color: '#7897ca', intensity: 1.00, radius: 6.5 },
       { kind: 'warm', x: 1.2, y: 3.00, z: -8.0, color: '#e2b070', intensity: 1.50, radius: 5.5 },
     ],
-    shafts: { count: 2, spread: 11, y: 6.0, z: -8.8, angle: 0.40, width: 3.0, intensity: 0.16, pool: 2.0 },
+    shafts: { count: 2, spread: 11, y: 6.0, z: -8.8, angle: 0.40, width: 3.0, intensity: 0.06, pool: 2.0 },
     bloom: 0.78, vignette: 1.23,
   },
 
@@ -732,7 +732,7 @@ export const REGIONS = {
       { kind: 'cold', x: -3.6, y: 1.80, z: -13.0, color: '#6c94ac', intensity: 1.40, radius: 7.0 },
       { kind: 'warm', x: 2.8, y: 1.50, z: -9.5, color: '#e0a35a', intensity: 2.10, radius: 6.0, fit: 'none' },
     ],
-    shafts: { count: 1, spread: 4, y: 5.0, z: -9.0, angle: 0.10, width: 4.2, intensity: 0.07, pool: 1.2 },
+    shafts: { count: 1, spread: 4, y: 5.0, z: -9.0, angle: 0.10, width: 4.2, intensity: 0.0, pool: 1.2 },
     vignette: 1.28, bloom: 0.90,
   },
 
@@ -1444,7 +1444,8 @@ export const ROOM_KINDS = {
        and its washstand -- each drawn in program 18) */
     kinds: [{ subject: 'dormroom', layout: 'wings', count: 0, swap: [[0, 51], [14, 51]],
               runner: 1.25, room: { d: 0.76, w: 0.78 },
-              lamps: [{ i: 0, x: -1.5, z: 0.30, k: 1.3 }, { i: 3, x: 1.5, z: 0.62, k: 1.6 }],
+              lamps: [{ i: 0, x: 0.0, z: 0.30, k: 1.4 },
+                      { i: 3, x: 4.6, z: 0.66, y: 1.25, color: '#eab070', k: 1.5, radius: 4.5, fit: 'none' }],
               near: [{ shape: 51, x: -4.2, z: -2.6, tone: 0.97, free: true },
                      { shape: 51, x: 4.2, z: -2.8, tone: 0.97, free: true },
                      { shape: 52, x: -5.2, z: -3.9, tone: 0.94, free: true },
@@ -1733,7 +1734,7 @@ export const ROOM_KINDS = {
        program 20 -- the chapel's floor stood with tombs and candles, the
        ossuary's with charnel stacks) */
     kinds: [
-      { subject: 'catacombs', count: 4, swap: [[57, 59]] },
+      { subject: 'catacombs', count: 4, swap: [[57, 59], [6, 58]] },
       { subject: 'cryptchapel', swap: [[6, 58]], count: 3, room: { d: 0.80 }, cam: { z: -1.0, look: 0.15 },
         lamps: [{ i: 1, x: 0.0, z: 0.86, y: 1.6, color: '#e2a660', k: 0.85, fit: 'none' }],
         near: [{ shape: 57, edge: 0.74, z: -3.0, tone: 0.96 },

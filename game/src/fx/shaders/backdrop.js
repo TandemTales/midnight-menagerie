@@ -14817,7 +14817,7 @@ float wfFourPoster(vec2 q, float px, float seed, float kq, bool paint){
   float onTop = step(edgeY, q.y);
   float drop = clamp((edgeY - q.y)/(edgeY - hem), 0.0, 1.0);
   float cf = 0.5 + 0.5*cos(q.x*(15.0 - 5.0*drop) + 2.2*sin(q.y*3.0 + seed) + drop*2.0);
-  float fold = mix(1.0, 0.50 + 0.62*cf, smoothstep(0.0, 0.25, drop));
+  float fold = mix(1.0, 0.68 + 0.42*cf, smoothstep(0.0, 0.25, drop));
   vec3 cpC = silk*(0.55 + 0.45*mix(0.6 + 0.6*puff, 1.0, 1.0 - onTop))*fold;
   float quil = mmInkP(max(abs(dfr.x), abs(dfr.y)) - 0.5, px/0.17, 1.0)*onTop*mmLod(0.17, px);
   cpC *= 1.0 - 0.35*quil;
