@@ -323,8 +323,8 @@ export const ROOMS_PROGRAM = {
   palm: 3, vine: 3,
   chapel: 4, mausolea: 4,
   tomb: 5, ossuary: 5,
-  wax: 6, reflector: 6, boiler: 6,
-  steam: 7, pool: 7, pipes: 7,
+  boiler: 6,
+  pipes: 7,
   /* round 22: the Hedge Maze (8), the Kitchens (9), the Secret Passages
      (10) and the Pumpkin Grounds (11) -- four wings whose walls are drawn
      whole (see hedgeWallH and its neighbours in shaders/backdrop.js), a
