@@ -129,21 +129,29 @@ const SHAPE_M = [1.20, 2.00, 1.30, 1.00, 2.00, 2.00, 3.32, 2.60, 1.17, 1.33,
                  /* graft: 31 the statue on its plinth drawn clean -- shape 15's
                     figure with a smooth, resolvable surface (the Heart, the maze) */
                  2.44,
-                 /* round 23: 32 a roll-top bath on claw feet, 0.78 m to its
-                    rim and its taps over that */
-                 1.24,
-                 /* 33 a hanging lantern, the chain as long as the quad;
-                    34 a lamp-maker's bench, 0.90 m to its top */
-                 2.60, 1.30,
-                 /* 35 a telescope on its tripod, 2.2 m to the end of its
-                    tube; 36 a steamer trunk, a case on half of them; 37
-                    furniture under a dust sheet */
-                 3.00, 1.05, 1.45,
+                 /* round 23: 32 a roll-top bath on claw feet, full, its taps
+                    at one end (graft: ULTRAMARINE's drawing, authored at
+                    1.45 m with the steam off it) */
+                 1.45,
+                 /* 33 a hanging lantern, sized by its chain in push;
+                    34 a lamp-maker's bench, its rack of glass over it */
+                 3.00, 1.60,
+                 /* 35 a telescope on its tripod (graft: ULTRAMARINE's, big
+                    enough to read across the room); 36 a steamer trunk, a
+                    case on half of them; 37 furniture under a dust sheet */
+                 3.10, 1.05, 1.45,
                  /* 38 a roof truss, sized to the room it stands in */
                  5.00,
-                 /* 39 a kennel, 40 a dog's bed and its bowl, 41 a grooming
-                    table with its arm, 42 a wash tub on its trestle */
-                 1.55, 0.50, 1.75, 1.05
+                 /* 39 a kennel, 40 a dog's basket and its bowl, 41 a
+                    grooming table with its arm, 42 a zinc wash tub on its
+                    trestle with the tap over it (graft: ULTRAMARINE's) */
+                 1.70, 0.70, 1.72, 1.55,
+                 /* 43 a candle-dipping rack hung with its tapers (graft,
+                    MADDERLAKE's, for the wax room's floor) */
+                 1.92,
+                 /* 44 an orrery on its table (graft, MADDERLAKE's, the
+                    attic observatory) */
+                 1.60
 ];
 /* ...and a width ratio, so a column is a column and not a capital-T. Four of
  * these were wrong by enough to change what the object was: a longcase clock
@@ -153,11 +161,12 @@ const SHAPE_W = [1.15, 0.55, 1.00, 0.95, 0.72, 0.80, 0.47, 0.85, 0.90, 1.35,
                  1.30, 1.20, 0.87, 1.14, 0.77, 0.78, 1.80, 2.24, 0.50, 0.62,
                  0.72, 2.025, 0.62, 0.34, 1.80, 1.476, 0.34,
                  1.62, 1.55, 2.10, 0.62, 0.78,
-                 2.20,
-                 0.30, 1.55,
-                 0.92, 1.12, 0.85,
+                 1.31,
+                 0.26, 1.66,
+                 1.06, 1.12, 0.85,
                  2.6,
-                 1.12, 3.60, 0.78, 1.55
+                 1.34, 2.30, 0.80, 1.09,
+                 0.76, 0.70
 ];
 /* HOW MUCH ONE OF THESE VARIES FROM THE NEXT, as a +-fraction of SHAPE_M.
  *
@@ -181,11 +190,17 @@ const SHAPE_VAR = [0.06, 0.08, 0.62, 0.20, 0.10, 0.08, 0.10, 0.10, 0.16, 0.48,
                  0.06, 0.04, 0.00, 0.00, 0.22, 0.00, 0.04,
                  0.34, 0.06, 0.05, 0.16, 0.14,
                  0.05,
-                 0.45, 0.05,
-                 0.03, 0.10, 0.16,
+                 0.00, 0.05,
+                 0.04, 0.10, 0.16,
                  0.0,
-                 0.08, 0.08, 0.04, 0.06
+                 0.08, 0.08, 0.04, 0.06,
+                 0.04, 0.03
 ];
+/* ROUND 23 (graft): ULTRAMARINE's drawings are in metres at their own
+   proportions, so their quads take no width jitter -- a telescope 22%
+   narrower than its drawing is a telescope with its objective cut off.
+   (rand() is still drawn for them, so no other room's stream moves.) */
+const FIXW = { 32: 1, 33: 1, 34: 1, 35: 1, 39: 1, 40: 1, 41: 1, 42: 1, 43: 1, 44: 1 };
 // Which shapes hang from the ceiling rather than stand on the floor.
 export const HANGING = { 4: 1, 7: 1, 22: 1, 33: 1 };
 /* ...and which stand AGAINST A WALL rather than out on the floor. A tall
@@ -323,7 +338,8 @@ export const ROOMS_PROGRAM = {
   baths: 12, steam: 12, pool: 12,
   lampshop: 13, wax: 13, reflector: 13,
   observatory: 14, eaves: 14,
-  kennel: 15, washroom: 15,
+  /* (graft: and its wash room in a program of its own, 16) */
+  kennel: 15, washroom: 16,
 };
 
 /**
@@ -1045,7 +1061,8 @@ export class Backdrop {
       const r = rand();
       const spread = 1 + v * (r * r * 2.6 - 0.9);
       const h = (SHAPE_M[shape] ?? 1.2) * nudge * sc * spread;
-      return { h, w: h * (SHAPE_W[shape] ?? 1) * (0.78 + rand() * 0.24) };
+      const jit = 0.78 + rand() * 0.24;
+      return { h, w: h * (SHAPE_W[shape] ?? 1) * (FIXW[shape] ? 1 : jit) };
     };
     /* Keep props inside the lens. A prop at x = +-halfW in a 34 m ballroom is
        simply off-screen, which is how round 1 ended up with a props crop that
@@ -1176,7 +1193,31 @@ export class Backdrop {
         h = Math.min(Math.max(h, ceil * 0.60), ceil * 0.86);
         w = h * (SHAPE_W[6] ?? 0.47) * (0.90 + rand() * 0.14);
       }
+      /* A LANTERN HANGS AT ITS OWN HEIGHT (round 23 graft, ULTRAMARINE's):
+         the lampworks' lamps are hung for the work under them and for show,
+         so each one's chain leaves it somewhere between head height and
+         two-thirds of the way up the room -- a dozen at a dozen heights. The
+         quad is the chain and the lantern; its width is the lantern's. A
+         lantern hung by hand (props.near) names its own height. */
+      if (s === 33) {
+        const yb0 = 2.05 + rand() * Math.max(ceil * 0.60 - 2.05, 0.6);
+        h = Math.max(ceil - (atY ?? yb0), 0.9);
+        w = 0.78;
+      }
       let y = atY ?? 0.02;
+      /* AT THE FRAME'S EDGE (round 23 graft, ULTRAMARINE's): a wing's
+         signature object set by hand where the fight leaves room for it --
+         its near end at screen fraction `edge` (> 0.5: its LEFT end, on the
+         right of the frame; < 0.5: its RIGHT end, on the left), at its own
+         depth. Solved from the lens itself, so it is there from any vantage. */
+      if (how && typeof how === 'object' && how.edge !== undefined) {
+        const e = how.edge, k = (2 * e - 1) * LS.tanH;
+        const dy = y - LS.ey, dz = z - LS.ez;
+        const qx = (k * (dy * LS.fy + dz * LS.fz) - dz * LS.rz) / (LS.rx - k * LS.fx);
+        x = LS.ex + qx + (e > 0.5 ? w * 0.5 : -w * 0.5);
+        x = Math.max(-halfW * 0.96 + w * 0.5, Math.min(halfW * 0.96 - w * 0.5, x));
+        how = 'free';
+      }
       /* Half the frame at this prop's own depth, measured at BOTH ends of it —
          a tall prop's head and its foot are at different view depths under a
          pitched camera, and the narrower of the two is the one that cuts. */
@@ -1250,7 +1291,7 @@ export class Backdrop {
         if (x > whi) x = whi; else if (x < wlo) x = wlo;
       }
       const [lo, hi] = bandAt(z);
-      if (x > hi || x < lo) {
+      if ((x > hi || x < lo) && how !== 'free') {
         if (how === 'file' && offAxis) {
           /* A COLONNADE'S FILE STAYS A FILE. From a vantage off the centre
              line the near file broke up when every column was pulled in to a
@@ -1269,9 +1310,24 @@ export class Backdrop {
          it, so the Kid stood on a bench. A floor piece whose foot would land
          in front of the combatants' own feet walks back along its line until
          it stands behind them. */
-      if (!hang && !pal.noStage) {
+      /* (round 23 graft: a signature object placed by hand -- `free` --
+         stands where it was put, beside the creature row) */
+      if (!hang && !pal.noStage && how !== 'free') {
         let g3 = 0;
         while (g3++ < 40 && onStage(x, z, w) && z > -room.d + 1.2) z -= 0.5;
+      }
+      /* (round 23 graft, the Bathhouse's fight -- judges 1 and 3: "move the
+         dark green tub and the palm out from behind the Kid at left") a
+         room that asks for it keeps the Kid's column clear: a floor piece
+         whose body would stand in it, behind the Kid, is not set. */
+      if (P.kidClear && !hang && how !== 'free') {
+        const dx = x - LS.ex, dy = Math.min(y + h * 0.5, 1.4) - LS.ey, dz = z - LS.ez;
+        const d = dx * LS.fx + dy * LS.fy + dz * LS.fz;
+        if (d > 0.3) {
+          const sx = 0.5 + 0.5 * (dx * LS.rx + dz * LS.rz) / (d * LS.tanH);
+          const hw = 0.5 * (w * 0.5 * LS.rx) / (d * LS.tanH);
+          if (sx - hw < 0.235 && sx + hw > -0.02) { rand(); return; }
+        }
       }
       out.push({ x, z, w, h, shape: s, seed: rand() * 10, tone, y, hang });
     };
@@ -1288,7 +1344,8 @@ export class Backdrop {
        whole prop budget with planting and kerbs, and the conservatory's
        fountain, dealt last with the near set, was sliced off at MAX_PROPS. */
     for (const it of (P.near || [])) {
-      if (it.centre) push(it.shape, it.x, it.z, it.scale ?? 1.0, it.tone ?? 0.9, it.y);
+      if (it.centre) push(it.shape, it.x ?? 0, it.z, it.scale ?? 1.0, it.tone ?? 0.9, it.y,
+                          it.edge !== undefined ? { edge: it.edge } : (it.free ? 'free' : undefined));
     }
 
     if (layout === 'colonnade') {
@@ -1644,8 +1701,15 @@ export class Backdrop {
       const every = P.trusses.every ?? 3.2;
       for (let z = -(P.trusses.first ?? 2.6); z > -room.d + 1.4 && out.length < MAX_PROPS; z -= every) {
         archN++;
-        out.push({ x: 0, z, w: room.w + 0.1, h: rise + 0.05, shape: P.trusses.shape ?? 38,
-                   seed: rand() * 10, tone: 0.80, y: room.h - 0.02, hang: true, arch: true });
+        /* (graft: ULTRAMARINE's arch-braced collar truss, and only from
+           0.75 m under the eaves -- the wall post on its corbel, the brace
+           and the roof. A quad from the floor put most of the frame's top
+           half through the prop shader: 15.6 ms in its attic. The seed
+           carries the eaves' height in the quad, where the brace springs.) */
+        const T0 = 0.75;
+        rand();
+        out.push({ x: 0, z, w: room.w + 0.30, h: rise + T0 - 0.02, shape: P.trusses.shape ?? 38,
+                   seed: T0, tone: 0.80, y: room.h - T0, hang: true, arch: true });
       }
     }
     /* A SOLO PROP IS THE ROOM'S ONE OF SOMETHING, so it is PLACED and not
@@ -1705,7 +1769,8 @@ export class Backdrop {
     for (const it of (P.near || [])) {
       if (out.length >= MAX_PROPS) break;
       if (it.skip || it.centre) continue;
-      push(it.shape, it.x, it.z, it.scale ?? 1.0, it.tone ?? 0.16, it.y, it.wall ? 'wall' : undefined);
+      push(it.shape, it.x ?? 0, it.z, it.scale ?? 1.0, it.tone ?? 0.16, it.y,
+           it.wall ? 'wall' : (it.edge !== undefined ? { edge: it.edge } : (it.free ? 'free' : undefined)));
       if (yields(it, out[out.length - 1])) out.pop();
     }
     return out.slice(0, MAX_PROPS);
@@ -2479,7 +2544,7 @@ export class Backdrop {
       wall(1), wall(2), wall(3), wall(4), wall(5), wall(6), wall(7),
       wall(8), wall(9), wall(10), wall(11),
       /* round 23 */
-      wall(12), wall(13), wall(14), wall(15),
+      wall(12), wall(13), wall(14), wall(15), wall(16),
       [this.portals[0].geometry, this.portals[0].material, null],
       [this.propGeo, this.propMat, { MM_STONES: 0, MM_BUST: 1 }],
       [this.floor.geometry, this.floorMat, { MM_FLOORX: 1 }],

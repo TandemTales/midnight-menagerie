@@ -507,9 +507,17 @@ export const REGIONS = {
     /* an attic's floor: trunks (36), furniture under dust sheets (37), a
        crate, a case, a clock -- along the knee walls, the middle kept; and
        before the gable's window, the TELESCOPE on its tripod (35) */
-    props: { shapes: [36, 37, 8, 36, 37, 14], count: 16, height: 2.2, layout: 'perimeter',
+    /* (graft, all three judges: ULTRAMARINE's "large brass telescope on a
+       tripod, angled up, big enough to read across the room", stood in the
+       moonbeam under the oculus and clear of the clocks and crates; and
+       MADDERLAKE's orrery on its table, the trunks and ONE grandfather
+       clock set round it) */
+    props: { shapes: [36, 37, 8, 36, 37, 36], count: 16, height: 2.2, layout: 'perimeter',
              family: ['perimeter', 'wings'],
-             near: [{ shape: 35, x: 0.4, z: -9.4, tone: 0.96, scale: 1.0 }],
+             near: [{ shape: 35, x: 1.3, z: -7.4, tone: 0.97, scale: 1.30, free: true },
+                    { shape: 44, x: -1.9, z: -8.0, tone: 0.95, free: true },
+                    { shape: 14, x: 3.7, z: -12.6, tone: 0.92 },
+                    { shape: 36, x: -3.9, z: -11.8, tone: 0.92 }],
              trusses: { shape: 38, every: 3.4, first: 2.2 } },
     particles: { mix: [[PTYPE.DUST, 0.62], [PTYPE.WISP, 0.26], [PTYPE.ASH, 0.12]],
                  tint: '#d8dcf5', wispTint: '#b0b8ff', emberTint: '#ffcf7a',
@@ -546,7 +554,23 @@ export const REGIONS = {
        heights (33), its floor stood with lamp-makers' benches (34) and gas
        standards (18); the machinery is the line shaft and its belts, which
        the wall program draws. */
-    props: { shapes: [33, 34, 33, 18, 34, 33], count: 30, height: 2.6, layout: 'hang' },
+    props: { shapes: [33, 34, 33, 18, 34, 33], count: 30, height: 2.6, layout: 'hang',
+             /* (graft, ULTRAMARINE's -- all three judges: "lanterns, globes
+                and hurricane lamps at several heights over the floor and the
+                creature"): benches crowded with lamps set by hand at the
+                frame's edges where the fight leaves room, and the lanterns
+                hung nearest the eye, over the fight, at the height of the
+                creatures' heads and above */
+             near: [
+               { shape: 34, edge: 0.80, z: -0.8, tone: 0.95 },
+               { shape: 34, edge: 0.22, z: -4.6, tone: 0.92 },
+               { shape: 33, x: -6.0, z: -3.0, y: 3.2, tone: 0.95 },
+               { shape: 33, x: -2.6, z: -1.6, y: 3.0, tone: 0.95 },
+               { shape: 33, x: -0.8, z: -4.2, y: 3.5, tone: 0.95 },
+               { shape: 33, x: 2.4, z: -1.0, y: 3.2, tone: 0.95 },
+               { shape: 33, x: 4.6, z: -2.4, y: 2.9, tone: 0.95 },
+               { shape: 33, x: 6.6, z: -0.6, y: 3.4, tone: 0.95 },
+             ] },
     particles: { mix: [[PTYPE.EMBER, 0.42], [PTYPE.WISP, 0.30], [PTYPE.DUST, 0.28]],
                  tint: '#cfe8ff', wispTint: '#6fd9ec', emberTint: '#ff9e3c',
                  speed: 1.1, scale: 1.1, wind: 1.0, density: 1.0 },
@@ -755,7 +779,21 @@ export const REGIONS = {
     /* (round 23: the bath hall's BATHS -- 32, roll-top on claw feet -- in two
        files down the room; its palms; and no hanging sheet, which read as
        "a grey rectangle floating in front of the glazing") */
-    props: { shapes: [32, 2, 32], count: 16, height: 2.3, layout: 'nook' },
+    props: { shapes: [32, 2, 32], count: 16, height: 2.3, layout: 'nook', kidClear: true,
+             /* (graft, ULTRAMARINE's, all three judges: "many clawfoot tubs
+                with visible water surfaces across the floor ... bring two
+                of them forward along the side walls where the Deck can see
+                them") -- set by hand at the frame's edges, where the fight
+                leaves room, and a palm with the near one */
+             near: [
+               { shape: 32, edge: 0.80, z: -0.9, tone: 0.95 },
+               { shape: 32, edge: 0.88, z: -3.8, tone: 0.93 },
+               { shape: 2, edge: 0.95, z: -2.4, tone: 0.92 },
+               /* and two more down the hall, on the left and the middle,
+                  where the files have room for them */
+               { shape: 32, x: -3.4, z: -7.4, tone: 0.92, free: true },
+               { shape: 32, x: 1.8, z: -10.2, tone: 0.90, free: true },
+             ] },
     particles: { mix: [[PTYPE.RAIN, 0.58], [PTYPE.DUST, 0.26], [PTYPE.WISP, 0.16]],
                  tint: '#bfe8f5', wispTint: '#6fd9ec', emberTint: '#ffb64a',
                  speed: 1.0, scale: 1.0, wind: 1.2, density: 1.0 },
@@ -797,13 +835,25 @@ export const REGIONS = {
        crate stack (8). A kennel block's floor has KENNELS on it (39), dogs'
        beds with their bowls (40) and the grooming table (41); its stalls,
        straw and name plates are the wall's (program 15). */
-    props: { shapes: [39, 40, 41, 39, 40], count: 14, height: 1.6, layout: 'rows' },
+    /* (graft: 11 dealt, from 14 -- the four set by hand are the big ones,
+       and the fight's frame paid for every kennel twice) */
+    props: { shapes: [39, 40, 41, 39, 40], count: 11, height: 1.6, layout: 'rows',
+             /* (graft, ULTRAMARINE's, all three judges: "the peaked, lit
+                doghouses with nameplates and the oval bone-plate dog beds IN
+                FRONT of the stalls", with their water bowls) -- set by hand
+                forward of the stall row, where the fight leaves room */
+             near: [
+               { shape: 39, edge: 0.80, z: -0.8, tone: 0.95 },
+               { shape: 40, edge: 0.64, z: -1.9, tone: 0.95 },
+               { shape: 40, edge: 0.22, z: -3.0, tone: 0.94 },
+             ] },
     /* (round 23: dust in the lamplight, not a field of sparks -- at 0.95 with
        embers in it the motes were the "speckle" over the stalls) */
     particles: { mix: [[PTYPE.DUST, 0.82], [PTYPE.ASH, 0.18]],
                  tint: '#ffdfae', wispTint: '#8fd9ec', emberTint: '#ffb64a',
                  speed: 0.8, scale: 1.0, wind: 0.6, density: 0.50 },
-    exposure: 2.4, vignette: 1.61, contrast: 1.54,
+    /* (graft: the corners a stop darker -- "real darks in the corners") */
+    exposure: 2.4, vignette: 1.86, contrast: 1.54,
     key:  { glow: 0, kind: 'warm', x: -3.4, y: 2.6, z: 2.0, color: '#e5b57e', intensity: 1.67, radius: 6.45 },
     fill: { glow: 0, kind: 'cold', x: 5.0, y: 2.2, z: 1.2, color: '#83a6bc', intensity: 7.45, radius: 7.5, flicker: false },
     lights: [
@@ -816,7 +866,11 @@ export const REGIONS = {
     ],
     /* Open to the sky: see the Graveyard's note. A shaft needs something to
        come through, and there is no ceiling here. */
-    shafts: { count: 2, spread: 16, y: 4.6, z: -7.5, angle: 0.14, width: 3.4, intensity: 0.11, pool: 1.7 },
+    /* (graft, judge 2: "the whole wing has no cold light -- add moonlight
+       from the windows onto the floor, and put real darks in the corners"):
+       the high windows' moonlight down onto the boards in three narrow
+       beams, each laying its cold pool among the lanterns' warm ones */
+    shafts: { count: 3, spread: 14, y: 4.0, z: -8.4, angle: 0.34, width: 1.2, intensity: 0.26, pool: 2.4 },
     warmTone: 0.05,
   },
 
@@ -1334,7 +1388,7 @@ export const ROOM_KINDS = {
        table and its lamp where the telescope stood) */
     kinds: [{ subject: 'observatory' },
             { subject: 'eaves', swap: [[37, 5], [14, 5]],
-              near: [{ shape: 34, x: -0.8, z: -10.5, tone: 0.92 }],
+              near: [{ shape: 18, x: -0.8, z: -10.5, tone: 0.92 }, { shape: 36, x: 0.7, z: -10.2, tone: 0.92 }],
               vantage: { at: 'along', off: 0.12, wall: 2.0, fwd: 1.4, yaw: 10, wide: 3 } }],
     names: [
       [/library|chart|archive|watcher/i, 1],
@@ -1353,7 +1407,11 @@ export const ROOM_KINDS = {
          frames hung with tapers under their hoods; its floor stood with the
          wax stoves and the candle stands, not the gas standards; seen low,
          among the racks, under its timber roof */
-      { subject: 'wax', layout: 'wings', swap: [[18, 34]], room: { w: 0.80, d: 0.56 },
+      /* (graft, MADDERLAKE's: its floor stood with candle-dipping racks
+         hung with their tapers, 43, where the gas standard was, and two
+         set by hand where the eye is) */
+      { subject: 'wax', layout: 'wings', swap: [[18, 43]], room: { w: 0.80, d: 0.56 },
+        near: [{ shape: 43, edge: 0.78, z: -1.6, tone: 0.95 }, { shape: 43, edge: 0.24, z: -2.8, tone: 0.92 }],
         ceil: 6, ceilGain: 1.9,
         vantage: { at: 'among', low: 0.72, fwd: 4.2, pitch: 3.0, off: 0.14, yaw: 12, wide: 4 } },
       /* THE REFLECTOR GALLERY -- round 14, one judge, VERMEIL's: "a receding
@@ -1381,7 +1439,10 @@ export const ROOM_KINDS = {
   },
   bathhouse: {
     kinds: [
-      { subject: 'baths', layout: 'colonnade', file: 32, fileX: 0.60 },
+      /* (graft: the files of baths start a bay further in, so none stands
+         behind the Kid -- "move the dark green tub and the palm out from
+         behind the Kid at left") */
+      { subject: 'baths', layout: 'colonnade', file: 32, fileX: 0.60, fileZ0: -4.6 },
       /* THE STEAM ROOM -- small, low and hot, tiled to its vault, an arcade of
          niches with their basins and taps over two stepped benches, and full
          of steam; seen from the lowest bench. Round 14, both judges: the loose
@@ -1389,8 +1450,15 @@ export const ROOM_KINDS = {
          (swap), which at this size is what a length of large-bore pipe on a
          tiled floor looks like -- there is no pipe prop, and a hot room has no
          columns, curtains or palms in it. */
-      { subject: 'steam', layout: 'nook', swap: [[6, 2], [32, 2]], countScale: 0.30,
+      /* (graft, all three judges: "the steam room must have baths or a
+         plunge" -- "it has only wall basins now"): its tubs kept, two set
+         by hand either side of the eye, and its palms gone; and the GRATE's
+         red light laid on the wet tiles in front of the stove (MADDERLAKE's)
+         -- the wing's warm lamp, brought down to the firebox */
+      { subject: 'steam', layout: 'nook', swap: [[6, 32], [2, 32]], countScale: 0.30,
         room: { w: 0.76, d: 0.62, h: 0.76 }, ceil: 4, ceilGain: 2.1, atmos: { wallFog: 0.20 },
+        near: [{ shape: 32, edge: 0.82, z: -2.6, tone: 0.95 }, { shape: 32, edge: 0.18, z: -3.4, tone: 0.93 }],
+        lampsView: [{ i: 1, x: 0.0, z: 0.86, y: 0.55, color: '#ff7a36', k: 0.50, radius: 3.6 }],
         vantage: { at: 'among', low: 0.66, fwd: 1.4, pitch: 3.0, off: 0.06, wide: 3, frame: 'steam' } },
       /* THE INDOOR POOL -- round 14, both judges' first instruction: "a sunk
          rectangular basin with a proud stone coping, a clear step down to the
@@ -1400,7 +1468,9 @@ export const ROOM_KINDS = {
          old 7.6 m strip down a 22 m room read as a dark rug -- and it starts
          near enough to the eye to be the room. Seen from the gallery over its
          near end, high enough to look down INTO it. */
+      /* (graft: and a bath at the pool's corner, ULTRAMARINE's) */
       { subject: 'pool', layout: 'colonnade', file: 6, fileX: 0.74, swap: [[32, 2]],
+        near: [{ shape: 32, x: 7.4, z: -2.6, tone: 0.95, free: true }],
         room: { w: 1.10, d: 1.24 }, rail: 'iron', ceil: 4, ceilGain: 2.4,
         pool: { hw: 5.6, z0: -1.4, back: 3.4 },
         /* the hall's cold light stands over the far end of the water, which is
@@ -1537,7 +1607,11 @@ export const ROOM_KINDS = {
   kennels: {
     /* (round 23: the kennel range, and its wash room with the tubs) */
     kinds: [{ subject: 'kennel' },
-            { subject: 'washroom', swap: [[39, 42], [40, 42]], countScale: 0.75 }],
+            /* (graft, ULTRAMARINE's: a zinc tub on its trestle and the
+               grooming table set by hand where the eye is) */
+            { subject: 'washroom', swap: [[39, 42], [40, 42]], countScale: 0.75, shaftK: 0.45,
+              near: [{ shape: 42, edge: 0.80, z: -1.0, tone: 0.95 }, { shape: 41, edge: 0.22, z: -3.4, tone: 0.92 },
+                     { shape: 42, edge: 0.30, z: -1.6, tone: 0.94 }] }],
     names: [
       [/wash|groom|veterinar|quarantine|kitchen/i, 1],
       [/./, 0],
@@ -2309,6 +2383,12 @@ export class Atmosphere {
           if (!L) continue;
           if (m.x !== undefined) L.x = m.x * vs;
           if (m.z !== undefined) L.z = -R.d * m.z;
+          /* (round 23 graft: and a lamp the room's own fire stands for -- the
+             steam room's grate -- at its own height, colour and strength) */
+          if (m.y !== undefined) L.y = m.y;
+          if (m.color !== undefined) L.color = m.color;
+          if (m.k !== undefined) L.intensity *= m.k;
+          if (m.radius !== undefined) L.radius = m.radius;
         }
       }
       if (kind.near) pal.props.near = kind.near;
@@ -2329,6 +2409,12 @@ export class Atmosphere {
          the wing's colour, lamps and material never move here. */
       for (const k of ['wallFog']) {
         if (kind.atmos && kind.atmos[k] !== undefined) pal[k] = kind.atmos[k];
+      }
+      /* (round 23 graft, ULTRAMARINE's: a room may carry less of its wing's
+         moonlight -- the kennels' wash room, where three beams over a white
+         wall were a haze) */
+      if (kind.shaftK !== undefined && pal.shafts) {
+        pal.shafts = Object.assign({}, pal.shafts, { intensity: (pal.shafts.intensity ?? 0) * kind.shaftK });
       }
       if (kind.fileZ0 !== undefined) pal.props.fileZ0 = kind.fileZ0;
       /* A ROOM'S CENTREPIECE, stood in the middle of its floor with the
