@@ -311,27 +311,42 @@ export const REGIONS = {
   sleeping: {
     label: 'The Sleeping Quarters',
     propMat: 'cloth', propCeil: 0.278,
-    arch: 0, floorPattern: 0, subject: 'wardrobe',
-    room: { w: 18, d: 16, h: 5.6, side: 0.06, ceilPattern: 3, wallPad: 4.6 },
-    cam: { y: 2.30, z: 9.0, look: 2.05, fov: 39 },
+    /* ROUND 24: both survey judges -- "the back wall is a raw electric-blue
+       flat colour, and the two beds are cardboard boxes with a quilt texture
+       pasted on the front", and the wing "copies the Nursery's
+       portraits-and-cabinets template". Its own wall program now (18): a
+       walnut dado of fielded panels and a striped indigo-and-aubergine
+       paper, the dormitory's windows with their blinds half down, the
+       bedroom's marble chimneypiece with its fire; and its BEDS drawn --
+       the iron dormitory bed (51), the four-poster (50), the washstand with
+       its candle (52). The wall's palette is a stop deeper (mid #2c2a4b ->
+       #262238, hi #46446e -> #3a3352) and the moon's fill weaker: the
+       electric blue was the cold light on a pale wall. */
+    arch: 0, floorPattern: 0, subject: 'dormroom', damask: 0,
+    room: { w: 16, d: 11, h: 4.6, side: 0.04, ceilPattern: 3, wallPad: 4.0 },
+    cam: { y: 2.10, z: 6.6, look: 1.95, fov: 41 },
     nookSide: -1,
-    deep: '#18162c', mid: '#2c2a4b', hi: '#46446e', accent: '#5e76aa',
-    shaft: '#a7b8e0', floorDeep: '#100f1e', floorMid: '#232339', ambient: '#19172e',
-    propAlb: '#33304f', propHi: '#5c5b86', rimCol: '#c1cbed',
-    gloss: 0.38, open: '#5873a1', openGlow: 0.42, coolFill: 1.15, wallFog: 0.22,
-    props: { shapes: [12, 5, 7, 0, 2], count: 20, height: 2.1, layout: 'nook' },
-    particles: { mix: [[PTYPE.DUST, 0.60], [PTYPE.WISP, 0.28], [PTYPE.ASH, 0.12]],
-                 tint: '#cfd8f2', wispTint: '#8fb7ff', emberTint: '#ffb64a',
-                 speed: 0.7, scale: 1.0, wind: 0.5, density: 0.8 },
+    deep: '#18162c', mid: '#262238', hi: '#3a3352', accent: '#5e76aa',
+    shaft: '#a7b8e0', floorDeep: '#100f1e', floorMid: '#232339', ambient: '#17152a',
+    propAlb: '#3a3350', propHi: '#6a6488', rimCol: '#d8c6b0',
+    gloss: 0.38, open: '#5873a1', openGlow: 0.42, coolFill: 0.80, wallFog: 0.18,
+    props: { shapes: [52, 0, 14, 0], count: 5, height: 2.1, layout: 'nook',
+             near: [{ shape: 51, x: -4.7, z: -3.6, tone: 0.95, free: true },
+                    { shape: 51, x: -5.2, z: -6.6, tone: 0.92, free: true },
+                    { shape: 51, x: 5.0, z: -6.9, tone: 0.92, free: true }] },
+    particles: { mix: [[PTYPE.DUST, 0.84], [PTYPE.ASH, 0.16]],
+                 tint: '#dfe2f2', wispTint: '#8fb7ff', emberTint: '#ffb64a',
+                 speed: 0.6, scale: 1.0, wind: 0.4, density: 0.40 },
     exposure: 1.46, contrast: 1.63,
     key:  { glow: 0, kind: 'warm', x: -4.0, y: 3.2, z: 2.4, color: '#e4ad7b', intensity: 2.99, radius: 7.31 },
     fill: { glow: 0, kind: 'cold', x: 5.4, y: 2.6, z: 1.0, color: '#92aae4', intensity: 1.78, radius: 8.5, flicker: false },
     lights: [
-      { kind: 'warm', x: -3.4, y: 1.05, z: -4.6, color: '#dda558', intensity: 3.15, radius: 4.13 },
-      { kind: 'cold', x: 5.2, y: 4.20, z: -12.6, color: '#92aae4', intensity: 2.54, radius: 11.0 },
-      { kind: 'cold', x: -6.2, y: 2.80, z: -9.6, color: '#7897ca', intensity: 1.12, radius: 7.5 },
+      { kind: 'warm', x: -3.4, y: 2.90, z: -4.6, color: '#dda558', intensity: 2.40, radius: 5.0 },
+      { kind: 'cold', x: 3.0, y: 2.60, z: -9.8, color: '#92aae4', intensity: 1.50, radius: 7.0 },
+      { kind: 'cold', x: -3.0, y: 2.60, z: -9.6, color: '#7897ca', intensity: 1.00, radius: 6.5 },
+      { kind: 'warm', x: 1.2, y: 3.00, z: -8.0, color: '#e2b070', intensity: 1.50, radius: 5.5 },
     ],
-    shafts: { count: 2, spread: 11, y: 6.4, z: -11.5, angle: 0.40, width: 3.0, intensity: 0.43, pool: 2.0 },
+    shafts: { count: 2, spread: 11, y: 6.0, z: -8.8, angle: 0.40, width: 3.0, intensity: 0.16, pool: 2.0 },
     bloom: 0.78, vignette: 1.23,
   },
 
@@ -1383,7 +1398,28 @@ export const ROOM_KINDS = {
     ],
   },
   sleeping: {
-    kinds: [{ subject: 'wardrobe' }, { subject: 'hearth', doorX: -1, cam: { z: -0.6, look: 0.15 } }],
+    /* (round 24: the dormitory, its iron beds down both sides with their
+       heads to the walls; and a bedroom with its hearth, its four-poster
+       and its washstand -- each drawn in program 18) */
+    kinds: [{ subject: 'dormroom', layout: 'wings', count: 2, swap: [[0, 51], [14, 51]],
+              runner: 1.25, room: { d: 0.86, w: 0.88 },
+              lamps: [{ i: 3, x: 0.0, z: 0.66, k: 1.5 }],
+              near: [{ shape: 51, x: -4.7, z: -3.6, tone: 0.95, free: true },
+                     { shape: 51, x: 4.8, z: -3.9, tone: 0.95, free: true },
+                     { shape: 52, x: -5.5, z: -5.4, tone: 0.92, free: true },
+                     { shape: 51, x: -5.2, z: -6.6, tone: 0.92, free: true },
+                     { shape: 51, x: 5.3, z: -6.9, tone: 0.92, free: true },
+                     { shape: 52, x: 5.8, z: -8.0, tone: 0.90, free: true },
+                     { shape: 51, x: -5.6, z: -9.2, tone: 0.90, free: true }],
+              cam: { z: -0.8, look: 0.10 } },
+            { subject: 'bedchamber', layout: 'wings', count: 1, swap: [[0, 14]],
+              room: { d: 0.80, w: 0.86 }, runner: 1.5,
+              lamps: [{ i: 0, x: 0.0, z: 0.95, y: 0.45, fit: 'none', color: '#ff9848', radius: 4.2, k: 1.10 },
+                      { i: 3, x: 3.4, z: 0.42 }],
+              near: [{ shape: 50, x: -2.9, z: -2.8, tone: 0.97, scale: 1.2, free: true },
+                     { shape: 52, x: 4.0, z: -3.4, tone: 0.95, free: true },
+                     { shape: 0, x: 2.2, z: -5.6, tone: 0.92, free: true }],
+              cam: { z: -1.4, look: 0.10 } }],
     names: [
       [/bedroom|moon window|dreaming/i, 1],
       [/./, 0],
@@ -2310,6 +2346,9 @@ export class Atmosphere {
       if (kind.runner !== undefined) pal.runner = kind.runner;
       if (kind.layout) pal.props.layout = kind.layout;
       if (kind.countScale) pal.props.count = Math.max(6, Math.round(pal.props.count * kind.countScale));
+      /* (round 24: or exactly how many, where a room's things are set by
+         hand and the pack only fills in round them) */
+      if (kind.count !== undefined) pal.props.count = kind.count;
       if (kind.aisle) pal.props.aisle = kind.aisle;
       /* a maze's own set-out (round 22: see Backdrop's `maze` layout) */
       if (kind.maze) Object.assign(pal.props, kind.maze);
@@ -2346,6 +2385,13 @@ export class Atmosphere {
         /* (graft: and how bright, against the wing's own: the scullery's
            copper fire is a third of the kitchen range's) */
         if (m.k !== undefined) L.intensity *= m.k;
+        /* (round 24: and a lamp a room's own fire stands for -- the
+           bedroom's grate, the study's hearth -- at its height and colour,
+           with no fitting of its own: the wall draws its fire) */
+        if (m.y !== undefined) L.y = m.y;
+        if (m.color !== undefined) L.color = m.color;
+        if (m.radius !== undefined) L.radius = m.radius;
+        if (m.fit !== undefined) L.fit = m.fit;
       }
       /* A DIFFERENT ROOM IS SEEN FROM A DIFFERENT PLACE. Offsets from the
          wing's authored rig, and small: the rig is authored against the
