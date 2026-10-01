@@ -1,0 +1,65 @@
+{
+  "round": "r25",
+  "maxBuilders": 3,
+  "briefs": [
+    "docs/ui-pass/BRIEF-r0.md",
+    "docs/ui-pass/BRIEF-r1.md",
+    "docs/ui-pass/BRIEF-r11.md",
+    "docs/ui-pass/BRIEF-r16.md",
+    "docs/ui-pass/BRIEF-r21.md",
+    "docs/ui-pass/BRIEF-r22.md",
+    "docs/ui-pass/BRIEF-r23.md",
+    "docs/ui-pass/BRIEF-r24.md",
+    "docs/ui-pass/BRIEF-r25.md"
+  ],
+  "rubrics": [
+    "docs/ui-pass/RUBRIC.md",
+    "docs/ui-pass/RUBRIC-r25.md"
+  ],
+  "samples": [
+    "UI/title.png",
+    "UI/mainMenu.png",
+    "UI/selectCompanion.png",
+    "UI/selectKid.png"
+  ],
+  "tracks": [
+    {
+      "key": "rooms",
+      "name": "ROOMS",
+      "rule": "refine",
+      "screens": [
+        "sheet-greenhouse",
+        "sheet-graveyard",
+        "sheet-foyer",
+        "sheet-ballroom",
+        "fight-foyer",
+        "fight-graveyard"
+      ],
+      "smallScreens": [
+        "fight-foyer",
+        "fight-graveyard"
+      ],
+      "baseline": "PERCALE",
+      "builders": [
+        {
+          "slot": "a",
+          "code": "AUREOLIN",
+          "port": 9061,
+          "angle": "LITERAL -- the angle that won rounds 20, 23 and 24. Work BRIEF-r25's fix list 1 to 4 in order and exactly as written, one wing at a time, the Foyer FIRST because it is the first wing of every expedition. For item 1, find each stepped object's low-resolution source before you redraw it, and prove the fix at 2x nearest-neighbour at the Deck's tier."
+        },
+        {
+          "slot": "b",
+          "code": "SINOPIA",
+          "port": 9062,
+          "angle": "THE OBJECT FIRST -- the angle that won round 22. The defect under all four wings is objects drawn from low-resolution sources. Redraw every one of them -- fern, palm, planter, headstone, cross, angel, baluster, piano, chair -- as a drawn object with smooth, pixel-aware edges, its own shading and a contact shadow; then dress and light each room around its objects."
+        },
+        {
+          "slot": "c",
+          "code": "PAYNE",
+          "port": 9063,
+          "angle": "GROUND AND AIR. Two of the survey's four complaints are about what lies between the objects: the Foyer's haze, the Ballroom's milky glass, the Graveyard's black void and broken path, the Greenhouse's acid floor and smeared glow. Make every floor run lit and drawn to the frame's edge, every pane deep and crisp, every bit of air clear of haze; then fix the stepped objects (item 1) in that light. Item 1 is still the test."
+        }
+      ]
+    }
+  ]
+}
