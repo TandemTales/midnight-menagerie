@@ -202,6 +202,20 @@ async def settle(page, scene):
             "        return !!s && !s.classList.contains('is-entering'); }", timeout=12000)
     except Exception:                                       # noqa: BLE001
         pass                                                # not every scene uses the class
+    # THE MAP FITS ITS SHEET LATE. `MapScene` calls `_fitView()` only after its
+    # trace and paper image load and `_paintPaper()` finishes, so at the old
+    # measure point the sheet often still had the identity transform -- 1010 px
+    # tall in an 800 px panel -- and the boss room read +635..677 px "off the
+    # panel". That was red on every tree since 2026-09-11 and was a measurement
+    # of the paper loading, not of a layout. `_fitZoom` is set by `_fitView()`.
+    if scene == "map":
+        try:
+            await page.wait_for_function(
+                "() => { const s = window.MM.ctx.scenes.current;"
+                "        return !!s && typeof s._fitZoom === 'number' && s._fitZoom > 0; }",
+                timeout=15000)
+        except Exception:                                   # noqa: BLE001
+            pass                                            # the row below then reports it
     await page.wait_for_timeout(700)
     # And wait for the screen to be NAVIGABLE, not merely present. The title's
     # menu items animate from opacity 0 on their own schedule, after the scene's
