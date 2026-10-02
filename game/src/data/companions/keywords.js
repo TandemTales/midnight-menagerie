@@ -708,7 +708,26 @@ export const COMPANION_STATUSES = [
     id: 'bristle', name: 'Bristle', kind: 'buff', icon: 'quills', decay: 'never', stacks: true,
     desc: '{n} Bristle. When an Attack costs you Courage, spend 1, Shed 1 Quill and hit that attacker back.',
     hooks: {
+      /* THIS DEFINITION REPLACES combat/statuses.js's generic Bristle at
+         registration, so it carries the generic meaning for anyone who is
+         not a Kid: an enemy (or ally) holding Bristle hits an attacker back
+         for its stacks, as statuses.js wrote it. Truffle's rule below needs
+         a seat -- `trackerCtx` builds a player ctx, and an enemy has no
+         piles, so it threw inside damage resolution and the hit never landed
+         (found 2026-09-24: combat-crowd's fixture puts Bristle on the boss). */
+      onAttacked: (h) => {
+        if (!h.owner || h.owner.side === 'player') return;
+        if (h.kind !== 'attack' || h.stacks <= 0) return;
+        const attacker = h.attacker;
+        if (!attacker || attacker === h.owner || !attacker.alive) return;
+        h.e._statusTrigger(h.owner, 'bristle', h.stacks, 'retaliate');
+        h.e.dealDamage({
+          attacker: h.owner, defender: attacker, amount: h.stacks,
+          kind: 'thorns', cause: 'bristle', skipModifiers: true,
+        });
+      },
       onCourageLoss: (h) => {
+        if (!h.defender || h.defender.side !== 'player') return;
         const c = trackerCtx(h.e, h.defender);
         if (!c || stacks(c, c.self, 'bristle') <= 0) return;
         const from = h.attacker;

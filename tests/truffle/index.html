@@ -156,6 +156,23 @@ try {
     check(hp - t.hp <= 8, 'and retaliate once', `dealt back ${hp - t.hp}`);
   }
   {
+    // AN ENEMY HOLDING BRISTLE (found 2026-09-24): this keyword replaces the
+    // generic Bristle, and its Truffle rule built a player ctx for the enemy,
+    // which has no piles -- it threw inside damage resolution and the hit never
+    // landed. An enemy's Bristle is the generic one: the hit lands, it hits back.
+    const e = await truffle();
+    const t = e.livingEnemies()[0];
+    e.applyStatus(t, 'bristle', 3);
+    t.block = 0; e.player.block = 0;
+    const thp = t.hp, php = e.player.hp;
+    let threw = null;
+    try { e.dealDamage({ attacker: e.player, defender: t, amount: 6, kind: 'attack' }); }
+    catch (x) { threw = String(x && x.message || x); }
+    check(!threw, 'an Attack into an enemy holding Bristle resolves', threw || '');
+    check(thp - t.hp === 6, 'and the hit lands on the enemy', `dealt ${thp - t.hp}`);
+    check(php - e.player.hp === 3, 'and the enemy hits back for its stacks', `took ${php - e.player.hp}`);
+  }
+  {
     // no Quill to Shed: the Bristle still goes, no retaliation
     const e = await truffle();
     e.applyStatus(e.player, 'bristle', 1);
