@@ -14596,8 +14596,10 @@ float wfBed(vec2 q, float px, float seed, float kq, bool paint){
   float pd = 1e3;
   vec3 pcol = vec3(0.0);
   float pink = 0.0;
-  for (int j = 0; j < 2; j++){
-    float cj = clamp(ci + float(j) - (fract((q.x + L)/sp) < 0.5 ? 1.0 : 0.0), 0.0, 3.0);
+  /* (the nearest plant only: a second crown per pixel cost the
+     Greenhouse's fight a millisecond it does not have) */
+  for (int j = 0; j < 1; j++){
+    float cj = ci;
     float cx = -L + (cj + 0.5)*sp;
     float sd = seed*3.0 + cj*1.37;
     vec2 pq = (q - vec2(cx, BH - 0.30))/(0.85 + 0.30*mmHash11(sd));
@@ -14661,10 +14663,10 @@ float wfStand(vec2 q, float px, float seed, float kq, bool paint){
   float pink = 0.0;
   /* the pots on the tiers: the nearest tier's two */
   float ti = clamp(floor((q.y - 0.34 + 0.20)/0.40), 0.0, 2.0);
-  for (int j = 0; j < 2; j++){
+  for (int j = 0; j < 1; j++){
     float y = 0.35 + ti*0.40;
     float hw = 0.40 - ti*0.09;
-    float cx = (float(j) - 0.5)*hw*1.05;
+    float cx = (step(0.0, q.x) - 0.5)*hw*1.05;
     float sd = seed*5.0 + ti*3.1 + float(j)*1.7;
     float scl = 0.36;
     vec2 pq = (q - vec2(cx, y))/scl;
