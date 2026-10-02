@@ -12268,8 +12268,9 @@ void main(){
           float has = step(0.18, mmHash21(gci + 2.9)) * (1.0 - earth);
           float gL = GC*(0.55 + 0.30*gh2.y);
           rootC = (1.0 - smoothstep(0.0, 0.16, length((w - base)*vec2(1.0, 0.7))))*has;
-          for (int k = 0; k < 3; k++){
-            float fk = float(k);
+          for (int k = 0; k < 2; k++){
+            if (has < 0.5) break;                 // (a bare cell draws nothing)
+            float fk = float(k)*2.0;              // (two blades a clump, splayed: the frame budget)
             float ang = (fk - 1.0)*0.42 + (gh2.x - 0.5)*0.30 + (fract(gh2.y*7.3 + fk*0.37) - 0.5)*0.22;
             vec2 dir = vec2(sin(ang), cos(ang));
             float L = gL*(0.65 + 0.35*fract(gh2.x*13.1 + fk*0.61))*(1.0 - 0.25*abs(fk - 1.0));
@@ -12372,7 +12373,10 @@ void main(){
         if (pxd < uRunner + 0.40) {
           float sRes = smoothstep(0.060, 0.022, mpp.x) * smoothstep(0.40, 0.14, mpp.y);
           vec2 sw = vec2(w.x - uRunX, w.y);
-          sw += vec2(mmNoise(w*1.7 + 3.0) - 0.5, mmNoise(w*1.7 + 9.0) - 0.5)*0.05;
+          /* (laid by hand: each course a little off the line, from its own
+             hash -- two noise taps a pixel here cost the churchyard fight's
+             floor a third of a millisecond) */
+          sw.x += (mmHash11(floor(sw.y/0.34)*3.7 + 1.3) - 0.5)*0.06;
           const vec2 SC = vec2(0.46, 0.34);
           float srow = floor(sw.y/SC.y);
           float sox = mmHash11(srow*1.37 + 4.1)*SC.x;
@@ -14893,7 +14897,7 @@ float wfCross(vec2 q, float px, float seed, float kq, bool paint){
    hanging -- short on its upper side, long and falling below, the shape that
    says palm -- each to a point, drawn while their pitch is two pixels and a
    ribbon along the rachis under that; its crown laid back to front, each
-   frond darker at the heart and toward the back; and a bed holds four
+   frond darker at the heart and toward the back; and a bed holds three
    plants of their own kinds and heights, not one crown repeated. Ported into
    this wing's own program (MM_WINGS 6) under this round's ids. */
 /* lay a member over what is under it, its outline in ink -- and HIDE the
@@ -14927,7 +14931,7 @@ float ghFrond(vec2 p, vec2 b, float a, float L, float dr, float W, float kind, f
   vec2 d0 = p - b;
   vec2 ch = u + v;
   t = clamp(dot(d0, ch)/max(dot(ch, ch), 1e-6), 0.0, 1.0);
-  for (int it = 0; it < 2; it++){
+  for (int it = 0; it < 1; it++){
     vec2 P = u*t + v*t*t - d0;
     vec2 D = u + 2.0*v*t;
     float f = dot(P, D);
@@ -14975,10 +14979,12 @@ float ghCrown(vec2 q, vec2 c, float S, float sp, float seed, float px, float kq,
               float clipY, inout vec3 col, inout float ink){
   float dAll = 1e3;
   if (length(q - c) > S*1.35) return dAll;
-  float nF = (sp < 1.5 ? 10.0 : 9.0) - gGhFew*3.0;
+  /* (the frame budget: 8 fronds a potted plant, 5 a bed's plant -- the
+     Greenhouse fight's props measured +1.5 ms over BASE at 10 and 7) */
+  float nF = (sp < 1.5 ? 8.0 : 7.0) - gGhFew*3.0;
   vec3 g0 = sp < 0.5 ? vec3(0.15, 0.36, 0.17) : (sp < 1.5 ? vec3(0.24, 0.42, 0.13) : vec3(0.11, 0.31, 0.20));
   g0 *= 0.85 + 0.30*mmHash11(seed*5.31);
-  for (int i = 0; i < 10; i++){
+  for (int i = 0; i < 8; i++){
     float fi = float(i);
     if (fi >= nF) break;
     float h1 = mmHash11(seed*3.13 + fi*1.37), h2 = mmHash11(seed*7.71 + fi*2.11), h3 = mmHash11(seed*1.93 + fi*0.73);
@@ -15098,7 +15104,7 @@ float wfPlant(vec2 q, float px, float seed, float kq, bool paint){
 
 /* ── 75 A PLANTING BED ─────────────────────────────────────────────────────
    A coursed-brick trough 0.43 m high under a stone coping, 2.9 m of it, and
-   four plants growing out of it, each its own -- a tall palm, a fern, a
+   three plants growing out of it, each its own -- a tall palm, a fern, a
    spiky aloe, at their own heights with the dark between them, not one mass
    of fronds -- and ivy trailing over the coping and down the brick. */
 void ghBedClump(float seed, float fi, out float cx, out float S, out float sp){
@@ -15106,7 +15112,7 @@ void ghBedClump(float seed, float fi, out float cx, out float S, out float sp){
      is four of one plant) */
   float s0 = floor(mmHash11(seed*6.77 + 0.41)*3.0);
   sp = mod(s0 + fi, 3.0);
-  cx = (fi - 1.5)*0.72 + (mmHash11(seed*4.1 + fi) - 0.5)*0.16;
+  cx = (fi - 1.0)*0.92 + (mmHash11(seed*4.1 + fi) - 0.5)*0.16;
   S = (sp < 0.5 ? 1.10 : (sp < 1.5 ? 0.72 : 0.84))*(0.78 + 0.44*mmHash11(seed*2.9 + fi));
 }
 float wfBed(vec2 q, float px, float seed, float kq, bool paint){
@@ -15135,10 +15141,10 @@ float wfBed(vec2 q, float px, float seed, float kq, bool paint){
   vec3 cc = vec3(0.52, 0.52, 0.47)*(0.70 + 0.40*smoothstep(BH, CT, q.y))*(0.88 + 0.22*mmFbm3(q*vec2(5.0, 20.0) + seed));
   ghLay(col, ink, cop, cc, px, 0.95);
   gGhFew = 1.0;
-  /* the plants, the two outer ones first so the middle two stand in front;
+  /* the plants, the two outer ones first so the middle one stands in front;
      only their falling outer fronds come down over the coping's face */
-  for (int i = 0; i < 4; i++){
-    float fi = i < 2 ? float(i*3) : float(i - 1);
+  for (int i = 0; i < 3; i++){
+    float fi = i < 2 ? float(i*2) : 1.0;          // the outer two, then the middle
     float cx, S, sp;
     ghBedClump(seed, fi, cx, S, sp);
     float pd = ghCrown(q, vec2(cx, CT - 0.02), S, sp, seed + fi*17.0, px, kq, 0.35, CT - 0.005, col, ink);
