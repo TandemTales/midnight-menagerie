@@ -178,7 +178,31 @@ const SHAPE_M = [1.20, 2.00, 1.30, 1.00, 2.00, 2.00, 3.32, 2.60, 1.17, 1.33,
                  2.30,
                  /* round 24 graft: 61 a doll's house on its stand (ORPINE's,
                     the nursery) */
-                 1.55
+                 1.55,
+                 /* round 25, the Foyer, drawn (MM_WINGS 4): 62 a longcase
+                    clock with its moon dial, 63 a button-back hall chair,
+                    64 a glazed vitrine of porcelain, 65 a brass torchere
+                    burning, 66 a pier table with its vase, salver and
+                    chamberstick, 67 a porcelain umbrella stand, 68 a gilt
+                    pier glass over its console; 69-71 the Greenhouse's and
+                    the Graveyard's (below); 72 the Ballroom's gilt chair */
+                 2.12, 1.04, 2.02, 1.56, 1.25, 1.08, 2.75,
+                 /* the Graveyard, drawn: 69 a headstone (five forms, its
+                    inscription cut), 70 a table tomb or a kerbed grave,
+                    71 the marble angel on her pedestal */
+                 1.00, 1.27, 2.44,
+                 1.04,
+                 /* 73 a wheel-headed Celtic cross on its steps */
+                 2.70,
+                 /* the Greenhouse, drawn: 74 a potted palm, fern or
+                    aspidistra, 75 a brick planting bed and its planting,
+                    76 a wirework plant stand, 77 the brick staging under
+                    the terrace's tiers (architecture: sized to the room) */
+                 1.30, 1.55, 1.60, 1.00,
+                 /* the Ballroom, drawn: 78 a grand piano in black lacquer,
+                    its lid propped, and its stool; 79 a fan dropped on
+                    the dance floor and a rose */
+                 2.05, 0.30
 ];
 /* ...and a width ratio, so a column is a column and not a capital-T. Four of
  * these were wrong by enough to change what the object was: a longcase clock
@@ -199,7 +223,13 @@ const SHAPE_W = [1.15, 0.55, 1.00, 0.95, 0.72, 0.80, 0.47, 0.85, 0.90, 1.35,
                  1.31, 0.61, 0.57, 0.71,
                  1.80, 0.42, 1.04,
                  0.58,
-                 0.71
+                 0.71,
+                 0.30, 0.72, 0.55, 0.31, 1.07, 0.50, 0.45,
+                 0.76, 1.66, 0.45,
+                 0.72,
+                 0.36,
+                 1.35, 1.90, 0.66, 1.00,
+                 2.05, 2.70
 ];
 /* HOW MUCH ONE OF THESE VARIES FROM THE NEXT, as a +-fraction of SHAPE_M.
  *
@@ -233,7 +263,13 @@ const SHAPE_VAR = [0.06, 0.08, 0.62, 0.20, 0.10, 0.08, 0.10, 0.10, 0.16, 0.48,
                  0.03, 0.05, 0.03, 0.03,
                  0.03, 0.08, 0.06,
                  0.03,
-                 0.03
+                 0.03,
+                 0.02, 0.03, 0.03, 0.04, 0.03, 0.05, 0.02,
+                 0.10, 0.06, 0.04,
+                 0.03,
+                 0.05,
+                 0.62, 0.12, 0.06, 0.00,
+                 0.02, 0.04
 ];
 /* ROUND 23 (graft): ULTRAMARINE's drawings are in metres at their own
    proportions, so their quads take no width jitter -- a telescope 22%
@@ -242,13 +278,16 @@ const SHAPE_VAR = [0.06, 0.08, 0.62, 0.20, 0.10, 0.08, 0.10, 0.10, 0.16, 0.48,
 const FIXW = { 32: 1, 33: 1, 34: 1, 35: 1, 39: 1, 40: 1, 41: 1, 42: 1, 43: 1, 44: 1,
                /* round 24's are drawn in metres the same way */
                45: 1, 46: 1, 47: 1, 48: 1, 49: 1, 50: 1, 51: 1, 52: 1, 53: 1, 54: 1,
-               55: 1, 56: 1, 57: 1, 58: 1, 59: 1, 60: 1, 61: 1 };
+               55: 1, 56: 1, 57: 1, 58: 1, 59: 1, 60: 1, 61: 1,
+               /* and round 25's */
+               62: 1, 63: 1, 64: 1, 65: 1, 66: 1, 67: 1, 68: 1, 69: 1, 70: 1, 71: 1, 72: 1, 73: 1,
+               75: 1, 76: 1, 77: 1, 78: 1, 79: 1 };
 // Which shapes hang from the ceiling rather than stand on the floor.
 export const HANGING = { 4: 1, 7: 1, 22: 1, 33: 1 };
 /* ...and which stand AGAINST A WALL rather than out on the floor. A tall
    mirror marooned in the middle of a dance floor reads as a slab; against a
    wall it reads as the thing a ballroom is lined with. */
-export const WALLSIDE = { 20: 1 };
+export const WALLSIDE = { 20: 1, 68: 1 };
 
 /* ══════════════ A LIGHT YOU CAN SEE NEEDS A FITTING ═══════════════════════
    BRIEF-r10 fix 1, and it is one root cause behind complaints from both judges
@@ -367,6 +406,14 @@ export const SUBJECT = {
    each program linked alone on an idle GPU (Intel UHD, ANGLE D3D11): BASE's
    wall 6.3 s, program 0 6.6 s, a full-size variant 7.4-9.0 s -- and a guarded
    one 0.6-1.5 s, all five in 4.6 s. Warm-up 34.7 s, BASE 34.7 s. */
+/* ROUND 25: the wall programs in which round 25 drew something for one of
+   the last four wings, by wing (MM_R25W in shaders/backdrop.js): 1 the
+   Foyer, 2 the Ballroom, 3 the Greenhouse, 4 the Graveyard. A wing gets its
+   own variant of a program only where it is listed here, so the Heart, the
+   Pumpkin Grounds and every other room keep the program they had. */
+export const R25_WALLS = { 1: [0, 1], 2: [2], 3: [0, 3], 4: [0, 4] };
+/* ...and the floor programs (MM_FLOORX) in which it drew for one of them */
+export const R25_FLOORS = { 1: [0], 2: [0], 3: [0], 4: [1] };
 export const ROOMS_PROGRAM = {
   chimney: 1, arcade: 1,
   mirrors: 2, music: 2, dais: 2,
@@ -429,48 +476,71 @@ export const ROOMS_PROGRAM = {
  */
 export const ROOM_VARIANTS = [
   /* the walls: a wing's own program, 0.7-5 s each on this machine */
-  { mat: 'wall', defines: { MM_ROOMS: 1 },  wings: ['foyer', 'heart'] },
-  { mat: 'wall', defines: { MM_ROOMS: 2 },  wings: ['ballroom'] },
-  { mat: 'wall', defines: { MM_ROOMS: 3 },  wings: ['greenhouse'] },
-  { mat: 'wall', defines: { MM_ROOMS: 4 },  wings: ['graveyard'] },
-  { mat: 'wall', defines: { MM_ROOMS: 6 },  wings: ['lampworks'] },
-  { mat: 'wall', defines: { MM_ROOMS: 7 },  wings: ['bathhouse'] },
-  { mat: 'wall', defines: { MM_ROOMS: 8 },  wings: ['hedge'] },
-  { mat: 'wall', defines: { MM_ROOMS: 9 },  wings: ['kitchens'] },
-  { mat: 'wall', defines: { MM_ROOMS: 10 }, wings: ['passages'] },
-  { mat: 'wall', defines: { MM_ROOMS: 11 }, wings: ['pumpkin'] },
+  { mat: 'wall', defines: { MM_ROOMS: 1, MM_R25W: 0 },  wings: ['heart'] },
+  { mat: 'wall', defines: { MM_ROOMS: 2, MM_R25W: 0 },  wings: [] },
+  { mat: 'wall', defines: { MM_ROOMS: 3, MM_R25W: 0 },  wings: [] },
+  { mat: 'wall', defines: { MM_ROOMS: 4, MM_R25W: 0 },  wings: [] },
+  { mat: 'wall', defines: { MM_ROOMS: 6, MM_R25W: 0 },  wings: ['lampworks'] },
+  { mat: 'wall', defines: { MM_ROOMS: 7, MM_R25W: 0 },  wings: ['bathhouse'] },
+  { mat: 'wall', defines: { MM_ROOMS: 8, MM_R25W: 0 },  wings: ['hedge'] },
+  { mat: 'wall', defines: { MM_ROOMS: 9, MM_R25W: 0 },  wings: ['kitchens'] },
+  { mat: 'wall', defines: { MM_ROOMS: 10, MM_R25W: 0 }, wings: ['passages'] },
+  { mat: 'wall', defines: { MM_ROOMS: 11, MM_R25W: 0 }, wings: ['pumpkin'] },
   /* round 23 */
-  { mat: 'wall', defines: { MM_ROOMS: 12 }, wings: ['bathhouse'] },
-  { mat: 'wall', defines: { MM_ROOMS: 13 }, wings: ['lampworks'] },
-  { mat: 'wall', defines: { MM_ROOMS: 14 }, wings: ['attic'] },
-  { mat: 'wall', defines: { MM_ROOMS: 15 }, wings: ['kennels'] },
-  { mat: 'wall', defines: { MM_ROOMS: 16 }, wings: ['kennels'] },
+  { mat: 'wall', defines: { MM_ROOMS: 12, MM_R25W: 0 }, wings: ['bathhouse'] },
+  { mat: 'wall', defines: { MM_ROOMS: 13, MM_R25W: 0 }, wings: ['lampworks'] },
+  { mat: 'wall', defines: { MM_ROOMS: 14, MM_R25W: 0 }, wings: ['attic'] },
+  { mat: 'wall', defines: { MM_ROOMS: 15, MM_R25W: 0 }, wings: ['kennels'] },
+  { mat: 'wall', defines: { MM_ROOMS: 16, MM_R25W: 0 }, wings: ['kennels'] },
   /* round 24 */
-  { mat: 'wall', defines: { MM_ROOMS: 17 }, wings: ['nursery'] },
-  { mat: 'wall', defines: { MM_ROOMS: 18 }, wings: ['sleeping'] },
-  { mat: 'wall', defines: { MM_ROOMS: 19 }, wings: ['study'] },
-  { mat: 'wall', defines: { MM_ROOMS: 20 }, wings: ['crypt'] },
+  { mat: 'wall', defines: { MM_ROOMS: 17, MM_R25W: 0 }, wings: ['nursery'] },
+  { mat: 'wall', defines: { MM_ROOMS: 18, MM_R25W: 0 }, wings: ['sleeping'] },
+  { mat: 'wall', defines: { MM_ROOMS: 19, MM_R25W: 0 }, wings: ['study'] },
+  { mat: 'wall', defines: { MM_ROOMS: 20, MM_R25W: 0 }, wings: ['crypt'] },
   /* round 14: the doorway, the rail, the gate and the steam (one program) */
   { mat: 'portal', defines: { MM_PORTAL: 1 }, wings: ['foyer', 'ballroom', 'greenhouse', 'lampworks', 'passages', 'bathhouse'] },
   /* the room-kind floors and ceilings (MM_FLOORX) */
-  { mat: 'floor', defines: { MM_FLOORX: 1 }, wings: ['ballroom', 'graveyard', 'hedge', 'pumpkin'] },
-  { mat: 'floor', defines: { MM_FLOORX: 2 }, wings: ['bathhouse'] },
+  { mat: 'floor', defines: { MM_FLOORX: 1, MM_R25W: 0 }, wings: ['ballroom', 'hedge', 'pumpkin'] },
+  { mat: 'floor', defines: { MM_FLOORX: 2, MM_R25W: 0 }, wings: ['bathhouse'] },
   { mat: 'ceil',  defines: { MM_FLOORX: 2 }, wings: ['attic'] },
   /* (the Greenhouse's glass roof: never in the old fixed list, so it linked
      on demand in every Greenhouse fight that had one) */
   { mat: 'ceil',  defines: { MM_FLOORX: 1 }, wings: ['greenhouse'] },
   /* the props: the gallery's busts, the grounds' carved stone, and rounds
      22-24's wing objects (13-90 s each on this machine) */
-  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 1, MM_WINGS: 0 }, wings: ['foyer'] },
-  { mat: 'prop', defines: { MM_STONES: 1, MM_BUST: 0, MM_WINGS: 0 }, wings: ['graveyard', 'greenhouse'] },
+  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 1, MM_WINGS: 0 }, wings: [] },
+  { mat: 'prop', defines: { MM_STONES: 1, MM_BUST: 0, MM_WINGS: 0 }, wings: [] },
   { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 1 }, wings: ['kitchens', 'hedge', 'pumpkin', 'heart'] },
   { mat: 'prop', defines: { MM_STONES: 1, MM_BUST: 0, MM_WINGS: 1 }, wings: ['hedge'] },
   { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 2 }, wings: ['lampworks', 'bathhouse', 'attic', 'kennels'] },
   { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 3 }, wings: ['nursery', 'sleeping', 'study', 'crypt'] },
+  /* (rounds 8-18's programs 2-4, the Foyer's bust and the grounds' stone, with
+     MM_R25W 0, are drawn by no room since round 25 moved its wings to their own
+     variants: they stay, unclaimed, so they link last.)
+     round 25: the last four wings (MM_R25W 1 Foyer, 2 Ballroom, 3 Greenhouse,
+     4 Graveyard), in the wall and floor programs they share -- R25_WALLS and
+     R25_FLOORS -- and their drawn objects (MM_WINGS 4 the Foyer's furniture,
+     5 the churchyard's stone, 6 the glasshouse's plants) */
+  { mat: 'wall', defines: { MM_ROOMS: 0, MM_R25W: 1 }, wings: ['foyer'] },
+  { mat: 'wall', defines: { MM_ROOMS: 1, MM_R25W: 1 }, wings: ['foyer'] },
+  { mat: 'wall', defines: { MM_ROOMS: 2, MM_R25W: 2 }, wings: ['ballroom'] },
+  { mat: 'wall', defines: { MM_ROOMS: 0, MM_R25W: 3 }, wings: ['greenhouse'] },
+  { mat: 'wall', defines: { MM_ROOMS: 3, MM_R25W: 3 }, wings: ['greenhouse'] },
+  { mat: 'wall', defines: { MM_ROOMS: 0, MM_R25W: 4 }, wings: ['graveyard'] },
+  { mat: 'wall', defines: { MM_ROOMS: 4, MM_R25W: 4 }, wings: ['graveyard'] },
+  { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 1 }, wings: ['foyer'] },
+  { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 2 }, wings: ['ballroom'] },
+  { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 3 }, wings: ['greenhouse'] },
+  { mat: 'floor', defines: { MM_FLOORX: 1, MM_R25W: 4 }, wings: ['graveyard'] },
+  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 4 }, wings: ['foyer', 'ballroom'] },
+  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 1, MM_WINGS: 4 }, wings: ['foyer'] },
+  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 5 }, wings: ['graveyard'] },
+  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 6 }, wings: ['greenhouse'] },
+  { mat: 'prop', defines: { MM_STONES: 1, MM_BUST: 0, MM_WINGS: 6 }, wings: ['greenhouse'] },
   /* linked since rounds 11 and 24 for the Crypt's old tomb and ossuary walls
      and its stone, which no authored room draws any more (the Crypt is wall
      20): kept, and last */
-  { mat: 'wall', defines: { MM_ROOMS: 5 }, wings: [] },
+  { mat: 'wall', defines: { MM_ROOMS: 5, MM_R25W: 0 }, wings: [] },
   { mat: 'prop', defines: { MM_STONES: 1, MM_BUST: 0, MM_WINGS: 3 }, wings: [] },
 ];
 
@@ -613,7 +683,7 @@ export class Backdrop {
         uLights: { value: v4arr() }, uLightCol: { value: colArr() },
       },
       vertexShader: WALL_VERT, fragmentShader: WALL_FRAG,
-      defines: { MM_ROOMS: 0 },
+      defines: { MM_ROOMS: 0, MM_R25W: 0 },
       /* LESS, not LEQUAL: this wall now draws AFTER the ceiling and the side
          walls, and must lose a depth tie to them exactly as it did when it
          drew first. See OPAQUE DRAW ORDER at the ceiling below. */
@@ -631,7 +701,7 @@ export class Backdrop {
       const mat = new THREE.ShaderMaterial({
         uniforms: freshLightSlots(THREE.UniformsUtils.clone(this.wallMat.uniforms)),
         vertexShader: WALL_VERT, fragmentShader: WALL_FRAG,
-        defines: { MM_ROOMS: 0 },
+        defines: { MM_ROOMS: 0, MM_R25W: 0 },
         // LESS for the same reason as the far wall's: it now follows the ceiling
         depthWrite: true, depthFunc: THREE.LessDepth, fog: false,
       });
@@ -698,7 +768,7 @@ export class Backdrop {
     this.floorMat = new THREE.ShaderMaterial({
       uniforms: surfaceUniforms(),
       /* the room-kind floors are a variant of their own: _setSurfaceProgram */
-      defines: { MM_FLOORX: 0 },
+      defines: { MM_FLOORX: 0, MM_R25W: 0 },
       vertexShader: FLOOR_VERT, fragmentShader: FLOOR_FRAG,
       depthWrite: true, fog: false,
     });
@@ -1615,7 +1685,9 @@ export class Backdrop {
       const per = Math.ceil(n / tiers);
       /* the chest SDF: a masonry planting bed. 16.25 since round 14, when shape
          16 became a carved table tomb: the kerb keeps its own old drawing. */
-      const bedShape = 16.25;
+      /* (round 25: a region may name its own -- the Greenhouse's drawn
+         brick staging, 77) */
+      const bedShape = P.bedShape ?? 16.25;
       for (let t = 0; t < tiers && out.length - archN < n; t++) {
         const f = t / (tiers - 1);
         const z = -2.6 - f * (room.d * 0.56);
@@ -1899,7 +1971,7 @@ export class Backdrop {
       return standing.some((f) => {
         const dx = Math.abs(f.x - p.x), dz = Math.abs(f.z - p.z);
         if (dx < (f.w + p.w) * 0.35 && dz < 1.0) return true;
-        return p.shape === 1 && Math.hypot(dx, dz) < 1.6;
+        return (p.shape === 1 || p.shape === 65) && Math.hypot(dx, dz) < 1.6;
       });
     };
     for (const it of (P.near || [])) {
@@ -2096,7 +2168,7 @@ export class Backdrop {
            chair's -- shape 0, the house's seating -- comes a quarter of its
            width forward onto the floor in front of its legs, and denser: it
            stands on four feet with its seat over them, not on a plinth. */
-        const chair = p.shape === 0;
+        const chair = p.shape === 0 || p.shape === 63 || p.shape === 72;   // (round 25: and the drawn chairs)
         so2[i * 3 + 0] = p.x; so2[i * 3 + 1] = p.y + 0.015; so2[i * 3 + 2] = p.z + (chair ? p.w * 0.24 : 0);
         ss2[i * 2 + 0] = p.w * (chair ? 1.7 : 2.0); ss2[i * 2 + 1] = p.w * (chair ? 1.05 : 1.15);
         st2[i] = chair ? 1.10 + 0.14 * (1 - p.tone) : 0.52 + 0.26 * (1 - p.tone);
@@ -2365,7 +2437,8 @@ export class Backdrop {
     w.uDamCell.value = p.damaskCell ?? (kind === 2 ? 0.74 : 0.92);
     w.uArch.value = arch;
     const subj = SUBJECT[p.subject] ?? 0;
-    this._setRoomsProgram(ROOMS_PROGRAM[p.subject] ?? 0);
+    const prog = ROOMS_PROGRAM[p.subject] ?? 0;
+    this._setRoomsProgram(prog, (R25_WALLS[p.r25w] || []).includes(prog) ? p.r25w : 0);
     w.uSubject.value = subj;
     w.uWains.value = p.wainscot ? 1 : 0;
     /* WHICH WALL CARRIES THE ROOM'S ONE-OFF (round 14). uFar has always
@@ -2433,8 +2506,8 @@ export class Backdrop {
     /* parquet (10), turf (11) and a pool are drawn by the room-kind variant */
     /* (round 23: an INDOOR bath is variant 2, which lays the hall in its
        water as a mirror; the pond out of doors keeps variant 1) */
-    this._setSurfaceProgram(this.floorMat, (p.pool && !p.pool.open) ? 2
-      : ((p.floorPattern ?? 0) > 9.5 || !!p.pool));
+    const fx = (p.pool && !p.pool.open) ? 2 : (((p.floorPattern ?? 0) > 9.5 || !!p.pool) ? 1 : 0);
+    this._setSurfaceProgram(this.floorMat, fx, (R25_FLOORS[p.r25w] || []).includes(fx) ? p.r25w : 0);
     f.uRunner.value = p.runner ?? 0;
     /* the runner leads to the door, wherever the subject took it */
     f.uRunX.value = p.runX ?? (p.subjX ?? 0);
@@ -2573,17 +2646,23 @@ export class Backdrop {
       m.material.uniforms.uRim.value.copy(p._rim);
       m.material.uniforms.uDoorKind.value = m === this.portals[1]
         ? (p.rail === 'iron' ? 1 : 0)
-        : (p.door === 'case' ? 1 : 0);
+        /* (round 25: the churchyard's gate, 2, is drawn with the pen --
+           the Hedge Maze's and the Pumpkin Grounds' keep theirs, 0) */
+        : (m === this.portals[2] && p.r25w === 4 ? 2 : (p.door === 'case' ? 1 : 0));
     }
   }
 
   /** The floor's or the ceiling's program: the room-kind floors (parquet,
    *  turf, a vinery's roof, a pool) are compiled only where they are laid
    *  (MM_FLOORX in shaders/backdrop.js). */
-  _setSurfaceProgram(mat, x) {
+  _setSurfaceProgram(mat, x, w = null) {
     const n = x === 2 ? 2 : (x ? 1 : 0);
-    if (mat.defines && mat.defines.MM_FLOORX === n) return;
-    mat.defines = Object.assign({}, mat.defines, { MM_FLOORX: n });
+    /* (round 25: and the floor's wing, MM_R25W, where round 25 drew in that
+       floor program for one of the last four wings -- R25_FLOORS. The
+       ceiling never carries it.) */
+    const want = w === null ? {} : { MM_R25W: w };
+    if (mat.defines && mat.defines.MM_FLOORX === n && (w === null || mat.defines.MM_R25W === w)) return;
+    mat.defines = Object.assign({}, mat.defines, { MM_FLOORX: n }, want);
     mat.needsUpdate = true;
   }
 
@@ -2597,27 +2676,34 @@ export class Backdrop {
    *  the hedge's fountain court has stones AND a fountain, and those are one
    *  variant; nothing that has a bust has either. */
   _setPropProgram(placed) {
-    let stones = 0, bust = 0, wings = 0;
+    let stones = 0, bust = 0, wings = 0, w25 = 0;
     for (const p of placed) {
       const s = p.shape;
+      /* round 25: the last four wings' drawn objects (62+), in a program of
+         their own -- so no room that does not deal one moves */
+      if (s > 61.5) w25 = (s > 68.5 && s < 71.5) || (s > 72.5 && s < 73.5) ? 5 : (s > 73.5 && s < 77.5 ? 6 : 4);
       if ((s > 2.5 && s < 3.5) || (s > 15.5 && s < 16.1) || (s > 24.5 && s < 25.5)) stones = 1;
       else if (s > 44.5) wings = 3;          // round 24: the house's own rooms' objects
       else if (s > 31.5) wings = Math.max(wings, 2);          // round 23: the bath, the lamp, the telescope, the kennel
       else if (s > 26.5) wings = 1;          // round 22: the pumpkin and the yew
       else if (s > 25.5) bust = 1;
     }
+    if (w25) wings = w25;
     const d = this.propMat.defines || {};
     if (d.MM_STONES === stones && d.MM_BUST === bust && d.MM_WINGS === wings) return;
     this.propMat.defines = Object.assign({}, d, { MM_STONES: stones, MM_BUST: bust, MM_WINGS: wings });
     this.propMat.needsUpdate = true;
   }
 
-  /** Switch the three wall planes to the program that carries this subject. */
-  _setRoomsProgram(n) {
-    if (this._roomsProg === n) return;
+  /** Switch the three wall planes to the program that carries this subject
+   *  -- and, round 25, the wing (MM_R25W) when it is one of the last four
+   *  and round 25 drew something in that program for it (R25_WALLS). */
+  _setRoomsProgram(n, w = 0) {
+    if (this._roomsProg === n && this._roomsW === w) return;
     this._roomsProg = n;
+    this._roomsW = w;
     for (const m of [this.wallMat, this.sides[0].material, this.sides[1].material]) {
-      m.defines = Object.assign({}, m.defines, { MM_ROOMS: n });
+      m.defines = Object.assign({}, m.defines, { MM_ROOMS: n, MM_R25W: w });
       m.needsUpdate = true;
     }
   }
