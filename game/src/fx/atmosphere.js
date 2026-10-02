@@ -2266,7 +2266,7 @@ export class Atmosphere {
         }
       }
       add(moodOf('', here));
-      const doors = run ? (run.wingOptions?.() || [])
+      const doors = run ? (run.wingOptions() || [])
         : exitsFrom(here).map((e) => ({ to: e.to, manifested: false }));
       for (const o of doors) if (!o.manifested) add(o.to);
       for (const o of doors) if (o.manifested) add(o.to);
