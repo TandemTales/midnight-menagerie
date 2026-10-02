@@ -1946,6 +1946,18 @@ float subjVine(vec2 q, float dqm, out float occ){
        + bunch*mix(vec3(0.050, 0.024, 0.064), vec3(0.140, 0.120, 0.160), berry*0.35);
   gColAmt = clamp(leaf + wood + bunch + sawn, 0.0, 1.0);
   occ = clamp(wallZ + trunk + cord + leaf + bunch + std + spur, 0.0, 1.0);
+#if MM_R25W == 3
+  /* ROUND 25: THE VINE IS PAINTED, NOT CARVED. Its leaves' lobes and ribs
+     were relief, read back through the 2x2-quad normal, so every leaf came
+     back as a cluster of blocks (the crops at 2x); here they keep their own
+     colour and value (gCol above) and the relief's derivative stands down
+     over them (gPen), each leaf's edge a pixel of ink. And the whitewash
+     is old and in shadow: lifted toward the wall's pale stone it was the
+     "milky" dark of the vinery's back wall. */
+  gPen = max(gPen, clamp(leaf + bunch + wood, 0.0, 1.0));
+  gInk = max(gInk, clamp(leaf*(1.0 - leaf)*4.0, 0.0, 1.0)*0.55 + rib*leaf*0.25);
+  gTint *= 0.30;
+#endif
   return s;
 }
 
@@ -14490,8 +14502,9 @@ float ghPot(vec2 q, float H, float R, float kind, float px, float kq, bool paint
    fern, its fronds tumbling over the rim; or an aspidistra, broad
    lance-shaped leaves with their veins. In terracotta, a glazed
    jardiniere or a lead urn. */
+float gPlantKind = -1.0;     // a bed's planting names its plants' kind
 float wfPlant(vec2 q, float px, float seed, float kq, bool paint){
-  float kind = mmHash11(seed*4.37 + 0.11);
+  float kind = gPlantKind >= 0.0 ? gPlantKind : mmHash11(seed*4.37 + 0.11);
   float potK = mmHash11(seed*7.91 + 0.3);
   float H = 0.30 + 0.10*mmHash11(seed*2.2), R = 0.15 + 0.05*mmHash11(seed*3.3);
   vec3 col = vec3(0.1);
@@ -14582,7 +14595,12 @@ float wfBed(vec2 q, float px, float seed, float kq, bool paint){
     float cx = -L + (cj + 0.5)*sp;
     float sd = seed*3.0 + cj*1.37;
     vec2 pq = (q - vec2(cx, BH - 0.30))/(0.85 + 0.30*mmHash11(sd));
+    /* a bed is planted in a rhythm a gardener sets: broad-leaved
+       aspidistras between palms, so the row reads as plants and not as
+       one mass of fronds */
+    gPlantKind = mod(cj, 2.0) < 0.5 ? 0.85 : 0.20;
     float dd = wfPlant(pq, px/(0.85 + 0.30*mmHash11(sd)), sd, kq, paint);
+    gPlantKind = -1.0;
     if (dd < pd) {
       pd = dd;
       pcol = gWfCol; pink = gWfInk;

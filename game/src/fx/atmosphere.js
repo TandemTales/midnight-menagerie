@@ -527,7 +527,7 @@ export const REGIONS = {
                     { shape: 70, edge: 0.975, z: 1.6, tone: 0.90 },
                     { shape: 73, x: 6.8, z: -9.5, tone: 0.90 }] },
     r25w: 4,
-    moonFloor: [0.80, 1.00, 1.45],
+    moonFloor: [0.62, 0.86, 1.05],
     particles: { mix: [[PTYPE.ASH, 0.40], [PTYPE.DUST, 0.34], [PTYPE.WISP, 0.26]],
                  tint: '#cfd9e0', wispTint: '#8fe8d0', emberTint: '#ffb64a',
                  speed: 0.65, scale: 1.2, wind: 0.9, density: 0.9 },
@@ -738,7 +738,7 @@ export const REGIONS = {
                 reflection, a dropped fan, a chair), not a bare magenta
                 field" -- a fan and a rose left where the fight leaves room,
                 and a chair pulled out onto the floor) */
-             near: [{ shape: 79, edge: 0.885, z: 2.2, tone: 0.96 },
+             near: [{ shape: 79, edge: 0.78, z: 4.2, tone: 0.96, scale: 1.3 },
                     { shape: 72, edge: 0.95, z: -1.0, tone: 0.94 }] },
     particles: { mix: [[PTYPE.DUST, 0.58], [PTYPE.EMBER, 0.26], [PTYPE.WISP, 0.16]],
                  tint: '#ffe8c0', wispTint: '#d8a8ff', emberTint: '#ffc95a',
@@ -2046,7 +2046,11 @@ function trueVerticals(pal, camera) {
   const hd = Math.max(Math.hypot(lx - ex, lz - ez), 0.5);
   const pitch = Math.atan2(ly - ey, hd);
   const tanV = Math.tan(((c.fov ?? 42) * Math.PI) / 360);
-  camera.setViewOffset(1, 1, 0, -Math.tan(pitch) / (2 * tanV), 1, 1);
+  /* (setViewOffset sets camera.aspect to fullWidth / fullHeight: the frame
+     is given at the canvas's own aspect, so nothing is stretched; a later
+     resize resets the aspect and the offset, a fraction, still holds) */
+  const asp = camera.aspect || (16 / 9);
+  camera.setViewOffset(asp, 1, 0, -Math.tan(pitch) / (2 * tanV), asp, 1);
   return Object.assign({}, c, { look: ey });
 }
 
