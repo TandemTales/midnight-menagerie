@@ -29,7 +29,7 @@ import { LobbyScene } from './scenes/lobby.js';
 import { MapScene } from './scenes/map.js';
 import { AtlasScene } from './scenes/atlas.js';
 import { TutorialScene } from './scenes/tutorial.js';
-import { CombatScene } from './scenes/combat.js';
+import { CombatScene, moodForRoom } from './scenes/combat.js';
 import { RewardScene } from './scenes/reward.js';
 import { EventScene } from './scenes/event.js';
 import { ShopScene } from './scenes/shop.js';
@@ -91,6 +91,9 @@ ctx.audio = new Audio(ctx);
 ctx.tooltip = new Tooltip(ctx);
 ctx.atmosphere = new Atmosphere(ctx);
 ctx.scenes = new SceneManager(ctx);
+/* Which wing's room a node plays in, for the atmosphere's link queue: it links
+   the programs of the rooms the party can meet next first (Atmosphere._linkOrder). */
+ctx.moodForRoom = moodForRoom;
 
 /* ── the overlay, and every other reason to stop being a game ──────────────
  * `platform:pause` fires for the Steam overlay AND for the window losing focus,

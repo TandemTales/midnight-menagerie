@@ -63,6 +63,8 @@ import { Save } from '../core/save.js';
 import { Backdrop, fittingFor, FIT } from './backdrop.js';
 import { LightRig } from './lights.js';
 import { ParticleField, PTYPE } from './particles.js';
+import { exitsFrom, legalNextIds, wingDistance } from '../state/mapgen.js';
+import { REGION_ORDER } from '../data/schema.js';
 
 /* ------------------------------------------------------------------ palettes */
 
@@ -2094,11 +2096,64 @@ export class Atmosphere {
        ~6 s long task on every scene. */
     stage.warmup?.().then((ms) => {
       window.__MM_WARMUP_MS = ms;
-      /* ...and then, behind the game, the wall programs that carry the other
-         wings' rooms (Backdrop.precompileRooms). */
-      this.backdrop?.precompileRooms?.(stage);
+      /* ...and then, behind the game, the programs that carry the other
+         wings' rooms (Backdrop.precompileRooms), the wings the party can meet
+         next first. */
+      this.backdrop?.precompileRooms?.(stage, { order: () => this._linkOrder() });
     }).catch(() => {});
     return this;
+  }
+
+  /**
+   * THE WINGS THE PARTY CAN MEET NEXT, most urgent first, as atmosphere keys:
+   * the order Backdrop.precompileRooms links their programs in.
+   *
+   *   1. the rooms still ahead on this wing's map, nearest first, each in the
+   *      room it plays in (`ctx.moodForRoom` -- scenes/combat.js's ROOM_MOOD:
+   *      a Kitchens map can hold a crypt stair), then the wing itself;
+   *   2. the wings its next door can open on (Run#wingOptions): the ordinary
+   *      doors before the ones that should not exist;
+   *   3. the rest, nearest the party on the blueprint first.
+   *
+   * Before an expedition exists, "here" is the Foyer: every expedition starts
+   * there, so its programs are linked while the title and the selects are up.
+   */
+  _linkOrder() {
+    const out = [];
+    const add = (k) => {
+      /* a run slug ('study-library', 'kitchens-cellars') or an atmosphere key */
+      const key = REGION_ALIAS[k] || REGION_ALIAS[String(k).split('-')[0]] || k;
+      if (key && REGIONS[key] && !out.includes(key)) out.push(key);
+    };
+    const run = this.ctx?.run || null;
+    const moodOf = this.ctx?.moodForRoom || ((name, region) => region);
+    const here = run?.region || 'foyer';
+    try {
+      if (run?.map?.nodes) {
+        const byId = new Map(run.map.nodes.map((n) => [n.id, n]));
+        const seen = new Set();
+        for (let ring = legalNextIds(run.map, run.currentNodeId); ring.length;) {
+          const outer = [];
+          for (const id of ring) {
+            if (seen.has(id)) continue;
+            seen.add(id);
+            const n = byId.get(id);
+            if (!n) continue;
+            add(moodOf(n.roomName, here));
+            outer.push(...(n.next || []));
+          }
+          ring = outer;
+        }
+      }
+      add(moodOf('', here));
+      const doors = run ? (run.wingOptions?.() || [])
+        : exitsFrom(here).map((e) => ({ to: e.to, manifested: false }));
+      for (const o of doors) if (!o.manifested) add(o.to);
+      for (const o of doors) if (o.manifested) add(o.to);
+    } catch { add(here); }
+    const rest = REGION_ORDER.slice().sort((a, b) => wingDistance(here, a) - wingDistance(here, b));
+    for (const r of rest) add(r);
+    return out;
   }
 
   /* ------------------------------------------------------------ public API */
