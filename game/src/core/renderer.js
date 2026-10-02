@@ -173,12 +173,57 @@ export class Stage {
     this._lost = false;
     canvas.addEventListener('webglcontextlost', () => { this._lost = true; this.lostCount = (this.lostCount || 0) + 1; }, false);
     canvas.addEventListener('webglcontextrestored', () => { this._lost = false; this._kicked = null; }, false);
-    this.stats     = { tier: this.tier, renderScale: 1, dpr: 1, frameMs: null };
+    this.stats     = { tier: this.tier, renderScale: 1, dpr: 1, frameMs: null, stallSteps: 0 };
 
     this.resize();
     this._onResize = () => this.resize();
     addEventListener('resize', this._onResize, { passive: true });
     clock.onFrame((dt, t) => this.update(dt, t));
+    /* see _watchStalls */
+    this._drawnAt = 0; this._hbAt = 0; this._stallQuiet = 0; this._stallStep = false;
+    this._hb = setInterval(() => this._watchStalls(), 250);
+  }
+
+  /**
+   * THE FIGHT MUST NOT SATURATE THE GPU. Measured 2026-10-02 on this machine
+   * (Intel UHD, ANGLE D3D11): at the medium tier's render scale 0.8 -- what
+   * auto picks here, and what _calibrate keeps, because the median frame
+   * still fits -- a fight keeps the 3D engine at ~97%, and every ~30 s the
+   * page gets no frame for 2.5-5 s (6-10 s at the high tier) while the GPU
+   * process's memory, grown ~20 MB since the last one, is reclaimed. The main
+   * thread is free throughout. It is not the shader links it was blamed on
+   * (Backdrop.precompileRooms): a fight with none running had the same
+   * stalls, and at render scale 0.72 the whole link queue ran behind a fight
+   * with no gap over 191 ms, as did 120 s of fight at the low tier.
+   *
+   * So while a fight draws every frame, a heartbeat on the main thread
+   * watches for a frame that has not come in a second. When one has not --
+   * and the heartbeat itself was on time, so it is the GPU and not a long
+   * task; and the page is visible and the clock running, so it is not a
+   * hidden tab or the Steam overlay -- the next frame draws at 0.9 of the
+   * render scale (floor 0.55, as _calibrate's), at most once in 10 s. Here
+   * the first stall steps 0.8 to 0.72 and there is no second: 120 s of an
+   * auto-tier fight after the warm-up, three runs each of foyer-14 and
+   * nursery-1, lost 9.2-14.1 s to 3-4 stalls on BASE and 1.3-5.1 s to the
+   * one stall that set the step off here.
+   *
+   * Only where the tier was not chosen: a player's own choice in the options,
+   * and every capture that pins one (setTier marks it tierForced), keep the
+   * scale they asked for. Only in a fight (`deferLinks`, which only combat
+   * sets): the room showcase the capture tools photograph never steps.
+   */
+  _watchStalls() {
+    const now = performance.now();
+    const late = this._hbAt && now - this._hbAt > 600;     // the main thread was busy
+    this._hbAt = now;
+    const at = this._drawnAt;
+    if (!at || now - at < 1000) return;
+    this._drawnAt = 0;                                      // one stall, one step
+    if (late || this.tierForced || clock.paused || !clock.running) return;
+    if (typeof document !== 'undefined' && document.visibilityState !== 'visible') return;
+    if (now < this._stallQuiet || this._scaleAdjust <= 0.55) return;
+    this._stallQuiet = now + 10000;
+    this._stallStep = true;                                 // applied by the next frame
   }
 
   /* --------------------------------------------------------- quality tiers */
@@ -723,6 +768,7 @@ export class Stage {
        stall on `reward` right after pausing, which would freeze the clock that
        drives the DOM animation too. 6-7 frames a second of an unseen backdrop is
        ~1% of the cost and makes that failure impossible. */
+    this._drawnAt = 0;          // set again below by a fight's full-rate frame: see _watchStalls
     if (this._paused) {
       this._pausedT = (this._pausedT || 0) + dt;
       if (this._pausedT < 0.15) return;
@@ -771,6 +817,15 @@ export class Stage {
     if (this._lost) return;     // nothing can draw; three drops the call anyway
     if (this.deferLinks) { if (this._gateLinks()) return; }
     else this._linking = false;
+    if (this._stallStep) {
+      this._stallStep = false;
+      if (!this.tierForced) {
+        this._scaleAdjust = Math.max(0.55, +(this._scaleAdjust * 0.9).toFixed(3));
+        this.resize();
+        this.stats.stallSteps++;
+      }
+    }
+    if (this.deferLinks && !this._paused) this._drawnAt = performance.now();
     this.composer.render(dt);
   }
 
