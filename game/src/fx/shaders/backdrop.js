@@ -2185,7 +2185,7 @@ float subjVine(vec2 q, float dqm, out float occ){
     /* (the vine's old wood is grey bark, so it reads off the red brick it
        is tied to -- the cordons in the wall's own brown were lost on it) */
     vec3 woodOld = mix(vec3(0.115, 0.078, 0.048), vec3(0.105, 0.100, 0.092), vDead);
-    gCol += wood*(mix(vec3(0.200, 0.170, 0.130), vec3(0.150, 0.150, 0.140), vDead) - woodOld);
+    gCol += wood*(mix(vec3(0.125, 0.100, 0.075), vec3(0.110, 0.108, 0.100), vDead) - woodOld);
     float mortar = (1.0 - smoothstep(0.005, 0.005 + aa*0.6, jb))*mmLod(0.075, aa);
     brickC = mix(brickC, vec3(0.055, 0.052, 0.046), mortar*0.85);
     brickC = mix(brickC, vec3(0.17, 0.175, 0.16), wash*0.20*(1.0 - mortar));
@@ -12137,6 +12137,7 @@ void main(){
   /* (round 25: the flags' joints, for the moss in them; the ballroom's
      filtered checker) */
   float r25Joint = 0.0, r25Chk = 0.0;
+  float r25Walk = 0.0;      // (round 25 graft: the churchyard's laid walk, for its stone below)
 #if MM_FLOORX >= 1
   /* (round 22: 13, the maze's lawn, and 14, the pumpkin patch, are the
      turf's own branch -- see there) */
@@ -12386,6 +12387,7 @@ void main(){
           float sPat = (0.40 + 0.30*sh + 0.22*dome + 0.10*sg.y) * sett + 0.04*(1.0 - sett);
           pat = mix(pat, mix(pat, sPat, sRes), walk);
           cellv = mix(cellv, mix(cellv, 0.30 + 0.45*sh, sRes*sett), walk);
+          r25Walk = walk*mix(1.0, sett, sRes);
           float ed = abs(pxd - uRunner - 0.06);
           float edge = 1.0 - smoothstep(0.06 - aaW*0.5, 0.06 + aaW*0.5, ed);
           float ejt = 1.0 - smoothstep(0.008, 0.008 + mpp.y*1.1, abs(fract(w.y/0.75) - 0.5)*0.75);
@@ -12396,6 +12398,7 @@ void main(){
           turf *= 1.0 - edge;
           earth *= 1.0 - edge;
           cellv = mix(cellv, 0.62, edge);
+          r25Walk = max(r25Walk, edge);
         }
 #endif
       }
@@ -12963,6 +12966,12 @@ void main(){
      of it: at night under a moon both go most of the way to its grey. */
 #if MM_FLOORX >= 1
   alb *= mix(vec3(1.0), vec3(0.80, 1.05, 0.76), turf*0.85);
+#if MM_R25W == 4
+  /* (round 25 graft: the walk's stones are STONE, a grey a stop over the
+     turf's ground, as mainMenu.png's path is the palest thing on its ground
+     -- laid over the palette's own floor colour, not in place of it) */
+  alb = mix(alb, vec3(mmLum(alb))*vec3(0.98, 1.00, 1.04)*1.65, r25Walk*0.80);
+#endif
   /* (round 22: the maze's lawn is a kept lawn, greener than a churchyard's
      turf; the same value, its hue taken toward the grass) */
   alb = mix(alb, vec3(mmLum(alb))*vec3(0.66, 1.14, 0.58), 0.55*turf*step(12.5, uPattern)*step(uPattern, 13.5));
@@ -13654,7 +13663,7 @@ void main(){
      the hand is drawn boards and runner and not a black band (measured on
      the judged parlour: its bottom centre averaged L 1.8 of 255) */
   if (uIsCeiling < 0.5)
-    col += alb * vec3(1.00, 0.76, 0.50) * 0.42 * (1.0 - smoothstep(3.0, 11.0, vDepth)) * uGain * 0.30;
+    col += alb * vec3(1.00, 0.76, 0.50) * 0.95 * (1.0 - smoothstep(4.0, 12.0, vDepth));
 #else
   col *= mix(0.40, 1.0, smoothstep(2.0, 13.0, vDepth));    // foreground falls away
 #endif
