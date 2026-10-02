@@ -187,8 +187,22 @@ const SHAPE_M = [1.20, 2.00, 1.30, 1.00, 2.00, 2.00, 3.32, 2.60, 1.17, 1.33,
                     pier glass over its console; 69-71 the Greenhouse's and
                     the Graveyard's (below); 72 the Ballroom's gilt chair */
                  2.12, 1.04, 2.02, 1.56, 1.25, 1.08, 2.75,
-                 1.00, 1.00, 1.00,
-                 1.04
+                 /* the Graveyard, drawn: 69 a headstone (five forms, its
+                    inscription cut), 70 a table tomb or a kerbed grave,
+                    71 the marble angel on her pedestal */
+                 1.00, 1.27, 2.44,
+                 1.04,
+                 /* 73 a wheel-headed Celtic cross on its steps */
+                 2.70,
+                 /* the Greenhouse, drawn: 74 a potted palm, fern or
+                    aspidistra, 75 a brick planting bed and its planting,
+                    76 a wirework plant stand, 77 the brick staging under
+                    the terrace's tiers (architecture: sized to the room) */
+                 1.30, 1.55, 1.60, 1.00,
+                 /* the Ballroom, drawn: 78 a grand piano in black lacquer,
+                    its lid propped, and its stool; 79 a fan dropped on
+                    the dance floor and a rose */
+                 2.05, 0.30
 ];
 /* ...and a width ratio, so a column is a column and not a capital-T. Four of
  * these were wrong by enough to change what the object was: a longcase clock
@@ -211,8 +225,11 @@ const SHAPE_W = [1.15, 0.55, 1.00, 0.95, 0.72, 0.80, 0.47, 0.85, 0.90, 1.35,
                  0.58,
                  0.71,
                  0.30, 0.72, 0.55, 0.31, 1.07, 0.50, 0.45,
-                 1.00, 1.00, 1.00,
-                 0.72
+                 0.76, 1.66, 0.45,
+                 0.72,
+                 0.36,
+                 1.35, 1.90, 0.66, 1.00,
+                 2.05, 2.70
 ];
 /* HOW MUCH ONE OF THESE VARIES FROM THE NEXT, as a +-fraction of SHAPE_M.
  *
@@ -248,8 +265,11 @@ const SHAPE_VAR = [0.06, 0.08, 0.62, 0.20, 0.10, 0.08, 0.10, 0.10, 0.16, 0.48,
                  0.03,
                  0.03,
                  0.02, 0.03, 0.03, 0.04, 0.03, 0.05, 0.02,
-                 0.03, 0.03, 0.03,
-                 0.03
+                 0.10, 0.06, 0.04,
+                 0.03,
+                 0.05,
+                 0.62, 0.12, 0.06, 0.00,
+                 0.02, 0.04
 ];
 /* ROUND 23 (graft): ULTRAMARINE's drawings are in metres at their own
    proportions, so their quads take no width jitter -- a telescope 22%
@@ -260,7 +280,8 @@ const FIXW = { 32: 1, 33: 1, 34: 1, 35: 1, 39: 1, 40: 1, 41: 1, 42: 1, 43: 1, 44
                45: 1, 46: 1, 47: 1, 48: 1, 49: 1, 50: 1, 51: 1, 52: 1, 53: 1, 54: 1,
                55: 1, 56: 1, 57: 1, 58: 1, 59: 1, 60: 1, 61: 1,
                /* and round 25's */
-               62: 1, 63: 1, 64: 1, 65: 1, 66: 1, 67: 1, 68: 1, 69: 1, 70: 1, 71: 1, 72: 1 };
+               62: 1, 63: 1, 64: 1, 65: 1, 66: 1, 67: 1, 68: 1, 69: 1, 70: 1, 71: 1, 72: 1, 73: 1,
+               75: 1, 76: 1, 77: 1, 78: 1, 79: 1 };
 // Which shapes hang from the ceiling rather than stand on the floor.
 export const HANGING = { 4: 1, 7: 1, 22: 1, 33: 1 };
 /* ...and which stand AGAINST A WALL rather than out on the floor. A tall
@@ -390,9 +411,9 @@ export const SUBJECT = {
    Foyer, 2 the Ballroom, 3 the Greenhouse, 4 the Graveyard. A wing gets its
    own variant of a program only where it is listed here, so the Heart, the
    Pumpkin Grounds and every other room keep the program they had. */
-export const R25_WALLS = { 1: [0, 1] };
+export const R25_WALLS = { 1: [0, 1], 2: [2], 3: [0, 3] };
 /* ...and the floor programs (MM_FLOORX) in which it drew for one of them */
-export const R25_FLOORS = { 1: [0] };
+export const R25_FLOORS = { 1: [0], 2: [0], 3: [0], 4: [1] };
 export const ROOMS_PROGRAM = {
   chimney: 1, arcade: 1,
   mirrors: 2, music: 2, dais: 2,
@@ -1563,7 +1584,9 @@ export class Backdrop {
       const per = Math.ceil(n / tiers);
       /* the chest SDF: a masonry planting bed. 16.25 since round 14, when shape
          16 became a carved table tomb: the kerb keeps its own old drawing. */
-      const bedShape = 16.25;
+      /* (round 25: a region may name its own -- the Greenhouse's drawn
+         brick staging, 77) */
+      const bedShape = P.bedShape ?? 16.25;
       for (let t = 0; t < tiers && out.length - archN < n; t++) {
         const f = t / (tiers - 1);
         const z = -2.6 - f * (room.d * 0.56);
@@ -2044,7 +2067,7 @@ export class Backdrop {
            chair's -- shape 0, the house's seating -- comes a quarter of its
            width forward onto the floor in front of its legs, and denser: it
            stands on four feet with its seat over them, not on a plinth. */
-        const chair = p.shape === 0;
+        const chair = p.shape === 0 || p.shape === 63 || p.shape === 72;   // (round 25: and the drawn chairs)
         so2[i * 3 + 0] = p.x; so2[i * 3 + 1] = p.y + 0.015; so2[i * 3 + 2] = p.z + (chair ? p.w * 0.24 : 0);
         ss2[i * 2 + 0] = p.w * (chair ? 1.7 : 2.0); ss2[i * 2 + 1] = p.w * (chair ? 1.05 : 1.15);
         st2[i] = chair ? 1.10 + 0.14 * (1 - p.tone) : 0.52 + 0.26 * (1 - p.tone);
@@ -2522,7 +2545,9 @@ export class Backdrop {
       m.material.uniforms.uRim.value.copy(p._rim);
       m.material.uniforms.uDoorKind.value = m === this.portals[1]
         ? (p.rail === 'iron' ? 1 : 0)
-        : (p.door === 'case' ? 1 : 0);
+        /* (round 25: the churchyard's gate, 2, is drawn with the pen --
+           the Hedge Maze's and the Pumpkin Grounds' keep theirs, 0) */
+        : (m === this.portals[2] && p.r25w === 4 ? 2 : (p.door === 'case' ? 1 : 0));
     }
   }
 
@@ -2555,14 +2580,14 @@ export class Backdrop {
       const s = p.shape;
       /* round 25: the last four wings' drawn objects (62+), in a program of
          their own -- so no room that does not deal one moves */
-      if (s > 61.5) w25 = 1;
+      if (s > 61.5) w25 = (s > 68.5 && s < 71.5) || (s > 72.5 && s < 73.5) ? 5 : (s > 73.5 && s < 77.5 ? 6 : 4);
       if ((s > 2.5 && s < 3.5) || (s > 15.5 && s < 16.1) || (s > 24.5 && s < 25.5)) stones = 1;
       else if (s > 44.5) wings = 3;          // round 24: the house's own rooms' objects
       else if (s > 31.5) wings = Math.max(wings, 2);          // round 23: the bath, the lamp, the telescope, the kennel
       else if (s > 26.5) wings = 1;          // round 22: the pumpkin and the yew
       else if (s > 25.5) bust = 1;
     }
-    if (w25) wings = 4;
+    if (w25) wings = w25;
     const d = this.propMat.defines || {};
     if (d.MM_STONES === stones && d.MM_BUST === bust && d.MM_WINGS === wings) return;
     this.propMat.defines = Object.assign({}, d, { MM_STONES: stones, MM_BUST: bust, MM_WINGS: wings });
@@ -2667,7 +2692,9 @@ export class Backdrop {
          with the conservatory's fountain */
       [this.propGeo, this.propMat, { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 4 }],
       [this.propGeo, this.propMat, { MM_STONES: 0, MM_BUST: 1, MM_WINGS: 4 }],
-      [this.propGeo, this.propMat, { MM_STONES: 1, MM_BUST: 0, MM_WINGS: 4 }],
+      [this.propGeo, this.propMat, { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 5 }],
+      [this.propGeo, this.propMat, { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 6 }],
+      [this.propGeo, this.propMat, { MM_STONES: 1, MM_BUST: 0, MM_WINGS: 6 }],
     ];
     (async () => {
       await new Promise((r) => setTimeout(r, 1500));

@@ -173,6 +173,7 @@ export const REGIONS = {
      round 1 shipped it with zero lights, zero shafts and zero particles. */
   foyer: {
     label: 'The Forgotten Foyer',
+    trueVert: true,       // round 25: see trueVerticals
     /* round 25: this wing's own drawing in the shared wall programs */
     r25w: 1,
     /* ...and its boards drawn, not a cloud (uCrisp, as the passages'):
@@ -203,7 +204,7 @@ export const REGIONS = {
        back wall twenty metres off left the stair hall's `landing` one of the
        four nearly-empty rooms BRIEF-r11 opens with. The authored, unseeded
        Foyer is unchanged. */
-    props: { shapes: [62, 63, 64, 4, 64, 65, 63], count: 26, height: 2.5, layout: 'perimeter', file: 6,
+    props: { shapes: [62, 63, 64, 4, 64, 65, 66], count: 26, height: 2.5, layout: 'perimeter', file: 6,
       family: ['wings', 'wings', 'colonnade'],
       /* AND THE ENTRANCE HALL'S OWN FURNITURE, placed rather than dealt --
          round 10 fix 6. A pair of glazed vitrines down the sides, two
@@ -250,7 +251,7 @@ export const REGIONS = {
            stand)". A hall keeps its pier table against the wall by the
            door, and its stick stand at the foot of the stair. */
         { shape: 66, x:  6.90, z: -6.20, tone: 0.92 },   // the pier table
-        { shape: 67, x: -3.90, z: -0.40, tone: 0.92 },   // the umbrella stand
+        { shape: 67, edge: 0.905, z: 0.6, tone: 0.92 },  // the umbrella stand, where the fight leaves room
       ] },
     particles: { mix: [[PTYPE.DUST, 0.80], [PTYPE.WISP, 0.12], [PTYPE.EMBER, 0.08]],
                  tint: '#ffe6bc', wispTint: '#7fd9ec', emberTint: '#ffb64a',
@@ -270,7 +271,7 @@ export const REGIONS = {
        the landing at 0.38, and the wall's own fog over the far wall at the
        default 0.18. The beams stay -- the moon through the landing window --
        as a breath, and the far wall keeps its darks. */
-    shafts: { count: 3, spread: 15, y: 9.6, z: -13.5, angle: 0.28, width: 3.2, intensity: 0.13, pool: 1.5 },
+    shafts: { count: 3, spread: 15, y: 9.6, z: -13.5, angle: 0.28, width: 3.2, intensity: 0.10, pool: 1.5 },
     wallFog: 0.06,
     bloom: 0.80, warmTone: 0.05, halation: 0.55,
   },
@@ -429,6 +430,7 @@ export const REGIONS = {
      Enormous, glazed, stepped planting terraces climbing away from the camera. */
   greenhouse: {
     label: 'The Impossible Greenhouse',
+    trueVert: true,       // round 25: see trueVerticals
     propMat: 'foliage', propCeil: 0.569,
     arch: 1, floorPattern: 2, subject: 'terrace',
     /* ceilPattern 9: a ridge-and-furrow GLASSHOUSE roof, not pattern 5's
@@ -438,7 +440,11 @@ export const REGIONS = {
     room: { w: 30, d: 26, h: 10.5, side: 0.10, ceilPattern: 9, wallPad: 5.0 },
     cam: { y: 2.75, z: 11.2, look: 3.4, fov: 39 },
     deep: '#131d1f', mid: '#233f31', hi: '#3c694d', accent: '#62ba91',
-    rimCol: '#a8e29b', shaft: '#9ecfb8', floorDeep: '#101619', floorMid: '#203529',
+    /* (round 25: the floor's two colours a deep moss, from an acid green --
+       both survey judges, "the acid-green floor is the loudest surface in
+       the room"; the brief names the change) */
+    rimCol: '#a8e29b', shaft: '#9ecfb8', floorDeep: '#0d1311', floorMid: '#1c2620',
+    crispFloor: true,
     ambient: '#152222', propAlb: '#2a4233', propHi: '#57825e',
     gloss: 0.55, grime: 0.50, open: '#64bd9b', openGlow: 0.78, coolFill: 1.2,
     /* CROWDED. BRIEF-r9 fix 4 asks whether a person walking into this room
@@ -456,7 +462,11 @@ export const REGIONS = {
        glasshouse a free-standing bush growing out of the paving never was. */
     /* depth 16: the furnishing stops where it can still be seen -- see RD in
        Backdrop._layoutProps. The terrace's own four tiers never went past it. */
-    props: { shapes: [2, 24, 2, 19, 6], count: 44, height: 2.6, layout: 'terrace', depth: 16 },
+    /* ROUND 25: every plant DRAWN (MM_WINGS 4) -- 74 a potted palm, fern or
+       aspidistra, 75 a brick bed and its planting, 76 a wirework stand of
+       pots -- and the terrace's tiers on drawn brick staging (77). */
+    props: { shapes: [74, 75, 74, 76, 6], count: 44, height: 2.6, layout: 'terrace', depth: 16, bedShape: 77 },
+    r25w: 3,
     particles: { mix: [[PTYPE.SPORE, 0.52], [PTYPE.DUST, 0.30], [PTYPE.WISP, 0.18]],
                  tint: '#d9ffcf', wispTint: '#7fffc9', emberTint: '#cfff6a',
                  speed: 0.85, scale: 1.35, wind: 0.7, density: 0.95 },
@@ -466,12 +476,17 @@ export const REGIONS = {
     lights: [
       { kind: 'cold', x: -6.0, y: 6.40, z: -14.0, color: '#91c5d7', intensity: 2.48, radius: 11.0 },
       { kind: 'cold', x: 7.4, y: 5.60, z: -13.0, color: '#79b2d3', intensity: 1.86, radius: 9.5 },
-      { kind: 'warm', x: -2.8, y: 1.20, z: -4.8, color: '#e0b266', intensity: 9.83, radius: 5.68 },
+      /* (round 25: 9.83 burned a white hole in the flags under it from the
+         conservatory's gallery) */
+      { kind: 'warm', x: -2.8, y: 1.20, z: -4.8, color: '#e0b266', intensity: 6.20, radius: 5.68 },
       { kind: 'cold', x: 3.2, y: 1.50, z: -8.0, color: '#8edde3', intensity: 1.24, radius: 6.0 },
     ],
-    shafts: { count: 4, spread: 22, y: 11.4, z: -13, angle: 0.30, width: 3.4, intensity: 0.45, pool: 1.7,
+    /* (round 25: the moon through the roof at half its strength -- four
+       beams at 0.45 were searchlights, and the haze between them the milk
+       the rubric asks to see gone) */
+    shafts: { count: 4, spread: 22, y: 11.4, z: -13, angle: 0.30, width: 3.4, intensity: 0.22, pool: 1.5,
               /* two raking shafts into the fight's own room (round 21 graft): Backdrop.build */
-              rake: { at: [0.31, 0.69], side: [1, 1], y: 0.47, angle: 0.42, width: 2.0, intensity: 0.85 } },
+              rake: { at: [0.31, 0.69], side: [1, 1], y: 0.47, angle: 0.42, width: 2.0, intensity: 0.70 } },
     bloom: 0.92,
   },
 
@@ -480,6 +495,7 @@ export const REGIONS = {
      roofline, and five staggered ranks of headstones marching to the horizon. */
   graveyard: {
     label: 'The Mansion Graveyard',
+    trueVert: true,       // round 25: see trueVerticals
     propMat: 'stone', propCeil: 0.392,
     /* TURF, and a gravel walk to the gate (floorPattern 11, runner 1.4). Round
        10 fix 5, both judges, never merged: "a graveyard is paved wall-to-wall
@@ -499,7 +515,19 @@ export const REGIONS = {
     /* ONE ANGEL (MADDER, round 11). A statue in one pick of five gave the low
        vantages a rank of dark figures across the foreground; a churchyard has
        a monument or two and a great many stones. `solo` places one. */
-    props: { shapes: [3, 3, 16, 15, 3], solo: [15], count: 34, height: 1.5, layout: 'rows' },
+    /* ROUND 25: every stone DRAWN (MM_WINGS 4) -- 69 a headstone in one of
+       five forms with its inscription cut, 70 a table tomb or a kerbed
+       grave, 71 the marble angel, 73 a wheel-headed cross -- and, both
+       survey judges, "the ground ends at y≈600, and everything below is an
+       unlit black void": the moon lies on the lawn to the bottom of the
+       frame (moonFloor, as the Pumpkin Grounds' flags), and the fight's
+       churchyard has a stone or two at its own near edge. */
+    props: { shapes: [69, 69, 70, 71, 69], solo: [71], count: 34, height: 1.5, layout: 'rows',
+             near: [{ shape: 69, edge: 0.90, z: -0.8, tone: 0.90 },
+                    { shape: 70, edge: 0.975, z: 1.6, tone: 0.90 },
+                    { shape: 73, x: 6.8, z: -9.5, tone: 0.90 }] },
+    r25w: 4,
+    moonFloor: [0.80, 1.00, 1.45],
     particles: { mix: [[PTYPE.ASH, 0.40], [PTYPE.DUST, 0.34], [PTYPE.WISP, 0.26]],
                  tint: '#cfd9e0', wispTint: '#8fe8d0', emberTint: '#ffb64a',
                  speed: 0.65, scale: 1.2, wind: 0.9, density: 0.9 },
@@ -685,6 +713,8 @@ export const REGIONS = {
      windows. The colonnade is now made of the thing a colonnade is made of. */
   ballroom: {
     label: 'The Ballroom and Velvet Suites',
+    trueVert: true,       // round 25: see trueVerticals
+    r25w: 2,
     propMat: 'cloth', propCeil: 0.474,
     arch: 0, floorPattern: 1, subject: 'mirrors',
     room: { w: 34, d: 26, h: 10.5, side: 0.05, ceilPattern: 7, wallPad: 5.4 },
@@ -698,8 +728,18 @@ export const REGIONS = {
        five put THREE chairs in a 34 m ballroom. Two entries of shape 0 make
        seating two fifths of the loose props, which is what a ballroom has
        round its walls, plus the chandeliers and the candelabra. */
-    props: { shapes: [6, 0, 20, 4, 0, 1, 7, 21], solo: [21], count: 34, height: 2.9, layout: 'colonnade',
-             family: ['colonnade'], depth: 20 },
+    /* ROUND 25: the seating, the glasses, the candelabra and the piano
+       DRAWN (MM_WINGS 4) -- 72 a giltwood fauteuil in rose velvet, 68 a
+       gilt pier glass, 65 a candelabrum burning, 78 the grand piano -- and
+       no drape: the 7's curtain panels came out as grey nets */
+    props: { shapes: [6, 72, 65, 4, 72, 65, 4, 78], solo: [78], count: 34, height: 2.9, layout: 'colonnade',
+             family: ['colonnade'], depth: 20,
+             /* (round 25: "its checker floor is staged (a chandelier's
+                reflection, a dropped fan, a chair), not a bare magenta
+                field" -- a fan and a rose left where the fight leaves room,
+                and a chair pulled out onto the floor) */
+             near: [{ shape: 79, edge: 0.885, z: 2.2, tone: 0.96 },
+                    { shape: 72, edge: 0.95, z: -1.0, tone: 0.94 }] },
     particles: { mix: [[PTYPE.DUST, 0.58], [PTYPE.EMBER, 0.26], [PTYPE.WISP, 0.16]],
                  tint: '#ffe8c0', wispTint: '#d8a8ff', emberTint: '#ffc95a',
                  speed: 0.9, scale: 1.1, wind: 0.8, density: 1.0 },
@@ -712,9 +752,12 @@ export const REGIONS = {
       { kind: 'warm', x: 0.0, y: 6.20, z: -15.0, color: '#e9cd92', intensity: 0.88, radius: 9.46 },
       { kind: 'cold', x: -10.0, y: 2.00, z: -7.5, color: '#a984cd', intensity: 1.32, radius: 8.0 },
     ],
-    shafts: { count: 4, spread: 26, y: 11.4, z: -14.0, angle: 0.22, width: 3.6, intensity: 0.37, pool: 1.7,
+    /* (round 25: the moon a third as strong -- at 0.37 its beams lay white
+       wedges of haze over the tall glasses and down the columns, the milk
+       the rubric names) */
+    shafts: { count: 4, spread: 26, y: 11.4, z: -14.0, angle: 0.22, width: 3.6, intensity: 0.13, pool: 1.5,
               /* two raking shafts into the fight's own room (round 21 graft): Backdrop.build */
-              rake: { at: [0.31, 0.83], y: 0.47, angle: 0.40, width: 2.0, intensity: 0.85 } },
+              rake: { at: [0.31, 0.83], y: 0.47, angle: 0.40, width: 2.0, intensity: 0.80 } },
     bloom: 1.10, warmTone: 0.06, halation: 0.85, vignette: 1.01, saturate: 0.92,
     /* the floor under the hand and at the frame's edges vignetted toward
        near-black (round 21 graft, PRUSSIAN's Ballroom): FLOOR_FRAG */
@@ -1228,22 +1271,39 @@ const FOYER_NEAR_GALLERY = [
    off. These stand round the eye -- a table tomb and the family's stones --
    so the room is IN the churchyard and not looking across it. */
 const GRAVE_NEAR_PLOTS = [
-  { shape: 16, x: -3.30, z: -0.40, tone: 0.84 },   // a table tomb
-  { shape: 3,  x: -1.20, z:  1.40, tone: 0.86 },   // its family's stones
-  { shape: 3,  x:  2.10, z:  0.90, tone: 0.86 },
-  { shape: 3,  x:  4.40, z: -2.20, tone: 0.82 },
-  { shape: 3,  x:  0.60, z: -2.60, tone: 0.82 },
-  { shape: 3,  x: -5.80, z:  0.20, tone: 0.84 },
+  { shape: 70, x: -3.30, z: -0.40, tone: 0.84 },   // a table tomb
+  { shape: 69, x: -1.20, z:  1.40, tone: 0.86 },   // its family's stones
+  { shape: 69, x:  2.10, z:  0.90, tone: 0.86 },
+  { shape: 69, x:  4.40, z: -2.20, tone: 0.82 },
+  { shape: 69, x:  0.60, z: -2.60, tone: 0.82 },
+  { shape: 69, x: -5.80, z:  0.20, tone: 0.84 },
+  { shape: 73, x:  6.20, z: -7.80, tone: 0.86 },   // the family's cross
+  { shape: 69, edge: 0.90, z: 1.6, tone: 0.92 },   // and one at your feet
 ];
 /* ...and just inside the GATE, the first graves either side of the walk --
    seen from the gateway, the churchyard begins at your feet, not twenty
    metres off across bare turf. Clear of the walk (it runs at x -1.2). */
 const GRAVE_NEAR_GATE = [
-  { shape: 3,  x: -4.10, z:  6.40, tone: 0.86 },
-  { shape: 3,  x:  2.40, z:  5.60, tone: 0.86 },
-  { shape: 16, x:  5.60, z:  3.40, tone: 0.84 },
-  { shape: 3,  x: -6.60, z:  3.20, tone: 0.84 },
-  { shape: 3,  x:  3.90, z:  8.20, tone: 0.88 },
+  { shape: 69, x: -4.10, z:  6.40, tone: 0.86 },
+  { shape: 69, x:  2.40, z:  5.60, tone: 0.86 },
+  { shape: 70, x:  5.60, z:  3.40, tone: 0.84 },
+  { shape: 69, x: -6.60, z:  3.20, tone: 0.84 },
+  { shape: 69, x:  3.90, z:  8.20, tone: 0.88 },
+  { shape: 73, x: -5.20, z: -3.60, tone: 0.86 },
+  /* (round 25: the stage-clearing walk sends every floor piece in front of
+     where a fight would stand back behind it, so a grave at your feet is set
+     by the frame's own edge, where the fight leaves room) */
+  { shape: 69, edge: 0.875, z: 6.4, tone: 0.92 },
+  { shape: 70, edge: 0.950, z: 8.6, tone: 0.92 },
+];
+/* ...and in the yard, seen down its row from beside the walk (round 25):
+   the stones begin at your feet there too, not at the first rank 2 m
+   off -- the lawn runs lit to the bottom of the frame with graves in it */
+const GRAVE_NEAR_YARD = [
+  { shape: 69, edge: 0.875, z: 1.2, tone: 0.92 },
+  { shape: 69, edge: 0.945, z: 3.4, tone: 0.92 },
+  { shape: 70, edge: 0.03, z: -5.0, tone: 0.88 },
+  { shape: 73, x:  2.80, z: -4.40, tone: 0.86, free: true },
 ];
 export const ROOM_KINDS = {
   foyer: {
@@ -1261,6 +1321,10 @@ export const ROOM_KINDS = {
          and you stand in its doorcase looking in at the fire. */
       { subject: 'chimney', doorX: 6.40, near: FOYER_NEAR_HEARTH, room: { d: 0.80 },
         swap: [[7, 63]], ceil: 3, ceilGain: 0.55, cam: { y: -0.25, z: -1.2, look: -0.25, fov: 0 },
+        /* (round 25: the moon's cold lamp hangs further from a back wall
+           this hall has brought nearer, so the paper beside the fire is
+           not washed a milky lavender) */
+        lamps: [{ i: 3, z: 0.42, k: 0.70 }],
         door: 'case', vantage: { at: 'threshold', back: 2.4, lens: 0.88, dip: 0.30, dy: -0.20 } },
       /* a gallery is long and narrow, so its arcade runs away down both
          sides; it is paved in flags and vaulted bay by bay */
@@ -1296,7 +1360,7 @@ export const ROOM_KINDS = {
          it dealt the piano). The mirror hall is seen from a CORNER, its wall
          of glass running away beside you, laid in herringbone parquet
          (LIMEWASH's, the named graft). */
-      { subject: 'mirrors', layout: 'wings', swap: [[6, 0], [20, 1], [7, 4], [21, 0]], solo: [], doorX: -1,
+      { subject: 'mirrors', layout: 'wings', swap: [[6, 72], [68, 65], [78, 72]], solo: [], doorX: -1,
         room: { d: 0.74 }, ceil: 4, ceilGain: 0.35, floor: 10,
         lamps: [{ i: 2, x: 0.0, z: 0.78 }],
         cam: { y: 0.25, z: 0.6, look: -0.2, fov: 2 },
@@ -1310,7 +1374,7 @@ export const ROOM_KINDS = {
          pair of columns no longer crops the gallery to its middle third --
          both judges: "pull them back a bay so the musicians' gallery is the
          feature". This is the Ballroom's own main room. */
-      { subject: 'music', lamps: [{ i: 2, x: 0.0, z: 0.80 }], swap: [[21, 0]], solo: [],
+      { subject: 'music', lamps: [{ i: 2, x: 0.0, z: 0.80 }], swap: [[78, 72]], solo: [],
         fileZ0: -6.4, fileX: 0.66,
         cam: { y: -0.30, z: -1.1, look: 0.55, fov: -1 },
         vantage: { at: 'square', dy: -0.30, dz: -1.1, dlook: 0.55, dfov: -1 } },
@@ -1321,12 +1385,12 @@ export const ROOM_KINDS = {
          room is seen from its door: a suite's state room is entered through
          a doorcase off the ballroom (FRAME_FRAG mode 3, door kind 1). */
       { subject: 'dais', doorX: -1, lamps: [{ i: 2, x: 0.0, z: 0.76 }],
-        layout: 'nook', swap: [[6, 0], [20, 1], [7, 1], [21, 0]], solo: [],
+        layout: 'nook', swap: [[6, 72], [68, 65], [78, 72]], solo: [],
         room: { w: 0.90, d: 0.80 }, ceilGain: 0.45, door: 'case',
         /* (1.00 from 1.35, round 18: the piano's quad is wider by its pianist
            on the bench at the keyboard end, and the piano itself stands where
            it did) */
-        stage: { shape: 21, x: 1.00, y: 0.58, back: 1.25 },
+        stage: { shape: 78, x: 1.00, y: 0.58, back: 1.25 },
         cam: { y: -0.40, z: -1.4, look: -0.1, fov: -3 },
         vantage: { at: 'threshold', back: 2.6, lens: 0.90, dip: 0.20, dy: -0.30 } },
     ],
@@ -1350,7 +1414,7 @@ export const ROOM_KINDS = {
         centre: { shape: 25, z: -2.9, clear: 2.9 },
         /* from up there the columns stand at the back and the birdcage stands
            are more planting (the view only: the fight's room is as it was) */
-        backOnly: [6], swapView: [[19, 2]],
+        backOnly: [6], swapView: [[76, 74]],
         /* its warm lamp stands beside the fountain, where it lights it */
         lampsView: [{ i: 2, x: 3.3, z: 0.10 }],
         vantage: { at: 'above', rise: 2.9, drop: 0.0, fwd: 0.4, ahead: 9.0, count: 0.82 } },
@@ -1367,17 +1431,17 @@ export const ROOM_KINDS = {
       /* ...and it is seen from AMONG the palms, low on the walk between them
          (MADDER's, round 11), on a prop budget: stepped in this far a plant is
          a quad a fifth of the screen tall. */
-      { subject: 'palm', layout: 'aisle', aisle: [0.12, 0.40], swap: [[6, 2]], countScale: 0.9, depth: 7,
+      { subject: 'palm', layout: 'aisle', aisle: [0.12, 0.40], swap: [[6, 74]], countScale: 0.9, depth: 7,
         cam: { y: -0.20, z: -0.6, look: 0.35, fov: 2 },
         vantage: { at: 'among', fwd: 3.2, low: 0.58, pitch: 4.5, off: 0.04, wide: 4, count: 0.62 },
         /* and palms at arm's length either side of the walk, which is where
            you are standing: among them, not looking at them across a floor */
         nearView: [
-          { shape: 2, x: -2.30, z: 3.60, tone: 0.90 },
-          { shape: 2, x:  2.70, z: 2.70, tone: 0.90 },
-          { shape: 2, x: -3.90, z: 0.90, tone: 0.88 },
-          { shape: 2, x:  4.30, z: 0.10, tone: 0.88 },
-          { shape: 24, x: -5.60, z: -1.60, tone: 0.86 },
+          { shape: 74, x: -2.30, z: 3.60, tone: 0.90 },
+          { shape: 74, x:  2.70, z: 2.70, tone: 0.90 },
+          { shape: 74, x: -3.90, z: 0.90, tone: 0.88 },
+          { shape: 74, x:  4.30, z: 0.10, tone: 0.88 },
+          { shape: 75, x: -5.60, z: -1.60, tone: 0.86 },
         ] },
       /* and a vinery's floor is bedded out in rows under the rods; it is a
          lean-to against the garden wall, so it is shallower than the great
@@ -1386,7 +1450,7 @@ export const ROOM_KINDS = {
          both judges: "running vines along the rafters changes the planting,
          not only the wall"), and it is seen from one end, down the length of
          its vine wall, the side wall's vines at arm's length */
-      { subject: 'vine', layout: 'rows', swap: [[6, 24]], room: { d: 0.70 }, ceil: 12,
+      { subject: 'vine', layout: 'rows', swap: [[6, 75]], room: { d: 0.70 }, ceil: 12,
         cam: { y: 0.35, z: 0.6, look: -0.2 },
         vantage: { at: 'along', off: 0.30, wall: 3.2, fwd: 3.2, yaw: 33, wide: 4, dlook: 0.5 } },
     ],
@@ -1410,7 +1474,8 @@ export const ROOM_KINDS = {
          further off and smaller over the stones */
       { subject: 'chapel', houseX: 10.5, moonX: -2.4, houseS: 0.84, layout: 'rows', runX: -8.0,
         cam: { y: -0.45, z: -1.2, look: 0.9, fov: -2 },
-        vantage: { at: 'along', off: 0.10, wall: 8.0, fwd: 3.0, yaw: 9, wide: 2, dy: -0.4, dlook: 0.6 } },
+        vantage: { at: 'along', off: 0.10, wall: 8.0, fwd: 3.0, yaw: 9, wide: 2, dy: -0.4, dlook: 0.6 },
+        nearView: GRAVE_NEAR_YARD, nearKeep: true },
       /* the mausolea stand right, so the house goes left and the moon over them */
       /* ...and the family plots are seen from AMONG the graves (both judges:
          "stand the camera among the graves"), low, the nearest stones and
@@ -1956,6 +2021,35 @@ function stageRig(pal) {
   pal.cam = Object.assign({}, c, { y: ey, look: Math.min(look, lookA) });
 }
 
+/* ── TRUE VERTICALS (round 25) ────────────────────────────────────────────
+   Both survey judges on the Ballroom: "the fluted columns lean inward".
+   Every rig in the house is PITCHED -- tilted up at a musicians' gallery,
+   down by stageRig to put the floor under the fight -- and a tilted camera
+   converges every vertical in the room: columns, pilasters, door jambs,
+   the stair's newels. A painter (and mainMenu.png) keeps verticals vertical
+   and moves the picture instead, which is what an architect's shift lens
+   does. So in the last four wings the camera looks LEVEL and the frame is
+   shifted up or down by the pitch it had (setViewOffset, in fractions of
+   the frame, so it holds at any size): the same room in the same place on
+   the screen, every vertical upright. The layout and the frame's edge
+   placements keep reading pal.cam, the pitched rig the picture matches to
+   within a few pixels at the frame's edge. Every other wing clears it. */
+function trueVerticals(pal, camera) {
+  const c = pal.cam || {};
+  if (!camera || typeof camera.setViewOffset !== 'function') return c;
+  if (!pal.trueVert) {
+    if (camera.view && camera.view.enabled) camera.clearViewOffset();
+    return c;
+  }
+  const ex = c.x ?? 0, ey = c.y ?? 2.3, ez = c.z ?? 9.6;
+  const lx = c.lookX ?? 0, ly = c.look ?? 2.4, lz = c.lookZ ?? 0;
+  const hd = Math.max(Math.hypot(lx - ex, lz - ez), 0.5);
+  const pitch = Math.atan2(ly - ey, hd);
+  const tanV = Math.tan(((c.fov ?? 42) * Math.PI) / 360);
+  camera.setViewOffset(1, 1, 0, -Math.tan(pitch) / (2 * tanV), 1, 1);
+  return Object.assign({}, c, { look: ey });
+}
+
 function resolve(name) {
   const key = REGION_ALIAS[name] || (REGIONS[name] ? name : 'foyer');
   const src = REGIONS[key] || {};
@@ -2182,7 +2276,7 @@ export class Atmosphere {
     this.ctx.stage.scene.fog.color.copy(pal._fog);
     this.ctx.stage.scene.fog.density = pal.fogDensity;
     this.ctx.stage.renderer.setClearColor(pal._fog.getHex(), 1);
-    this.ctx.stage.setCameraRig(pal.cam, opts.instant || Save.settings?.reduceMotion ? 0 : 0.7);
+    this.ctx.stage.setCameraRig(trueVerticals(pal, this.ctx.stage.camera), opts.instant || Save.settings?.reduceMotion ? 0 : 0.7);
 
     if (opts.instant || Save.settings?.reduceMotion) {
       this.live = pal;
@@ -2631,7 +2725,11 @@ export class Atmosphere {
        the hall's furniture goes down the wall the lens is TURNED TOWARD,
        spread along it the way a hall keeps it -- three pieces, not six. Its
        own hash stream, so no number the room drew above moves. */
-    if (pal.props.near && (pal.vantageKind === 'along' || pal.vantageKind === 'corner')) {
+    /* (round 25: not out of doors -- a churchyard's graves are not a hall's
+       furniture, and its "wall" is twenty metres off across open lawn: the
+       yard's stones at your feet stay at your feet, `nearKeep`) */
+    if (pal.props.near && (pal.vantageKind === 'along' || pal.vantageKind === 'corner')
+        && !(kind && kind.nearKeep)) {
       let ns = hashSeed(`${pal.regionKey}|near|${name ?? ''}`) || 1;
       const nr = () => { ns = (Math.imul(ns, 1664525) + 1013904223) >>> 0; return ns / 4294967296; };
       const camSide = pal.vantageSide || 1;
