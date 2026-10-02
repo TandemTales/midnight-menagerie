@@ -137,6 +137,7 @@ async function greedyTurn(e) {
 const ROWS = [];
 /** Damage from visible countdowns, which no intent promises and none should. */
 let SCHEDULED = 0;
+let TOLLED = 0;
 // How much of what the enemies threw actually reached the player's Courage. Against an AI
 // that blocks exactly the telegraphed number, a single-attack encounter is absorbed almost
 // entirely — which is why raising one enemy's damage barely moves "HP cost per fight".
@@ -149,6 +150,7 @@ async function auditFight(encId, seed, maxTurns = 60) {
   // attributed to the enemy that dealt it so a mismatch names its own culprit.
   let delivered = 0;
   let scheduled = 0;
+  let tolled = 0;
   const bySource = new Map();
   e.on('damage', (ev) => {
     if (ev.targetId !== 'player') return;
@@ -162,6 +164,11 @@ async function auditFight(encId, seed, maxTurns = 60) {
        so it stays visible rather than quietly forgiven: what promises it is
        the labelled timer the player has been watching tick for two turns. */
     if (ev.cause === 'timer') { scheduled += amt; return; }
+    /* THE HOUSE'S PATIENCE TOLL is the same case: past turn 30 the engine
+       takes Courage at the opening of the player turn (`_losePatience`),
+       inside this window, with no enemy behind it. Its promise is the
+       announced rule, not an intent; counted apart, like the timers. */
+    if (ev.cause === 'patience') { tolled += amt; return; }
     delivered += amt;
     ABSORB.blocked += (ev.blocked || 0);
     ABSORB.hpLoss += (ev.hpLoss || 0);
@@ -184,9 +191,11 @@ async function auditFight(encId, seed, maxTurns = 60) {
     const atCommit = promised.reduce((s, p) => s + p.t, 0);
     delivered = 0;
     scheduled = 0;
+    tolled = 0;
     bySource.clear();
     await e.endTurn();
     SCHEDULED += scheduled;
+    TOLLED += tolled;
     const per = promised.map(p => ({ ...p, got: bySource.get(p.id) || 0,
                                      alive: !!e.enemies.find(x => x.id === p.id && x.alive),
                                      gone: !e.enemies.find(x => x.id === p.id) }));
@@ -297,6 +306,9 @@ head('Result');
   const scored = ROWS.filter(r => !r.truncated && !r.per.some(p => p.gone));
   const bad = scored.filter(r => r.delivered !== r.atCommit);
   const moved = ROWS.filter(r => r.atStart !== r.atCommit);
+  if (TOLLED) {
+    log(`  ${TOLLED} Courage was the house's patience toll past turn 30 -- an announced rule, scored against no intent.`);
+  }
   if (SCHEDULED) {
     log(`  ${SCHEDULED} damage came from scheduled countdowns and is scored against no `
       + 'intent: a labelled timer the player has watched tick is its own promise.', 'dim');

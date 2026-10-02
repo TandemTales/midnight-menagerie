@@ -2979,6 +2979,9 @@ export class CombatEngine {
    * rises ON THE INTENT the player is reading before it rises on the hit — the
    * escalation is never a surprise and never a lie.
    *
+   * (2026-10-02: Strength alone was NOT enough -- hit PREVENTION beats it; see
+   * the Courage toll in `_losePatience`, which is what now guarantees an end.)
+   *
    * It is unbounded, so a board that ATTACKS AT ALL must eventually finish the
    * player. Strength is an attacker-side term, so a formation that only ever
    * DEFENDED would not escalate — and it also could not be the half that fails
@@ -3026,10 +3029,24 @@ export class CombatEngine {
         id: 'the-house-loses-patience',
         name: 'THE HOUSE LOSES PATIENCE',
         text: 'This has gone on long enough. Every enemy gains 1 Strength at the '
-            + 'start of each of your turns, and keeps it.',
+            + 'start of each of your turns, and keeps it -- and every Kid loses '
+            + 'Courage that no Guard can stop: 1 now, one more each turn after.',
       });
     }
     for (const a of living) this.applyStatus(a, 'strength', 1);
+    // Strength cannot finish a fight against hit PREVENTION: Marmalade's
+    // Ghoststep cancels whole hits however hard they land, and seed 371416
+    // drew the Archivist at the 200-turn ceiling (14/200) because every
+    // Attack the Kid played was Filed into the boss's Guard. So past
+    // PATIENCE the house also takes Courage directly, growing by one a
+    // turn -- the Corrupt Heart's Beat of Death, the StS answer to a stall
+    // deck. `loseHp` skips Guard and both prevention hooks
+    // (`skipModifiers`), so this alone guarantees every fight ends.
+    const toll = this.turn - PATIENCE;
+    for (const pl of this.livingPlayers()) {
+      this.loseHp(pl, toll, 'patience');
+      if (this.over) return;
+    }
   }
 
   /** One seat's turn opening: draw penalty, Guard wipe, start-of-turn statuses. */
