@@ -2037,7 +2037,11 @@ function stageRig(pal) {
 function trueVerticals(pal, camera) {
   const c = pal.cam || {};
   if (!camera || typeof camera.setViewOffset !== 'function') return c;
-  if (!pal.trueVert) {
+  /* (not through a doorway, over a rail or in a gateway: those portals are
+     built in the pitched lens's own space, Backdrop._setVantage, and their
+     dip is a few degrees) */
+  const portal = pal.frame === 'door' || pal.frame === 'rail' || pal.frame === 'gate';
+  if (!pal.trueVert || portal) {
     if (camera.view && camera.view.enabled) camera.clearViewOffset();
     return c;
   }

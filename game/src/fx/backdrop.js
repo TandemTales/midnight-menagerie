@@ -411,7 +411,7 @@ export const SUBJECT = {
    Foyer, 2 the Ballroom, 3 the Greenhouse, 4 the Graveyard. A wing gets its
    own variant of a program only where it is listed here, so the Heart, the
    Pumpkin Grounds and every other room keep the program they had. */
-export const R25_WALLS = { 1: [0, 1], 2: [2], 3: [0, 3] };
+export const R25_WALLS = { 1: [0, 1], 2: [2], 3: [0, 3], 4: [0, 4] };
 /* ...and the floor programs (MM_FLOORX) in which it drew for one of them */
 export const R25_FLOORS = { 1: [0], 2: [0], 3: [0], 4: [1] };
 export const ROOMS_PROGRAM = {

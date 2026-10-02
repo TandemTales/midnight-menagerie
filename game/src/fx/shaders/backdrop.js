@@ -10811,6 +10811,12 @@ void main(){
 #if MM_ROOMS >= 8
   grime = mix(0.66, grime, 0.35);
 #endif
+#if MM_R25W > 0
+  /* (round 25: and in the last four wings -- this three-metre grime is the
+     rest of the "mottled cloud" over the glasshouse's panes and the halls'
+     paper; what is built keeps its own variation) */
+  grime = mix(0.66, grime, 0.35);
+#endif
   float corner = smoothstep(1.6, 0.0, q.y)*0.7
                + smoothstep(uSize.x*0.34, 0.0, q.x)
                + smoothstep(uSize.x*0.66, uSize.x, q.x);
