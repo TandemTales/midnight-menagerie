@@ -1446,13 +1446,13 @@ export const ROOM_KINDS = {
              the fountain back to the staging, 12 m off (measured: z -12.4),
              where no lamp reached it -- the room's low cold lamp goes there,
              warm, beside it and the bed behind) */
-          { i: 3, x: 1.4, z: 0.46, y: 2.60, color: '#e6b872', k: 5.0, radius: 9.0 }],
+          { i: 3, x: 1.4, z: 0.46, y: 1.80, color: '#e6b872', k: 5.0, radius: 8.0 }],
         /* (...and, both judges, "one or two planted urns or a fern stand at
            mid-depth on the empty floor": set by the frame, dealt first --
            the terrace spends the whole prop budget) */
         nearView: [
-          { shape: 74, edge: 0.30, z: -3.6, tone: 0.94, centre: 1, scale: 1.55, seed: 1.75 },   // a kentia in a stone urn, by the lamp
-          { shape: 76, edge: 0.76, z: -2.4, tone: 0.92, centre: 1, scale: 1.30 },
+          { shape: 74, edge: 0.30, z: -3.6, tone: 0.94, centre: 1, scale: 2.60, seed: 1.75 },   // a kentia in a stone urn, by the lamp
+          { shape: 76, edge: 0.76, z: -2.4, tone: 0.92, centre: 1, scale: 1.90 },
         ],
         vantage: { at: 'above', rise: 2.9, drop: 0.0, fwd: 0.4, ahead: 9.0, count: 0.82 } },
       /* a palm house is walked down between two files of palms, close in
