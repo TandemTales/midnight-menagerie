@@ -176,6 +176,8 @@ so round 2 runs six at once, as round 1 did.
 
 | 24 | **THE HOUSE'S OWN ROOMS** — the Nursery, the Sleeping Quarters, the Study & Library, the Crypt (sheets at the Deck's tier) | SMALTINE 6.72 · KERMESITE 6.42 · ORPINE 6.14 · the wings before **2.94** | SMALTINE, 2 of 3 and the highest mean, five of six screens: each room the room it claims, each wing's rooms DISTINCT, darks dark, objects crisp. **+3.78, the largest refining gain of the pass.** All three judges asked for ORPINE's Sleeping Quarters (robes on pegs, a moon window, a red striped bedroom) and KERMESITE's nursery frieze and crypt vaults as the graft | `0fd3de7` |
 
+| 25 | **THE LAST FOUR ROOMS** — the Greenhouse, the Graveyard, the Foyer, the Ballroom: the survey's sprite-stepped objects, the Foyer's haze, the Ballroom's milky panes | AUREOLIN 6.54 · SINOPIA 5.96 · PAYNE 5.29 · the rooms before **4.17** | AUREOLIN, 2 of 2, five of six screens (the Greenhouse tied SINOPIA). **+2.38** — the smallest of the wing rounds, because these were already the best rooms (rounds 8-18). Both judges asked for SINOPIA's ferns and foreground headstones and PAYNE's graveyard path and Foyer rug | `e1bbfa4` |
+
 **Scores anchor to the candidates beside them.** Round 0's winner scored 7.0 in
 round 0 and 5.58 as round 1's baseline: the judges grew stricter as the field
 improved. Compare a winner with the baseline IN ITS OWN ROUND (round 1 REFINE:
@@ -198,6 +200,7 @@ Against their own baselines:
 | 11 | VARIATION **+2.17** (sheets 3-3.5 -> 6-7) | — |
 | 12 | — | THE LAST WEB CHROME **+5.9** (per-screen winners 7.33 / 8.00 / 7.67 against 2 / 1 / 1.33) |
 | 13 | CHROME, second pass **+2.22** (coach 6.0 -> 8.0, veil 6.0 -> 8.67, toast 5.0 -> 7.0) | — |
+| 25 | THE LAST FOUR ROOMS **+2.38** (the best rooms of the survey; the literal angle again) | — |
 | 24 | THE HOUSE'S OWN ROOMS **+3.78** (the baseline 2.94; faster on every fight) | — |
 | 23 | FOUR MORE WINGS **+3.01** (the literal angle took the system, the object angle the screens) | — |
 | 22 | FOUR WINGS THAT ARE NOT YET THEIR NAME **+2.64** (the wings before scored 2.5-3.8: the survey's rooms were the headroom) | — |
@@ -1017,3 +1020,20 @@ refining gain of the pass (run `wf_863ea9b3-589`).
   faster (nursery 14.6 -> 11.1 ms).
 - The battery ran on the WINNER before the graft this time (round 23's
   winner had left four dead keys that surfaced only after its graft).
+
+### Round 25: the last four rooms, 2026-10-02
+
+**AUREOLIN, 2 of 2 judges, 6.54 against 4.17 — +2.38** (run
+`wf_0ae6967e-52a`). Every one of the survey's seventeen wings has now had a
+round of its own (rounds 22-25), each judged at the Deck's tier.
+
+- **Merged onto a changed tree.** Between the round and its merge, a bug pass
+  replaced `precompileRooms`' fixed job list with `ROOM_VARIANTS`, a table of
+  variants by the wings that use them, linked in route order. Round 25's
+  variants (MM_R25W, MM_WINGS 4-6) became table entries, and
+  `tests/link-queue` caught nine stale claims in the first draft. A round
+  that adds a variant now adds one table line and runs that gate.
+- **The safety review of the winning build timed out**, so its diff was read
+  by hand before the merge: three fx files, nothing outside them.
+- **The battery outgrew the background time limit** (~45 min) and was killed
+  at gate 84; run it by phase (`gates.py --only check|run|extra`).
