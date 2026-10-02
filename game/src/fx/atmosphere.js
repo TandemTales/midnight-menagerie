@@ -1416,7 +1416,7 @@ export const ROOM_KINDS = {
            are more planting (the view only: the fight's room is as it was) */
         backOnly: [6], swapView: [[76, 74]],
         /* its warm lamp stands beside the fountain, where it lights it */
-        lampsView: [{ i: 2, x: 3.3, z: 0.10 }],
+        lampsView: [{ i: 2, x: 3.3, z: 0.10, k: 0.55 }],   // (round 25: no white hole in the flags)
         vantage: { at: 'above', rise: 2.9, drop: 0.0, fwd: 0.4, ahead: 9.0, count: 0.82 } },
       /* a palm house is walked down between two files of palms, close in
          along the walk where the lamps are, and its columns are the iron
