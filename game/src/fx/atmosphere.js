@@ -527,7 +527,12 @@ export const REGIONS = {
     props: { shapes: [69, 69, 70, 71, 69], solo: [71], count: 34, height: 1.5, layout: 'rows',
              near: [{ shape: 69, edge: 0.90, z: -0.8, tone: 0.90 },
                     { shape: 70, edge: 0.975, z: 1.6, tone: 0.90 },
-                    { shape: 73, x: 6.8, z: -9.5, tone: 0.90 }] },
+                    { shape: 73, x: 6.8, z: -9.5, tone: 0.90 },
+                    /* (round 25 graft, both judges on fight-graveyard: "a
+                       midground headstone or tomb between the Kid and the
+                       Moth" -- a stone in the turf between them, its right
+                       end at 0.40 of the frame) */
+                    { shape: 69, edge: 0.40, z: -2.6, tone: 0.92, scale: 1.10, seed: 3.0 }] },
     r25w: 4,
     moonFloor: [0.62, 0.86, 1.05],
     particles: { mix: [[PTYPE.ASH, 0.40], [PTYPE.DUST, 0.34], [PTYPE.WISP, 0.26]],
@@ -1281,6 +1286,13 @@ const GRAVE_NEAR_PLOTS = [
   { shape: 69, x: -5.80, z:  0.20, tone: 0.84 },
   { shape: 73, x:  6.20, z: -7.80, tone: 0.86 },   // the family's cross
   { shape: 69, edge: 0.90, z: 1.6, tone: 0.92 },   // and one at your feet
+  /* ROUND 25 GRAFT, both judges: SINOPIA's "large carved, inscribed
+     foreground headstones and a long kerbed grave" on the plots, to fill the
+     near-black lawn. Placed by the frame (edge), so they stand at its sides
+     in the near turf from this vantage; `seed` picks each one's form -- an
+     arched stone with five lines cut, a kerbed plot with its headstone. */
+  { shape: 69, edge: 0.17, z: 2.4, tone: 0.94, scale: 1.32, seed: 1.25 },
+  { shape: 70, edge: 0.58, z: 1.8, tone: 0.92, scale: 1.15, seed: 2.5 },
 ];
 /* ...and just inside the GATE, the first graves either side of the walk --
    seen from the gateway, the churchyard begins at your feet, not twenty
@@ -1295,8 +1307,11 @@ const GRAVE_NEAR_GATE = [
   /* (round 25: the stage-clearing walk sends every floor piece in front of
      where a fight would stand back behind it, so a grave at your feet is set
      by the frame's own edge, where the fight leaves room) */
-  { shape: 69, edge: 0.875, z: 6.4, tone: 0.92 },
-  { shape: 70, edge: 0.950, z: 8.6, tone: 0.92 },
+  /* (round 25 graft, both judges: SINOPIA's large near stones at the gate --
+     a Celtic cross by the walk, a long kerbed grave, a stone at the pier) */
+  { shape: 69, edge: 0.24, z: 7.4, tone: 0.94, scale: 1.25, seed: 2.25 },
+  { shape: 70, edge: 0.64, z: 6.6, tone: 0.92, scale: 1.15, seed: 6.0 },
+  { shape: 69, edge: 0.875, z: 9.0, tone: 0.92, scale: 1.20, seed: 3.0 },
 ];
 /* ...and in the yard, seen down its row from beside the walk (round 25):
    the stones begin at your feet there too, not at the first rank 2 m
@@ -1312,7 +1327,10 @@ export const ROOM_KINDS = {
     kinds: [
       /* THE STAIR HALL, from low beside its stair (round 14, both judges:
          "the landing from lower, the stair rising to one side"). */
+      /* (round 25 graft, both judges: PAYNE's Turkey carpet on the landing's
+         boards, nearer you than the creatures' nameplates would stand) */
       { subject: 'stair', subj: { wall: 'far', at: 0.56, mode: 1, dir: 1 }, room: { d: 0.92, w: 0.86 },
+        rug: { ahead: 6.4, hw: 2.4, hd: 1.6 },
         vantage: { at: 'among', low: 0.66, fwd: 2.6, pitch: 2.0, off: 0.04, yaw: 31, wide: 4 } },
       /* the doors go to the sides because the fire takes the axis. A hall
          built round its fire is SHALLOWER than the stair hall (0.8 of its
@@ -1332,7 +1350,11 @@ export const ROOM_KINDS = {
          sides; it is paved in flags and vaulted bay by bay */
       /* ...and it is seen from ONE END of its arcade, the arches receding
          down the wall beside you -- where you stand in a gallery. */
-      { subject: 'arcade', near: FOYER_NEAR_GALLERY, room: { w: 0.84, d: 1.10 },
+      /* (round 25 graft, both judges: "dress the gallery's bare lower floor
+         with a rug, a bench, or a bust on a plinth" -- a long carpet down
+         its flags, and a bust on its term at the near end, by the frame) */
+      { subject: 'arcade', near: FOYER_NEAR_GALLERY.concat([{ shape: 26, edge: 0.13, z: 1.0, tone: 0.96, fore: 1, scale: 1.1 }]),
+        room: { w: 0.84, d: 1.10 }, rug: { ahead: 5.2, hw: 1.5, hd: 2.6 },
         floor: 2, ceil: 4, cam: { y: 0.45, z: 1.2, look: -0.10, fov: 3 },
         vantage: { at: 'along', off: 0.30, wall: 2.6, fwd: 0.8, yaw: 26, wide: 5 } },
     ],
@@ -1418,7 +1440,20 @@ export const ROOM_KINDS = {
            are more planting (the view only: the fight's room is as it was) */
         backOnly: [6], swapView: [[76, 74]],
         /* its warm lamp stands beside the fountain, where it lights it */
-        lampsView: [{ i: 2, x: 3.3, z: 0.10, k: 0.55 }],   // (round 25: no white hole in the flags)
+        lampsView: [{ i: 2, x: 3.3, z: 0.10, k: 0.55 },   // (round 25: no white hole in the flags)
+          /* (round 25 graft, both judges: "light the fountain and the back
+             planting bed so the focal point reads". The stage-clear walks
+             the fountain back to the staging, 12 m off (measured: z -12.4),
+             where no lamp reached it -- the room's low cold lamp goes there,
+             warm, beside it and the bed behind) */
+          { i: 3, x: 2.2, z: 0.36, y: 1.60, color: '#e6b872', k: 4.2, radius: 7.5 }],
+        /* (...and, both judges, "one or two planted urns or a fern stand at
+           mid-depth on the empty floor": set by the frame, dealt first --
+           the terrace spends the whole prop budget) */
+        nearView: [
+          { shape: 74, edge: 0.22, z: -0.6, tone: 0.94, centre: 1, scale: 1.55, seed: 1.75 },   // a kentia in a stone urn
+          { shape: 76, edge: 0.76, z: -2.4, tone: 0.92, centre: 1, scale: 1.30 },
+        ],
         vantage: { at: 'above', rise: 2.9, drop: 0.0, fwd: 0.4, ahead: 9.0, count: 0.82 } },
       /* a palm house is walked down between two files of palms, close in
          along the walk where the lamps are, and its columns are the iron
@@ -1433,7 +1468,10 @@ export const ROOM_KINDS = {
       /* ...and it is seen from AMONG the palms, low on the walk between them
          (MADDER's, round 11), on a prop budget: stepped in this far a plant is
          a quad a fifth of the screen tall. */
-      { subject: 'palm', layout: 'aisle', aisle: [0.12, 0.40], swap: [[6, 74]], countScale: 0.9, depth: 7,
+      /* (round 25 graft, both judges: SINOPIA's "brass birdcages on stands
+         in the planters" -- the wirework stand's place in the palm house
+         goes to a birdcage, 80) */
+      { subject: 'palm', layout: 'aisle', aisle: [0.12, 0.40], swap: [[6, 74], [76, 80]], countScale: 0.9, depth: 7,
         cam: { y: -0.20, z: -0.6, look: 0.35, fov: 2 },
         vantage: { at: 'among', fwd: 3.2, low: 0.58, pitch: 4.5, off: 0.04, wide: 4, count: 0.62 },
         /* and palms at arm's length either side of the walk, which is where
@@ -2323,6 +2361,20 @@ export class Atmosphere {
        was fiction. */
     pal.aspect = this.ctx.stage.camera.aspect || (16 / 9);
     stageRig(pal);
+    /* ROUND 25 GRAFT (PAYNE's): A CARPET where the room lays one (kind.rug),
+       square to the room, where the pitched lens's line meets the floor
+       `ahead` metres out -- so it is under the eye in every vantage the kind
+       is seen from -- and `dx` across. */
+    pal.rug = null;
+    if (pal.rugK && pal.cam) {
+      const c = pal.cam;
+      let dx = (c.lookX ?? 0) - (c.x ?? 0), dz = (c.lookZ ?? 0) - (c.z ?? 9.6);
+      const dl = Math.hypot(dx, dz) || 1;
+      dx /= dl; dz /= dl;
+      const a = pal.rugK.ahead ?? 6.0;
+      pal.rug = { x: (c.x ?? 0) + dx * a + (pal.rugK.dx ?? 0), z: (c.z ?? 9.6) + dz * a,
+                  hw: pal.rugK.hw ?? 2.2, hd: pal.rugK.hd ?? 1.5 };
+    }
     this.backdrop.build(pal, () => this._rand());
     // material is structural, like the geometry: it swaps with the room rather
     // than cross-fading, because a cabinet does not gradually stop being oak.
@@ -2629,6 +2681,11 @@ export class Atmosphere {
          already draws: a gallery paved in marble flags, a hall with a fire under
          a beamed ceiling. */
       if (kind.floor !== undefined) pal.floorPattern = kind.floor;
+      /* (round 25 graft: a carpet laid where the lens finds the floor --
+         placed from the final rig in setMood, after stageRig) */
+      /* (never the wing's main room: the fight's hall is dressed by its
+         runner, and a carpet there lay under the creatures' nameplates) */
+      pal.rugK = (!isMain && kind.rug) || null;
       if (kind.ceil !== undefined) R.ceilPattern = kind.ceil;
       if (kind.ceilGain !== undefined) pal.ceilGain = kind.ceilGain;
       /* a lamp the room itself places (z as a fraction of the room's depth) */
@@ -2799,6 +2856,9 @@ export class Atmosphere {
       let k = 0;
       pal.props.near = pal.props.near.map((it) => {
         if (it.under !== undefined) return it;
+        /* (round 25 graft, SINOPIA's: a piece the FRAME places -- fore --
+           stays where the frame puts it, and is not one of the wall's three) */
+        if (it.fore) return it;
         const o = Object.assign({}, it);
         o.x = -camSide * R.w * (0.40 + 0.04 * nr());
         o.z = -3.0 - k * 2.8 - nr() * 0.6;
@@ -2993,6 +3053,7 @@ export class Atmosphere {
       L.houseS = T.houseS; L.floorRot = T.floorRot; L.runner = T.runner; L.runX = T.runX;
       L.door = T.door; L.rail = T.rail; L.subForm = T.subForm; L.pool = T.pool;
       L.nearDark = T.nearDark;
+      L.rug = T.rug;                    // (round 25 graft: the carpet goes with the room)
       this.backdrop.applyPalette(L);
       this._applyGrade(L, k);
       if (this._fade >= 1) { this.live = T; this.backdrop.applyPalette(T); this._applyGrade(T, 1); }

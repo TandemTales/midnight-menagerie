@@ -1510,6 +1510,60 @@ float subjMusic(vec2 q, float cx, float ax, float dqm, out float occ){
   gTint = par*(1.0 - gap)*0.55 - gap*0.55 + on*mmBand(q.y, FL + 0.98, FL + 1.10)*0.7 + band*0.75
         - val*0.30 - (mmSolid(md) + mmSolid(md2))*0.45;
   occ = clamp(on*mmBand(q.y, FL - 0.75, FL + 3.1) + mmSolid(md - 0.15) + mmSolid(md2 - 0.16), 0.0, 1.0);
+#if MM_R25W == 2
+  /* ROUND 25 GRAFT, both judges on the ballroom: "build the back wall above
+     the musicians' gallery as panels with mouldings and gilding, not mottled
+     cloud". Measured: from the valance's hem at 7.5 m to the ceiling the
+     wall was the room's own damask ground under its fbm grime and nothing
+     else -- three metres of cloud over the room's feature. Here it is a
+     panelled upper wall, the bays the gallery's own (1.45 m, a panel between
+     each pair of consoles): a gilt dado over the valance, in each bay a tall
+     panel and a frieze panel over it, each a field of wine silk inside a
+     gilt bolection moulding rounded across its width, a gilt wreath at the
+     head of each tall panel, the framing between them dark painted wood,
+     and a gilt cornice under the ceiling. Every edge is the pen's. */
+  {
+    const float Z0 = FL + 3.16, Z1 = 10.05;
+    float zon = (1.0 - smoothstep(GW + 0.10, GW + 0.10 + aaM, ax))*mmBandA(q.y, Z0, Z1, aaM);
+    if (zon > 0.001) {
+      float bxp = mod(cx, 1.45) - 0.725;                 // across a bay, 0 at its panel's middle
+      const float yA0 = FL + 3.48, yA1 = 8.62, yB0 = 8.86, yB1 = 9.58, MW = 0.075;
+      float pA = mmBox(vec2(bxp, q.y - (yA0 + yA1)*0.5), vec2(0.50, (yA1 - yA0)*0.5), 0.0);
+      float pB = mmBox(vec2(bxp, q.y - (yB0 + yB1)*0.5), vec2(0.50, (yB1 - yB0)*0.5), 0.0);
+      float pd = min(pA, pB);
+      float field = smoothstep(aaM, -aaM, pd + MW);
+      float mould = smoothstep(aaM, -aaM, pd)*(1.0 - field);
+      float prof = sqrt(max(1.0 - pow((pd + MW*0.5)/(MW*0.5), 2.0), 0.0));      // rounded across it
+      float dado = mmBandA(q.y, Z0, Z0 + 0.13, aaM);
+      float corn = mmBandA(q.y, Z1 - 0.30, Z1, aaM);
+      float cornB = mmBandA(q.y, Z1 - 0.38, Z1 - 0.32, aaM);
+      vec2 wq = vec2(bxp, q.y - (yA1 - 0.42));
+      float wr = abs(length(wq/vec2(1.0, 1.18)) - 0.17) - 0.022;
+      float wreath = smoothstep(aaM, -aaM, wr)*field;
+      vec3 silk = vec3(0.150, 0.040, 0.062)*(0.80 + 0.30*smoothstep(yA0, yA1, q.y));
+      vec3 gilt = vec3(0.58, 0.42, 0.17);
+      vec3 frame = vec3(0.105, 0.050, 0.050);
+      vec3 pc = frame;
+      pc = mix(pc, silk, field);
+      pc = mix(pc, gilt*(0.45 + 0.75*prof), mould);
+      pc = mix(pc, gilt*0.95, wreath);
+      pc = mix(pc, gilt*(0.70 + 0.30*smoothstep(Z0, Z0 + 0.13, q.y)), dado);
+      pc = mix(pc, gilt*(0.55 + 0.50*smoothstep(Z1 - 0.30, Z1 - 0.05, q.y)), max(corn, cornB));
+      gCol = mix(gCol, pc, zon);
+      gColAmt = max(gColAmt, zon*0.92);
+      /* the relief, so the room's light models them: fields sunk, the
+         moulding standing proud, the cornice out over it all */
+      s = mix(s, 0.20 - field*0.18 + mould*(0.30 + 0.25*prof) + max(corn, dado)*0.55, zon);
+      gTint = mix(gTint, 0.0, zon);
+      mmPen(pd, 1.0, 0.70*zon);
+      mmPen(pd + MW, 1.0, 0.55*zon);
+      mmPen(wr, 1.0, 0.45*zon*field);
+      mmPen(q.y - Z0 - 0.13, 1.0, 0.55*zon);
+      mmPen(q.y - (Z1 - 0.30), 1.0, 0.55*zon);
+      occ = max(occ, zon);
+    }
+  }
+#endif
   return s;
 }
 
@@ -1599,7 +1653,16 @@ float subjDais(vec2 q, float cx, float ax, out float occ){
   /* THE VALANCE, swagged, following the arch 0.5 m under its soffit, with
      its fringe's shadow under the hem */
   float sw = fract(cx/1.43 + 0.5)*2.0 - 1.0;
+#if MM_R25W == 2
+  /* (round 25 graft, both judges on the suite: "smooth the stair-stepped
+     proscenium arch curves, the curtain swags". The swag's hem was a step()
+     across a curve -- a staircase of whole pixels; here it is antialiased
+     over the pixel, and the pen draws it below) */
+  float hemD = ell + 0.52 + 0.20*(1.0 - sw*sw);
+  float val = inOpen*smoothstep(-apx*1.5, apx*1.5, hemD)*smoothstep(SP - 0.10 - apx, SP - 0.10 + apx, q.y);
+#else
   float val = inOpen*step(-0.52 - 0.20*(1.0 - sw*sw), ell)*step(SP - 0.10, q.y);
+#endif
   s = mix(s, 0.40 + 0.12*sin(cx*23.0), val);
   s -= inOpen*step(SP - 0.10, q.y)*(1.0 - smoothstep(0.012, 0.030, abs(ell + 0.52 + 0.20*(1.0 - sw*sw) - 0.035)))*0.30;
   /* THE PILASTERS, fluted, up to the springing, with a sunk panel in the
@@ -1680,6 +1743,43 @@ float subjDais(vec2 q, float cx, float ax, out float occ){
   gTint -= arris*0.50*(1.0 - key);
   gTint = mix(gTint, 0.72, key);
   occ = mmSolid(mmBox(vec2(cx, q.y - (TOP + 0.64)*0.5), vec2(HW + 0.85, (TOP + 0.64)*0.5), 0.0));
+#if MM_R25W == 2
+  /* ROUND 25 GRAFT, both judges on the suite: the proscenium's arch, its
+     curtains and their swags came back "stair-stepped". MEASURED at 2x on
+     the judged sheet: every curve here is RELIEF, and its edge reaches the
+     screen as a derivative normal and mmDrawn's line, both read a 2x2 quad
+     at a time -- a curve crossing the quad grid comes back as two-pixel
+     teeth. So each curve is drawn by the PEN (a line a pixel wide at any
+     size, the relief quieted round it -- round 21's), and the velvet is laid
+     in its own colour so it does not lean on the stepped relief for its
+     edge: the opening's soffit, the archivolt's outer edge and its two
+     fasciae, the curtains' leading edges, the valance's swagged hem, the
+     tie-backs, the keystone and the pilasters' sides. */
+  {
+    float upS = smoothstep(SP - 0.05, SP + 0.05, q.y);
+    mmPen(ell, 1.0, 0.85*step(PL, q.y)*step(ax, HW + 0.02 + 10.0*upS));        // the soffit and jambs
+    mmPen(ell - AV, 1.0, 0.75*upS*(1.0 - key));                              // the archivolt's outer edge
+    mmPen(ell - 0.11, 1.0, 0.40*upS*(1.0 - key));
+    mmPen(ell - 0.23, 1.0, 0.40*upS*(1.0 - key));
+    mmPen(hemD, 1.0, 0.85*inOpen*step(SP - 0.10, q.y));                       // the valance's hem
+    mmPen(ax - xin, 1.0, 0.80*inOpen*(1.0 - val));                             // the curtains' edges
+    mmPen(ax - kw2, 1.0, 0.70*step(kyb, q.y)*step(q.y, TOP + 0.10));         // the keystone
+    mmPen(abs(pilx) - 0.30, 1.0, 0.60*step(PL, q.y)*step(q.y, SP - 0.10));    // the pilasters' sides
+    /* the velvet in its own colour, its folds a function of where they are
+       and not of the relief: deep red, lighter on each fold's crown */
+    float fold = 0.5 + 0.5*sin(u*18.85);
+    vec3 velv = vec3(0.30, 0.045, 0.060)*(0.55 + 0.75*fold)*(0.85 + 0.25*smoothstep(PL, TIE, q.y));
+    float swg = 0.5 + 0.5*cos(sw*3.1416);
+    vec3 valC = vec3(0.32, 0.050, 0.065)*(0.60 + 0.55*swg);
+    float vMask = max(cur*(1.0 - val), val);
+    gCol = mix(gCol, mix(velv, valC, val), vMask);
+    gColAmt = max(gColAmt, vMask*0.90);
+    /* the valance's fringe, a line of gold under its hem */
+    float fr = inOpen*step(SP - 0.10, q.y)*(1.0 - smoothstep(0.0, 0.020 + apx, abs(hemD - 0.012)));
+    gCol = mix(gCol, vec3(0.62, 0.44, 0.16), fr);
+    gColAmt = max(gColAmt, fr);
+  }
+#endif
   return s;
 }
 
@@ -1848,6 +1948,12 @@ float subjVine(vec2 q, float dqm, out float occ){
   kc = mix(kc, 3.0 + ku, upV);
   yc = mix(yc, mix(5.15, 5.95, ku), upV);
   float dyc = q.y - yc - 0.035*sin(bx*2.6 + bi*1.7 + kc);
+#if MM_R25W == 3
+  /* (round 25 graft: each plant's cordons tied in where its gardener tied
+     them, a hand above or below the wire's mean, not ruled at one height
+     across the house) */
+  dyc -= 0.075*(mmHash11(bi*3.7 + kc*1.9 + uSeed) - 0.5)*(1.0 - upV) + 0.020*sin(bx*1.1 + bi*4.1 + kc*2.3);
+#endif
   /* ROUND 15, FIX 5, BOTH JUDGES: "the cordons are thin strings on bare
      glazing -- thicken them to woody stems with spurs and rod supports, and
      hang enough leaf and fruit that the wall reads as PLANTED rather than
@@ -1870,6 +1976,100 @@ float subjVine(vec2 q, float dqm, out float occ){
      0.36 m a bay of 2.76 m carried eight clusters a cordon and the wall
      between them was bare whitewash; at 0.27 m it carries eleven, they lap,
      and one in eight is bare instead of one in five. */
+#if MM_R25W == 3
+  /* ROUND 25 GRAFT, both judges on the vinery: "replace the gridded,
+     stamped grape-vine tiles with irregular trained vines (varied leaf
+     clusters, trailing tendrils, uneven bunches)". MEASURED on the judged
+     sheet at 2x: each spur's cluster was drawn only inside its own 0.23-
+     0.31 m cell of the cordon, and its three leaves reach 0.24 m from the
+     spur -- so every cluster was CUT square at both cell edges, a row of
+     green tiles at an even pitch. Here each pixel draws the three spurs
+     nearest it, so a cluster's leaves lap its neighbours' and none is cut;
+     and every spur deals its own: where it stands along the cordon and how
+     far off it (and now and then on the side its pattern says not to),
+     two to four leaves of their own sizes and turns, a tendril trailing
+     from the cordon, and a bunch of its own length with a lobed shoulder
+     and its berries in staggered rows of their own sizes. */
+  float leaf = 0.0, rib = 0.0, lval = 0.0, lk = 0.0, spur = 0.0;
+  float bunchM = 0.0, berry = 0.0, tend = 0.0;
+  float ciN = floor(bx/vPit + 0.5);
+  for (int n = 0; n < 3; n++){
+    float ci = ciN + float(n) - 1.0;
+    float ch = mmHash11(ci*7.1 + kc*13.7 + bi*3.3 + uSeed);
+    float ch2 = mmHash11(ci*3.9 + kc*5.3 + bi*7.7 + uSeed*1.7);
+    float side = mix(mod(ci + kc, 2.0)*2.0 - 1.0, -1.0, upV);
+    side = mix(side, -side, step(0.80, ch2)*(1.0 - upV));
+    float jx = (ch - 0.5)*0.36*vPit;
+    float jy = 0.105 + 0.085*ch2;
+    vec2 cc = vec2(bx - ci*vPit - jx, dyc - side*jy);
+    float onSpur = (step(abs(ci*vPit), vReach - 0.06)*mmBand(q.y, 1.30, 4.25)*step(kc, vTiers - 0.5)
+                  + mmBand(q.y, 4.70, 6.40)*step(0.15, mmHash11(bi*1.97 + ku*3.3 + uSeed)))
+                 *step(0.06, ch)*(1.0 - vGone);
+    /* the spur's stub from the cordon to its cluster */
+    spur = max(spur, (1.0 - smoothstep(0.016, 0.016 + aa, abs(cc.x)))
+                   * step(0.0, side*dyc) * (1.0 - smoothstep(0.0, jy + 0.01, abs(dyc))) * onSpur);
+    /* a TENDRIL off the cordon beside it, trailing down in a lazy wave and
+       ending in a curl (one spur in two) */
+    {
+      float tx0 = bx - ci*vPit - jx + (ch2 > 0.5 ? 0.085 : -0.085);
+      float ty = -dyc;                                        // down from the cordon
+      float tL = 0.10 + 0.14*fract(ch*3.3 + ch2);
+      float wv = tx0 - 0.020*sin(ty*38.0 + ch*9.0)*smoothstep(0.0, 0.05, ty);
+      float stroke = (1.0 - smoothstep(0.0035, 0.0035 + aa*0.7, abs(wv)))*step(0.0, ty)*step(ty, tL);
+      vec2 tq = vec2(wv, ty - tL - 0.016);
+      float trr = length(tq), tan2 = atan(tq.y, tq.x);
+      float curl = (1.0 - smoothstep(0.0035, 0.0035 + aa*0.7, abs(trr - (0.008 + 0.012*(tan2 + 3.1416)/6.2832))))*step(trr, 0.024);
+      tend = max(tend, max(stroke, curl)*step(0.45, ch2)*onSpur*(1.0 - vDead)*(1.0 - upV));
+    }
+    /* its leaves: two to four, each its own size and turn, laid over the
+       ones before with a shadow along the edge */
+    float nL = 2.0 + floor(fract(ch*9.7 + ch2*1.3)*3.0);
+    for (int j = 0; j < 4; j++){
+      float fj = float(j);
+      if (fj >= nL) break;
+      float hj = fract(ch*5.31 + fj*0.618 + ch2*2.1);
+      float a = fj*6.2832/nL + ch*6.2832 + (hj - 0.5)*0.9;
+      vec2 lc = cc - vec2(cos(a), sin(a))*(0.050 + 0.045*hj);
+      float r = (0.088 + 0.062*hj)*vLs;
+      float ang = atan(lc.y, lc.x) - a;
+      float dl = length(lc)*(1.0 + 0.20*cos(5.0*ang + 1.3))*(1.0 + 0.05*cos(10.0*ang));
+      float lf = (1.0 - smoothstep(r - aa, r + aa, dl))*onSpur*(1.0 - vDead)
+               *step(vLeafP, fract(ch*5.3 + fj*0.29 + 0.11));
+      float over = lf*step(0.01, leaf);
+      float mr = abs(lc.x*sin(a) - lc.y*cos(a));
+      float mid = (1.0 - smoothstep(0.005, 0.005 + aa*0.8, mr))*step(0.0, dot(lc, vec2(cos(a), sin(a))))*lf;
+      float vn = (1.0 - smoothstep(0.004, 0.004 + aa*0.8, abs(fract(ang/1.2566 + 0.5) - 0.5)*1.2566*length(lc)))*lf;
+      float lit = 0.55 + 0.45*clamp(0.5 + lc.y/r*0.8, 0.0, 1.0);
+      leaf = max(leaf, lf);
+      rib = mix(rib, max(mid, vn*0.6), lf);
+      lval = mix(lval, lit - over*(1.0 - smoothstep(r*0.70, r, dl))*0.35, lf);
+      lk = mix(lk, fract(ch*3.7 + fj*0.53), lf);
+    }
+    /* its bunch, under one spur in two or three: its own length and
+       shoulder, the outline lobed where the grapes bulge, hanging a little
+       askew, the berries in staggered rows of their own sizes */
+    vec2 gp = vec2(bx - ci*vPit - jx + 0.04 + 0.08*(ch2 - 0.5), dyc + 0.05 + 0.05*ch2);
+    float gL = mix(0.20, 0.44, fract(ch*11.3));
+    float gW = mix(0.065, 0.120, fract(ch*5.9));
+    float isB = step(vFruit, fract(ch*7.31))*step(abs(ci*vPit), vReach - 0.10)*onSpur*(1.0 - vDead)
+              *(step(kc, 2.5)*mmBand(q.y, 1.2, 4.25) + upV*mmBand(q.y, 4.60, 6.15));
+    float gxs = gp.x + 0.035*sin(gp.y*9.0 + ch*6.0)*(-gp.y/gL);
+    float lob = 1.0 + 0.24*sin(gp.y*41.0 + ch*17.0) + 0.14*sin(gp.y*73.0 + ch2*9.0);
+    float cone = step(-gL, gp.y)*step(gp.y, 0.0)
+               *(1.0 - smoothstep(0.0, aa, abs(gxs) - gW*(1.0 + gp.y/gL)*lob - 0.012));
+    float brw = floor(gp.y/0.044);
+    float bxs = gxs + 0.022*mod(brw, 2.0);
+    vec2 bg = vec2(mod(bxs + 0.022, 0.044) - 0.022, mod(gp.y, 0.044) - 0.022);
+    float bsz = 0.014 + 0.006*mmHash21(vec2(floor((bxs + 0.022)/0.044), brw) + ch*7.0);
+    float be = 1.0 - smoothstep(bsz, bsz + aa, length(bg));
+    float bn = isB*cone;
+    berry = mix(berry, be, bn*(1.0 - bunchM));
+    bunchM = max(bunchM, bn);
+  }
+  float bunch = bunchM*(1.0 - leaf);
+  /* the tendrils are the vine's wood where nothing lies over them */
+  spur = max(spur, tend*(1.0 - leaf)*(1.0 - bunch));
+#else
   float ci = floor(bx/vPit + 0.5);
   float ch = mmHash11(ci*7.1 + kc*13.7 + bi*3.3 + uSeed);
   float side = mix(mod(ci + kc, 2.0)*2.0 - 1.0, -1.0, upV);
@@ -1924,6 +2124,7 @@ float subjVine(vec2 q, float dqm, out float occ){
   vec2 bg = mod(gp + vec2(0.024), 0.048) - 0.024;
   float berry = 1.0 - smoothstep(0.017, 0.017 + aa, length(bg));
   float bunch = isB*cone*(1.0 - leaf);
+#endif
   /* front to back: the wall, the wires and standards, the cordons and trunk,
      the leaves, the fruit */
   s = mix(s, 0.40, wire*(1.0 - trunk));
@@ -1957,6 +2158,30 @@ float subjVine(vec2 q, float dqm, out float occ){
   gPen = max(gPen, clamp(leaf + bunch + wood, 0.0, 1.0));
   gInk = max(gInk, clamp(leaf*(1.0 - leaf)*4.0, 0.0, 1.0)*0.55 + rib*leaf*0.25);
   gTint *= 0.30;
+  /* (round 25 graft, both judges: the vine "on real brick courses", and
+     "keep the back wall's darks deep". The wall behind the vine is BRICK:
+     stretchers in 0.075 m courses, each brick its own fired red-brown, the
+     mortar a dark line where a course is wide enough to draw, the old
+     whitewash surviving in flakes -- a dark under the vine, not a pale
+     ground the moon can milk.) */
+  {
+    float course = floor(q.y/0.075);
+    float bxx = (q.x + mod(course, 2.0)*0.1125)/0.225;
+    float bh1 = mmHash21(vec2(floor(bxx), course) + uSeed);
+    vec3 brickC = mix(vec3(0.105, 0.050, 0.036), vec3(0.084, 0.046, 0.040), bh1)
+                * (0.78 + 0.40*mmHash21(vec2(floor(bxx), course) + 3.1));
+    /* (the vine's old wood is grey bark, so it reads off the red brick it
+       is tied to -- the cordons in the wall's own brown were lost on it) */
+    vec3 woodOld = mix(vec3(0.115, 0.078, 0.048), vec3(0.105, 0.100, 0.092), vDead);
+    gCol += wood*(mix(vec3(0.200, 0.170, 0.130), vec3(0.150, 0.150, 0.140), vDead) - woodOld);
+    float mortar = (1.0 - smoothstep(0.005, 0.005 + aa*0.6, jb))*mmLod(0.075, aa);
+    brickC = mix(brickC, vec3(0.055, 0.052, 0.046), mortar*0.85);
+    brickC = mix(brickC, vec3(0.17, 0.175, 0.16), wash*0.20*(1.0 - mortar));
+    float wallOnly = wallZ*(1.0 - clamp(gColAmt, 0.0, 1.0))*(1.0 - std)*(1.0 - clamp(wire, 0.0, 1.0));
+    gCol += wallOnly*brickC;
+    gColAmt = clamp(gColAmt + wallOnly*0.82, 0.0, 1.0);
+    gInk = max(gInk, mortar*wallOnly*0.30);
+  }
 #endif
   return s;
 }
@@ -3273,7 +3498,12 @@ float subjectH(vec2 q, float far, out float occ){
       float cNew = clamp(0.5 - min(nwD, nBall)/px, 0.0, 1.0);
       /* the spandrel, in shadow under the flight */
       float cSpa = spa;
-      vec3 maho = vec3(0.30, 0.11, 0.05);
+      /* (round 25 graft, both judges on fight-foyer: "knock the stair
+         rail's copper-red down to a dark warm wood with one lit edge" --
+         0.30, 0.11, 0.05 read under the hall's warm key as polished copper;
+         this is old mahogany gone dark, and the rail's top arris alone takes
+         the light, below) */
+      vec3 maho = vec3(0.150, 0.078, 0.046);
       vec3 cream = vec3(0.62, 0.56, 0.44);
       vec3 paintC = vec3(0.022, 0.016, 0.016);                  // the dark behind the balusters
       float amt = gapB*0.92;
@@ -3290,7 +3520,9 @@ float subjectH(vec2 q, float far, out float occ){
       strC = mix(strC, cream*0.92, max(nosB, footB*0.7));
       paintC = mix(paintC, strC, cStr);
       amt = max(amt, cStr);
-      vec3 railC = maho*(0.70 + 1.20*smoothstep(yR0 + 0.020, yR1 - 0.010, q.y));
+      vec3 railC = maho*(0.70 + 0.45*smoothstep(yR0 + 0.020, yR1 - 0.010, q.y));
+      /* its one lit edge: the roll's arris, a line of warm light along it */
+      railC += vec3(0.46, 0.31, 0.17)*clamp(0.5 + (0.0075 - abs(q.y - (yR1 - 0.013)))/pxr, 0.0, 1.0);
       paintC = mix(paintC, maho*0.85, cShoe);
       amt = max(amt, cShoe);
       paintC = mix(paintC, railC, cRail);
@@ -11821,6 +12053,12 @@ uniform vec3  uStageCol;
    how far the floor under the hand and at the frame's two edges falls, 0 for
    a room that keeps its own. The frame's position comes from vClip. */
 uniform float uNearDark;
+#if MM_R25W == 1
+/* A CARPET LAID ON THE FLOOR (round 25 graft, PAYNE's): its centre's world
+   x and z, its half-width and half-depth in metres; z = 0, none. The
+   Foyer's floor variant only. */
+uniform vec4  uRug;
+#endif
 /* THE PASSAGES' OPEN DOORS (round 22 graft): each slit's world xz and the
    unit direction into the room (uWedge), how strong its wedge of lamplight
    is (uWedgeK, 0 = none); and uCrisp, the passages' boards drawn crisp
@@ -11999,6 +12237,42 @@ void main(){
         float resG = smoothstep(0.045, 0.014, mp);
         pat = 0.50 + (bl*(0.16 + 0.22*tip) - 0.05)*resG*(1.0 - earth) + tuft*0.10*(1.0 - earth) - earth*0.14;
       }
+      /* ROUND 25 GRAFT (PAYNE's): LOW TUFTS IN THE LAWN. Both judges asked
+         for them: grass in mainMenu.png is CLUMPS -- a dark root and a fan of
+         blades whose tips catch the moon, on darker ground between them. One
+         clump in each 0.42 m cell (four in five cells), three blades fanning
+         up the plane, each a tapering stroke a pixel and more wide, its tip
+         lit and its root in its own shade. Drawn while a blade is a pixel
+         across and a few up the picture (per axis); past that, the lawn. */
+      {
+        float gRes = smoothstep(0.045, 0.018, mpp.x) * smoothstep(0.26, 0.10, mpp.y);
+        if (gRes > 0.001) {
+          const float GC = 0.42;
+          float bladeC = 0.0, tipC = 0.0, rootC = 0.0;
+          vec2 gci = floor(w/GC);
+          vec2 gh2 = mmHash22(gci + 17.3);
+          vec2 base = (gci + vec2(0.25 + gh2.x*0.50, 0.08 + gh2.y*0.20))*GC;
+          float has = step(0.18, mmHash21(gci + 2.9)) * (1.0 - earth);
+          float gL = GC*(0.55 + 0.30*gh2.y);
+          rootC = (1.0 - smoothstep(0.0, 0.16, length((w - base)*vec2(1.0, 0.7))))*has;
+          for (int k = 0; k < 3; k++){
+            float fk = float(k);
+            float ang = (fk - 1.0)*0.42 + (gh2.x - 0.5)*0.30 + (fract(gh2.y*7.3 + fk*0.37) - 0.5)*0.22;
+            vec2 dir = vec2(sin(ang), cos(ang));
+            float L = gL*(0.65 + 0.35*fract(gh2.x*13.1 + fk*0.61))*(1.0 - 0.25*abs(fk - 1.0));
+            vec2 v = w - base;
+            float t = clamp(dot(v, dir)/L, 0.0, 1.0);
+            vec2 axis = dir*t*L + vec2(dir.y, -dir.x)*sign(ang + 1e-3)*0.06*L*t*t;
+            float wd = mix(0.020, 0.0, t*t) + mpp.x*0.45;
+            float dd = length(v - axis);
+            float on = (1.0 - smoothstep(wd, wd + mpp.x*1.1, dd)) * step(-0.01, dot(v, dir)) * has;
+            bladeC = max(bladeC, on);
+            tipC = max(tipC, on*smoothstep(0.45, 0.95, t));
+          }
+          pat += ((bladeC*0.22 + tipC*0.30) - rootC*0.16 - (1.0 - bladeC)*0.06) * gRes;
+          cellv = mix(cellv, 0.42 + 0.30*tipC, gRes*bladeC*0.6);
+        }
+      }
 #endif
       if (uPattern > 12.5 && uPattern < 13.5) {
         /* 13 THE MAZE'S LAWN (round 22): mown in stripes 1.4 m wide, the way
@@ -12074,6 +12348,44 @@ void main(){
         turf *= 1.0 - max(walk, kerb);
         earth *= 1.0 - max(walk, kerb);
         cellv = mix(cellv, 0.52 + 0.18*grit, walk);
+#if MM_R25W == 4
+        /* ROUND 25 GRAFT (PAYNE's), both judges: THE WALK IS LAID FLAGS, as
+           mainMenu.png's is -- rounded stones in staggered courses across
+           the path, each its own size and value, with dark joints that close
+           up as the path runs away to the gate and the enemy line; and a
+           dressed stone edging either side standing proud of the turf, its
+           top lit by the moon and the grass beside it in its shadow. Under
+           three pixels a stone, the gravel tone it was. */
+        if (pxd < uRunner + 0.40) {
+          float sRes = smoothstep(0.060, 0.022, mpp.x) * smoothstep(0.40, 0.14, mpp.y);
+          vec2 sw = vec2(w.x - uRunX, w.y);
+          sw += vec2(mmNoise(w*1.7 + 3.0) - 0.5, mmNoise(w*1.7 + 9.0) - 0.5)*0.05;
+          const vec2 SC = vec2(0.46, 0.34);
+          float srow = floor(sw.y/SC.y);
+          float sox = mmHash11(srow*1.37 + 4.1)*SC.x;
+          vec2 sg = vec2(fract((sw.x + sox)/SC.x), fract(sw.y/SC.y)) - 0.5;
+          vec2 sid = vec2(floor((sw.x + sox)/SC.x), srow);
+          float sh = mmHash21(sid + 2.3);
+          vec2 sq2 = abs(sg)*SC - (SC*0.5 - vec2(0.026, 0.020));
+          float sd = length(max(sq2, 0.0)) + min(max(sq2.x, sq2.y), 0.0) - 0.022;
+          float jAA = mpp.x*1.2;
+          float sett = 1.0 - smoothstep(-jAA, jAA, sd);
+          float dome = clamp(-sd/0.08, 0.0, 1.0);
+          float sPat = (0.30 + 0.26*sh + 0.20*dome + 0.10*sg.y) * sett + 0.06*(1.0 - sett);
+          pat = mix(pat, mix(pat, sPat, sRes), walk);
+          cellv = mix(cellv, mix(cellv, 0.30 + 0.45*sh, sRes*sett), walk);
+          float ed = abs(pxd - uRunner - 0.06);
+          float edge = 1.0 - smoothstep(0.06 - aaW*0.5, 0.06 + aaW*0.5, ed);
+          float ejt = 1.0 - smoothstep(0.008, 0.008 + mpp.y*1.1, abs(fract(w.y/0.75) - 0.5)*0.75);
+          float eTop = smoothstep(0.06, 0.0, ed);
+          pat = mix(pat, 0.92 + 0.10*eTop - ejt*0.45, edge);
+          float eSh = (1.0 - smoothstep(0.0, 0.10 + aaW, pxd - uRunner - 0.12)) * step(uRunner + 0.12, pxd);
+          pat -= eSh*0.22;
+          turf *= 1.0 - edge;
+          earth *= 1.0 - edge;
+          cellv = mix(cellv, 0.62, edge);
+        }
+#endif
       }
     }
   } else
@@ -12714,6 +13026,77 @@ void main(){
     rug = mix(rug, vec3(0.70, 0.52, 0.20), rGuard);
     rug = mix(rug, vec3(0.76, 0.70, 0.56), rFr*0.85);
     alb = mix(alb, rug*Lf*5.2*(0.80 + 0.30*cellv), runner*0.94);
+    /* (round 25 graft, both judges on fight-foyer: "darken or interrupt the
+       red runner where it passes under the enemy's HP bar, so the bar stays
+       the brightest red there". In a fight -- someone standing on this
+       floor -- the runner goes into the creatures' own shade in the band of
+       the frame their bars sit in, its madder a stop and a half down and
+       toward its indigo; on an empty floor it is as it was.) */
+    float anyone = step(0.001, uActor[0].w + uActor[1].w + uActor[2].w + uActor[3].w + uActor[4].w + uActor[5].w);
+    if (anyone > 0.5) {
+      vec2 ndcR = vClip.xy / max(vClip.z, 1e-4);
+      float hpBand = smoothstep(-0.07, -0.11, ndcR.y)*(1.0 - smoothstep(-0.21, -0.27, ndcR.y));
+      alb = mix(alb, alb*vec3(0.34, 0.36, 0.52), hpBand*runner*0.85);
+    }
+  }
+  /* ---- A TURKEY CARPET (round 25 graft, PAYNE's) -------------------------
+     Both judges: "PAYNE's patterned rug on the Foyer landing floor". A hall
+     of this date lays a Turkey carpet before its stair: a madder field with
+     an indigo medallion and four spandrels in its corners, a broad border
+     between two ivory guard stripes, a fringe at each end. Everything that
+     names it varies ACROSS the border or radially in the medallion, so it
+     reads at any distance; every edge is antialiased over its own pixel per
+     axis, and the pile takes no lamp's mirror smear (wetK, below). */
+  float rugCov = 0.0;
+  if (uRug.z > 0.01 && uIsCeiling < 0.5
+      && all(lessThan(abs(vWorld.xz - uRug.xy), uRug.zw + vec2(0.25)))) {
+    vec2 rp = vWorld.xz - uRug.xy;
+    vec2 rpx = vec2(length(vec2(dFdx(rp.x), dFdy(rp.x))), length(vec2(dFdx(rp.y), dFdy(rp.y))));
+    rpx = max(rpx, vec2(1e-4));
+    vec2 ed = uRug.zw - abs(rp);
+    rugCov = clamp(ed.x/rpx.x + 0.5, 0.0, 1.0) * clamp(ed.y/rpx.y + 0.5, 0.0, 1.0);
+    float eIn = min(ed.x, ed.y);
+    float ePx = mix(rpx.x, rpx.y, step(ed.y, ed.x));
+    /* (in this hall's own dyes, the runner's: madder, indigo, old gold, ivory) */
+    vec3 madder = vec3(0.42, 0.07, 0.055), indigo = vec3(0.05, 0.08, 0.24);
+    vec3 ivory = vec3(0.76, 0.70, 0.56), saffron = vec3(0.62, 0.44, 0.17);
+    float guard = max(1.0 - smoothstep(0.012, 0.012 + ePx*1.2, abs(eIn - 0.05)),
+                      1.0 - smoothstep(0.012, 0.012 + ePx*1.2, abs(eIn - 0.42)));
+    float inBord = smoothstep(0.07 - ePx, 0.07 + ePx, eIn) * (1.0 - smoothstep(0.40 - ePx, 0.40 + ePx, eIn));
+    float along = (ed.x < ed.y) ? rp.y : rp.x;
+    float lz = abs(fract(along/0.46) - 0.5)*0.46 + abs(eIn - 0.235)*0.95;
+    float loz = 1.0 - smoothstep(0.10 - ePx, 0.10 + ePx, lz);
+    float lozI = 1.0 - smoothstep(0.045 - ePx, 0.045 + ePx, lz);
+    vec3 bordC = mix(indigo*0.9, madder*1.1, loz);
+    bordC = mix(bordC, saffron, lozI*0.8);
+    vec2 fq = rp / max(uRug.zw - 0.45, vec2(0.3));
+    float md2 = abs(fq.x)*0.95 + abs(fq.y)*1.25;
+    float medO = 1.0 - smoothstep(0.62 - rpx.x*1.5, 0.62 + rpx.x*1.5, md2);
+    float medR = 1.0 - smoothstep(0.012, 0.012 + rpx.x*1.3, abs(md2 - 0.62)/1.5);
+    float medI = 1.0 - smoothstep(0.24 - rpx.x, 0.24 + rpx.x, md2);
+    float cs = (2.0 - abs(fq.x) - abs(fq.y))*1.1;
+    float corner = 1.0 - smoothstep(0.22 - rpx.x, 0.22 + rpx.x, cs);
+    vec3 fieldC = madder;
+    fieldC = mix(fieldC, indigo, max(medO, corner));
+    fieldC = mix(fieldC, ivory*0.9, medR*0.85);
+    fieldC = mix(fieldC, saffron, medI);
+    vec2 gq = abs(fract(rp/vec2(0.30, 0.30)) - 0.5)*0.30;
+    float gul = (1.0 - smoothstep(0.030, 0.030 + max(rpx.x, rpx.y), gq.x + gq.y)) * smoothstep(0.03, 0.012, max(rpx.x, rpx.y));
+    fieldC = mix(fieldC, mix(indigo, ivory, 0.35), gul*0.45*(1.0 - max(medO, corner)));
+    vec3 rugCol = mix(fieldC, bordC, inBord);
+    rugCol = mix(rugCol, ivory, guard);
+    rugCol *= 0.86 + 0.20*mmNoise(rp*1.7 + 3.0);
+    float frg = (1.0 - smoothstep(0.0, 0.10, -ed.y)) * step(ed.y, 0.0)
+              * clamp(ed.x/rpx.x + 0.5, 0.0, 1.0)
+              * (0.45 + 0.55*step(0.5, fract(rp.x*22.0)));
+    rugCol = mix(rugCol, ivory*0.85, frg*(1.0 - rugCov));
+    rugCov = max(rugCov, frg*0.85);
+    /* (laid in the runner's own value: the hall's lit board tone, as the
+       runner's dyes are) */
+    float LfR = mmLum(mix(uDeep, uMid, 0.55));
+    alb = mix(alb, rugCol*LfR*5.2*(0.86 + 0.20*mmNoise(rp*0.9 + 7.0)), rugCov*0.95);
+    /* its edge stands a centimetre proud: a hairline of shadow round it */
+    alb *= 1.0 - (1.0 - smoothstep(0.0, max(ePx*2.0, 0.02), abs(eIn)))*0.30*step(eIn, 0.0)*(1.0 - frg);
   }
 #endif
   alb *= mix(0.58, 1.0, smoothstep(uSpan.x*0.52, uSpan.x*0.24, abs(w.x)));   // creeps into shadow at the walls
@@ -12751,6 +13134,9 @@ void main(){
      for floor pattern 9; that ground was not grafted, so only the runner's
      term is here, and wetK is exactly 1.0 on every floor but the Foyer's.) */
   float wetK = (1.0 - runner*0.86) * (1.0 - turf*0.85);   // nor does grass
+#if MM_R25W == 1
+  wetK *= 1.0 - rugCov*0.92;            // (nor does the carpet: round 25 graft)
+#endif
   /* ...and WATER mirrors a lamp far harder than a wet tile, the image broken
      up by the ripples on it */
   float rip = 0.0;
@@ -13238,7 +13624,15 @@ void main(){
      17 -- moved below the fog in round 18: see there.) */
   float ridgeUp = 1.0 - smoothstep(0.0, uSpan.x*0.5, abs(w.x));
   col += (uAccent*0.45 + vec3(0.26, 0.36, 0.40)) * roofLit * 0.30;
+#if MM_R25W == 1
+  /* (round 25 graft, both judges on the parlour and the gallery: "carry the
+     lit boards and flagstones into the near-black near floor" -- the hall's
+     near floor falls to two-thirds, not two-fifths, so its boards, its flags
+     and the runner's pattern run on toward the hand; PAYNE's number) */
+  col *= mix(0.68, 1.0, smoothstep(2.0, 13.0, vDepth));    // foreground falls away
+#else
   col *= mix(0.40, 1.0, smoothstep(2.0, 13.0, vDepth));    // foreground falls away
+#endif
   /* ...and in a room that asks, the floor under the hand and at the two
      edges of the frame goes down toward near-black, the way a painted room
      is vignetted into its own dark (round 21 graft). A multiply, so the
@@ -13520,6 +13914,15 @@ float wfArmchair(vec2 q, float px, float seed, float kq, bool paint, float gilt)
   float ink = 0.0;
   vec3 wood = mix(vec3(0.34, 0.14, 0.07), vec3(0.88, 0.64, 0.28), gilt);
   vec3 vel = mix(vec3(0.08, 0.24, 0.14), vec3(0.50, 0.15, 0.22), gilt);
+  /* (round 25 graft, SINOPIA's ballroom chairs, one judge: "mixed seat
+     colours (plum, mustard, rose)" -- a ballroom's gilt chairs were covered
+     over a century, not in one bolt: each its own off its seed) */
+  if (gilt > 0.5) {
+    float sc = mmHash11(seed*6.13 + 0.71);
+    vel = sc < 0.34 ? vec3(0.50, 0.15, 0.22)                      // rose
+        : (sc < 0.67 ? vec3(0.30, 0.09, 0.30)                     // plum
+                     : vec3(0.54, 0.38, 0.10));                   // mustard
+  }
   float side = 1.0 + 0.28*kq*sign(q.x);
   /* the legs, round, lit down the key's side */
   float lu = clamp((ax - 0.270)/0.035, -1.0, 1.0);
@@ -13961,6 +14364,13 @@ float wfPiano(vec2 q, float px, float seed, float kq, bool paint){
   vec3 paper = vec3(0.86, 0.80, 0.66);
   float stave = step(0.62, fract((q.y - C1)/0.022))*mmLod(0.022, px);
   wfLay(col, ink, sheet, paper*(1.0 - 0.55*stave), px, 0.6);
+  /* (round 25 graft, both judges on the suite: "the piano silhouette with
+     inked edges" -- black lacquer inked in black is lost against a dark
+     stage; its every outline takes a pixel of the room's light just inside
+     the ink, so the silhouette is drawn) */
+  float pOut = min(min(caseD, lid), min(legs, stick));
+  float rimP = wfIn(pOut, px)*smoothstep(-3.0*px, -1.2*px, pOut);
+  col = mix(col, hiL*0.42, rimP*0.75);
   gWfGloss = 0.85*wfIn(min(min(caseD, lid), legs), px) + 0.2;
   gWfMoon = 0.25*wfIn(lid, px)*edgeL + 0.15*wfIn(sheet, px);
   gWfCol = col; gWfInk = ink;
@@ -14439,205 +14849,332 @@ float wfCross(vec2 q, float px, float seed, float kq, bool paint){
    the strokes cross -- three ways to get a staircase. These are drawn in
    metres, each frond a curve with its leaflets swept along it, every edge
    a pixel at any size, the leaf's veins in pen, the pot turned. */
-/* ONE FROND: from b, leaving at angle a (0 straight up, + to the right),
-   len long, drooping by dr over its length. Returns (distance from the
-   midrib across, distance along it) in the frond's own frame. */
-vec2 ghFrond(vec2 p, vec2 b, float a, float len, float dr){
-  vec2 d = vec2(sin(a), cos(a));
-  vec2 nr = vec2(d.y, -d.x);
-  vec2 r = p - b;
-  float s = clamp(dot(r, d), 0.0, len);
-  float t = s/len;
-  float sag = dr*t*t*len;
-  /* the droop pulls the curve DOWN the screen, whichever way it leans */
-  vec2 c = b + d*s - vec2(0.0, sag) ;
-  vec2 o = p - c;
-  float across = dot(o, nr);
-  float along = dot(r, d);
-  return vec2(across, along);
+/* ROUND 25 GRAFT: THE PALM HOUSE'S PLANTS ARE SINOPIA'S. Both judges named
+   them first: "crisp, finely drawn fern fronds", where this round's own
+   crowns read at the Deck's tier as one soft, lamp-lit mass of yellow-green
+   -- a fan of leaflets swept along a straight frond, the fronds of every
+   plant in a bed laid one over the next with no gap and no dark between
+   them. SINOPIA's frond is a CURVE (a quadratic from its base, the nearest
+   point on it found by two Newton steps), its leaflets cut to the rachis and
+   hanging -- short on its upper side, long and falling below, the shape that
+   says palm -- each to a point, drawn while their pitch is two pixels and a
+   ribbon along the rachis under that; its crown laid back to front, each
+   frond darker at the heart and toward the back; and a bed holds four
+   plants of their own kinds and heights, not one crown repeated. Ported into
+   this wing's own program (MM_WINGS 6) under this round's ids. */
+/* lay a member over what is under it, its outline in ink -- and HIDE the
+   ink of whatever it covers (wfLay keeps it: right for joinery, wrong for a
+   frond laid over another frond) */
+void ghLay(inout vec3 col, inout float ink, float d, vec3 c, float px, float k){
+  float a = wfIn(d, px);
+  col = mix(col, c, a);
+  ink = max(ink*(1.0 - a), mmInkP(d, px, 1.0)*k*smoothstep(-2.5*px, 0.0, d + 1.5*px));
 }
-/* a pinnate frond's leaflets: how much of this pixel is leaflet, rib, the
-   leaflet's own centre line (its vein), and how far out across it is */
-vec4 ghPinnae(vec2 fa, float len, float px, float sp, float lw, float sweep){
-  float s = clamp(fa.y, 0.0, len), t = s/len;
-  float n = abs(fa.x);
-  float span = len*lw*pow(max(sin(3.1416*min(t*1.08, 1.0)), 0.0), 0.65);
-  float rib = clamp(0.5 + (0.0060*(1.0 - 0.6*t) - n)/px, 0.0, 1.0)*step(fa.y, len)*step(-0.01, fa.y);
-  float u = s + n*sweep;
-  float cell = fract(u/sp) - 0.5;
-  float w = sp*0.36*(1.0 - 0.75*smoothstep(0.0, max(span, 1e-3), n));
-  float onL = clamp(0.5 + (w - abs(cell)*sp)/px, 0.0, 1.0)*clamp(0.5 + (span - n)/px, 0.0, 1.0)
-            *step(-0.01, fa.y)*step(fa.y, len*1.02);
-  /* below about two pixels a leaflet, the frond is its own green: a blade */
-  float lod = mmLod(sp, px);
-  onL = mix(clamp(0.5 + (span*0.85 - n)/px, 0.0, 1.0)*step(-0.01, fa.y)*step(fa.y, len), onL, lod);
-  float vein = mmInkP(cell*sp, px, 1.0)*onL*lod*0.6;
-  return vec4(onL, rib, vein, n/max(span, 1e-3));
+/* a tapered body between y0 and y1, half-widths b0 at the foot, b1 at the top */
+float ghTaper(vec2 q, float y0, float y1, float b0, float b1){
+  float t = clamp((q.y - y0)/max(y1 - y0, 1e-4), 0.0, 1.0);
+  float hw = mix(b0, b1, t);
+  float sl = (b1 - b0)/max(y1 - y0, 1e-4);
+  return max((abs(q.x) - hw)/sqrt(1.0 + sl*sl), max(y0 - q.y, q.y - y1));
 }
-/* A POT: terracotta with a rolled rim and a band, a glazed jardiniere, or a
-   lead urn -- turned, lit on the key's side, its soil showing at the rim */
-float ghPot(vec2 q, float H, float R, float kind, float px, float kq, bool paint, inout vec3 col, inout float ink){
-  float taper = mix(0.78, 1.0, smoothstep(0.0, H, q.y));
-  float belly = kind > 0.66 ? (0.90 + 0.25*sin(3.1416*clamp(q.y/H, 0.0, 1.0))) : 1.0;
-  float body = max(abs(q.x) - R*taper*belly, max(-q.y, q.y - H));
-  float rim = mmBox(q - vec2(0.0, H - 0.020), vec2(R*1.10, 0.024), 0.012);
-  float foot = kind > 0.66 ? mmBox(q - vec2(0.0, 0.025), vec2(R*0.80, 0.025), 0.006) : 1e3;
-  float d = min(min(body, rim), foot);
-  if (!paint) return d;
-  vec3 pc = kind < 0.40 ? vec3(0.60, 0.30, 0.17) : (kind < 0.66 ? vec3(0.16, 0.30, 0.46) : vec3(0.40, 0.42, 0.42));
-  float u = clamp(q.x/max(R*taper*belly, 0.02), -1.0, 1.0);
-  vec3 c = pc*(0.42 + 0.70*wfRound(u))*(0.85 + 0.25*kq*u);
-  if (kind > 0.40 && kind < 0.66) {
-    /* the jardiniere's glaze: a band of pale flowers round its shoulder */
-    float bnd = step(abs(q.y - H*0.62), H*0.13);
-    c = mix(c, vec3(0.78, 0.76, 0.66)*(0.5 + 0.6*wfRound(u)), bnd*step(0.45, fract(q.x*28.0)));
-    c += vec3(0.25)*smoothstep(0.35, 0.0, abs(u + 0.45*kq))*0.6;
+float ghCyl(float x, float hw){ return clamp(x/max(hw, 1e-4), -1.0, 1.0); }
+
+/* ONE FROND, from b: P(t) = b + u t + v t^2, leaving at angle a (0 up, + to
+   the right), L long, its tip falling by dr of L. Returns the distance to
+   its outline in metres, and its own frame: t along it, n across (+ its
+   upper side), lf the leaflet's phase, lod whether leaflets are drawn.
+     kind 0  a palm's pinnate frond, cut to the rachis into leaflets
+     kind 1  a fern's frond, finer and narrower
+     kind 2  a strap leaf (an aloe, an aspidistra), entire, with its midrib */
+float ghFrond(vec2 p, vec2 b, float a, float L, float dr, float W, float kind, float px,
+              out float t, out float n, out float lf, out float lod){
+  vec2 u = vec2(sin(a), cos(a))*L;
+  vec2 v = vec2(0.0, -dr*L);
+  vec2 d0 = p - b;
+  vec2 ch = u + v;
+  t = clamp(dot(d0, ch)/max(dot(ch, ch), 1e-6), 0.0, 1.0);
+  for (int it = 0; it < 2; it++){
+    vec2 P = u*t + v*t*t - d0;
+    vec2 D = u + 2.0*v*t;
+    float f = dot(P, D);
+    float fp = dot(D, D) + 2.0*dot(P, v);
+    t = clamp(t - f/max(fp, 1e-5), 0.0, 1.0);
   }
-  wfLay(col, ink, foot, pc*0.55, px, 0.8);
-  wfLay(col, ink, body, c, px, 0.95);
-  float band = abs(q.y - H*0.70) - 0.010;
-  ink = max(ink, mmInkP(band, px, 1.0)*0.5*wfIn(body, px)*step(kind, 0.40));
-  vec3 rc = pc*(0.62 + 0.55*smoothstep(H - 0.04, H + 0.004, q.y))*(0.85 + 0.25*kq*clamp(q.x/R, -1.0, 1.0));
-  wfLay(col, ink, rim, rc, px, 0.95);
+  vec2 P = b + u*t + v*t*t;
+  vec2 T = normalize(u + 2.0*v*t);
+  vec2 Nn = vec2(-T.y, T.x)*(T.x >= 0.0 ? 1.0 : -1.0);
+  vec2 r = p - P;
+  n = dot(r, Nn);
+  float beyond = t > 0.999 ? dot(r, T) : (t < 0.001 ? -dot(r, T) : -1e3);
+  float an = abs(n);
+  float lower = step(n, 0.0);
+  float e;
+  if (kind < 0.5)      e = W*sin(3.1416*pow(t, 0.85))*smoothstep(0.16, 0.30, t)*mix(0.30, 1.0, lower);
+  else if (kind < 1.5) e = W*sin(3.1416*pow(t, 0.85))*smoothstep(0.03, 0.12, t);
+  else                 e = W*sin(3.1416*pow(t, 0.55));
+  float env = max(an - e, beyond);
+  float rach = max(an - L*mix(0.012, 0.004, t)*(kind > 1.5 ? 0.0 : 1.0), beyond);
+  lf = 0.0; lod = 1.0;
+  if (kind > 1.5) return env;
+  float pitch = L*(kind < 0.5 ? 0.085 : 0.050);
+  float sl = kind < 0.5 ? mix(1.60, 0.80, lower) : 0.45;
+  float ph = (t*L - sl*an - (kind < 0.5 ? 1.2*an*an/max(W, 1e-4) : 0.0))/pitch + lower*0.5;
+  float c = fract(ph) - 0.5;
+  lf = c;
+  float perp = abs(c)*pitch/sqrt(1.0 + sl*sl);
+  float th = pitch*(kind < 0.5 ? 0.24 : 0.32)*sqrt(max(1.0 - an/max(e, 1e-4), 0.0));
+  float leaf = max(perp - th, env);
+  lod = smoothstep(1.6*px, 3.2*px, pitch);
+  float rib = max(an - e*0.38, beyond);
+  return min(mix(rib, leaf, lod), rach);
+}
+
+/* A CROWN of fronds from c, its longest S: a kentia palm (0), a Boston fern
+   (1) or a spiky aloe (2). Laid back to front -- the upright fronds behind,
+   the splayed ones falling over the pot in front -- each a little lighter
+   than the one behind, so the crown has depth and the dark between its
+   fronds shows; and each frond's upper edge on the key's side takes a
+   pixel of light (the rim the judges asked for between the plants). Paints
+   over col/ink; returns the crown's distance. */
+float gGhFew = 0.0;      // a bed's plants carry fewer fronds each
+float ghCrown(vec2 q, vec2 c, float S, float sp, float seed, float px, float kq, float spread,
+              float clipY, inout vec3 col, inout float ink){
+  float dAll = 1e3;
+  if (length(q - c) > S*1.35) return dAll;
+  float nF = (sp < 1.5 ? 10.0 : 9.0) - gGhFew*3.0;
+  vec3 g0 = sp < 0.5 ? vec3(0.15, 0.36, 0.17) : (sp < 1.5 ? vec3(0.24, 0.42, 0.13) : vec3(0.11, 0.31, 0.20));
+  g0 *= 0.85 + 0.30*mmHash11(seed*5.31);
+  for (int i = 0; i < 10; i++){
+    float fi = float(i);
+    if (fi >= nF) break;
+    float h1 = mmHash11(seed*3.13 + fi*1.37), h2 = mmHash11(seed*7.71 + fi*2.11), h3 = mmHash11(seed*1.93 + fi*0.73);
+    float o = (fi + 0.5)/nF;
+    float side = mod(fi, 2.0) < 0.5 ? -1.0 : 1.0;
+    float a, L, dr, W;
+    vec2 b = c;
+    if (sp < 0.5) {
+      a = side*(0.04 + 0.95*o) + (h1 - 0.5)*0.30;
+      L = S*(0.62 + 0.38*h2);
+      dr = 0.12 + 0.62*o*o + 0.10*h3;
+      W = L*(0.17 + 0.04*h3);
+    } else if (sp < 1.5) {
+      a = side*(0.08 + 1.35*o) + (h1 - 0.5)*0.35;
+      L = S*(0.66 + 0.34*h2);
+      dr = 0.22 + 0.55*o + 0.12*h3;
+      W = L*(0.12 + 0.03*h3);
+    } else {
+      a = side*(0.05 + 1.10*o) + (h1 - 0.5)*0.30;
+      L = S*(0.70 + 0.30*h2);
+      dr = 0.10 + 0.70*o*o;
+      W = L*(0.060 + 0.020*h3);
+      b.x += (h1 - 0.5)*spread;
+    }
+    if (length(q - b) > L*1.15 + W) continue;
+    float t, n, lf, lod;
+    float dd = ghFrond(q, b, a, L, dr, W, sp < 1.5 ? sp : 2.0, px, t, n, lf, lod);
+    /* the crown's back fronds stand behind whatever it grows out of */
+    dd = max(dd, (clipY - q.y)*step(o, 0.58));
+    if (dd > W) continue;
+    float up = smoothstep(-0.2, 0.6, n/max(W*0.4, 1e-4));
+    vec3 fc = g0*(0.62 + 0.38*smoothstep(0.0, 0.55, t))*(0.82 + 0.30*up);
+    fc *= 0.50 + 0.50*o;
+    float brown = step(0.80, h2)*smoothstep(0.62, 0.95, t)*(sp < 1.5 ? 1.0 : 0.6);
+    fc = mix(fc, vec3(0.42, 0.33, 0.16)*(0.75 + 0.25*up), brown);
+    fc *= 1.0 + 0.22*lod*(lf + 0.1)*(sp < 1.5 ? 1.0 : 0.0);
+    ghLay(col, ink, dd, fc, px, 0.85 - 0.25*o*(1.0 - lod));
+    /* the midrib, a line of light down a strap leaf and a palm's rachis */
+    float rib = mmInkP(n, px, 1.0)*wfIn(dd, px)*smoothstep(0.02, 0.10, t)*(1.0 - smoothstep(0.80, 1.0, t));
+    col = mix(col, fc*1.55 + vec3(0.02, 0.03, 0.0), rib*(sp > 1.5 ? 0.75 : 0.45));
+    /* its rim: the upper edge, inside the ink, on the key's side */
+    float rimE = wfIn(dd, px)*smoothstep(-3.0*px, -1.2*px, dd)*step(0.0, n)
+               *clamp(0.5 + 0.8*kq*side, 0.0, 1.0)*smoothstep(0.15, 0.5, t);
+    col = mix(col, fc*1.9 + vec3(0.04, 0.05, 0.02), rimE*0.55);
+    dAll = min(dAll, dd);
+  }
+  return dAll;
+}
+
+/* A POT: a thrown terracotta flowerpot with its rolled rim and the soil in
+   its mouth, or a stone urn on its foot. H its height; paints it. */
+float ghPot(vec2 q, float H, float urn, float seed, float px, float kq, inout vec3 col, inout float ink){
+  float d;
+  if (urn < 0.5) {
+    float tw = H*0.68, bw = H*0.48;
+    float body = ghTaper(q, 0.0, H*0.84, bw, tw);
+    float rim = mmBox(q - vec2(0.0, H*0.915), vec2(tw*1.08, H*0.085), H*0.03);
+    d = min(body, rim);
+    vec3 clay = mix(vec3(0.66, 0.31, 0.17), vec3(0.58, 0.34, 0.24), mmHash11(seed*2.7));
+    float u = ghCyl(q.x, mix(bw, tw, q.y/H));
+    float sh = (0.55 + 0.45*wfRound(u))*(1.0 + 0.30*kq*u);
+    vec3 bc = clay*sh;
+    bc *= 1.0 - 0.40*smoothstep(H*0.72, H*0.83, q.y);
+    float bloom = smoothstep(0.55, 0.80, mmFbm3(q*vec2(9.0, 6.0)/H + seed*3.0))*smoothstep(H*0.5, 0.0, q.y);
+    bc = mix(bc, vec3(0.62, 0.58, 0.50)*sh, bloom*0.45);
+    ghLay(col, ink, body, bc, px, 0.95);
+    float ru = ghCyl(q.x, tw*1.08);
+    vec3 rc = clay*(0.60 + 0.50*wfRound(ru))*(1.0 + 0.28*kq*ru)*(0.85 + 0.30*smoothstep(H*0.83, H*0.99, q.y));
+    ghLay(col, ink, rim, rc, px, 0.95);
+    float mouth = wfEll(q - vec2(0.0, H*0.995), vec2(tw*0.96, H*0.055));
+    col = mix(col, vec3(0.10, 0.07, 0.05), wfIn(max(mouth, H*0.99 - q.y), px));
+    ink = max(ink, mmInkP(max(mouth, H*0.99 - q.y), px, 1.0)*0.5);
+    d = min(d, mouth);
+  } else {
+    float foot = mmBox(q - vec2(0.0, H*0.08), vec2(H*0.34, H*0.08), H*0.01);
+    float stem = ghTaper(q, H*0.16, H*0.36, H*0.16, H*0.10);
+    vec2 bq = q - vec2(0.0, H*0.62);
+    float bowl = max(wfEll(bq, vec2(H*0.62, H*0.34)), q.y - H*0.86);
+    float lip = mmBox(q - vec2(0.0, H*0.90), vec2(H*0.66, H*0.05), H*0.02);
+    d = min(min(foot, stem), min(bowl, lip));
+    vec3 stn = vec3(0.56, 0.56, 0.52)*(0.85 + 0.25*mmFbm3(q*8.0/H + seed));
+    float u = ghCyl(q.x, H*0.62);
+    ghLay(col, ink, foot, stn*0.70, px, 0.9);
+    ghLay(col, ink, stem, stn*(0.55 + 0.4*wfRound(ghCyl(q.x, H*0.13))), px, 0.9);
+    vec3 bc = stn*(0.50 + 0.50*wfRound(u))*(1.0 + 0.25*kq*u);
+    float gad = abs(fract(atan(q.x/(H*0.62), 1.0)*3.0) - 0.5)*step(q.y, H*0.62);
+    bc *= 1.0 - 0.25*smoothstep(0.30, 0.5, gad)*mmLod(H*0.12, px);
+    ghLay(col, ink, bowl, bc, px, 0.9);
+    ghLay(col, ink, lip, stn*(0.70 + 0.35*smoothstep(H*0.86, H*0.95, q.y)), px, 0.9);
+    float mouth = wfEll(q - vec2(0.0, H*0.95), vec2(H*0.60, H*0.05));
+    col = mix(col, vec3(0.10, 0.07, 0.05), wfIn(max(mouth, H*0.945 - q.y), px));
+    d = min(d, mouth);
+  }
   return d;
 }
 
 /* ── 74 A POTTED PLANT ─────────────────────────────────────────────────────
-   One of three off its seed: a parlour palm, its pinnate fronds arching
-   out of the pot, each frond's leaflets swept toward its tip; a Boston
-   fern, its fronds tumbling over the rim; or an aspidistra, broad
-   lance-shaped leaves with their veins. In terracotta, a glazed
-   jardiniere or a lead urn. */
-float gPlantKind = -1.0;     // a bed's planting names its plants' kind
+   A kentia palm, a Boston fern or a spiky aloe, in a terracotta pot or a
+   stone urn: the pot a fifth of the plant, its crown out of the soil, its
+   back fronds behind the rim and its outer fronds falling over the pot. */
 float wfPlant(vec2 q, float px, float seed, float kq, bool paint){
-  float kind = gPlantKind >= 0.0 ? gPlantKind : mmHash11(seed*4.37 + 0.11);
-  float potK = mmHash11(seed*7.91 + 0.3);
-  float H = 0.30 + 0.10*mmHash11(seed*2.2), R = 0.15 + 0.05*mmHash11(seed*3.3);
+  float spH = mmHash11(seed*1.17 + 0.3);
+  float sp = spH < 0.44 ? 0.0 : (spH < 0.72 ? 1.0 : 2.0);
+  float urn = step(0.74, mmHash11(seed*4.9 + 0.7));
+  float PH = urn > 0.5 ? 0.34 : 0.27;
   vec3 col = vec3(0.1);
   float ink = 0.0;
-  float pot = ghPot(q, H, R, potK, px, kq, false, col, ink);
-  /* the crown: within its own bounding ellipse, or nothing to do */
-  vec2 cb = vec2(0.0, H - 0.02);
-  float crownR = 1.20 - H;
-  float bound = length((q - vec2(0.0, H + crownR*0.40))/vec2(crownR*0.95, crownR*0.75)) - 1.0;
-  float leafCov = 0.0;
-  vec3 lc = vec3(0.0);
-  float lvein = 0.0;
-  if (bound < 0.10) {
-    int nF = kind < 0.40 ? 8 : (kind < 0.70 ? 11 : 7);
-    for (int i = 0; i < 11; i++){
-      if (i >= nF) break;
-      float fi = float(i)/float(nF - 1);
-      float h = mmHash11(seed*13.1 + float(i)*7.3);
-      float a, len, dr;
-      if (kind < 0.40)      { a = (fi - 0.5)*2.5 + (h - 0.5)*0.30; len = crownR*(0.70 + 0.35*h)*(1.0 - 0.25*abs(fi - 0.5)); dr = 0.30 + 0.50*abs(fi - 0.5); }
-      else if (kind < 0.70) { a = (fi - 0.5)*3.4 + (h - 0.5)*0.40; len = crownR*(0.55 + 0.25*h); dr = 0.70 + 0.60*abs(fi - 0.5); }
-      else                  { a = (fi - 0.5)*1.6 + (h - 0.5)*0.30; len = crownR*(0.62 + 0.40*h)*(1.0 - 0.20*abs(fi - 0.5)); dr = 0.18 + 0.30*abs(fi - 0.5); }
-      vec2 fa = ghFrond(q, cb + vec2((fi - 0.5)*R*0.9, 0.0), a, len, dr);
-      if (abs(fa.x) > len*0.30 + 0.02 || fa.y < -0.02 || fa.y > len + 0.02) continue;
-      float onL, rib, vein, nn;
-      if (kind < 0.70) {
-        vec4 pn = ghPinnae(fa, len, px, kind < 0.40 ? 0.050 : 0.034, kind < 0.40 ? 0.28 : 0.20, kind < 0.40 ? 0.9 : 0.6);
-        onL = pn.x; rib = pn.y; vein = pn.z; nn = pn.w;
-      } else {
-        /* a broad blade: widest a third along, pointed, its midrib and the
-           side veins running out to its edge */
-        float t = clamp(fa.y/len, 0.0, 1.0);
-        float W = len*0.15*pow(sin(3.1416*pow(t, 0.75)), 0.8);
-        onL = clamp(0.5 + (W - abs(fa.x))/px, 0.0, 1.0)*step(-0.005, fa.y)*step(fa.y, len);
-        rib = clamp(0.5 + (0.004 - abs(fa.x))/px, 0.0, 1.0)*onL;
-        float sv = fract((fa.y + abs(fa.x)*1.4)/0.045) - 0.5;
-        vein = mmInkP(sv*0.045, px, 1.0)*onL*0.35*mmLod(0.045, px);
-        nn = abs(fa.x)/max(W, 1e-3);
-      }
-      float cov = max(onL, rib);
-      if (cov < 0.004) continue;
-      /* the fronds laid in order, each over the ones before it */
-      vec3 g = mix(vec3(0.10, 0.26, 0.09), vec3(0.20, 0.36, 0.12), h);
-      if (kind > 0.70) g = mix(vec3(0.07, 0.22, 0.10), vec3(0.12, 0.30, 0.14), h);
-      g *= 0.62 + 0.55*(1.0 - nn)*(0.75 + 0.35*clamp(kq*sin(a)*2.0 + 0.5, 0.0, 1.0));
-      g *= 0.80 + 0.35*smoothstep(0.0, len, fa.y);
-      g = mix(g, g*1.45 + vec3(0.03, 0.04, 0.0), rib);
-      lc = mix(lc, g, cov);
-      lvein = mix(lvein, vein, cov);
-      leafCov = max(leafCov, cov);
-    }
-  }
-  /* the silhouette, in metres, for the prop's own edge: the pot, and the
-     crown's coverage turned back into a distance a pixel wide */
-  float dLeaf = (0.5 - leafCov)*px;
-  float d = min(pot, dLeaf);
-  if (!paint) return d;
-  ghPot(q, H, R, potK, px, kq, true, col, ink);
-  /* the soil at the rim */
-  col = mix(col, vec3(0.08, 0.05, 0.03), wfIn(mmBox(q - vec2(0.0, H - 0.004), vec2(R*0.95, 0.010), 0.004), px)*0.9);
-  col = mix(col, lc, leafCov);
-  ink = max(ink*(1.0 - leafCov), lvein);
-  ink = max(ink, (1.0 - abs(leafCov*2.0 - 1.0))*0.55);
-  gWfGloss = 0.35*leafCov + 0.25*(1.0 - leafCov);
-  gWfMoon = 0.35*leafCov*smoothstep(H, 1.2, q.y);
+  float S = sp < 0.5 ? 1.00 : (sp < 1.5 ? 0.82 : 0.86);
+  float pot = ghPot(q, PH, urn, seed, px, kq, col, ink);
+  float pl = ghCrown(q, vec2(0.0, PH*0.97), S, sp, seed, px, kq, PH*0.9, PH*0.93, col, ink);
+  float plA = wfIn(pl, px);
   gWfCol = col; gWfInk = ink;
-  return d;
+  gWfGloss = 0.55*plA + 0.15;
+  gWfMoon = 0.45*plA*smoothstep(PH, PH + 0.6, q.y);
+  return min(pl, pot);
 }
 
 /* ── 75 A PLANTING BED ─────────────────────────────────────────────────────
-   A coursed-brick bed with its stone coping, 2.9 m of it, and its planting:
-   a row of ferns and palms growing out of the soil along it, each drawn as
-   the potted ones are. */
+   A coursed-brick trough 0.43 m high under a stone coping, 2.9 m of it, and
+   four plants growing out of it, each its own -- a tall palm, a fern, a
+   spiky aloe, at their own heights with the dark between them, not one mass
+   of fronds -- and ivy trailing over the coping and down the brick. */
+void ghBedClump(float seed, float fi, out float cx, out float S, out float sp){
+  /* (each bed takes the three kinds in turn from its own start, so no bed
+     is four of one plant) */
+  float s0 = floor(mmHash11(seed*6.77 + 0.41)*3.0);
+  sp = mod(s0 + fi, 3.0);
+  cx = (fi - 1.5)*0.72 + (mmHash11(seed*4.1 + fi) - 0.5)*0.16;
+  S = (sp < 0.5 ? 1.10 : (sp < 1.5 ? 0.72 : 0.84))*(0.78 + 0.44*mmHash11(seed*2.9 + fi));
+}
 float wfBed(vec2 q, float px, float seed, float kq, bool paint){
-  const float BH = 0.43, L = 1.42;
-  float wall = mmBox(q - vec2(0.0, BH*0.5), vec2(L, BH*0.5), 0.004);
-  float cop = mmBox(q - vec2(0.0, BH + 0.02), vec2(L + 0.04, 0.035), 0.008);
-  /* its plants: the nearest two of four along it */
-  float sp = 2.0*L/4.0;
-  float ci = clamp(floor((q.x + L)/sp), 0.0, 3.0);
+  const float HL = 1.42, BH = 0.43, CT = 0.50;
   vec3 col = vec3(0.1);
   float ink = 0.0;
-  float pd = 1e3;
-  vec3 pcol = vec3(0.0);
-  float pink = 0.0;
-  /* (the nearest plant only: a second crown per pixel cost the
-     Greenhouse's fight a millisecond it does not have) */
-  for (int j = 0; j < 1; j++){
-    float cj = ci;
-    float cx = -L + (cj + 0.5)*sp;
-    float sd = seed*3.0 + cj*1.37;
-    vec2 pq = (q - vec2(cx, BH - 0.30))/(0.85 + 0.30*mmHash11(sd));
-    /* a bed is planted in a rhythm a gardener sets: broad-leaved
-       aspidistras between palms, so the row reads as plants and not as
-       one mass of fronds */
-    gPlantKind = mod(cj, 2.0) < 0.5 ? 0.85 : 0.20;
-    float dd = wfPlant(pq, px/(0.85 + 0.30*mmHash11(sd)), sd, kq, paint);
-    gPlantKind = -1.0;
-    if (dd < pd) {
-      pd = dd;
-      pcol = gWfCol; pink = gWfInk;
-    }
+  float dAll = 1e3;
+  float body = mmBox(q - vec2(0.0, BH*0.5), vec2(HL, BH*0.5), 0.0);
+  const float CH = 0.075, BL = 0.225;
+  float row = floor(q.y/CH);
+  float bx = q.x/BL + 0.5*mod(row, 2.0);
+  float bid = floor(bx);
+  float lodB = mmLod(CH, px);
+  float jy = abs(fract(q.y/CH) - 0.5)*CH;
+  float jx = abs(fract(bx) - 0.5)*BL;
+  float bh = mmHash21(vec2(bid, row) + seed);
+  vec3 brick = mix(vec3(0.36, 0.16, 0.11), vec3(0.26, 0.14, 0.12), bh)*(0.80 + 0.40*mmHash11(bid*3.1 + row));
+  brick = mix(vec3(0.30, 0.15, 0.11), brick, lodB);
+  brick *= (0.62 + 0.38*smoothstep(0.0, BH*0.8, q.y))*(1.0 - 0.35*smoothstep(BH - 0.06, BH, q.y));
+  float mort = max(1.0 - smoothstep(0.0, max(px*0.9, 0.006), CH*0.5 - jy),
+                   1.0 - smoothstep(0.0, max(px*0.9, 0.006), BL*0.5 - jx));
+  brick = mix(brick, vec3(0.10, 0.09, 0.07), mort*0.75*lodB);
+  ghLay(col, ink, body, brick, px, 0.9);
+  col = mix(col, vec3(0.12, 0.24, 0.10), wfIn(body, px)*smoothstep(0.10, 0.0, q.y)*0.55);
+  float cop = mmBox(q - vec2(0.0, (BH + CT)*0.5), vec2(HL + 0.04, (CT - BH)*0.5), 0.008);
+  vec3 cc = vec3(0.52, 0.52, 0.47)*(0.70 + 0.40*smoothstep(BH, CT, q.y))*(0.88 + 0.22*mmFbm3(q*vec2(5.0, 20.0) + seed));
+  ghLay(col, ink, cop, cc, px, 0.95);
+  gGhFew = 1.0;
+  /* the plants, the two outer ones first so the middle two stand in front;
+     only their falling outer fronds come down over the coping's face */
+  for (int i = 0; i < 4; i++){
+    float fi = i < 2 ? float(i*3) : float(i - 1);
+    float cx, S, sp;
+    ghBedClump(seed, fi, cx, S, sp);
+    float pd = ghCrown(q, vec2(cx, CT - 0.02), S, sp, seed + fi*17.0, px, kq, 0.35, CT - 0.005, col, ink);
+    dAll = min(dAll, pd);
   }
-  /* (the plants' own pots sit below the coping, out of sight) */
-  pd = max(pd, -(q.y - BH - 0.03));
-  float d = min(min(wall, cop), pd);
-  if (!paint) return d;
-  /* the brick: stretchers in English garden wall bond, struck mortar */
-  vec2 bq = vec2(q.x + 3.0, q.y);
-  float course = floor(bq.y/0.075);
-  float bx = bq.x/0.225 + 0.5*mod(course, 2.0);
-  float bi = floor(bx);
-  float jx = abs(fract(bx) - 0.5)*0.225, jy = abs(fract(bq.y/0.075) - 0.5)*0.075;
-  float lod = mmLod(0.075, px);
-  float mort = max(mmInkP(jx - 0.1125, px, 1.0), mmInkP(jy - 0.0375, px, 1.0))*lod;
-  vec3 brick = vec3(0.46, 0.20, 0.13)*(0.75 + 0.35*mmHash21(vec2(bi, course) + seed));
-  brick = mix(brick, vec3(0.30, 0.28, 0.24), mort*0.85);
-  brick *= 0.85 + 0.25*kq*clamp(q.x/L, -1.0, 1.0);
-  brick = mix(brick, vec3(0.12, 0.18, 0.08), smoothstep(0.08, 0.0, q.y)*0.6);    // the damp at its foot
-  wfLay(col, ink, wall, brick, px, 0.95);
-  vec3 cc = vec3(0.56, 0.54, 0.48)*(0.70 + 0.45*smoothstep(BH - 0.01, BH + 0.05, q.y));
-  wfLay(col, ink, cop, cc, px, 0.95);
-  col = mix(col, pcol, wfIn(pd, px));
-  ink = max(ink*(1.0 - wfIn(pd, px)), pink*wfIn(pd, px));
-  gWfGloss = 0.25;
-  gWfMoon = 0.30*wfIn(cop, px) + 0.20*wfIn(pd, px)*smoothstep(0.5, 1.4, q.y);
+  gGhFew = 0.0;
+  /* ivy, two trails over the coping and down the brick */
+  for (int i = 0; i < 2; i++){
+    float fi = float(i);
+    float ix = (fi*2.0 - 1.0)*(0.35 + 0.5*mmHash11(seed*8.3 + fi));
+    float yl = CT - q.y;
+    float sx = ix + 0.05*sin(yl*14.0 + fi*3.0);
+    float stem = max(abs(q.x - sx) - 0.006, max(q.y - CT - 0.01, (CT - 0.30 - 0.12*mmHash11(seed + fi)) - q.y));
+    float lyr = floor(yl/0.05);
+    float lside = mod(lyr, 2.0) < 0.5 ? -1.0 : 1.0;
+    vec2 lc = vec2(sx + lside*0.030, CT - (lyr + 0.5)*0.05);
+    float leaf = max(wfEll(q - lc, vec2(0.030, 0.022)), (CT - 0.32 - 0.12*mmHash11(seed + fi)) - q.y);
+    leaf = max(leaf, q.y - CT - 0.02);
+    float iv = min(stem, leaf);
+    vec3 ic = vec3(0.13, 0.30, 0.13)*(0.75 + 0.45*smoothstep(-0.03, 0.03, q.y - lc.y));
+    ghLay(col, ink, iv, ic, px, 0.8);
+    dAll = min(dAll, iv);
+  }
   gWfCol = col; gWfInk = ink;
+  float onPl = wfIn(dAll, px)*(1.0 - wfIn(min(body, cop), px));
+  gWfGloss = 0.15 + 0.40*onPl;
+  gWfMoon = 0.40*onPl + 0.55*wfIn(cop, px)*smoothstep(BH, CT, q.y);
+  return min(dAll, min(body, cop));
+}
+
+/* ── 80 A BIRDCAGE ON ITS STAND (SINOPIA's; round 25 graft) ───────────────
+   Both judges: "brass birdcages on stands in the planters". A tripod foot,
+   a slender pole in conservatory-green iron, and the cage -- a drum of
+   brass wires under a dome, its seed tray, the ring it hangs by, and a
+   canary on its perch inside. 1.56 m nominal. */
+float wfBirdcage(vec2 q, float px, float seed, float kq, bool paint){
+  vec3 col = vec3(0.1);
+  float ink = 0.0;
+  vec3 brass = vec3(0.86, 0.66, 0.32);
+  vec3 iron = vec3(0.20, 0.30, 0.24);
+  float ax = abs(q.x);
+  float t;
+  float feet = min(wfSegT(vec2(ax, q.y), vec2(0.02, 0.18), vec2(0.20, 0.02), 0.018, 0.010, t), mmBox(q - vec2(0.0, 0.09), vec2(0.015, 0.09), 0.006));
+  float pole = max(ax - 0.013, max(0.17 - q.y, q.y - 0.98));
+  float tray = mmBox(q - vec2(0.0, 0.99), vec2(0.20, 0.020), 0.008);
+  float drum = mmBox(q - vec2(0.0, 1.15), vec2(0.19, 0.16), 0.0);
+  float dome = max(wfEll(q - vec2(0.0, 1.31), vec2(0.19, 0.17)), 1.31 - q.y);
+  float ring = abs(length(q - vec2(0.0, 1.51)) - 0.030) - 0.007;
+  float cage = min(drum, dome);
+  float d = min(min(min(feet, pole), min(tray, cage)), ring);
+  ghLay(col, ink, min(feet, pole), iron*0.65, px, 0.85);
+  float wl = mmLod(0.019, px);
+  float wire = 1.0 - smoothstep(0.0, max(px/0.019, 0.08), abs(fract(q.x/0.019) - 0.5));
+  wire = max(wire, 1.0 - smoothstep(0.0, max(px, 0.005), abs(q.y - 1.20) - 0.004));
+  float inC = wfIn(cage, px);
+  col = mix(col, vec3(0.06, 0.06, 0.07), inC*0.85);
+  float perch = mmBox(q - vec2(0.0, 1.10), vec2(0.15, 0.005), 0.0);
+  float bird = min(wfEll(q - vec2(0.02, 1.15), vec2(0.040, 0.030)), length(q - vec2(0.055, 1.18)) - 0.018);
+  bird = min(bird, wfSeg(q, vec2(-0.01, 1.14), vec2(-0.07, 1.12), 0.010));
+  col = mix(col, iron*0.5, wfIn(perch, px)*inC);
+  col = mix(col, vec3(0.90, 0.78, 0.25), wfIn(bird, px)*inC);
+  /* the wires are BRASS, lit across the drum on the key's side */
+  vec3 wc = brass*(0.45 + 0.55*wfRound(ghCyl(q.x, 0.19)))*(0.85 + 0.25*kq*ghCyl(q.x, 0.19));
+  col = mix(col, wc, inC*mix(0.35, wire, wl));
+  ink = max(ink, mmInkP(cage, px, 1.0)*0.7);
+  ghLay(col, ink, tray, brass*0.75, px, 0.9);
+  ghLay(col, ink, ring, brass, px, 0.8);
+  gWfCol = col; gWfInk = ink;
+  gWfGloss = 0.6;
+  gWfMoon = 0.35*inC*smoothstep(1.2, 1.45, q.y);
   return d;
 }
 
@@ -14738,7 +15275,8 @@ float wfNom(float s){
   if (s < 76.5) return 1.60;   // the plant stand
   if (s < 77.5) return 1.00;   // (77, the staging, is sized to the room)
   if (s < 78.5) return 2.05;   // the grand piano and its stool
-  return 0.30;                 // 79, a fan dropped on the floor
+  if (s < 79.5) return 0.30;   // 79, a fan dropped on the floor
+  return 1.56;                 // 80, a birdcage on its stand (graft)
 }
 /* which way it faces: the room's seed turns some round */
 float wfMirror(float s, float seed){
@@ -14778,6 +15316,7 @@ float wfDraw(vec2 m, vec2 msz, float s, float seed, float px, bool paint){
   if (s < 74.5)      d = wfPlant(q, qpx, seed, kq, paint);
   else if (s < 75.5) d = wfBed(q, qpx, seed, kq, paint);
   else if (s < 76.5) d = wfStand(q, qpx, seed, kq, paint);
+  else if (s > 79.5) d = wfBirdcage(q, qpx, seed, kq, paint);   // 80 (graft)
   /* 77, the staging, is architecture sized to the room: in its own metres */
   else return wfStaging(m, msz, px, (uKeyDir.x >= 0.0 ? 1.0 : -1.0), paint);
 #endif

@@ -202,7 +202,10 @@ const SHAPE_M = [1.20, 2.00, 1.30, 1.00, 2.00, 2.00, 3.32, 2.60, 1.17, 1.33,
                  /* the Ballroom, drawn: 78 a grand piano in black lacquer,
                     its lid propped, and its stool; 79 a fan dropped on
                     the dance floor and a rose */
-                 2.05, 0.30
+                 2.05, 0.30,
+                 /* round 25 graft: 80 a birdcage on its stand, brass wires
+                    under a dome (SINOPIA's, the palm house's planters) */
+                 1.56
 ];
 /* ...and a width ratio, so a column is a column and not a capital-T. Four of
  * these were wrong by enough to change what the object was: a longcase clock
@@ -229,7 +232,8 @@ const SHAPE_W = [1.15, 0.55, 1.00, 0.95, 0.72, 0.80, 0.47, 0.85, 0.90, 1.35,
                  0.72,
                  0.36,
                  1.35, 1.90, 0.66, 1.00,
-                 2.05, 2.70
+                 2.05, 2.70,
+                 0.42
 ];
 /* HOW MUCH ONE OF THESE VARIES FROM THE NEXT, as a +-fraction of SHAPE_M.
  *
@@ -269,7 +273,8 @@ const SHAPE_VAR = [0.06, 0.08, 0.62, 0.20, 0.10, 0.08, 0.10, 0.10, 0.16, 0.48,
                  0.03,
                  0.05,
                  0.62, 0.12, 0.06, 0.00,
-                 0.02, 0.04
+                 0.02, 0.04,
+                 0.04
 ];
 /* ROUND 23 (graft): ULTRAMARINE's drawings are in metres at their own
    proportions, so their quads take no width jitter -- a telescope 22%
@@ -281,7 +286,7 @@ const FIXW = { 32: 1, 33: 1, 34: 1, 35: 1, 39: 1, 40: 1, 41: 1, 42: 1, 43: 1, 44
                55: 1, 56: 1, 57: 1, 58: 1, 59: 1, 60: 1, 61: 1,
                /* and round 25's */
                62: 1, 63: 1, 64: 1, 65: 1, 66: 1, 67: 1, 68: 1, 69: 1, 70: 1, 71: 1, 72: 1, 73: 1,
-               75: 1, 76: 1, 77: 1, 78: 1, 79: 1 };
+               75: 1, 76: 1, 77: 1, 78: 1, 79: 1, 80: 1 };
 // Which shapes hang from the ceiling rather than stand on the floor.
 export const HANGING = { 4: 1, 7: 1, 22: 1, 33: 1 };
 /* ...and which stand AGAINST A WALL rather than out on the floor. A tall
@@ -763,6 +768,10 @@ export class Backdrop {
       /* the moon on the Pumpkin Grounds' flags and in its pond (graft) */
       uMoonF: { value: new THREE.Color(0, 0, 0) },
       uMoonW: { value: new THREE.Vector4(0, 0, 0, 0) },
+      /* a carpet laid on the floor (round 25 graft, PAYNE's; the Foyer's floor
+         variant reads it): world x and z of its centre, its half-width and
+         half-depth in metres; z = 0, none */
+      uRug: { value: new THREE.Vector4(0, 0, 0, 0) },
     });
 
     this.floorMat = new THREE.ShaderMaterial({
@@ -1550,8 +1559,11 @@ export class Backdrop {
        whole prop budget with planting and kerbs, and the conservatory's
        fountain, dealt last with the near set, was sliced off at MAX_PROPS. */
     for (const it of (P.near || [])) {
-      if (it.centre) push(it.shape, it.x ?? 0, it.z, it.scale ?? 1.0, it.tone ?? 0.9, it.y,
-                          it.edge !== undefined ? { edge: it.edge } : (it.free ? 'free' : undefined));
+      if (!it.centre) continue;
+      const n0 = out.length;
+      push(it.shape, it.x ?? 0, it.z, it.scale ?? 1.0, it.tone ?? 0.9, it.y,
+           it.edge !== undefined ? { edge: it.edge } : (it.free ? 'free' : undefined));
+      if (it.seed !== undefined && out.length > n0) out[out.length - 1].seed = it.seed;   // (round 25 graft)
     }
 
     if (layout === 'colonnade') {
@@ -1977,8 +1989,13 @@ export class Backdrop {
     for (const it of (P.near || [])) {
       if (out.length >= MAX_PROPS) break;
       if (it.skip || it.centre) continue;
+      const n0 = out.length;
       push(it.shape, it.x ?? 0, it.z, it.scale ?? 1.0, it.tone ?? 0.16, it.y,
            it.wall ? 'wall' : (it.edge !== undefined ? { edge: it.edge } : (it.free ? 'free' : undefined)));
+      /* (round 25 graft: a piece placed by hand may name its own seed -- the
+         form a drawing takes off it, a kerbed grave and not a table tomb --
+         AFTER it is dealt, so the rand() stream is what it was) */
+      if (it.seed !== undefined && out.length > n0) out[out.length - 1].seed = it.seed;
       if (yields(it, out[out.length - 1])) out.pop();
     }
     return out.slice(0, MAX_PROPS);
@@ -2523,6 +2540,8 @@ export class Backdrop {
     f.uGloss.value = p.gloss ?? 0.5;
     /* the foreground's vignette into the dark (round 21 graft): FLOOR_FRAG */
     f.uNearDark.value = p.nearDark ?? 0;
+    if (p.rug) f.uRug.value.set(p.rug.x, p.rug.z, p.rug.hw, p.rug.hd);
+    else f.uRug.value.set(0, 0, 0, 0);
     /* the moon on the court's flags and in its pond (round 22 graft) */
     if (p.moonFloor) {
       f.uMoonF.value.set(p.moonFloor[0], p.moonFloor[1], p.moonFloor[2]);
@@ -2681,7 +2700,7 @@ export class Backdrop {
       const s = p.shape;
       /* round 25: the last four wings' drawn objects (62+), in a program of
          their own -- so no room that does not deal one moves */
-      if (s > 61.5) w25 = (s > 68.5 && s < 71.5) || (s > 72.5 && s < 73.5) ? 5 : (s > 73.5 && s < 77.5 ? 6 : 4);
+      if (s > 61.5) w25 = (s > 68.5 && s < 71.5) || (s > 72.5 && s < 73.5) ? 5 : ((s > 73.5 && s < 77.5) || (s > 79.5 && s < 80.5) ? 6 : 4);
       if ((s > 2.5 && s < 3.5) || (s > 15.5 && s < 16.1) || (s > 24.5 && s < 25.5)) stones = 1;
       else if (s > 44.5) wings = 3;          // round 24: the house's own rooms' objects
       else if (s > 31.5) wings = Math.max(wings, 2);          // round 23: the bath, the lamp, the telescope, the kennel
