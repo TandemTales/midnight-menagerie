@@ -1490,7 +1490,10 @@ export const ROOM_KINDS = {
          both judges: "running vines along the rafters changes the planting,
          not only the wall"), and it is seen from one end, down the length of
          its vine wall, the side wall's vines at arm's length */
-      { subject: 'vine', layout: 'rows', swap: [[6, 75]], room: { d: 0.70 }, ceil: 12,
+      /* (round 25 graft, both judges: "keep the back wall's darks deep; the
+         upper-left beam is starting to milk it" -- a lean-to's glass is over
+         the vine, so the moon comes through it at half the great house's) */
+      { subject: 'vine', layout: 'rows', swap: [[6, 75]], room: { d: 0.70 }, ceil: 12, shaftK: 0.45,
         cam: { y: 0.35, z: 0.6, look: -0.2 },
         vantage: { at: 'along', off: 0.30, wall: 3.2, fwd: 3.2, yaw: 33, wide: 4, dlook: 0.5 } },
     ],
