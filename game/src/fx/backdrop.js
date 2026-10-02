@@ -397,6 +397,84 @@ export const ROOMS_PROGRAM = {
 };
 
 /**
+ * EVERY PROGRAM VARIANT A ROOM CAN NEED BEYOND THE BASE ONES, AND THE WINGS
+ * THAT DRAW IT -- the list Backdrop.precompileRooms links behind the game.
+ *
+ * `mat` is which backdrop material it is a variant of (wall -- the back and
+ * both side walls --, prop, floor, ceil, portal); `defines` sets EVERY key
+ * that material's variants differ by (a key left out would be taken from
+ * whatever room happened to be live when the job ran, and link the wrong
+ * variant); `wings` are atmosphere keys (REGION_ALIAS in atmosphere.js, so
+ * 'sleeping', 'kitchens', 'hedge' -- not the run's slugs). The base variants
+ * (wall 0, props 0/0/0, floor and ceiling 0) are not here: every boot links
+ * them in the stage warm-up.
+ *
+ * The queue takes these in the order of the wings the party can meet next
+ * (Atmosphere._linkOrder), and within a wing in the order written here. A
+ * variant whose `wings` is empty is linked last, after everything a wing
+ * claims.
+ *
+ * TO ADD A VARIANT (a round that adds MM_WINGS 4, or wall program 21): add
+ * the define in shaders/backdrop.js and the line that selects it here in
+ * backdrop.js (_setPropProgram, _setRoomsProgram, _setSurfaceProgram), then
+ * ONE line below naming the wings whose rooms draw it, e.g.
+ *     { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 4 }, wings: ['ballroom'] },
+ * and run tests/link-queue/check.py: it puts every authored room of every
+ * wing on the stage and fails on a variant a wing draws that this table does
+ * not give that wing (it would link on demand, the stand-in room up while it
+ * does), and on an entry no room draws.
+ *
+ * `wings` measured 2026-10-02 by that census (all 340 authored rooms, the
+ * names twelve generated maps per wing give them, and each wing unseeded).
+ */
+export const ROOM_VARIANTS = [
+  /* the walls: a wing's own program, 0.7-5 s each on this machine */
+  { mat: 'wall', defines: { MM_ROOMS: 1 },  wings: ['foyer', 'heart'] },
+  { mat: 'wall', defines: { MM_ROOMS: 2 },  wings: ['ballroom'] },
+  { mat: 'wall', defines: { MM_ROOMS: 3 },  wings: ['greenhouse'] },
+  { mat: 'wall', defines: { MM_ROOMS: 4 },  wings: ['graveyard'] },
+  { mat: 'wall', defines: { MM_ROOMS: 6 },  wings: ['lampworks'] },
+  { mat: 'wall', defines: { MM_ROOMS: 7 },  wings: ['bathhouse'] },
+  { mat: 'wall', defines: { MM_ROOMS: 8 },  wings: ['hedge'] },
+  { mat: 'wall', defines: { MM_ROOMS: 9 },  wings: ['kitchens'] },
+  { mat: 'wall', defines: { MM_ROOMS: 10 }, wings: ['passages'] },
+  { mat: 'wall', defines: { MM_ROOMS: 11 }, wings: ['pumpkin'] },
+  /* round 23 */
+  { mat: 'wall', defines: { MM_ROOMS: 12 }, wings: ['bathhouse'] },
+  { mat: 'wall', defines: { MM_ROOMS: 13 }, wings: ['lampworks'] },
+  { mat: 'wall', defines: { MM_ROOMS: 14 }, wings: ['attic'] },
+  { mat: 'wall', defines: { MM_ROOMS: 15 }, wings: ['kennels'] },
+  { mat: 'wall', defines: { MM_ROOMS: 16 }, wings: ['kennels'] },
+  /* round 24 */
+  { mat: 'wall', defines: { MM_ROOMS: 17 }, wings: ['nursery'] },
+  { mat: 'wall', defines: { MM_ROOMS: 18 }, wings: ['sleeping'] },
+  { mat: 'wall', defines: { MM_ROOMS: 19 }, wings: ['study'] },
+  { mat: 'wall', defines: { MM_ROOMS: 20 }, wings: ['crypt'] },
+  /* round 14: the doorway, the rail, the gate and the steam (one program) */
+  { mat: 'portal', defines: { MM_PORTAL: 1 }, wings: ['foyer', 'ballroom', 'greenhouse', 'lampworks', 'passages', 'bathhouse'] },
+  /* the room-kind floors and ceilings (MM_FLOORX) */
+  { mat: 'floor', defines: { MM_FLOORX: 1 }, wings: ['ballroom', 'graveyard', 'hedge', 'pumpkin'] },
+  { mat: 'floor', defines: { MM_FLOORX: 2 }, wings: ['bathhouse'] },
+  { mat: 'ceil',  defines: { MM_FLOORX: 2 }, wings: ['attic'] },
+  /* (the Greenhouse's glass roof: never in the old fixed list, so it linked
+     on demand in every Greenhouse fight that had one) */
+  { mat: 'ceil',  defines: { MM_FLOORX: 1 }, wings: ['greenhouse'] },
+  /* the props: the gallery's busts, the grounds' carved stone, and rounds
+     22-24's wing objects (13-90 s each on this machine) */
+  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 1, MM_WINGS: 0 }, wings: ['foyer'] },
+  { mat: 'prop', defines: { MM_STONES: 1, MM_BUST: 0, MM_WINGS: 0 }, wings: ['graveyard', 'greenhouse'] },
+  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 1 }, wings: ['kitchens', 'hedge', 'pumpkin', 'heart'] },
+  { mat: 'prop', defines: { MM_STONES: 1, MM_BUST: 0, MM_WINGS: 1 }, wings: ['hedge'] },
+  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 2 }, wings: ['lampworks', 'bathhouse', 'attic', 'kennels'] },
+  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 3 }, wings: ['nursery', 'sleeping', 'study', 'crypt'] },
+  /* linked since rounds 11 and 24 for the Crypt's old tomb and ossuary walls
+     and its stone, which no authored room draws any more (the Crypt is wall
+     20): kept, and last */
+  { mat: 'wall', defines: { MM_ROOMS: 5 }, wings: [] },
+  { mat: 'prop', defines: { MM_STONES: 1, MM_BUST: 0, MM_WINGS: 3 }, wings: [] },
+];
+
+/**
  * THE LENS, FOR ANY VANTAGE (MADDER, round 11; grafted into the room kinds in
  * round 14).
  *
@@ -2545,100 +2623,110 @@ export class Backdrop {
   }
 
   /**
-   * LINK THE OTHER WINGS' WALL PROGRAMS BEHIND THE GAME, once the stage has
-   * warmed, one at a time. Measured on this machine with each program linked
-   * alone (a unique define defeats the program cache): a guarded variant
-   * links in 0.6-1.5 s, so a wing's program linked on demand holds the first
-   * room of that wing about a second -- where a full-size one took 7-9 s.
+   * LINK THE OTHER WINGS' PROGRAMS BEHIND THE GAME, once the stage has warmed,
+   * one at a time, the wings the party can meet next first. The variants are
+   * ROOM_VARIANTS (top of this file).
+   *
+   * WHAT THE PARTY CAN MEET NEXT, FIRST: `order()` (Atmosphere._linkOrder)
+   * names wings most urgent first -- the rooms still ahead on the map of the
+   * wing the party stands in, that wing, the wings its next door can open on,
+   * then the rest -- and is asked again before every job, so the queue
+   * follows the route as it is chosen. Before an expedition exists it names
+   * the Foyer first: every expedition starts there, and the title and the
+   * selects are where its programs get linked. (Until 2026-10-02 this was one
+   * fixed list, walls 1-20 first: the Foyer's busts waited behind nineteen
+   * other wings' walls, and a prop job merged its defines over the LIVE
+   * room's, so one run while a room of another kind was up linked a variant
+   * nobody draws.)
+   *
+   * BEHIND A FIGHT TOO, measured. On 2026-10-02 the fight's frame gaps on this
+   * machine (Intel UHD, ANGLE D3D11) were blamed on these links -- 2.4-6.1 s
+   * each, while one was running. They are not the links: a build that linked
+   * nothing in the fight had the same gaps (120 s of a medium-tier fight,
+   * three runs a side, time lost to gaps of 250 ms or more: foyer-14 11.3
+   * 10.6 14.0 s linking / 11.8 11.2 11.0 s not; nursery-1 11.7 12.2 8.4 s /
+   * 9.3 8.7 7.3 s), 2.5-5 s every ~30 s, and the whole list linked behind a
+   * fight at render scale 0.72 left no gap over 191 ms (two runs). The gaps
+   * are a GPU the fight saturates: see Stage._watchStalls. So the queue runs
+   * wherever the game is -- holding it to the boards cost ~5 minutes of
+   * board time to drain on this machine (a prop variant is a 13-90 s link
+   * there), and every wing reached before then linked its room on demand,
+   * the stand-in up for up to a minute. (A note here used to say 29 fps and
+   * a worst gap of 2.6 s; that was measured with five jobs.)
+   *
+   * A room shown before its program is ready links it on demand, the
+   * stand-in room up meanwhile (Stage._gateLinks, CombatScene._syncColdRoom):
+   * never a different picture, and never a frozen one -- a Kennels room set 10
+   * s into a Foyer fight put the stand-in up within 0.25 s and held it ~52-68
+   * s, the page presenting throughout (worst gap 0.9-1.0 s).
    *
    * ONE TARGET: the composer's. Play draws the walls only through the
    * composer; the canvas program the stage's own warm-up also links is for
-   * its show-the-room-while-post-warms phase, which a variant never sees --
-   * and linking both doubled the work done behind the game.
-   *
-   * THE FOYER'S FIRST, AND AT ONCE. Every expedition starts in the Foyer, and
-   * fourteen of its twenty rooms are its hall with a fire or its gallery
-   * (program 1), so that is the program a player meets first; begun as soon
-   * as the stage has warmed and calibrated, it is linked while the title and
-   * the selects are still up. A draft waited 45 s first, so that a capture
-   * deep-linked into another wing would link its own program alone -- which
-   * bought a faster screenshot with the player's first fight. A room shown
-   * before its program is ready links it on demand, as every program was
-   * before stage.warmup existed: slower with this running beside it, never a
-   * different picture. Measured behind a running Foyer fight on this machine
-   * (Intel UHD, ANGLE D3D11): all five variants linked 69 s after the
-   * warm-up, the frame loop held 29 fps throughout, and its worst gap was
-   * 2.6 s -- BASE's own worst in the same slot, with nothing linking, 7.0 s.
+   * its show-the-room-while-post-warms phase, which a variant never sees.
    *
    * EVERY variant is kept here, the live room's included: three.js releases a
    * program when the last material using it moves off it, so a variant held
    * only by the live walls would be thrown away at the next room of another
-   * kind and linked again at the one after.
+   * kind and linked again at the one after. The materials are KEPT:
+   * disposing one would release the program it holds.
    *
-   * Only where KHR_parallel_shader_compile exists: there the link runs off
-   * the main thread, and without it a background link would be a multi-second
-   * stall on whatever screen is up -- so there a wing's program is linked the
-   * first time one of its rooms is shown, as every program was before
-   * stage.warmup existed. The materials are KEPT: disposing one would release
-   * the program it holds.
+   * Only where KHR_parallel_shader_compile exists: without it a background
+   * link would be a multi-second stall on whatever screen is up, so there a
+   * wing's program is linked the first time one of its rooms is shown.
+   *
+   * @param {object} stage
+   * @param {{ order?: () => string[] }} [opts]
    */
-  precompileRooms(stage) {
+  precompileRooms(stage, { order = null } = {}) {
     if (this._pre || !stage?.renderer) return;
     this._pre = [];
     const R = stage.renderer;
     let gl = null;
     try { gl = R.getContext(); } catch { gl = null; }
     if (!gl || !gl.getExtension('KHR_parallel_shader_compile')) return;
-    const targets = [stage.composer?.renderTarget1 ?? null];
-    /* THE WALLS FIRST, in the order they always were: a wall variant is a
-       0.6-1.5 s link, and holding them back behind round 14's heavier ones
-       left the Graveyard's plots (wall 4) linking on demand in a batch -- the
-       one VOID in its check sheet. Then round 14's: the portal (the Foyer's
-       parlor is seen from a doorway), the props with the gallery's busts
-       (MM_BUST), the room-kind floor, and last the grounds' carved stone
-       (MM_STONES, a 15 s link on this machine), whose first wing is the
-       Greenhouse, the third. */
-    const wall = (n) => [this.wall.geometry, this.wallMat, { MM_ROOMS: n }];
-    const jobs = [
-      wall(1), wall(2), wall(3), wall(4), wall(5), wall(6), wall(7),
-      wall(8), wall(9), wall(10), wall(11),
-      /* round 23 */
-      wall(12), wall(13), wall(14), wall(15), wall(16),
-      /* round 24 */
-      wall(17), wall(18), wall(19), wall(20),
-      [this.portals[0].geometry, this.portals[0].material, null],
-      [this.propGeo, this.propMat, { MM_STONES: 0, MM_BUST: 1 }],
-      [this.floor.geometry, this.floorMat, { MM_FLOORX: 1 }],
-      [this.floor.geometry, this.floorMat, { MM_FLOORX: 2 }],
-      [this.ceiling.geometry, this.ceilMat, { MM_FLOORX: 2 }],
-      [this.propGeo, this.propMat, { MM_STONES: 1, MM_BUST: 0 }],
-      /* round 22: the pumpkin and the yew, alone and with the grounds' stone
-         (the maze's fountain court deals both) */
-      [this.propGeo, this.propMat, { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 1 }],
-      [this.propGeo, this.propMat, { MM_STONES: 1, MM_BUST: 0, MM_WINGS: 1 }],
-      /* round 23: the four wings' own objects */
-      [this.propGeo, this.propMat, { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 2 }],
-      /* round 24: the house's own rooms' objects, and with the Crypt's stone */
-      [this.propGeo, this.propMat, { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 3 }],
-      [this.propGeo, this.propMat, { MM_STONES: 1, MM_BUST: 0, MM_WINGS: 3 }],
-    ];
+    const target = stage.composer?.renderTarget1 ?? null;
+    const MAT = {
+      wall: [this.wall.geometry, this.wallMat],
+      portal: [this.portals[0].geometry, this.portals[0].material],
+      prop: [this.propGeo, this.propMat],
+      floor: [this.floor.geometry, this.floorMat],
+      ceil: [this.ceiling.geometry, this.ceilMat],
+    };
+    const left = ROOM_VARIANTS.filter((j) => MAT[j.mat]);
+    /* the first job serving the most urgent wing; past every named wing, the
+       first left in the table that names one, and the unclaimed last */
+    const next = () => {
+      let want = null;
+      try { want = order ? order() : null; } catch { want = null; }
+      for (const w of (want || [])) {
+        const i = left.findIndex((j) => j.wings.includes(w));
+        if (i >= 0) return i;
+      }
+      const i = left.findIndex((j) => j.wings.length);
+      return i >= 0 ? i : 0;
+    };
+    /* what ran and when, for the probes */
+    const log = this._preLog = [];
     (async () => {
       await new Promise((r) => setTimeout(r, 1500));
-      for (const [geo, mat, defs] of jobs) {
+      while (left.length) {
+        const job = left.splice(next(), 1)[0];
+        const [geo, mat] = MAT[job.mat];
         const m = mat.clone();
-        if (defs) m.defines = Object.assign({}, mat.defines, defs);
+        m.defines = Object.assign({}, mat.defines, job.defines);
         const mesh = new THREE.Mesh(geo, m);
         mesh.frustumCulled = false;
-        for (const rt of targets) {
-          const prev = R.getRenderTarget();
-          R.setRenderTarget(rt);
-          let done = null;
-          try { done = R.compileAsync(mesh, stage.camera, stage.scene); } catch { done = null; }
-          R.setRenderTarget(prev);
-          try { await done; } catch { /* keep going */ }
-          await new Promise((r) => setTimeout(r, 0));
-        }
+        const rec = { mat: job.mat, defines: job.defines, t0: Math.round(performance.now()) };
+        log.push(rec);
+        const prev = R.getRenderTarget();
+        R.setRenderTarget(target);
+        let done = null;
+        try { done = R.compileAsync(mesh, stage.camera, stage.scene); } catch { done = null; }
+        R.setRenderTarget(prev);
+        try { await done; } catch { /* keep going */ }
+        rec.t1 = Math.round(performance.now());
         this._pre.push(m);
+        await new Promise((r) => setTimeout(r, 0));
       }
     })();
   }
