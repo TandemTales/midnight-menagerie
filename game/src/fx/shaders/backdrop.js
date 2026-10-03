@@ -4231,12 +4231,21 @@ float subjectH(vec2 q, float far, out float occ){
        two metres of pure black running the whole width of the frame -- exactly
        the "nothing on it" the rubric asks to be named. mainMenu.png has
        planting and purple roses the length of its railings. */
+#if MM_R25W == 4
+    /* (performance pass: the planting tops out under 1.05 m -- vtop is at
+       most 0.887 -- and over it this term is zero, so its two noise fields
+       are skipped there; the churchyard's variant only) */
+    if (q.y < 1.10) {
+#endif
     float veg = mmFbm3(vec2(q.x*1.9, q.y*3.4) + uSeed);
     /* 0.55-0.90 m of planting, which covers the dwarf wall and the foot of the
        railings the way mainMenu.png's roses do. At round 8's 1.30-2.05 m it
        was a bank as tall as the railing it was supposed to grow under. */
     float vtop = 0.55 + 0.35*mmFbm3(vec2(q.x*0.42 + uSeed*2.0, 0.0));
     s += smoothstep(vtop + 0.16, vtop - 0.55, q.y) * smoothstep(0.26, 0.70, veg) * 1.30;
+#if MM_R25W == 4
+    }
+#endif
     // ...and the dwarf wall is coursed, like everything else built of stone here
     pl += mmBand(q.y, 0.0, 0.45)
         * (1.0 - smoothstep(0.011, 0.011 + aaB, min(mmRowX(q.x + mod(floor(q.y/0.22), 2.0)*0.30, 0.60),
@@ -10389,6 +10398,21 @@ float wallH(vec2 q, out float occ){
        scale), where it can be seen. The whorl scallop now goes to nothing on
        the leader as well as at the tips: on the centre line it stacked into a
        knob and the tall ones read as chess pawns. */
+#if MM_R25W == 4
+    /* (performance pass, 2026-10-02: the wood is drawn only where it can
+       show. On the house's own columns every term it adds is multiplied by
+       (1 - onHouse2), and above 16.5 m no crown of either band reaches --
+       a near fir tops out at 15 m plus its whorl scallop (1.14 m) and its
+       ragged needles (0.21 m), its edge 6.5 px of slope wide at most -- so
+       there every term it adds is zero, and the four noise fields and six
+       tree evaluations it costs are skipped. The churchyard's variant
+       only: the title's house and the Pumpkin Grounds' are untouched.) */
+    float nearM = 0.0, nearLit = 0.0, nearTrunk = 0.0, nearRim = 0.0, nearBr = 0.0, farM = 0.0;
+    if (onHouse2 < 0.5 && hq.y < 16.5 + 7.0*hpx) {
+#define MM_TDECL
+#else
+#define MM_TDECL float
+#endif
     float sp = 3.40;
     float cxs = cx + uSeed*5.1;
     float cell0 = floor(cxs/sp + 0.5);
@@ -10398,7 +10422,7 @@ float wallH(vec2 q, out float occ){
        per ~8 px, where the eye still reads it as needles.) */
     float ragF = min(7.0, 0.12/max(hpx, 1e-4));
     float rag = 0.22 * mmFbm3(vec2(cxs*ragF, hq.y*min(3.0, ragF*0.43)));  // ragged needles
-    float nearM = 0.0, nearLit = 0.0, nearTrunk = 0.0, nearRim = 0.0, nearBr = 0.0;
+    MM_TDECL nearM = 0.0, nearLit = 0.0, nearTrunk = 0.0, nearRim = 0.0, nearBr = 0.0;
     for (int k = -1; k <= 1; k++){
       float fid = cell0 + float(k);
       float fx2 = cxs - (fid + (mmHash11(fid*4.7 + uSeed*1.3) - 0.5)*0.64)*sp;
@@ -10556,7 +10580,7 @@ float wallH(vec2 q, out float occ){
     /* ...and it is LIMBED UP as well, a clear stem under every tree over
        3.5 m: a near fir's bare trunk can only be seen against what is behind
        it, and behind it was the far band's solid skirt down to the ground. */
-    float farM = 0.0;
+    MM_TDECL farM = 0.0;
     for (int k = -1; k <= 1; k++){
       float gid = gcell + float(k);
       float gx2 = cxs2 - (gid + (mmHash11(gid*2.3 + uSeed*0.9) - 0.5)*0.60)*sp2;
@@ -10590,6 +10614,9 @@ float wallH(vec2 q, out float occ){
        -- and the moon's disc is bright enough that 5% of it came through a
        fir in front of it as a whole moon. A tree is opaque; the house's
        silhouette stands at 1.4 for the same reason.) */
+#if MM_R25W == 4
+    }
+#endif
     h += max(nearM, farM) * (1.0 - onHouse2) * noSub * 1.10;
     /* AND THE BELT HAS AN INSIDE. It is the darkest mass in the frame and it
        was one flat value, so eight trees in front of each other read as one
@@ -10617,6 +10644,11 @@ float wallH(vec2 q, out float occ){
        moonlit edge along its top and its moon-side whorls (nearRim, lit and
        out from under the moon cut), and the branch across each gap darker
        than the crown round it.) */
+#if MM_R25W == 4
+    /* (and with no tree here, every term below is zero or is read only
+       where a tree is -- gTreeRim and gTreeTex, under wCov in main()) */
+    if (nearM > 0.0 || farM > 0.0) {
+#endif
     float tex = mmFbm3(vec2(cx*3.1, hq.y*5.3) + uSeed*1.7) - 0.5;
     gTint += inNear * (-0.74 + 0.36*nearLit + 0.55*tex + 1.25*nearRim - 0.30*nearBr) * noSub;
     gTint -= inNear * nearTrunk * 0.30 * noSub;
@@ -10631,6 +10663,9 @@ float wallH(vec2 q, out float occ){
     gTreeF = clamp(farM*(1.0 - inNear)*(1.0 - onHouse2), 0.0, 1.0)*noSub;
     gTreeRim = clamp(nearRim, 0.0, 1.0);
     gTreeTex = clamp((clA - clB)*3.2 + 0.5 + tex*0.6, 0.0, 1.0)*(1.0 - 0.8*nearBr);
+#if MM_R25W == 4
+    }
+#endif
     /* A STRING COURSE and QUOINS on the wings. The house is a black silhouette
        with lit windows in it, and mainMenu.png's is not: its masonry carries a
        banded course at each floor and dressed stone up every corner, and those
@@ -10648,12 +10683,27 @@ float wallH(vec2 q, out float occ){
     /* A STRING COURSE AT EACH FLOOR LINE, and a cap on the plinth -- so the
        lines across the elevation say where the floors are instead of landing at
        4.32 and 6.20, which belonged to no storey at all. */
+#if MM_R25W == 4
+    /* (performance pass: the elevation's courses, quoins, ashlar, window
+       surrounds and ivy are each multiplied by onBody, so off the house's
+       walls they are skipped -- the churchyard's variant only) */
+    if (onBody > 0.0) {
+#endif
     h += onBody * mmBandA(wy, 0.0, 0.16, hpx) * 0.45;
+#if MM_R25W == 4
+    }
+#endif
     h += mmBandA(hq.y, PLINTH - 0.14, PLINTH, hpx) * 0.55 * step(0.5, onA + onB);
+#if MM_R25W == 4
+    if (onBody > 0.0) {
+#endif
     float quoin = max(max(1.0 - smoothstep(0.26, 0.52, abs(abs(cx + 2.6) - 6.20)),
                           1.0 - smoothstep(0.26, 0.52, abs(abs(cx - 3.4) - 9.60))),
                       (1.0 - smoothstep(0.20, 0.44, abs(gax - BAYHW)))*onA*step(hq.y, BAYE));
     h += onBody * quoin * (1.0 - smoothstep(0.014, 0.014 + hpx*1.5, mmRowX(hq.y, 0.48))) * 0.45;
+#if MM_R25W == 4
+    }
+#endif
     /* THE BAY'S PROJECTION, AS VALUE. Relief alone cannot say that 0.85 m of
        wall stands forward of the wall beside it -- the normal is the same on
        both -- so the two faces that prove it are drawn as MATERIAL: the left
@@ -10692,6 +10742,9 @@ float wallH(vec2 q, out float occ){
        and that every block carries its own value -- stone is quarried, and a
        wall of it is never one tone. That per-stone jitter is what makes the
        bond legible as blocks. (REALGAR's finding, grafted.) */
+#if MM_R25W == 4
+    if (onBody > 0.0) {
+#endif
     float crow = floor(hq.y/0.48);
     float cph = (hq.x + uSize.x*0.5 + mod(crow, 2.0)*0.525 + uSeed)/1.05;
     float cbx = abs(fract(cph + 0.5) - 0.5)*1.05;
@@ -10750,6 +10803,9 @@ float wallH(vec2 q, out float occ){
     /* AND THE BLIND BAY'S PANEL, which is a shallow recess with a chamfer and
        no glass -- the thing a chimney breast leaves on an elevation. */
     h += onBody * wBlind * (1.0 - smoothstep(0.030, 0.030 + hpx*1.6, abs(pa2 + 0.06))) * 0.30;
+#if MM_R25W == 4
+    }
+#endif
     /* THE OCULUS in the gable's tympanum: a circular light with a moulded rim
        and a four-part cross of bars, which is where a house of this date puts
        a window it cannot make square. The fifth window SIZE, and the one that
@@ -10767,8 +10823,14 @@ float wallH(vec2 q, out float occ){
     /* Stretched along Y, not X: at 1.15 across and 0.60 up the mass came out in
        horizontal streaks and the front of the house read as SCAFFOLDING. Ivy
        climbs. */
+#if MM_R25W == 4
+    if (onBody > 0.0) {
+#endif
     float ivy = mmFbm3(vec2((hq.x + uSize.x*0.5)*0.62, hq.y*1.75) + uSeed*3.0);
     h += onBody * smoothstep(0.56, 0.90, ivy) * smoothstep(8.5, 1.8, hq.y) * 0.58;
+#if MM_R25W == 4
+    }
+#endif
     /* ROUND 18, THE BASELINE'S OWN LEAK: "stray horizontal black lines running
        across the plots panel's mausoleum masonry ... belonging to no object".
        They belonged to the HOUSE. Every term above -- its silhouette step, the
@@ -11105,6 +11167,14 @@ void main(){
   wGl = 0.12 + 1.6*gWGloss;
 #endif
 
+#if MM_R25W == 4
+  /* (performance pass, 2026-10-02: in the churchyard everything lit here is
+     replaced by the sky wherever the exterior's solidity is 0 -- mix(sky,
+     col, 0) is the sky -- so the lamps are not summed there. The sky is
+     the same, so the frame is.) */
+  float solidL = smoothstep(0.25, 0.85, h);
+  if (solidL > 0.0)
+#endif
   for (int i = 0; i < 5; i++){
     vec4 L = uLights[i];
     if (L.w <= 0.001) continue;
@@ -11640,6 +11710,10 @@ void main(){
 #if MM_ROOMS == 11
     /* (graft: no sky is painted where the court's wall stands solid) */
     if (solid < 0.9999) col = mix(skyColor(q, 2.0), col, solid);
+#elif MM_R25W == 4
+    /* (performance pass: and no sky where the churchyard's masonry, wood
+       and railing stand solid) */
+    if (solid < 1.0) col = mix(skyColor(q, 2.0), col, solid);
 #else
     col = mix(skyColor(q, 2.0), col, solid);
 #endif
@@ -21039,6 +21113,11 @@ void main(){
      the carving's derivative ink turned her into the "pixel blob" both
      judges named. Both stand down as she gets smaller. */
   float brk = 0.34 * (1.0 - rAct*0.62) * (1.0 - 0.75*colSh) * (1.0 - 0.80*stSmall);
+#if MM_WINGS >= 4
+  /* (performance pass, 2026-10-02: a round-25 drawing's normal is set
+     outright just below, so its two noise fields here are not taken) */
+  if (vShape <= 61.5)
+#endif
   N = normalize(N + vec3((mmFbm3(vUv*9.0 + vSeed*3.1) - 0.5)*brk,
                          (mmFbm3(vUv*9.0 + vSeed*7.7) - 0.5)*brk, 0.0));
 #if MM_WINGS >= 4
