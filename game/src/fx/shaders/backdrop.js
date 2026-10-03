@@ -12119,6 +12119,23 @@ ${LIGHT_LIB}
 #ifndef MM_FLOORX
 #define MM_FLOORX 1
 #endif
+/* WHICH FLOOR PATTERNS A ROUND-25 WING'S FLOOR CAN LAY (performance pass,
+   2026-10-02, measured by a census of every room each wing shows): the
+   Foyer planks and flags (0, 2), the Ballroom its checker (1), the
+   Greenhouse flags (2), the Graveyard its turf (11, in the turf branch) --
+   and a ceiling is never one of them. Their variants carry only those;
+   MM_R25W 0, every other room's floor and every ceiling, keeps all. */
+#if MM_R25W == 1
+#define MM_PAT(k) (k == 0 || k == 2)
+#elif MM_R25W == 2
+#define MM_PAT(k) (k == 1)
+#elif MM_R25W == 3
+#define MM_PAT(k) (k == 2)
+#elif MM_R25W == 4
+#define MM_PAT(k) (k == 11)
+#else
+#define MM_PAT(k) (k >= 0)
+#endif
 uniform float uTime, uSeed, uDread, uFogNear, uFogFar, uGloss, uPattern, uGain, uAlbLift;
 uniform float uInk, uLip, uWet;
 uniform float uRunner;         // half-width of the hall runner, metres; 0 = none
@@ -12514,6 +12531,7 @@ void main(){
   } else
 #endif
   if (uPattern < 0.5) {                      // 0 planks
+#if MM_PAT(0)
     /* ROUND 16 ITEM 3, judge 1 on the parlor: the floorboards "do not shorten
        with distance -- a single repeated width all the way to the back wall,
        so the carpet runner sits on a floor that reads as a printed sheet".
@@ -12552,7 +12570,9 @@ void main(){
     /* ...and past that the boards are gone and the floor is polished timber
        with the room's own length in its grain */
     pat += (mmNoise(vec2(w.x*0.26, w.y*2.2) + uSeed) - 0.5) * 0.10 * (1.0 - resP);
+#endif
   } else if (uPattern < 1.5) {               // 1 checker tile
+#if MM_PAT(1)
     vec2 t = floor(w/0.78);
     pat = mod(t.x + t.y, 2.0)*0.62;
     float gx = abs(fract(w.x/0.78 + 0.5) - 0.5)*0.78;
@@ -12575,7 +12595,9 @@ void main(){
       pat = r25Chk*0.62 - (1.0 - smoothstep(0.008, max(0.026, jw), min(gx, gy)))*0.30;
     }
 #endif
+#endif
   } else if (uPattern < 2.5) {               // 2 irregular flagstone
+#if MM_PAT(2)
     /* Flags at 0.95 x 0.70 m, not 1.45 x 1.00: at the camera's distance the
        old cell was 185 px across and read as a slab, where selectKid's flags
        are 60-90 px and read as paving.
@@ -12610,29 +12632,39 @@ void main(){
     pat = (0.44 + 0.62*slab) - joint*0.95 + (mmNoise(w*1.1 + slab*9.0) - 0.5)*0.08;
     r25Joint = joint;
 #endif
+#endif
   } else if (uPattern < 3.5) {               // 3 coffered ceiling beams
+#if MM_PAT(3)
     float bx = abs(fract(w.x/2.70 + 0.5) - 0.5)*2.70;
     float by = abs(fract(w.y/2.70 + 0.5) - 0.5)*2.70;
     pat = (1.0 - smoothstep(0.10, 0.34, min(bx, by)))*0.55
         + mmFbm3(w*1.3 + uSeed)*0.30;
+#endif
   } else if (uPattern < 4.5) {               // 4 vaulted ribs
+#if MM_PAT(4)
     float rib = abs(fract(w.y/3.10 + 0.5) - 0.5)*3.10;
     float arc = abs(w.x) * 0.16;
     pat = (1.0 - smoothstep(0.10, 0.42, rib))*0.70
         + (1.0 - smoothstep(0.35, 1.30, abs(w.x)))*0.35
         - arc*0.20 + mmFbm3(w*1.9 + uSeed)*0.22;
+#endif
   } else if (uPattern < 5.5) {               // 5 glazed panes
+#if MM_PAT(5)
     float gx = abs(fract(w.x/1.55 + 0.5) - 0.5)*1.55;
     float gy = abs(fract(w.y/1.55 + 0.5) - 0.5)*1.55;
     float bar = 1.0 - smoothstep(0.035, max(0.090, jw*1.3), min(gx, gy));
     pat = 0.95 - bar*0.75 + mmFbm3(w*3.2 + uSeed)*0.16;
     cellv = mmHash11(floor(w.x/1.55)*11.3 + floor(w.y/1.55)*19.1 + uSeed);
+#endif
   } else if (uPattern < 6.5) {               // 6 exposed rafters + joists
+#if MM_PAT(6)
     float jb = abs(fract(w.y/1.15 + 0.5) - 0.5)*1.15;
     pat = (1.0 - smoothstep(0.11, 0.26, jb))*0.80;
     pat += (1.0 - smoothstep(0.16, 0.40, abs(w.x)))*0.55;      // ridge beam
     pat = pat*0.9 - 0.25 + mmFbm3(w*2.2 + uSeed)*0.34;
+#endif
   } else if (uPattern < 7.5) {               // 7 plaster rose + moulding
+#if MM_PAT(7)
     /* ROUND 16 ITEM 2, judge 1 on the ballroom: the new plaster ceiling has
        "colour and texture but no rose, rib or beam, and the chandelier hangs
        out of an empty field". It had a rose -- ONE, at length(w), which is
@@ -12669,12 +12701,15 @@ void main(){
     pat += (1.0 - smoothstep(0.9, 1.6, r))*0.55;
     pat += (1.0 - smoothstep(0.05, 0.22, abs(r - 2.4)))*0.40;
     pat = pat*0.7 + 0.22 + mmFbm3(w*1.6 + uSeed)*0.22;
+#endif
   } else if (uPattern < 8.5) {               // 8 industrial truss
+#if MM_PAT(8)
     float bay = abs(fract(w.y/3.40 + 0.5) - 0.5)*3.40;
     float zig = abs(fract((w.x + w.y*0.9)/1.70 + 0.5) - 0.5)*1.70;
     pat = (1.0 - smoothstep(0.09, 0.22, bay))*0.75
         + (1.0 - smoothstep(0.06, 0.16, zig))*(1.0 - smoothstep(0.35, 1.4, bay))*0.55;
     pat = pat*0.9 - 0.18 + mmFbm3(w*2.6 + uSeed)*0.26;
+#endif
 #if MM_FLOORX == 2
   } else if (uPattern > 14.5 && uPattern < 15.5) {   // 15 the attic's roof (round 23)
     /* "The rafters are diagonal lines scrawled over a blue cloud texture"
@@ -12712,6 +12747,7 @@ void main(){
     pat = mix(pat, 0.10, glazed);
 #endif
   } else {                                   // 9 glasshouse roof, bars to a ridge
+#if MM_R25W == 0
     /* ROUND 10, FIX 9: "The Greenhouse's ceiling is a flat black band. A
        glasshouse roof is GLAZED: carry the glazing bars over the top in
        perspective to a ridge, so the shafts in the room have a source."
@@ -12845,6 +12881,7 @@ void main(){
       pat = mix(pat, 0.34 + 0.30*lh, vineR);
     }
 #endif
+#endif
   }
 
   /* ---- A PENDANT HANGS FROM A CEILING ROSE ---------------------------------
@@ -12866,7 +12903,11 @@ void main(){
      _vary(), for nothing but the arithmetic. No atan: a run of acanthus rays
      costs five inverse tangents a pixel and reads as nothing at the 30 px a
      rose occupies, where the concentric mouldings read as all of it. */
+#if MM_R25W == 0
   if (uIsCeiling > 0.5 && uPattern > 2.5 && uPattern < 8.5) {
+#else
+  if (false) {          /* (a ceiling is never a round-25 wing's floor) */
+#endif
     float rose = 0.0;
     float aaR = max(max(mpp.x, mpp.y)*1.2, 0.020);
     for (int i = 0; i < 5; i++){
@@ -13456,7 +13497,11 @@ void main(){
      bright patch lands round each pendant and the bays between them go dark.
      That is what gives the plaster its roses, its ribs and its coffers
      something to be seen by, and it is the room's own lamps doing it. */
+#if MM_R25W == 0
   if (uIsCeiling > 0.5) {
+#else
+  if (false) {          /* (a ceiling is never a round-25 wing's floor) */
+#endif
     float plasterC = step(2.5, uPattern)*step(uPattern, 4.5)
                    + step(6.5, uPattern)*step(uPattern, 7.5);
     if (plasterC > 0.5) {
@@ -15119,6 +15164,10 @@ float ghCrown(vec2 q, vec2 c, float S, float sp, float seed, float px, float kq,
     /* the crown's back fronds stand behind whatever it grows out of */
     dd = max(dd, (clipY - q.y)*step(o, 0.58));
     if (dd > W) continue;
+    /* (performance pass, 2026-10-02: a pixel a pixel or more outside this
+       frond takes none of its paint -- wfIn, mmInkP and so ghLay, the rib
+       and the rim are all zero there -- so only its distance is kept) */
+    if (dd >= max(px, 1e-5)) { dAll = min(dAll, dd); continue; }
     float up = smoothstep(-0.2, 0.6, n/max(W*0.4, 1e-4));
     vec3 fc = g0*(0.62 + 0.38*smoothstep(0.0, 0.55, t))*(0.82 + 0.30*up);
     fc *= 0.50 + 0.50*o;
@@ -15147,6 +15196,10 @@ float ghPot(vec2 q, float H, float urn, float seed, float px, float kq, inout ve
     float body = ghTaper(q, 0.0, H*0.84, bw, tw);
     float rim = mmBox(q - vec2(0.0, H*0.915), vec2(tw*1.08, H*0.085), H*0.03);
     d = min(body, rim);
+    float mouth = wfEll(q - vec2(0.0, H*0.995), vec2(tw*0.96, H*0.055));
+    /* (performance pass: painted only within a pixel of the pot -- past
+       that every ghLay below and the mouth's mix and ink are zero) */
+    if (min(d, max(mouth, H*0.99 - q.y)) < max(px, 1e-5)) {
     vec3 clay = mix(vec3(0.66, 0.31, 0.17), vec3(0.58, 0.34, 0.24), mmHash11(seed*2.7));
     float u = ghCyl(q.x, mix(bw, tw, q.y/H));
     float sh = (0.55 + 0.45*wfRound(u))*(1.0 + 0.30*kq*u);
@@ -15158,9 +15211,9 @@ float ghPot(vec2 q, float H, float urn, float seed, float px, float kq, inout ve
     float ru = ghCyl(q.x, tw*1.08);
     vec3 rc = clay*(0.60 + 0.50*wfRound(ru))*(1.0 + 0.28*kq*ru)*(0.85 + 0.30*smoothstep(H*0.83, H*0.99, q.y));
     ghLay(col, ink, rim, rc, px, 0.95);
-    float mouth = wfEll(q - vec2(0.0, H*0.995), vec2(tw*0.96, H*0.055));
     col = mix(col, vec3(0.10, 0.07, 0.05), wfIn(max(mouth, H*0.99 - q.y), px));
     ink = max(ink, mmInkP(max(mouth, H*0.99 - q.y), px, 1.0)*0.5);
+    }
     d = min(d, mouth);
   } else {
     float foot = mmBox(q - vec2(0.0, H*0.08), vec2(H*0.34, H*0.08), H*0.01);
@@ -15169,6 +15222,8 @@ float ghPot(vec2 q, float H, float urn, float seed, float px, float kq, inout ve
     float bowl = max(wfEll(bq, vec2(H*0.62, H*0.34)), q.y - H*0.86);
     float lip = mmBox(q - vec2(0.0, H*0.90), vec2(H*0.66, H*0.05), H*0.02);
     d = min(min(foot, stem), min(bowl, lip));
+    float mouth = wfEll(q - vec2(0.0, H*0.95), vec2(H*0.60, H*0.05));
+    if (min(d, max(mouth, H*0.945 - q.y)) < max(px, 1e-5)) {
     vec3 stn = vec3(0.56, 0.56, 0.52)*(0.85 + 0.25*mmFbm3(q*8.0/H + seed));
     float u = ghCyl(q.x, H*0.62);
     ghLay(col, ink, foot, stn*0.70, px, 0.9);
@@ -15178,8 +15233,8 @@ float ghPot(vec2 q, float H, float urn, float seed, float px, float kq, inout ve
     bc *= 1.0 - 0.25*smoothstep(0.30, 0.5, gad)*mmLod(H*0.12, px);
     ghLay(col, ink, bowl, bc, px, 0.9);
     ghLay(col, ink, lip, stn*(0.70 + 0.35*smoothstep(H*0.86, H*0.95, q.y)), px, 0.9);
-    float mouth = wfEll(q - vec2(0.0, H*0.95), vec2(H*0.60, H*0.05));
     col = mix(col, vec3(0.10, 0.07, 0.05), wfIn(max(mouth, H*0.945 - q.y), px));
+    }
     d = min(d, mouth);
   }
   return d;
@@ -15226,6 +15281,9 @@ float wfBed(vec2 q, float px, float seed, float kq, bool paint){
   float dAll = 1e3;
   float body = mmBox(q - vec2(0.0, BH*0.5), vec2(HL, BH*0.5), 0.0);
   const float CH = 0.075, BL = 0.225;
+  /* (performance pass: the brick and the coping are painted only within a
+     pixel of them, where ghLay and the moss can lay anything) */
+  if (body < max(px, 1e-5)) {
   float row = floor(q.y/CH);
   float bx = q.x/BL + 0.5*mod(row, 2.0);
   float bid = floor(bx);
@@ -15241,9 +15299,12 @@ float wfBed(vec2 q, float px, float seed, float kq, bool paint){
   brick = mix(brick, vec3(0.10, 0.09, 0.07), mort*0.75*lodB);
   ghLay(col, ink, body, brick, px, 0.9);
   col = mix(col, vec3(0.12, 0.24, 0.10), wfIn(body, px)*smoothstep(0.10, 0.0, q.y)*0.55);
+  }
   float cop = mmBox(q - vec2(0.0, (BH + CT)*0.5), vec2(HL + 0.04, (CT - BH)*0.5), 0.008);
+  if (cop < max(px, 1e-5)) {
   vec3 cc = vec3(0.52, 0.52, 0.47)*(0.70 + 0.40*smoothstep(BH, CT, q.y))*(0.88 + 0.22*mmFbm3(q*vec2(5.0, 20.0) + seed));
   ghLay(col, ink, cop, cc, px, 0.95);
+  }
   gGhFew = 1.0;
   /* the plants, the two outer ones first so the middle one stands in front;
      only their falling outer fronds come down over the coping's face */
