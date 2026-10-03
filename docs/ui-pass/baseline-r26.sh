@@ -12,7 +12,8 @@ one () {
   n="$1"; bright="$2"; shift 2
   for try in 1 2 3; do
     rm -f "shots/DOWLAS-$n.png" "shots/DOWLAS-$n.state.json"
-    python tools/shot.py "DOWLAS-$n" --port 8777 "$@" >/dev/null 2>&1
+    # a crashed page must not hang the job (2026-10-03: one did, for half an hour)
+    timeout 180 python tools/shot.py "DOWLAS-$n" --port 8777 "$@" >/dev/null 2>&1
     v=$(python -c "
 import json
 try:
