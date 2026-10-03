@@ -3057,15 +3057,6 @@ export class Atmosphere {
       L.door = T.door; L.rail = T.rail; L.subForm = T.subForm; L.pool = T.pool;
       L.nearDark = T.nearDark;
       L.rug = T.rug;                    // (round 25 graft: the carpet goes with the room)
-      /* ...and so does WHICH WING the room's programs are drawn for (round
-         25's r25w): it was left behind, so a fight entered from the map --
-         which is the Foyer's palette -- spent its cross-fade drawing the
-         Graveyard's or the Heart's arch and subject in the Foyer's wall and
-         floor variants, then popped to its own. Since the performance pass
-         of 2026-10-02 a wing's variant carries only the arch and subjects
-         its own rooms reach (MM_ARCH, MM_SID in shaders/backdrop.js), so it
-         must never draw another wing's room. */
-      L.r25w = T.r25w;
       this.backdrop.applyPalette(L);
       this._applyGrade(L, k);
       if (this._fade >= 1) { this.live = T; this.backdrop.applyPalette(T); this._applyGrade(T, 1); }

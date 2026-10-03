@@ -217,34 +217,6 @@ precision highp float;
 #ifndef MM_ROOMS
 #define MM_ROOMS 0
 #endif
-/* WHAT ONE OF THE LAST FOUR WINGS' WALLS CAN REACH (performance pass,
-   2026-10-02). Their walls are programs 0-4, which carry every architecture
-   mode and, in 0, every subject the old rooms had; but a room of the Foyer is
-   only ever panelled (uArch 0) and its program-0 subject is only the stair,
-   the Greenhouse is only glass (1) and the terrace (4), the Graveyard only
-   the exterior (5) and the fence (13, which its chapel and mausolea draw
-   through) -- measured by a census of every room each wing can show. A
-   variant carries only those (MM_ARCH, MM_SID; 9 and 0 are "all"), so it
-   draws the same picture with far fewer registers. MM_R25W 0, which every
-   other room uses, keeps everything, as before. (The cross-fade switches the
-   wing with the arch and the subject -- Atmosphere.update -- so a variant is
-   never asked to draw another wing's room.) */
-#if MM_R25W == 1
-#define MM_ARCH 0
-#define MM_SID 1
-#elif MM_R25W == 2
-#define MM_ARCH 0
-#define MM_SID 0
-#elif MM_R25W == 3
-#define MM_ARCH 1
-#define MM_SID 4
-#elif MM_R25W == 4
-#define MM_ARCH 5
-#define MM_SID 13
-#else
-#define MM_ARCH 9
-#define MM_SID 0
-#endif
 ${GLSL_LIB}
 ${LIGHT_LIB}
 uniform float uTime, uSeed, uDread, uFogAmt, uArch, uCool, uGrime, uOpen, uCeil, uGain;
@@ -3304,7 +3276,7 @@ float subjectH(vec2 q, float far, out float occ){
 #endif
 
   } else if (sid < 1.5) {
-#if MM_ROOMS == 0 && (MM_SID == 0 || MM_SID == 1)
+#if MM_ROOMS == 0
     /* 1  STAIR -- the Forgotten Foyer. "a sweeping staircase in the
        background". An imperial stair: two flights rising from the outside to a
        landing over the doorway, a balustrade on every run, newels at the
@@ -3587,7 +3559,7 @@ float subjectH(vec2 q, float far, out float occ){
 
 #endif
   } else if (sid < 2.5) {
-#if MM_ROOMS == 0 && (MM_SID == 0 || MM_SID == 2)
+#if MM_ROOMS == 0
     /* 2  BOOKCASE -- the Grand Study and Library. Cases to the cornice, every
        bay full of spines, and the rail a rolling ladder runs on across them. */
     float bay = mmRowX(q.x, 2.35), ct = max(uCeil - 0.55, 2.2);
@@ -3603,7 +3575,7 @@ float subjectH(vec2 q, float far, out float occ){
 
 #endif
   } else if (sid < 3.5) {
-#if (MM_ROOMS == 0 && (MM_SID == 0 || MM_SID == 3)) || MM_ROOMS == 5
+#if MM_ROOMS == 0 || MM_ROOMS == 5
     /* 3  LOCULI -- the Crypt and Ossuary. "arched niches of neatly stacked
        skulls and bones".
 
@@ -3713,7 +3685,7 @@ float subjectH(vec2 q, float far, out float occ){
 
 #endif
   } else if (sid < 4.5) {
-#if MM_ROOMS == 0 && (MM_SID == 0 || MM_SID == 4)
+#if MM_ROOMS == 0
     /* 4  TERRACE -- the Impossible Greenhouse. "potted ferns crowding the
        edges": three stepped planting benches against the glazing, the pots on
        them, and the iron legs that carry them. */
@@ -3726,7 +3698,7 @@ float subjectH(vec2 q, float far, out float occ){
 
 #endif
   } else if (sid < 5.5) {
-#if MM_ROOMS == 0 && (MM_SID == 0 || MM_SID == 5)
+#if MM_ROOMS == 0
     /* 5  BENCH -- the Lampworks. "workbenches of glass chimneys at the edges"
        under "rows of hanging oil lamps". */
     s += mmBand(q.y, 0.94, 1.08) * 0.90;                      // the bench top
@@ -3740,7 +3712,7 @@ float subjectH(vec2 q, float far, out float occ){
 
 #endif
   } else if (sid < 6.5) {
-#if MM_ROOMS == 0 && (MM_SID == 0 || MM_SID == 6)
+#if MM_ROOMS == 0
     /* 6  WARDROBE -- the Sleeping Quarters. "tall wardrobes with doors slightly
        ajar": a carcass, a cornice over it, two panelled doors, and a black gap
        where one of them stands open. */
@@ -3757,7 +3729,7 @@ float subjectH(vec2 q, float far, out float occ){
 
 #endif
   } else if (sid < 7.5) {
-#if MM_ROOMS == 0 && (MM_SID == 0 || MM_SID == 7)
+#if MM_ROOMS == 0
     /* 7  PENS -- the Kennels and Animal Ward. "rows of wooden kennel pens",
        with the staves, the gate brace and the hook rail of leashes over them. */
     float i = floor(q.x/2.20), px = q.x - (i + 0.5)*2.20;
@@ -3770,7 +3742,7 @@ float subjectH(vec2 q, float far, out float occ){
 
 #endif
   } else if (sid < 8.5) {
-#if MM_ROOMS == 0 && (MM_SID == 0 || MM_SID == 8)
+#if MM_ROOMS == 0
     /* 8  TOPIARY -- the Withered Hedge Maze. "broken topiary animals": a
        clipped ball and a cone on a standard, standing above the hedge line,
        and an arched way cut through it. */
@@ -3786,7 +3758,7 @@ float subjectH(vec2 q, float far, out float occ){
 
 #endif
   } else if (sid < 9.5) {
-#if MM_ROOMS == 0 && (MM_SID == 0 || MM_SID == 9)
+#if MM_ROOMS == 0
     /* 9  TIMBER -- the Secret Passages. "bare timber and brick": studs, the
        noggins between them, a peephole, and the dumbwaiter's hatch. */
     s += (1.0 - smoothstep(0.070, 0.130, mmRowX(q.x, 0.62))) * mmBand(q.y, 0.0, uCeil) * 0.70;
@@ -3802,7 +3774,7 @@ float subjectH(vec2 q, float far, out float occ){
 
 #endif
   } else if (sid < 10.5) {
-#if MM_ROOMS == 0 && (MM_SID == 0 || MM_SID == 10)
+#if MM_ROOMS == 0
     /* 10  MIRRORS -- the Ballroom and Velvet Suites. A pier glass between every
        pair of windows, each under a carved pelmet, with a velvet drape falling
        either side of it. (Program 0's copy: every Ballroom room draws its
@@ -3913,7 +3885,7 @@ float subjectH(vec2 q, float far, out float occ){
     occSet = 1.0;
 #endif
   } else if (sid < 11.5) {
-#if MM_ROOMS == 0 && (MM_SID == 0 || MM_SID == 11)
+#if MM_ROOMS == 0
     /* 11  DADO -- the Bathhouse and Rain Wing. "puddles on patterned tiles": a
        tiled dado with a bullnose cap, and the brass standpipes on it. */
     s += mmBand(q.y, 0.0, 1.52)
@@ -3928,7 +3900,7 @@ float subjectH(vec2 q, float far, out float occ){
 
 #endif
   } else if (sid < 12.5) {
-#if MM_ROOMS == 0 && (MM_SID == 0 || MM_SID == 12)
+#if MM_ROOMS == 0
     /* 12  RAFTERS -- the Moonlit Attic and Observatory. "exposed rafters" and
        "star charts pinned to beams". A rafter RAKES, so it is drawn on a sheared
        coordinate and not as another upright. */
@@ -3950,7 +3922,7 @@ float subjectH(vec2 q, float far, out float occ){
 
 #endif
   } else if (sid < 13.5) {
-#if (MM_ROOMS == 0 && (MM_SID == 0 || MM_SID == 13)) || MM_ROOMS == 4
+#if MM_ROOMS == 0 || MM_ROOMS == 4
     /* 13  FENCE -- the Mansion Graveyard. mainMenu.png's own iron fence: a
        plinth, spear-headed railings, piers with ball finials, and the estate
        mausoleum standing behind them. Drawn in FRONT of the house's mass, which
@@ -4258,7 +4230,7 @@ float subjectH(vec2 q, float far, out float occ){
 #if MM_ROOMS == 11
     s = subjCoping(q, cx, dqm, occ);
     occSet = 1.0;
-#elif MM_ROOMS == 0 && (MM_SID == 0 || MM_SID == 14)
+#elif MM_ROOMS == 0
     /* 14  COPING -- the Moon Courtyard and Pumpkin Grounds. "a moonlit WALLED
        courtyard": a coursed wall with a coping course along its top, buttresses
        against it, and the pumpkins heaped at its foot. */
@@ -4277,7 +4249,7 @@ float subjectH(vec2 q, float far, out float occ){
 
 #endif
   } else if (sid < 15.5) {
-#if MM_ROOMS == 0 && (MM_SID == 0 || MM_SID == 15)
+#if MM_ROOMS == 0
     /* 15  TOYSHELF -- the Forgotten Nursery. "porcelain dolls on shelves", "a
        toy chest pushed to the edge": a picture-rail shelf of them at a child's
        eye level, the chests under it, and the nightlight's own little niche. */
@@ -4291,7 +4263,7 @@ float subjectH(vec2 q, float far, out float occ){
 
 #endif
   } else if (sid < 16.5) {
-#if MM_ROOMS == 0 && (MM_SID == 0 || MM_SID == 16)
+#if MM_ROOMS == 0
     /* 16  RANGE -- the Kitchens and Cellars. "iron ovens", "copper pots", "jam
        jars and candy jars on shelves". */
     float i = floor(q.x/5.40), rx = q.x - (i + 0.5)*5.40;
@@ -4306,7 +4278,7 @@ float subjectH(vec2 q, float far, out float occ){
 
 #endif
   } else {
-#if MM_ROOMS == 0 && (MM_SID == 0 || MM_SID == 17)
+#if MM_ROOMS == 0
     /* 17  HEARTH -- the Heart of the House. "shelves of carefully kept
        belongings from every wing, a hearth". One fireplace, dead centre, and it
        is the only room in the house with a mantel. */
@@ -9740,7 +9712,7 @@ float wallH(vec2 q, out float occ){
   float clear = 1.0 - occ;
 
   if (uArch < 0.5) {
-#if (MM_ROOMS == 0 || MM_ROOMS == 1 || MM_ROOMS == 2) && (MM_ARCH == 9 || MM_ARCH == 0)
+#if MM_ROOMS == 0 || MM_ROOMS == 1 || MM_ROOMS == 2
     // ---- PANEL: wainscot, chair rail, tall stiles, crown, arched doorway ----
     /* THE HORIZONTAL SET-OUT OF A PANELLED WALL, all of it from the table:
        skirting 0.15-0.25, dado rail 0.85-1.00, picture rail 1.80-2.00, cornice
@@ -9945,7 +9917,7 @@ float wallH(vec2 q, out float occ){
 
 #endif
   } else if (uArch < 1.5) {
-#if (MM_ROOMS == 0 || MM_ROOMS == 3 || MM_ROOMS == 7) && (MM_ARCH == 9 || MM_ARCH == 1)
+#if MM_ROOMS == 0 || MM_ROOMS == 3 || MM_ROOMS == 7
     // ---- GLASS: mullioned conservatory / bathhouse glazing ------------------
     float mx = abs(fract(q.x/1.05 + 0.5) - 0.5) * 1.05;
     float my = abs(fract((q.y-0.9)/1.35 + 0.5) - 0.5) * 1.35;
@@ -10074,7 +10046,7 @@ float wallH(vec2 q, out float occ){
 
 #endif
   } else if (uArch < 2.5) {
-#if (MM_ROOMS == 0 || MM_ROOMS == 5) && (MM_ARCH == 9 || MM_ARCH == 2)
+#if MM_ROOMS == 0 || MM_ROOMS == 5
     // ---- STONE: coursed blocks with recessed niches -------------------------
     float row = floor(q.y/0.52);
     float off = mod(row, 2.0)*0.62 + mmHash11(row+uSeed)*0.30;
@@ -10101,7 +10073,7 @@ float wallH(vec2 q, out float occ){
 
 #endif
   } else if (uArch < 3.5) {
-#if MM_ROOMS == 0 && (MM_ARCH == 9 || MM_ARCH == 3)
+#if MM_ROOMS == 0
     // ---- FOLIAGE: hedge / canopy mass ---------------------------------------
     vec2 w = mmWarp(q*0.35, 0.30, 1.1);
     float mass = mmRidge(w*1.5 + uSeed)*0.95 + mmFbm3(w*4.0)*0.5;
@@ -10111,7 +10083,7 @@ float wallH(vec2 q, out float occ){
 
 #endif
   } else if (uArch < 4.5) {
-#if (MM_ROOMS == 0 || MM_ROOMS == 6) && (MM_ARCH == 9 || MM_ARCH == 4)
+#if MM_ROOMS == 0 || MM_ROOMS == 6
     // ---- INDUSTRIAL: rafters, pipes, hanging lamp rails ---------------------
     float px = abs(fract(q.x/2.4 + 0.5) - 0.5) * 2.4;
     h += (1.0 - smoothstep(0.11, 0.21, px)) * 1.05 * clear;                  // uprights
@@ -10130,7 +10102,7 @@ float wallH(vec2 q, out float occ){
      Grounds' fight is the house's heaviest frame; they are not drawn.) */
   if (q.y > 2.40) {
 #endif
-#if (MM_ROOMS == 0 || MM_ROOMS == 4 || MM_ROOMS == 11) && (MM_ARCH == 9 || MM_ARCH == 5)
+#if MM_ROOMS == 0 || MM_ROOMS == 4 || MM_ROOMS == 11
     // ---- EXTERIOR: the house's skyline, and a treeline in front of it --------
     // Only the silhouette matters here; the sky is painted in the colour pass.
     /* uHouse.x stands the house off centre per room, and everything below that
@@ -11170,10 +11142,11 @@ void main(){
 #if MM_R25W == 4
   /* (performance pass, 2026-10-02: in the churchyard everything lit here is
      replaced by the sky wherever the exterior's solidity is 0 -- mix(sky,
-     col, 0) is the sky -- so the lamps are not summed there. The sky is
-     the same, so the frame is.) */
+     col, 0) is the sky -- so the lamps are not summed there. Only under the
+     exterior arch: this variant also draws whatever room a cross-fade is
+     passing through, whatever its arch.) */
   float solidL = smoothstep(0.25, 0.85, h);
-  if (solidL > 0.0)
+  if (uArch < 4.5 || solidL > 0.0)
 #endif
   for (int i = 0; i < 5; i++){
     vec4 L = uLights[i];
@@ -11271,7 +11244,7 @@ void main(){
 
   // ---- the doorway breathes cold light from the next room -------------------
   if (uArch < 0.5) {
-#if (MM_ROOMS == 0 || MM_ROOMS == 1 || MM_ROOMS == 2) && (MM_ARCH == 9 || MM_ARCH == 0)
+#if MM_ROOMS == 0 || MM_ROOMS == 1 || MM_ROOMS == 2
     float a = archSD(q);
     float inside = smoothstep(0.02, -0.06, a);
     /* A DOORWAY IS A HOLE. The old fill painted uOpenGlow over the whole
@@ -11301,7 +11274,7 @@ void main(){
      crosses this band of the frame, and a bright window there is the one thing
      the prompt pack said an interior must not put in it. */
   if (uSubject > 0.5 && uSubject < 1.5 && uFar > 0.5) {
-#if MM_ROOMS == 0 && (MM_SID == 0 || MM_SID == 1)
+#if MM_ROOMS == 0
     float cxw = q.x - uSize.x*0.5 - uSubjX;
     float wd  = mmArch(vec2(cxw, q.y - 4.95), 1.06, 1.42);
     float glass = mmSolid(wd + 0.095);
@@ -11705,7 +11678,7 @@ void main(){
 #endif
   // ---- exterior: everything above the roofline is sky ------------------------
   if (uArch > 4.5) {
-#if (MM_ROOMS == 0 || MM_ROOMS == 4 || MM_ROOMS == 11) && (MM_ARCH == 9 || MM_ARCH == 5)
+#if MM_ROOMS == 0 || MM_ROOMS == 4 || MM_ROOMS == 11
     float solid = smoothstep(0.25, 0.85, h);
 #if MM_ROOMS == 11
     /* (graft: no sky is painted where the court's wall stands solid) */
@@ -11953,7 +11926,7 @@ void main(){
      exterior mode uses, and a lower horizon because there is no roofline to
      stand the sky above -- the hedge itself is the skyline. */
   if (uOpenSky > 0.5 && uArch < 4.5) {
-#if MM_ROOMS == 0 && MM_ARCH == 9
+#if MM_ROOMS == 0
     float solidO = smoothstep(0.25, 0.85, h);
     col = mix(skyColor(q, 0.6), col, solidO);
 #endif
@@ -11979,7 +11952,6 @@ void main(){
   // NOT where there is no ceiling: this multiplier is 0.10 above uCeil, and a
   // ceiling-less region is handed a 6.4 m fallback, so it would crush the sky
   // the branch above just painted back to the void it replaced.
-#if MM_ARCH != 5
   if (uArch < 4.5 && uOpenSky < 0.5) {
 #if MM_ROOMS == 6 || MM_ROOMS == 7
     /* ROUND 14 GRAFT, item 5, both judges on both sheets: "both sheets lose
@@ -12032,7 +12004,6 @@ void main(){
     col *= mix(0.72, 1.0, smoothstep(uCeil, uCeil - 1.5, q.y));  // shadow under the cornice
 #endif
   }
-#endif
 
   /* ---- THE BAND THE CREATURES STAND AGAINST ------------------------------
      ROUND 16 ITEM 4, the regression round 15 introduced, judge 1 on combat:
@@ -12118,23 +12089,6 @@ ${LIGHT_LIB}
 #endif
 #ifndef MM_FLOORX
 #define MM_FLOORX 1
-#endif
-/* WHICH FLOOR PATTERNS A ROUND-25 WING'S FLOOR CAN LAY (performance pass,
-   2026-10-02, measured by a census of every room each wing shows): the
-   Foyer planks and flags (0, 2), the Ballroom its checker (1), the
-   Greenhouse flags (2), the Graveyard its turf (11, in the turf branch) --
-   and a ceiling is never one of them. Their variants carry only those;
-   MM_R25W 0, every other room's floor and every ceiling, keeps all. */
-#if MM_R25W == 1
-#define MM_PAT(k) (k == 0 || k == 2)
-#elif MM_R25W == 2
-#define MM_PAT(k) (k == 1)
-#elif MM_R25W == 3
-#define MM_PAT(k) (k == 2)
-#elif MM_R25W == 4
-#define MM_PAT(k) (k == 11)
-#else
-#define MM_PAT(k) (k >= 0)
 #endif
 uniform float uTime, uSeed, uDread, uFogNear, uFogFar, uGloss, uPattern, uGain, uAlbLift;
 uniform float uInk, uLip, uWet;
@@ -12531,7 +12485,6 @@ void main(){
   } else
 #endif
   if (uPattern < 0.5) {                      // 0 planks
-#if MM_PAT(0)
     /* ROUND 16 ITEM 3, judge 1 on the parlor: the floorboards "do not shorten
        with distance -- a single repeated width all the way to the back wall,
        so the carpet runner sits on a floor that reads as a printed sheet".
@@ -12570,9 +12523,7 @@ void main(){
     /* ...and past that the boards are gone and the floor is polished timber
        with the room's own length in its grain */
     pat += (mmNoise(vec2(w.x*0.26, w.y*2.2) + uSeed) - 0.5) * 0.10 * (1.0 - resP);
-#endif
   } else if (uPattern < 1.5) {               // 1 checker tile
-#if MM_PAT(1)
     vec2 t = floor(w/0.78);
     pat = mod(t.x + t.y, 2.0)*0.62;
     float gx = abs(fract(w.x/0.78 + 0.5) - 0.5)*0.78;
@@ -12595,9 +12546,7 @@ void main(){
       pat = r25Chk*0.62 - (1.0 - smoothstep(0.008, max(0.026, jw), min(gx, gy)))*0.30;
     }
 #endif
-#endif
   } else if (uPattern < 2.5) {               // 2 irregular flagstone
-#if MM_PAT(2)
     /* Flags at 0.95 x 0.70 m, not 1.45 x 1.00: at the camera's distance the
        old cell was 185 px across and read as a slab, where selectKid's flags
        are 60-90 px and read as paving.
@@ -12632,39 +12581,29 @@ void main(){
     pat = (0.44 + 0.62*slab) - joint*0.95 + (mmNoise(w*1.1 + slab*9.0) - 0.5)*0.08;
     r25Joint = joint;
 #endif
-#endif
   } else if (uPattern < 3.5) {               // 3 coffered ceiling beams
-#if MM_PAT(3)
     float bx = abs(fract(w.x/2.70 + 0.5) - 0.5)*2.70;
     float by = abs(fract(w.y/2.70 + 0.5) - 0.5)*2.70;
     pat = (1.0 - smoothstep(0.10, 0.34, min(bx, by)))*0.55
         + mmFbm3(w*1.3 + uSeed)*0.30;
-#endif
   } else if (uPattern < 4.5) {               // 4 vaulted ribs
-#if MM_PAT(4)
     float rib = abs(fract(w.y/3.10 + 0.5) - 0.5)*3.10;
     float arc = abs(w.x) * 0.16;
     pat = (1.0 - smoothstep(0.10, 0.42, rib))*0.70
         + (1.0 - smoothstep(0.35, 1.30, abs(w.x)))*0.35
         - arc*0.20 + mmFbm3(w*1.9 + uSeed)*0.22;
-#endif
   } else if (uPattern < 5.5) {               // 5 glazed panes
-#if MM_PAT(5)
     float gx = abs(fract(w.x/1.55 + 0.5) - 0.5)*1.55;
     float gy = abs(fract(w.y/1.55 + 0.5) - 0.5)*1.55;
     float bar = 1.0 - smoothstep(0.035, max(0.090, jw*1.3), min(gx, gy));
     pat = 0.95 - bar*0.75 + mmFbm3(w*3.2 + uSeed)*0.16;
     cellv = mmHash11(floor(w.x/1.55)*11.3 + floor(w.y/1.55)*19.1 + uSeed);
-#endif
   } else if (uPattern < 6.5) {               // 6 exposed rafters + joists
-#if MM_PAT(6)
     float jb = abs(fract(w.y/1.15 + 0.5) - 0.5)*1.15;
     pat = (1.0 - smoothstep(0.11, 0.26, jb))*0.80;
     pat += (1.0 - smoothstep(0.16, 0.40, abs(w.x)))*0.55;      // ridge beam
     pat = pat*0.9 - 0.25 + mmFbm3(w*2.2 + uSeed)*0.34;
-#endif
   } else if (uPattern < 7.5) {               // 7 plaster rose + moulding
-#if MM_PAT(7)
     /* ROUND 16 ITEM 2, judge 1 on the ballroom: the new plaster ceiling has
        "colour and texture but no rose, rib or beam, and the chandelier hangs
        out of an empty field". It had a rose -- ONE, at length(w), which is
@@ -12701,15 +12640,12 @@ void main(){
     pat += (1.0 - smoothstep(0.9, 1.6, r))*0.55;
     pat += (1.0 - smoothstep(0.05, 0.22, abs(r - 2.4)))*0.40;
     pat = pat*0.7 + 0.22 + mmFbm3(w*1.6 + uSeed)*0.22;
-#endif
   } else if (uPattern < 8.5) {               // 8 industrial truss
-#if MM_PAT(8)
     float bay = abs(fract(w.y/3.40 + 0.5) - 0.5)*3.40;
     float zig = abs(fract((w.x + w.y*0.9)/1.70 + 0.5) - 0.5)*1.70;
     pat = (1.0 - smoothstep(0.09, 0.22, bay))*0.75
         + (1.0 - smoothstep(0.06, 0.16, zig))*(1.0 - smoothstep(0.35, 1.4, bay))*0.55;
     pat = pat*0.9 - 0.18 + mmFbm3(w*2.6 + uSeed)*0.26;
-#endif
 #if MM_FLOORX == 2
   } else if (uPattern > 14.5 && uPattern < 15.5) {   // 15 the attic's roof (round 23)
     /* "The rafters are diagonal lines scrawled over a blue cloud texture"
@@ -12747,7 +12683,6 @@ void main(){
     pat = mix(pat, 0.10, glazed);
 #endif
   } else {                                   // 9 glasshouse roof, bars to a ridge
-#if MM_R25W == 0
     /* ROUND 10, FIX 9: "The Greenhouse's ceiling is a flat black band. A
        glasshouse roof is GLAZED: carry the glazing bars over the top in
        perspective to a ridge, so the shafts in the room have a source."
@@ -12881,7 +12816,6 @@ void main(){
       pat = mix(pat, 0.34 + 0.30*lh, vineR);
     }
 #endif
-#endif
   }
 
   /* ---- A PENDANT HANGS FROM A CEILING ROSE ---------------------------------
@@ -12903,11 +12837,7 @@ void main(){
      _vary(), for nothing but the arithmetic. No atan: a run of acanthus rays
      costs five inverse tangents a pixel and reads as nothing at the 30 px a
      rose occupies, where the concentric mouldings read as all of it. */
-#if MM_R25W == 0
   if (uIsCeiling > 0.5 && uPattern > 2.5 && uPattern < 8.5) {
-#else
-  if (false) {          /* (a ceiling is never a round-25 wing's floor) */
-#endif
     float rose = 0.0;
     float aaR = max(max(mpp.x, mpp.y)*1.2, 0.020);
     for (int i = 0; i < 5; i++){
@@ -13497,11 +13427,7 @@ void main(){
      bright patch lands round each pendant and the bays between them go dark.
      That is what gives the plaster its roses, its ribs and its coffers
      something to be seen by, and it is the room's own lamps doing it. */
-#if MM_R25W == 0
   if (uIsCeiling > 0.5) {
-#else
-  if (false) {          /* (a ceiling is never a round-25 wing's floor) */
-#endif
     float plasterC = step(2.5, uPattern)*step(uPattern, 4.5)
                    + step(6.5, uPattern)*step(uPattern, 7.5);
     if (plasterC > 0.5) {
@@ -13893,6 +13819,7 @@ void main(){
 /* ROUND 25 (AUREOLIN): the Foyer's, the Greenhouse's, the Graveyard's and
    the Ballroom's objects, drawn -- pasted into PROP_FRAG under MM_WINGS 4. */
 const R25_PROPS = /* glsl */`
+#if MM_WINGS >= 4
 /* (performance pass, 2026-10-02) A PIXEL 2 cm OR MORE OUTSIDE A DRAWING
    IS DISCARDED, so it is not painted. shapeField hands main() -(d/wfNom +
    an erosion of at most 0.00175), so past 0.02 local units -- 0.0073 of the
@@ -13900,8 +13827,6 @@ const R25_PROPS = /* glsl */`
    it; its silhouette distance, which the outline's derivatives read, is
    still taken in full. */
 #define WF_GONE 0.02
-
-#if MM_WINGS >= 4
 /* ═══════════ ROUND 25: THE LAST FOUR ROOMS' THINGS, DRAWN ═══════════════
    Both survey judges, on the Foyer, the Greenhouse, the Graveyard and the
    Ballroom: their objects are "upscaled low-res sprites that both
