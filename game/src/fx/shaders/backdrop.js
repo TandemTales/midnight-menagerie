@@ -4203,12 +4203,21 @@ float subjectH(vec2 q, float far, out float occ){
        two metres of pure black running the whole width of the frame -- exactly
        the "nothing on it" the rubric asks to be named. mainMenu.png has
        planting and purple roses the length of its railings. */
+#if MM_R25W == 4
+    /* (performance pass: the planting tops out under 1.05 m -- vtop is at
+       most 0.887 -- and over it this term is zero, so its two noise fields
+       are skipped there; the churchyard's variant only) */
+    if (q.y < 1.10) {
+#endif
     float veg = mmFbm3(vec2(q.x*1.9, q.y*3.4) + uSeed);
     /* 0.55-0.90 m of planting, which covers the dwarf wall and the foot of the
        railings the way mainMenu.png's roses do. At round 8's 1.30-2.05 m it
        was a bank as tall as the railing it was supposed to grow under. */
     float vtop = 0.55 + 0.35*mmFbm3(vec2(q.x*0.42 + uSeed*2.0, 0.0));
     s += smoothstep(vtop + 0.16, vtop - 0.55, q.y) * smoothstep(0.26, 0.70, veg) * 1.30;
+#if MM_R25W == 4
+    }
+#endif
     // ...and the dwarf wall is coursed, like everything else built of stone here
     pl += mmBand(q.y, 0.0, 0.45)
         * (1.0 - smoothstep(0.011, 0.011 + aaB, min(mmRowX(q.x + mod(floor(q.y/0.22), 2.0)*0.30, 0.60),
@@ -10361,6 +10370,21 @@ float wallH(vec2 q, out float occ){
        scale), where it can be seen. The whorl scallop now goes to nothing on
        the leader as well as at the tips: on the centre line it stacked into a
        knob and the tall ones read as chess pawns. */
+#if MM_R25W == 4
+    /* (performance pass, 2026-10-02: the wood is drawn only where it can
+       show. On the house's own columns every term it adds is multiplied by
+       (1 - onHouse2), and above 16.5 m no crown of either band reaches --
+       a near fir tops out at 15 m plus its whorl scallop (1.14 m) and its
+       ragged needles (0.21 m), its edge 6.5 px of slope wide at most -- so
+       there every term it adds is zero, and the four noise fields and six
+       tree evaluations it costs are skipped. The churchyard's variant
+       only: the title's house and the Pumpkin Grounds' are untouched.) */
+    float nearM = 0.0, nearLit = 0.0, nearTrunk = 0.0, nearRim = 0.0, nearBr = 0.0, farM = 0.0;
+    if (onHouse2 < 0.5 && hq.y < 16.5 + 7.0*hpx) {
+#define MM_TDECL
+#else
+#define MM_TDECL float
+#endif
     float sp = 3.40;
     float cxs = cx + uSeed*5.1;
     float cell0 = floor(cxs/sp + 0.5);
@@ -10370,7 +10394,7 @@ float wallH(vec2 q, out float occ){
        per ~8 px, where the eye still reads it as needles.) */
     float ragF = min(7.0, 0.12/max(hpx, 1e-4));
     float rag = 0.22 * mmFbm3(vec2(cxs*ragF, hq.y*min(3.0, ragF*0.43)));  // ragged needles
-    float nearM = 0.0, nearLit = 0.0, nearTrunk = 0.0, nearRim = 0.0, nearBr = 0.0;
+    MM_TDECL nearM = 0.0, nearLit = 0.0, nearTrunk = 0.0, nearRim = 0.0, nearBr = 0.0;
     for (int k = -1; k <= 1; k++){
       float fid = cell0 + float(k);
       float fx2 = cxs - (fid + (mmHash11(fid*4.7 + uSeed*1.3) - 0.5)*0.64)*sp;
@@ -10528,7 +10552,7 @@ float wallH(vec2 q, out float occ){
     /* ...and it is LIMBED UP as well, a clear stem under every tree over
        3.5 m: a near fir's bare trunk can only be seen against what is behind
        it, and behind it was the far band's solid skirt down to the ground. */
-    float farM = 0.0;
+    MM_TDECL farM = 0.0;
     for (int k = -1; k <= 1; k++){
       float gid = gcell + float(k);
       float gx2 = cxs2 - (gid + (mmHash11(gid*2.3 + uSeed*0.9) - 0.5)*0.60)*sp2;
@@ -10562,6 +10586,9 @@ float wallH(vec2 q, out float occ){
        -- and the moon's disc is bright enough that 5% of it came through a
        fir in front of it as a whole moon. A tree is opaque; the house's
        silhouette stands at 1.4 for the same reason.) */
+#if MM_R25W == 4
+    }
+#endif
     h += max(nearM, farM) * (1.0 - onHouse2) * noSub * 1.10;
     /* AND THE BELT HAS AN INSIDE. It is the darkest mass in the frame and it
        was one flat value, so eight trees in front of each other read as one
@@ -10589,6 +10616,11 @@ float wallH(vec2 q, out float occ){
        moonlit edge along its top and its moon-side whorls (nearRim, lit and
        out from under the moon cut), and the branch across each gap darker
        than the crown round it.) */
+#if MM_R25W == 4
+    /* (and with no tree here, every term below is zero or is read only
+       where a tree is -- gTreeRim and gTreeTex, under wCov in main()) */
+    if (nearM > 0.0 || farM > 0.0) {
+#endif
     float tex = mmFbm3(vec2(cx*3.1, hq.y*5.3) + uSeed*1.7) - 0.5;
     gTint += inNear * (-0.74 + 0.36*nearLit + 0.55*tex + 1.25*nearRim - 0.30*nearBr) * noSub;
     gTint -= inNear * nearTrunk * 0.30 * noSub;
@@ -10603,6 +10635,9 @@ float wallH(vec2 q, out float occ){
     gTreeF = clamp(farM*(1.0 - inNear)*(1.0 - onHouse2), 0.0, 1.0)*noSub;
     gTreeRim = clamp(nearRim, 0.0, 1.0);
     gTreeTex = clamp((clA - clB)*3.2 + 0.5 + tex*0.6, 0.0, 1.0)*(1.0 - 0.8*nearBr);
+#if MM_R25W == 4
+    }
+#endif
     /* A STRING COURSE and QUOINS on the wings. The house is a black silhouette
        with lit windows in it, and mainMenu.png's is not: its masonry carries a
        banded course at each floor and dressed stone up every corner, and those
@@ -10620,12 +10655,27 @@ float wallH(vec2 q, out float occ){
     /* A STRING COURSE AT EACH FLOOR LINE, and a cap on the plinth -- so the
        lines across the elevation say where the floors are instead of landing at
        4.32 and 6.20, which belonged to no storey at all. */
+#if MM_R25W == 4
+    /* (performance pass: the elevation's courses, quoins, ashlar, window
+       surrounds and ivy are each multiplied by onBody, so off the house's
+       walls they are skipped -- the churchyard's variant only) */
+    if (onBody > 0.0) {
+#endif
     h += onBody * mmBandA(wy, 0.0, 0.16, hpx) * 0.45;
+#if MM_R25W == 4
+    }
+#endif
     h += mmBandA(hq.y, PLINTH - 0.14, PLINTH, hpx) * 0.55 * step(0.5, onA + onB);
+#if MM_R25W == 4
+    if (onBody > 0.0) {
+#endif
     float quoin = max(max(1.0 - smoothstep(0.26, 0.52, abs(abs(cx + 2.6) - 6.20)),
                           1.0 - smoothstep(0.26, 0.52, abs(abs(cx - 3.4) - 9.60))),
                       (1.0 - smoothstep(0.20, 0.44, abs(gax - BAYHW)))*onA*step(hq.y, BAYE));
     h += onBody * quoin * (1.0 - smoothstep(0.014, 0.014 + hpx*1.5, mmRowX(hq.y, 0.48))) * 0.45;
+#if MM_R25W == 4
+    }
+#endif
     /* THE BAY'S PROJECTION, AS VALUE. Relief alone cannot say that 0.85 m of
        wall stands forward of the wall beside it -- the normal is the same on
        both -- so the two faces that prove it are drawn as MATERIAL: the left
@@ -10664,6 +10714,9 @@ float wallH(vec2 q, out float occ){
        and that every block carries its own value -- stone is quarried, and a
        wall of it is never one tone. That per-stone jitter is what makes the
        bond legible as blocks. (REALGAR's finding, grafted.) */
+#if MM_R25W == 4
+    if (onBody > 0.0) {
+#endif
     float crow = floor(hq.y/0.48);
     float cph = (hq.x + uSize.x*0.5 + mod(crow, 2.0)*0.525 + uSeed)/1.05;
     float cbx = abs(fract(cph + 0.5) - 0.5)*1.05;
@@ -10722,6 +10775,9 @@ float wallH(vec2 q, out float occ){
     /* AND THE BLIND BAY'S PANEL, which is a shallow recess with a chamfer and
        no glass -- the thing a chimney breast leaves on an elevation. */
     h += onBody * wBlind * (1.0 - smoothstep(0.030, 0.030 + hpx*1.6, abs(pa2 + 0.06))) * 0.30;
+#if MM_R25W == 4
+    }
+#endif
     /* THE OCULUS in the gable's tympanum: a circular light with a moulded rim
        and a four-part cross of bars, which is where a house of this date puts
        a window it cannot make square. The fifth window SIZE, and the one that
@@ -10739,8 +10795,14 @@ float wallH(vec2 q, out float occ){
     /* Stretched along Y, not X: at 1.15 across and 0.60 up the mass came out in
        horizontal streaks and the front of the house read as SCAFFOLDING. Ivy
        climbs. */
+#if MM_R25W == 4
+    if (onBody > 0.0) {
+#endif
     float ivy = mmFbm3(vec2((hq.x + uSize.x*0.5)*0.62, hq.y*1.75) + uSeed*3.0);
     h += onBody * smoothstep(0.56, 0.90, ivy) * smoothstep(8.5, 1.8, hq.y) * 0.58;
+#if MM_R25W == 4
+    }
+#endif
     /* ROUND 18, THE BASELINE'S OWN LEAK: "stray horizontal black lines running
        across the plots panel's mausoleum masonry ... belonging to no object".
        They belonged to the HOUSE. Every term above -- its silhouette step, the
@@ -11077,6 +11139,15 @@ void main(){
   wGl = 0.12 + 1.6*gWGloss;
 #endif
 
+#if MM_R25W == 4
+  /* (performance pass, 2026-10-02: in the churchyard everything lit here is
+     replaced by the sky wherever the exterior's solidity is 0 -- mix(sky,
+     col, 0) is the sky -- so the lamps are not summed there. Only under the
+     exterior arch: this variant also draws whatever room a cross-fade is
+     passing through, whatever its arch.) */
+  float solidL = smoothstep(0.25, 0.85, h);
+  if (uArch < 4.5 || solidL > 0.0)
+#endif
   for (int i = 0; i < 5; i++){
     vec4 L = uLights[i];
     if (L.w <= 0.001) continue;
@@ -11612,6 +11683,10 @@ void main(){
 #if MM_ROOMS == 11
     /* (graft: no sky is painted where the court's wall stands solid) */
     if (solid < 0.9999) col = mix(skyColor(q, 2.0), col, solid);
+#elif MM_R25W == 4
+    /* (performance pass: and no sky where the churchyard's masonry, wood
+       and railing stand solid) */
+    if (solid < 1.0) col = mix(skyColor(q, 2.0), col, solid);
 #else
     col = mix(skyColor(q, 2.0), col, solid);
 #endif
@@ -13745,6 +13820,13 @@ void main(){
    the Ballroom's objects, drawn -- pasted into PROP_FRAG under MM_WINGS 4. */
 const R25_PROPS = /* glsl */`
 #if MM_WINGS >= 4
+/* (performance pass, 2026-10-02) A PIXEL 2 cm OR MORE OUTSIDE A DRAWING
+   IS DISCARDED, so it is not painted. shapeField hands main() -(d/wfNom +
+   an erosion of at most 0.00175), so past 0.02 local units -- 0.0073 of the
+   tallest drawing's quad -- f is negative, the mask is 0 and main() discards
+   it; its silhouette distance, which the outline's derivatives read, is
+   still taken in full. */
+#define WF_GONE 0.02
 /* ═══════════ ROUND 25: THE LAST FOUR ROOMS' THINGS, DRAWN ═══════════════
    Both survey judges, on the Foyer, the Greenhouse, the Graveyard and the
    Ballroom: their objects are "upscaled low-res sprites that both
@@ -13845,7 +13927,7 @@ float wfClock(vec2 q, float px, float seed, float kq, bool paint){
     fin = min(fin, mmBox(q - vec2(fx, fy + 0.012), vec2(0.010, 0.030), 0.004));
   }
   float d = min(min(min(plinth, skirt), min(trunk, waist)), min(min(hood, ped), min(scroll, fin)));
-  if (!paint) return d;
+  if (!paint || d > WF_GONE) return d;
 
   vec3 col = vec3(0.1);
   float ink = 0.0;
@@ -13946,7 +14028,7 @@ float wfArmchair(vec2 q, float px, float seed, float kq, bool paint, float gilt)
   float rail = mmBox(q - vec2(0.0, 0.355), vec2(0.315, 0.045), 0.010);
   float legs = wfCabriole(vec2(ax, q.y), 0.270, 1.0, 0.33, 0.030);
   float d = min(min(back, min(armS, armP)), min(min(seat, rail), legs));
-  if (!paint) return d;
+  if (!paint || d > WF_GONE) return d;
 
   vec3 col = vec3(0.1);
   float ink = 0.0;
@@ -14010,7 +14092,7 @@ float wfVitrine(vec2 q, float px, float seed, float kq, bool paint){
   float corn = mmBox(q - vec2(0.0, B1 + 0.055), vec2(HW + 0.050, 0.055), 0.006);
   float crest = max(wfEll(q - vec2(0.0, B1 + 0.110), vec2(0.130, 0.090)), -(q.y - B1 - 0.110));
   float d = min(min(legs, apron), min(min(body, corn), crest));
-  if (!paint) return d;
+  if (!paint || d > WF_GONE) return d;
 
   vec3 col = vec3(0.1);
   float ink = 0.0;
@@ -14125,7 +14207,7 @@ float wfTorchere(vec2 q, float px, float seed, float kq, bool paint){
   float cand = min(mmBox(vec2(ax - 0.232, q.y - 1.40), vec2(0.016, 0.055), 0.005), mmBox(q - vec2(0.0, 1.49), vec2(0.016, 0.055), 0.005));
   float centre = mmBox(q - vec2(0.0, 1.27), vec2(0.016, 0.13), 0.006);
   float d = min(min(min(foot, stem), min(knop, arm)), min(min(pans, cups), min(cand, centre)));
-  if (!paint) return d;
+  if (!paint || d > WF_GONE) return d;
 
   vec3 col = vec3(0.1);
   float ink = 0.0;
@@ -14179,7 +14261,7 @@ float wfHallTable(vec2 q, float px, float seed, float kq, bool paint){
   float cnoz = mmBox(c - vec2(0.0, 0.045), vec2(0.020, 0.025), 0.006);
   float cwax = mmBox(c - vec2(0.0, 0.135), vec2(0.016, 0.075), 0.004);
   float d = min(min(min(top, apron), min(legs, under)), min(min(vase, bloom), min(min(salver, cards), min(cpan, min(cnoz, cwax)))));
-  if (!paint) return d;
+  if (!paint || d > WF_GONE) return d;
 
   vec3 col = vec3(0.1);
   float ink = 0.0;
@@ -14246,7 +14328,7 @@ float wfUmbrella(vec2 q, float px, float seed, float kq, bool paint){
   float stick = wfSeg(q, vec2(0.0, 0.50), vec2(0.03, 0.90), 0.011);
   float shand = wfSeg(q, vec2(0.03, 0.90), vec2(0.10, 0.92), 0.012);
   float d = min(min(min(pot, rim), min(umb, crook)), min(min(shaft, cane), min(knob, min(stick, shand))));
-  if (!paint) return d;
+  if (!paint || d > WF_GONE) return d;
 
   vec3 col = vec3(0.1);
   float ink = 0.0;
@@ -14287,7 +14369,7 @@ float wfPierGlass(vec2 q, float px, float seed, float kq, bool paint){
   float frame = mmBox(q - vec2(0.0, (G0 + G1)*0.5), vec2(GW, (G1 - G0)*0.5), 0.010);
   float crest = max(min(wfEll(q - vec2(0.0, G1 + 0.04), vec2(0.20, 0.17)), length(vec2(ax - 0.30, q.y - G1 - 0.02)) - 0.07), -(q.y - G1 + 0.02));
   float d = min(min(min(ctop, capron), cleg), min(frame, crest));
-  if (!paint) return d;
+  if (!paint || d > WF_GONE) return d;
 
   vec3 col = vec3(0.1);
   float ink = 0.0;
@@ -14361,7 +14443,7 @@ float wfPiano(vec2 q, float px, float seed, float kq, bool paint){
   float stoolL = min(wfSegT(vec2(abs(sq.x), sq.y), vec2(0.22, 0.46), vec2(0.24, 0.02), 0.022, 0.016, t0), mmBox(sq - vec2(0.0, 0.40), vec2(0.23, 0.020), 0.004));
   float d = min(min(min(caseD, lid), min(stick, desk)), min(min(keys, cheek), min(min(legs, castr), min(stoolS, stoolL))));
   d = min(d, sheet);
-  if (!paint) return d;
+  if (!paint || d > WF_GONE) return d;
 
   vec3 col = vec3(0.1);
   float ink = 0.0;
@@ -14441,7 +14523,7 @@ float wfFan(vec2 q, float px, float seed, float kq, bool paint){
   float rose = wfEll(rq, vec2(0.040, 0.026));
   float stem = wfSeg(q, vec2(0.27, 0.02), vec2(0.05, 0.005), 0.005);
   float d = min(min(min(leaf, lace), min(guard, rivet)), min(sticks, min(rose, stem)));
-  if (!paint) return d;
+  if (!paint || d > WF_GONE) return d;
   vec3 col = vec3(0.1);
   float ink = 0.0;
   vec3 ivory = vec3(0.86, 0.80, 0.66);
@@ -14783,7 +14865,7 @@ float wfAngel(vec2 q, float px, float seed, float kq, bool paint){
   wing = max(wing, -(q.y - 1.40));
   float fig = min(min(robe, min(head, hair)), min(min(armR, armL), wreath));
   float d = min(min(ped, fig), wing);
-  if (!paint) return d;
+  if (!paint || d > WF_GONE) return d;
 
   vec3 col = vec3(0.1);
   float ink = 0.0;
@@ -14847,7 +14929,7 @@ float wfCross(vec2 q, float px, float seed, float kq, bool paint){
   head = max(head, -(length(vec2(ax - 0.165, abs(q.y - yC) - 0.165)) - 0.055));   // the arm pits
   float ring = abs(length(q - vec2(0.0, yC)) - 0.235) - 0.040;
   float d = min(steps, min(head, ring));
-  if (!paint) return d;
+  if (!paint || d > WF_GONE) return d;
 
   vec3 col = vec3(0.1);
   float ink = 0.0;
@@ -15015,6 +15097,10 @@ float ghCrown(vec2 q, vec2 c, float S, float sp, float seed, float px, float kq,
     /* the crown's back fronds stand behind whatever it grows out of */
     dd = max(dd, (clipY - q.y)*step(o, 0.58));
     if (dd > W) continue;
+    /* (performance pass, 2026-10-02: a pixel a pixel or more outside this
+       frond takes none of its paint -- wfIn, mmInkP and so ghLay, the rib
+       and the rim are all zero there -- so only its distance is kept) */
+    if (dd >= max(px, 1e-5)) { dAll = min(dAll, dd); continue; }
     float up = smoothstep(-0.2, 0.6, n/max(W*0.4, 1e-4));
     vec3 fc = g0*(0.62 + 0.38*smoothstep(0.0, 0.55, t))*(0.82 + 0.30*up);
     fc *= 0.50 + 0.50*o;
@@ -15043,6 +15129,10 @@ float ghPot(vec2 q, float H, float urn, float seed, float px, float kq, inout ve
     float body = ghTaper(q, 0.0, H*0.84, bw, tw);
     float rim = mmBox(q - vec2(0.0, H*0.915), vec2(tw*1.08, H*0.085), H*0.03);
     d = min(body, rim);
+    float mouth = wfEll(q - vec2(0.0, H*0.995), vec2(tw*0.96, H*0.055));
+    /* (performance pass: painted only within a pixel of the pot -- past
+       that every ghLay below and the mouth's mix and ink are zero) */
+    if (min(d, max(mouth, H*0.99 - q.y)) < max(px, 1e-5)) {
     vec3 clay = mix(vec3(0.66, 0.31, 0.17), vec3(0.58, 0.34, 0.24), mmHash11(seed*2.7));
     float u = ghCyl(q.x, mix(bw, tw, q.y/H));
     float sh = (0.55 + 0.45*wfRound(u))*(1.0 + 0.30*kq*u);
@@ -15054,9 +15144,9 @@ float ghPot(vec2 q, float H, float urn, float seed, float px, float kq, inout ve
     float ru = ghCyl(q.x, tw*1.08);
     vec3 rc = clay*(0.60 + 0.50*wfRound(ru))*(1.0 + 0.28*kq*ru)*(0.85 + 0.30*smoothstep(H*0.83, H*0.99, q.y));
     ghLay(col, ink, rim, rc, px, 0.95);
-    float mouth = wfEll(q - vec2(0.0, H*0.995), vec2(tw*0.96, H*0.055));
     col = mix(col, vec3(0.10, 0.07, 0.05), wfIn(max(mouth, H*0.99 - q.y), px));
     ink = max(ink, mmInkP(max(mouth, H*0.99 - q.y), px, 1.0)*0.5);
+    }
     d = min(d, mouth);
   } else {
     float foot = mmBox(q - vec2(0.0, H*0.08), vec2(H*0.34, H*0.08), H*0.01);
@@ -15065,6 +15155,8 @@ float ghPot(vec2 q, float H, float urn, float seed, float px, float kq, inout ve
     float bowl = max(wfEll(bq, vec2(H*0.62, H*0.34)), q.y - H*0.86);
     float lip = mmBox(q - vec2(0.0, H*0.90), vec2(H*0.66, H*0.05), H*0.02);
     d = min(min(foot, stem), min(bowl, lip));
+    float mouth = wfEll(q - vec2(0.0, H*0.95), vec2(H*0.60, H*0.05));
+    if (min(d, max(mouth, H*0.945 - q.y)) < max(px, 1e-5)) {
     vec3 stn = vec3(0.56, 0.56, 0.52)*(0.85 + 0.25*mmFbm3(q*8.0/H + seed));
     float u = ghCyl(q.x, H*0.62);
     ghLay(col, ink, foot, stn*0.70, px, 0.9);
@@ -15074,8 +15166,8 @@ float ghPot(vec2 q, float H, float urn, float seed, float px, float kq, inout ve
     bc *= 1.0 - 0.25*smoothstep(0.30, 0.5, gad)*mmLod(H*0.12, px);
     ghLay(col, ink, bowl, bc, px, 0.9);
     ghLay(col, ink, lip, stn*(0.70 + 0.35*smoothstep(H*0.86, H*0.95, q.y)), px, 0.9);
-    float mouth = wfEll(q - vec2(0.0, H*0.95), vec2(H*0.60, H*0.05));
     col = mix(col, vec3(0.10, 0.07, 0.05), wfIn(max(mouth, H*0.945 - q.y), px));
+    }
     d = min(d, mouth);
   }
   return d;
@@ -15122,6 +15214,9 @@ float wfBed(vec2 q, float px, float seed, float kq, bool paint){
   float dAll = 1e3;
   float body = mmBox(q - vec2(0.0, BH*0.5), vec2(HL, BH*0.5), 0.0);
   const float CH = 0.075, BL = 0.225;
+  /* (performance pass: the brick and the coping are painted only within a
+     pixel of them, where ghLay and the moss can lay anything) */
+  if (body < max(px, 1e-5)) {
   float row = floor(q.y/CH);
   float bx = q.x/BL + 0.5*mod(row, 2.0);
   float bid = floor(bx);
@@ -15137,9 +15232,12 @@ float wfBed(vec2 q, float px, float seed, float kq, bool paint){
   brick = mix(brick, vec3(0.10, 0.09, 0.07), mort*0.75*lodB);
   ghLay(col, ink, body, brick, px, 0.9);
   col = mix(col, vec3(0.12, 0.24, 0.10), wfIn(body, px)*smoothstep(0.10, 0.0, q.y)*0.55);
+  }
   float cop = mmBox(q - vec2(0.0, (BH + CT)*0.5), vec2(HL + 0.04, (CT - BH)*0.5), 0.008);
+  if (cop < max(px, 1e-5)) {
   vec3 cc = vec3(0.52, 0.52, 0.47)*(0.70 + 0.40*smoothstep(BH, CT, q.y))*(0.88 + 0.22*mmFbm3(q*vec2(5.0, 20.0) + seed));
   ghLay(col, ink, cop, cc, px, 0.95);
+  }
   gGhFew = 1.0;
   /* the plants, the two outer ones first so the middle one stands in front;
      only their falling outer fronds come down over the coping's face */
@@ -15251,7 +15349,7 @@ float wfStand(vec2 q, float px, float seed, float kq, bool paint){
     if (dd < pd) { pd = dd; pcol = gWfCol; pink = gWfInk; }
   }
   float d = min(min(legs, tiers), pd);
-  if (!paint) return d;
+  if (!paint || d > WF_GONE) return d;
   vec3 iron = vec3(0.12, 0.13, 0.12);
   wfLay(col, ink, legs, iron*(0.8 + 0.6*kq), px, 0.9);
   wfLay(col, ink, tiers, iron*1.6, px, 0.9);
@@ -21009,6 +21107,11 @@ void main(){
      the carving's derivative ink turned her into the "pixel blob" both
      judges named. Both stand down as she gets smaller. */
   float brk = 0.34 * (1.0 - rAct*0.62) * (1.0 - 0.75*colSh) * (1.0 - 0.80*stSmall);
+#if MM_WINGS >= 4
+  /* (performance pass, 2026-10-02: a round-25 drawing's normal is set
+     outright just below, so its two noise fields here are not taken) */
+  if (vShape <= 61.5)
+#endif
   N = normalize(N + vec3((mmFbm3(vUv*9.0 + vSeed*3.1) - 0.5)*brk,
                          (mmFbm3(vUv*9.0 + vSeed*7.7) - 0.5)*brk, 0.0));
 #if MM_WINGS >= 4
