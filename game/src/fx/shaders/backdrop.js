@@ -13893,6 +13893,14 @@ void main(){
 /* ROUND 25 (AUREOLIN): the Foyer's, the Greenhouse's, the Graveyard's and
    the Ballroom's objects, drawn -- pasted into PROP_FRAG under MM_WINGS 4. */
 const R25_PROPS = /* glsl */`
+/* (performance pass, 2026-10-02) A PIXEL 2 cm OR MORE OUTSIDE A DRAWING
+   IS DISCARDED, so it is not painted. shapeField hands main() -(d/wfNom +
+   an erosion of at most 0.00175), so past 0.02 local units -- 0.0073 of the
+   tallest drawing's quad -- f is negative, the mask is 0 and main() discards
+   it; its silhouette distance, which the outline's derivatives read, is
+   still taken in full. */
+#define WF_GONE 0.02
+
 #if MM_WINGS >= 4
 /* ═══════════ ROUND 25: THE LAST FOUR ROOMS' THINGS, DRAWN ═══════════════
    Both survey judges, on the Foyer, the Greenhouse, the Graveyard and the
@@ -13994,7 +14002,7 @@ float wfClock(vec2 q, float px, float seed, float kq, bool paint){
     fin = min(fin, mmBox(q - vec2(fx, fy + 0.012), vec2(0.010, 0.030), 0.004));
   }
   float d = min(min(min(plinth, skirt), min(trunk, waist)), min(min(hood, ped), min(scroll, fin)));
-  if (!paint) return d;
+  if (!paint || d > WF_GONE) return d;
 
   vec3 col = vec3(0.1);
   float ink = 0.0;
@@ -14095,7 +14103,7 @@ float wfArmchair(vec2 q, float px, float seed, float kq, bool paint, float gilt)
   float rail = mmBox(q - vec2(0.0, 0.355), vec2(0.315, 0.045), 0.010);
   float legs = wfCabriole(vec2(ax, q.y), 0.270, 1.0, 0.33, 0.030);
   float d = min(min(back, min(armS, armP)), min(min(seat, rail), legs));
-  if (!paint) return d;
+  if (!paint || d > WF_GONE) return d;
 
   vec3 col = vec3(0.1);
   float ink = 0.0;
@@ -14159,7 +14167,7 @@ float wfVitrine(vec2 q, float px, float seed, float kq, bool paint){
   float corn = mmBox(q - vec2(0.0, B1 + 0.055), vec2(HW + 0.050, 0.055), 0.006);
   float crest = max(wfEll(q - vec2(0.0, B1 + 0.110), vec2(0.130, 0.090)), -(q.y - B1 - 0.110));
   float d = min(min(legs, apron), min(min(body, corn), crest));
-  if (!paint) return d;
+  if (!paint || d > WF_GONE) return d;
 
   vec3 col = vec3(0.1);
   float ink = 0.0;
@@ -14274,7 +14282,7 @@ float wfTorchere(vec2 q, float px, float seed, float kq, bool paint){
   float cand = min(mmBox(vec2(ax - 0.232, q.y - 1.40), vec2(0.016, 0.055), 0.005), mmBox(q - vec2(0.0, 1.49), vec2(0.016, 0.055), 0.005));
   float centre = mmBox(q - vec2(0.0, 1.27), vec2(0.016, 0.13), 0.006);
   float d = min(min(min(foot, stem), min(knop, arm)), min(min(pans, cups), min(cand, centre)));
-  if (!paint) return d;
+  if (!paint || d > WF_GONE) return d;
 
   vec3 col = vec3(0.1);
   float ink = 0.0;
@@ -14328,7 +14336,7 @@ float wfHallTable(vec2 q, float px, float seed, float kq, bool paint){
   float cnoz = mmBox(c - vec2(0.0, 0.045), vec2(0.020, 0.025), 0.006);
   float cwax = mmBox(c - vec2(0.0, 0.135), vec2(0.016, 0.075), 0.004);
   float d = min(min(min(top, apron), min(legs, under)), min(min(vase, bloom), min(min(salver, cards), min(cpan, min(cnoz, cwax)))));
-  if (!paint) return d;
+  if (!paint || d > WF_GONE) return d;
 
   vec3 col = vec3(0.1);
   float ink = 0.0;
@@ -14395,7 +14403,7 @@ float wfUmbrella(vec2 q, float px, float seed, float kq, bool paint){
   float stick = wfSeg(q, vec2(0.0, 0.50), vec2(0.03, 0.90), 0.011);
   float shand = wfSeg(q, vec2(0.03, 0.90), vec2(0.10, 0.92), 0.012);
   float d = min(min(min(pot, rim), min(umb, crook)), min(min(shaft, cane), min(knob, min(stick, shand))));
-  if (!paint) return d;
+  if (!paint || d > WF_GONE) return d;
 
   vec3 col = vec3(0.1);
   float ink = 0.0;
@@ -14436,7 +14444,7 @@ float wfPierGlass(vec2 q, float px, float seed, float kq, bool paint){
   float frame = mmBox(q - vec2(0.0, (G0 + G1)*0.5), vec2(GW, (G1 - G0)*0.5), 0.010);
   float crest = max(min(wfEll(q - vec2(0.0, G1 + 0.04), vec2(0.20, 0.17)), length(vec2(ax - 0.30, q.y - G1 - 0.02)) - 0.07), -(q.y - G1 + 0.02));
   float d = min(min(min(ctop, capron), cleg), min(frame, crest));
-  if (!paint) return d;
+  if (!paint || d > WF_GONE) return d;
 
   vec3 col = vec3(0.1);
   float ink = 0.0;
@@ -14510,7 +14518,7 @@ float wfPiano(vec2 q, float px, float seed, float kq, bool paint){
   float stoolL = min(wfSegT(vec2(abs(sq.x), sq.y), vec2(0.22, 0.46), vec2(0.24, 0.02), 0.022, 0.016, t0), mmBox(sq - vec2(0.0, 0.40), vec2(0.23, 0.020), 0.004));
   float d = min(min(min(caseD, lid), min(stick, desk)), min(min(keys, cheek), min(min(legs, castr), min(stoolS, stoolL))));
   d = min(d, sheet);
-  if (!paint) return d;
+  if (!paint || d > WF_GONE) return d;
 
   vec3 col = vec3(0.1);
   float ink = 0.0;
@@ -14590,7 +14598,7 @@ float wfFan(vec2 q, float px, float seed, float kq, bool paint){
   float rose = wfEll(rq, vec2(0.040, 0.026));
   float stem = wfSeg(q, vec2(0.27, 0.02), vec2(0.05, 0.005), 0.005);
   float d = min(min(min(leaf, lace), min(guard, rivet)), min(sticks, min(rose, stem)));
-  if (!paint) return d;
+  if (!paint || d > WF_GONE) return d;
   vec3 col = vec3(0.1);
   float ink = 0.0;
   vec3 ivory = vec3(0.86, 0.80, 0.66);
@@ -14932,7 +14940,7 @@ float wfAngel(vec2 q, float px, float seed, float kq, bool paint){
   wing = max(wing, -(q.y - 1.40));
   float fig = min(min(robe, min(head, hair)), min(min(armR, armL), wreath));
   float d = min(min(ped, fig), wing);
-  if (!paint) return d;
+  if (!paint || d > WF_GONE) return d;
 
   vec3 col = vec3(0.1);
   float ink = 0.0;
@@ -14996,7 +15004,7 @@ float wfCross(vec2 q, float px, float seed, float kq, bool paint){
   head = max(head, -(length(vec2(ax - 0.165, abs(q.y - yC) - 0.165)) - 0.055));   // the arm pits
   float ring = abs(length(q - vec2(0.0, yC)) - 0.235) - 0.040;
   float d = min(steps, min(head, ring));
-  if (!paint) return d;
+  if (!paint || d > WF_GONE) return d;
 
   vec3 col = vec3(0.1);
   float ink = 0.0;
@@ -15416,7 +15424,7 @@ float wfStand(vec2 q, float px, float seed, float kq, bool paint){
     if (dd < pd) { pd = dd; pcol = gWfCol; pink = gWfInk; }
   }
   float d = min(min(legs, tiers), pd);
-  if (!paint) return d;
+  if (!paint || d > WF_GONE) return d;
   vec3 iron = vec3(0.12, 0.13, 0.12);
   wfLay(col, ink, legs, iron*(0.8 + 0.6*kq), px, 0.9);
   wfLay(col, ink, tiers, iron*1.6, px, 0.9);
