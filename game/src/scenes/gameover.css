@@ -941,7 +941,7 @@
 .go-foot .kit-btn--quiet { --plate-h: clamp(44px, 5.2vh, 48px); }
 /* each hint under its words, as the nameplates set an epithet under a name */
 .go-foot .go-btn { flex-direction: column; gap: 0; line-height: 1.12; }
-.go-foot .go-btn em { font-size: max(11.5px, var(--fs-xs)); }
+.go-foot .go-btn em { font-size: max(13px, var(--fs-xs)); }
 .go-foot { min-width: 0; }
 .go-acts { display: flex; align-items: center; gap: clamp(34px, 3.6vw, 60px); }
 .go-btn b { font: inherit; letter-spacing: inherit; white-space: nowrap; }
@@ -1076,4 +1076,44 @@
 }
 @media (max-width: 1100px) {
   .go-wrap { grid-template-columns: minmax(0, 1fr); grid-template-areas: "stage" "altar" "left" "ledger" "stats"; overflow-y: auto; }
+}
+
+/* ── the house's pictures, over the shelf's flanks (round 26) ──────────────
+   One picture over each plaque on the shelf, on the wall between the shelf
+   the two who went in stand on and the plaque's top: the mansion over HOW
+   FAR, a portrait of the menagerie over the line that says why
+   (.kit-hang, ui/hang.js). Each hangs from its own plaque, so it follows the
+   plaque wherever the shelf sits. */
+.go-tri { position: relative; }
+.go-hang {
+  --hang-w: min(calc(var(--tri-w) * .9), 14.4vh);
+  --hang-lit: .92;
+  translate: -50% 0;
+  bottom: calc(100% + var(--carve) + var(--hang-w) * .07 + 4px);
+}
+/* each a little in from its plaque's middle, toward the card, so its frame
+   stands clear of the panel the plaque overlaps */
+.go-hang--l { left: calc(50% + var(--tri-w) * .09); }
+.go-hang--r { left: calc(50% - var(--tri-w) * .09); }
+.go-hang.kit-hang--wide { --hang-w: min(calc(var(--tri-w) * .92), 20vh); }
+
+/* ── the ledger with room in it (round 26) ─────────────────────────────────
+   "Overpacked at 1280: a two-column list of 16+ Tricks and five Keepsakes at
+   ~9px italic running to the panel's foot" (both survey judges). Each
+   Keepsake is its painted object and its name now, two to a row, what it did
+   on its own tablet on hover or focus (gameover.js); the Tricks' list gets
+   the height that frees, a size larger. */
+.go-keeps { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: clamp(6px, 1vh, 10px); }
+.go-keep { grid-template-areas: 'i b'; cursor: help; border-radius: 3px; }
+.go-keep + .go-keep::before { display: none; }
+.go-keep + .go-keep, .go-board .go-keep + .go-keep { padding-top: 2px; }
+.go-keep b { align-self: center; font-size: max(13.5px, var(--fs-sm)); line-height: 1.12; }
+.go-keep:focus-visible { outline: 1px solid color-mix(in srgb, var(--kit-gold-hi) 70%, transparent); outline-offset: 2px; }
+.go-keep:hover b, .go-keep:focus-visible b { color: var(--kit-gold-hi); }
+.go-trick.go-trick { padding-block: 5px 6px; }
+.go-trick.go-trick .go-trick__name { font-size: 13.5px; }
+@media (max-height: 860px) {
+  .go-trick.go-trick { padding-block: 3px 4px; }
+  .go-trick.go-trick .go-trick__name { font-size: 12.5px; }
+  .go-keep b { font-size: 13px; }
 }

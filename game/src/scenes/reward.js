@@ -25,6 +25,7 @@ import { TERMS, NodeType } from '../data/schema.js';
 import { cardById } from '../data/cards.js';
 import { relicById } from '../data/relics.js';
 import { objectHtml, keepsakeKey } from '../ui/objects.js';
+import { gallery } from '../ui/hang.js';
 import { Run } from '../state/run.js';
 import { act, ACT } from '../net/actions.js';
 import { INPUT } from '../net/session.js';
@@ -585,17 +586,17 @@ export class RewardScene extends RoomScene {
       </div>
       <div class="rw-fan kit-cards" data-tip-avoid=".rw-slot, .rm-where, .rw-spoils, .rw-candle" data-tip-bounds=".rw-cards" data-tip-gap="18" role="listbox" aria-label="Three ${esc(TERMS.card)}s. Choose one, or skip."></div>
       <i class="rw-ledge kit-shelf-rail" aria-hidden="true"></i>`;
-    // Round 6: the hall is LIT, and lit from two sides. High on the wall of
-    // each flank a moonlit gothic lancet (QUINCE's, ui/r4-polish-a) throws a
-    // cold shaft down through the alcove, and under it on the rail's end a
-    // candle stands on a book and warms the panelling round its foot — the
-    // cold-against-warm contrast the samples use. A cast brass boss caps each
-    // end of the rail. Decoration only; reward.js (_pointLights) aims the
-    // ground's beams at the two windows and its pools at the two flames.
+    // Round 26: the alcove is the house's gallery. Each flank hangs one of
+    // the menagerie's portraits (ui/hang.js, .kit-hang) at the height of the
+    // frames' paintings, where no card, ribbon or plate stands in front of it,
+    // and under it on the rail's end a candle on a book lights it from below.
+    // (Rounds 6-25 hung a moonlit lancet in each flank, and the room's own
+    // three pictures hung behind the ribbon, where they were read as smears.)
+    // A cast brass boss caps each end of the rail. Decoration only;
+    // reward.js (_pointLights) aims the ground's pools at the two flames.
+    sec.insertAdjacentHTML('beforeend', gallery(['crumbula', 'marmalade'],
+      ['rw-hang rw-hang--l', 'rw-hang rw-hang--r'], { skip: this.run?.companion }));
     for (const side of ['l', 'r']) {
-      const s = el('i', `kit-window${side === 'r' ? ' kit-window--r' : ''} rw-window rw-window--${side}`);
-      s.setAttribute('aria-hidden', 'true');
-      sec.appendChild(s);
       const c = el('i', `kit-prop kit-prop--candle rw-candle rw-candle--${side}`);
       c.setAttribute('aria-hidden', 'true');
       sec.appendChild(c);
@@ -749,10 +750,10 @@ export class RewardScene extends RoomScene {
   /**
    * Aim the room's light at the things that give it off (ui/kit.css
    * .kit-ground): the ground reveals its lit damask and wainscot through light
-   * slots placed in viewport lengths, and both the flanks' windows and the
+   * slots placed in viewport lengths, and both the flanks' pictures and the
    * rail's candles hang on the stage, which stands wherever the title and the
-   * spoils leave it. Each window gets a cold beam slanting down from its sill;
-   * each candle a warm pool round its flame. reward.css's defaults are the
+   * spoils leave it. Each picture gets the moon's cold pool on the paper round
+   * it; each candle a warm pool round its flame. reward.css's defaults are the
    * 1600x900 answer; this is the measured one. Decoration only.
    */
   _pointLights() {
@@ -765,15 +766,13 @@ export class RewardScene extends RoomScene {
       board.style.setProperty(`--wl${k}-x`, `${(r.left + r.width / 2).toFixed(1)}px`);
       board.style.setProperty(`--wl${k}-y`, `${(r.top + r.height * .18).toFixed(1)}px`);
     }
-    // the beam falls from the window's own glass, out into the room
-    for (const [sel, k] of [['.rw-window--l', 1], ['.rw-window--r', 2]]) {
+    // the moon's cold pool sits on the damask round each flank's picture
+    for (const [sel, k] of [['.rw-hang--l', 1], ['.rw-hang--r', 2]]) {
       const s = board.querySelector(sel);
       const r = s?.getBoundingClientRect();
       if (!r || !r.width) continue;
-      board.style.setProperty(`--mb${k}-x`, `${(r.left + r.width * (k === 1 ? .64 : .36)).toFixed(1)}px`);
-      board.style.setProperty(`--mb${k}-y`, `${(r.top + r.height * .22).toFixed(1)}px`);
-      board.style.setProperty(`--mb${k}-w`, `${(r.width * 2.4).toFixed(1)}px`);
-      board.style.setProperty(`--mb${k}-h`, `${Math.max(120, window.innerHeight - r.top - r.height * .22).toFixed(1)}px`);
+      board.style.setProperty(`--ml${k}-x`, `${(r.left + r.width / 2).toFixed(1)}px`);
+      board.style.setProperty(`--ml${k}-y`, `${(r.top + r.height * .3).toFixed(1)}px`);
     }
   }
 

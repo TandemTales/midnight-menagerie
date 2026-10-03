@@ -31,6 +31,7 @@
 import { Modal, kitButton } from './modal.js';
 import { icon } from './icons.js';
 import { plural, word } from '../util/plural.js';
+import { roomBehind } from './hang.js';
 
 const TYPES = ['attack', 'skill', 'power', 'status', 'curse'];
 /**
@@ -104,9 +105,9 @@ export class DeckView {
 
     /* THE LOOK IS THE KIT'S (ui/kit.css), as on the boards: the count struck on
        the enamel cartouche a price wears, the search inked on a slip of old
-       card (.kit-hw-slip), each filter one of the house's dial plates — what it
-       chooses by engraved on its upper band, the choice in its sunk window, a
-       brass finial at its end (.kit-hw-dial) — Clear a nameplate button, and
+       card (.kit-hw-slip), each filter one of the house's cycling cartouches —
+       what it chooses by engraved over the choice, a brass chevron either side
+       that turns it (.kit-hw-cycle) — Clear a nameplate button, and
        the Tricks in the hand's own brass (.kit-cards--nerve). deckview.css
        only lays them out. */
 
@@ -146,11 +147,7 @@ export class DeckView {
       this._select('Upgraded', 'upgraded', [['all', 'Upgraded or not'], ['yes', 'Upgraded only'], ['no', 'Not upgraded']]),
     );
 
-    const sortWrap = document.createElement('label');
-    sortWrap.className = 'mm-deck__sortwrap kit-hw-dial';
-    sortWrap.innerHTML = '<span class="mm-deck__label kit-hw-dial__label">Sort</span><i class="kit-hw-finial" aria-hidden="true"></i>';
     const sortSel = document.createElement('select');
-    sortSel.className = 'mm-deck__select kit-hw-dial__sel';
     for (const [v, l] of [['name', 'Name'], ['cost', 'Nerve cost'], ['type', 'Type'], ['rarity', 'Rarity']]) {
       const op = document.createElement('option'); op.value = v; op.textContent = l; sortSel.appendChild(op);
     }
@@ -160,8 +157,7 @@ export class DeckView {
     }
     sortSel.value = this.sort;
     sortSel.addEventListener('change', () => { this.sort = sortSel.value; this._apply(); });
-    sortWrap.appendChild(sortSel);
-    filt.appendChild(sortWrap);
+    filt.appendChild(this._cycle('Sort', sortSel));
 
     const clear = document.createElement('button');
     clear.type = 'button'; clear.className = 'mm-btn mm-btn--ghost mm-deck__clear';
@@ -235,22 +231,57 @@ export class DeckView {
   }
 
   _select(label, key, options) {
-    /* one of the house's dial plates (ui/kit.css .kit-hw-dial): the filter's
-       name engraved on its upper band, the choice in its window, a brass
-       finial at its end; its window lights while it filters anything out */
-    const wrap = document.createElement('label');
-    wrap.className = 'mm-deck__sortwrap kit-hw-dial';
-    wrap.innerHTML = `<span class="mm-deck__label kit-hw-dial__label">${label}</span><i class="kit-hw-finial" aria-hidden="true"></i>`;
     const sel = document.createElement('select');
-    sel.className = 'mm-deck__select kit-hw-dial__sel';
     for (const [v, l] of options) {
       const op = document.createElement('option'); op.value = v; op.textContent = l; sel.appendChild(op);
     }
+    const wrap = this._cycle(label, sel);
+    // it lights while it filters anything out
     const lit = () => wrap.classList.toggle('is-set', sel.value !== 'all');
     this._lits = [...(this._lits || []), lit];
     sel.addEventListener('change', () => { this.filters[key] = sel.value; lit(); this._apply(); });
-    wrap.appendChild(sel);
     (this._sels ||= []).push([key, sel]);
+    return wrap;
+  }
+
+  /* One of the house's cycling cartouches (ui/kit.css .kit-hw-cycle, round
+     26): what it chooses by engraved over a dark cartouche with the choice
+     lettered on it, and a brass chevron in enamel either side that turns it to
+     the one before or after. Round 19's dial plates were still "HTML dropdowns
+     dressed in gold plaques" to both survey judges. The real <select> stays
+     inside the cartouche, so a click still lists every choice, the keyboard's
+     arrows still turn it, and it is the one tab stop; the chevrons are for the
+     pointer. */
+  _cycle(label, sel) {
+    const wrap = document.createElement('div');
+    wrap.className = 'mm-deck__sortwrap kit-hw-cycle';
+    wrap.setAttribute('role', 'group');
+    wrap.setAttribute('aria-label', label);
+    sel.className = 'mm-deck__select kit-hw-cycle__sel';
+    sel.setAttribute('aria-label', label);
+    const step = (dir) => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.tabIndex = -1;
+      b.className = `kit-hw-enamel kit-hw-cycle__step kit-hw-cycle__step--${dir < 0 ? 'prev' : 'next'}`;
+      b.setAttribute('aria-label', `${label}: ${dir < 0 ? 'previous' : 'next'}`);
+      b.innerHTML = `<i class="kit-hw-chev${dir < 0 ? ' kit-hw-chev--l' : ''}" aria-hidden="true"></i>`;
+      b.addEventListener('click', () => {
+        const n = sel.options.length;
+        if (!n) return;
+        sel.selectedIndex = (sel.selectedIndex + dir + n) % n;
+        sel.dispatchEvent(new Event('change', { bubbles: true }));
+      });
+      return b;
+    };
+    const name = document.createElement('span');
+    name.className = 'mm-deck__label kit-hw-cycle__label';
+    name.setAttribute('aria-hidden', 'true');
+    name.textContent = label;
+    const plate = document.createElement('span');
+    plate.className = 'kit-hw-cycle__plate';
+    plate.appendChild(sel);
+    wrap.append(name, step(-1), plate, step(1));
     return wrap;
   }
   get selects() { return this._sels || []; }
@@ -505,6 +536,8 @@ export async function openPile(o = {}) {
     size: 'wide',
     host: o.host || o.ctx?.dom,
   });
+  // the case stands in the house's own room, not on a void (round 26)
+  roomBehind(modal);
 
   let picked = null;
   const view = new DeckView({

@@ -37,6 +37,8 @@ What comes out, and how `game/src/ui/kit.css` uses it:
   grain                 the panels' own grain as a neutral overlay tile
   from UI/mainMenu.png
   hall-*                four details of the mansion, hung as portraits
+  hang-*                the house's pictures (.kit-hang): every Companion tile
+                        whole, and the mansion  (--only hang writes just these)
   generated in the painting's manner
   floor                 cobbles that flatten into the dark (.kit-dress__floor)
   marble                marbled lavender for display type (.kit-cartouche__title)
@@ -49,6 +51,7 @@ Run tools/prep_ui_materials.py after this one: its room, sconce and floor
 read pieces this script writes (damask, floor, candle).
 
     python tools/prep_ui_kit.py            # write everything
+    python tools/prep_ui_kit.py --only hang
 """
 import argparse
 import os
@@ -783,6 +786,51 @@ def hall_paintings():
         save(np.asarray(im), name, 86)
 
 
+# The house's pictures (round 26, SANGUINE). The boards' wall used to have
+# three portraits painted INTO the room (tools/prep_ui_paint.py), small, fused
+# by the room's own paint and lit at its 0.2 ambient -- and every judge read
+# them as "grey smeared noise". These are hung in the page instead (.kit-hang,
+# ui/kit.css; ui/hang.js), cut at the sample's own resolution so the inked
+# line survives: each Companion tile of UI/selectCompanion.png WHOLE -- its
+# thin gold frame, the painting and the dark nameplate with its lettering,
+# exactly as Josh painted it -- and the mansion off UI/mainMenu.png as the
+# house's own landscape.
+HANG_COLS = [(16, 312), (320, 624), (631, 934), (941, 1237)]
+HANG_ROWS = [(186, 445), (451, 698), (704, 941), (947, 1203)]
+HANG_TILES = [
+    ["marmalade", "wisp", "crumbula", "boggle"],
+    ["bones", "pipkin", "taffy", "truffle"],
+    ["hush", "mopsy", "drizzle", "pudding"],
+    ["wink", "crinkle", "mossbit", "brambleboo"],
+]
+
+
+# A tile is a landscape, 296 x 259; a wall bay is tall. Each picture is cut to
+# an upright 216 wide -- the nameplate (x 50..250) whole, the painting either
+# side of the animal trimmed -- and HANG_SHIFT moves the cut where the animal
+# sits off the tile's middle.
+HANG_W = 216
+HANG_SHIFT = {"marmalade": -8, "crumbula": 4, "pipkin": 0, "mopsy": 0}
+
+
+def hang():
+    """hang-<companion>.webp (the sixteen tiles, upright), hang-<companion>-tile
+    .webp (each tile whole) and hang-house.webp."""
+    for r, (y0, y1) in enumerate(HANG_ROWS):
+        for c, (x0, x1) in enumerate(HANG_COLS):
+            name = HANG_TILES[r][c]
+            mid = (x0 + x1) // 2 + HANG_SHIFT.get(name, 0)
+            rgb = crop(SC, (mid - HANG_W // 2, y0, mid + HANG_W // 2, y1))
+            save(np.clip(rgb, 0, 255).astype(np.uint8), f"hang-{name}.webp", 90)
+            # and the whole tile, its own gilt edge and all, for a bay that is
+            # wider than it is tall (.kit-hang--tile)
+            whole = crop(SC, (x0, y0, x1, y1))
+            save(np.clip(whole, 0, 255).astype(np.uint8), f"hang-{name}-tile.webp", 88)
+    im = Image.open(os.path.join(UI, "mainMenu.png")).convert("RGB")
+    im = im.crop((230, 130, 1420, 770)).resize((714, 384), Image.LANCZOS)
+    save(np.asarray(im), "hang-house.webp", 88)
+
+
 def cartouche():
     """The wordmark's cartouche from UI/title.png, rebuilt to hold any title.
 
@@ -951,8 +999,15 @@ def cartouche():
             save(np.ascontiguousarray(out[:, ::-1]), "cart-bat-r.webp", 92)
 
 
-def main():
+PIECES = {"hang": hang}
+
+
+def main(only=None):
     print("kit ->", os.path.relpath(OUT, ROOT))
+    if only:
+        for name in only:
+            PIECES[name]()
+        return
     hall_paintings()
     floor()
     grain()
@@ -971,8 +1026,11 @@ def main():
     props()
     webs()
     footscroll()
+    hang()
 
 
 if __name__ == "__main__":
-    argparse.ArgumentParser(description="Prepare the shared UI kit from the sample boards.").parse_args()
-    main()
+    ap = argparse.ArgumentParser(description="Prepare the shared UI kit from the sample boards.")
+    ap.add_argument("--only", action="append", choices=sorted(PIECES),
+                    help="write one piece (and nothing else the script makes)")
+    main(ap.parse_args().only)
