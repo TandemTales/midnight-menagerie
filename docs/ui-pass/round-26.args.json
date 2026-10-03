@@ -1,0 +1,56 @@
+{
+  "round": "r26",
+  "maxBuilders": 3,
+  "briefs": [
+    "docs/ui-pass/BRIEF-r0.md",
+    "docs/ui-pass/BRIEF-r1.md",
+    "docs/ui-pass/BRIEF-r19.md",
+    "docs/ui-pass/BRIEF-r26.md"
+  ],
+  "rubrics": [
+    "docs/ui-pass/RUBRIC.md",
+    "docs/ui-pass/RUBRIC-r26.md"
+  ],
+  "samples": [
+    "UI/title.png",
+    "UI/mainMenu.png",
+    "UI/selectCompanion.png",
+    "UI/selectKid.png"
+  ],
+  "tracks": [
+    {
+      "key": "boards",
+      "name": "BOARDS",
+      "rule": "refine",
+      "screens": [
+        "reward",
+        "event",
+        "rest",
+        "gameover",
+        "settings",
+        "piles"
+      ],
+      "baseline": "DOWLAS",
+      "builders": [
+        {
+          "slot": "a",
+          "code": "MADDERROSE",
+          "port": 9091,
+          "angle": "LITERAL -- the angle that won rounds 20, 23, 24 and 25. Work BRIEF-r26's list 1 to 5 in order and exactly as written. Item 1 is one shared room for four screens: find where the room shell draws its frames and pictures, and make every one a drawn picture (or take it away) before anything else."
+        },
+        {
+          "slot": "b",
+          "code": "VERMEILLE",
+          "port": 9092,
+          "angle": "ONE HOUSE'S HARDWARE, FINISHED. Round 19 built a brass-and-enamel control vocabulary; items 2-3 are where it never reached. Replace every remaining web control -- Settings' segmented switches and palette buttons, the pile viewer's dropdown selects -- with that vocabulary, and stand both dialogs on a dimmed room, not a void. Then the walls (item 1) and the type (items 4-5)."
+        },
+        {
+          "slot": "c",
+          "code": "SANGUINE",
+          "port": 9093,
+          "angle": "THE PAINTED WALL. Item 1 is your round: the four boards share one room, and its pictures are smeared noise at eye level. Hang that wall properly -- drawn portraits of the house's own (its Companions, its creatures, its rooms) in the samples' inked hand, at a scale and light that read, with the frames placed so no window or card covers them -- and make that room the dialogs' backdrop too. Then items 3-5."
+        }
+      ]
+    }
+  ]
+}
