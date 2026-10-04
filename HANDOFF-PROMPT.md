@@ -1,4 +1,4 @@
-# Handoff — rounds 0-18 and four of Josh's fixes merged; round 19 (the boards) running
+# Handoff — rounds 0-26 merged; the bug pass, the mercy rule and the dead upgrades done
 
 You are picking up Midnight Menagerie on `dev`. Everything below is pushed.
 
@@ -16,7 +16,94 @@ loop until perfected". Two later calls narrow it and both are in force:
 `UI/*.png`** — what matters is readable, accurately drawn, well-detailed objects
 (item 3).
 
-## START HERE — 2026-09-24, after midnight
+## START HERE — 2026-10-04 (supersedes the 09-24 section below)
+
+**EVERYTHING THROUGH ROUND 26 IS MERGED, VERIFIED AND PUSHED**, plus a bug
+pass and a gameplay pass. The battery on dev: 101 gates, the only red is
+`tests/sprites` (7 HALO clips, LOOKED AT 2026-10-02 -- no visible fringe; the
+check reads Taffy's cream gloss as background; leave it red, do not lower it).
+
+**Josh's standing rules, newest first:**
+- 2026-10-03: **"When in doubt, err on the side of making it easier for the
+  player to win."** It outranks "look it up in StS2".
+- 2026-10-03: **keep the render-scale governor** (core/renderer.js).
+- 2026-10-02: **highest-priority open bugs first, then continue the loop.**
+- 2026-09-23: no longer worry about usage; still ONE round at a time (one GPU).
+- 2026-09-12: the UI pass loop, "until perfected" (below).
+
+**Done since 09-24 (all pushed):**
+- UI rounds 19-26, each with a graft: the boards and controls (19), the run
+  rail and the hand (20), the fight's room inked at the Deck's tier (21),
+  all seventeen wings rebuilt (22-25), the boards' painted wall and the
+  dialogs (26). Gains +1.37 to +3.78. README has every round.
+- **Bugs:** the Archivist softlock; an enemy holding Bristle threw; the
+  steam-deck Map race (settle() waits for the fit -- a red there is real
+  now); a fight's GPU-saturation freezes (route-ordered `ROOM_VARIANTS` link
+  queue + the governor); the Graveyard fight 18.1 -> 15.45 ms.
+- **The mercy rule** (`0ffd7b8`): past turn 30 the house drains the ENEMIES
+  (3% of max Courage x turns past 30, unpreventable). tests/run is GREEN; it
+  fails only if a past-30 fight is LOST. Unaided wins 3/40 -> 6/40.
+- **Dead upgrades 218 -> 0** (`6e81cfa`): every upgrade now does what its +
+  text says; many BASE cards that did nothing were fixed to their text.
+  `tests/upgrade-effects/check.py` FAILS on any dead upgrade, and
+  `tests/upgrade-effects/run.py` proves all 195 waivers.
+- **Card truth** (`e17d030a`): a Power played twice keeps its BEST copy in
+  every deck; Lightning Rod deals its printed 15/21; The Garden Remembers
+  does something.
+- **Survey 3** (`docs/ui-pass/SURVEY-2026-10-04.md`): what is owed next.
+
+**IN FLIGHT AT HANDOFF (check before starting anything):**
+- **Round 27, THE CARD** (`docs/ui-pass/BRIEF-r27.md`): worktrees
+  `C:/UILOOP/r27/wt/r27-card-{a,b,c}` (PERYLENE, HANSA, QUINACRIDONE; ports
+  9111-9113; BASE `5cb816c`; baseline captures `SHANTUNG` in
+  `C:/UILOOP/r27/judging/r27/card/`). The first run hit a session limit with
+  all three mid-build; it was RESUMED as run `wf_0a2772a4-aba`. If that run
+  did not finish: look at each branch's commits and `JUDGING/<CODE>/`, and
+  relaunch `docs/ui-pass/round-workflow.js` with `round-27.args.json` plus
+  `repo`, `uiloop: C:/UILOOP/r27`, `base: 5cb816c`, and a `resume` string on
+  each unfinished builder (see how round 21 and 27 were resumed in the
+  memory notes). Then merge the winner, battery (three phases), graft,
+  README row, push.
+- Nothing else is running. Dev is pushed.
+
+**OPEN, NAMED:**
+- The Foyer (16.3 ms) and Greenhouse (15.9 ms) fights are over the 15.5 ms
+  Deck budget. A fix exists on `perf/old-wings-guards` but changes the first
+  0.7 s of a fight's cross-fade: needs a look-neutral version.
+- The WebGL context loss of 09-23 did not reproduce on 10-02 (0/34) --
+  machine state after heavy days. `tools/ctxloss_probe.py` names it next time.
+- Steam P2P is blocked on a Steam App ID only Josh can get.
+- **Cards still not matching their text** (found by the card-truth pass,
+  `e17d030a`): Inside Job and Now You See Me do nothing; Clean Getaway never
+  grants its Nerve; Endless Pantry does nothing but its text would make
+  Leftovers COST more, so it needs a generous re-reading; Warm Windowsill
+  advances the same Seed twice ("different" in the text); a Mature Briar may
+  not retaliate against a direct attack (unverified). Fix each to the text in
+  the player's favour; every deck suite must stay green and
+  `tests/upgrade-effects` (check + run) must stay at 0.
+
+**THE NEXT ROUNDS, from survey 3:** round 27 = the card (running or merged,
+see in-flight); round 28 = the rooms' props (flat primitives, no contact
+shadows), the darks (haze lifting them in eight wings), the box-mansion the
+Graveyard and the Pumpkin Grounds share, and the Passages' missing far end;
+then the run strip's Keepsake/Gear tray at 1280, and the pale parchment +
+three node states on the map and atlas.
+
+**HOW TO RUN THINGS ON THIS MACHINE (each cost a day to learn):**
+- The battery outruns the ~33-min background limit: run `tools/gates.py
+  --only check`, `--only run`, `--only extra` as THREE separate background
+  jobs, never chained. A Bash `timeout` on a background job IS its kill time.
+- Wrap every capture in `timeout 180`. A killed job orphans its shot.py and
+  headless browser: find them by command line and stop them BY PID. If every
+  WebGL screen then crashes ("Page crashed"), idle 5 minutes.
+- Josh plays games on this machine (WoW, TrackStudio): check `tasklist`
+  before trusting a perf number or a steam-deck red.
+- Each round: baselines from the SAME commit the worktrees are cut from;
+  builders' BASE servers on their own port + 100; run the battery on the
+  WINNER before its graft; grafts PORT ideas (builders reuse ids), never
+  merge the losers; `tests/link-queue` for any new shader variant.
+
+## START HERE — 2026-09-24, after midnight (SUPERSEDED, kept for history)
 
 **EVERYTHING THROUGH ROUND 18 IS MERGED, VERIFIED AND PUSHED (`8f02e4e`),
 and so are four things Josh asked for on 2026-09-23.** The battery on the
