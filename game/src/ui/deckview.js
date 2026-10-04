@@ -169,8 +169,12 @@ export class DeckView {
       this._clearFilters();
       if (had) input.focus({ preventScroll: true });
     });
-    kitButton(clear, { quiet: true });
-    filt.appendChild(clear);
+    /* Clear wears the round enamel medallion with its cast cross on the
+       plate's end, as CLOSE does (round 26 graft, VERMEILLE's; both judges),
+       and stands on the bar beside the search it also wipes, so the five
+       choosers have the filters' row to themselves at a size the Deck reads */
+    kitButton(clear, { quiet: true, medal: 'close' });
+    bar.appendChild(clear);
     this.clearBtn = clear;
 
     // note

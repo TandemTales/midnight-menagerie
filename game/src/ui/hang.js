@@ -83,16 +83,17 @@ export function gallery(arts, classes, { skip = '', spares = ['marmalade', 'wisp
 
 /**
  * The room behind a dialog (round 26, both survey judges: Settings and the pile
- * viewer stood "on a flat black void"). The scrim becomes the boards' own room
- * -- the painted wall, panelling and flags (.kit-ground, the room every board
- * stands in) -- lit by the candles at the dialog's foot and pushed back into
- * the dark (.kit-scrim--room, ui/kit.css), so a dialog is a ledger or a case
- * set down in the house, not a page over nothing. Idempotent.
+ * viewer stood "on a flat black void"). Round 26 graft (VERMEILLE's; both
+ * judges asked for it in effect): the dialog stands over the ACTUAL screen it
+ * was opened from -- the map or the fight the pile belongs to, the run rail,
+ * the room's candles -- turned down and cooled under a scrim
+ * (.kit-scrim--dim, ui/kit.css), only the strip behind the dialog's own
+ * plaque put out so no second title reads through. SANGUINE's round painted
+ * the boards' room into the scrim instead; that read as a wainscot under a
+ * flat dark. The name is kept for its callers. Idempotent.
  */
 export function roomBehind(modal) {
   const scrim = modal?.el?.querySelector('.mm-modal__scrim');
-  if (!scrim || scrim.classList.contains('kit-scrim--room')) return;
-  scrim.classList.add('kit-scrim--room');
-  scrim.insertAdjacentHTML('afterbegin',
-    '<div class="kit-ground kit-scrim__room" aria-hidden="true"><i class="kit-ground__warm"></i><i class="kit-ground__moon"></i></div>');
+  if (!scrim || scrim.classList.contains('kit-scrim--dim')) return;
+  scrim.classList.add('kit-scrim--dim');
 }

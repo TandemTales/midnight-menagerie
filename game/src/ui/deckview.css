@@ -34,7 +34,8 @@
 
 /* Round 26: the case stands in the house's own room, not on a void --
    deckview.js hangs it in the scrim (ui/hang.js roomBehind; settings.css says
-   why) */
+   why). Round 26 graft: over the fight it belongs to, turned down
+   (.kit-scrim--dim), not a painted room. */
 
 /* ── bar: count + search, centred on the panel like a board's plaque row ─── */
 .mm-deck__bar {
@@ -296,3 +297,46 @@
 
 /* largeText: fewer, larger cards rather than the same grid with clipped text */
 :root[data-large-text="1"] .mm-deck { --deck-cw: clamp(180px, 16vw, 224px); }
+
+/* ── round 26 graft: the filters a size up, on the enamel ─────────────────
+   Both judges: the choices sat "about 10px at 1280 in flat dark pills".
+   Each choice is lettered a size up on the boards' violet enamel cartouche
+   with its scrolled gilt ends (cartouche.webp, the plate "5 TRICKS" is struck
+   on), a round enamel button with a cast chevron riding over each end
+   (VERMEILLE's), and what it chooses by engraved over it in spaced caps
+   between two of the boards' stars ("✦ TYPE ✦", MADDERROSE's). Clear stands
+   on the bar now (deckview.js), so the five have the row. */
+.mm-deck__sortwrap.kit-hw-cycle {
+  --cy-h: clamp(40px, 5vh, 46px);
+  grid-template-columns: auto auto auto;
+  column-gap: 0;
+  row-gap: 4px;
+}
+.mm-deck__sortwrap .kit-hw-cycle__plate {
+  z-index: 1;
+  border-image-source: url("../../assets/ui/kit/cartouche.webp");
+}
+.mm-deck__sortwrap .kit-hw-cycle__sel {
+  padding: 0 calc(var(--cy-h) * .74) 1px;
+  font-size: max(16px, calc(var(--cy-h) * .4));
+  color: var(--kit-name);
+}
+.mm-deck__sortwrap .kit-hw-cycle__step.kit-hw-enamel { --en: calc(var(--cy-h) * 1.06); z-index: 2; }
+.mm-deck__sortwrap .kit-hw-cycle__step--prev { margin-right: calc(var(--cy-h) * -.3); }
+.mm-deck__sortwrap .kit-hw-cycle__step--next { margin-left: calc(var(--cy-h) * -.3); }
+.mm-deck__sortwrap .kit-hw-cycle__step > .kit-hw-chev { width: 56%; filter: drop-shadow(0 1px 1px rgba(0, 0, 0, .8)) brightness(1.18); }
+.mm-deck__sortwrap .kit-hw-cycle__label {
+  display: inline-flex; align-items: center; gap: .55em;
+  font-size: max(12.5px, calc(var(--cy-h) * .3));
+  letter-spacing: .24em;
+}
+.mm-deck__sortwrap .kit-hw-cycle__label::before,
+.mm-deck__sortwrap .kit-hw-cycle__label::after {
+  content: ''; flex: none;
+  width: 8px; height: 8px;
+  background: url("../../assets/ui/kit/star4.svg") 50% 50% / 100% 100% no-repeat;
+  filter: drop-shadow(0 1px 0 rgba(0, 0, 0, .85));
+}
+.mm-deck__sortwrap .kit-hw-cycle__label::after { margin-left: -.24em; }
+.mm-deck__filters { gap: 8px clamp(10px, 1.3vw, 22px); }
+
