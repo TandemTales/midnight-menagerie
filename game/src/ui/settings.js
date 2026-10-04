@@ -399,6 +399,18 @@ export async function openSettings(ctx = {}) {
   done.addEventListener('click', () => modal.close(null));
 
   kitButton(restore, { quiet: true });
+  /* putting the house back as it was (round 26 graft, VERMEILLE's; both
+     judges): the arrow turning back on itself, struck on the round enamel
+     medallion seated on the plate's end, as DONE wears its tick -- no plate
+     at this foot is a bare rectangle */
+  {
+    const m = document.createElement('i');
+    m.className = 'kit-medallion kit-btn__medal mm-dlg-medal';
+    m.setAttribute('aria-hidden', 'true');
+    m.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12.4 4.2a7.8 7.8 0 1 1-7.4 10.4l2.7-1a4.9 4.9 0 1 0 4.7-6.5V10L6.8 5.7 12.4 1.4z"/></svg>';
+    restore.classList.add('mm-dlg-btn--medal');
+    restore.appendChild(m);
+  }
   kitButton(done, { medal: 'done' });
   modal.footer.append(restore, done);
 

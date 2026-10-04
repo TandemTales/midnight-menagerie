@@ -1082,20 +1082,20 @@
    One picture over each plaque on the shelf, on the wall between the shelf
    the two who went in stand on and the plaque's top: the mansion over HOW
    FAR, a portrait of the menagerie over the line that says why
-   (.kit-hang, ui/hang.js). Each hangs from its own plaque, so it follows the
-   plaque wherever the shelf sits. */
+   (.kit-hang, ui/hang.js). Round 26 graft: each hangs on its cord FROM that
+   shelf (the cornice) with a clear gap over its plaque, both frames one
+   height, or neither hangs -- gameover.js (_hangPictures) measures and sets
+   --hang-w, top and --go-cord, the cord's length up to the cornice. */
 .go-tri { position: relative; }
 .go-hang {
-  --hang-w: min(calc(var(--tri-w) * .9), 14.4vh);
+  --hang-w: 120px;
   --hang-lit: .92;
+  left: 50%;
   translate: -50% 0;
-  bottom: calc(100% + var(--carve) + var(--hang-w) * .07 + 4px);
 }
-/* each a little in from its plaque's middle, toward the card, so its frame
-   stands clear of the panel the plaque overlaps */
-.go-hang--l { left: calc(50% + var(--tri-w) * .09); }
-.go-hang--r { left: calc(50% - var(--tri-w) * .09); }
-.go-hang.kit-hang--wide { --hang-w: min(calc(var(--tri-w) * .92), 20vh); }
+.go-hang[hidden] { display: none; }
+.go-hang.kit-hang .kit-hang__cord { height: var(--go-cord, 24px); }
+.go-hang.kit-hang--tile .kit-hang__cord { width: 44%; }
 
 /* ── the ledger with room in it (round 26) ─────────────────────────────────
    "Overpacked at 1280: a two-column list of 16+ Tricks and five Keepsakes at
@@ -1117,11 +1117,93 @@
   .go-trick.go-trick .go-trick__name { font-size: 12.5px; }
   .go-keep b { font-size: 13px; }
 }
-/* on a short board (the Deck's 800) the wall over the line that says why is
-   too short for a picture, and a picture never hangs over the shelf or the
-   two who went in: only the mansion hangs, over HOW FAR, a size larger */
+
+/* ═══ round 26 graft: the record folded, one page at a time ════════════════
+   MADDERROSE's (one judge asked for it): when there are both, the final
+   Tricks and the Keepsakes are two pages behind the board's gilt tabs
+   (.kit-tabs), FINAL TRICKS open, and the open page has the ledger's whole
+   height, so its type is set for the Deck and never runs to the panel's foot.
+   The tab carries the heading and its count; the page's own heading stays
+   for a reader only. With nothing kept there is nothing to fold. */
+.go-block[hidden], .go-fold[hidden] { display: none; }
+.go-ledger[data-fold] {
+  grid-template-rows: auto auto minmax(0, 1fr);
+  grid-template-areas: "head" "fold" "page";
+  align-content: stretch;
+}
+.go-ledger[data-fold] > .go-block--deck,
+.go-ledger[data-fold] > .go-block--keep { grid-area: page; align-content: start; min-height: 0; overflow-y: auto; scrollbar-color: var(--kit-gold-lo) transparent; }
+.go-ledger[data-fold] > .go-block--keep::before,
+.go-ledger[data-fold] > .go-block--keep::after { display: none; }
+.go-ledger[data-fold] .go-block > .go-h {
+  position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+/* the tabs stand on the rule that parts the head from the page */
+.go-fold.kit-tabs {
+  grid-area: fold;
+  gap: clamp(10px, 1.2vw, 18px);
+  margin-top: 4px;
+}
+.go-fold__tab.kit-tab {
+  --plate-h: clamp(38px, 4.6vh, 42px);
+  gap: 9px;
+  padding-inline: calc(var(--plate-h) * .78);
+  font-size: 13px;
+}
+.go-fold__n {
+  font-family: var(--font-body); font-variant-numeric: var(--num-feat);
+  font-style: italic; font-weight: 600;
+  font-size: 14px; letter-spacing: .01em; text-transform: none;
+  color: var(--kit-gold);
+}
+.go-fold__tab[aria-selected="true"] .go-fold__n { color: var(--kit-gold-hi); }
+.go-fold__n:empty { display: none; }
+
+/* the Tricks page: the list at the size a deck list is read at */
+.go-ledger[data-fold] .go-tricks.go-tricks {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 clamp(14px, 1.4vw, 22px);
+  padding-inline: 6px;
+}
+.go-ledger[data-fold] .go-trick.go-trick { --coin: 23px; gap: 10px; padding: 5px 2px 6px 1px; }
+.go-ledger[data-fold] .go-trick.go-trick .go-trick__name { font-size: 15px; line-height: 1.15; }
+.go-ledger[data-fold] .go-trick.go-trick .go-trick__n { font-size: 14px; }
+.go-ledger[data-fold] .go-trick.go-trick .go-trick__cost { font-size: max(12px, calc(var(--coin) * .54)); }
+/* the Keepsakes page: each one its object, its name and what it did */
+.go-keep__desc {
+  position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+.go-ledger[data-fold] .go-keeps { grid-template-columns: minmax(0, 1fr); row-gap: 2px; padding-inline: 4px; }
+.go-ledger[data-fold] .go-keep { grid-template-areas: 'i b' 'i e'; padding-block: 6px 7px; column-gap: 12px; cursor: default; }
+.go-ledger[data-fold] .go-keep + .go-keep { padding-top: 9px; }
+.go-ledger[data-fold] .go-keep + .go-keep::before { display: block; }
+.go-ledger[data-fold] .go-keep__sigil.kit-hw-well { --well: clamp(38px, 2.8vw, 44px); }
+.go-ledger[data-fold] .go-keep b { align-self: end; font-size: 15px; line-height: 1.15; }
+.go-ledger[data-fold] .go-keep__desc {
+  position: static; width: auto; height: auto; margin: 0; overflow: visible; clip: auto; white-space: normal;
+  font-size: 13.5px; line-height: 1.28;
+}
 @media (max-height: 860px) {
-  .go-hang--r { display: none; }
-  .go-hang.kit-hang--wide { --hang-w: min(calc(var(--tri-w) * 1.06), 20vh); }
-  .go-hang--l { left: calc(50% + var(--tri-w) * .12); }
+  .go-fold__tab.kit-tab { --plate-h: 36px; font-size: 12.5px; }
+  .go-ledger[data-fold] .go-trick.go-trick { --coin: 21px; padding: 4px 2px 5px 1px; }
+  .go-ledger[data-fold] .go-trick.go-trick .go-trick__name { font-size: 14px; }
+  .go-ledger[data-fold] .go-keep { padding-block: 4px 5px; }
+  .go-ledger[data-fold] .go-keep + .go-keep { padding-top: 7px; }
+  .go-ledger[data-fold] .go-keep__sigil.kit-hw-well { --well: 36px; }
+  .go-ledger[data-fold] .go-keep b { font-size: 14px; }
+  .go-ledger[data-fold] .go-keep__desc { font-size: 13px; line-height: 1.24; }
+}
+
+/* round 26 graft (both judges): the ledger's italics -- 'the candle ran out',
+   the seed's 'Run this house again', the counts by each heading -- were about
+   9 px to the eye at the Deck's 1280 (Grenze's italic reads well under its
+   em). Set to read 11 px or more there. */
+.go-courage__note, .go-seed__hint { font-size: 14px; font-weight: 500; }
+.go-h .go-h__n { font-size: 14px; }
+.go-mvp__h .kit-plate__epithet { font-size: max(13px, calc(var(--plate-h, 40px) * .3)); }
+.go-bp__label, .go-bp__count { font-size: 12.5px; }
+@media (max-width: 1400px) {
+  .go-courage__note, .go-seed__hint { font-size: 13.5px; }
 }

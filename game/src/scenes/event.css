@@ -463,25 +463,35 @@
 .ev-register .ev-out__next { color: var(--kit-ink-oxblood); }
 
 /* ── the hall around the page ───────────────────────────────────────────────
-   Each side wall is staged the same way, mirrored: one of the house's
-   portraits on its cord (round 26; a gothic window stood here before), a
-   brass sconce under it, and on the floor a candle (and on the left the skull
-   on its books). The positions are custom properties because the ground's
-   light slots are pointed at the same places: the sconces light the wall and
-   the picture over them, the moon lays a cold glow on the paper round it.
-   `.ev-hall` sits under the page. */
+   Each side wall is staged the same way, mirrored (round 26 graft): at the
+   wall's OUTER edge a gothic window onto the grounds with the moon in it
+   (VERMEILLE's; both judges asked for it back), between the window and the
+   page one of the house's portraits on its cord (SANGUINE's), a brass sconce
+   under the portrait lighting it from below, and on the floor a candle (and
+   on the left the skull on its books). Over the page, either side of its moon
+   medallion, a pair of small sconces light the strip of wall between the
+   plaque and the page. The positions are custom properties because the
+   ground's light slots are pointed at the same places: the sconces light the
+   wall round them, the windows spill moonlight down the panelling and across
+   the floor. event.js measures where the page stands (--page-l, --page-t,
+   --band-h, --lamp-dx); the fallbacks are the 1600x900 answer. `.ev-hall`
+   sits under the page. */
 .rm--event {
   --page-edge: calc(50vw - min(370px, 50vw));             /* where the page starts */
-  --win-w: clamp(100px, 9.6vw, 158px);
+  --page-l: max(calc(50vw - 390px), 24vw);                /* measured by event.js */
+  --win-w: clamp(78px, 6.8vw, 120px);
   --win-h: calc(var(--win-w) * 680 / 300);
-  --win-cx: calc(var(--page-edge) * .46 + var(--kit-vine-w, 40px) * .3);
-  --win-top: calc(var(--hud-h) + 25vh);
+  --win-cx: calc(var(--kit-edge, 10px) + var(--kit-vine-w, 40px) + clamp(10px, 1vw, 18px) + var(--win-w) / 2);
+  --win-top: calc(var(--hud-h) + 22vh);
+  /* the portrait, against the page */
+  --pic-w: clamp(100px, 9vw, 146px);
+  --pic-cx: calc(var(--page-l) - clamp(14px, 1.4vw, 24px) - var(--pic-w) / 2);
+  --pic-top: calc(var(--hud-h) + 26vh);
   --sconce-w: clamp(58px, 5.2vw, 84px);
   --sconce-h: calc(var(--sconce-w) * 330 / 150);
-  /* round 26: the sconce stands under its wall's picture, lighting it from
-     below, so the picture has the bay's whole width */
-  --sconce-cx: var(--win-cx);
-  --sconce-top: calc(var(--win-top) + var(--win-w) * 1.56);
+  /* the sconce stands under its wall's picture and its plate, lighting it */
+  --sconce-cx: var(--pic-cx);
+  --sconce-top: calc(var(--pic-top) + var(--pic-w) * 1.12 + 26px);
   --flame-y: calc(var(--sconce-top) + var(--sconce-h) * .16);
   --floor-y: calc(100vh - clamp(70px, 10vh, 96px));
   /* candle light: the two sconces and the two floor candles */
@@ -493,33 +503,70 @@
   --wl5-w: clamp(260px, 24vw, 400px);            --wl5-h: calc(var(--wl5-w) * .9);
   --wl6-x: calc(100vw - var(--wl5-x));           --wl6-y: var(--wl5-y);
   --wl6-w: var(--wl5-w);                         --wl6-h: var(--wl5-h);
-  /* moonlight: a cold glow on the paper round each wall's pictures */
+  /* moonlight: a glow round each window and a beam down onto the floor */
   --ml1-x: var(--win-cx);                        --ml1-y: calc(var(--win-top) + var(--win-h) * .42);
   --ml1-w: calc(var(--win-w) * 2.9);             --ml1-h: calc(var(--win-h) * 1.55);
   --ml2-x: calc(100vw - var(--win-cx));          --ml2-y: var(--ml1-y);
   --ml2-w: var(--ml1-w);                         --ml2-h: var(--ml1-h);
-  /* (no shafts since round 26: the bays hang pictures, not windows) */
+  --mb1-x: calc(var(--win-cx) + var(--win-w) * .55); --mb1-y: calc(var(--win-top) + var(--win-h) * .3);
+  --mb1-w: calc(var(--win-w) * 2.2);             --mb1-h: calc(100vh - var(--mb1-y));
+  --mb2-x: calc(100vw - var(--mb1-x));           --mb2-y: var(--mb1-y);
+  --mb2-w: var(--mb1-w);                         --mb2-h: var(--mb1-h);
 }
 .ev-hall { position: absolute; inset: 0; z-index: 2; pointer-events: none; }
 .ev-hall > * { position: absolute; display: block; }
-/* The pictures (round 26): one to a wall, hung in the bay a gothic window
-   stood in, the sconce under it lighting it from below. --win-* still names
-   that bay. */
-.ev-hall__pic {
-  --hang-w: var(--win-w);
-  --hang-lit: .96;
-  top: calc(var(--win-top) + var(--win-w) * .3);
-  translate: -50% 0;
+/* Moonlight coming in: from each window a cold shaft slants down across the
+   panelling and over the flagstones towards the page, the way the warm light
+   pools at the sconces beside it. Screen-blended, soft-edged, still. */
+.ev-hall__beam {
+  top: calc(var(--win-top) + var(--win-h) * .16);
+  width: calc(var(--win-w) * 1.2);
+  height: calc(100vh - var(--win-top) - var(--win-h) * .16 - clamp(24px, 3.4vh, 40px));
+  /* soft on every side: a shaft of light has no edge to cut */
+  background: linear-gradient(90deg, transparent 0%,
+    color-mix(in srgb, var(--kit-moon) 30%, transparent) 28%,
+    color-mix(in srgb, var(--kit-moon) 40%, transparent) 52%,
+    color-mix(in srgb, var(--kit-moon) 20%, transparent) 78%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 12%, rgba(0, 0, 0, .75) 55%, rgba(0, 0, 0, .35) 85%, transparent 100%);
+          mask-image: linear-gradient(to bottom, transparent 0%, black 12%, rgba(0, 0, 0, .75) 55%, rgba(0, 0, 0, .35) 85%, transparent 100%);
+  mix-blend-mode: screen;
+  transform-origin: 50% 0;
 }
-.ev-hall__pic--l { left: var(--win-cx); }
-.ev-hall__pic--r { left: calc(100vw - var(--win-cx)); }
-/* a web strung from the wall's outer border to the top picture's cord */
+.ev-hall__beam--l { left: calc(var(--win-cx) - var(--win-w) * .52); transform: skewX(24deg); }
+.ev-hall__beam--r { right: calc(var(--win-cx) - var(--win-w) * .52); transform: skewX(-24deg); }
+.kit-board.has-backdrop .ev-hall__beam { opacity: .6; }
+.ev-hall__window { top: var(--win-top); }
+.ev-hall__window--l { left: calc(var(--win-cx) - var(--win-w) / 2); }
+.ev-hall__window--r { right: calc(var(--win-cx) - var(--win-w) / 2); }
+/* a web strung from the wall's outer border to the window's arch */
 .ev-hall__web { top: calc(var(--win-top) - var(--win-h) * .04); }
 .ev-hall__web--l { --web-w: calc(var(--win-w) * .95); left: calc(var(--win-cx) - var(--win-w) * 1.02); }
 .ev-hall__web--r { --web-w: calc(var(--win-w) * 1.25); right: calc(var(--win-cx) - var(--win-w) * 1.1); }
+/* The pictures: one to a wall, between its window and the page, the sconce
+   under it lighting it from below. */
+.ev-hall__pic {
+  --hang-w: var(--pic-w);
+  --hang-lit: .96;
+  top: var(--pic-top);
+  translate: -50% 0;
+}
+.ev-hall__pic--l { left: var(--pic-cx); }
+.ev-hall__pic--r { left: calc(100vw - var(--pic-cx)); }
 .ev-hall__sconce { top: var(--sconce-top); }
 .ev-hall__sconce--l { left: calc(var(--sconce-cx) - var(--sconce-w) / 2); }
 .ev-hall__sconce--r { right: calc(var(--sconce-cx) - var(--sconce-w) / 2); }
+/* the pair over the page, either side of its moon medallion, on the strip of
+   wall between the plaque and the page (both judges: "the wall is empty
+   dark" there). Each as tall as the strip lets it stand, its foot tucked
+   behind the page's top rail; their flames warm the strip. */
+.ev-hall__lamp {
+  --sconce-w: calc(var(--band-h, 72px) * .5);
+  top: calc(var(--page-t, 324px) - var(--band-h, 72px) * 1.02);
+  translate: -50% 0;
+}
+.ev-hall__lamp--l { left: calc(50vw - var(--lamp-dx, 170px)); }
+.ev-hall__lamp--r { left: calc(50vw + var(--lamp-dx, 170px)); }
+.ev-hall__lamp[hidden] { display: none; }
 .ev-hall__candle { bottom: clamp(70px, 10vh, 96px); width: clamp(48px, 4vw, 68px); filter: brightness(.95); }
 .ev-hall__candle--l { left: calc(var(--wl5-x) - clamp(48px, 4vw, 68px) / 2); }
 .ev-hall__candle--r { right: calc(var(--wl5-x) - clamp(48px, 4vw, 68px) / 2); }

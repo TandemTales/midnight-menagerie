@@ -3966,3 +3966,67 @@ button.kit-hw-enamel:focus-visible {
    at the least, a weight up, and the keycap's word at 11px. */
 .kit-btn em { font-size: max(13px, var(--fs-xs)); font-weight: 500; }
 .kit-btn kbd { font-size: 11px; }
+
+/* ===========================================================================
+   ROUND 26 GRAFT — appended; nothing above is changed.
+
+     .kit-hang__plate   a hung Companion's name and epithet LETTERED on a small
+                        brass-rimmed plate screwed to the frame's foot (ui/
+                        hang.js). The painted plate on Josh's tile is cut off
+                        (--pic-ar, set per picture): hung at a wall picture's
+                        size its epithet came out at 6-7 px at the Deck's 1280
+                        (both judges). The name sets at 13px, the epithet at
+                        12px italic; a frame under 128px drops the epithet and
+                        keeps the name.
+   =========================================================================== */
+.kit-hang--named { container-type: inline-size; }
+/* the painting only: the tile's own painted plate falls below the cut */
+.kit-hang__pic[style] { aspect-ratio: var(--pic-ar); object-position: 50% 0; }
+.kit-hang__plate {
+  position: absolute; z-index: 3; left: 50%; top: 100%;
+  translate: -50% calc(var(--hang-rim) * -.35);
+  display: flex; flex-direction: column; align-items: center; gap: 1px;
+  box-sizing: border-box;
+  width: max-content; min-width: 78%;
+  padding: 4px 16px 5px;
+  border: 0 solid transparent;
+  border-image: url("../../assets/ui/kit/cartouche-dark.webp") 18 34 18 34 fill / 8px 15px stretch;
+  filter: drop-shadow(0 3px 3px rgba(0, 0, 0, .85));
+  white-space: nowrap; text-align: center;
+}
+.kit-hang__plate > b {
+  font-family: var(--font-display); font-weight: 700; font-style: normal;
+  font-size: 13px; line-height: 1.05; letter-spacing: .04em;
+  color: var(--kit-name);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .95);
+}
+.kit-hang__plate > em {
+  font-family: var(--font-body); font-weight: 500; font-style: italic;
+  font-size: 12px; line-height: 1.05; letter-spacing: .01em;
+  color: var(--kit-text-mid);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .95);
+}
+@container (max-width: 127px) {
+  .kit-hang__plate > em { display: none; }
+  .kit-hang__plate { padding: 4px 13px 5px; }
+}
+
+/* ── the screen behind a dialog, turned down (round 26 graft) ──
+   .kit-scrim--dim   a dialog's scrim over the ACTUAL screen it was opened
+                     from (ui/hang.js roomBehind): the map, the fight, the run
+                     rail and the room's candles stay where they were, put
+                     back a step, cooled toward the house's violet and a
+                     little softened, so they read as the room behind and
+                     never compete with the dialog; only the strip behind the
+                     dialog's own plaque is put out, so no second title reads
+                     through, and the frame's candle still warms the lower
+                     right. VERMEILLE's. */
+.mm-modal__scrim.kit-scrim--dim {
+  background:
+    radial-gradient(40% 15% at 50% 9%, color-mix(in srgb, var(--kit-void) 92%, transparent) 45%, transparent 100%),
+    radial-gradient(60% 55% at 92% 96%, color-mix(in srgb, var(--kit-candle) 10%, transparent), transparent 70%),
+    radial-gradient(120% 100% at 50% 52%, color-mix(in srgb, var(--kit-void) 42%, transparent) 0%, color-mix(in srgb, var(--kit-void) 50%, transparent) 62%, color-mix(in srgb, var(--kit-void) 64%, transparent) 100%),
+    linear-gradient(color-mix(in srgb, var(--kit-violet-lo) 14%, transparent), color-mix(in srgb, var(--kit-violet-lo) 14%, transparent));
+  -webkit-backdrop-filter: blur(1px) saturate(.78);
+          backdrop-filter: blur(1px) saturate(.78);
+}

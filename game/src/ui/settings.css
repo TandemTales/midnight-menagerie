@@ -27,10 +27,11 @@
 
 /* Round 19 made the scrim solid ("the screen behind shows through at the
    edges"); round 26's judges then found the ledger standing "on a flat black
-   void". It stands in the house's own room now: settings.js hangs the boards'
-   painted room in the scrim (ui/hang.js roomBehind, .kit-scrim--room), lit by
-   a candle low at each side and dark under the ledger. (The pile viewer,
-   deckview.js, the same.) */
+   void". Round 26 graft: it stands over the screen it was opened from -- the
+   map, the run rail, the room's candles -- turned down and cooled under the
+   scrim (ui/hang.js roomBehind, .kit-scrim--dim), only the strip behind its
+   own plaque put out. (The pile viewer, deckview.js, the same over its
+   fight.) */
 /* the ledger: wide enough for three columns of pages, the map showing round it */
 .mm-settings-modal .mm-modal__dialog { width: min(100%, 88rem); }
 /* its name on a plaque a size smaller than a board's, so the pages get the height */
@@ -472,3 +473,27 @@
 :root[data-large-text="1"] .mm-set__seed,
 :root[data-large-text="1"] .mm-set__text,
 :root[data-large-text="1"] .mm-set__row > .kit-btn { justify-self: start; }
+
+/* ── round 26 graft: the lever reads at a glance ─────────────────────────
+   One judge found the levers about 20 px at 1280 with OFF and ON faint. The
+   lever is a size up, both words a size up, the word it points at lit (the
+   candle for ON, the boards' lavender for OFF) and the other one cut in the
+   brass dark but still legible. */
+.mm-set { --sw-h-set: 34px; }
+@media (max-height: 920px) { .mm-set { --sw-h-set: 31px; } }
+/* ...without growing its row: the four px it gained come out of the
+   button's own padding, so every page still stands above the footer */
+.mm-set__toggle { margin-block: -2px; }
+.mm-set__switch > .kit-hw-throw__word {
+  min-width: 2.5em;
+  font-size: max(13px, calc(var(--sw-h) * .42));
+  color: color-mix(in oklab, var(--kit-text-lo) 86%, var(--kit-gold-lo));
+}
+.mm-set__switch:not([data-on="1"]) > .kit-hw-throw__word:first-child {
+  color: var(--kit-lav-hi);
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, .9), 0 0 9px color-mix(in srgb, var(--kit-lav) 80%, transparent);
+}
+.mm-set__switch[data-on="1"] > .kit-hw-throw__word:last-child {
+  color: #fff3d6;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, .9), 0 0 10px color-mix(in srgb, var(--kit-candle) 95%, transparent);
+}
