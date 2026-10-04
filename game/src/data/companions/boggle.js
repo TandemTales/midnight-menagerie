@@ -444,7 +444,9 @@ U.onTracker(SLUG, (e, s, seat) => {
     st.unawareThisTurn = 0;
     st.ambushedThisTurn = 0;
     st.houseSettles = 0;
-    st.lightsOff = 0;
+    /* Keep the Lights Off is NOT reset here. Its text is "the next {n} Attacks",
+       with no "this turn", and the charges are the player's to spend: wiping
+       them at the turn boundary threw away whatever the turn did not use. */
     st.plainSight = false;
     st.noScreamYet = 0;
     st.attackedThisTurn = false;
@@ -1160,7 +1162,10 @@ const uncommons = [
     text: 'Maximum [Lurk] becomes 7 this combat. Gain {l} [Lurk].',
     flavor: 'It is bigger under there. Considerably bigger.',
     nums: { l: 1 },
-    effect: eff((c) => power(c, 'boggle/underbed-kingdom', 1, (x) => { raiseLurkCap(x); gainLurk(x, N(x).l); })),
+    /* The cap is raised once; the Lurk is every copy's own. Both used to sit in
+       the install-once closure, so a second copy gained no Lurk at all and an
+       upgraded copy after a base one gained nothing. */
+    effect: eff((c) => { power(c, 'boggle/underbed-kingdom', 1, (x) => { raiseLurkCap(x); }); gainLurk(c, N(c).l); }),
     upgrade: { nums: { l: 2 } },
   },
   {
@@ -1621,9 +1626,13 @@ const coopCards = [
     text: 'Once a round per other Kid: when they damage an enemy with {f} or more [Fright], [Scare] {f} from it. That Kid draws a Trick and gains {b} Guard, and you gain {l} [Lurk].',
     flavor: 'There is more than one thing under this bed and they have a plan.',
     nums: { f: 4, b: 6, l: 1 },
-    effect: eff((c) => power(c, 'boggle/monster-squad', 1, (x) => {
-      U.mm(x).squad = { f: N(x).f, b: N(x).b, l: N(x).l };
-    })),
+    /* The best copy's numbers, not the first one's: they were set inside the
+       install-once closure. {f} is a THRESHOLD, so the best copy is the LOWEST. */
+    effect: eff((c) => {
+      power(c, 'boggle/monster-squad', 1);
+      const s = U.mm(c), was = s.squad, n = N(c);
+      s.squad = was ? { f: Math.min(was.f, n.f), b: Math.max(was.b, n.b), l: Math.max(was.l, n.l) } : { f: n.f, b: n.b, l: n.l };
+    }),
     upgrade: { nums: { f: 4, b: 9, l: 1 } },
   },
 ];

@@ -244,6 +244,44 @@ try {
     check(stacks(e, t, 'fright') >= 4, 'Fright survives a full round',
       `fright=${stacks(e, t, 'fright')}`);
   }
+
+  // ── 9. a Power keeps the BEST copy played, not the first ─────────────────
+  {
+    /* Underbed Kingdom gained its {l} Lurk inside the install-once closure, so
+       an upgraded copy played after a base one gained nothing at all. */
+    const playUp = async (e, id) => {
+      e.addCard(CARDS.cardById(id), 'hand', { upgraded: true });
+      const k = e.piles.hand[e.piles.hand.length - 1];
+      e.player.energy = 9;
+      return e.playCard(k.uid);
+    };
+    const e = await boggle();
+    await play(e, 'boggle/underbed-kingdom', null);
+    const mid = e.counter('lurk');
+    await playUp(e, 'boggle/underbed-kingdom');
+    check(mid === 1 && e.counter('lurk') === 3, 'Underbed Kingdom then Underbed Kingdom+ gains 1, then the upgraded 2 Lurk',
+      `lurk ${mid} -> ${e.counter('lurk')}`);
+    check(e.counterMax('lurk') === 7, 'and the cap is raised once, to 7', `max=${e.counterMax('lurk')}`);
+  }
+
+  // ── 10. Keep the Lights Off: "the next {n} Attacks", with no "this turn" ──
+  {
+    /* The charges used to be wiped at every turn start. Unspent ones now carry
+       to the next turn, which is what the text says. */
+    const e = await boggle();
+    const t = e.livingEnemies()[0];
+    await play(e, 'boggle/keep-the-lights-off', null);
+    await e.endTurn();
+    if (!t.alive) check(false, 'the target survived the turn (setup)');
+    else {
+      await play(e, 'boggle/under-the-bed', t);
+      check(stacks(e, t, 'unaware') === 1, 'next turn, the target is hidden (setup)');
+      await play(e, 'boggle/little-chomp', t);
+      check(stacks(e, t, 'unaware') === 0 && stacks(e, t, 'suspicious') === 0,
+        'an Ambush on the NEXT turn still leaves it Aware, not Suspicious',
+        `unaware=${stacks(e, t, 'unaware')} suspicious=${stacks(e, t, 'suspicious')}`);
+    }
+  }
 } catch (err) {
   fails.push('THREW: ' + (err && err.stack || err));
 }
