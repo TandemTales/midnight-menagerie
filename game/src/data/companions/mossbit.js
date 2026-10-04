@@ -341,6 +341,11 @@ const WEATHER_PRINTED = new Map();
 const weathers = (id, n) => { WEATHER_PRINTED.set(id, n); return id; };
 const printedWeather = (k) => WEATHER_PRINTED.get(k && (k.def ? k.def.id : k.id));
 
+/**
+ * Install a Power once. A number written inside `install` is the FIRST copy's
+ * forever, so every Power records its number on each play with `U.keepBest`
+ * (or adds it, where copies stack) outside the closure.
+ */
 const power = (c, id, install) => {
   const s = U.mm(c);
   U.applySelf(c, id, 1);
@@ -831,7 +836,7 @@ const commons = [
     text: 'The first [Epitaph] you create each turn also gives {b} Guard right away.',
     flavor: 'Nobody reads it. It does not mind.',
     nums: { b: 8 },
-    effect: eff((c) => power(c, 'mossbit/quiet-monument', (x, s) => { s.quietMonument = N(x).b; })),
+    effect: eff((c) => { power(c, 'mossbit/quiet-monument', () => {}); U.keepBest(c, 'quietMonument', N(c).b); }),
     upgrade: { nums: { b: 12 } },
   },
   {
@@ -840,7 +845,7 @@ const commons = [
     text: 'The first [Epitaph] that resolves on its own each turn also gives {b} Guard.',
     flavor: 'It does not need permission and it never has.',
     nums: { b: 9 },
-    effect: eff((c) => power(c, 'mossbit/moss-grows-anyway', (x, s) => { s.mossGrowsAnyway = N(x).b; })),
+    effect: eff((c) => { power(c, 'mossbit/moss-grows-anyway', () => {}); U.keepBest(c, 'mossGrowsAnyway', N(c).b); }),
     upgrade: { nums: { b: 13 } },
   },
 ];
@@ -1253,10 +1258,15 @@ const uncommons = [
     text: 'New [Epitaph]s take 1 longer, and their damage and Guard are {m0} stronger.',
     flavor: 'Properly carved things take properly long.',
     nums: { m0: 5 },
-    effect: eff((c) => power(c, 'mossbit/set-in-stone', (x, s) => {
-      s.setInStone = true;
-      s.monumentBonus = (s.monumentBonus || 0) + N(x).m0;
-    })),
+    /* Each copy adds its OWN {m0}, as Monument to Small Things' bonus does. It
+       was added inside the install-once closure, so a second copy - Set in
+       Stone then Set in Stone+ - added nothing: +5, not +5 +8. The extra turn
+       is still the Power's, once. */
+    effect: eff((c) => {
+      power(c, 'mossbit/set-in-stone', (x, s) => { s.setInStone = true; });
+      const s = U.mm(c);
+      s.monumentBonus = (s.monumentBonus || 0) + (N(c).m0 | 0);
+    }),
     upgrade: { nums: { m0: 8 } },
   },
   {
@@ -1265,7 +1275,7 @@ const uncommons = [
     text: 'Erasing an unresolved [Epitaph] gains {b} Guard and takes a little off [Buried Harm].',
     flavor: 'It grows over the ones nobody visits.',
     nums: { b: 13 },
-    effect: eff((c) => power(c, 'mossbit/grave-moss', (x, s) => { s.graveMoss = N(x).b; })),
+    effect: eff((c) => { power(c, 'mossbit/grave-moss', () => {}); U.keepBest(c, 'graveMoss', N(c).b); }),
     upgrade: { nums: { b: 18 } },
   },
   {
@@ -1584,7 +1594,7 @@ const rares = [
     text: '[Patience] you cannot hold becomes {m0} damage to all enemies and {m0} Guard instead.',
     flavor: 'Mountains do this. It takes them longer.',
     nums: { m0: 6 },
-    effect: eff((c) => power(c, 'mossbit/geological-patience', (x, s) => { s.geologicalPatience = N(x).m0; })),
+    effect: eff((c) => { power(c, 'mossbit/geological-patience', () => {}); U.keepBest(c, 'geologicalPatience', N(c).m0); }),
     upgrade: { nums: { m0: 10 } },
   },
   {
@@ -1611,7 +1621,7 @@ const rares = [
     text: 'Clearing [Buried Harm] before it costs you Courage makes future [Epitaph]s {m0} stronger. It stacks.',
     flavor: 'For the ones nobody built anything for.',
     nums: { m0: 2 },
-    effect: eff((c) => power(c, 'mossbit/monument-to-small-things', (x, s) => { s.monumentToSmallThings = N(x).m0; })),
+    effect: eff((c) => { power(c, 'mossbit/monument-to-small-things', () => {}); U.keepBest(c, 'monumentToSmallThings', N(c).m0); }),
     upgrade: { nums: { m0: 3 } },
   },
   {
@@ -1629,14 +1639,20 @@ const rares = [
     text: 'Two more [Epitaph] slots. If one is free now, create [Epitaph] 3: draw {c1} and gain {e} Nerve.',
     flavor: 'It was on the shell when he woke up.',
     nums: { c1: 2, e: 1 },
-    effect: eff((c) => power(c, 'mossbit/already-written', (x, s) => {
-      s.extraSlots = 2;
-      x.defineCounter(slotTrack(MAX_SLOTS, epitaphs(x).length));
-      inscribe(x, {
-        turns: 3, exact: true, label: 'Already Written',
-        run: (y) => { U.draw(y, N(x).c1); epitaphNerve(y, N(x).e); },
+    /* The slots are the Power's, once. The Epitaph is EVERY copy's: it was
+       inscribed inside the install-once closure, so a second copy created
+       nothing although a slot was free. */
+    effect: eff((c) => {
+      power(c, 'mossbit/already-written', (x, s) => {
+        s.extraSlots = 2;
+        x.defineCounter(slotTrack(MAX_SLOTS, epitaphs(x).length));
       });
-    })),
+      const { c1, e } = N(c);
+      inscribe(c, {
+        turns: 3, exact: true, label: 'Already Written',
+        run: (y) => { U.draw(y, c1); epitaphNerve(y, e); },
+      });
+    }),
     upgrade: { cost: 1 },
   },
   {
@@ -1715,7 +1731,7 @@ const coopCards = [
     text: 'The first [Epitaph] to mature each turn gives every friend {b} Guard.',
     flavor: 'One stone. Several names. A long story.',
     nums: { b: 6 },
-    effect: eff((c) => power(c, 'mossbit/family-plot', (x, s) => { s.familyPlot = N(x).b; })),
+    effect: eff((c) => { power(c, 'mossbit/family-plot', () => {}); U.keepBest(c, 'familyPlot', N(c).b); }),
     upgrade: { nums: { b: 10 } },
   },
   {

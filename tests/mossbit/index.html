@@ -369,6 +369,46 @@ try {
     check(e.counter('patience') === 1, 'and still pays only one Patience',
       `patience=${e.counter('patience')}`);
   }
+
+  // ── a Power keeps the best copy played, not the first ─────────────────────
+  async function playAs(e, id, up, target) {
+    e.addCard(CARDS.cardById(id), 'hand', { upgraded: up });
+    const k = e.piles.hand[e.piles.hand.length - 1];
+    e.player.energy = 9;
+    await e.playCard(k.uid, target ? target.id : undefined);
+  }
+  {
+    /* Quiet Monument's {b} was written inside the install-once closure:
+       Quiet Monument then Quiet Monument+ paid the base 8. */
+    for (const [label, seq, want] of [['base only', [false], 8], ['base then upgraded', [false, true], 12]]) {
+      const e = await mossbit(); calm(e);
+      for (const up of seq) await playAs(e, 'mossbit/quiet-monument', up);
+      e.player.block = 0;
+      await play(e, 'mossbit/written-in-stone', e.livingEnemies()[0]);
+      check(e.player.block === want, `Quiet Monument (${label}): the first Epitaph gives ${want} Guard`, `guard=${e.player.block}`);
+    }
+  }
+  {
+    /* Set in Stone added its {m0} inside the install-once closure, so a second
+       copy added nothing. Each copy adds its own now: +5, or +5 +8. */
+    for (const [label, seq, want] of [['base only', [false], 16 + 5], ['base then upgraded', [false, true], 16 + 5 + 8]]) {
+      const e = await mossbit(); calm(e);
+      for (const up of seq) await playAs(e, 'mossbit/set-in-stone', up);
+      const t = e.livingEnemies()[0];
+      await play(e, 'mossbit/written-in-stone', t);
+      const dmg = watchDamage(e);
+      for (let i = 0; i < 3; i++) { e.player.block = 999; await e.endTurn(); }
+      check(dmg.total === want, `Set in Stone (${label}): Written in Stone lands for ${want}`, `${dmg.hits} hits for ${dmg.total}`);
+    }
+  }
+  {
+    // Already Written created its Epitaph inside the install-once closure.
+    const e = await mossbit(); calm(e);
+    await playAs(e, 'mossbit/already-written', false);
+    await playAs(e, 'mossbit/already-written', true);
+    const mine = eps(e).filter(t => t.label === 'Already Written');
+    check(mine.length === 2, 'Already Written twice creates two Epitaphs, a free slot each time', `epitaphs=${mine.length}`);
+  }
 } catch (err) {
   fails.push('THREW: ' + (err && err.stack || err));
 }
