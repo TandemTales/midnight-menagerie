@@ -294,6 +294,45 @@ U.onTracker(SLUG, (e, s, seat) => {
     if (st.patternBook && new Set(st.playedPatchKinds).size >= 2 && U.once(c, 'patternBook')) gainStuffing(c, 1);
   });
 
+  /* FAMILY QUILT (multiplayer): "Once a round per Kid, when they play a Trick
+     you Patched, they draw {c1} and you gain {n} Stuffing." Another seat's
+     play, so it is caught here rather than by the listener above, which only
+     answers for Mopsy's own Tricks. */
+  e.on('card:play', (ev) => {
+    if (!seat || !ev || !ev.actorId || ev.actorId === seat.id) return;
+    const c = fake();
+    const st = U.mm(c);
+    if (!st.familyQuilt || U.stacks(c, c.self, 'mopsy/family-quilt') <= 0) return;
+    const card = e.card(ev.cardUid);
+    if (!card || !patchesOn(card).length) return;
+    const round = U.turn(c);
+    if (!st.quiltRound || st.quiltRound.round !== round) st.quiltRound = { round, seen: [] };
+    if (st.quiltRound.seen.includes(ev.actorId)) return;
+    st.quiltRound.seen.push(ev.actorId);
+    const mate = e.actor(ev.actorId);
+    if (mate && st.familyQuilt.draw > 0) c.giveDraw(mate, st.familyQuilt.draw);
+    gainStuffing(c, st.familyQuilt.stuff);
+  });
+
+  /* HELD TOGETHER BY LOVE: "Once per combat, lethal damage leaves you at 1
+     Courage. Tear your hand, cash every Patch for Stuffing, draw {c1} next
+     turn." `onLethal` is the engine's one refuse-to-die step (see Pudding's
+     Home Is Where You Are); nothing was listening on it for Mopsy. */
+  e.hooks.add('onLethal', (h) => {
+    const c = fake();
+    const st = U.mm(c);
+    if (!st.heldTogether || st.heldTogetherUsed) return;
+    if (!h || !seat || h.defender !== seat) return;
+    if (U.stacks(c, c.self, 'mopsy/held-together-by-love') <= 0) return;
+    st.heldTogetherUsed = true;
+    h.setHp(1);
+    let cash = 0;
+    for (const k of U.cardsIn(c, 'hand').slice()) if (patchable(k) && tear(c, k)) cash++;
+    for (const k of allPatched(c)) { cash += patchesOn(k).length; setPatches(k, []); }
+    gainStuffing(c, cash);
+    st.heldTogetherDraw = (st.heldTogetherDraw || 0) + st.heldTogether;
+  }, { owner: seat });
+
   U.onPlayerTurn(e, 'start', () => {
     const c = fake();
     const st = U.mm(c);
@@ -309,7 +348,11 @@ U.onTracker(SLUG, (e, s, seat) => {
     st.freeTriggerFor = null;
     if (st.wholePatternBonus) { U.draw(c, 1); st.wholePatternBonus = false; }
     if (st.heldTogetherDraw) { U.draw(c, st.heldTogetherDraw); st.heldTogetherDraw = 0; }
-    if (st.fortRefund) { gainStuffing(c, Math.min(2, st.fortRefund)); st.fortRefund = 0; }
+    /* Cushion Fort's refund is capped by the card's own printed {n} (2, or 3
+       upgraded). It was a literal 2, and nothing ever counted a use either, so
+       the refund half of the card never paid at all. The count is kept by the
+       Cushion status itself (companions/keywords.js). */
+    if (st.fortRefund) { gainStuffing(c, Math.min(st.fortRefundCap || 2, st.fortRefund)); st.fortRefund = 0; st.fortRefundCap = 0; }
   }, seat);
 
   U.onPlayerTurn(e, 'end', () => {
@@ -1309,7 +1352,7 @@ const rares = [
     text: 'Until your next turn [Cushion] has no usage limit. Each still costs 1 [Stuffing]. Regain up to {n} after.',
     flavor: 'Every cushion in the house, in one doorway.',
     nums: { n: 2 },
-    effect: eff((c) => { U.applySelf(c, 'cushion-fort', 1); U.mm(c).fortRefundCap = N(c).n; }),
+    effect: eff((c) => { U.applySelf(c, 'cushion-fort', 1); U.mm(c).fortRefundCap = Math.max(U.mm(c).fortRefundCap || 0, N(c).n); }),
     upgrade: { nums: { n: 3 } },
   },
 
@@ -1384,7 +1427,11 @@ const rares = [
     text: 'Once per combat, lethal damage leaves you at 1 Courage. [Tear] your hand, cash every [Patch] for [Stuffing], draw {c1} next turn.',
     flavor: 'That is genuinely all that is holding her together.',
     nums: { c1: 2 },
-    effect: eff((c) => power(c, 'mopsy/held-together-by-love', 1, (x) => { U.mm(x).heldTogether = N(x).c1; })),
+    /* The best copy's draw, not the first one's: the value was set inside the
+       install-once closure, so an upgraded copy after a base one drew 2. The
+       rule itself lives in the tracker's `onLethal`; it was never written, so
+       this 3-Nerve Rare did nothing at all. */
+    effect: eff((c) => { power(c, 'mopsy/held-together-by-love', 1); U.mm(c).heldTogether = Math.max(U.mm(c).heldTogether || 0, N(c).c1); }),
     upgrade: { nums: { c1: 3 } },
   },
 ];
@@ -1449,7 +1496,13 @@ const coopCards = [
     text: 'Once a round per Kid, when they play a Trick you [Patch]ed, they draw {c1} and you gain {n} [Stuffing].',
     flavor: 'One square each, and it covers all of them.',
     nums: { c1: 1, n: 1 },
-    effect: eff((c) => power(c, 'mopsy/family-quilt', 1, (x) => { U.mm(x).familyQuilt = { draw: N(x).c1, stuff: N(x).n }; })),
+    /* Paid by the tracker's `card:play` listener, which did not exist: the
+       numbers were stored and nothing read them, so the Power did nothing. */
+    effect: eff((c) => {
+      power(c, 'mopsy/family-quilt', 1);
+      const s = U.mm(c), was = s.familyQuilt || { draw: 0, stuff: 0 };
+      s.familyQuilt = { draw: Math.max(was.draw, N(c).c1 | 0), stuff: Math.max(was.stuff, N(c).n | 0) };
+    }),
     upgrade: { nums: { c1: 1, n: 2 } },
   },
   {

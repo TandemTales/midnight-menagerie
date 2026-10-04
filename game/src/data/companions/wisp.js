@@ -275,7 +275,13 @@ function resolveBatch(c, entries, opts = {}) {
       payWatcher(c, e, converged);
       followMyLight(c);
     }
-    if (e.card) {
+    /* An Afterglow that has already put its card in HAND keeps it there.
+       Small Orbit's return does exactly that ("It returns to hand costing {m}
+       less") and this line then swept the card on into the discard pile, so
+       the Trick never came back and its discount, upgraded or not, was spent
+       on a card nobody could play. */
+    if (e.card && U.cardsIn(c, 'hand').includes(e.card)) { /* returned to hand by its own Afterglow */ }
+    else if (e.card) {
       if (e.vanish) { U.makeVanish(c, e.card); c.exhaust(e.card); }
       else U.moveCard(c, e.card, 'discard', {});
     }
@@ -418,7 +424,7 @@ U.onTracker(SLUG, (e, s, seat) => {
     st.afterglowsThisTurn = 0;
     st.convergedThisTurn = 0;
     st.gentleLanding = null;
-    if (st.bottled != null) { gainGlow(c, st.bottled + 1); st.bottled = null; }
+    if (st.bottled != null) { gainGlow(c, st.bottled + (st.bottledPlus | 0)); st.bottled = null; st.bottledPlus = 0; }
     if (st.pocketTomorrow && st.pocketTomorrow.length) {
       for (const k of st.pocketTomorrow) { U.toHand(c, k); U.costSet(c, k, 0, 'turn'); }
       st.pocketTomorrow = [];
@@ -1313,7 +1319,13 @@ const rares = [
     effect: eff((c) => {
       const had = glow(c);
       spendGlow(c, had);
-      U.mm(c).bottled = had;
+      /* "Regain it plus {g}": the turn-start refund added a literal 1, so the
+         upgrade's +2 was never paid. The bonus rides with the stash, and a
+         second Bottle in one turn adds to the stash instead of overwriting the
+         first one's Glow with its own 0. */
+      const s = U.mm(c);
+      s.bottled = (s.bottled || 0) + had;
+      s.bottledPlus = (s.bottledPlus || 0) + (N(c).g | 0);
       if (had >= N(c).n) U.guard(c, N(c).b);
     }),
     upgrade: { nums: { g: 2, n: 4, b: 14 } },

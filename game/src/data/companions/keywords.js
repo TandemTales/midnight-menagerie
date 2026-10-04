@@ -39,7 +39,7 @@
  */
 
 import { trackerCtx, fire as fireCompanionHook, res, addRes, spendRes,
-  flag as cardFlag, stacks, apply as applyTo, unapply as unapplyFrom } from './_util.js';
+  flag as cardFlag, stacks, apply as applyTo, unapply as unapplyFrom, mm } from './_util.js';
 
 /** A card-shaped ctx for a hook, so the `_util` resource helpers work in here. */
 function uctx(h) { return trackerCtx(h.e); }
@@ -559,6 +559,9 @@ export const COMPANION_STATUSES = [
         if (free) unapplyFrom(c, c.self, 'cushion-free', 1);
         else addRes(c, 'stuffing', -1, 0, 6);
         applyTo(c, c.self, 'cushion-used', 1);
+        // Cushion Fort's "Regain up to {n} after": counted here, the one place
+        // a Cushion use is known, and paid out by Mopsy's turn-start tracker.
+        if (noLimit) { const s = mm(c); s.fortRefund = (s.fortRefund || 0) + 1; }
         h.setAmount(Math.ceil(h.amount / 2));
       },
       /**

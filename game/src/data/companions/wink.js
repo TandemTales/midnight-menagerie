@@ -266,11 +266,23 @@ function spendWeb(c, e, n) {
 
 // ── Intent reordering ───────────────────────────────────────────────────────
 const anchored = (c, e, pos) => (c.isAnchored ? !!c.isAnchored(e, pos) : false);
+/**
+ * A Reorder happened: count it, tell the Powers, and let a Set that waits for
+ * one fire NOW. False Floor's trigger was "a reorder has happened this turn",
+ * polled only on `intent` and `damage` events, and the swap's own `intent`
+ * event is emitted BEFORE the bump — so the Set sat armed through the Reorder
+ * it was waiting for and went off later, on whatever event came next, against
+ * any enemy at all.
+ */
+function reordered(c, e) {
+  U.bump(c, 'reordered');
+  U.fire(c, 'reorder', { enemy: e });
+  checkSets(c, { type: 'reorder', enemy: e });
+}
 function swapIntents(c, e, a, b) {
   if (!e || anchored(c, e, a) || anchored(c, e, b)) return false;
   c.swapIntents(e, a, b);
-  U.bump(c, 'reordered');
-  U.fire(c, 'reorder', { enemy: e });
+  reordered(c, e);
   return true;
 }
 function postpone(c, e) {
@@ -279,8 +291,7 @@ function postpone(c, e) {
   c.postponeIntent(e);
   // The next queued action is current NOW — the card says so in as many words.
   advanceQueue(c, e, currentFamily(c, e), revealed, null);
-  U.bump(c, 'reordered');
-  U.fire(c, 'reorder', { enemy: e });
+  reordered(c, e);
   return true;
 }
 function deleteIntent(c, e) {
@@ -288,8 +299,7 @@ function deleteIntent(c, e) {
   const revealed = previewDepth(c, e) > 0;
   c.deleteIntent(e);
   advanceQueue(c, e, currentFamily(c, e), revealed, null);
-  U.bump(c, 'reordered');
-  U.fire(c, 'reorder', { enemy: e });
+  reordered(c, e);
   return true;
 }
 /**
@@ -484,7 +494,14 @@ U.onTracker(SLUG, (e, s, seat) => {
   // Wink's own edits, and her own Previews, are not the enemy changing its
   // mind — every one of these reasons comes from a Trick she just played.
   const OWN_EDIT = new Set(['preview', 'swap', 'postpone', 'delete', 'override', 'override-clear', 'control', 'fork']);
-  const watched = {};                       // enemyId -> { moves, depth } as last seen
+  const watched = {};                       // enemyId -> { moves, depth, fam } as last seen
+  /* Seeded with what each enemy is showing now, so the FIRST action of the
+     fight has a "used" family even if a 'status' redraw beats its turnEnd. */
+  for (const en of (e.enemies || [])) {
+    let f0 = null;
+    try { f0 = e.intentFamilyOf ? e.intentFamilyOf(en, 0) : null; } catch (_) { f0 = null; }
+    watched[eid(en)] = { moves: (en.history && en.history.length) || 0, depth: 0, fam: f0 };
+  }
   // an Intent becoming current resolves the Read on that position and fires Sets
   e.on('intent', (ev) => {
     const c = fake();
@@ -513,6 +530,7 @@ U.onTracker(SLUG, (e, s, seat) => {
      * reported five green passes.
      */
     const fam = (ev.intent && ev.intent.familyLabel) || currentFamily(c, en);
+    let executed = null;
     if (en) {
       const key = eid(en);
       const was = watched[key] || { moves: 0, depth: 0 };
@@ -532,19 +550,36 @@ U.onTracker(SLUG, (e, s, seat) => {
          ever written. The family an enemy actually USED is the one it was
          showing until this instant, and the event carries it as `previous`. */
       const acted = ev.reason === 'turnEnd' && moves > was.moves;
+      /* The history can grow BEFORE that `turnEnd`. A move that lands a
+         status (Coatrack's Drape puts Weak on the Kid) redraws every intent
+         with reason 'status' while the enemy phase is still running, and that
+         event already sees the longer history. Taking it as the new baseline
+         swallowed the action: the `turnEnd` that followed saw no growth, so a
+         Read on that position resolved a whole enemy turn late, and the
+         family it was scored against, Seen It Before's "used" family and
+         Lampshade Lookout's "executed" family were all read off a queue that
+         had already moved on. So the baseline (moves, depth AND the family the
+         enemy was showing) is frozen from the moment it acts until its own
+         `turnEnd`, and the family it USED comes from that frozen reading. */
+      const pending = !acted && moves > was.moves;
+      const used = acted ? (was.fam || (ev.previous && ev.previous.familyLabel) || null) : null;
       if (acted) {
-        advanceQueue(c, en, fam, (was.depth || 0) > 0,
-          (ev.previous && ev.previous.familyLabel) || null);
-      } else if (!OWN_EDIT.has(ev.reason) && ev.previous && ev.intent && ev.previous.moveId !== ev.intent.moveId) {
+        advanceQueue(c, en, fam, (was.depth || 0) > 0, used);
+      } else if (!pending && !OWN_EDIT.has(ev.reason) && ev.previous && ev.intent && ev.previous.moveId !== ev.intent.moveId) {
         // The enemy changed its mind with the queue standing still: the AI
         // re-derived this position because conditions changed. The House Has
         // Tells is the one card about that, and telling it apart from an
         // ordinary advance is the whole of "changes one of its future Intents".
         U.fire(c, 'intentChanged', { enemy: en, family: fam });
       }
-      watched[key] = { moves, depth: previewDepth(c, en) };
+      if (!pending) watched[key] = { moves, depth: previewDepth(c, en), fam };
+      /* What the enemy just DID, for a Set written against an executed
+         Intent (Lampshade Lookout). `fam` is the NEW current Intent, so
+         asking it "did it execute a Scheme" fired on a Scheme being shown and
+         never on one being used. */
+      executed = used;
     }
-    checkSets(c, { type: 'intent', enemy: en, family: fam });
+    checkSets(c, { type: 'intent', enemy: en, family: fam, executed });
   });
   e.on('damage', (ev) => checkSets(fake(), { type: 'damage', ...ev }));
   e.on('death', (ev) => {
@@ -1161,7 +1196,7 @@ const uncommons = [
     text: '[Set] globally. The next time an enemy executes a Scheme or Special Intent, [Preview] {m0} on it and draw {n} additional Tricks at the start of your next turn. Then discard this Trick.',
     flavor: 'The best seat in the house is inside the lampshade.',
     nums: { n: 2, m0: 1 },
-    effect: setEff(c => { const n = N(c).n, m = N(c).m0; placeSet(c, (x, ev) => ev.type === 'intent' && (ev.family === FAMILY.SCHEME || ev.family === FAMILY.SPECIAL), (x, ev) => { preview(x, ev.enemy, m); U.nextTurn(x, (y) => U.draw(y, n)); }, { global: true }); }),
+    effect: setEff(c => { const n = N(c).n, m = N(c).m0; placeSet(c, (x, ev) => ev.type === 'intent' && (ev.executed === FAMILY.SCHEME || ev.executed === FAMILY.SPECIAL), (x, ev) => { preview(x, ev.enemy, m); U.nextTurn(x, (y) => U.draw(y, n)); }, { global: true }); }),
     upgrade: { nums: { n: 3, m0: 1 } },
   },
   {
@@ -1170,7 +1205,7 @@ const uncommons = [
     text: '[Set] on an enemy. The next time you [Reorder] one of its Intents, deal {d} damage and [Preview] {n}, then discard this Trick.',
     flavor: 'The floorboard was never there.',
     nums: { d: 22, n: 1 },
-    effect: setEff(c => { const t = c.target, d = N(c).d, n = N(c).n; placeSet(c, (x) => U.got(x, 'reordered') > 0, (x) => { U.hitAt(x, t, d); preview(x, t, n); }, { enemy: t }); }),
+    effect: setEff(c => { const t = c.target, d = N(c).d, n = N(c).n; placeSet(c, (x, ev) => ev.type === 'reorder' && ev.enemy && eid(ev.enemy) === eid(t), (x) => { U.hitAt(x, t, d); preview(x, t, n); }, { enemy: t }); }),
     upgrade: { nums: { d: 30, n: 1 } },
   },
   {
@@ -1538,7 +1573,7 @@ const rares = [
     text: 'Choose an enemy with at least {n} [Preview]ed future Intents. After its current Intent finishes, you choose which of the two becomes current next. The other stays queued.',
     flavor: 'Both futures exist. She simply picks.',
     nums: { n: 2 },
-    effect: eff(async (c) => { const t = c.target; U.tf(c).forked = t; U.bump(c, 'reordered'); U.fire(c, 'reorder', { enemy: t }); await c.forkFuture(t); }),
+    effect: eff(async (c) => { const t = c.target; U.tf(c).forked = t; reordered(c, t); await c.forkFuture(t); }),
     playable: (c) => previewDepth(c, c.target) >= 2,
     upgrade: { cost: 0, nums: { n: 2 } },
   },
@@ -1548,7 +1583,10 @@ const rares = [
     text: 'Return one active [Set] Trick you own to your hand, freeing its slot. That Trick costs {n} this turn.',
     flavor: 'She takes the trap back. She will need it somewhere better.',
     nums: { n: 0 },
-    effect: eff(c => { const list = activeSets(c); if (!list.length) return; const s = list.pop(); U.toHand(c, s.card); U.costSet(c, s.card, N(c).n, 'turn'); }),
+    /* The upgrade's "Draw {m0} Trick" was text only: nothing read m0, so the
+       Sharpened copy was the base card. The draw is its own sentence and does
+       not hang on a Set being there to take back. */
+    effect: eff(c => { const list = activeSets(c); if (list.length) { const s = list.pop(); U.toHand(c, s.card); U.costSet(c, s.card, N(c).n, 'turn'); } U.draw(c, N(c).m0 | 0); }),
     upgrade: { nums: { n: 0, m0: 1 }, text: 'Return one active [Set] Trick you own to your hand, freeing its slot. That Trick costs {n} this turn. Draw {m0} Trick.' },
   },
   {
