@@ -1,0 +1,294 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Upgrade waivers, group 4: the proofs</title>
+<style>
+  body { font: 14px/1.5 ui-monospace, monospace; background: #14121a; color: #d8d4e0; padding: 20px; }
+  .pass { color: #7fd08a; } .fail { color: #ff8080; } .dim { color: #8a839c; }
+</style>
+<h1>Upgrade waivers, group 4</h1>
+<div class="dim">every entry in WAIVED_G4, played base and upgraded on a board that DOES reach its condition</div>
+<div id="out"></div>
+<script type="module">
+/**
+ * THE PROOF BEHIND EVERY WAIVER IN `WAIVED_G4` (index.html).
+ *
+ * `tests/upgrade-effects` plays each Trick on one dummy board. A live upgrade
+ * whose condition that board never reaches - no Bite Mark to Feed on, nothing
+ * Buried, a Power whose trigger never happens - comes out identical, and is
+ * waived there. A waiver is a claim that the upgrade IS live, so this page
+ * makes the claim checkable: each entry builds the board its condition needs
+ * with the engine API, plays the Trick base and upgraded, and reads the one
+ * number the upgrade is supposed to move. Identical readings FAIL.
+ *
+ *   python tests/upgrade-effects/proofs_g4.py
+ *
+ * Crumbula, Bones, Taffy, Truffle, Marmalade and Pudding (2026-10-04).
+ */
+import { RNG } from '../../game/src/core/rng.js';
+import { makeDummySetup, makeDummyParty } from '../../game/src/combat/dummy.js';
+import { CombatEngine } from '../../game/src/combat/engine.js';
+import * as U from '../../game/src/data/companions/_util.js';
+import * as CARDS from '../../game/src/data/cards.js';
+
+const SEED = 20260911;
+async function mk(slug) {
+  const e = new CombatEngine(makeDummySetup(new RNG(SEED), { companion: slug, deck: CARDS.startingDeckFor(slug) }));
+  e.setTrackerInstaller(U.installTrackers);
+  await e.startCombat();
+  for (const x of e.enemies) { x.maxHp = 9999; x.hp = 9999; }
+  e.player.energy = 9;
+  return e;
+}
+async function mkParty(slug, n = 2) {
+  const decks = []; for (let i = 0; i < n; i++) decks.push(CARDS.startingDeckFor(slug));
+  const e = makeDummyParty(new RNG(SEED), n, { companion: slug, decks });
+  e.setTrackerInstaller(U.installTrackers);
+  await e.startCombat();
+  for (const x of e.enemies) { x.maxHp = 9999; x.hp = 9999; }
+  for (const p of e.players) p.energy = 9;
+  return e;
+}
+const DEFS = new Map(CARDS.allCards().map(d => [d.id, d]));
+function add(e, id, upgraded = false, pile = 'hand') {
+  const d = DEFS.get(id);
+  if (!d) throw new Error('no such Trick ' + id);
+  const m = e.addCard(d, pile, { upgraded });
+  return Array.isArray(m) ? m[0] : m;
+}
+async function play(e, card, tgt) {
+  e.current.energy = 9;
+  const t = tgt || e.livingEnemies()[0];
+  await e.playCard(card.uid, t && t.id);
+}
+async function addPlay(e, id, upgraded = false, tgt) { const k = add(e, id, upgraded); await play(e, k, tgt); return k; }
+function tally(e) {
+  const t = { dmg: 0, hits: 0, block: 0, heal: 0, status: 0, draw: 0, counter: 0 };
+  e.on('damage', v => { t.dmg += v.amount || 0; t.hits++; });
+  e.on('block', v => { t.block += v.amount || 0; });
+  e.on('heal', v => { t.heal += v.amount || 0; });
+  e.on('status', v => { t.status += Math.abs(v.delta || 0); });
+  e.on('draw', v => { t.draw += (v.count || 1); });
+  e.on('counter', () => { t.counter++; });
+  return t;
+}
+const emptyHand = (e) => { for (const k of e.piles.hand.slice()) e.discardCard(k, 'proof'); };
+const st = (a, id) => (a.statuses.get(id) || 0);
+const stretchOf = (k) => (k.meta && k.meta['#stretch']) | 0;
+
+/* [id, what the board needs, async (upgraded) => the reading the upgrade moves] */
+const PROOFS = [
+  // ── Marmalade ─────────────────────────────────────────────────────────────
+  ['marmalade/always-lands', 'Ghoststep consumed by an enemy hit', async (up) => {
+    const e = await mk('marmalade'); await addPlay(e, 'marmalade/always-lands', up);
+    await addPlay(e, 'marmalade/ghoststep'); const t = tally(e); await e.endTurn(); return t.block; }],
+  ['marmalade/haunted-housecat', 'Ghoststep gained', async (up) => {
+    const e = await mk('marmalade'); await addPlay(e, 'marmalade/haunted-housecat', up);
+    const t = tally(e); await addPlay(e, 'marmalade/ghoststep'); return t.status; }],
+  ['marmalade/spectral-stampede', 'Lives spent this combat', async (up) => {
+    const e = await mk('marmalade'); await addPlay(e, 'marmalade/nine-lived-nerve'); await addPlay(e, 'marmalade/nine-lived-nerve');
+    const t = tally(e); await addPlay(e, 'marmalade/spectral-stampede', up); return t.dmg; }],
+  ['marmalade/nine-lives', 'a Life spent', async (up) => {
+    const e = await mk('marmalade'); await addPlay(e, 'marmalade/nine-lives', up);
+    const t = tally(e); await addPlay(e, 'marmalade/nine-lived-nerve'); return t.block; }],
+  ['marmalade/endless-zoomies', 'Zoomies triggered more than twice in a turn', async (up) => {
+    const e = await mk('marmalade'); await addPlay(e, 'marmalade/endless-zoomies', up);
+    const t = tally(e); for (let i = 0; i < 6; i++) await addPlay(e, 'marmalade/quick-pounce'); return t.draw; }],
+
+  // ── Bones ─────────────────────────────────────────────────────────────────
+  ['bones/fetch', 'a printed-cost-2 Trick in the discard', async (up) => {
+    const e = await mk('bones'); const k = add(e, 'bones/dig-like-crazy', false, 'discard');
+    await addPlay(e, 'bones/fetch', up); return e.piles.hand.includes(k); }],
+  ['bones/treat-stash', 'the Treat Dug Up, and the hand read before it is played out', async (up) => {
+    const e = await mk('bones'); await addPlay(e, 'bones/treat-stash', up); await e.endTurn(); return e.piles.hand.length; }],
+  ['bones/scent-memory', 'a Fetch', async (up) => {
+    const e = await mk('bones'); await addPlay(e, 'bones/scent-memory', up); add(e, 'bones/bite', false, 'discard');
+    const t = tally(e); await addPlay(e, 'bones/fetch'); return t.draw; }],
+  ['bones/yard-map', 'two or more Burials in a turn', async (up) => {
+    const e = await mk('bones'); await addPlay(e, 'bones/yard-map', up);
+    for (let i = 0; i < 3; i++) await addPlay(e, 'bones/bury-it');
+    return e.piles.stash.map(k => k.meta['#buried']).join(','); }],
+  ['bones/spare-parts-everywhere', 'becoming Scattered', async (up) => {
+    const e = await mk('bones'); await addPlay(e, 'bones/spare-parts-everywhere', up); e.setCounter('loose-bones', 3, 'proof');
+    await addPlay(e, 'bones/shake-it-loose'); return e.piles.hand.filter(k => k.id === 'bones/spare-bone').length; }],
+  ['bones/tighten-the-collar', 'becoming Whole', async (up) => {
+    const e = await mk('bones'); await addPlay(e, 'bones/tighten-the-collar', up); e.setCounter('loose-bones', 1, 'proof');
+    await addPlay(e, 'bones/put-yourself-back-together'); await e.endTurn(); return e.player.energy; }],
+  ['bones/tail-a-mile-a-minute', 'a Fetch, then an Attack', async (up) => {
+    const e = await mk('bones'); await addPlay(e, 'bones/tail-a-mile-a-minute', up); add(e, 'bones/bite', false, 'discard');
+    await addPlay(e, 'bones/fetch'); const t = tally(e); await addPlay(e, 'bones/bite'); return t.dmg; }],
+  ['bones/built-wrong', 'a Shed at 6 Loose Bones, twice in a turn', async (up) => {
+    const e = await mk('bones'); await addPlay(e, 'bones/built-wrong', up); e.setCounter('loose-bones', 6, 'proof');
+    const t = tally(e); for (let i = 0; i < 3; i++) await addPlay(e, 'bones/shake-it-loose'); return t.counter; }],
+  ['bones/treasure-yard', 'three or more Dig Ups in a turn', async (up) => {
+    const e = await mk('bones'); await addPlay(e, 'bones/treasure-yard', up);
+    for (let i = 0; i < 4; i++) await addPlay(e, 'bones/bury-it');
+    await e.endTurn();   // nothing has come up yet: Bury It is 2 counters
+    let gained = 0;
+    for (let i = 0; i < 4; i++) { const k = add(e, 'bones/dig-here'); e.current.energy = 5; await e.playCard(k.uid); gained += e.current.energy - (5 - e.costOf(k)); }
+    return gained; }],
+
+  // ── Taffy ─────────────────────────────────────────────────────────────────
+  ['taffy/wobble-room', 'the Split that makes you Runny', async (up) => {
+    const e = await mk('taffy'); e.setCounter('globs', 4, 'proof'); const t = tally(e);
+    await addPlay(e, 'taffy/wobble-room', up); return t.draw; }],
+  ['taffy/chew-slowly', 'Stretched Tricks in hand', async (up) => {
+    const e = await mk('taffy'); for (const k of e.piles.hand.slice(0, 3)) k.meta['#stretch'] = 1;
+    const t = tally(e); await addPlay(e, 'taffy/chew-slowly', up); return t.block; }],
+  ['taffy/mouthfeel', 'Tricks in the Belly', async (up) => {
+    const e = await mk('taffy');
+    for (const id of ['taffy/sugar-bonk', 'taffy/squish']) add(e, id, false, 'stash').meta.belly = true;
+    const t = tally(e); await addPlay(e, 'taffy/mouthfeel', up); return t.block; }],
+  ['taffy/elastic-memory', 'two Stretched Tricks, one played', async (up) => {
+    const e = await mk('taffy'); await addPlay(e, 'taffy/elastic-memory', up);
+    const a = add(e, 'taffy/sugar-bonk'); a.meta['#stretch'] = 1; const b = add(e, 'taffy/squish'); b.meta['#stretch'] = 1;
+    await play(e, a); return stretchOf(b); }],
+  ['taffy/snack-pocket', 'an Absorb', async (up) => {
+    const e = await mk('taffy'); await addPlay(e, 'taffy/snack-pocket', up);
+    const t = tally(e); await addPlay(e, 'taffy/save-for-later'); return t.block; }],
+  ['taffy/multipack', 'a Gummy copy made', async (up) => {
+    const e = await mk('taffy'); await addPlay(e, 'taffy/multipack', up); emptyHand(e);
+    add(e, 'taffy/stretch-punch'); await addPlay(e, 'taffy/sample-size');
+    return e.piles.hand.map(k => e.costOf(k)).join(','); }],
+  ['taffy/surface-tension', '3 or 4 Globs at the start of the turn', async (up) => {
+    const e = await mk('taffy'); await addPlay(e, 'taffy/surface-tension', up); e.setCounter('globs', 3, 'proof');
+    await e.endTurn(); return e.player.block; }],
+  ['taffy/sweet-spot', 'a Recombine that leaves exactly 2', async (up) => {
+    const e = await mk('taffy'); await addPlay(e, 'taffy/sweet-spot', up); e.setCounter('globs', 4, 'proof');
+    const t = tally(e); await addPlay(e, 'taffy/little-recombine'); return t.draw; }],
+  ['taffy/conservation-of-taffy', 'a Recombine of 2 or more', async (up) => {
+    const e = await mk('taffy'); await addPlay(e, 'taffy/conservation-of-taffy', up); e.setCounter('globs', 4, 'proof');
+    await addPlay(e, 'taffy/recombination-slam'); await e.endTurn(); return e.counter('globs'); }],
+  ['taffy/bottomless-belly', 'a Belly filled past its base size', async (up) => {
+    const e = await mk('taffy'); await addPlay(e, 'taffy/bottomless-belly', up);
+    for (let i = 0; i < 8; i++) { emptyHand(e); add(e, 'taffy/squish'); await addPlay(e, 'taffy/save-for-later'); }
+    return e.piles.stash.length; }],
+  ['taffy/family-pack', 'the Gummy it leaves, read in the discard', async (up) => {
+    const e = await mk('taffy'); await addPlay(e, 'taffy/family-pack', up); await e.endTurn();
+    await addPlay(e, 'taffy/sugar-bonk');
+    return e.piles.discard.filter(k => k.meta && k.meta.gummy).map(k => e.costOf(k)).join(','); }],
+
+  // ── Count Crumbula ────────────────────────────────────────────────────────
+  ...[
+    ['crumbula/midnight-snack', { marks: 3, app: 3 }, (e, t, tl) => tl.block],
+    ['crumbula/one-tiny-sip', { marks: 3, app: 1 }, (e, t, tl) => tl.heal],
+    ['crumbula/seconds', { marks: 3, app: 1 }, (e, t, tl) => tl.heal + '/' + tl.block],
+    ['crumbula/pocket-snack', { marks: 3 }, (e) => e.piles.hand.filter(k => k.id === 'crumbula/leftover').length],
+    ['crumbula/reserve-vintage', { marks: 3 }, (e) => e.piles.hand.filter(k => k.id === 'crumbula/leftover').length],
+    ['crumbula/clean-plate-club', { marks: 5, app: 3 }, (e, t, tl) => tl.heal + '/' + tl.block],
+    ['crumbula/house-guest', { marks2: 6 }, (e, t, tl) => tl.block],
+    ['crumbula/royal-taste-test', { marks: 5, app: 1 }, (e, t, tl) => tl.dmg + '/' + tl.heal],
+  ].map(([id, o, read]) => [id, 'Bite Marks on the board' + (o.marks2 ? ', on ANOTHER enemy' : ''), async (up) => {
+    const e = await mk('crumbula'); e.player.hp = 40;
+    const [t, t2] = e.livingEnemies();
+    if (o.marks) e.applyStatus(t, 'bite-mark', o.marks);
+    if (o.marks2) e.applyStatus(t2, 'bite-mark', o.marks2);
+    if (o.app != null) e.setCounter('appetite', o.app, 'proof');
+    const tl = tally(e); await addPlay(e, id, up, t); return read(e, t, tl); }]),
+  ['crumbula/sip-slowly', 'Bite Marks left for the second Feed', async (up) => {
+    const e = await mk('crumbula'); e.player.hp = 40; const t = e.livingEnemies()[0];
+    e.applyStatus(t, 'bite-mark', 6); e.setCounter('appetite', 0, 'proof');
+    await addPlay(e, 'crumbula/sip-slowly', up, t); await e.endTurn(); return st(t, 'bite-mark'); }],
+  ['crumbula/polite-refusal', 'two Feeds after it', async (up) => {
+    const e = await mk('crumbula'); e.player.hp = 40; const t = e.livingEnemies()[0];
+    e.applyStatus(t, 'bite-mark', 6); e.setCounter('appetite', 0, 'proof');
+    await addPlay(e, 'crumbula/polite-refusal', up);
+    for (let i = 0; i < 3; i++) await addPlay(e, 'crumbula/one-tiny-sip', false, t);
+    return e.counter('appetite'); }],
+  ['crumbula/secret-pantry', 'three Leftovers in the discard', async (up) => {
+    const e = await mk('crumbula');
+    for (let i = 0; i < 3; i++) e.moveCard(add(e, 'crumbula/leftover'), 'discard');
+    await addPlay(e, 'crumbula/secret-pantry', up);
+    return e.piles.hand.filter(k => k.id === 'crumbula/leftover').length; }],
+  ['crumbula/one-for-the-road', 'Leftovers in hand', async (up) => {
+    const e = await mk('crumbula'); e.player.hp = 40; e.setCounter('appetite', 1, 'proof'); emptyHand(e);
+    for (let i = 0; i < 6; i++) add(e, 'crumbula/leftover');
+    const tl = tally(e); await addPlay(e, 'crumbula/one-for-the-road', up); return tl.dmg; }],
+  ['crumbula/the-counts-hospitality', 'a hurt teammate (two seats)', async (up) => {
+    const e = await mkParty('crumbula', 2); const mate = e.players[1]; mate.hp = 30;
+    const t = e.livingEnemies()[0]; e.applyStatus(t, 'bite-mark', 3);
+    await addPlay(e, 'crumbula/the-counts-hospitality', up); await addPlay(e, 'crumbula/one-tiny-sip', false, t);
+    return mate.hp; }],
+
+  // ── Truffle ───────────────────────────────────────────────────────────────
+  ['truffle/barely-holding-together', 'becoming Ragged after it is played', async (up) => {
+    const e = await mk('truffle'); await addPlay(e, 'truffle/barely-holding-together', up);
+    e.player.hp = 20; const t = tally(e); await e.endTurn(); return t.draw; }],
+  ...[
+    ['truffle/needle-exchange', 'Bristle to consume', { br: 2, q: 3 }, (e, tl) => tl.dmg + '/' + e.counter('quills')],
+    ['truffle/pick-yourself-up', 'Ragged, and more Loose Quills than the base Gathers', { ragged: true, lq: 6, q: 3 }, (e, tl) => e.counter('quills') + '/' + tl.block],
+    ['truffle/shake-off-the-cobwebs', 'a debuff on him', { weak: true, q: 6 }, (e) => e.counter('quills')],
+    ['truffle/emergency-regrowth', 'Ragged', { ragged: true }, (e, tl) => tl.heal],
+    ['truffle/all-together-now', 'Loose Quills that will not fit', { q: 11, lq: 6 }, (e) => st(e.player, 'empowered')],
+    ['truffle/shake-apart', 'more Quills than the base Sheds', { q: 10 }, (e) => e.counter('quills') + '/' + e.piles.hand.length],
+    ['truffle/loose-change', 'Loose Quills to spend, read on the next turn', { lq: 5 }, null],
+  ].map(([id, why, o, read]) => [id, why, async (up) => {
+    const e = await mk('truffle');
+    if (o.ragged) e.player.hp = 20;
+    if (o.q != null) e.setCounter('quills', o.q, 'proof');
+    if (o.lq != null) e.setCounter('loose-quills', o.lq, 'proof');
+    if (o.br) e.applyStatus(e.player, 'bristle', o.br);
+    if (o.weak) e.applyStatus(e.player, 'weak', 1);
+    const tl = tally(e); await addPlay(e, id, up);
+    if (!read) { await e.endTurn(); return e.player.energy; }
+    return read(e, tl); }]),
+  ['truffle/more-where-that-came-from', 'a Gather of 2 or more', async (up) => {
+    const e = await mk('truffle'); e.setCounter('loose-quills', 6, 'proof'); e.setCounter('quills', 3, 'proof');
+    await addPlay(e, 'truffle/more-where-that-came-from', up); await addPlay(e, 'truffle/pick-yourself-up');
+    return st(e.player, 'bristle'); }],
+  ['truffle/unpleasant-geometry', 'a Gather', async (up) => {
+    const e = await mk('truffle'); e.setCounter('loose-quills', 6, 'proof'); e.setCounter('quills', 3, 'proof');
+    await addPlay(e, 'truffle/unpleasant-geometry', up); const tl = tally(e); await addPlay(e, 'truffle/pick-yourself-up');
+    return tl.dmg; }],
+  ['truffle/exact-amount-of-terrible', 'a target swinging for more than the base cap', async (up) => {
+    const e = await mk('truffle'); const t = e.livingEnemies()[0];
+    t.pendingMove = { ...(t.pendingMove || {}), intent: 'attack', damage: 40 }; e.player.block = 0;
+    await addPlay(e, 'truffle/exact-amount-of-terrible', up, t); return e.player.block; }],
+  ['truffle/lend-them-the-spiky-side', 'a teammate to lend to (two seats)', async (up) => {
+    const e = await mkParty('truffle', 2);
+    await addPlay(e, 'truffle/lend-them-the-spiky-side', up); return st(e.players[1], 'bristle'); }],
+
+  // ── Pudding ───────────────────────────────────────────────────────────────
+  ['pudding/dig-here', 'a Buried Trick that costs 2 or more', async (up) => {
+    const e = await mk('pudding'); emptyHand(e); const k = add(e, 'pudding/pug-of-the-baskervilles');
+    await addPlay(e, 'pudding/bury-this'); await e.endTurn();
+    await addPlay(e, 'pudding/dig-here', up); return e.costOf(k); }],
+  ['pudding/careful-excavation', 'two or more Buried Tricks', async (up) => {
+    const e = await mk('pudding');
+    for (let i = 0; i < 3; i++) { add(e, 'pudding/little-chomp'); await addPlay(e, 'pudding/bury-this'); }
+    await e.endTurn(); await addPlay(e, 'pudding/careful-excavation', up); return e.piles.stash.length; }],
+  ['pudding/double-dig', 'three Buried Tricks', async (up) => {
+    const e = await mk('pudding');
+    for (let i = 0; i < 3; i++) { add(e, 'pudding/little-chomp'); await addPlay(e, 'pudding/bury-this'); }
+    await e.endTurn(); await addPlay(e, 'pudding/double-dig', up); return e.piles.stash.length; }],
+  ['pudding/treat-for-later', 'the Treat Dug Up', async (up) => {
+    const e = await mk('pudding'); await addPlay(e, 'pudding/treat-for-later', up); await e.endTurn();
+    const k = add(e, 'pudding/dig-it-up'); e.current.energy = 5; await e.playCard(k.uid); return e.current.energy; }],
+  ['pudding/loyal-little-idiot', 'room on the Loyalty track', async (up) => {
+    const e = await mk('pudding'); e.setCounter('loyalty', 0, 'proof'); e.player.block = 10;
+    await addPlay(e, 'pudding/loyal-little-idiot', up); return e.counter('loyalty'); }],
+  ['pudding/little-ghost-escort', 'a Bury, then an Attack', async (up) => {
+    const e = await mk('pudding'); await addPlay(e, 'pudding/little-ghost-escort', up);
+    add(e, 'pudding/guard-the-ankles'); await addPlay(e, 'pudding/bury-this');
+    const tl = tally(e); await addPlay(e, 'pudding/little-chomp'); return tl.dmg; }],
+  ['pudding/graveyard-choir', 'Graveside (two Plots filled)', async (up) => {
+    const e = await mk('pudding'); await addPlay(e, 'pudding/graveyard-choir', up);
+    for (let i = 0; i < 2; i++) { add(e, 'pudding/little-chomp'); await addPlay(e, 'pudding/bury-this'); }
+    const tl = tally(e); await e.endTurn(); return tl.dmg; }],
+];
+
+const out = document.getElementById('out');
+const say = (html, cls) => { const d = document.createElement('div'); if (cls) d.className = cls; d.innerHTML = html; out.appendChild(d); };
+
+(async () => {
+  const pass = [], fail = [];
+  for (const [id, why, run] of PROOFS) {
+    let a, b, err = '';
+    try { a = await run(false); b = await run(true); } catch (x) { err = String((x && x.message) || x); }
+    const line = id + ' [' + why + ']: base ' + JSON.stringify(a) + ', upgraded ' + JSON.stringify(b) + (err ? ' THREW ' + err : '');
+    if (!err && JSON.stringify(a) !== JSON.stringify(b)) { pass.push(line); say('PASS ' + line, 'pass'); }
+    else { fail.push(line); say('FAIL ' + line, 'fail'); }
+  }
+  window.__RESULT = { pass, fail, ids: PROOFS.map(p => p[0]) };
+  window.__DONE = true;
+})().catch(err => { window.__RESULT = { pass: [], fail: ['CRASHED ' + ((err && err.stack) || err)], ids: [] }; window.__DONE = true; });
+</script>
