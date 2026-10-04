@@ -27,7 +27,8 @@ function shed(c, n) {
   if (n <= 0) return 0;
   const wasScattered = isScattered(c);
   let d = U.addRes(c, BONES, n, 0, 6);
-  if (d === 0 && U.stacks(c, c.self, 'bones/built-wrong') > 0 && U.once(c, 'builtWrong')) {
+  if (d === 0 && U.stacks(c, c.self, 'bones/built-wrong') > 0 && U.got(c, 'builtWrong') < 1 + banked(c, 'bones/built-wrong')) {
+    U.bump(c, 'builtWrong');
     U.addRes(c, BONES, -1, 0, 6); rattle(c);
     d = U.addRes(c, BONES, n, 0, 6);
   }
@@ -59,7 +60,7 @@ async function fetch(c, filter, prompt = 'Fetch a Trick') {
 function bury(c, k, counters = 2) {
   if (!k) return null;
   let n = counters;
-  if (counters === 2 && U.stacks(c, c.self, 'bones/yard-map') > 0 && U.got(c, 'buriedThisTurn') < U.stacks(c, c.self, 'bones/yard-map')) n = 1;
+  if (counters === 2 && U.stacks(c, c.self, 'bones/yard-map') > 0 && U.got(c, 'buriedThisTurn') < U.stacks(c, c.self, 'bones/yard-map') + banked(c, 'bones/yard-map')) n = 1;
   U.bump(c, 'buriedThisTurn');
   U.setCounter(k, 'buried', n);
   U.moveCard(c, k, 'stash', { buried: true });
@@ -74,6 +75,15 @@ function digUp(c, k) {
   U.toHand(c, k);
   U.bump(c, 'retrieved'); U.bump(c, 'dugUp');
   U.fire(c, 'digUp', { card: k });
+  /* Treat Stash's payout. The card set this flag and nothing ever read it, so
+     it Buried itself and came back up doing nothing - base and upgraded. */
+  if (U.flag(k, 'treatStash')) {
+    U.clearFlag(k, 'treatStash');
+    const kn = k.nums || {};
+    nerve(c, kn.m0 || 0);
+    U.draw(c, kn.m1 || 0);
+    if (c.exhaust) c.exhaust(k); else U.moveCard(c, k, 'exhaust');
+  }
   return k;
 }
 function unslobber(c, k) { if (k) { U.clearFlag(k, 'slobbered'); U.setFlag(k, 'noFetchUntilNextTurn', true); } }
@@ -82,6 +92,29 @@ function power(c, id, n, install) {
   const s = U.mm(c);
   if (install && !s['pw:' + id]) { s['pw:' + id] = true; install(c); }
 }
+/**
+ * What an upgraded copy adds over the printed base on num `k` (0 for a base
+ * copy). A Power's hook runs with no card attached, so `N(c)` there is the
+ * TRIGGERING card's nums, not the Power's: an upgrade that only changed the
+ * Power's own nums changed nothing. So each copy banks its extra on the seat
+ * when it is played, and the hook adds what was banked to the formula it has
+ * always used - a base copy banks 0 and plays exactly as it did.
+ */
+const upBy = (c, k) => ((N(c)[k] ?? 0) - ((c.card && c.card.def && c.card.def.nums && c.card.def.nums[k]) ?? 0)) || 0;
+function upPower(c, id, k, install) {
+  power(c, id, 1, install);
+  const n = upBy(c, k);
+  if (n) { const s = U.mm(c); s['up:' + id] = (s['up:' + id] || 0) + n; }
+}
+const banked = (c, id) => U.mm(c)['up:' + id] || 0;
+/**
+ * Nerve from a Bones effect. The Buried countdown digs cards up from the
+ * `turn:start` listener, BEFORE the refill in `_dealSeatTurn` - which SETS
+ * Nerve - so Nerve gained there was erased a moment later (trap 21) and
+ * Treasure Yard paid nothing on the Dig Ups most games are made of. Inside
+ * that window it is banked onto the refill instead.
+ */
+function nerve(c, n) { if (!(n > 0)) return; if (U.mm(c).preDeal) U.energyNextTurn(c, n); else U.energy(c, n); }
 
 // ── Spare Bone ──────────────────────────────────────────────────────────────
 const SPARE_BONE = {
@@ -108,18 +141,21 @@ U.onTracker(SLUG, (e, s, seat) => {
   U.onPlayerTurn(e, 'start', () => {
     s.played = 0;
     const c = U.trackerCtx(e, seat);
-    for (const k of U.cardsIn(c, 'stash')) {
-      if (U.counter(k, 'buried') > 0) {
-        U.addCounter(k, 'buried', -1);
-        if (U.counter(k, 'buried') === 0) digUp(c, k);
+    s.preDeal = true;
+    try {
+      for (const k of U.cardsIn(c, 'stash').slice()) {
+        if (U.counter(k, 'buried') > 0) {
+          U.addCounter(k, 'buried', -1);
+          if (U.counter(k, 'buried') === 0) digUp(c, k);
+        }
+        U.clearFlag(k, 'noFetchUntilNextTurn');
       }
-      U.clearFlag(k, 'noFetchUntilNextTurn');
-    }
+    } finally { s.preDeal = false; }
   });
 });
 
 // ── Power hooks ─────────────────────────────────────────────────────────────
-U.onHook('rattle', 'bones/rattletrap', (c) => { if (U.once(c, 'rattletrap')) U.hitAll(c, 5 + (U.stacks(c, c.self, 'bones/rattletrap') - 1) * 3); });
+U.onHook('rattle', 'bones/rattletrap', (c) => { if (U.once(c, 'rattletrap')) U.hitAll(c, 5 + (U.stacks(c, c.self, 'bones/rattletrap') - 1) * 3 + banked(c, 'bones/rattletrap')); });
 /**
  * Tail a Mile a Minute: the first Attack after a Fetch or a Dig Up each turn is
  * Empowered. Scales by stacks the same way Rattletrap does, because a second
@@ -127,7 +163,7 @@ U.onHook('rattle', 'bones/rattletrap', (c) => { if (U.once(c, 'rattletrap')) U.h
  */
 const tailAMile = (c) => {
   if (!U.once(c, 'tailAMileAMinute')) return;
-  U.empower(c, 7 + (U.stacks(c, c.self, 'bones/tail-a-mile-a-minute') - 1) * 3);
+  U.empower(c, 7 + (U.stacks(c, c.self, 'bones/tail-a-mile-a-minute') - 1) * 3 + banked(c, 'bones/tail-a-mile-a-minute'));
 };
 U.onHook('fetch', 'bones/tail-a-mile-a-minute', tailAMile);
 /**
@@ -147,18 +183,18 @@ U.onHook('fetch', 'bones/tail-a-mile-a-minute', tailAMile);
  * One name now. The two co-op cards fire `digUp` like everything else.
  */
 U.onHook('digUp', 'bones/tail-a-mile-a-minute', tailAMile);
-U.onHook('fetch', 'bones/scent-memory', (c) => { if (U.once(c, 'scentMemory')) U.draw(c, U.stacks(c, c.self, 'bones/scent-memory')); });
-U.onHook('becameScattered', 'bones/spare-parts-everywhere', (c) => { if (U.once(c, 'sparePartsEverywhere')) spawnSpare(c, U.stacks(c, c.self, 'bones/spare-parts-everywhere')); });
+U.onHook('fetch', 'bones/scent-memory', (c) => { if (U.once(c, 'scentMemory')) U.draw(c, U.stacks(c, c.self, 'bones/scent-memory') + banked(c, 'bones/scent-memory')); });
+U.onHook('becameScattered', 'bones/spare-parts-everywhere', (c) => { if (U.once(c, 'sparePartsEverywhere')) spawnSpare(c, U.stacks(c, c.self, 'bones/spare-parts-everywhere') + banked(c, 'bones/spare-parts-everywhere')); });
 U.onHook('becameWhole', 'bones/tighten-the-collar', (c) => {
   if (!U.once(c, 'tightenCollar')) return;
-  const n = U.stacks(c, c.self, 'bones/tighten-the-collar');
+  const n = U.stacks(c, c.self, 'bones/tighten-the-collar') + banked(c, 'bones/tighten-the-collar');
   /* Banked, not granted from a next-turn timer: the turn-start refill SETS
      Nerve, so a timer's grant was erased and the Collar never paid out. */
   U.energyNextTurn(c, n);
 });
 U.onHook('digUp', 'bones/treasure-yard', (c) => {
-  const cap = 1 + U.stacks(c, c.self, 'bones/treasure-yard');
-  if (U.got(c, 'treasureYard') < cap) { U.bump(c, 'treasureYard'); U.energy(c, 1); }
+  const cap = 1 + U.stacks(c, c.self, 'bones/treasure-yard') + banked(c, 'bones/treasure-yard');
+  if (U.got(c, 'treasureYard') < cap) { U.bump(c, 'treasureYard'); nerve(c, 1); }
 });
 
 // ════════════════════════════════════════════════════════════════════════════
@@ -292,7 +328,7 @@ const commons = [
     text: '[Shed] {m0} Bone. The next Trick you play this turn costs {n} less.',
     flavor: 'A full-body shake with one predictable consequence and one useful one.',
     nums: { m0: 1, n: 1 },
-    effect: eff(c => { shed(c, N(c).m0); U.applySelf(c, 'next-trick-discount', N(c).n); }),
+    effect: eff(c => { shed(c, N(c).m0); U.applySelf(c, 'next-trick-discount', N(c).n); U.draw(c, N(c).m1 || 0); }),
     upgrade: { nums: { m0: 1, n: 1, m1: 1 }, text: '[Shed] {m0} Bone. The next Trick you play this turn costs {n} less. Draw {m1} Trick.' },
   },
   {
@@ -691,7 +727,7 @@ const uncommons = [
     text: 'The first time you [Rattle] each turn, deal {d} damage to all enemies.',
     flavor: 'The noise is the weapon. The dog is the delivery mechanism.',
     nums: { d: 5 },
-    effect: eff(c => power(c, 'bones/rattletrap', 1)),
+    effect: eff(c => upPower(c, 'bones/rattletrap', 'd')),
     upgrade: { nums: { d: 8 } },
   },
   {
@@ -700,7 +736,7 @@ const uncommons = [
     text: 'The first time you [Fetch] each turn, draw {n} Trick.',
     flavor: 'He remembers every single thing he has ever put in his mouth.',
     nums: { n: 1 },
-    effect: eff(c => power(c, 'bones/scent-memory', 1)),
+    effect: eff(c => upPower(c, 'bones/scent-memory', 'n')),
     upgrade: { nums: { n: 2 } },
   },
   {
@@ -709,7 +745,7 @@ const uncommons = [
     text: 'The first {m0} Tricks you [Bury] each turn receive only {n} counter instead of 2.',
     flavor: 'X, X, X, and a fourth X he refuses to explain.',
     nums: { n: 1, m0: 1 },
-    effect: eff(c => power(c, 'bones/yard-map', 1)),
+    effect: eff(c => upPower(c, 'bones/yard-map', 'm0')),
     upgrade: { nums: { n: 1, m0: 2 } },
   },
   {
@@ -718,7 +754,7 @@ const uncommons = [
     text: 'The first time each turn you become [Scattered], create {n} Spare Bone.',
     flavor: 'The house is now, in a real sense, partly dog.',
     nums: { n: 1 },
-    effect: eff(c => power(c, 'bones/spare-parts-everywhere', 1)),
+    effect: eff(c => upPower(c, 'bones/spare-parts-everywhere', 'n')),
     upgrade: { nums: { n: 2 } },
   },
   {
@@ -727,7 +763,7 @@ const uncommons = [
     text: 'The first time each turn you become [Whole], gain {n} Nerve at the start of your next turn.',
     flavor: 'One notch. Everything stays where it belongs.',
     nums: { n: 1 },
-    effect: eff(c => power(c, 'bones/tighten-the-collar', 1)),
+    effect: eff(c => upPower(c, 'bones/tighten-the-collar', 'n')),
     upgrade: { nums: { n: 2 } },
   },
   {
@@ -741,7 +777,7 @@ const uncommons = [
     // Nerve and had no effect whatsoever. Found by tests/hook-names/check.py.
     // The hooks Bones actually fires are 'fetch' and 'digUp'; the wiring is
     // module-scope below, next to the other Bones Powers.
-    effect: eff(c => power(c, 'bones/tail-a-mile-a-minute', 1)),
+    effect: eff(c => upPower(c, 'bones/tail-a-mile-a-minute', 'n')),
     upgrade: { nums: { n: 10 } },
   },
 ];
@@ -916,7 +952,7 @@ const rares = [
     text: 'Lose all Guard. [Shed] until you reach 6. Gain {m0} Nerve for every {n} Bones actually Shed. [Vanish].',
     flavor: 'A controlled demolition of a very good boy.',
     nums: { n: 2, m0: 1 },
-    effect: eff(c => { if (c.self) c.self.block = 0; const s = shed(c, 6 - loose(c)); U.energy(c, Math.floor(s / N(c).n) * N(c).m0); }),
+    effect: eff(c => { if (c.self) c.self.block = 0; const s = shed(c, 6 - loose(c)); U.energy(c, Math.floor(s / N(c).n) * N(c).m0); U.draw(c, N(c).m1 || 0); }),
     upgrade: { nums: { n: 2, m0: 1, m1: 2 }, text: 'Lose all Guard. [Shed] until you reach 6. Gain {m0} Nerve for every {n} Bones actually Shed. Draw {m1} Tricks. [Vanish].' },
   },
   {
@@ -977,7 +1013,7 @@ const rares = [
     text: '{n} time each turn, if an effect would [Shed] while you already have 6 [Loose Bones], first [Reattach] 1, then Shed. Both cause separate [Rattle]s.',
     flavor: 'Nobody put him together. He simply happened, correctly.',
     nums: { n: 1 },
-    effect: eff(c => power(c, 'bones/built-wrong', 1)),
+    effect: eff(c => upPower(c, 'bones/built-wrong', 'n')),
     upgrade: { nums: { n: 2 } },
   },
   {
@@ -986,7 +1022,7 @@ const rares = [
     text: 'The first {n} times each turn a [Buried] Trick is [Dug Up], gain {m0} Nerve.',
     flavor: 'Every hole is a withdrawal.',
     nums: { n: 2, m0: 1 },
-    effect: eff(c => power(c, 'bones/treasure-yard', 1)),
+    effect: eff(c => upPower(c, 'bones/treasure-yard', 'n')),
     upgrade: { nums: { n: 3, m0: 1 } },
   },
   {
@@ -995,9 +1031,9 @@ const rares = [
     text: 'At the end of your turn, [Reattach] {n} Bone if possible. Whenever you begin your turn [Whole], draw {m0} additional Trick.',
     flavor: 'They come back on their own. It is unnerving and very convenient.',
     nums: { n: 1, m0: 1 },
-    effect: eff(c => power(c, 'bones/every-bone-knows-the-way-home', 1, (x) => {
+    effect: eff(c => upPower(c, 'bones/every-bone-knows-the-way-home', 'm0', (x) => {
       U.onPlayerTurn(x.e, 'end', () => reattach(x, U.stacks(x, x.self, 'bones/every-bone-knows-the-way-home')), x.self);
-      U.onPlayerTurn(x.e, 'start', () => { if (isWhole(x)) U.draw(x, 1); }, x.self);
+      U.onPlayerTurn(x.e, 'start', () => { if (isWhole(x)) U.draw(x, 1 + banked(x, 'bones/every-bone-knows-the-way-home')); }, x.self);
     })),
     upgrade: { nums: { n: 1, m0: 2 } },
   },
