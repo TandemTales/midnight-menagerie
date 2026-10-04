@@ -420,6 +420,28 @@ try {
       `still ${me.status('stay-with-me')}`);
   }
 
+  // ── a Power keeps the best copy played, not the first ─────────────────────
+  {
+    /* Haunted Headstones' {b} was written inside the install-once closure:
+       Haunted Headstones then Haunted Headstones+ paid the base 5 Guard. */
+    const buryGuard = async (seq) => {
+      const e = await pudding();
+      for (const up of seq) {
+        e.addCard(CARDS.cardById('pudding/haunted-headstones'), 'hand', { upgraded: up });
+        const k = e.piles.hand[e.piles.hand.length - 1];
+        e.player.energy = 9;
+        await e.playCard(k.uid);
+      }
+      give(e, 'pudding/little-chomp');
+      e.player.block = 0;
+      await play(e, 'pudding/bury-this');
+      return e.player.block;
+    };
+    const none = await buryGuard([]), base = await buryGuard([false]), both = await buryGuard([false, true]);
+    check(base - none === 5, 'Haunted Headstones: the first Bury gives the Best Friend 5 Guard', `${none} -> ${base}`);
+    check(both - none === 8, 'Haunted Headstones then Haunted Headstones+ gives the upgraded 8', `${none} -> ${both}`);
+  }
+
 } catch (err) {
   fails.push('THREW: ' + (err && err.stack || err));
 }
