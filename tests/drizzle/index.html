@@ -533,6 +533,48 @@ try {
       check(e.piles.hand.length === want, `Barometer${up ? '+' : ''} draws ${up ? 2 : 1} extra`, `hand=${e.piles.hand.length}`);
     }
   }
+  {
+    /* A Power keeps the BEST copy played. Barometer's {n} was written inside the
+       install-once closure: Barometer then Barometer+ drew 1 extra, not 2. */
+    const e = await drizzle();
+    await play(e, 'drizzle/barometer', null);
+    await playUp(e, 'drizzle/barometer', null);
+    await play(e, 'drizzle/just-a-sprinkle', null);
+    await e.endTurn();
+    const want = e.player.drawPerTurn + 2;
+    check(e.piles.hand.length === want, 'Barometer then Barometer+ draws the upgraded 2 extra', `hand=${e.piles.hand.length}`);
+  }
+  {
+    // Weather Station: setting a Forecast pays {b} Guard, 4 or 7.
+    const guardFor = async (seq) => {
+      const e = await drizzle();
+      for (const up of seq) await (up ? playUp : play)(e, 'drizzle/weather-station', null);
+      e.player.block = 0;
+      await play(e, 'drizzle/save-a-drop', null);
+      return e.player.block;
+    };
+    const none = await guardFor([]), base = await guardFor([false]), both = await guardFor([false, true]);
+    check(base - none === 4, 'Weather Station: setting a Forecast pays 4 Guard', `${none} -> ${base}`);
+    check(both - none === 7, 'Weather Station then Weather Station+ pays the upgraded 7', `${none} -> ${both}`);
+  }
+  {
+    /* LIGHTNING ROD: "Deal {d} damage, then {m0} more for each Forecast waiting
+       on Thunderstorm." It dealt a hardcoded 5 a Forecast; the text says 15 (21). */
+    for (const [up, d, m0] of [[false, 9, 15], [true, 13, 21]]) {
+      const e = await drizzle();
+      await play(e, 'drizzle/save-a-drop', null);
+      await play(e, 'drizzle/save-a-drop', null);
+      const waiting = e.counter('forecast');
+      const t = e.livingEnemies()[0];
+      t.maxHp = 999; t.hp = 999; t.block = 0;
+      const hits = [];
+      e.on('damage', (ev) => { if (ev && ev.targetId === t.id) hits.push(ev.amount | 0); });
+      await (up ? playUp : play)(e, 'drizzle/lightning-rod', t);
+      check(waiting === 2 && hits.join(',') === [d, m0, m0].join(','),
+        `Lightning Rod${up ? '+' : ''} with two Thunderstorm Forecasts waiting: ${d}, then ${m0} for each`,
+        `forecasts=${waiting}, hits=${hits.join(',')}`);
+    }
+  }
 } catch (err) {
   fails.push('THREW: ' + (err && err.stack || err));
 }
