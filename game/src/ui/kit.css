@@ -4062,7 +4062,7 @@ button.kit-hw-enamel:focus-visible {
   /* the tab's lettering: ivory warmed by the type, never the type on itself
      (a pink ATTACK on its red enamel read at 2.8:1) */
   --tab-ink: color-mix(in oklab, var(--type-color) 20%, #fff3df);
-  --name-u: max(15.5, 12.5 / var(--cpx, 1), min(18, 14 / var(--cpx, 1)));
+  --name-u: max(15.5, 13 / var(--cpx, 1), min(19.5, 14 / var(--cpx, 1)));
   --type-u: max(12.5, 11.5 / var(--cpx, 1));
 }
 .kit-cards .mm-card[data-rarity][data-type][data-uid] .mm-card__face {

@@ -1869,9 +1869,9 @@
    a ground in the type's colour, the type line on an enamel tab astride its
    rail, the name on a plate that grows a line UP rather than shrink — and the
    hand only places it. Its name and type line hold a size in screen px
-   (--cpx, ui/hand.js), so the Deck's 1280x800 prints them at 11.5 and 10 px;
+   (--cpx, ui/hand.js), so the Deck's 1280x800 prints them at 13.5 and 11.5 px;
    its rules are fitted to the panel's box (176u x 116u, CardView#fitRules)
-   between 10 and 13 px. */
+   between 10 and 14 px (12 in a crowded fan). */
 .cb-handhost.kit-cards .mm-hand .mm-card[data-rarity][data-type][data-uid].is-fitted .mm-card__rules { font-size: calc(var(--rules-fit) * var(--u)); line-height: var(--rules-lh, 1.1); }
 .cb-handhost.kit-cards .mm-hand .mm-card[data-rarity][data-type][data-uid].is-fitted .mm-card__rules .mm-card__num { line-height: 0; }
 .cb-handhost.kit-cards .mm-card[data-rarity][data-type][data-uid] .mm-card__rules > div,
