@@ -585,3 +585,17 @@
   .rs-room { grid-template-columns: minmax(0, 1fr); }
   .rs-stage { display: none; }
 }
+
+/* ── the house's pictures, either side of the plaque (round 26) ────────────
+   The fort and the four panels fill the wall below; the only wall the Safe
+   Room shows is up here between the plaque and the corner candles, so a
+   Companion tile hangs on each side of it (.kit-hang--tile, ui/hang.js),
+   lit by the corner candle beside it. */
+.rs-hang {
+  --hang-w: clamp(104px, 8.6vw, 140px);
+  --hang-lit: .95;
+  z-index: 2;
+  top: calc(var(--hud-h) + clamp(26px, 3.6vh, 34px));
+}
+.rs-hang--l { left: calc(var(--kit-edge) + var(--corner-w) + 6px); }
+.rs-hang--r { right: calc(var(--kit-edge) + var(--corner-w) + 6px); }

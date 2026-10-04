@@ -105,7 +105,7 @@
   transition: filter var(--t-quick) var(--ease-out), transform var(--t-quick) var(--ease-out);
 }
 .rm-btn em { font-style: italic; text-transform: none; letter-spacing: 0;
-             font-family: var(--font-body); font-weight: 400; font-size: max(12px, var(--fs-xs)); color: var(--kit-text-lo); }
+             font-family: var(--font-body); font-weight: 500; font-size: max(13px, var(--fs-xs)); color: var(--kit-text-lo); }
 .rm-btn:hover:not(:disabled) { transform: translateY(-1px); color: var(--kit-text);
                                filter: drop-shadow(0 3px 5px rgba(0, 0, 0, .7)) saturate(.9) brightness(1.04); }
 .rm-btn:disabled { opacity: .4; cursor: not-allowed; }
@@ -262,10 +262,8 @@
   --ml1-w: calc(var(--flank-w) * 2.6);       --ml1-h: 52vh;
   --ml2-x: calc(100vw - var(--flank-cx));    --ml2-y: var(--ml1-y);
   --ml2-w: var(--ml1-w);                     --ml2-h: var(--ml1-h);
-  --mb1-x: calc(var(--flank-cx) + var(--flank-w) * .3); --mb1-y: var(--win-y);
-  --mb1-w: calc(var(--flank-w) * 1.9);       --mb1-h: calc(100vh - var(--win-y));
-  --mb2-x: calc(100vw - var(--mb1-x));       --mb2-y: var(--mb1-y);
-  --mb2-w: var(--mb1-w);                     --mb2-h: var(--mb1-h);
+  /* (no shafts since round 26: the flanks hang pictures, not lancets, and
+     a shaft needs a window to fall from) */
 }
 /* a Big Scare also hands over a Keepsake: its panel hangs under the row on the
    rule, and the three stand in the height it leaves */
@@ -475,50 +473,22 @@
   background: radial-gradient(closest-side, color-mix(in srgb, var(--kit-candle) 24%, transparent), color-mix(in srgb, var(--kit-candle) 8%, transparent) 52%, transparent);
   mix-blend-mode: screen;
 }
-/* the flanks: high on each wall a moonlit gothic lancet (.kit-window,
-   QUINCE's, ui/r4-polish-a) letting cold light into the alcove, and under it
-   on the rail's end a candle on a book burning warm against it. They stood as
-   floating brass sconces before, and the hall behind the cards read as empty
-   dark wainscot. */
-/* hung level with the tops of the frames, on the damask over the chair rail;
-   reward.js (_pointLights) aims the ground's beams at the two glasses */
-.rw-window {
-  --win-w: min(calc(var(--flank-w) * .92), calc(var(--slot-h) * .54));
-  top: calc(var(--frame-pad) * .4);
+/* the flanks: the house's gallery (round 26). On each wall one of the
+   menagerie's portraits (.kit-hang, ui/hang.js), hung by its cord at the
+   height of the frames' paintings, and under it on the rail's end a candle on
+   a book lighting it from below. Rounds 6-25 hung a moonlit lancet here; the
+   moon still reaches the flanks as a cold pool high on the damask
+   (--ml1/--ml2), so the warm-against-cold the samples paint stays. */
+.rw-hang {
+  --hang-w: min(calc(var(--flank-w) * .86), calc(var(--slot-h) * .5));
+  --hang-lit: .95;
+  /* its middle level with the middle of the frames' paintings */
+  top: calc(var(--frame-pad) + var(--slot-h) * .2);
   z-index: -1;
   translate: -50% 0;
-  filter: drop-shadow(0 12px 16px rgba(0, 0, 0, .7)) brightness(1.1) saturate(1.06);
 }
-.rw-window--l { left: calc(var(--flank-w) / 2 + 6px); }
-.rw-window--r { left: calc(100% - var(--flank-w) / 2 - 6px); }
-/* the moonlight standing off the glass, and the cold wash it lays on the
-   damask and the wainscot round it */
-.rw-window::before {
-  left: -68%; right: -68%; top: 2%; bottom: 6%;
-  background: radial-gradient(closest-side,
-    color-mix(in srgb, var(--kit-moon) 26%, transparent) 0%,
-    color-mix(in srgb, var(--kit-moon) 10%, transparent) 46%,
-    color-mix(in srgb, var(--kit-moon) 3%, transparent) 74%, transparent);
-}
-/* and the shaft itself, standing in the air of the alcove: soft on every side
-   (a shaft of light has no edge to cut), leaning inward the way the Curiosity's
-   hall leans its two. */
-.rw-window::after {
-  content: ''; position: absolute; z-index: -1; pointer-events: none;
-  left: 50%; top: 18%;
-  width: 128%;
-  height: calc(var(--slot-h) * .96 + var(--stand, 20px));
-  transform-origin: 50% 0;
-  background: linear-gradient(90deg, transparent 0%,
-    color-mix(in srgb, var(--kit-moon) 36%, transparent) 28%,
-    color-mix(in srgb, var(--kit-moon) 46%, transparent) 52%,
-    color-mix(in srgb, var(--kit-moon) 23%, transparent) 78%, transparent 100%);
-  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 14%, rgba(0, 0, 0, .7) 56%, rgba(0, 0, 0, .3) 86%, transparent 100%);
-          mask-image: linear-gradient(to bottom, transparent 0%, #000 14%, rgba(0, 0, 0, .7) 56%, rgba(0, 0, 0, .3) 86%, transparent 100%);
-  mix-blend-mode: screen;
-}
-.rw-window--l::after { transform: translateX(-42%) skewX(21deg); }
-.rw-window--r::after { transform: translateX(-58%) skewX(-21deg); }
+.rw-hang--l { left: calc(var(--flank-w) / 2 + 6px); }
+.rw-hang--r { left: calc(100% - var(--flank-w) / 2 - 6px); }
 .rw-candle {
   bottom: calc(var(--stand) - var(--rw-rail-h) * .02);
   width: clamp(40px, 3.4vw, 58px);

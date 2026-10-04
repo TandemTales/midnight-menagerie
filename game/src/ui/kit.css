@@ -3670,3 +3670,299 @@ button.kit-hw-enamel:focus-visible {
   filter: drop-shadow(0 2px 3px rgba(0, 0, 0, .8)) drop-shadow(0 0 10px color-mix(in srgb, var(--kit-candle) 70%, transparent)) brightness(1.12);
 }
 .kit-ladder--candles > .kit-ladder__rung:disabled { filter: grayscale(.6) brightness(.55); }
+
+/* ===========================================================================
+   ROUND 26 — appended; nothing above is changed.
+
+     .kit-hang        a picture hung on the room's wall (ui/hang.js writes it):
+                      a Companion tile off UI/selectCompanion.png WHOLE -- gilt
+                      edge, painting, lettered nameplate -- or the mansion off
+                      UI/mainMenu.png (--wide), cut at the sample's own
+                      resolution (tools/prep_ui_kit.py --only hang), in the Kid
+                      board's carved gilt frame (frame.webp), on a cord from a
+                      cast brass boss, the wall's shadow under it and a candle's
+                      light on the paper round it. Place it with your OWN class
+                      (left/top); size it with --hang-w (the picture's width);
+                      --hang-lit is how much light reaches it (1 = full)
+       __cord         the cord and its boss, above the frame
+       __frame        the moulding; __pic the picture in it
+       --wide         the mansion, a landscape;  --tile  a Companion tile
+                      whole (ui/hang.js: 'pudding-tile'), wider than tall
+   =========================================================================== */
+
+/* ── hung picture ── */
+.kit-hang {
+  --hang-w: 180px;
+  --hang-lit: .92;
+  --hang-rim: calc(var(--hang-w) * .085);   /* how far the moulding stands outside the picture */
+  position: absolute; display: block; margin: 0;
+  width: var(--hang-w);
+  pointer-events: none;
+  isolation: isolate;
+}
+.kit-hang__frame {
+  position: relative; display: block;
+  /* the wall's shadow: the frame stands off it on its cord, lit from below */
+  filter: drop-shadow(0 calc(var(--hang-w) * .05) calc(var(--hang-w) * .05) rgba(4, 2, 6, .82))
+          drop-shadow(0 2px 2px rgba(0, 0, 0, .7));
+}
+.kit-hang__pic {
+  /* every portrait one shape, whichever row of the sheet it was cut from:
+     a few px of the painting's top give way, never the nameplate */
+  display: block; width: 100%; height: auto;
+  aspect-ratio: 216 / 248; object-fit: cover; object-position: 50% 100%;
+  filter: brightness(var(--hang-lit)) saturate(.94) contrast(1.03);
+}
+/* the varnish and the light on it: the candle is below, so the top of the
+   canvas falls a little into the room's dark and its foot takes the warmth */
+.kit-hang__frame::before {
+  content: ''; position: absolute; inset: 0; z-index: 1; pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(10, 6, 16, .34) 0%, rgba(10, 6, 16, .08) 30%, transparent 52%,
+      color-mix(in srgb, var(--kit-candle) 7%, transparent) 100%),
+    radial-gradient(120% 95% at 50% 62%, transparent 58%, rgba(8, 5, 12, .42) 100%);
+}
+/* the moulding: the Kid board's carved gilt frame, laid OVER the tile's own
+   thin gilt edge so its inner lip sits on the picture */
+.kit-hang__frame::after {
+  content: ''; position: absolute; z-index: 2; pointer-events: none;
+  inset: calc(var(--hang-rim) * -1);
+  border: 0 solid transparent;
+  border-image-source: url("../../assets/ui/kit/frame.webp");
+  border-image-slice: 52;
+  border-image-width: calc(var(--hang-rim) * 2.15);
+  border-image-repeat: stretch;
+  filter: brightness(1.06) saturate(1.05);
+}
+/* the cord, two strands up to a cast brass boss in the paper */
+.kit-hang__cord {
+  position: absolute; z-index: 0; display: block;
+  left: 50%; translate: -50% 0;
+  bottom: calc(100% + var(--hang-rim) * .3);
+  width: 62%; height: calc(var(--hang-w) * .2);
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 30' preserveAspectRatio='none'%3E%3Cpath d='M50 3 L2 30 M50 3 L98 30' fill='none' stroke='%230c0705' stroke-width='3.4' vector-effect='non-scaling-stroke'/%3E%3Cpath d='M50 3 L2 30 M50 3 L98 30' fill='none' stroke='%23b08a4a' stroke-width='1.4' vector-effect='non-scaling-stroke'/%3E%3C/svg%3E") 0 0 / 100% 100% no-repeat;
+}
+.kit-hang__cord::after {
+  content: ''; position: absolute; left: 50%; top: 0;
+  width: calc(var(--hang-w) * .13); aspect-ratio: 1;
+  translate: -50% -42%;
+  background: url("../../assets/ui/kit/boss-rosette.webp") 50% 50% / 100% 100% no-repeat;
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .8)) brightness(.92);
+}
+/* a candle's light on the paper round it, under the picture */
+.kit-hang::before {
+  content: ''; position: absolute; z-index: -1; pointer-events: none;
+  left: -45%; right: -45%; top: -30%; bottom: -40%;
+  background: radial-gradient(closest-side,
+    color-mix(in srgb, var(--kit-candle) 20%, transparent) 0%,
+    color-mix(in srgb, var(--kit-candle) 8%, transparent) 50%, transparent 100%);
+  mix-blend-mode: screen;
+}
+.kit-hang--wide { --hang-rim: calc(var(--hang-w) * .05); }
+.kit-hang--wide .kit-hang__pic { aspect-ratio: 714 / 384; object-position: 50% 50%; }
+/* a tile whole: wider than it is tall, its own gilt edge inside the frame */
+.kit-hang--tile { --hang-rim: calc(var(--hang-w) * .06); }
+.kit-hang--tile .kit-hang__pic { aspect-ratio: 296 / 256; object-position: 50% 100%; }
+.kit-hang--tile .kit-hang__cord { width: 50%; height: calc(var(--hang-w) * .15); }
+.kit-hang--wide .kit-hang__cord { width: 44%; height: calc(var(--hang-w) * .12); }
+.kit-hang--wide .kit-hang__cord::after { width: calc(var(--hang-w) * .08); }
+
+/* ── the room behind a dialog ──
+   .kit-scrim--room   a dialog's scrim as the boards' own room (ui/hang.js
+                      roomBehind): the painted wall, panelling and flags, lit
+                      by a candle low at each side where the dialog's own
+                      candle and skull stand, and pushed into the dark toward
+                      the dialog so the room reads as BEHIND it. */
+.kit-scrim--room {
+  background: var(--kit-void);
+  -webkit-backdrop-filter: none; backdrop-filter: none;
+}
+.kit-scrim--room > .kit-scrim__room {
+  /* the candle pools, low on each side and up under the plaque */
+  --wl1-x: 4vw;   --wl1-y: 70vh;  --wl1-w: 50vw;  --wl1-h: 110vh;
+  --wl2-x: 96vw;  --wl2-y: 70vh;  --wl2-w: 50vw;  --wl2-h: 110vh;
+  --wl3-x: 50vw;  --wl3-y: 6vh;   --wl3-w: 64vw;  --wl3-h: 40vh;
+  /* and the moon, cold, high on both sides */
+  --ml1-x: 3vw;   --ml1-y: 24vh;  --ml1-w: 30vw;  --ml1-h: 60vh;
+  --ml2-x: 97vw;  --ml2-y: 24vh;  --ml2-w: 30vw;  --ml2-h: 60vh;
+}
+/* the room turned down: deepest under the dialog, so its rail stands clear */
+.kit-scrim--room::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  background:
+    radial-gradient(64% 70% at 50% 50%, color-mix(in srgb, var(--kit-void) 72%, transparent) 0%, color-mix(in srgb, var(--kit-void) 40%, transparent) 70%, color-mix(in srgb, var(--kit-void) 8%, transparent) 100%),
+    linear-gradient(to bottom, color-mix(in srgb, var(--kit-void) 22%, transparent), transparent 22%, transparent 80%, color-mix(in srgb, var(--kit-void) 30%, transparent));
+}
+
+/* ── the house's controls, finished (round 26) ──
+   Both survey judges, after round 19: Settings' OFF/ON plates still read as
+   "segmented switches", its colour palettes as "rectangular web buttons", and
+   the pile viewer's filters as "HTML dropdowns dressed in gold plaques". The
+   same brass, enamel and engraving, cast as the things themselves:
+     .kit-hw-throw     a brass lever on a cast boss, thrown left to OFF or
+                       right to ON, the two words engraved either side of it
+                       and the one it points at lit (put [data-on="1"] on it):
+                       __word, __boss > __lever, __word
+     .kit-hw-swatch    one of several choices shown as what it IS: a brass
+                       roundel holding its colours in enamel (--sw1..--sw4),
+                       the name engraved beside it; the chosen one lit
+                       (role="radio" + aria-checked): __disc, then the name
+     .kit-hw-cycle     a list chooser you turn, not open: what it chooses BY
+                       engraved over a dark cartouche with the choice lettered
+                       on it, a brass chevron in enamel either side that steps
+                       it (__label, __step x2, __plate holding the real
+                       <select class="kit-hw-cycle__sel">, its arrow gone)  */
+
+/* the lever toggle */
+.kit-hw-throw {
+  --sw-h: 30px;
+  position: relative; flex: none;
+  display: inline-flex; align-items: center; gap: calc(var(--sw-h) * .2);
+  height: var(--sw-h);
+}
+.kit-hw-throw__word {
+  min-width: 2.2em; text-align: center;
+  font-family: var(--font-display); font-weight: 700; font-style: normal;
+  font-size: max(11px, calc(var(--sw-h) * .37)); line-height: 1;
+  letter-spacing: .16em; padding-left: .16em; text-transform: uppercase;
+  color: color-mix(in oklab, var(--kit-text-lo) 70%, var(--kit-gold-lo));
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, .95), 0 1px 0 color-mix(in srgb, var(--kit-gold) 16%, transparent);
+  transition: color var(--t-quick) var(--ease-out), text-shadow var(--t-quick) var(--ease-out);
+}
+/* the word the lever points at is lit: OFF in the boards' lavender, ON by the
+   candle -- the two states never read alike */
+.kit-hw-throw:not([data-on="1"]) > .kit-hw-throw__word:first-child {
+  color: var(--kit-lav-hi);
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, .9), 0 0 8px color-mix(in srgb, var(--kit-lav) 65%, transparent);
+}
+.kit-hw-throw[data-on="1"] > .kit-hw-throw__word:last-child {
+  color: #fff1d2;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, .9), 0 0 9px color-mix(in srgb, var(--kit-candle) 90%, transparent);
+}
+/* the boss the lever turns on: a cast brass rosette, its stone the pivot */
+.kit-hw-throw__boss {
+  position: relative; display: block; flex: none;
+  width: calc(var(--sw-h) * .86); aspect-ratio: 1;
+  margin-inline: calc(var(--sw-h) * .22);
+  background: url("../../assets/ui/kit/boss-rosette.webp") 50% 50% / 100% 100% no-repeat;
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .85));
+}
+/* the lever: hw-lever.webp, its pivot the picture's centre, its ball up */
+.kit-hw-throw__lever {
+  position: absolute; left: 50%; top: 50%;
+  width: calc(var(--sw-h) * 2.1); aspect-ratio: 1;
+  translate: -50% -50%;
+  background: url("../../assets/ui/kit/hw-lever.webp") 50% 50% / 100% 100% no-repeat;
+  filter: drop-shadow(1px 2px 1.5px rgba(0, 0, 0, .85)) brightness(1.12);
+  rotate: -50deg;
+  transition: rotate var(--t-base) var(--ease-out);   /* --t-base is 1ms under reduced motion */
+}
+.kit-hw-throw[data-on="1"] > .kit-hw-throw__boss > .kit-hw-throw__lever { rotate: 50deg; }
+.kit-hw-throw[data-on="1"] > .kit-hw-throw__boss {
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .85)) drop-shadow(0 0 7px color-mix(in srgb, var(--kit-candle) 45%, transparent));
+}
+
+/* the swatch roundel */
+.kit-hw-swatch {
+  --disc: 30px;
+  --sw1: #8d8598; --sw2: #5e6472; --sw3: #cfd6e6; --sw4: #b08a4a;   /* the palette's four, set per choice */
+  position: relative;
+  display: inline-flex; align-items: center; gap: calc(var(--disc) * .3);
+  min-width: 0; margin: 0; padding: 2px 4px 2px 0;
+  background: none; border: 0; border-radius: 0;
+  /* the name as the select boards letter a name on a plate: the serif */
+  font-family: var(--font-body); font-weight: 600; font-style: normal;
+  font-size: max(13px, calc(var(--disc) * .44)); line-height: 1.05;
+  letter-spacing: .01em; white-space: nowrap; text-align: left;
+  color: color-mix(in oklab, var(--kit-text-lo) 80%, var(--kit-gold-lo));
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, .95), 0 1px 0 color-mix(in srgb, var(--kit-gold) 14%, transparent);
+  cursor: pointer;
+  transition: color var(--t-quick) var(--ease-out), filter var(--t-quick) var(--ease-out);
+}
+.kit-hw-swatch__disc {
+  position: relative; display: block; flex: none;
+  width: var(--disc); aspect-ratio: 1;
+  border-radius: 50%;
+  /* the rope-bead brass rim, and the four colours in enamel under its glaze */
+  background:
+    url("../../assets/ui/kit/hw-glaze.webp") 50% 50% / 76% 76% no-repeat,
+    url("../../assets/ui/kit/roundel.webp") 50% 50% / 100% 100% no-repeat,
+    conic-gradient(from -45deg, var(--sw1) 0 25%, var(--sw2) 0 50%, var(--sw3) 0 75%, var(--sw4) 0 100%) 50% 50% / 74% 74% no-repeat;
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .85)) saturate(.55) brightness(.72);
+  transition: filter var(--t-quick) var(--ease-out);
+}
+.kit-hw-swatch:hover { color: var(--kit-text); }
+.kit-hw-swatch:hover > .kit-hw-swatch__disc { filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .85)) saturate(.8) brightness(.9); }
+.kit-hw-swatch[aria-checked="true"] {
+  color: var(--kit-lav-hi);
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, .9), 0 0 8px color-mix(in srgb, var(--kit-lav) 60%, transparent);
+}
+.kit-hw-swatch[aria-checked="true"] > .kit-hw-swatch__disc {
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .85)) drop-shadow(0 0 7px color-mix(in srgb, var(--kit-candle) 75%, transparent)) saturate(1.05) brightness(1.08);
+}
+.kit-hw-swatch:focus-visible { outline: none; }
+.kit-hw-swatch:focus-visible > .kit-hw-swatch__disc {
+  filter: drop-shadow(0 0 1.5px var(--kit-gold-hi)) drop-shadow(0 0 10px color-mix(in srgb, var(--kit-candle) 60%, transparent)) brightness(1.1);
+}
+
+/* the cycling cartouche */
+.kit-hw-cycle {
+  --cy-h: 34px;
+  position: relative;
+  display: inline-grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-rows: auto var(--cy-h);
+  grid-template-areas: "label label label" "prev plate next";
+  align-items: center; column-gap: 3px; row-gap: 3px;
+}
+.kit-hw-cycle__label {
+  grid-area: label; justify-self: center;
+  font-family: var(--font-display); font-weight: 700; font-style: normal;
+  font-size: max(11.5px, calc(var(--cy-h) * .34)); line-height: 1;
+  letter-spacing: .2em; padding-left: .2em; text-transform: uppercase; white-space: nowrap;
+  color: var(--kit-gold);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .95), 0 0 6px color-mix(in srgb, var(--kit-candle) 25%, transparent);
+  pointer-events: none;
+}
+.kit-hw-cycle__plate {
+  grid-area: plate;
+  position: relative; display: block;
+  height: var(--cy-h); min-width: 0;
+  border: 0 solid transparent;
+  border-image: url("../../assets/ui/kit/cartouche-dark.webp") 18 34 18 34 fill / calc(var(--cy-h) * 18 / 64) calc(var(--cy-h) * 34 / 64) stretch;
+  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .8));
+}
+.kit-hw-cycle__sel {
+  display: block; box-sizing: border-box;
+  width: 100%; height: 100%;
+  margin: 0; padding: 0 calc(var(--cy-h) * .3);
+  border: 0; border-radius: 0;
+  -webkit-appearance: none; appearance: none;
+  background: none; outline: none;
+  font-family: var(--font-body); font-weight: 600; font-style: normal;
+  font-size: max(13px, calc(var(--cy-h) * .4)); line-height: 1;
+  text-align: center; text-align-last: center;
+  color: var(--kit-name);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
+  cursor: pointer;
+}
+.kit-hw-cycle__sel option { background: #17111c; color: var(--kit-text); }
+.kit-hw-cycle__step.kit-hw-enamel { --en: calc(var(--cy-h) * .92); cursor: pointer; }
+.kit-hw-cycle__step--prev { grid-area: prev; }
+.kit-hw-cycle__step--next { grid-area: next; }
+.kit-hw-cycle__step > .kit-hw-chev { width: 62%; }
+.kit-hw-cycle:has(> .kit-hw-cycle__plate > .kit-hw-cycle__sel:focus-visible) > .kit-hw-cycle__plate {
+  filter: drop-shadow(0 0 1.5px var(--kit-gold-hi)) drop-shadow(0 0 10px color-mix(in srgb, var(--kit-candle) 55%, transparent)) drop-shadow(0 3px 4px rgba(0, 0, 0, .8));
+}
+/* a chooser set to something other than "any" has its choice lit, so the
+   filters in force are found at a glance */
+.kit-hw-cycle.is-set .kit-hw-cycle__sel { color: #fff4dc; text-shadow: 0 1px 0 rgba(0, 0, 0, .9), 0 0 9px color-mix(in srgb, var(--kit-candle) 70%, transparent); }
+.kit-hw-cycle.is-set > .kit-hw-cycle__label { color: var(--kit-gold-hi); }
+
+/* ── the small print on an action plate (round 26) ──
+   "Small italic sub-captions of about 9px inside action plaques (TAKE NONE,
+   LEAVE IT BE, PACK UP ...) are too small at the Deck's resolution" -- both
+   survey judges. The epithet under or beside a plate's words letters at 13px
+   at the least, a weight up, and the keycap's word at 11px. */
+.kit-btn em { font-size: max(13px, var(--fs-xs)); font-weight: 500; }
+.kit-btn kbd { font-size: 11px; }

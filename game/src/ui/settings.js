@@ -26,6 +26,7 @@
  */
 
 import { Modal, confirmModal, kitButton } from './modal.js';
+import { roomBehind } from './hang.js';
 import { formatSeed } from './portrait.js';
 
 /**
@@ -168,6 +169,8 @@ export async function openSettings(ctx = {}) {
     host: ctx.dom,
     className: 'mm-settings-modal',
   });
+  // the ledger is set down in the house's own room, not on a void (round 26)
+  roomBehind(modal);
 
   /* The panel is a ledger of the house's workings, laid out in three columns
      so every page of it is open at once, at the Deck's 1280x800 as at 1600x900:
@@ -474,10 +477,11 @@ function buildRow(ctx, Save, item, rerender) {
     /* ONE SWITCH PLATE, WHICH SAYS ITS OWN STATE. Round 5's judges found every
        row carrying a slider-switch AND a separate OFF/ON pill; round 19's
        survey found the switch that replaced them still "a dark disc beside a
-       thin bar with OFF in it". It is the house's two-position plate now
-       (ui/kit.css .kit-hw-switch): OFF and ON cut into two sunk wells of a
-       gilt-rimmed plate, the setting's well lit. One object; `aria-checked` on
-       the switch itself is what a reader is told. */
+       thin bar with OFF in it", and round 26's found its two-well plate still
+       a "segmented switch". It is a lever now (ui/kit.css .kit-hw-throw): a
+       brass lever on a cast boss, thrown toward OFF or ON engraved either side
+       of it. One object; `aria-checked` on the switch itself is what a reader
+       is told. */
     const btn = document.createElement('button');
     btn.type = 'button'; btn.id = id;
     btn.className = 'mm-set__toggle';
@@ -486,13 +490,14 @@ function buildRow(ctx, Save, item, rerender) {
       const on = !!get(Save, item.key);
       btn.setAttribute('aria-checked', String(on));
       btn.dataset.on = on ? '1' : '0';
-      /* a two-position engraved plate (ui/kit.css .kit-hw-switch): OFF | ON
-         in two sunk wells, the setting's well lit */
+      /* a brass lever on its cast boss (ui/kit.css .kit-hw-throw, round 26),
+         thrown toward the word engraved on that side, which is lit -- the
+         two-well plate before it was still read as a segmented switch */
       btn.innerHTML =
-        `<i class="mm-set__switch kit-hw-switch" data-on="${on ? 1 : 0}" aria-hidden="true">`
-        + `<b class="kit-hw-switch__pos">Off</b><b class="kit-hw-switch__pos">On</b>`
-        // round 19 graft: the lever on its brass pivot, thrown toward the setting
-        + `<i class="kit-hw-switch__lever"></i></i>`;
+        `<i class="mm-set__switch kit-hw-throw" data-on="${on ? 1 : 0}" aria-hidden="true">`
+        + `<b class="kit-hw-throw__word">Off</b>`
+        + `<i class="kit-hw-throw__boss"><i class="kit-hw-throw__lever"></i></i>`
+        + `<b class="kit-hw-throw__word">On</b></i>`;
     };
     btn.addEventListener('click', () => { setSetting(ctx, item.key, !get(Save, item.key)); paint(); });
     paint();
@@ -507,7 +512,11 @@ function buildRow(ctx, Save, item, rerender) {
     const btns = [];
     /* a row of the house's engraved plates (ui/kit.css .kit-hw-choice): the
        chosen one lit like a switch's setting, the boards' four-point star set
-       before its name, the rest the dark plate */
+       before its name, the rest the dark plate. A choice whose options ARE
+       colours (the palettes) shows them instead: a brass roundel holding the
+       palette's colours in enamel, the name engraved beside it (.kit-hw-swatch,
+       round 26 -- "rectangular web buttons", both survey judges). */
+    const sw = SWATCHES[item.key];
     const paint = () => {
       const v = get(Save, item.key);
       for (const b of btns) {
@@ -519,10 +528,17 @@ function buildRow(ctx, Save, item, rerender) {
     };
     for (const [value, text] of item.options) {
       const b = document.createElement('button');
-      b.type = 'button'; b.className = 'mm-set__choice kit-hw-choice';
+      b.type = 'button';
       b.setAttribute('role', 'radio');
       b.dataset.value = value;
-      b.innerHTML = `<i class="mm-set__star" aria-hidden="true"></i><span class="mm-set__choicename">${escape_(text)}</span>`;
+      if (sw?.[value]) {
+        b.className = 'mm-set__choice mm-set__choice--swatch kit-hw-swatch';
+        sw[value].forEach((c, i) => b.style.setProperty(`--sw${i + 1}`, c));
+        b.innerHTML = `<i class="kit-hw-swatch__disc" aria-hidden="true"></i><span class="mm-set__choicename">${escape_(text)}</span>`;
+      } else {
+        b.className = 'mm-set__choice kit-hw-choice';
+        b.innerHTML = `<i class="mm-set__star" aria-hidden="true"></i><span class="mm-set__choicename">${escape_(text)}</span>`;
+      }
       b.addEventListener('click', () => { setSetting(ctx, item.key, value); paint(); });
       b.addEventListener('keydown', (e) => {
         const i = btns.indexOf(b);
@@ -537,6 +553,18 @@ function buildRow(ctx, Save, item, rerender) {
   }
   return row;
 }
+
+/* What each colour palette looks like, for its swatch: the four hues it gives
+   the information colour carries -- Attack, Skill, an Uncommon and a Rare --
+   as tokens.css (§CB) assigns them. Presentation only. */
+const SWATCHES = {
+  colorblind: {
+    off:          ['#d9583f', '#4f8fbf', '#6fd9ec', '#ffc14d'],
+    protanopia:   ['#ef8b32', '#56a4ff', '#e2e7ef', '#ffb020'],
+    deuteranopia: ['#ef8b32', '#56a4ff', '#3f9dff', '#ffb020'],
+    tritanopia:   ['#ff5f45', '#17b0c2', '#4bd88a', '#ff7f5c'],
+  },
+};
 
 function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
 function escape_(s) {

@@ -357,43 +357,6 @@ def painted_flagstones(h, w, rng):
     return col, hgt, np.clip(ink, 0, 1), lip
 
 
-# The portraits on the room's wall: which of the menagerie, cut from which
-# sample. (x0, y0, x1, y1) in the sample's own pixels, each close to its
-# canvas's aspect (sides 146x186, middle 210x254) and clear of the tile's gilt
-# edge and nameplate. Round 19's KERMES chose Hush and Mopsy; Hush is a black
-# ferret, and on the Reward's darker wall it was a black rectangle again, so
-# the pale ghost cat hangs in its place.
-HUNG = {
-    "marmalade": ("selectCompanion.png", (90, 198, 239, 388)),
-    "crumbula":  ("selectCompanion.png", (662, 199, 819, 388)),
-    "mopsy":     ("selectCompanion.png", (393, 706, 539, 886)),
-}
-
-
-def hung_painting(art, w, h):
-    """A portrait's canvas as ALBEDO, w x h: the sample's painting cover-fitted,
-    gone amber under old varnish, sinking into the dark toward the frame's
-    rebate, and LIFTED to the wall's albedo scale -- the samples are already
-    lit paintings, and the room's dark pass (ambient 0.2) otherwise leaves a
-    black hole where the picture is (KERMES's figures, round 19)."""
-    name, box = HUNG[art]
-    im = Image.open(os.path.join(UI, name)).convert("RGB").crop(box)
-    k = max(w / im.width, h / im.height)
-    im = im.resize((int(np.ceil(im.width * k)), int(np.ceil(im.height * k))), Image.LANCZOS)
-    ox, oy = (im.width - w) // 2, (im.height - h) // 2
-    pic = np.asarray(im, np.float32)[oy:oy + h, ox:ox + w]
-    # old varnish: a warm glaze, a little of the colour drained out of it
-    l = lum(pic)[..., None]
-    pic = pic * 0.78 + l * 0.22
-    pic = pic * np.array([1.06, 0.98, 0.84], np.float32)
-    # the canvas sinks into the dark toward the frame's rebate
-    vy = np.abs(np.linspace(-1, 1, h))[:, None]
-    vx = np.abs(np.linspace(-1, 1, w))[None, :]
-    sink = 1 - 0.42 * np.clip(np.maximum(vx, vy) - 0.55, 0, None) / 0.45
-    pic = pic * sink[..., None]
-    return np.clip(pic * 1.55 + 4.0, 0, 255)
-
-
 def room_paint_layers():
     rng = np.random.default_rng(1881)
     W, H = ROOM_W, ROOM_H
@@ -464,11 +427,10 @@ def room_paint_layers():
     # So it gets the two things a Victorian hall puts there. A STENCILLED FRIEZE
     # under the picture rail -- a palmette on a 128 px repeat between two beaded
     # rules, which is the ornament BRIEF-r8's fix 2 asks for and it need not be
-    # wallpaper. And PICTURES, hung: five of them, two deliberately at the far
-    # edges where the board does not reach, each a moulded frame round a canvas
-    # sunk into it. Both are drawn into the HEIGHT field, so ink_lines outlines
-    # them and the scumbled ao gathers under every moulding, exactly as it does
-    # for the panelling below.
+    # wallpaper. (Its PICTURES used to be painted here too; since round 26 they
+    # hang in the page, see below.) The frieze is drawn into the HEIGHT field,
+    # so ink_lines outlines it and the scumbled ao gathers under every
+    # moulding, exactly as it does for the panelling below.
     fr0, fr1 = Y_PIC[1] + 6, Y_PIC[1] + 92
     fwob = wob1d(W, rng, 300, 1.8)[None, :]
     yf = yy - fwob
@@ -496,53 +458,15 @@ def room_paint_layers():
     alb = alb * (1 - stencil * 0.55) + hexc("#6b5480") * (stencil * 0.55)
     gloss = np.where(band, np.maximum(gloss, 0.22), gloss)
 
-    # the hung pictures. ROUND 19: there were five, the two outer ones at the
-    # screen's edges, and the boards with windows (the Reward, the Curiosity)
-    # stand their lancets in exactly those two bays -- "a window cannot overlap
-    # a picture frame", both survey judges. Those two are gone; the three that
-    # remain are not "holes in the wall" any more but PICTURES.
-    #
-    # ROUND 19 GRAFT: BICE hung the grounds of UI/mainMenu.png in them, and
-    # a navy night under a varnish, at the room's ambient 0.2, still read as
-    # "empty black rectangles" to all three judges. KERMES hung the
-    # menagerie's own portraits, lifted to the wall's albedo scale, and those
-    # read as paintings -- so the house's three portraits are its animals now
-    # (see HUNG and hung_painting above): Marmalade, Count Crumbula over the
-    # middle of the wall like the house's lord, Mopsy.
-    hall = {536: "marmalade", 960: "crumbula", 1384: "mopsy"}
-    for cxp, wp, hp, drop in ((536, 96, 116, 14), (960, 128, 150, -6), (1384, 96, 116, 10)):
-        py0 = 268 + drop
-        # TWO boxes, not one distance field. wobbly_box_distance caps its inset
-        # distance at `chip`, so a frame drawn as a function of it is 0.82 of
-        # itself everywhere and every picture came out a solid gold slab with no
-        # canvas in it. The frame is the BAND between an outer box and an inner
-        # one; the canvas is what is left inside.
-        dd, inner = wobbly_box_distance(xx, yy, cxp - wp, cxp + wp,
-                                        py0, py0 + 2 * hp, rng, amp=1.6, chip=5)
-        dc, core = wobbly_box_distance(xx, yy, cxp - wp + 23, cxp + wp - 23,
-                                       py0 + 23, py0 + 2 * hp - 23, rng, amp=1.2, chip=4)
-        band_f = inner & ~core
-        gilt = hexc("#7d6034")
-        oil = hexc("#171020")
-        # the moulding: a raised outer lip, a hollow, and a bead against the art
-        prof = 11.0 + 5.0 * np.cos(np.clip(dd, 0, 5) / 5.0 * 3.1416)
-        hgt = np.where(band_f, hgt + prof, hgt)
-        hgt = np.where(core, hgt - 8.0 + smooth(0.0, 4.0, dc) * -3.0, hgt)
-        alb = np.where(band_f[..., None], gilt * (0.72 + 0.46 * (dd / 5.0)[..., None]), alb)
-        # the canvas: the portrait, cover-fitted into the frame's opening
-        # (a margin of 2 px under the rebate), varnished and lifted
-        x0, x1 = cxp - wp + 21, cxp + wp - 21
-        y0, y1 = py0 + 21, py0 + 2 * hp - 21
-        canvas = np.zeros_like(alb)
-        canvas[y0:y1, x0:x1] = hung_painting(hall[cxp], x1 - x0, y1 - y0)
-        # a craquelure of fine dark lines and the grain of the canvas
-        pic = canvas * (0.9 + 0.2 * noise(dd.shape, rng, 1.2)[..., None])
-        alb = np.where(core[..., None], pic, alb)
-        gloss = np.where(band_f, 0.55, gloss)
-        gloss = np.where(core, 0.30, gloss)
-        # the wall's own shadow under the frame, which is what hangs it
-        below = np.exp(-((yy - (py0 + 2 * hp) - 9.0) / 11.0) ** 2)               * smooth(wp + 16.0, wp - 4.0, np.abs(xx - cxp))
-        alb = alb * (1 - 0.34 * below[..., None])
+    # the hung pictures. ROUND 26: none are painted into this room any more.
+    # Rounds 19-25 hung three portraits here, cut small from the samples and
+    # put through the room's own paint (the Kuwahara fusing, the tooth, the
+    # 0.2 ambient), and at eye level every judge read them as "grey smeared
+    # noise with no drawn subject" -- and they hung at one height on one
+    # wall, so every board's ribbon, parchment or card stood in front of them.
+    # The house's pictures are hung in the page now (.kit-hang, ui/kit.css;
+    # ui/hang.js), at the sample's own resolution, each board placing its
+    # frames on wall it actually shows. This wall keeps only the frieze.
 
     # the floor
     fh = H - Y_FLOOR

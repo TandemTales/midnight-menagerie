@@ -25,16 +25,12 @@
    text input — so the keyboard, the pad and assistive tech drive it as one.
    This sheet lays the ledger out and seats those pieces; it paints no frame. */
 
-/* Round 19, both survey judges: "the screen behind shows through at the
-   edges -- a solid scrim". The ledger is a board of its own, so the room
-   behind it is put out, not turned down: the boards' void, with the frame's
-   candle still warming its lower right. (The pile viewer, deckview.css, the
-   same.) */
-.mm-settings-modal .mm-modal__scrim {
-  background:
-    radial-gradient(60% 55% at 92% 96%, color-mix(in srgb, var(--kit-candle) 8%, transparent), transparent 70%),
-    radial-gradient(90% 80% at 50% 50%, var(--kit-ground-1) 0%, var(--kit-void) 100%);
-}
+/* Round 19 made the scrim solid ("the screen behind shows through at the
+   edges"); round 26's judges then found the ledger standing "on a flat black
+   void". It stands in the house's own room now: settings.js hangs the boards'
+   painted room in the scrim (ui/hang.js roomBehind, .kit-scrim--room), lit by
+   a candle low at each side and dark under the ledger. (The pile viewer,
+   deckview.js, the same.) */
 /* the ledger: wide enough for three columns of pages, the map showing round it */
 .mm-settings-modal .mm-modal__dialog { width: min(100%, 88rem); }
 /* its name on a plaque a size smaller than a board's, so the pages get the height */
@@ -384,12 +380,13 @@
 /* a slider's reading lights with its knob while it is held or focused */
 .mm-set__rangewrap:focus-within .mm-set__out { filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .75)) drop-shadow(0 0 8px color-mix(in srgb, var(--kit-candle) 40%, transparent)); }
 
-/* ── toggle: a two-position engraved plate ─────────────────────────────────
+/* ── toggle: a brass lever ────────────────────────────────────────────────
    Round 19's survey: the switch was "a dark disc beside a thin bar with OFF
-   in it". It is the house's switch plate now (ui/kit.css .kit-hw-switch): a
-   gilt-rimmed plate with OFF and ON cut into two sunk wells, the setting's
-   well lit — violet enamel for OFF, and for ON the candle through it too. One
-   object; `aria-checked` on the button is what a reader is told. */
+   in it"; round 26's: the two-well plate that followed was a "segmented
+   switch". It is a lever now (ui/kit.css .kit-hw-throw): a brass lever on a
+   cast boss, thrown toward OFF or ON engraved either side, the word it points
+   at lit — lavender for OFF, the candle for ON. One object; `aria-checked`
+   on the button is what a reader is told. */
 .mm-set__toggle {
   display: inline-flex; align-items: center;
   justify-self: end;
@@ -399,10 +396,10 @@
   transition: filter var(--t-quick) var(--ease-out);
   cursor: pointer;
 }
-.mm-set__switch.kit-hw-switch { --sw-h: calc(var(--sw-h-set, 30px)); }
-.mm-set__toggle:hover .kit-hw-switch { filter: drop-shadow(0 3px 3px rgba(0, 0, 0, .8)) brightness(1.14); }
+.mm-set__switch.kit-hw-throw { --sw-h: calc(var(--sw-h-set, 30px)); }
+.mm-set__toggle:hover .kit-hw-throw { filter: brightness(1.14); }
 .mm-set__toggle:focus-visible { outline: none; }
-.mm-set__toggle:focus-visible .kit-hw-switch {
+.mm-set__toggle:focus-visible .kit-hw-throw {
   filter: drop-shadow(0 0 1.5px var(--kit-gold-hi)) drop-shadow(0 0 10px color-mix(in srgb, var(--kit-candle) 55%, transparent)) brightness(1.12);
 }
 
@@ -424,6 +421,10 @@
   filter: drop-shadow(0 1px 0 rgba(0, 0, 0, .85)) drop-shadow(0 0 5px color-mix(in srgb, var(--kit-candle) 55%, transparent));
 }
 .mm-set__choice[data-on="1"] .mm-set__star { display: block; }
+/* the palettes: four brass roundels of their colours, two to a row, each name
+   engraved beside its roundel (ui/kit.css .kit-hw-swatch) */
+.mm-set__choices:has(> .mm-set__choice--swatch) { gap: 8px 12px; padding: 7px 0 4px 2px; }
+.mm-set__choice--swatch.kit-hw-swatch { --disc: calc(var(--choice-h) * .98); justify-self: start; }
 
 
 /* ── seed ─────────────────────────────────────────────────────────────────

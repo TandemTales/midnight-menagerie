@@ -43,6 +43,7 @@ import {
 import { kitDressMarkup } from '../ui/kitboard.js';
 import { nodeSymbol } from '../ui/mapnode.js';
 import { paintBackdrop } from '../ui/backdrop.js';
+import { gallery } from '../ui/hang.js';
 import { pauseStageFor } from './_stage.js';
 import { fitCardToSlot } from './_cardfit.js';
 import { plural, word } from '../util/plural.js';
@@ -601,6 +602,12 @@ export class GameOverScene extends Scene {
     reach.setAttribute('role', 'group');
     reach.setAttribute('aria-label', `${plural(s.floor, 'room')} deep, in ${region}, wing ${s.wing}`);
     altar.appendChild(reach);
+    // Round 26: over each flank of the shelf, on the wall the shelf leaves
+    // bare, one of the house's own pictures on its cord (ui/hang.js): the
+    // mansion over HOW FAR, and over the line that says why, a portrait of one
+    // of the menagerie the house still keeps. The room's own pictures hung
+    // here before, painted into the wall, and were read as smears.
+    reach.insertAdjacentHTML('beforeend', gallery(['house'], ['go-hang go-hang--l']));
 
     const mvp = el('div', 'go-block go-block--mvp');
     // A museum piece: the card in its frame on its gilt pedestal, its label on
@@ -613,7 +620,8 @@ export class GameOverScene extends Scene {
     mvp.hidden = true;
     altar.appendChild(mvp);
 
-    const said = el('div', 'go-said go-tri', `<i class="go-said__mark" aria-hidden="true"></i><p class="go-mvp__note"></p><i class="go-tri__rule" aria-hidden="true"></i>`);
+    const said = el('div', 'go-said go-tri', `<i class="go-said__mark" aria-hidden="true"></i><p class="go-mvp__note"></p><i class="go-tri__rule" aria-hidden="true"></i>`
+      + gallery(['pudding-tile'], ['go-hang go-hang--r'], { skip: s.companion }));
     said.hidden = true;
     this._mvpNote = said.querySelector('.go-mvp__note');
     this._mvpSaid = said;
@@ -824,11 +832,15 @@ export class GameOverScene extends Scene {
         `<p class="go-keeps__none">Your pockets were empty. Nothing came out with you.</p>`;
     } else {
       this._keepHost.setAttribute('role', 'list');
+      // Round 26 ("overpacked at 1280", both judges): each Keepsake is its
+      // painted object and its name, two to a row; what it did is read on
+      // demand -- the Keepsake's own tablet on hover or focus (ui/tooltip.js
+      // data-tip-keepsake), and always to a screen reader.
       this._keepHost.innerHTML = list.map((r) => `
-        <span class="go-keep" role="listitem" data-rarity="${esc(r.rarity || 'common')}">
+        <span class="go-keep" role="listitem" tabindex="0" data-rarity="${esc(r.rarity || 'common')}"${r.id ? ` data-tip-keepsake="${esc(r.id)}" data-tip-placement="left"` : ''}>
           <i class="go-keep__sigil kit-hw-well" aria-hidden="true">${pic && r.id ? pic(r.id) : ''}</i>
           <b>${esc(r.name ?? r.id)}</b>
-          <em>${esc(r.desc ?? r.text ?? '')}</em>
+          <em class="sr-only">${esc(r.desc ?? r.text ?? '')}</em>
         </span>`).join('');
     }
     if (this._keepTotal) this._keepTotal.textContent = list.length ? `${list.length} kept` : 'none kept';

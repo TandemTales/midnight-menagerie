@@ -24,6 +24,7 @@ import { TERMS, NodeType, COMPANIONS } from '../data/schema.js';
 import { cardById } from '../data/cards.js';
 import { plural } from '../util/plural.js';
 import { objectHtml, keepsakeKey } from '../ui/objects.js';
+import { gallery } from '../ui/hang.js';
 import { RoomScene, esc } from './reward.js';
 import { act, ACT, deckIndex } from '../net/actions.js';
 import { INPUT } from '../net/session.js';
@@ -453,6 +454,12 @@ export class RestScene extends RoomScene {
     // The fort and its four panels need the board's height more than the
     // plaque does — the same trade Mr. Moth's makes.
     this.root.querySelector('.kit-titleblock')?.classList.add('kit-titleblock--compact');
+    // Round 26: the fort and its four panels fill the wall from side to side,
+    // so the house's pictures hang where the wall still shows -- either side
+    // of the plaque, between it and the corner candles (ui/hang.js). The
+    // room's own picture used to bleed out from behind the REST panel.
+    this.root.querySelector('.rm')?.insertAdjacentHTML('beforeend', gallery(['taffy-tile', 'wisp-tile'],
+      ['rs-hang rs-hang--l', 'rs-hang rs-hang--r'], { skip: this.run?.companion }));
 
     this._buildBody();
     this._buildFoot();
