@@ -280,6 +280,51 @@ async function swing(e, id) {
           `hand: ${e.piles.hand.map(c => c.id).join(', ')}`);
   }
 
+  say('<h2>Best Dog in the House digs up a Treat Stash with its Nerve intact</h2>');
+  {
+    /* Best Dog digs up from its OWN async turn:start listener, outside the
+       countdown's preDeal window, so a Treat Stash it dug up gained its Nerve
+       with a plain gain - erased if it landed before the refill SETS Nerve.
+       It banks onto the refill like the deck's other Dig Ups now. */
+    const nerveAfter = async (withDog) => {
+      const e = await dog();
+      if (withDog) await play(e, 'bones/best-dog-in-the-house', null);
+      const treat = await play(e, 'bones/treat-stash', null);
+      treat.meta['#buried'] = 3;             // the countdown will NOT reach it: Best Dog must
+      const who = e.players[0];
+      e.pilesOf(who).hand.length = 0;
+      e.pilesOf(who).discard.length = 0;     // nothing to Fetch, so Best Dog Digs Up
+      for (const x of e.enemies) x.block = 0;
+      who.block = 999;
+      await e.endTurn();
+      for (let i = 0; i < 5; i++) await new Promise(r => setTimeout(r, 0));
+      return { energy: who.energy, max: who.energyMax, dug: e.pilesOf(who).exhaust.includes(treat) };
+    };
+    const off = await nerveAfter(false), on = await nerveAfter(true);
+    check(on.dug, 'Best Dog in the House Digs Up the buried Treat Stash (setup)');
+    check(off.energy === off.max, 'CONTROL: without Best Dog the turn opens at the normal Nerve', `${off.energy}/${off.max}`);
+    check(on.energy === off.energy + 2, 'with it, the 2 Nerve of the Treat Stash arrive on top of the refill',
+          `without ${off.energy}, with ${on.energy}`);
+  }
+  {
+    /* The window itself: a Dig Up anywhere between turn:start and the deal
+       banks (it used to close the moment the countdown loop finished, so a
+       turn-start timer or Best Dog resolving early gained Nerve the refill then
+       erased); after the deal it is a plain gain. */
+    const e = await dog();
+    await play(e, 'bones/treat-stash', null);
+    const scratch = () => e.players[0].__mm || {};
+    const seen = {};
+    e.on('turn:start', (ev) => { if (ev && ev.side === 'player') seen.start = scratch().preDeal; });
+    e.schedule({ turns: 1, when: 'playerTurnStart', label: 'probe', run: () => { seen.timer = scratch().preDeal; } });
+    e.on('phase', (ev) => { if (ev && ev.phase === 'playerReady') seen.ready = scratch().preDeal; });
+    e.players[0].block = 999;
+    await e.endTurn();
+    check(seen.start === true && seen.timer === true && seen.ready === false,
+          'Dig Ups bank from turn:start right up to the deal, and gain plainly after it',
+          JSON.stringify(seen));
+  }
+
   for (const line of passes) say('PASS ' + line, 'pass');
   for (const line of fails) say('FAIL ' + line, 'fail');
   say(`<h2>${passes.length} passed, ${fails.length} failed</h2>`);

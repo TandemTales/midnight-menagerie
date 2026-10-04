@@ -112,7 +112,8 @@ const banked = (c, id) => U.mm(c)['up:' + id] || 0;
  * `turn:start` listener, BEFORE the refill in `_dealSeatTurn` - which SETS
  * Nerve - so Nerve gained there was erased a moment later (trap 21) and
  * Treasure Yard paid nothing on the Dig Ups most games are made of. Inside
- * that window it is banked onto the refill instead.
+ * that window (turn:start until `playerReady`, see the tracker) it is banked
+ * onto the refill instead. Best Dog in the House's Dig Up goes through here too.
  */
 function nerve(c, n) { if (!(n > 0)) return; if (U.mm(c).preDeal) U.energyNextTurn(c, n); else U.energy(c, n); }
 
@@ -138,19 +139,25 @@ U.onTracker(SLUG, (e, s, seat) => {
   ]);
   // Player turn start ONLY: the raw event also fires for every enemy, which
   // made the Buried countdown tick two or three times a round.
+  /* THE preDeal WINDOW runs from `turn:start` to `playerReady`, the phase the
+     engine emits once every seat has been dealt (engine 6b) - not just for the
+     length of the countdown loop below. Best Dog in the House digs up from its
+     OWN turn:start listener, which awaits a choice: a Treat Stash it dug up
+     before the refill gained its Nerve plainly and the refill erased it. Any
+     Dig Up before the deal now banks onto it; one after the deal (a choice the
+     player took a moment over) gains directly, as it always did. */
+  e.on('phase', (ev) => { if (ev && ev.phase === 'playerReady') s.preDeal = false; });
   U.onPlayerTurn(e, 'start', () => {
     s.played = 0;
     const c = U.trackerCtx(e, seat);
     s.preDeal = true;
-    try {
-      for (const k of U.cardsIn(c, 'stash').slice()) {
-        if (U.counter(k, 'buried') > 0) {
-          U.addCounter(k, 'buried', -1);
-          if (U.counter(k, 'buried') === 0) digUp(c, k);
-        }
-        U.clearFlag(k, 'noFetchUntilNextTurn');
+    for (const k of U.cardsIn(c, 'stash').slice()) {
+      if (U.counter(k, 'buried') > 0) {
+        U.addCounter(k, 'buried', -1);
+        if (U.counter(k, 'buried') === 0) digUp(c, k);
       }
-    } finally { s.preDeal = false; }
+      U.clearFlag(k, 'noFetchUntilNextTurn');
+    }
   });
 });
 
