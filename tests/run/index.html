@@ -1595,12 +1595,22 @@ async function main() {
          So `_losePatience` is not a net that never fires. It is the resolution
          mechanism for a stall the game still has, and it resolves it AGAINST the
          player: nine of nine over-30 fights but one were LOST. */
+      /* 2026-10-03, BY DECISION (Josh: "when in doubt, err on the side of making
+         it easier for the player to win"): `_losePatience` is now a MERCY RULE.
+         Past turn 30 the house drains the ENEMIES, so a fight that reaches it
+         is no longer a difficulty mechanic nobody designed -- it is the designed
+         end of a stall, in the player's favour. What would still be a defect is
+         an over-30 fight the player LOSES anyway: the mercy rule failing to
+         rescue them. That is the failure now; the count is reported. */
       const stalls = over30.filter(f => f.pool && f.left / f.pool > 0.4).length;
-      fail(`_losePatience fired in reachable play: ${over30.length} of ${ALLT.length} `
-         + `fights ran past turn 30 (longest ${PATIENCE_ROW.longest}, ${PATIENCE_ROW.where}). `
-         + `\`PATIENCE\` is meant to be a tail stop, not a difficulty mechanic. ${stalls} of them ended with the board `
-         + `over 40% ALIVE, which is the Guard-per-turn stall engine.js ~2918 describes - `
-         + `not a Courage pool and not a route-depth problem.`);
+      const lost30 = over30.filter(f => !f.won);
+      say(`<pre>_losePatience (the mercy rule) fired in ${over30.length} of ${ALLT.length} fights `
+        + `(longest ${PATIENCE_ROW.longest}, ${PATIENCE_ROW.where}); ${stalls} reached it over 40% ALIVE; `
+        + `${over30.length - lost30.length} of them were won.</pre>`);
+      if (lost30.length) {
+        fail(`the mercy rule did not rescue ${lost30.length} of ${over30.length} fights past turn 30: `
+           + lost30.slice(0, 4).map(f => `${f.encId || f.enc || '?'} seed ${f.seed}`).join(', '));
+      }
     }
     say('<h2>the longest fight anyone had</h2>');
     say(`<pre>${ALLT.length} fights. Longest ${PATIENCE_ROW.longest} turns `

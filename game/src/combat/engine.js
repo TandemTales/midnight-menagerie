@@ -2979,8 +2979,9 @@ export class CombatEngine {
    * rises ON THE INTENT the player is reading before it rises on the hit — the
    * escalation is never a surprise and never a lie.
    *
-   * (2026-10-02: Strength alone was NOT enough -- hit PREVENTION beats it; see
-   * the Courage toll in `_losePatience`, which is what now guarantees an end.)
+   * (SUPERSEDED 2026-10-03: past PATIENCE the house no longer escalates the
+   * enemies. It drains THEM -- a mercy rule; see `_losePatience`. The history
+   * below is why a fight needs an end at all.)
    *
    * It is unbounded, so a board that ATTACKS AT ALL must eventually finish the
    * player. Strength is an attacker-side term, so a formation that only ever
@@ -3028,23 +3029,27 @@ export class CombatEngine {
       this.announceRule({
         id: 'the-house-loses-patience',
         name: 'THE HOUSE LOSES PATIENCE',
-        text: 'This has gone on long enough. Every enemy gains 1 Strength at the '
-            + 'start of each of your turns, and keeps it -- and every Kid loses '
-            + 'Courage that no Guard can stop: 1 now, one more each turn after.',
+        text: 'This has gone on long enough, and the house takes your side. At the '
+            + 'start of each of your turns every enemy loses Courage that no Guard '
+            + 'can stop -- a little now, more each turn after.',
       });
     }
-    for (const a of living) this.applyStatus(a, 'strength', 1);
-    // Strength cannot finish a fight against hit PREVENTION: Marmalade's
-    // Ghoststep cancels whole hits however hard they land, and seed 371416
-    // drew the Archivist at the 200-turn ceiling (14/200) because every
-    // Attack the Kid played was Filed into the boss's Guard. So past
-    // PATIENCE the house also takes Courage directly, growing by one a
-    // turn -- the Corrupt Heart's Beat of Death, the StS answer to a stall
-    // deck. `loseHp` skips Guard and both prevention hooks
-    // (`skipModifiers`), so this alone guarantees every fight ends.
+    /* A MERCY RULE, BY DECISION (Josh, 2026-10-03: "when in doubt, err on the
+       side of making it easier for the player to win"). It used to settle a
+       stall AGAINST the Kids -- every enemy gained Strength, and from
+       2026-10-02 every Kid lost growing Courage -- and the run gate recorded
+       what that meant: of the fights that ran past turn 30, all but one were
+       LOST. A fight still has to END (seed 371416's Archivist sat at the
+       200-turn ceiling, every Attack Filed into its Guard, every hit on the Kid
+       prevented by Ghoststep), so the house now ends it in the player's
+       favour: each enemy loses 3% of its own maximum Courage times the turns
+       past PATIENCE, through loseHp (skips Guard and both prevention hooks).
+       Measured on the enemy's own pool, so a 350-Courage boss and a 20-Courage
+       minion fall on the same clock: about two thirds gone six turns in. */
     const toll = this.turn - PATIENCE;
-    for (const pl of this.livingPlayers()) {
-      this.loseHp(pl, toll, 'patience');
+    for (const a of living) {
+      const n = Math.max(1, Math.ceil((a.maxHp || a.hp || 0) * 0.03 * toll));
+      this.loseHp(a, n, 'patience');
       if (this.over) return;
     }
   }

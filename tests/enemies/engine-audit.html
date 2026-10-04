@@ -151,8 +151,15 @@ async function auditFight(encId, seed, maxTurns = 60) {
   let delivered = 0;
   let scheduled = 0;
   let tolled = 0;
+  let mercy = false;
   const bySource = new Map();
   e.on('damage', (ev) => {
+    /* THE MERCY RULE (2026-10-03): past turn 30 `_losePatience` drains the
+       ENEMIES at the opening of the player turn -- inside this window -- and
+       what they do about it (a retaliation, a phase or move change) is the
+       rule acting on the board, not an intent that lied. A window it fired
+       in is set aside and counted, like a fight that ended mid-phase. */
+    if (ev.cause === 'patience') { mercy = true; if (ev.targetId !== 'player') return; }
     if (ev.targetId !== 'player') return;
     const amt = (ev.blocked || 0) + (ev.hpLoss || 0);
     /* A COUNTDOWN IS ITS OWN PROMISE, and it is not an intent.
@@ -192,6 +199,7 @@ async function auditFight(encId, seed, maxTurns = 60) {
     delivered = 0;
     scheduled = 0;
     tolled = 0;
+    mercy = false;
     bySource.clear();
     await e.endTurn();
     SCHEDULED += scheduled;
@@ -203,7 +211,7 @@ async function auditFight(encId, seed, maxTurns = 60) {
     // resolve, and enemies removed from the board (Wardrobe summons vanishing with their
     // parent) never act. Neither is the intent lying, so neither is scored.
     const truncated = e.over;
-    ROWS.push({ encId, seed, turn: turns, promised, per, atStart, atCommit, delivered, truncated });
+    ROWS.push({ encId, seed, turn: turns, promised, per, atStart, atCommit, delivered, truncated, mercy });
   }
   return { win: e.victory, turns };
 }
@@ -303,7 +311,9 @@ for (const [label, a] of Object.entries(ABSORB_BY_ENC)) {
 
 head('Result');
 {
-  const scored = ROWS.filter(r => !r.truncated && !r.per.some(p => p.gone));
+  const scored = ROWS.filter(r => !r.truncated && !r.mercy && !r.per.some(p => p.gone));
+  const MERCY = ROWS.filter(r => r.mercy).length;
+  if (MERCY) log(`  ${MERCY} turns past 30 set aside: the mercy rule drained the board inside the window.`, 'dim');
   const bad = scored.filter(r => r.delivered !== r.atCommit);
   const moved = ROWS.filter(r => r.atStart !== r.atCommit);
   if (TOLLED) {
