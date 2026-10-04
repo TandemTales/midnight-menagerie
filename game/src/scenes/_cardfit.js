@@ -38,6 +38,9 @@ export function fitCardToSlot(view, slot, { legibleAt = 0 } = {}) {
   const natural = (view?.el?.offsetWidth || 0) / CARD_SS;
   if (!natural) return false;
   try { view.setTransform({ x: w / 2, y: h, scale: w / natural }); } catch { return false; }
+  // the card's size on screen, px per design unit: ui/kit.css holds a card's
+  // name and type line to a size in screen px through it (round 27)
+  view.el?.style?.setProperty('--cpx', (w / 224).toFixed(4));
   if (legibleAt && view.el?.style) {
     const k = Math.max(1, Math.min(1.4, legibleAt / w));
     view.el.style.setProperty('--rules-k', k.toFixed(3));

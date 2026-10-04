@@ -4030,3 +4030,125 @@ button.kit-hw-enamel:focus-visible {
   -webkit-backdrop-filter: blur(1px) saturate(.78);
           backdrop-filter: blur(1px) saturate(.78);
 }
+
+/* ── the card's body, painted (round 27) ──
+   Round 27's survey: "the card body is the largest flat, CSS-looking surface
+   on six screens, and its rule text is the smallest text at 1280." The rules
+   half of every Trick is now one of the Kid board's info panels
+   (UI/selectKid.png) at card size: its gold rail and star-fleur corners
+   (panel.webp, a 9-slice) round a painted ground (card-vellum.webp,
+   tools/prep_ui_surfaces.py) sunk under the rail with a bevel and a soft
+   vignette, a damask pressed into it as a watermark. The card's TYPE is the
+   ground's colour and the colour of the enamel tab on the panel's top rail,
+   the way a sample frame carries its colour; the tab holds the type line.
+
+   LAYOUT, in the face's own units (the face is the card inset 7u: 210 x 298
+   for a common card), bottom-anchored so a rare card's deeper rim moves
+   nothing:
+       0 .. 126   art
+     ... .. 142   the name plate, standing on 142 and growing UP over the art
+                  a line at a time (a name never shrinks for its length: one
+                  size across a row)
+     146 .. 296   the panel: its rail at ~152, the type tab astride it
+     166 .. 284   the rules
+   `--cpx` is the card's size on screen, in px per design unit (set by
+   scenes/_cardfit.js, ui/deckview.js and ui/hand.js); the name and the type
+   line hold a size in SCREEN px through it, so a small card at the Deck's
+   1280x800 still prints them to read. */
+.kit-cards .mm-card[data-rarity][data-type] {
+  --tint: color-mix(in oklab, var(--type-color) 30%, #1a1022);
+  --tint-hi: color-mix(in oklab, var(--type-color) 52%, #f6ecdb);
+  --tab: color-mix(in oklab, var(--type-color) 70%, #2a1838);
+  --name-u: max(15.5, 11.5 / var(--cpx, 1));
+  --type-u: max(11, 10 / var(--cpx, 1));
+}
+.kit-cards .mm-card[data-rarity][data-type][data-uid] .mm-card__face {
+  background:
+    radial-gradient(140% 60% at 50% 75%, transparent 40%, rgb(4 2 7 / .7) 100%),
+    url("../../assets/ui/kit/suede.webp") 50% 0 / calc(240 * var(--u)) calc(240 * var(--u)),
+    #120b18;
+}
+/* the panel's ground, sunk under the rail: the card's type laid into a
+   painted paper as its colour, a damask pressed into it, the light of the
+   room on its upper middle falling off into its corners, and a bevel (dark
+   under the rail at its top, a lit lip at its foot) */
+.kit-cards .mm-card[data-rarity][data-type][data-uid] .mm-card__face::before {
+  content: ''; position: absolute; pointer-events: none;
+  left: calc(6 * var(--u)); right: calc(6 * var(--u));
+  top: calc(151 * var(--u)); bottom: calc(6 * var(--u));
+  background:
+    radial-gradient(70% 34% at 50% 34%, rgb(255 216 168 / .12), transparent 74%),
+    radial-gradient(120% 95% at 50% 42%, transparent 46%, rgb(5 2 8 / .66) 100%),
+    linear-gradient(var(--tint), var(--tint)),
+    url("../../assets/ui/kit/card-vellum.webp") 50% calc(-6 * var(--u)) / calc(128 * var(--u)) calc(145.6 * var(--u)) repeat,
+    #1a1420;
+  background-blend-mode: normal, normal, color, normal, normal;
+  box-shadow:
+    inset 0 calc(2 * var(--u)) calc(2 * var(--u)) rgb(0 0 0 / .6),
+    inset 0 calc(-1.5 * var(--u)) 0 rgb(255 226 180 / .12),
+    inset 0 calc(7 * var(--u)) calc(12 * var(--u)) rgb(0 0 0 / .42);
+  opacity: 1;
+}
+/* the Kid board's info-panel rail, with its star-fleur corners */
+.kit-cards .mm-card[data-rarity][data-type][data-uid] .mm-card__face::after {
+  content: ''; position: absolute; pointer-events: none;
+  left: calc(2.5 * var(--u)); right: calc(2.5 * var(--u));
+  top: calc(146.5 * var(--u)); bottom: calc(2.5 * var(--u));
+  border: 0 solid transparent;
+  border-image: url("../../assets/ui/kit/panel.webp") 44 / calc(21 * var(--u)) stretch;
+  background: none;
+  opacity: 1;
+  filter: drop-shadow(0 calc(1 * var(--u)) calc(1 * var(--u)) rgb(0 0 0 / .7));
+}
+/* the type line: an enamel tab astride the panel's top rail, glazed in the
+   type's colour inside the dark cartouche's brass rim (cartouche-glass.webp,
+   its centre cleared to a glaze; the cartouche's own outline masks the
+   enamel to its shape), lettered in spaced engraved caps */
+.kit-cards .mm-card[data-rarity][data-type][data-uid] .mm-card__type {
+  left: 50%; right: auto; top: calc(141 * var(--u)); height: auto;
+  transform: translateX(-50%);
+  width: max-content; max-width: calc(186 * var(--u));
+  z-index: 2;
+  padding: calc(4.5 * var(--u)) calc(16 * var(--u)) calc(4.5 * var(--u));
+  gap: calc(5 * var(--u));
+  font-size: calc(var(--type-u) * var(--u));
+  letter-spacing: .14em;
+  line-height: 1;
+  color: var(--tint-hi);
+  border: 0 solid transparent;
+  border-image: url("../../assets/ui/kit/cartouche-glass.webp") 18 34 18 34 fill / calc(8 * var(--u)) calc(15 * var(--u)) stretch;
+  -webkit-mask-box-image-source: url("../../assets/ui/kit/cartouche-dark.webp");
+  -webkit-mask-box-image-slice: 18 34 18 34 fill;
+  -webkit-mask-box-image-width: calc(8 * var(--u)) calc(15 * var(--u));
+  -webkit-mask-box-image-repeat: stretch;
+  background:
+    radial-gradient(70% 90% at 50% 18%, rgb(255 240 220 / .16), transparent 70%),
+    linear-gradient(var(--tab), var(--tab)),
+    url("../../assets/ui/kit/enamel.webp") 50% 50% / calc(120 * var(--u)) calc(120 * var(--u)),
+    #1a1022;
+  background-blend-mode: normal, color, normal, normal;
+  text-shadow: 0 calc(1 * var(--u)) 0 rgb(0 0 0 / .95), 0 0 calc(4 * var(--u)) rgb(0 0 0 / .7);
+}
+.kit-cards .mm-card[data-rarity][data-type][data-uid] .mm-card__typeicon {
+  width: calc(var(--type-u) * 1.05 * var(--u)); height: calc(var(--type-u) * 1.05 * var(--u));
+  color: var(--kit-gold-hi);
+}
+.kit-cards .mm-card[data-rarity][data-type][data-uid] .mm-card__typesub { color: color-mix(in oklab, var(--tint-hi) 70%, var(--kit-text-lo)); letter-spacing: .1em; }
+/* the name: one size, a line at a time, the plate standing on its foot */
+.kit-cards .mm-card[data-rarity][data-type][data-uid] .mm-card__banner {
+  top: auto; bottom: calc(156 * var(--u)); height: auto;
+  min-height: calc(38 * var(--u));
+  padding: calc(6 * var(--u)) 0 calc(6.5 * var(--u));
+  border-image-width: calc(10.7 * var(--u)) calc(19 * var(--u));
+}
+.kit-cards .mm-card[data-rarity][data-type][data-uid] .mm-card__name {
+  font-size: calc(var(--name-u) * var(--u));
+  line-height: 1.04; letter-spacing: .015em;
+  white-space: normal; text-wrap: balance; text-align: center;
+  padding: 0 calc(17 * var(--u));
+}
+.kit-cards .mm-card[data-rarity][data-type][data-uid] .mm-card__rules {
+  top: calc(166 * var(--u)); bottom: calc(14 * var(--u));
+  left: calc(13 * var(--u)); right: calc(13 * var(--u));
+  padding: 0 calc(3 * var(--u));
+}

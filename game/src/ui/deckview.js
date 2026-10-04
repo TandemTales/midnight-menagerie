@@ -430,6 +430,7 @@ export class DeckView {
             const px = RULES_PX[len] * (this._large ? 1.12 : 1);
             const k = Math.max(1, Math.min(1.8, px / (base * sizes[i][0] / 224)));
             v.el.style.setProperty('--rules-k', k.toFixed(3));
+            v.el.style.setProperty('--cpx', (sizes[i][0] / 224).toFixed(4));
           }
         }
       }

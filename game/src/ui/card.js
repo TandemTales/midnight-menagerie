@@ -192,8 +192,9 @@ function linesAt(rows, f, W) {
 
 /* A name plate's end caps and the lettering's inset, by the lines it holds,
    in design units (CardView#nameLadder; scenes/combat.css draws the same).
-   A crowded hand's long name may take three or four (ui/hand.js#_stripFit). */
-const NAME_CAPS = { 1: { cap: 19, pad: 16 }, 2: { cap: 11, pad: 12 }, 3: { cap: 11, pad: 12 }, 4: { cap: 11, pad: 12 } };
+   A crowded hand's name takes two at most (ui/hand.js#_stripFit); round 27
+   narrowed the one-line caps to the two-line plate's, so it fits a strip. */
+const NAME_CAPS = { 1: { cap: 12, pad: 12 }, 2: { cap: 12, pad: 12 }, 3: { cap: 12, pad: 12 }, 4: { cap: 12, pad: 12 } };
 
 let SEQ = 0;
 

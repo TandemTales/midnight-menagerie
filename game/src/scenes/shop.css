@@ -360,35 +360,38 @@
     inset 0 0 0 calc(3 * var(--u)) color-mix(in srgb, var(--kit-gold-hi) 26%, transparent),
     0 calc(4 * var(--u)) calc(12 * var(--u)) rgba(0, 0, 0, .7);
 }
-/* the face: the Tricks' aubergine enamel, a candle's light where the words are */
+/* the face: the body every Trick on the shelf wears (round 27, ui/kit.css
+   "the card's body, painted"): a dark suede surround, and under the art the
+   Kid board's info panel — its rail and star-fleur corners round a laid
+   paper with the damask pressed in it — glazed in the house's violet, since a
+   service is no Attack, Skill or Power */
+.sh-service__card {
+  --tint: color-mix(in oklab, var(--kit-lav) 26%, #1a1022);
+  --tint-hi: color-mix(in oklab, var(--kit-lav) 60%, #f6ecdb);
+  --tab: color-mix(in oklab, var(--kit-lav) 62%, #2a1838);
+}
 .sh-service__card::before {
   content: ''; position: absolute; inset: calc(7 * var(--u));
   border-radius: calc(8 * var(--u));
   background:
-    radial-gradient(120% 34% at 50% 102%, color-mix(in srgb, var(--kit-lav) 26%, transparent), transparent 72%),
-    radial-gradient(110% 44% at 50% 62%, color-mix(in srgb, #ffcf94 34%, transparent), transparent 76%),
-    radial-gradient(150% 120% at 50% 55%, transparent 50%, rgb(6 4 9 / .55) 100%),
-    url("../../assets/ui/kit/enamel.webp") 50% 0 / calc(220 * var(--u)) calc(220 * var(--u)),
-    #2a1b3b;
-  background-blend-mode: overlay, overlay, normal, normal, normal;
-  box-shadow:
-    inset 0 0 0 calc(1 * var(--u)) rgba(0, 0, 0, .8),
-    inset 0 0 0 calc(2.5 * var(--u)) color-mix(in srgb, var(--kit-gold) 50%, transparent),
-    inset 0 0 0 calc(3.5 * var(--u)) rgba(0, 0, 0, .55);
+    radial-gradient(70% 22% at 50% 64%, rgb(255 216 168 / .12), transparent 74%),
+    radial-gradient(120% 50% at 50% 76%, transparent 46%, rgb(5 2 8 / .66) 100%) 0 calc(151 * var(--u)) / 100% calc(100% - 157 * var(--u)) no-repeat,
+    linear-gradient(var(--tint), var(--tint)) calc(6 * var(--u)) calc(151 * var(--u)) / calc(100% - 12 * var(--u)) calc(100% - 157 * var(--u)) no-repeat,
+    url("../../assets/ui/kit/card-vellum.webp") 50% calc(-6 * var(--u)) / calc(128 * var(--u)) calc(145.6 * var(--u)) repeat,
+    radial-gradient(140% 60% at 50% 75%, transparent 40%, rgb(4 2 7 / .7) 100%),
+    url("../../assets/ui/kit/suede.webp") 50% 0 / calc(240 * var(--u)) calc(240 * var(--u)),
+    #120b18;
+  background-blend-mode: normal, normal, color, normal, normal, normal, normal;
+  box-shadow: inset 0 0 0 calc(1 * var(--u)) rgba(0, 0, 0, .8);
 }
-/* the rules panel's engraved double rule, a brass fleuron at its lower corners */
+/* the panel's rail */
 .sh-service__card::after {
   content: ''; position: absolute; pointer-events: none;
-  left: calc(14 * var(--u)); right: calc(14 * var(--u));
-  top: calc(154 * var(--u)); bottom: calc(14 * var(--u));
-  border: calc(3.4 * var(--u)) double color-mix(in srgb, var(--kit-gold) 52%, transparent);
-  border-top-color: transparent;
-  --fl: calc(15 * var(--u));
-  background:
-    url("../../assets/ui/kit/fleuron-bl.webp") 0 100% / var(--fl) var(--fl) no-repeat,
-    url("../../assets/ui/kit/fleuron-br.webp") 100% 100% / var(--fl) var(--fl) no-repeat;
-  background-origin: border-box;
-  opacity: .9;
+  left: calc(9.5 * var(--u)); right: calc(9.5 * var(--u));
+  top: calc(153.5 * var(--u)); bottom: calc(9.5 * var(--u));
+  border: 0 solid transparent;
+  border-image: url("../../assets/ui/kit/panel.webp") 44 / calc(21 * var(--u)) stretch;
+  filter: drop-shadow(0 calc(1 * var(--u)) calc(1 * var(--u)) rgb(0 0 0 / .7));
 }
 /* the art: the crescent medallion hung in a window of night velvet, cold
    light on it and a few stars pricked into the cloth */
@@ -442,15 +445,31 @@
     0 calc(2 * var(--u)) calc(3 * var(--u)) rgba(0, 0, 0, .9),
     0 0 calc(8 * var(--u)) color-mix(in srgb, var(--kit-violet) 55%, transparent);
 }
-/* "a service": the card's type line, in spaced gold small caps */
+/* "a service": the card's type line, on the enamel tab astride the panel's
+   top rail that every Trick wears (ui/kit.css, round 27) */
 .sh-service .sh-service__h > em {
-  position: absolute; left: 0; right: 0; top: calc(100% + 4 * var(--u));
-  margin: 0; text-align: center; line-height: 1.15;
+  position: absolute; left: 50%; right: auto; top: calc(100% + 3 * var(--u));
+  transform: translateX(-50%);
+  width: max-content;
+  margin: 0; text-align: center; line-height: 1;
+  padding: calc(4.5 * var(--u)) calc(16 * var(--u));
   font-family: var(--font-display); font-style: normal; font-weight: 600;
   font-variant: normal;
-  font-size: max(11px, calc(10.5 * var(--u) * 1.2)); letter-spacing: .2em; text-transform: uppercase;
-  color: color-mix(in oklab, var(--kit-gold-hi) 84%, var(--kit-text));
-  text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
+  font-size: max(10px, calc(11 * var(--u))); letter-spacing: .14em; text-transform: uppercase;
+  color: var(--tint-hi);
+  border: 0 solid transparent;
+  border-image: url("../../assets/ui/kit/cartouche-glass.webp") 18 34 18 34 fill / calc(8 * var(--u)) calc(15 * var(--u)) stretch;
+  -webkit-mask-box-image-source: url("../../assets/ui/kit/cartouche-dark.webp");
+  -webkit-mask-box-image-slice: 18 34 18 34 fill;
+  -webkit-mask-box-image-width: calc(8 * var(--u)) calc(15 * var(--u));
+  -webkit-mask-box-image-repeat: stretch;
+  background:
+    radial-gradient(70% 90% at 50% 18%, rgb(255 240 220 / .16), transparent 70%),
+    linear-gradient(var(--tab), var(--tab)),
+    url("../../assets/ui/kit/enamel.webp") 50% 50% / calc(120 * var(--u)) calc(120 * var(--u)),
+    #1a1022;
+  background-blend-mode: normal, color, normal, normal;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .95);
 }
 /* what it does: the card's rules, lifted the way a Trick's are on a small
    card (--rules-k, set by shop.js _layout) */

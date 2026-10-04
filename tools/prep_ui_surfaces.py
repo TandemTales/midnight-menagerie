@@ -26,6 +26,15 @@ paints those materials so a board can be built OF them:
                      highlight along its top (the same 9-slice)
   cartouche-lit.webp the dark cartouche (cartouche-dark.webp) repainted in the
                      enamel the same way: a price, a value, a card's name
+  cartouche-glass.webp the dark cartouche with its centre cleared to a glaze:
+                     the brass rim, the shadow it casts into the hollow and a
+                     wet glint, over nothing, so the element's own colour
+                     (a Trick's type, ui/kit.css) is the enamel (round 27)
+  card-vellum.webp   the rules panel of every Trick (round 27): a dark laid
+                     paper, clouded and fibred, with the samples' damask
+                     pressed into it as a watermark; nearly grey, so a card
+                     lays its type's colour into it (ui/kit.css, blend: color)
+                     on the damask's own tile
 
 Every surface is painted the way tools/prep_ui_paint.py (round 2, BRAID) paints
 a room: forms are laid in as values and fused with a generalized Kuwahara
@@ -627,6 +636,72 @@ def M_noise(shape, rng, sigma, amp):
     return M.noise(shape, rng, sigma, amp)
 
 
+# ── a cartouche glazed in any colour (round 27) ─────────────────────────────
+def cartouche_glass(src_name="cartouche-dark.webp", out_name="cartouche-glass.webp",
+                    thresh=52.0, sink=7.0, wet=0.55):
+    """The dark cartouche with its flat centre cleared: what is left over the
+    hollow is the shadow the rim casts into it (dark, fading off over `sink`
+    px) and a wet glint under its top edge, so whatever the element paints
+    behind it (a Trick's type colour, as enamel) reads as glaze sunk in the
+    brass. The rim is untouched."""
+    im = np.asarray(Image.open(os.path.join(OUT, src_name)).convert("RGBA"), np.float32)
+    H, W = im.shape[:2]
+    rgb, a = im[..., :3], im[..., 3]
+    L = lum(rgb)
+    dark = (a > 200) & (L < thresh)
+    lab, _ = ndimage.label(dark)
+    centre = lab == lab[H // 2, W // 2]
+    if not centre.any() or lab[H // 2, W // 2] == 0:
+        raise SystemExit(f"{src_name}: no dark centre to clear")
+    dist = ndimage.distance_transform_edt(centre)
+    shadow = (1 - np.clip(dist / sink, 0, 1)) ** 1.6 * 0.82
+    rows = np.arange(H, dtype=np.float32)[:, None]
+    top = np.where(centre.any(axis=0), centre.argmax(axis=0), H).astype(np.float32)[None, :]
+    glint = np.exp(-((rows - top - 3.4) ** 2) / 4.5) * centre
+    span = np.clip((np.arange(W) - W * 0.12) / (W * 0.76), 0, 1)
+    glint *= (0.3 + 0.7 * np.sin(span * np.pi))[None, :] * wet
+    # premultiplied over the hollow: black shadow, a lilac-white glint
+    ca = np.clip(shadow + glint, 0, 1)
+    gcol = np.array([236, 226, 255], np.float32)
+    ccol = (glint[..., None] * gcol) / np.maximum(ca[..., None], 1e-4)
+    out_rgb = np.where(centre[..., None], ccol, rgb)
+    out_a = np.where(centre, ca * 255, a)
+    save(np.dstack([out_rgb, out_a]), out_name, 92)
+
+
+# ── card vellum: the paper under every Trick's rules (round 27) ─────────────
+def card_vellum(seed=61, k=2):
+    """The rules panel of a Trick, painted: a dark laid paper with clouds of
+    pigment, a fibre running along it and the samples' damask pressed into it
+    as a watermark (a shallow relief lit from above, and a faint sheen where
+    the paper is thinner). Kept nearly grey: a card lays its type's colour
+    over it (ui/kit.css, background-blend-mode: color), the way a sample frame
+    carries its colour. On the damask's own tile, k times larger."""
+    rng = np.random.default_rng(seed)
+    src = Image.open(os.path.join(OUT, "damask.webp")).convert("RGBA")
+    W, H = src.width * k, src.height * k
+    a = np.asarray(src.resize((W, H), Image.LANCZOS), np.float32)[..., 3] / 255.0
+    motif = np.clip(ndimage.gaussian_filter(a, 0.7 * k, mode="wrap") * 1.3, 0, 1)
+    press = lambert(normals(-ndimage.gaussian_filter(motif, 1.2 * k, mode="wrap") * 3.2 * k, 1.0))
+    flat = float(lambert(np.array([[[0, 0, 1.0]]], np.float32))[0, 0])
+    relief = np.clip(press - flat, -0.5, 0.5)
+    clouds = pnoise(H, W, rng, beta=2.6, lo_cut=2)
+    clouds = warp(clouds, pnoise(H, W, rng, beta=3.0) * 18, pnoise(H, W, rng, beta=3.0) * 18)
+    mott = np.clip((pnoise(H, W, rng, beta=2.2, lo_cut=9) - 0.15) * 2.4, 0, 1)
+    fibre = ndimage.gaussian_filter(rng.normal(0, 1, (H, W)).astype(np.float32), (0.6, 5.0), mode="wrap")
+    fibre /= np.abs(fibre).max() + 1e-6
+    v = 0.46 + 0.17 * clouds - 0.1 * mott + 0.07 * fibre + 0.05 * motif + 0.75 * relief
+    col = ramp(np.clip(v, 0, 1), [(0, "#09070c"), (0.28, "#17131b"), (0.46, "#241e2a"),
+                                  (0.62, "#332b39"), (0.8, "#463c4d"), (1.0, "#62566a")])
+    col = kuwahara(col, radius=2, q=6.0)
+    specks_ = specks(H, W, rng, 0.0004, 0.5, 1.2)
+    col *= (1 - 0.35 * specks_[..., None])
+    grain = ndimage.gaussian_filter(rng.normal(0, 1, (H, W)).astype(np.float32), 0.6, mode="wrap")
+    col += grain[..., None] * 2.0
+    save(col, "card-vellum.webp", 86)
+    return col
+
+
 PIECES = {
     "pedestal": pedestal,
     "enamel": enamel,
@@ -637,6 +712,8 @@ PIECES = {
     "curtain": curtain,
     "plate-lit": lambda: refill("plate.webp", "plate-lit.webp", fill_tile("enamel.webp") * 0.62, thresh=44.0, wet=34.0),
     "cartouche-lit": lambda: refill("cartouche-dark.webp", "cartouche-lit.webp", fill_tile("enamel.webp") * 0.92, thresh=52.0),
+    "card-vellum": card_vellum,
+    "cartouche-glass": cartouche_glass,
 }
 
 
