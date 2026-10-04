@@ -23,7 +23,7 @@ enemy Courage, Guard and statuses, the Kid's Courage, Guard, Nerve, statuses and
 counters, every pile size, timers, objects - and the cost. Identical boards and
 an identical cost means the upgrade did nothing anybody could see.
 
-REPORT-ONLY, DELIBERATELY
+REPORT-ONLY, UNTIL 2026-10-04 -- IT FAILS NOW (see main)
 -------------------------
 The list is long today, so a red here would be a gate nobody believes (trap 54).
 The exit code is about the GATE's health instead: a card it cannot instantiate,
@@ -92,7 +92,11 @@ def main():
               f"{len(stale)} stale waivers, {len(broken)} broken, {len(bad)} console errors",
               flush=True)
         browser.close()
-        return 1 if (stale or broken or bad) else 0
+        # 2026-10-04: the list reached ZERO (218 -> 0 across four builders), so
+        # it fails now, as this docstring said it would: an upgrade that moves
+        # nothing is a Sharpen the player wasted. A live upgrade this board
+        # cannot show belongs in the page's WAIVED arrays WITH its proof.
+        return 1 if (dead or stale or broken or bad) else 0
 
 
 if __name__ == "__main__":
