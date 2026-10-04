@@ -297,7 +297,7 @@ U.onTracker(SLUG, (e, s, seat) => {
        timer that ticks after the wipe; `U.energyNextTurn` rides the refill
        itself. Draw is fine here: the turn-start deal ADDS to the hand. */
     if (st.drawNextTurn) { U.draw(c, st.drawNextTurn); st.drawNextTurn = 0; }
-    if (!st.raggedSeen && isRagged(c)) { st.raggedSeen = true; if (st.barelyHolding) U.draw(c, 2); }
+    if (!st.raggedSeen && isRagged(c)) { st.raggedSeen = true; if (st.barelyHolding) U.draw(c, st.barelyHolding); }
   }, seat);
 
   U.onPlayerTurn(e, 'end', () => {
@@ -692,8 +692,12 @@ const commons = [
     text: 'The first time you become [Ragged] this combat, draw {c1}. Triggers now if already [Ragged].',
     flavor: 'He is. He genuinely is.',
     nums: { c1: 2 },
-    effect: eff((c) => power(c, 'truffle/barely-holding-together', 1, null, (x) => {
-      U.mm(x).barelyHolding = true;
+    /* The later trigger drew a literal 2 where {c1} is printed, so the
+       upgrade's 3 only ever applied when he was ALREADY Ragged. The draw is
+       stashed per copy now, best copy wins. */
+    effect: eff((c) => power(c, 'truffle/barely-holding-together', 1, (x, st) => {
+      st.barelyHolding = Math.max(st.barelyHolding | 0, N(x).c1 | 0);
+    }, (x) => {
       if (isRagged(x)) { U.mm(x).raggedSeen = true; U.draw(x, N(x).c1); }
     })),
     upgrade: { nums: { c1: 3 } },
@@ -912,7 +916,9 @@ const uncommons = [
     nums: { n: 2, e: 1 },
     effect: eff((c) => {
       let got = 0;
-      for (let i = 0; i < 2; i++) { if (spendLoose(c, N(c).n) >= N(c).n) got += N(c).e; }
+      /* Only a whole lot is spent. With 3 on the floor the second try used to
+         spend the odd 1 and pay nothing for it. */
+      for (let i = 0; i < 2; i++) { if (loose(c) >= N(c).n && spendLoose(c, N(c).n) >= N(c).n) got += N(c).e; }
       if (got) U.energyNextTurn(c, got);
     }),
     upgrade: { nums: { n: 2, e: 2 } },
