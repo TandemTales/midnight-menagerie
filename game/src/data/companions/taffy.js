@@ -1149,9 +1149,13 @@ const coopCards = [
     text: 'Once each round, the first Trick each player plays leaves a Gummy copy in THEIR OWN discard, costing {n} more.',
     flavor: 'Economy size. Nobody remembers agreeing to it.',
     nums: { n: 1 },
+    /* {n} is a SURCHARGE, so the best copy is the LOWEST: the upgrade's 0. It
+       was captured by the install-once closure, so Family Pack then Family
+       Pack+ kept charging the base 1 more. */
     effect: eff((c) => {
+      const s0 = U.mm(c);
+      s0.familyPackMore = Math.min(typeof s0.familyPackMore === 'number' ? s0.familyPackMore : Infinity, N(c).n | 0);
       power(c, 'taffy/family-pack', 1, () => {
-        const more = N(c).n;
         let done = new Set();
         U.onPlayerTurn(c.e, 'start', () => { done = new Set(); });
         c.e.on('card:play', (ev) => {
@@ -1159,6 +1163,7 @@ const coopCards = [
           const who = card && c.e.seatOfCard(card);
           if (!who || card.temporary || done.has(who.id)) return;
           done.add(who.id);
+          const more = s0.familyPackMore | 0;
           c.e._asSeat(who, () => gummy(c, card, 'discard', more));
         });
       });
