@@ -1,0 +1,55 @@
+{
+  "round": "r27",
+  "maxBuilders": 3,
+  "briefs": [
+    "docs/ui-pass/BRIEF-r0.md",
+    "docs/ui-pass/BRIEF-r1.md",
+    "docs/ui-pass/BRIEF-r20.md",
+    "docs/ui-pass/BRIEF-r27.md"
+  ],
+  "rubrics": [
+    "docs/ui-pass/RUBRIC.md",
+    "docs/ui-pass/RUBRIC-r27.md"
+  ],
+  "samples": [
+    "UI/title.png",
+    "UI/mainMenu.png",
+    "UI/selectCompanion.png",
+    "UI/selectKid.png"
+  ],
+  "tracks": [
+    {
+      "key": "card",
+      "name": "CARD",
+      "rule": "refine",
+      "screens": [
+        "combat-boss",
+        "combat-crowd",
+        "reward",
+        "shop",
+        "piles"
+      ],
+      "baseline": "SHANTUNG",
+      "builders": [
+        {
+          "slot": "a",
+          "code": "PERYLENE",
+          "port": 9111,
+          "angle": "LITERAL. Work BRIEF-r27's list 1 to 4 in order and exactly as written. The card body is ONE component every screen shares: build it once in ui/card.*, then check it on all five screens at both sizes before touching the fan."
+        },
+        {
+          "slot": "b",
+          "code": "HANSA",
+          "port": 9112,
+          "angle": "THE PRINTED CARD. Treat the rules panel as a printed playing card from the house's own press: a laid-paper or vellum ground with a deckle-soft inner edge, an engraved border in the type's colour, gilt corner brackets, and the rules set in the samples' serif like a page. Make it read as an object you could hold. Then the size-up and the fan."
+        },
+        {
+          "slot": "c",
+          "code": "QUINACRIDONE",
+          "port": 9113,
+          "angle": "THE DECK AT 1280 FIRST. Items 2 and 3 are your round: measure every card's name and rules size at 1280 on all five screens and the nine-card fan, and make the card's whole layout serve legibility on the Deck -- name ribbon, type line, rules block, cost coin -- then paint the body (item 1) in the room that layout leaves."
+        }
+      ]
+    }
+  ]
+}

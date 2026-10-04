@@ -20,6 +20,7 @@ KID="--seed 7 --companion bones --kid maya"
 DECK="js:(s=>{s.setTier('medium',{persist:false});s.tierForced=true;s._scaleAdjust=1;s.resize()})(MM.ctx.stage)"
 one () {
   n="$1"; shift
+  [ -f "$J/$n.png" ] && { echo "have $n"; return; }   # resumable: a killed run picks up where it stopped
   for try in 1 2 3; do
     rm -f "shots/SURVEY-$n.png" "shots/SURVEY-$n.state.json"
     timeout 180 python tools/shot.py "SURVEY-$n" --port 8777 "$@" >/dev/null 2>&1   # a crashed page must not hang the job
@@ -50,6 +51,7 @@ for size in "" "-1280"; do
   one "combat-boss$size"  $S --scene combat --encounter foyer-boss $KID --wait 8 --steps "$DECK|wait:3"
   one "combat-crowd$size" $S --scene combat --encounter foyer-boss $KID --wait 8 --script @tools/shot-scripts/combat-crowd.js --steps "$DECK|wait:3"
 done
+[ "${1:-}" = "--rooms" ] || { echo "screens done; rooms: bash $0 --rooms"; exit 0; }
 # The seventeen wings' fight rooms, empty, at the Deck's tier and size.
 python tools/room_batch.py --port 8777 --regions all --tier medium --w 1280 --h 800 \
   --prefix SURVEY-room- --sheet "$J/rooms-sheet.png" --cols 4 2>&1 | tail -4
