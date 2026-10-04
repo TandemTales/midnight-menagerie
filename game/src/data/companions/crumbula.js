@@ -76,10 +76,23 @@ function setAppetite(c, n, opts = {}) {
 
 const addAppetite = (c, n) => setAppetite(c, appetite(c) + n);
 
+/* A Power's own number is its STACKS: each copy applies its printed number,
+   so a base copy pays exactly what it always did and an upgraded one (or a
+   second copy) adds its own. Five of these hooks wrote the base number as a
+   literal, and every one of their upgrades was dead - the Power's status
+   stacks moved, which is all the upgrade gate saw, and nothing else did. */
+const pw = (c, id) => U.stacks(c, c.self, id);
+
+/** Everybody Gets a Cape: every Kid at the table, this one included. */
+function everyKid(c) { return [c.self, ...(c.teammates ? c.teammates() : [])].filter(Boolean); }
+
 function enteredHungry(c) {
   const s = U.mm(c);
   s.wasHungryThisTurn = true;
-  if (s.velvetAppetite && U.once(c, 'enterHungry')) U.draw(c, 1);
+  if (s.velvetAppetite && U.once(c, 'enterHungry')) U.draw(c, pw(c, 'crumbula/velvet-appetite'));
+  if (s.capesForAll && U.once(c, 'capesHungry')) {
+    for (const k of everyKid(c)) { if (k === c.self) U.draw(c, s.capesForAll.draw); else if (c.giveDraw) c.giveDraw(k, s.capesForAll.draw); }
+  }
   if (s.feastFamine && s.wasSatedThisTurn && U.once(c, 'ffHungry')) { U.energy(c, 1); U.draw(c, 1); }
   U.fire(c, 'hungry', {});
 }
@@ -87,7 +100,10 @@ function enteredHungry(c) {
 function enteredSated(c) {
   const s = U.mm(c);
   s.wasSatedThisTurn = true;
-  if (s.velvetAppetite && U.once(c, 'enterSated')) U.draw(c, 1);
+  if (s.velvetAppetite && U.once(c, 'enterSated')) U.draw(c, pw(c, 'crumbula/velvet-appetite'));
+  if (s.capesForAll && U.once(c, 'capesSated')) {
+    for (const k of everyKid(c)) { if (k === c.self) U.guard(c, s.capesForAll.b); else c.giveBlock(k, s.capesForAll.b); }
+  }
   if (s.feastFamine && s.wasHungryThisTurn && U.once(c, 'ffSated')) { U.energy(c, 1); U.draw(c, 1); }
   U.fire(c, 'sated', {});
 }
@@ -147,7 +163,7 @@ function feed(c, e, x, opts = {}) {
   }
   if (eaten > 0) {
     s.feedsThisTurn = (s.feedsThisTurn || 0) + 1;
-    if (s.wellFed && isSated(c) && U.once(c, 'wellFed')) U.guard(c, 6);
+    if (s.wellFed && isSated(c) && U.once(c, 'wellFed')) U.guard(c, pw(c, 'crumbula/well-fed-well-dressed'));
     if (s.tableForTwo) { const m = s.tableForTwo; const who = (c.party ? c.party() : []).find((p) => p.seat === m.seat); if (who) c.giveHeal(who, m.heal); }
     U.fire(c, 'fed', { enemy: e, amount: eaten });
   }
@@ -171,7 +187,7 @@ function indulge(c, n) {
   U.bleed(c, n);
   if (s.goodNapkin) U.guard(c, n);
   s.indulgedThisTurn = true;
-  if (s.countsCut && U.once(c, 'countsCut')) for (const e of U.enemies(c)) bite(c, e, 1);
+  if (s.countsCut && U.once(c, 'countsCut')) for (const e of U.enemies(c)) bite(c, e, pw(c, 'crumbula/the-counts-cut'));
   U.fire(c, 'indulged', { amount: n });
   return true;
 }
@@ -186,7 +202,7 @@ const LEFTOVER = {
   effect: eff((c) => {
     feed(c, null, N(c).n, { free: true });
     const s = U.mm(c);
-    if (s.connoisseur) U.guard(c, 4);
+    if (s.connoisseur) U.guard(c, pw(c, 'crumbula/connoisseur'));
   }),
   upgrade: { nums: { n: 2 } },
 };
@@ -254,7 +270,7 @@ U.onTracker(SLUG, (e, s, seat) => {
     if (!st.houseRules) return;
     const dead = e.actor(ev.actorId);
     if (!dead) return;
-    const had = Math.min(2, marksOn(c, dead));
+    const had = Math.min(pw(c, 'crumbula/house-rules'), marksOn(c, dead));
     if (had <= 0) return;
     const living = U.enemies(c).filter((x) => x !== dead);
     for (let i = 0; i < had && living.length; i++) bite(c, living[i % living.length], 1);
@@ -1258,7 +1274,14 @@ const coopCards = [
     text: 'Each round: the first time you become [Sated] every Kid gains {b} Guard; [Hungry] draws them {c1}.',
     flavor: 'Small capes. Everybody looks ridiculous. Nobody minds.',
     nums: { b: 4, c1: 1 },
-    effect: eff((c) => power(c, 'crumbula/everybody-gets-a-cape', 1, (x) => { U.mm(x).capesForAll = { b: N(x).b, draw: N(x).c1 }; })),
+    /* The best copy's numbers, recorded on every play (they were set inside the
+       install-once closure), and paid by enteredSated / enteredHungry: nothing
+       read `capesForAll` at all, so the Power did nothing. */
+    effect: eff((c) => {
+      power(c, 'crumbula/everybody-gets-a-cape', 1);
+      const s = U.mm(c), was = s.capesForAll || { b: 0, draw: 0 };
+      s.capesForAll = { b: Math.max(was.b, N(c).b | 0), draw: Math.max(was.draw, N(c).c1 | 0) };
+    }),
     upgrade: { nums: { b: 7, c1: 1 } },
   },
   {
