@@ -178,6 +178,8 @@ so round 2 runs six at once, as round 1 did.
 
 | 25 | **THE LAST FOUR ROOMS** — the Greenhouse, the Graveyard, the Foyer, the Ballroom: the survey's sprite-stepped objects, the Foyer's haze, the Ballroom's milky panes | AUREOLIN 6.54 · SINOPIA 5.96 · PAYNE 5.29 · the rooms before **4.17** | AUREOLIN, 2 of 2, five of six screens (the Greenhouse tied SINOPIA). **+2.38** — the smallest of the wing rounds, because these were already the best rooms (rounds 8-18). Both judges asked for SINOPIA's ferns and foreground headstones and PAYNE's graveyard path and Foyer rug | `e1bbfa4` |
 
+| 26 | **THE BOARDS' WALLS AND THE DIALOGS** — reward, event, rest, gameover (one shared room), settings, piles: the smeared wall pictures, dialogs on a void, the last web controls, 9 px italics | SANGUINE 6.90 · VERMEILLE 6.72 · MADDERROSE 6.51 · the screens before **5.11** | SANGUINE, 2 of 2, five of six screens: the room shell hangs drawn portraits of the house's own Companions with cartouche nameplates, and the dialogs stand on a dimmed room. **+1.79.** VERMEILLE won the pile viewer; both judges asked for its moonlit windows back and its medallions, and MADDERROSE's colour fort picture | `1afb3e6` |
+
 **Scores anchor to the candidates beside them.** Round 0's winner scored 7.0 in
 round 0 and 5.58 as round 1's baseline: the judges grew stricter as the field
 improved. Compare a winner with the baseline IN ITS OWN ROUND (round 1 REFINE:
@@ -200,6 +202,7 @@ Against their own baselines:
 | 11 | VARIATION **+2.17** (sheets 3-3.5 -> 6-7) | — |
 | 12 | — | THE LAST WEB CHROME **+5.9** (per-screen winners 7.33 / 8.00 / 7.67 against 2 / 1 / 1.33) |
 | 13 | CHROME, second pass **+2.22** (coach 6.0 -> 8.0, veil 6.0 -> 8.67, toast 5.0 -> 7.0) | — |
+| 26 | THE BOARDS' WALLS AND THE DIALOGS **+1.79** (the painted-wall angle, not the literal one) | — |
 | 25 | THE LAST FOUR ROOMS **+2.38** (the best rooms of the survey; the literal angle again) | — |
 | 24 | THE HOUSE'S OWN ROOMS **+3.78** (the baseline 2.94; faster on every fight) | — |
 | 23 | FOUR MORE WINGS **+3.01** (the literal angle took the system, the object angle the screens) | — |
@@ -1037,3 +1040,22 @@ round of its own (rounds 22-25), each judged at the Deck's tier.
   by hand before the merge: three fx files, nothing outside them.
 - **The battery outgrew the background time limit** (~45 min) and was killed
   at gate 84; run it by phase (`gates.py --only check|run|extra`).
+
+### Round 26: the boards' walls and the dialogs, 2026-10-03
+
+**SANGUINE, 2 of 2 judges, 6.90 against 5.11 — +1.79** (run
+`wf_c23990df-795`). The literal angle lost for the first time since round 22:
+MADDERROSE took the smeared pictures DOWN (the brief allowed it), and both
+judges marked a bare wall below a hung one. SANGUINE, told to hang the wall
+properly, painted the house's own Companions into it.
+
+- **Taking a defect away is not the same as fixing it.** The rubric said "a
+  frame taken away is better than a smear"; it was, and still lost by half
+  a point to a frame filled well.
+- **SANGUINE repainted the SHARED room image**, so the shop and the atlas --
+  not judged -- lost their baked portraits. Checked after the merge: neither
+  reads bare. A builder who repaints a shared asset owes a look at every
+  screen that uses it.
+- Merged alongside a gameplay decision (Josh, 2026-10-03: "when in doubt,
+  err on the side of making it easier for the player to win"): past turn 30
+  the house now drains the ENEMIES (`0ffd7b8`); `tests/run` is green.
