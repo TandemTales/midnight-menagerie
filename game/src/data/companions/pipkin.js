@@ -251,7 +251,9 @@ U.onHook('harvest', 'pipkin/community-garden', (c) => {
   // First Harvest each turn only. `U.once` is the established per-turn guard.
   if (!U.once(c, 'communityGarden')) return;
   const friend = c.e.livingPlayers().find(pl => pl !== c.self);
-  if (friend) c.giveBlock(friend, 7);
+  /* The best printed {b} played (7, upgraded 10). It was a literal 7, so the
+     upgrade did nothing - a party-only Power, so the upgrade gate never saw it. */
+  if (friend) c.giveBlock(friend, pwNum(c, 'cgB', 7));
 });
 // stacks ARE the Seeds: each copy adds its own {n} (power(…, N(c).n) below)
 U.onHook('land', 'pipkin/fertile-footprints', (c) => { if (U.once(c, 'fertileFootprints')) plant(c, U.stacks(c, c.self, 'pipkin/fertile-footprints')); });
@@ -1217,15 +1219,19 @@ const coopCards = [
       // `engine.hooks.add('harvested', ...)` — which is what this first did —
       // registers for a hook name the engine never dispatches. It resolved
       // cleanly and did nothing, which is precisely CONTRACTS rule 8.
+      powerNum(c, 'cgB', N(c).b);
       power(c, 'pipkin/community-garden', 1, () => {
         c.e.on('card:play', (ev) => {
           const s = U.mm({ e: c.e, self: c.self });
           if (s.gardenPlantedTurn === c.e.turn) return;
           // The event carries `card` (a snapshot), `actorId` and `seat` — NOT
           // a bare `type`. Reading `ev.type` made this silently never fire.
+          /* "when a friend plays a Trick" - ANY Trick. This tested for a
+             Skill, which the text never said: a friend's Attack planted
+             nothing. */
           const card = c.e.card(ev.cardUid);
-          if (!card || card.type !== 'skill') return;
-          if (!ev.actorId || ev.actorId === c.self.id) return;   // a FRIEND's Skill
+          if (!card) return;
+          if (!ev.actorId || ev.actorId === c.self.id) return;   // a FRIEND's Trick
           s.gardenPlantedTurn = c.e.turn;
           plant(c, 1);
         });

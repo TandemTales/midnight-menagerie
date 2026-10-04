@@ -280,6 +280,30 @@ async function swing(e, id) {
           `hand: ${e.piles.hand.map(c => c.id).join(', ')}`);
   }
 
+  say('<h2>A Power pays at least its best copy</h2>');
+  {
+    /* Bones banks each upgraded copy's extra on the seat (upPower), so base
+       then upgraded is never less than the upgraded copy alone. Rattletrap's
+       first Rattle each turn: 5, upgraded 8. */
+    const rattleDamage = async (seq) => {
+      const e = await dog();
+      const who = e.players[0];
+      for (const up of seq) {
+        e.addCard(CARDS.cardById('bones/rattletrap'), 'hand', { to: who, upgraded: up });
+        const hand = e.pilesOf(who).hand;
+        who.energy = 9;
+        await e.playCard(hand[hand.length - 1].uid);
+      }
+      const t = e.firstLivingEnemy(); t.block = 0;
+      const hp = t.hp;
+      await play(e, 'bones/shake-it-loose', null);
+      return hp - t.hp;
+    };
+    const base = await rattleDamage([false]), upOnly = await rattleDamage([true]), both = await rattleDamage([false, true]);
+    check(base === 5 && upOnly === 8, 'Rattletrap: the first Rattle deals 5, upgraded 8', `${base} / ${upOnly}`);
+    check(both >= upOnly, 'Rattletrap then Rattletrap+ deals at least the upgraded 8', `${both}`);
+  }
+
   say('<h2>Best Dog in the House digs up a Treat Stash with its Nerve intact</h2>');
   {
     /* Best Dog digs up from its OWN async turn:start listener, outside the

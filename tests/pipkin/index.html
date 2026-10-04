@@ -177,6 +177,61 @@ const fromArray = (e, seat = null) => {
     }
   }
 
+  say('<h2>Community Garden: any friend Trick plants, and the Harvest Guard is the best copy</h2>');
+  {
+    /* It tested for a friend's SKILL, which its text never said, and paid a
+       literal 7 Guard whatever {b} was (the upgrade's 10 was dead). */
+    const run = async (seq) => {
+      const e = await startDummyParty(new RNG(41), 2, {
+        companion: 'pipkin', maxHp: 80,
+        decks: [CARDS.startingDeckFor('pipkin'), CARDS.startingDeckFor('pipkin')],
+      });
+      installTrackers(e, 'pipkin');
+      const [a, b] = e.players;
+      for (const up of seq) {
+        e.addCard(CARDS.cardById('pipkin/community-garden'), 'hand', { to: a, upgraded: up });
+        const hand = e.pilesOf(a).hand;
+        a.energy = 9;
+        await e.playCard(hand[hand.length - 1].uid, undefined);
+      }
+      e.addCard(CARDS.cardById('pipkin/tiny-tongue'), 'hand', { to: b });
+      const bh = e.pilesOf(b).hand;
+      b.energy = 9;
+      await e.playCard(bh[bh.length - 1].uid, e.livingEnemies()[0].id);
+      const planted = arr(e, a).length;
+      arr(e, a).length = 0; arr(e, a).push('pumpkin');
+      b.block = 0;
+      await play(e, 'pipkin/pick-one', a);
+      return { planted, guard: b.block };
+    };
+    const base = await run([false]), both = await run([false, true]);
+    check(base.planted === 1, 'a friend playing an ATTACK plants a Seed in your Patch', `planted ${base.planted}`);
+    check(base.guard === 7, 'your first Harvest gives the friend 7 Guard', `guard ${base.guard}`);
+    check(both.guard === 10, 'Community Garden then Community Garden+ gives the upgraded 10', `guard ${both.guard}`);
+  }
+
+  say('<h2>A Power pays at least its best copy</h2>');
+  {
+    /* Big Frog Energy keeps the best printed {b} played (powerNum), then adds 2
+       a further copy: base then upgraded is never less than the upgraded copy. */
+    const plumpGuard = async (seq) => {
+      const e = await pipkin();
+      const who = e.players[0];
+      for (const up of seq) {
+        e.addCard(CARDS.cardById('pipkin/big-frog-energy'), 'hand', { to: who, upgraded: up });
+        const hand = e.pilesOf(who).hand;
+        who.energy = 9;
+        await e.playCard(hand[hand.length - 1].uid, undefined);
+      }
+      who.block = 0;
+      await play(e, 'pipkin/puff-up');
+      return who.block;
+    };
+    const none = await plumpGuard([]), base = await plumpGuard([false]), upOnly = await plumpGuard([true]), both = await plumpGuard([false, true]);
+    check(base - none === 5 && upOnly - none === 7, 'Big Frog Energy: gaining Plump pays 5 Guard, upgraded 7', `${base - none} / ${upOnly - none}`);
+    check(both - none >= upOnly - none, 'Big Frog Energy then Big Frog Energy+ pays at least the upgraded 7', `${both - none}`);
+  }
+
   for (const line of passes) say('PASS ' + line, 'pass');
   for (const line of fails) say('FAIL ' + line, 'fail');
   say(`<h2>${passes.length} passed, ${fails.length} failed</h2>`);
