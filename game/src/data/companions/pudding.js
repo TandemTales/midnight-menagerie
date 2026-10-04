@@ -218,7 +218,9 @@ function digUp(c, o = {}) {
      effect. Handled here rather than in its own card, because the card is not
      the thing being played when this happens. */
   if (U.flag(card, 'treat')) {
-    const n = card.def && card.def.nums ? card.def.nums : { e: 1, c1: 1 };
+    /* The RUNTIME card's nums, which have the upgrade folded in. `def.nums` is
+       the printed base, so Treat for Later+ paid the base 1 Nerve. */
+    const n = card.nums || (card.def && card.def.nums) || { e: 1, c1: 1 };
     U.energy(c, n.e || 1);
     U.draw(c, n.c1 || 1);
     U.moveCard(c, card, 'exhaust', { vanish: true });
@@ -950,7 +952,8 @@ const uncommons = [
     text: '[Dig Up] a Trick. If you do not play it this turn, keep it in hand. It still loses [Unearthed].',
     flavor: 'A small brush. Immense concentration.',
     nums: {},
-    effect: eff((c) => { const k = digUp(c); if (k) U.retain(c, k, 'combat'); }),
+    /* The upgrade is text only ("two Tricks"), and the effect dug up one. */
+    effect: eff((c) => { for (let i = 0; i < (U.up(c) ? 2 : 1); i++) { const k = digUp(c); if (!k) break; U.retain(c, k, 'combat'); } }),
     upgrade: { text: '[Dig Up] two Tricks. If you do not play them this turn, keep them in hand. They still lose [Unearthed].' },
   },
   {
@@ -1167,7 +1170,9 @@ const uncommons = [
     text: 'The first Attack you play after [Bury]ing a Trick each turn deals {m0} more.',
     flavor: 'Something small walks him to the gate every night.',
     nums: { m0: 9 },
-    effect: eff((c) => power(c, 'pudding/little-ghost-escort', (x, s) => { s.littleGhostEscort = N(x).m0; })),
+    /* Recorded on EVERY copy, best one wins: inside `install` only the first
+       copy's number was ever kept, so a later upgraded copy changed nothing. */
+    effect: eff((c) => { power(c, 'pudding/little-ghost-escort', () => {}); const s = U.mm(c); s.littleGhostEscort = Math.max(s.littleGhostEscort || 0, N(c).m0); }),
     upgrade: { nums: { m0: 13 } },
   },
   {
@@ -1525,7 +1530,7 @@ const rares = [
     text: 'While [Graveside], the residents deal {m0} to all enemies at the end of your turn, once per occupied [Plot].',
     flavor: 'Not singing, exactly. Not not singing.',
     nums: { m0: 5 },
-    effect: eff((c) => power(c, 'pudding/graveyard-choir', (x, s) => { s.graveyardChoir = N(x).m0; })),
+    effect: eff((c) => { power(c, 'pudding/graveyard-choir', () => {}); const s = U.mm(c); s.graveyardChoir = Math.max(s.graveyardChoir || 0, N(c).m0); }),
     upgrade: { nums: { m0: 8 } },
   },
   {
