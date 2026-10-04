@@ -108,12 +108,14 @@
    with the choice lettered on it, a brass chevron in enamel either side that
    turns it. Each is as wide as its longest choice. */
 .mm-deck__sortwrap.kit-hw-cycle {
-  --cy-h: clamp(32px, 4.3vh, 38px);
+  --cy-h: clamp(36px, 4.6vh, 42px);
   grid-template-columns: auto auto auto;
+  column-gap: 1px;
 }
+/* the choice clear of the cartouche's scrolled ends */
 .mm-deck__sortwrap .kit-hw-cycle__sel {
-  padding: 0 calc(var(--cy-h) * .5);
-  font-size: max(13.5px, calc(var(--cy-h) * .4));
+  padding: 0 calc(var(--cy-h) * .66) 1px;
+  font-size: max(14px, calc(var(--cy-h) * .37));
 }
 /* nothing to clear is still a plate, and it stands on the plates' own line —
    not on the tags' */

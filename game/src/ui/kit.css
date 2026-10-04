@@ -3842,21 +3842,22 @@ button.kit-hw-enamel:focus-visible {
 /* the boss the lever turns on: a cast brass rosette, its stone the pivot */
 .kit-hw-throw__boss {
   position: relative; display: block; flex: none;
-  width: calc(var(--sw-h) * 1.06); aspect-ratio: 1;
+  width: calc(var(--sw-h) * .86); aspect-ratio: 1;
+  margin-inline: calc(var(--sw-h) * .22);
   background: url("../../assets/ui/kit/boss-rosette.webp") 50% 50% / 100% 100% no-repeat;
   filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .85));
 }
 /* the lever: hw-lever.webp, its pivot the picture's centre, its ball up */
 .kit-hw-throw__lever {
   position: absolute; left: 50%; top: 50%;
-  width: calc(var(--sw-h) * 1.5); aspect-ratio: 1;
+  width: calc(var(--sw-h) * 2.1); aspect-ratio: 1;
   translate: -50% -50%;
   background: url("../../assets/ui/kit/hw-lever.webp") 50% 50% / 100% 100% no-repeat;
-  filter: drop-shadow(1px 2px 1.5px rgba(0, 0, 0, .8));
-  rotate: -52deg;
+  filter: drop-shadow(1px 2px 1.5px rgba(0, 0, 0, .85)) brightness(1.12);
+  rotate: -50deg;
   transition: rotate var(--t-base) var(--ease-out);   /* --t-base is 1ms under reduced motion */
 }
-.kit-hw-throw[data-on="1"] > .kit-hw-throw__boss > .kit-hw-throw__lever { rotate: 52deg; }
+.kit-hw-throw[data-on="1"] > .kit-hw-throw__boss > .kit-hw-throw__lever { rotate: 50deg; }
 .kit-hw-throw[data-on="1"] > .kit-hw-throw__boss {
   filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .85)) drop-shadow(0 0 7px color-mix(in srgb, var(--kit-candle) 45%, transparent));
 }
@@ -3945,10 +3946,10 @@ button.kit-hw-enamel:focus-visible {
   cursor: pointer;
 }
 .kit-hw-cycle__sel option { background: #17111c; color: var(--kit-text); }
-.kit-hw-cycle__step.kit-hw-enamel { --en: calc(var(--cy-h) * .86); }
+.kit-hw-cycle__step.kit-hw-enamel { --en: calc(var(--cy-h) * .92); cursor: pointer; }
 .kit-hw-cycle__step--prev { grid-area: prev; }
 .kit-hw-cycle__step--next { grid-area: next; }
-.kit-hw-cycle__step > .kit-hw-chev { width: 50%; }
+.kit-hw-cycle__step > .kit-hw-chev { width: 62%; }
 .kit-hw-cycle:has(> .kit-hw-cycle__plate > .kit-hw-cycle__sel:focus-visible) > .kit-hw-cycle__plate {
   filter: drop-shadow(0 0 1.5px var(--kit-gold-hi)) drop-shadow(0 0 10px color-mix(in srgb, var(--kit-candle) 55%, transparent)) drop-shadow(0 3px 4px rgba(0, 0, 0, .8));
 }

@@ -1117,3 +1117,11 @@
   .go-trick.go-trick .go-trick__name { font-size: 12.5px; }
   .go-keep b { font-size: 13px; }
 }
+/* on a short board (the Deck's 800) the wall over the line that says why is
+   too short for a picture, and a picture never hangs over the shelf or the
+   two who went in: only the mansion hangs, over HOW FAR, a size larger */
+@media (max-height: 860px) {
+  .go-hang--r { display: none; }
+  .go-hang.kit-hang--wide { --hang-w: min(calc(var(--tri-w) * 1.06), 20vh); }
+  .go-hang--l { left: calc(50% + var(--tri-w) * .12); }
+}
