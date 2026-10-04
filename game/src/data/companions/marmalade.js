@@ -935,7 +935,10 @@ const rares = [
           U.addRes(x, 'untouched-streak', 1, 0, 99);
           const s = U.res(x, 'untouched-streak');
           U.applySelf(x, 'predators-patience', dmg);
-          U.guard(x, blk * s);
+          /* Not `U.guard`: this is a `turn:start` listener, and the engine
+             wipes Guard right after `turn:start`, so the Streak's Guard was
+             deleted a few lines after it was granted (see U.guardNextTurn). */
+          U.guardNextTurn(x, blk * s);
         }, x.self);
       });
     }),
