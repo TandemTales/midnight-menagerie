@@ -7,11 +7,12 @@
  * parchment -- and both survey judges read every one of them as "grey smeared
  * noise with no drawn subject". So the room is bare now, and a board HANGS its
  * pictures here instead, where its own wall actually shows: each one the whole
- * Companion tile off UI/selectCompanion.png (its gilt edge, the painting, the
- * dark nameplate lettered by the same hand) or the mansion off UI/mainMenu.png,
- * at the sample's own resolution (tools/prep_ui_kit.py --only hang), in the Kid
- * board's carved gilt frame on a cord from a cast brass boss (.kit-hang,
- * ui/kit.css). Decoration only: every picture is aria-hidden.
+ * Companion tile off UI/selectCompanion.png (its gilt edge and the painting;
+ * since the round 26 graft its painted nameplate is cut off and the name and
+ * epithet LETTERED on a brass plate under the frame, below) or the mansion off
+ * UI/mainMenu.png, at the sample's own resolution (tools/prep_ui_kit.py --only
+ * hang), in the Kid board's carved gilt frame on a cord from a cast brass boss
+ * (.kit-hang, ui/kit.css). Decoration only: every picture is aria-hidden.
  *
  *   hangHtml('crumbula', 'rw-hang rw-hang--l')   one picture's markup
  *   gallery(['crumbula', 'mopsy'], { skip })     the same for a list, skipping

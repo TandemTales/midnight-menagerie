@@ -4023,7 +4023,7 @@ button.kit-hw-enamel:focus-visible {
                      right. VERMEILLE's. */
 .mm-modal__scrim.kit-scrim--dim {
   background:
-    radial-gradient(30% 14% at 50% 9%, color-mix(in srgb, var(--kit-void) 92%, transparent) 40%, transparent 100%),
+    radial-gradient(40% 15% at 50% 9%, color-mix(in srgb, var(--kit-void) 92%, transparent) 45%, transparent 100%),
     radial-gradient(60% 55% at 92% 96%, color-mix(in srgb, var(--kit-candle) 10%, transparent), transparent 70%),
     radial-gradient(120% 100% at 50% 52%, color-mix(in srgb, var(--kit-void) 42%, transparent) 0%, color-mix(in srgb, var(--kit-void) 50%, transparent) 62%, color-mix(in srgb, var(--kit-void) 64%, transparent) 100%),
     linear-gradient(color-mix(in srgb, var(--kit-violet-lo) 14%, transparent), color-mix(in srgb, var(--kit-violet-lo) 14%, transparent));

@@ -761,10 +761,12 @@ export class RewardScene extends RoomScene {
   /**
    * Aim the room's light at the things that give it off (ui/kit.css
    * .kit-ground): the ground reveals its lit damask and wainscot through light
-   * slots placed in viewport lengths, and the rail's candles hang on the stage, which stands wherever the title and the
-   * spoils leave it. Each lancet gets the moon's cold pool on the paper round
-   * its glass; each candle a warm pool round its flame. reward.css's defaults
-   * are the 1600x900 answer; this is the measured one. Decoration only.
+   * slots placed in viewport lengths, and the rail's candles hang on the
+   * stage, which stands wherever the title and the spoils leave it; the
+   * lancets stand in the bays the plaque leaves. Each lancet gets the moon's
+   * cold pool on the paper round its glass; each candle a warm pool round its
+   * flame. reward.css's defaults are the 1600x900 answer; this is the
+   * measured one. Decoration only.
    */
   _pointLights() {
     const board = this.root?.querySelector('.rm--reward');

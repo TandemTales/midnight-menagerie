@@ -217,14 +217,15 @@
    =========================================================================== */
 
 /* The board's geometry, in viewport units so the room's light can be pointed
-   at the things standing in it: the stage, the three frames, the two moonlit
-   windows in the stage's flanks and the candles under them. */
+   at the things standing in it: the stage, the three frames, the portraits in
+   the stage's flanks and the candles under them (and since the round 26
+   graft, the two moonlit lancets high by the plaque, placed in reward.js). */
 .rm--reward {
   --stage-w: min(1440px, 100vw - 2 * var(--rm-pad) - 2 * var(--kit-vine-w) - 30px);
   --stage-half: calc(var(--stage-w) / 2);
   --frame-pad: clamp(16px, 1.5vw, 24px);
   --fan-gap: calc(var(--frame-pad) * 2 + clamp(18px, 2vw, 34px));
-  /* either flank of the stage: a moonlit lancet over a candle */
+  /* either flank of the stage: a portrait over a candle */
   --flank-w: clamp(136px, 10.6vw, 190px);
   /* The three frames: as wide as the stage between its flanks allows, as tall
      as the board under the top rule allows (the fixed rows above and below
@@ -241,12 +242,13 @@
   --crest-h: calc(var(--crest-w) * 98 / 156);
   --crest-rise: calc(var(--crest-h) * .84 - clamp(30px, 3.8vh, 36px) / 2 + clamp(34px, 4.3vh, 40px) / 2 + 3px);
   /* Round 6: the hall is lit from two sides, cold against warm — the contrast
-     the samples paint. Each flank's gothic lancet throws a cold shaft down
-     through the alcove (--mb1/--mb2, measured onto the glass in reward.js);
+     the samples paint. A gothic lancet high on each side of the plaque lays
+     a cold pool on the wall (--ml1/--ml2, measured onto the glass in
+     reward.js; rounds 6-25 hung the lancets in the flanks);
      the candle on each end of the rail warms the panelling round its foot
      (--wl3/--wl4); and a broad pool rises behind the middle of the three,
-     where the frames stand in the candles' light. The lancets hang at
-     --win-y, their glass a fifth of the way down them. */
+     where the frames stand in the candles' light. --win-y is the moon pools'
+     fallback height. */
   --win-y: calc(var(--hud-h) + 32vh);
   --wl3-x: var(--flank-cx);                  --wl3-y: calc(100vh - clamp(150px, 20vh, 190px));
   --wl3-w: clamp(330px, 28vw, 480px);        --wl3-h: calc(var(--wl3-w) * 1.1);
