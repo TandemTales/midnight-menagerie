@@ -148,7 +148,8 @@ function onWeatherEntered(c, from, to, o = {}) {
   f.entered.push(to);   // a HISTORY, not a set: Weather Has Memory counts repeats
 
   const s = U.mm(c);
-  if (s.barometer && U.once(c, 'barometer')) s.drawNextTurn = (s.drawNextTurn || 0) + 1;
+  // `s.barometer` IS the Power's {n}: it was a hardcoded +1, so the upgrade's 2 drew 1.
+  if (s.barometer && U.once(c, 'barometer')) s.drawNextTurn = (s.drawNextTurn || 0) + s.barometer;
 
   // Entering Thunderstorm soaks the board, whether it was advanced into,
   // set into, or arrived at by a Forecast.
@@ -183,7 +184,9 @@ function stormbreak(c, o = {}) {
   if (!o.forced && f.teacup) { f.teacup = false; return false; }
 
   let dest = f.sbDest;
-  if (f.vane) { dest = DOWNPOUR; f.vane = false; }     // one shot, beats the Power
+  // A count, not a flag: a Sharpened Strange Weather Vane turns TWO breaks.
+  // Beats the Power. `true` from an older save reads as one.
+  if (f.vane) { dest = DOWNPOUR; f.vane = Math.max(0, (f.vane === true ? 1 : f.vane | 0) - 1); }
 
   const from = weather(c);
   U.setRes(c, WEATHER, dest, CLEAR, THUNDER);
@@ -289,6 +292,33 @@ function conduct(c, primary, fn) {
  */
 const FORECASTS = new Map();
 const forecastCard = (id, trigger, run) => { FORECASTS.set(id, { trigger, run }); return id; };
+
+/**
+ * A waiting Forecast's OWN numbers and upgrade.
+ *
+ * A Forecast resolves inside whatever ctx moved the Weather: another Trick's
+ * (Just a Sprinkle advancing into Downpour) or the tracker's, which has no card
+ * at all (the automatic Stormbreak). So `N(c)` and `U.up(c)` there describe the
+ * WRONG card or none, and every delayed half that read a number that way paid
+ * the base value forever: a Sharpened Tomorrow's Umbrella still gave 12 Guard.
+ * The parked card rides on the slot entry, so read it from there.
+ */
+const FN = (entry) => (entry && entry.card && entry.card.nums) || {};
+const FUP = (entry) => !!(entry && entry.card && entry.card.upgraded);
+
+/**
+ * Guard and Nerve from a Forecast that resolves in the ENEMY phase.
+ *
+ * The automatic Stormbreak runs at `enemyPhaseEnd`, after every enemy has
+ * swung, and it is the commonest way into Clear. Guard handed out there is wiped
+ * by `_openSeatTurn` a moment later and Nerve is SET to the maximum by
+ * `_dealSeatTurn`, so "Gain 5 Guard" and "Gain 1 Nerve" both arrived as
+ * nothing. Out of the player's own turn they are banked for the next one,
+ * which is the first moment either can be spent.
+ */
+const enemyPhase = (c) => { const p = c && c.e && c.e.phase; return p === 'enemy' || p === 'enemyPhaseEnd'; };
+function payGuard(c, n) { if (enemyPhase(c)) U.guardNextTurn(c, n); else U.guard(c, n); }
+function payNerve(c, n) { if (enemyPhase(c)) U.energyNextTurn(c, n); else U.energy(c, n); }
 const forecastDef = (k) => FORECASTS.get(k && (k.def ? k.def.id : k.id)) || null;
 const isForecastCard = (k) => !!forecastDef(k);
 
@@ -421,7 +451,13 @@ function recallForecast(c, entry, discount = 1) {
   if (at < 0) return false;
   row.splice(at, 1);
   U.moveCard(c, entry.card, 'hand', { forecast: true });
-  U.costMod(c, entry.card, -discount, 'turn');
+  U.costMod(c, entry.card, -1, 'turn');
+  /* Every Forecast Trick costs 0 or 1, and a turn delta is clamped at 0 BEFORE
+     the cost hooks run (engine.costOf step 3), so "2 less" through `costMod`
+     was identical to "1 less" in every fight. The rest of the discount rides
+     the hook step instead, where it can pay off a tax -- Flood, Webbed,
+     Forgotten, Bound -- which is the only place a second Nerve off can show. */
+  if (discount > 1) entry.card.meta.shelfDiscount = { turn: U.turn(c), n: discount - 1 };
   entry.card.meta.noForecastTurn = U.turn(c);
   syncSlotCounter(c);
   return true;
@@ -514,7 +550,11 @@ U.onTracker(SLUG, (e, s, seat) => {
     // Downpour is her stable state precisely because it re-soaks for free.
     if (weather(c) === DOWNPOUR) {
       for (const en of U.enemies(c)) soak(c, en, { silent: true });
-      if (st.downpourDarling) U.guard(c, st.downpourDarling);
+      /* Downpour Darling's Guard is NOT granted here: this is `turn:start`,
+         which `_openSeatTurn` follows with the Guard wipe, so it arrived as 0
+         (the block event fired, which is all a tally could see). It lands on
+         `playerReady` below. Its discount is armed here. */
+      if (st.downpourDarling) st.darlingTurn = U.turn(c);
     }
     // Every Forecast placed on an earlier turn is live now.
     for (const entry of slots(c)) entry.armed = true;
@@ -540,6 +580,12 @@ U.onTracker(SLUG, (e, s, seat) => {
     if (ev.phase === 'enemy') {
       // Rule 2: what matters is the state the enemy turn BEGAN in.
       f.enemyBeganClear = weather(c) === CLEAR;
+      return;
+    }
+    // Downpour Darling: after the Guard wipe, so the Guard is still there to use.
+    if (ev.phase === 'playerReady') {
+      const st = U.mm(c);
+      if (st.downpourDarling && st.darlingTurn === U.turn(c)) U.guard(c, st.downpourDarling);
       return;
     }
     if (ev.phase !== 'enemyPhaseEnd') return;
@@ -572,6 +618,39 @@ U.onTracker(SLUG, (e, s, seat) => {
     if (st.dampHouseTurn === U.turn(c)) return;
     st.dampHouseTurn = U.turn(c);
     U.guard(c, st.dampHouse);
+  });
+
+  /* Downpour Darling's other half, "your first Attack on a [Soaked] enemy costs
+     1 less", which nothing implemented. Armed by a turn that opened in Downpour
+     (which has just re-soaked every enemy), shown on the Attacks in hand while
+     a Soaked enemy is there to aim at, and spent by the first Attack played. */
+  const darlingArmed = (c) => {
+    const st = U.mm(c);
+    return !!st.downpourDarling && st.darlingTurn === U.turn(c) && st.darlingSpent !== U.turn(c);
+  };
+  const isAttack = (k) => !!k && ((k.def && k.def.type) || k.type) === ATTACK;
+  /* Cloud Shelf / Cloud Storage, Sharpened: the second Nerve off. See
+     recallForecast. Pure, as a cost hook must be. A `hooks.add` provider runs
+     AFTER the actor's status hooks (hooks.actorHooks), so this sees the cost
+     with any tax already on it. */
+  e.hooks.add('modifyCardCost', (cost, h) => {
+    const d = h && h.card && h.card.meta && h.card.meta.shelfDiscount;
+    if (!d || !(cost > 0) || d.turn !== e.turn) return cost;
+    return Math.max(0, cost - d.n);
+  }, { owner: seat });
+  e.hooks.add('modifyCardCost', (cost, h) => {
+    if (!(cost > 0) || !isAttack(h && h.card)) return cost;
+    // Her Attacks, not a teammate's: an added hook is not filtered by seat.
+    if (e.seatOfCard && e.seatOfCard(h.card) !== seat) return cost;
+    const c = fake();
+    if (!darlingArmed(c) || !soakedEnemies(c).length) return cost;
+    return cost - 1;
+  }, { owner: seat });
+  e.on('card:play', (ev) => {
+    if (!ev || ev.actorId !== seat.id) return;
+    const c = fake();
+    if (!darlingArmed(c) || !isAttack(ev.card)) return;
+    U.mm(c).darlingSpent = U.turn(c);
   });
 
   /* I Am the Weather / Quiet After both key off a Trick actually being played.
@@ -791,7 +870,7 @@ const commons = [
     text: '[Soak] an enemy. If it was already [Soaked], draw a Trick, then discard a Trick.',
     flavor: 'She leaves prints on things she has not touched.',
     nums: {},
-    effect: eff((c) => { if (!soak(c, c.target)) { U.draw(c, 1); c.discard(1, { choose: true }); } }),
+    effect: eff((c) => { if (!soak(c, c.target)) { U.draw(c, U.up(c) ? 2 : 1); c.discard(1, { choose: true }); } }),
     upgrade: { text: '[Soak] an enemy. If it was already [Soaked], draw two Tricks, then discard a Trick.' },
   },
   {
@@ -832,7 +911,7 @@ const commons = [
     upgrade: { nums: { b: 4 } },
   },
   {
-    id: forecastCard('drizzle/rain-check', DOWNPOUR, (c) => U.draw(c, 2)),
+    id: forecastCard('drizzle/rain-check', DOWNPOUR, (c, entry) => { U.draw(c, 2); if (FUP(entry)) payGuard(c, 5); }),
     name: 'Rain Check', companion: SLUG, type: SKILL, rarity: COMMON,
     cost: 1, target: SELF, keywords: ['forecast', 'weather'],
     text: '[Forecast] Downpour: Draw two Tricks.',
@@ -860,7 +939,7 @@ const commons = [
     upgrade: { nums: { b: 16, m0: 7 } },
   },
   {
-    id: forecastCard('drizzle/save-a-drop', THUNDER, (c) => { U.energy(c, 1); U.draw(c, 1); }),
+    id: forecastCard('drizzle/save-a-drop', THUNDER, (c, entry) => { payNerve(c, FUP(entry) ? 2 : 1); U.draw(c, 1); }),
     name: 'Save a Drop', companion: SLUG, type: SKILL, rarity: COMMON,
     cost: 0, target: SELF, keywords: ['forecast', 'weather'],
     text: '[Forecast] Thunderstorm: Gain 1 Nerve and draw a Trick.',
@@ -879,6 +958,7 @@ const commons = [
       const pick = await c.choose({ options: ['Advance', 'Ease'], prompt: 'Which way?' });
       const up = pick[0] !== 1;
       if (up ? advance(c, 1) : ease(c, 1)) {
+        if (U.up(c)) { for (const en of U.enemies(c)) soak(c, en); return; }
         const t = c.target || U.enemies(c)[0];
         if (t) soak(c, t);
       }
@@ -1083,7 +1163,7 @@ const uncommons = [
 
   // ── Skills ────────────────────────────────────────────────────────────────
   {
-    id: forecastCard('drizzle/tomorrows-umbrella', THUNDER, (c) => { U.guard(c, 12); U.draw(c, 1); }),
+    id: forecastCard('drizzle/tomorrows-umbrella', THUNDER, (c, entry) => { payGuard(c, FN(entry).b ?? 12); U.draw(c, 1); }),
     name: "Tomorrow's Umbrella", companion: SLUG, type: SKILL, rarity: UNCOMMON,
     cost: 1, target: SELF, keywords: ['forecast', 'weather'],
     text: '[Forecast] Thunderstorm: Gain {b} Guard and draw a Trick.',
@@ -1093,7 +1173,7 @@ const uncommons = [
     upgrade: { nums: { b: 17 } },
   },
   {
-    id: forecastCard('drizzle/watch-the-glass', CLEAR, (c) => { U.draw(c, 2); U.guard(c, 5); }),
+    id: forecastCard('drizzle/watch-the-glass', CLEAR, (c, entry) => { U.draw(c, 2); payGuard(c, FN(entry).b ?? 5); }),
     name: 'Watch the Glass', companion: SLUG, type: SKILL, rarity: UNCOMMON,
     cost: 1, target: SELF, keywords: ['forecast', 'weather'],
     text: '[Forecast] Clear: Draw two Tricks and gain {b} Guard.',
@@ -1176,7 +1256,7 @@ const uncommons = [
       const picked = await c.chooseCard({ pool: row.map(x => x.card), count: 1, prompt: 'Take back which Forecast?' });
       const card = picked[0];
       const entry = row.find(x => x.card === card);
-      if (entry) recallForecast(c, entry, 1);
+      if (entry) recallForecast(c, entry, U.up(c) ? 2 : 1);
     }),
     upgrade: { text: 'Return one [Forecast]ed Trick to your hand. It costs 2 less this turn and cannot be [Forecast]ed again this turn.' },
   },
@@ -1188,14 +1268,17 @@ const uncommons = [
     nums: {},
     effect: eff(async (c) => {
       const row = slots(c).filter(x => x.trigger !== SB);
-      if (!row.length) return;
-      const picked = await c.chooseCard({ pool: row.map(x => x.card), count: 1, prompt: 'Re-aim which Forecast?' });
+      const picked = row.length
+        ? await c.chooseCard({ pool: row.map(x => x.card), count: 1, prompt: 'Re-aim which Forecast?' })
+        : [];
       const entry = row.find(x => x.card === picked[0]);
-      if (!entry) return;
-      const pick = await c.choose({ options: WEATHER_NAME.slice(), prompt: 'Waiting for which Weather?' });
-      if (pick.length) entry.trigger = pick[0];
+      if (entry) {
+        const pick = await c.choose({ options: WEATHER_NAME.slice(), prompt: 'Waiting for which Weather?' });
+        if (pick.length) entry.trigger = pick[0];
+      }
+      if (U.up(c)) U.draw(c, 1);
     }),
-    upgrade: { cost: 0, text: 'Change one [Forecast]’s Weather trigger to any other state, then draw a Trick. [Vanish].' },
+    upgrade: { cost: 0, text: 'Change one [Forecast]’s Weather trigger to any other state, then draw a Trick. A [Stormbreak] trigger cannot be changed. [Vanish].' },
   },
   {
     id: 'drizzle/puddle-map', name: 'Puddle Map', companion: SLUG, type: SKILL, rarity: UNCOMMON,
@@ -1203,7 +1286,7 @@ const uncommons = [
     text: 'Choose a [Soaked] enemy. The next [Conduct] this turn repeats its marked effect against it once more.',
     flavor: 'She has been keeping track of where all of it went.',
     nums: {},
-    effect: eff((c) => { const t = c.target; if (isSoaked(c, t)) U.mm(c).puddleMap = t.id; }),
+    effect: eff((c) => { const t = c.target; if (isSoaked(c, t)) U.mm(c).puddleMap = t.id; if (U.up(c)) U.draw(c, 1); }),
     upgrade: { text: 'Choose a [Soaked] enemy and draw a Trick. The next [Conduct] this turn repeats its marked effect against it once more.' },
   },
   {
@@ -1220,7 +1303,7 @@ const uncommons = [
     upgrade: { nums: { b: 17 } },
   },
   {
-    id: forecastCard('drizzle/rain-delay', SPRINKLE, (c) => { U.energy(c, 1); U.draw(c, 2); }),
+    id: forecastCard('drizzle/rain-delay', SPRINKLE, (c, entry) => { payNerve(c, FUP(entry) ? 2 : 1); U.draw(c, 2); }),
     name: 'Rain Delay', companion: SLUG, type: SKILL, rarity: UNCOMMON,
     cost: 1, target: SELF, keywords: ['forecast', 'weather'],
     text: 'Choose any Weather. [Forecast] that state: Gain 1 Nerve and draw two Tricks.',
@@ -1239,8 +1322,8 @@ const uncommons = [
     flavor: 'It has to go somewhere.',
     nums: {},
     effect: eff((c) => {
-      if (weather(c) === THUNDER) { stormbreak(c, { forced: true }); U.draw(c, 1); }
-      else ease(c, 1);
+      if (weather(c) === THUNDER) { stormbreak(c, { forced: true }); U.draw(c, U.up(c) ? 2 : 1); }
+      else { ease(c, 1); if (U.up(c)) U.draw(c, 1); }
     }),
     upgrade: { text: 'At Thunderstorm, force a [Stormbreak] and draw two Tricks. Otherwise [Ease] [Weather] one step and draw a Trick.' },
   },
@@ -1251,10 +1334,13 @@ const uncommons = [
     flavor: 'It talks to itself across the ceiling.',
     nums: {},
     effect: eff((c) => {
-      const pool = U.enemies(c).slice(0, 2);
+      /* "up to two" / "up to three", and the draw needs every one of them to
+         have been wet already -- so a room of fewer still qualifies. */
+      const want = U.up(c) ? 3 : 2;
+      const pool = U.enemies(c).slice(0, want);
       let already = 0;
       for (const en of pool) if (!soak(c, en)) already++;
-      if (pool.length === 2 && already === 2) U.draw(c, 1);
+      if (pool.length >= 2 && already === pool.length) U.draw(c, U.up(c) ? 2 : 1);
     }),
     upgrade: { text: '[Soak] up to three enemies. If they were all already [Soaked], draw two Tricks.' },
   },
@@ -1384,11 +1470,11 @@ const rares = [
     upgrade: { nums: { d: 54 } },
   },
   {
-    id: forecastCard('drizzle/what-goes-up', SB, (c) => {
+    id: forecastCard('drizzle/what-goes-up', SB, (c, entry) => {
       const pool = U.enemies(c);
       if (!pool.length) return;
       const weakest = pool.reduce((a, b) => (b.hp < a.hp ? b : a), pool[0]);
-      U.hitAt(c, weakest, 18);
+      U.hitAt(c, weakest, FN(entry).m0 ?? 18);
     }),
     name: 'What Goes Up', companion: SLUG, type: ATTACK, rarity: RARE,
     cost: 1, target: ENEMY, keywords: ['forecast', 'stormbreak'],
@@ -1540,7 +1626,7 @@ const rares = [
     text: 'The next [Stormbreak] returns [Weather] to Downpour instead of Clear. It is still a [Stormbreak].',
     flavor: 'It points where it likes. It has for years.',
     nums: {},
-    effect: eff((c) => { wf(c).vane = true; }),
+    effect: eff((c) => { const f = wf(c); f.vane = Math.max(f.vane === true ? 1 : (f.vane | 0), U.up(c) ? 2 : 1); }),
     upgrade: { text: 'The next two [Stormbreak]s return [Weather] to Downpour instead of Clear. They are still [Stormbreak]s.' },
   },
   {
@@ -1549,7 +1635,7 @@ const rares = [
     text: 'Return every [Forecast]ed Trick to your hand. Each costs 1 less this turn and cannot be [Forecast]ed again this turn.',
     flavor: 'All of it back at once, all of it damp.',
     nums: {},
-    effect: eff((c) => { for (const entry of slots(c).slice()) recallForecast(c, entry, 1); }),
+    effect: eff((c) => { for (const entry of slots(c).slice()) recallForecast(c, entry, U.up(c) ? 2 : 1); }),
     upgrade: { text: 'Return every [Forecast]ed Trick to your hand. Each costs 2 less this turn and cannot be [Forecast]ed again this turn.' },
   },
   {
@@ -1581,7 +1667,7 @@ const rares = [
     flavor: 'Whatever they had put on, it is off now.',
     nums: {},
     effect: eff((c) => {
-      for (const en of U.enemies(c)) { soak(c, en); stripBuff(c, en); }
+      for (const en of U.enemies(c)) { soak(c, en); stripBuff(c, en); if (U.up(c)) stripBuff(c, en); }
       setWeather(c, CLEAR);
     }),
     upgrade: { text: '[Soak] all enemies and strip two buffs from each, then set [Weather] to Clear.' },

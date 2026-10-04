@@ -296,6 +296,58 @@ try {
       `objects=${shown.length}`);
     check(shown[0].name === 'Creeping Ivy', 'with a name a player can read', `name=${shown[0].name}`);
   }
+  // ══ Sharpened Tricks that used to change nothing ════════════════════════
+  async function playUp(e, id, target) {
+    e.addCard(CARDS.cardById(id), 'hand', { upgraded: true });
+    const k = e.piles.hand[e.piles.hand.length - 1];
+    e.player.energy = 9;
+    await e.playCard(k.uid, target ? target.id : undefined);
+    return k;
+  }
+  for (const [id, cultivar] of [['tiny-creeper', 'ivy'], ['little-bramble', 'briar'], ['moon-in-the-window', 'moonflower'], ['damp-corner', 'moss']]) {
+    const e = await boo();
+    await playUp(e, 'brambleboo/' + id, null);
+    const p = plants(e)[0];
+    check(p && p.data.cultivar === cultivar && p.data.growth === 1, `${id}+ plants its ${cultivar} at 1 Growth`, `growth=${p && p.data.growth}`);
+  }
+  {
+    const e = await boo();
+    await playUp(e, 'brambleboo/four-corners', null);
+    check(plants(e).length === 2 && plants(e).every(p => p.data.growth === 1), 'Four Corners+ plants both at 1 Growth',
+      plants(e).map(p => p.data.growth).join(','));
+  }
+  {
+    const e = await boo();
+    await play(e, 'brambleboo/tiny-creeper', null);
+    await playUp(e, 'brambleboo/night-watering', null);
+    check(plants(e)[0].data.mature === true, 'Night Watering+ gives 2 Growth: a fresh Plant Matures', `growth=${plants(e)[0].data.growth}`);
+  }
+  {
+    const e = await boo();
+    const c0 = e.counter('compost');
+    await playUp(e, 'brambleboo/careful-snip', null);                 // empty Garden
+    check(e.counter('compost') === c0 + 1, 'Careful Snip+ gains its Compost either way', `compost ${c0} -> ${e.counter('compost')}`);
+  }
+  {
+    // Moss Harvest is 16 Guard: twice base, three times Sharpened.
+    for (const up of [false, true]) {
+      const e = await boo();
+      e.addObject({ kind: 'plant', name: 'Grave Moss', slot: 0, data: { cultivar: 'moss', growth: 2, mature: true, seat: e.player.id, graft: null } });
+      const g = e.player.block;
+      await (up ? playUp : play)(e, 'brambleboo/prune-to-the-heart', null);
+      const want = up ? 48 : 32;
+      check(e.player.block - g === want, `Prune to the Heart${up ? '+' : ''} Harvests ${up ? 'three' : 'two'} times`, `gained ${e.player.block - g}`);
+    }
+  }
+  {
+    for (const up of [false, true]) {
+      const e = await boo();
+      await (up ? playUp : play)(e, 'brambleboo/the-mansion-waters-back', null);
+      const weeds = () => [...e.piles.discard, ...e.piles.draw, ...e.piles.hand].filter(k => k.def.id === 'brambleboo/weed').length;
+      await e.endTurn();
+      check(weeds() === (up ? 0 : 1), `The Mansion Waters Back${up ? '+ adds no' : ' adds its'} Weed`, `weeds=${weeds()}`);
+    }
+  }
 } catch (err) {
   fails.push('THREW: ' + (err && err.stack || err));
 }

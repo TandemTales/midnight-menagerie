@@ -690,7 +690,7 @@ const basics = [
     flavor: 'It has picked a wall. It is committed.',
     nums: {},
     playable: (c) => plotsFree(c) > 0,
-    effect: eff((c) => { plant(c, IVY, {}); }),
+    effect: eff((c) => { plant(c, IVY, { growth: U.up(c) ? 1 : 0 }); }),
     upgrade: { text: '[Plant] a Creeping [Ivy] with 1 Growth.' },
   },
   {
@@ -714,6 +714,8 @@ const basics = [
     flavor: 'Snip. He has thought about it.',
     nums: {},
     effect: eff(async (c) => {
+      // Sharpened: 1 Compost "either way" -- whichever it did, or neither.
+      if (U.up(c)) gainCompost(c, 1);
       const ripe = mature(c);
       if (ripe.length) { const p = await pickPlant(c, { pool: ripe, prompt: 'Harvest which Plant?' }); if (p) harvest(c, p); return; }
       const p = await pickPlant(c, { pool: immature(c), optional: true, prompt: 'Uproot which Plant?' });
@@ -823,7 +825,7 @@ const commons = [
     flavor: 'Small. Extremely opinionated.',
     nums: {},
     playable: (c) => plotsFree(c) > 0,
-    effect: eff((c) => { plant(c, BRIAR, {}); }),
+    effect: eff((c) => { plant(c, BRIAR, { growth: U.up(c) ? 1 : 0 }); }),
     upgrade: { text: '[Plant] a [Briar] with 1 Growth.' },
   },
   {
@@ -833,7 +835,7 @@ const commons = [
     flavor: 'It only opens when nobody is looking.',
     nums: {},
     playable: (c) => plotsFree(c) > 0,
-    effect: eff((c) => { plant(c, MOON, {}); }),
+    effect: eff((c) => { plant(c, MOON, { growth: U.up(c) ? 1 : 0 }); }),
     upgrade: { text: '[Plant] a [Moonflower] with 1 Growth.' },
   },
   {
@@ -843,7 +845,7 @@ const commons = [
     flavor: 'Every house has one. This one has nine.',
     nums: {},
     playable: (c) => plotsFree(c) > 0,
-    effect: eff((c) => { plant(c, MOSS, {}); }),
+    effect: eff((c) => { plant(c, MOSS, { growth: U.up(c) ? 1 : 0 }); }),
     upgrade: { text: '[Plant] [Grave Moss] with 1 Growth.' },
   },
   {
@@ -1188,7 +1190,7 @@ const uncommons = [
     text: 'Every immature Plant gains 1 Growth. Add a [Weed] to your discard pile.',
     flavor: 'The whole house, at three in the morning.',
     nums: {},
-    effect: eff((c) => { for (const p of immature(c)) grow(c, p, 1); addWeed(c, 1); }),
+    effect: eff((c) => { for (const p of immature(c)) grow(c, p, U.up(c) ? 2 : 1); addWeed(c, 1); }),
     upgrade: { text: 'Every immature Plant gains 2 Growth. Add a [Weed] to your discard pile.' },
   },
   {
@@ -1248,10 +1250,11 @@ const uncommons = [
     playable: (c) => plotsFree(c) >= 2,
     effect: eff(async (c) => {
       const a = await pickCultivar(c, 'Plant what first?');
-      plant(c, a, { force: true });
+      const growth = U.up(c) ? 1 : 0;
+      plant(c, a, { force: true, growth });
       const rest = CULTIVARS.filter(k => k !== a);
       const picked = await c.choose({ options: rest.map(k => CULTIVAR_NAME[k]), prompt: 'And what next?' });
-      plant(c, rest[picked[0]] || rest[0], { force: true });
+      plant(c, rest[picked[0]] || rest[0], { force: true, growth });
     }),
     upgrade: { text: '[Plant] two different Cultivars into two empty Plots, each with 1 Growth.' },
   },
@@ -1302,7 +1305,7 @@ const uncommons = [
       if (!p) return;
       const cultivar = p.data.cultivar;
       harvest(c, p);
-      plant(c, cultivar, { force: true });
+      plant(c, cultivar, { force: true, growth: U.up(c) ? 1 : 0 });
     }),
     upgrade: { text: '[Harvest] a Mature Plant, then [Plant] that same Cultivar again with 1 Growth.' },
   },
@@ -1670,6 +1673,7 @@ const rares = [
       const p = await pickPlant(c, { pool: mature(c), prompt: 'Harvest which Plant?' });
       if (!p) return;
       harvestEffect(c, p.data.cultivar, p);
+      if (U.up(c)) harvestEffect(c, p.data.cultivar, p);   // three times, Sharpened
       harvest(c, p);
     }),
     upgrade: { cost: 0, text: '[Harvest] a Mature Plant. Its [Harvest] happens three times, for 1 [Compost]. [Vanish].' },
@@ -1723,7 +1727,7 @@ const rares = [
     effect: eff((c) => {
       const s = U.mm(c);
       s.mansionWaters = true;
-      s.mansionWatersWeed = true;
+      s.mansionWatersWeed = !U.up(c);   // Sharpened: no Weed
       s.wateredIds = {};
     }),
     upgrade: { text: 'This turn, every Trick you pay Nerve for grows a Plant, once each. No [Weed]. [Vanish].' },
