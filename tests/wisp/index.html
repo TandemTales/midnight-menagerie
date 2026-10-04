@@ -418,6 +418,15 @@ try {
         `Home in the Dark${up ? '+' : ''}: the first Afterglow gains {b} Guard`,
         `block=${e.players[0].block}, printed {b}=${nums('wisp/home-in-the-dark', up).b}`);
     }
+    /* Base then upgraded: the best copy's {b} (pnums), not the first copy's. */
+    const e = await arena();
+    await play(e, 'wisp/home-in-the-dark', null, false);
+    await play(e, 'wisp/home-in-the-dark', null, true);
+    await play(e, 'wisp/wait-wait', e.livingEnemies()[0]);
+    await e.endTurn();
+    check(e.players[0].block >= nums('wisp/home-in-the-dark', true).b,
+      'Home in the Dark then Home in the Dark+: the first Afterglow gains at least the upgraded {b}',
+      `block=${e.players[0].block}, upgraded {b}=${nums('wisp/home-in-the-dark', true).b}`);
   }
   {
     for (const up of [false, true]) {

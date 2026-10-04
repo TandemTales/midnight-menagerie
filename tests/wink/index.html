@@ -496,6 +496,14 @@ try {
     const diffUp = await run(true, ALTERNATOR);
     check(diffUp === UPNUMS(id).n && diffUp !== diff, 'and its upgrade really moves that number',
       `${diff} -> ${diffUp}`);
+    /* Two copies: each adds its own printed number (pwSum), so base then
+       upgraded pays at least the upgraded copy - never the first copy's. */
+    const e = await winkVs(ALTERNATOR);
+    await play(e, id); await playUp(e, id);
+    const before = eyesOf(e);
+    await play(e, 'wink/read-the-room');
+    const both = eyesOf(e) - before;
+    check(both >= diffUp, 'House Pattern then House Pattern+ Opens at least the upgraded number', `+${both} (upgraded alone +${diffUp})`);
   }
   {
     const id = 'wink/loom-logic';
