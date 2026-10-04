@@ -298,7 +298,7 @@ function reduceHarm(c, n) {
   const gone = Math.min(n, harm(c));
   s.buriedHarm = harm(c) - gone;
   if (gone > 0 && harm(c) === 0 && s.monumentToSmallThings) {
-    s.monumentBonus = (s.monumentBonus || 0) + 2;
+    s.monumentBonus = (s.monumentBonus || 0) + (s.monumentToSmallThings | 0);
   }
   return gone;
 }
@@ -504,8 +504,9 @@ U.onTracker(SLUG, (e, s, seat) => {
     const taken = Math.min(cap, amount);
     /* Emergency Burial covers ONE hit however big; every other Bury is a
        capacity that several hits chip away at. */
-    st.burialCap = st.burialOneHit ? 0 : cap - taken;
-    st.burialOneHit = false;
+    const wholeHits = st.burialOneHit | 0;
+    st.burialCap = wholeHits === 1 ? 0 : cap - taken;
+    st.burialOneHit = Math.max(0, wholeHits - 1);
     addHarm(c, taken);
     h.setAmount(amount - taken);
   }, { owner: seat });
@@ -1223,7 +1224,13 @@ const uncommons = [
     text: 'Postpone the whole of the next enemy hit as [Buried Harm].',
     flavor: 'Down. Now. All the way down.',
     nums: {},
-    effect: eff((c) => { U.mm(c).burialOneHit = true; openBurial(c, 999); }),
+    /* `burialOneHit` is a COUNT of whole hits, not a flag: the upgrade promises
+       two, and a boolean could only ever cover one (the upgrade shipped dead). */
+    effect: eff((c) => {
+      const s = U.mm(c);
+      s.burialOneHit = Math.max(s.burialOneHit | 0, U.up(c) ? 2 : 1);
+      openBurial(c, 999);
+    }),
     upgrade: { text: 'Postpone the whole of the next two enemy hits as [Buried Harm].' },
   },
 
@@ -1604,7 +1611,7 @@ const rares = [
     text: 'Clearing [Buried Harm] before it costs you Courage makes future [Epitaph]s {m0} stronger. It stacks.',
     flavor: 'For the ones nobody built anything for.',
     nums: { m0: 2 },
-    effect: eff((c) => power(c, 'mossbit/monument-to-small-things', (x, s) => { s.monumentToSmallThings = true; })),
+    effect: eff((c) => power(c, 'mossbit/monument-to-small-things', (x, s) => { s.monumentToSmallThings = N(x).m0; })),
     upgrade: { nums: { m0: 3 } },
   },
   {
