@@ -3779,8 +3779,8 @@ button.kit-hw-enamel:focus-visible {
 }
 .kit-scrim--room > .kit-scrim__room {
   /* the candle pools, low on each side and up under the plaque */
-  --wl1-x: 4vw;   --wl1-y: 84vh;  --wl1-w: 46vw;  --wl1-h: 92vh;
-  --wl2-x: 96vw;  --wl2-y: 84vh;  --wl2-w: 46vw;  --wl2-h: 92vh;
+  --wl1-x: 4vw;   --wl1-y: 70vh;  --wl1-w: 50vw;  --wl1-h: 110vh;
+  --wl2-x: 96vw;  --wl2-y: 70vh;  --wl2-w: 50vw;  --wl2-h: 110vh;
   --wl3-x: 50vw;  --wl3-y: 6vh;   --wl3-w: 64vw;  --wl3-h: 40vh;
   /* and the moon, cold, high on both sides */
   --ml1-x: 3vw;   --ml1-y: 24vh;  --ml1-w: 30vw;  --ml1-h: 60vh;
@@ -3790,8 +3790,8 @@ button.kit-hw-enamel:focus-visible {
 .kit-scrim--room::after {
   content: ''; position: absolute; inset: 0; pointer-events: none;
   background:
-    radial-gradient(64% 70% at 50% 50%, color-mix(in srgb, var(--kit-void) 72%, transparent) 0%, color-mix(in srgb, var(--kit-void) 46%, transparent) 70%, color-mix(in srgb, var(--kit-void) 24%, transparent) 100%),
-    linear-gradient(to bottom, color-mix(in srgb, var(--kit-void) 30%, transparent), transparent 22%, transparent 80%, color-mix(in srgb, var(--kit-void) 34%, transparent));
+    radial-gradient(64% 70% at 50% 50%, color-mix(in srgb, var(--kit-void) 72%, transparent) 0%, color-mix(in srgb, var(--kit-void) 40%, transparent) 70%, color-mix(in srgb, var(--kit-void) 8%, transparent) 100%),
+    linear-gradient(to bottom, color-mix(in srgb, var(--kit-void) 22%, transparent), transparent 22%, transparent 80%, color-mix(in srgb, var(--kit-void) 30%, transparent));
 }
 
 /* ── the house's controls, finished (round 26) ──
@@ -3865,6 +3865,7 @@ button.kit-hw-enamel:focus-visible {
 /* the swatch roundel */
 .kit-hw-swatch {
   --disc: 30px;
+  --sw1: #8d8598; --sw2: #5e6472; --sw3: #cfd6e6; --sw4: #b08a4a;   /* the palette's four, set per choice */
   position: relative;
   display: inline-flex; align-items: center; gap: calc(var(--disc) * .3);
   min-width: 0; margin: 0; padding: 2px 4px 2px 0;
@@ -3886,7 +3887,7 @@ button.kit-hw-enamel:focus-visible {
   background:
     url("../../assets/ui/kit/hw-glaze.webp") 50% 50% / 76% 76% no-repeat,
     url("../../assets/ui/kit/roundel.webp") 50% 50% / 100% 100% no-repeat,
-    conic-gradient(from -45deg, var(--sw1, #888) 0 25%, var(--sw2, #666) 0 50%, var(--sw3, #aaa) 0 75%, var(--sw4, #555) 0 100%) 50% 50% / 74% 74% no-repeat;
+    conic-gradient(from -45deg, var(--sw1) 0 25%, var(--sw2) 0 50%, var(--sw3) 0 75%, var(--sw4) 0 100%) 50% 50% / 74% 74% no-repeat;
   filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .85)) saturate(.55) brightness(.72);
   transition: filter var(--t-quick) var(--ease-out);
 }
