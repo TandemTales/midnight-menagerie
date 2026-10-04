@@ -695,7 +695,9 @@ const commons = [
     text: 'The first Trick you [Fold] each turn gets {n} more [Crease].',
     flavor: 'He has done this eleven thousand times.',
     nums: { n: 1 },
-    effect: eff((c) => power(c, 'crinkle/practised-hands', (x, s) => { s.practisedHands = N(x).n; })),
+    /* The best copy's {n}, recorded on every play: inside the install-once
+       closure only the FIRST copy's number was ever kept. */
+    effect: eff((c) => { power(c, 'crinkle/practised-hands', () => {}); U.keepBest(c, 'practisedHands', N(c).n); }),
     upgrade: { cost: 1 },
   },
   {
@@ -1091,7 +1093,7 @@ const uncommons = [
     text: 'Whenever you [Fold] a Trick to exactly two [Crease]s, gain {b} Guard.',
     flavor: 'Under the heaviest book on the heaviest shelf.',
     nums: { b: 9 },
-    effect: eff((c) => power(c, 'crinkle/pressed-flat', (x, s) => { s.pressedFlat = N(x).b; })),
+    effect: eff((c) => { power(c, 'crinkle/pressed-flat', () => {}); U.keepBest(c, 'pressedFlat', N(c).b); }),
     upgrade: { nums: { b: 13 } },
   },
   {
@@ -1502,7 +1504,7 @@ const coopCards = [
     text: 'Whenever a friend plays a Trick costing 2 or more, gain {p} [Paper].',
     flavor: 'Everyone’s books, on everyone’s shelves.',
     nums: { p: 1 },
-    effect: eff((c) => power(c, 'crinkle/shared-library', (x, s) => { s.sharedLibrary = N(x).p; })),
+    effect: eff((c) => { power(c, 'crinkle/shared-library', () => {}); U.keepBest(c, 'sharedLibrary', N(c).p); }),
     upgrade: { nums: { p: 2 } },
   },
   {

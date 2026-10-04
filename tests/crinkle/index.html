@@ -386,6 +386,31 @@ try {
       `hits ${over.hits}`);
     check(over.energy === 3, 'and spends none of it', `energy ${over.energy}`);
   }
+
+  // ── a Power keeps the BEST copy played, not the first ─────────────────────
+  {
+    /* Pressed Flat's {b} was written inside the install-once closure, so
+       Pressed Flat then Pressed Flat+ paid the base 9 Guard. */
+    const run = async (seq) => {
+      const e = await crinkle();
+      for (const up of seq) {
+        e.addCard(CARDS.cardById('crinkle/pressed-flat'), 'hand', { upgraded: up });
+        await playCard(e, e.piles.hand[e.piles.hand.length - 1]);
+      }
+      const k = give(e, 'crinkle/sharp-edge');
+      e.addCard(CARDS.cardById('crinkle/first-fold'), 'hand', {});
+      const fold = e.piles.hand[e.piles.hand.length - 1];
+      onlyInHand(e, k, fold);
+      k.meta['#crease'] = 1;            // one Fold from exactly two
+      e.player.block = 0;
+      await playCard(e, fold);
+      return e.player.block;
+    };
+    const base = await run([false]), upOnly = await run([true]), both = await run([false, true]);
+    check(upOnly - base === 4, 'Pressed Flat+ pays 4 more Guard than Pressed Flat (13 vs 9)', `base ${base}, upgraded ${upOnly}`);
+    check(both === upOnly, 'Pressed Flat then Pressed Flat+ pays the upgraded 13, not the base 9',
+      `base then upgraded ${both}, upgraded alone ${upOnly}`);
+  }
 } catch (err) {
   fails.push('THREW: ' + (err && err.stack || err));
 }
