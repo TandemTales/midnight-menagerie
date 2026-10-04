@@ -438,6 +438,33 @@ U.onTracker(SLUG, (e, s, seat) => {
     if (card && isAttackCard(card)) card.unplayable = true;
   });
 
+  /* MONSTER SQUAD: "Once a round per other Kid: when they damage an enemy with
+     {f} or more Fright, Scare {f} from it. That Kid draws a Trick and gains {b}
+     Guard, and you gain {l} Lurk." It stored its numbers and nothing read them,
+     so the Rare did nothing at all. This is the reader, at the best copy's
+     numbers (see the card). */
+  e.on('damage', (ev) => {
+    if (!ev || !seat || !ev.sourceId || ev.sourceId === seat.id) return;
+    const from = e.actor(ev.sourceId);
+    if (!from || from.side !== 'player') return;
+    const target = e.actor(ev.targetId);
+    if (!target || target.side === 'player' || !(target.hp > 0)) return;
+    const c = fake();
+    const st = U.mm(c);
+    const sq = st.squad;
+    if (!sq || U.stacks(c, c.self, 'boggle/monster-squad') <= 0) return;
+    if (frightOn(c, target) < sq.f) return;
+    const round = U.turn(c);
+    if (!st.squadRound || st.squadRound.round !== round) st.squadRound = { round, seen: [] };
+    if (st.squadRound.seen.includes(from.id)) return;
+    if (!scare(c, target, sq.f, (x) => {
+      if (x.giveDraw) x.giveDraw(from, 1);
+      x.giveBlock(from, sq.b);
+      gainLurk(x, sq.l);
+    })) return;
+    st.squadRound.seen.push(from.id);
+  });
+
   U.onPlayerTurn(e, 'start', () => {
     const c = fake();
     const st = U.mm(c);

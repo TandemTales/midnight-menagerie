@@ -11,7 +11,7 @@
 <script type="module">
 import { RNG } from '../../game/src/core/rng.js';
 import { CombatEngine } from '../../game/src/combat/engine.js';
-import { makeDummySetup } from '../../game/src/combat/dummy.js';
+import { makeDummySetup, startDummyParty } from '../../game/src/combat/dummy.js';
 import { installTrackers } from '../../game/src/data/companions/_util.js';
 import * as CARDS from '../../game/src/data/cards.js';
 
@@ -262,6 +262,37 @@ try {
     check(mid === 1 && e.counter('lurk') === 3, 'Underbed Kingdom then Underbed Kingdom+ gains 1, then the upgraded 2 Lurk',
       `lurk ${mid} -> ${e.counter('lurk')}`);
     check(e.counterMax('lurk') === 7, 'and the cap is raised once, to 7', `max=${e.counterMax('lurk')}`);
+  }
+
+  // ── 9b. Monster Squad: it stored its numbers and nothing read them ─────────
+  for (const seq of [[false], [false, true]]) {
+    const e = await startDummyParty(new RNG(4242), 2, {
+      companion: 'boggle', maxHp: 68,
+      decks: [CARDS.startingDeckFor('boggle'), CARDS.startingDeckFor('boggle')],
+    });
+    installTrackers(e, 'boggle');
+    const [a, b] = e.players;
+    for (const up of seq) {
+      e.addCard(CARDS.cardById('boggle/monster-squad'), 'hand', { to: a, upgraded: up });
+      const hand = e.pilesOf(a).hand;
+      a.energy = 9;
+      await e.playCard(hand[hand.length - 1].uid);
+    }
+    const t = e.livingEnemies()[0];
+    t.maxHp = 999; t.hp = 999;
+    e.applyStatus(t, 'fright', 6);
+    const lurk0 = e.counter('lurk', a.id), hand0 = e.pilesOf(b).hand.length;
+    b.block = 0;
+    e.addCard(CARDS.cardById('boggle/little-chomp'), 'hand', { to: b });
+    const bh = e.pilesOf(b).hand;
+    b.energy = 9;
+    await e.playCard(bh[bh.length - 1].uid, t.id);
+    const want = seq.length > 1 ? 9 : 6;
+    const tag = seq.length > 1 ? 'Monster Squad then Monster Squad+' : 'Monster Squad';
+    check(stacks(e, t, 'fright') === 2, `${tag}: a friend hitting a 4+ Fright enemy Scares 4 from it`, `fright=${stacks(e, t, 'fright')}`);
+    check(b.block === want, `and that Kid gains ${want} Guard`, `guard=${b.block}`);
+    check(e.pilesOf(b).hand.length === hand0 + 1, 'and draws a Trick', `hand ${hand0} -> ${e.pilesOf(b).hand.length}`);
+    check(e.counter('lurk', a.id) === lurk0 + 1, 'and Boggle gains 1 Lurk', `lurk ${lurk0} -> ${e.counter('lurk', a.id)}`);
   }
 
   // ── 10. Keep the Lights Off: "the next {n} Attacks", with no "this turn" ──
