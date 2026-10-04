@@ -1321,7 +1321,8 @@ const rares = [
     text: 'Fill your [Paper]. [Vanish].',
     flavor: 'The stationery cupboard does not have a back.',
     nums: {},
-    effect: eff((c) => gainPaper(c, paperMax(c) - paper(c))),
+    // the upgrade's draw is in its TEXT only: nothing drew, so Endless Ream+ was the base card
+    effect: eff((c) => { gainPaper(c, paperMax(c) - paper(c)); if (U.up(c)) U.draw(c, 1); }),
     upgrade: { cost: 0, text: 'Fill your [Paper] and draw a Trick. [Vanish].' },
   },
   {
