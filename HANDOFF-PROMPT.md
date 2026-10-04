@@ -52,19 +52,21 @@ check reads Taffy's cream gloss as background; leave it red, do not lower it).
   does something.
 - **Survey 3** (`docs/ui-pass/SURVEY-2026-10-04.md`): what is owed next.
 
-**IN FLIGHT AT HANDOFF (check before starting anything):**
-- **Round 27, THE CARD** (`docs/ui-pass/BRIEF-r27.md`): worktrees
-  `C:/UILOOP/r27/wt/r27-card-{a,b,c}` (PERYLENE, HANSA, QUINACRIDONE; ports
-  9111-9113; BASE `5cb816c`; baseline captures `SHANTUNG` in
-  `C:/UILOOP/r27/judging/r27/card/`). The first run hit a session limit with
-  all three mid-build; it was RESUMED as run `wf_0a2772a4-aba`. If that run
-  did not finish: look at each branch's commits and `JUDGING/<CODE>/`, and
-  relaunch `docs/ui-pass/round-workflow.js` with `round-27.args.json` plus
-  `repo`, `uiloop: C:/UILOOP/r27`, `base: 5cb816c`, and a `resume` string on
-  each unfinished builder (see how round 21 and 27 were resumed in the
-  memory notes). Then merge the winner, battery (three phases), graft,
-  README row, push.
-- Nothing else is running. Dev is pushed.
+**FIRST JOB FOR THE NEXT SESSION: round 27's GRAFT.** Round 27 (THE CARD)
+is judged and MERGED (`a3d33ddc`): QUINACRIDONE 7.08 vs 5.46 (+1.62), 2 of
+2, four of five screens. The graft is NOT done. Everything it needs is in
+`docs/ui-pass/VERDICTS-r27.md`: both judges' fix lists and grafts and all
+three builders' notes. In short: the rules text is still ~9-10 px at 1280
+on combat-crowd and shop (bring it to PERYLENE's ~12-13 px, one size on every
+card); the type chips become gilt enamel cartouches set in HANSA's engraved
+rule ('-- ATTACK --'); PERYLENE's faint type watermarks (claw, shield, star)
+under the damask, off the text; HANSA's burnished panel edge and gilt inner
+rule; the Service card its own tone; the pile viewer's cards full-size.
+Losers' branches: ui/r27-card-a (PERYLENE), ui/r27-card-b (HANSA); worktrees
+under C:/UILOOP/r27/wt/. Cut the graft from dev's tip, PORT ideas, run
+tests/hand-cards, card-face, steam-deck, chrome, piles-reachable, gamepad.
+Then the battery (three phases), README row for round 27, push, and on to
+round 28 (below). Nothing else is running.
 
 **OPEN, NAMED:**
 - The Foyer (16.3 ms) and Greenhouse (15.9 ms) fights are over the 15.5 ms

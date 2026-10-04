@@ -180,6 +180,8 @@ so round 2 runs six at once, as round 1 did.
 
 | 26 | **THE BOARDS' WALLS AND THE DIALOGS** — reward, event, rest, gameover (one shared room), settings, piles: the smeared wall pictures, dialogs on a void, the last web controls, 9 px italics | SANGUINE 6.90 · VERMEILLE 6.72 · MADDERROSE 6.51 · the screens before **5.11** | SANGUINE, 2 of 2, five of six screens: the room shell hangs drawn portraits of the house's own Companions with cartouche nameplates, and the dialogs stand on a dimmed room. **+1.79.** VERMEILLE won the pile viewer; both judges asked for its moonlit windows back and its medallions, and MADDERROSE's colour fort picture | `1afb3e6` |
 
+| 27 | **THE CARD** — the painted rules panel, the rules a size up at 1280, the nine-card fan (combat-boss, combat-crowd, reward, shop, piles), briefed from SURVEY 3 | QUINACRIDONE 7.08 · PERYLENE 6.85 · HANSA 6.34 · the cards before **5.46** | QUINACRIDONE, 2 of 2, four of five screens: embossed damask in the type's colour, gilt corners, an enamel type chip, one name size per row. **+1.62.** The Deck-first angle won; its rules are still ~10 px at 1280, so the graft takes PERYLENE's larger type and HANSA's engraved edge (`VERDICTS-r27.md`) | `a3d33ddc` |
+
 **Scores anchor to the candidates beside them.** Round 0's winner scored 7.0 in
 round 0 and 5.58 as round 1's baseline: the judges grew stricter as the field
 improved. Compare a winner with the baseline IN ITS OWN ROUND (round 1 REFINE:
@@ -202,6 +204,7 @@ Against their own baselines:
 | 11 | VARIATION **+2.17** (sheets 3-3.5 -> 6-7) | — |
 | 12 | — | THE LAST WEB CHROME **+5.9** (per-screen winners 7.33 / 8.00 / 7.67 against 2 / 1 / 1.33) |
 | 13 | CHROME, second pass **+2.22** (coach 6.0 -> 8.0, veil 6.0 -> 8.67, toast 5.0 -> 7.0) | — |
+| 27 | THE CARD **+1.62** (resumed after a session limit cut all three builders mid-round) | — |
 | 26 | THE BOARDS' WALLS AND THE DIALOGS **+1.79** (the painted-wall angle, not the literal one) | — |
 | 25 | THE LAST FOUR ROOMS **+2.38** (the best rooms of the survey; the literal angle again) | — |
 | 24 | THE HOUSE'S OWN ROOMS **+3.78** (the baseline 2.94; faster on every fight) | — |
