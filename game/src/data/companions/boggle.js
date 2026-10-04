@@ -86,13 +86,30 @@ function setAware(c, e) {
 function hide(c, e, opts = {}) {
   if (!e) return false;
   if (isUnaware(c, e)) return false;
-  if (isSuspicious(c, e) && !opts.force) return false;
+  if (isSuspicious(c, e) && !opts.force && !seeNothing(c)) return false;
   setAware(c, e);
   U.apply(c, e, UNAWARE, 1);
   const s = U.mm(c);
   s.unawareThisTurn = (s.unawareThisTurn || 0) + 1;
   U.fire(c, 'becameUnaware', { enemy: e });
   armSearch(c, e);
+  return true;
+}
+
+/**
+ * You Didn't See Anything: the first hide each turn may take a Suspicious
+ * enemy, paid for with Lurk. Its Power used to record the price in
+ * `s.seeNothing` and nothing ever read it, so the whole Power did nothing;
+ * this is the reader. Spends the Lurk only when it is there to spend.
+ */
+function seeNothing(c) {
+  const s = U.mm(c);
+  const price = s.seeNothing;
+  if (!(price > 0)) return false;
+  if (U.got(c, 'seeNothingUsed') > 0) return false;
+  if (lurk(c) < price) return false;
+  U.bump(c, 'seeNothingUsed');
+  spendLurk(c, price);
   return true;
 }
 
@@ -112,6 +129,11 @@ function suspect(c, e, opts = {}) {
     st.suspiciousLastEnemyTurn = true;
   }
   U.fire(c, 'becameSuspicious', { enemy: e, ambushed: !!opts.ambushed });
+  // Lump Under the Blanket's mark. Called here, not through U.onHook: a hook
+  // only runs while its statusId is on Boggle, and nothing ever applied the
+  // 'boggle/lump-mark' status it was registered under, so it never once fired.
+  const lump = takeMark(c, e, 'lump');
+  if (lump > 0) fright(c, e, lump);
   return true;
 }
 
@@ -217,8 +239,26 @@ function resolveSearch(engine, e) {
   if (!e || !e.alive) return;
   U.apply(c, e, FRIGHT, 2);
   U.fire(c, 'search', { enemy: e });
+  const staysAware = searchMarks(c, e);
   setAware(c, e);
-  suspect(c, e);
+  if (!staysAware) suspect(c, e);
+}
+
+/**
+ * The promises a Search pays out: Don't Turn Around's extra Fright, Don't
+ * Check Again's Fright and "ends Aware, not Suspicious", Blanket Fort's Guard.
+ * These were an U.onHook under the statusId 'boggle/search-marks', which no
+ * card ever applied, so not one of them had ever paid. Returns true when the
+ * Searcher must end Aware.
+ */
+function searchMarks(c, e) {
+  const s = U.mm(c);
+  const extra = takeMark(c, e, 'dontTurn');
+  if (extra > 0) fright(c, e, extra);
+  const stop = takeMark(c, e, 'dontCheck');
+  if (stop > 0) fright(c, e, stop);
+  if (s.fortGuard > 0) { U.guard(c, s.fortGuard); s.fortGuard = 0; }
+  return stop > 0;
 }
 
 // ── Fright and Scare ────────────────────────────────────────────────────────
@@ -243,6 +283,9 @@ function scare(c, e, n, fn) {
   let spend = need;
   const key = 'fotd:' + eid(e);
   if (s.fearOfDark && U.once(c, key)) spend = 0;
+  // Don't Scream Yet: the next {n} Scares this turn keep their Fright. The
+  // count was stored and never read, so its upgrade (2 -> 3) did nothing.
+  else if (s.noScreamYet > 0) { s.noScreamYet--; spend = 0; }
   if (spend > 0) {
     U.unapply(c, e, FRIGHT, spend);
     if (s.biggerInHead) {
@@ -354,6 +397,23 @@ U.onTracker(SLUG, (e, s, seat) => {
     if (st.pending) delete st.pending[ev.actorId];
   });
 
+  /* Nobody's Here: once a turn, an Aware enemy carrying enough Fright that is
+     about to aim a directed Attack at Boggle is made Unaware first, so it
+     Searches instead. Its Power stored the threshold and nothing read it. An
+     enemy's TURN_START is emitted before its pending move is read, so the
+     Search override lands in time. */
+  e.on('turn:start', (ev) => {
+    if (!ev || ev.side !== 'enemy') return;
+    const c = fake();
+    const st = U.mm(c);
+    if (!(st.nobodysHere > 0) || U.stacks(c, c.self, 'boggle/nobodys-here') <= 0) return;
+    if (st.nobodysHereTurn === e.turn) return;
+    const en = e.actor(ev.actorId);
+    if (!en || !en.alive || !isAware(c, en)) return;
+    if (frightOn(c, en) < st.nobodysHere || !aimedAtMe(c, en)) return;
+    if (hide(c, en)) st.nobodysHereTurn = e.turn;
+  });
+
   // "have I played an Attack yet this turn", for Wait For It and The Long Wait.
   e.on('card:play', (ev) => {
     /* `seat` here is the ACTOR the tracker was installed for, the way
@@ -388,6 +448,9 @@ U.onTracker(SLUG, (e, s, seat) => {
     st.plainSight = false;
     st.noScreamYet = 0;
     st.attackedThisTurn = false;
+    // "before your next turn": Lump Under the Blanket and Blanket Fort lapse here
+    if (st.marks) for (const id of Object.keys(st.marks)) delete st.marks[id].lump;
+    st.fortGuard = 0;
     if (st.noAttacks) {
       st.noAttacks = false;
       for (const k of U.cardsIn(c, 'hand')) if (isAttackCard(k)) k.unplayable = false;
@@ -1427,7 +1490,8 @@ const rares = [
     text: 'Once a turn, when an Aware enemy with {f} or more [Fright] aims a directed Attack at you, make it [Unaware] first.',
     flavor: 'Nobody at all.',
     nums: { f: 6 },
-    effect: eff((c) => power(c, 'boggle/nobodys-here', 1, (x) => { U.mm(x).nobodysHere = N(x).f; })),
+    // the LOWEST threshold among the copies played: an upgraded copy after a base one still lowers it
+    effect: eff((c) => { const s = U.mm(c); s.nobodysHere = Math.min(s.nobodysHere || 99, N(c).f); power(c, 'boggle/nobodys-here', 1); }),
     upgrade: { nums: { f: 4 } },
   },
   {
@@ -1472,7 +1536,8 @@ const rares = [
     text: 'Hiding Tricks may target [Suspicious] enemies. The first each turn works if you spend {l} [Lurk].',
     flavor: 'You did not. You were asleep.',
     nums: { l: 2 },
-    effect: eff((c) => power(c, 'boggle/you-didnt-see-anything', 1, (x) => { U.mm(x).seeNothing = N(x).l; })),
+    // the CHEAPEST price among the copies played; read by seeNothing() in hide()
+    effect: eff((c) => { const s = U.mm(c); s.seeNothing = Math.min(s.seeNothing || 99, N(c).l); power(c, 'boggle/you-didnt-see-anything', 1); }),
     upgrade: { nums: { l: 1 } },
   },
   {
@@ -1584,19 +1649,8 @@ function takeMark(c, e, key) {
   return n;
 }
 
-// marks that fire off Boggle's own hooks
-U.onHook('becameSuspicious', 'boggle/lump-mark', (c, p) => {
-  const n = takeMark(c, p.enemy, 'lump');
-  if (n > 0) fright(c, p.enemy, n);
-});
-U.onHook('search', 'boggle/search-marks', (c, p) => {
-  const s = U.mm(c);
-  const extra = takeMark(c, p.enemy, 'dontTurn');
-  if (extra > 0) fright(c, p.enemy, extra);
-  const stop = takeMark(c, p.enemy, 'dontCheck');
-  if (stop > 0) { fright(c, p.enemy, stop); markSuspicious(c, p.enemy, { to: 'aware' }); }
-  if (s.fortGuard > 0) { U.guard(c, s.fortGuard); s.fortGuard = 0; }
-});
+// The marks are paid by suspect() (Lump) and searchMarks() (the Search ones),
+// directly: as U.onHook entries they were gated on statuses nobody applied.
 
 export default {
   slug: SLUG,

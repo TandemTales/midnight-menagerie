@@ -57,6 +57,56 @@ const WAIVED_G1 = [
 /* ------------------------------------------------------------------ */
 /* WAIVERS, group 2 (pipkin, boggle, crinkle, hush): [id, 'why this board cannot show it'] */
 const WAIVED_G2 = [
+  /* Pipkin's Patch is an array on the seat's scratch (U.mm().patch); the snapshot
+     sees only `objects=1` for it, never what is planted, and this board's Patch
+     starts empty, so a Harvest has nothing to take. Each proof: base vs upgraded
+     from the same seed, with the condition set up through the engine. */
+  ['pipkin/plant-a-little-one', 'Plants into the Patch, which the snapshot cannot see: Patch seed -> seed,seed'],
+  ['pipkin/pocket-seeds', 'Plants into the Patch, which the snapshot cannot see: 2 Seeds -> 3'],
+  ['pipkin/scatter-on-landing', 'Plants into the Patch, which the snapshot cannot see: 2 Seeds -> 3'],
+  ['pipkin/seed-stash', 'Plants into the Patch, which the snapshot cannot see: 1 Seed now -> 2 (and 2 next turn)'],
+  ['pipkin/heirloom-seeds', 'Plants into the Patch, which the snapshot cannot see: 2 Seeds -> 3'],
+  ['pipkin/seed-vault', 'Patch capacity and Seeds, neither in the snapshot: cap 8 + 2 Seeds -> cap 9 + 3 Seeds'],
+  ['pipkin/damp-corner', 'Advances Patch objects and this Patch is empty: with 3 Seeds, sprout -> pumpkin'],
+  ['pipkin/warm-windowsill', 'Advances Patch objects and this Patch is empty: with 3 Seeds, 2 advanced -> 3'],
+  ['pipkin/pick-one', 'Harvest needs a Pumpkin and this Patch is empty: with 3 Pumpkins, Nerve +1 -> +2'],
+  ['pipkin/little-harvest', 'Harvest needs a Pumpkin and this Patch is empty: with 3 Pumpkins, hand 5 -> 6'],
+  ['pipkin/choose-the-biggest', 'Harvest needs a Pumpkin and this Patch is empty: with 3 Pumpkins, Guard 19 -> 25, Empowered 12 -> 16'],
+  ['pipkin/pantry-raid', 'Harvest needs Pumpkins and this Patch is empty: with 3 Pumpkins, draws 2 -> 3'],
+  ['pipkin/replant-the-rind', 'Harvest needs a Pumpkin and this Patch is empty: with 3 Pumpkins, replants 2 -> 3 Seeds'],
+  ['pipkin/picnic-basket', 'Harvest needs a Pumpkin and this Patch is empty: with 3 Pumpkins, heal 8 -> 11 (hurt) or Guard 16 -> 20 (full)'],
+  ['pipkin/harvest-festival', 'Harvest needs a Pumpkin and this Patch is empty: with Pumpkins, Guard 6 -> 9'],
+  ['pipkin/hang-time', 'The extra draw lands next turn and the 10-card deck reshuffles it away by the last reading: hand at the next turn 6 -> 7'],
+  ['pipkin/big-frog-energy', 'Pays on gaining Plump and on a Deflate, which the two follow-up plays never do: Puff Up + Squash Tackle after it, Guard 5 -> 7 and Empowered 8 -> 10'],
+  ['pipkin/bigger-than-the-doorway', 'Pays on Plump gained above 3; this board never passes 3: at 3 Plump, Big Breath gives Guard 8 -> 11'],
+  ['pipkin/the-patch-fights-back', 'Needs a Harvest then a Land in one turn, with an empty Patch: Pick One then Belly Drop, Land bonus 20 -> 26'],
+  /* Boggle: both enemies start Aware, the first aims a directed Attack at him,
+     Fright starts at 0 and Lurk is seeded at 3 of a cap of 5. */
+  ['boggle/under-the-bed', 'The Guard is for when no enemy is Aware, and both are: with both Unaware, Guard 4 -> 7'],
+  ['boggle/hide-under-something', 'The Guard is for when no enemy is Aware, and both are: with both Unaware, Guard 6 -> 9'],
+  ['boggle/wrong-room', 'The Fright is for an enemy NOT aiming at Boggle, and the target is: target intending to defend, Fright 2 -> 4'],
+  ['boggle/dont-move', 'Needs an Unaware enemy and none is: target Unaware, Fright 3 -> 5 and Guard 11 -> 15'],
+  ['boggle/cozy-darkness', 'Counts Unaware/Suspicious enemies and none is: one Unaware, Guard 4 -> 6'],
+  ['boggle/no-one-here-but-dust', 'The Fright is for when only one enemy lives, and two do: one enemy, Fright 3 -> 5'],
+  ['boggle/every-creak-means-me', 'Doubles Fright up to a cap, and Fright starts at 0: at 12 Fright, +8 -> +12'],
+  ['boggle/hiding-place-inside-a-hiding-place', 'Upgraded branches are Unaware/Suspicious, target is Aware: Unaware Fright 4 -> 6; Suspicious Guard 10 -> 14 and draw 1 -> 2'],
+  ['boggle/the-long-wait', 'Lurk is seeded at 3 of a cap of 5, so +2 and +3 both cap: from 0 Lurk, 2 -> 3'],
+  ['boggle/keep-the-lights-off', 'Counts Ambushes, which need an Unaware target: three Ambushes, the third leaves it Suspicious -> Aware'],
+  ['boggle/lump-under-the-blanket', 'Pays when the enemy becomes Suspicious, which needs an Ambush on an Unaware enemy: Fright 2 -> 3'],
+  ['boggle/dont-turn-around', 'Marks an Unaware enemy and none is: hidden, then it Searches, Fright 5 -> 7'],
+  ['boggle/dont-check-again', 'Marks an Unaware enemy and none is: hidden, then it Searches, Fright 7 -> 10 and it ends Aware'],
+  ['boggle/dont-scream-yet', 'Needs Scares, which need Fright, which starts at 0: 12 Fright and five Ankle Grabs, Fright left 9 -> 12'],
+  ['boggle/you-didnt-see-anything', 'Pays for hiding a Suspicious enemy, and none is hidden here: Lurk 3, hide a Suspicious one, Lurk left 1 -> 2'],
+  /* Hush: his Shadow Pocket starts empty, he starts Seen, and nothing in the
+     deck is a Status or Curse. */
+  ['hush/nobody-saw-that', 'The draw is for when already Unseen, and he is Seen: Unseen first, hand 3 -> 4'],
+  ['hush/shhh', 'Discounts Pocket Tricks and the Pocket is empty: a 2-cost Trick in it, cost 1 -> 0'],
+  ['hush/hidey-hole', 'Pocket capacity, and nothing fills the Pocket: six Stashes, Pocket holds 4 -> 5'],
+  ['hush/bigger-on-the-inside', 'Pocket capacity, and nothing fills the Pocket: seven Stashes, Pocket holds 5 -> 6'],
+  ['hush/empty-the-pockets', 'Plays Contraband from the Pocket and it is empty: two Contraband, Guard 8 -> 12'],
+  ['hush/buried-in-the-couch', 'Removes Statuses and Curses and the deck has none: four Spooked in discard, 3 removed for 15 Guard -> 4 for 28'],
+  /* Crinkle */
+  ['crinkle/unbound', 'Paper is seeded at 3, and floor(3/3) = floor(3/2) = 1: at 4 Paper, draws 1 -> 2'],
 ];
 /* ------------------------------------------------------------------ */
 /* WAIVERS, group 3 (mossbit, wink, wisp, mopsy): [id, 'why this board cannot show it'] */

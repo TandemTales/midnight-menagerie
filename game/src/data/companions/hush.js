@@ -94,6 +94,20 @@ const ambush = (c) => c.playedFrom === POCKET && isUnseen(c);
 const pocket = (c) => U.cardsIn(c, POCKET);
 const pocketCap = (c) => BASE_POCKET + (U.mm(c).pocketBonus || 0);
 const pocketRoom = (c) => pocket(c).length < pocketCap(c);
+/**
+ * Widen the Pocket. `pocketCap` above is only Hush's own reading of it: the
+ * ENGINE enforces the stash pile's size itself (`piles.stashCap`, 3), and
+ * refuses the move silently. Hidey Hole and Bigger on the Inside raised the
+ * first and never the second, so the Pocket never held a fourth Trick, and
+ * both Powers -- and both upgrades -- did nothing. Pudding's cemetery widens
+ * the same field the same way.
+ */
+function setPocketBonus(c, bonus) {
+  const s = U.mm(c);
+  s.pocketBonus = Math.max(0, bonus | 0);
+  const piles = c.self && c.self.piles;
+  if (piles && typeof piles.stashCap === 'number') piles.stashCap = Math.max(piles.stashCap, pocketCap(c));
+}
 
 /**
  * Move a Trick between zones deliberately. This is the ONLY way Hush's cards
@@ -239,6 +253,7 @@ U.onTracker(SLUG, (e, s, seat) => {
     st.cannotHide = false;
     st.stayHidden = false;
     st.attacksFromHand = 0;
+    st.pocketPlaysThisTurn = 0;
     st.pocketFullAtStart = pocket(c).length >= pocketCap(c);
     if (st.lightSleeper && isUnseen(c)) U.energy(c, 1);
     if (st.houseHasCorners && !isUnseen(c) && pocket(c).length >= 2) hide(c);
@@ -264,7 +279,20 @@ U.onTracker(SLUG, (e, s, seat) => {
     if (!card) return;
     const isAttack = String((card.type || (card.def && card.def.type)) || '').toLowerCase() === 'attack';
     if (isAttack && card._playedFrom !== POCKET) U.mm(c).attacksFromHand = (U.mm(c).attacksFromHand || 0) + 1;
+    if (card._playedFrom === POCKET) U.mm(c).pocketPlaysThisTurn = (U.mm(c).pocketPlaysThisTurn || 0) + 1;
   });
+
+  /* Bigger on the Inside: "The first Trick in each turn costs 1 less from
+     there." Its Power never had this half at all. Pure, as modifyCardCost must
+     be: it reads the seat's Pocket, the Power and this turn's pocket plays. */
+  e.hooks.add('modifyCardCost', (cost, h) => {
+    const k = h && h.card;
+    const who = seat || (e.players && e.players[0]);
+    if (!k || !who || !who.piles || !who.piles.stash || !who.piles.stash.includes(k)) return cost;
+    if (!(who.statuses && who.statuses.get('hush/bigger-on-the-inside') > 0)) return cost;
+    if (((who.__mm && who.__mm.pocketPlaysThisTurn) || 0) > 0) return cost;
+    return Math.max(0, cost - 1);
+  }, { owner: seat });
 });
 
 // ── Power hooks ─────────────────────────────────────────────────────────────
@@ -913,10 +941,9 @@ const uncommons = [
     text: '[Shadow Pocket] capacity +{n} this combat. The first [Stash] each turn draws {c1}.',
     flavor: 'There is another one behind this one.',
     nums: { n: 1, c1: 1 },
-    effect: eff((c) => power(c, 'hush/hidey-hole', 1, (x) => {
-      U.mm(x).pocketBonus = (U.mm(x).pocketBonus || 0) + N(x).n;
-      U.mm(x).hideyHole = true;
-    })),
+    /* Every copy widens the Pocket by its own {n} (this used to sit inside the
+       install-once callback, so a second copy added nothing). */
+    effect: eff((c) => { setPocketBonus(c, (U.mm(c).pocketBonus || 0) + N(c).n); power(c, 'hush/hidey-hole', 1, (x) => { U.mm(x).hideyHole = true; }); }),
     upgrade: { nums: { n: 2, c1: 1 } },
   },
   {
@@ -1257,9 +1284,7 @@ const rares = [
     text: '[Shadow Pocket] capacity becomes {n}. The first Trick in each turn costs 1 less from there.',
     flavor: 'It is a pocket. It is also, somehow, a room.',
     nums: { n: 5 },
-    effect: eff((c) => power(c, 'hush/bigger-on-the-inside', 1, (x) => {
-      U.mm(x).pocketBonus = Math.max(U.mm(x).pocketBonus || 0, N(x).n - BASE_POCKET);
-    })),
+    effect: eff((c) => { setPocketBonus(c, Math.max(U.mm(c).pocketBonus || 0, N(c).n - BASE_POCKET)); power(c, 'hush/bigger-on-the-inside', 1); }),
     upgrade: { nums: { n: 6 } },
   },
   {

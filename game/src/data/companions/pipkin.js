@@ -40,8 +40,19 @@ const plump = (c) => U.res(c, PLUMP);
 const maxPlump = (c) => (U.stacks(c, c.self, 'pipkin/bigger-than-the-doorway') > 0 ? 5 : 3);
 const heavyAt = (c) => (U.stacks(c, c.self, 'pipkin/bigger-than-the-doorway') > 0 ? 4 : 3);
 const heavyFeet = (c) => (plump(c) >= heavyAt(c) && U.stacks(c, c.self, 'pipkin/great-pumpkin-frog') === 0 && U.stacks(c, c.self, 'ignore-heavy-feet') === 0 ? 1 : 0);
-/** dynamicCost for any Trick containing Hop. */
-const hopCost = (base) => (c) => Math.max(0, base + heavyFeet(c) - (U.stacks(c, c.self, 'elastic-legs') > 0 ? 1 : 0));
+/**
+ * dynamicCost for any Trick containing Hop.
+ *
+ * `dynamicCost` REPLACES the printed cost (engine.costOf step 1), so it has to
+ * start from the card's OWN printed cost: the upgraded one when the card is
+ * upgraded. Starting from the `base` written here made Springboard+ and Triple
+ * Jump+ ("cost 1 -> 0") cost 1 for ever. `base` is only the fallback for a
+ * ctx with no card attached.
+ */
+const hopCost = (base) => (c) => {
+  const printed = (c && c.card && typeof c.card.baseCost === 'number') ? c.card.baseCost : base;
+  return Math.max(0, printed + heavyFeet(c) - (U.stacks(c, c.self, 'elastic-legs') > 0 ? 1 : 0));
+};
 function gainPlump(c, n) {
   const room = Math.max(0, maxPlump(c) - plump(c));
   const d = U.addRes(c, PLUMP, Math.min(n, room), 0, maxPlump(c));
@@ -185,6 +196,22 @@ function power(c, id, n, install) {
   const s = U.mm(c);
   if (install && !s['pw:' + id]) { s['pw:' + id] = true; install(c); }
 }
+/**
+ * A Power whose hook pays "first copy's number, +k for each extra copy".
+ *
+ * Those hooks used to start from a number written into the hook (5, 8, 20), so
+ * the upgraded copy's bigger number was never read: Big Frog Energy+, Bigger
+ * Than the Doorway+ and The Patch Fights Back+ played exactly like the base
+ * card. The best printed number among the copies played is remembered per
+ * seat, and the hook starts from that; the extra-copy step is unchanged, so an
+ * unupgraded card (one copy or several) pays exactly what it always did.
+ */
+function powerNum(c, key, n) {
+  const s = U.mm(c);
+  if (!s.pwNum) s.pwNum = {};
+  s.pwNum[key] = Math.max(s.pwNum[key] || 0, n | 0);
+}
+const pwNum = (c, key, dflt) => { const s = U.mm(c); return (s.pwNum && s.pwNum[key]) || dflt; };
 
 // ── per-combat bookkeeping ──────────────────────────────────────────────────
 U.onTracker(SLUG, (e, s, seat) => {
@@ -226,20 +253,21 @@ U.onHook('harvest', 'pipkin/community-garden', (c) => {
   const friend = c.e.livingPlayers().find(pl => pl !== c.self);
   if (friend) c.giveBlock(friend, 7);
 });
+// stacks ARE the Seeds: each copy adds its own {n} (power(…, N(c).n) below)
 U.onHook('land', 'pipkin/fertile-footprints', (c) => { if (U.once(c, 'fertileFootprints')) plant(c, U.stacks(c, c.self, 'pipkin/fertile-footprints')); });
 U.onHook('ripen', 'pipkin/prize-pumpkin', (c) => { if (U.once(c, 'prizePumpkin')) { const n = U.stacks(c, c.self, 'pipkin/prize-pumpkin'); U.energyNextTurn(c, n); } });   // banked: a next-turn timer is wiped by the refill (CONTRACTS trap 24)
-U.onHook('plump', 'pipkin/big-frog-energy', (c) => U.guard(c, 5 + (U.stacks(c, c.self, 'pipkin/big-frog-energy') - 1) * 2));
-U.onHook('deflate', 'pipkin/big-frog-energy', (c) => { if (U.once(c, 'bigFrogDeflate')) U.empower(c, 8 + (U.stacks(c, c.self, 'pipkin/big-frog-energy') - 1) * 2); });
+U.onHook('plump', 'pipkin/big-frog-energy', (c) => U.guard(c, pwNum(c, 'bfeB', 5) + (U.stacks(c, c.self, 'pipkin/big-frog-energy') - 1) * 2));
+U.onHook('deflate', 'pipkin/big-frog-energy', (c) => { if (U.once(c, 'bigFrogDeflate')) U.empower(c, pwNum(c, 'bfeN', 8) + (U.stacks(c, c.self, 'pipkin/big-frog-energy') - 1) * 2); });
 U.onHook('harvest', 'pipkin/garden-in-motion', (c) => { if (U.once(c, 'gardenInMotion')) { if (!advance(c, SEED)) plant(c, 1); } });
 U.onHook('harvest', 'pipkin/great-pumpkin-frog', (c) => { if (U.once(c, 'gpfHarvest')) gainPlump(c, 1); });
 U.onHook('deflate', 'pipkin/great-pumpkin-frog', (c) => { if (U.once(c, 'gpfDeflate')) plant(c, 1); });
 U.onHook('harvest', 'pipkin/heirloom-seeds', (c, p) => { const t = U.bump(c, 'heirloom', p.n || 1); if (Math.floor(t / 2) > Math.floor((t - (p.n || 1)) / 2)) plant(c, 1); });
-U.onHook('plump', 'pipkin/bigger-than-the-doorway', (c, p) => { if (p.above3) U.guard(c, 8 + (U.stacks(c, c.self, 'pipkin/bigger-than-the-doorway') - 1) * 3); });
+U.onHook('plump', 'pipkin/bigger-than-the-doorway', (c, p) => { if (p.above3) U.guard(c, pwNum(c, 'btdB', 8) + (U.stacks(c, c.self, 'pipkin/bigger-than-the-doorway') - 1) * 3); });
 U.onHook('harvest', 'pipkin/the-patch-fights-back', (c) => {
   if (!U.once(c, 'patchFightsBack')) return;
   const t = c.target || c.randomEnemy();
   U.tf(c).patchTarget = t;
-  U.tf(c).patchDamage = 20 + (U.stacks(c, c.self, 'pipkin/the-patch-fights-back') - 1) * 6;
+  U.tf(c).patchDamage = pwNum(c, 'pfbD', 20) + (U.stacks(c, c.self, 'pipkin/the-patch-fights-back') - 1) * 6;
 });
 U.onHook('land', 'pipkin/the-patch-fights-back', (c) => {
   const f = U.tf(c);
@@ -789,7 +817,7 @@ const uncommons = [
     text: 'The first time you [Land] each turn, [Plant] {n} [Seed].',
     flavor: 'Something grows in every dent he leaves.',
     nums: { n: 1 },
-    effect: eff(c => power(c, 'pipkin/fertile-footprints', 1)),
+    effect: eff(c => power(c, 'pipkin/fertile-footprints', N(c).n)),   // stacks ARE the Seeds the Land hook plants
     upgrade: { nums: { n: 2 } },
   },
   {
@@ -818,7 +846,7 @@ const uncommons = [
     text: 'Whenever you gain [Plump], gain {b} Guard. The first time you [Deflate] each turn, your next Attack is [Empowered] {n}.',
     flavor: 'He is not big. He is just very present.',
     nums: { b: 5, n: 8 },
-    effect: eff(c => power(c, 'pipkin/big-frog-energy', 1)),
+    effect: eff(c => { powerNum(c, 'bfeB', N(c).b); powerNum(c, 'bfeN', N(c).n); power(c, 'pipkin/big-frog-energy', 1); }),
     upgrade: { nums: { b: 7, n: 10 } },
   },
   {
@@ -1091,7 +1119,7 @@ const rares = [
     text: 'Maximum [Plump] becomes {n}. [Heavy Feet] activates at {m0} instead of 3. Whenever you gain Plump above 3, gain {b} Guard.',
     flavor: 'A logistical problem for the entire household.',
     nums: { n: 5, m0: 4, b: 8 },
-    effect: eff(c => power(c, 'pipkin/bigger-than-the-doorway', 1)),
+    effect: eff(c => { powerNum(c, 'btdB', N(c).b); power(c, 'pipkin/bigger-than-the-doorway', 1); }),
     upgrade: { nums: { n: 5, m0: 4, b: 11 } },
   },
   {
@@ -1100,7 +1128,7 @@ const rares = [
     text: 'The first time you [Land] each turn, set your [Height] to {n} afterwards instead of 0.',
     flavor: 'He bounces on impact. Every single time.',
     nums: { n: 1 },
-    effect: eff(c => power(c, 'pipkin/boing-without-end', 1)),
+    effect: eff(c => power(c, 'pipkin/boing-without-end', N(c).n)),   // stacks ARE the Height the Land sets
     upgrade: { nums: { n: 2 } },
   },
   {
@@ -1109,7 +1137,7 @@ const rares = [
     text: 'Once each turn when you [Harvest] a Pumpkin, choose an enemy. Your next [Land] that turn also deals {d} damage to it.',
     flavor: 'It has been listening. All season, it has been listening.',
     nums: { d: 20 },
-    effect: eff(c => power(c, 'pipkin/the-patch-fights-back', 1)),
+    effect: eff(c => { powerNum(c, 'pfbD', N(c).d); power(c, 'pipkin/the-patch-fights-back', 1); }),
     upgrade: { nums: { d: 26 } },
   },
 ];
@@ -1241,7 +1269,8 @@ const coopCards = [
         if (!harvest(c, 1)) break;         // out of Pumpkins: stop cleanly
         const who = party[i % party.length];
         i++;
-        if (who === c.self) { U.draw(c, N(c).n); U.block(c, N(c).b); }
+        // `U.block` does not exist: this threw the moment a Pumpkin was there to Harvest
+        if (who === c.self) { U.draw(c, N(c).n); U.guard(c, N(c).b); }
         else { c.giveDraw(who, N(c).n); c.giveBlock(who, N(c).b); }
       }
     }),
