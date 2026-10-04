@@ -152,6 +152,78 @@ try {
     const before = st(e).scurriesThisTurn || 0;
     check(true, 'setup: scurries before playing Contraband', String(before));
   }
+
+  // ── a Power pays its OWN number, and the best of the copies played ───────
+  async function playAs(e, id, up) {
+    e.addCard(CARDS.cardById(id), 'hand', { upgraded: up });
+    await play(e, e.piles.hand[e.piles.hand.length - 1]);
+  }
+  {
+    /* Hallway Phantom's Guard was a literal 6: the upgrade's 9 never landed and
+       a second copy added nothing. It is the Power's stacks now. */
+    const scurryGuard = async (seq) => {
+      const e = await hush();
+      for (const up of seq) await playAs(e, 'hush/hallway-phantom', up);
+      put(e, 'hush/quick-nip');
+      e.player.block = 0;
+      await play(e, put(e, 'hush/pocket-this'));
+      return e.player.block;
+    };
+    const none = await scurryGuard([]), base = await scurryGuard([false]), both = await scurryGuard([false, true]);
+    check(base - none === 6, 'Hallway Phantom: the first Scurry pays 6 Guard', `${none} -> ${base}`);
+    check(both - none === 15, 'Hallway Phantom then Hallway Phantom+ pays 6 + 9', `${none} -> ${both}`);
+  }
+  {
+    /* Light Sleeper gained its Nerve from a turn:start listener, before the
+       refill SETS Nerve, so it was erased and the Power never paid. Banked. */
+    const nerveNext = async (withPower) => {
+      const e = await hush();
+      if (withPower) await playAs(e, 'hush/light-sleeper', false);
+      await play(e, put(e, 'hush/lights-out'));
+      e.player.block = 999;
+      await e.endTurn();
+      return { energy: e.player.energy, max: e.player.energyMax, unseen: unseen(e) };
+    };
+    const off = await nerveNext(false), on = await nerveNext(true);
+    check(on.unseen === 1 && on.energy === off.energy + 1, 'Light Sleeper: Unseen at the start of the turn really gains 1 Nerve',
+      `without ${off.energy}, with ${on.energy} (unseen=${on.unseen})`);
+  }
+  {
+    /* Soft Footfalls set a flag nothing read: only what sat in the Pocket when
+       it landed was ever discounted. An Ambush Attack Stashed LATER now costs
+       {n} less, for the first one played from the Pocket each turn. */
+    const e = await hush();
+    e.piles.stash.length = 0;
+    await playAs(e, 'hush/soft-footfalls', false);
+    const a = put(e, 'hush/from-under-the-sofa', 'stash');
+    const b = put(e, 'hush/from-under-the-sofa', 'stash');
+    const printed = CARDS.cardById('hush/from-under-the-sofa').cost;
+    check(e.costOf(a) === printed - 1 && e.costOf(b) === printed - 1,
+      'Soft Footfalls: an Ambush Attack put in the Pocket after it costs 1 less', `printed ${printed}, now ${e.costOf(a)}/${e.costOf(b)}`);
+    await play(e, a, e.livingEnemies()[0]);
+    check(e.costOf(b) === printed, 'and only the first one each turn', `the second now costs ${e.costOf(b)}`);
+    const nip = put(e, 'hush/pocket-this', 'stash');
+    check(e.costOf(nip) === CARDS.cardById('hush/pocket-this').cost, 'a Skill in the Pocket is not discounted');
+  }
+  {
+    /* Sticky Little Legend set a flag nothing read: the 2-Nerve Rare did
+       nothing. Contraband now comes back to the Pocket, 1 dearer each time. */
+    const e = await hush();
+    e.piles.stash.length = 0;
+    await playAs(e, 'hush/sticky-little-legend', false);
+    const t = e.livingEnemies().find(x => x.pendingMove) || e.livingEnemies()[0];
+    await play(e, put(e, 'hush/sticky-fingers'), t);
+    const loot = pocket(e).find(k => k.meta && k.meta.contraband);
+    if (!loot) check(false, 'Sticky Fingers made Contraband (setup)');
+    else {
+      const c0 = e.costOf(loot);
+      await play(e, loot, e.livingEnemies()[0]);
+      check(pocket(e).includes(loot), 'Sticky Little Legend: used Contraband returns to the Pocket', `pocket=${pocket(e).length}`);
+      check(e.costOf(loot) === c0 + 1, 'costing 1 more', `${c0} -> ${e.costOf(loot)}`);
+      await play(e, loot, e.livingEnemies()[0]);
+      check(pocket(e).includes(loot) && e.costOf(loot) === c0 + 2, 'and 1 more again the next time', `cost ${e.costOf(loot)}`);
+    }
+  }
 } catch (err) {
   fails.push('THREW: ' + (err && err.stack || err));
 }
