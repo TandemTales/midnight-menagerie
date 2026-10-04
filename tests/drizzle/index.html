@@ -444,6 +444,95 @@ try {
     const LINING = CARDS.cardById('drizzle/silver-lining').nums.b;
     check(e.player.block >= LINING, `and pays its ${LINING} at the start of the next turn`, `guard=${e.player.block}`);
   }
+  // ══ 11. Sharpened Tricks, and payouts that land in the ENEMY phase ══════
+  /* tests/upgrade-effects found these upgrades moving nothing, and three base
+     payouts that were wiped before the player could use them. */
+  async function playUp(e, id, target) {
+    e.addCard(CARDS.cardById(id), 'hand', { upgraded: true });
+    const k = e.piles.hand[e.piles.hand.length - 1];
+    e.player.energy = 9;
+    await e.playCard(k.uid, target ? target.id : undefined);
+    return k;
+  }
+  {
+    // Downpour Darling's Guard was granted on turn:start, BEFORE the Guard wipe.
+    for (const up of [false, true]) {
+      const e = await drizzle();
+      setW(e, DOWNPOUR);
+      await (up ? playUp : play)(e, 'drizzle/downpour-darling', null);
+      await e.endTurn();
+      const want = up ? 12 : 8;
+      check(e.player.block >= want, `Downpour Darling${up ? '+' : ''}'s ${want} Guard survives into the turn`, `guard=${e.player.block}`);
+      const atk = e.piles.hand.find(k => k.def.type === 'attack');
+      if (atk) {
+        check(e.costOf(atk) === Math.max(0, atk.def.cost - 1), 'and the first Attack costs 1 less', `cost=${e.costOf(atk)} printed ${atk.def.cost}`);
+        await e.playCard(atk.uid, e.livingEnemies()[0].id);
+        const next = e.piles.hand.find(k => k.def.type === 'attack');
+        if (next) check(e.costOf(next) === next.def.cost, 'but only the first', `cost=${e.costOf(next)}`);
+      }
+    }
+  }
+  {
+    // A Clear Forecast resolving at the automatic Stormbreak paid Guard and Nerve that were then wiped.
+    for (const up of [false, true]) {
+      const e = await drizzle();
+      setW(e, THUNDER);
+      await (up ? playUp : play)(e, 'drizzle/watch-the-glass', null);
+      await e.endTurn();
+      const want = up ? 9 : 5;
+      check(W(e) === CLEAR && e.player.block >= want, `Watch the Glass${up ? '+' : ''} on the automatic Stormbreak: its ${want} Guard reaches the next turn`, `weather=${W(e)} guard=${e.player.block}`);
+    }
+    for (const up of [false, true]) {
+      const e = await drizzle();
+      setW(e, THUNDER);
+      await (up ? playUp : play)(e, 'drizzle/rain-delay', null);      // auto-pick: Clear
+      await e.endTurn();
+      const want = e.player.energyMax + (up ? 2 : 1);
+      check(e.player.energy === want, `Rain Delay${up ? '+' : ''} on the automatic Stormbreak: its Nerve is banked, not wiped`, `nerve=${e.player.energy}, want ${want}`);
+    }
+  }
+  {
+    // Every Forecast's delayed half reads its OWN card, not the Trick that moved the Weather.
+    const e = await drizzle();
+    setW(e, DOWNPOUR);
+    await playUp(e, 'drizzle/tomorrows-umbrella', null);
+    const g = e.player.block;
+    await play(e, 'drizzle/just-a-sprinkle', null);                  // Downpour -> Thunderstorm
+    check(e.player.block - g >= 17, "Tomorrow's Umbrella+ pays 17, not the base 12", `gained ${e.player.block - g}`);
+  }
+  {
+    const e = await drizzle();
+    await playUp(e, 'drizzle/strange-weather-vane', null);
+    for (let i = 0; i < 2; i++) {
+      setW(e, THUNDER);
+      await play(e, 'drizzle/open-the-window', null);
+      check(W(e) === DOWNPOUR, `Strange Weather Vane+ turns break ${i + 1} of 2`, `weather=${W(e)}`);
+    }
+    setW(e, THUNDER);
+    await play(e, 'drizzle/open-the-window', null);
+    check(W(e) === CLEAR, 'and the third is normal', `weather=${W(e)}`);
+  }
+  {
+    // "2 less" could not beat "1 less" on a 1-Nerve Forecast; it shows against a tax.
+    for (const up of [false, true]) {
+      const e = await drizzle();
+      const k = await play(e, 'drizzle/rain-check', null);
+      e.modifyCardCost(k, 1, 'combat');                               // a Webbed / Forgotten tax
+      await (up ? playUp : play)(e, 'drizzle/cloud-shelf', null);
+      const want = up ? 0 : 1;
+      check(pileOf(e, k) === 'hand' && e.costOf(k) === want, `Cloud Shelf${up ? '+' : ''} on a taxed Forecast: costs ${want}`, `cost=${e.costOf(k)}`);
+    }
+  }
+  {
+    for (const up of [false, true]) {
+      const e = await drizzle();
+      await (up ? playUp : play)(e, 'drizzle/barometer', null);
+      await play(e, 'drizzle/just-a-sprinkle', null);
+      await e.endTurn();
+      const want = e.player.drawPerTurn + (up ? 2 : 1);
+      check(e.piles.hand.length === want, `Barometer${up ? '+' : ''} draws ${up ? 2 : 1} extra`, `hand=${e.piles.hand.length}`);
+    }
+  }
 } catch (err) {
   fails.push('THREW: ' + (err && err.stack || err));
 }
