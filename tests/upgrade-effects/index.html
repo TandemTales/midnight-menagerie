@@ -87,7 +87,7 @@ const WAIVED_G1 = [
   ['brambleboo/night-watering', 'the Garden is empty; on a Plant it gives 1 vs 2 Growth'],
   ['brambleboo/follow-the-draft', 'no enemy has Vines; with 5 it moves 3 vs 5 and draws 1 vs 2'],
   ['brambleboo/deadhead', 'no Mature Plant; on one it pays 1 vs 2 extra Compost'],
-  ['brambleboo/keep-the-cutting', 'no Mature Plant; and a Harvested Cultivar already replants at 1 Growth once a turn (base bug), so it shows on the second: 0 vs 1 Growth'],
+  ['brambleboo/keep-the-cutting', 'no Mature Plant; from one it replants at 1 vs 2 Growth'],
   ['brambleboo/mulch-the-evidence', 'no Weeds; with three it removes 2 vs 3'],
   ['brambleboo/sweep-the-weeds', 'no Weeds; with three it draws 2 vs 3'],
   ['brambleboo/thorny-disposition', 'no Mature Briar and no Snare; with both 5 vs 8 a Briar'],
@@ -217,7 +217,7 @@ const WAIVED_G3 = [
 /* WAIVERS, group 4 (crumbula, bones, taffy, truffle, marmalade, pudding): [id, 'why this board cannot show it'] */
 const WAIVED_G4 = [
   /* Every entry is proved live, base vs upgraded on a board that reaches its
-     condition, by tests/upgrade-effects/proofs_g4.py. */
+     condition, by tests/upgrade-effects/run.py (proofs-g4.html). */
   ['marmalade/always-lands', 'no enemy hit ever consumes Ghoststep on this board'],
   ['marmalade/haunted-housecat', 'nothing gains Ghoststep after the Power is out'],
   ['marmalade/spectral-stampede', 'no Lives have been spent this combat, so it swings 0 times'],
