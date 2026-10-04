@@ -1,0 +1,280 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Upgrade waivers, group 1: the proofs</title>
+<style>
+  body { font: 14px/1.5 ui-monospace, monospace; background: #14121a; color: #d8d4e0; padding: 20px; }
+  .pass { color: #7fd08a; } .fail { color: #ff8080; } .dim { color: #8a839c; }
+</style>
+<h1>Upgrade waivers, group 1</h1>
+<div class="dim">every entry in WAIVED_G1, played base and upgraded on a board that DOES reach its condition</div>
+<div id="out"></div>
+<script type="module">
+/**
+ * THE PROOF BEHIND EVERY WAIVER IN `WAIVED_G1` (index.html).
+ *
+ * `tests/upgrade-effects` plays each Trick on one dummy board. A live upgrade
+ * whose condition that board never reaches - nothing Soaked, a Weather that is
+ * already at Thunderstorm, an empty Garden, no Weeds to pull - comes out
+ * identical, and is waived there. A waiver is a claim that the upgrade IS live,
+ * so this page makes the claim checkable: each entry builds the board its
+ * condition needs with the engine API, plays the Trick base and upgraded, and
+ * reads the one number the upgrade is supposed to move. Identical readings FAIL.
+ *
+ *   python tests/upgrade-effects/run.py g1
+ *
+ * Drizzle, Brambleboo and the shared pool's Second Wind (2026-10-04).
+ */
+import { RNG } from '../../game/src/core/rng.js';
+import { makeDummySetup, makeDummyParty } from '../../game/src/combat/dummy.js';
+import { CombatEngine } from '../../game/src/combat/engine.js';
+import * as U from '../../game/src/data/companions/_util.js';
+import * as CARDS from '../../game/src/data/cards.js';
+import { registerStatuses } from '../../game/src/combat/statuses.js';
+import { ENEMY_STATUSES } from '../../game/src/data/enemies/index.js';
+
+/* The region statuses, as `state/run.js` registers them for a real fight.
+   Cloud Shelf / Cloud Storage only show their upgrade against a TAX on the
+   recalled Trick, and the tax used here (the Attic's Webbed) is a region
+   status: unregistered, it is a hookless placeholder and taxes nothing. */
+registerStatuses(ENEMY_STATUSES);
+
+const SEED = 20260911;
+async function mk(slug) {
+  const e = new CombatEngine(makeDummySetup(new RNG(SEED), { companion: slug, deck: CARDS.startingDeckFor(slug) }));
+  e.setTrackerInstaller(U.installTrackers);
+  await e.startCombat();
+  for (const x of e.enemies) { x.maxHp = 9999; x.hp = 9999; }
+  e.player.energy = 9;
+  return e;
+}
+async function mkParty(slug, n = 2) {
+  const decks = []; for (let i = 0; i < n; i++) decks.push(CARDS.startingDeckFor(slug));
+  const e = makeDummyParty(new RNG(SEED), n, { companion: slug, decks });
+  e.setTrackerInstaller(U.installTrackers);
+  await e.startCombat();
+  for (const x of e.enemies) { x.maxHp = 9999; x.hp = 9999; }
+  for (const p of e.players) p.energy = 9;
+  return e;
+}
+const DEFS = new Map(CARDS.allCards().map(d => [d.id, d]));
+function add(e, id, upgraded = false, pile = 'hand') {
+  const d = DEFS.get(id);
+  if (!d) throw new Error('no such Trick ' + id);
+  const m = e.addCard(d, pile, { upgraded });
+  return Array.isArray(m) ? m[0] : m;
+}
+async function play(e, card, tgt) {
+  e.current.energy = 9;
+  const t = tgt || e.livingEnemies()[0];
+  await e.playCard(card.uid, t && t.id);
+}
+async function addPlay(e, id, upgraded = false, tgt) { const k = add(e, id, upgraded); await play(e, k, tgt); return k; }
+function tally(e) {
+  const t = { dmg: 0, hits: 0, block: 0, heal: 0, status: 0, draw: 0, counter: 0 };
+  e.on('damage', v => { t.dmg += v.amount || 0; t.hits++; });
+  e.on('block', v => { t.block += v.amount || 0; });
+  e.on('heal', v => { t.heal += v.amount || 0; });
+  e.on('status', v => { t.status += Math.abs(v.delta || 0); });
+  e.on('draw', v => { t.draw += (v.count || 1); });
+  e.on('counter', () => { t.counter++; });
+  return t;
+}
+const emptyHand = (e) => { for (const k of e.piles.hand.slice()) e.discardCard(k, 'proof'); };
+const st = (a, id) => (a.statuses.get(id) || 0);
+
+// ── Drizzle ─────────────────────────────────────────────────────────────────
+const CLEAR = 0, SPRINKLE = 1, DOWNPOUR = 2, THUNDER = 3;
+const setWeather = (e, w) => e.setCounter('weather', w, 'proof');
+const soakAll = (e) => { for (const x of e.livingEnemies()) e.applyStatus(x, 'soaked', 1); };
+const wetCount = (e) => e.livingEnemies().filter(x => st(x, 'soaked') > 0).length;
+
+// ── Brambleboo ──────────────────────────────────────────────────────────────
+const plants = (e) => e.objects.filter(o => o.kind === 'plant').sort((a, b) => a.slot - b.slot);
+const growths = (e) => plants(e).map(o => o.data.growth).join(',');
+/** Put a Plant in the ground through its own Trick (played base), and hand it back. */
+async function sow(e, id = 'brambleboo/tiny-creeper') {
+  const before = new Set(plants(e).map(o => o.id));
+  await addPlay(e, id);
+  return plants(e).find(o => !before.has(o.id));
+}
+/** The same, already Mature. */
+async function ripe(e, id = 'brambleboo/tiny-creeper') {
+  const o = await sow(e, id);
+  e.updateObject(o.id, { growth: 2, mature: true });
+  return o;
+}
+
+/* [id, what the board needs, async (upgraded) => the reading the upgrade moves] */
+const PROOFS = [
+  // ── Drizzle: Soaked ───────────────────────────────────────────────────────
+  ['drizzle/damp-spot', 'a target already Soaked', async (up) => {
+    const e = await mk('drizzle'); const t = e.livingEnemies()[0]; e.applyStatus(t, 'soaked', 1);
+    const tl = tally(e); await addPlay(e, 'drizzle/damp-spot', up, t); return tl.block; }],
+  ['drizzle/misty-fingers', 'a target already Soaked', async (up) => {
+    const e = await mk('drizzle'); const t = e.livingEnemies()[0]; e.applyStatus(t, 'soaked', 1);
+    const tl = tally(e); await addPlay(e, 'drizzle/misty-fingers', up, t); return tl.draw; }],
+  ['drizzle/flash-flood', 'Soaked enemies to hit', async (up) => {
+    const e = await mk('drizzle'); soakAll(e);
+    const tl = tally(e); await addPlay(e, 'drizzle/flash-flood', up); return tl.dmg; }],
+  ['drizzle/every-bucket', 'one enemy already Soaked', async (up) => {
+    const e = await mk('drizzle'); e.applyStatus(e.livingEnemies()[0], 'soaked', 1);
+    const tl = tally(e); await addPlay(e, 'drizzle/every-bucket', up); return tl.block; }],
+  ['drizzle/cloudburst', 'a Soaked enemy to hit', async (up) => {
+    const e = await mk('drizzle'); e.applyStatus(e.livingEnemies()[0], 'soaked', 1);
+    const tl = tally(e); await addPlay(e, 'drizzle/cloudburst', up); return tl.dmg; }],
+  ['drizzle/cloud-to-cloud', 'both enemies already Soaked', async (up) => {
+    const e = await mk('drizzle'); soakAll(e);
+    const tl = tally(e); await addPlay(e, 'drizzle/cloud-to-cloud', up); return tl.draw; }],
+  ['drizzle/wash-it-all-away', 'two buffs on each enemy', async (up) => {
+    const e = await mk('drizzle');
+    for (const x of e.livingEnemies()) { e.applyStatus(x, 'strength', 2); e.applyStatus(x, 'dexterity', 2); }
+    await addPlay(e, 'drizzle/wash-it-all-away', up);
+    return e.livingEnemies().map(x => st(x, 'strength') + st(x, 'dexterity')).join(','); }],
+
+  // ── Drizzle: Weather moving ───────────────────────────────────────────────
+  ['drizzle/just-a-sprinkle', 'Weather with room to Advance (Clear)', async (up) => {
+    const e = await mk('drizzle'); setWeather(e, CLEAR);
+    const tl = tally(e); await addPlay(e, 'drizzle/just-a-sprinkle', up); return tl.block; }],
+  ['drizzle/drip-drip-drip', 'Weather with room to Advance (Clear)', async (up) => {
+    const e = await mk('drizzle'); setWeather(e, CLEAR);
+    const tl = tally(e); await addPlay(e, 'drizzle/drip-drip-drip', up); return tl.block; }],
+  ['drizzle/turn-the-tap', 'Weather the auto-picked Advance can move (Clear)', async (up) => {
+    const e = await mk('drizzle'); setWeather(e, CLEAR);
+    await addPlay(e, 'drizzle/turn-the-tap', up); return wetCount(e); }],
+  ['drizzle/barometer', 'the Weather changing after it, read on the next turn', async (up) => {
+    const e = await mk('drizzle'); setWeather(e, CLEAR); await addPlay(e, 'drizzle/barometer', up);
+    await addPlay(e, 'drizzle/just-a-sprinkle'); await e.endTurn(); return e.piles.hand.length; }],
+  ['drizzle/storm-chaser', 'Thunderstorm ENTERED (Downpour, then an Advance)', async (up) => {
+    const e = await mk('drizzle'); setWeather(e, DOWNPOUR); await addPlay(e, 'drizzle/storm-chaser', up);
+    const tl = tally(e); await addPlay(e, 'drizzle/just-a-sprinkle'); return tl.draw; }],
+  ['drizzle/downpour-darling', 'a turn that opens in Downpour', async (up) => {
+    const e = await mk('drizzle'); setWeather(e, DOWNPOUR); await addPlay(e, 'drizzle/downpour-darling', up);
+    await e.endTurn(); return e.player.block; }],
+  ['drizzle/three-days-of-rain', 'an Advance on the turn after the second enemy turn', async (up) => {
+    const e = await mk('drizzle'); await addPlay(e, 'drizzle/three-days-of-rain', up);
+    await e.endTurn(); await e.endTurn();
+    await addPlay(e, 'drizzle/just-a-sprinkle'); return e.counter('weather'); }],
+  ['drizzle/strange-weather-vane', 'two Stormbreaks', async (up) => {
+    const e = await mk('drizzle'); setWeather(e, THUNDER); await addPlay(e, 'drizzle/strange-weather-vane', up);
+    await addPlay(e, 'drizzle/open-the-window');      // break 1: Downpour either way
+    await addPlay(e, 'drizzle/just-a-sprinkle');      // back up to Thunderstorm
+    await addPlay(e, 'drizzle/open-the-window');      // break 2
+    return e.counter('weather'); }],
+
+  // ── Drizzle: Forecasts ────────────────────────────────────────────────────
+  ['drizzle/rain-check', 'Downpour entered while it waits', async (up) => {
+    const e = await mk('drizzle'); setWeather(e, SPRINKLE); await addPlay(e, 'drizzle/rain-check', up);
+    const tl = tally(e); await addPlay(e, 'drizzle/just-a-sprinkle'); return tl.block; }],
+  ['drizzle/save-a-drop', 'Thunderstorm entered while it waits', async (up) => {
+    const e = await mk('drizzle'); setWeather(e, DOWNPOUR); await addPlay(e, 'drizzle/save-a-drop', up);
+    await addPlay(e, 'drizzle/just-a-sprinkle'); return e.player.energy; }],
+  ['drizzle/tomorrows-umbrella', 'Thunderstorm entered while it waits', async (up) => {
+    const e = await mk('drizzle'); setWeather(e, DOWNPOUR); await addPlay(e, 'drizzle/tomorrows-umbrella', up);
+    const tl = tally(e); await addPlay(e, 'drizzle/just-a-sprinkle'); return tl.block; }],
+  ['drizzle/rain-delay', 'its auto-picked state (Clear) entered in-turn', async (up) => {
+    const e = await mk('drizzle'); setWeather(e, SPRINKLE); await addPlay(e, 'drizzle/rain-delay', up);
+    await addPlay(e, 'drizzle/let-it-ease'); return e.player.energy; }],
+  ['drizzle/weather-station', 'a Forecast set after it', async (up) => {
+    const e = await mk('drizzle'); await addPlay(e, 'drizzle/weather-station', up);
+    const tl = tally(e); await addPlay(e, 'drizzle/rain-check'); return tl.block; }],
+  ...['drizzle/cloud-shelf', 'drizzle/cloud-storage'].map(id => [id, 'a waiting Forecast with a tax on it (Webbed)', async (up) => {
+    const e = await mk('drizzle'); const k = await addPlay(e, 'drizzle/rain-check');
+    await addPlay(e, id, up);
+    if (!e.piles.hand.includes(k)) return 'not recalled';
+    e.applyStatus(e.player, 'webbed', 1); e.player._webbed = new Set([k.uid]);
+    return e.costOf(k); }]),
+
+  // ── Brambleboo: a Plant's starting Growth ─────────────────────────────────
+  ...['brambleboo/tiny-creeper', 'brambleboo/little-bramble', 'brambleboo/moon-in-the-window', 'brambleboo/damp-corner']
+    .map(id => [id, 'no Compost and no watering, read after one turn of Growth', async (up) => {
+      const e = await mk('brambleboo'); e.setCounter('compost', 0, 'proof');
+      await addPlay(e, id, up); await e.endTurn();
+      return plants(e).map(o => o.data.growth + (o.data.mature ? 'M' : '')).join(','); }]),
+
+  // ── Brambleboo: the Garden ────────────────────────────────────────────────
+  ['brambleboo/water-please', 'three immature Plants', async (up) => {
+    const e = await mk('brambleboo'); for (let i = 0; i < 3; i++) await sow(e);
+    await addPlay(e, 'brambleboo/water-please', up); return growths(e); }],
+  ['brambleboo/careful-pruning', 'an immature Plant to Uproot', async (up) => {
+    const e = await mk('brambleboo'); await sow(e);
+    const tl = tally(e); await addPlay(e, 'brambleboo/careful-pruning', up); return tl.block; }],
+  ['brambleboo/repot', 'a Plant to Repot', async (up) => {
+    const e = await mk('brambleboo'); await sow(e);
+    await addPlay(e, 'brambleboo/repot', up); return growths(e); }],
+  ['brambleboo/take-a-cutting', 'a Mature Plant and three empty Plots', async (up) => {
+    const e = await mk('brambleboo'); await ripe(e);
+    await addPlay(e, 'brambleboo/take-a-cutting', up); return plants(e).length; }],
+  ['brambleboo/compost-tea', 'three immature Plants and Compost to spend', async (up) => {
+    const e = await mk('brambleboo'); for (let i = 0; i < 3; i++) await sow(e);
+    e.setCounter('compost', 5, 'proof');
+    await addPlay(e, 'brambleboo/compost-tea', up); return e.counter('compost'); }],
+  ['brambleboo/night-watering', 'an immature Plant', async (up) => {
+    const e = await mk('brambleboo'); await sow(e);
+    await addPlay(e, 'brambleboo/night-watering', up); return growths(e); }],
+  ['brambleboo/deadhead', 'a Mature Plant', async (up) => {
+    const e = await mk('brambleboo'); e.setCounter('compost', 0, 'proof'); await ripe(e);
+    await addPlay(e, 'brambleboo/deadhead', up); return e.counter('compost'); }],
+  ['brambleboo/keep-the-cutting', 'a Mature Plant to Harvest', async (up) => {
+    const e = await mk('brambleboo'); await ripe(e);
+    await addPlay(e, 'brambleboo/keep-the-cutting', up); return growths(e); }],
+  ['brambleboo/tear-up-the-floorboards', 'all four Cultivars in the ground', async (up) => {
+    const e = await mk('brambleboo');
+    for (const id of ['brambleboo/tiny-creeper', 'brambleboo/little-bramble', 'brambleboo/moon-in-the-window', 'brambleboo/damp-corner']) await sow(e, id);
+    const tl = tally(e); await addPlay(e, 'brambleboo/tear-up-the-floorboards', up); return tl.draw; }],
+  ['brambleboo/perfect-cutting', 'a Mature Plant and three empty Plots', async (up) => {
+    const e = await mk('brambleboo'); await ripe(e);
+    await addPlay(e, 'brambleboo/perfect-cutting', up); return growths(e); }],
+  ['brambleboo/compost-cathedral', '9 Compost, every one spent on Guard', async (up) => {
+    const e = await mk('brambleboo'); e.setCounter('compost', 9, 'proof');
+    e.setChoiceResolver((req) => (req.prompt === 'Compost Cathedral' ? [3] : e.choices.auto(req)));
+    const tl = tally(e); await addPlay(e, 'brambleboo/compost-cathedral', up); return tl.block; }],
+  ['brambleboo/prune-to-the-heart', 'a Mature Grave Moss', async (up) => {
+    const e = await mk('brambleboo'); await ripe(e, 'brambleboo/damp-corner');
+    const tl = tally(e); await addPlay(e, 'brambleboo/prune-to-the-heart', up); return tl.block; }],
+  ['brambleboo/four-seasons', 'a Mature Plant to Harvest', async (up) => {
+    const e = await mk('brambleboo'); await ripe(e, 'brambleboo/damp-corner');
+    await addPlay(e, 'brambleboo/four-seasons', up); return growths(e); }],
+
+  // ── Brambleboo: Weeds and Vines ───────────────────────────────────────────
+  ['brambleboo/mulch-the-evidence', 'three Weeds in the discard', async (up) => {
+    const e = await mk('brambleboo'); e.setCounter('compost', 0, 'proof');
+    for (let i = 0; i < 3; i++) add(e, 'brambleboo/weed', false, 'discard');
+    await addPlay(e, 'brambleboo/mulch-the-evidence', up); return e.counter('compost'); }],
+  ['brambleboo/sweep-the-weeds', 'three Weeds in the discard', async (up) => {
+    const e = await mk('brambleboo'); for (let i = 0; i < 3; i++) add(e, 'brambleboo/weed', false, 'discard');
+    const tl = tally(e); await addPlay(e, 'brambleboo/sweep-the-weeds', up); return tl.draw; }],
+  ['brambleboo/follow-the-draft', '5 Vines on one enemy', async (up) => {
+    const e = await mk('brambleboo'); const [a, b] = e.livingEnemies(); e.applyStatus(a, 'vines', 5);
+    const tl = tally(e); await addPlay(e, 'brambleboo/follow-the-draft', up); return st(b, 'vines') + '/' + tl.draw; }],
+  ['brambleboo/tug-the-whole-room', '3 Vines on each enemy', async (up) => {
+    const e = await mk('brambleboo'); for (const x of e.livingEnemies()) e.applyStatus(x, 'vines', 3);
+    const tl = tally(e); await addPlay(e, 'brambleboo/tug-the-whole-room', up); return tl.dmg; }],
+  ['brambleboo/thorny-disposition', 'a Mature Briar and an attacker with Vines to Snare it', async (up) => {
+    const e = await mk('brambleboo'); await ripe(e, 'brambleboo/little-bramble');
+    await addPlay(e, 'brambleboo/thorny-disposition', up);
+    const foes = e.livingEnemies(); for (const x of foes) e.applyStatus(x, 'vines', 4);
+    await e.endTurn(); return foes.map(x => 9999 - x.hp).join(','); }],
+
+  // ── the shared pool ───────────────────────────────────────────────────────
+  ['neutral/second-wind', 'two Skills in hand', async (up) => {
+    const e = await mk('drizzle'); emptyHand(e);
+    add(e, 'drizzle/cloud-cover'); add(e, 'drizzle/cloud-cover');
+    const tl = tally(e); await addPlay(e, 'neutral/second-wind', up); return tl.block; }],
+];
+
+const out = document.getElementById('out');
+const say = (html, cls) => { const d = document.createElement('div'); if (cls) d.className = cls; d.innerHTML = html; out.appendChild(d); };
+
+(async () => {
+  const pass = [], fail = [];
+  for (const [id, why, run] of PROOFS) {
+    let a, b, err = '';
+    try { a = await run(false); b = await run(true); } catch (x) { err = String((x && x.message) || x); }
+    const line = id + ' [' + why + ']: base ' + JSON.stringify(a) + ', upgraded ' + JSON.stringify(b) + (err ? ' THREW ' + err : '');
+    if (!err && JSON.stringify(a) !== JSON.stringify(b)) { pass.push(line); say('PASS ' + line, 'pass'); }
+    else { fail.push(line); say('FAIL ' + line, 'fail'); }
+  }
+  window.__RESULT = { pass, fail, ids: PROOFS.map(p => p[0]) };
+  window.__DONE = true;
+})().catch(err => { window.__RESULT = { pass: [], fail: ['CRASHED ' + ((err && err.stack) || err)], ids: [] }; window.__DONE = true; });
+</script>
