@@ -58,6 +58,17 @@ function power(c, id, n, install) {
   const s = U.mm(c);
   if (install && !s['pw:' + id]) { s['pw:' + id] = true; install(c); }
 }
+/**
+ * What an upgraded copy adds over the printed base on num `k` (0 for a base
+ * copy). A Power's hook runs with no card attached, so `N(c)` there is the
+ * TRIGGERING card's nums, not the Power's: an upgrade that only changed the
+ * Power's own nums changed nothing. So each copy banks its extra on the seat
+ * when it is played, and the hook adds what was banked to the formula it has
+ * always used - a base copy banks 0 and plays exactly as it did.
+ */
+const upBy = (c, k) => ((N(c)[k] ?? 0) - ((c.card && c.card.def && c.card.def.nums && c.card.def.nums[k]) ?? 0)) || 0;
+function bankUp(c, id, n) { if (n) { const s = U.mm(c); s['up:' + id] = (s['up:' + id] || 0) + n; } }
+const banked = (c, id) => U.mm(c)['up:' + id] || 0;
 const SPOOKED = STATUS_CARDS.find(k => k.id === 'status/spooked');
 const WRONG_SIDE = STATUS_CARDS.find(k => k.id === 'status/wrong-side');
 
@@ -79,8 +90,15 @@ U.onTracker(SLUG, (e, s, seat) => {
     s.exhaustAtTurnStart = (me()?.piles?.exhaust || []).length;
   });
   U.onPlayerTurn(e, 'end', () => { s.lastTurnEndHp = hp(); }, seat);
-  // "I Meant to Do That" counts everything that left the hand this turn.
-  e.on('discard', (ev) => { s.turnFlags.gone = (s.turnFlags.gone || 0) + (ev?.count || 1); });
+  // "I Meant to Do That" counts every Trick DISCARDED from the hand this turn.
+  // Through `U.bump`, not straight into `s.turnFlags`: the per-turn bag is
+  // replaced the first time anything asks for it on a new turn, so a discard
+  // that landed before the first ask was thrown away - and the card read 0.
+  // A PLAYED Trick also emits 'discard' (from limbo), and it is not one the
+  // text counts, so only cards leaving the hand are.
+  const leftHand = (ev) => { if (ev && ev.from === 'hand' && (!ev.to || ev.to === 'discard') && e.current === me()) U.bump({ e, self: me() }, 'gone'); };
+  e.on('discard', leftHand);
+  e.on('card:move', leftHand);
 });
 /** Tricks discarded or Vanished so far this turn. */
 function gone(c) {
@@ -92,16 +110,16 @@ function gone(c) {
 // ── Power hooks ─────────────────────────────────────────────────────────────
 U.onHook('ghoststepGained', 'marmalade/haunted-housecat', (c) => {
   const n = U.stacks(c, c.self, 'marmalade/haunted-housecat');
-  const t = c.randomEnemy(); if (t) U.apply(c, t, HAUNT, 2 + n - 1);
+  const t = c.randomEnemy(); if (t) U.apply(c, t, HAUNT, 2 + n - 1 + banked(c, 'marmalade/haunted-housecat'));
 });
 U.onHook('lifeSpent', 'marmalade/nine-lives', (c) => {
-  U.draw(c, 1); U.guard(c, 6 + (U.stacks(c, c.self, 'marmalade/nine-lives') - 1) * 4);
+  U.draw(c, 1); U.guard(c, 6 + (U.stacks(c, c.self, 'marmalade/nine-lives') - 1) * 4 + banked(c, 'marmalade/nine-lives'));
 });
 U.onHook('ghoststepConsumed', 'marmalade/always-lands', (c) => {
-  if (U.once(c, 'alwaysLands')) U.guard(c, 8 + (U.stacks(c, c.self, 'marmalade/always-lands') - 1) * 4);
+  if (U.once(c, 'alwaysLands')) U.guard(c, 8 + (U.stacks(c, c.self, 'marmalade/always-lands') - 1) * 4 + banked(c, 'marmalade/always-lands'));
 });
 U.onHook('zoomiesTriggered', 'marmalade/endless-zoomies', (c) => {
-  if (U.got(c, 'endlessZoomies') < 2) { U.bump(c, 'endlessZoomies'); U.draw(c, 1); }
+  if (U.got(c, 'endlessZoomies') < 2 + banked(c, 'marmalade/endless-zoomies')) { U.bump(c, 'endlessZoomies'); U.draw(c, 1); }
 });
 
 // ════════════════════════════════════════════════════════════════════════════
@@ -274,7 +292,7 @@ const commons = [
     text: 'Spend {m0} [Lives]. Gain {n} Nerve.',
     flavor: 'She has eight more. She has done the arithmetic.',
     nums: { m0: 1, n: 1 },
-    effect: eff(c => { if (spendLife(c, N(c).m0)) U.energy(c, N(c).n); }),
+    effect: eff(c => { if (spendLife(c, N(c).m0)) { U.energy(c, N(c).n); U.draw(c, N(c).m1 || 0); } }),
     playable: (c) => U.res(c, LIVES) >= 1,
     upgrade: { nums: { m0: 1, n: 1, m1: 1 }, text: 'Spend {m0} [Lives]. Gain {n} Nerve. Draw {m1} Trick.' },
   },
@@ -628,7 +646,7 @@ const uncommons = [
     text: 'The first time each turn your [Ghoststep] is consumed, gain {b} Guard.',
     flavor: 'Physics files a complaint. Physics is ignored.',
     nums: { b: 8 },
-    effect: eff(c => power(c, 'marmalade/always-lands', 1)),
+    effect: eff(c => { power(c, 'marmalade/always-lands', 1); bankUp(c, 'marmalade/always-lands', upBy(c, 'b')); }),
     upgrade: { nums: { b: 12 } },
   },
   {
@@ -648,7 +666,7 @@ const uncommons = [
     text: 'Whenever you gain [Ghoststep], apply {n} [Haunt] to a random enemy.',
     flavor: 'Being hard to hit is, itself, unsettling.',
     nums: { n: 2 },
-    effect: eff(c => power(c, 'marmalade/haunted-housecat', 1)),
+    effect: eff(c => { power(c, 'marmalade/haunted-housecat', 1); bankUp(c, 'marmalade/haunted-housecat', upBy(c, 'n')); }),
     upgrade: { nums: { n: 3 } },
   },
   {
@@ -804,11 +822,27 @@ const rares = [
     flavor: 'She knows. She is going in anyway.',
     nums: { n: 3 },
     effect: eff(c => {
-      const cap = (c.e?.handSize ?? c.e?.player?.handSize ?? 10) - U.cardsIn(c, 'hand').length;
+      /* `engine.handSize` is how many cards are IN the hand, not how many fit,
+         so this used to draw (hand - hand) = 0 and the card did nothing at all.
+         The cap is `handCap`. And only the Tricks DRAWN this way are marked,
+         as the text says - not the ones that were already in hand. */
+      const before = U.cardsIn(c, 'hand').slice();
+      const cap = (typeof c.e?.handCap === 'function' ? c.e.handCap(c.self) : 10) - before.length;
       U.draw(c, Math.max(0, cap));
-      const marked = U.cardsIn(c, 'hand').slice();
+      const marked = U.cardsIn(c, 'hand').filter(k => !before.includes(k));
       const n = N(c).n;
-      U.atTurnEnd(c, (x) => { const left = U.cardsIn(x, 'hand'); const still = marked.filter(k => left.includes(k)).length; U.bleed(x, still * n); });
+      /* On the seat's own `turn:end`, not `U.atTurnEnd`: that is a
+         `playerTurnEnd` timer, and timers tick AFTER the hand has been
+         discarded, so "still in your hand" was always 0 and neither the
+         penalty nor its smaller upgraded version ever happened. `turn:end` is
+         emitted while the hand is still held. */
+      const me = c.self, e = c.e;
+      const off = U.onPlayerTurn(e, 'end', () => {
+        off();
+        const left = (me && me.piles && me.piles.hand) || [];
+        const still = marked.filter(k => left.includes(k)).length;
+        if (still > 0 && me) e.loseHp(me, still * n, 'marmalade/curiosity-killed-the-cat');
+      }, me);
     }),
     upgrade: { nums: { n: 2 } },
   },
@@ -884,7 +918,7 @@ const rares = [
     text: 'The first [Lives] you spend each turn also draws {n} Trick and gains {b} Guard.',
     flavor: 'Spending one is only expensive if you were counting.',
     nums: { n: 1, b: 6 },
-    effect: eff(c => power(c, 'marmalade/nine-lives', 1)),
+    effect: eff(c => { power(c, 'marmalade/nine-lives', 1); bankUp(c, 'marmalade/nine-lives', upBy(c, 'b')); }),
     upgrade: { nums: { n: 1, b: 10 } },
   },
   {
@@ -901,7 +935,10 @@ const rares = [
           U.addRes(x, 'untouched-streak', 1, 0, 99);
           const s = U.res(x, 'untouched-streak');
           U.applySelf(x, 'predators-patience', dmg);
-          U.guard(x, blk * s);
+          /* Not `U.guard`: this is a `turn:start` listener, and the engine
+             wipes Guard right after `turn:start`, so the Streak's Guard was
+             deleted a few lines after it was granted (see U.guardNextTurn). */
+          U.guardNextTurn(x, blk * s);
         }, x.self);
       });
     }),
@@ -936,7 +973,7 @@ const rares = [
     text: 'Whenever a Trick activates [Zoomies], draw {m0} Trick. Maximum {m1} times each turn.',
     flavor: 'It does not stop. It has never once stopped on its own.',
     nums: { m0: 1, m1: 2 },
-    effect: eff(c => power(c, 'marmalade/endless-zoomies', 1)),
+    effect: eff(c => { power(c, 'marmalade/endless-zoomies', 1); bankUp(c, 'marmalade/endless-zoomies', upBy(c, 'm1')); }),
     upgrade: { nums: { m0: 1, m1: 3 } },
   },
 ];

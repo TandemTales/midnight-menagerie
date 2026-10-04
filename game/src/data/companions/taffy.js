@@ -48,9 +48,18 @@ const bellyFull = (c) => belly(c).length >= bellyCap(c);
 function absorb(c, k, freeSlot) {
   if (!k) return null;
   if (!freeSlot && bellyFull(c)) return null;
+  /* The Belly lives in the engine's stash, which refuses a 4th card
+     (`piles.stashCap` = 3). So Snack Pocket + Bottomless Belly's "increase
+     Belly capacity" stopped at 3 whatever it said, and the refused card stayed
+     in HAND, flagged as eaten, with the Absorb hooks fired for it anyway. The
+     Belly's own cap is the rule; the stash makes room for it (Pudding raises
+     the same cap for its Plots). */
+  const pl = c.self && c.self.piles;
+  if (pl && typeof pl.stashCap === 'number' && pl.stash && pl.stash.length >= pl.stashCap) pl.stashCap = pl.stash.length + 1;
   U.setFlag(k, 'belly', true);
   if (freeSlot) U.setFlag(k, 'bellyFree', true);
   U.moveCard(c, k, 'stash', { belly: true });
+  if (!U.cardsIn(c, 'stash').includes(k)) { U.clearFlag(k, 'belly'); U.clearFlag(k, 'bellyFree'); return null; }
   U.fire(c, 'absorb', { card: k });
   return k;
 }
@@ -89,7 +98,7 @@ function gummy(c, src, pile = 'hand', costDelta = 0, forcedCost) {
   if (!src || U.flag(src, 'gummy')) return null;
   let delta = costDelta;
   const isX = (src.def || src).cost === -1;   // X ignores discounts, so never spend one on its copy
-  if (!isX && U.stacks(c, c.self, 'taffy/multipack') > 0 && U.once(c, 'multipack')) delta -= U.stacks(c, c.self, 'taffy/multipack');
+  if (!isX && U.stacks(c, c.self, 'taffy/multipack') > 0 && U.once(c, 'multipack')) delta -= U.stacks(c, c.self, 'taffy/multipack') + banked(c, 'taffy/multipack');
   if (!isX && U.got(c, 'wrapperDiscount') > 0) { delta -= 1; U.bump(c, 'wrapperDiscount', -1); }
   const def = gummyDef(src, delta, forcedCost);
   if (!def) return null;
@@ -108,6 +117,21 @@ function power(c, id, n, install) {
   const s = U.mm(c);
   if (install && !s['pw:' + id]) { s['pw:' + id] = true; install(c); }
 }
+/**
+ * What an upgraded copy adds over the printed base on num `k` (0 for a base
+ * copy). A Power's hook runs with no card attached, so `N(c)` there is the
+ * TRIGGERING card's nums, not the Power's: an upgrade that only changed the
+ * Power's own nums changed nothing. So each copy banks its extra on the seat
+ * when it is played, and the hook adds what was banked to the formula it has
+ * always used - a base copy banks 0 and plays exactly as it did.
+ */
+const upBy = (c, k) => ((N(c)[k] ?? 0) - ((c.card && c.card.def && c.card.def.nums && c.card.def.nums[k]) ?? 0)) || 0;
+function upPower(c, id, k, install) {
+  power(c, id, 1, install);
+  const n = upBy(c, k);
+  if (n) { const s = U.mm(c); s['up:' + id] = (s['up:' + id] || 0) + n; }
+}
+const banked = (c, id) => U.mm(c)['up:' + id] || 0;
 
 // ── per-combat bookkeeping ──────────────────────────────────────────────────
 U.onTracker(SLUG, (e, s, seat) => {
@@ -136,6 +160,17 @@ U.onTracker(SLUG, (e, s, seat) => {
     /* trap 19: `ev.card` is a SNAPSHOT, so the runtime flag is not on it. */
     const live = ev.cardUid != null ? e.card(ev.cardUid) : null;
     if (U.flag(live || ev.card, 'gummy')) U.bump(fake(), 'gummyPlayed');
+    /* Elastic Memory. The Power applied its marker and NOTHING read it - no
+       hook, no listener - so it was a Trick that did nothing, base or
+       upgraded. `card:play` is emitted before the effect runs, so the played
+       Trick's Stretch is still on it here. */
+    if (live && stretchOf(live) > 0 && (!seat || e.seatOfCard(live) === seat)) {
+      const c = fake();
+      if (U.stacks(c, c.self, 'taffy/elastic-memory') > 0 && U.once(c, 'elasticMemory')) {
+        const other = stretchedInHand(c).find(k => k !== live);
+        if (other) stretch(c, other, U.stacks(c, c.self, 'taffy/elastic-memory') + banked(c, 'taffy/elastic-memory'));
+      }
+    }
   });
   // Player turn end ONLY — Stretch used to climb on every enemy turn end too.
   U.onPlayerTurn(e, 'end', () => {
@@ -164,10 +199,10 @@ U.onTracker(SLUG, (e, s, seat) => {
 });
 
 // ── Power hooks ─────────────────────────────────────────────────────────────
-U.onHook('absorb', 'taffy/snack-pocket', (c) => { if (U.once(c, 'snackPocket')) U.guard(c, 6 + (U.stacks(c, c.self, 'taffy/snack-pocket') - 1) * 3); });
+U.onHook('absorb', 'taffy/snack-pocket', (c) => { if (U.once(c, 'snackPocket')) U.guard(c, 6 + (U.stacks(c, c.self, 'taffy/snack-pocket') - 1) * 3 + banked(c, 'taffy/snack-pocket')); });
 U.onHook('absorb', 'taffy/bottomless-belly', (c) => U.draw(c, 1));
-U.onHook('recombine', 'taffy/sweet-spot', (c, p) => { if (p.left === 2 && U.once(c, 'sweetSpot')) U.draw(c, U.stacks(c, c.self, 'taffy/sweet-spot')); });
-U.onHook('recombine', 'taffy/conservation-of-taffy', (c, p) => { if (p.n >= 2 && U.once(c, 'conservation')) { const g = U.stacks(c, c.self, 'taffy/conservation-of-taffy'); U.atTurnEnd(c, (x) => split(x, g)); } });
+U.onHook('recombine', 'taffy/sweet-spot', (c, p) => { if (p.left === 2 && U.once(c, 'sweetSpot')) U.draw(c, U.stacks(c, c.self, 'taffy/sweet-spot') + banked(c, 'taffy/sweet-spot')); });
+U.onHook('recombine', 'taffy/conservation-of-taffy', (c, p) => { if (p.n >= 2 && U.once(c, 'conservation')) { const g = U.stacks(c, c.self, 'taffy/conservation-of-taffy') + banked(c, 'taffy/conservation-of-taffy'); U.atTurnEnd(c, (x) => split(x, g)); } });
 U.onHook('spitOut', 'taffy/chew-cycle', (c, p) => {
   if (!U.once(c, 'chewCycle')) return;
   const other = belly(c).find(k => k !== p.card && copyable(k));
@@ -609,7 +644,7 @@ const uncommons = [
     text: '[Split] {n}. You cannot lose Courage from being [Runny] before your next turn.',
     flavor: 'Underwritten by nobody, honoured anyway.',
     nums: { n: 2 },
-    effect: eff(c => { split(c, N(c).n); U.applySelf(c, 'blob-insurance', 1); }),
+    effect: eff(c => { split(c, N(c).n); U.guard(c, N(c).b || 0); U.applySelf(c, 'blob-insurance', 1); }),
     upgrade: { nums: { n: 2, b: 10 }, text: '[Split] {n}. Gain {b} Guard. You cannot lose Courage from being [Runny] before your next turn.' },
   },
   {
@@ -690,7 +725,7 @@ const uncommons = [
     text: 'The first time each turn you play a [Stretch]ed Trick, add {n} Stretch to another Stretched Trick in your hand.',
     flavor: 'The pull carries across.',
     nums: { n: 1 },
-    effect: eff(c => power(c, 'taffy/elastic-memory', 1)),
+    effect: eff(c => upPower(c, 'taffy/elastic-memory', 'n')),
     upgrade: { nums: { n: 2 } },
   },
   {
@@ -699,7 +734,7 @@ const uncommons = [
     text: 'Increase [Belly] capacity by {n}. The first time you [Absorb] each turn, gain {b} Guard.',
     flavor: 'A second stomach, for admin.',
     nums: { n: 1, b: 6 },
-    effect: eff(c => { U.mm(c).bellyCap += N(c).n; power(c, 'taffy/snack-pocket', 1); }),
+    effect: eff(c => { U.mm(c).bellyCap += N(c).n; upPower(c, 'taffy/snack-pocket', 'b'); }),
     upgrade: { nums: { n: 1, b: 9 } },
   },
   {
@@ -708,7 +743,7 @@ const uncommons = [
     text: 'The first [Gummy] copy you create each turn costs {n} less.',
     flavor: 'Bulk discount, applied to herself.',
     nums: { n: 1 },
-    effect: eff(c => power(c, 'taffy/multipack', 1)),
+    effect: eff(c => upPower(c, 'taffy/multipack', 'n')),
     upgrade: { nums: { n: 2 } },
   },
   {
@@ -717,8 +752,12 @@ const uncommons = [
     text: 'At the start of your turn, gain {b} Guard if you have 3 or 4 [Glob]s. If you are [Runny] instead, draw {n} Trick.',
     flavor: 'Held together by nothing but the outside of herself.',
     nums: { b: 10, n: 1 },
-    effect: eff(c => power(c, 'taffy/surface-tension', 1, (x) => {
-      U.onPlayerTurn(x.e, 'start', () => { const g = globs(x); if (g >= 5) U.draw(x, 1); else if (g >= 3) U.guard(x, 10); }, x.self);
+    /* Guard through `guardNextTurn`, not straight from the `turn:start`
+       listener: the engine wipes Guard right AFTER `turn:start`, so the 10 it
+       handed out here was deleted a few lines later and the Power never
+       guarded anything, base or upgraded (see `U.guardNextTurn`). */
+    effect: eff(c => upPower(c, 'taffy/surface-tension', 'b', (x) => {
+      U.onPlayerTurn(x.e, 'start', () => { const g = globs(x); if (g >= 5) U.draw(x, 1); else if (g >= 3) U.guardNextTurn(x, 10 + banked(x, 'taffy/surface-tension')); }, x.self);
     })),
     upgrade: { nums: { b: 14, n: 1 } },
   },
@@ -728,7 +767,7 @@ const uncommons = [
     text: 'The first time each turn a [Recombine] leaves you at exactly {n} [Glob]s, draw {m0} Trick.',
     flavor: 'Two is the correct number of pieces. She is certain of this.',
     nums: { n: 2, m0: 1 },
-    effect: eff(c => power(c, 'taffy/sweet-spot', 1)),
+    effect: eff(c => upPower(c, 'taffy/sweet-spot', 'm0')),
     upgrade: { nums: { n: 2, m0: 2 } },
   },
   {
@@ -963,7 +1002,7 @@ const rares = [
     text: 'Once each turn, after you [Recombine] {n} or more [Glob]s, regain {m0} Glob at the end of that turn.',
     flavor: 'Taffy is neither created nor destroyed. Taffy is merely relocated.',
     nums: { n: 2, m0: 1 },
-    effect: eff(c => power(c, 'taffy/conservation-of-taffy', 1)),
+    effect: eff(c => upPower(c, 'taffy/conservation-of-taffy', 'm0')),
     upgrade: { nums: { n: 2, m0: 2 } },
   },
   {
