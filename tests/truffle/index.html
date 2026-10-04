@@ -734,6 +734,24 @@ try {
       `shed ${on.shed} dealt ${on.dealt}`);
     check(on.guard === n.b, 'and the Kid wakes up with its printed Guard', `${on.guard} want ${n.b}`);
   }
+
+  // ── a Power keeps the BEST copy played, in either order ──────────────────
+  {
+    /* Every Truffle Power's `set` ASSIGNED its numbers on each play, so the
+       LAST copy won: an upgraded copy followed by a base one dropped back to
+       the base number. */
+    async function spines(seq) {
+      const e = await truffle();
+      for (const up of seq) await play(e, 'truffle/all-spines-no-plan', null, up);
+      const b = e.player.block;
+      await play(e, 'truffle/oops-a-quill', e.livingEnemies()[0]);
+      return e.player.block - b;
+    }
+    const want = NUMS('truffle/all-spines-no-plan', true).b;
+    const both = await spines([false, true]), back = await spines([true, false]);
+    check(both === want, 'All Spines, No Plan then All Spines, No Plan+ Guards the upgraded amount', `${both} want ${want}`);
+    check(back === want, 'and upgraded then base still Guards the upgraded amount', `${back} want ${want}`);
+  }
 } catch (err) {
   fails.push('THREW: ' + (err && err.stack || err));
 }

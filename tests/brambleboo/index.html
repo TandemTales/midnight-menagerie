@@ -348,6 +348,73 @@ try {
       check(weeds() === (up ? 0 : 1), `The Mansion Waters Back${up ? '+ adds no' : ' adds its'} Weed`, `weeds=${weeds()}`);
     }
   }
+
+  // ══ a Power keeps the BEST copy played, not the first ═══════════════════
+  const matureBriar = (e, slot = 0) => e.addObject({ kind: 'plant', name: 'Briar', slot, data: { cultivar: 'briar', growth: 2, mature: true, seat: e.player.id, graft: null } });
+  {
+    /* Thorny Disposition's {m0} was written inside the install-once closure:
+       Thorny Disposition then Thorny Disposition+ paid the base 5. */
+    for (const [label, seq, want] of [['base only', [false], 5], ['base then upgraded', [false, true], 8], ['upgraded then base', [true, false], 8]]) {
+      const e = await boo();
+      for (const u of seq) await (u ? playUp : play)(e, 'brambleboo/thorny-disposition', null);
+      matureBriar(e);
+      const t = e.livingEnemies()[0];
+      e.applyStatus(t, 'vines', 4); t.block = 0;
+      const hp = t.hp;
+      await e.dealDamage({ attacker: t, defender: e.player, amount: 10, kind: 'attack' });
+      check(hp - t.hp === want, `Thorny Disposition (${label}): a Snare makes the Briar deal ${want}`, `dealt ${hp - t.hp}`);
+    }
+  }
+
+  // ══ Keep the Cutting and The Garden Remembers ════════════════════════════
+  {
+    /* Keep the Cutting said 0 Growth and replanted at 1 (the free remembered
+       Growth). Its text now says 1, 1 is a floor, and the upgrade says 2. */
+    for (const [up, want] of [[false, 1], [true, 2]]) {
+      const e = await boo();
+      matureBriar(e);
+      await (up ? playUp : play)(e, 'brambleboo/keep-the-cutting', null);
+      const p = plants(e)[0];
+      check(p && p.data.cultivar === 'briar' && p.data.growth === want,
+        `Keep the Cutting${up ? '+' : ''} replants the Briar at ${want} Growth`, `growth=${p && p.data.growth}`);
+    }
+    {
+      // a SECOND Keep the Cutting on the same Cultivar in one turn used to give 0
+      const e = await boo();
+      matureBriar(e);
+      await play(e, 'brambleboo/keep-the-cutting', null);
+      plants(e)[0].data.growth = 2; plants(e)[0].data.mature = true;
+      await play(e, 'brambleboo/keep-the-cutting', null);
+      check(plants(e).length === 1 && plants(e)[0].data.growth === 1, 'and a second one the same turn still gives 1',
+        `growth=${plants(e)[0] && plants(e)[0].data.growth}`);
+    }
+  }
+  {
+    /* Every deck: a Harvested Cultivar's first Plant each turn comes back at 1
+       Growth. That base rule must not move. */
+    const e = await boo();
+    matureBriar(e);
+    await play(e, 'brambleboo/careful-snip', null);
+    check(plants(e).length === 0, 'Careful Snip Harvests the Briar (setup)');
+    await play(e, 'brambleboo/little-bramble', null);
+    await play(e, 'brambleboo/little-bramble', null);
+    check(plants(e).map(p => p.data.growth).join(',') === '1,0',
+      'without The Garden Remembers: first replant 1 Growth, the second 0 (unchanged)', plants(e).map(p => p.data.growth).join(','));
+  }
+  {
+    // The Garden Remembers did nothing at all; now it adds 1 more, every time.
+    const e = await boo();
+    await play(e, 'brambleboo/the-garden-remembers', null);
+    matureBriar(e);
+    await play(e, 'brambleboo/careful-snip', null);
+    await play(e, 'brambleboo/little-bramble', null);
+    await play(e, 'brambleboo/little-bramble', null);
+    await play(e, 'brambleboo/tiny-creeper', null);
+    check(plants(e).map(p => p.data.growth).join(',') === '2,1,0',
+      'with The Garden Remembers: a Harvested Briar comes back at 2 then 1; an Ivy never Harvested gets nothing',
+      plants(e).map(p => p.data.growth).join(','));
+    check(plants(e)[0].data.mature === true, 'so the first replant is already Mature');
+  }
 } catch (err) {
   fails.push('THREW: ' + (err && err.stack || err));
 }

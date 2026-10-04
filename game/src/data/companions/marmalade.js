@@ -927,13 +927,18 @@ const rares = [
     text: 'At the start of your turn, gain a Perfect Streak if you were [Untouched], otherwise lose all of them. Your Attacks deal {n} more damage and you gain {b} Guard for each Streak.',
     flavor: 'Four turns without a scratch. Nobody in the room is comfortable.',
     nums: { n: 2, b: 3 },
+    /* The best copy's {n} and {b}, recorded on every play. They were captured
+       by the install-once closure, so Untouchable then Untouchable+ paid 2 and
+       3 a Streak, not 3 and 4. */
     effect: eff(c => {
-      const dmg = N(c).n, blk = N(c).b;
+      U.keepBest(c, 'untouchableN', N(c).n);
+      U.keepBest(c, 'untouchableB', N(c).b);
       power(c, 'marmalade/untouchable', 1, (x) => {
         U.onPlayerTurn(x.e, 'start', () => {
           if (!U.isUntouched(x)) { U.setRes(x, 'untouched-streak', 0); return; }
           U.addRes(x, 'untouched-streak', 1, 0, 99);
           const s = U.res(x, 'untouched-streak');
+          const dmg = U.mm(x).untouchableN | 0, blk = U.mm(x).untouchableB | 0;
           U.applySelf(x, 'predators-patience', dmg);
           /* Not `U.guard`: this is a `turn:start` listener, and the engine
              wipes Guard right after `turn:start`, so the Streak's Guard was

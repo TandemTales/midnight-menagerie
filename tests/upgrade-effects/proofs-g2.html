@@ -1,0 +1,217 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Upgrade waivers, group 2: the proofs</title>
+<style>
+  body { font: 14px/1.5 ui-monospace, monospace; background: #14121a; color: #d8d4e0; padding: 20px; }
+  .pass { color: #7fd08a; } .fail { color: #ff8080; } .dim { color: #8a839c; }
+</style>
+<h1>Upgrade waivers, group 2</h1>
+<div class="dim">every entry in WAIVED_G2, played base and upgraded on a board that DOES reach its condition</div>
+<div id="out"></div>
+<script type="module">
+/**
+ * THE PROOF BEHIND EVERY WAIVER IN `WAIVED_G2` (index.html).
+ *
+ * `tests/upgrade-effects` plays each Trick on one dummy board. A live upgrade
+ * whose condition that board never reaches - an empty Patch, every enemy
+ * Aware, an empty Shadow Pocket, a Power whose trigger never happens - comes
+ * out identical, and is waived there. A waiver is a claim that the upgrade IS
+ * live, so this page makes the claim checkable: each entry builds the board
+ * its condition needs with the engine API, plays the Trick base and upgraded,
+ * and reads the one number the upgrade is supposed to move. Identical readings FAIL.
+ *
+ *   python tests/upgrade-effects/run.py g2
+ *
+ * Pipkin, Boggle, Hush and Crinkle (2026-10-04).
+ */
+import { RNG } from '../../game/src/core/rng.js';
+import { makeDummySetup, makeDummyParty } from '../../game/src/combat/dummy.js';
+import { CombatEngine } from '../../game/src/combat/engine.js';
+import * as U from '../../game/src/data/companions/_util.js';
+import * as CARDS from '../../game/src/data/cards.js';
+
+const SEED = 20260911;
+async function mk(slug) {
+  const e = new CombatEngine(makeDummySetup(new RNG(SEED), { companion: slug, deck: CARDS.startingDeckFor(slug) }));
+  e.setTrackerInstaller(U.installTrackers);
+  await e.startCombat();
+  for (const x of e.enemies) { x.maxHp = 9999; x.hp = 9999; }
+  e.player.energy = 9;
+  return e;
+}
+async function mkParty(slug, n = 2) {
+  const decks = []; for (let i = 0; i < n; i++) decks.push(CARDS.startingDeckFor(slug));
+  const e = makeDummyParty(new RNG(SEED), n, { companion: slug, decks });
+  e.setTrackerInstaller(U.installTrackers);
+  await e.startCombat();
+  for (const x of e.enemies) { x.maxHp = 9999; x.hp = 9999; }
+  for (const p of e.players) p.energy = 9;
+  return e;
+}
+// Statuses too: Buried in the Couch needs Spooked in the discard
+const DEFS = new Map([...CARDS.allCards(), ...CARDS.statusCards(), ...CARDS.curseCards()].map(d => [d.id, d]));
+function add(e, id, upgraded = false, pile = 'hand') {
+  const d = DEFS.get(id);
+  if (!d) throw new Error('no such Trick ' + id);
+  const m = e.addCard(d, pile, { upgraded });
+  return Array.isArray(m) ? m[0] : m;
+}
+async function play(e, card, tgt) {
+  e.current.energy = 9;
+  const t = tgt || e.livingEnemies()[0];
+  await e.playCard(card.uid, t && t.id);
+}
+async function addPlay(e, id, upgraded = false, tgt) { const k = add(e, id, upgraded); await play(e, k, tgt); return k; }
+function tally(e) {
+  const t = { dmg: 0, hits: 0, block: 0, heal: 0, status: 0, draw: 0, counter: 0 };
+  e.on('damage', v => { t.dmg += v.amount || 0; t.hits++; });
+  e.on('block', v => { t.block += v.amount || 0; });
+  e.on('heal', v => { t.heal += v.amount || 0; });
+  e.on('status', v => { t.status += Math.abs(v.delta || 0); });
+  e.on('draw', v => { t.draw += (v.count || 1); });
+  e.on('counter', () => { t.counter++; });
+  return t;
+}
+const emptyHand = (e) => { for (const k of e.piles.hand.slice()) e.discardCard(k, 'proof'); };
+const st = (a, id) => (a.statuses.get(id) || 0);
+
+/* Pipkin's Patch is an array on the seat's scratch, not a counter. */
+const M = (e) => U.mm({ e, self: e.player });
+const patchOf = (e) => M(e).patch.join(',');
+const fillPatch = (e, ...objs) => { M(e).patch.splice(0, 99, ...objs); };
+const PUMPKINS = ['pumpkin', 'pumpkin', 'pumpkin'];
+/* Boggle's awareness, as one word */
+const aware = (x) => st(x, 'suspicious') ? 'Suspicious' : st(x, 'unaware') ? 'Unaware' : 'Aware';
+
+/* [id, what the board needs, async (upgraded) => the reading the upgrade moves] */
+const PROOFS = [
+  // ── Pipkin ────────────────────────────────────────────────────────────────
+  ...['pipkin/plant-a-little-one', 'pipkin/pocket-seeds', 'pipkin/scatter-on-landing', 'pipkin/seed-stash', 'pipkin/heirloom-seeds']
+    .map(id => [id, 'the Patch, read off the seat scratch', async (up) => {
+      const e = await mk('pipkin'); fillPatch(e); await addPlay(e, id, up); return patchOf(e); }]),
+  ['pipkin/seed-vault', 'the Patch capacity, read off the seat scratch', async (up) => {
+    const e = await mk('pipkin'); fillPatch(e); await addPlay(e, 'pipkin/seed-vault', up);
+    return 'cap ' + M(e).patchCap + ' / ' + patchOf(e); }],
+  ...['pipkin/damp-corner', 'pipkin/warm-windowsill'].map(id => [id, '3 Seeds in the Patch', async (up) => {
+    const e = await mk('pipkin'); fillPatch(e, 'seed', 'seed', 'seed'); await addPlay(e, id, up); return patchOf(e); }]),
+  ['pipkin/pick-one', '3 Pumpkins to Harvest', async (up) => {
+    const e = await mk('pipkin'); fillPatch(e, ...PUMPKINS); await addPlay(e, 'pipkin/pick-one', up); return e.player.energy; }],
+  ['pipkin/little-harvest', '3 Pumpkins to Harvest', async (up) => {
+    const e = await mk('pipkin'); fillPatch(e, ...PUMPKINS); await addPlay(e, 'pipkin/little-harvest', up); return e.piles.hand.length; }],
+  ['pipkin/choose-the-biggest', '3 Pumpkins to Harvest', async (up) => {
+    const e = await mk('pipkin'); fillPatch(e, ...PUMPKINS); await addPlay(e, 'pipkin/choose-the-biggest', up);
+    return 'guard ' + e.player.block + ' / empowered ' + st(e.player, 'empowered'); }],
+  ['pipkin/pantry-raid', '3 Pumpkins to Harvest', async (up) => {
+    const e = await mk('pipkin'); fillPatch(e, ...PUMPKINS); const t = tally(e); await addPlay(e, 'pipkin/pantry-raid', up); return t.draw; }],
+  ['pipkin/replant-the-rind', '3 Pumpkins to Harvest', async (up) => {
+    const e = await mk('pipkin'); fillPatch(e, ...PUMPKINS); await addPlay(e, 'pipkin/replant-the-rind', up); return patchOf(e); }],
+  ['pipkin/picnic-basket', '3 Pumpkins to Harvest; hurt, then at full Courage', async (up) => {
+    const a = await mk('pipkin'); fillPatch(a, ...PUMPKINS); a.player.hp = 30; const ta = tally(a); await addPlay(a, 'pipkin/picnic-basket', up);
+    const b = await mk('pipkin'); fillPatch(b, ...PUMPKINS); await addPlay(b, 'pipkin/picnic-basket', up);
+    return 'heal ' + ta.heal + ' / guard ' + b.player.block; }],
+  ['pipkin/harvest-festival', 'Pumpkins to Harvest', async (up) => {
+    const e = await mk('pipkin'); fillPatch(e, ...PUMPKINS); await addPlay(e, 'pipkin/harvest-festival', up); return e.player.block; }],
+  ['pipkin/hang-time', 'Height kept, and the hand read at the next turn', async (up) => {
+    const e = await mk('pipkin'); e.setCounter('height', 2, 'proof'); await addPlay(e, 'pipkin/hang-time', up);
+    await e.endTurn(); return e.piles.hand.length; }],
+  ['pipkin/big-frog-energy', 'Plump gained (Puff Up), then a Deflate (Squash Tackle)', async (up) => {
+    const e = await mk('pipkin'); await addPlay(e, 'pipkin/big-frog-energy', up); e.setCounter('plump', 0, 'proof');
+    await addPlay(e, 'pipkin/puff-up'); await addPlay(e, 'pipkin/squash-tackle'); return e.player.block; }],
+  ['pipkin/bigger-than-the-doorway', 'Plump gained above 3', async (up) => {
+    const e = await mk('pipkin'); await addPlay(e, 'pipkin/bigger-than-the-doorway', up); e.setCounter('plump', 3, 'proof');
+    await addPlay(e, 'pipkin/big-breath'); return e.player.block; }],
+  ['pipkin/the-patch-fights-back', 'a Harvest, then a Land, in one turn', async (up) => {
+    const e = await mk('pipkin'); await addPlay(e, 'pipkin/the-patch-fights-back', up); fillPatch(e, 'pumpkin');
+    e.setCounter('height', 2, 'proof'); await addPlay(e, 'pipkin/pick-one');
+    const t = tally(e); await addPlay(e, 'pipkin/belly-drop'); return t.dmg; }],
+
+  // ── Boggle ────────────────────────────────────────────────────────────────
+  ...['boggle/under-the-bed', 'boggle/hide-under-something'].map(id => [id, 'no enemy Aware', async (up) => {
+    const e = await mk('boggle'); for (const x of e.enemies) e.applyStatus(x, 'unaware', 1);
+    await addPlay(e, id, up); return e.player.block; }]),
+  ['boggle/wrong-room', 'a target NOT aiming at him', async (up) => {
+    const e = await mk('boggle'); const t = e.livingEnemies()[0]; t.pendingMove = { ...(t.pendingMove || {}), intent: 'defend' };
+    await addPlay(e, 'boggle/wrong-room', up, t); return st(t, 'fright'); }],
+  ['boggle/dont-move', 'an Unaware target', async (up) => {
+    const e = await mk('boggle'); const t = e.livingEnemies()[0]; e.applyStatus(t, 'unaware', 1);
+    await addPlay(e, 'boggle/dont-move', up, t); return 'fright ' + st(t, 'fright') + ' / guard ' + e.player.block; }],
+  ['boggle/cozy-darkness', 'one Unaware enemy', async (up) => {
+    const e = await mk('boggle'); e.applyStatus(e.livingEnemies()[0], 'unaware', 1);
+    await addPlay(e, 'boggle/cozy-darkness', up); return e.player.block; }],
+  ['boggle/no-one-here-but-dust', 'only one enemy alive', async (up) => {
+    const e = await mk('boggle'); const [t, gone] = e.livingEnemies(); gone.hp = 0; gone.alive = false;
+    await addPlay(e, 'boggle/no-one-here-but-dust', up, t); return st(t, 'fright'); }],
+  ['boggle/every-creak-means-me', '12 Fright to double', async (up) => {
+    const e = await mk('boggle'); const t = e.livingEnemies()[0]; e.applyStatus(t, 'fright', 12);
+    await addPlay(e, 'boggle/every-creak-means-me', up); return st(t, 'fright'); }],
+  ['boggle/hiding-place-inside-a-hiding-place', 'an Unaware target, then a Suspicious one', async (up) => {
+    const a = await mk('boggle'); const ta = a.livingEnemies()[0]; a.applyStatus(ta, 'unaware', 1);
+    await addPlay(a, 'boggle/hiding-place-inside-a-hiding-place', up, ta);
+    const b = await mk('boggle'); const tb = b.livingEnemies()[0]; b.applyStatus(tb, 'suspicious', 1);
+    const tl = tally(b); await addPlay(b, 'boggle/hiding-place-inside-a-hiding-place', up, tb);
+    return 'fright ' + st(ta, 'fright') + ' / guard ' + b.player.block + ' draw ' + tl.draw; }],
+  ['boggle/the-long-wait', 'Lurk with room under the cap', async (up) => {
+    const e = await mk('boggle'); e.setCounter('lurk', 0, 'proof'); await addPlay(e, 'boggle/the-long-wait', up); return e.counter('lurk'); }],
+  ['boggle/keep-the-lights-off', 'three Ambushes on an Unaware enemy', async (up) => {
+    const e = await mk('boggle'); const t = e.livingEnemies()[0]; await addPlay(e, 'boggle/keep-the-lights-off', up);
+    for (let i = 0; i < 3; i++) { e.applyStatus(t, 'unaware', 1); await addPlay(e, 'boggle/little-chomp', false, t); }
+    return aware(t); }],
+  ['boggle/lump-under-the-blanket', 'an Ambush that makes it Suspicious', async (up) => {
+    const e = await mk('boggle'); const t = e.livingEnemies()[0]; await addPlay(e, 'boggle/lump-under-the-blanket', up, t);
+    e.applyStatus(t, 'unaware', 1); await addPlay(e, 'boggle/little-chomp', false, t); return st(t, 'fright'); }],
+  ...['boggle/dont-turn-around', 'boggle/dont-check-again'].map(id => [id, 'an Unaware target that then Searches', async (up) => {
+    const e = await mk('boggle'); const t = e.livingEnemies()[0]; await addPlay(e, 'boggle/under-the-bed', false, t);
+    await addPlay(e, id, up, t); await e.endTurn();
+    return 'fright ' + st(t, 'fright') + ' / ' + aware(t); }]),
+  ['boggle/dont-scream-yet', '12 Fright and five Scares', async (up) => {
+    const e = await mk('boggle'); const t = e.livingEnemies()[0]; e.applyStatus(t, 'fright', 12);
+    await addPlay(e, 'boggle/dont-scream-yet', up);
+    for (let i = 0; i < 5; i++) await addPlay(e, 'boggle/ankle-grab', false, t);
+    return st(t, 'fright'); }],
+  ['boggle/you-didnt-see-anything', 'Lurk, and a Suspicious enemy to hide', async (up) => {
+    const e = await mk('boggle'); const t = e.livingEnemies()[0]; await addPlay(e, 'boggle/you-didnt-see-anything', up);
+    e.setCounter('lurk', 3, 'proof'); e.applyStatus(t, 'suspicious', 1);
+    await addPlay(e, 'boggle/under-the-bed', false, t); return e.counter('lurk'); }],
+
+  // ── Hush ──────────────────────────────────────────────────────────────────
+  ['hush/nobody-saw-that', 'already Unseen', async (up) => {
+    const e = await mk('hush'); e.applyStatus(e.player, 'unseen', 1); const t = tally(e);
+    await addPlay(e, 'hush/nobody-saw-that', up); return t.draw; }],
+  ['hush/shhh', 'a 2-cost Trick in the Shadow Pocket', async (up) => {
+    const e = await mk('hush'); const k = add(e, 'hush/stash-and-dash', false, 'stash');
+    await addPlay(e, 'hush/shhh', up); return e.costOf(k); }],
+  ...[['hush/hidey-hole', 6], ['hush/bigger-on-the-inside', 7]].map(([id, n]) => [id, n + ' Stashes', async (up) => {
+    const e = await mk('hush'); await addPlay(e, id, up);
+    for (let i = 0; i < n; i++) await addPlay(e, 'hush/pocket-this');
+    return e.piles.stash.length; }]),
+  ['hush/empty-the-pockets', 'two Contraband in the Pocket', async (up) => {
+    const e = await mk('hush');
+    for (let i = 0; i < 2; i++) add(e, 'hush/snatched-swipe', false, 'stash').meta.contraband = true;
+    await addPlay(e, 'hush/empty-the-pockets', up); return e.player.block; }],
+  ['hush/buried-in-the-couch', 'four Spooked in the discard', async (up) => {
+    const e = await mk('hush'); for (let i = 0; i < 4; i++) add(e, 'status/spooked', false, 'discard');
+    await addPlay(e, 'hush/buried-in-the-couch', up);
+    return e.piles.discard.filter(k => k.id === 'status/spooked').length + ' left / guard ' + e.player.block; }],
+
+  // ── Crinkle ───────────────────────────────────────────────────────────────
+  ['crinkle/unbound', '4 Paper to spend', async (up) => {
+    const e = await mk('crinkle'); e.setCounter('paper', 4, 'proof'); const t = tally(e);
+    await addPlay(e, 'crinkle/unbound', up); return t.draw; }],
+];
+
+const out = document.getElementById('out');
+const say = (html, cls) => { const d = document.createElement('div'); if (cls) d.className = cls; d.innerHTML = html; out.appendChild(d); };
+
+(async () => {
+  const pass = [], fail = [];
+  for (const [id, why, run] of PROOFS) {
+    let a, b, err = '';
+    try { a = await run(false); b = await run(true); } catch (x) { err = String((x && x.message) || x); }
+    const line = id + ' [' + why + ']: base ' + JSON.stringify(a) + ', upgraded ' + JSON.stringify(b) + (err ? ' THREW ' + err : '');
+    if (!err && JSON.stringify(a) !== JSON.stringify(b)) { pass.push(line); say('PASS ' + line, 'pass'); }
+    else { fail.push(line); say('FAIL ' + line, 'fail'); }
+  }
+  window.__RESULT = { pass, fail, ids: PROOFS.map(p => p[0]) };
+  window.__DONE = true;
+})().catch(err => { window.__RESULT = { pass: [], fail: ['CRASHED ' + ((err && err.stack) || err)], ids: [] }; window.__DONE = true; });
+</script>

@@ -268,7 +268,11 @@ function spectralCopy(c, def) {
 
 const canBury = (c, card) => !!card && !card.meta.noBury;
 
-/** Install a Power once. */
+/**
+ * Install a Power once. A number written inside `install` is the FIRST copy's
+ * forever, so every Power records its number on each play (`U.keepBest`, or
+ * the Math.max that Little Ghost Escort and Graveyard Choir use) outside it.
+ */
 const power = (c, id, install) => {
   const s = U.mm(c);
   U.applySelf(c, id, 1);
@@ -741,7 +745,7 @@ const commons = [
     text: 'The first time you [Bury] a Trick each turn, your [Best Friend] gains {b} Guard.',
     flavor: 'The stones approve. Faintly.',
     nums: { b: 5 },
-    effect: eff((c) => power(c, 'pudding/haunted-headstones', (x, s) => { s.hauntedHeadstones = N(x).b; })),
+    effect: eff((c) => { power(c, 'pudding/haunted-headstones', () => {}); U.keepBest(c, 'hauntedHeadstones', N(c).b); }),
     upgrade: { nums: { b: 8 } },
   },
   {
@@ -750,7 +754,7 @@ const commons = [
     text: 'While [Graveside], your first Attack each turn on something winding up at your [Best Friend] deals {m0} more.',
     flavor: 'There are rules here. He wrote them. Nobody can read them.',
     nums: { m0: 6 },
-    effect: eff((c) => power(c, 'pudding/graveyard-rules', (x, s) => { s.graveyardRules = N(x).m0; })),
+    effect: eff((c) => { power(c, 'pudding/graveyard-rules', () => {}); U.keepBest(c, 'graveyardRules', N(c).m0); }),
     upgrade: { nums: { m0: 9 } },
   },
 ];
@@ -1134,7 +1138,7 @@ const uncommons = [
     text: 'While [Graveside], your [Best Friend] gains {b} Guard at the end of your turn.',
     flavor: 'Something here has decided to be kind.',
     nums: { b: 6 },
-    effect: eff((c) => power(c, 'pudding/hallowed-ground', (x, s) => { s.hallowedGround = N(x).b; })),
+    effect: eff((c) => { power(c, 'pudding/hallowed-ground', () => {}); U.keepBest(c, 'hallowedGround', N(c).b); }),
     upgrade: { nums: { b: 10 } },
   },
   {
@@ -1152,7 +1156,7 @@ const uncommons = [
     text: 'The first time you spend [Loyalty] each turn, your [Best Friend] gains {b} Guard.',
     flavor: 'Asleep. Still on duty. Somehow both.',
     nums: { b: 9 },
-    effect: eff((c) => power(c, 'pudding/never-off-duty', (x, s) => { s.neverOffDuty = N(x).b; })),
+    effect: eff((c) => { power(c, 'pudding/never-off-duty', () => {}); U.keepBest(c, 'neverOffDuty', N(c).b); }),
     upgrade: { nums: { b: 13 } },
   },
   {
@@ -1605,7 +1609,7 @@ const coopCards = [
     text: 'Once each turn, change your [Best Friend] for free; they gain {b} Guard. [Loyalty] now watches the whole party.',
     flavor: 'All of them. He has decided. All of them.',
     nums: { b: 6 },
-    effect: eff((c) => power(c, 'pudding/the-whole-pack', (x, s) => { s.wholePack = N(x).b; })),
+    effect: eff((c) => { power(c, 'pudding/the-whole-pack', () => {}); U.keepBest(c, 'wholePack', N(c).b); }),
     upgrade: { nums: { b: 10 } },
   },
   {

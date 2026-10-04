@@ -136,6 +136,29 @@ try {
     check(e.costOf(k) === drop.cost - drop.nums.n, 'where Jawbreaker Drop costs its discount less',
       `costs ${e.costOf(k)}, printed ${drop.cost}`);
   }
+
+  say('<h2>A Power keeps the best copy played</h2>');
+  {
+    /* Family Pack's surcharge {n} (1, upgraded 0) was captured by the
+       install-once closure, so Family Pack then Family Pack+ still charged 1. */
+    const gummyCost = async (seq) => {
+      const e = await taffy();
+      for (const up of seq) {
+        e.addCard(CARDS.cardById('taffy/family-pack'), 'hand', { upgraded: up });
+        const card = e.piles.hand[e.piles.hand.length - 1];
+        e.player.energy = 9;
+        await e.playCard(card.uid);
+      }
+      await e.endTurn();
+      await play(e, 'taffy/sugar-bonk', e.livingEnemies()[0]);
+      const g = e.piles.discard.find(k => flag(k, 'gummy') && k.def && k.def.id === 'taffy/sugar-bonk');
+      return g ? e.costOf(g) : null;
+    };
+    const printed = CARDS.cardById('taffy/sugar-bonk').cost;
+    const base = await gummyCost([false]), both = await gummyCost([false, true]);
+    check(base === printed + 1, 'Family Pack: the Gummy copy costs 1 more', `printed ${printed}, Gummy ${base}`);
+    check(both === printed, 'Family Pack then Family Pack+ charges the upgraded 0 more', `printed ${printed}, Gummy ${both}`);
+  }
 } catch (err) {
   fails.push('THREW: ' + (err && err.stack || err));
 }

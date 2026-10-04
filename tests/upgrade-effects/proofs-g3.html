@@ -1,0 +1,321 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Upgrade waivers, group 3: the proofs</title>
+<style>
+  body { font: 14px/1.5 ui-monospace, monospace; background: #14121a; color: #d8d4e0; padding: 20px; }
+  .pass { color: #7fd08a; } .fail { color: #ff8080; } .dim { color: #8a839c; }
+</style>
+<h1>Upgrade waivers, group 3</h1>
+<div class="dim">every entry in WAIVED_G3, played base and upgraded on a board that DOES reach its condition</div>
+<div id="out"></div>
+<script type="module">
+/**
+ * THE PROOF BEHIND EVERY WAIVER IN `WAIVED_G3` (index.html).
+ *
+ * `tests/upgrade-effects` plays each Trick on one dummy board. A live upgrade
+ * whose condition that board never reaches - no Buried Harm to clear, nothing
+ * Lingering to Hasten, a Preview depth the snapshot does not read, a Power
+ * whose trigger never happens - comes out identical, and is waived there. A
+ * waiver is a claim that the upgrade IS live, so this page makes the claim
+ * checkable: each entry builds the board its condition needs with the engine
+ * API, plays the Trick base and upgraded, and reads the one number the upgrade
+ * is supposed to move. Identical readings FAIL.
+ *
+ *   python tests/upgrade-effects/run.py g3
+ *
+ * Mossbit, Wink, Wisp and Mopsy (2026-10-04).
+ */
+import { RNG } from '../../game/src/core/rng.js';
+import { makeDummySetup, makeDummyParty } from '../../game/src/combat/dummy.js';
+import { CombatEngine } from '../../game/src/combat/engine.js';
+import * as U from '../../game/src/data/companions/_util.js';
+import * as CARDS from '../../game/src/data/cards.js';
+
+const SEED = 20260911;
+async function mk(slug, enemies) {
+  const e = new CombatEngine(makeDummySetup(new RNG(SEED), { companion: slug, deck: CARDS.startingDeckFor(slug), ...(enemies ? { enemies } : {}) }));
+  e.setTrackerInstaller(U.installTrackers);
+  await e.startCombat();
+  for (const x of e.enemies) { x.maxHp = 9999; x.hp = 9999; }
+  e.player.energy = 9;
+  return e;
+}
+async function mkParty(slug, n = 2) {
+  const decks = []; for (let i = 0; i < n; i++) decks.push(CARDS.startingDeckFor(slug));
+  const e = makeDummyParty(new RNG(SEED), n, { companion: slug, decks });
+  e.setTrackerInstaller(U.installTrackers);
+  await e.startCombat();
+  for (const x of e.enemies) { x.maxHp = 9999; x.hp = 9999; }
+  for (const p of e.players) p.energy = 9;
+  return e;
+}
+const DEFS = new Map(CARDS.allCards().map(d => [d.id, d]));
+function add(e, id, upgraded = false, pile = 'hand') {
+  const d = DEFS.get(id);
+  if (!d) throw new Error('no such Trick ' + id);
+  const m = e.addCard(d, pile, { upgraded });
+  return Array.isArray(m) ? m[0] : m;
+}
+async function play(e, card, tgt) {
+  e.current.energy = 9;
+  const t = tgt || e.livingEnemies()[0];
+  await e.playCard(card.uid, t && t.id);
+}
+async function addPlay(e, id, upgraded = false, tgt) { const k = add(e, id, upgraded); await play(e, k, tgt); return k; }
+function tally(e) {
+  const t = { dmg: 0, hits: 0, block: 0, heal: 0, status: 0, draw: 0, counter: 0 };
+  e.on('damage', v => { t.dmg += v.amount || 0; t.hits++; });
+  e.on('block', v => { t.block += v.amount || 0; });
+  e.on('heal', v => { t.heal += v.amount || 0; });
+  e.on('status', v => { t.status += Math.abs(v.delta || 0); });
+  e.on('draw', v => { t.draw += (v.count || 1); });
+  e.on('counter', () => { t.counter++; });
+  return t;
+}
+const emptyHand = (e) => { for (const k of e.piles.hand.slice()) e.discardCard(k, 'proof'); };
+const st = (a, id) => (a.statuses.get(id) || 0);
+
+/* Group 3 keeps its rules in tracker state rather than counters: Buried Harm,
+   the Gloaming, Sets and Reads all live on the seat's scratch. */
+const MM = (e, who) => U.mm(U.trackerCtx(e, who || e.player));
+/** An enemy Attack landing on a Kid, the way an enemy move deals one. */
+const enemyHit = (e, n, who) => e.dealDamage({ attacker: e.livingEnemies()[0], defender: who || e.player, amount: n, kind: 'attack' });
+/** Bring every one of Mossbit's Epitaphs to 0. 'tick' is the natural reason. */
+const land = (e, reason = 'hasten') => {
+  for (const t of e.timers.slice()) if (t.data && t.data.mossbit) e.adjustTimer(t.id, -t.turnsLeft, reason);
+};
+const eyes = (e, who) => e.counter('open-eyes', (who || e.player).id);
+const patches = (k) => (U.flag(k, 'patches') || []);
+
+/* Wink's Intent Families need enemies whose plan is a certainty, the same
+   three tests/wink builds: one that only swings, one that only Defends, and
+   one that changes its mind the moment it carries Web. */
+const SWING = { id: 'swing', name: 'Swing', intent: 'attack', damage: 3, hits: 1, effect: (c) => c.damage(3) };
+const BRACE = { id: 'brace', name: 'Brace', intent: 'defend', block: 5, effect: (c) => c.block(c.self, 5) };
+const ATTACKER = { id: 'g3/attacker', name: 'Attacker', region: 'foyer', tier: 'normal', hp: [400, 400], silhouette: 'blob', moves: { swing: SWING }, nextMove: () => 'swing' };
+const DEFENDER = { id: 'g3/defender', name: 'Defender', region: 'foyer', tier: 'normal', hp: [400, 400], silhouette: 'blob', moves: { brace: BRACE }, nextMove: () => 'brace' };
+const MOODY = {
+  id: 'g3/moody', name: 'Moody', region: 'foyer', tier: 'normal', hp: [400, 400], silhouette: 'blob', moves: { swing: SWING, brace: BRACE },
+  nextMove: (c) => ((c.self.status('web') || 0) > 0 ? 'brace' : 'swing'),
+};
+/** Every family prompt answered with one label. */
+const callFamily = (e, label) => e.setChoiceResolver(async (req) => {
+  if (req.kind !== 'option') return [0];
+  const i = (req.pool || req.options || []).findIndex(o => (o.label || o) === label);
+  return [i >= 0 ? i : 0];
+});
+/** Snip Here deletes the current action: a real advance, resolving the Read on position 1. */
+async function snipToResolve(e, t) {
+  e.applyStatus(t, 'web', DEFS.get('wink/snip-here').nums.n);
+  await addPlay(e, 'wink/snip-here', false, t);
+}
+
+/* [id, what the board needs, async (upgraded) => the reading the upgrade moves] */
+const PROOFS = [
+  // ── Mossbit ───────────────────────────────────────────────────────────────
+  ...[
+    'mossbit/not-yet', 'mossbit/put-it-off', 'mossbit/take-the-hit-later', 'mossbit/emergency-burial',
+  ].map(id => [id, 'three 15-damage enemy hits into the Burial window', async (up) => {
+    const e = await mk('mossbit'); await addPlay(e, id, up);
+    for (let i = 0; i < 3; i++) enemyHit(e, 15);
+    return MM(e).buriedHarm || 0; }]),
+  ['mossbit/steady-little-heart', '12 Buried Harm', async (up) => {
+    const e = await mk('mossbit'); MM(e).buriedHarm = 12; const t = tally(e);
+    await addPlay(e, 'mossbit/steady-little-heart', up); return MM(e).buriedHarm + '/' + t.block; }],
+  ['mossbit/weight-to-words', '20 Buried Harm, and its Epitaph landed', async (up) => {
+    const e = await mk('mossbit'); MM(e).buriedHarm = 20;
+    await addPlay(e, 'mossbit/weight-to-words', up); const t = tally(e); land(e); return t.dmg; }],
+  ['mossbit/carry-it-properly', '20 Buried Harm', async (up) => {
+    const e = await mk('mossbit'); MM(e).buriedHarm = 20; const t = tally(e);
+    await addPlay(e, 'mossbit/carry-it-properly', up); return t.draw + '/' + (20 - MM(e).buriedHarm); }],
+  ['mossbit/monument-to-small-things', 'Buried Harm cleared, then an Epitaph', async (up) => {
+    const e = await mk('mossbit'); await addPlay(e, 'mossbit/monument-to-small-things', up);
+    MM(e).buriedHarm = 5; await addPlay(e, 'mossbit/steady-little-heart');
+    await addPlay(e, 'mossbit/written-in-stone'); const t = tally(e); land(e); return t.dmg; }],
+  ['mossbit/deep-inscription', 'the turns it takes Epitaph 3 to land on its own', async (up) => {
+    const e = await mk('mossbit'); emptyHand(e); await addPlay(e, 'mossbit/deep-inscription', up);
+    const t = tally(e); for (let i = 0; i < 3; i++) await e.endTurn();
+    return t.draw + '/' + e.player.energy; }],
+  ['mossbit/set-in-stone', 'an Epitaph written after it, landed', async (up) => {
+    const e = await mk('mossbit'); await addPlay(e, 'mossbit/set-in-stone', up);
+    await addPlay(e, 'mossbit/written-in-stone'); const t = tally(e); land(e); return t.dmg; }],
+  ['mossbit/moss-grows-anyway', 'an Epitaph resolving on its own', async (up) => {
+    const e = await mk('mossbit'); await addPlay(e, 'mossbit/moss-grows-anyway', up);
+    await addPlay(e, 'mossbit/written-in-stone'); const t = tally(e); land(e, 'tick'); return t.block; }],
+  ['mossbit/grave-moss', 'an Epitaph to Erase', async (up) => {
+    const e = await mk('mossbit'); await addPlay(e, 'mossbit/grave-moss', up);
+    await addPlay(e, 'mossbit/written-in-stone'); const t = tally(e);
+    await addPlay(e, 'mossbit/scratch-it-out'); return t.block; }],
+  ['mossbit/geological-patience', 'full Patience and an Epitaph resolving on its own', async (up) => {
+    const e = await mk('mossbit'); await addPlay(e, 'mossbit/geological-patience', up);
+    e.setCounter('patience', 3, 'proof');
+    await addPlay(e, 'mossbit/written-in-stone'); const t = tally(e); land(e, 'tick'); return t.dmg + '/' + t.block; }],
+  ['mossbit/weatherproofing', 'three Weathering 2 Tricks in hand', async (up) => {
+    const e = await mk('mossbit'); emptyHand(e);
+    const ks = [0, 1, 2].map(() => add(e, 'mossbit/warm-flagstone'));
+    await addPlay(e, 'mossbit/weatherproofing', up); return ks.map(k => k.meta.weatherLeft ?? 'untouched').join(','); }],
+  ['mossbit/turn-to-stone', 'the next hand, read', async (up) => {
+    const e = await mk('mossbit'); emptyHand(e); await addPlay(e, 'mossbit/turn-to-stone', up);
+    await e.endTurn(); return e.piles.hand.length; }],
+
+  // ── Wink ──────────────────────────────────────────────────────────────────
+  ['wink/peek-around-the-corner', 'Preview depth, read', async (up) => {
+    const e = await mk('wink'); const t = e.livingEnemies()[0];
+    await addPlay(e, 'wink/peek-around-the-corner', up, t); return e.previewDepth(t); }],
+  ['wink/read-the-room', 'Preview depth on every enemy, read', async (up) => {
+    const e = await mk('wink'); await addPlay(e, 'wink/read-the-room', up);
+    return e.livingEnemies().map(x => e.previewDepth(x)).join(','); }],
+  ['wink/three-steps-ahead', 'the next turn, and its Preview depth read', async (up) => {
+    const e = await mk('wink'); await addPlay(e, 'wink/three-steps-ahead', up); await e.endTurn();
+    return e.previewDepth(e.livingEnemies()[0]); }],
+  ['wink/ceiling-survey', '2 Web on the target', async (up) => {
+    const e = await mk('wink'); const t = e.livingEnemies()[0]; e.applyStatus(t, 'web', 2);
+    await addPlay(e, 'wink/ceiling-survey', up, t); return e.previewDepth(t); }],
+  ['wink/double-check', 'two revealed Intents of one family (an enemy that only swings)', async (up) => {
+    const e = await mk('wink', [ATTACKER]); const t = e.livingEnemies()[0];
+    await addPlay(e, 'wink/double-check', up, t); return eyes(e); }],
+  ['wink/red-string-theory', 'a Previewed enemy, and 3 Nerve to spend', async (up) => {
+    const e = await mk('wink'); const t = e.livingEnemies()[0];
+    await addPlay(e, 'wink/peek-around-the-corner', false, t);
+    const k = add(e, 'wink/red-string-theory', up); e.current.energy = 3; await e.playCard(k.uid);
+    return st(t, 'web'); }],
+  ['wink/controlled-panic', 'an Attack now and an Attack Previewed next', async (up) => {
+    const e = await mk('wink', [ATTACKER]); const t = e.livingEnemies()[0];
+    await addPlay(e, 'wink/peek-around-the-corner', false, t); const b0 = e.player.block;
+    await addPlay(e, 'wink/controlled-panic', up, t); return (e.player.block - b0) + '/' + st(t, 'web'); }],
+  ['wink/lampshade-lookout', 'an enemy executing a Scheme (the Coatrack\'s Drape), and the next hand read', async (up) => {
+    const e = await mk('wink'); await addPlay(e, 'wink/lampshade-lookout', up); await e.endTurn();
+    return e.piles.hand.length; }],
+  ['wink/false-floor', 'a Reorder on its enemy (Stall the Bad Part)', async (up) => {
+    const e = await mk('wink'); const t = e.livingEnemies()[0];
+    await addPlay(e, 'wink/false-floor', up, t); e.applyStatus(t, 'web', 2); const tl = tally(e);
+    await addPlay(e, 'wink/stall-the-bad-part', false, t); return tl.dmg; }],
+  ['wink/loom-logic', 'Web spent on a Reorder (Stall the Bad Part)', async (up) => {
+    const e = await mk('wink'); const [t, o] = e.livingEnemies();
+    await addPlay(e, 'wink/loom-logic', up); e.applyStatus(t, 'web', 2);
+    await addPlay(e, 'wink/stall-the-bad-part', false, t); return st(o, 'web'); }],
+  ['wink/extra-corner', 'six Sets placed', async (up) => {
+    const e = await mk('wink'); await addPlay(e, 'wink/extra-corner', up);
+    for (let i = 0; i < 6; i++) await addPlay(e, 'wink/lampshade-lookout');
+    return MM(e).sets.length; }],
+  ['wink/i-meant-that-one', 'a Read that would fail (Attack called on a Defender), resolved', async (up) => {
+    const e = await mk('wink', [DEFENDER]); const t = e.livingEnemies()[0]; callFamily(e, 'Attack');
+    await addPlay(e, 'wink/call-it', false, t); await addPlay(e, 'wink/i-meant-that-one', up, t);
+    const before = eyes(e); await snipToResolve(e, t); return eyes(e) - before; }],
+  ['wink/telltale-twitch', 'a Read that succeeds (Attack called on an Attacker)', async (up) => {
+    const e = await mk('wink', [ATTACKER]); const t = e.livingEnemies()[0]; callFamily(e, 'Attack');
+    await addPlay(e, 'wink/telltale-twitch', up); await addPlay(e, 'wink/call-it', false, t);
+    await snipToResolve(e, t); return st(t, 'web'); }],
+  ['wink/pattern-library', 'a Read that succeeds (Attack called on an Attacker)', async (up) => {
+    const e = await mk('wink', [ATTACKER]); const t = e.livingEnemies()[0]; callFamily(e, 'Attack');
+    await addPlay(e, 'wink/pattern-library', up); await addPlay(e, 'wink/call-it', false, t);
+    const tl = tally(e); await snipToResolve(e, t); return tl.draw; }],
+  ['wink/the-house-has-tells', 'an enemy that changes its mind with the queue still', async (up) => {
+    const e = await mk('wink', [MOODY]); const t = e.livingEnemies()[0];
+    await addPlay(e, 'wink/the-house-has-tells', up); const before = eyes(e);
+    e.applyStatus(t, 'web', 1); return eyes(e) - before; }],
+
+  // ── Wisp ──────────────────────────────────────────────────────────────────
+  ['wisp/not-yet', 'one Lingering Trick (Wait... Wait..., which lands as damage)', async (up) => {
+    const e = await mk('wisp'); await addPlay(e, 'wisp/wait-wait'); const t = tally(e);
+    await addPlay(e, 'wisp/not-yet', up); return t.block; }],
+  ['wisp/still-here', 'two Lingering Tricks', async (up) => {
+    const e = await mk('wisp'); for (let i = 0; i < 2; i++) await addPlay(e, 'wisp/wait-wait');
+    const t = tally(e); await addPlay(e, 'wisp/still-here', up); return t.block; }],
+  ['wisp/orbiting-sparks', 'two Tricks in the Gloaming', async (up) => {
+    const e = await mk('wisp'); for (let i = 0; i < 2; i++) await addPlay(e, 'wisp/nightlight-practice');
+    const t = tally(e); await addPlay(e, 'wisp/orbiting-sparks', up); return t.dmg; }],
+  ['wisp/cut-the-wait', 'three Lingering Tricks at 1', async (up) => {
+    const e = await mk('wisp'); for (let i = 0; i < 3; i++) await addPlay(e, 'wisp/nightlight-practice');
+    const t = tally(e); await addPlay(e, 'wisp/cut-the-wait', up);
+    return (3 - MM(e).gloaming.length) + '/' + t.draw; }],
+  ['wisp/all-at-once', 'two Lingering Tricks at 1', async (up) => {
+    const e = await mk('wisp'); for (let i = 0; i < 2; i++) await addPlay(e, 'wisp/nightlight-practice');
+    await addPlay(e, 'wisp/all-at-once', up); return e.player.energy; }],
+  ['wisp/stop-the-clocks', 'two Lingering Tricks', async (up) => {
+    const e = await mk('wisp'); for (let i = 0; i < 2; i++) await addPlay(e, 'wisp/nightlight-practice');
+    const t = tally(e); await addPlay(e, 'wisp/stop-the-clocks', up); return t.block; }],
+  ['wisp/gentle-landing', 'an Afterglow before the next turn (one Hastened, no Guard of its own)', async (up) => {
+    const e = await mk('wisp'); await addPlay(e, 'wisp/wait-wait'); await addPlay(e, 'wisp/gentle-landing', up);
+    const t = tally(e); await addPlay(e, 'wisp/cut-the-wait'); return t.block; }],
+  ['wisp/constellation-practice', 'two Afterglows landing together', async (up) => {
+    const e = await mk('wisp'); for (let i = 0; i < 2; i++) await addPlay(e, 'wisp/nightlight-practice');
+    await addPlay(e, 'wisp/constellation-practice', up); const t = tally(e);
+    await addPlay(e, 'wisp/all-at-once'); return t.draw; }],
+  ['wisp/small-orbit', 'a 2-cost Trick on top of the draw pile, brought back', async (up) => {
+    const e = await mk('wisp'); const k = add(e, 'wisp/wait-wait', false, 'draw');
+    await addPlay(e, 'wisp/small-orbit', up); await addPlay(e, 'wisp/cut-the-wait');
+    return e.piles.hand.includes(k) ? e.costOf(k) : 'not back'; }],
+  ['wisp/glow-bank', 'Glow from 0 (room under the cap)', async (up) => {
+    const e = await mk('wisp'); e.setCounter('glow', 0, 'proof');
+    await addPlay(e, 'wisp/glow-bank', up); return e.counter('glow'); }],
+  ['wisp/never-goes-out', 'Glow spent (1, by Start Over Small), read after the turn', async (up) => {
+    const e = await mk('wisp'); await addPlay(e, 'wisp/never-goes-out', up); e.setCounter('glow', 1, 'proof');
+    await addPlay(e, 'wisp/start-over-small'); await e.endTurn(); return e.counter('glow'); }],
+  ['wisp/start-over-small', '8 Glow (Bigger Than a Nightlight) and a Linger at 4', async (up) => {
+    const e = await mk('wisp'); await addPlay(e, 'wisp/bigger-than-a-nightlight');
+    await addPlay(e, 'wisp/long-fuse'); await addPlay(e, 'wisp/glow-bank');   // Linger 3, Delayed 1
+    e.setCounter('glow', 8, 'proof'); const g = MM(e).gloaming[0];
+    await addPlay(e, 'wisp/start-over-small', up); return g.hastened; }],
+  ['wisp/count-with-me', 'a friend (two seats), and the Linger landing', async (up) => {
+    const e = await mkParty('wisp', 2); const mate = e.players[1];
+    await addPlay(e, 'wisp/nightlight-practice'); await addPlay(e, 'wisp/count-with-me', up);
+    const h0 = mate.piles.hand.length, b0 = mate.block;
+    await addPlay(e, 'wisp/not-yet'); return (mate.piles.hand.length - h0) + '/' + (mate.block - b0); }],
+  ['wisp/make-a-constellation', 'a friend (two seats), and the Linger landing', async (up) => {
+    const e = await mkParty('wisp', 2); const mate = e.players[1];
+    await addPlay(e, 'wisp/nightlight-practice'); await addPlay(e, 'wisp/make-a-constellation', up);
+    const h0 = mate.piles.hand.length, b0 = mate.block;
+    await addPlay(e, 'wisp/not-yet'); return (mate.piles.hand.length - h0) + '/' + (mate.block - b0); }],
+
+  // ── Mopsy ─────────────────────────────────────────────────────────────────
+  ...['mopsy/inside-out', 'mopsy/turn-me-inside-out'].map(id => [id, 'Stuffing at 0 (turns Plump) and at 6 (turns Hollow)', async (up) => {
+    const a = await mk('mopsy'); a.setCounter('stuffing', 0, 'proof'); const ta = tally(a); await addPlay(a, id, up);
+    const b = await mk('mopsy'); b.setCounter('stuffing', 6, 'proof'); const tb = tally(b); await addPlay(b, id, up);
+    return ta.draw + '/' + tb.block; }]),
+  ['mopsy/neat-hem', 'a Patch in hand at 1 Stitch', async (up) => {
+    const e = await mk('mopsy'); const k = add(e, 'mopsy/sock-kick'); U.setFlag(k, 'patches', [{ id: 'guard', stitches: 1 }]);
+    await addPlay(e, 'mopsy/neat-hem', up); return patches(k)[0].stitches; }],
+  ['mopsy/two-good-stitches', 'three Patched Tricks played (2 Stitches each)', async (up) => {
+    const e = await mk('mopsy'); emptyHand(e);
+    const ks = [0, 1, 2].map(() => { const k = add(e, 'mopsy/folded-arms'); U.setFlag(k, 'patches', [{ id: 'guard', stitches: 2 }]); return k; });
+    await addPlay(e, 'mopsy/two-good-stitches', up);
+    for (const k of ks) await play(e, k);
+    return ks.reduce((n, k) => n + patches(k).reduce((m, p) => m + p.stitches, 0), 0); }],
+  ['mopsy/cushion-fort', 'four hits Cushioned, and the next turn read', async (up) => {
+    const e = await mk('mopsy'); e.setCounter('stuffing', 6, 'proof'); await addPlay(e, 'mopsy/cushion-fort', up);
+    for (let i = 0; i < 4; i++) enemyHit(e, 10);
+    await e.endTurn(); return e.counter('stuffing'); }],
+  ['mopsy/held-together-by-love', 'a killing blow, and the next hand read', async (up) => {
+    const e = await mk('mopsy'); await addPlay(e, 'mopsy/held-together-by-love', up);
+    emptyHand(e);   // a full hand Torn would leave too few Tricks in the deck to draw the extra
+    enemyHit(e, 999); const hp = e.player.hp; e.player.block = 99;
+    await e.endTurn(); return hp + '/' + e.piles.hand.length; }],
+  ['mopsy/family-quilt', 'a friend (two seats) playing a Patched Trick', async (up) => {
+    const e = await mkParty('mopsy', 2); const [me, mate] = e.players;
+    await addPlay(e, 'mopsy/family-quilt', up);
+    const k = e.addCard(DEFS.get('mopsy/folded-arms'), 'hand', { to: mate });
+    const card = Array.isArray(k) ? k[0] : k; U.setFlag(card, 'patches', [{ id: 'guard', stitches: 2 }]);
+    mate.energy = 9; await e.playCard(card.uid);
+    return e.counter('stuffing', me.id); }],
+  ['mopsy/bunny-pile', 'four Kids and 6 Stuffing', async (up) => {
+    const e = await mkParty('mopsy', 4); e.setCounter('stuffing', 6, 'proof', e.players[0].id);
+    await addPlay(e, 'mopsy/bunny-pile', up); return e.players.filter(p => st(p, 'cushion-free') > 0).length; }],
+];
+
+const out = document.getElementById('out');
+const say = (html, cls) => { const d = document.createElement('div'); if (cls) d.className = cls; d.innerHTML = html; out.appendChild(d); };
+
+(async () => {
+  const pass = [], fail = [];
+  for (const [id, why, run] of PROOFS) {
+    let a, b, err = '';
+    try { a = await run(false); b = await run(true); } catch (x) { err = String((x && x.message) || x); }
+    const line = id + ' [' + why + ']: base ' + JSON.stringify(a) + ', upgraded ' + JSON.stringify(b) + (err ? ' THREW ' + err : '');
+    if (!err && JSON.stringify(a) !== JSON.stringify(b)) { pass.push(line); say('PASS ' + line, 'pass'); }
+    else { fail.push(line); say('FAIL ' + line, 'fail'); }
+  }
+  window.__RESULT = { pass, fail, ids: PROOFS.map(p => p[0]) };
+  window.__DONE = true;
+})().catch(err => { window.__RESULT = { pass: [], fail: ['CRASHED ' + ((err && err.stack) || err)], ids: [] }; window.__DONE = true; });
+</script>

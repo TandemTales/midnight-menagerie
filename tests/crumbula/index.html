@@ -165,6 +165,75 @@ try {
     await e.playCard(left[0].uid);
     check(e.player.hp > 50, 'and the Leftover Feeds with no enemy needed', `hp 50 -> ${e.player.hp}`);
   }
+
+  // ── 7. a Power pays its OWN number, and an upgraded copy after a base one ──
+  /* Five Powers wrote the base number into their hook as a literal (draw 1,
+     Guard 6, Guard 4, 1 Bite Mark, 2 moved), so every one of their upgrades was
+     dead, and a second copy - base or upgraded - added nothing. They now read
+     the Power's stacks: each copy adds its printed number. */
+  async function playAs(e, id, up, target) {
+    e.addCard(CARDS.cardById(id), 'hand', { upgraded: up });
+    const card = e.piles.hand[e.piles.hand.length - 1];
+    e.player.energy = 9;
+    await e.playCard(card.uid, target ? target.id : undefined);
+  }
+  for (const [label, seq, want] of [['base only', [false], 4], ['base then upgraded', [false, true], 11]]) {
+    const e = await count();
+    for (const up of seq) await playAs(e, 'crumbula/connoisseur', up);
+    const t = e.livingEnemies()[0];
+    e.applyStatus(t, 'bite-mark', 1);
+    await play(e, 'crumbula/pocket-snack', t);
+    const left = e.piles.hand.find(k => (k.def && k.def.id) === 'crumbula/leftover');
+    e.player.block = 0; e.player.energy = 9;
+    await e.playCard(left.uid);
+    check(e.player.block === want, `Connoisseur (${label}): a Leftover gives ${want} Guard`, `guard=${e.player.block}`);
+  }
+  for (const [label, seq, want] of [['base only', [false], 1], ['base then upgraded', [false, true], 3]]) {
+    const e = await count();
+    for (const up of seq) await playAs(e, 'crumbula/the-counts-cut', up);
+    const [t, other] = e.livingEnemies();
+    await play(e, 'crumbula/no-i-can-stop', t);
+    check(marks(e, other) === want, `The Count's Cut (${label}): an Indulge marks every enemy ${want}`, `marks=${marks(e, other)}`);
+  }
+  for (const [label, seq, want] of [['base only', [false], 6], ['base then upgraded', [false, true], 15]]) {
+    const e = await count();
+    for (const up of seq) await playAs(e, 'crumbula/well-fed-well-dressed', up);
+    e.setCounter('appetite', 4, 'test');
+    const t = e.livingEnemies()[0];
+    e.applyStatus(t, 'bite-mark', 3);
+    const g0 = e.player.block;
+    let fedGuard = 0;
+    const off = e.on('block', (ev) => { if (ev && ev.reason !== 'crumbula/one-tiny-sip') fedGuard += ev.amount || 0; });
+    await play(e, 'crumbula/one-tiny-sip', t);
+    if (typeof off === 'function') off();
+    check(e.player.block - g0 >= want && fedGuard >= want, `Well Fed, Well Dressed (${label}): a Feed while Sated gives ${want} Guard`,
+      `guard ${g0} -> ${e.player.block}`);
+  }
+  for (const [label, seq, want] of [['base only', [false], 1], ['base then upgraded', [false, true], 3]]) {
+    const e = await count();
+    for (const up of seq) await playAs(e, 'crumbula/velvet-appetite', up);
+    e.setCounter('appetite', 3, 'test');
+    let drawn = 0;
+    e.on('draw', (ev) => { drawn += (ev && ev.count) || 1; });
+    const t = e.livingEnemies()[0];
+    e.applyStatus(t, 'bite-mark', 3);
+    await play(e, 'crumbula/one-tiny-sip', t);        // 3 -> 4: Sated
+    check(drawn === want, `Velvet Appetite (${label}): becoming Sated draws ${want}`, `drew ${drawn}`);
+  }
+  /* Everybody Gets a Cape stored its numbers inside the install-once closure
+     and nothing ever read them: the Power did nothing at all. "Every Kid"
+     includes Crumbula, so solo it is his own Guard. */
+  for (const [label, seq, want] of [['none', [], 0], ['base only', [false], 4], ['base then upgraded', [false, true], 7]]) {
+    const e = await count();
+    for (const up of seq) await playAs(e, 'crumbula/everybody-gets-a-cape', up);
+    e.setCounter('appetite', 3, 'test');
+    const t = e.livingEnemies()[0];
+    e.applyStatus(t, 'bite-mark', 3);
+    let capeGuard = 0;
+    e.on('block', (ev) => { if (ev && ev.reason !== 'crumbula/one-tiny-sip') capeGuard += ev.amount || 0; });
+    await play(e, 'crumbula/one-tiny-sip', t);        // 3 -> 4: Sated
+    check(capeGuard === want, `Everybody Gets a Cape (${label}): becoming Sated gives ${want} Guard`, `guard=${capeGuard}`);
+  }
 } catch (err) {
   fails.push('THREW: ' + (err && err.stack || err));
 }

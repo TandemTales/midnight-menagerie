@@ -483,7 +483,12 @@ function stripBuff(c, en) {
   return null;
 }
 
-/** Install a Power once, and record its number on the seat's scratch. */
+/**
+ * Install a Power once. Its NUMBER is not recorded here: a number written in
+ * the install closure is the first copy's forever, so an upgraded copy played
+ * after a base one paid the base value. Every Power records its number on each
+ * play with `U.keepBest`, outside the closure, and the hook reads the best.
+ */
 const power = (c, id, install) => {
   const s = U.mm(c);
   U.applySelf(c, id, 1);
@@ -971,7 +976,7 @@ const commons = [
     text: 'The first time each turn you [Soak] an enemy, gain {b} Guard.',
     flavor: 'Reliable. Almost restful.',
     nums: { b: 7 },
-    effect: eff((c) => power(c, 'drizzle/steady-patter', (x, s) => { s.steadyPatter = N(x).b; })),
+    effect: eff((c) => { power(c, 'drizzle/steady-patter', () => {}); U.keepBest(c, 'steadyPatter', N(c).b); }),
     upgrade: { nums: { b: 10 } },
   },
   {
@@ -980,7 +985,7 @@ const commons = [
     text: 'The first time each enemy turn a [Soaked] enemy attacks you, gain {b} Guard.',
     flavor: 'The walls have gone soft and so has its footing.',
     nums: { b: 5 },
-    effect: eff((c) => power(c, 'drizzle/damp-house', (x, s) => { s.dampHouse = N(x).b; })),
+    effect: eff((c) => { power(c, 'drizzle/damp-house', () => {}); U.keepBest(c, 'dampHouse', N(c).b); }),
     upgrade: { nums: { b: 8 } },
   },
   {
@@ -989,7 +994,7 @@ const commons = [
     text: 'The first time [Weather] changes during each of your turns, draw {n} additional Trick next turn.',
     flavor: 'The little needle has been twitching all evening.',
     nums: { n: 1 },
-    effect: eff((c) => power(c, 'drizzle/barometer', (x, s) => { s.barometer = N(x).n; })),
+    effect: eff((c) => { power(c, 'drizzle/barometer', () => {}); U.keepBest(c, 'barometer', N(c).n); }),
     upgrade: { nums: { n: 2 } },
   },
 ];
@@ -1370,7 +1375,7 @@ const uncommons = [
     text: 'At the start of your turn during Downpour, gain {b} Guard, and your first Attack on a [Soaked] enemy costs 1 less.',
     flavor: 'This is her weather. She is having a lovely time.',
     nums: { b: 8 },
-    effect: eff((c) => power(c, 'drizzle/downpour-darling', (x, s) => { s.downpourDarling = N(x).b; })),
+    effect: eff((c) => { power(c, 'drizzle/downpour-darling', () => {}); U.keepBest(c, 'downpourDarling', N(c).b); }),
     upgrade: { nums: { b: 12 } },
   },
   {
@@ -1379,7 +1384,7 @@ const uncommons = [
     text: 'The first time each turn you enter Thunderstorm, draw {n} Tricks, then discard a Trick.',
     flavor: 'Toward it. Always toward it.',
     nums: { n: 2 },
-    effect: eff((c) => power(c, 'drizzle/storm-chaser', (x, s) => { s.stormChaser = N(x).n; })),
+    effect: eff((c) => { power(c, 'drizzle/storm-chaser', () => {}); U.keepBest(c, 'stormChaser', N(c).n); }),
     upgrade: { nums: { n: 3 } },
   },
   {
@@ -1388,7 +1393,7 @@ const uncommons = [
     text: 'Whenever a [Stormbreak] happens, gain {b} Guard at the start of your next turn.',
     flavor: 'There is always one. It is thin and it is cold.',
     nums: { b: 15 },
-    effect: eff((c) => power(c, 'drizzle/silver-lining', (x, s) => { s.silverLining = N(x).b; })),
+    effect: eff((c) => { power(c, 'drizzle/silver-lining', () => {}); U.keepBest(c, 'silverLining', N(c).b); }),
     upgrade: { nums: { b: 21 } },
   },
   {
@@ -1415,7 +1420,7 @@ const uncommons = [
     text: 'Setting a [Forecast] gains {b} Guard. A [Forecast] resolving draws {n} additional Trick next turn.',
     flavor: 'Instruments. Charts. A small unhappy barometer.',
     nums: { b: 4, n: 1 },
-    effect: eff((c) => power(c, 'drizzle/weather-station', (x, s) => { s.weatherStation = N(x).b; })),
+    effect: eff((c) => { power(c, 'drizzle/weather-station', () => {}); U.keepBest(c, 'weatherStation', N(c).b); }),
     upgrade: { nums: { b: 7, n: 1 } },
   },
   {
@@ -1508,8 +1513,11 @@ const rares = [
     effect: eff((c) => {
       const t = c.target;
       U.hit(c, N(c).d);
+      /* "{m0} more for each Forecast": 15 (21 upgraded) a Forecast, one hit each,
+         as printed. It was a hardcoded 5, so the base card paid a third of its
+         text and the upgrade's 21 was never read. */
       const waiting = slots(c).filter(x => x.trigger === THUNDER).length;
-      for (let i = 0; i < waiting; i++) U.hitAt(c, t, 5);
+      for (let i = 0; i < waiting; i++) U.hitAt(c, t, N(c).m0);
     }),
     upgrade: { nums: { d: 13, m0: 21 } },
   },
@@ -1835,11 +1843,13 @@ const coopCards = [
     text: 'Each round, every friend’s first Attack on a [Soaked] enemy gains [Conduct]: Deal {m0} damage.',
     flavor: 'Nobody counts alone in this house.',
     nums: { m0: 5 },
-    effect: eff((c) => power(c, 'drizzle/thunder-buddies', (x, s) => {
-      s.thunderBuddies = N(x).m0;
-      s.buddyUsed = {};
-      for (const mate of x.teammates()) x.giveStatus(mate, 'lent-conduct', 1);
-    })),
+    effect: eff((c) => {
+      power(c, 'drizzle/thunder-buddies', (x, s) => {
+        s.buddyUsed = {};
+        for (const mate of x.teammates()) x.giveStatus(mate, 'lent-conduct', 1);
+      });
+      U.keepBest(c, 'thunderBuddies', N(c).m0);
+    }),
     upgrade: { nums: { m0: 8 } },
   },
 ];

@@ -174,6 +174,11 @@ function gd(c, n) {
  * its number written out as a literal. The numbers are stashed here, at the one
  * moment a card really is in play, and a second, upgraded copy raises them.
  */
+/* The BEST copy played, not the last one: `set` used to ASSIGN, so an upgraded
+   copy followed by a base one dropped back to the base number. A payout keeps
+   the highest; a threshold ("{n}+ Loose Quills") keeps the lowest. */
+const hi = (was, now) => Math.max(typeof was === 'number' ? was : -Infinity, now | 0);
+const lo = (was, now) => Math.min(typeof was === 'number' ? was : Infinity, now | 0);
 const power = (c, id, n, set, install) => {
   U.applySelf(c, id, n);
   const s = U.mm(c);
@@ -708,7 +713,7 @@ const commons = [
     text: 'The first time you [Shed] each turn, gain {b} Guard.',
     flavor: 'There has never been a plan.',
     nums: { b: 4 },
-    effect: eff((c) => power(c, 'truffle/all-spines-no-plan', N(c).b, (x, st) => { st.allSpines = N(x).b; })),
+    effect: eff((c) => power(c, 'truffle/all-spines-no-plan', N(c).b, (x, st) => { st.allSpines = hi(st.allSpines, N(x).b); })),
     upgrade: { nums: { b: 7 } },
   },
 ];
@@ -1034,7 +1039,7 @@ const uncommons = [
     text: 'The first time you [Shed] each turn, [Regrow] {g} at the start of your next.',
     flavor: 'Off, then on, then off again.',
     nums: { g: 1 },
-    effect: eff((c) => power(c, 'truffle/shed-cycle', N(c).g, (x, st) => { st.shedCycle = N(x).g; })),
+    effect: eff((c) => power(c, 'truffle/shed-cycle', N(c).g, (x, st) => { st.shedCycle = hi(st.shedCycle, N(x).g); })),
     upgrade: { nums: { g: 2 } },
   },
   {
@@ -1043,7 +1048,7 @@ const uncommons = [
     text: 'At end of turn, with {n}+ [Loose Quill]s down, deal {d} to all enemies. They are not consumed.',
     flavor: 'The floor itself is now a hazard.',
     nums: { n: 4, d: 4 },
-    effect: eff((c) => power(c, 'truffle/quill-carpet', 1, (x, st) => { st.quillCarpet = { n: N(x).n, d: N(x).d }; })),
+    effect: eff((c) => power(c, 'truffle/quill-carpet', 1, (x, st) => { st.quillCarpet = { n: lo(st.quillCarpet && st.quillCarpet.n, N(x).n), d: hi(st.quillCarpet && st.quillCarpet.d, N(x).d) }; })),
     upgrade: { nums: { n: 4, d: 7 } },
   },
   {
@@ -1052,7 +1057,7 @@ const uncommons = [
     text: 'Whenever you end a turn [Ragged] with 0 Guard, gain {n} [Bristle].',
     flavor: 'By every reasonable measure he should not be here.',
     nums: { n: 1 },
-    effect: eff((c) => power(c, 'truffle/wretched-little-miracle', N(c).n, (x, st) => { st.wretchedMiracle = N(x).n; })),
+    effect: eff((c) => power(c, 'truffle/wretched-little-miracle', N(c).n, (x, st) => { st.wretchedMiracle = hi(st.wretchedMiracle, N(x).n); })),
     upgrade: { nums: { n: 2 } },
   },
   {
@@ -1061,7 +1066,7 @@ const uncommons = [
     text: 'The first Attack each enemy turn that costs you Courage makes you [Regrow] {g} after.',
     flavor: 'Structurally. Comprehensively.',
     nums: { g: 2 },
-    effect: eff((c) => power(c, 'truffle/built-wrong', N(c).g, (x, st) => { st.builtWrong = N(x).g; })),
+    effect: eff((c) => power(c, 'truffle/built-wrong', N(c).g, (x, st) => { st.builtWrong = hi(st.builtWrong, N(x).g); })),
     upgrade: { nums: { g: 3 } },
   },
   {
@@ -1070,7 +1075,7 @@ const uncommons = [
     text: 'Whenever [Bristle] triggers, gain {b} Guard at the start of your next turn.',
     flavor: 'People have tried.',
     nums: { b: 4 },
-    effect: eff((c) => power(c, 'truffle/hard-to-finish', N(c).b, (x, st) => { st.hardToFinish = N(x).b; })),
+    effect: eff((c) => power(c, 'truffle/hard-to-finish', N(c).b, (x, st) => { st.hardToFinish = hi(st.hardToFinish, N(x).b); })),
     upgrade: { nums: { b: 7 } },
   },
   {
@@ -1079,7 +1084,7 @@ const uncommons = [
     text: 'The first time each turn you [Gather] {n}+ at once, gain {m0} [Bristle].',
     flavor: 'There is. There is a great deal more.',
     nums: { n: 2, m0: 2 },
-    effect: eff((c) => power(c, 'truffle/more-where-that-came-from', 1, (x, st) => { st.moreWhereThat = { n: N(x).n, m0: N(x).m0 }; })),
+    effect: eff((c) => power(c, 'truffle/more-where-that-came-from', 1, (x, st) => { st.moreWhereThat = { n: lo(st.moreWhereThat && st.moreWhereThat.n, N(x).n), m0: hi(st.moreWhereThat && st.moreWhereThat.m0, N(x).m0) }; })),
     upgrade: { nums: { n: 2, m0: 3 } },
   },
   {
@@ -1088,7 +1093,7 @@ const uncommons = [
     text: 'While [Ragged], Guard Tricks give a little less but each also gives {n} [Bristle].',
     flavor: 'He has been in pieces before. It is fine.',
     nums: { n: 1 },
-    effect: eff((c) => power(c, 'truffle/comfortable-in-pieces', N(c).n, (x, st) => { st.comfortablePieces = N(x).n; })),
+    effect: eff((c) => power(c, 'truffle/comfortable-in-pieces', N(c).n, (x, st) => { st.comfortablePieces = hi(st.comfortablePieces, N(x).n); })),
     upgrade: { nums: { n: 2 } },
   },
   {
@@ -1097,7 +1102,7 @@ const uncommons = [
     text: 'The first time each turn you spend or [Gather] [Loose Quill]s, draw {c1}.',
     flavor: 'He has claimed it. Nobody contested it.',
     nums: { c1: 1 },
-    effect: eff((c) => power(c, 'truffle/the-floor-is-mine', N(c).c1, (x, st) => { st.floorIsMine = N(x).c1; })),
+    effect: eff((c) => power(c, 'truffle/the-floor-is-mine', N(c).c1, (x, st) => { st.floorIsMine = hi(st.floorIsMine, N(x).c1); })),
     upgrade: { nums: { c1: 2 } },
   },
 ];
@@ -1342,7 +1347,7 @@ const rares = [
     text: 'The first {n} [Loose Quill]s you [Gather] each turn each throw {d} at a random enemy.',
     flavor: 'The angles are wrong and they hurt to look at.',
     nums: { n: 3, d: 4 },
-    effect: eff((c) => power(c, 'truffle/unpleasant-geometry', 1, (x, st) => { st.unpleasantGeometry = { n: N(x).n, d: N(x).d }; })),
+    effect: eff((c) => power(c, 'truffle/unpleasant-geometry', 1, (x, st) => { st.unpleasantGeometry = { n: hi(st.unpleasantGeometry && st.unpleasantGeometry.n, N(x).n), d: hi(st.unpleasantGeometry && st.unpleasantGeometry.d, N(x).d) }; })),
     upgrade: { nums: { n: 3, d: 7 } },
   },
   {
@@ -1360,7 +1365,7 @@ const rares = [
     text: '[Bristle] may [Shed] {n} instead of 1 and retaliate once per Quill, still consuming only 1 [Bristle].',
     flavor: 'Twice the spines, same amount of spite.',
     nums: { n: 2 },
-    effect: eff((c) => power(c, 'truffle/double-barbed', N(c).n, (x, st) => { st.doubleBarbed = N(x).n; })),
+    effect: eff((c) => power(c, 'truffle/double-barbed', N(c).n, (x, st) => { st.doubleBarbed = hi(st.doubleBarbed, N(x).n); })),
     upgrade: { nums: { n: 3 } },
   },
   {
@@ -1378,7 +1383,7 @@ const rares = [
     text: 'The first Attack each enemy turn that costs you Courage: [Regrow] {g}, and next turn {e} Nerve and {c1} card.',
     flavor: 'A theory he is testing personally.',
     nums: { g: 1, e: 1, c1: 1 },
-    effect: eff((c) => power(c, 'truffle/dead-hedgehog-theory', 1, (x, st) => { st.deadTheory = { g: N(x).g, e: N(x).e, c1: N(x).c1 }; })),
+    effect: eff((c) => power(c, 'truffle/dead-hedgehog-theory', 1, (x, st) => { st.deadTheory = { g: hi(st.deadTheory && st.deadTheory.g, N(x).g), e: hi(st.deadTheory && st.deadTheory.e, N(x).e), c1: hi(st.deadTheory && st.deadTheory.c1, N(x).c1) }; })),
     upgrade: { cost: 2 },
   },
   {
@@ -1405,7 +1410,7 @@ const rares = [
     text: 'End a turn [Ragged], with 0 Guard and [Bristle] left: gain {e} Nerve and {c1} card next turn.',
     flavor: 'Against all advice, and all evidence.',
     nums: { e: 1, c1: 1 },
-    effect: eff((c) => power(c, 'truffle/still-wiggling', 1, (x, st) => { st.stillWiggling = { e: N(x).e, c1: N(x).c1 }; })),
+    effect: eff((c) => power(c, 'truffle/still-wiggling', 1, (x, st) => { st.stillWiggling = { e: hi(st.stillWiggling && st.stillWiggling.e, N(x).e), c1: hi(st.stillWiggling && st.stillWiggling.c1, N(x).c1) }; })),
     upgrade: { cost: 2 },
   },
 ];
@@ -1474,7 +1479,7 @@ const coopCards = [
     text: 'Once each enemy turn per Kid, when they lose Courage you may [Shed] 1 to retaliate. They gain {b} Guard next turn.',
     flavor: 'Everybody gets to be the pincushion.',
     nums: { b: 4 },
-    effect: eff((c) => power(c, 'truffle/shared-pincushion', N(c).b, (x, st) => { st.sharedPincushion = N(x).b; })),
+    effect: eff((c) => power(c, 'truffle/shared-pincushion', N(c).b, (x, st) => { st.sharedPincushion = hi(st.sharedPincushion, N(x).b); })),
     upgrade: { nums: { b: 7 } },
   },
 ];

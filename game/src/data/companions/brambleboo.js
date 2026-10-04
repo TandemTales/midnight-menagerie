@@ -113,9 +113,14 @@ function plant(c, cultivar, o = {}) {
   if (slot < 0) return null;
 
   let growth = o.growth || 0;
-  // The Garden Remembers: a Cultivar you have Harvested comes back further on.
-  if (s.remembered && s.remembered[cultivar] && U.once(c, 'remember:' + cultivar)) {
-    growth = Math.max(growth, 1);
+  /* Every Brambleboo deck: a Cultivar you have Harvested comes back with 1
+     Growth the first time each turn you Plant it (`harvest` records it). */
+  if (s.remembered && s.remembered[cultivar]) {
+    if (U.once(c, 'remember:' + cultivar)) growth = Math.max(growth, 1);
+    /* The Garden Remembers ON TOP of that: every time, 1 more Growth. The Power
+       used to set up `s.remembered`, which `harvest` already does for every
+       deck, so a 2-Nerve Rare did nothing at all. */
+    if (s.gardenRemembers) growth += 1;
   }
   const obj = c.addObject({
     kind: 'plant', name: CULTIVAR_NAME[cultivar] || cultivar, slot,
@@ -1297,17 +1302,23 @@ const uncommons = [
   {
     id: 'brambleboo/keep-the-cutting', name: 'Keep the Cutting', companion: SLUG, type: SKILL, rarity: UNCOMMON,
     cost: 1, target: SELF, keywords: ['harvest', 'garden'],
-    text: '[Harvest] a Mature Plant, then [Plant] that same Cultivar again with 0 Growth.',
+    text: '[Harvest] a Mature Plant, then [Plant] that same Cultivar again with 1 Growth.',
     flavor: 'The good bit, saved. The rest, used.',
     nums: {},
+    /* The text said 0 Growth, and the replant came back at 1 anyway: a Cultivar
+       you have just Harvested gets 1 Growth the first time that turn, so the
+       base card already played as its own upgrade. The TEXT moves to the more
+       generous play, and 1 is now a floor rather than a once-a-turn accident
+       (a second Keep the Cutting on the same Cultivar used to give 0). The
+       upgrade moves one further: it comes back Mature. */
     effect: eff(async (c) => {
       const p = await pickPlant(c, { pool: mature(c), prompt: 'Harvest which Plant?' });
       if (!p) return;
       const cultivar = p.data.cultivar;
       harvest(c, p);
-      plant(c, cultivar, { force: true, growth: U.up(c) ? 1 : 0 });
+      plant(c, cultivar, { force: true, growth: U.up(c) ? 2 : 1 });
     }),
-    upgrade: { text: '[Harvest] a Mature Plant, then [Plant] that same Cultivar again with 1 Growth.' },
+    upgrade: { text: '[Harvest] a Mature Plant, then [Plant] that same Cultivar again with 2 Growth (Mature).' },
   },
   {
     id: 'brambleboo/tangled-hallway', name: 'Tangled Hallway', companion: SLUG, type: SKILL, rarity: UNCOMMON,
@@ -1406,7 +1417,7 @@ const uncommons = [
     text: 'Whenever an enemy is [Snare]d, every Mature [Briar] deals {m0}. Once per enemy each turn.',
     flavor: 'Caught. And then, immediately, punished.',
     nums: { m0: 5 },
-    effect: eff((c) => power(c, 'brambleboo/thorny-disposition', (x, s) => { s.thornyDisposition = N(x).m0; })),
+    effect: eff((c) => { power(c, 'brambleboo/thorny-disposition', () => {}); U.keepBest(c, 'thornyDisposition', N(c).m0); }),
     upgrade: { nums: { m0: 8 } },
   },
   {
@@ -1796,10 +1807,14 @@ const rares = [
   {
     id: 'brambleboo/the-garden-remembers', name: 'The Garden Remembers', companion: SLUG, type: POWER, rarity: RARE,
     cost: 2, target: SELF, keywords: ['harvest', 'garden'],
-    text: 'A Cultivar you have [Harvest]ed comes back with 1 Growth, the first time each turn you [Plant] it.',
+    text: 'Whenever you [Plant] a Cultivar you have [Harvest]ed, it comes back with 1 more Growth.',
     flavor: 'It knows where it was. It goes back there.',
     nums: {},
-    effect: eff((c) => power(c, 'brambleboo/the-garden-remembers', (x, s) => { s.remembered = s.remembered || {}; })),
+    /* It used to only create `s.remembered`, and `harvest` creates and fills that
+       for every Brambleboo deck: the 1 Growth its old text promised was already
+       free. Now it adds 1 Growth on top, on every Plant of a Harvested Cultivar,
+       not just the first each turn (see `plant`). */
+    effect: eff((c) => power(c, 'brambleboo/the-garden-remembers', (x, s) => { s.gardenRemembers = true; })),
     upgrade: { cost: 1 },
   },
   {
@@ -1890,7 +1905,7 @@ const coopCards = [
     text: 'Once per friend each turn, spend 2 [Vines] from an attacker to give them {b} Guard first.',
     flavor: 'Room under there for everyone.',
     nums: { b: 10 },
-    effect: eff((c) => power(c, 'brambleboo/safe-under-the-leaves', (x, s) => { s.safeUnderLeaves = N(x).b; })),
+    effect: eff((c) => { power(c, 'brambleboo/safe-under-the-leaves', () => {}); U.keepBest(c, 'safeUnderLeaves', N(c).b); }),
     upgrade: { nums: { b: 15 } },
   },
   {

@@ -94,6 +94,9 @@ const ambush = (c) => c.playedFrom === POCKET && isUnseen(c);
 const pocket = (c) => U.cardsIn(c, POCKET);
 const pocketCap = (c) => BASE_POCKET + (U.mm(c).pocketBonus || 0);
 const pocketRoom = (c) => pocket(c).length < pocketCap(c);
+const isAttackTrick = (k) => String((k && (k.type || (k.def && k.def.type))) || '').toLowerCase() === 'attack';
+/** An [Ambush] Attack: one that carries the Ambush keyword (Soft Footfalls). */
+const isAmbushTrick = (k) => ((k && ((k.def && k.def.keywords) || k.keywords)) || []).includes('ambush');
 /**
  * Widen the Pocket. `pocketCap` above is only Hush's own reading of it: the
  * ENGINE enforces the stash pile's size itself (`piles.stashCap`, 3), and
@@ -122,7 +125,9 @@ function scurry(c, card, to, opts = {}) {
   const s = U.mm(c);
   s.scurriesThisTurn = (s.scurriesThisTurn || 0) + 1;
   s.pocketTouched = true;
-  if (s.hallwayPhantom && U.once(c, 'hallwayPhantom')) U.guard(c, 6);
+  /* The Power's own {b}, as its stacks: a literal 6 here left the upgrade's 9
+     unread and a second copy adding nothing. */
+  if (s.hallwayPhantom && U.once(c, 'hallwayPhantom')) U.guard(c, U.stacks(c, c.self, 'hush/hallway-phantom'));
   if (to === POCKET && s.hideyHole && U.once(c, 'hideyHole')) U.draw(c, 1);
   if (to !== POCKET && s.nowYouDont && pocket(c).length === 0 && U.once(c, 'nowYouDont')) {
     hide(c); U.draw(c, 2); U.energy(c, 1);
@@ -255,7 +260,10 @@ U.onTracker(SLUG, (e, s, seat) => {
     st.attacksFromHand = 0;
     st.pocketPlaysThisTurn = 0;
     st.pocketFullAtStart = pocket(c).length >= pocketCap(c);
-    if (st.lightSleeper && isUnseen(c)) U.energy(c, 1);
+    /* Light Sleeper's {e}, BANKED onto this turn's refill: `turn:start` runs
+       before `_dealSeatTurn` SETS Nerve, so a plain gain here was erased and
+       the Power never paid at all (trap 21). */
+    if (st.lightSleeper && isUnseen(c)) U.energyNextTurn(c, U.stacks(c, c.self, 'hush/light-sleeper'));
     if (st.houseHasCorners && !isUnseen(c) && pocket(c).length >= 2) hide(c);
     if (st.nextTurnNerve) { U.energy(c, st.nextTurnNerve); st.nextTurnNerve = 0; }
     // Contraband and other temporaries do not survive into a new turn.
@@ -280,6 +288,41 @@ U.onTracker(SLUG, (e, s, seat) => {
     const isAttack = String((card.type || (card.def && card.def.type)) || '').toLowerCase() === 'attack';
     if (isAttack && card._playedFrom !== POCKET) U.mm(c).attacksFromHand = (U.mm(c).attacksFromHand || 0) + 1;
     if (card._playedFrom === POCKET) U.mm(c).pocketPlaysThisTurn = (U.mm(c).pocketPlaysThisTurn || 0) + 1;
+    if (isAttack && card._playedFrom === POCKET && isAmbushTrick(card)) U.mm(c).footfallsTurn = U.turn(c);
+  });
+
+  /* SOFT FOOTFALLS: "Your first [Ambush] Attack from the [Shadow Pocket] each
+     turn costs {n} less." The Power only ever discounted what was in the Pocket
+     the moment it was played (kept, below, so no deck plays worse than it did),
+     and set a flag nothing read: an Ambush Attack Stashed later never got its
+     discount. Pure, as modifyCardCost must be. */
+  e.hooks.add('modifyCardCost', (cost, h) => {
+    const k = h && h.card;
+    const who = seat || (e.players && e.players[0]);
+    if (!k || !who || !who.piles || !who.piles.stash || !who.piles.stash.includes(k)) return cost;
+    const n = (who.__mm && who.__mm.softFootfalls) | 0;
+    if (!(n > 0) || !(who.statuses && who.statuses.get('hush/soft-footfalls') > 0)) return cost;
+    if (!isAttackTrick(k) || !isAmbushTrick(k)) return cost;
+    if (who.__mm.footfallsTurn === e.turn) return cost;
+    return Math.max(0, cost - n);
+  }, { owner: seat });
+
+  /* STICKY LITTLE LEGEND: "[Contraband] returns to the [Shadow Pocket] after
+     use, costing {n} more each time." It set a flag nothing read, so the 2-Nerve
+     Rare did nothing. A Contraband this seat plays comes back out of the Vanish
+     pile into the Pocket if there is room, a further {n} dearer each time. It
+     is still temporary: the turn-start sweep above clears it as before. */
+  e.on('card:resolved', (ev) => {
+    if (!ev || (seat && e.current && e.current !== seat)) return;
+    const c = fake();
+    const st = U.mm(c);
+    const n = st.stickyLegend | 0;
+    if (!(n > 0) || U.stacks(c, c.self, 'hush/sticky-little-legend') <= 0) return;
+    const card = e.card(ev.cardUid);
+    if (!card || !card.meta || !card.meta.contraband) return;
+    if (!U.cardsIn(c, 'exhaust').includes(card) || !pocketRoom(c)) return;
+    U.moveCard(c, card, POCKET, {});
+    U.costMod(c, card, n, 'combat');
   });
 
   /* Bigger on the Inside: "The first Trick in each turn costs 1 less from
@@ -997,10 +1040,15 @@ const uncommons = [
     text: 'Your first [Ambush] Attack from the [Shadow Pocket] each turn costs {n} less.',
     flavor: 'Not silence. Something quieter than silence.',
     nums: { n: 1 },
-    effect: eff((c) => power(c, 'hush/soft-footfalls', N(c).n, (x) => {
-      U.mm(x).softFootfalls = true;
-      for (const k of pocket(x)) U.costMod(x, k, -N(x).n, 'combat');
-    })),
+    /* The discount itself is the tracker's modifyCardCost hook, at the best
+       copy's {n}. The one-off discount on whatever sat in the Pocket when the
+       first copy landed is what the card always did, and it stays. */
+    effect: eff((c) => {
+      power(c, 'hush/soft-footfalls', N(c).n, (x) => {
+        for (const k of pocket(x)) U.costMod(x, k, -N(x).n, 'combat');
+      });
+      U.keepBest(c, 'softFootfalls', N(c).n);
+    }),
     upgrade: { cost: 1 },
   },
 ];
@@ -1311,7 +1359,8 @@ const rares = [
     text: '[Contraband] returns to the [Shadow Pocket] after use, costing {n} more each time.',
     flavor: 'They tell stories about him downstairs.',
     nums: { n: 1 },
-    effect: eff((c) => power(c, 'hush/sticky-little-legend', N(c).n, (x) => { U.mm(x).stickyLegend = true; })),
+    /* Paid by the tracker's `card:resolved` listener, at the best copy's {n}. */
+    effect: eff((c) => { power(c, 'hush/sticky-little-legend', N(c).n); U.keepBest(c, 'stickyLegend', N(c).n); }),
     upgrade: { cost: 1 },
   },
   {

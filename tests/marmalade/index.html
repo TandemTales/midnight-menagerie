@@ -306,6 +306,30 @@ async function swing(e, id, seat = null) {
           `hit seat ${hitSeat}, safe seat ${safeSeat}`);
   }
 
+  say('<h2>A Power keeps the best copy played</h2>');
+  {
+    /* Untouchable's {n} and {b} were captured by the install-once closure, so
+       Untouchable then Untouchable+ paid the base 2 damage / 3 Guard a Streak. */
+    const streak = async (seq) => {
+      const e = await cat();
+      for (const up of seq) {
+        e.addCard(CARDS.cardById('marmalade/untouchable'), 'hand', { upgraded: up });
+        const card = e.piles.hand[e.piles.hand.length - 1];
+        e.player.energy = 9;
+        await e.playCard(card.uid);
+      }
+      e.player.statuses.delete('predators-patience');
+      e.player.block = 999;
+      await e.endTurn();
+      return { guard: e.player.block, patience: e.player.status('predators-patience') };
+    };
+    const base = await streak([false]), both = await streak([false, true]);
+    check(base.guard === 3 && base.patience === 2, 'Untouchable: one Streak pays 3 Guard and 2 damage',
+      `guard ${base.guard}, damage ${base.patience}`);
+    check(both.guard === 4 && both.patience === 3, 'Untouchable then Untouchable+ pays the upgraded 4 Guard and 3 damage',
+      `guard ${both.guard}, damage ${both.patience}`);
+  }
+
   for (const line of passes) say('PASS ' + line, 'pass');
   for (const line of fails) say('FAIL ' + line, 'fail');
   say(`<h2>${passes.length} passed, ${fails.length} failed</h2>`);

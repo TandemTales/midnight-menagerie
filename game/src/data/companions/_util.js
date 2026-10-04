@@ -116,6 +116,20 @@ export const HOOK_NAMES = () => [...HOOKS.keys()].sort();
 export function N(c) { return c?.card?.nums || c?.nums || {}; }
 /** Is the card being played upgraded? */
 export function up(c) { return !!(c?.card?.upgraded); }
+/**
+ * A Power's number, kept at the BEST copy played.
+ *
+ * A Power installs its listener once (the `pw:` guard every deck's `power()`
+ * has), so a number written inside that install closure is the FIRST copy's
+ * forever: an upgraded copy played after a base one paid the base value. Call
+ * this on EVERY play, outside the closure, and the hook reads the most generous
+ * copy so far. One copy plays exactly as it always did.
+ */
+export function keepBest(c, key, n) {
+  const s = mm(c), v = +n || 0;
+  if (!(typeof s[key] === 'number' && s[key] >= v)) s[key] = v;
+  return s[key];
+}
 
 // ── randomness (always through the engine rng) ──────────────────────────────
 export function rint(c, max) { return c?.e?.rng?.int ? c.e.rng.int(max) : 0; }
