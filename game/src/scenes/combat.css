@@ -1864,56 +1864,18 @@
      the longest Trick in the Bones deck still sets in four lines of it. */
   --rules-k: 1.16;
 }
-/* NAMES AND TYPE LINES THAT HOLD AT HAND SIZE. card.css sizes a name for a
-   224px card and shrinks a long one to 11.5u, which a hand card on the Deck's
-   panel prints at 7px ("Put Yourself Back Together"). In the hand a name is set
-   a size up, and a very long one takes two lines on its cartouche instead of
-   shrinking; the type line is lifted to match. */
-.cb-handhost.kit-cards .mm-card[data-rarity] .mm-card__name,
-.cb-chooser__pool.kit-cards .mm-card[data-rarity] .mm-card__name { font-size: calc(18.5 * var(--u)); }
-.cb-handhost.kit-cards .mm-card[data-rarity].is-name-long .mm-card__name,
-.cb-chooser__pool.kit-cards .mm-card[data-rarity].is-name-long .mm-card__name { font-size: calc(15 * var(--u)); }
-.cb-handhost.kit-cards .mm-card[data-rarity].is-name-xlong .mm-card__name,
-.cb-chooser__pool.kit-cards .mm-card[data-rarity].is-name-xlong .mm-card__name {
-  font-size: calc(14 * var(--u)); line-height: 1; letter-spacing: 0;
-  white-space: normal; text-wrap: balance; text-align: center;
-  padding: 0 calc(15 * var(--u)) calc(1 * var(--u));
-}
-/* A TWO-LINE NAME SITS INSIDE ITS PLATE. On the card's 38u cartouche the rails
-   take 10u each, and "Put Yourself / Back Together" ran both lines across
-   them. The plate grows to 46u, starts 8u higher over the art, and its rails
-   are drawn thinner, so both lines stand in the dark between them. */
-.cb-handhost.kit-cards .mm-card[data-rarity].is-name-xlong .mm-card__banner,
-.cb-chooser__pool.kit-cards .mm-card[data-rarity].is-name-xlong .mm-card__banner {
-  top: calc(97 * var(--u)); height: calc(47 * var(--u));
-  border-image-width: calc(9 * var(--u)) calc(22 * var(--u));
-}
-.cb-handhost.kit-cards .mm-card[data-rarity] .mm-card__type,
-.cb-chooser__pool.kit-cards .mm-card[data-rarity] .mm-card__type { font-size: calc(12 * var(--u) * min(var(--rules-k, 1), 1.2)); }
-/* A CROWDED HAND READS FROM THE LEFT. Past eight Tricks each card shows only
-   its left part past its neighbour (ui/hand.js `boundVisible`, published as
-   --fan-vis), so a name centred on its plate lost its last letters under the
-   next card ("SIT PRET") and a rule lost both ends of every line ("Deal 6
-   dama"). While the hand is crowded every card IN THE FAN (the last one
-   included, so the row reads as one system) sets its name and type line flush
-   left inside the plate and wraps its rules into the strip that shows: "Deal
-   6 damage." reads whole on a card two-fifths covered. A card lifted out of
-   the fan (hovered, selected, held, played) is whole, and lays out whole. */
-.cb-handhost.kit-cards .mm-hand.is-crowded .mm-card[data-rarity]:not(.is-hover):not(.is-selected):not(.is-dragging):not(.is-aiming):not(.is-hero) .mm-card__banner {
-  justify-items: start;
-}
-.cb-handhost.kit-cards .mm-hand.is-crowded .mm-card[data-rarity]:not(.is-hover):not(.is-selected):not(.is-dragging):not(.is-aiming):not(.is-hero) .mm-card__name {
-  padding-left: calc(19 * var(--u)); padding-right: calc(8 * var(--u));
-  text-align: left;
-}
-.cb-handhost.kit-cards .mm-hand.is-crowded .mm-card[data-rarity].is-name-xlong:not(.is-hover):not(.is-selected):not(.is-dragging):not(.is-aiming):not(.is-hero) .mm-card__name {
-  font-size: calc(13.4 * var(--u)); padding-left: calc(17 * var(--u));
-}
-.cb-handhost.kit-cards .mm-hand.is-crowded .mm-card[data-rarity]:not(.is-hover):not(.is-selected):not(.is-dragging):not(.is-aiming):not(.is-hero) .mm-card__rules {
-  right: calc((224 * (1 - var(--fan-vis, .6)) + 6) * var(--u));
-  left: calc(13 * var(--u));
-  align-items: flex-start; text-align: left;
-}
+/* THE HAND'S CARDS ARE THE BOARDS' CARDS (round 27). Every Trick wears the
+   painted body ui/kit.css gives .kit-cards — the Kid board's info panel round
+   a ground in the type's colour, the type line on an enamel tab astride its
+   rail, the name on a plate that grows a line UP rather than shrink — and the
+   hand only places it. Its name and type line hold a size in screen px
+   (--cpx, ui/hand.js), so the Deck's 1280x800 prints them at 13.5 and 11.5 px;
+   its rules are fitted to the panel's box (176u x 116u, CardView#fitRules)
+   between 10 and 14 px (12 in a crowded fan). */
+.cb-handhost.kit-cards .mm-hand .mm-card[data-rarity][data-type][data-uid].is-fitted .mm-card__rules { font-size: calc(var(--rules-fit) * var(--u)); line-height: var(--rules-lh, 1.1); }
+.cb-handhost.kit-cards .mm-hand .mm-card[data-rarity][data-type][data-uid].is-fitted .mm-card__rules .mm-card__num { line-height: 0; }
+.cb-handhost.kit-cards .mm-card[data-rarity][data-type][data-uid] .mm-card__rules > div,
+.cb-chooser__pool.kit-cards .mm-card[data-rarity][data-type][data-uid] .mm-card__rules > div { text-wrap: balance; }
 /* THE CREST ON THE TOP RAIL IS CAST, NOT MOULDED. A common Trick's crest was
    the rarity's pale steel lifted toward white, and across a fan of nine it
    read as a row of grey plastic tabs. In the hand it is the frame's own brass
@@ -1931,33 +1893,6 @@
 /* the plain Tricks wear the frame's brass; uncommon and rare keep their colour */
 .cb-handhost.kit-cards .mm-card:is([data-rarity="basic"], [data-rarity="common"]) .mm-card__crest i,
 .cb-chooser__pool.kit-cards .mm-card:is([data-rarity="basic"], [data-rarity="common"]) .mm-card__crest i { --crest-mix: 0%; }
-/* the type line too: SKILL reads whole in the strip, never "SKI" */
-.cb-handhost.kit-cards .mm-hand.is-crowded .mm-card[data-rarity]:not(.is-hover):not(.is-selected):not(.is-dragging):not(.is-aiming):not(.is-hero) .mm-card__type {
-  justify-content: flex-start; padding-left: calc(20 * var(--u));
-}
-/* …AND WHOLE TO ITS LAST LETTER (round 4: "SKILL · SEL" is a failure). A
-   neighbour leaves at least 0.6 of a card showing (ui/hand.js boundVisible),
-   134 of its 224 units; the frame's edge takes ten of those. At the hand's
-   tracking "SKILL · SELF" needed 142, so a covered card sets its type line
-   closer (the same caps, a size down, tracked tight) and it needs 112: the
-   whole line, its target included, reads in the strip. A card lifted out of
-   the fan, and the fan's last card, keep the open tracking. The name comes
-   down in step with the strip (--fan-vis), so "SIT PRETTY" keeps its Y. */
-.cb-handhost.kit-cards .mm-hand.is-crowded .mm-card[data-rarity]:not(.is-fan-last):not(.is-hover):not(.is-selected):not(.is-dragging):not(.is-aiming):not(.is-hero) .mm-card__type {
-  gap: calc(4 * var(--u));
-  font-size: calc(12.4 * var(--u));
-  letter-spacing: .07em;
-}
-.cb-handhost.kit-cards .mm-hand.is-crowded .mm-card[data-rarity]:not(.is-fan-last):not(.is-hover):not(.is-selected):not(.is-dragging):not(.is-aiming):not(.is-hero) .mm-card__typesub {
-  letter-spacing: .03em;
-}
-.cb-handhost.kit-cards .mm-hand.is-crowded .mm-card[data-rarity]:not(.is-fan-last):not(.is-name-xlong):not(.is-hover):not(.is-selected):not(.is-dragging):not(.is-aiming):not(.is-hero) .mm-card__name {
-  font-size: calc(min(18.5, 25.6 * var(--fan-vis, .6)) * var(--u));
-  padding-left: calc(16 * var(--u));
-}
-.cb-handhost.kit-cards .mm-hand.is-crowded .mm-card[data-rarity].is-name-long:not(.is-fan-last):not(.is-hover):not(.is-selected):not(.is-dragging):not(.is-aiming):not(.is-hero) .mm-card__name {
-  font-size: calc(min(15, 21.5 * var(--fan-vis, .6)) * var(--u));
-}
 /* THE HAND'S STATES, IN THE KIT'S METAL. `.kit-cards` dresses a card's frame
    and face with selectors that outrank card.css's own state rules, which is
    right on a shop shelf and wrong in a hand: the keyboard's selected card, a
@@ -1995,15 +1930,6 @@
     inset 0 0 0 calc(1 * var(--u)) color-mix(in srgb, white 45%, transparent),
     0 0 calc(9 * var(--u)) color-mix(in srgb, var(--pluck-300) 65%, transparent);
 }
-/* a card you cannot pay for keeps its dark ground but loses the type's wash, so
-   it never reads as active (card.css's intent, restated over the kit's face) */
-.cb-handhost.kit-cards .mm-card[data-rarity].is-unplayable .mm-card__face {
-  background:
-    linear-gradient(rgba(8, 6, 11, .38), rgba(8, 6, 11, .38)),
-    url("../../assets/ui/kit/felt-damask.webp") 50% 0 / calc(104 * var(--u)) calc(118 * var(--u)),
-    #110d14;
-}
-.cb-handhost.kit-cards .mm-card[data-rarity].is-unplayable .mm-card__face::before { opacity: 0; }
 
 /* VANISH, RETAIN and the rest: a small dark plate seated on the ruled panel's
    foot, lettered in the boards' engraved caps (card.css draws a 9u pill, which
@@ -2023,177 +1949,80 @@
   letter-spacing: .12em;
   text-shadow: 0 calc(1 * var(--u)) 0 rgba(0, 0, 0, .9);
 }
-/* THE HAND'S FACES ARE THE BOARDS' FACES, LIT FROM WITHIN. The Shop's and the
-   Reward's cards (.kit-cards) already rule their rules panel with a double
-   gilt line and brass fleurons over flocked damask; the hand used to draw a
-   second, rounded rule inside that one, and every Trick in hand wore two. It
-   wears the one now, and this adds only light: a candle-warm edge along the
-   inside of the panel's top, where the name plate's shadow ends, and the
-   panel's corners falling a shade darker, so the face reads as cloth in a
-   frame rather than a flat fill. Painted under the rules text. */
-/* …AND THE CLOTH HAS A WEAVE AND A RULE (round 4). "The hand's rules panels
-   carry texture and an inner rule": the enamel takes the house's damask as a
-   flock worked into it (card-flock.webp, a fifth of the kit's damask), and a
-   fine gilt rule stands in from the double rule round the words, from under
-   the type line to the foot, a four-point star where it turns at each corner.
-   The words are set in from it (below), so no line of rules touches it. */
-.cb-handhost.kit-cards .mm-card[data-rarity] .mm-card__face::before,
-.cb-chooser__pool.kit-cards .mm-card[data-rarity] .mm-card__face::before {
-  --ri: calc(6.5 * var(--u));                 /* the inner rule's inset from the panel */
-  --rt: calc(26 * var(--u));                  /* its top, under the type line */
-  --rw: calc(1.35 * var(--u));                /* its weight */
-  --st: calc(10 * var(--u));                  /* a corner star */
-  --rule: color-mix(in srgb, var(--kit-gold) 70%, var(--kit-gold-hi));
-  content: ''; position: absolute; pointer-events: none;
-  left: calc(10.5 * var(--u)); right: calc(10.5 * var(--u));
-  /* the lit edge runs just above the type line's letters, never through them */
-  top: calc(144 * var(--u)); bottom: calc(10.5 * var(--u));
-  background:
-    url("../../assets/ui/kit/star4.svg") calc(var(--ri) + var(--rw) / 2 - var(--st) / 2) calc(var(--rt) + var(--rw) / 2 - var(--st) / 2) / var(--st) var(--st) no-repeat,
-    url("../../assets/ui/kit/star4.svg") calc(100% - var(--ri) - var(--rw) / 2 + var(--st) / 2) calc(var(--rt) + var(--rw) / 2 - var(--st) / 2) / var(--st) var(--st) no-repeat,
-    url("../../assets/ui/kit/star4.svg") calc(var(--ri) + var(--rw) / 2 - var(--st) / 2) calc(100% - var(--ri) - var(--rw) / 2 + var(--st) / 2) / var(--st) var(--st) no-repeat,
-    url("../../assets/ui/kit/star4.svg") calc(100% - var(--ri) - var(--rw) / 2 + var(--st) / 2) calc(100% - var(--ri) - var(--rw) / 2 + var(--st) / 2) / var(--st) var(--st) no-repeat,
-    linear-gradient(var(--rule), var(--rule)) var(--ri) var(--rt) / calc(100% - var(--ri) * 2) var(--rw) no-repeat,
-    linear-gradient(var(--rule), var(--rule)) var(--ri) calc(100% - var(--ri)) / calc(100% - var(--ri) * 2) var(--rw) no-repeat,
-    linear-gradient(var(--rule), var(--rule)) var(--ri) var(--rt) / var(--rw) calc(100% - var(--rt) - var(--ri)) no-repeat,
-    linear-gradient(var(--rule), var(--rule)) calc(100% - var(--ri)) var(--rt) / var(--rw) calc(100% - var(--rt) - var(--ri)) no-repeat,
-    /* a shadow cut under the rule, so it reads engraved into the cloth */
-    linear-gradient(rgba(4, 2, 7, .55), rgba(4, 2, 7, .55)) var(--ri) calc(var(--rt) + var(--rw)) / calc(100% - var(--ri) * 2) var(--rw) no-repeat,
-    linear-gradient(to bottom, color-mix(in srgb, var(--kit-candle) 30%, transparent) 0, color-mix(in srgb, var(--kit-candle) 11%, transparent) calc(4 * var(--u)), color-mix(in srgb, var(--kit-candle) 3%, transparent) calc(16 * var(--u)), transparent calc(34 * var(--u))),
-    radial-gradient(110% 55% at 50% 0%, color-mix(in srgb, var(--kit-candle) 9%, transparent), transparent 72%),
-    radial-gradient(90% 70% at 50% 44%, transparent 52%, rgba(4, 2, 6, .42) 100%),
-    url("../../assets/ui/kit/card-flock.webp") 50% calc(8 * var(--u)) / calc(92 * var(--u)) calc(105 * var(--u)) repeat;
-  box-shadow:
-    inset 0 calc(1.2 * var(--u)) 0 color-mix(in srgb, var(--kit-gold-hi) 38%, transparent),
-    inset calc(1 * var(--u)) 0 0 color-mix(in srgb, var(--kit-gold-hi) 10%, transparent),
-    inset calc(-1 * var(--u)) 0 0 color-mix(in srgb, var(--kit-gold-hi) 10%, transparent);
+
+/* A card you cannot pay for keeps its painted ground but loses the type's
+   colour from it and from its tab, so it never reads as active (card.css's
+   intent, restated over the kit's body). */
+.cb-handhost.kit-cards .mm-card[data-rarity][data-type].is-unplayable {
+  --tint: #1d1822;
+  --tint-hi: var(--kit-text-mid);
+  --tab-ink: var(--kit-text-mid);
+  --tab: #4a4250;
 }
-/* the panel's own double rule a shade brighter in the hand, where a card is
-   smaller than on a shelf */
-.cb-handhost.kit-cards .mm-card[data-rarity] .mm-card__face::after,
-.cb-chooser__pool.kit-cards .mm-card[data-rarity] .mm-card__face::after {
-  border-color: color-mix(in srgb, var(--kit-gold) 72%, transparent);
-  border-top-color: transparent;
-}
-/* the words stand inside the inner rule */
-.cb-handhost.kit-cards .mm-card[data-rarity] .mm-card__rules,
-.cb-chooser__pool.kit-cards .mm-card[data-rarity] .mm-card__rules {
-  top: calc(173 * var(--u)); bottom: calc(20 * var(--u));
-  padding: 0 calc(8 * var(--u));
-}
-/* a covered card's rules wrap into a narrower strip and take more lines: they
-   get the panel's full height inside the rule and a closer leading */
-.cb-handhost.kit-cards .mm-hand.is-crowded .mm-card[data-rarity]:not(.is-fan-last):not(.is-hover):not(.is-selected):not(.is-dragging):not(.is-aiming):not(.is-hero) .mm-card__rules {
-  top: calc(172 * var(--u)); bottom: calc(17 * var(--u));
-  padding: 0 calc(3 * var(--u)) 0 calc(6 * var(--u));
-  line-height: 1.12;
-  /* AND THEY BREAK WHERE A SENTENCE BREAKS (round 6). A judge quoted the hand
-     back at us: "Shed 1 / Bone. Draw / 1 Trick." A greedy wrap fills every
-     line to the edge and leaves the last one with two words, which is how a
-     number ends up on one line and its noun on the next. Balanced, the same
-     rule sets as "Shed 1 Bone. / Draw 1 Trick." — the same size, the same
-     number of lines (balance never adds one, so CardView#fitRules's count
-     still holds), broken where the eye would break it. */
-  text-wrap: balance;
-}
-.cb-handhost.kit-cards .mm-hand.is-crowded .mm-card[data-rarity]:not(.is-fan-last):not(.is-hover):not(.is-selected):not(.is-dragging):not(.is-aiming):not(.is-hero) .mm-card__rules > div { text-wrap: balance; }
-/* NO CARD'S TITLE PLATE OR TYPE LINE IS CUT BY THE NEXT CARD (round 5). The
-   name sat flush left in the strip a covered card shows, but the plate under
-   it ran on beneath the next card and was cut at its edge on every card of a
-   full hand, and the rules panel's gilt rules with it. A covered card now lays
-   its whole face out IN THE STRIP (--fan-vis, ui/hand.js; --strip is the
-   strip in card units, and the face sits 7u inside the card): its plate is cut
-   down to the strip, the right end cap standing clear of the next card's edge;
-   its name is lettered between the caps at the size that fits it, on one
-   line if it can, else two, else three (--name-fit, CardView#fitName: the
-   plate grows up over the art, never down onto the type line); the type line
-   fits the strip by its measured width (--type-em); and the rules panel's
-   double rule, its inner rule and its words close in to the strip. The strip is measured at the card's foot, where the
-   fan's tilt leaves it narrowest, so up at the plate there is more room than
-   this spends. A card lifted out of the fan, and the fan's last card, which
-   nothing covers, lay out whole. */
+
+/* A CROWDED HAND (round 27). Past eight Tricks each card shows only the strip
+   of it its neighbour leaves (ui/hand.js deals them, --strip in design units),
+   and a covered card lays its whole body out IN THAT STRIP, never under the
+   next card: the plate, centred on the strip with narrow end caps, holds its
+   name on one line or two (Hand#_stripFit deals a long name a wider strip
+   before it lets it take a third); the type tab is centred on the strip and
+   carries the type's word and colour (its target, "· SELF", is the part the
+   next card covers, as the art is: lifted, the card is whole); the panel's
+   rail, ground and rules close in to the strip; and the panel climbs over its
+   own art by --rise when its rule needs the room (the art is what the next
+   card covers anyway). A card lifted out of the fan, and the fan's last card,
+   which nothing covers, lay out whole. */
 .cb-handhost.kit-cards .mm-hand.is-crowded .mm-card[data-rarity][data-type][data-uid]:not(.is-fan-last):not(.is-hover):not(.is-selected):not(.is-dragging):not(.is-aiming):not(.is-hero) {
   --strip: calc(224 * var(--fan-vis, .6));
-}
-.cb-handhost.kit-cards .mm-hand.is-crowded .mm-card[data-rarity][data-type][data-uid]:not(.is-fan-last):not(.is-hover):not(.is-selected):not(.is-dragging):not(.is-aiming):not(.is-hero) .mm-card__banner {
-  left: calc(8 * var(--u)); right: auto;
-  width: calc((var(--strip) - 19) * var(--u));
-  top: auto; bottom: calc(170 * var(--u));
-  height: auto; min-height: calc(38 * var(--u));
-  padding: calc(6 * var(--u)) 0 calc(6.5 * var(--u));
-  /* the caps narrow as the plate grows a line (NAME_CAPS in ui/card.js):
-     19u on one line, 11u on two. Round 6 cut the second-line cap hard: a
-     covered card's plate is only 120u wide and 34u of that was end caps, which
-     is what forced the longest name in the Bones deck onto a third line. */
-  border-image-width: calc(10.7 * var(--u)) calc(clamp(11, 27 - 8 * var(--name-lines, 1), 19) * var(--u));
-  justify-items: start; align-items: center;
-}
-.cb-handhost.kit-cards .mm-hand.is-crowded .mm-card[data-rarity][data-type][data-uid]:not(.is-fan-last):not(.is-hover):not(.is-selected):not(.is-dragging):not(.is-aiming):not(.is-hero) .mm-card__name {
-  font-size: calc(var(--name-fit, clamp(12, (var(--strip) - 51) / var(--name-em, 7), 17.5)) * var(--u));
-  line-height: 1.04; letter-spacing: .02em;
-  /* just inside the caps: 16u on one line, 12u on two — a unit clear of the
-     11u cap, so a two-line name never touches the notch it sits between */
-  padding: 0 calc(clamp(12, 20 - 4 * var(--name-lines, 1), 16) * var(--u));
-  white-space: normal; text-wrap: balance; text-align: left;
-}
-.cb-handhost.kit-cards .mm-hand.is-crowded .mm-card[data-rarity][data-type][data-uid]:not(.is-fan-last):not(.is-hover):not(.is-selected):not(.is-dragging):not(.is-aiming):not(.is-hero) .mm-card__type {
-  font-size: calc(clamp(9.5, (var(--strip) - 50) / var(--type-em, 6), 12.4) * var(--u));
-}
-.cb-handhost.kit-cards .mm-hand.is-crowded .mm-card[data-rarity][data-type][data-uid]:not(.is-fan-last):not(.is-hover):not(.is-selected):not(.is-dragging):not(.is-aiming):not(.is-hero) .mm-card__face::after { right: calc((222 - var(--strip)) * var(--u)); }
-.cb-handhost.kit-cards .mm-hand.is-crowded .mm-card[data-rarity][data-type][data-uid]:not(.is-fan-last):not(.is-hover):not(.is-selected):not(.is-dragging):not(.is-aiming):not(.is-hero) .mm-card__face::before { right: calc((225 - var(--strip)) * var(--u)); }
-.cb-handhost.kit-cards .mm-hand.is-crowded .mm-card[data-rarity][data-type][data-uid]:not(.is-fan-last):not(.is-hover):not(.is-selected):not(.is-dragging):not(.is-aiming):not(.is-hero) .mm-card__rules { right: calc((233 - var(--strip)) * var(--u)); }
-/* …AND THE RULES ARE SET TO READ IN IT. Each card in a crowded hand is fitted
-   to the box it shows (ui/hand.js asks, CardView#fitRules answers): the
-   largest size up to 22u at which its own words wrap into the strip, down to
-   11.5u for the longest rule, so a short rule reads at 1280x800 instead of
-   sitting small in room it could use. A number, a size up, never deepens its
-   line (line-height 0), so every line is the height the fit counted. */
-.cb-handhost.kit-cards .mm-hand.is-crowded .mm-card[data-rarity][data-type][data-uid].is-fitted:not(.is-hover):not(.is-selected):not(.is-dragging):not(.is-aiming):not(.is-hero) .mm-card__rules { font-size: calc(var(--rules-fit) * var(--u)); line-height: var(--rules-lh, 1.1); }
-.cb-handhost.kit-cards .mm-hand.is-crowded .mm-card[data-rarity][data-type][data-uid].is-fitted:not(.is-hover):not(.is-selected):not(.is-dragging):not(.is-aiming):not(.is-hero) .mm-card__rules .mm-card__num { line-height: 0; }
-/* THE FAN'S LAST CARD IS WHOLE. Nothing covers it, so it keeps its plate's
-   centred name, its type line and its rules the width of its panel: set into
-   the strip it had no need of, its rule ran a line past the panel's foot. */
-.cb-handhost.kit-cards .mm-hand.is-crowded .mm-card[data-rarity][data-type][data-uid].is-fan-last:not(.is-hover):not(.is-selected):not(.is-dragging):not(.is-aiming):not(.is-hero) .mm-card__banner { justify-items: center; }
-.cb-handhost.kit-cards .mm-hand.is-crowded .mm-card[data-rarity][data-type][data-uid].is-fan-last:not(.is-hover):not(.is-selected):not(.is-dragging):not(.is-aiming):not(.is-hero) .mm-card__name { text-align: center; padding-left: calc(12 * var(--u)); padding-right: calc(12 * var(--u)); }
-.cb-handhost.kit-cards .mm-hand.is-crowded .mm-card[data-rarity][data-type][data-uid].is-fan-last:not(.is-hover):not(.is-selected):not(.is-dragging):not(.is-aiming):not(.is-hero) .mm-card__type { justify-content: center; padding-left: 0; }
-.cb-handhost.kit-cards .mm-hand.is-crowded .mm-card[data-rarity][data-type][data-uid].is-fan-last:not(.is-hover):not(.is-selected):not(.is-dragging):not(.is-aiming):not(.is-hero) .mm-card__rules { left: calc(12 * var(--u)); right: calc(12 * var(--u)); align-items: center; text-align: center; top: calc(173 * var(--u)); bottom: calc(20 * var(--u)); padding: 0 calc(8 * var(--u)); }
-/* AN OPEN HAND'S RULES ARE FITTED TOO (round 20): each card's rule at the
-   largest size its own panel holds, 10 to 13 px on screen (ui/hand.js), so a
-   long rule no longer steps down to 8.7 px at 1280 while a short one sits
-   small in a panel with room to spare. Lifted, it keeps the same size. */
-.cb-handhost.kit-cards .mm-hand:not(.is-crowded) .mm-card[data-rarity][data-type][data-uid].is-fitted .mm-card__rules { font-size: calc(var(--rules-fit) * var(--u)); line-height: var(--rules-lh, 1.1); }
-.cb-handhost.kit-cards .mm-hand:not(.is-crowded) .mm-card[data-rarity][data-type][data-uid].is-fitted .mm-card__rules .mm-card__num { line-height: 0; }
-/* …and a long NAME on an open hand is held at 11 px (ui/hand.js publishes
-   the size in design units as --name-read-u): "Put Yourself Back Together"
-   stepped down to 14u, 9.7 px at 1280, on a plate with room for two lines of
-   the larger size. */
-.cb-handhost.kit-cards .mm-hand:not(.is-crowded) .mm-card[data-rarity].is-name-xlong .mm-card__name { font-size: calc(clamp(14, var(--name-read-u, 14), 17) * var(--u)); padding: 0 calc(11 * var(--u)) calc(1 * var(--u)); }
-.cb-handhost.kit-cards .mm-hand:not(.is-crowded) .mm-card[data-rarity].is-name-long .mm-card__name { font-size: calc(clamp(15, var(--name-read-u, 15), 17) * var(--u)); }
-/* THE OVERLAP LIES IN THE ART, NOT IN THE WORDS (round 20). A covered card
-   shows a strip, and its rules wrap there into twice the lines they take on a
-   whole card; round 19 closed them up to fit and "Put Yourself Back Together"
-   printed at 8.6 px at the Deck's size. Now the words keep 11 px and the
-   PANEL grows to hold them: the name plate, the type line and the ruled
-   panel climb over the card's own art by --fan-rise design units (ui/hand.js
-   works out how far each covered card's own rule needs, so a card whose
-   rule already fits keeps its whole picture), and the art window gives up
-   its foot. The art is what the next card covers anyway; the name never is. */
-.cb-handhost.kit-cards .mm-hand.is-crowded .mm-card[data-rarity][data-type][data-uid]:not(.is-fan-last):not(.is-hover):not(.is-selected):not(.is-dragging):not(.is-aiming):not(.is-hero) {
   --rise: var(--card-rise, 0);
 }
 .cb-handhost.kit-cards .mm-hand.is-crowded .mm-card[data-rarity][data-type][data-uid]:not(.is-fan-last):not(.is-hover):not(.is-selected):not(.is-dragging):not(.is-aiming):not(.is-hero) .mm-card__art {
   height: calc((126 - var(--rise)) * var(--u));
   background-position: 50% 38%;
 }
-.cb-handhost.kit-cards .mm-hand.is-crowded .mm-card[data-rarity][data-type][data-uid]:not(.is-fan-last):not(.is-hover):not(.is-selected):not(.is-dragging):not(.is-aiming):not(.is-hero) .mm-card__banner { bottom: calc((170 + var(--rise) - min(var(--rise), 10)) * var(--u)); }
-.cb-handhost.kit-cards .mm-hand.is-crowded .mm-card[data-rarity][data-type][data-uid]:not(.is-fan-last):not(.is-hover):not(.is-selected):not(.is-dragging):not(.is-aiming):not(.is-hero) .mm-card__type { top: calc((145 - var(--rise)) * var(--u)); }
-.cb-handhost.kit-cards .mm-hand.is-crowded .mm-card[data-rarity][data-type][data-uid]:not(.is-fan-last):not(.is-hover):not(.is-selected):not(.is-dragging):not(.is-aiming):not(.is-hero) .mm-card__face::before { top: calc((144 - var(--rise)) * var(--u)); }
-.cb-handhost.kit-cards .mm-hand.is-crowded .mm-card[data-rarity][data-type][data-uid]:not(.is-fan-last):not(.is-hover):not(.is-selected):not(.is-dragging):not(.is-aiming):not(.is-hero) .mm-card__face::after { top: calc((147 - var(--rise)) * var(--u)); }
-.cb-handhost.kit-cards .mm-hand.is-crowded .mm-card[data-rarity][data-type][data-uid]:not(.is-fan-last):not(.is-hover):not(.is-selected):not(.is-dragging):not(.is-aiming):not(.is-hero) .mm-card__rules { top: calc((172 - var(--rise)) * var(--u)); }
-/* ROUND 20 GRAFT: the type line under a covered card's plate reads too. At
-   the old clamp it set "SKILL · SELF" at 9.5u, 7.3 px on the Deck; it is fitted
-   to the strip from 10.5u up to 16u (round 20's first merge had this). */
-.cb-handhost.kit-cards .mm-hand.is-crowded .mm-card[data-rarity][data-type][data-uid]:not(.is-fan-last):not(.is-hover):not(.is-selected):not(.is-dragging):not(.is-aiming):not(.is-hero) .mm-card__type { font-size: calc(clamp(10.5, (var(--strip) - 46) / var(--type-em, 6), 16) * var(--u)); }
+.cb-handhost.kit-cards .mm-hand.is-crowded .mm-card[data-rarity][data-type][data-uid]:not(.is-fan-last):not(.is-hover):not(.is-selected):not(.is-dragging):not(.is-aiming):not(.is-hero) .mm-card__banner {
+  left: calc(6 * var(--u)); right: auto;
+  width: calc((var(--strip) - 17) * var(--u));
+  bottom: calc((159 + var(--rise)) * var(--u));
+  border-image-width: calc(10.7 * var(--u)) calc(12 * var(--u));
+}
+.cb-handhost.kit-cards .mm-hand.is-crowded .mm-card[data-rarity][data-type][data-uid]:not(.is-fan-last):not(.is-hover):not(.is-selected):not(.is-dragging):not(.is-aiming):not(.is-hero) .mm-card__name {
+  font-size: calc(var(--name-fit, var(--name-u)) * var(--u));
+  padding: 0 calc(12 * var(--u));
+  letter-spacing: .01em;
+}
+.cb-handhost.kit-cards .mm-hand.is-crowded .mm-card[data-rarity][data-type][data-uid]:not(.is-fan-last):not(.is-hover):not(.is-selected):not(.is-dragging):not(.is-aiming):not(.is-hero) .mm-card__type {
+  left: calc((var(--strip) - 6.5) / 2 * var(--u));
+  top: calc((144 - var(--rise)) * var(--u));
+  max-width: calc((var(--strip) - 14) * var(--u));
+  padding-left: calc(13 * var(--u)); padding-right: calc(13 * var(--u));
+  gap: calc(4 * var(--u));
+  letter-spacing: .1em;
+  /* the cartouche's curled ends drawn a size narrower, the words clear of them */
+  border-image-width: calc(8 * var(--u)) calc(12 * var(--u));
+  -webkit-mask-box-image-width: calc(8 * var(--u)) calc(12 * var(--u));
+  font-size: calc(min(var(--type-u), (var(--strip) - 40) / var(--type-word-em, 4.4)) * var(--u));
+}
+.cb-handhost.kit-cards .mm-hand.is-crowded .mm-card[data-rarity][data-type][data-uid]:not(.is-fan-last):not(.is-hover):not(.is-selected):not(.is-dragging):not(.is-aiming):not(.is-hero) .mm-card__typesub,
+.cb-handhost.kit-cards .mm-hand.is-crowded .mm-card[data-rarity][data-type][data-uid]:not(.is-fan-last):not(.is-hover):not(.is-selected):not(.is-dragging):not(.is-aiming):not(.is-hero) .mm-card__typeicon { display: none; }
+.cb-handhost.kit-cards .mm-hand.is-crowded .mm-card[data-rarity][data-type][data-uid]:not(.is-fan-last):not(.is-hover):not(.is-selected):not(.is-dragging):not(.is-aiming):not(.is-hero) .mm-card__face::after {
+  right: calc((219 - var(--strip)) * var(--u));
+  top: calc((149 - var(--rise)) * var(--u));
+}
+.cb-handhost.kit-cards .mm-hand.is-crowded .mm-card[data-rarity][data-type][data-uid]:not(.is-fan-last):not(.is-hover):not(.is-selected):not(.is-dragging):not(.is-aiming):not(.is-hero) .mm-card__face::before {
+  right: calc((222.5 - var(--strip)) * var(--u));
+  top: calc((153.5 - var(--rise)) * var(--u));
+}
+.cb-handhost.kit-cards .mm-hand.is-crowded .mm-card[data-rarity][data-type][data-uid]:not(.is-fan-last):not(.is-hover):not(.is-selected):not(.is-dragging):not(.is-aiming):not(.is-hero) .mm-card__rules {
+  left: calc(11 * var(--u));
+  right: calc((227 - var(--strip)) * var(--u));
+  top: calc((168 - var(--rise)) * var(--u));
+  padding: 0 calc(2 * var(--u));
+}
+.cb-handhost.kit-cards .mm-hand.is-crowded .mm-card[data-rarity][data-type][data-uid]:not(.is-fan-last):not(.is-hover):not(.is-selected):not(.is-dragging):not(.is-aiming):not(.is-hero) .mm-card__badges {
+  right: calc((219 - var(--strip)) * var(--u));
+}
+
 /* ── the hand never hides the hit ──────────────────────────────────────────
    The played card is presented at 0.62 of the board height (ui/hand.js TUNE
    .playY) which puts a 226x314 card straight across the creature band; at the

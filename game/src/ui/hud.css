@@ -461,13 +461,16 @@
   display: inline-flex; align-items: center;
   box-sizing: border-box;
   height: calc(var(--hud-chip-h) * 1.08);
-  padding: 0 .85em;
+  padding: 0 1.3em;
+  /* round 27: the card's dark cartouche, its curled brass ends and all (the
+     judges read the old well as "a plain box") */
   border: 0 solid transparent;
-  border-image: url("../../assets/ui/kit/hw-rail-well.webp") 14 fill / 7px stretch;
+  border-image: url("../../assets/ui/kit/cartouche-dark.webp") 18 34 18 34 fill / calc(var(--hud-chip-h) * 1.08 * 18 / 64) calc(var(--hud-chip-h) * 1.08 * 34 / 64) stretch;
+  filter: drop-shadow(0 1px 1.5px rgba(0, 0, 0, .8));
   font-family: var(--font-display); font-weight: 700; font-style: normal;
   font-size: var(--hud-cap-fs); letter-spacing: .07em;
   text-transform: uppercase;
-  color: var(--kit-text-mid);
+  color: var(--kit-lav-hi);
   text-shadow: 0 -1px 0 rgba(0, 0, 0, .9), 0 1px 0 color-mix(in srgb, var(--kit-lav-hi) 18%, transparent);
   white-space: nowrap;
 }

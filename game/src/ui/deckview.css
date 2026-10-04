@@ -215,8 +215,11 @@
      their slots' lips and the scroll gutter taken off — a stocked case at 1280
      and at 1600, and never a fifth Trick sawn off at the lining. The vw figure
      on .mm-deck is the same size in round numbers, for --card-w. */
+  /* round 27: and no taller than the case's floor shows, so a row of five lies
+     WHOLE in it, its panel's foot and gilt corners and all (it was sawn off
+     at the case's lip at 1280x800 and at 1600x900) */
   --deck-cw: min(
-    clamp(150px, 36vh, 236px),
+    clamp(150px, calc(29vh - 68px), 236px),
     calc((100cqw - 10 * var(--slot-pad) - 34px) / 5));
   display: grid;
   /* whole cards, centred: a pile of five lies in the middle of the case, not
@@ -254,6 +257,13 @@
 /* the card is the case's size, not the hand's (card.css caps a card at the
    hand's width, which on the Deck is smaller than a Trick is read at) */
 .mm-deck__cell > .mm-card { --mm-card-w: var(--deck-cw); }
+/* round 27: a Trick laid in the case is read at the size its rules are lifted
+   to (--rules-k), so its name and its type line are held a size up with them
+   (ui/kit.css sets them in screen px through --cpx) */
+.mm-deck .mm-deck__cell > .mm-card[data-rarity][data-type] {
+  --name-u: max(15.5, 16.5 / var(--cpx, 1));
+  --type-u: max(11, 12 / var(--cpx, 1));
+}
 /* its place in the case: the recess pressed into the velvet under it, a gilt
    bead round the lip (case-slot.webp, tools/prep_ui_ledger.py). It stays put
    when the card lifts out of it. */
