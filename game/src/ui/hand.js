@@ -171,7 +171,7 @@ export const TUNE = {
      wider one, taken from the cards whose words keep them in less ("Bite",
      "Deal 6 damage."), never under `stripGive` of the common strip. */
   nameCapPx: 12.5,
-  typePx: 10,           // round 27: a covered card's type tab keeps this (kit.css --type-u)
+  typePx: 10.5,         // round 27: a covered card's type tab keeps this (kit.css --type-u)
   stripGive: 0.8,
   stripTake: 1.6,
 
@@ -1199,8 +1199,11 @@ export class Hand {
     else if (F.crowded) {
       const strip = 224 * Math.min(1, F.step / F.cw);
       const fo = {
-        read: T.readPx / uPx, floor: T.floorPx / uPx, capU: T.coverCapPx / uPx,
-        nameCap: T.nameCapPx / uPx, nameFloor: T.nameFloorPx / uPx,
+        read: T.readPx / uPx, floor: T.floorPx / uPx,
+        // round 27: the cap grows with the card past the Deck's size, so a
+        // 1600 board's larger panels are not left half empty
+        capU: Math.min(14, Math.max(T.coverCapPx, 17 * uPx)) / uPx,
+        nameCap: Math.min(14, Math.max(T.nameCapPx, 17 * uPx)) / uPx, nameFloor: T.nameFloorPx / uPx,
         type: T.typePx / uPx,
       };
       // `_layout` runs on every hover: deal and measure only when the hand,
@@ -1241,7 +1244,7 @@ export class Hand {
          floor and cap as a crowded hand's. */
       for (const s of this.slots) {
         s.view.el.style.removeProperty('--fan-vis');
-        s.view.fitRules?.(176, 116, { lo: T.floorPx / uPx, hi: T.capPx / uPx });
+        s.view.fitRules?.(176, 116, { lo: T.floorPx / uPx, hi: Math.min(15, Math.max(T.capPx, 18 * uPx)) / uPx });
       }
     }
     if (!off) { this._deal = null; this._dealKey = null; }

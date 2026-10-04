@@ -4060,7 +4060,7 @@ button.kit-hw-enamel:focus-visible {
   --tint-hi: color-mix(in oklab, var(--type-color) 52%, #f6ecdb);
   --tab: color-mix(in oklab, var(--type-color) 70%, #2a1838);
   --name-u: max(15.5, 12.5 / var(--cpx, 1), min(18, 14 / var(--cpx, 1)));
-  --type-u: max(11, 10.5 / var(--cpx, 1));
+  --type-u: max(12.5, 10.5 / var(--cpx, 1));
 }
 .kit-cards .mm-card[data-rarity][data-type][data-uid] .mm-card__face {
   background:
