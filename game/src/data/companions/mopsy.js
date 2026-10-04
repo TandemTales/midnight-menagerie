@@ -291,7 +291,7 @@ U.onTracker(SLUG, (e, s, seat) => {
       for (let rep = 0; rep <= extra; rep++) firePatch(c, card, list[i], i);
     }
     st.playedPatchKinds = (st.playedPatchKinds || []).concat(list.map((x) => x.id));
-    if (st.patternBook && new Set(st.playedPatchKinds).size >= 2 && U.once(c, 'patternBook')) gainStuffing(c, 1);
+    if (st.patternBook && new Set(st.playedPatchKinds).size >= 2 && U.once(c, 'patternBook')) gainStuffing(c, U.stacks(c, c.self, 'mopsy/pattern-book'));
   });
 
   /* FAMILY QUILT (multiplayer): "Once a round per Kid, when they play a Trick
@@ -376,12 +376,30 @@ U.onTracker(SLUG, (e, s, seat) => {
        wiped and the Power never paid its Nerve. Its card still comes at turn start. */
     if (st.wholePattern && distinctPatchKinds(c).size >= 3) { st.wholePatternBonus = true; U.energyNextTurn(c, 1); }
   }, seat);
+
+  /* HEART ON HER SLEEVE: "The first time each enemy turn you actually lose
+     Courage, gain {n} Stuffing and Reinforce every Patch in hand." It set a
+     flag nothing read, so the 2-Nerve Rare did nothing. Courage ACTUALLY lost
+     is the damage event's hpLoss, so Guard soaking the whole hit does not count. */
+  e.on('damage', (ev) => {
+    if (!ev || !seat || ev.targetId !== seat.id || !((ev.hpLoss || 0) > 0)) return;
+    if (!String(e.phase || '').startsWith('enemy')) return;
+    const c = fake();
+    const st = U.mm(c);
+    const n = U.stacks(c, c.self, 'mopsy/heart-on-her-sleeve');
+    if (!st.heartOnSleeve || n <= 0 || st.heartTurn === e.turn) return;
+    st.heartTurn = e.turn;
+    gainStuffing(c, n);
+    for (const k of patchedInHand(c)) reinforce(c, k, 1);
+  });
 });
 
 // ── Power hooks ─────────────────────────────────────────────────────────────
 U.onHook('patchBroke', 'mopsy/loose-ends', (c) => {
   if (!U.once(c, 'looseEnds')) return;
-  U.draw(c, 1);
+  /* Its {c1} as the Power's stacks: a literal 1 left the upgrade's 2 unread
+     and a second copy adding nothing. */
+  U.draw(c, U.stacks(c, c.self, 'mopsy/loose-ends'));
   spawnScrap(c, 1, 'discard');
 });
 

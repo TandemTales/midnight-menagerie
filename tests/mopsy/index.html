@@ -201,6 +201,54 @@ try {
     check(e.counter('stuffing') === st0 + 1, 'and playing a Scrap gains 1 Stuffing',
       `stuffing ${st0} -> ${e.counter('stuffing')}`);
   }
+
+  // ── 6. a Power pays its OWN number, and the best of the copies played ─────
+  async function playAs(e, id, up) {
+    e.addCard(CARDS.cardById(id), 'hand', { upgraded: up });
+    const card = e.piles.hand[e.piles.hand.length - 1];
+    e.player.energy = 9;
+    await e.playCard(card.uid);
+  }
+  {
+    /* Loose Ends drew a literal 1 when a Patch broke: the upgrade's 2 was
+       unread and a second copy added nothing. It draws its stacks now. */
+    const drawsOnBreak = async (seq) => {
+      const e = await mopsy();
+      for (const up of seq) await playAs(e, 'mopsy/loose-ends', up);
+      const k = onlyInHand(e, 'mopsy/sock-kick');
+      k.meta.patches = [{ id: 'guard', stitches: 1 }];
+      let drawn = 0;
+      e.on('draw', (ev) => { drawn += (ev && ev.count) || 1; });
+      e.player.energy = 9;
+      await e.playCard(k.uid, e.livingEnemies()[0].id);
+      return drawn;
+    };
+    const none = await drawsOnBreak([]), base = await drawsOnBreak([false]), both = await drawsOnBreak([false, true]);
+    check(base - none === 1, 'Loose Ends: a Patch breaking draws 1', `${none} -> ${base}`);
+    check(both - none === 3, 'Loose Ends then Loose Ends+ draws 1 + 2', `${none} -> ${both}`);
+  }
+  {
+    /* Heart on Her Sleeve set a flag nothing read: the Rare did nothing. */
+    const stuffingAfterHit = async (seq, patched) => {
+      const e = await mopsy();
+      for (const up of seq) await playAs(e, 'mopsy/heart-on-her-sleeve', up);
+      const k = onlyInHand(e, 'mopsy/sock-kick');
+      if (patched) k.meta.patches = [{ id: 'guard', stitches: 2 }];
+      e.setCounter('stuffing', 2, 'test');
+      e.player.block = 0;
+      const t = e.livingEnemies()[0];
+      e.phase = 'enemy';
+      await e.dealDamage({ attacker: t, defender: e.player, amount: 10, kind: 'attack' });
+      await e.dealDamage({ attacker: t, defender: e.player, amount: 10, kind: 'attack' });
+      e.phase = 'player';
+      return { stuffing: e.counter('stuffing'), stitches: (patchesOf(k)[0] || {}).stitches };
+    };
+    const none = await stuffingAfterHit([]), base = await stuffingAfterHit([false], true), both = await stuffingAfterHit([false, true]);
+    check(base.stuffing - none.stuffing === 1, 'Heart on Her Sleeve: losing Courage in the enemy turn gains 1 Stuffing, once',
+      `${none.stuffing} -> ${base.stuffing}`);
+    check(base.stitches === 3, 'and Reinforces the Patch in hand', `stitches=${base.stitches}`);
+    check(both.stuffing - none.stuffing === 3, 'Heart on Her Sleeve then Heart on Her Sleeve+ gains 1 + 2', `${none.stuffing} -> ${both.stuffing}`);
+  }
 } catch (err) {
   fails.push('THREW: ' + (err && err.stack || err));
 }
