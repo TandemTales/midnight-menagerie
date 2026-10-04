@@ -590,12 +590,23 @@ export class RewardScene extends RoomScene {
     // the menagerie's portraits (ui/hang.js, .kit-hang) at the height of the
     // frames' paintings, where no card, ribbon or plate stands in front of it,
     // and under it on the rail's end a candle on a book lights it from below.
-    // (Rounds 6-25 hung a moonlit lancet in each flank, and the room's own
-    // three pictures hung behind the ribbon, where they were read as smears.)
     // A cast brass boss caps each end of the rail. Decoration only;
     // reward.js (_pointLights) aims the ground's pools at the two flames.
     sec.insertAdjacentHTML('beforeend', gallery(['crumbula', 'marmalade'],
       ['rw-hang rw-hang--l', 'rw-hang rw-hang--r'], { skip: this.run?.companion }));
+    // Round 26 graft (VERMEILLE's, both judges): the moonlit gothic lancets
+    // back, cold against the candles' warm. They hang OUTSIDE the flanks the
+    // portraits fill -- high on the wall at the board's outer edges, in the
+    // bay between each corner candle and the plaque -- and _pointLights
+    // places them where that bay measures. Decoration only.
+    const board = this.root.querySelector('.rm--reward');
+    if (board && !board.querySelector('.rw-hall')) {
+      const hall = el('div', 'rw-hall');
+      hall.setAttribute('aria-hidden', 'true');
+      hall.innerHTML = '<i class="kit-window rw-window rw-window--l"></i>'
+        + '<i class="kit-window kit-window--r rw-window rw-window--r"></i>';
+      board.insertBefore(hall, board.querySelector('.rm-hudhost'));
+    }
     for (const side of ['l', 'r']) {
       const c = el('i', `kit-prop kit-prop--candle rw-candle rw-candle--${side}`);
       c.setAttribute('aria-hidden', 'true');
@@ -750,11 +761,10 @@ export class RewardScene extends RoomScene {
   /**
    * Aim the room's light at the things that give it off (ui/kit.css
    * .kit-ground): the ground reveals its lit damask and wainscot through light
-   * slots placed in viewport lengths, and both the flanks' pictures and the
-   * rail's candles hang on the stage, which stands wherever the title and the
-   * spoils leave it. Each picture gets the moon's cold pool on the paper round
-   * it; each candle a warm pool round its flame. reward.css's defaults are the
-   * 1600x900 answer; this is the measured one. Decoration only.
+   * slots placed in viewport lengths, and the rail's candles hang on the stage, which stands wherever the title and the
+   * spoils leave it. Each lancet gets the moon's cold pool on the paper round
+   * its glass; each candle a warm pool round its flame. reward.css's defaults
+   * are the 1600x900 answer; this is the measured one. Decoration only.
    */
   _pointLights() {
     const board = this.root?.querySelector('.rm--reward');
@@ -766,13 +776,49 @@ export class RewardScene extends RoomScene {
       board.style.setProperty(`--wl${k}-x`, `${(r.left + r.width / 2).toFixed(1)}px`);
       board.style.setProperty(`--wl${k}-y`, `${(r.top + r.height * .18).toFixed(1)}px`);
     }
-    // the moon's cold pool sits on the damask round each flank's picture
-    for (const [sel, k] of [['.rw-hang--l', 1], ['.rw-hang--r', 2]]) {
-      const s = board.querySelector(sel);
-      const r = s?.getBoundingClientRect();
-      if (!r || !r.width) continue;
-      board.style.setProperty(`--ml${k}-x`, `${(r.left + r.width / 2).toFixed(1)}px`);
-      board.style.setProperty(`--ml${k}-y`, `${(r.top + r.height * .3).toFixed(1)}px`);
+    // Round 26 graft: the lancets, each in the bay of upper wall between its
+    // corner candle and the plaque, standing on the stage's top rule's row,
+    // and the moon's cold pool round each one's glass. With no bay a lancet
+    // can stand in (the window too narrow, or the board too short), neither
+    // hangs.
+    const q = (sel) => board.querySelector(sel)?.getBoundingClientRect() || null;
+    const B = board.getBoundingClientRect();
+    const cl = q('.kit-dress__corner--l'), cr = q('.kit-dress__corner--r');
+    const plaque = q('.rm-where');
+    const stage = q('.rw-stage');
+    const hall = board.querySelector('.rw-hall');
+    if (hall && cl && cr && plaque && stage) {
+      const top = cl.top - B.top + cl.height * .12;
+      const foot = stage.top - B.top - 6;
+      const bayL = [cl.right - B.left - cl.width * .1, plaque.left - B.left - 10];
+      const bayR = [plaque.right - B.left + 10, cr.left - B.left + cr.width * .1];
+      const span = Math.min(bayL[1] - bayL[0], bayR[1] - bayR[0]);
+      const w = Math.min(span * .9, (foot - top) * 300 / 680, 132);
+      const ok = w >= 64;
+      hall.hidden = !ok;
+      if (ok) {
+        const h = w * 680 / 300;
+        const t = foot - h;
+        const xl = (bayL[0] + bayL[1]) / 2, xr = (bayR[0] + bayR[1]) / 2;
+        hall.style.setProperty('--win-w', `${w.toFixed(1)}px`);
+        hall.style.setProperty('--win-t', `${t.toFixed(1)}px`);
+        hall.style.setProperty('--win-x', `${xl.toFixed(1)}px`);
+        hall.style.setProperty('--win-x2', `${xr.toFixed(1)}px`);
+        // the shaft falls from the glass down the outer wall onto the portrait
+        const pic = q('.rw-hang--l');
+        if (pic) {
+          const dy = Math.max(60, pic.top + pic.height * .5 - (B.top + t + h * .3));
+          const dx = xl - (pic.left - B.left + pic.width / 2);
+          hall.style.setProperty('--shaft-h', `${(dy * 1.15).toFixed(1)}px`);
+          hall.style.setProperty('--shaft-skew', `${(-Math.atan2(dx, dy) * 180 / Math.PI).toFixed(1)}deg`);
+        }
+        for (const [x, k] of [[xl, 1], [xr, 2]]) {
+          board.style.setProperty(`--ml${k}-x`, `${(B.left + x).toFixed(1)}px`);
+          board.style.setProperty(`--ml${k}-y`, `${(B.top + t + h * .45).toFixed(1)}px`);
+          board.style.setProperty(`--ml${k}-w`, `${(w * 3.2).toFixed(1)}px`);
+          board.style.setProperty(`--ml${k}-h`, `${(h * 1.5).toFixed(1)}px`);
+        }
+      }
     }
   }
 

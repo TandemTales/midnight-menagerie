@@ -262,8 +262,9 @@
   --ml1-w: calc(var(--flank-w) * 2.6);       --ml1-h: 52vh;
   --ml2-x: calc(100vw - var(--flank-cx));    --ml2-y: var(--ml1-y);
   --ml2-w: var(--ml1-w);                     --ml2-h: var(--ml1-h);
-  /* (no shafts since round 26: the flanks hang pictures, not lancets, and
-     a shaft needs a window to fall from) */
+  /* (no ground shafts since round 26; the graft's lancets, high by the
+     plaque, cast their own -- .rw-window::after -- and reward.js moves the
+     cold pools --ml1/--ml2 onto their glass) */
 }
 /* a Big Scare also hands over a Keepsake: its panel hangs under the row on the
    rule, and the three stand in the height it leaves */
@@ -476,9 +477,7 @@
 /* the flanks: the house's gallery (round 26). On each wall one of the
    menagerie's portraits (.kit-hang, ui/hang.js), hung by its cord at the
    height of the frames' paintings, and under it on the rail's end a candle on
-   a book lighting it from below. Rounds 6-25 hung a moonlit lancet here; the
-   moon still reaches the flanks as a cold pool high on the damask
-   (--ml1/--ml2), so the warm-against-cold the samples paint stays. */
+   a book lighting it from below. */
 .rw-hang {
   --hang-w: min(calc(var(--flank-w) * .86), calc(var(--slot-h) * .5));
   --hang-lit: .95;
@@ -489,6 +488,47 @@
 }
 .rw-hang--l { left: calc(var(--flank-w) / 2 + 6px); }
 .rw-hang--r { left: calc(100% - var(--flank-w) / 2 - 6px); }
+/* ...and the lancets back (round 26 graft; VERMEILLE's, both judges): cold
+   against warm, as the samples paint it. The flanks below are the
+   portraits'; the lancets stand OUTSIDE them, high on the wall at the board's
+   outer edges, each in the bay between the corner candle and the plaque, so
+   a window and a picture never share a stretch of wall. From there the
+   moon's light falls down the outer wall onto the portrait under it.
+   reward.js (_pointLights) measures the bay and places each one: --win-x
+   (its middle), --win-t (its top) and --win-w. */
+.rw-hall { position: absolute; inset: 0; z-index: 2; pointer-events: none; }
+.rw-window {
+  left: calc(var(--win-x, -999px) - var(--win-w) / 2);
+  top: var(--win-t, 0px);
+  filter: drop-shadow(0 12px 16px rgba(0, 0, 0, .7)) brightness(1.12) saturate(1.08);
+}
+.rw-window--r { left: calc(var(--win-x2, -999px) - var(--win-w) / 2); }
+/* the moonlight standing off the glass, and the cold wash it lays on the
+   damask round it */
+.rw-window::before {
+  left: -60%; right: -60%; top: 0; bottom: 4%;
+  background: radial-gradient(closest-side,
+    color-mix(in srgb, var(--kit-moon) 26%, transparent) 0%,
+    color-mix(in srgb, var(--kit-moon) 10%, transparent) 46%,
+    color-mix(in srgb, var(--kit-moon) 3%, transparent) 74%, transparent);
+}
+/* and the shaft, standing in the air under the glass, leaning OUT and down
+   toward the portrait below it */
+.rw-window::after {
+  content: ''; position: absolute; z-index: -1; pointer-events: none;
+  left: 50%; top: 30%;
+  width: 120%; height: var(--shaft-h, 60vh);
+  transform-origin: 50% 0;
+  background: linear-gradient(90deg, transparent 0%,
+    color-mix(in srgb, var(--kit-moon) 20%, transparent) 28%,
+    color-mix(in srgb, var(--kit-moon) 28%, transparent) 52%,
+    color-mix(in srgb, var(--kit-moon) 12%, transparent) 78%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 12%, rgba(0, 0, 0, .6) 50%, transparent 100%);
+          mask-image: linear-gradient(to bottom, transparent 0%, #000 12%, rgba(0, 0, 0, .6) 50%, transparent 100%);
+  mix-blend-mode: screen;
+}
+.rw-window--l::after { transform: translateX(-50%) skewX(var(--shaft-skew, 20deg)); }
+.rw-window--r::after { transform: translateX(-50%) skewX(calc(var(--shaft-skew, 20deg) * -1)); }
 .rw-candle {
   bottom: calc(var(--stand) - var(--rw-rail-h) * .02);
   width: clamp(40px, 3.4vw, 58px);

@@ -183,6 +183,16 @@ export class GameOverScene extends Scene {
 
     this._wire();
     await fontsReady();
+    this._hangPictures();
+    if (typeof ResizeObserver === 'function') {
+      let raf = 0;
+      const ro = new ResizeObserver(() => {
+        cancelAnimationFrame(raf);
+        raf = requestAnimationFrame(() => this._hangPictures());
+      });
+      ro.observe(board);
+      this._offs.push(() => { cancelAnimationFrame(raf); ro.disconnect(); });
+    }
 
     // real card data is optional; upgrade the ledger the moment it resolves
     this._hydrateCards();
@@ -590,6 +600,43 @@ export class GameOverScene extends Scene {
     this._keepHost = keep.querySelector('.go-keeps');
     this._keepTotal = keep.querySelector('[data-keep-total]');
 
+    /* --- the two lists FOLDED, one page at a time ----------------------------
+       Round 26 graft (MADDERROSE's): at the Deck's 1280 the ledger ran a
+       two-column list of sixteen-odd Tricks AND the Keepsakes to its foot in
+       small type -- "overpacked", both survey judges. So when there are both,
+       they are two pages of one record behind the board's gilt tabs
+       (ui/kit.css .kit-tabs): the Tricks open, the Keepsakes a press away,
+       and whichever is open has the whole height to set its type at a size
+       the Deck reads, a Keepsake's own words under its name. An empty pocket
+       is one line, so with nothing kept there is nothing to fold and both
+       stand as before. */
+    const fold = el('nav', 'go-fold kit-tabs');
+    fold.setAttribute('role', 'tablist');
+    fold.setAttribute('aria-label', 'The record');
+    fold.hidden = true;
+    const tab = (which, label) => {
+      const b = el('button', 'go-fold__tab kit-tab');
+      b.type = 'button';
+      b.setAttribute('role', 'tab');
+      b.dataset.fold = which;
+      b.innerHTML = `<span class="go-fold__name">${esc(label)}</span><em class="go-fold__n"></em>`;
+      b.addEventListener('click', () => this._setFold(which, true));
+      b.addEventListener('keydown', (e) => {
+        if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+        e.preventDefault();
+        this._setFold(which === 'deck' ? 'keep' : 'deck', true);
+      });
+      fold.appendChild(b);
+      return b;
+    };
+    deck.id = 'go-page-deck'; keep.id = 'go-page-keep';
+    const tDeck = tab('deck', `Final ${TERMS.deck}`);
+    const tKeep = tab('keep', `${TERMS.relic}s`);
+    tDeck.setAttribute('aria-controls', deck.id);
+    tKeep.setAttribute('aria-controls', keep.id);
+    led.insertBefore(fold, deck);
+    this._fold = { led, fold, deck, keep, tDeck, tKeep };
+
     /* --- the triptych, on one carved shelf -------------------------------- */
     const altar = el('div', 'go-altar');
     const reach = el('div', 'go-reach go-tri', `
@@ -606,7 +653,10 @@ export class GameOverScene extends Scene {
     // bare, one of the house's own pictures on its cord (ui/hang.js): the
     // mansion over HOW FAR, and over the line that says why, a portrait of one
     // of the menagerie the house still keeps. The room's own pictures hung
-    // here before, painted into the wall, and were read as smears.
+    // here before, painted into the wall, and were read as smears. Round 26
+    // graft: both hang from the cornice -- the shelf the two who went in
+    // stand on -- clear of their plaques, at one height, or neither does
+    // (_hangPictures).
     reach.insertAdjacentHTML('beforeend', gallery(['house'], ['go-hang go-hang--l']));
 
     const mvp = el('div', 'go-block go-block--mvp');
@@ -621,7 +671,7 @@ export class GameOverScene extends Scene {
     altar.appendChild(mvp);
 
     const said = el('div', 'go-said go-tri', `<i class="go-said__mark" aria-hidden="true"></i><p class="go-mvp__note"></p><i class="go-tri__rule" aria-hidden="true"></i>`
-      + gallery(['pudding-tile'], ['go-hang go-hang--r'], { skip: s.companion }));
+      + gallery(['pudding-tile'], ['go-hang go-hang--r'], { skip: s.companion, plate: false }));
     said.hidden = true;
     this._mvpNote = said.querySelector('.go-mvp__note');
     this._mvpSaid = said;
@@ -792,6 +842,7 @@ export class GameOverScene extends Scene {
       }
       this._mvpBlock.hidden = false;
       if (this._mvpSaid) this._mvpSaid.hidden = false;
+      requestAnimationFrame(() => this._hangPictures());
     } catch { /* card-feel's renderer is not available; the list above stands */ }
   }
 
@@ -840,14 +891,86 @@ export class GameOverScene extends Scene {
         <span class="go-keep" role="listitem" tabindex="0" data-rarity="${esc(r.rarity || 'common')}"${r.id ? ` data-tip-keepsake="${esc(r.id)}" data-tip-placement="left"` : ''}>
           <i class="go-keep__sigil kit-hw-well" aria-hidden="true">${pic && r.id ? pic(r.id) : ''}</i>
           <b>${esc(r.name ?? r.id)}</b>
-          <em class="sr-only">${esc(r.desc ?? r.text ?? '')}</em>
+          <em class="go-keep__desc">${esc(r.desc ?? r.text ?? '')}</em>
         </span>`).join('');
     }
     if (this._keepTotal) this._keepTotal.textContent = list.length ? `${list.length} kept` : 'none kept';
+    // Both lists filled: fold them into two pages, the Tricks open.
+    if (this._fold) {
+      this._fold.tKeep.querySelector('.go-fold__n').textContent = this._keepTotal?.textContent || '';
+      this._fold.tDeck.querySelector('.go-fold__n').textContent = this._deckTotal?.textContent || '';
+      if (list.length) this._setFold(this._fold.led.dataset.fold || 'deck');
+      else this._setFold(null);
+    }
     const el0 = this.root?.querySelector('[data-relic-count]');
     if (el0) el0.textContent = String(list.length);
     const noun = this.root?.querySelector('[data-relic-noun]');
     if (noun) noun.textContent = word(list.length, TERMS.relic);
+  }
+
+  /** Open one page of the folded record ('deck' | 'keep'), or unfold (null). */
+  _setFold(which, focus = false) {
+    const F = this._fold;
+    if (!F) return;
+    F.fold.hidden = !which;
+    if (which) F.led.dataset.fold = which; else delete F.led.dataset.fold;
+    for (const [t, page, k] of [[F.tDeck, F.deck, 'deck'], [F.tKeep, F.keep, 'keep']]) {
+      const on = !which || which === k;
+      page.hidden = !on;
+      if (which) page.setAttribute('role', 'tabpanel'); else page.removeAttribute('role');
+      t.setAttribute('aria-selected', String(which === k));
+      t.tabIndex = which === k ? 0 : -1;
+      if (focus && which === k) t.focus({ preventScroll: true });
+    }
+  }
+
+  /**
+   * The two pictures over the shelf's flanks (round 26 graft; both judges:
+   * the mansion "sits on top of the HOW FAR plaque", and at 1280 the portrait
+   * dropped while the mansion stayed, leaving the middle lopsided). Each hangs
+   * on its cord from the cornice -- the shelf the two who went in stand on --
+   * its frame's foot a clear gap above its plaque, and both frames are one
+   * height: the tallest the shorter of the two bays takes. When that bay is
+   * too short for a picture to read (the Deck's 800), NEITHER hangs. Measured
+   * in layout space (offsetTop), so the board's entrance, which slides the
+   * shelf and the plaques in, never skews it.
+   */
+  _hangPictures() {
+    const b = this._board;
+    if (!b || this._dead) return;
+    const figs = [...b.querySelectorAll('.go-hang')];
+    if (!figs.length) return;
+    const y = (e) => { let t = 0; for (let n = e; n && n !== b; n = n.offsetParent) t += n.offsetTop; return t; };
+    const stage = b.querySelector('.go-stage');
+    const reach = b.querySelector('.go-reach');
+    const said = this._mvpSaid;
+    const show = (on) => { for (const f of figs) f.hidden = !on; };
+    if (!stage || !reach || !said || said.hidden || !reach.offsetWidth) { show(false); return; }
+    const cornice = y(stage) + stage.offsetHeight + 2;
+    const foot = Math.min(y(reach), y(said)) - 14;      // the gap over the higher plaque
+    const triW = Math.min(reach.offsetWidth, said.offsetWidth);
+    // each frame's height per px of its width: the picture, and its moulding
+    const kOf = (f) => {
+      const img = f.querySelector('.kit-hang__pic');
+      const ar = String(getComputedStyle(img).aspectRatio || '').split('/').map(Number);
+      const a = ar.length === 2 && ar[0] && ar[1] ? ar[1] / ar[0] : (f.classList.contains('kit-hang--wide') ? 384 / 714 : .62);
+      const rim = f.classList.contains('kit-hang--wide') ? .05 : .06;
+      return { a, rim, k: a + 2 * rim };
+    };
+    const ks = figs.map(kOf);
+    let F = Math.min(foot - cornice - 18, ...ks.map(k => k.k * triW * .98));
+    if (F < 56) { show(false); return; }
+    show(true);
+    figs.forEach((f, i) => {
+      const { rim, k } = ks[i];
+      const w = F / k;
+      const host = f.offsetParent || f.parentElement;
+      const picTop = foot - F + w * rim;
+      f.style.setProperty('--hang-w', `${w.toFixed(1)}px`);
+      f.style.top = `${(picTop - y(host)).toFixed(1)}px`;
+      f.style.bottom = 'auto';
+      f.style.setProperty('--go-cord', `${Math.max(12, picTop - w * rim * .3 - cornice).toFixed(1)}px`);
+    });
   }
 
   /**
@@ -986,6 +1109,7 @@ export class GameOverScene extends Scene {
     this._acts = this._deckHost = this._keepHost = this._board = null;
     this._mvpSlot = this._mvpNote = this._mvpN = this._mvpBlock = this._mvpSaid = null;
     this._deckTotal = this._keepTotal = null;
+    this._fold = null;
     this.root.innerHTML = '';
   }
 }

@@ -193,7 +193,11 @@
 .rs-gilt-b  { stop-color: var(--kit-gold-lo); }
 .rs-gilt-c  { stop-color: var(--kit-gold); }
 .rs-picframe { filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .8)); }
-.rs-pic     { opacity: .62; }
+/* round 26 graft (MADDERROSE's, both judges): the one picture on the fort's
+   wall is a DRAWN one -- the house's own towers under the moon
+   (hall-towers.webp, cut from UI/mainMenu.png), its deep blue sky and all --
+   lit enough to name, never a grey sketch in a gilt corner */
+.rs-pic     { opacity: 1; filter: brightness(1.35) contrast(1.08) saturate(1.1); }
 .rs-picedge { fill: none; stroke: var(--kit-void); stroke-width: 1.2; }
 .rs-cord    { fill: none; stroke: color-mix(in oklab, var(--kit-gold) 70%, var(--kit-void)); stroke-width: 1.1; opacity: .85; }
 .rs-hook    { fill: var(--kit-gold); stroke: var(--kit-void); stroke-width: .8; }

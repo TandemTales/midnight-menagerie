@@ -237,15 +237,20 @@ export class EventScene extends RoomScene {
   }
 
   /**
-   * The room the page is read in, staged symmetrically on its two side walls:
-   * one of the menagerie's portraits on its cord (ui/hang.js; round 26 -- a
-   * moonlit lancet stood here before, and the room's own pictures hung half
-   * behind the page), a brass sconce between it and the page lighting it, and on
-   * the floor below a candle — with a skull on its books on the left. The
-   * sconce's candle light and the moon's cold pool are the ground's own light
-   * slots (event.css points them), so the panelling and the damask are lit
-   * where these hang. All of it decoration, all of it at the edges, none of it
-   * over the words.
+   * The room the page is read in, staged symmetrically on its two side walls
+   * (round 26 graft): at each wall's outer edge a gothic window onto the
+   * grounds with the moon in it, its cold shaft slanting down toward the page
+   * (VERMEILLE's lancets; both judges asked for them back); between the
+   * window and the page one of the menagerie's portraits on its cord
+   * (ui/hang.js; SANGUINE's), a brass sconce under it lighting it; on the
+   * floor below a candle, with a skull on its books on the left; and over the
+   * page, either side of its moon medallion, a pair of small sconces on the
+   * strip of wall between the plaque and the page. The windows' moonlight
+   * and the sconces' candle light are the ground's own light slots
+   * (event.css points them), so the panelling and the damask are lit where
+   * these hang. All of it decoration, all of it at the edges, none of it over
+   * the words. When `event.png` is painted it brings its own walls and the
+   * windows step aside.
    */
   _buildHall() {
     const board = this.root.querySelector('.rm');
@@ -253,16 +258,48 @@ export class EventScene extends RoomScene {
     const hall = el('div', 'ev-hall');
     hall.setAttribute('aria-hidden', 'true');
     hall.innerHTML = `
+      <i class="ev-hall__beam ev-hall__beam--l"></i>
+      <i class="ev-hall__beam ev-hall__beam--r"></i>
+      <i class="kit-window ev-hall__window ev-hall__window--l"></i>
+      <i class="kit-window kit-window--r ev-hall__window ev-hall__window--r"></i>
       ${gallery(['pipkin', 'mopsy'], ['ev-hall__pic ev-hall__pic--l', 'ev-hall__pic ev-hall__pic--r'],
         { skip: this.run?.companion })}
       <i class="kit-web ev-hall__web ev-hall__web--l"></i>
       <i class="kit-web kit-web--r ev-hall__web ev-hall__web--r"></i>
       <i class="kit-sconce ev-hall__sconce ev-hall__sconce--l"></i>
       <i class="kit-sconce ev-hall__sconce ev-hall__sconce--r"></i>
+      <i class="kit-sconce ev-hall__lamp ev-hall__lamp--l" hidden></i>
+      <i class="kit-sconce ev-hall__lamp ev-hall__lamp--r" hidden></i>
       <i class="kit-prop kit-prop--skull ev-hall__skull"></i>
       <i class="kit-prop kit-prop--candle ev-hall__candle ev-hall__candle--l"></i>
       <i class="kit-prop kit-prop--candle ev-hall__candle ev-hall__candle--r"></i>`;
     board.insertBefore(hall, board.querySelector('.rm-hudhost'));
+    /* where the page stands, so the portraits hang against it and the pair of
+       sconces stand on the strip of wall over it */
+    const place = () => {
+      if (this._dead) return;
+      const page = board.querySelector('.ev-page')?.getBoundingClientRect();
+      const head = board.querySelector('.rm-where')?.getBoundingClientRect();
+      if (!page || !page.width) return;
+      board.style.setProperty('--page-l', `${page.left.toFixed(1)}px`);
+      board.style.setProperty('--page-t', `${page.top.toFixed(1)}px`);
+      const band = head ? page.top - head.bottom : 0;
+      const lamps = hall.querySelectorAll('.ev-hall__lamp');
+      const ok = band >= 44 && !board.classList.contains('is-rescue');
+      for (const l of lamps) l.hidden = !ok;
+      if (ok) {
+        board.style.setProperty('--band-h', `${Math.min(band, 110).toFixed(1)}px`);
+        board.style.setProperty('--lamp-dx', `${Math.max(110, page.width * .2).toFixed(1)}px`);
+      }
+    };
+    requestAnimationFrame(place);
+    document.fonts?.ready?.then(place);
+    this._own(bus.on('scene:entered', place));
+    if (typeof ResizeObserver === 'function') {
+      const ro = new ResizeObserver(() => place());
+      ro.observe(board);
+      this._own(() => ro.disconnect());
+    }
   }
 
   /**
