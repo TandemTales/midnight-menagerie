@@ -1125,9 +1125,9 @@ export class Hand {
    */
   _strips(strip, o) {
     const cov = this.slots.slice(0, -1);
-    // round 27: a covered card's type tab (scenes/combat.css) is 44u of
-    // padding, gap and margin round its icon and word at `o.type` design units
-    const tabNeed = (v) => 44 + (o.type || 0) * ((v.typeWordEm || 4.4) + 1.05);
+    // round 27: a covered card's type tab (scenes/combat.css) is 40u of
+    // padding and margin round its word at `o.type` design units
+    const tabNeed = (v) => 40 + (o.type || 0) * (v.typeWordEm || 4.4);
     const ok = (s, sw) => {
       if (sw < tabNeed(s.view)) return false;
       const p = this._stripFit(s.view, sw, o);

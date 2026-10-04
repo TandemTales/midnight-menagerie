@@ -2000,9 +2000,10 @@
   /* the cartouche's curled ends drawn a size narrower, the words clear of them */
   border-image-width: calc(8 * var(--u)) calc(12 * var(--u));
   -webkit-mask-box-image-width: calc(8 * var(--u)) calc(12 * var(--u));
-  font-size: calc(min(var(--type-u), (var(--strip) - 44) / (var(--type-word-em, 4.4) + 1.05)) * var(--u));
+  font-size: calc(min(var(--type-u), (var(--strip) - 40) / var(--type-word-em, 4.4)) * var(--u));
 }
-.cb-handhost.kit-cards .mm-hand.is-crowded .mm-card[data-rarity][data-type][data-uid]:not(.is-fan-last):not(.is-hover):not(.is-selected):not(.is-dragging):not(.is-aiming):not(.is-hero) .mm-card__typesub { display: none; }
+.cb-handhost.kit-cards .mm-hand.is-crowded .mm-card[data-rarity][data-type][data-uid]:not(.is-fan-last):not(.is-hover):not(.is-selected):not(.is-dragging):not(.is-aiming):not(.is-hero) .mm-card__typesub,
+.cb-handhost.kit-cards .mm-hand.is-crowded .mm-card[data-rarity][data-type][data-uid]:not(.is-fan-last):not(.is-hover):not(.is-selected):not(.is-dragging):not(.is-aiming):not(.is-hero) .mm-card__typeicon { display: none; }
 .cb-handhost.kit-cards .mm-hand.is-crowded .mm-card[data-rarity][data-type][data-uid]:not(.is-fan-last):not(.is-hover):not(.is-selected):not(.is-dragging):not(.is-aiming):not(.is-hero) .mm-card__face::after {
   right: calc((219 - var(--strip)) * var(--u));
   top: calc((149 - var(--rise)) * var(--u));

@@ -4107,12 +4107,15 @@ button.kit-hw-enamel:focus-visible {
 .kit-cards .mm-card[data-rarity][data-type][data-uid] .mm-card__type {
   left: 50%; right: auto; top: calc(144 * var(--u)); height: auto;
   transform: translateX(-50%);
-  width: max-content; max-width: calc(186 * var(--u));
+  width: max-content; max-width: calc(196 * var(--u));
   z-index: 2;
   padding: calc(4.5 * var(--u)) calc(16 * var(--u)) calc(4.5 * var(--u));
   gap: calc(5 * var(--u));
-  font-size: calc(var(--type-u) * var(--u));
-  letter-spacing: .14em;
+  /* one line, always: a long type line ("POWER · SELF" on a small shelf card)
+     closes its tracking and, past that, its size (--type-em, ui/card.js) */
+  white-space: nowrap;
+  font-size: calc(min(var(--type-u), 159 / (var(--type-em, 6) + 1.9)) * var(--u));
+  letter-spacing: .1em;
   line-height: 1;
   color: var(--tint-hi);
   border: 0 solid transparent;
