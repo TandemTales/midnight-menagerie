@@ -158,6 +158,8 @@ export const TUNE = {
   nameFloorPx: 9,       // the smallest a name that cannot keep that may go
   floorPx: 10,          // the smallest a rule that still cannot fit may go
   capPx: 13,            // …and the largest a short one may: the row reads as one size
+  coverCapPx: 12,       // round 27: a crowded row's cap: a point less buys a strip's
+                        // rules a word more a line ("Gain 5 Guard. / Gain 3 more")
   riseMax: 44,          // design units a covered card's panel may climb its art
   /* ROUND 20 GRAFT: the row's names read as ONE size. The fit above set a
      short name at 18.5u, 12.9 px at 1280 and 13.9 at 1600 -- two-line
@@ -168,7 +170,8 @@ export const TUNE = {
      whose words cannot keep the row's sizes in the common strip is dealt a
      wider one, taken from the cards whose words keep them in less ("Bite",
      "Deal 6 damage."), never under `stripGive` of the common strip. */
-  nameCapPx: 12,
+  nameCapPx: 12.5,
+  typePx: 10,           // round 27: a covered card's type tab keeps this (kit.css --type-u)
   stripGive: 0.8,
   stripTake: 1.6,
 
@@ -1091,21 +1094,21 @@ export class Hand {
       // the plate stands on the type line and may not climb past 82u, where
       // the cost coin's shadow ends: a name on four lines is set no larger
       // than that allows (measured: 4 x 18u lines put the plate over the coin)
-      const f = Math.min(o.f, (92 - 12.5) / (o.n * 1.04));
+      const f = Math.min(o.f, (89 - 12.5) / (o.n * 1.04));
       if (f < nameFloor) continue;
       const plate = Math.max(38, o.n * f * 1.04 + 12.5);
-      // the plate stands on 142u - rise and its top stays under the coin (102u)
-      let ceil = 102 - plate;
-      if (ceil < 10) ceil = Math.max(0, 92 - plate);
+      // the plate stands on 139u - rise and its top stays under the coin (99u)
+      let ceil = 99 - plate;
+      if (ceil < 10) ceil = Math.max(0, 89 - plate);
       const top = clamp(ceil, 0, TUNE.riseMax);
       let rf = floor;
-      for (let g = capU; g >= floor; g -= 0.25) if (view.rulesNeed(W, g) <= (118 + top) * 0.97) { rf = g; break; }
+      for (let g = capU; g >= floor; g -= 0.25) if (view.rulesNeed(W, g) <= (116 + top) * 0.97) { rf = g; break; }
       const score = Math.min(f, Math.min(rf, read * 1.1));
       if (!best || score > best.score + 0.01) best = { score, f, n: o.n, rf, top };
     }
     if (!best) return null;
     const need = view.rulesNeed(W, best.rf);
-    const rise = Math.min(best.top, Math.ceil(clamp(need / 0.97 - 118, 0, TUNE.riseMax) / 2) * 2);
+    const rise = Math.min(best.top, Math.ceil(clamp(need / 0.97 - 116, 0, TUNE.riseMax) / 2) * 2);
     return { f: best.f, n: best.n, rf: best.rf, rise: Math.max(0, Math.floor(rise)) };
   }
 
@@ -1122,7 +1125,11 @@ export class Hand {
    */
   _strips(strip, o) {
     const cov = this.slots.slice(0, -1);
+    // round 27: a covered card's type tab (scenes/combat.css) is 44u of
+    // padding, gap and margin round its icon and word at `o.type` design units
+    const tabNeed = (v) => 44 + (o.type || 0) * ((v.typeWordEm || 4.4) + 1.05);
     const ok = (s, sw) => {
+      if (sw < tabNeed(s.view)) return false;
       const p = this._stripFit(s.view, sw, o);
       return !!p && p.f >= o.nameCap * 0.97 && p.rf >= o.read;
     };
@@ -1192,8 +1199,9 @@ export class Hand {
     else if (F.crowded) {
       const strip = 224 * Math.min(1, F.step / F.cw);
       const fo = {
-        read: T.readPx / uPx, floor: T.floorPx / uPx, capU: T.capPx / uPx,
+        read: T.readPx / uPx, floor: T.floorPx / uPx, capU: T.coverCapPx / uPx,
         nameCap: T.nameCapPx / uPx, nameFloor: T.nameFloorPx / uPx,
+        type: T.typePx / uPx,
       };
       // `_layout` runs on every hover: deal and measure only when the hand,
       // its words or the fan changed
@@ -1223,7 +1231,7 @@ export class Hand {
       off = this._deal.x;
       for (const s of this.slots) {
         const covered = s !== last;
-        s.view.fitRules?.(covered ? s._strip - 33 : 176, covered ? 118 + s._rise : 118, { lo: fo.floor, hi: fo.capU });
+        s.view.fitRules?.(covered ? s._strip - 33 : 176, covered ? 116 + s._rise : 116, { lo: fo.floor, hi: fo.capU });
       }
     } else {
       /* …and an open hand reads at the same size. Its cards are whole, but
@@ -1233,7 +1241,7 @@ export class Hand {
          floor and cap as a crowded hand's. */
       for (const s of this.slots) {
         s.view.el.style.removeProperty('--fan-vis');
-        s.view.fitRules?.(176, 118, { lo: T.floorPx / uPx, hi: T.capPx / uPx });
+        s.view.fitRules?.(176, 116, { lo: T.floorPx / uPx, hi: T.capPx / uPx });
       }
     }
     if (!off) { this._deal = null; this._dealKey = null; }

@@ -375,8 +375,8 @@
   border-radius: calc(8 * var(--u));
   background:
     radial-gradient(70% 22% at 50% 64%, rgb(255 216 168 / .12), transparent 74%),
-    radial-gradient(120% 50% at 50% 76%, transparent 46%, rgb(5 2 8 / .66) 100%) 0 calc(151 * var(--u)) / 100% calc(100% - 157 * var(--u)) no-repeat,
-    linear-gradient(var(--tint), var(--tint)) calc(6 * var(--u)) calc(151 * var(--u)) / calc(100% - 12 * var(--u)) calc(100% - 157 * var(--u)) no-repeat,
+    radial-gradient(120% 50% at 50% 76%, transparent 46%, rgb(5 2 8 / .66) 100%) 0 calc(153.5 * var(--u)) / 100% calc(100% - 159.5 * var(--u)) no-repeat,
+    linear-gradient(var(--tint), var(--tint)) calc(6 * var(--u)) calc(153.5 * var(--u)) / calc(100% - 12 * var(--u)) calc(100% - 159.5 * var(--u)) no-repeat,
     url("../../assets/ui/kit/card-vellum.webp") 50% calc(-6 * var(--u)) / calc(128 * var(--u)) calc(145.6 * var(--u)) repeat,
     radial-gradient(140% 60% at 50% 75%, transparent 40%, rgb(4 2 7 / .7) 100%),
     url("../../assets/ui/kit/suede.webp") 50% 0 / calc(240 * var(--u)) calc(240 * var(--u)),
@@ -388,7 +388,7 @@
 .sh-service__card::after {
   content: ''; position: absolute; pointer-events: none;
   left: calc(9.5 * var(--u)); right: calc(9.5 * var(--u));
-  top: calc(153.5 * var(--u)); bottom: calc(9.5 * var(--u));
+  top: calc(156 * var(--u)); bottom: calc(9.5 * var(--u));
   border: 0 solid transparent;
   border-image: url("../../assets/ui/kit/panel.webp") 44 / calc(21 * var(--u)) stretch;
   filter: drop-shadow(0 calc(1 * var(--u)) calc(1 * var(--u)) rgb(0 0 0 / .7));
@@ -426,7 +426,7 @@
 /* FORGETTING, on the card's dark cartouche nameplate over the foot of the art */
 .sh-service .sh-service__h {
   position: absolute; z-index: 2;
-  left: calc(15 * var(--u)); right: calc(15 * var(--u)); top: calc(111 * var(--u));
+  left: calc(15 * var(--u)); right: calc(15 * var(--u)); top: calc(108 * var(--u));
   height: calc(38 * var(--u));
   display: grid; place-items: center;
   margin: 0; padding: 0 calc(12 * var(--u)) calc(1 * var(--u));
@@ -448,7 +448,7 @@
 /* "a service": the card's type line, on the enamel tab astride the panel's
    top rail that every Trick wears (ui/kit.css, round 27) */
 .sh-service .sh-service__h > em {
-  position: absolute; left: 50%; right: auto; top: calc(100% + 3 * var(--u));
+  position: absolute; left: 50%; right: auto; top: calc(100% + 5 * var(--u));
   transform: translateX(-50%);
   width: max-content;
   margin: 0; text-align: center; line-height: 1;

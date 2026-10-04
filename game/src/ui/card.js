@@ -354,6 +354,11 @@ export class CardView {
     const typeEm = textEm((TYPE_LABEL[t] || t).toUpperCase(), 600, 0.07);
     const subEm = sub ? textEm((' · ' + sub).toUpperCase(), 600, 0.03) : 0;
     if (nameEm) this.el.style.setProperty('--name-em', String(nameEm));
+    // round 27: the type's word alone, at the crowded tab's tracking (.1em):
+    // scenes/combat.css sizes a covered card's tab by it, and ui/hand.js
+    // deals a strip no narrower than the tab needs
+    const wordEm = textEm((TYPE_LABEL[t] || t).toUpperCase(), 600, 0.1);
+    if (wordEm != null) { this.typeWordEm = wordEm; this.el.style.setProperty('--type-word-em', String(wordEm)); }
     if (typeEm != null && subEm != null) this.el.style.setProperty('--type-em', String(Math.round((typeEm + subEm) * 1000) / 1000));
     if (!fontsIn() && !this._emWait && typeof document !== 'undefined' && document.fonts) {
       this._emWait = true;

@@ -4046,11 +4046,11 @@ button.kit-hw-enamel:focus-visible {
    for a common card), bottom-anchored so a rare card's deeper rim moves
    nothing:
        0 .. 126   art
-     ... .. 142   the name plate, standing on 142 and growing UP over the art
+     ... .. 139   the name plate, standing on 139 and growing UP over the art
                   a line at a time (a name never shrinks for its length: one
                   size across a row)
-     146 .. 296   the panel: its rail at ~152, the type tab astride it
-     166 .. 284   the rules
+     149 .. 296   the panel: its rail at ~156, the type tab astride it
+     168 .. 284   the rules
    `--cpx` is the card's size on screen, in px per design unit (set by
    scenes/_cardfit.js, ui/deckview.js and ui/hand.js); the name and the type
    line hold a size in SCREEN px through it, so a small card at the Deck's
@@ -4059,8 +4059,8 @@ button.kit-hw-enamel:focus-visible {
   --tint: color-mix(in oklab, var(--type-color) 30%, #1a1022);
   --tint-hi: color-mix(in oklab, var(--type-color) 52%, #f6ecdb);
   --tab: color-mix(in oklab, var(--type-color) 70%, #2a1838);
-  --name-u: max(15.5, 11.5 / var(--cpx, 1));
-  --type-u: max(11, 10 / var(--cpx, 1));
+  --name-u: max(15.5, 12.5 / var(--cpx, 1), min(18, 14 / var(--cpx, 1)));
+  --type-u: max(11, 10.5 / var(--cpx, 1));
 }
 .kit-cards .mm-card[data-rarity][data-type][data-uid] .mm-card__face {
   background:
@@ -4075,7 +4075,7 @@ button.kit-hw-enamel:focus-visible {
 .kit-cards .mm-card[data-rarity][data-type][data-uid] .mm-card__face::before {
   content: ''; position: absolute; pointer-events: none;
   left: calc(6 * var(--u)); right: calc(6 * var(--u));
-  top: calc(151 * var(--u)); bottom: calc(6 * var(--u));
+  top: calc(153.5 * var(--u)); bottom: calc(6 * var(--u));
   background:
     radial-gradient(70% 34% at 50% 34%, rgb(255 216 168 / .12), transparent 74%),
     radial-gradient(120% 95% at 50% 42%, transparent 46%, rgb(5 2 8 / .66) 100%),
@@ -4093,7 +4093,7 @@ button.kit-hw-enamel:focus-visible {
 .kit-cards .mm-card[data-rarity][data-type][data-uid] .mm-card__face::after {
   content: ''; position: absolute; pointer-events: none;
   left: calc(2.5 * var(--u)); right: calc(2.5 * var(--u));
-  top: calc(146.5 * var(--u)); bottom: calc(2.5 * var(--u));
+  top: calc(149 * var(--u)); bottom: calc(2.5 * var(--u));
   border: 0 solid transparent;
   border-image: url("../../assets/ui/kit/panel.webp") 44 / calc(21 * var(--u)) stretch;
   background: none;
@@ -4105,7 +4105,7 @@ button.kit-hw-enamel:focus-visible {
    its centre cleared to a glaze; the cartouche's own outline masks the
    enamel to its shape), lettered in spaced engraved caps */
 .kit-cards .mm-card[data-rarity][data-type][data-uid] .mm-card__type {
-  left: 50%; right: auto; top: calc(141 * var(--u)); height: auto;
+  left: 50%; right: auto; top: calc(144 * var(--u)); height: auto;
   transform: translateX(-50%);
   width: max-content; max-width: calc(186 * var(--u));
   z-index: 2;
@@ -4130,13 +4130,13 @@ button.kit-hw-enamel:focus-visible {
   text-shadow: 0 calc(1 * var(--u)) 0 rgb(0 0 0 / .95), 0 0 calc(4 * var(--u)) rgb(0 0 0 / .7);
 }
 .kit-cards .mm-card[data-rarity][data-type][data-uid] .mm-card__typeicon {
-  width: calc(var(--type-u) * 1.05 * var(--u)); height: calc(var(--type-u) * 1.05 * var(--u));
+  width: 1.05em; height: 1.05em;
   color: var(--kit-gold-hi);
 }
 .kit-cards .mm-card[data-rarity][data-type][data-uid] .mm-card__typesub { color: color-mix(in oklab, var(--tint-hi) 70%, var(--kit-text-lo)); letter-spacing: .1em; }
 /* the name: one size, a line at a time, the plate standing on its foot */
 .kit-cards .mm-card[data-rarity][data-type][data-uid] .mm-card__banner {
-  top: auto; bottom: calc(156 * var(--u)); height: auto;
+  top: auto; bottom: calc(159 * var(--u)); height: auto;
   min-height: calc(38 * var(--u));
   padding: calc(6 * var(--u)) 0 calc(6.5 * var(--u));
   border-image-width: calc(10.7 * var(--u)) calc(19 * var(--u));
@@ -4148,7 +4148,7 @@ button.kit-hw-enamel:focus-visible {
   padding: 0 calc(17 * var(--u));
 }
 .kit-cards .mm-card[data-rarity][data-type][data-uid] .mm-card__rules {
-  top: calc(166 * var(--u)); bottom: calc(14 * var(--u));
+  top: calc(168 * var(--u)); bottom: calc(14 * var(--u));
   left: calc(13 * var(--u)); right: calc(13 * var(--u));
   padding: 0 calc(3 * var(--u));
 }

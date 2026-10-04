@@ -1870,9 +1870,8 @@
    rail, the name on a plate that grows a line UP rather than shrink — and the
    hand only places it. Its name and type line hold a size in screen px
    (--cpx, ui/hand.js), so the Deck's 1280x800 prints them at 11.5 and 10 px;
-   its rules are fitted to the panel's box (176u x 118u, CardView#fitRules)
+   its rules are fitted to the panel's box (176u x 116u, CardView#fitRules)
    between 10 and 13 px. */
-.cb-handhost.kit-cards .mm-card[data-rarity][data-type] { --name-u: max(15.5, 12 / var(--cpx, 1)); }
 .cb-handhost.kit-cards .mm-hand .mm-card[data-rarity][data-type][data-uid].is-fitted .mm-card__rules { font-size: calc(var(--rules-fit) * var(--u)); line-height: var(--rules-lh, 1.1); }
 .cb-handhost.kit-cards .mm-hand .mm-card[data-rarity][data-type][data-uid].is-fitted .mm-card__rules .mm-card__num { line-height: 0; }
 .cb-handhost.kit-cards .mm-card[data-rarity][data-type][data-uid] .mm-card__rules > div,
@@ -1983,7 +1982,7 @@
 .cb-handhost.kit-cards .mm-hand.is-crowded .mm-card[data-rarity][data-type][data-uid]:not(.is-fan-last):not(.is-hover):not(.is-selected):not(.is-dragging):not(.is-aiming):not(.is-hero) .mm-card__banner {
   left: calc(6 * var(--u)); right: auto;
   width: calc((var(--strip) - 17) * var(--u));
-  bottom: calc((156 + var(--rise)) * var(--u));
+  bottom: calc((159 + var(--rise)) * var(--u));
   border-image-width: calc(10.7 * var(--u)) calc(12 * var(--u));
 }
 .cb-handhost.kit-cards .mm-hand.is-crowded .mm-card[data-rarity][data-type][data-uid]:not(.is-fan-last):not(.is-hover):not(.is-selected):not(.is-dragging):not(.is-aiming):not(.is-hero) .mm-card__name {
@@ -1993,24 +1992,29 @@
 }
 .cb-handhost.kit-cards .mm-hand.is-crowded .mm-card[data-rarity][data-type][data-uid]:not(.is-fan-last):not(.is-hover):not(.is-selected):not(.is-dragging):not(.is-aiming):not(.is-hero) .mm-card__type {
   left: calc((var(--strip) - 6.5) / 2 * var(--u));
-  top: calc((142 - var(--rise)) * var(--u));
+  top: calc((144 - var(--rise)) * var(--u));
   max-width: calc((var(--strip) - 14) * var(--u));
-  padding-left: calc(11 * var(--u)); padding-right: calc(11 * var(--u));
+  padding-left: calc(13 * var(--u)); padding-right: calc(13 * var(--u));
+  gap: calc(4 * var(--u));
   letter-spacing: .1em;
+  /* the cartouche's curled ends drawn a size narrower, the words clear of them */
+  border-image-width: calc(8 * var(--u)) calc(12 * var(--u));
+  -webkit-mask-box-image-width: calc(8 * var(--u)) calc(12 * var(--u));
+  font-size: calc(min(var(--type-u), (var(--strip) - 44) / (var(--type-word-em, 4.4) + 1.05)) * var(--u));
 }
 .cb-handhost.kit-cards .mm-hand.is-crowded .mm-card[data-rarity][data-type][data-uid]:not(.is-fan-last):not(.is-hover):not(.is-selected):not(.is-dragging):not(.is-aiming):not(.is-hero) .mm-card__typesub { display: none; }
 .cb-handhost.kit-cards .mm-hand.is-crowded .mm-card[data-rarity][data-type][data-uid]:not(.is-fan-last):not(.is-hover):not(.is-selected):not(.is-dragging):not(.is-aiming):not(.is-hero) .mm-card__face::after {
   right: calc((219 - var(--strip)) * var(--u));
-  top: calc((146.5 - var(--rise)) * var(--u));
+  top: calc((149 - var(--rise)) * var(--u));
 }
 .cb-handhost.kit-cards .mm-hand.is-crowded .mm-card[data-rarity][data-type][data-uid]:not(.is-fan-last):not(.is-hover):not(.is-selected):not(.is-dragging):not(.is-aiming):not(.is-hero) .mm-card__face::before {
   right: calc((222.5 - var(--strip)) * var(--u));
-  top: calc((151 - var(--rise)) * var(--u));
+  top: calc((153.5 - var(--rise)) * var(--u));
 }
 .cb-handhost.kit-cards .mm-hand.is-crowded .mm-card[data-rarity][data-type][data-uid]:not(.is-fan-last):not(.is-hover):not(.is-selected):not(.is-dragging):not(.is-aiming):not(.is-hero) .mm-card__rules {
   left: calc(11 * var(--u));
   right: calc((227 - var(--strip)) * var(--u));
-  top: calc((166 - var(--rise)) * var(--u));
+  top: calc((168 - var(--rise)) * var(--u));
   padding: 0 calc(2 * var(--u));
 }
 .cb-handhost.kit-cards .mm-hand.is-crowded .mm-card[data-rarity][data-type][data-uid]:not(.is-fan-last):not(.is-hover):not(.is-selected):not(.is-dragging):not(.is-aiming):not(.is-hero) .mm-card__badges {
