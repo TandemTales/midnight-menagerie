@@ -62,7 +62,10 @@ function setAppetite(c, n, opts = {}) {
   if (delta !== 0) U.addRes(c, APPETITE, delta, 0, cap);
   const now = appetite(c);
   if (now !== before) {
-    if (s.keepTheChange) { s.keepTheChange = false; U.draw(c, 1); U.guard(c, 4); }
+    /* Keep the Change carries its OWN numbers: this runs from whatever moved
+       Appetite (a Feed, the end-of-turn tick), so N(c) here is not the card
+       that set it up, and the upgrade's draw 2 / Guard 7 used to be 1 and 4. */
+    if (s.keepTheChange) { const k = s.keepTheChange; s.keepTheChange = false; U.draw(c, k.draw ?? 1); U.guard(c, k.guard ?? 4); }
     const wasHungry = before <= HUNGRY_AT;
     const wasSated = before >= SATED_AT;
     if (!wasHungry && now <= HUNGRY_AT) enteredHungry(c);
@@ -131,13 +134,15 @@ function feed(c, e, x, opts = {}) {
     let heal = HEAL_PER_MARK + (s.borrowedBravery ? 3 : 0);
     s.borrowedBravery = false;
     U.mend(c, heal);
-    if (s.politeRefusal) s.politeRefusal = false;
+    /* A COUNT, not a flag: Polite Refusal+ says "your next 2 Feeds", and the
+       first Feed used to clear it outright. */
+    if (s.politeRefusal > 0) s.politeRefusal -= 1;
     else if (appetite(c) >= appetiteCap(c)) overate = true;
     else addAppetite(c, 1);
     if (s.hospitality && U.once(c, 'hospitality')) {
       const mates = c.teammates ? c.teammates() : [];
       const worst = mates.slice().sort((a, b) => (a.hp / a.maxHp) - (b.hp / b.maxHp))[0];
-      if (worst) { c.giveHeal(worst, HEAL_PER_MARK); addAppetite(c, 1); }
+      if (worst) { c.giveHeal(worst, s.hospitality > 0 ? s.hospitality : HEAL_PER_MARK); addAppetite(c, 1); }
     }
   }
   if (eaten > 0) {
@@ -222,9 +227,12 @@ U.onTracker(SLUG, (e, s, seat) => {
     st.openBar = false;
     /* Queasy pays for itself from its own onTurnStart hook in keywords.js. It
        cannot be done here: turn:start is emitted BEFORE the Nerve refill. */
-    if (st.sipSlowly) { const en = U.enemies(c).find((x) => (x.id ?? x.uid) === st.sipSlowly); if (en && marksOn(c, en) > 0) feed(c, en, 1); st.sipSlowly = null; }
+    if (st.sipSlowly) { const sip = st.sipSlowly; const en = U.enemies(c).find((x) => (x.id ?? x.uid) === sip.id); if (en && marksOn(c, en) > 0) feed(c, en, sip.n || 1); st.sipSlowly = null; }
     if (st.nextTurnDraw) { U.draw(c, st.nextTurnDraw); st.nextTurnDraw = 0; }
-    if (st.nextTurnNerve) { U.energy(c, st.nextTurnNerve); st.nextTurnNerve = 0; }
+    /* Banked onto the refill, not gained here: turn:start runs BEFORE
+       `_dealSeatTurn` SETS Nerve, so Bite the Hand's "gain 2 Nerve next turn"
+       was erased the moment it landed (trap 21). */
+    if (st.nextTurnNerve) { U.energyNextTurn(c, st.nextTurnNerve); st.nextTurnNerve = 0; }
     if (st.cheekPocket && st.cheekPocket.length) {
       for (const k of st.cheekPocket) { U.toHand(c, k); U.costSet(c, k, 0, 'turn'); }
       st.cheekPocket = [];
@@ -236,7 +244,6 @@ U.onTracker(SLUG, (e, s, seat) => {
     const st = U.mm(c);
     // An unpaid Tab comes due.
     if (st.tab) { U.bleed(c, st.tab); st.tab = 0; }
-    if (st.capeClosed) { st.nextTurnGuard = (st.nextTurnGuard || 0) + st.capeClosed; st.capeClosed = 0; }
     setAppetite(c, appetite(c) - 1);
   }, seat);
 
@@ -432,7 +439,10 @@ const commons = [
     text: 'Gain {b} Guard. If [Sated], gain {m0} Guard at the start of your next turn.',
     flavor: 'Nothing to see. Nobody home.',
     nums: { b: 6, m0: 4 },
-    effect: eff((c) => { U.guard(c, N(c).b); if (isSated(c)) U.mm(c).capeClosed = N(c).m0; }),
+    /* Through `guardNextTurn`. It used to stash the number in `capeClosed`,
+       which the end-of-turn tracker moved into `nextTurnGuard` - and nothing
+       anywhere read `nextTurnGuard`, so the Sated half never paid. */
+    effect: eff((c) => { U.guard(c, N(c).b); if (isSated(c)) U.guardNextTurn(c, N(c).m0); }),
     upgrade: { nums: { b: 9, m0: 7 } },
   },
   {
@@ -498,7 +508,7 @@ const commons = [
     text: 'The next time [Appetite] changes this turn, draw {c1} and gain {b} Guard.',
     flavor: 'Generous, for a man who eats his hosts.',
     nums: { c1: 1, b: 4 },
-    effect: eff((c) => { U.mm(c).keepTheChange = true; }),
+    effect: eff((c) => { U.mm(c).keepTheChange = { draw: N(c).c1, guard: N(c).b }; }),
     upgrade: { nums: { c1: 2, b: 7 } },
   },
 ];
@@ -711,7 +721,7 @@ const uncommons = [
     text: '[Feed] {n} from an enemy. At the start of your next turn, [Feed] {n} from it again.',
     flavor: 'He is savouring it. It is unbearable to watch.',
     nums: { n: 1 },
-    effect: eff((c) => { const t = c.target || markedEnemies(c)[0]; if (!t) return; feed(c, t, N(c).n); U.mm(c).sipSlowly = (t.id ?? t.uid); }),
+    effect: eff((c) => { const t = c.target || markedEnemies(c)[0]; if (!t) return; feed(c, t, N(c).n); U.mm(c).sipSlowly = { id: (t.id ?? t.uid), n: N(c).n }; }),
     upgrade: { nums: { n: 2 } },
   },
   {
@@ -1266,7 +1276,9 @@ const coopCards = [
     text: 'Each round your first [Feed] also heals the weakest Kid {h} — and costs you {n} extra [Appetite].',
     flavor: 'Generous to a fault. The fault is the Appetite.',
     nums: { n: 1, h: 3 },
-    effect: eff((c) => power(c, 'crumbula/the-counts-hospitality', N(c).n, (x) => { U.mm(x).hospitality = N(x).h; })),
+    /* The heal used to be HEAL_PER_MARK (3) whatever {h} said, and only the
+       FIRST copy's number was ever recorded. The best copy played wins. */
+    effect: eff((c) => { power(c, 'crumbula/the-counts-hospitality', N(c).n); const s = U.mm(c); s.hospitality = Math.max(s.hospitality || 0, N(c).h || 0); }),
     upgrade: { nums: { n: 1, h: 6 } },
   },
 ];
