@@ -262,7 +262,7 @@
    (ui/kit.css sets them in screen px through --cpx) */
 .mm-deck .mm-deck__cell > .mm-card[data-rarity][data-type] {
   --name-u: max(15.5, 16.5 / var(--cpx, 1));
-  --type-u: max(11, 11.5 / var(--cpx, 1));
+  --type-u: max(11, 12 / var(--cpx, 1));
 }
 /* its place in the case: the recess pressed into the velvet under it, a gilt
    bead round the lip (case-slot.webp, tools/prep_ui_ledger.py). It stays put

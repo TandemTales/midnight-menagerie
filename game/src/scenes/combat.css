@@ -1956,6 +1956,7 @@
 .cb-handhost.kit-cards .mm-card[data-rarity][data-type].is-unplayable {
   --tint: #1d1822;
   --tint-hi: var(--kit-text-mid);
+  --tab-ink: var(--kit-text-mid);
   --tab: #4a4250;
 }
 

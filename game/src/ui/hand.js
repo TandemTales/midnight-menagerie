@@ -158,6 +158,7 @@ export const TUNE = {
   nameFloorPx: 9,       // the smallest a name that cannot keep that may go
   floorPx: 10,          // the smallest a rule that still cannot fit may go
   capPx: 13,            // …and the largest a short one may: the row reads as one size
+  openCapPx: 14,        // round 27: an open hand's cap (a hand of eight or fewer)
   coverCapPx: 12,       // round 27: a crowded row's cap: a point less buys a strip's
                         // rules a word more a line ("Gain 5 Guard. / Gain 3 more")
   riseMax: 44,          // design units a covered card's panel may climb its art
@@ -1241,10 +1242,12 @@ export class Hand {
          card.css steps a long rule down to 12.5u, which a 1280 board prints
          at 8.7 px ("Put Yourself Back Together" in an opening hand of five):
          each is fitted to its own panel, 170u by 104u, between the same
-         floor and cap as a crowded hand's. */
+         floor and cap as a crowded hand's. Round 27 opened its cap a point
+         (`openCapPx`): a whole panel has the room, and the Deck is where a
+         rule is read from furthest away. */
       for (const s of this.slots) {
         s.view.el.style.removeProperty('--fan-vis');
-        s.view.fitRules?.(176, 116, { lo: T.floorPx / uPx, hi: Math.min(15, Math.max(T.capPx, 18 * uPx)) / uPx });
+        s.view.fitRules?.(176, 116, { lo: T.floorPx / uPx, hi: Math.min(15.5, Math.max(T.openCapPx, 18.5 * uPx)) / uPx });
       }
     }
     if (!off) { this._deal = null; this._dealKey = null; }

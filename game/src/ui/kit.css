@@ -4059,8 +4059,11 @@ button.kit-hw-enamel:focus-visible {
   --tint: color-mix(in oklab, var(--type-color) 30%, #1a1022);
   --tint-hi: color-mix(in oklab, var(--type-color) 52%, #f6ecdb);
   --tab: color-mix(in oklab, var(--type-color) 70%, #2a1838);
+  /* the tab's lettering: ivory warmed by the type, never the type on itself
+     (a pink ATTACK on its red enamel read at 2.8:1) */
+  --tab-ink: color-mix(in oklab, var(--type-color) 20%, #fff3df);
   --name-u: max(15.5, 12.5 / var(--cpx, 1), min(18, 14 / var(--cpx, 1)));
-  --type-u: max(12.5, 10.5 / var(--cpx, 1));
+  --type-u: max(12.5, 11.5 / var(--cpx, 1));
 }
 .kit-cards .mm-card[data-rarity][data-type][data-uid] .mm-card__face {
   background:
@@ -4117,7 +4120,7 @@ button.kit-hw-enamel:focus-visible {
   font-size: calc(min(var(--type-u), 159 / (var(--type-em, 6) + 1.9)) * var(--u));
   letter-spacing: .1em;
   line-height: 1;
-  color: var(--tint-hi);
+  color: var(--tab-ink);
   border: 0 solid transparent;
   border-image: url("../../assets/ui/kit/cartouche-glass.webp") 18 34 18 34 fill / calc(8 * var(--u)) calc(15 * var(--u)) stretch;
   -webkit-mask-box-image-source: url("../../assets/ui/kit/cartouche-dark.webp");
@@ -4136,7 +4139,7 @@ button.kit-hw-enamel:focus-visible {
   width: 1.05em; height: 1.05em;
   color: var(--kit-gold-hi);
 }
-.kit-cards .mm-card[data-rarity][data-type][data-uid] .mm-card__typesub { color: color-mix(in oklab, var(--tint-hi) 70%, var(--kit-text-lo)); letter-spacing: .1em; }
+.kit-cards .mm-card[data-rarity][data-type][data-uid] .mm-card__typesub { color: color-mix(in oklab, var(--tab-ink) 78%, var(--kit-text-lo)); letter-spacing: .1em; }
 /* the name: one size, a line at a time, the plate standing on its foot */
 .kit-cards .mm-card[data-rarity][data-type][data-uid] .mm-card__banner {
   top: auto; bottom: calc(159 * var(--u)); height: auto;
