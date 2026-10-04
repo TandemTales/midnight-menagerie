@@ -51,7 +51,23 @@ const SEED_COUNTERS = [['lives', 9], ['loose-bones', 3], ['height', 2], ['plump'
 const SEED_ENEMY_STATUS = [['haunt', 6], ['web', 6], ['weak', 1]];
 
 /** id -> why a dummy fight cannot show this upgrade. Checked in BOTH directions. */
-const WAIVED = new Map([]);
+/* WAIVERS, group 1 (drizzle, brambleboo, the shared pool): [id, 'why this board cannot show it'] */
+const WAIVED_G1 = [
+];
+/* ------------------------------------------------------------------ */
+/* WAIVERS, group 2 (pipkin, boggle, crinkle, hush): [id, 'why this board cannot show it'] */
+const WAIVED_G2 = [
+];
+/* ------------------------------------------------------------------ */
+/* WAIVERS, group 3 (mossbit, wink, wisp, mopsy): [id, 'why this board cannot show it'] */
+const WAIVED_G3 = [
+];
+/* ------------------------------------------------------------------ */
+/* WAIVERS, group 4 (crumbula, bones, taffy, truffle, marmalade, pudding): [id, 'why this board cannot show it'] */
+const WAIVED_G4 = [
+];
+/* ------------------------------------------------------------------ */
+const WAIVED = new Map([...WAIVED_G1, ...WAIVED_G2, ...WAIVED_G3, ...WAIVED_G4]);
 
 const out = document.getElementById('out');
 const say = (html, cls) => { const d = document.createElement('div'); if (cls) d.className = cls; d.innerHTML = html; out.appendChild(d); };
