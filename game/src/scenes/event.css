@@ -481,7 +481,7 @@
   /* round 26: the sconce stands under its wall's picture, lighting it from
      below, so the picture has the bay's whole width */
   --sconce-cx: var(--win-cx);
-  --sconce-top: calc(var(--win-top) + var(--win-w) * 1.7);
+  --sconce-top: calc(var(--win-top) + var(--win-w) * 1.56);
   --flame-y: calc(var(--sconce-top) + var(--sconce-h) * .16);
   --floor-y: calc(100vh - clamp(70px, 10vh, 96px));
   /* candle light: the two sconces and the two floor candles */
