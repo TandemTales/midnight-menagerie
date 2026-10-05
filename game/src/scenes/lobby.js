@@ -55,7 +55,7 @@ import { canChooseEntry } from '../state/run.js';
 import { Lobby, seedFromRoom } from '../net/lobby.js';
 import { Session } from '../net/session.js';
 import { attachSession } from '../net/actions.js';
-import { ChannelTransport, canChannel } from '../net/transport.js';
+import { ChannelTransport, SteamTransport, canChannel, steamNet } from '../net/transport.js';
 import {
   ensureCss, el, reduceMotion,
   availableCompanions, isStarter, warmFaces,
@@ -388,7 +388,7 @@ export class LobbyScene extends Scene {
 
     const go = el('button', 'lo__enter kit-btn');
     go.type = 'submit';
-    go.disabled = !canChannel();
+    go.disabled = !canChannel() && !steamNet();
     /* the way on as a nameplate: its name over its italic epithet, the key
        set apart after them, so the three never crowd at 1280x800 */
     go.innerHTML = `<span class="lo-go__words"><span>Climb up</span><em>up the rope ladder</em></span><kbd>Enter</kbd>`
@@ -399,7 +399,7 @@ export class LobbyScene extends Scene {
     form.addEventListener('submit', (e) => {
       e.preventDefault();
       const room = tidyRoom(input.value);
-      if (!room || !canChannel()) return;
+      if (!room || (!canChannel() && !steamNet())) return;
       this._open(room);
     });
 
@@ -411,7 +411,12 @@ export class LobbyScene extends Scene {
 
   _open(room) {
     this._room = room;
-    this._transport = new ChannelTransport(room, `mm-${Math.random().toString(36).slice(2, 9)}`);
+    /* Steam when the desktop shell has it (shell/steam.js turns the password
+       into a Steam lobby), the two-tab wire otherwise. Nothing past this line
+       knows which. */
+    this._transport = steamNet()
+      ? new SteamTransport(room, { seats: MAX_PARTY })
+      : new ChannelTransport(room, `mm-${Math.random().toString(36).slice(2, 9)}`);
     this._lobby = new Lobby({ transport: this._transport, room, seats: MAX_PARTY });
 
     /* Seed the choice so the common case is "press ready". Nothing here is a
@@ -420,7 +425,8 @@ export class LobbyScene extends Scene {
     this._lobby.setChoice({
       companion: pickable[0] || 'marmalade',
       kid: (Save?.data?.kidsUnlocked || ['maya'])[0] || 'maya',
-      name: '',
+      /* Over Steam, the player's Steam name until they type another. */
+      name: (steamNet() && steamNet().name) || '',
       /* This machine's ladder and this machine's roster, ANNOUNCED rather than
          used: seat 0's are the ones the party plays. Reading them at launch
          instead is what put two players on different Haunt levels. `MAX_PARTY`

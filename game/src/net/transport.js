@@ -10,7 +10,7 @@
  *
  *   const t = new LoopbackTransport();          // in one page, for tests
  *   const t = new ChannelTransport('mm:abc');   // two tabs on one machine
- *   const t = new SteamTransport(lobby);        // does not exist yet
+ *   const t = new SteamTransport(room);         // Steam P2P, in shell/ only
  *
  * The contract, in full:
  *
@@ -184,3 +184,77 @@ export class ChannelTransport {
 
 /** Is a two-tab wire available in this environment at all? */
 export const canChannel = () => typeof BroadcastChannel === 'function';
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   STEAM — the shipping wire, through the desktop shell.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/**
+ * The shell's `net` bridge, or null outside it (or when Steam did not start).
+ * The shape is documented in `shell/preload.js`.
+ */
+export function steamNet() {
+  const h = typeof window !== 'undefined' ? window.__MM_HOST__ : null;
+  const n = h && h.net;
+  return n && typeof n.open === 'function' && n.me ? n : null;
+}
+
+/**
+ * Steam P2P inside a Steam lobby named by the room's password.
+ *
+ * All the Steam work happens in the shell (`shell/steam.js`): finding or
+ * creating the lobby, accepting sessions, sending on the Reliable channel,
+ * which is ordered per sender and never delivered to itself. This class only
+ * maps that bridge onto the contract above, so it is as thin as
+ * ChannelTransport and the session cannot tell them apart.
+ *
+ * The constructor returns at once, before the lobby exists. Anything sent
+ * before somebody else is in the room reaches nobody, exactly as on a
+ * BroadcastChannel, and the Lobby re-announces on every `onPeer` joined.
+ */
+export class SteamTransport {
+  /**
+   * @param {string} room
+   * @param {object} [o]
+   * @param {number} [o.seats]
+   * @param {object} [o.net]   the bridge; defaults to `steamNet()`
+   */
+  constructor(room, o = {}) {
+    this.net = o.net || steamNet();
+    if (!this.net) throw new Error('SteamTransport: no Steam bridge');
+    this.id = String(this.net.me);
+    this.room = room;
+    this._msg = new Set();
+    this._peer = new Set();
+    this.closed = false;
+    this.known = new Set();
+    this.token = this.net.open(room, o.seats | 0);
+    this._off = this.net.on(this.token, (ev) => {
+      if (this.closed || !ev) return;
+      if (ev.type === 'peer') {
+        const id = String(ev.id);
+        if (ev.joined) this.known.add(id); else this.known.delete(id);
+        for (const fn of this._peer) fn({ id, joined: !!ev.joined });
+      } else if (ev.type === 'msg') {
+        for (const fn of this._msg) fn(ev.msg, String(ev.from));
+      }
+    });
+  }
+
+  send(msg) {
+    if (this.closed) return false;
+    return this.net.send(this.token, msg) !== false;
+  }
+
+  onMessage(fn) { this._msg.add(fn); return () => this._msg.delete(fn); }
+  onPeer(fn) { this._peer.add(fn); return () => this._peer.delete(fn); }
+
+  close() {
+    if (this.closed) return;
+    this.closed = true;
+    try { this._off && this._off(); } catch { /* bridge gone */ }
+    try { this.net.close(this.token); } catch { /* bridge gone */ }
+    this._msg.clear();
+    this._peer.clear();
+  }
+}

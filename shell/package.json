@@ -1,0 +1,14 @@
+{
+  "name": "midnight-menagerie-shell",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Desktop shell for Midnight Menagerie: the game plus Steam P2P.",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "dependencies": {
+    "electron": "44.5.1",
+    "steamworks.js": "0.4.0"
+  }
+}

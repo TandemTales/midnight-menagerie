@@ -74,7 +74,17 @@ round 28 (below). Nothing else is running.
   0.7 s of a fight's cross-fade: needs a look-neutral version.
 - The WebGL context loss of 09-23 did not reproduce on 10-02 (0/34) --
   machine state after heavy days. `tools/ctxloss_probe.py` names it next time.
-- Steam P2P is blocked on a Steam App ID only Josh can get.
+- **Steam P2P is BUILT, waiting only on the App ID (2026-10-04 evening).**
+  `shell/` is an Electron + steamworks.js wrapper; `SteamTransport` is in
+  `net/transport.js` and `scenes/lobby.js` picks it when the shell's `net`
+  bridge is present (one Steam lobby per password, Reliable P2P, invites and
+  "Join Game"). `tests/shell/check.py` runs it against a FAKE Steam (50/0).
+  Josh is doing the Steamworks signup under his LLC and expects the REAL App
+  ID 10-05 morning (reminder task `steam-app-id-reminder`, 09:00). He
+  REJECTED 480/Spacewar -- never use it. When the ID arrives: put it in
+  `shell/steam_appid.txt`, `npx electron . --smoke` must say `steam:true`,
+  then a real two-machine test with shoejunk (who needs a key). See
+  `shell/README.md`.
 - **Cards still not matching their text** (found by the card-truth pass,
   `e17d030a`): Inside Job and Now You See Me do nothing; Clean Getaway never
   grants its Nerve; Endless Pantry does nothing but its text would make

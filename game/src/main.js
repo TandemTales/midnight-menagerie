@@ -180,6 +180,22 @@ if (startParams.kids === '2' && startScene !== 'title') {
 ctx.scenes.go(startScene, startParams, { instant: true });
 bus.emit('boot');
 
+/* Joining a friend through Steam ("Join Game", an accepted invite) lands here.
+   The desktop shell is already in their lobby and hands over its password; the
+   lobby scene opens on it and adopts that lobby. Never in the middle of an
+   expedition: following an invite there would throw the run away. */
+const hostNet = window.__MM_HOST__ && window.__MM_HOST__.net;
+if (hostNet && typeof hostNet.onInvite === 'function') {
+  hostNet.onInvite((room) => {
+    const at = ctx.scenes.currentName;
+    if (ctx.run && at !== 'title' && at !== 'lobby') {
+      console.warn(`[steam] invite to "${room}" ignored: an expedition is in progress`);
+      return;
+    }
+    ctx.scenes.go('lobby', { room });
+  });
+}
+
 /* Anything the player earned offline, or on another machine, or in the browser
    build. No await: a Steam round-trip must not sit in front of the title
    screen, and nothing on screen depends on the answer. */
