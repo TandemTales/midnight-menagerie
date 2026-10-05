@@ -52,7 +52,19 @@ check reads Taffy's cream gloss as background; leave it red, do not lower it).
   does something.
 - **Survey 3** (`docs/ui-pass/SURVEY-2026-10-04.md`): what is owed next.
 
-**FIRST JOB FOR THE NEXT SESSION: round 27's GRAFT.** Round 27 (THE CARD)
+**IN FLIGHT (2026-10-04, 21:40): ROUND 28** -- props and darks, briefed in
+`BRIEF-r28.md`, launched as Workflow run `wf_94d70174-b3a` from session
+`d6f2d6fc` at base `71146686`. Worktrees `C:/UILOOP/r28/wt/r28-rooms-{a,b,c}`
+(NAPLES 9121, MAUVEINE 9122, TERREVERTE 9123), baselines (TICKING) in
+`C:/UILOOP/r28/judging/r28/rooms/`. If this session ended before the result:
+finish it as a NEW run of only what is unfinished (README of this file, "If a
+limit stops a round"), never resumeFromRunId. Then merge, battery, graft.
+
+**DONE 2026-10-04 evening:** round 27's graft (`7ca0a9a6`), five card-truth
+fixes (`7444fa27`), the Steam shell (`9d5ea8bd`, waiting on the App ID), a
+green battery, pushed.
+
+~~FIRST JOB FOR THE NEXT SESSION: round 27's GRAFT~~ (done, kept for history). Round 27 (THE CARD)
 is judged and MERGED (`a3d33ddc`): QUINACRIDONE 7.08 vs 5.46 (+1.62), 2 of
 2, four of five screens. The graft is NOT done. Everything it needs is in
 `docs/ui-pass/VERDICTS-r27.md`: both judges' fix lists and grafts and all
