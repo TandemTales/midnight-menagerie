@@ -363,12 +363,14 @@
 /* the face: the body every Trick on the shelf wears (round 27, ui/kit.css
    "the card's body, painted"): a dark suede surround, and under the art the
    Kid board's info panel — its rail and star-fleur corners round a laid
-   paper with the damask pressed in it — glazed in the house's violet, since a
-   service is no Attack, Skill or Power */
+   paper with the damask pressed in it — glazed in tarnished BRONZE, since a
+   service is no Attack, Skill or Power (round 27 graft: in the house's violet
+   it read as a Power card beside Tighten the Collar, both judges) */
 .sh-service__card {
-  --tint: color-mix(in oklab, var(--kit-lav) 26%, #1a1022);
-  --tint-hi: color-mix(in oklab, var(--kit-lav) 60%, #f6ecdb);
-  --tab: color-mix(in oklab, var(--kit-lav) 62%, #2a1838);
+  --svc: #b9874a;
+  --tint: color-mix(in oklab, var(--svc) 30%, #16100b);
+  --tint-hi: color-mix(in oklab, var(--svc) 46%, #f6ecdb);
+  --tab: color-mix(in oklab, var(--svc) 60%, #22150c);
 }
 .sh-service__card::before {
   content: ''; position: absolute; inset: calc(7 * var(--u));
@@ -383,6 +385,22 @@
     #120b18;
   background-blend-mode: normal, normal, color, normal, normal, normal, normal;
   box-shadow: inset 0 0 0 calc(1 * var(--u)) rgba(0, 0, 0, .8);
+}
+/* round 27 graft: the panel a Trick wears now -- a crescent pressed faintly
+   into its foot corner, the enamel burnished where it meets the rail, a fine
+   gilt rule inside it. Its own layer, since ::before paints the whole face. */
+.sh-service__rules::before {
+  content: ''; position: absolute; pointer-events: none; z-index: -1;
+  /* the tinted ground, from this box: 13u / 160.5u / 13u in from the card */
+  left: calc(-6 * var(--u)); right: calc(-6 * var(--u));
+  top: calc(-15.5 * var(--u)); bottom: calc(-9 * var(--u));
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath fill='%23f6e2bc' fill-opacity='.09' d='M62 6 A46 46 0 1 0 94 74 A38 38 0 1 1 62 6Z'/%3E%3C/svg%3E")
+    right calc(5 * var(--u)) bottom calc(4 * var(--u)) / calc(64 * var(--u)) calc(64 * var(--u)) no-repeat;
+  box-shadow:
+    inset 0 0 calc(10 * var(--u)) calc(1.5 * var(--u)) rgb(30 12 4 / .58),
+    inset 0 0 0 calc(.8 * var(--u)) rgb(222 178 108 / .2);
+  outline: calc(.7 * var(--u)) solid rgb(226 190 120 / .36);
+  outline-offset: calc(-4.5 * var(--u));
 }
 /* the panel's rail */
 .sh-service__card::after {

@@ -218,8 +218,11 @@
   /* round 27: and no taller than the case's floor shows, so a row of five lies
      WHOLE in it, its panel's foot and gilt corners and all (it was sawn off
      at the case's lip at 1280x800 and at 1600x900) */
+  /* round 27 graft: the room under the case given to the cards (both judges:
+     "draw the pile cards at the size of the other boards") -- 164 -> 180 px
+     at 1280x800 */
   --deck-cw: min(
-    clamp(150px, calc(29vh - 68px), 236px),
+    clamp(150px, calc(29vh - 52px), 236px),
     calc((100cqw - 10 * var(--slot-pad) - 34px) / 5));
   display: grid;
   /* whole cards, centred: a pile of five lies in the middle of the case, not

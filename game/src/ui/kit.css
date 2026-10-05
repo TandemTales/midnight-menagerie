@@ -4158,3 +4158,106 @@ button.kit-hw-enamel:focus-visible {
   left: calc(13 * var(--u)); right: calc(13 * var(--u));
   padding: 0 calc(3 * var(--u));
 }
+
+/* ── the card's body, round 27's GRAFT ──
+   Both judges, docs/ui-pass/VERDICTS-r27.md:
+   - the type chip as an ENAMEL CARTOUCHE, gilt-rimmed and bevelled, SET into
+     the rail rather than floating on it (HANSA's engraved '-- ATTACK --'):
+     the enamel moves to ::before (still masked to the cartouche's outline),
+     ::after is the same outline 1.2u larger in gold -- the rim -- and the
+     tab's own box, unmasked now, carries a gilt spur either side that runs
+     out along the rail to a diamond;
+   - PERYLENE's faint type watermark, a claw (Attack), shield (Skill) or star
+     (Power) pressed into the panel's foot corner, under 10% and off the words;
+   - HANSA's burnished edge inside the enamel ground and a fine gilt inner
+     rule, so the panel reads as a lit, framed surface;
+   - the damask pressed deeper and a centre light, so the lower half reads as
+     painted enamel at arm's length and not as a tinted fill;
+   - Power its own violet, apart from Skill's navy (the base the type is mixed
+     into was itself violet, which pulled the two together). */
+.kit-cards .mm-card[data-rarity][data-type] {
+  --tint: color-mix(in oklab, var(--type-color) 34%, #131017);
+  --tab: color-mix(in oklab, var(--type-color) 64%, #1b1014);
+  --spur: calc(13 * var(--u));
+  --tab-bw: calc(8 * var(--u)) calc(15 * var(--u));
+  --wm: none;
+}
+.kit-cards .mm-card[data-rarity][data-type="attack"] {
+  --wm: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cg fill='%23f6e2bc' fill-opacity='.085'%3E%3Cpath d='M20 92 C30 60 46 30 70 6 C56 34 44 62 34 94Z'/%3E%3Cpath d='M38 96 C48 64 62 36 84 12 C72 40 60 68 52 98Z'/%3E%3Cpath d='M56 98 C64 70 76 46 96 24 C86 50 76 74 70 99Z'/%3E%3C/g%3E%3C/svg%3E");
+}
+.kit-cards .mm-card[data-rarity][data-type="skill"] {
+  --wm: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath fill='%23f6e2bc' fill-opacity='.085' fill-rule='evenodd' d='M50 4 L88 16 C88 54 76 80 50 96 C24 80 12 54 12 16Z M50 14 L79 23 C78 53 69 73 50 86 C31 73 22 53 21 23Z'/%3E%3Cpath fill='%23f6e2bc' fill-opacity='.06' d='M50 22 L72 29 C71 52 64 67 50 78Z'/%3E%3C/svg%3E");
+}
+.kit-cards .mm-card[data-rarity][data-type="power"] {
+  --tint: color-mix(in oklab, var(--type-color) 40%, #1a0f1c);
+  --tab: color-mix(in oklab, var(--type-color) 66%, #24101e);
+  --wm: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath fill='%23f6e2bc' fill-opacity='.09' d='M50 4 L61 37 L96 37 L68 58 L78 92 L50 71 L22 92 L32 58 L4 37 L39 37Z'/%3E%3C/svg%3E");
+}
+/* the ground: centre light, vignette, the watermark, the damask pressed in
+   twice (once coloured by the type, once over it for its relief), the paper */
+.kit-cards .mm-card[data-rarity][data-type][data-uid] .mm-card__face::before {
+  background:
+    radial-gradient(62% 30% at 50% 36%, rgb(255 222 176 / .17), transparent 72%),
+    radial-gradient(118% 92% at 50% 44%, transparent 52%, rgb(6 2 6 / .72) 100%),
+    var(--wm) right calc(5 * var(--u)) bottom calc(4 * var(--u)) / calc(70 * var(--u)) calc(70 * var(--u)) no-repeat,
+    url("../../assets/ui/kit/card-vellum.webp") 50% calc(-6 * var(--u)) / calc(128 * var(--u)) calc(145.6 * var(--u)) repeat,
+    linear-gradient(var(--tint), var(--tint)),
+    url("../../assets/ui/kit/card-vellum.webp") 50% calc(-6 * var(--u)) / calc(128 * var(--u)) calc(145.6 * var(--u)) repeat,
+    #1a1420;
+  background-blend-mode: normal, normal, normal, soft-light, color, normal, normal;
+  box-shadow:
+    inset 0 calc(2 * var(--u)) calc(2 * var(--u)) rgb(0 0 0 / .6),
+    inset 0 calc(-1.5 * var(--u)) 0 rgb(255 226 180 / .12),
+    inset 0 calc(7 * var(--u)) calc(12 * var(--u)) rgb(0 0 0 / .42),
+    /* the burnished edge: the enamel darkened and warmed where it meets the rail */
+    inset 0 0 calc(10 * var(--u)) calc(1.5 * var(--u)) rgb(30 12 4 / .58),
+    inset 0 0 0 calc(.8 * var(--u)) rgb(222 178 108 / .2);
+  /* the fine gilt inner rule */
+  outline: calc(.7 * var(--u)) solid rgb(226 190 120 / .36);
+  outline-offset: calc(-4.5 * var(--u));
+}
+/* the cartouche: its own box carries the spurs, its enamel and rim are pseudo */
+.kit-cards .mm-card[data-rarity][data-type][data-uid] .mm-card__type {
+  border-image: none;
+  -webkit-mask-box-image: none;
+  isolation: isolate;
+  padding-left: calc(16 * var(--u) + var(--spur));
+  padding-right: calc(16 * var(--u) + var(--spur));
+  max-width: calc(196 * var(--u) + 2 * var(--spur));
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 26 8' preserveAspectRatio='none'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' x2='1'%3E%3Cstop offset='0' stop-color='%23e6c98a' stop-opacity='.35'/%3E%3Cstop offset='1' stop-color='%23e6c98a'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M5 3.4 H26 V4.6 H5Z' fill='url(%23g)'/%3E%3Cpath d='M0.5 4 L3.5 1 L6.5 4 L3.5 7Z' fill='%23e6c98a'/%3E%3Cpath d='M2.4 4 L3.5 2.9 L4.6 4 L3.5 5.1Z' fill='%236b4c24'/%3E%3C/svg%3E")
+      left center / calc(var(--spur) + 3 * var(--u)) calc(7 * var(--u)) no-repeat,
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 26 8' preserveAspectRatio='none'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='1' x2='0'%3E%3Cstop offset='0' stop-color='%23e6c98a' stop-opacity='.35'/%3E%3Cstop offset='1' stop-color='%23e6c98a'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M0 3.4 H21 V4.6 H0Z' fill='url(%23g)'/%3E%3Cpath d='M19.5 4 L22.5 1 L25.5 4 L22.5 7Z' fill='%23e6c98a'/%3E%3Cpath d='M21.4 4 L22.5 2.9 L23.6 4 L22.5 5.1Z' fill='%236b4c24'/%3E%3C/svg%3E")
+      right center / calc(var(--spur) + 3 * var(--u)) calc(7 * var(--u)) no-repeat;
+  filter: drop-shadow(0 calc(1 * var(--u)) calc(1.5 * var(--u)) rgb(0 0 0 / .8));
+}
+.kit-cards .mm-card[data-rarity][data-type][data-uid] .mm-card__type::before,
+.kit-cards .mm-card[data-rarity][data-type][data-uid] .mm-card__type::after {
+  content: ''; position: absolute; pointer-events: none;
+  -webkit-mask-box-image-source: url("../../assets/ui/kit/cartouche-dark.webp");
+  -webkit-mask-box-image-slice: 18 34 18 34 fill;
+  -webkit-mask-box-image-width: var(--tab-bw);
+  -webkit-mask-box-image-repeat: stretch;
+}
+/* the enamel: the type's colour glazed over the enamel ground, a bevel lit
+   from above (a bright lip under its top edge, a shade at its foot) */
+.kit-cards .mm-card[data-rarity][data-type][data-uid] .mm-card__type::before {
+  z-index: -1;
+  top: 0; bottom: 0; left: var(--spur); right: var(--spur);
+  border: 0 solid transparent;
+  border-image: url("../../assets/ui/kit/cartouche-glass.webp") 18 34 18 34 fill / var(--tab-bw) stretch;
+  background:
+    linear-gradient(180deg, rgb(255 246 228 / .34) 0, rgb(255 246 228 / .08) 30%, transparent 48%, transparent 62%, rgb(0 0 0 / .34) 100%),
+    radial-gradient(70% 90% at 50% 14%, rgb(255 240 220 / .14), transparent 70%),
+    linear-gradient(var(--tab), var(--tab)),
+    url("../../assets/ui/kit/enamel.webp") 50% 50% / calc(120 * var(--u)) calc(120 * var(--u)),
+    #1a1022;
+  background-blend-mode: normal, normal, color, normal, normal;
+}
+/* the rim: the cartouche's own outline a little larger, in gilt */
+.kit-cards .mm-card[data-rarity][data-type][data-uid] .mm-card__type::after {
+  z-index: -2;
+  top: calc(-1.2 * var(--u)); bottom: calc(-1.2 * var(--u));
+  left: calc(var(--spur) - 1.4 * var(--u)); right: calc(var(--spur) - 1.4 * var(--u));
+  background: linear-gradient(180deg, var(--kit-gold-hi), var(--kit-gold) 46%, var(--kit-gold-lo) 78%, var(--kit-gold) 100%);
+}
