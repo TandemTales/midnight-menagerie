@@ -1,0 +1,65 @@
+{
+  "round": "r28",
+  "maxBuilders": 3,
+  "briefs": [
+    "docs/ui-pass/BRIEF-r0.md",
+    "docs/ui-pass/BRIEF-r1.md",
+    "docs/ui-pass/BRIEF-r11.md",
+    "docs/ui-pass/BRIEF-r16.md",
+    "docs/ui-pass/BRIEF-r21.md",
+    "docs/ui-pass/BRIEF-r22.md",
+    "docs/ui-pass/BRIEF-r23.md",
+    "docs/ui-pass/BRIEF-r24.md",
+    "docs/ui-pass/BRIEF-r25.md",
+    "docs/ui-pass/BRIEF-r28.md"
+  ],
+  "rubrics": [
+    "docs/ui-pass/RUBRIC.md",
+    "docs/ui-pass/RUBRIC-r28.md"
+  ],
+  "samples": [
+    "UI/title.png",
+    "UI/mainMenu.png",
+    "UI/selectCompanion.png",
+    "UI/selectKid.png"
+  ],
+  "tracks": [
+    {
+      "key": "rooms",
+      "name": "ROOMS",
+      "rule": "refine",
+      "screens": [
+        "sheet-passages",
+        "sheet-pumpkin",
+        "sheet-graveyard",
+        "sheet-kitchens",
+        "sheet-kennels",
+        "fight-passages"
+      ],
+      "smallScreens": [
+        "fight-passages"
+      ],
+      "baseline": "TICKING",
+      "builders": [
+        {
+          "slot": "a",
+          "code": "NAPLES",
+          "port": 9121,
+          "angle": "LITERAL -- the angle that won rounds 20, 23, 24 and 25. Work BRIEF-r28's fix list 1 to 4 in order and exactly as written, one wing at a time: the Passages' far end FIRST (the largest headroom in the house), then the one shared mansion, then the props and the darks wing by wing. Keep every change inside your five wings and prove the other twelve byte-identical."
+        },
+        {
+          "slot": "b",
+          "code": "MAUVEINE",
+          "port": 9122,
+          "angle": "THE SHARED PROP -- the judges' SYSTEM fix. The defect under every wing is one weak material: flat-shaded primitives with no contact shadow. Build ONE prop finish and contact-shadow rule that every wing's props go through, prove it on your five wings first (item 3), then sweep all seventeen and LOOK at each; then the Passages' far end and the mansion in that light."
+        },
+        {
+          "slot": "c",
+          "code": "TERREVERTE",
+          "port": 9123,
+          "angle": "THE HOUSE AND THE DARK. Start with the mansion (item 2): draw UI/mainMenu.png's house -- slate roofs, turrets, dormers, finials, lit arched windows -- as the most-seen building in the game, crisp against the sky; then take every haze and milky band out of your five wings so their darks go back down (item 4), with a second cold light in the Kitchens. Then the Passages' far end and the props."
+        }
+      ]
+    }
+  ]
+}
