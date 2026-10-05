@@ -906,15 +906,18 @@ export class Backdrop {
     this._shdOffset = new THREE.InstancedBufferAttribute(new Float32Array(MAX_PROPS * 3), 3);
     this._shdScale = new THREE.InstancedBufferAttribute(new Float32Array(MAX_PROPS * 2), 2);
     this._shdStr = new THREE.InstancedBufferAttribute(new Float32Array(MAX_PROPS), 1);
+    /* the throw (round 28): see SHADOW_VERT and _castShadows */
+    this._shdCast = new THREE.InstancedBufferAttribute(new Float32Array(MAX_PROPS * 2), 2);
     /* setActorShadows() is a per-frame call for any scene that moves an actor, and
        a STATIC_DRAW respecification there stalls the pipeline the same way the
        flame buffers did. Declare the intent up front. */
-    for (const a of [this._shdOffset, this._shdScale, this._shdStr]) {
+    for (const a of [this._shdOffset, this._shdScale, this._shdStr, this._shdCast]) {
       a.setUsage(THREE.DynamicDrawUsage);
     }
     shGeo.setAttribute('aOffset', this._shdOffset);
     shGeo.setAttribute('aScale', this._shdScale);
     shGeo.setAttribute('aStrength', this._shdStr);
+    shGeo.setAttribute('aCast', this._shdCast);
     shGeo.instanceCount = 0;
     shGeo.boundingSphere = new THREE.Sphere(new THREE.Vector3(0, 0, -9), 80);
     this.shadowGeo = shGeo;
@@ -2166,6 +2169,7 @@ export class Backdrop {
     placed.sort((a, b) => a.z - b.z);
 
     let shadowN = 0;
+    const castOf = this._castOf = [];
     for (let k = 0; k < placed.length; k++) {
       const p = placed[k];
       off[k * 3 + 0] = p.x; off[k * 3 + 1] = p.y; off[k * 3 + 2] = p.z;
@@ -2178,6 +2182,8 @@ export class Backdrop {
          the prop's own base, and hanging props do not get one. */
       if (!p.hang) {
         const i = shadowN++;
+        this._shdCast.array[i * 2] = 0; this._shdCast.array[i * 2 + 1] = 0;
+        castOf[i] = p;
         /* A CHAIR SITS IN ITS OWN SHADOW (round 21 graft; the judges on the
            Ballroom: "give each armchair a floor shadow"). Centred on the
            quad's own plane, half of every contact shadow lay behind the
@@ -2188,7 +2194,9 @@ export class Backdrop {
         const chair = p.shape === 0 || p.shape === 63 || p.shape === 72;   // (round 25: and the drawn chairs)
         so2[i * 3 + 0] = p.x; so2[i * 3 + 1] = p.y + 0.015; so2[i * 3 + 2] = p.z + (chair ? p.w * 0.24 : 0);
         ss2[i * 2 + 0] = p.w * (chair ? 1.7 : 2.0); ss2[i * 2 + 1] = p.w * (chair ? 1.05 : 1.15);
-        st2[i] = chair ? 1.10 + 0.14 * (1 - p.tone) : 0.52 + 0.26 * (1 - p.tone);
+        /* (round 28: a contact a step denser -- the shared rule, see
+           _castShadows -- 0.52-0.78 under a lit floor read as no shadow) */
+        st2[i] = chair ? 1.10 + 0.14 * (1 - p.tone) : 0.80 + 0.22 * (1 - p.tone);
         /* A LENGTH OF HEDGE (28, round 22) is a wall, not a pot: its shadow
            is a band along its foot, not an ellipse twice its length across
            the path. A pumpkin (27) sits in a dense little pool of its own. */
@@ -2210,6 +2218,8 @@ export class Backdrop {
     this.placed = placed;
     this._shdOffset.needsUpdate = this._shdScale.needsUpdate = this._shdStr.needsUpdate = true;
     this._propShadowN = shadowN;
+    this._castSig = NaN;              // the throws are laid at the next syncLights
+    this._shdCast.needsUpdate = true;
     this.shadowGeo.instanceCount = shadowN;
     if (this._actors?.length) this.setActorShadows(this._actors);
 
@@ -2300,6 +2310,33 @@ export class Backdrop {
     this._shOrigin.needsUpdate = this._shParam.needsUpdate = true;
     this._shSeed.needsUpdate = this._shInt.needsUpdate = true;
     this.shaftGeo.instanceCount = sn + rn;
+    /* THE SCONCES' POOLS ON THE FLOOR (round 28, the Secret Passages). The
+       wall program draws a brass sconce every `pitch` metres down alternate
+       walls from `z0` and two either side of the end door, each lighting the
+       oak round it (passWallH); the floor under the far ones takes their
+       light here, so the passage recedes in pools on the boards as well as
+       on the panelling. The floor has four slots, and the farthest sconces
+       take them: the near ones stand in the rig's own lamplight. */
+    const SC = pal.sconces;
+    if (SC && room.h > 0) {
+      const xw = room.w / 2 - (SC.inset ?? 0.40);
+      const zEnd = this._wallZ;
+      const side = pal.subject !== 'closet';
+      const span = Math.max(-zEnd, 1);
+      for (let k = 0; side && k < 12; k++) {
+        const z = -(SC.z0 + k * SC.pitch);
+        if (z < zEnd + 0.6) break;
+        /* the middle of the passage takes the slots: there the floor is
+           both in view and past the rig's lamps (the near sconces stand in
+           their light, the end wall's pair on a sliver of boards) */
+        const mid = z < -4.0 && z > zEnd + 2.5 ? 1 : 0.5;
+        this.pools.push({ x: (k % 2 === 0 ? -1 : 1) * xw, z, r: SC.r, ax: 1, ay: 0, stretch: 1.0,
+                          i: SC.i * mid * (0.80 + 0.20 * Math.min(1, -z / span)) });
+      }
+      for (const sx of [-1.24, 1.24]) {
+        this.pools.push({ x: sx, z: zEnd + 0.45, r: SC.r * 1.1, ax: 1, ay: 0, stretch: 1.0, i: SC.i * 0.45 });
+      }
+    }
     this.pools.sort((a, b) => b.i - a.i);
     this._writePools();
 
@@ -2368,6 +2405,53 @@ export class Backdrop {
   }
 
   /**
+   * THE THROW (round 28, MAUVEINE -- the shared prop rule's floor half).
+   * Every standing prop's shadow falls AWAY from the room lamp that lights it
+   * most, as far as that lamp's height and distance say, so the floor carries
+   * the shape the light lays down beside the pool under the foot. One rule,
+   * every wing: the judges' "no contact shadows" under desks, tubs, kennels,
+   * sarcophagi, workbenches, the piano, rocking horses and headstones.
+   * Practical lamps only (a cinematic key lights the fight, not the set), and
+   * laid again only when the rig's lamps move -- a room change, a vantage --
+   * never per frame for its own sake.
+   */
+  _castShadows(rig) {
+    const castOf = this._castOf;
+    if (!castOf || !castOf.length) return;
+    const ls = rig.lights || [];
+    let sig = ls.length;
+    for (const l of ls) sig += l.pos.x * 1.3 + l.pos.y * 2.7 + l.pos.z * 3.1 + (l.base > 0.001 ? 7 : 0) + (l.cine ? 11 : 0);
+    if (sig === this._castSig) return;
+    this._castSig = sig;
+    const ca = this._shdCast.array;
+    for (let i = 0; i < castOf.length; i++) {
+      const p = castOf[i];
+      ca[i * 2] = 0; ca[i * 2 + 1] = 0;
+      if (!p || p.shape === 28 || p.shape === 24) continue;     // a hedge run and a planting bed are walls
+      const h = Math.max(p.h || 1, 0.2), cy = (p.y || 0) + h * 0.5;
+      let best = null, bw = 0;
+      for (const l of ls) {
+        if (l.cine || !(l.base > 0.001)) continue;
+        const dx = p.x - l.pos.x, dy = cy - l.pos.y, dz = p.z - l.pos.z, r = Math.max(l.radius || 1, 0.5);
+        const w = l.base / (1 + (dx * dx + dy * dy + dz * dz) / (r * r));
+        if (w > bw) { bw = w; best = l; }
+      }
+      if (!best || bw < 0.06) continue;
+      let dx = p.x - best.pos.x, dz = p.z - best.pos.z;
+      const dxz = Math.hypot(dx, dz);
+      if (dxz < 0.05) continue;
+      dx /= dxz; dz /= dxz;
+      /* similar triangles off the lamp's height over the prop's top, held to
+         a third to one and a half of the prop's height so a lamp at shoulder
+         height does not throw a shadow across the room */
+      const over = Math.max(best.pos.y - (p.y || 0) - h * 0.8, 0.35);
+      const L = Math.min(1.5 * h, Math.max(0.35 * h, h * dxz / over)) * Math.min(1, 0.45 + bw);
+      ca[i * 2] = dx * L; ca[i * 2 + 1] = dz * L;
+    }
+    this._shdCast.needsUpdate = true;
+  }
+
+  /**
    * Ground shadows for actors a scene owns. `list` items: {x, z, r, strength}.
    * These are appended after the prop shadows in the same instanced draw, so an
    * enemy costs nothing extra.
@@ -2382,8 +2466,10 @@ export class Backdrop {
       off[k * 3 + 0] = a.x; off[k * 3 + 1] = 0.018; off[k * 3 + 2] = a.z ?? -4;
       sc[k * 2 + 0] = (a.r ?? 0.9) * 2.2; sc[k * 2 + 1] = (a.r ?? 0.9) * 1.25;
       st[k] = a.strength ?? 0.62;
+      this._shdCast.array[k * 2] = 0; this._shdCast.array[k * 2 + 1] = 0;
     }
     this._shdOffset.needsUpdate = this._shdScale.needsUpdate = this._shdStr.needsUpdate = true;
+    this._shdCast.needsUpdate = true;
     this.shadowGeo.instanceCount = k;
   }
 
@@ -2469,7 +2555,10 @@ export class Backdrop {
     w.uSubjX.value = sWall === 'back' ? (p.subjX ?? 0) : 0;
     w.uSubjMode.value = p.subjMode ?? 0;
     w.uSubjDir.value = p.subjDir ?? 1;
-    w.uHouseS.value = p.houseS ?? 1;
+    /* (round 28: houseK, a wing's whole-house scale -- the Pumpkin Grounds'
+       and the Graveyard's mansion stands further off, so its roofs, turrets
+       and spires are in the frame against the sky, as mainMenu.png's are) */
+    w.uHouseS.value = (p.houseS ?? 1) * (p.houseK ?? 1);
     w.uQuiet.value = p.quietStair ? 1 : 0;
     /* ROUND 16 ITEM 4, judge 1 on combat: "the wall behind the Dust Bunny is
        now the brightest patch in the top half and the enemy's grey fur loses
@@ -2916,6 +3005,7 @@ export class Backdrop {
       pi[i] = rig.inten[i] * (rig.cine[i] ? CINE_PROP : 1) * (opposed ? CINE_FILL_PROP : 1);
     }
     this.propMat.uniforms.uKeyDir.value.copy(rig.keyDir);
+    this._castShadows(rig);
     /* the lamp the fight's shadows fall away from: the cinematic key */
     for (let i = 0; i < NLIGHT; i++) {
       if (rig.cine[i] && !rig.isFill[i]) {

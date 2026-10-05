@@ -534,7 +534,13 @@ export const REGIONS = {
                        end at 0.40 of the frame) */
                     { shape: 69, edge: 0.40, z: -2.6, tone: 0.92, scale: 1.10, seed: 3.0 }] },
     r25w: 4,
-    moonFloor: [0.62, 0.86, 1.05],
+    /* (round 28: the moon on the lawn at two-thirds -- [0.62, 0.86, 1.05]
+       lifted the turf to "a flat milky grey-green field", both judges; the
+       lawn is a true dark now, with its blades, tufts and leaf litter lit) */
+    moonFloor: [0.40, 0.55, 0.70],
+    /* (round 28: the mansion further off, so the whole of it -- roofs,
+       turrets, spires -- stands in the frame over the stones) */
+    houseK: 0.64,
     particles: { mix: [[PTYPE.ASH, 0.40], [PTYPE.DUST, 0.34], [PTYPE.WISP, 0.26]],
                  tint: '#cfd9e0', wispTint: '#8fe8d0', emberTint: '#ffb64a',
                  speed: 0.65, scale: 1.2, wind: 0.9, density: 0.9 },
@@ -879,7 +885,11 @@ export const REGIONS = {
     /* (round 22 graft: its hidden doors, one on each wall standing open in
        relief with its wedge of light on the boards -- Backdrop._placeAjar) */
     ajarDoors: true,
-    room: { w: 7.5, d: 20, h: 3.4, side: 0.0, ceilPattern: 3, wallPad: 2.4 },
+    /* (round 28: a far end the eye reaches -- 17 m, from 20, and lit by its
+       own sconces down both walls and either side of the end door, each
+       pooling on the oak and the boards: passWallH, Backdrop.build) */
+    sconces: { z0: 2.4, pitch: 3.3, r: 1.7, i: 1.7 },
+    room: { w: 7.5, d: 17, h: 3.4, side: 0.0, ceilPattern: 3, wallPad: 2.4 },
     cam: { y: 1.70, z: 6.8, look: 1.75, fov: 52 },
     deep: '#191525', mid: '#2e2437', hi: '#47394e', accent: '#836faf',
     rimCol: '#d2a763', shaft: '#d6b88a', floorDeep: '#110e19', floorMid: '#201a26',
@@ -889,8 +899,10 @@ export const REGIONS = {
        crates, an old chair -- not a colonnade and a glazed cabinet) */
     props: { shapes: [8], count: 6, height: 1.9, layout: 'aisle' },
     particles: { mix: [[PTYPE.DUST, 0.78], [PTYPE.PLASTER, 0.16], [PTYPE.WISP, 0.06]],
+                 /* (round 28: 0.45, from 1.0 -- a thousand lit motes against
+                    the dark end of the passage were "a starfield indoors") */
                  tint: '#ffe0b8', wispTint: '#a87fd8', emberTint: '#ffb64a',
-                 speed: 0.8, scale: 0.9, wind: 0.5, density: 1.0 },
+                 speed: 0.8, scale: 0.9, wind: 0.5, density: 0.45 },
     exposure: 1.72, contrast: 1.28,
     /* (graft, all three judges: "the violet and amber floor pools are soft
        smears -- sharpen them"; and "pull the lit panel mid-tones from mauve
@@ -970,10 +982,15 @@ export const REGIONS = {
     arch: 0, floorPattern: 2, subject: 'kennel', damask: 0,
     /* (round 23: 9 m deep, from 11 -- the range of stalls IS the room, and
        16 m from the lens it was a strip along the top of the frame) */
-    room: { w: 20, d: 9, h: 4.0, side: 0.0, ceilPattern: 8, wallPad: 3.2 },
+    /* (round 28: "the ceiling is a milky grey band" -- a BEAMED ceiling,
+       pattern 6, the kitchens' too, where 8 is the Lampworks' iron truss) */
+    room: { w: 20, d: 9, h: 4.0, side: 0.0, ceilPattern: 6, wallPad: 3.2 },
     cam: { y: 2.55, z: 5.4, look: 1.05, fov: 52 },
     deep: '#1c141a', mid: '#3a2b23', hi: '#614a32', accent: '#768e9b',
-    rimCol: '#dbb882', shaft: '#d9bd92', floorDeep: '#120e13', floorMid: '#2f241c',
+    /* (round 28, a palette COLOUR, because the dark was too pale: "the floor
+       flags are a lifted grey-beige" -- floorMid #2f241c -> #251c16, a deep
+       warm dark) */
+    rimCol: '#dbb882', shaft: '#d9bd92', floorDeep: '#100c10', floorMid: '#251c16',
     ambient: '#191315', propAlb: '#3d2d24', propHi: '#6e5339',
     gloss: 0.38, grime: 0.62, open: '#649aa6', openGlow: 0.5,
     /* AN ARMCHAIR AND A BOOKCASE IN THE KENNELS (BRIEF-r9 fix 4) -- the third
@@ -1006,7 +1023,9 @@ export const REGIONS = {
     /* (graft: the corners a stop darker -- "real darks in the corners") */
     exposure: 2.4, vignette: 1.86, contrast: 1.54,
     key:  { glow: 0, kind: 'warm', x: -3.4, y: 2.6, z: 2.0, color: '#e5b57e', intensity: 1.67, radius: 6.45 },
-    fill: { glow: 0, kind: 'cold', x: 5.0, y: 2.2, z: 1.2, color: '#83a6bc', intensity: 7.45, radius: 7.5, flicker: false },
+    /* (round 28: the cold fill 7.45 -> 4.4 -- at 7.45 it was what lifted
+       the wash room's right-hand flags to a milky blue-grey) */
+    fill: { glow: 0, kind: 'cold', x: 5.0, y: 2.2, z: 1.2, color: '#7f9fb8', intensity: 4.4, radius: 7.5, flicker: false },
     lights: [
       /* (round 23: the range's lanterns light its stalls -- they were 0.78
          and 0.75 against a cold 3.23, and the cold one alone lit the back
@@ -1073,6 +1092,9 @@ export const REGIONS = {
     /* (graft, all three judges: the moon on the court's flags, so the lower
        two-thirds of the floor is paving and not a void, and in the pond) */
     moonFloor: [0.30, 0.40, 0.62], moonPond: 1.0,
+    /* (round 28: the mansion over the court wall seen whole -- see the
+       Graveyard's houseK) */
+    houseK: 0.62,
   },
 
   /* ── 17. The Heart of the House ────────────────────────────────────────────
@@ -3053,7 +3075,7 @@ export class Atmosphere {
          sliding along its wall through a cross-fade is neither room either. */
       L.subjX = T.subjX; L.subjMode = T.subjMode; L.subjDir = T.subjDir;
       L.subjWall = T.subjWall; L.subjAt = T.subjAt;
-      L.houseS = T.houseS; L.floorRot = T.floorRot; L.runner = T.runner; L.runX = T.runX;
+      L.houseS = T.houseS; L.houseK = T.houseK; L.floorRot = T.floorRot; L.runner = T.runner; L.runX = T.runX;
       L.door = T.door; L.rail = T.rail; L.subForm = T.subForm; L.pool = T.pool;
       L.nearDark = T.nearDark;
       L.rug = T.rug;                    // (round 25 graft: the carpet goes with the room)
