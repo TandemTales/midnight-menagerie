@@ -4896,7 +4896,7 @@ float passWallH(vec2 q, float qpx, out float occ){
        cardboard flats" both judges -- and its light THROUGH the crack laid
        on the panels round it, p28Pool, which is what says the room beyond
        is lit) */
-    gWEmit = slit*beyond*0.62*(0.95 + 0.20*mmNoise(vec2(q.y*3.0, uTime*0.4)))*smoothstep(-0.05, 0.35, q.y)
+    gWEmit = slit*beyond*0.40*(0.95 + 0.20*mmNoise(vec2(q.y*3.0, uTime*0.4)))*smoothstep(-0.05, 0.35, q.y)
            + edge*0.26 + headL*0.45 + rev*0.30
            + leaf*0.10*exp(-(gx1 - dx)/0.12);
     {
@@ -4990,6 +4990,31 @@ float passWallH(vec2 q, float qpx, out float occ){
     float zk = -(2.4 + kk*3.3);
     /* (not on a door leaf, and not in a closet: a closet's walls are its
        pegs; its light is the end door's) */
+    /* A CANDLE NICHE (the judges' own list for the passage): one bay in five
+       that is neither a door nor beside a sconce has an arched recess cut in
+       its tall panel, black inside, three stubs of candle burning in it and
+       their light on its reveal and the panel under it */
+    float nRoll = mmHash11(bi*7.31 + uSeed*3.3);
+    if (nRoll < 0.20 && isDoor < 0.5 && clo < 0.5 && lib < 0.5 && abs(zl - zk) > 1.1) {
+      vec2 np = vec2(bx, q.y - 1.18);
+      float nd = mmArch(np, 0.20, 0.42);
+      float inN = P28CV(-nd);
+      oak = mix(oak, vec3(0.012, 0.009, 0.008), inN);
+      h = mix(h, 0.45, inN);
+      gInk = max(gInk, mmInkP(nd, px, 1.3)*0.9);
+      gInk = max(gInk, mmInkP(nd - 0.035, px, 1.0)*0.5);
+      for (int c = 0; c < 3; c++){
+        float fc = float(c) - 1.0;
+        float chh = 0.10 + 0.06*mmHash11(bi*3.1 + fc*1.7);
+        vec2 cp = np - vec2(fc*0.095, 0.0);
+        float cd = max(abs(cp.x) - 0.018, max(-cp.y, cp.y - chh));
+        oak = mix(oak, scWax, P28CV(-cd)*inN);
+        vec2 fp2 = cp - vec2(0.0, chh + 0.030);
+        float fl2 = (length(vec2(fp2.x/0.014, fp2.y/(fp2.y > 0.0 ? 0.034 : 0.016))) - 1.0)*0.014;
+        scE += P28CV(-fl2)*2.0 + 0.10*exp(-length(fp2)/0.07);
+      }
+      p28Pool(vec2(bx, q.y - 1.30), vec2(0.38, 0.42), 2.2*(1.0 - inN*0.4), scWarm);
+    }
     if (kk >= 0.0 && mine > 0.5 && isDoor < 0.5 && clo < 0.5) {
       vec2 sp2 = vec2(zl - zk, q.y - 1.66);
       p28Sconce(sp2, px, scBrass, scWax, oak, h, scE);
@@ -11010,8 +11035,16 @@ float wallH(vec2 q, out float occ){
       float slate = clamp(max(onRoof, step(rtop - 0.02, hq.y)), 0.0, 1.0)
                   * (1.0 - clamp(inShaft, 0.0, 1.0)) * step(eave - 0.02, hq.y);
       float lumH = mmLum(uHi);
-      vec3 hsC = vec3(0.52, 0.51, 0.49)*(lumH*1.15 + 0.010);
-      vec3 hrC = vec3(0.23, 0.27, 0.37)*(lumH*1.25 + 0.010);
+      /* (round 28: a stop up, both -- the house under the moon is mid-grey
+         stone under blue slate in mainMenu.png, its masonry read by eye,
+         and at the old value only its lit windows showed) */
+      vec3 hsC = vec3(0.52, 0.51, 0.49)*(lumH*2.10 + 0.016);
+      vec3 hrC = vec3(0.23, 0.27, 0.37)*(lumH*2.30 + 0.016);
+      /* each cone and pyramid has a flank to the moon and one away from it */
+      float mSide = sign(uHouse.y - uHouse.x + 1e-3);
+      float coneL = (step(abs(tw), 1.07)*step(body + th - 0.05, hq.y) * step(0.0, -tw*mSide)
+                   + step(abs(cx - 2.25), 1.85)*step(EAVE_A - 0.1, hq.y)*step(0.0, -(cx - 2.25)*mSide))*onFoot;
+      hrC *= 1.0 + 0.55*clamp(coneL, 0.0, 1.0);
       /* (round 28: the same house in the churchyard -- ONE mansion, both
          wings -- and three more of mainMenu.png's materials on it: each
          stone its own grey-brown, the chimney stacks in stone and not
@@ -11032,6 +11065,20 @@ float wallH(vec2 q, out float occ){
                  * step(0.6, hq.y) * smoothstep(0.30, 0.70, mmFbm3(vec2(hq.x*2.3, hq.y*2.9) + uSeed));
       vec3 ivyC = vec3(0.13, 0.21, 0.10)*(lumH*1.05 + 0.006)*(0.70 + 0.60*mmFbm3(hq*6.0 + uSeed));
       vec3 hc = mix(mix(hsC, hrC, slate), ivyC, ivyM*0.85);
+      /* (round 28) A TURRET IS ROUND: its shaft turns from the moon into
+         shade across its width, a string course rings it under the cap, and
+         a lancet is cut in it -- where it read as a pale flat rectangle
+         standing on the roof */
+      {
+        float onSh = clamp(inShaft, 0.0, 1.0)*(1.0 - slate)*step(abs(tw), 0.95);
+        float tu = clamp(tw/0.95, -1.0, 1.0)*mSide;
+        hc *= mix(1.0, 0.55 + 0.55*smoothstep(0.7, -0.6, tu), onSh);
+        float lan = mmArch(vec2(tw, hq.y - (body + th*0.30)), 0.15, 0.62);
+        float onLan = mmCover(-lan)*onSh*step(1.2, th);
+        hc = mix(hc, vec3(0.020, 0.024, 0.040), onLan);
+        float sc2 = mmBandA(hq.y, body + th - 0.30, body + th - 0.12, hpx)*onSh;
+        hc *= 1.0 + 0.35*sc2;
+      }
       float houseM = roofCov * (1.0 - occ) * noSub;
       gCol = mix(gCol, hc, houseM);
       gColAmt = max(gColAmt, houseM);
@@ -14878,22 +14925,8 @@ float gyTufts(vec2 q, float hw, float seed){
   return max(d, abs(q.x) - hw);
 }
 
-/* ── 69 A HEADSTONE ────────────────────────────────────────────────────────
-   One of five forms off its seed -- a round head on its shoulders, a
-   Celtic cross on its die, a pointed Gothic head, a tablet under its
-   pediment with its acroteria, a low slab whose top has gone -- leaning a
-   little as the ground has let it, in the parish's granite, sandstone,
-   slate or marble; its inscription cut in rows, an emblem cut over it
-   (a cross, a wreath, a dove's urn), lichen on it and moss at its foot,
-   and the grass grown up round it. */
-float wfHeadstone(vec2 q, float px, float seed, float kq, bool paint){
-  float k = mmHash11(seed*3.71 + 0.13);
-  float lean = (mmHash11(seed*8.3) - 0.5)*0.10;
-  vec2 p = vec2(q.x*cos(lean) - q.y*sin(lean), q.x*sin(lean) + q.y*cos(lean));
-  float H = 0.62 + 0.26*mmHash11(seed*5.7);          // its height
-  float W = 0.22 + 0.06*mmHash11(seed*2.3);          // its half-width
-  float d, face, tx, ty;
-  float kind;
+float wfHsForm(vec2 p, float k, float H, float W, float seed, out float face, out float tx, out float ty, out float kind){
+  float d;
   if (k < 0.36) {
     kind = 0.0;
     float body = mmBox(p - vec2(0.0, (H - W)*0.5), vec2(W, (H - W)*0.5), 0.004);
@@ -14941,8 +14974,36 @@ float wfHeadstone(vec2 q, float px, float seed, float kq, bool paint){
     face = max(face, cut + 0.03);
     tx = W*1.15 - 0.06; ty = yT*0.62;
   }
+  return d;
+}
+/* ── 69 A HEADSTONE ────────────────────────────────────────────────────────
+   One of five forms off its seed -- a round head on its shoulders, a
+   Celtic cross on its die, a pointed Gothic head, a tablet under its
+   pediment with its acroteria, a low slab whose top has gone -- leaning a
+   little as the ground has let it, in the parish's granite, sandstone,
+   slate or marble; its inscription cut in rows, an emblem cut over it
+   (a cross, a wreath, a dove's urn), lichen on it and moss at its foot,
+   and the grass grown up round it. */
+float wfHeadstone(vec2 q, float px, float seed, float kq, bool paint){
+  float k = mmHash11(seed*3.71 + 0.13);
+  float lean = (mmHash11(seed*8.3) - 0.5)*0.10;
+  vec2 p = vec2(q.x*cos(lean) - q.y*sin(lean), q.x*sin(lean) + q.y*cos(lean));
+  float H = 0.62 + 0.26*mmHash11(seed*5.7);          // its height
+  float W = 0.22 + 0.06*mmHash11(seed*2.3);          // its half-width
+  float d, face, tx, ty;
+  float kind;
+  d = wfHsForm(p, k, H, W, seed, face, tx, ty, kind);
+  /* (round 28: A STONE HAS A THICKNESS -- "the headstones are small
+     flat-shaded boxes", both judges. The same outline a hand's breadth back
+     and up: where it shows past the face it is the stone's RETURN, its side
+     and its top, seen as the eye sees a slab a little from one side and
+     above) */
+  float sgnR = mmHash11(seed*1.37 + 0.71) < 0.5 ? -1.0 : 1.0;
+  vec2 offR = vec2(sgnR*(0.050 + 0.015*W), 0.022);
+  float fR, txR, tyR, kR;
+  float dRet = wfHsForm(p - offR, k, H, W, seed, fR, txR, tyR, kR);
   float tuft = gyTufts(q, W*1.25, seed);
-  float dAll = min(d, tuft);
+  float dAll = min(min(d, dRet), tuft);
   if (!paint) return dAll;
 
   vec3 col = vec3(0.1);
@@ -14954,6 +15015,14 @@ float wfHeadstone(vec2 q, float px, float seed, float kq, bool paint){
   sc = gyWeather(sc, p, px, seed, 0.0);
   float bev = clamp(-d/0.016, 0.0, 1.0);
   sc *= mix(1.25 + 0.20*kq*sign(p.x), 1.0, bev);
+  /* the return first, under the face: its side in the shade unless the key
+     is round that way, its top (where it shows above) catching the light */
+  {
+    vec3 rc = gyWeather(st*(0.80 + 0.10*smoothstep(0.0, H, p.y)), p, px, seed, 0.0);
+    float topR = smoothstep(0.004, 0.020, (p.y - offR.y*0.5) - (H - 0.02)) ;
+    rc *= mix(0.52 + 0.22*step(0.0, kq*sgnR), 1.18, clamp(topR, 0.0, 1.0));
+    wfLay(col, ink, dRet, rc, px, 0.85);
+  }
   wfLay(col, ink, d, sc, px, 0.95);
   /* the sunk face (the margin left proud round it) */
   ink = max(ink, mmInkP(face, px, 1.0)*0.55*wfIn(d, px));
@@ -16238,16 +16307,17 @@ float tbSD(vec2 m, vec2 msz, float seed, out float ok){
   const float TOP = 0.86;
   ok = 0.0;
   float d = mmBox(m - vec2(0.0, TOP - 0.04), vec2(hw, 0.045), 0.012);          // the top
-  d = min(d, mmBox(m - vec2(0.0, TOP - 0.13), vec2(hw - 0.07, 0.05), 0.005));   // its apron
+  d = min(d, mmBox(m - vec2(0.0, TOP - 0.14), vec2(hw - 0.07, 0.065), 0.005));  // its apron, a drawer's depth
   for (int i = 0; i < 2; i++){
     float lx = (i == 0) ? hw - 0.10 : hw - 0.34;
-    float lw = (i == 0) ? 0.040 : 0.032;
+    /* (round 28: a kitchen table's legs are STOUT -- 4 cm read as wire) */
+    float lw = (i == 0) ? 0.058 : 0.046;
     float t = clamp(m.y/(TOP - 0.18), 0.0, 1.0);
     /* turned: a swell below the apron, a bead, a taper to the foot */
     float w = lw*(0.80 + 0.45*exp(-pow((t - 0.78)*6.0, 2.0)) + 0.25*exp(-pow((t - 0.35)*10.0, 2.0)));
     d = min(d, mmBox(vec2(abs(m.x) - lx, m.y - (TOP - 0.18)*0.5), vec2(w, (TOP - 0.18)*0.5), 0.005));
   }
-  d = min(d, mmBox(m - vec2(0.0, 0.15), vec2(hw - 0.10, 0.018), 0.004));          // the pot board
+  d = min(d, mmBox(m - vec2(0.0, 0.15), vec2(hw - 0.10, 0.032), 0.004));          // the pot board
   /* what is on it: four places along the top */
   for (int k = 0; k < 4; k++){
     float kx = (float(k) - 1.5)*hw*0.46 + (mmHash11(seed*3.1 + float(k)) - 0.5)*0.18;
@@ -21603,6 +21673,20 @@ void main(){
     vec2 tm = (vUv - vec2(0.5, 0.0))*vSize;
     deal *= 1.0 + 0.9*smoothstep(0.80, 0.84, tm.y)*step(tm.y, 0.865);
     deal *= 1.0 - 0.45*step(tm.y, 0.77);
+    /* (round 28) the apron is a row of DRAWERS: each front a board a step
+       lighter than the rails round it, a dark seam about it and a brass knob
+       at its middle -- what tells a working table from a frame of sticks */
+    {
+      float dwP = 0.52;
+      float dxl = abs(fract(tm.x/dwP + 0.5) - 0.5)*dwP;
+      float inAp = step(0.665, tm.y)*step(tm.y, 0.775)*step(abs(tm.x), vSize.x*0.5 - 0.20);
+      float seam = (1.0 - smoothstep(0.0, 0.012 + mpp.x, abs(dxl - dwP*0.5 + 0.02)))
+                 + (1.0 - smoothstep(0.0, 0.010 + mpp.y, abs(tm.y - 0.672)))
+                 + (1.0 - smoothstep(0.0, 0.010 + mpp.y, abs(tm.y - 0.768)));
+      float knob = 1.0 - smoothstep(0.016, 0.016 + mpp.x*1.2, length(vec2(dxl, tm.y - 0.72)));
+      deal *= 1.0 + inAp*(0.35 - 0.55*clamp(seam, 0.0, 1.0));
+      deal = mix(deal, vec3(0.80, 0.58, 0.26)*(lum*3.2 + 0.06), knob*inAp);
+    }
     vec3 oc = gTbOk < 1.5 ? vec3(0.66, 0.32, 0.14)
             : (gTbOk < 2.5 ? vec3(0.86, 0.85, 0.80)
             : (gTbOk < 3.5 ? vec3(0.66, 0.42, 0.18)
@@ -22076,6 +22160,9 @@ void main(){
      own -- on a flat quad a lamp's highlight was a pale smudge across a
      kennel's side) */
   if (vShape > 35.5 && vShape < 41.5) glossP = uGloss*0.15;
+  /* (round 28: scrubbed deal and a packing case are MATT -- under the
+     Kitchens' metal gloss a table top came back a steel sheen) */
+  if ((vShape > 28.5 && vShape < 29.5) || (vShape > 7.5 && vShape < 8.5)) glossP = uGloss*0.10;
 #if MM_WINGS >= 3
   if (vShape > 44.5) glossP = uGloss*gWfGloss;
 #endif

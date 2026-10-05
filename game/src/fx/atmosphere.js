@@ -1094,7 +1094,7 @@ export const REGIONS = {
     moonFloor: [0.30, 0.40, 0.62], moonPond: 1.0,
     /* (round 28: the mansion over the court wall seen whole -- see the
        Graveyard's houseK) */
-    houseK: 0.62,
+    houseK: 0.80,
   },
 
   /* ── 17. The Heart of the House ────────────────────────────────────────────
