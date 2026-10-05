@@ -154,7 +154,12 @@ function plant(c, n) {
 function advance(c, stage) {
   const p = patch(c);
   const i = stage ? p.indexOf(stage) : (p.indexOf(SPROUT) >= 0 ? p.indexOf(SPROUT) : p.indexOf(SEED));
-  if (i < 0) return false;
+  return advanceAt(c, i);
+}
+/** Advance the Patch object at index i by one stage. */
+function advanceAt(c, i) {
+  const p = patch(c);
+  if (i < 0 || i >= p.length) return false;
   if (p[i] === SEED) p[i] = SPROUT;
   else if (p[i] === SPROUT) { p[i] = PUMPKIN; syncPatch(c); U.fire(c, 'ripen', {}); return true; }
   else return false;
@@ -662,7 +667,19 @@ const uncommons = [
     text: 'Advance up to {n} different [Patch] objects by one stage.',
     flavor: 'Best sun in the house. Strictly rationed.',
     nums: { n: 2 },
-    effect: eff(c => { for (let i = 0; i < N(c).n; i++) advance(c); }),
+    /* DIFFERENT objects: advance() picks a Sprout before a Seed, so two calls
+       could walk one Seed to a Pumpkin. Each object moves at most once,
+       Sprouts first (a ripened Pumpkin is the better stage to reach). */
+    effect: eff(c => {
+      const p = patch(c), moved = new Set();
+      for (let i = 0; i < N(c).n; i++) {
+        let j = p.findIndex((s, k) => s === SPROUT && !moved.has(k));
+        if (j < 0) j = p.findIndex((s, k) => s === SEED && !moved.has(k));
+        if (j < 0) break;
+        moved.add(j);
+        advanceAt(c, j);
+      }
+    }),
     upgrade: { nums: { n: 3 } },
   },
   {

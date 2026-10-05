@@ -232,6 +232,22 @@ const fromArray = (e, seat = null) => {
     check(both - none >= upOnly - none, 'Big Frog Energy then Big Frog Energy+ pays at least the upgraded 7', `${both - none}`);
   }
 
+
+  // ── card truth (2026-10-04): Warm Windowsill moves DIFFERENT objects ─────
+  {
+    const e = await pipkin();
+    const p = arr(e);
+    p.length = 0; p.push('seed', 'seed');
+    await play(e, 'pipkin/warm-windowsill');
+    check(arr(e).join(',') === 'sprout,sprout', 'Warm Windowsill advances two DIFFERENT Seeds, not one Seed twice', arr(e).join(','));
+    const f = await pipkin();
+    const q = arr(f);
+    q.length = 0; q.push('seed', 'sprout', 'seed');
+    await play(f, 'pipkin/warm-windowsill');
+    check(arr(f).filter(s => s === 'pumpkin').length === 1 && arr(f).filter(s => s === 'sprout').length === 1,
+      'and it ripens a Sprout first', arr(f).join(','));
+  }
+
   for (const line of passes) say('PASS ' + line, 'pass');
   for (const line of fails) say('FAIL ' + line, 'fail');
   say(`<h2>${passes.length} passed, ${fails.length} failed</h2>`);

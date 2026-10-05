@@ -224,6 +224,60 @@ try {
       check(pocket(e).includes(loot) && e.costOf(loot) === c0 + 2, 'and 1 more again the next time', `cost ${e.costOf(loot)}`);
     }
   }
+
+  /* ── card truth (2026-10-04): three Hush cards set fields nothing read ── */
+  {
+    /* NOW YOU SEE ME: the first Ambush Attack each turn does not reveal him. */
+    const e = await hush();
+    e.piles.stash.length = 0;
+    e.piles.hand.length = 0;
+    await playAs(e, 'hush/now-you-see-me', false);
+    await play(e, put(e, 'hush/lights-out'));
+    const a = put(e, 'hush/from-under-the-sofa', 'stash');
+    const b = put(e, 'hush/from-under-the-sofa', 'stash');
+    const t = e.livingEnemies()[0];
+    const hp = t.hp;
+    await play(e, a, t);
+    check(unseen(e) === 1, 'Now You See Me: the first Ambush Attack does not reveal him', `unseen=${unseen(e)}`);
+    check(hp - t.hp === SOFA.d + SOFA.m0, 'and it still got its Ambush bonus', `dealt ${hp - t.hp}`);
+    await play(e, b, e.livingEnemies()[0]);
+    check(unseen(e) === 0, 'the second one that turn reveals him as usual', `unseen=${unseen(e)}`);
+  }
+  {
+    /* CLEAN GETAWAY: if nothing gets through the enemy turn, {e} Nerve next turn. */
+    const CG = CARDS.cardById('hush/clean-getaway').nums;
+    const run = async (hit) => {
+      const e = await hush();
+      e.piles.hand.length = 0;
+      await play(e, put(e, 'hush/clean-getaway'));
+      if (hit) {
+        e.player.block = 0;
+        e.dealDamage({ attacker: e.livingEnemies()[0], defender: e.player, amount: 6, kind: 'attack' });
+      } else e.player.block = 999;
+      await e.endTurn();
+      return { energy: e.player.energy, max: e.player.energyMax };
+    };
+    const clean = await run(false), hurt = await run(true);
+    check(clean.energy === clean.max + CG.e, 'Clean Getaway: nothing got through, so +1 Nerve next turn', `${clean.energy} of ${clean.max}`);
+    check(hurt.energy === hurt.max, 'and Courage lost to an Attack forfeits it', `${hurt.energy} of ${hurt.max}`);
+  }
+  {
+    /* INSIDE JOB: the first Contraband each turn pockets your top discard. */
+    const e = await hush();
+    e.piles.stash.length = 0;
+    await playAs(e, 'hush/inside-job', false);
+    const t = e.livingEnemies().find(x => x.pendingMove) || e.livingEnemies()[0];
+    await play(e, put(e, 'hush/sticky-fingers'), t);
+    const loot = pocket(e).find(k => k.meta && k.meta.contraband);
+    if (!loot) check(false, 'Sticky Fingers made Contraband (setup)');
+    else {
+      const top = e.piles.discard[e.piles.discard.length - 1];
+      await play(e, loot, e.livingEnemies()[0]);
+      check(!!top && pocket(e).includes(top), 'Inside Job: playing Contraband moves the top discard into the Pocket',
+        `top=${top && top.def && top.def.id}, pocket=${pocket(e).map(k => k.def && k.def.id).join(',')}`);
+      check(!e.piles.discard.includes(top), 'and it has left the discard pile');
+    }
+  }
 } catch (err) {
   fails.push('THREW: ' + (err && err.stack || err));
 }

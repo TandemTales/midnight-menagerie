@@ -666,7 +666,7 @@ export const COMPANION_STATUSES = [
   powerStatus('crumbula/eternal-hunger', 'Eternal Hunger', 'Appetite is locked at 0. Feeding heals but never fills.', 'appetite'),
   powerStatus('crumbula/bottomless-tummy', 'Bottomless Tummy', 'Maximum Appetite is 9. Above 6, Attacks cost more and your first Skill costs less.', 'appetite'),
   powerStatus('crumbula/on-the-house', 'On the House', 'Your first Indulge each turn goes on the Tab.', 'appetite'),
-  powerStatus('crumbula/endless-pantry', 'Endless Pantry', 'Leftovers cost 1 and cycle through the deck instead of Vanishing.', 'appetite'),
+  powerStatus('crumbula/endless-pantry', 'Endless Pantry', 'Leftovers cycle through the deck instead of Vanishing.', 'appetite'),
   powerStatus('crumbula/not-dead-just-napping', 'Not Dead, Just Napping', 'Once per combat, lethal damage leaves the Count at 1 Courage.', 'appetite'),
   powerStatus('crumbula/feast-and-famine', 'Feast and Famine', 'Swinging between Hungry and Sated pays Nerve and a card.', 'appetite'),
   powerStatus('crumbula/everybody-gets-a-cape', 'Everybody Gets a Cape', 'Becoming Sated Guards the party; becoming Hungry draws for them.', 'appetite'),

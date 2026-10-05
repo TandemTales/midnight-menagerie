@@ -234,6 +234,24 @@ try {
     await play(e, 'crumbula/one-tiny-sip', t);        // 3 -> 4: Sated
     check(capeGuard === want, `Everybody Gets a Cape (${label}): becoming Sated gives ${want} Guard`, `guard=${capeGuard}`);
   }
+
+  // ── card truth (2026-10-04): Endless Pantry set a flag nothing read ──────
+  {
+    const where = async (withPantry) => {
+      const e = await count();
+      if (withPantry) await play(e, 'crumbula/endless-pantry');
+      const l = await play(e, 'crumbula/leftover');
+      return e.piles.discard.includes(l) ? 'discard' : e.piles.exhaust.includes(l) ? 'vanished' : 'elsewhere';
+    };
+    const off = await where(false), on = await where(true);
+    check(off === 'vanished', 'a Leftover Vanishes as printed', off);
+    check(on === 'discard', 'Endless Pantry: it goes to the discard pile instead, to come round again', on);
+    const e = await count();
+    await play(e, 'crumbula/endless-pantry');
+    e.addCard(CARDS.cardById('crumbula/leftover'), 'hand', {});
+    const l = e.piles.hand[e.piles.hand.length - 1];
+    check(e.costOf(l) === CARDS.cardById('crumbula/leftover').cost, 'and it costs no more than printed (the text no longer says "cost 1")', `cost ${e.costOf(l)}`);
+  }
 } catch (err) {
   fails.push('THREW: ' + (err && err.stack || err));
 }

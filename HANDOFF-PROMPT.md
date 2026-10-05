@@ -85,14 +85,13 @@ round 28 (below). Nothing else is running.
   `shell/steam_appid.txt`, `npx electron . --smoke` must say `steam:true`,
   then a real two-machine test with shoejunk (who needs a key). See
   `shell/README.md`.
-- **Cards still not matching their text** (found by the card-truth pass,
-  `e17d030a`): Inside Job and Now You See Me do nothing; Clean Getaway never
-  grants its Nerve; Endless Pantry does nothing but its text would make
-  Leftovers COST more, so it needs a generous re-reading; Warm Windowsill
-  advances the same Seed twice ("different" in the text); a Mature Briar may
-  not retaliate against a direct attack (unverified). Fix each to the text in
-  the player's favour; every deck suite must stay green and
-  `tests/upgrade-effects` (check + run) must stay at 0.
+- **Card truth, round 2 (2026-10-04 evening): FIXED** Inside Job, Now You
+  See Me, Clean Getaway (Hush), Endless Pantry (Crumbula; its "cost 1" was
+  dropped from the text -- the generous reading, Leftovers stay free) and Warm
+  Windowsill (Pipkin, DIFFERENT objects, Sprouts first). Each has a check in
+  its companion's suite that fails on the old code. Mature Briar was READ,
+  not changed: onAttack fires after every enemy attack's last hit, once per
+  enemy per turn -- no bug found.
 
 **THE NEXT ROUNDS, from survey 3:** round 27 = the card (running or merged,
 see in-flight); round 28 = the rooms' props (flat primitives, no contact

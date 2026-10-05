@@ -57,8 +57,14 @@ const eff = (fn) => (c) => {
   const fromPocket = c.playedFrom === POCKET;
   const isAttack = String((c.card && (c.card.type || (c.card.def && c.card.def.type))) || '').toLowerCase() === 'attack';
   if (isAttack && !fromPocket) reveal(c);
+  /* NOW YOU SEE ME: "The first [Ambush] Attack you resolve each turn does not
+     reveal you." It set a flag nothing read, so the 3-Nerve Rare did nothing.
+     An Ambush is an Attack out of the Pocket while Unseen -- read BEFORE it
+     resolves, since resolving may be what reveals him. */
+  const keepHidden = isAttack && fromPocket && isUnseen(c) && U.mm(c).nowYouSeeMe
+    && U.stacks(c, c.self, 'hush/now-you-see-me') > 0 && U.once(c, 'nowYouSeeMe');
   const r = fn(c);
-  const after = () => { if (isAttack && fromPocket && !U.mm(c).stayHidden) reveal(c); };
+  const after = () => { if (isAttack && fromPocket && !U.mm(c).stayHidden && !keepHidden) reveal(c); };
   if (r && typeof r.then === 'function') return r.then((v) => { after(); return v; });
   after();
   return r;
@@ -246,6 +252,7 @@ U.onTracker(SLUG, (e, s, seat) => {
     const c = fake();
     if (!c || !c.self || ev.targetId !== c.self.id) return;
     if ((ev.hpLoss || 0) <= 0) return;
+    U.mm(c).cleanGetawayHit = true;       // something got through (Clean Getaway)
     reveal(c);
   });
 
@@ -266,6 +273,12 @@ U.onTracker(SLUG, (e, s, seat) => {
     if (st.lightSleeper && isUnseen(c)) U.energyNextTurn(c, U.stacks(c, c.self, 'hush/light-sleeper'));
     if (st.houseHasCorners && !isUnseen(c) && pocket(c).length >= 2) hide(c);
     if (st.nextTurnNerve) { U.energy(c, st.nextTurnNerve); st.nextTurnNerve = 0; }
+    /* CLEAN GETAWAY: "If nothing gets through this enemy turn, gain {e} Nerve
+       next turn." Banked onto this turn's refill, as Light Sleeper is. */
+    if (st.cleanGetaway) {
+      if (!st.cleanGetawayHit) U.energyNextTurn(c, st.cleanGetaway);
+      st.cleanGetaway = 0; st.cleanGetawayHit = false;
+    }
     // Contraband and other temporaries do not survive into a new turn.
     for (const k of pocket(c).slice()) {
       if (k.meta && k.meta.expireAtTurnEnd) U.moveCard(c, k, 'exhaust', {});
@@ -306,6 +319,23 @@ U.onTracker(SLUG, (e, s, seat) => {
     if (who.__mm.footfallsTurn === e.turn) return cost;
     return Math.max(0, cost - n);
   }, { owner: seat });
+
+  /* INSIDE JOB: "The first [Contraband] you play each turn moves your top
+     discard into the [Shadow Pocket]." It set a flag nothing read. After the
+     Contraband resolves (it has Vanished, so the top discard is a real Trick),
+     and as a Scurry, since it is a deliberate move. */
+  e.on('card:resolved', (ev) => {
+    if (!ev || (seat && e.current && e.current !== seat)) return;
+    const c = fake();
+    const st = U.mm(c);
+    if (!st.insideJob || U.stacks(c, c.self, 'hush/inside-job') <= 0) return;
+    const card = e.card(ev.cardUid);
+    if (!card || !card.meta || !card.meta.contraband) return;
+    if (!U.once(c, 'insideJob')) return;
+    const pile = U.cardsIn(c, 'discard');
+    const top = pile[pile.length - 1];
+    if (top) scurry(c, top, POCKET);
+  });
 
   /* STICKY LITTLE LEGEND: "[Contraband] returns to the [Shadow Pocket] after
      use, costing {n} more each time." It set a flag nothing read, so the 2-Nerve
@@ -1212,7 +1242,14 @@ const rares = [
     text: 'Gain {b} Guard and become [Unseen]. If nothing gets through this enemy turn, gain {e} Nerve next turn.',
     flavor: 'No prints, no fur, no witnesses.',
     nums: { b: 22, e: 1 },
-    effect: eff((c) => { U.guard(c, N(c).b); hide(c); U.mm(c).cleanGetaway = N(c).e; }),
+    /* The Nerve is paid by the tracker at the start of the next turn, unless an
+       enemy Attack cost him Courage in between (it set a field nothing read). */
+    effect: eff((c) => {
+      U.guard(c, N(c).b); hide(c);
+      const s = U.mm(c);
+      s.cleanGetaway = (s.cleanGetaway || 0) + N(c).e;
+      s.cleanGetawayHit = false;
+    }),
     upgrade: { nums: { b: 30, e: 1 } },
   },
   {

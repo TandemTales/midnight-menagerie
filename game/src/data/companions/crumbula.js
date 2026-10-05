@@ -203,6 +203,9 @@ const LEFTOVER = {
     feed(c, null, N(c).n, { free: true });
     const s = U.mm(c);
     if (s.connoisseur) U.guard(c, pw(c, 'crumbula/connoisseur'));
+    /* ENDLESS PANTRY: it does not Vanish -- it goes to the discard pile and
+       comes round again. (The Power set a flag nothing read.) */
+    if (s.endlessPantry && pw(c, 'crumbula/endless-pantry') > 0 && typeof c.setVanish === 'function') c.setVanish(c.card, false);
   }),
   upgrade: { nums: { n: 2 } },
 };
@@ -1196,7 +1199,7 @@ const rares = [
   {
     id: 'crumbula/endless-pantry', name: 'Endless Pantry', companion: SLUG, type: POWER, rarity: RARE,
     cost: 2, target: SELF, keywords: ['leftover'],
-    text: '[Leftover]s cost 1 and no longer [Vanish] — they go to your discard pile and come round again.',
+    text: '[Leftover]s no longer [Vanish] — they go to your discard pile and come round again.',
     flavor: 'It is not endless. It is simply very large.',
     nums: {},
     effect: eff((c) => power(c, 'crumbula/endless-pantry', 1, (x) => { U.mm(x).endlessPantry = true; })),
