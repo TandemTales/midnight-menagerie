@@ -22108,8 +22108,10 @@ void main(){
   float pfTop = (1.0 - smoothstep(0.6, 3.2, fpx)) * smoothstep(0.35, 0.85, -g.y)
               * smoothstep(0.12, 0.30, vUv.y) * pfOn;
   /* tooth: long strokes across, short up, at 9 and 4 cm */
-  float pfB = mmFbm3(vec2(sp.x*11.0, sp.y*25.0) + vSeed*5.3) - 0.5;
-  albedo *= 1.0 + pfB*0.16*pfOn*smoothstep(4.0, 7.0, 0.09/pfPx);
+  /* (one noise tap, not an fbm: this is paid on every prop pixel in the
+     house, and the Foyer and the Greenhouse are already at the budget) */
+  float pfB = mmNoise(vec2(sp.x*11.0, sp.y*25.0) + vSeed*5.3) - 0.5;
+  albedo *= 1.0 + pfB*0.18*pfOn*smoothstep(4.0, 7.0, 0.09/pfPx);
 
   /* --- A RECESS IS DARKER THAN THE FACE IT IS CUT INTO ----------------------
      Round 8's third insight, and the one that turned the wall's panelling from
@@ -22214,8 +22216,8 @@ void main(){
   float lSide = clamp(lsS / lsW, -1.0, 1.0);
   float lUp   = clamp(lsU / lsW, 0.0, 1.0);
   float pfU   = (vUv.x - 0.5) * 2.0 * sign(lSide + 1e-4);
-  float pfTurn = mix(1.0, 0.58 + 0.56*smoothstep(-0.80, 0.45, pfU),
-                     clamp(abs(lSide)*1.8, 0.35, 1.0) * pfOn);
+  float pfSide = clamp(abs(lSide)*1.8, 0.35, 1.0) * pfOn;
+  float pfTurn = mix(1.0, 0.58 + 0.56*smoothstep(-0.80, 0.45, pfU), pfSide);
   pfTurn *= 1.0 + pfTop * (0.55 + 0.75*lUp);
   vec3 col = albedo * (uAmbient + uAccent * 0.13 + diff * pfTurn) + spec * 0.85;
 #if MM_WINGS == 1
@@ -22283,6 +22285,14 @@ void main(){
      lit wall to its shadowed one, the line of light on the lit arris, and
      the inked groove -- on the lit colour, so the ceiling cannot eat them. */
   col *= (1.0 + fWall*0.24) * (1.0 + fLit*0.55) * (1.0 - fInk*0.72);
+  /* THE SHARED FINISH, ON THE LIT COLOUR (round 28): the same three marks
+     again, after the ceiling -- a drawn object already carries its light in
+     its own paint, and a near prop sits on the knee where a mark laid in
+     albedo is compressed to nothing (the column's flutes found that first).
+     The turn and the core shadow; the lit top edge; the dark seat. */
+  col *= mix(1.0, 0.74 + 0.36*smoothstep(-0.80, 0.45, pfU), pfSide*0.85);
+  col *= 1.0 + pfTop*(0.28 + 0.34*lUp);
+  col *= 1.0 - 0.40*pfFoot*pfOn;
 
   /* --- AND A CHROMA CEILING, the same shape and for the same reason -------
      Measured: a prop in UI/*.png reads 0.19-0.43 mean saturation -- the skull
@@ -22918,8 +22928,14 @@ void main(){
        actually sits, the arris drops to a third and narrows to a pixel and a
        half, and two drawn lines -- the chamfer and the shadow in the reveal --
        give the section its depth. */
-    float gr = mmFbm3(vec2(p.x*9.0, p.y*26.0) + uSeed*2.0);
-    vec3 colB = uColor * (0.62 + 1.05*gr) * (1.0 - smoothstep(soff, 1.0, p.y)*0.42);
+    /* (round 28: SAWN OAK, its grain running the length of the beam -- an
+       fbm at 9 x 26 cycles read as a mottled grey stone lid, "a flat grey
+       band runs across the top as the ceiling" (the Kitchens) and "a milky
+       grey band" (the Kennels), both judges -- and a stop darker, the
+       unlit near timber it is) */
+    float gr = 0.55*mmFbm3(vec2(p.x*2.4, p.y*95.0) + uSeed*2.0)
+             + 0.45*mmNoise(vec2(p.x*1.1 + uSeed, p.y*260.0));
+    vec3 colB = uColor * vec3(1.10, 0.92, 0.78) * (0.40 + 0.80*gr) * (1.0 - smoothstep(soff, 1.0, p.y)*0.50);
     float aris = max(aaY*1.4, 0.0018);
     colB += uRim * beam * (1.0 - smoothstep(aris, aris + 0.0026, abs(p.y - soff - 0.0034))) * 0.155;
     colB *= 1.0 - beam * (1.0 - smoothstep(aris, aris + 0.0030, abs(p.y - soff - 0.0135))) * 0.55;

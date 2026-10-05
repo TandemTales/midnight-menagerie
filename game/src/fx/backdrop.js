@@ -926,6 +926,15 @@ export class Backdrop {
       vertexShader: SHADOW_VERT, fragmentShader: SHADOW_FRAG,
       transparent: true, depthWrite: false, depthTest: true,
       blending: THREE.MultiplyBlending, fog: false,
+      /* ROUND 28 (MAUVEINE): THE CONTACT SHADOWS NEVER DREW. SHADOW_VERT
+         lays the PlaneGeometry's y along +z, which is a reflection, not a
+         rotation: the quad's front face points DOWN, and a FrontSide
+         material culls it from every camera that looks at a floor. So since
+         round 2 "with it they are in the room" has been true of no prop in
+         the house -- found by flooding this program red and finding not one
+         red pixel -- and both survey judges' one system defect, "flat-shaded
+         primitives with no contact shadows", was this line. */
+      side: THREE.DoubleSide,
     });
     this.shadows = new THREE.Mesh(shGeo, this.shadowMat);
     this.shadows.frustumCulled = false;
@@ -2196,7 +2205,7 @@ export class Backdrop {
         ss2[i * 2 + 0] = p.w * (chair ? 1.7 : 2.0); ss2[i * 2 + 1] = p.w * (chair ? 1.05 : 1.15);
         /* (round 28: a contact a step denser -- the shared rule, see
            _castShadows -- 0.52-0.78 under a lit floor read as no shadow) */
-        st2[i] = chair ? 1.10 + 0.14 * (1 - p.tone) : 0.80 + 0.22 * (1 - p.tone);
+        st2[i] = chair ? 0.95 + 0.12 * (1 - p.tone) : 0.70 + 0.20 * (1 - p.tone);
         /* A LENGTH OF HEDGE (28, round 22) is a wall, not a pot: its shadow
            is a band along its foot, not an ellipse twice its length across
            the path. A pumpkin (27) sits in a dense little pool of its own. */
@@ -2465,7 +2474,12 @@ export class Backdrop {
       const a = list[i];
       off[k * 3 + 0] = a.x; off[k * 3 + 1] = 0.018; off[k * 3 + 2] = a.z ?? -4;
       sc[k * 2 + 0] = (a.r ?? 0.9) * 2.2; sc[k * 2 + 1] = (a.r ?? 0.9) * 1.25;
-      st[k] = a.strength ?? 0.62;
+      /* (round 28: OFF. These slots were culled with every prop's until this
+         round -- see side: DoubleSide above -- and a fighter's ground shadow
+         is the floor's own (setActors, FLOOR_FRAG's contact and throw), so
+         drawing them now would put a second shadow under every fighter and an
+         orphan one under the showcase's hidden stand-in. Kept, at nothing.) */
+      st[k] = 0;
       this._shdCast.array[k * 2] = 0; this._shdCast.array[k * 2 + 1] = 0;
     }
     this._shdOffset.needsUpdate = this._shdScale.needsUpdate = this._shdStr.needsUpdate = true;
