@@ -54,7 +54,9 @@ check reads Taffy's cream gloss as background; leave it red, do not lower it).
 
 **IN FLIGHT (2026-10-04, 21:40): ROUND 28** -- props and darks, briefed in
 `BRIEF-r28.md`, launched as Workflow run `wf_94d70174-b3a` from session
-`d6f2d6fc` at base `71146686`. Worktrees `C:/UILOOP/r28/wt/r28-rooms-{a,b,c}`
+`d6f2d6fc` at base `71146686`; all three builders hit the session limit
+mid-build (2, 3 and 5 commits, trees clean) and were RESUMED 2026-10-05 20:10
+as run `wf_7244ff26-ed1`. Worktrees `C:/UILOOP/r28/wt/r28-rooms-{a,b,c}`
 (NAPLES 9121, MAUVEINE 9122, TERREVERTE 9123), baselines (TICKING) in
 `C:/UILOOP/r28/judging/r28/rooms/`. If this session ended before the result:
 finish it as a NEW run of only what is unfinished (README of this file, "If a
