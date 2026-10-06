@@ -988,6 +988,9 @@ export const REGIONS = {
     /* (round 28: "the ceiling is a milky grey band" -- a BEAMED ceiling,
        pattern 6, the kitchens' too, where 8 is the Lampworks' iron truss) */
     room: { w: 20, d: 9, h: 4.0, side: 0.0, ceilPattern: 6, wallPad: 3.2 },
+    /* (round 28: and the beams a stop down -- still "a milky grey band"
+       across the top of both rooms at full gain) */
+    ceilGain: 0.40,
     cam: { y: 2.55, z: 5.4, look: 1.05, fov: 52 },
     deep: '#1c141a', mid: '#3a2b23', hi: '#614a32', accent: '#768e9b',
     /* (round 28, a palette COLOUR, because the dark was too pale: "the floor

@@ -4216,6 +4216,31 @@ float subjectH(vec2 q, float far, out float occ){
       br = tombs*1.20 + cols*tombs*0.30 + disc*0.30 - doors*0.30;
       dark = doors;
       gTint = tombs*(1.0 - doors)*0.95;        // white marble, and a bronze door
+#if MM_R25W == 4
+      /* ROUND 28: A TOMB IS BUILT OF BLOCKS, AND WEATHERS. Under the moon
+         the four were white cut-outs, flat as card beside the painted house
+         -- the survey's "flat-shaded primitives". Ashlar courses inked at
+         0.42 m with their perpends broken course by course; each block its
+         own value; rain streaks running down from every ledge; the marble a
+         stop under white, greyed with a century; the shade side of each
+         monument (away from the moon on the left) a value down, so it turns;
+         and a column's shaft rounded across its width. */
+      {
+        float crs = floor(m.y/0.42);
+        float pp  = m.x + mod(crs, 2.0)*0.45;
+        float jit = mmHash11(floor(pp/0.90)*3.1 + crs*7.7);
+        float jB  = mmInkP(0.21 - mmRowX(m.y, 0.42), aaB/1.2, 0.9);
+        float jP  = mmInkP(mmRowX(pp, 0.90), aaB/1.2, 0.9);
+        float face = tombs*(1.0 - doors)*(1.0 - cols);
+        gInk = max(gInk, face*max(jB*0.55, jP*0.40));
+        float streak = mmNoise(vec2(m.x*9.0, m.y*0.7 + uSeed))*smoothstep(0.55, 0.85, mmNoise(vec2(m.x*3.1, 1.7)));
+        /* each monument's own centre, so its far half is its shade side */
+        float cxT = m.x < 6.15 ? a.x/1.88 : (m.x < 10.5 ? b.x/1.42 : (m.x < 14.3 ? c.x/1.55 : o.x/0.60));
+        float shade = smoothstep(-0.15, 0.95, cxT);
+        float colR = cols*tombs*(1.0 - abs(fract((abs(a.x) - 0.98)/0.30 + 0.5) - 0.5)*2.0);
+        gTint = tombs*(1.0 - doors)*(0.52 + 0.16*(jit - 0.5) - 0.30*streak - 0.68*shade + 0.20*colR);
+      }
+#endif
     }
 #endif
     bars *= 1.0 - bld;
@@ -4963,7 +4988,9 @@ float passWallH(vec2 q, float qpx, out float occ){
       float spine2 = step(0.05, sy2)*step(sy2, 0.05 + 0.24*(0.7 + 0.3*mmHash11(sid2*1.3)));
       vec3 bcol2 = mix(vec3(0.42, 0.14, 0.10), vec3(0.18, 0.24, 0.30), mmHash11(sid2*3.7));
       bcol2 = mix(bcol2, vec3(0.34, 0.28, 0.12), step(0.7, mmHash11(sid2*5.1)));
-      oak = mix(oak, mix(vec3(0.03, 0.02, 0.015), bcol2*0.9, spine2), op);
+      /* (round 28: the spines at a third -- under the end wall's sconce
+         pools at 0.9 they came back a white panel at the vanishing point) */
+      oak = mix(oak, mix(vec3(0.03, 0.02, 0.015), bcol2*0.30*(lum*3.0 + 0.30), spine2), op);
       /* (round 28: the library through it LIT, not a white panel -- at
          0.25-0.60 under the end wall's sconces it burned out to a blank
          rectangle at the vanishing point) */
@@ -5043,7 +5070,7 @@ float passWallH(vec2 q, float qpx, out float occ){
     float sx = abs(cx) - 1.24;
     vec2 sp2 = vec2(sx, q.y - 1.66);
     if (lib < 0.5) p28Sconce(sp2, px, scBrass, scWax, oak, h, scE);
-    p28Pool(vec2(sx, q.y - 1.85), vec2(1.40, 1.35), 3.4, scWarm);
+    p28Pool(vec2(sx, q.y - 1.85), vec2(1.40, 1.35), lib > 0.5 ? 1.4 : 3.4, scWarm);
     p28Pool(vec2(cx, q.y - 1.10), vec2(1.10, 1.60), lib > 0.5 ? 0.7 : 2.4, vec3(1.00, 0.66, 0.34)*1.5);
     /* the architrave round the door, moulded, catching both sconces */
     float arch = step(abs(cx), BW*0.5 + 0.12)*step(q.y, HR1 + 0.12)
@@ -5460,7 +5487,9 @@ float kitchenWallH(vec2 q, float qpx, out float occ){
     h = mix(h, 1.12, rev*0.6);
     mmPen(max(abs(wcx) - whw, max(wy0 - q.y, q.y - wHead)), 1.2, 0.9);
     mmPen(max(abs(wcx) - whw - 0.11, max(wy0 - 0.12 - q.y, q.y - wHead - 0.13)), 1.1, 0.7);
-    emit += inW*(1.0 - bars)*glow*0.11;
+    /* (0.06: a night sky through a basement sash is the darkest light in
+       the room, deep blue, brightest at the sill where the yard is) */
+    emit += inW*(1.0 - bars)*glow*0.06*(0.55 + 0.45*smoothstep(1.1, 0.1, wp.y));
     emitC = mix(emitC, vec3(0.46, 0.62, 1.00), inW);
     /* the sill, stone, catching its own window */
     float sill = (1.0 - smoothstep(whw + 0.16 - px, whw + 0.16 + px, abs(wcx))) * mmBandA(q.y, wy0 - 0.17, wy0 - 0.08, px);
