@@ -621,6 +621,9 @@ function freshLightSlots(uniforms) {
   return uniforms;
 }
 
+/* the room's mansion: UI/mainMenu.png's house, cut out (round 28) */
+const HOUSE_STILL_URL = new URL('../../assets/ui/house-still.webp', import.meta.url).href;
+
 export class Backdrop {
   constructor(scene) {
     this.scene = scene;
@@ -673,6 +676,11 @@ export class Backdrop {
            and how big the exterior's house is (round 14). See WALL_FRAG. */
         uSubjX: { value: 0 }, uSubjMode: { value: 0 }, uSubjDir: { value: 1 },
         uHouseS: { value: 1 }, uQuiet: { value: 0 }, uBoardBand: { value: 0 },
+        /* ROUND 28: mainMenu.png's own mansion, standing where the drawn one
+           stood in the Pumpkin Grounds and the Graveyard (MM_HOUSE28 in the
+           wall program; loaded below, off until it has) */
+        uHouseTex: { value: null }, uHouseTexOn: { value: 0 },
+        uHouseTexG: { value: 1 / 1.3 }, uHouseTexK: { value: 1 },
         uSkyGlow: { value: 1.0 }, uOpenSky: { value: 0 },
         uSkyDeep: { value: new THREE.Color(0x141725) },
         uDamHue: { value: new THREE.Color(0.46, 0.24, 0.66) },
@@ -696,6 +704,21 @@ export class Backdrop {
     });
     this.wall = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), this.wallMat);
     this.wall.renderOrder = 0;
+    /* THE ONE MANSION (round 28): the sample's house, cut out on alpha by
+       tools/prep_menu_art.py. sRGB, mipmapped -- seen at a third of its size
+       over a court wall, a mip is what keeps every spire and finial smooth --
+       and clamped at its edges. Until it arrives, and if it never does, the
+       drawn house stands (uHouseTexOn 0). */
+    new THREE.TextureLoader().load(HOUSE_STILL_URL, (t) => {
+      t.colorSpace = THREE.SRGBColorSpace;
+      t.wrapS = t.wrapT = THREE.ClampToEdgeWrapping;
+      t.generateMipmaps = true;
+      t.minFilter = THREE.LinearMipmapLinearFilter;
+      t.magFilter = THREE.LinearFilter;
+      t.anisotropy = 4;
+      this.wallMat.uniforms.uHouseTex.value = t;
+      this.wallMat.uniforms.uHouseTexOn.value = 1;
+    }, undefined, () => { /* the drawn house stands */ });
     this.group.add(this.wall);
 
     /* ----------------------------------------------------------- side walls */
@@ -2573,6 +2596,10 @@ export class Backdrop {
        and the Graveyard's mansion stands further off, so its roofs, turrets
        and spires are in the frame against the sky, as mainMenu.png's are) */
     w.uHouseS.value = (p.houseS ?? 1) * (p.houseK ?? 1);
+    /* the grade, inverted for the painted house: 1/contrast, and the exposure
+       divided out, times the wing's own level for it (housePaint) */
+    w.uHouseTexG.value = 1 / Math.max(p.contrast ?? 1.3, 0.5);
+    w.uHouseTexK.value = (p.housePaint ?? 1) / Math.max(p.exposure ?? 2.0, 0.2);
     w.uQuiet.value = p.quietStair ? 1 : 0;
     /* ROUND 16 ITEM 4, judge 1 on combat: "the wall behind the Dust Bunny is
        now the brightest patch in the top half and the enemy's grey fur loses

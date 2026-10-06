@@ -919,7 +919,10 @@ export const REGIONS = {
     lights: [
       { kind: 'warm', x: -2.5, y: 1.90, z: -4.2, color: '#dfaa63', intensity: 1.89, radius: 4.13 },
       { kind: 'warm', x: 2.5, y: 1.60, z: -10.0, color: '#db944d', intensity: 1.08, radius: 4.3 },
-      { kind: 'cold', x: 1.8, y: 1.60, z: -16.5, color: '#8e78ca', intensity: 1.63, radius: 7.0 },
+      /* (round 28: 3 m short of the end wall, from 0.5 -- the passage is
+         17 m now, and a lamp standing against the end wall burned the
+         library's open case to a white panel at the vanishing point) */
+      { kind: 'cold', x: 1.8, y: 1.60, z: -14.0, color: '#8e78ca', intensity: 1.63, radius: 7.0 },
     ],
     /* (graft: a passage behind the walls has no window for a shaft) */
     shafts: { count: 2, spread: 4, y: 4.0, z: -11.0, angle: 0.08, width: 1.5, intensity: 0.0, pool: 2.1 },
@@ -1095,6 +1098,9 @@ export const REGIONS = {
     /* (round 28: the mansion over the court wall seen whole -- see the
        Graveyard's houseK) */
     houseK: 0.80,
+    /* (round 28: the painted house a little up under this wing's 0.9
+       exposure -- it is the court's whole skyline) */
+    housePaint: 1.15,
   },
 
   /* ── 17. The Heart of the House ────────────────────────────────────────────

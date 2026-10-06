@@ -250,6 +250,16 @@ uniform float uWains;
              house and the one moon in the one place. */
 uniform float uDoorX;
 uniform vec2  uHouse;
+#if MM_HOUSE28 == 1
+/* ROUND 28 (MAUVEINE): THE ONE MANSION IS mainMenu.png's. uHouseTex is the
+   house cut out of the sample on alpha (tools/prep_menu_art.py, house-still),
+   in sRGB; uHouseTexOn is 1 once it has loaded (until then, and if it never
+   does, the drawn house of rounds 8-28 stands); uHouseTexG is 1/contrast and
+   uHouseTexK the exposure's inverse times a level, so the grade hands the
+   screen the painting's own values -- see mmGradeInv. */
+uniform sampler2D uHouseTex;
+uniform float uHouseTexOn, uHouseTexG, uHouseTexK;
+#endif
 /* WHERE THE SUBJECT STANDS ON ITS WALL (MADDER, round 11; round 14).
    uSubjX     metres along the back wall from its middle; the principal doorway,
               which is the stair's own landing door, moves with it. 0 on the
@@ -642,6 +652,9 @@ float gTint;
    subject does not say, so no other room changes. */
 vec3 gCol;
 float gColAmt;
+/* (round 28: what of the exterior's drawn house is showing, and where the
+   painted one may stand -- wallH writes them, main() reads them; MM_HOUSE28) */
+float gHouseM, gHouseVis, gHousePZ;
 /* ...and where the wall is NOT PAPERED (round 15). The damask prints over
    everything the wall draws, which is right for a panel and wrong for a
    canvas: a portrait with the hall's fleur-de-lis showing through it is the
@@ -4951,7 +4964,10 @@ float passWallH(vec2 q, float qpx, out float occ){
       vec3 bcol2 = mix(vec3(0.42, 0.14, 0.10), vec3(0.18, 0.24, 0.30), mmHash11(sid2*3.7));
       bcol2 = mix(bcol2, vec3(0.34, 0.28, 0.12), step(0.7, mmHash11(sid2*5.1)));
       oak = mix(oak, mix(vec3(0.03, 0.02, 0.015), bcol2*0.9, spine2), op);
-      gWEmit = max(gWEmit, op*(0.25 + 0.35*spine2));
+      /* (round 28: the library through it LIT, not a white panel -- at
+         0.25-0.60 under the end wall's sconces it burned out to a blank
+         rectangle at the vanishing point) */
+      gWEmit = max(gWEmit, op*(0.05 + 0.15*spine2));
       gWEmitC = mix(gWEmitC, vec3(1.00, 0.72, 0.40)*0.9, op);
       h = mix(h, 0.6 + 0.2*spine2, op);
     }
@@ -5028,7 +5044,7 @@ float passWallH(vec2 q, float qpx, out float occ){
     vec2 sp2 = vec2(sx, q.y - 1.66);
     if (lib < 0.5) p28Sconce(sp2, px, scBrass, scWax, oak, h, scE);
     p28Pool(vec2(sx, q.y - 1.85), vec2(1.40, 1.35), 3.4, scWarm);
-    p28Pool(vec2(cx, q.y - 1.10), vec2(1.10, 1.60), 2.4, vec3(1.00, 0.66, 0.34)*1.5);
+    p28Pool(vec2(cx, q.y - 1.10), vec2(1.10, 1.60), lib > 0.5 ? 0.7 : 2.4, vec3(1.00, 0.66, 0.34)*1.5);
     /* the architrave round the door, moulded, catching both sconces */
     float arch = step(abs(cx), BW*0.5 + 0.12)*step(q.y, HR1 + 0.12)
                * (1.0 - step(abs(cx), BW*0.5)*step(q.y, HR1));
@@ -5436,13 +5452,15 @@ float kitchenWallH(vec2 q, float qpx, out float occ){
     float moon = (1.0 - smoothstep(0.17 - px, 0.17 + px, length(wp - vec2(-0.24*sign(cx), 0.86))))*step(cx, 0.0);
     float glow = 0.55 + 0.45*smoothstep(1.1, 0.0, wp.y) + 1.8*moon;
     vec3 night = mix(vec3(0.020, 0.034, 0.075), vec3(0.060, 0.090, 0.160), smoothstep(1.2, 0.0, wp.y));
-    col = mix(col, mix(night, vec3(0.02, 0.02, 0.025), bars), inW);
+    /* (the glass itself near-black -- the night is in its EMISSION; as an
+       albedo under the range's light the panes came back pale lavender) */
+    col = mix(col, mix(night*0.30, vec3(0.012, 0.012, 0.016), bars), inW);
     col = mix(col, brick*0.55, rev);
     h = mix(h, 0.62, inW);
     h = mix(h, 1.12, rev*0.6);
     mmPen(max(abs(wcx) - whw, max(wy0 - q.y, q.y - wHead)), 1.2, 0.9);
     mmPen(max(abs(wcx) - whw - 0.11, max(wy0 - 0.12 - q.y, q.y - wHead - 0.13)), 1.1, 0.7);
-    emit += inW*(1.0 - bars)*glow*0.16;
+    emit += inW*(1.0 - bars)*glow*0.11;
     emitC = mix(emitC, vec3(0.46, 0.62, 1.00), inW);
     /* the sill, stone, catching its own window */
     float sill = (1.0 - smoothstep(whw + 0.16 - px, whw + 0.16 + px, abs(wcx))) * mmBandA(q.y, wy0 - 0.17, wy0 - 0.08, px);
@@ -9849,6 +9867,7 @@ float wallH(vec2 q, out float occ){
      passages; 11 is the Pumpkin Grounds' exterior) -- and round 23's four,
      12 the Bathhouse, 13 the Lampworks, 14 the Attic, 15 the Kennels */
   gTint = 0.0; gCol = vec3(0.0); gColAmt = 0.0; gRailQuiet = 0.0; gBare = 0.0;
+  gHouseM = 0.0; gHouseVis = 0.0; gHousePZ = 0.0;
   gPtAmt = 0.0; gPatch = 0.0; gPtP = vec2(0.0); gPtHs = vec2(1.0); gPtK = vec2(-1.0); gPtSd = 0.0;
 #if MM_ROOMS == 8
   return hedgeWallH(q, qpx, occ);
@@ -11080,6 +11099,7 @@ float wallH(vec2 q, out float occ){
         hc *= 1.0 + 0.35*sc2;
       }
       float houseM = roofCov * (1.0 - occ) * noSub;
+      gHouseM = houseM; gHouseVis = noSub * (1.0 - occ);
       gCol = mix(gCol, hc, houseM);
       gColAmt = max(gColAmt, houseM);
     }
@@ -11092,6 +11112,24 @@ float wallH(vec2 q, out float occ){
   return h + sub;
 }
 
+#if MM_HOUSE28 == 1
+/* THE GRADE, RUN BACKWARDS (round 28): the colour that, put through the
+   grade's contrast power, three.js's ACES filmic at the renderer's 1.02 and
+   its matrices, comes out as d -- a linear display colour. So a painted
+   texture can be handed to the screen at its own values; the exposure is in
+   the caller's gain. The RRT/ODT fit a/b = t inverted as its quadratic. */
+vec3 mmGradeInv(vec3 d, float invC){
+  const mat3 OUT_INV = mat3(vec3(0.643038, 0.059269, 0.005962), vec3(0.311187, 0.931436, 0.063929), vec3(0.045775, 0.009295, 0.930118));
+  const mat3 IN_INV  = mat3(vec3(1.764741, -0.147028, -0.036337), vec3(-0.675778, 1.160252, -0.162436), vec3(-0.088963, -0.013224, 1.198773));
+  /* (held under the fit's shoulder: inverted at its asymptote a lit pane's
+     red ran to infinity and the input matrix turned the window GREEN) */
+  vec3 t = clamp(OUT_INV * d, 0.0, 0.80);
+  vec3 A = 1.0 - 0.983729*t, B = 0.0245786 - 0.4329510*t, C = -(0.000090537 + 0.238081*t);
+  vec3 v = (-B + sqrt(max(B*B - 4.0*A*C, 0.0)))/(2.0*A);
+  vec3 y = max(IN_INV * v, 0.0) * (0.6/1.02);
+  return pow(y, vec3(invC));
+}
+#endif
 /* Night sky used by the exterior mode: gradient, stars, moon and its halo. */
 vec3 skyColor(vec2 q, float horizon){
   vec2 c = vec2(q.x - uSize.x*0.5, q.y);
@@ -12168,6 +12206,38 @@ void main(){
       float wCov = clamp(gTreeN + gTreeF, 0.0, 1.0) * solid;
       col = mix(col, mix(woodF, woodN, clamp(gTreeN/max(wCov, 1e-3), 0.0, 1.0)), wCov*0.92);
     }
+#if MM_HOUSE28 == 1
+    /* ═══ ROUND 28 (MAUVEINE): THE MANSION OF mainMenu.png ═══════════════════
+       Both survey judges, both wings: "the same box-mansion", "a blocky box
+       model whose windows and carvings are stair-stepped pixel glyphs ...
+       nowhere near mainMenu.png's turrets, slate roofs and ivy". Twenty
+       rounds of drawing it in relief got it to hipped roofs and needle caps;
+       the sample IS the house, and it is the title's house too, so the one
+       building the player sees from the menu stands over the court wall and
+       the churchyard railing as itself -- turrets, slate, dormers, finials,
+       chimneys, ivy and its own lit windows among the dark (house-still).
+       It stands where the drawn house stood, in the house's metres (hqw), so
+       it scales and moves with each room's vantage as that did; behind the
+       court wall, the railing and every monument (gHouseVis, sOcc), and in
+       front of the wood. Wherever the drawn house showed and the painting
+       does not -- between its spires -- that is sky now. Not lit by the rig:
+       a painting carries its own moonlight, and the grade is inverted for it
+       (mmGradeInv) so it reaches the screen at the sample's own values. */
+    if (uHouseTexOn > 0.5 && uFar > 0.5) {
+      const float PW = 24.0, PX0 = -10.3, PH = 24.0*572.0/1122.0;
+      vec2 pu = vec2((hqw.x - PX0)/PW, hqw.y/PH);
+      vec4 tx = texture2D(uHouseTex, clamp(pu, vec2(0.0005), vec2(0.9995)));
+      float inR = step(0.0, pu.x)*step(pu.x, 1.0)*step(0.0, pu.y)*step(pu.y, 1.0);
+      float vis = clamp(gHouseVis, 0.0, 1.0) * (1.0 - clamp(sOcc, 0.0, 1.0));
+      col = mix(col, skyColor(q, 2.0), clamp(gHouseM, 0.0, 1.0));
+      col = mix(col, mmGradeInv(tx.rgb, uHouseTexG) * uHouseTexK, tx.a * inR * vis);
+      /* ...and the drawn house's LINES go with it: its roofline pen, its
+         courses and its relief's ink are laid after this (the drawn line,
+         below), and over the painting or the sky between its spires they
+         were the old house's ghost. Everywhere the drawn house could reach. */
+      gHousePZ = vis * step(-11.0, hqw.x) * step(hqw.x, 14.2) * step(hqw.y, 17.5);
+    }
+#endif
 #endif
   }
 
@@ -12293,6 +12363,9 @@ void main(){
   /* the pen's own lines (gInk, round 21) are drawn at the same strength as
      the relief's: the darker of the two, so a feature drawn both ways is not
      inked twice */
+#if MM_HOUSE28 == 1
+  drawn *= 1.0 - gHousePZ; gInk *= 1.0 - gHousePZ;     // (round 28: see the painted house)
+#endif
   col *= 1.0 - max(drawn.x, gInk * wDraw) * uInk;
   col += col * drawn.y * uLip;
 
@@ -21671,7 +21744,10 @@ void main(){
     /* the top is SCRUBBED, the palest board in a kitchen, and seen from a
        standing eye its face is a band of light the length of the table */
     vec2 tm = (vUv - vec2(0.5, 0.0))*vSize;
-    deal *= 1.0 + 0.9*smoothstep(0.80, 0.84, tm.y)*step(tm.y, 0.865);
+    /* (round 28: 2.0 from 0.9 -- against the range behind them the tables
+       were dark frames, "black wire outlines"; the scrubbed top is the one
+       pale plank in the room) */
+    deal *= 1.0 + 2.0*smoothstep(0.80, 0.84, tm.y)*step(tm.y, 0.865);
     deal *= 1.0 - 0.45*step(tm.y, 0.77);
     /* (round 28) the apron is a row of DRAWERS: each front a board a step
        lighter than the rails round it, a dark seam about it and a brass knob
@@ -22933,9 +23009,14 @@ void main(){
        band runs across the top as the ceiling" (the Kitchens) and "a milky
        grey band" (the Kennels), both judges -- and a stop darker, the
        unlit near timber it is) */
-    float gr = 0.55*mmFbm3(vec2(p.x*2.4, p.y*95.0) + uSeed*2.0)
-             + 0.45*mmNoise(vec2(p.x*1.1 + uSeed, p.y*260.0));
-    vec3 colB = uColor * vec3(1.10, 0.92, 0.78) * (0.40 + 0.80*gr) * (1.0 - smoothstep(soff, 1.0, p.y)*0.50);
+    /* (and the grain at a timber's scale: 2.4 cycles across the frame was
+       a blotch a third of the screen wide, which is what still read as a
+       mottled grey lid over the kennels' wash room. Streaks a few
+       centimetres apart, long along the beam, each board a value of its own) */
+    float gr = 0.50*mmFbm3(vec2(p.x*7.0, p.y*170.0) + uSeed*2.0)
+             + 0.30*mmNoise(vec2(p.x*16.0 + uSeed, p.y*520.0))
+             + 0.20*mmHash11(floor(p.x*9.0 + 0.5*sin(p.y*40.0)) + uSeed);
+    vec3 colB = uColor * vec3(1.10, 0.90, 0.74) * (0.30 + 0.74*gr) * (1.0 - smoothstep(soff, 1.0, p.y)*0.50);
     float aris = max(aaY*1.4, 0.0018);
     colB += uRim * beam * (1.0 - smoothstep(aris, aris + 0.0026, abs(p.y - soff - 0.0034))) * 0.155;
     colB *= 1.0 - beam * (1.0 - smoothstep(aris, aris + 0.0030, abs(p.y - soff - 0.0135))) * 0.55;
