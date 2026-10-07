@@ -2225,7 +2225,10 @@ export class Backdrop {
            stands on four feet with its seat over them, not on a plinth. */
         const chair = p.shape === 0 || p.shape === 63 || p.shape === 72;   // (round 25: and the drawn chairs)
         so2[i * 3 + 0] = p.x; so2[i * 3 + 1] = p.y + 0.015; so2[i * 3 + 2] = p.z + (chair ? p.w * 0.24 : 0);
-        ss2[i * 2 + 0] = p.w * (chair ? 1.7 : 2.0); ss2[i * 2 + 1] = p.w * (chair ? 1.05 : 1.15);
+        /* (round 28: 1.6 x 1.0 of its width, from 2.0 x 1.15 -- drawn at last,
+           a piano's or a tomb's pool four metres across took the lamp pool it
+           stood in with it; the foot is the dark, a hand round it the grey) */
+        ss2[i * 2 + 0] = p.w * (chair ? 1.7 : 1.6); ss2[i * 2 + 1] = p.w * (chair ? 1.05 : 1.0);
         /* (round 28: a contact a step denser -- the shared rule, see
            _castShadows -- 0.52-0.78 under a lit floor read as no shadow) */
         st2[i] = chair ? 0.95 + 0.12 * (1 - p.tone) : 0.70 + 0.20 * (1 - p.tone);
@@ -2460,6 +2463,10 @@ export class Backdrop {
       const p = castOf[i];
       ca[i * 2] = 0; ca[i * 2 + 1] = 0;
       if (!p || p.shape === 28 || p.shape === 24) continue;     // a hedge run and a planting bed are walls
+      /* (and a column is architecture: thrown 1.5 times its six metres across
+         the Ballroom's checker it put out the lamp pools the room is lit by --
+         the sweep caught it. It keeps its contact pool.) */
+      if (p.shape === 6 || (p.h || 1) > 3.2) continue;
       const h = Math.max(p.h || 1, 0.2), cy = (p.y || 0) + h * 0.5;
       let best = null, bw = 0;
       for (const l of ls) {
@@ -2477,7 +2484,9 @@ export class Backdrop {
          a third to one and a half of the prop's height so a lamp at shoulder
          height does not throw a shadow across the room */
       const over = Math.max(best.pos.y - (p.y || 0) - h * 0.8, 0.35);
-      const L = Math.min(1.5 * h, Math.max(0.35 * h, h * dxz / over)) * Math.min(1, 0.45 + bw);
+      /* ...and never more than 1.1 m: a throw is the cue that the thing stands
+         in the lamp's light, not a second lamp-shaped dark on the floor */
+      const L = Math.min(1.1, Math.min(1.5 * h, Math.max(0.35 * h, h * dxz / over)) * Math.min(1, 0.45 + bw));
       ca[i * 2] = dx * L; ca[i * 2 + 1] = dz * L;
     }
     this._shdCast.needsUpdate = true;
