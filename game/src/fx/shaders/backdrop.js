@@ -4846,7 +4846,12 @@ float passWallH(vec2 q, float qpx, out float occ){
     oak = mix(oak, vec3(0.05, 0.03, 0.02), cslit);
     oak = mix(oak, vec3(0.62, 0.40, 0.18)*(lum*2.4 + 0.03), cedge);
     oak *= 1.0 - 0.45*cshd;
-    gWEmit = cslit*(0.90 + 0.20*mmNoise(vec2(q.y*3.0, dci)))*smoothstep(-0.05, 0.40, q.y) + cedge*0.22;
+    /* (round 28: the library's lamps are low over its tables, so the crack
+       is brightest at desk height and a third of that under the cornice --
+       at an even 0.9 the full height of the case it read as a white tube,
+       the passages' "glowing slit" again) */
+    float fallC = 0.30 + 0.70*(1.0 - smoothstep(0.7, 2.6, q.y));
+    gWEmit = (cslit*0.52*(0.90 + 0.20*mmNoise(vec2(q.y*3.0, dci))) + cedge*0.15)*fallC*smoothstep(-0.05, 0.40, q.y);
     gWEmitC = vec3(1.00, 0.68, 0.32) * 0.85;
     mmPen(abs(cxl) - CW*0.5, 1.3, isCD*0.9);
     gInk = max(gInk, mmInkP(cxl - (cg0 - 0.045), px, 1.1)*0.8*ajC*onC);
@@ -12270,7 +12275,7 @@ void main(){
          courses and its relief's ink are laid after this (the drawn line,
          below), and over the painting or the sky between its spires they
          were the old house's ghost. Everywhere the drawn house could reach. */
-      gHousePZ = vis * step(-11.0, hqw.x) * step(hqw.x, 14.2) * step(hqw.y, 17.5);
+      gHousePZ = vis * step(-14.0, hqw.x) * step(hqw.x, 17.0) * step(hqw.y, 40.0);   // (its spires' and gables' ink reach far over 17.5 m from the patch's low eye -- a teal gable ghost in its sky)
     }
 #endif
 #endif
