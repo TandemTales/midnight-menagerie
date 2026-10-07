@@ -12269,7 +12269,9 @@ void main(){
       vec4 tx = texture2D(uHouseTex, clamp(pu, vec2(0.0005), vec2(0.9995)));
       float inR = step(0.0, pu.x)*step(pu.x, 1.0)*step(0.0, pu.y)*step(pu.y, 1.0);
       float vis = clamp(gHouseVis, 0.0, 1.0) * (1.0 - clamp(sOcc, 0.0, 1.0));
-      col = mix(col, skyColor(q, 2.0), clamp(gHouseM, 0.0, 1.0));
+      /* (the drawn house's outline lit by its relief's normals sat a pixel either side of its coverage -- teal gables and ridges in the sky over the painting from the patch's low eye: the sky is laid a few pixels past that coverage too) */
+      float hmD = clamp(gHouseM + 4.0*fwidth(gHouseM), 0.0, 1.0);
+      col = mix(col, skyColor(q, 2.0), hmD);
       col = mix(col, mmGradeInv(tx.rgb, uHouseTexG) * uHouseTexK, tx.a * inR * vis);
       /* ...and the drawn house's LINES go with it: its roofline pen, its
          courses and its relief's ink are laid after this (the drawn line,
@@ -21701,6 +21703,34 @@ void main(){
     float brd = mmHash11(floor(sp.y/0.14)*3.7 + floor(sp.x/0.5)*1.3 + vSeed);
     vec3 deal = vec3(0.66, 0.48, 0.29)*(lum*2.0 + 0.030)*(0.78 + 0.34*brd)*(0.86 + 0.26*grain);
     albedo = mix(albedo, deal, 0.88);
+    /* (round 28) ITS JOINERY, DRAWN: the relief's battens, rails, brace and
+       board joints were a few per cent of normal, which at a passage's
+       distance is nothing -- a case read as a box. In paint: the battens and
+       the brace a sawn board paler than the boards they are nailed over, a
+       dark line along every edge of them and down every joint, at a pixel
+       or more, so the case is joinery from across the room. */
+    {
+      float upC = step(0.435*vSize.y, sp.y);
+      vec2  cm  = vec2(sp.x - vSize.x*0.5 - mix(-0.10, 0.16, upC)*vSize.x,
+                       sp.y - mix(0.000, 0.430, upC)*vSize.y);
+      float ch  = mix(0.440, 0.380, upC)*vSize.y;
+      float cw  = mix(0.240, 0.190, upC)*vSize.x;
+      float ax  = abs(cm.x);
+      float bw  = max(cw*0.16, 0.035);
+      float lw  = max(mpp.x, mpp.y)*1.1;
+      float bat = step(cw - bw, ax)*step(ax, cw);
+      float rail = (step(cm.y, ch*0.13) + step(ch*0.87, cm.y))*step(ax, cw);
+      float bd  = abs(cm.x*0.92 - (cm.y - ch*0.5)*0.78*sign(0.5 - upC + 0.01));
+      float brace = (1.0 - step(bw*0.55, bd))*step(ax, cw - bw)*step(ch*0.13, cm.y)*step(cm.y, ch*0.87);
+      float trim = clamp(bat + rail + brace, 0.0, 1.0);
+      albedo *= 1.0 + 0.32*trim;
+      float lines = (1.0 - smoothstep(0.0, lw, abs(ax - (cw - bw))))*step(ch*0.13, cm.y)*step(cm.y, ch*0.87)
+                  + (1.0 - smoothstep(0.0, lw, abs(cm.y - ch*0.13)))*step(ax, cw - bw)
+                  + (1.0 - smoothstep(0.0, lw, abs(cm.y - ch*0.87)))*step(ax, cw - bw)
+                  + (1.0 - smoothstep(0.0, lw, abs(bd - bw*0.55)))*step(ax, cw - bw)*step(ch*0.13, cm.y)*step(cm.y, ch*0.87)*(1.0 - bat)
+                  + (1.0 - smoothstep(0.0, lw, ch/6.0 - abs(mod(cm.y, ch/3.0) - ch/6.0)))*step(ax, cw - bw)*(1.0 - brace)*0.7;
+      albedo *= 1.0 - 0.55*clamp(lines, 0.0, 1.0)*step(0.0, cm.y)*step(cm.y, ch);
+    }
   }
 
   /* A HANGING IS TRIMMED, AND THAT IS WHAT NAMES IT. Round 15 fix 4, both
