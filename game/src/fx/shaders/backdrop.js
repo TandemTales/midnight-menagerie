@@ -4934,9 +4934,15 @@ float passWallH(vec2 q, float qpx, out float occ){
        cardboard flats" both judges -- and its light THROUGH the crack laid
        on the panels round it, p28Pool, which is what says the room beyond
        is lit) */
-    gWEmit = slit*beyond*0.40*(0.95 + 0.20*mmNoise(vec2(q.y*3.0, uTime*0.4)))*smoothstep(-0.05, 0.35, q.y)
-           + edge*0.26 + headL*0.45 + rev*0.30
-           + leaf*0.10*exp(-(gx1 - dx)/0.12);
+    /* (round 28, again: the crack's light FALLS from the lamp low in the room
+       beyond -- full at knee height, a third of it under the head -- and the
+       reveal and the leaf's edge take a share of it, not a tube's worth each:
+       seen down a side wall, slit + reveal + edge summed to one even pale
+       strip from floor to head, which is exactly the "glowing slit") */
+    float fallB = 0.34 + 0.66*(1.0 - smoothstep(0.5, 2.1, q.y));
+    gWEmit = slit*beyond*0.36*fallB*(0.95 + 0.20*mmNoise(vec2(q.y*3.0, uTime*0.4)))*smoothstep(-0.05, 0.35, q.y)
+           + (edge*0.15 + rev*0.11)*fallB + headL*0.30
+           + leaf*0.10*exp(-(gx1 - dx)/0.12)*fallB;
     {
       float ajX = far > 0.5 ? cx - (gx0 + gx1)*0.5 : q.x - uAjar.x - (gx0 + gx1)*0.5;
       float near2 = far > 0.5 ? 1.0 : step(abs(q.x - uAjar.x), 2.6)*step(0.001, uAjar.y);
@@ -13721,8 +13727,14 @@ void main(){
       float dd = dot(v, dir);
       float cc = v.x*dir.y - v.y*dir.x;
       float hw = 0.11 + max(dd, 0.0)*0.22;
-      float inW = (1.0 - smoothstep(hw - mp, hw + mp, abs(cc))) * smoothstep(-mp, mp, dd);
-      float fall = exp(-max(dd, 0.0)/1.7) * (0.55 + 0.45*smoothstep(0.0, 0.25, dd));
+      /* (round 28: its edges open into a penumbra as it goes -- a crack is
+         not a point, so a metre out the wedge's side is a hand of soft
+         light, not a ruled line; and it is spent by three metres. Two of
+         them crossing the passage at the jib doors' depth read as "the lit
+         floor ends in a hard trapezoid edge", both judges) */
+      float pen = mp + max(dd, 0.0)*0.16;
+      float inW = (1.0 - smoothstep(hw - pen, hw + pen, abs(cc))) * smoothstep(-mp, mp, dd);
+      float fall = exp(-max(dd, 0.0)/1.05) * (0.55 + 0.45*smoothstep(0.0, 0.25, dd));
       col += alb * vec3(1.00, 0.66, 0.30) * inW * fall * k * uGain;
     }
   }
@@ -15113,7 +15125,12 @@ float wfHeadstone(vec2 q, float px, float seed, float kq, bool paint){
   vec3 st = gyStone(seed);
   /* the stone's face, lit from the moon's side, its bevelled edge catching */
   float rnd = 0.80 + 0.30*kq*clamp(p.x/max(W, 0.1), -1.0, 1.0);
-  vec3 sc = st*rnd*(0.82 + 0.25*smoothstep(0.0, H, p.y));
+  /* (round 28: the moon on its shoulders and the grass's dark up its foot --
+     0.62 at the ground to 1.06 at the head, from 0.82-1.07 -- and the
+     weather in broad stains a hand across, so a near marble stone is a
+     worn stone and not "a flat pale slab", both judges) */
+  vec3 sc = st*rnd*(0.62 + 0.44*smoothstep(0.0, H, p.y));
+  sc *= 0.80 + 0.30*mmNoise(p*6.0 + seed*3.1);
   sc = gyWeather(sc, p, px, seed, 0.0);
   float bev = clamp(-d/0.016, 0.0, 1.0);
   sc *= mix(1.25 + 0.20*kq*sign(p.x), 1.0, bev);
@@ -17265,6 +17282,16 @@ vec3 wgPaint(vec2 m, vec2 msz, float shape, float seed, float px, float lum,
     vec3 trim  = pk < 0.72 ? vec3(0.80, 0.76, 0.64) : vec3(0.34, 0.24, 0.14);
     float wear = mmNoise(vec2(k.x*9.0, k.y*2.2) + seed*7.0);
     vec3 board = paint*E*1.35*(0.80 + 0.30*wear);
+    /* (round 28: WEATHERED -- each board its own value, and the paint worn
+       through to grey timber at the foot and along the board edges where
+       a dog has rubbed it: "the doghouses are flat-coloured boxes") */
+    {
+      float bI = floor((k.x + 0.6)/0.108);
+      board *= 0.82 + 0.32*mmHash11(bI*7.1 + seed*3.0);
+      float bare = smoothstep(0.62, 0.80, wear + 0.30*(1.0 - smoothstep(0.0, 0.30, k.y))
+                 + 0.25*mmNoise(vec2(k.x*40.0, k.y*6.0) + seed));
+      board = mix(board, vec3(0.30, 0.27, 0.23)*E*1.25*(0.8 + 0.3*wear), bare*0.75);
+    }
     col = board;
     float body = mmBox(k - vec2(0.0, 0.470), vec2(0.600, 0.385), 0.008);
     float roof = wgTri(k - vec2(0.0, 0.810), 0.760, 0.500);
@@ -17301,6 +17328,10 @@ vec3 wgPaint(vec2 m, vec2 msz, float shape, float seed, float px, float lum,
     float dy = (k.y - 0.08)/0.57;
     vec3 dark = vec3(0.035, 0.028, 0.030)*E*(0.8 + 0.8*smoothstep(0.0, 0.35, 0.215 - abs(k.x)));
     col = mix(col, dark, inD);
+    /* (round 28: A LIT INTERIOR -- the lamp over the run reaching in over
+       the sill: the straw bed on its floor and the back boards warm and
+       low, dark under the roof, so the door is a way in and not a hole) */
+    col += vec3(0.42, 0.28, 0.12)*E*inD*(1.0 - smoothstep(0.08, 0.34, k.y))*(0.55 + 0.45*smoothstep(0.20, 0.0, abs(k.x)));
     ink = max(ink, mmInkP(door, qpx, 1.4));
     /* its surround, a lighter reveal */
     float rev = step(0.0, door)*step(door, 0.035)*step(0.08, k.y);

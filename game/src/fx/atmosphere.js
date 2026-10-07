@@ -421,7 +421,13 @@ export const REGIONS = {
          pooling out of the arch across the flags as the room's focal light;
          its fitting is the range itself */
       { kind: 'warm', x: 0.0, y: 0.70, z: -7.2, color: '#ffa24c', intensity: 3.0, radius: 6.0, fit: 'none' },
-      { kind: 'cold', x: -6.6, y: 3.20, z: -8.8, color: '#3d5a8c', intensity: 1.1, radius: 7.0 },
+      /* (round 28: THE SECOND, COLD LIGHT -- the moon through the night
+         panes over the left-hand dresser, where it lays a blue edge on
+         the near table, its crocks and the left of the range: "a single
+         red wash" with "more than one value" asked for, both judges.
+         2.3 from 1.1, under the window from -6.6 out at the side wall,
+         and a moonlit blue where it was a navy no lamp could show)  */
+      { kind: 'cold', x: -4.6, y: 3.40, z: -8.4, color: '#5b75b0', intensity: 2.3, radius: 6.4, fit: 'none' },
     ],
     /* (no shafts: a kitchen has no window for one to come through) */
     shafts: { count: 2, spread: 11, y: 5.0, z: -8.0, angle: 0.18, width: 2.4, intensity: 0.0, pool: 1.6 },
@@ -1663,7 +1669,7 @@ export const ROOM_KINDS = {
        them: the fire in the range, the scullery's chandeliers over its two
        sinks and its copper's fire at a third of the range's) */
     kinds: [{ subject: 'range', room: { d: 0.68 }, cam: { z: -2.6, look: 0.05 },
-              lamps: [{ i: 2, x: 0.0, z: 0.94 }] },
+              lamps: [{ i: 2, x: 0.0, z: 0.94 }, { i: 3, x: -4.4, z: 0.86 }] },   // (round 28: the moon under its left window)
             { subject: 'scullery', room: { d: 0.66, w: 0.86 }, cam: { z: -2.0, look: 0.30 },
               swap: [[8, 29]], countScale: 0.40,
               lamps: [{ i: 0, x: -1.95, z: 0.62 }, { i: 1, x: 1.95, z: 0.66 },
