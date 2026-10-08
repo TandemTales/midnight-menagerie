@@ -52,16 +52,17 @@ check reads Taffy's cream gloss as background; leave it red, do not lower it).
   does something.
 - **Survey 3** (`docs/ui-pass/SURVEY-2026-10-04.md`): what is owed next.
 
-**ROUND 28 IS MERGED (2026-10-08): MAUVEINE, 2 of 2, 6.31 vs 3.92 (+2.39)**
-(`cad57a30`). It found every prop's contact shadow back-face culled since
-round 2 (one shared fix draws them in all 17 wings) and set mainMenu.png's own
-house behind the Pumpkin Grounds and Graveyard (BRIEF-r0 technique 1). Battery
-green but the known sprites halo (kid-clips and sprites/clips were transient
-GPU reds, green on rerun). **NEXT JOB: the graft, `docs/ui-pass/GRAFT-r28.md`**
--- FIRST a real perf regression: the Graveyard fight +9.9 ms (16.6 -> 26.5,
-gpuprof T_full, medium tier, 3 interleaved runs) and the Pumpkin Grounds +2.5;
-then NAPLES's passage beams + sconces and TERREVERTE's kennels/kitchens props
-(`VERDICTS-r28.md`). Losers: ui/r28-rooms-a (NAPLES), ui/r28-rooms-c.
+**ROUND 28 AND ITS GRAFT ARE MERGED, VERIFIED AND PUSHED (2026-10-08):**
+MAUVEINE +2.39 (`cad57a30`), graft `87d8a530`. The props' contact shadows
+draw in all 17 wings (back-face culled since round 2); mainMenu.png's own
+house behind the Pumpkin Grounds and Graveyard. **gpuprof's first number is a
+warm-up lottery at --wait 40: use `--settle 6`** (the Graveyard's "+9.9 ms"
+was mostly that; the real +2.6 ms is fixed). Battery green but the sprites
+halo. Left from the graft: the Pumpkin patch turf still reads near-black, the
+trees by the house are still round, faint sconce/door pools. **NEXT: round
+29** from survey 3: the run strip's Keepsake/Gear tray at 1280, the pale
+parchment + three node states on the map and atlas, and the remaining rooms
+(hedge, sleeping, heart haze).
 
 **DONE 2026-10-04 evening:** round 27's graft (`7ca0a9a6`), five card-truth
 fixes (`7444fa27`), the Steam shell (`9d5ea8bd`, waiting on the App ID), a
