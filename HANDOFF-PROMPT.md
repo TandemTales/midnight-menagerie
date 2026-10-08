@@ -52,21 +52,16 @@ check reads Taffy's cream gloss as background; leave it red, do not lower it).
   does something.
 - **Survey 3** (`docs/ui-pass/SURVEY-2026-10-04.md`): what is owed next.
 
-**IN FLIGHT (2026-10-04, 21:40): ROUND 28** -- props and darks, briefed in
-`BRIEF-r28.md`, launched as Workflow run `wf_94d70174-b3a` from session
-`d6f2d6fc` at base `71146686`; all three builders hit the session limit
-mid-build (2, 3 and 5 commits, trees clean) and were RESUMED 2026-10-05 20:10
-as run `wf_7244ff26-ed1`; that hit the WEEKLY limit (4, 5+1 uncommitted, 7
-commits) and was resumed again 2026-10-06 20:20 as run `wf_d359057a-276`.
-That hit the session limit too (6, 9, 8 commits; MAUVEINE's captures were
-fresh); relaunched 2026-10-07 20:55 as run `wf_1b3e8df4-129` with WRAP-UP
-notes (recapture, tests, endings guard, return -- no new refinement).
-At merge: MAUVEINE cut its mansion out of UI/mainMenu.png itself -- check it
-against BRIEF-r0's hard rules before merging that build. Worktrees `C:/UILOOP/r28/wt/r28-rooms-{a,b,c}`
-(NAPLES 9121, MAUVEINE 9122, TERREVERTE 9123), baselines (TICKING) in
-`C:/UILOOP/r28/judging/r28/rooms/`. If this session ended before the result:
-finish it as a NEW run of only what is unfinished (README of this file, "If a
-limit stops a round"), never resumeFromRunId. Then merge, battery, graft.
+**ROUND 28 IS MERGED (2026-10-08): MAUVEINE, 2 of 2, 6.31 vs 3.92 (+2.39)**
+(`cad57a30`). It found every prop's contact shadow back-face culled since
+round 2 (one shared fix draws them in all 17 wings) and set mainMenu.png's own
+house behind the Pumpkin Grounds and Graveyard (BRIEF-r0 technique 1). Battery
+green but the known sprites halo (kid-clips and sprites/clips were transient
+GPU reds, green on rerun). **NEXT JOB: the graft, `docs/ui-pass/GRAFT-r28.md`**
+-- FIRST a real perf regression: the Graveyard fight +9.9 ms (16.6 -> 26.5,
+gpuprof T_full, medium tier, 3 interleaved runs) and the Pumpkin Grounds +2.5;
+then NAPLES's passage beams + sconces and TERREVERTE's kennels/kitchens props
+(`VERDICTS-r28.md`). Losers: ui/r28-rooms-a (NAPLES), ui/r28-rooms-c.
 
 **DONE 2026-10-04 evening:** round 27's graft (`7ca0a9a6`), five card-truth
 fixes (`7444fa27`), the Steam shell (`9d5ea8bd`, waiting on the App ID), a
