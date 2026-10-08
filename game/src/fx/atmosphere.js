@@ -388,7 +388,12 @@ export const REGIONS = {
     arch: 4, floorPattern: 2, subject: 'range',
     /* (round 22: 9.5 m deep, from 11 -- the range is the room, so its wall
        comes a step nearer) */
-    room: { w: 22, d: 9.5, h: 4.4, side: 0.0, ceilPattern: 6, wallPad: 3.6 },
+    /* (round 28 graft: the floor run under the walls -- floorOver -- so the
+       seam at their foot cannot open on the clear colour) */
+    room: { w: 22, d: 9.5, h: 4.4, side: 0.0, ceilPattern: 6, wallPad: 3.6, floorOver: 0.4 },
+    /* (round 28 graft, NAPLES's; both judges: "a dark contact shadow under
+       every prep-table leg and under the range" -- Backdrop.build) */
+    propShadow: 1.8,
     cam: { y: 1.92, z: 7.0, look: 2.25, fov: 47 },
     deep: '#201419', mid: '#462c24', hi: '#70492c', accent: '#7d8d58',
     rimCol: '#cd8852', shaft: '#c6915e', floorDeep: '#140e13', floorMid: '#33231d',
@@ -427,7 +432,10 @@ export const REGIONS = {
          red wash" with "more than one value" asked for, both judges.
          2.3 from 1.1, under the window from -6.6 out at the side wall,
          and a moonlit blue where it was a navy no lamp could show)  */
-      { kind: 'cold', x: -4.6, y: 3.40, z: -8.4, color: '#5b75b0', intensity: 2.3, radius: 6.4, fit: 'none' },
+      /* (round 28 graft, TERREVERTE's: lower and further into the room, so
+         its cold pool lies on the flags in front of the range's fire -- "the
+         cold moonlit window and its blue pool on the floor") */
+      { kind: 'cold', x: -4.6, y: 3.00, z: -7.6, color: '#5b75b0', intensity: 2.5, radius: 6.8, fit: 'none' },
     ],
     /* (no shafts: a kitchen has no window for one to come through) */
     shafts: { count: 2, spread: 11, y: 5.0, z: -8.0, angle: 0.18, width: 2.4, intensity: 0.0, pool: 1.6 },
@@ -544,6 +552,9 @@ export const REGIONS = {
        lifted the turf to "a flat milky grey-green field", both judges; the
        lawn is a true dark now, with its blades, tufts and leaf litter lit) */
     moonFloor: [0.40, 0.55, 0.70],
+    /* (round 28 graft, NAPLES's; judge 2: "seat each headstone and cross with
+       a ground shadow" -- Backdrop.build's pal.propShadow) */
+    propShadow: 1.6,
     /* (round 28: the mansion further off, so the whole of it -- roofs,
        turrets, spires -- stands in the frame over the stones) */
     houseK: 0.64,
@@ -894,8 +905,18 @@ export const REGIONS = {
     /* (round 28: a far end the eye reaches -- 17 m, from 20, and lit by its
        own sconces down both walls and either side of the end door, each
        pooling on the oak and the boards: passWallH, Backdrop.build) */
-    sconces: { z0: 2.4, pitch: 3.3, r: 1.7, i: 1.7 },
-    room: { w: 7.5, d: 17, h: 3.4, side: 0.0, ceilPattern: 3, wallPad: 2.4 },
+    /* (round 28 graft: a pair every 2.9 m, both walls -- see passWallH; k
+       the strength of their pools on the boards and the beams, FLOOR_FRAG) */
+    sconces: { z0: 2.4, pitch: 2.9, k: 2.4 },
+    /* (round 28 graft: its cases and lamp posts set down on the boards in a
+       denser contact shadow -- Backdrop.build's pal.propShadow) */
+    propShadow: 1.6,
+    /* (round 28 graft, NAPLES's, both judges: the ceiling BEAMED, 16, its
+       members receding to the far wall; and the floor run under the walls,
+       floorOver, so the seam at their foot cannot open on the clear colour --
+       "thin blue wire-like lines running diagonally from the crates across
+       the floor", judge 2, were that seam) */
+    room: { w: 7.5, d: 17, h: 3.4, side: 0.0, ceilPattern: 16, wallPad: 2.4, floorOver: 0.4 },
     cam: { y: 1.70, z: 6.8, look: 1.75, fov: 52 },
     deep: '#191525', mid: '#2e2437', hi: '#47394e', accent: '#836faf',
     rimCol: '#d2a763', shaft: '#d6b88a', floorDeep: '#110e19', floorMid: '#201a26',
@@ -994,6 +1015,14 @@ export const REGIONS = {
     /* (round 28: "the ceiling is a milky grey band" -- a BEAMED ceiling,
        pattern 6, the kitchens' too, where 8 is the Lampworks' iron truss) */
     room: { w: 20, d: 9, h: 4.0, side: 0.0, ceilPattern: 6, wallPad: 3.2 },
+    /* (round 28 graft, NAPLES's; judge 1: "add a straw texture to the bare
+       lower floor" -- FLOOR_FRAG's uStraw) */
+    straw: 1.0,
+    /* (round 28 graft: its doghouses, beds and tubs set down on the flags in
+       a denser contact shadow -- Backdrop.build's pal.propShadow) */
+    propShadow: 1.7,
+    /* (round 28 graft: each kennel's lit door laid as a warm pool on the flags) */
+    kennelGlow: 0.85,
     /* (round 28: and the beams a stop down -- still "a milky grey band"
        across the top of both rooms at full gain) */
     ceilGain: 0.40,
@@ -1107,6 +1136,9 @@ export const REGIONS = {
     /* (round 28: the mansion over the court wall seen whole -- see the
        Graveyard's houseK) */
     houseK: 0.80,
+    /* (round 28 graft: its pumpkins and carts set down in a denser contact
+       shadow -- Backdrop.build's pal.propShadow) */
+    propShadow: 1.5,
     /* (round 28: the painted house a little up under this wing's 0.9
        exposure -- it is the court's whole skyline) */
     housePaint: 1.15,
@@ -1552,7 +1584,11 @@ export const ROOM_KINDS = {
          moon rises behind the chapel's cross */
       /* ...and the yard is seen down its row from beside the walk, the house
          further off and smaller over the stones */
-      { subject: 'chapel', houseX: 10.5, moonX: -2.4, houseS: 0.84, layout: 'rows', runX: -8.0,
+      /* (round 28 graft, judge 1: "bring the mansion forward and scale it
+         up -- it is a small soft smudge behind the fence at right -- so it
+         holds the skyline the way it does in the plots room": 1.30 from 0.84,
+         a step nearer the chapel) */
+      { subject: 'chapel', houseX: 9.6, moonX: -4.8, houseS: 1.30, layout: 'rows', runX: -8.0,
         cam: { y: -0.45, z: -1.2, look: 0.9, fov: -2 },
         vantage: { at: 'along', off: 0.10, wall: 8.0, fwd: 3.0, yaw: 9, wide: 2, dy: -0.4, dlook: 0.6 },
         nearView: GRAVE_NEAR_YARD, nearKeep: true },
@@ -1669,7 +1705,7 @@ export const ROOM_KINDS = {
        them: the fire in the range, the scullery's chandeliers over its two
        sinks and its copper's fire at a third of the range's) */
     kinds: [{ subject: 'range', room: { d: 0.68 }, cam: { z: -2.6, look: 0.05 },
-              lamps: [{ i: 2, x: 0.0, z: 0.94 }, { i: 3, x: -4.4, z: 0.86 }] },   // (round 28: the moon under its left window)
+              lamps: [{ i: 2, x: 0.0, z: 0.94 }, { i: 3, x: -4.4, z: 0.78, y: 3.0 }] },   // (round 28: the moon under its left window; graft: a step into the room, its pool on the flags)
             { subject: 'scullery', room: { d: 0.66, w: 0.86 }, cam: { z: -2.0, look: 0.30 },
               swap: [[8, 29]], countScale: 0.40,
               lamps: [{ i: 0, x: -1.95, z: 0.62 }, { i: 1, x: 1.95, z: 0.66 },
@@ -1840,7 +1876,11 @@ export const ROOM_KINDS = {
       /* a false closet, a portrait cavity: seen from its hidden door */
       /* (round 22: a CLOSET, 8 m of it and not the passage's 20: its pegs
          and its coats down both walls, its jib door out in the end one) */
-      { subject: 'closet', door: 'case', room: { d: 0.42 }, countScale: 0.5,
+      /* (round 28 graft, judge 2: "make it a different room from the
+         passage -- a narrow closet with hanging coats and shelving close in
+         -- rather than the passage re-lit with wardrobe shapes": 0.56 of the
+         passage's width, so its pegs and shelves stand at arm's length) */
+      { subject: 'closet', door: 'case', room: { d: 0.42, w: 0.56 }, countScale: 0.35,
         vantage: { at: 'threshold', back: 2.0, lens: 0.90, dip: 0.12 } },
       /* a crawlspace or an underfloor run: crouched, well in */
       { subject: 'timber',
@@ -3094,6 +3134,7 @@ export class Atmosphere {
       L.door = T.door; L.rail = T.rail; L.subForm = T.subForm; L.pool = T.pool;
       L.nearDark = T.nearDark;
       L.rug = T.rug;                    // (round 25 graft: the carpet goes with the room)
+      L.straw = T.straw;                // (round 28 graft: and the kennels' straw)
       this.backdrop.applyPalette(L);
       this._applyGrade(L, k);
       if (this._fade >= 1) { this.live = T; this.backdrop.applyPalette(T); this._applyGrade(T, 1); }
