@@ -10833,7 +10833,14 @@ float wallH(vec2 q, out float occ){
         vec2  cq = vec2(fx2/lw, (hq.y - ccy)/cry);
         float ang = atan(cq.y, cq.x);
         float lobe = 0.10*sin(ang*5.0 + fid*1.7) + 0.06*sin(ang*9.0 - fid)
+#if MM_R25W == 4
+                   /* (round 28 graft: the churchyard's limes with a CRISP
+                      lobed outline -- ragged at leaf scale they came back a
+                      soft blue cloud beside the painted house) */
+                   + 0.10*(rag - 0.11);
+#else
                    + 0.30*(rag - 0.11);
+#endif
         float cd = (length(cq) - 1.0 - lobe)*min(lw, cry);
         cm = smoothstep(hpx, -hpx, cd);
         /* the bole, and the two limbs it forks into, up into the crown */
