@@ -907,7 +907,7 @@ export const REGIONS = {
        pooling on the oak and the boards: passWallH, Backdrop.build) */
     /* (round 28 graft: a pair every 2.9 m, both walls -- see passWallH; k
        the strength of their pools on the boards and the beams, FLOOR_FRAG) */
-    sconces: { z0: 2.4, pitch: 2.9, k: 2.4 },
+    sconces: { z0: 2.4, pitch: 2.9, k: 4.0 },
     /* (round 28 graft: its cases and lamp posts set down on the boards in a
        denser contact shadow -- Backdrop.build's pal.propShadow) */
     propShadow: 1.6,
@@ -1588,7 +1588,7 @@ export const ROOM_KINDS = {
          up -- it is a small soft smudge behind the fence at right -- so it
          holds the skyline the way it does in the plots room": 1.30 from 0.84,
          a step nearer the chapel) */
-      { subject: 'chapel', houseX: 9.6, moonX: -4.8, houseS: 1.30, layout: 'rows', runX: -8.0,
+      { subject: 'chapel', houseX: 9.6, moonX: -7.6, houseS: 1.30, layout: 'rows', runX: -8.0,
         cam: { y: -0.45, z: -1.2, look: 0.9, fov: -2 },
         vantage: { at: 'along', off: 0.10, wall: 8.0, fwd: 3.0, yaw: 9, wide: 2, dy: -0.4, dlook: 0.6 },
         nearView: GRAVE_NEAR_YARD, nearKeep: true },
