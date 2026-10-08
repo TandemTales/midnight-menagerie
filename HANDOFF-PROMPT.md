@@ -58,6 +58,9 @@ check reads Taffy's cream gloss as background; leave it red, do not lower it).
 mid-build (2, 3 and 5 commits, trees clean) and were RESUMED 2026-10-05 20:10
 as run `wf_7244ff26-ed1`; that hit the WEEKLY limit (4, 5+1 uncommitted, 7
 commits) and was resumed again 2026-10-06 20:20 as run `wf_d359057a-276`.
+That hit the session limit too (6, 9, 8 commits; MAUVEINE's captures were
+fresh); relaunched 2026-10-07 20:55 as run `wf_1b3e8df4-129` with WRAP-UP
+notes (recapture, tests, endings guard, return -- no new refinement).
 At merge: MAUVEINE cut its mansion out of UI/mainMenu.png itself -- check it
 against BRIEF-r0's hard rules before merging that build. Worktrees `C:/UILOOP/r28/wt/r28-rooms-{a,b,c}`
 (NAPLES 9121, MAUVEINE 9122, TERREVERTE 9123), baselines (TICKING) in
