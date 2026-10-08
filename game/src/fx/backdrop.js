@@ -507,7 +507,7 @@ export const ROOM_VARIANTS = [
   /* the room-kind floors and ceilings (MM_FLOORX) */
   { mat: 'floor', defines: { MM_FLOORX: 1, MM_R25W: 0 }, wings: ['ballroom', 'hedge', 'pumpkin'] },
   { mat: 'floor', defines: { MM_FLOORX: 2, MM_R25W: 0 }, wings: ['bathhouse'] },
-  { mat: 'ceil',  defines: { MM_FLOORX: 2 }, wings: ['attic'] },
+  { mat: 'ceil',  defines: { MM_FLOORX: 2 }, wings: ['attic', 'passages'] },   // (round 28 graft: and the passage's beams, ceilPattern 16)
   /* (the Greenhouse's glass roof: never in the old fixed list, so it linked
      on demand in every Greenhouse fight that had one) */
   { mat: 'ceil',  defines: { MM_FLOORX: 1 }, wings: ['greenhouse'] },
@@ -788,6 +788,10 @@ export class Backdrop {
          (0 = none). uCrisp: the passages' boards, crisp through their pools. */
       uWedge: { value: zeroV4(3) }, uWedgeK: { value: new THREE.Vector3(0, 0, 0) },
       uCrisp: { value: 0 },
+      /* straw on the kennels' flags (round 28 graft, NAPLES's): pal.straw */
+      uStraw: { value: 0 },
+      /* the passage's sconce pools (round 28 graft): see FLOOR_FRAG and build */
+      uSconce: { value: new THREE.Vector4(0, 0, 0, 0) }, uSconceEnd: { value: -20 },
       /* the moon on the Pumpkin Grounds' flags and in its pond (graft) */
       uMoonF: { value: new THREE.Color(0, 0, 0) },
       uMoonW: { value: new THREE.Vector4(0, 0, 0, 0) },
@@ -1243,7 +1247,9 @@ export class Backdrop {
       this.ceilMat.uniforms.uSpan.value.set(room.w, spanZ);
       this.ceilMat.uniforms.uPattern.value = room.ceilPattern ?? 3;
       /* a vinery's roof (12) is drawn by the room-kind variant */
-      this._setSurfaceProgram(this.ceilMat, (room.ceilPattern ?? 3) === 15 ? 2 : (room.ceilPattern ?? 3) > 11.5);
+      /* (round 28 graft: and the beamed timber ceiling, 16, in the attic's variant) */
+      const cpS = room.ceilPattern ?? 3;
+      this._setSurfaceProgram(this.ceilMat, cpS === 15 || cpS === 16 ? 2 : cpS > 11.5);
     }
     this._floorCz = cz;
     this._wallZ = -room.d;
@@ -2240,6 +2246,11 @@ export class Backdrop {
         } else if (p.shape === 27) {
           ss2[i * 2 + 0] = p.w * 1.35; ss2[i * 2 + 1] = p.w * 0.62; st2[i] = 1.05;
         }
+        /* (round 28 graft, NAPLES's: a wing may set its objects down harder --
+           pal.propShadow, 1 wherever it is not written. Both judges: the
+           doghouses, the beds, the prep tables, the crates and the lamp posts
+           still "float on the floor with no contact shadow".) */
+        st2[i] *= pal.propShadow ?? 1;
       }
     }
     this._propOffset.needsUpdate = this._propScale.needsUpdate = true;
@@ -2353,23 +2364,26 @@ export class Backdrop {
        on the panelling. The floor has four slots, and the farthest sconces
        take them: the near ones stand in the rig's own lamplight. */
     const SC = pal.sconces;
-    if (SC && room.h > 0) {
-      const xw = room.w / 2 - (SC.inset ?? 0.40);
-      const zEnd = this._wallZ;
-      const side = pal.subject !== 'closet';
-      const span = Math.max(-zEnd, 1);
-      for (let k = 0; side && k < 12; k++) {
-        const z = -(SC.z0 + k * SC.pitch);
-        if (z < zEnd + 0.6) break;
-        /* the middle of the passage takes the slots: there the floor is
-           both in view and past the rig's lamps (the near sconces stand in
-           their light, the end wall's pair on a sliver of boards) */
-        const mid = z < -4.0 && z > zEnd + 2.5 ? 1 : 0.5;
-        this.pools.push({ x: (k % 2 === 0 ? -1 : 1) * xw, z, r: SC.r, ax: 1, ay: 0, stretch: 1.0,
-                          i: SC.i * mid * (0.80 + 0.20 * Math.min(1, -z / span)) });
+    /* (round 28 graft: the sconces' pools are FLOOR_FRAG's own now, every one
+       of them on the boards and on the beams over it -- uSconce, at
+       passWallH's set-out -- where four pool slots held the farthest few) */
+    for (const m of [this.floorMat, this.ceilMat]) {
+      const u = m.uniforms;
+      if (SC && room.h > 0 && pal.subject !== 'closet') {
+        u.uSconce.value.set(room.w / 2 - (SC.inset ?? 0.40), SC.z0, SC.pitch, SC.k ?? 0.9);
+      } else {
+        u.uSconce.value.set(0, 0, 1, 0);
       }
-      for (const sx of [-1.24, 1.24]) {
-        this.pools.push({ x: sx, z: zEnd + 0.45, r: SC.r * 1.1, ax: 1, ay: 0, stretch: 1.0, i: SC.i * 0.45 });
+      u.uSconceEnd.value = this._wallZ;
+    }
+    /* (round 28 graft, NAPLES's, judge 2: "the lit interior of the green
+       doghouse, a warm focal pool on the floor in front of it". Each kennel's
+       lamp-lit straw throws its glow out over the sill: a small warm pool on
+       the flags at its door, competing for the floor's slots like any other) */
+    if (pal.kennelGlow && this.placed) {
+      for (const p of this.placed) {
+        if (p.shape !== 36 || p.hang) continue;
+        this.pools.push({ x: p.x - 0.16, z: p.z + 0.45, r: 0.62, ax: 1, ay: 0, stretch: 1.5, i: pal.kennelGlow });
       }
     }
     this.pools.sort((a, b) => b.i - a.i);
@@ -2677,6 +2691,7 @@ export class Backdrop {
       f.uWater.value.set(0, 0, 0, 0);
     }
     f.uGloss.value = p.gloss ?? 0.5;
+    f.uStraw.value = p.straw ?? 0;
     /* the foreground's vignette into the dark (round 21 graft): FLOOR_FRAG */
     f.uNearDark.value = p.nearDark ?? 0;
     if (p.rug) f.uRug.value.set(p.rug.x, p.rug.z, p.rug.hw, p.rug.hd);

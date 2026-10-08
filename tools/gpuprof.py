@@ -81,6 +81,19 @@ PROBE = r"""
   const b = stage.bloom, g = stage.grade;
   const bOn = b.enabled, gOn = g.enabled;
 
+  /* --settle S: draw S seconds of frames before the first timer. Without it
+     T_full is taken in the first ~2 s after the stage's warm-up and the
+     probe's own first draw (which links whatever the fight's link gate was
+     still holding back), and those frames run up to 10 ms slow on this
+     machine's Intel/ANGLE while the driver settles the new programs: round
+     28's graft found the Graveyard's "+9.9 ms" was mostly that window, with
+     T_noBloom and T_noGrade, measured seconds later, back at the settled
+     cost. 0 (the default) measures exactly as before. */
+  if (SETTLE > 0) {
+    const t0 = performance.now();
+    while (performance.now() - t0 < SETTLE*1000) { await raf(); try { full(); } catch(e){} }
+  }
+  out.settle = SETTLE;
   out.T_full = await gpuMs(full);
   sceneOnly();
   out.draws = {calls: stage.renderer.info.render.calls,
@@ -157,7 +170,14 @@ async def run(a):
         fps0 = await page.evaluate("""(async()=>{let n=0;const t0=performance.now();
           await new Promise(r=>{const f=()=>{n++;performance.now()-t0<1500?requestAnimationFrame(f):r()};requestAnimationFrame(f)});
           return Math.round(n/((performance.now()-t0)/1000))})()""")
-        res = await page.evaluate(PROBE)
+        if a.settle > 0:
+            # the stage's own warm-up first: the probe's first draw otherwise
+            # links in-line whatever the warm-up has not, inside the timers
+            try:
+                await page.wait_for_function("window.__MM_WARMUP_MS !== undefined", timeout=600000)
+            except Exception:
+                pass
+        res = await page.evaluate(PROBE.replace("SETTLE", repr(float(a.settle))))
         res["rafFps_before_probe"] = fps0
         res["errors"] = errs[:5]
         res["scene"] = a.scene
@@ -180,6 +200,9 @@ if __name__ == "__main__":
     ap.add_argument("--w", type=int, default=1600)
     ap.add_argument("--h", type=int, default=900)
     ap.add_argument("--wait", type=float, default=5.0)
+    ap.add_argument("--settle", type=float, default=0.0,
+                    help="seconds of frames drawn after the warm-up and before the first "
+                         "timer (0: as before). See SETTLE in PROBE.")
     ap.add_argument("--hash", default="",
                     help="more of the URL fragment, appended after scene= the way "
                          "shot.py --hash is, e.g. 'encounter=gh-14&region=greenhouse'")

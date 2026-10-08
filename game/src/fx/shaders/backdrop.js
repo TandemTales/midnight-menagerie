@@ -4459,6 +4459,10 @@ float gTreeM;
    the far band's coverage, the near crown's moonlit edge, and its clumps --
    1 on a clump's moon-side face, 0 on its shaded underside. */
 float gTreeN, gTreeF, gTreeRim, gTreeTex;
+/* (round 28 graft: the wood as it stands BEHIND the house too -- not cut
+   to the drawn house's columns -- for the painted house, whose spires and
+   gaps show the trees behind it; see MM_HOUSE28 in main()) */
+float gTreeNU, gTreeFU;
 /* How much of this pixel is a glasshouse GLAZING BAR (round 18): main() takes
    the crest's lip off it -- see there. */
 float gBarM;
@@ -4973,7 +4977,14 @@ float passWallH(vec2 q, float qpx, out float occ){
       float coat = max(abs(pgx) - cw, max(cy - 0.02 + abs(pgx)*0.35, -(0.76 + 0.30*hc) - cy));
       float onCoat = mmCover(-coat) * hasC;
       float fold = 1.0 - smoothstep(0.0, 0.03, abs(mod(pgx + 0.07*sin(cy*3.0), 0.09) - 0.045));
-      vec3 cloth = (hc < 0.6 ? vec3(0.10, 0.09, 0.10) : vec3(0.20, 0.08, 0.07))*(lum*1.3 + 0.006);
+      /* (round 28 graft: a closet's coats are each their own cloth -- a
+         plum, a bottle green, a camel, a black, a claret -- and a value up,
+         so the rail of them reads at the Deck's size as coats and not as a
+         dark band) */
+      float ck = mmHash11(pgi*7.9 + uSeed*1.3);
+      vec3 cloth = (ck < 0.22 ? vec3(0.22, 0.10, 0.20) : (ck < 0.42 ? vec3(0.10, 0.18, 0.12)
+                 : (ck < 0.60 ? vec3(0.30, 0.22, 0.13) : (ck < 0.80 ? vec3(0.10, 0.09, 0.10) : vec3(0.26, 0.08, 0.07)))))
+                 * (lum*2.3 + 0.012);
       oak = mix(oak, cloth*(0.75 + 0.30*fold), onCoat);
       h = mix(h, 1.12 + 0.08*fold - 0.10*smoothstep(-0.05, -0.9, cy), onCoat);
       mmPen(coat, 1.2, 0.9*hasC);
@@ -4984,6 +4995,30 @@ float passWallH(vec2 q, float qpx, out float occ){
       float boxD = mmBox(vec2(bxl2, q.y - 2.09 - bhh), vec2(0.20, bhh), 0.01);
       float box = mmCover(-boxD) * step(0.35, mmHash11(bxi*5.7 + uSeed)) * (1.0 - isDoor);
       oak = mix(oak, vec3(0.30, 0.24, 0.16)*(lum*1.4 + 0.006), box);
+      /* (round 28 graft: SHELVING over the hat shelf, close in -- a second
+         board under the frieze with folded linen and boxes on it, each its
+         own value, so the closet's walls are stores and not the passage's
+         panelling) */
+      float shelf2 = mmBandA(q.y, 2.56, 2.61, px) * (1.0 - isDoor);
+      float lnI = floor(q.x/0.34);
+      float lnx = q.x - (lnI + 0.5)*0.34;
+      float lnH = 0.08 + 0.10*mmHash11(lnI*3.7 + uSeed);
+      float lnD = mmBox(vec2(lnx, q.y - 2.61 - lnH), vec2(0.13, lnH), 0.012);
+      float hasL = step(0.30, mmHash11(lnI*9.1 + uSeed*2.0)) * (1.0 - isDoor) * step(q.y, FR1 + 0.40);
+      float linen = mmCover(-lnD) * hasL;
+      float lk = mmHash11(lnI*4.3);
+      vec3 lnC = (lk < 0.5 ? vec3(0.62, 0.58, 0.50) : (lk < 0.75 ? vec3(0.36, 0.20, 0.16) : vec3(0.26, 0.30, 0.36)))*(lum*1.8 + 0.010);
+      float lnFold = mmInkP(mmRowX(q.y - 2.61, 0.05), px, 1.0)*0.5;
+      oak = mix(oak, lnC*(1.0 - lnFold*0.4), linen);
+      oak = mix(oak, oak*1.6, shelf2);
+      mmPen(q.y - 2.56, 1.2, 0.8*(1.0 - isDoor));
+      mmPen(lnD, 1.0, 0.7*hasL);
+      h += shelf2*0.45 + linen*0.25;
+      /* (and the end lamps' light down its walls, a pool on the coats near
+         them and a fainter one halfway -- a closet seen from its door is
+         lit from inside it, not a black slot with a lit end) */
+      p28Pool(vec2(vWorld.z + 5.4, q.y - 1.6), vec2(1.7, 1.5), 1.5, vec3(1.00, 0.64, 0.32)*1.4);
+      p28Pool(vec2(vWorld.z + 2.4, q.y - 1.6), vec2(1.5, 1.4), 0.8, vec3(1.00, 0.64, 0.32)*1.4);
       h += peg*0.4 + shelf*0.45 + box*0.2;
       mmPen(q.y - 2.04, 1.2, 0.8*(1.0 - isDoor));
       mmPen(boxD, 1.0, 0.7*step(0.35, mmHash11(bxi*5.7 + uSeed))*(1.0 - isDoor));
@@ -5038,10 +5073,14 @@ float passWallH(vec2 q, float qpx, out float occ){
   float scE = 0.0;
   if (far < 0.5) {
     float zl = vWorld.z;
-    float kk = floor((-zl - 2.4)/3.3 + 0.5);
-    float sideL = step(vWorld.x, 0.0);
-    float mine = mod(kk, 2.0) < 0.5 ? sideL : 1.0 - sideL;
-    float zk = -(2.4 + kk*3.3);
+    /* (round 28 graft, both judges, NAPLES's: "line BOTH side walls with
+       more candle sconces so the walls stay lit all the way to the far end"
+       -- a pair facing each other every 2.9 m, where one wall in turn every
+       3.3 m left each wall a sconce in 6.6 m; FLOOR_FRAG's uSconce lays
+       their pools on the boards and the beams at the same set-out) */
+    float kk = floor((-zl - 2.4)/2.9 + 0.5);
+    float mine = 1.0;
+    float zk = -(2.4 + kk*2.9);
     /* (not on a door leaf, and not in a closet: a closet's walls are its
        pegs; its light is the end door's) */
     /* A CANDLE NICHE (the judges' own list for the passage): one bay in five
@@ -5531,10 +5570,15 @@ float kitchenWallH(vec2 q, float qpx, out float occ){
     float pan = kPan(vec2(pxl, q.y - (rY - 0.035 - 0.03 - hy - r)), r, hy, px, lum, pc, pglint)
               * onRail * step(0.18, prnk);
     col = mix(col, pc, pan);
-    h += pan*(0.30 + 0.10*smoothstep(0.0, r, r - length(vec2(pxl, q.y - (rY - 0.065 - hy - r)))));
-    gloss = max(gloss, pan*0.35);
+    /* (round 28 graft, TERREVERTE's: "copper pans on the rail" -- the pan
+       REPLACES the wall's relief, where added to it the brick's courses ran
+       on across the copper and the lamp lit them as pale stripes; and a
+       glint, not a glow: at 0.22 with 0.35 of gloss the pans came back as
+       pale gold balls, where copper is dark and red) */
+    h = mix(h, 1.30 + 0.10*smoothstep(0.0, r, r - length(vec2(pxl, q.y - (rY - 0.065 - hy - r)))), pan);
+    gloss = max(gloss, pan*0.20);
     /* ...and each pan holds a glint of the range's fire in its dish */
-    emit += pan*pglint*0.22;
+    emit += pan*pglint*0.10;
     /* the dresser, left of the breast: plates on its rack, the pot board */
     if (far > 0.5) kDresser(cx + 4.6, q, px, lum, 1.0 - scul, col, h);
   }
@@ -9886,7 +9930,7 @@ float kennelWallH(vec2 q, float qpx, out float occ){
 #endif
 float wallH(vec2 q, out float occ){
   gTreeM = 0.0;
-  gTreeN = 0.0; gTreeF = 0.0; gTreeRim = 0.0; gTreeTex = 0.5;
+  gTreeN = 0.0; gTreeF = 0.0; gTreeRim = 0.0; gTreeTex = 0.5; gTreeNU = 0.0; gTreeFU = 0.0;
   gBarM = 0.0;
   gWDisc = 0.0; gWLit = 0.0; gWood = 0.0; gWEmit = 0.0; gWGloss = 0.0; gWEmitC = vec3(0.0);
   float h = mmNoise(q*2.3 + uSeed)*0.14;   // one octave: this runs 3x per pixel
@@ -10619,6 +10663,13 @@ float wallH(vec2 q, out float occ){
        fence's old tomb keep their own. */
     float noSub = 1.0 - smoothstep(0.06, 0.40, abs(sub));
     float onHouse2 = step(0.5, onA + onB);
+#if MM_HOUSE28 == 1
+    /* (round 28 graft: the wood stands behind the house's columns too while
+       the PAINTED house stands there -- its spires and the sky between them
+       show the trees behind, where the drawn house's columns cut them off in
+       a hard vertical: "a hard-edged blue blotch right of it", judge 2) */
+    onHouse2 *= 1.0 - step(0.5, uHouseTexOn);
+#endif
     /* ROUND 17 ITEM 2, both round-16 judges on the gate and the yard: "a row
        of solid trunkless cones at an even pitch -- the nearest six want a
        visible trunk below the skirt, an irregular pitch and half again the
@@ -10644,7 +10695,9 @@ float wallH(vec2 q, out float occ){
        tree evaluations it costs are skipped. The churchyard's variant
        only: the title's house and the Pumpkin Grounds' are untouched.) */
     float nearM = 0.0, nearLit = 0.0, nearTrunk = 0.0, nearRim = 0.0, nearBr = 0.0, farM = 0.0;
-    if (onHouse2 < 0.5 && hq.y < 16.5 + 7.0*hpx) {
+    /* (round 28 graft: and behind the house's columns too while the painted
+       house stands there -- it is the wood seen between its spires) */
+    if ((onHouse2 < 0.5 || uHouseTexOn > 0.5) && hq.y < 16.5 + 7.0*hpx) {
 #define MM_TDECL
 #else
 #define MM_TDECL float
@@ -10768,13 +10821,26 @@ float wallH(vec2 q, out float occ){
         fn = 1.0 - clamp(abs(fx2)/max(lw, 0.02), 0.0, 1.0);
         /* each clump's moonlit upper edge, over the dark of the one behind */
         float up = smoothstep(-0.15, 0.65, dot(nn, vec2(-0.45, 0.89)));
-        rimB = (1.0 - smoothstep(0.0, 0.35 + hpx*2.2, -inner)) * up * step(inner, 0.0);
+        /* (round 28 graft, judge 2: "ink the blobby lollipop trees beside
+           the mansion into crisp silhouettes". A rim round EVERY clump drew
+           each as its own pale bubble -- the lollipop -- so the moon takes
+           only the crown's OUTER edge now, a hairline on its upper side, and
+           the crown is one dark mass inked round its outline as the firs are) */
+        rimB = (1.0 - smoothstep(0.0, 0.10 + hpx*1.4, -cd)) * up * step(cd, 0.0) * 0.45;
+        gInk = max(gInk, clamp(1.1 - abs(cd)/max(hpx, 1e-4), 0.0, 1.0)*0.85*cm);
         brT = 0.0;
 #else
         vec2  cq = vec2(fx2/lw, (hq.y - ccy)/cry);
         float ang = atan(cq.y, cq.x);
         float lobe = 0.10*sin(ang*5.0 + fid*1.7) + 0.06*sin(ang*9.0 - fid)
+#if MM_R25W == 4
+                   /* (round 28 graft: the churchyard's limes with a CRISP
+                      lobed outline -- ragged at leaf scale they came back a
+                      soft blue cloud beside the painted house) */
+                   + 0.10*(rag - 0.11);
+#else
                    + 0.30*(rag - 0.11);
+#endif
         float cd = (length(cq) - 1.0 - lobe)*min(lw, cry);
         cm = smoothstep(hpx, -hpx, cd);
         /* the bole, and the two limbs it forks into, up into the crown */
@@ -10789,9 +10855,18 @@ float wallH(vec2 q, out float occ){
            where its limbs show against the sky behind */
         rimB = (1.0 - smoothstep(0.0, 0.30 + hpx*2.2, -cd))
              * (0.40 + 0.60*smoothstep(-0.30, 0.50, cq.y - cq.x*0.6));
+#if MM_R25W == 4
+        /* (round 28 graft: no holes in the churchyard's limes -- each came
+           back as a pale disc of sky with a hard edge in a soft blue crown,
+           "a hard-edged blue blotch" beside the house, judge 2; the crown is
+           one dark mass with its outline inked, as the firs round it are) */
+        float holeB = 0.0;
+        gInk = max(gInk, clamp(1.1 - abs(cd)/max(hpx, 1e-4), 0.0, 1.0)*0.85*cm);
+#else
         float gzB = mmFbm3(vec2(fx2*1.3 + fid*2.1, hq.y*1.3 - fid));
         float holeB = smoothstep(0.62, 0.69, gzB)*smoothstep(-0.12, -0.30, cd/max(min(lw, cry), 0.1))
                     * step(-0.80, cq.y)*step(cq.y, 0.55);
+#endif
         cm *= 1.0 - holeB;
         rimB *= 1.0 - holeB;
         brT = holeB*tm;
@@ -10897,6 +10972,8 @@ float wallH(vec2 q, out float occ){
     float clB = mmFbm3(vec2(cx*1.25 + 0.30, hq.y*1.50 - 0.40) + uSeed*2.9);
     gTreeN = clamp(inNear, 0.0, 1.0)*noSub;
     gTreeF = clamp(farM*(1.0 - inNear)*(1.0 - onHouse2), 0.0, 1.0)*noSub;
+    gTreeNU = clamp(nearM, 0.0, 1.0)*noSub;
+    gTreeFU = clamp(farM*(1.0 - nearM), 0.0, 1.0)*noSub;
     gTreeRim = clamp(nearRim, 0.0, 1.0);
     gTreeTex = clamp((clA - clB)*3.2 + 0.5 + tex*0.6, 0.0, 1.0)*(1.0 - 0.8*nearBr);
 #if MM_R25W == 4
@@ -11088,7 +11165,13 @@ float wallH(vec2 q, out float occ){
        colour. mainMenu.png's house is grey stone under blue-grey slate, and
        that is what this one is now: the same building, its materials named.
        (The Graveyard's house is program 0 and 4, and is untouched.) */
-    {
+    float houseM = roofCov * (1.0 - occ) * noSub;
+    gHouseM = houseM; gHouseVis = noSub * (1.0 - occ);
+    /* (round 28 graft: the drawn house's COLOUR only where it shows -- with
+       the painted house loaded every pixel of it is laid over by the
+       painting or the sky, and its three ivy noise fields and its stone
+       ran on every pixel of the sky for nothing) */
+    if (uHouseTexOn < 0.5 && houseM > 0.0) {
       float inShaft = (1.0 - step(0.95, abs(tw)))*onFoot*step(hq.y, body + th)
                     + onCT*step(hq.y, ctTop);
       float slate = clamp(max(onRoof, step(rtop - 0.02, hq.y)), 0.0, 1.0)
@@ -11138,8 +11221,6 @@ float wallH(vec2 q, out float occ){
         float sc2 = mmBandA(hq.y, body + th - 0.30, body + th - 0.12, hpx)*onSh;
         hc *= 1.0 + 0.35*sc2;
       }
-      float houseM = roofCov * (1.0 - occ) * noSub;
-      gHouseM = houseM; gHouseVis = noSub * (1.0 - occ);
       gCol = mix(gCol, hc, houseM);
       gColAmt = max(gColAmt, houseM);
     }
@@ -12266,18 +12347,61 @@ void main(){
     if (uHouseTexOn > 0.5 && uFar > 0.5) {
       const float PW = 24.0, PX0 = -10.3, PH = 24.0*572.0/1122.0;
       vec2 pu = vec2((hqw.x - PX0)/PW, hqw.y/PH);
-      vec4 tx = texture2D(uHouseTex, clamp(pu, vec2(0.0005), vec2(0.9995)));
+      /* (round 28 graft, both judges: "sharpen its silhouette against the
+         sky -- roof lines, finials and turret tips crisp, not softened". Seen
+         at a third of its size the trilinear filter took the mip a level
+         too soft; three-quarters of a level sharper, the sample's own line) */
+      vec4 tx = texture2D(uHouseTex, clamp(pu, vec2(0.0005), vec2(0.9995)), -0.75);
       float inR = step(0.0, pu.x)*step(pu.x, 1.0)*step(0.0, pu.y)*step(pu.y, 1.0);
       float vis = clamp(gHouseVis, 0.0, 1.0) * (1.0 - clamp(sOcc, 0.0, 1.0));
       /* (the drawn house's outline lit by its relief's normals sat a pixel either side of its coverage -- teal gables and ridges in the sky over the painting from the patch's low eye: the sky is laid a few pixels past that coverage too) */
       float hmD = clamp(gHouseM + 4.0*fwidth(gHouseM), 0.0, 1.0);
-      col = mix(col, skyColor(q, 2.0), hmD);
-      col = mix(col, mmGradeInv(tx.rgb, uHouseTexG) * uHouseTexK, tx.a * inR * vis);
+      /* (round 28 graft: each only where it lands -- the sky's two noise
+         fields and the inverse grade ran on every pixel of the wall) */
+      /* (round 28 graft: and the WOOD behind it, where the drawn house cut
+         it -- laid as sky alone, the gap it left in the treeline was "a
+         hard-edged blue blotch right of the house", judge 2) */
+      if (hmD > 0.0) {
+        vec3 bgH = skyColor(q, 2.0);
+        float wU = clamp(gTreeNU + gTreeFU, 0.0, 1.0);
+        if (wU > 0.0) {
+          float up0 = clamp((q.y - 2.0) / 15.0, 0.0, 1.0);
+          vec3 skyB = (uSkyDeep * mix(6.80, 3.90, smoothstep(0.0, 0.62, up0))
+                       + uOpenGlow * 0.46 * exp(-up0 * 4.2)) * uSkyGlow;
+          vec3 woodN = mix(skyB * (0.32 + 0.34*gTreeTex), skyB * vec3(1.15, 1.25, 1.35), gTreeRim);
+          vec3 woodF = skyB * (0.52 + 0.14*gTreeTex);
+          bgH = mix(bgH, mix(woodF, woodN, clamp(gTreeNU/max(wU, 1e-3), 0.0, 1.0)), wU*0.92);
+        }
+        col = mix(col, bgH, hmD);
+      }
+      float hA = tx.a * inR * vis;
+      if (hA > 0.0) {
+        vec3 txc = tx.rgb;
+#if MM_R25W == 4
+        /* (round 28 graft, judge 2: "the painted mansion sits warm-brown
+           under a cold blue moon like a pasted sticker". Under the
+           churchyard's moon its stone and slate go COLD -- their own values,
+           taken to a moonlit blue-grey a step down -- and only what is warm
+           in the painting because it is LAMPLIGHT keeps its gold: the lit
+           windows and the spill round them.) */
+        float tl = dot(txc, vec3(0.2126, 0.7152, 0.0722));
+        float lamp = smoothstep(0.10, 0.34, txc.r - txc.b) * smoothstep(0.025, 0.10, tl);
+        vec3 moonC = vec3(tl)*vec3(0.74, 0.88, 1.22)*0.86;
+        txc = mix(mix(txc, moonC, 0.78), txc, lamp);
+#endif
+        col = mix(col, mmGradeInv(txc, uHouseTexG) * uHouseTexK, hA);
+      }
       /* ...and the drawn house's LINES go with it: its roofline pen, its
          courses and its relief's ink are laid after this (the drawn line,
          below), and over the painting or the sky between its spires they
          were the old house's ghost. Everywhere the drawn house could reach. */
-      gHousePZ = vis * step(-14.0, hqw.x) * step(hqw.x, 17.0) * step(hqw.y, 40.0);   // (its spires' and gables' ink reach far over 17.5 m from the patch's low eye -- a teal gable ghost in its sky)
+      gHousePZ = vis * step(-14.0, hqw.x) * step(hqw.x, 17.0) * step(hqw.y, 40.0);
+      /* (round 28 graft: but not off the WOOD in that box -- a tree with its
+         relief and ink taken off is a flat pale blue cut-out, and where the
+         box ended it went back to a drawn tree in a hard vertical: the "hard-
+         edged blue blotch" beside the house, judge 2. Off the painting and
+         the trees, only the drawn house's own lines go) */
+      gHousePZ *= 1.0 - clamp(gTreeNU + gTreeFU, 0.0, 1.0)*(1.0 - hA);   // (its spires' and gables' ink reach far over 17.5 m from the patch's low eye -- a teal gable ghost in its sky)
     }
 #endif
 #endif
@@ -12519,6 +12643,15 @@ uniform vec4  uRug;
 uniform vec4  uWedge[3];
 uniform vec3  uWedgeK;
 uniform float uCrisp;
+/* (round 28 graft, NAPLES's: straw tracked across the kennels' flags, its
+   strength; 0 elsewhere) */
+uniform float uStraw;
+/* (round 28 graft: the passage's sconce pools on its boards and its beams --
+   x the line of the sconces off the axis, y the first one's depth, z their
+   pitch, w the strength (0 in every other room); uSconceEnd the end wall's z,
+   where a pair flanks the door) */
+uniform vec4  uSconce;
+uniform float uSconceEnd;
 /* THE MOON ON THE PUMPKIN GROUNDS' FLOOR (round 22 graft, all three judges:
    "light the lower two-thirds of the courtyard and pond flagstones with
    moonlight so the floor is not a void"): its colour at the strength it lays
@@ -12736,7 +12869,10 @@ void main(){
          the turf it lies on so it catches the moon -- drawn while a leaf is
          two pixels long, gone to the lawn's tone past that. */
       {
-        float lRes = smoothstep(0.022, 0.009, mp);
+        /* (round 28 graft, both judges: "scattered autumn leaves on the lawn"
+           -- one in three at 5 cm read only at the foot of the frame; one
+           in two, a third bigger, drawn a step further back) */
+        float lRes = smoothstep(0.030, 0.011, mp);
         if (lRes > 0.001) {
           const float LC = 0.30;
           vec2 lci = floor(w/LC);
@@ -12744,9 +12880,9 @@ void main(){
           vec2 lp = w - (lci + 0.2 + 0.6*lh)*LC;
           float la = mmHash21(lci + 9.1)*6.2832;
           vec2 lr = vec2(cos(la)*lp.x + sin(la)*lp.y, -sin(la)*lp.x + cos(la)*lp.y);
-          float lw = 0.024*(1.0 - pow(abs(lr.x)/0.055, 2.0));
-          float leaf = (1.0 - smoothstep(lw, lw + mp*1.1, abs(lr.y))) * step(abs(lr.x), 0.055)
-                     * step(mmHash21(lci + 3.3), 0.36) * lRes;
+          float lw = 0.031*(1.0 - pow(abs(lr.x)/0.072, 2.0));
+          float leaf = (1.0 - smoothstep(lw, lw + mp*1.1, abs(lr.y))) * step(abs(lr.x), 0.072)
+                     * step(mmHash21(lci + 3.3), 0.52) * lRes;
           earth = max(earth, leaf*0.95);
           turf = min(turf, 1.0 - leaf*0.85);
           pat += leaf*(0.10 + 0.10*lh.x);
@@ -12805,13 +12941,22 @@ void main(){
                   * step(tr, 0.07) * step(0.4, mmHash11(floor((w.x + rid*0.61)/0.92)*5.1 + rid));
         /* the furrow between the rows: a darker, damper band */
         float furrow = 1.0 - smoothstep(0.25, 0.75, abs(abs(dy) - rowP*0.5)/0.6);
-        vineR = clamp(max(max(stem, ten), leaf), 0.0, 1.0) * mix(0.30, 1.0, res) * 0.62;
-        pat = 0.46 - furrow*0.12 + (mmNoise(w*9.0) - 0.5)*0.12*res
+        /* (round 28 graft, judge 2: "replace the faint green ring lines on
+           the black lawn with a drawn, dark-green turf texture". The rows'
+           stems, lit by the moon from the low eye of the patch, curved into
+           thin green rings across the whole lawn: the stem now lies in the
+           grass and takes no moon of its own, and between the rows is TURF
+           -- the lawn's own tufts and blades, dark green, worn to earth along
+           each furrow -- with the leaves on it) */
+        vineR = clamp(max(ten*0.5, leaf), 0.0, 1.0) * mix(0.30, 1.0, res) * 0.62;
+        earth = 0.22 + 0.50*furrow*(0.6 + 0.4*pch);
+        pat = 0.44 + (tuft*0.26 + blade*0.26)*(1.0 - earth) - furrow*0.14 - stem*0.06*res
+            + (mmNoise(w*9.0) - 0.5)*0.08*res
             + leaf*(0.16*(1.0 - smoothstep(0.0, lr, lrr)) - 0.10*smoothstep(lr*0.55, lr, lrr)
                     + 0.08*clamp(dot(lce/max(lrr, 1e-3), vec2(-0.6, 0.8)), 0.0, 1.0))*res
             - vein*0.20*res - shadowL*0.24;
         cellv = 0.30 + 0.40*pch;
-        turf = 0.15;
+        turf = 0.85*(1.0 - earth*0.70);
       }
       if (uRunner > 0.001 && uIsCeiling < 0.5) {
         float pxd = abs(w.x - uRunX);
@@ -13091,6 +13236,27 @@ void main(){
     roofLit = glazed*1.6;
     pat = mix(pat, 0.85, sFrame);
     pat = mix(pat, 0.10, glazed);
+  } else if (uPattern > 15.5 && uPattern < 16.5) {   // 16 a beamed timber ceiling (round 28 graft)
+    /* (round 28 graft, NAPLES's, both judges on the Passages: "give the
+       ceiling structure -- beams or a cornice line receding to the far wall
+       -- in place of the purple haze above the corridor".) A service
+       passage of this house is ceiled in TIMBER: deep cross BEAMS every
+       2.4 m, each with its chamfered arris catching the light and its
+       shadow side dark; the JOISTS between them at 0.48 m running the other
+       way, on to the vanishing point; the boards of the room above between
+       those, in shadow. No cloud: its value is its members. */
+    float bj = abs(fract((w.y + uSeed*0.37)/2.40 + 0.5) - 0.5)*2.40;
+    float jj = abs(fract(w.x/0.48 + 0.5) - 0.5)*0.48;
+    float mBm = 1.0 - smoothstep(0.17, max(0.19, 0.17 + jw), bj);
+    float mAr = (1.0 - smoothstep(0.010, max(0.024, jw), abs(bj - 0.15)))*(1.0 - smoothstep(0.10, 0.25, mp));
+    float mJ = (1.0 - smoothstep(0.050, max(0.065, 0.050 + jw), jj))*(1.0 - mBm)
+             * (1.0 - smoothstep(0.06, 0.16, mp));
+    float mJs = (1.0 - smoothstep(0.050, max(0.10, jw*1.4), abs(jj - 0.075)))*(1.0 - mJ)*(1.0 - mBm);
+    float bdl = abs(fract(w.x/0.16 + 0.5) - 0.5)*0.16;
+    float mBd = (1.0 - smoothstep(0.004, max(0.010, jw), bdl))*(1.0 - smoothstep(0.03, 0.09, mp));
+    float bmS = smoothstep(0.17, 0.42, bj)*(1.0 - smoothstep(0.42, 0.80, bj));   // the beam's shadow on the boards
+    pat = 0.05 - mBd*0.04 - mJs*0.04 - bmS*0.04 + mJ*0.42 + mBm*0.62 + mAr*0.30;
+    cellv = mmHash11(floor(w.x/0.48)*3.7 + floor((w.y + uSeed*0.37)/2.40)*11.1 + uSeed);
 #endif
   } else {                                   // 9 glasshouse roof, bars to a ridge
     /* ROUND 10, FIX 9: "The Greenhouse's ceiling is a flat black band. A
@@ -13464,6 +13630,9 @@ void main(){
   /* (round 22: the maze's lawn is a kept lawn, greener than a churchyard's
      turf; the same value, its hue taken toward the grass) */
   alb = mix(alb, vec3(mmLum(alb))*vec3(0.66, 1.14, 0.58), 0.55*turf*step(12.5, uPattern)*step(uPattern, 13.5));
+  /* (round 28 graft: and the pumpkin patch's turf a DARK green, a step
+     under the maze's kept lawn) */
+  alb = mix(alb, vec3(mmLum(alb))*vec3(0.62, 1.10, 0.56)*0.85, 0.50*turf*step(13.5, uPattern)*step(uPattern, 14.5));
   alb = mix(alb, vec3(0.050, 0.110, 0.034)*(0.70 + 0.60*cellv), vineR*0.85);
   /* water is dark and green-blue; the coping pale stone. A BATH'S water is
      the bath's own green over white tile rather than a pond's near-black, so
@@ -13482,6 +13651,36 @@ void main(){
   alb *= mix(vec3(1.0), vec3(1.10, 0.95, 0.80), earth*0.70);
 #endif
   alb *= 0.55 + 0.90*pat;
+  /* ---- ROUND 28 GRAFT (NAPLES's): STRAW ON THE FLAGS (uStraw, the Kennels;
+     0 elsewhere). Both judges: "add a straw texture to the bare lower floor".
+     A kennel block's floor is a deep warm dark with the straw tracked out of
+     the stalls lying on it -- single stalks, each a short pale stroke turned
+     its own way, in drifts where the dogs have dragged it, none where the
+     floor is swept. Drawn while a stalk is a pixel across; past that the
+     floor is as it was. */
+  if (uStraw > 0.001 && uIsCeiling < 0.5) {
+    float sRes = smoothstep(0.034, 0.012, mp);
+    if (sRes > 0.001) {
+      float drift = smoothstep(0.30, 0.72, mmNoise(w*0.42 + 3.7));
+      float strw = 0.0, strT = 0.0;
+      for (int k = 0; k < 2; k++){
+        vec2 cs = w/0.20 + float(k)*0.5;
+        vec2 ci = floor(cs);
+        vec2 hh = mmHash22(ci + float(k)*7.1);
+        if (mmHash21(ci + 1.3) > drift*0.95) continue;
+        vec2 c0 = (ci + 0.20 + 0.60*hh - float(k)*0.5)*0.20;
+        float an = hh.x*6.2832;
+        vec2 dir = vec2(cos(an), sin(an));
+        vec2 v = w - c0;
+        float L = 0.05 + 0.05*hh.y;
+        float t = clamp(dot(v, dir), -L, L);
+        float d = length(v - dir*t);
+        float on = (1.0 - smoothstep(0.0035, 0.0035 + mp*1.1, d))*sRes;
+        if (on > strw) { strw = on; strT = hh.y; }
+      }
+      alb = mix(alb, vec3(mmLum(uMid))*vec3(2.6, 1.9, 0.85)*(1.0 + 0.7*strT)*uStraw, strw*0.70);
+    }
+  }
 #if MM_FLOORX == 2
   /* (round 23: the attic's roof is TIMBER -- the region's violet night
      carried to old pine, and no cloud in it: its value is its members) */
@@ -13493,7 +13692,11 @@ void main(){
     vec3 pine = vec3(mmLum(mix(uDeep, uMid, 0.55)))*vec3(2.40, 1.02, 0.32);
     alb = pine*(0.16 + 2.00*max(pat - 0.02, 0.0))*(0.90 + 0.20*cellv);
   }
-  alb += uAlbLift*(1.0 - 0.80*step(14.5, uPattern)*step(uPattern, 15.5)*uIsCeiling);
+  /* (round 28 graft: the beamed timber ceiling's oak, smoke-dark, the same way) */
+  if (uPattern > 15.5 && uPattern < 16.5)
+    alb = vec3(mmLum(mix(uDeep, uMid, 0.50)))*vec3(1.90, 1.00, 0.55)
+        *(0.12 + 1.60*max(pat - 0.01, 0.0))*(0.86 + 0.28*cellv);
+  alb += uAlbLift*(1.0 - 0.80*step(14.5, uPattern)*step(uPattern, 16.5)*uIsCeiling);
 #else
   alb += uAlbLift;
 #endif
@@ -13684,7 +13887,10 @@ void main(){
      -- so the patch's own leaves were black on black. A cool top light on
      the leaves and a little on the earth, pattern 14 only. */
   if (uPattern > 13.5 && uPattern < 14.5 && uIsCeiling < 0.5)
-    col += alb * vec3(0.30, 0.40, 0.58) * (0.10 + 0.55*vineR) * uGain * 0.9;
+    col += alb * vec3(0.30, 0.40, 0.58) * (0.10 + 0.40*vineR) * uGain * 0.9
+    /* (round 28 graft: and the moon on the TURF between the rows, so its
+       tufts and blades read as a dark green lawn and not a black field) */
+         + alb * vec3(0.30, 0.40, 0.58) * 0.55 * turf * uGain;
 #endif
   for (int i = 0; i < 5; i++){
     vec4 L = uLights[i];
@@ -13744,6 +13950,31 @@ void main(){
       float fall = exp(-max(dd, 0.0)/1.05) * (0.55 + 0.45*smoothstep(0.0, 0.25, dd));
       col += alb * vec3(1.00, 0.66, 0.30) * inW * fall * k * uGain;
     }
+  }
+  /* ---- ROUND 28 GRAFT (NAPLES's): THE SCONCES' POOLS ON THE BOARDS AND THE
+     BEAMS. The wall program hangs a pair of sconces every uSconce.z metres
+     from uSconce.y down both walls (passWallH) and two either side of the
+     end door; each lays its light on the floor along its wall, long down the
+     wall and short across the passage, the way a wall light falls -- and on
+     the ceiling over it, where the beams catch it. So the corridor recedes
+     in a rhythm of pools to a lit end, where four floor slots could hold
+     only the farthest few. */
+  if (uSconce.w > 0.001) {
+    float onC = uIsCeiling;
+    float zz = vWorld.z;
+    float kq = max(floor((-zz - uSconce.y)/uSconce.z + 0.5), 0.0);
+    float zk = -(uSconce.y + kq*uSconce.z);
+    float inRun = step(uSconceEnd + 0.6, zk);
+    float acc = 0.0;
+    for (int i = 0; i < 2; i++){
+      vec2 dd = vec2(vWorld.x - (i == 0 ? -1.0 : 1.0)*uSconce.x, zz - zk);
+      acc += exp(-(dd.x*dd.x)/mix(1.40, 0.80, onC) - (dd.y*dd.y)/mix(1.70, 1.10, onC)) * inRun;
+      vec2 de = vec2(vWorld.x - (i == 0 ? -1.24 : 1.24), zz - uSconceEnd - 0.30);
+      acc += exp(-(de.x*de.x)/1.4 - (de.y*de.y)/mix(2.2, 1.0, onC)) * 0.85;
+    }
+    /* (the ceiling is lit at a fraction of the floor's gain, so its share is
+       made up here: the beams over each candle catch it) */
+    col += alb * vec3(1.00, 0.64, 0.32) * acc * uSconce.w * mix(1.0, 30.0, onC) * uGain;
   }
 
   /* THE MOON ON THE FLAGS (graft; uMoonF is black everywhere but the
@@ -13845,8 +14076,11 @@ void main(){
      something to be seen by, and it is the room's own lamps doing it. */
   if (uIsCeiling > 0.5) {
     float plasterC = step(2.5, uPattern)*step(uPattern, 4.5)
-                   + step(6.5, uPattern)*step(uPattern, 7.5);
-    if (plasterC > 0.5) {
+                   + step(6.5, uPattern)*step(uPattern, 7.5)
+    /* (round 28 graft: and the beamed timber ceiling, at a little over half:
+       its beams catch the lamps under them where the boards stay dark) */
+                   + 0.60*step(15.5, uPattern)*step(uPattern, 16.5);
+    if (plasterC > 0.01) {
       vec3 up = vec3(0.0);
       for (int i = 0; i < 5; i++){
         vec4 L = uLights[i];
@@ -13859,7 +14093,7 @@ void main(){
          why the first two tries missed by a factor of four: this palette runs
          uContrast 1.61, so the composite raises everything to the 1.61 and a
          ceiling reading 1.3 needs 4.7x of input to read 16, not 12x. */
-      col += alb * up * (0.55 + 1.35*mmLum(alb)*3.4) * 11.0;
+      col += alb * up * (0.55 + 1.35*mmLum(alb)*3.4) * 11.0 * min(plasterC, 1.0);
     }
 #if MM_FLOORX == 2
     /* (graft, all three judges on the attic: the boards between the
@@ -14122,7 +14356,7 @@ void main(){
   float ceilDim = mix(0.05, 0.52, smoothstep(1.5, 13.0, vDepth));
   ceilDim = mix(ceilDim,
                 mix(0.30, 0.92, smoothstep(1.0, 15.0, vDepth)) * (1.0 - glazed*0.46),
-                step(8.5, uPattern));
+                step(8.5, uPattern)*(1.0 - step(15.5, uPattern)*step(uPattern, 16.5)));
   col *= mix(1.0, ceilDim, uIsCeiling);
   /* THE NIGHT IS ON THE OTHER SIDE OF IT. Glass is not a surface: the panes
      take the sky's own cold and the bars take the room's. Without this the
@@ -14987,7 +15221,10 @@ vec3 gyStone(float seed){
   if (k < 0.34) return vec3(0.50, 0.50, 0.48);
   if (k < 0.56) return vec3(0.54, 0.44, 0.34);
   if (k < 0.74) return vec3(0.33, 0.36, 0.40);
-  return vec3(0.70, 0.70, 0.67);
+  /* (round 28 graft, TERREVERTE's: the marble a stop down -- at 0.70 the
+     near stones came back under the moon as the palest, flattest thing on
+     the sheet) */
+  return vec3(0.58, 0.58, 0.555);
 }
 /* INCISED LETTERING: n rows of cut capitals under the point p is measured
    from (the top centre of the block), each row its own length, centred, its
@@ -15028,7 +15265,15 @@ vec3 gyWeather(vec3 c, vec2 q, float px, float seed, float foot){
   float lich = smoothstep(1.02 - px*14.0, 1.02 + px*14.0, n);
   c = mix(c, c*vec3(0.92, 1.02, 0.78) + vec3(0.03, 0.04, 0.0), lich*0.55);
   float moss = smoothstep(0.10, 0.0, q.y - foot - 0.04*mmNoise(vec2(q.x*30.0, seed)));
+  /* (round 28 graft, TERREVERTE's; judge 2: "add moss and grime to the
+     foreground headstones and crosses". The moss CLIMBS -- tongues of it up
+     from the foot -- and lichen spots the face, so a stone is weathered,
+     never a flat-shaded tablet) */
+  float tongue = mmNoise(vec2(q.x*11.0 + seed*5.0, q.y*3.0));
+  moss = max(moss, smoothstep(0.30, 0.12, q.y - foot - 0.22*tongue)*smoothstep(0.60, 0.76, tongue)*0.85);
+  float spot = smoothstep(0.86, 0.96, mmNoise(q*14.0 + seed*9.0) + 0.35*mmNoise(q*41.0 + seed));
   c = mix(c, vec3(0.13, 0.20, 0.08), moss*0.75);
+  c = mix(c, c*vec3(0.62, 0.74, 0.46), spot*0.50);
   /* the rain's long dark runs down the face from the top */
   float run = smoothstep(0.55, 0.85, mmNoise(vec2(q.x*38.0 + seed*3.0, 0.5)))*smoothstep(0.0, 0.5, q.y - foot);
   c *= 1.0 - 0.18*run;
@@ -17324,9 +17569,28 @@ vec3 wgPaint(vec2 m, vec2 msz, float shape, float seed, float px, float lum,
     col = mix(col, board*(0.50 + 0.18*kq)*(0.85 + 0.25*smoothstep(0.085, 0.95, k.y)), onSide);
     ink = max(ink, mmInkP(bdx2, qpx, 1.0)*onSide*0.45);
     float onRS = step(roofSD, 0.0)*(1.0 - onRoof);
-    float slates = abs(fract(((k.x - 0.76) * 0.30 + (k.y - 0.81)*0.85)/0.07) - 0.5)*0.07;
-    col = mix(col, paint*E*1.05*(1.10 + 0.25*smoothstep(0.81, 1.35, k.y)), onRS);
-    ink = max(ink, mmInkP(slates, qpx, 1.0)*onRS*0.35);
+    /* (round 28 graft, TERREVERTE's; both judges: "shingle and weather the
+       doghouse roofs" -- they were "flat untextured green and red planes".
+       The far slope in courses of cedar shingles gone grey, each its own
+       value, the courses staggered, moss in the lower ones, its ridge
+       catching the lamps) */
+    {
+      vec2 sB = vec2(0.76, 0.81), sU = vec2(-0.76, 0.50), sV = vec2(0.28, 0.098);
+      vec2 sr = k - sB;
+      float sdet = sU.x*sV.y - sU.y*sV.x;
+      float su = (sr.x*sV.y - sr.y*sV.x)/sdet, sv = (sU.x*sr.y - sU.y*sr.x)/sdet;
+      float scrs = floor(su*8.0);
+      float ssj = abs(fract(sv*5.0 + 0.5*mod(scrs, 2.0)) - 0.5);
+      float ssh = mmHash21(vec2(floor(sv*5.0 + 0.5*mod(scrs, 2.0)), scrs) + seed);
+      vec3 shin = vec3(0.30, 0.27, 0.24)*E*1.30*(0.70 + 0.42*ssh);
+      shin = mix(shin, vec3(0.16, 0.22, 0.10)*E*1.3,
+                 smoothstep(0.55, 0.85, mmNoise(vec2(sv*6.0, su*7.0) + seed*3.0))*smoothstep(0.5, 0.0, su)*0.8);
+      shin *= 0.80 + 0.35*smoothstep(0.80, 1.0, su);
+      shin *= 1.0 - 0.30*smoothstep(0.6, 1.0, fract(su*8.0));          // each course's shadow on the next
+      col = mix(col, shin, onRS);
+      ink = max(ink, mmInkP(fract(su*8.0)/8.0*0.58, qpx, 1.0)*onRS*0.65);
+      ink = max(ink, mmInkP(ssj*0.052, qpx, 1.0)*onRS*0.40);
+    }
     ink = max(ink, max(mmInkP(sideD, qpx, 1.2), mmInkP(roofSD, qpx, 1.2))*0.85);
     /* the finial at the ridge */
     /* the door: an arched opening, and the dark inside it */
@@ -17416,8 +17680,13 @@ vec3 wgPaint(vec2 m, vec2 msz, float shape, float seed, float px, float lum,
     float onC = step(inner, 0.0);
     vec2 tq = q*vec2(1.0, 2.2);
     float tA = step(abs(fract(tq.x/0.12) - 0.5), 0.12), tB = step(abs(fract(tq.y/0.12) - 0.5), 0.12);
-    vec3 tart = mix(vec3(0.56, 0.12, 0.10), vec3(0.10, 0.22, 0.14), max(tA, tB)*0.7);
-    tart = mix(tart, vec3(0.80, 0.70, 0.30), tA*tB*0.6);
+    /* (round 28 graft, TERREVERTE's; both judges: "vary the pet-bed
+       cushions -- green, red, pink" -- "all the same red cushion". Each bed
+       its own cloth off its seed, checked in its own darker shade) */
+    float bkC = mmHash11(seed*5.3 + 2.1);
+    vec3 cl0 = bkC < 0.36 ? vec3(0.56, 0.12, 0.10) : (bkC < 0.68 ? vec3(0.14, 0.34, 0.15) : vec3(0.66, 0.28, 0.40));
+    vec3 tart = mix(cl0, cl0*0.42, max(tA, tB)*0.7);
+    tart = mix(tart, vec3(0.80, 0.70, 0.30), tA*tB*0.45);
     col = mix(col, tart*E*1.25*(0.70 + 0.45*smoothstep(0.23, 0.36, q.y)), onC);
     ink = max(ink, mmInkP(rim, qpx, 1.2) + mmInkP(inner, qpx, 1.0)*0.9);
     /* (round 28) the basket is ROUND: its wall falls into shade at both
@@ -17431,8 +17700,8 @@ vec3 wgPaint(vec2 m, vec2 msz, float shape, float seed, float px, float lum,
     float sw = wgRound(clamp(length(dq), 0.0, 1.0));
     vec2 tq2 = vec2(q.x, (q.y - 0.335)*(1.0 + 1.8*sw))*vec2(1.0, 2.2);
     float tA2 = step(abs(fract(tq2.x/0.12) - 0.5), 0.12), tB2 = step(abs(fract(tq2.y/0.12) - 0.5), 0.12);
-    vec3 tart2 = mix(vec3(0.56, 0.12, 0.10), vec3(0.10, 0.22, 0.14), max(tA2, tB2)*0.7);
-    tart2 = mix(tart2, vec3(0.80, 0.70, 0.30), tA2*tB2*0.6);
+    vec3 tart2 = mix(cl0, cl0*0.42, max(tA2, tB2)*0.7);
+    tart2 = mix(tart2, vec3(0.80, 0.70, 0.30), tA2*tB2*0.45);
     col = mix(col, tart2*E*1.30*(0.55 + 0.75*sw*(0.75 + 0.25*smoothstep(-0.6, 0.6, dq.y - 0.3*kq*dq.x))), onDm);
     ink = max(ink, mmInkP(domeD, qpx, 1.1)*step(0.335, q.y));
     /* and a bone on it */
@@ -21701,7 +21970,9 @@ void main(){
   if (vShape > 7.5 && vShape < 8.5) {
     float lum  = max(mmLum(albedo), 0.02);
     float brd = mmHash11(floor(sp.y/0.14)*3.7 + floor(sp.x/0.5)*1.3 + vSeed);
-    vec3 deal = vec3(0.66, 0.48, 0.29)*(lum*2.0 + 0.030)*(0.78 + 0.34*brd)*(0.86 + 0.26*grain);
+    /* (round 28 graft: a step up -- judge 1 on fight-passages: "make the far
+       crates ... read with more value contrast") */
+    vec3 deal = vec3(0.68, 0.47, 0.26)*(lum*2.5 + 0.042)*(0.78 + 0.34*brd)*(0.86 + 0.26*grain);
     albedo = mix(albedo, deal, 0.88);
     /* (round 28) ITS JOINERY, DRAWN: the relief's battens, rails, brace and
        board joints were a few per cent of normal, which at a passage's
@@ -21835,7 +22106,10 @@ void main(){
   }
   if (vShape > 28.5 && vShape < 29.5) {
     float lum = max(mmLum(albedo), 0.02);
-    vec3 deal = vec3(0.66, 0.54, 0.38)*(lum*3.0 + 0.050)*(0.86 + 0.28*grain);
+    /* (round 28 graft, TERREVERTE's; both judges: "warm up the table wood so
+       the tables stop reading as dark flat-shaded slabs". Scrubbed DEAL, a
+       warm honey: at the metal room's own chroma it came back grey iron) */
+    vec3 deal = vec3(0.86, 0.52, 0.22)*(lum*4.2 + 0.075)*(0.86 + 0.28*grain);
     /* the top is SCRUBBED, the palest board in a kitchen, and seen from a
        standing eye its face is a band of light the length of the table */
     vec2 tm = (vUv - vec2(0.5, 0.0))*vSize;
@@ -21862,7 +22136,9 @@ void main(){
             : (gTbOk < 2.5 ? vec3(0.86, 0.85, 0.80)
             : (gTbOk < 3.5 ? vec3(0.66, 0.42, 0.18)
             : (gTbOk < 4.5 ? vec3(0.74, 0.30, 0.11) : vec3(0.48, 0.40, 0.30))));
-    oc *= (lum*2.1 + 0.030);
+    /* (round 28 graft: the crockery a stop up -- the bowls and the crock came
+       back as black half-discs on the scrubbed top) */
+    oc *= (lum*3.8 + 0.060);
     albedo = mix(deal, oc, step(0.5, gTbOk));
   }
   if (vShape > 27.5 && vShape < 28.5) {
@@ -22499,7 +22775,9 @@ void main(){
      earthenware and copper -- material facts, as a pumpkin's orange is. In
      the Kitchens' metal ceiling of 0.13 they came back grey steel, "black
      wire outlines" both judges) */
-  if (vShape > 28.5 && vShape < 29.5) { satK = max(uPropSat, 0.38); satM = max(uPropSatMax, 0.56); }
+  /* (round 28 graft, TERREVERTE's: 0.46 from 0.38 -- the warm deal still came
+     back a grey-lilac between the fire and the moon) */
+  if (vShape > 28.5 && vShape < 29.5) { satK = max(uPropSat, 0.46); satM = max(uPropSatMax, 0.64); }
 #endif
   if (vShape > 7.5 && vShape < 8.5) { satK = max(uPropSat, 0.30); satM = max(uPropSatMax, 0.46); }
   if (sat > satK) {
@@ -22524,6 +22802,11 @@ void main(){
      why two of the three read and the middle of the dance floor still showed a
      pale oval attached to nothing. */
   float fFog = (isFit > 0.5 || (vShape > 32.5 && vShape < 33.5)) ? vFog*0.26 : vFog;
+  /* (round 28 graft, TERREVERTE's; judge 1 on fight-passages: "make the far
+     crates and lamp posts behind the creature read with more value
+     contrast". A packing case is a thing on the boards of a corridor, not a
+     shape in a fog: at full haze the far cases came back grey cut-outs) */
+  if (vShape > 7.5 && vShape < 8.5) fFog *= 0.45;
   col = mix(col, uFog, fFog);
   col = mmDesat(col, uDread*0.5) * (1.0 - uDread*0.22);
   gl_FragColor = vec4(col, mask*(1.0 - fFog*0.30)*gWgAlpha);
