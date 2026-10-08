@@ -206,6 +206,7 @@ Against their own baselines:
 | 12 | — | THE LAST WEB CHROME **+5.9** (per-screen winners 7.33 / 8.00 / 7.67 against 2 / 1 / 1.33) |
 | 13 | CHROME, second pass **+2.22** (coach 6.0 -> 8.0, veil 6.0 -> 8.67, toast 5.0 -> 7.0) | — |
 | 27 | THE CARD **+1.62** (resumed after a session limit cut all three builders mid-round) | — |
+| 28 | THE PROPS AND THE DARKS **+2.39** (three limits stopped the builders; the fourth run wrapped them up) | — |
 | 26 | THE BOARDS' WALLS AND THE DIALOGS **+1.79** (the painted-wall angle, not the literal one) | — |
 | 25 | THE LAST FOUR ROOMS **+2.38** (the best rooms of the survey; the literal angle again) | — |
 | 24 | THE HOUSE'S OWN ROOMS **+3.78** (the baseline 2.94; faster on every fight) | — |
