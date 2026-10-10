@@ -515,7 +515,7 @@ export const REGIONS = {
        the rubric asks to see gone) */
     shafts: { count: 4, spread: 22, y: 11.4, z: -13, angle: 0.30, width: 3.4, intensity: 0.08, pool: 1.2,
               /* two raking shafts into the fight's own room (round 21 graft): Backdrop.build */
-              rake: { at: [0.31, 0.69], side: [1, 1], y: 0.47, angle: 0.42, width: 2.0, intensity: 0.34 } },
+              rake: { at: [0.31, 0.69], side: [1, 1], y: 0.47, angle: 0.42, width: 2.0, intensity: 0.22 } },
     bloom: 0.92,
   },
 
@@ -1194,17 +1194,17 @@ export const REGIONS = {
        "the back wall's portraits are lost under shafts of haze". The cold
        fill was 5.4 in a pale cyan and the cold lamp before the stage 3.07:
        together they laid a pale blue sheet over the right of the boards. A
-       deep moon blue now, at under half, and the lamp at two fifths -- the
+       deep moon blue now, at a quarter, and the lamp at a quarter -- the
        floor keeps its dark, lit warm where the fight stands. The shafts go
        from 0.48 to 0.10 and the wall fog from 0.10 to 0.04, so the portraits
        hang in a dark wall, not behind a curtain of haze. (A LIGHT's colour,
        said here because the darks were too pale.) */
-    fill: { glow: 0, kind: 'cold', x: 5.6, y: 2.6, z: 1.4, color: '#5a7fa6', intensity: 2.3, radius: 8.5, flicker: false },
+    fill: { glow: 0, kind: 'cold', x: 5.6, y: 2.6, z: 1.4, color: '#55759c', intensity: 1.3, radius: 8.5, flicker: false },
     lights: [
       { kind: 'warm', x: 0.0, y: 4.20, z: -15.0, color: '#edd7a6', intensity: 0.88, radius: 10.32, flicker: false },
       { kind: 'warm', x: -5.6, y: 2.20, z: -8.0, color: '#e9c892', intensity: 0.59, radius: 6.45 },
       { kind: 'warm', x: 5.6, y: 2.20, z: -8.0, color: '#e9c892', intensity: 0.59, radius: 6.45 },
-      { kind: 'cold', x: 0.0, y: 1.00, z: -3.2, color: '#6f93b8', intensity: 1.25, radius: 5.4 },
+      { kind: 'cold', x: 0.0, y: 1.00, z: -3.2, color: '#6f93b8', intensity: 0.85, radius: 5.4 },
     ],
     shafts: { count: 3, spread: 14, y: 10.0, z: -12.0, angle: 0.18, width: 4.0, intensity: 0.10, pool: 1.2 },
     bloom: 0.82, warmTone: 0.07, halation: 0.58, vignette: 1.01, grain: 0.020,
@@ -1552,6 +1552,9 @@ export const ROOM_KINDS = {
         nearView: [
           { shape: 74, edge: 0.30, z: -3.6, tone: 0.94, centre: 1, scale: 2.60, seed: 1.75 },   // a kentia in a stone urn, by the lamp
           { shape: 76, edge: 0.76, z: -2.4, tone: 0.92, centre: 1, scale: 1.90 },
+          /* (round 29: and a palm in its tub at the right, so the planting
+             crowds both sides of the floor) */
+          { shape: 74, edge: 0.94, z: -3.8, tone: 0.92, centre: 1, seed: 2.45 },
         ],
         vantage: { at: 'above', rise: 2.9, drop: 0.0, fwd: 0.4, ahead: 9.0, count: 0.82 } },
       /* a palm house is walked down between two files of palms, close in
@@ -1576,6 +1579,14 @@ export const ROOM_KINDS = {
         /* and palms at arm's length either side of the walk, which is where
            you are standing: among them, not looking at them across a floor */
         nearView: [
+          /* (round 29, both judges: "overgrown hanging and potted plants
+             crowding the midground on both sides" -- a kentia in its urn and
+             a palm in its tub at each side of the walk, set by the frame and
+             dealt first, so the budget cannot drop them) */
+          { shape: 74, edge: 0.15, z: -2.2, tone: 0.92, centre: 1, seed: 1.75 },
+          { shape: 74, edge: 0.88, z: -1.8, tone: 0.92, centre: 1, seed: 2.45 },
+          { shape: 74, edge: 0.03, z: -4.6, tone: 0.90, centre: 1, seed: 3.35 },
+          { shape: 74, edge: 0.97, z: -5.2, tone: 0.90, centre: 1, seed: 4.15 },
           { shape: 74, x: -2.30, z: 3.60, tone: 0.90 },
           { shape: 74, x:  2.70, z: 2.70, tone: 0.90 },
           { shape: 74, x: -3.90, z: 0.90, tone: 0.88 },
@@ -1593,6 +1604,12 @@ export const ROOM_KINDS = {
          upper-left beam is starting to milk it" -- a lean-to's glass is over
          the vine, so the moon comes through it at half the great house's) */
       { subject: 'vine', layout: 'rows', swap: [[6, 75]], room: { d: 0.70 }, ceil: 12, shaftK: 0.45,
+        /* (round 29: potted palms crowding both sides of the vinery's walk) */
+        nearView: [
+          { shape: 74, edge: 0.12, z: -2.4, tone: 0.92, centre: 1, seed: 1.75 },
+          { shape: 74, edge: 0.93, z: -3.0, tone: 0.92, centre: 1, seed: 2.45 },
+          { shape: 76, edge: 0.80, z: -4.4, tone: 0.90, centre: 1 },
+        ],
         cam: { y: 0.35, z: 0.6, look: -0.2 },
         vantage: { at: 'along', off: 0.30, wall: 3.2, fwd: 3.2, yaw: 33, wide: 4, dlook: 0.5 } },
     ],
