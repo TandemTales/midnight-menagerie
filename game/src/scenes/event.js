@@ -21,7 +21,7 @@ import { cardById } from '../data/cards.js';
 import { relicById, relicSigil } from '../data/relics.js';
 import { satisfyingItem, itemsSatisfying } from '../data/backpack.js';
 import { RoomScene, esc, chip } from './reward.js';
-import { gallery } from '../ui/hang.js';
+import { houseGallery } from '../ui/hang.js';
 import { act, ACT, deckIndex } from '../net/actions.js';
 import { INPUT } from '../net/session.js';
 import {
@@ -262,8 +262,7 @@ export class EventScene extends RoomScene {
       <i class="ev-hall__beam ev-hall__beam--r"></i>
       <i class="kit-window ev-hall__window ev-hall__window--l"></i>
       <i class="kit-window kit-window--r ev-hall__window ev-hall__window--r"></i>
-      ${gallery(['pipkin', 'mopsy'], ['ev-hall__pic ev-hall__pic--l', 'ev-hall__pic ev-hall__pic--r'],
-        { skip: this.run?.companion })}
+      ${houseGallery(['dowager', 'children'], ['ev-hall__pic ev-hall__pic--l', 'ev-hall__pic ev-hall__pic--r'])}
       <i class="kit-web ev-hall__web ev-hall__web--l"></i>
       <i class="kit-web kit-web--r ev-hall__web ev-hall__web--r"></i>
       <i class="kit-sconce ev-hall__sconce ev-hall__sconce--l"></i>

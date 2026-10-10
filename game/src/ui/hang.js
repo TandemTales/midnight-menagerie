@@ -82,6 +82,54 @@ export function gallery(arts, classes, { skip = '', spares = ['marmalade', 'wisp
   }).join('');
 }
 
+/* ── THE HOUSE'S OWN PEOPLE (Josh, 2026-10-09) ────────────────────────────
+   "There shouldn't be pictures of pets when it doesn't pertain specifically
+   to their role or room ... make a haunted house portrait that would fit in
+   this place, maybe a painting of the previous owner and her cat from 200
+   years ago." So the boards that are no Companion's room -- the reward
+   alcove, an event's hall, the rest fort, game over -- hang the family who
+   lived here, each with the ORDINARY pet the Drawing Room's photographs keep
+   showing (docs/design/01-mansion-structure.md: "family photographs and
+   sketches contain recurring household cats"). The family has no name in the
+   design, so the plates name their places in the house, not a surname.
+
+   A portrait hangs once its painting exists: drop it in art/portraits/
+   (prompts: docs/art/portrait-prompts.md), run
+   `python tools/prep_ui_kit.py --only residents`, and set `ready`. Until then
+   the house itself stands in, once per board. */
+export const RESIDENTS = [
+  { id: 'lady',     name: 'The Lady of the House',   title: 'and her cat, 1826',            ready: false },
+  { id: 'master',   name: 'The Master of the House', title: 'and his hound, 1824',          ready: false },
+  { id: 'dowager',  name: 'The Dowager',             title: 'and her parrot, 1811',         ready: false },
+  { id: 'children', name: 'The Children',            title: 'and the nursery rabbit, 1838', ready: false },
+  { id: 'gardener', name: 'The Gardener',            title: 'and the stable cat, 1833',     ready: false },
+  { id: 'scholar',  name: 'The Younger Son',         title: 'and his tortoise, 1849',       ready: false },
+];
+const RES = Object.fromEntries(RESIDENTS.map(r => [r.id, r]));
+
+/** One of the family's portraits, in the same carved frame and brass plate. */
+export function residentHtml(id, cls = '') {
+  const r = RES[id];
+  if (!r) return '';
+  return `<figure class="kit-hang kit-hang--named kit-hang--resident${cls ? ' ' + cls : ''}" data-art="res-${id}" aria-hidden="true">`
+    + '<i class="kit-hang__cord"></i>'
+    + `<span class="kit-hang__frame"><img class="kit-hang__pic" src="${KIT}hang-res-${id}.webp" alt="" decoding="async" draggable="false" style="--pic-ar:4 / 5"></span>`
+    + `<span class="kit-hang__plate"><b>${r.name}</b><em>${r.title}</em></span>`
+    + '</figure>';
+}
+
+/**
+ * The family's portraits for a board, one per class. Those not painted yet
+ * leave their place bare; if NONE is painted and `house` is set, the house's
+ * own picture hangs in the first place instead, so the wall is never a row of
+ * empty frames and never a row of somebody else's pets.
+ */
+export function houseGallery(ids, classes, { house = true } = {}) {
+  const ready = ids.map(id => RES[id] && RES[id].ready);
+  if (!ready.some(Boolean)) return house ? hangHtml('house', classes[0] || '') : '';
+  return ids.map((id, i) => (ready[i] ? residentHtml(id, classes[i] || '') : '')).join('');
+}
+
 /**
  * The room behind a dialog (round 26, both survey judges: Settings and the pile
  * viewer stood "on a flat black void"). Round 26 graft (VERMEILLE's; both

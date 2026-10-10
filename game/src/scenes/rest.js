@@ -24,7 +24,7 @@ import { TERMS, NodeType, COMPANIONS } from '../data/schema.js';
 import { cardById } from '../data/cards.js';
 import { plural } from '../util/plural.js';
 import { objectHtml, keepsakeKey } from '../ui/objects.js';
-import { gallery } from '../ui/hang.js';
+import { houseGallery } from '../ui/hang.js';
 import { RoomScene, esc } from './reward.js';
 import { act, ACT, deckIndex } from '../net/actions.js';
 import { INPUT } from '../net/session.js';
@@ -458,8 +458,8 @@ export class RestScene extends RoomScene {
     // so the house's pictures hang where the wall still shows -- either side
     // of the plaque, between it and the corner candles (ui/hang.js). The
     // room's own picture used to bleed out from behind the REST panel.
-    this.root.querySelector('.rm')?.insertAdjacentHTML('beforeend', gallery(['taffy-tile', 'wisp-tile'],
-      ['rs-hang rs-hang--l', 'rs-hang rs-hang--r'], { skip: this.run?.companion }));
+    this.root.querySelector('.rm')?.insertAdjacentHTML('beforeend', houseGallery(['gardener', 'scholar'],
+      ['rs-hang rs-hang--l', 'rs-hang rs-hang--r']));   // the family, not the pets (Josh, 2026-10-09)
 
     this._buildBody();
     this._buildFoot();

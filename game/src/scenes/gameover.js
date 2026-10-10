@@ -43,7 +43,7 @@ import {
 import { kitDressMarkup } from '../ui/kitboard.js';
 import { nodeSymbol } from '../ui/mapnode.js';
 import { paintBackdrop } from '../ui/backdrop.js';
-import { gallery } from '../ui/hang.js';
+import { gallery, houseGallery } from '../ui/hang.js';
 import { pauseStageFor } from './_stage.js';
 import { fitCardToSlot } from './_cardfit.js';
 import { plural, word } from '../util/plural.js';
@@ -671,7 +671,7 @@ export class GameOverScene extends Scene {
     altar.appendChild(mvp);
 
     const said = el('div', 'go-said go-tri', `<i class="go-said__mark" aria-hidden="true"></i><p class="go-mvp__note"></p><i class="go-tri__rule" aria-hidden="true"></i>`
-      + gallery(['pudding-tile'], ['go-hang go-hang--r'], { skip: s.companion, plate: false }));
+      + houseGallery(['lady'], ['go-hang go-hang--r'], { house: false }));   // the house already hangs left
     said.hidden = true;
     this._mvpNote = said.querySelector('.go-mvp__note');
     this._mvpSaid = said;

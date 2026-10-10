@@ -999,7 +999,34 @@ def cartouche():
             save(np.ascontiguousarray(out[:, ::-1]), "cart-bat-r.webp", 92)
 
 
-PIECES = {"hang": hang}
+RESIDENT_IDS = ["lady", "master", "dowager", "children", "gardener", "scholar"]
+
+
+def residents():
+    """hang-res-<id>.webp: the house's own family (ui/hang.js RESIDENTS), from
+    Josh's paintings in art/portraits/<id>.png (docs/art/portrait-prompts.md).
+    Each is centre-cropped to 4:5 (the frame's opening) and set at 432x540.
+    A painting that is not there yet is skipped, and its portrait stays off
+    the walls until ui/hang.js marks it ready."""
+    src = os.path.join(ROOT, "art", "portraits")
+    for rid in RESIDENT_IDS:
+        path = os.path.join(src, rid + ".png")
+        if not os.path.exists(path):
+            print("  (no painting yet)", os.path.relpath(path, ROOT))
+            continue
+        im = Image.open(path).convert("RGB")
+        w, h = im.size
+        if w / h > 4 / 5:                       # too wide: trim the sides
+            nw = round(h * 4 / 5); x0 = (w - nw) // 2
+            im = im.crop((x0, 0, x0 + nw, h))
+        else:                                   # too tall: trim mostly from the foot
+            nh = round(w * 5 / 4); y0 = (h - nh) // 3
+            im = im.crop((0, y0, w, y0 + nh))
+        im = im.resize((432, 540), Image.LANCZOS)
+        save(np.asarray(im), f"hang-res-{rid}.webp", 90)
+
+
+PIECES = {"hang": hang, "residents": residents}
 
 
 def main(only=None):

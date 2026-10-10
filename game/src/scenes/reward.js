@@ -25,7 +25,7 @@ import { TERMS, NodeType } from '../data/schema.js';
 import { cardById } from '../data/cards.js';
 import { relicById } from '../data/relics.js';
 import { objectHtml, keepsakeKey } from '../ui/objects.js';
-import { gallery } from '../ui/hang.js';
+import { houseGallery } from '../ui/hang.js';
 import { Run } from '../state/run.js';
 import { act, ACT } from '../net/actions.js';
 import { INPUT } from '../net/session.js';
@@ -592,8 +592,10 @@ export class RewardScene extends RoomScene {
     // and under it on the rail's end a candle on a book lights it from below.
     // A cast brass boss caps each end of the rail. Decoration only;
     // reward.js (_pointLights) aims the ground's pools at the two flames.
-    sec.insertAdjacentHTML('beforeend', gallery(['crumbula', 'marmalade'],
-      ['rw-hang rw-hang--l', 'rw-hang rw-hang--r'], { skip: this.run?.companion }));
+    // Josh, 2026-10-09: the house's own family, not the menagerie's pets --
+    // the alcove is no Companion's room (ui/hang.js RESIDENTS).
+    sec.insertAdjacentHTML('beforeend', houseGallery(['lady', 'master'],
+      ['rw-hang rw-hang--l', 'rw-hang rw-hang--r']));
     // Round 26 graft (VERMEILLE's, both judges): the moonlit gothic lancets
     // back, cold against the candles' warm. They hang OUTSIDE the flanks the
     // portraits fill -- high on the wall at the board's outer edges, in the
