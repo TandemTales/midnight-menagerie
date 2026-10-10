@@ -214,7 +214,11 @@ export class CombatScene extends Scene {
     ctx.atmosphere?.setMood?.(this.mood || this.region || 'foyer',
       // per-room seed: without it, the six Foyer rooms that share the 'passages'
       // space render pixel-identically.
-      { seed: this.roomName || this.mood || this.region });
+      // INSTANT (Josh, 2026-10-09): this runs while the transition still covers
+      // the screen, and a 0.7 s ease meant the player watched the camera swing
+      // from the last room's vantage to this one's. A new room is a new room:
+      // it is already standing in its own perspective when the doors open.
+      { seed: this.roomName || this.mood || this.region, instant: true });
     ctx.audio?.music?.(this.arena === 'boss' ? 'boss' : 'combat');
 
     /* ── the warm-up that never ran ─────────────────────────────────────────

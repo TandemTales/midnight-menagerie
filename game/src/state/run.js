@@ -78,6 +78,9 @@ import {
 import { encountersFor, rollEncounter, buildEncounter } from '../data/encounters.js';
 import { applyWing, addPipesEnemy } from '../data/wings.js';
 import { MAX_PARTY } from '../combat/engine.js';
+
+/** The scenes a door opens onto: rooms of the house, entered from the blueprint. */
+const ROOM_SCENES = new Set(['combat', 'event', 'shop', 'rest']);
 import { detectStrict } from '../combat/strict.js';
 import {
   makeRelic, relicById, rollKeepsake, rollKeepsakeRarity, relicRunFlags, starterKeepsake,
@@ -1623,7 +1626,12 @@ export class Run {
   _goto(scene, params = {}) {
     const ctx = this.ctx;
     if (!ctx?.scenes) return null;
-    return ctx.scenes.go(scene, params);
+    /* Josh, 2026-10-09: walking into a room is going through a DOOR -- the
+       panelled leaves swing shut on the blueprint and open on the new room
+       (fx/transition.js 'doorway') -- and the room is already standing in its
+       own perspective when they open (scenes/combat.js sets it instant). */
+    const door = ROOM_SCENES.has(scene) && !Save.settings?.reduceMotion;
+    return ctx.scenes.go(scene, params, door ? { transition: 'doorway' } : {});
   }
 
   // ══ combat ═══════════════════════════════════════════════════════════════
