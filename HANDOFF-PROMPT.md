@@ -52,6 +52,16 @@ check reads Taffy's cream gloss as background; leave it red, do not lower it).
   does something.
 - **Survey 3** (`docs/ui-pass/SURVEY-2026-10-04.md`): what is owed next.
 
+**IN FLIGHT (2026-10-09): ROUND 29** -- the Hedge Maze, Sleeping Quarters,
+Heart and Greenhouse (`BRIEF-r29.md`), Workflow run `wf_10d86a4a-eb4` at base
+`078e50a3`; worktrees `C:/UILOOP/r29/wt/r29-rooms-{a,b,c}` (VIRIDIAN 9141,
+GRISAILLE 9142, BOLUS 9143), baselines BOMBAZINE in
+`C:/UILOOP/r29/judging/r29/rooms/`. If it stops on a limit, finish it as a NEW
+run with `resume` notes (never resumeFromRunId). Also done 10-09: no pet
+portraits on walls that are not theirs (the house's family, prompts in
+`docs/art/portrait-prompts.md`, waiting on Josh's paintings), and rooms are
+entered through the 'doorway' transition with the camera already set.
+
 **ROUND 28 AND ITS GRAFT ARE MERGED, VERIFIED AND PUSHED (2026-10-08):**
 MAUVEINE +2.39 (`cad57a30`), graft `87d8a530`. The props' contact shadows
 draw in all 17 wings (back-face culled since round 2); mainMenu.png's own
