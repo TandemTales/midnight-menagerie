@@ -4717,7 +4717,7 @@ float hedgeWallH(vec2 q, float qpx, out float occ){
   /* (round 29: WITHERED -- hzWither: deep green to olive to rust from the
      foot up, and holes where it is dead through, its stems across them) */
   float gapY, twigY;
-  vec3 yew = hzWither(vec2(u, q.y), sd, qpx, 1.0, gapY, twigY)*(lum*2.6 + 0.020)*1.25;
+  vec3 yew = hzWither(vec2(u, q.y), sd, qpx, 1.0, gapY, twigY)*(lum*2.6 + 0.020)*1.45;
   gapY *= hedge*(1.0 - corr);
   yew *= mix(0.24 + 1.25*tone, 1.0, gapY);
   yew *= mix(1.0, 0.40, foot);
@@ -22692,7 +22692,7 @@ void main(){
     /* (round 29: withered, as the walls' -- hzWither) */
     vec2 ym = (vUv - vec2(0.5, 0.0))*vSize;
     float gapP, twigP;
-    vec3 yew = hzWither(vec2(ym.x + vSeed*1.7, ym.y), vSeed*3.1, max(max(mpp.x, mpp.y), 1e-5), 1.0, gapP, twigP)*(lum*1.05 + 0.018)*1.40;
+    vec3 yew = hzWither(vec2(ym.x + vSeed*1.7, ym.y), vSeed*3.1, max(max(mpp.x, mpp.y), 1e-5), 1.0, gapP, twigP)*(lum*1.05 + 0.018)*1.55;
     yew *= mix(0.84 + 0.30*blotch, 1.0, gapP);
     yew *= mix(0.45 + 1.10*gYewCl, 1.0, gapP);
     /* the top, sheared level, catches the moon along its whole length */

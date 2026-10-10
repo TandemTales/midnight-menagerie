@@ -1605,6 +1605,12 @@ export class Backdrop {
       push(it.shape, it.x ?? 0, it.z, it.scale ?? 1.0, it.tone ?? 0.9, it.y,
            it.edge !== undefined ? { edge: it.edge } : (it.free ? 'free' : undefined));
       if (it.seed !== undefined && out.length > n0) out[out.length - 1].seed = it.seed;   // (round 25 graft)
+      /* (round 29: and its height in metres, `hM`, where a living thing's
+         dealt spread would leave the frame's one specimen palm a fern) */
+      if (it.hM !== undefined && out.length > n0) {
+        const o = out[out.length - 1];
+        o.w *= it.hM / o.h; o.h = it.hM;
+      }
     }
 
     if (layout === 'colonnade') {
@@ -2043,6 +2049,10 @@ export class Backdrop {
          form a drawing takes off it, a kerbed grave and not a table tomb --
          AFTER it is dealt, so the rand() stream is what it was) */
       if (it.seed !== undefined && out.length > n0) out[out.length - 1].seed = it.seed;
+      if (it.hM !== undefined && out.length > n0) {            // (round 29: see above)
+        const o = out[out.length - 1];
+        o.w *= it.hM / o.h; o.h = it.hM;
+      }
       if (!it.keep && yields(it, out[out.length - 1])) out.pop();
     }
     return out.slice(0, MAX_PROPS);

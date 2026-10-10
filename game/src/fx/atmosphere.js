@@ -1554,7 +1554,10 @@ export const ROOM_KINDS = {
           { shape: 76, edge: 0.76, z: -2.4, tone: 0.92, centre: 1, scale: 1.90 },
           /* (round 29: and a palm in its tub at the right, so the planting
              crowds both sides of the floor) */
-          { shape: 74, edge: 0.94, z: -3.8, tone: 0.92, centre: 1, seed: 2.45 },
+          { shape: 74, edge: 0.94, z: -3.8, tone: 0.92, centre: 1, seed: 2.45, hM: 2.9 },
+          { shape: 74, edge: 0.07, z: -3.0, tone: 0.92, centre: 1, seed: 4.15, hM: 2.6 },
+          { shape: 76, edge: 0.15, z: -5.6, tone: 0.90, centre: 1 },
+          { shape: 74, edge: 0.84, z: -6.4, tone: 0.90, centre: 1, seed: 3.35, hM: 2.2 },
         ],
         vantage: { at: 'above', rise: 2.9, drop: 0.0, fwd: 0.4, ahead: 9.0, count: 0.82 } },
       /* a palm house is walked down between two files of palms, close in
@@ -1583,10 +1586,10 @@ export const ROOM_KINDS = {
              crowding the midground on both sides" -- a kentia in its urn and
              a palm in its tub at each side of the walk, set by the frame and
              dealt first, so the budget cannot drop them) */
-          { shape: 74, edge: 0.15, z: -2.2, tone: 0.92, centre: 1, seed: 1.75 },
-          { shape: 74, edge: 0.88, z: -1.8, tone: 0.92, centre: 1, seed: 2.45 },
-          { shape: 74, edge: 0.03, z: -4.6, tone: 0.90, centre: 1, seed: 3.35 },
-          { shape: 74, edge: 0.97, z: -5.2, tone: 0.90, centre: 1, seed: 4.15 },
+          { shape: 74, edge: 0.15, z: -2.2, tone: 0.92, centre: 1, seed: 1.75, hM: 2.7 },
+          { shape: 74, edge: 0.88, z: -1.8, tone: 0.92, centre: 1, seed: 2.45, hM: 3.0 },
+          { shape: 74, edge: 0.03, z: -4.6, tone: 0.90, centre: 1, seed: 3.35, hM: 2.2 },
+          { shape: 74, edge: 0.97, z: -5.2, tone: 0.90, centre: 1, seed: 4.15, hM: 2.4 },
           { shape: 74, x: -2.30, z: 3.60, tone: 0.90 },
           { shape: 74, x:  2.70, z: 2.70, tone: 0.90 },
           { shape: 74, x: -3.90, z: 0.90, tone: 0.88 },
@@ -1606,8 +1609,8 @@ export const ROOM_KINDS = {
       { subject: 'vine', layout: 'rows', swap: [[6, 75]], room: { d: 0.70 }, ceil: 12, shaftK: 0.45,
         /* (round 29: potted palms crowding both sides of the vinery's walk) */
         nearView: [
-          { shape: 74, edge: 0.12, z: -2.4, tone: 0.92, centre: 1, seed: 1.75 },
-          { shape: 74, edge: 0.93, z: -3.0, tone: 0.92, centre: 1, seed: 2.45 },
+          { shape: 74, edge: 0.12, z: -2.4, tone: 0.92, centre: 1, seed: 1.75, hM: 2.4 },
+          { shape: 74, edge: 0.93, z: -3.0, tone: 0.92, centre: 1, seed: 2.45, hM: 2.6 },
           { shape: 76, edge: 0.80, z: -4.4, tone: 0.90, centre: 1 },
         ],
         cam: { y: 0.35, z: 0.6, look: -0.2 },
@@ -1744,6 +1747,9 @@ export const ROOM_KINDS = {
               cam: { z: -1.6, look: 0.10 } },
             { subject: 'bedchamber', layout: 'wings', count: 0,
               room: { d: 1.053, w: 1.72 }, runner: 1.5,
+              /* (round 29: a Turkey carpet laid before the hearth -- the
+                 bedroom's middle floor was a bare dark field) */
+              rug: { ahead: 8.6, hw: 2.1, hd: 1.35 },
               lamps: [{ i: 0, x: 0.0, z: 0.95, y: 0.45, fit: 'none', color: '#ff9848', radius: 4.2, k: 1.10 },
                       { i: 3, x: 3.4, z: 0.42 },
                       { i: 2, x: 4.0, z: 0.38, y: 1.25, color: '#eab070', k: 1.5, radius: 4.0, fit: 'none' }],
