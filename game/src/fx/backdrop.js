@@ -2031,13 +2031,19 @@ export class Backdrop {
       if (out.length >= MAX_PROPS) break;
       if (it.skip || it.centre) continue;
       const n0 = out.length;
-      push(it.shape, it.x ?? 0, it.z, it.scale ?? 1.0, it.tone ?? 0.16, it.y,
+      /* (round 29: a piece set against a SIDE wall may name its distance
+         from it -- `fromWall`, metres, on the side its x is signed -- so a
+         row of beds keeps its heads to the wall whatever width _vary() gave
+         the room; and `keep` says it was set there on purpose, so a lamp's
+         stand beside it does not unseat it. Read only where written.) */
+      const ix = it.fromWall !== undefined ? Math.sign(it.x || 1) * (halfW - it.fromWall) : (it.x ?? 0);
+      push(it.shape, ix, it.z, it.scale ?? 1.0, it.tone ?? 0.16, it.y,
            it.wall ? 'wall' : (it.edge !== undefined ? { edge: it.edge } : (it.free ? 'free' : undefined)));
       /* (round 25 graft: a piece placed by hand may name its own seed -- the
          form a drawing takes off it, a kerbed grave and not a table tomb --
          AFTER it is dealt, so the rand() stream is what it was) */
       if (it.seed !== undefined && out.length > n0) out[out.length - 1].seed = it.seed;
-      if (yields(it, out[out.length - 1])) out.pop();
+      if (!it.keep && yields(it, out[out.length - 1])) out.pop();
     }
     return out.slice(0, MAX_PROPS);
   }

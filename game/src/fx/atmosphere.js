@@ -353,13 +353,19 @@ export const REGIONS = {
        #262238, hi #46446e -> #3a3352) and the moon's fill weaker: the
        electric blue was the cold light on a pale wall. */
     arch: 0, floorPattern: 0, subject: 'dormroom', damask: 0,
-    room: { w: 16, d: 11, h: 4.6, side: 0.04, ceilPattern: 3, wallPad: 4.0, floorOver: 0.4 },
+    /* (round 29: the wing's own shell IS the dormitory now, 8 x 8.4 m --
+       the fight is played in it, and a room kind's `room` never reaches
+       the wing's main room; the bedroom scales up from it to what it was) */
+    room: { w: 8.0, d: 8.36, h: 4.6, side: 0.04, ceilPattern: 3, wallPad: 4.0, floorOver: 0.4 },
     cam: { y: 2.10, z: 6.6, look: 1.95, fov: 41 },
     nookSide: -1,
     deep: '#18162c', mid: '#262238', hi: '#3a3352', accent: '#5e76aa',
     shaft: '#a7b8e0', floorDeep: '#100f1e', floorMid: '#232339', ambient: '#17152a',
     propAlb: '#3a3350', propHi: '#6a6488', rimCol: '#d8c6b0',
-    gloss: 0.38, open: '#5873a1', openGlow: 0.42, coolFill: 0.80, wallFog: 0.18,
+    gloss: 0.38, open: '#5873a1', openGlow: 0.42, coolFill: 0.80, wallFog: 0.07,
+    /* (round 29: the beds and washstands set down on the boards -- the
+       shared contact rule a step harder here, as round 28's wings) */
+    propShadow: 1.6,
     props: { shapes: [52, 0, 14, 0], count: 5, height: 2.1, layout: 'nook',
              near: [{ shape: 51, x: -4.7, z: -3.6, tone: 0.95, free: true },
                     { shape: 51, x: -5.2, z: -6.6, tone: 0.92, free: true },
@@ -372,11 +378,11 @@ export const REGIONS = {
     fill: { glow: 0, kind: 'cold', x: 5.4, y: 2.6, z: 1.0, color: '#92aae4', intensity: 1.78, radius: 8.5, flicker: false },
     lights: [
       { kind: 'warm', x: -3.4, y: 2.90, z: -4.6, color: '#dda558', intensity: 2.40, radius: 5.0 },
-      { kind: 'cold', x: 3.0, y: 2.60, z: -9.8, color: '#92aae4', intensity: 1.50, radius: 7.0 },
-      { kind: 'cold', x: -3.0, y: 2.60, z: -9.6, color: '#7897ca', intensity: 1.00, radius: 6.5 },
-      { kind: 'warm', x: 1.2, y: 3.00, z: -8.0, color: '#e2b070', intensity: 1.50, radius: 5.5 },
+      { kind: 'cold', x: 3.0, y: 2.60, z: -7.5, color: '#92aae4', intensity: 1.50, radius: 7.0 },
+      { kind: 'cold', x: -3.0, y: 2.60, z: -7.4, color: '#7897ca', intensity: 1.00, radius: 6.5 },
+      { kind: 'warm', x: 1.2, y: 3.00, z: -7.3, color: '#e2b070', intensity: 1.50, radius: 5.5 },
     ],
-    shafts: { count: 2, spread: 11, y: 6.0, z: -8.8, angle: 0.40, width: 3.0, intensity: 0.06, pool: 2.0 },
+    shafts: { count: 2, spread: 11, y: 6.0, z: -7.0, angle: 0.40, width: 3.0, intensity: 0.06, pool: 2.0 },
     bloom: 0.78, vignette: 1.23,
   },
 
@@ -463,6 +469,11 @@ export const REGIONS = {
     crispFloor: true,
     ambient: '#152222', propAlb: '#2a4233', propHi: '#57825e',
     gloss: 0.55, grime: 0.50, open: '#64bd9b', openGlow: 0.78, coolFill: 1.2,
+    /* (round 29, both judges: "in teal haze" -- the wall fog 0.16 -> 0.05
+       and the moon's beams through the roof 0.22 -> 0.08, the rakes into the
+       fight 0.70 -> 0.34: the glass is dark night glass now, lit only by
+       what it reflects; and the pots and beds set down harder) */
+    wallFog: 0.05, propShadow: 1.5,
     /* CROWDED. BRIEF-r9 fix 4 asks whether a person walking into this room
        would find these things in it IN THIS QUANTITY, and the answer for a
        Victorian glasshouse with thirty plants spread over three tiers of a
@@ -495,14 +506,16 @@ export const REGIONS = {
       /* (round 25: 9.83 burned a white hole in the flags under it from the
          conservatory's gallery) */
       { kind: 'warm', x: -2.8, y: 1.20, z: -4.8, color: '#e0b266', intensity: 6.20, radius: 5.68 },
-      { kind: 'cold', x: 3.2, y: 1.50, z: -8.0, color: '#8edde3', intensity: 1.24, radius: 6.0 },
+      /* (round 29, judge 1: "the right half of the floor is black" -- the
+         lamp on that side, a lantern among the pots, lit warm and stronger) */
+      { kind: 'warm', x: 3.6, y: 1.30, z: -6.4, color: '#dcae6a', intensity: 3.40, radius: 6.4 },
     ],
     /* (round 25: the moon through the roof at half its strength -- four
        beams at 0.45 were searchlights, and the haze between them the milk
        the rubric asks to see gone) */
-    shafts: { count: 4, spread: 22, y: 11.4, z: -13, angle: 0.30, width: 3.4, intensity: 0.22, pool: 1.5,
+    shafts: { count: 4, spread: 22, y: 11.4, z: -13, angle: 0.30, width: 3.4, intensity: 0.08, pool: 1.2,
               /* two raking shafts into the fight's own room (round 21 graft): Backdrop.build */
-              rake: { at: [0.31, 0.69], side: [1, 1], y: 0.47, angle: 0.42, width: 2.0, intensity: 0.70 } },
+              rake: { at: [0.31, 0.69], side: [1, 1], y: 0.47, angle: 0.42, width: 2.0, intensity: 0.34 } },
     bloom: 0.92,
   },
 
@@ -860,9 +873,15 @@ export const REGIONS = {
     room: { w: 11, d: 26, h: 0, side: 0, ceilPattern: 0, wallPad: 0, openW: 120 },
     cam: { y: 2.35, z: 9.2, look: 2.5, fov: 47 },
     deep: '#191618', mid: '#353020', hi: '#575030', accent: '#90905e',
-    rimCol: '#c4b479', shaft: '#b8ae8b', floorDeep: '#100e12', floorMid: '#27221b',
+    /* (round 29, both judges: "the path and lawn are milky grey under a
+       grain wash" -- the turf's mid a stop down, #27221b -> #1c1a14, the
+       wall fog 0.22 -> 0.06, the moon on the walk 3.02 -> 2.30 and the grain
+       0.026 -> 0.014: a true dark lawn, lit where the fight stands. A
+       palette COLOUR, changed because the dark was too pale.) */
+    rimCol: '#c4b479', shaft: '#b8ae8b', floorDeep: '#0d0c0f', floorMid: '#1c1a14',
     ambient: '#171519', propAlb: '#323021', propHi: '#615d45',
-    gloss: 0.28, grime: 0.95, coolFill: 0.95, wallFog: 0.22, open: '#a39e6d', openGlow: 0.25,
+    gloss: 0.28, grime: 0.95, coolFill: 0.95, wallFog: 0.06, open: '#a39e6d', openGlow: 0.25,
+    grain: 0.014, propShadow: 1.4,
     /* A HEADSTONE IN A HEDGE MAZE (BRIEF-r9 fix 4) was the second set I would
        question: defensible in a haunted house, but a formal maze's set piece
        is a GARDEN STATUE on a plinth at the turn of a walk, and shape 15 now
@@ -876,7 +895,7 @@ export const REGIONS = {
                  tint: '#e0d8a8', wispTint: '#b08fd8', emberTint: '#d8a04a',
                  speed: 0.75, scale: 1.3, wind: 1.4, density: 0.95 },
     exposure: 1.72, vignette: 1.52, contrast: 1.21,
-    key:  { glow: 0, kind: 'cold', x: -4.2, y: 5.6, z: 3.0, color: '#c4cce1', intensity: 3.02, radius: 15.0, flicker: false },
+    key:  { glow: 0, kind: 'cold', x: -4.2, y: 5.6, z: 3.0, color: '#b6c0da', intensity: 2.30, radius: 15.0, flicker: false },
     fill: { glow: 0, kind: 'warm', x: 5.0, y: 1.6, z: 1.6, color: '#dda358', intensity: 1.01, radius: 5.59 },
     lights: [
       { kind: 'cold', x: -3.0, y: 7.60, z: -12.0, color: '#a4b5cc', intensity: 2.63, radius: 14.0, flicker: false },
@@ -1156,7 +1175,9 @@ export const REGIONS = {
     deep: '#211a1c', mid: '#423428', hi: '#725b41', accent: '#c3a674',
     rimCol: '#eadcb7', shaft: '#e4d0b1', floorDeep: '#161114', floorMid: '#392d24',
     ambient: '#1d1719', propAlb: '#4a3a2b', propHi: '#876d4c',
-    gloss: 0.72, grime: 0.20, open: '#dbc38e', openGlow: 0.88, coolFill: 0.7, wallFog: 0.10,
+    gloss: 0.72, grime: 0.20, open: '#dbc38e', openGlow: 0.88, coolFill: 0.7, wallFog: 0.04,
+    /* (round 29: the statues set down on the boards, as round 28's wings) */
+    propShadow: 1.5,
     /* (round 22 graft, all three judges: the statues beside the columns
        were "stair-stepped low-res silhouettes -- redraw them clean": 31 is
        the same figure with a surface the Deck's tier can resolve; the wall
@@ -1169,14 +1190,23 @@ export const REGIONS = {
                  speed: 0.55, scale: 1.15, wind: 0.35, density: 1.0 },
     exposure: 1.8, contrast: 1.67,
     key:  { glow: 0, kind: 'warm', x: -4.4, y: 3.6, z: 2.6, color: '#ebcc9b', intensity: 0.9, radius: 8.6 },
-    fill: { glow: 0, kind: 'cold', x: 5.6, y: 2.6, z: 1.4, color: '#91bad3', intensity: 5.4, radius: 8.5, flicker: false },
+    /* ROUND 29, both judges: "the floor's right third is a milky blue-grey",
+       "the back wall's portraits are lost under shafts of haze". The cold
+       fill was 5.4 in a pale cyan and the cold lamp before the stage 3.07:
+       together they laid a pale blue sheet over the right of the boards. A
+       deep moon blue now, at under half, and the lamp at two fifths -- the
+       floor keeps its dark, lit warm where the fight stands. The shafts go
+       from 0.48 to 0.10 and the wall fog from 0.10 to 0.04, so the portraits
+       hang in a dark wall, not behind a curtain of haze. (A LIGHT's colour,
+       said here because the darks were too pale.) */
+    fill: { glow: 0, kind: 'cold', x: 5.6, y: 2.6, z: 1.4, color: '#5a7fa6', intensity: 2.3, radius: 8.5, flicker: false },
     lights: [
       { kind: 'warm', x: 0.0, y: 4.20, z: -15.0, color: '#edd7a6', intensity: 0.88, radius: 10.32, flicker: false },
       { kind: 'warm', x: -5.6, y: 2.20, z: -8.0, color: '#e9c892', intensity: 0.59, radius: 6.45 },
       { kind: 'warm', x: 5.6, y: 2.20, z: -8.0, color: '#e9c892', intensity: 0.59, radius: 6.45 },
-      { kind: 'cold', x: 0.0, y: 1.00, z: -3.2, color: '#91bad3', intensity: 3.07, radius: 5.4 },
+      { kind: 'cold', x: 0.0, y: 1.00, z: -3.2, color: '#6f93b8', intensity: 1.25, radius: 5.4 },
     ],
-    shafts: { count: 3, spread: 14, y: 10.0, z: -12.0, angle: 0.18, width: 4.0, intensity: 0.48, pool: 1.8 },
+    shafts: { count: 3, spread: 14, y: 10.0, z: -12.0, angle: 0.18, width: 4.0, intensity: 0.10, pool: 1.2 },
     bloom: 0.82, warmTone: 0.07, halation: 0.58, vignette: 1.01, grain: 0.020,
   },
 
@@ -1664,23 +1694,39 @@ export const ROOM_KINDS = {
        heads to the walls; and a bedroom with its hearth, its four-poster
        and its washstand -- each drawn in program 18) */
     kinds: [{ subject: 'dormroom', layout: 'wings', count: 0, swap: [[0, 51], [14, 51]],
-              runner: 1.25, room: { d: 0.76, w: 0.78 },
+              runner: 1.25,
               lamps: [{ i: 0, x: 0.0, z: 0.30, k: 1.4 },
-                      { i: 3, x: 4.6, z: 0.66, y: 1.25, color: '#eab070', k: 1.5, radius: 4.5, fit: 'none' }],
+                      { i: 3, x: 3.3, z: 0.60, y: 1.25, color: '#eab070', k: 1.5, radius: 4.5, fit: 'none' }],
               /* (graft, all three judges: "bring the iron beds in from the
                  edges into two rows down the room" -- two files either side
                  of the aisle, a washstand between each pair of beds) */
-              near: [{ shape: 51, x: -2.9, z: -2.6, tone: 0.97, free: true },
-                     { shape: 51, x: 2.9, z: -2.8, tone: 0.97, free: true },
-                     { shape: 52, x: -3.3, z: -3.8, tone: 0.94, free: true },
-                     { shape: 52, x: 3.3, z: -4.0, tone: 0.94, free: true },
-                     { shape: 51, x: -3.1, z: -4.9, tone: 0.95, free: true },
-                     { shape: 51, x: 3.1, z: -5.1, tone: 0.95, free: true },
-                     { shape: 51, x: -3.3, z: -7.0, tone: 0.92, free: true },
-                     { shape: 51, x: 3.3, z: -7.2, tone: 0.92, free: true }],
+              /* ROUND 29, both judges: "a near-empty dark box with two tiny
+                 beds at the edges"; "the beds and washstands are tiny,
+                 flat-lit and lost against it". A DORMITORY: the room is
+                 brought in to 8 m (the wing's shell) so its side walls are
+                 in the picture, and
+                 down each of them a file of five iron beds with their heads
+                 to the wall, from the far end up to the stage, the nearest
+                 at the fighters' own depth; a washstand at the head between
+                 each pair. Set from the wall (`fromWall`), so _vary()'s
+                 width cannot push a bedhead through the plaster. */
+              near: [{ shape: 51, x: -1, fromWall: 1.05, z: -1.15, tone: 0.98, free: true, keep: true },
+                     { shape: 51, x: 1, fromWall: 1.05, z: -1.00, tone: 0.98, free: true, keep: true },
+                     { shape: 52, x: -1, fromWall: 0.62, z: -1.95, tone: 0.95, free: true, keep: true },
+                     { shape: 52, x: 1, fromWall: 0.62, z: -1.80, tone: 0.95, free: true, keep: true },
+                     { shape: 51, x: -1, fromWall: 1.05, z: -2.75, tone: 0.97, free: true, keep: true },
+                     { shape: 51, x: 1, fromWall: 1.05, z: -2.60, tone: 0.97, free: true, keep: true },
+                     { shape: 51, x: -1, fromWall: 1.05, z: -4.35, tone: 0.95, free: true, keep: true },
+                     { shape: 51, x: 1, fromWall: 1.05, z: -4.20, tone: 0.95, free: true, keep: true },
+                     { shape: 52, x: -1, fromWall: 0.62, z: -5.15, tone: 0.93, free: true, keep: true },
+                     { shape: 52, x: 1, fromWall: 0.62, z: -5.00, tone: 0.93, free: true, keep: true },
+                     { shape: 51, x: -1, fromWall: 1.05, z: -5.95, tone: 0.93, free: true, keep: true },
+                     { shape: 51, x: 1, fromWall: 1.05, z: -5.80, tone: 0.93, free: true, keep: true },
+                     { shape: 51, x: -1, fromWall: 1.05, z: -7.30, tone: 0.91, free: true, keep: true },
+                     { shape: 51, x: 1, fromWall: 1.05, z: -7.15, tone: 0.91, free: true, keep: true }],
               cam: { z: -1.6, look: 0.10 } },
             { subject: 'bedchamber', layout: 'wings', count: 0,
-              room: { d: 0.80, w: 0.86 }, runner: 1.5,
+              room: { d: 1.053, w: 1.72 }, runner: 1.5,
               lamps: [{ i: 0, x: 0.0, z: 0.95, y: 0.45, fit: 'none', color: '#ff9848', radius: 4.2, k: 1.10 },
                       { i: 3, x: 3.4, z: 0.42 },
                       { i: 2, x: 4.0, z: 0.38, y: 1.25, color: '#eab070', k: 1.5, radius: 4.0, fit: 'none' }],
