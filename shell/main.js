@@ -135,6 +135,7 @@ if (!app.requestSingleInstanceLock()) {
     // Links out of the game open in the real browser, never in this window.
     win.webContents.setWindowOpenHandler(({ url }) => { shell.openExternal(url); return { action: 'deny' }; });
     win.on('closed', () => { win = null; });
+    watchForCrashes(win);
     await win.loadURL(`http://127.0.0.1:${port}/game/index.html`);
 
     if (SMOKE) { await smoke(win); return; }
@@ -144,6 +145,44 @@ if (!app.requestSingleInstanceLock()) {
   });
 
   app.on('window-all-closed', () => { steam.shutdown(); app.quit(); });
+}
+
+/* ── when the GPU or the page dies ───────────────────────────────────────────
+   On this machine's integrated GPU, Chromium's GPU process can die after a
+   long session ("GPU state invalid after WaitForGetOffsetInRange"); Electron
+   restarts it, but the page's WebGL context is gone and the window just sits
+   dark. So reload the page -- the game resumes a saved expedition from the
+   title -- and write down why, in <userData>/shell.log, so a dark screen
+   always leaves a reason behind. At most three reloads in two minutes, so a
+   GPU that keeps dying cannot loop forever. */
+function shellLog(line) {
+  const msg = `${new Date().toISOString()} ${line}`;
+  console.warn('[shell] ' + line);
+  try { fs.appendFileSync(path.join(app.getPath('userData'), 'shell.log'), msg + '\n'); } catch { /* best effort */ }
+}
+
+function watchForCrashes(w) {
+  const reloads = [];
+  const reload = (why) => {
+    const now = Date.now();
+    while (reloads.length && now - reloads[0] > 120000) reloads.shift();
+    if (reloads.length >= 3) { shellLog(`not reloading again (${why}): three reloads in two minutes`); return; }
+    reloads.push(now);
+    setTimeout(() => { if (!w.isDestroyed()) { shellLog(`reloading the page (${why})`); w.webContents.reload(); } }, 1500);
+  };
+  app.on('child-process-gone', (_e, d) => {
+    shellLog(`child process gone: type=${d.type} reason=${d.reason} exitCode=${d.exitCode}`);
+    if (d.type === 'GPU') reload('the GPU process died');
+  });
+  w.webContents.on('render-process-gone', (_e, d) => {
+    shellLog(`page process gone: reason=${d.reason} exitCode=${d.exitCode}`);
+    if (d.reason !== 'clean-exit') reload('the page process died');
+  });
+  w.webContents.on('unresponsive', () => shellLog('the page stopped responding'));
+  w.webContents.on('responsive', () => shellLog('the page is responding again'));
+  w.webContents.on('console-message', (e) => {
+    if (e.level === 'error' || /context lost|CONTEXT_LOST/i.test(e.message || '')) shellLog(`console ${e.level}: ${e.message}`);
+  });
 }
 
 async function smoke(w) {
@@ -158,6 +197,17 @@ async function smoke(w) {
                net: !!(window.__MM_HOST__ && window.__MM_HOST__.net),
                reason: (window.__MM_HOST__ && window.__MM_HOST__.steamReason) || '' };
     })()`).catch(() => null);
+  }
+  /* `--smoke-js=FILE`: run a script in the page once the title is up (click a
+     button, say), wait, and report the scene it led to. */
+  const jsFile = (process.argv.find(a => a.startsWith('--smoke-js=')) || '').slice(11);
+  if (jsFile && seen) {
+    await new Promise(r => setTimeout(r, 4000));
+    await w.webContents.executeJavaScript(fs.readFileSync(jsFile, 'utf8')).catch((e) => errors.push('smoke-js: ' + e.message));
+    await new Promise(r => setTimeout(r, 8000));
+    seen.after = await w.webContents.executeJavaScript(`({ scene: MM.ctx.scenes.currentName,
+      dom: document.querySelector('#dom-layer').innerHTML.length,
+      warm: MM.ctx.stage && MM.ctx.stage.warmStage })`).catch((e) => 'eval failed: ' + e.message);
   }
   const shot = (process.argv.find(a => a.startsWith('--smoke-shot=')) || '').slice(13);
   if (shot && seen) {
