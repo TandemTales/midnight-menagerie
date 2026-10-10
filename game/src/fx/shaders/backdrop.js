@@ -4595,6 +4595,9 @@ vec3 hzWither(vec2 p, float sd, float px, float holes, out float gap, out float 
    a lamp on a clipped yew lights its sprays, not a smooth disc of it --
    CASSEL's orange-and-purple blotch on the back hedge) */
 float gHedgeLeaf = 1.0, gHedgeAmt = 0.0;
+/* (round 29: the moon along the SHEARED edge of the crown, a light of its
+   own and not a share of the leaf's dark colour -- main() adds it) */
+float gHedgeEdge = 0.0;
 /* THE HEDGE MAZE'S WALLS. Clipped yew 3.2 m high -- the yew runs' (shape
    28) own height, so a run across the way and the walls either side are one
    hedge. The SIDE walls have their turnings: a way through every few metres
@@ -4608,6 +4611,7 @@ float gHedgeLeaf = 1.0, gHedgeAmt = 0.0;
    with a statue standing in each. */
 float hedgeWallH(vec2 q, float qpx, out float occ){
   occ = 0.0;
+  gHedgeEdge = 0.0;
   const float HH = 3.20;
   float far = step(0.5, uFar);
   float court = far * step(36.5, uSubject);
@@ -4735,7 +4739,8 @@ float hedgeWallH(vec2 q, float qpx, out float occ){
   gWLit *= 1.0 - gapY;
   /* THE SHEARED EDGE: the last hand of the crown takes the moon along its
      cut -- broken by the sprays and by the dead patches, never a line */
-  gWLit += hedge*(1.0 - inGap)*smoothstep(top - 0.10, top - 0.03, q.y)*step(q.y, top)*(0.55 + 0.45*lit)*(1.0 - gapY)*1.40;
+  gHedgeEdge = hedge*(1.0 - inGap)*smoothstep(top - 0.085, top - 0.03, q.y)*(0.45 + 0.55*lit)*(1.0 - gapY);
+  gWLit += gHedgeEdge*0.8;
   gCol = yew;
   gColAmt = solidM;
   gHedgeLeaf = mix(1.0, (0.20 + 1.30*tone)*(1.0 - niche*0.8), hedge*(1.0 - stone));
@@ -11848,6 +11853,8 @@ void main(){
     float solidH = smoothstep(0.25, 0.85, h);
     col += alb * solidH * (faceC*(0.10 + 0.42*max(nrm.y, 0.0))*mix(1.0, 0.35 + 0.95*gHedgeLeaf, gHedgeAmt)
                            + moonH*2.2*gWLit) * uGain;
+    /* (round 29: the sheared edge, crisp, in the moon's own light) */
+    col += mix(moonH, vec3(0.46, 0.56, 0.42), 0.5) * 0.050 * gHedgeEdge * uGain;
   }
 #endif
 #if MM_ROOMS >= 8
@@ -17055,8 +17062,10 @@ float stFigure(vec2 q, float urn, out float head, out float skirt, out float tor
   skirt = min(skirt, wfEll(q - vec2(0.10, 0.80), vec2(0.075, 0.035)));
   /* the torso: waist, breast, shoulders rounded */
   float ty = clamp((q.y - 1.58)/0.44, 0.0, 1.0);
-  float tw = mix(0.172, 0.205, smoothstep(0.0, 0.7, ty)) + 0.035*smoothstep(0.75, 1.0, ty);
-  torso = mmBox(q - vec2(0.0, 1.80), vec2(tw, 0.23), 0.07);
+  float tw = mix(0.150, 0.190, smoothstep(0.0, 0.7, ty)) + 0.020*smoothstep(0.75, 1.0, ty);
+  /* sloping shoulders, rounded into the neck -- not a box */
+  torso = mmBox(q - vec2(0.0, 1.78), vec2(tw, 0.21), 0.12);
+  torso = max(torso, (q.y - 2.04) + 0.55*abs(q.x) - 0.06);
   float neck = mmBox(q - vec2(0.008, 2.075), vec2(0.042, 0.06), 0.02);
   torso = mmSmin(torso, neck, 0.03);
   /* the head, a little turned, and its dressed hair */
@@ -17088,7 +17097,8 @@ float stFigure(vec2 q, float urn, out float head, out float skirt, out float tor
     float veil = max(mmBox(q - vec2(-0.01, 2.08), vec2(0.100 + clamp(2.25 - q.y, 0.0, 0.30)*0.28, 0.24), 0.09), q.y - 2.32);
     veil = min(veil, wfEll(q - hc - vec2(-0.005, 0.020), vec2(0.100, 0.115)));
     head = min(head, veil);
-    extra = abs(length(q - vec2(0.0, 1.68)) - 0.115) - 0.030;
+    /* the wreath hangs from her hands, foreshortened, below them */
+    extra = (abs(length((q - vec2(0.0, 1.70))/vec2(1.0, 0.72)) - 0.095) - 0.024)*0.85;
   }
   return min(min(min(head, skirt), min(torso, arms)), extra);
 }
@@ -17158,8 +17168,9 @@ float stDraw(vec2 m, vec2 msz, float seed, float px, bool paint){
   vec3 skC = stone*turn*mix(1.0, 0.62 + 0.50*(0.5 + 0.5*spl), 0.35 + 0.65*deep);
   /* the himation swagged across the hips, its folds sagging in arcs */
   vec2 hv = q - vec2(0.0, 1.30);
-  float swagY = 0.12*hv.x + 0.10*hv.x*hv.x/0.09;
-  float swag = abs(hv.y - swagY) - 0.10 - 0.03*hv.x;
+  /* (diagonal, from the high hip down across the thigh, as it is draped) */
+  float swagY = 0.42*hv.x + 0.08*hv.x*hv.x/0.09;
+  float swag = abs(hv.y - swagY) - 0.065 - 0.02*hv.x;
   float onSw = wfIn(swag, qpx)*step(abs(q.x), sw);
   float sf = sin((hv.y - swagY)*48.0 + hv.x*3.0);
   skC = mix(skC, stone*turn*(0.70 + 0.38*(0.5 + 0.5*sf)), onSw);
@@ -17212,7 +17223,7 @@ float stDraw(vec2 m, vec2 msz, float seed, float px, bool paint){
     float band = smoothstep(0.012, 0.0, abs(uq.y - 0.035)) + smoothstep(0.010, 0.0, abs(uq.y + 0.045));
     xC = stone*(0.66 + 0.40*wfRound(clamp(uq.x/0.105, -1.0, 1.0)))*(1.0 + 0.25*kq*uq.x/0.1)*(1.0 - 0.25*band);
   } else {
-    vec2 wq = q - vec2(0.0, 1.68);
+    vec2 wq = (q - vec2(0.0, 1.70))/vec2(1.0, 0.72);
     float lf = sin(atan(wq.y, wq.x)*18.0);
     xC = mix(stone*0.80, vec3(0.30, 0.36, 0.22)*0.9, 0.35)*(0.70 + 0.35*lf);
   }
@@ -20881,6 +20892,7 @@ float gBedLeaf;
    dark foot, and the reveal of its arch */
 float gPkOn, gPkLobe, gPkRib, gPkStem, gPkLeaf, gPkCut, gPkNear;
 float gYewTop, gYewFoot, gYewRev, gYewDead, gYewCl;
+float gYewEdge;     // (round 29: the sheared edge of a run, in the moon's own light)
 float gTbOk;       // which of the table's things this pixel is (29)
 float reliefH(vec2 uv, vec2 msz, vec2 mpp, float shape, float seed, out float tint){
   vec2  p = uv - vec2(0.5, 0.0);          // the same frame shapeField authors in
@@ -20917,6 +20929,7 @@ float reliefH(vec2 uv, vec2 msz, vec2 mpp, float shape, float seed, out float ti
   gBedLeaf = 0.0;
   gPkOn = 0.0; gPkLobe = 0.0; gPkRib = 0.0; gPkStem = 0.0; gPkLeaf = 0.0; gPkCut = 0.0; gPkNear = 0.0;
   gYewTop = 0.0; gYewFoot = 0.0; gYewRev = 0.0; gYewDead = 0.0; gYewCl = 0.5; gTbOk = 0.0;
+  gYewEdge = 0.0;
 #if MM_WINGS == 1
   /* (round 29: the carved statue carries its form in its own paint) */
   if (shape > 30.5 && shape < 31.5) return 0.0;
@@ -22255,6 +22268,7 @@ float reliefH(vec2 uv, vec2 msz, vec2 mpp, float shape, float seed, out float ti
        judges named on VANDYKE's): only the upper faces of the sprays in its
        top half-metre, so the light breaks with the leaf */
     gYewTop  = smoothstep(top - 0.55, top - 0.05, m.y) * step(m.y, top + 0.10) * ylit;
+    gYewEdge = smoothstep(top - 0.085, top - 0.03, m.y) * step(m.y, top + 0.06) * (0.45 + 0.55*ylit) * (1.0 - topi);
     gYewFoot = smoothstep(0.36, 0.02, m.y) * (1.0 - topi);
     h -= 0.040*gYewFoot;
     float ad = yewArch(m, seed);
@@ -23221,6 +23235,7 @@ void main(){
     /* (graft: a topiary out in the alley is lit by nothing else, and at
        the old 0.10 a cone was a flat dark triangle) */
     col += albedo * moonP * (0.18 + 0.75*max(N.y, 0.0) + 1.8*gYewTop);
+    col += mix(moonP, vec3(0.46, 0.56, 0.42), 0.5) * 0.050 * gYewEdge;   // (round 29)
   }
   /* ...and on a pumpkin, lying out under the same sky: the tops of its
      lobes take the moon, so an uncarved one is a round orange thing in the
