@@ -4735,7 +4735,13 @@ float hedgeWallH(vec2 q, float qpx, out float occ){
   stoneC *= 1.0 + 0.40*smoothstep(0.03, 0.0, abs(q.y - 0.755));
   yew = mix(yew, stoneC, stone);
   gInk = max(gInk, mmInkP(abs(fract(nbx*46.0/6.2832) - 0.5)*6.2832/46.0, qpx, 0.8)*stone*robeZ*smoothstep(1.62, 1.10, q.y)*0.55);
-  h -= gapY*(1.0 - twigY)*0.45;
+  h -= gapY*(1.0 - twigY)*0.25;
+  /* (round 29: main() blends the SKY in where h falls under 0.85 -- the
+     maze's way through -- so the yew's own foot and a dead hole in it keep
+     their h above that, or the night shows through the hedge's base) */
+  /* ...and so does a niche, whose dark is its colour (yew*0.12), not the
+     sky blended into it -- the court's niches read as pale lavender panels */
+  h = mix(h, max(h, 0.92), hedge*(1.0 - corr));
   gWLit *= 1.0 - gapY;
   /* THE SHEARED EDGE: the last hand of the crown takes the moon along its
      cut -- broken by the sprays and by the dead patches, never a line */
