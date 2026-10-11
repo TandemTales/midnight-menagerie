@@ -52,15 +52,21 @@ check reads Taffy's cream gloss as background; leave it red, do not lower it).
   does something.
 - **Survey 3** (`docs/ui-pass/SURVEY-2026-10-04.md`): what is owed next.
 
-**ROUND 29 IS MERGED, VERIFIED AND PUSHED (2026-10-11): VIRIDIAN, 2 of 2,
-6.15 vs 4.40 (+1.75)** (`d6e73e3f`). Battery green but the sprites halo
-(`tests/kid-clips` flakes 9/1 inside the battery two rounds running and passes
-10/0 alone). **NEXT JOB: its graft, `docs/ui-pass/GRAFT-r29.md`** -- first the
-Greenhouse back under 15.5 ms (15.78 settled, +0.67), then BOLUS's dark maze
-and GRISAILLE's fountain and statues. Losers: ui/r29-rooms-b, ui/r29-rooms-c.
-Also 10-09: no pet portraits on walls that are not theirs (the house's family,
-prompts in `docs/art/portrait-prompts.md`, waiting on Josh's paintings); rooms
-entered through the 'doorway' transition with the camera already set.
+**ROUNDS 28 AND 29 AND BOTH GRAFTS ARE MERGED, VERIFIED AND PUSHED
+(2026-10-11).** Round 29: VIRIDIAN +1.75 (`d6e73e3f`), graft `d736df00`
+(Greenhouse back under budget at 15.25 ms settled). Battery green but the
+sprites halo and `tests/kid-clips`: its defeat check fails ~2 in 5 even alone
+(the Kid's defeat clip switches later than the 1.1 s banner). Preloading the
+atlas did NOT help (measured), so it is not the download -- a spawned task
+chip holds the investigation. Left from graft 29: the Heart's portraits lit
+not enlarged (shared wall code), the four-poster's counterpane flat, the
+Greenhouse's blue floor pool barely darker, the Hedge at 15.05 ms (thin
+margin). **NEXT: round 30** -- survey 3's remaining items: the run strip's
+Keepsake/Gear tray at 1280 (+2 both), the pale parchment and three node
+states on the map and atlas, then a fourth survey. Also 10-09: no pet
+portraits on walls that are not theirs (the house's family, prompts in
+`docs/art/portrait-prompts.md`, waiting on Josh's paintings); rooms entered
+through the 'doorway' transition with the camera already set.
 
 **ROUND 28 AND ITS GRAFT ARE MERGED, VERIFIED AND PUSHED (2026-10-08):**
 MAUVEINE +2.39 (`cad57a30`), graft `87d8a530`. The props' contact shadows
