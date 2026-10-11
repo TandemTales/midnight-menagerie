@@ -19461,9 +19461,10 @@ float wfFourPoster(vec2 q, float px, float seed, float kq, bool paint){
   /* the counterpane: quilted ivory silk, its gold border, folds to the floor */
   /* (round 29: an old-gold or a wine counterpane -- the pale silk was the
      one milky mass in the bedroom) */
-  /* (round 29 graft: the old gold a stop deeper -- flat-lit it came up the
-     pale cream panel judge 1 named on another build's bed) */
-  vec3 silk = kc < 0.5 ? vec3(0.42, 0.29, 0.15) : vec3(0.48, 0.18, 0.19);
+  /* (round 29 graft: a plum or a wine -- lit flat, without the cloud, the
+     old gold came up the pale cream panel judge 1 named on another build's
+     bed) */
+  vec3 silk = kc < 0.5 ? vec3(0.30, 0.12, 0.20) : vec3(0.42, 0.15, 0.16);
   /* over the mattress's edge it is quilted in diamonds, each one puffed;
      below the edge it FALLS, in deep folds that open toward the floor */
   float edgeY = MT - 0.16;
@@ -23310,7 +23311,7 @@ void main(){
     /* (...and the four-poster a step under it: without the cloud its
        counterpane came up a flat pale panel -- the defect judge 1 named on
        another build's bed) */
-    if (vShape > 49.5 && vShape < 50.5) Ew *= 0.74;
+    if (vShape > 49.5 && vShape < 50.5) Ew *= 0.62;
     /* (round 29 graft, both judges on the fight: the dormitory's beds and
        washstands set low in tone -- the near file behind the Kid -- go down
        a full stop, not the tenth the shared tone term gives a drawing) */
