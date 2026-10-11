@@ -52,15 +52,14 @@ check reads Taffy's cream gloss as background; leave it red, do not lower it).
   does something.
 - **Survey 3** (`docs/ui-pass/SURVEY-2026-10-04.md`): what is owed next.
 
-**IN FLIGHT (2026-10-09): ROUND 29** -- the Hedge Maze, Sleeping Quarters,
-Heart and Greenhouse (`BRIEF-r29.md`), Workflow run `wf_10d86a4a-eb4` at base
-`078e50a3` (session limit; resumed 2026-10-11 06:10 as `wf_cb9fb800-2be`
-with wrap-up notes); worktrees `C:/UILOOP/r29/wt/r29-rooms-{a,b,c}` (VIRIDIAN 9141,
-GRISAILLE 9142, BOLUS 9143), baselines BOMBAZINE in
-`C:/UILOOP/r29/judging/r29/rooms/`. If it stops on a limit, finish it as a NEW
-run with `resume` notes (never resumeFromRunId). Also done 10-09: no pet
-portraits on walls that are not theirs (the house's family, prompts in
-`docs/art/portrait-prompts.md`, waiting on Josh's paintings), and rooms are
+**ROUND 29 IS MERGED, VERIFIED AND PUSHED (2026-10-11): VIRIDIAN, 2 of 2,
+6.15 vs 4.40 (+1.75)** (`d6e73e3f`). Battery green but the sprites halo
+(`tests/kid-clips` flakes 9/1 inside the battery two rounds running and passes
+10/0 alone). **NEXT JOB: its graft, `docs/ui-pass/GRAFT-r29.md`** -- first the
+Greenhouse back under 15.5 ms (15.78 settled, +0.67), then BOLUS's dark maze
+and GRISAILLE's fountain and statues. Losers: ui/r29-rooms-b, ui/r29-rooms-c.
+Also 10-09: no pet portraits on walls that are not theirs (the house's family,
+prompts in `docs/art/portrait-prompts.md`, waiting on Josh's paintings); rooms
 entered through the 'doorway' transition with the camera already set.
 
 **ROUND 28 AND ITS GRAFT ARE MERGED, VERIFIED AND PUSHED (2026-10-08):**
