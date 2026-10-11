@@ -2261,6 +2261,25 @@ export class Backdrop {
           ss2[i * 2 + 0] = p.w * 1.08; ss2[i * 2 + 1] = 1.5; st2[i] = 0.95;
         } else if (p.shape === 27) {
           ss2[i * 2 + 0] = p.w * 1.35; ss2[i * 2 + 1] = p.w * 0.62; st2[i] = 1.05;
+        } else if (p.shape === 25 && pal.regionKey === 'hedge') {
+          /* (round 29 graft, both judges: the maze court's fountain "a dark
+             contact shadow on the lawn" -- the round basin's own pool, its
+             width and a third of it deep, dense) */
+          ss2[i * 2 + 0] = p.w * 1.12; ss2[i * 2 + 1] = p.w * 0.40; st2[i] = 1.25;
+        } else if (p.shape === 31) {
+          /* (round 29 graft, GRISAILLE's: the carved statue stands on a
+             plinth 0.8 of a metre square, not on the quad it is drawn in --
+             a dense pool round the plinth's foot) */
+          ss2[i * 2 + 0] = p.h * 0.44; ss2[i * 2 + 1] = p.h * 0.32; st2[i] = 1.15;
+        } else if (p.shape === 50 || p.shape === 51) {
+          /* (round 29 graft, both judges: "a contact shadow under each bed so
+             the rows sit on the floor" -- a BED stands on its long side to
+             us, 0.9 m deep: a dense band the length of it, GRISAILLE's) */
+          ss2[i * 2 + 0] = p.w * 1.08; ss2[i * 2 + 1] = 1.25; st2[i] = 1.10;
+        } else if (p.shape === 52 || p.shape === 60) {
+          /* (round 29 graft, judge 2: "give the bed, wardrobe and washstand
+             contact shadows" -- a washstand's and a wardrobe's pool, dense) */
+          ss2[i * 2 + 0] = p.w * 1.30; ss2[i * 2 + 1] = p.w * 0.80; st2[i] = 1.05;
         }
         /* (round 28 graft, NAPLES's: a wing may set its objects down harder --
            pal.propShadow, 1 wherever it is not written. Both judges: the

@@ -499,7 +499,10 @@ export const REGIONS = {
                  speed: 0.85, scale: 1.35, wind: 0.7, density: 0.95 },
     exposure: 1.67, vignette: 0.97, contrast: 1.62,
     key:  { glow: 0, kind: 'warm', x: -4.4, y: 3.8, z: 2.8, color: '#e7bc8a', intensity: 7.46, radius: 8.17 },
-    fill: { glow: 0, kind: 'cold', x: 6.0, y: 3.0, z: 1.6, color: '#79b2d3', intensity: 2.33, radius: 9.5, flicker: false },
+    /* (round 29 GRAFT, judge 2: "the blue moonlight pool on the right floor
+       is milky. Darken it" -- the cold fill at two-thirds, 2.33 -> 1.55,
+       so the right of the floor is dark flags, not a milk pool nor black) */
+    fill: { glow: 0, kind: 'cold', x: 6.0, y: 3.0, z: 1.6, color: '#79b2d3', intensity: 1.55, radius: 9.5, flicker: false },
     lights: [
       { kind: 'cold', x: -6.0, y: 6.40, z: -14.0, color: '#91c5d7', intensity: 2.48, radius: 11.0 },
       { kind: 'cold', x: 7.4, y: 5.60, z: -13.0, color: '#79b2d3', intensity: 1.86, radius: 9.5 },
@@ -513,9 +516,14 @@ export const REGIONS = {
     /* (round 25: the moon through the roof at half its strength -- four
        beams at 0.45 were searchlights, and the haze between them the milk
        the rubric asks to see gone) */
-    shafts: { count: 4, spread: 22, y: 11.4, z: -13, angle: 0.30, width: 3.4, intensity: 0.08, pool: 1.2,
-              /* two raking shafts into the fight's own room (round 21 graft): Backdrop.build */
-              rake: { at: [0.31, 0.69], side: [1, 1], y: 0.47, angle: 0.42, width: 2.0, intensity: 0.22 } },
+    /* ROUND 29 GRAFT, ITEM 0: THE GREENHOUSE UNDER THE DECK'S 15.5 MS. At
+       0.08 (and the rakes at 0.22 of that) the moon's beams through the roof
+       were all but gone from the picture -- round 29 had turned them down
+       for the "teal haze" both judges named -- and still cost the fight 0.40
+       ms of the Deck's frame (gpuprof piece 'shafts', gh-1). They are off:
+       no beams and no pools of theirs on the flags (BOLUS went to 0 too);
+       the night glass carries the moon now. */
+    shafts: { count: 0, spread: 22, y: 11.4, z: -13, angle: 0.30, width: 3.4, intensity: 0.0, pool: 1.2 },
     bloom: 0.92,
   },
 
@@ -878,10 +886,16 @@ export const REGIONS = {
        wall fog 0.22 -> 0.06, the moon on the walk 3.02 -> 2.30 and the grain
        0.026 -> 0.014: a true dark lawn, lit where the fight stands. A
        palette COLOUR, changed because the dark was too pale.) */
-    rimCol: '#c4b479', shaft: '#b8ae8b', floorDeep: '#0d0c0f', floorMid: '#1c1a14',
-    ambient: '#171519', propAlb: '#323021', propHi: '#615d45',
-    gloss: 0.28, grime: 0.95, coolFill: 0.95, wallFog: 0.06, open: '#a39e6d', openGlow: 0.25,
-    grain: 0.014, propShadow: 1.4,
+    /* (round 29 GRAFT, judge 2: "the floor is a milky blue-grey that lifts
+       the darks; it should sit as near-black as BOLUS's ground". The milk
+       was the moon's sheen down the walk, not the turf: the lawn's gloss
+       0.28 -> 0.12 (GRISAILLE's), the turf's mid another step down,
+       #1c1a14 -> #16150f, and the ambient #171519 -> #131115 -- PALETTE
+       colours, changed because the dark was too pale) */
+    rimCol: '#c4b479', shaft: '#b8ae8b', floorDeep: '#0d0c0f', floorMid: '#16150f',
+    ambient: '#131115', propAlb: '#323021', propHi: '#615d45',
+    gloss: 0.12, grime: 0.95, coolFill: 0.95, wallFog: 0.05, open: '#a39e6d', openGlow: 0.25,
+    grain: 0.014, propShadow: 1.5,
     /* A HEADSTONE IN A HEDGE MAZE (BRIEF-r9 fix 4) was the second set I would
        question: defensible in a haunted house, but a formal maze's set piece
        is a GARDEN STATUE on a plinth at the turn of a walk, and shape 15 now
@@ -894,11 +908,13 @@ export const REGIONS = {
     particles: { mix: [[PTYPE.SPORE, 0.44], [PTYPE.ASH, 0.30], [PTYPE.DUST, 0.26]],
                  tint: '#e0d8a8', wispTint: '#b08fd8', emberTint: '#d8a04a',
                  speed: 0.75, scale: 1.3, wind: 1.4, density: 0.95 },
-    exposure: 1.72, vignette: 1.52, contrast: 1.21,
+    /* (round 29 graft: the contrast a little up and the moon over the far
+       hedges a step down, BOLUS's -- the darks down, the lit tops kept) */
+    exposure: 1.72, vignette: 1.52, contrast: 1.28,
     key:  { glow: 0, kind: 'cold', x: -4.2, y: 5.6, z: 3.0, color: '#b6c0da', intensity: 2.30, radius: 15.0, flicker: false },
     fill: { glow: 0, kind: 'warm', x: 5.0, y: 1.6, z: 1.6, color: '#dda358', intensity: 1.01, radius: 5.59 },
     lights: [
-      { kind: 'cold', x: -3.0, y: 7.60, z: -12.0, color: '#a4b5cc', intensity: 2.63, radius: 14.0, flicker: false },
+      { kind: 'cold', x: -3.0, y: 7.60, z: -12.0, color: '#a4b5cc', intensity: 2.05, radius: 14.0, flicker: false },
       { kind: 'warm', x: 3.0, y: 1.00, z: -5.0, color: '#dda358', intensity: 1.47, radius: 4.64 },
       /* (graft: in the alley, not 6.4 m out inside the hedge -- and against
          its side hedge, where it lights that hedge's leaf, not across the
@@ -1185,6 +1201,10 @@ export const REGIONS = {
        so the floor runs lit to the bottom of the frame -- CAPUT's) */
     props: { shapes: [31, 6, 4, 0, 5], count: 24, height: 2.6, layout: 'colonnade' },
     wainscot: true, nearFrame: false,
+    /* (round 29 graft, judge 1: "give the lower half of the hall drawn
+       content -- a long rug" -- the hall's Turkey runner, its medallions and
+       guard stripes, laid from the foot of the frame to the door) */
+    runner: 1.15,
     particles: { mix: [[PTYPE.DUST, 0.54], [PTYPE.WISP, 0.30], [PTYPE.EMBER, 0.16]],
                  tint: '#fff2d8', wispTint: '#ffd9a8', emberTint: '#ffcf7a',
                  speed: 0.55, scale: 1.15, wind: 0.35, density: 1.0 },
@@ -1199,12 +1219,25 @@ export const REGIONS = {
        from 0.48 to 0.10 and the wall fog from 0.10 to 0.04, so the portraits
        hang in a dark wall, not behind a curtain of haze. (A LIGHT's colour,
        said here because the darks were too pale.) */
-    fill: { glow: 0, kind: 'cold', x: 5.6, y: 2.6, z: 1.4, color: '#55759c', intensity: 1.3, radius: 8.5, flicker: false },
+    /* ROUND 29 GRAFT, both judges: "remove the cold blue pool on the right
+       floor"; "light the second and third statues along each wall enough to
+       show they are carved"; "enlarge or light the back-gallery portraits so
+       their faces read". The cold fill at a quarter again (1.3 -> 0.35); the
+       low lamp before the stage WARM, a candle-coloured pool on the runner
+       where the fight stands (#6f93b8 -> #d9b07a, a light's colour, said
+       here because that blue was the pool the judges named); the two lamps
+       down the side bays at nearly twice their strength and reach, so the
+       statues behind the front pair are lit stone; and the lamp over the
+       back gallery up by half, on the portraits. */
+    fill: { glow: 0, kind: 'cold', x: 5.6, y: 2.6, z: 1.4, color: '#55759c', intensity: 0.35, radius: 8.5, flicker: false },
     lights: [
-      { kind: 'warm', x: 0.0, y: 4.20, z: -15.0, color: '#edd7a6', intensity: 0.88, radius: 10.32, flicker: false },
-      { kind: 'warm', x: -5.6, y: 2.20, z: -8.0, color: '#e9c892', intensity: 0.59, radius: 6.45 },
-      { kind: 'warm', x: 5.6, y: 2.20, z: -8.0, color: '#e9c892', intensity: 0.59, radius: 6.45 },
-      { kind: 'cold', x: 0.0, y: 1.00, z: -3.2, color: '#6f93b8', intensity: 0.85, radius: 5.4 },
+      { kind: 'warm', x: 0.0, y: 4.20, z: -15.0, color: '#edd7a6', intensity: 1.30, radius: 10.32, flicker: false },
+      { kind: 'warm', x: -5.6, y: 2.40, z: -8.0, color: '#e9c892', intensity: 1.10, radius: 8.6 },
+      { kind: 'warm', x: 5.6, y: 2.40, z: -8.0, color: '#e9c892', intensity: 1.10, radius: 8.6 },
+      /* (a lamp's light with no lamp drawn -- glow 0 -- brought forward
+         over the runner, so the near half of the hall is lit boards and
+         carpet, not a dead dark band: judge 1) */
+      { glow: 0, kind: 'warm', x: 0.0, y: 1.40, z: 1.6, color: '#d9b07a', intensity: 0.95, radius: 6.8 },
     ],
     shafts: { count: 3, spread: 14, y: 10.0, z: -12.0, angle: 0.18, width: 4.0, intensity: 0.10, pool: 1.2 },
     bloom: 0.82, warmTone: 0.07, halation: 0.58, vignette: 1.01, grain: 0.020,
@@ -1558,6 +1591,11 @@ export const ROOM_KINDS = {
           { shape: 74, edge: 0.07, z: -3.0, tone: 0.92, centre: 1, seed: 4.15, hM: 2.6 },
           { shape: 76, edge: 0.15, z: -5.6, tone: 0.90, centre: 1 },
           { shape: 74, edge: 0.84, z: -6.4, tone: 0.90, centre: 1, seed: 3.35, hM: 2.2 },
+          /* (round 29 GRAFT, judge 1, BOLUS's: "the pair of fluted green
+             iron columns framing the arched bays; they add a structural
+             foreground the conservatory lacks") */
+          { shape: 6, edge: 0.17, z: -7.6, tone: 0.96, centre: 1 },
+          { shape: 6, edge: 0.83, z: -7.8, tone: 0.96, centre: 1 },
         ],
         vantage: { at: 'above', rise: 2.9, drop: 0.0, fwd: 0.4, ahead: 9.0, count: 0.82 } },
       /* a palm house is walked down between two files of palms, close in
@@ -1590,6 +1628,11 @@ export const ROOM_KINDS = {
           { shape: 74, edge: 0.88, z: -1.8, tone: 0.92, centre: 1, seed: 2.45, hM: 3.0 },
           { shape: 74, edge: 0.03, z: -4.6, tone: 0.90, centre: 1, seed: 3.35, hM: 2.2 },
           { shape: 74, edge: 0.97, z: -5.2, tone: 0.90, centre: 1, seed: 4.15, hM: 2.4 },
+          /* (round 29 GRAFT, judge 2: "add planters or pots into the bare
+             front slabs" -- a fern in its pot and a stand of pots on the
+             flags at the front of the walk) */
+          { shape: 74, edge: 0.30, z: -1.0, tone: 0.90, centre: 1, seed: 5.25, hM: 1.0 },
+          { shape: 76, edge: 0.68, z: -0.9, tone: 0.90, centre: 1 },
           { shape: 74, x: -2.30, z: 3.60, tone: 0.90 },
           { shape: 74, x:  2.70, z: 2.70, tone: 0.90 },
           { shape: 74, x: -3.90, z: 0.90, tone: 0.88 },
@@ -1612,6 +1655,9 @@ export const ROOM_KINDS = {
           { shape: 74, edge: 0.12, z: -2.4, tone: 0.92, centre: 1, seed: 1.75, hM: 2.4 },
           { shape: 74, edge: 0.93, z: -3.0, tone: 0.92, centre: 1, seed: 2.45, hM: 2.6 },
           { shape: 76, edge: 0.80, z: -4.4, tone: 0.90, centre: 1 },
+          /* (round 29 GRAFT, judge 2: pots on the bare front slabs) */
+          { shape: 74, edge: 0.42, z: -1.2, tone: 0.90, centre: 1, seed: 6.05, hM: 0.9 },
+          { shape: 76, edge: 0.66, z: -1.4, tone: 0.90, centre: 1 },
         ],
         cam: { y: 0.35, z: 0.6, look: -0.2 },
         vantage: { at: 'along', off: 0.30, wall: 3.2, fwd: 3.2, yaw: 33, wide: 4, dlook: 0.5 } },
@@ -1730,11 +1776,16 @@ export const ROOM_KINDS = {
                  at the fighters' own depth; a washstand at the head between
                  each pair. Set from the wall (`fromWall`), so _vary()'s
                  width cannot push a bedhead through the plaster. */
-              near: [{ shape: 51, x: -1, fromWall: 1.05, z: -1.15, tone: 0.98, free: true, keep: true },
-                     { shape: 51, x: 1, fromWall: 1.05, z: -1.00, tone: 0.98, free: true, keep: true },
-                     { shape: 52, x: -1, fromWall: 0.62, z: -1.95, tone: 0.95, free: true, keep: true },
-                     { shape: 52, x: 1, fromWall: 0.62, z: -1.80, tone: 0.95, free: true, keep: true },
-                     { shape: 51, x: -1, fromWall: 1.05, z: -2.75, tone: 0.97, free: true, keep: true },
+              /* (round 29 GRAFT, both judges on the fight: "drop the value of
+                 the near bed row and washstands behind the Kid by a stop" --
+                 the left file's nearest bed, its washstand and the bed after
+                 them at tone 0.0-0.45, from 0.95-0.98: about a stop at the
+                 front, so the Kid and the creature own the contrast) */
+              near: [{ shape: 51, x: -1, fromWall: 1.05, z: -1.15, tone: 0.0, free: true, keep: true },
+                     { shape: 51, x: 1, fromWall: 1.05, z: -1.00, tone: 0.80, free: true, keep: true },
+                     { shape: 52, x: -1, fromWall: 0.62, z: -1.95, tone: 0.0, free: true, keep: true },
+                     { shape: 52, x: 1, fromWall: 0.62, z: -1.80, tone: 0.85, free: true, keep: true },
+                     { shape: 51, x: -1, fromWall: 1.05, z: -2.75, tone: 0.45, free: true, keep: true },
                      { shape: 51, x: 1, fromWall: 1.05, z: -2.60, tone: 0.97, free: true, keep: true },
                      { shape: 51, x: -1, fromWall: 1.05, z: -4.35, tone: 0.95, free: true, keep: true },
                      { shape: 51, x: 1, fromWall: 1.05, z: -4.20, tone: 0.95, free: true, keep: true },
@@ -2764,7 +2815,11 @@ export class Atmosphere {
 
     // ── the shafts ─────────────────────────────────────────────────────────
     const sh = pal.shafts;
-    sh.count = Math.max(1, (sh.count ?? 3) + ((r() * 3) | 0) - 1);
+    /* (round 29 graft: a room that names NO shafts -- count 0, the
+       Greenhouse -- keeps none; the draw is taken all the same, so the
+       rand() stream every seeded room was judged with does not move) */
+    const shJit = ((r() * 3) | 0) - 1;
+    sh.count = sh.count === 0 ? 0 : Math.max(1, (sh.count ?? 3) + shJit);
     sh.z *= spread(0.12);
     sh.spread *= spread(0.16);
     sh.angle *= spread(0.20);
