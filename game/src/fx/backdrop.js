@@ -2390,7 +2390,11 @@ export class Backdrop {
     }
     this._shOrigin.needsUpdate = this._shParam.needsUpdate = true;
     this._shSeed.needsUpdate = this._shInt.needsUpdate = true;
-    this.shaftGeo.instanceCount = sn + rn;
+    /* (round 29 graft: a room may keep the moon's POOLS on its floor and
+       draw no beam -- shafts.beams false, the Greenhouse: the beams were all
+       but invisible and cost its fight 0.4 ms of the Deck's frame; the pools
+       are the floor's own uniforms and cost nothing) */
+    this.shaftGeo.instanceCount = S.beams === false ? 0 : sn + rn;
     /* THE SCONCES' POOLS ON THE FLOOR (round 28, the Secret Passages). The
        wall program draws a brass sconce every `pitch` metres down alternate
        walls from `z0` and two either side of the end door, each lighting the

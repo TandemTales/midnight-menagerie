@@ -520,10 +520,14 @@ export const REGIONS = {
        0.08 (and the rakes at 0.22 of that) the moon's beams through the roof
        were all but gone from the picture -- round 29 had turned them down
        for the "teal haze" both judges named -- and still cost the fight 0.40
-       ms of the Deck's frame (gpuprof piece 'shafts', gh-1). They are off:
-       no beams and no pools of theirs on the flags (BOLUS went to 0 too);
-       the night glass carries the moon now. */
-    shafts: { count: 0, spread: 22, y: 11.4, z: -13, angle: 0.30, width: 3.4, intensity: 0.0, pool: 1.2 },
+       ms of the Deck's frame (gpuprof piece 'shafts', gh-1). So no BEAM is
+       drawn (beams: false, Backdrop.build); the pools they lay on the flags
+       stay -- they are what keeps the right of the floor from going black
+       -- at two-thirds, 1.2 -> 0.8, for judge 2's "the blue moonlight pool
+       on the right floor is milky. Darken it". */
+    shafts: { count: 4, spread: 22, y: 11.4, z: -13, angle: 0.30, width: 3.4, intensity: 0.08, pool: 0.8, beams: false,
+              /* two raking shafts into the fight's own room (round 21 graft): Backdrop.build */
+              rake: { at: [0.31, 0.69], side: [1, 1], y: 0.47, angle: 0.42, width: 2.0, intensity: 0.22 } },
     bloom: 0.92,
   },
 
