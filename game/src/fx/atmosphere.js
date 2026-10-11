@@ -1624,6 +1624,10 @@ export const ROOM_KINDS = {
          in the planters" -- the wirework stand's place in the palm house
          goes to a birdcage, 80) */
       { subject: 'palm', layout: 'aisle', aisle: [0.12, 0.40], swap: [[6, 74], [76, 80]], countScale: 0.9, depth: 7,
+        /* (round 29 graft, BOLUS's: its warm lantern on the RIGHT of the walk
+           by the right-hand bed -- with the roof's moon-pools gone the right
+           of the floor would be black) */
+        lampsView: [{ i: 3, x: 3.4, z: 0.24, y: 1.5, k: 0.85 }],
         cam: { y: -0.20, z: -0.6, look: 0.35, fov: 2 },
         vantage: { at: 'among', fwd: 3.2, low: 0.58, pitch: 4.5, off: 0.04, wide: 4, count: 0.62 },
         /* and palms at arm's length either side of the walk, which is where
