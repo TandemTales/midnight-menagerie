@@ -500,9 +500,11 @@ export const REGIONS = {
     exposure: 1.67, vignette: 0.97, contrast: 1.62,
     key:  { glow: 0, kind: 'warm', x: -4.4, y: 3.8, z: 2.8, color: '#e7bc8a', intensity: 7.46, radius: 8.17 },
     /* (round 29 GRAFT, judge 2: "the blue moonlight pool on the right floor
-       is milky. Darken it" -- the cold fill at two-thirds, 2.33 -> 1.55,
-       so the right of the floor is dark flags, not a milk pool nor black) */
-    fill: { glow: 0, kind: 'cold', x: 6.0, y: 3.0, z: 1.6, color: '#79b2d3', intensity: 1.55, radius: 9.5, flicker: false },
+       is milky. Darken it" -- the palm house's and the vinery's pool was
+       the roof's moon-pools, at two-thirds now (shafts.pool, below); the cold
+       fill, 2.33 -> 2.0, is what keeps the fight's own right-hand flags from
+       going black -- at 1.55 it did) */
+    fill: { glow: 0, kind: 'cold', x: 6.0, y: 3.0, z: 1.6, color: '#79b2d3', intensity: 2.0, radius: 9.5, flicker: false },
     lights: [
       { kind: 'cold', x: -6.0, y: 6.40, z: -14.0, color: '#91c5d7', intensity: 2.48, radius: 11.0 },
       { kind: 'cold', x: 7.4, y: 5.60, z: -13.0, color: '#79b2d3', intensity: 1.86, radius: 9.5 },
