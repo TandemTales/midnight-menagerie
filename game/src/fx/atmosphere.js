@@ -894,7 +894,13 @@ export const REGIONS = {
        colours, changed because the dark was too pale) */
     rimCol: '#c4b479', shaft: '#b8ae8b', floorDeep: '#0d0c0f', floorMid: '#16150f',
     ambient: '#131115', propAlb: '#323021', propHi: '#615d45',
-    gloss: 0.12, grime: 0.95, coolFill: 0.95, wallFog: 0.05, open: '#a39e6d', openGlow: 0.25,
+    gloss: 0.12, grime: 0.95, coolFill: 0.95, wallFog: 0.05, open: '#7c879e', openGlow: 0.25,
+    /* (round 29 GRAFT, judge 1, BOLUS's: "the deeper blue night sky" -- the
+       night's own colour a cold blue-grey from khaki, #a39e6d -> #7c879e (a
+       PALETTE colour: it lit the clouds and the moon on the yew olive, "milky
+       khaki clouds"), and the sky's gradient a fifth down, 1.20 -> 0.95; the
+       moon and the stars keep their own light) */
+    skyGlow: 0.95,
     grain: 0.014, propShadow: 1.5,
     /* A HEADSTONE IN A HEDGE MAZE (BRIEF-r9 fix 4) was the second set I would
        question: defensible in a haunted house, but a formal maze's set piece
@@ -924,7 +930,10 @@ export const REGIONS = {
     /* Open to the sky: see the Graveyard's note. A shaft needs something to
        come through, and there is no ceiling here. (Graft: between two hedges
        under a clear moon one read as a pale parallelogram across the stars.) */
-    shafts: { count: 2, spread: 28, y: 9.0, z: -11.0, angle: 0.34, width: 4.4, intensity: 0.0, pool: 1.6 },
+    /* (round 29 graft: and none drawn -- at intensity 0 the two beams were
+       invisible and still cost the fight 0.05-0.08 ms; count 0 survives
+       _vary now) */
+    shafts: { count: 0, spread: 28, y: 9.0, z: -11.0, angle: 0.34, width: 4.4, intensity: 0.0, pool: 1.6 },
   },
 
   /* ── 13. The Secret Passages ───────────────────────────────────────────────
