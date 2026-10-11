@@ -54,7 +54,8 @@ check reads Taffy's cream gloss as background; leave it red, do not lower it).
 
 **IN FLIGHT (2026-10-09): ROUND 29** -- the Hedge Maze, Sleeping Quarters,
 Heart and Greenhouse (`BRIEF-r29.md`), Workflow run `wf_10d86a4a-eb4` at base
-`078e50a3`; worktrees `C:/UILOOP/r29/wt/r29-rooms-{a,b,c}` (VIRIDIAN 9141,
+`078e50a3` (session limit; resumed 2026-10-11 06:10 as `wf_cb9fb800-2be`
+with wrap-up notes); worktrees `C:/UILOOP/r29/wt/r29-rooms-{a,b,c}` (VIRIDIAN 9141,
 GRISAILLE 9142, BOLUS 9143), baselines BOMBAZINE in
 `C:/UILOOP/r29/judging/r29/rooms/`. If it stops on a limit, finish it as a NEW
 run with `resume` notes (never resumeFromRunId). Also done 10-09: no pet
