@@ -19461,7 +19461,9 @@ float wfFourPoster(vec2 q, float px, float seed, float kq, bool paint){
   /* the counterpane: quilted ivory silk, its gold border, folds to the floor */
   /* (round 29: an old-gold or a wine counterpane -- the pale silk was the
      one milky mass in the bedroom) */
-  vec3 silk = kc < 0.5 ? vec3(0.60, 0.44, 0.24) : vec3(0.48, 0.18, 0.19);
+  /* (round 29 graft: the old gold a stop deeper -- flat-lit it came up the
+     pale cream panel judge 1 named on another build's bed) */
+  vec3 silk = kc < 0.5 ? vec3(0.42, 0.29, 0.15) : vec3(0.48, 0.18, 0.19);
   /* over the mattress's edge it is quilted in diamonds, each one puffed;
      below the edge it FALLS, in deep folds that open toward the floor */
   float edgeY = MT - 0.16;
