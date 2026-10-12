@@ -31,6 +31,9 @@ pieces the judges asked for next, so none of them is drawn with a CSS gradient:
   initial.webp        the box a drop cap is set in: a bevelled gilt frame, a
                       scrolled fleuron in each corner, a dark enamel field
   curl.webp           the corner of a survey sheet curling up off the desk
+  oldpaper-sheet.webp / oldpaper-plate.webp
+                      round 30's OLD PAPER: one tea-dark, burnt survey sheet
+                      (the map's aspect, and the atlas's), charred at its edge
 
     python tools/prep_ui_polish.py               # everything
     python tools/prep_ui_polish.py --only coin   # one piece while tuning
@@ -533,7 +536,7 @@ def curl():
     dfold = (fold - s_) / math.sqrt(2)
     tip = F / math.sqrt(2)
     paper = ramp(np.clip(0.5 + noise((SS, SS), rng, 7) * 0.25 + noise((SS, SS), rng, 1.2) * 0.08, 0, 1),
-                 [(0, "#a99474"), (0.5, "#bca786"), (1, "#cbb795")])
+                 [(0, "#4a3420"), (0.5, "#5e4429"), (1, "#735634")])  # round 30: the old paper's underside
     tt = np.clip(dfold / tip, 0, 1)
     light = 0.72 + 0.22 * np.exp(-((tt - 0.35) / 0.25) ** 2) - 0.12 * tt - 0.2 * np.exp(-(tt / 0.08) ** 2)
     fcol = paper * light[..., None]
@@ -556,7 +559,88 @@ def curl():
     save(rgba_from(col, ndimage.gaussian_filter(alpha, 0.5), ss), "curl.webp", 90)
 
 
+def _oldpaper(W, H, seed, name):
+    """THE OLD PAPER (round 30): one aged, burnt survey sheet for the map, the
+    atlas and anything else that is paper in this house. Survey 3's system
+    defect was pale parchment breaking the darks -- the map's tan sheet was 80%
+    of the screen -- so the sheet is TEA-DARK sepia: a mid tone a dark iron-gall
+    ink still reads on, clouded in slow tides, its fibres and foxing in it, and
+    every edge BURNT: the paper browns, then scorches, then chars to black along
+    a ragged line that bites in here and there, a dull ember-brown just inside
+    the char. Not a tile: one whole sheet, so the burn follows its own edge."""
+    rng = np.random.default_rng(seed)
+    yy, xx = np.mgrid[0:H, 0:W].astype(np.float32)
+    m = float(min(W, H))
+
+    def field(sigma):
+        n = ndimage.gaussian_filter(rng.normal(0, 1, (H, W)).astype(np.float32), sigma)
+        return n / (n.std() + 1e-6)                     # unit variance, not unit max
+
+    # slow tides of colour: the sheet aged unevenly, in clouds
+    t = 0.52 + field(m / 7.0) * 0.11 + field(m / 22.0) * 0.065 + field(m / 70.0) * 0.045 + field(1.6) * 0.02
+    col = ramp(np.clip(t, 0, 1), [(0.0, "#3a2614"), (0.25, "#553b21"), (0.5, "#71532f"),
+                                  (0.75, "#8b6a42"), (1.0, "#a48155")])
+    # fibres: short strokes along the laid lines, darker and lighter
+    fib = ndimage.gaussian_filter1d(ndimage.gaussian_filter(rng.normal(0, 1, (H, W)).astype(np.float32), 0.7), 7.0, axis=1)
+    fib = fib / (fib.std() + 1e-6)
+    col = col * (1 + fib[..., None] * 0.035)
+    # foxing: soft rust blooms of every size, in loose clusters, more toward the edges
+    edge_d = np.minimum.reduce([xx, W - 1 - xx, yy, H - 1 - yy]) / m
+    spots = np.zeros((H, W), np.float32)
+    nclu = int(W * H / 60000)
+    for _ in range(nclu):
+        cx, cy = rng.integers(0, W), rng.integers(0, H)
+        if rng.random() > np.clip(1.25 - edge_d[cy, cx] * 3.2, 0.2, 1):
+            continue
+        for _ in range(rng.integers(2, 9)):
+            x = int(np.clip(cx + rng.normal(0, m * 0.025), 0, W - 1))
+            y = int(np.clip(cy + rng.normal(0, m * 0.025), 0, H - 1))
+            spots[y, x] += rng.uniform(0.3, 1.0)
+    fox = ndimage.gaussian_filter(spots, 1.6) * 9 + ndimage.gaussian_filter(spots, 5) * 34 + ndimage.gaussian_filter(spots, 14) * 60
+    fox = np.clip(fox * 1.5, 0, 0.4)
+    col = col * (1 - fox)[..., None] + np.array([46, 20, 4], np.float32) * (fox * 0.5)[..., None]
+    # one tide mark, off to a side: a water stain dried with a darker, broken rim
+    cx, cy = rng.uniform(0.62, 0.8) * W, rng.uniform(0.6, 0.78) * H
+    r = rng.uniform(0.09, 0.13) * m
+    d = np.hypot(xx - cx, (yy - cy) * 1.2) + field(m / 18.0) * r * 0.16
+    broken = np.clip(0.55 + field(m / 30.0) * 0.5, 0, 1)
+    rim = np.exp(-((d - r) / (r * 0.03)) ** 2) * 0.16 * broken
+    col = col * (1 - rim - (d < r) * 0.035)[..., None]
+    # THE BURN: distance in from the nearest edge (in short-side units),
+    # perturbed so the line is ragged and bites in where the flame caught
+    rag = field(m / 14.0) * 0.012 + field(m / 45.0) * 0.006 + field(m / 160.0) * 0.0025
+    e = np.minimum.reduce([xx, W - 1 - xx, yy, H - 1 - yy]) / m + rag
+    for _ in range(5):                                      # a few deeper bites
+        side = rng.integers(0, 4)
+        u = rng.uniform(0.1, 0.9)
+        bx, by = [(u * W, 0), (u * W, H - 1), (0, u * H), (W - 1, u * H)][side]
+        br = rng.uniform(0.03, 0.07) * m
+        e = e - 0.028 * np.exp(-(((xx - bx) ** 2 + (yy - by) ** 2) / (br * br)))
+    # the long browning toward every edge, uneven
+    brown = (1 - smooth(0.0, 0.3, e + field(m / 10.0) * 0.03)) ** 1.4
+    col = col * (1 - brown * 0.6)[..., None]
+    # the scorch: dark, warm, toward black
+    sc = 1 - smooth(0.006, 0.06, e)
+    scorch = ramp(np.clip(e / 0.06, 0, 1), [(0.0, "#0f0805"), (0.4, "#2a140a"), (0.75, "#46260f"), (1.0, "#5a381b")])
+    col = col * (1 - sc[..., None] * 0.9) + scorch * sc[..., None] * 0.9
+    # an ember-brown lip just inside the char, broken, never a neon line
+    lip = np.exp(-((e - 0.013) / 0.005) ** 2) * np.clip(0.5 + field(m / 25.0) * 0.5, 0, 1) * 0.5
+    col = col + np.array([74, 32, 8], np.float32) * lip[..., None]
+    ch = 1 - smooth(0.0, 0.01, e)
+    col = col * (1 - ch[..., None]) + np.array([10, 7, 6], np.float32) * ch[..., None]
+    # the paper's tooth
+    col = col * (1 + field(0.7)[..., None] * 0.02)
+    save(col, name, 86)
+
+
+def oldpaper():
+    """The map's sheet (its 2030x1010 aspect) and the atlas's (its frame's)."""
+    _oldpaper(2048, 1020, 3001, "oldpaper-sheet.webp")
+    _oldpaper(1400, 1000, 3002, "oldpaper-plate.webp")
+
+
 PIECES = {
+    "oldpaper": oldpaper,
     "felt": felt, "felt-damask": felt_damask, "vellum": vellum,
     "coin": coin, "socket-round": socket_round, "plate-hud": plate_hud,
     "rail-engraved": rail_engraved, "fleurons": fleurons, "plate-rect": plate_rect,

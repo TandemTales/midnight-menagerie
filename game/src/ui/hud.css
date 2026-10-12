@@ -686,3 +686,153 @@
   .mm-hud__fold { gap: .22em; padding: 0 .1em 0 0; }
   .mm-hud__foldwell + .mm-hud__foldwell { margin-left: calc(var(--hud-chip-h) * -.4); }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ROUND 30 — THE BELT
+   Survey 3, both judges, hud-late at 1280: "the ten Keepsakes collapse to two
+   overlapping coins and the eight Gear show no icon at all"; "every label is
+   about 11px small caps run together with dot separators". So:
+
+   - every Keepsake and every piece of Gear stands as its OWN object in its own
+     round gold-rimmed socket (hw-well.webp, the house's velvet well in its
+     brass ring -- the same setting the Snacks stand in): a belt of them along
+     the rail. ui/hud.js#_fit tightens the belt a size before it ever gives
+     its last few sockets to a "+N" medallion, and never reduces one to a word;
+   - the readouts are their icon and their FIGURE: the word each counts is a
+     screen reader's (and its tooltip's), not lettered into the channel;
+   - the type is a size up, and the studs that parted every readout -- the
+     "dot separators" -- are gone; groups are parted by the cast bosses alone.
+   Everything here comes after the rules it overrides.
+   ═══════════════════════════════════════════════════════════════════════════ */
+.mm-hud {
+  --hud-fs: calc(clamp(14px, .94vw, 15.5px) * var(--type-scale, 1));
+  --hud-chip-h: 1.62em;
+  --sock: calc(var(--hud-chip-h) * 1.3);
+  gap: 7px;
+}
+.mm-hud[data-belt="tight"] { --sock: calc(var(--hud-chip-h) * 1.16); }
+.mm-hud[data-belt="tighter"] { --sock: calc(var(--hud-chip-h) * 1.06); }
+.mm-hud[data-belt="tighter"] :is(.mm-hud__relics, .mm-hud__gear) { gap: 0; }
+
+/* no studs: the channel's own air parts the readouts */
+.mm-hud__group--vitals > :not(:first-child),
+.mm-hud__group--meta > :not(:first-child) { margin-left: 2px; }
+.mm-hud__group--vitals > :not(:first-child)::after,
+.mm-hud__group--meta > :not(:first-child)::after { content: none; }
+.mm-hud__group { gap: 9px; }
+.mm-hud__w { font-family: var(--font-display); font-weight: 700; text-transform: uppercase; font-size: max(12px, .8em); letter-spacing: .06em; color: var(--kit-text-mid); }
+
+/* a word kept for a screen reader, never lettered into the channel */
+.mm-hud__sr, .mm-hud__u, .mm-hud__snackcap {
+  position: absolute !important; width: 1px; height: 1px; overflow: hidden;
+  clip-path: inset(50%); white-space: nowrap; margin: 0; padding: 0;
+}
+.mm-hud__echo { display: none; }
+
+/* the figures: a size up, in the rail's lining numerals */
+.mm-hud__chip .mm-hud__t {
+  font-family: var(--font-num); font-weight: 700;
+  font-variant-numeric: lining-nums tabular-nums;
+  letter-spacing: .02em;
+}
+.mm-hud__where .mm-hud__t { font-family: var(--font-display); font-weight: 700; letter-spacing: .03em; }
+.mm-hud__where .mm-hud__s::before { content: none; }
+.mm-hud__where .mm-hud__s {
+  font-family: var(--font-display); font-weight: 700; text-transform: uppercase;
+  font-size: max(11.5px, .78em); letter-spacing: .08em; padding-left: .2em;
+  color: var(--kit-gold);
+}
+.mm-hud__clue .mm-hud__t { color: color-mix(in srgb, var(--kit-moon) 70%, var(--kit-name)); }
+.mm-hud__luck .mm-hud__t { color: color-mix(in srgb, var(--good-300) 60%, var(--kit-name)); }
+.mm-hud__deck .mm-hud__t { color: var(--kit-name); }
+
+/* ── the belt ── */
+.mm-hud__relics, .mm-hud__gear { display: flex; align-items: center; gap: 2px; flex-wrap: nowrap; }
+.mm-hud__relics[data-folded="1"], .mm-hud__gear[data-folded="1"] { position: relative; }
+.mm-hud .mm-hud__gear::before { margin: 0 4px 0 2px; }
+.mm-hud__relic,
+.mm-hud__gearchip,
+.mm-hud__gearchip.has-obj {
+  position: relative;
+  flex: none;
+  display: grid; place-items: center;
+  width: var(--sock); height: var(--sock);
+  margin-block: calc((var(--hud-chip-h) - var(--sock)) / 2);
+  border-radius: 50%;
+  background: url("../../assets/ui/kit/hw-well.webp") 50% 50% / 100% 100% no-repeat;
+  filter: drop-shadow(0 1.5px 1.5px rgba(0, 0, 0, .85));
+  color: var(--kit-gold-hi);
+}
+/* a Keepsake is lit warm in its well, with its rarity a glaze round the
+   object; Gear is lit by the moon -- shape is shared now, temperature is not */
+.mm-hud__relic::before,
+.mm-hud__gearchip::before {
+  content: ''; position: absolute; inset: 15%; pointer-events: none;
+  border: 0; clip-path: none; border-radius: 50%;
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--kit-candle) 30%, transparent), color-mix(in srgb, var(--kit-candle) 6%, transparent) 70%, transparent);
+  box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--rar, var(--kit-gold)) 55%, transparent);
+}
+.mm-hud__gearchip::before {
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--kit-moon) 30%, transparent), color-mix(in srgb, var(--kit-moon) 6%, transparent) 70%, transparent);
+  box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--kit-moon) 45%, transparent);
+}
+/* the object stands proud of its well, as large as the hollow allows
+   (`.mm-hud` first: hud.js injects the Gear's older rules after this sheet) */
+.mm-hud .mm-hud__relicobj, .mm-hud .mm-hud__gearobj {
+  position: relative; width: 116%; max-width: none;
+  filter: brightness(1.14) saturate(1.08) drop-shadow(0 1.5px 1px rgba(0, 0, 0, .9));
+}
+.mm-hud__relic .mm-icon, .mm-hud__gearchip .mm-icon { position: relative; width: 52%; height: 52%; }
+.mm-hud__relic:hover, .mm-hud__gearchip:hover,
+.mm-hud__relic:focus-visible, .mm-hud__gearchip:focus-visible {
+  transform: translateY(-2px);
+  filter: brightness(1.2) drop-shadow(0 0 6px color-mix(in srgb, var(--kit-candle) 55%, transparent));
+  outline: none;
+}
+.mm-hud__relicn { right: -3px; bottom: -3px; }
+
+/* the overflow: one round enamel medallion lettered "+N" (ui/hud.js) */
+.mm-hud__more {
+  position: relative; flex: none;
+  display: grid; place-items: center;
+  width: var(--sock); height: var(--sock);
+  margin: calc((var(--hud-chip-h) - var(--sock)) / 2) 0 calc((var(--hud-chip-h) - var(--sock)) / 2) 2px;
+  padding: 0; border: 0; border-radius: 50%;
+  background:
+    url("../../assets/ui/kit/hw-glaze.webp") 50% 50% / 100% 100% no-repeat,
+    url("../../assets/ui/kit/button.webp") 50% 50% / 100% 100% no-repeat;
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .8));
+  cursor: pointer;
+  transition: filter var(--t-quick) var(--ease-out);
+}
+.mm-hud__moren {
+  font-family: var(--font-num); font-weight: 700; font-style: normal;
+  font-size: .9em; line-height: 1; letter-spacing: -.01em;
+  font-variant-numeric: lining-nums tabular-nums;
+  color: var(--kit-gold-hi);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .95);
+}
+.mm-hud__more:hover, .mm-hud__more[aria-expanded="true"] { filter: brightness(1.2) drop-shadow(0 0 6px color-mix(in srgb, var(--kit-candle) 45%, transparent)); }
+.mm-hud__more:focus-visible { outline: none; filter: brightness(1.2) drop-shadow(0 0 1.5px var(--kit-gold-hi)) drop-shadow(0 0 8px color-mix(in srgb, var(--kit-candle) 55%, transparent)); }
+.mm-hud__relics[data-folded="1"] > .mm-hud__tray,
+.mm-hud__gear[data-folded="1"] > .mm-hud__tray { left: auto; right: calc(var(--sock) * -.6); }
+
+/* "No Keepsakes" on its cartouche, at the rail's new size */
+.mm-hud__norelics { height: calc(var(--hud-chip-h) * 1.12); font-size: max(12px, .82em); }
+
+/* a TERSE rail (ui/hud.js#_fit, before the belt tightens): the readouts the
+   map's own plaque and the tooltips already say -- the wing's number,
+   Haunt's word, the seed's figures -- become a screen reader's, so every
+   object on the belt keeps its socket */
+.mm-hud[data-terse="1"] :is(.mm-hud__where .mm-hud__s, .mm-hud__w, .mm-hud__seed .mm-hud__t) {
+  position: absolute; width: 1px; height: 1px; overflow: hidden;
+  clip-path: inset(50%); white-space: nowrap; margin: 0; padding: 0;
+}
+@media (max-width: 1400px) {
+  .mm-hud { gap: 6px; }
+  .mm-hud__group { gap: 7px; }
+  .mm-hud__group--vitals > :not(:first-child),
+  .mm-hud__group--meta > :not(:first-child) { margin-left: 1px; }
+  .mm-hud__relics, .mm-hud__gear { gap: 1px; }
+  .mm-hud__relic, .mm-hud__gearchip, .mm-hud__gearchip.has-obj { width: var(--sock); height: var(--sock); }
+}

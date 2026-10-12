@@ -300,10 +300,19 @@ export class HUD {
        themselves each refresh: `addChip()` hands this node to a room scene that
        still writes its own Clue chip, and a node that gets replaced every
        refresh would leave that scene writing into a detached span. */
-    this.$clue.append(icon('ui.search'), text(''));
-    this.$luck.append(icon('ui.star'), text(''));
+    /* Round 30: each readout is its icon and its FIGURE; the word it counts
+       is kept for a screen reader (and said by its tooltip), not lettered
+       into the channel -- the belt needs the room. A room scene that still
+       writes its own Clue/Luck text gets the hidden echo node (addChip()),
+       so its words never reappear in the rail. */
+    this.$clue.append(icon('ui.search'), text(''), srWord(''));
+    this.$luck.append(icon('ui.star'), text(''), srWord(''));
     this.$clueT = this.$clue.querySelector('.mm-hud__t');
     this.$luckT = this.$luck.querySelector('.mm-hud__t');
+    this.$clueW = this.$clue.querySelector('.mm-hud__sr');
+    this.$luckW = this.$luck.querySelector('.mm-hud__sr');
+    this.$clueEcho = echo(); this.$clue.append(this.$clueEcho);
+    this.$luckEcho = echo(); this.$luck.append(this.$luckEcho);
     this.$haunt.prepend(icon('res.haunt-level'));
     this.$seed.prepend(icon('res.seed'));
     this.$deck.prepend(icon('res.deck'));
@@ -378,12 +387,14 @@ export class HUD {
        — CONTRACTS rule 8: never `?.` a run API that must exist. */
     const clues = num(r.cluesFound ?? r.clues, 0);
     const luck = num(r.flags ? r.flags.luck : r.luck, 0);
-    this.$clueT.textContent = `${clues} ${word(clues, 'Clue')}`;
+    this.$clueT.textContent = String(clues);
+    this.$clueW.textContent = ` ${word(clues, 'Clue')}`;
     this.$clue.setAttribute('aria-label', `${plural(clues, 'Clue')} found`);
     this.$clue.dataset.tipTitle = plural(clues, 'Clue');
     this.$clue.dataset.tip =
       'What you have worked out about where the animals went. Curiosities and some rooms give them up, and they carry over to the investigation board at the clubhouse.';
-    this.$luckT.textContent = `Luck +${luck}`;
+    this.$luckT.textContent = `+${luck}`;
+    this.$luckW.textContent = ' Luck';
     this.$luck.setAttribute('aria-label', `Luck plus ${luck}`);
     this.$luck.dataset.tipTitle = `Luck +${luck}`;
     this.$luck.dataset.tip =
@@ -498,20 +509,11 @@ export class HUD {
   /** Does the rail hold ONE row? Tried after layout (and again on a resize,
    *  and once the fonts are in).
    *
-   *  ROUND 20 -- the Steam Deck bug (BRIEF-r20 item 1). Round 19 made the rail
-   *  hold one row with a run's OPENING state; a run carrying ten Keepsakes and
-   *  a full backpack wrapped it to two rows at 1280 again, dropping Haunt, the
-   *  seed, Tricks and Settings onto a second line over the room. The rail now
-   *  folds, in order, only as far as it must:
-   *
-   *    0  everything spread
-   *    1  the Gear folds into one plate, "8 Gear", its tray under it
-   *    2  the Keepsakes fold the same way, "10 Keepsakes"
-   *
-   *  A folded group is a plate that SAYS what it holds -- its count and its
-   *  noun, and the first of its objects fanned on it -- and opens its tray of
-   *  the real chips on hover, on focus, or on a click (a pad or a finger).
-   *  Every chip keeps its own tooltip in the tray. */
+   *  ROUND 20 -- the Steam Deck bug: a run carrying ten Keepsakes and a full
+   *  backpack wrapped the rail to two rows at 1280, dropping Haunt, the seed,
+   *  Tricks and Settings onto a second line over the room. Round 20 answered
+   *  by folding whole groups into plates of words; round 30 (`_fit`) keeps
+   *  every object on the rail instead, as a belt of sockets. */
   _fitSoon() {
     if (this._fitQueued) return;
     this._fitQueued = true;
@@ -532,7 +534,7 @@ export class HUD {
   }
 
   /** Is the rail over-full: a group dropped a row, the rail scrolls, or the
-   *  Keepsakes spill or wrap inside their group? */
+   *  belt spills or wraps inside its group? */
   _tight() {
     const groups = [...this.el.querySelectorAll(':scope > .mm-hud__group')].filter((g) => g.offsetWidth);
     const tops = groups.map((g) => g.offsetTop);
@@ -541,57 +543,51 @@ export class HUD {
     const keep = this.$relics.parentElement;
     if (keep.scrollWidth > keep.clientWidth + 1) return true;
     for (const list of [this.$relics, this.$gear]) {
-      if (list.dataset.folded === '1' || list.hidden) continue;
-      const kids = [...list.children].filter((k) => k.offsetWidth);
+      if (list.hidden) continue;
+      const kids = [...list.children].filter((k) => k.offsetWidth && !k.classList.contains('mm-hud__tray'));
       if (kids.length > 1 && kids[kids.length - 1].offsetTop > kids[0].offsetTop + 4) return true;
     }
     return false;
   }
 
+  /* ROUND 30 -- THE BELT. Survey 3, both judges, on hud-late at 1280: "the
+     ten Keepsakes collapse to two overlapping coins and the eight Gear show no
+     icon at all -- '10 KEEPSAKES ◆ 8 GEAR ▼' is just words crushed between
+     SNACKS and Haunt". Round 20 folded whole groups into a plate that SAID
+     what it held; a plate of words is exactly the defect. Now every Keepsake
+     and every piece of Gear stands as its own object in its own round
+     gold-rimmed socket, a belt of them along the rail, and the rail makes
+     room for them the other way round -- the readouts give up their words
+     (each keeps its icon, its figure and its tooltip) and the type no longer
+     shares the channel with captions. Only if even a tight belt cannot hold
+     the load does it give up its LAST few sockets to one enamel "+N"
+     medallion, which opens a tray of the rest, each still its own object:
+
+       0  every socket, at the belt's size, every readout's word lettered
+       1  the words the map and the tooltips already say go to a screen
+          reader (the wing's number, Haunt's word, the seed's figures)
+       2  every socket, a size down
+       3  every socket, two sizes down, shoulder to shoulder
+       4  the first sockets, and "+N" for the rest (never fewer than two) */
   _fit() {
     if (!this.el || !this.el.isConnected || !this.el.offsetWidth) return;
-    const nGear = this._gearChips?.length || 0;
-    const nKeep = this._keepChips?.length || 0;
-    const levels = [{ gear: false, keep: false, snack: true }];
-    if (nGear > 1) levels.push({ gear: true, keep: false, snack: true });
-    if (nKeep > 2) levels.push({ gear: nGear > 1, keep: true, snack: true });
-    /* ROUND 20 GRAFT (MALACHITE's fallback): at the last, the Keepsakes and
-       the Gear fold into ONE plate that says both ("10 Keepsakes ◆ 8 Gear")
-       and opens one tray of both. It frees the second plate's objects, its
-       drop and the boss between them -- the width that lets every word the
-       rail engraves be set at the figures' cap height at 1280. */
-    if (nKeep > 2 && nGear > 1) levels.push({ gear: true, keep: true, both: true, snack: true });
-    /* The free Snack settings are NOT folded. Round 19 folded them into one
-       setting marked "×3", every judge read the bare figure as meaningless,
-       and a folded setting with its words beside it ("3 free") is as wide as
-       the three settings standing -- so folding them buys the rail nothing. */
+    const total = (this._keepChips?.length || 0) + (this._gearChips?.length || 0);
     this.el.dataset.dense = '0';
-    let pick = levels[levels.length - 1];
-    for (const lv of levels) {
+    this.el.dataset.terse = '0';
+    let lv = { snack: true, compact: false, over: 0 };
+    this._applyFold(lv);
+    if (this._tight()) this.el.dataset.terse = '1';
+    if (this._tight()) { lv = { snack: true, compact: true, over: 0 }; this._applyFold(lv); }
+    if (this._tight()) { lv = { snack: true, compact: 2, over: 0 }; this._applyFold(lv); }
+    while (this._tight() && lv.over < total - 1) {
+      lv = { snack: true, compact: 2, over: lv.over ? lv.over + 1 : 2 };
       this._applyFold(lv);
-      if (!this._tight()) { pick = lv; break; }
     }
-    this._applyFold(pick);
-    this.el.dataset.fold = String(levels.indexOf(pick));
-    /* ROUND 20 GRAFT: and if even the last fold is over-full -- a late wing's
-       long name ("Attic & Observatory") with a four-figure purse on the
-       Deck's 1280 -- the rail closes up rather than drop a row: the wing's
-       name ends in an ellipsis (its tooltip says it whole), the folded
-       plate shows one object, and the engraved words close their tracking.
-       Nothing is folded away that the rail did not already fold. */
+    this.el.dataset.fold = String(lv.over ? 4 : lv.compact === 2 ? 3 : lv.compact ? 2 : this.el.dataset.terse === '1' ? 1 : 0);
+    /* and if even that is over-full -- a late wing's long name with a
+       four-figure purse -- the rail closes up rather than drop a row: the
+       wing's name ends in an ellipsis (its tooltip says it whole) */
     if (this._tight()) this.el.dataset.dense = '1';
-    /* A folded group fans out as many of its objects as the rail has room
-       for -- two on the Steam Deck, the whole set where the rail is wide --
-       so the room a wide screen has is spent SHOWING the things, while the
-       plate still says how many there are and what they are. */
-    for (const list of [this.$relics, this.$gear]) {
-      if (list.dataset.folded !== '1') continue;
-      const wells = [...list.querySelectorAll(':scope > .mm-hud__fold .mm-hud__foldwell')];
-      for (let k = 2; k < wells.length; k++) {
-        wells[k].hidden = false;
-        if (this._tight()) { wells[k].hidden = true; break; }
-      }
-    }
     /* the engraved vine fills the channel left over (hud.css); a stub of it
        shorter than a whole turn of the vine reads as a scribble, so it only
        shows where it has room for one */
@@ -610,33 +606,26 @@ export class HUD {
     this._arrange();
   }
 
-  /** Put the chips where the fold says: straight on the rail, or in their
-   *  group's tray behind a plate that says what the group holds (at the last,
-   *  one plate and one tray for both groups). The chips themselves are the
-   *  same nodes either way. */
+  /** Lay the belt: the Keepsakes, a boss, the Gear, each in its own socket;
+   *  with `over` set, the last `over` of them go behind one "+N" medallion
+   *  (in the Gear's list when there is Gear, so the Gear stays where its
+   *  readers look for it). The chips are the same nodes either way. */
   _arrange() {
     const f = this._fold || {};
     const keep = this._keepChips || [], gear = this._gearChips || [];
-    const both = !!f.both && keep.length > 2 && gear.length > 1;
-    if (both) {
-      if (this.$gear.dataset.merged !== '1') {
-        this.$gear.textContent = '';
-        this.$gear.dataset.folded = '0';
-        this.$gear.dataset.merged = '1';
-      }
-      arrangeList(this.$relics, keep, true, {
-        one: 'Keepsake', label: 'Keepsakes and Backpack Gear', lead: null, keys: this._keepKeys || [],
-        also: { chips: gear, keys: this._gearKeys || [], one: 'Gear', many: 'Gear' },
-      });
-      return;
+    const total = keep.length + gear.length;
+    const over = Math.min(f.over || 0, total);
+    const showN = total - over;
+    const showK = keep.slice(0, Math.min(keep.length, showN));
+    const showG = gear.slice(0, Math.max(0, showN - keep.length));
+    const rest = [...keep.slice(showK.length), ...gear.slice(showG.length)];
+    this.el.dataset.belt = f.compact === 2 ? 'tighter' : f.compact ? 'tight' : 'wide';
+    if (keep.length) layBelt(this.$relics, showK);
+    if (gear.length) layBelt(this.$gear, showG);
+    if (rest.length) {
+      const host = gear.length ? this.$gear : this.$relics;
+      host.append(...moreMedallion(host, rest, keep.length - showK.length, gear.length - showG.length));
     }
-    delete this.$gear.dataset.merged;
-    arrangeList(this.$relics, keep, !!f.keep && keep.length > 2, {
-      one: 'Keepsake', label: 'Keepsakes', lead: this._keepLbl, keys: this._keepKeys || [],
-    });
-    arrangeList(this.$gear, gear, !!f.gear && gear.length > 1, {
-      one: 'Gear', many: 'Gear', label: 'Backpack Gear', lead: this._gearLbl, keys: this._gearKeys || [], gear: true,
-    });
   }
 
   _refreshKeepsakes(r) {
@@ -661,7 +650,9 @@ export class HUD {
        their count and noun ("6 Keepsakes") exactly as their folded plate
        and the Gear's do -- a judge saw "4 Gear" labelled and the row of
        Keepsakes beside it not */
-    this._keepLbl = relics.length ? groupLead(relics.length, 'Keepsake') : null;
+    /* round 30: no count-and-noun lead any more -- the objects say it, and
+       the words were what crushed the belt at 1280 */
+    this._keepLbl = null;
     if (!relics.length) {
       const none = document.createElement('span');
       none.className = 'mm-hud__norelics';
@@ -680,13 +671,15 @@ export class HUD {
     this.$gear.hidden = !gear.length;
     this._gearChips = gear.map(gearChip);
     this._gearKeys = gear.map((g) => gearKey(String(g.icon || g.id || '').replace(/^gear\//, '')));
-    this._gearLbl = gear.length ? groupLead(gear.length, 'Gear', 'Gear') : null;
+    this._gearLbl = null;
     this._arrange();
 
     // meta
     const haunt = num(r.hauntLevel ?? this.ctx?.Save?.data?.hauntLevel, 0);
     this.$haunt.textContent = '';
-    this.$haunt.append(icon('res.haunt-level'), text(`Haunt ${haunt}`));
+    /* round 30: the word is lettered where the rail has room for it and a
+       screen reader's where it does not (hud.css, the Deck's 1280) */
+    this.$haunt.append(icon('res.haunt-level'), wideWord('Haunt '), text(String(haunt)));
     this.$haunt.dataset.tipTitle = `Haunt Level ${haunt}`;
     this.$haunt.dataset.tip = haunt > 0
       ? `Every Haunt Level stacks another permanent difficulty modifier onto the whole expedition. You are running ${haunt} of them.`
@@ -702,7 +695,8 @@ export class HUD {
 
     const deck = Array.isArray(r.deck) ? r.deck : [];
     this.$deck.textContent = '';
-    this.$deck.append(icon('res.deck'), text('Tricks'), sub(String(deck.length)));
+    /* round 30: the deck's own icon says Tricks; its figure stands beside it */
+    this.$deck.append(icon('res.deck'), srWord('Tricks '), text(String(deck.length)));
     this.$deck.setAttribute('aria-label', `View your ${plural(deck.length, 'Trick')}`);
   }
 
@@ -740,8 +734,8 @@ export class HUD {
    */
   addChip(node) {
     const kw = node && node.dataset ? node.dataset.kw : '';
-    if (kw === 'clue' && this.$clueT) return this.$clueT;
-    if (kw === 'luck' && this.$luckT) return this.$luckT;
+    if (kw === 'clue' && this.$clueEcho) return this.$clueEcho;
+    if (kw === 'luck' && this.$luckEcho) return this.$luckEcho;
     this.$extra?.appendChild(node);
     return node;
   }
@@ -755,98 +749,51 @@ export class HUD {
 }
 
 /**
- * Lay a group's chips straight on the rail, or FOLD them: one plate that says
- * what the group holds ("10 Keepsakes", with the first three of them fanned
- * on it) and a tray under the rail holding the real chips, opened by hover,
- * focus or a click. Round 20 (the Steam Deck at a run's full load).
+ * Lay a group's chips straight on the belt (round 30): every one its own
+ * object in its own socket. Rebuilt in place on every fit; the chips are the
+ * same nodes, so their listeners and tooltips travel with them.
  */
-function arrangeList(list, chips, fold, o) {
-  if (!chips.length) return;
-  const wasFolded = list.dataset.folded === '1';
-  if (!fold) {
-    if (!wasFolded && list.childElementCount === chips.length + (o.lead ? 1 : 0)) return;
-    list.textContent = '';
-    if (o.lead) list.appendChild(o.lead);
-    for (const c of chips) list.appendChild(c);
-    list.dataset.folded = '0';
-    delete list.dataset.foldKind;
-    list.setAttribute('role', 'list');
-    list.removeAttribute('data-open');
-    return;
-  }
-  const kind = o.also ? 'both' : 'one';
-  if (wasFolded && list.dataset.foldKind === kind) return;
+function layBelt(list, chips) {
   list.textContent = '';
-  list.dataset.folded = '1';
-  list.dataset.foldKind = kind;
-  list.removeAttribute('role');
-  const n = chips.length;
-  const noun = word(n, o.one, o.many);
-  const n2 = o.also ? o.also.chips.length : 0;
-  const noun2 = o.also ? word(n2, o.also.one, o.also.many) : '';
+  for (const c of chips) list.appendChild(c);
+  list.dataset.folded = '0';
+  list.setAttribute('role', 'list');
+  list.removeAttribute('data-open');
+}
+
+/**
+ * The belt's overflow (round 30): one round enamel medallion lettered "+N",
+ * and under the rail a tray holding the N objects it stands for, each still
+ * its own chip with its own tooltip -- opened by hover, focus or a click (a
+ * pad or a finger), shut by Escape or a click elsewhere.
+ */
+function moreMedallion(list, rest, nKeep, nGear) {
+  const n = rest.length;
   const btn = document.createElement('button');
   btn.type = 'button';
-  btn.className = 'mm-hud__fold';
+  btn.className = 'mm-hud__more kit-beltsock__more';
   btn.setAttribute('aria-expanded', 'false');
-  btn.setAttribute('aria-label', o.also ? `${n} ${noun} and ${n2} ${noun2}. Show them.` : `${n} ${noun}. Show them.`);
-  const pics = document.createElement('span');
-  pics.className = 'mm-hud__foldpics';
-  pics.setAttribute('aria-hidden', 'true');
-  for (const key of [...o.keys, ...(o.also ? o.also.keys : [])].filter(Boolean).slice(0, 10)) {
-    const url = objectUrl(key);
-    if (!url) continue;
-    const w = document.createElement('i');
-    w.className = 'mm-hud__foldwell';
-    const ob = document.createElement('i');
-    ob.className = 'kit-obj';
-    ob.style.setProperty('--obj', `url('${url}')`);
-    w.appendChild(ob);
-    w.hidden = pics.childElementCount >= 2;      // _fit fans out more where the rail has room
-    pics.appendChild(w);
-  }
+  const what = [nKeep ? plural(nKeep, 'more Keepsake', 'more Keepsakes') : '', nGear ? plural(nGear, 'more Gear', 'more Gear') : '']
+    .filter(Boolean).join(' and ');
+  btn.setAttribute('aria-label', `${what}. Show them.`);
+  btn.dataset.tipTitle = `+${n}`;
+  btn.dataset.tip = `${what[0].toUpperCase()}${what.slice(1)} than the rail has room for. Point here, or press it, to see them.`;
+  btn.dataset.tipPlacement = 'bottom';
   const fig = document.createElement('b');
-  fig.className = 'mm-hud__foldn';
-  fig.textContent = String(n);
-  const nm = document.createElement('span');
-  nm.className = 'mm-hud__foldw';
-  nm.textContent = noun;
-  const car = document.createElement('i');
-  car.className = 'mm-hud__foldcar';
-  car.setAttribute('aria-hidden', 'true');
-  if (o.gear) btn.classList.add('mm-hud__fold--gear');
-  btn.append(pics, fig, nm);
-  if (o.also) {
-    // "10 Keepsakes ◆ 8 Gear": the second group's count after a brass lozenge
-    const sep = document.createElement('i');
-    sep.className = 'mm-hud__foldsep';
-    const fig2 = document.createElement('b');
-    fig2.className = 'mm-hud__foldn';
-    fig2.textContent = String(n2);
-    const nm2 = document.createElement('span');
-    nm2.className = 'mm-hud__foldw mm-hud__foldw--gear';
-    nm2.textContent = noun2;
-    btn.append(sep, fig2, nm2);
-  }
-  btn.append(car);
+  fig.className = 'mm-hud__moren';
+  fig.textContent = `+${n}`;
+  btn.appendChild(fig);
   const tray = document.createElement('div');
   tray.className = 'mm-hud__tray';
   tray.setAttribute('role', 'list');
-  tray.setAttribute('aria-label', o.label);
+  tray.setAttribute('aria-label', 'The rest of what you carry');
   const head = document.createElement('b');
   head.className = 'mm-hud__trayt';
   head.setAttribute('aria-hidden', 'true');
-  head.textContent = `${n} ${noun}`;
+  head.textContent = `${n} more`;
   tray.appendChild(head);
-  for (const c of chips) tray.appendChild(c);
-  if (o.also) {
-    const head2 = document.createElement('b');
-    head2.className = 'mm-hud__trayt';
-    head2.setAttribute('aria-hidden', 'true');
-    head2.textContent = `${n2} ${noun2}`;
-    tray.appendChild(head2);
-    for (const c of o.also.chips) tray.appendChild(c);
-  }
-  list.append(btn, tray);
+  for (const c of rest) tray.appendChild(c);
+  list.dataset.folded = '1';
   const sync = () => {
     const open = list.dataset.open === '1' || list.matches(':hover') || list.matches(':focus-within');
     btn.setAttribute('aria-expanded', open ? 'true' : 'false');
@@ -868,14 +815,14 @@ function arrangeList(list, chips, fold, o) {
     list._foldWired = true;
     for (const ev of ['mouseenter', 'mouseleave', 'focusin', 'focusout']) {
       list.addEventListener(ev, () => requestAnimationFrame(() => {
-        const b = list.querySelector(':scope > .mm-hud__fold');
+        const b = list.querySelector(':scope > .mm-hud__more');
         if (!b) return;
         const open = list.dataset.open === '1' || list.matches(':hover') || list.matches(':focus-within');
         b.setAttribute('aria-expanded', open ? 'true' : 'false');
       }));
     }
     list.addEventListener('keydown', (e) => {
-      const b = list.querySelector(':scope > .mm-hud__fold');
+      const b = list.querySelector(':scope > .mm-hud__more');
       if (!b || e.key !== 'Escape') return;
       e.preventDefault(); e.stopPropagation();
       list.dataset.open = '0';
@@ -887,26 +834,16 @@ function arrangeList(list, chips, fold, o) {
       b.addEventListener('blur', lift);
     });
   }
-}
-
-/** A group's count and noun at the head of its row ("6 Keepsakes"), in the
- *  same figures and engraved capitals as its folded plate. Decorative: the
- *  list's own aria-label and every chip's say what they are. */
-function groupLead(n, one, many) {
-  const lead = document.createElement('span');
-  lead.className = 'mm-hud__lead';
-  lead.setAttribute('aria-hidden', 'true');
-  const fig = document.createElement('b');
-  fig.className = 'mm-hud__foldn';
-  fig.textContent = String(n);
-  const nm = document.createElement('span');
-  nm.className = 'mm-hud__foldw';
-  nm.textContent = word(n, one, many);
-  lead.append(fig, nm);
-  return lead;
+  return [btn, tray];
 }
 
 function text(s) { const n = document.createElement('span'); n.className = 'mm-hud__t'; n.textContent = s; return n; }
+/** a readout's word, lettered on a wide rail, a screen reader's on a narrow one */
+function wideWord(s) { const n = document.createElement('span'); n.className = 'mm-hud__w'; n.textContent = s; return n; }
+/** the word a readout counts, for a screen reader only (round 30) */
+function srWord(s) { const n = document.createElement('span'); n.className = 'mm-hud__sr'; n.textContent = s; return n; }
+/** where a room scene's own Clue/Luck text lands, out of sight (round 30) */
+function echo() { const n = document.createElement('span'); n.className = 'mm-hud__echo'; n.hidden = true; n.setAttribute('aria-hidden', 'true'); return n; }
 /** the word a figure counts, engraved small beside it ("137 Buttons") */
 function unit(s) { const n = document.createElement('span'); n.className = 'mm-hud__u'; n.textContent = s; return n; }
 function sub(s)  { const n = document.createElement('span'); n.className = 'mm-hud__s'; n.textContent = s; return n; }
@@ -958,7 +895,7 @@ function isGear(k) {
 function keepsakeChip(k) {
   const chip = document.createElement('button');
   chip.type = 'button';
-  chip.className = 'mm-hud__relic';
+  chip.className = 'mm-hud__relic kit-beltsock';
   chip.setAttribute('role', 'listitem');
   chip.dataset.rarity = k.rarity || 'common';
   chip.appendChild(keepsakePicture(k.id));
@@ -1019,7 +956,7 @@ const GEAR_GLYPHS = {
 function gearChip(g) {
   const chip = document.createElement('button');
   chip.type = 'button';
-  chip.className = 'mm-hud__gearchip';
+  chip.className = 'mm-hud__gearchip kit-beltsock kit-beltsock--moon';
   chip.setAttribute('role', 'listitem');
   const icon = String(g.icon || g.id || '').replace(/^gear\//, '');
   chip.dataset.gear = icon;
