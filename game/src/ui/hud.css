@@ -866,8 +866,11 @@
       transparent 4px 6px,
       #6b4c24 6px 7px, #e6c98a 7px 8px, rgba(8, 4, 2, .85) 8px 9px, transparent 9px) 0 0 / 100% 100% no-repeat;
 }
-/* the flourish after the last Gear: its width is the sockets' now */
+/* the flourish after the last Gear: its width is the sockets' now. It
+   comes back only over a long bare channel the belt cannot use (an empty
+   run's strip; ui/hud.js#_fit sets data-vine) */
 .mm-hud__group--keepsakes::after { content: none; }
+.mm-hud__group--keepsakes[data-vine="1"]::after { content: ''; }
 
 /* between the groups: the engraved rule in place of the rosette boss (and
    before the meta group too, which the empty Turn group used to hide) */

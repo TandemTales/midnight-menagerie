@@ -631,7 +631,11 @@ export class HUD {
     const keep = this.$relics.parentElement;
     const kids = [...keep.children].filter((k) => k.offsetWidth);
     const used = kids.reduce((a, k) => a + k.offsetWidth, 0) + (kids.length ? parseFloat(getComputedStyle(keep).columnGap) * kids.length : 0);
-    keep.dataset.vine = keep.clientWidth - used >= 72 ? '1' : '0';
+    /* round 30 graft: only where the sockets can take no more of it (they
+       grow to SOCK_MAX first) -- a run with nothing in its belt, a wide
+       screen -- does the vine fill a long bare channel; never a stub of it
+       after the last Gear */
+    keep.dataset.vine = keep.clientWidth - used >= 140 ? '1' : '0';
   }
 
   _applyFold(lv) {
