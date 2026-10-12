@@ -1,0 +1,52 @@
+{
+  "round": "r30",
+  "maxBuilders": 3,
+  "briefs": [
+    "docs/ui-pass/BRIEF-r0.md",
+    "docs/ui-pass/BRIEF-r1.md",
+    "docs/ui-pass/BRIEF-r30.md"
+  ],
+  "rubrics": [
+    "docs/ui-pass/RUBRIC.md",
+    "docs/ui-pass/RUBRIC-r30.md"
+  ],
+  "samples": [
+    "UI/title.png",
+    "UI/mainMenu.png",
+    "UI/selectCompanion.png",
+    "UI/selectKid.png"
+  ],
+  "tracks": [
+    {
+      "key": "strip",
+      "name": "STRIP",
+      "rule": "refine",
+      "screens": [
+        "hud-late",
+        "map",
+        "atlas"
+      ],
+      "baseline": "CHALLIS",
+      "builders": [
+        {
+          "slot": "a",
+          "code": "ALIZARIN",
+          "port": 9161,
+          "angle": "LITERAL -- the angle that won rounds 20, 23-25 and 29. Work BRIEF-r30's fix list 1 to 3 in order and exactly as written: the strip's Keepsake and Gear tray FIRST (it is on every in-run screen), then the map's dark parchment and three node states, then the atlas."
+        },
+        {
+          "slot": "b",
+          "code": "VERONESE",
+          "port": 9162,
+          "angle": "THE BELT OF OBJECTS. The strip is a leather-and-brass belt the Kid wears: every Keepsake and Gear item a small painted object in its own gold socket, the counts as engraved numerals, the controls as brass knobs -- make it read as the samples' hardware first, then bring the same gilt-and-enamel medallions to the map's nodes and the atlas's surveyed wing."
+        },
+        {
+          "slot": "c",
+          "code": "SANDARAC",
+          "port": 9163,
+          "angle": "THE OLD PAPER. Two of the three screens are mostly parchment and the survey's system defect is pale parchment breaking the darks: build ONE darkened, burnt, inked parchment treatment for the map and the atlas (and the strip's plate) first, with the node states and the surveyed wing drawn IN INK on it, then fit the strip's tray."
+        }
+      ]
+    }
+  ]
+}
