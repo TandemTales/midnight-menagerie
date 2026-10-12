@@ -116,6 +116,38 @@ const ZOOM_MARGIN = 0.06;
 const ZOOM_MAX = 7;
 /** Backing-store cap for the re-inked wing, long side, in device pixels. */
 const INK_MAX = 2600;
+/** Round 30, THE OLD PAPER: the survey's iron-gall ink, and the pencil the
+ *  rest of the house is drawn in -- the same ink, faint. */
+const GALL = '#1f130a';
+/** A surveyed wing is inked a pen heavier than the plan's own solve, so it
+ *  holds as ink at the Deck's 1280 rather than greying into hatching. */
+const SURVEY_COVER = 0.075;
+
+/**
+ * The master drawing lifted off its own paper (round 30): every line it
+ * carries, as alpha, in pencil, so it lies on OUR old paper instead of
+ * printing its pale sheet across it. Built once per page -- one pass over the
+ * master's 1.6M pixels -- and copied into each visit's canvas.
+ */
+let PENCIL = null;
+function pencilOf(img) {
+  if (PENCIL) return PENCIL;
+  const c = document.createElement('canvas');
+  c.width = MASTER.w; c.height = MASTER.h;
+  const g = c.getContext('2d', { willReadFrequently: true });
+  g.drawImage(img, 0, 0, MASTER.w, MASTER.h);
+  const d = g.getImageData(0, 0, MASTER.w, MASTER.h), p = d.data;
+  for (let i = 0; i < p.length; i += 4) {
+    const r = p[i], gg = p[i + 1], b = p[i + 2];
+    const blue = (b - r) / 255;
+    const dark = 1 - (r * 0.299 + gg * 0.587 + b * 0.114) / 255;
+    let v = blue * 2.4 + Math.max(0, dark - 0.38) * 1.3;
+    v = v <= 0 ? 0 : v >= 1 ? 1 : v;
+    p[i] = 31; p[i + 1] = 19; p[i + 2] = 10; p[i + 3] = (v * 255) | 0;
+  }
+  g.putImageData(d, 0, 0);
+  return (PENCIL = c);
+}
 
 /**
  * Geometry comes from `sections.json`; EVERYTHING ELSE comes from `regionMeta`.
@@ -397,6 +429,27 @@ export class AtlasScene extends Scene {
     img.alt = '';
     plate.appendChild(img);
 
+    /* ROUND 30: the house in FADED PENCIL on the old paper (the master's
+       lines lifted off its own pale sheet, pencilOf), and over it every
+       SURVEYED wing in strong iron-gall with a gilt wash under it -- so the
+       plan says what "1 of 17" means at a glance. Survey 3: "all seventeen
+       wings at the same blue-grey line weight, so the one surveyed wing and
+       the sixteen unknown ones look identical". */
+    const pencil = this._pencil = document.createElement('canvas');
+    pencil.className = 'at-pencil';
+    pencil.width = MASTER.w; pencil.height = MASTER.h;
+    pencil.setAttribute('aria-hidden', 'true');
+    plate.appendChild(pencil);
+    const lay = () => {
+      if (!this._pencil || !img.naturalWidth) return;
+      try { this._pencil.getContext('2d').drawImage(pencilOf(img), 0, 0); this.root?.setAttribute('data-pencil', '1'); }
+      catch { /* a tainted or missing master: the printed drawing shows instead */ }
+    };
+    if (img.complete && img.naturalWidth) lay(); else img.addEventListener('load', lay, { once: true });
+    const survey = this._survey = el('div', 'at-survey');
+    survey.setAttribute('aria-hidden', 'true');
+    plate.appendChild(survey);
+
     // the re-inked wing, laid back on the rectangle it was cut from
     const ink = this._ink = document.createElement('canvas');
     ink.className = 'at-ink';
@@ -441,6 +494,7 @@ export class AtlasScene extends Scene {
          is the same information without the noise. */
       if (this.offered.has(w.slug)) { if (this.choosing) b.classList.add('is-open'); }
       else if (this.choosing || this.entering) b.classList.add('is-shut');
+      if (this.surveyed.has(w.slug)) b.classList.add('is-surveyed');
       if (this.trail.includes(w.slug)) b.classList.add('is-walked');
       if (this.trail[this.trail.length - 1] === w.slug) b.classList.add('is-here');
       b.setAttribute('aria-label', this._hotLabel(w));
@@ -733,6 +787,7 @@ export class AtlasScene extends Scene {
     if (!this._plate) return;
     if (!this._fitSheet()) return;
     const w = this.sel && this.wings.find((x) => x.slug === this.sel);
+    this._paintSurvey();
     if (!w) {
       this._plate.style.transform = 'translate(0px, 0px) scale(1)';
       this._plate.style.setProperty('--k', '1');
@@ -808,6 +863,48 @@ export class AtlasScene extends Scene {
     inkTrace(g, t, { pen: solvePen(t, D), scale: D, ink, layerAlpha: 0.88 });
     g.restore();
     cv.hidden = false;
+  }
+
+  /**
+   * Ink every surveyed wing onto its own rectangle, at the plate's laid-flat
+   * size and the screen's own pixel density (round 30), over a gilt wash. A
+   * canvas per wing, positioned in percent, so a zoom magnifies it with the
+   * plate and only a RESIZE re-inks it.
+   */
+  async _paintSurvey() {
+    const host = this._survey;
+    if (!host || !this._vp) return;
+    const vr = this._vp.getBoundingClientRect();
+    const k = this._k || 1;
+    const pw = vr.width / k, ph = vr.height / k;
+    if (!pw || !ph) return;
+    const key = `${Math.round(pw)}x${Math.round(ph)}|${[...this.surveyed].join(',')}`;
+    if (this._surveyKey === key) return;
+    this._surveyKey = key;
+    const token = this._surveyToken = (this._surveyToken || 0) + 1;
+    host.textContent = '';
+    const dpr = window.devicePixelRatio || 1;
+    for (const w of this.wings) {
+      if (!this.surveyed.has(w.slug)) continue;
+      const at = `left:${w.nx * 100}%;top:${w.ny * 100}%;width:${w.nw * 100}%;height:${w.nh * 100}%`;
+      const gild = el('i', 'at-survey__gild');
+      gild.style.cssText = at;
+      host.appendChild(gild);
+      const cv = document.createElement('canvas');
+      cv.className = 'at-survey__ink';
+      cv.style.cssText = at;
+      host.appendChild(cv);
+      const t = await loadPlanTrace(new URL(`../../${blueprintTraceUrl(w.slug)}`, import.meta.url).href);
+      if (token !== this._surveyToken || !t) continue;
+      const D = (w.nw * pw) / w.w;                     // on-screen px per section px
+      const ss = Math.max(1, Math.min(D * dpr * 1.5, INK_MAX / Math.max(w.w, w.h)));
+      cv.width = Math.max(1, Math.round(w.w * ss)); cv.height = Math.max(1, Math.round(w.h * ss));
+      const g = cv.getContext('2d');
+      g.save();
+      g.scale(cv.width / w.w, cv.height / w.h);
+      inkTrace(g, t, { pen: solvePen(t, D, SURVEY_COVER), scale: D, ink: GALL, layerAlpha: 1 });
+      g.restore();
+    }
   }
 
   _tok(name, dflt) {
@@ -1104,6 +1201,7 @@ export class AtlasScene extends Scene {
     this._pf = null;
     this._inkToken = (this._inkToken || 0) + 1;
     this._vp = this._plate = this._estate = this._ink = this._hots = null;
+    this._pencil = this._survey = null; this._surveyKey = null;
     this._dossier = this._wide = this._trail = this._tally = this._board = null;
     this.offer = [];
     this.offered = new Set();

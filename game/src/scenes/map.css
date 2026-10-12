@@ -1168,3 +1168,182 @@
 }
 /* a wing with three conditions: the conditions give up their icons' air */
 .map-bar:has(.note ~ .note ~ .note) .note b { letter-spacing: .02em; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ROUND 30 — THE OLD PAPER, AND THREE STATES OF A ROOM
+   Survey 3, both judges: "the blueprint parchment covers about 80% of the
+   screen in pale tan, and its 50-odd room nodes are tan discs with dark glyphs
+   on tan paper, so the house's aubergine darks are gone and no node stands out
+   except the boss crown." The sheet is the painted OLD PAPER now (map.js
+   _paintPaper, oldpaper-sheet.webp): tea-dark sepia, burnt at its edges, the
+   plan printed on it in iron-gall. And a room is in one of three states the
+   eye parts at a glance, each a different KIND of mark, not a shade of one:
+
+     reachable  a lit ENAMEL MEDALLION: violet glaze in a gold rim, its glyph
+                in gilt, candlelight round it -- the board's own round button,
+                pressed into the sheet. The focal point; nothing else is metal.
+     visited    INKED OVER: a solid disc of iron-gall with the glyph knocked
+                out of it in the paper's own colour. Quieter, and done.
+     distant    FADED PENCIL: the glyph alone in pale ink on a breath of
+                lighter paper, a pencilled ring round it. Readable, receding.
+
+   Reachable legs are gilt and heavy, with an ink edge so they lift off the
+   paper; every other leg is faint ink, weighted by whether it is still ahead.
+   Everything here comes after the rules it overrides, at the same specificity.
+   ═══════════════════════════════════════════════════════════════════════════ */
+.map-screen {
+  --parchment: var(--kit-oldpaper);
+  --parchment-shade: var(--kit-oldpaper-lo);
+  --ink: var(--kit-gall);
+  --ink-soft: color-mix(in srgb, var(--kit-gall) 58%, transparent);
+  --pencil: var(--kit-gall);
+  --graphite: color-mix(in srgb, var(--kit-gall) 90%, var(--kit-oldpaper));
+  --graphite-soft: color-mix(in srgb, var(--kit-gall) 62%, var(--kit-oldpaper));
+  --mark: color-mix(in srgb, var(--kit-gold-hi) 78%, var(--kit-gold));
+  color: var(--kit-gall);
+}
+
+/* ── the legs ── */
+/* the wipe of clean paper under a pencil line belonged to a pale sheet; on the
+   old paper a lane of flat mid-tone reads as a stripe, so it goes, and the one
+   leg that needs separating from the plan -- the live one -- gets an ink edge */
+.mi-halo, .mi-halo.is-walked, .mi-halo.is-dead, .mi-halo.is-cold { opacity: 0; }
+.mi-halo.is-open { stroke: var(--kit-gall); stroke-width: 15; opacity: .72; }
+.mi-shade { stroke: var(--kit-gall); opacity: .14; }
+.mi-shade.is-open   { stroke-width: 12; opacity: .5; }
+.mi-shade.is-walked { stroke-width: 9; opacity: .24; }
+.mi-shade.is-dead   { opacity: .08; }
+.mi-shade.is-cold   { opacity: 0; }
+.mi-ghost { stroke: var(--kit-gall); opacity: .26; }
+.mi-ghost.is-open   { stroke: var(--kit-gold); stroke-width: 4; opacity: .7; }
+.mi-ghost.is-walked { stroke: var(--kit-gall); stroke-width: 4.6; opacity: .55; }
+.mi-ghost.is-dead   { opacity: .16; }
+.mi-ghost.is-cold   { opacity: .06; }
+.mi-edge { stroke: var(--kit-gall); stroke-width: 3.6; opacity: .62; }
+.mi-edge.is-open   { stroke: var(--mark); stroke-width: 9; opacity: 1; }
+.mi-edge.is-walked { stroke: var(--kit-gall); stroke-width: 7.4; opacity: .96; }
+.mi-edge.is-dead   { stroke: var(--kit-gall); stroke-width: 3.4; opacity: .5; }
+.mi-edge.is-cold   { stroke: var(--kit-gall); stroke-width: 2.4; opacity: .24; }
+.mi-edge--entry          { stroke: var(--mark); opacity: 1; }
+.mi-edge--entry.is-dead  { stroke: var(--kit-gall); opacity: .3; }
+.mi-arrowhead { fill: var(--mark); stroke: var(--kit-gall); stroke-width: 1.2; stroke-linejoin: round; paint-order: stroke; }
+.mi-in {
+  fill: var(--kit-gold-hi); opacity: .92;
+  stroke: var(--kit-gall); stroke-width: 3px; paint-order: stroke fill;
+}
+.mi-here-a, .mi-here-b { stroke: var(--mark); }
+
+/* ── the wing conditions: crisp tide-marked ink (map.js) ── */
+.mi-zone { color: var(--kit-madder); }
+.mi-zone--boon { color: var(--kit-indigo); }
+.mi-zone-pool { fill: currentColor; opacity: .1; }
+.mi-zone-edge {
+  fill: none; stroke: currentColor; stroke-width: 3.2;
+  stroke-linejoin: round; opacity: .9;
+}
+.mi-zone-tide {
+  fill: none; stroke: currentColor; stroke-width: 1.3;
+  stroke-linejoin: round; opacity: .55;
+}
+.mi-zone-hatch { opacity: .16; }
+.mi-zone-lead { opacity: .9; }
+.mi-zone-glyph .s { stroke: #f6e6c6; }
+.mi-zone-glyph .f { fill: #f6e6c6; }
+
+/* ── distant: faded pencil ── */
+.map-node { color: color-mix(in srgb, var(--kit-gall) 66%, transparent); }
+.mn-pool {
+  background: radial-gradient(circle closest-side,
+    color-mix(in srgb, var(--kit-oldpaper-hi) 52%, transparent) 0%,
+    color-mix(in srgb, var(--kit-oldpaper-hi) 30%, transparent) 64%,
+    color-mix(in srgb, var(--kit-oldpaper-hi) 0%, transparent) 100%);
+  box-shadow: 0 0 0 1.6px color-mix(in srgb, var(--kit-gall) 40%, transparent);
+}
+.mn-art .pl, .mn-art .pw { fill: color-mix(in srgb, var(--kit-oldpaper-hi) 70%, var(--kit-oldpaper)); }
+.map-node.is-dim  { color: color-mix(in srgb, var(--kit-gall) 60%, transparent); }
+.map-node.is-dim  .mn-pool { opacity: 1; }
+.map-node.is-far  { color: color-mix(in srgb, var(--kit-gall) 68%, transparent); }
+.map-node.is-cold { color: color-mix(in srgb, var(--kit-gall) 34%, transparent); }
+.map-node.is-cold .mn-pool { opacity: .45; }
+
+/* ── visited: inked over ── */
+.map-node.is-visited { opacity: 1; color: color-mix(in srgb, var(--kit-oldpaper-hi) 92%, white); }
+.map-node.is-visited .mn-pool {
+  background:
+    radial-gradient(circle at 36% 30%, rgb(255 230 190 / .1), transparent 55%),
+    radial-gradient(circle closest-side, var(--kit-gall) 0%, color-mix(in srgb, var(--kit-gall) 92%, var(--kit-oldpaper)) 86%, color-mix(in srgb, var(--kit-gall) 60%, transparent) 100%);
+  box-shadow:
+    0 0 0 2px color-mix(in srgb, var(--kit-oldpaper-hi) 50%, transparent),
+    0 0 0 3.6px color-mix(in srgb, var(--kit-gall) 70%, transparent),
+    1px 2px 4px 2px rgb(10 5 2 / .4);
+}
+.map-node.is-visited .mn-art .pl, .map-node.is-visited .mn-art .pw { fill: var(--kit-gall); }
+.map-node.is-visited .mn-art > g { opacity: .92; }
+.map-node.is-visited .mn-tick { opacity: 0; }
+.map-node.is-visited .mn-overdraw { display: none; }
+/* where you are standing: inked, and ringed in gilt */
+.map-node.is-current .mn-pool {
+  background:
+    radial-gradient(circle closest-side, var(--kit-gall) 0%, color-mix(in srgb, var(--kit-gall) 92%, var(--kit-oldpaper)) 86%, transparent 100%);
+  box-shadow:
+    0 0 0 2.4px var(--kit-gold),
+    0 0 0 4.6px color-mix(in srgb, var(--kit-gall) 80%, transparent),
+    0 0 14px 4px color-mix(in srgb, var(--kit-candle) 34%, transparent);
+}
+
+/* ── reachable: a lit enamel medallion ── */
+.map-node.is-legal { color: var(--kit-gold-hi); }
+.map-node.is-legal .mn-pool {
+  inset: 3%;
+  background:
+    url("../../assets/ui/kit/hw-glaze.webp") 50% 50% / 100% 100% no-repeat,
+    url("../../assets/ui/kit/button.webp") 50% 50% / 100% 100% no-repeat;
+  box-shadow:
+    0 0 0 2px color-mix(in srgb, var(--kit-gall) 85%, transparent),
+    0 4px 8px 1px rgb(8 4 2 / .62),
+    0 0 26px 8px color-mix(in srgb, var(--kit-candle) 34%, transparent);
+}
+.map-node.is-legal .mn-art .pl, .map-node.is-legal .mn-art .pw { fill: var(--kit-enamel); }
+.map-node.is-legal .mn-art > g:not(.mn-overdraw) { filter: drop-shadow(0 1.5px 0 rgb(10 5 2 / .85)); }
+.map-node.is-legal .mn-overdraw { display: none; }
+/* the medallion's own gold rim is the ring now: a pencilled loop round a
+   piece of enamel read as a scribble */
+.map-node.is-legal .mn-ring  { opacity: 0; }
+.map-node.is-legal .mn-ring2 { opacity: 0; }
+.map-node.is-legal .mn-art .w3 { stroke-width: 5.2; }
+
+/* the boss keeps its gilt wax seal; its clearing is candlelight on the dark
+   paper, not a pale disc */
+.map-node--boss.is-dim, .map-node--boss.is-cold { color: color-mix(in srgb, var(--kit-gall) 92%, transparent); }
+.map-node--boss .mn-pool {
+  background: radial-gradient(circle closest-side,
+    color-mix(in srgb, var(--kit-candle) 30%, transparent) 0%,
+    color-mix(in srgb, var(--kit-candle) 12%, transparent) 46%,
+    transparent 78%);
+}
+.map-node--boss.is-dim .mn-pool { opacity: 1; }
+.mn-art .crownin { fill: color-mix(in srgb, var(--kit-gold-lo) 70%, var(--kit-gall)); }
+/* the seal in real gilt wax, a step deeper than the open route's gold */
+.map-node--boss .mn-art .seal { fill: var(--kit-gold); }
+.map-node--boss .mn-art .sealrim { stroke: var(--kit-gold-lo); }
+.map-node--boss .mn-art .crownline { stroke: color-mix(in srgb, var(--kit-gold-hi) 70%, white); }
+
+/* the sheet's own edge on the desk */
+.map-sheet {
+  background: var(--kit-oldpaper-lo);
+  box-shadow:
+    0 0 0 1px rgb(8 4 2 / .9),
+    0 30px 60px rgba(0,0,0,.72),
+    0 8px 20px rgba(0,0,0,.55);
+}
+
+/* ── the key, readable at 1280 ── */
+.lg-i { font-size: 14.5px; }
+.lg-ico { width: 26px; height: 26px; }
+.lg-ico svg { width: 16px; height: 16px; }
+@media (max-width: 1500px) {
+  .lg-i { font-size: 13.5px; gap: 4px; }
+  .lg-ico { width: 23px; height: 23px; }
+  .lg-ico svg { width: 14px; height: 14px; }
+  .map-legend { column-gap: 8px; }
+}

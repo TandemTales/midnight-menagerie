@@ -89,6 +89,26 @@ const STAIN = {
   bane: new URL('../../assets/ui/kit/stain-madder.webp', import.meta.url).href,
   boon: new URL('../../assets/ui/kit/stain-indigo.webp', import.meta.url).href,
 };
+/** THE OLD PAPER (round 30): the sheet the survey is drawn on, tea-dark and
+ *  burnt at its edges (tools/prep_ui_polish.py `oldpaper`), the one paper the
+ *  atlas is drawn on too. Asked for at module load, beside the stylesheet, so
+ *  it is already decoded by the time anybody walks into a map. */
+const OLDPAPER_URL = new URL('../../assets/ui/kit/oldpaper-sheet.webp', import.meta.url).href;
+const OLDPAPER = (() => {
+  if (typeof Image === 'undefined') return Promise.resolve(null);
+  return new Promise((res) => {
+    const im = new Image();
+    im.decoding = 'async';
+    im.onload = () => res(im); im.onerror = () => res(null);
+    im.src = OLDPAPER_URL;
+  });
+})();
+/** The survey's iron-gall ink: the plan, its rules and its lettering's shadow
+ *  are drawn in it now, a warm near-black that reads on the dark paper. */
+const GALL = '#1f130a';
+/** The gilt the title block is lettered in: dark ink on tea-dark paper is
+ *  2.5:1, gold leaf on it is a survey's presentation copy, and reads. */
+const GILT = '#e0bf7c';
 /** Pseudo-node standing for the doorway you came in through. */
 const ENTRY = '__in';
 /** The walked route as this screen draws it: the doorway, then the rooms. */
@@ -554,72 +574,34 @@ export class MapScene extends Scene {
 
     const parch = this._tok('--parchment', '#e8dcc0');
     const shade = this._tok('--parchment-shade', '#cdbb96');
-    const ink   = this._tok('--blueprint-ink', '#2d4a7a');
+    // the survey is printed in iron-gall now, not the blueprint's blue: dark
+    // warm ink on dark warm paper, the plan sitting back as the ground
+    const ink   = this._tok('--kit-gall', GALL);
     this._inkColor = ink;
     const rng = new RNG(hashSeed(`paper|${this.model.regionId}|${this.model.seed}`));
 
-    // 1. ground
-    g.fillStyle = parch; g.fillRect(0, 0, w, h);
+    // 1. THE OLD PAPER (round 30). Survey 3's both judges: "the blueprint
+    //    parchment covers about 80% of the screen in pale tan ... so the
+    //    house's aubergine darks are gone". The sheet is the painted old paper
+    //    now -- tea-dark sepia clouded unevenly, foxed, a tide mark, every edge
+    //    browned, scorched and charred (tools/prep_ui_polish.py `oldpaper`) --
+    //    the same sheet the atlas is drawn on. Its ageing, its fibre and its
+    //    burn are IN the painting, so the four procedural passes that faked
+    //    them on a pale ground (blotches, fibre, foxing, edge burn) are gone.
+    const old = await OLDPAPER;
+    if (old) g.drawImage(old, 0, 0, w, h);
+    else { g.fillStyle = parch; g.fillRect(0, 0, w, h); }
 
-    // 2. broad tonal blotches — the sheet has not aged evenly
-    g.save();
-    for (let i = 0; i < 190; i++) {
-      const x = rng.next() * w, y = rng.next() * h, r = 60 + rng.next() * 340;
-      const gr = g.createRadialGradient(x, y, 0, x, y, r);
-      const warm = rng.chance(0.55);
-      gr.addColorStop(0, hexA(warm ? shade : '#f3e9d2', 0.055 + rng.next() * 0.07));
-      gr.addColorStop(1, hexA(warm ? shade : '#f3e9d2', 0));
-      g.fillStyle = gr; g.beginPath(); g.arc(x, y, r, 0, 6.2832); g.fill();
-    }
-    g.restore();
-
-    // 3. paper fibre
-    g.save(); g.lineWidth = 1;
-    for (let i = 0; i < 2600; i++) {
-      const x = rng.next() * w, y = rng.next() * h;
-      const a = (rng.next() - 0.5) * 0.7 + (rng.chance(0.5) ? 0 : Math.PI / 2);
-      const l = 2 + rng.next() * 13;
-      g.strokeStyle = hexA(rng.chance(0.5) ? shade : '#fbf3e0', 0.05 + rng.next() * 0.07);
-      g.beginPath(); g.moveTo(x, y); g.lineTo(x + Math.cos(a) * l, y + Math.sin(a) * l); g.stroke();
-    }
-    g.restore();
-
-    // 4. foxing — rust-brown age spots, denser near the edges, a few of them
-    //    grown into the soft blotches old paper gets where it was handled
-    for (let i = 0; i < 230; i++) {
-      const edge = rng.chance(0.74);
-      const x = edge ? (rng.chance(0.5) ? rng.next() * w * 0.2 : w - rng.next() * w * 0.2) : rng.next() * w;
-      const y = edge ? (rng.chance(0.5) ? rng.next() * h * 0.22 : h - rng.next() * h * 0.22) : rng.next() * h;
-      const big = rng.chance(0.08);
-      const r = big ? 18 + rng.next() * 30 : 2 + rng.next() * 11;
-      const gr = g.createRadialGradient(x, y, 0, x, y, r);
-      const a = big ? 0.06 + rng.next() * 0.06 : 0.14 + rng.next() * 0.18;
-      gr.addColorStop(0, hexA('#8f6636', a));
-      gr.addColorStop(0.65, hexA('#9c7443', a * 0.45));
-      gr.addColorStop(1, hexA('#9c7443', 0));
-      g.fillStyle = gr; g.beginPath(); g.arc(x, y, r, 0, 6.2832); g.fill();
-    }
-
-    // 5. two coffee rings, because someone put a mug on the plans
-    for (let i = 0; i < 2; i++) {
-      const x = 150 + rng.next() * (w - 300), y = 150 + rng.next() * (h - 300);
-      const r = 52 + rng.next() * 40;
-      g.save(); g.strokeStyle = hexA('#8a5f31', 0.10); g.lineWidth = 3 + rng.next() * 3;
-      g.beginPath(); g.arc(x, y, r, 0.2, 5.4); g.stroke();
-      g.strokeStyle = hexA('#8a5f31', 0.05); g.lineWidth = 12;
-      g.beginPath(); g.arc(x, y, r - 5, 0.4, 5.2); g.stroke(); g.restore();
-    }
-
-    // 6. folds — this sheet has been in a backpack: each crease a shadowed
-    //    valley with its lit ridge beside it, and the paper worn thin along it
+    // 2. folds -- this sheet has been in a backpack: each crease a shadowed
+    //    valley with its lit ridge beside it, the paper worn along it
     g.save();
     const crease = (horizontal, at, span) => {
       const lg = horizontal
         ? g.createLinearGradient(0, at - span, 0, at + span)
         : g.createLinearGradient(at - span, 0, at + span, 0);
-      lg.addColorStop(0, hexA(shade, 0)); lg.addColorStop(0.4, hexA('#7d6440', 0.16));
-      lg.addColorStop(0.49, hexA('#5f4a2e', 0.22)); lg.addColorStop(0.53, hexA('#fdf6e6', 0.24));
-      lg.addColorStop(0.64, hexA(shade, 0.08)); lg.addColorStop(1, hexA(shade, 0));
+      lg.addColorStop(0, hexA('#120a05', 0)); lg.addColorStop(0.4, hexA('#120a05', 0.16));
+      lg.addColorStop(0.49, hexA('#0c0603', 0.3)); lg.addColorStop(0.53, hexA('#e9c88e', 0.13));
+      lg.addColorStop(0.64, hexA('#e9c88e', 0.04)); lg.addColorStop(1, hexA('#e9c88e', 0));
       g.fillStyle = lg;
       if (horizontal) g.fillRect(0, at - span, w, span * 2); else g.fillRect(at - span, 0, span * 2, h);
     };
@@ -628,66 +610,31 @@ export class MapScene extends Scene {
     crease(true, h * 0.71, 24);
     g.restore();
 
-    // 7. edge burn
-    const edge = (x0, y0, x1, y1, len) => {
-      const lg = g.createLinearGradient(x0, y0, x1, y1);
-      lg.addColorStop(0, hexA('#7d6440', 0.34));
-      lg.addColorStop(0.35, hexA('#9c8154', 0.10));
-      lg.addColorStop(1, hexA('#9c8154', 0));
-      g.fillStyle = lg; g.fillRect(Math.min(x0, x1), Math.min(y0, y1),
-        Math.abs(x1 - x0) || w, Math.abs(y1 - y0) || h);
-    };
-    edge(0, 0, 120, 0); edge(w, 0, w - 130, 0); edge(0, 0, 0, 100); edge(0, h, 0, h - 110);
-
-    // 7b. the room's light on it: the candles warm the corners nearest them and
-    //     the paper falls off to a cool, moonlit grey along its middle edges
+    // 3. the room's light on it (fix 10, round 4): the two candles standing
+    //    over the rail's top corners and the one on the desk at its front
+    //    right corner each throw a warm pool onto the paper; the dark paper
+    //    takes it as amber, and the middle of the sheet -- where the route is
+    //    read -- is the best lit. The fall to the edges is in the paper itself.
     g.save();
     g.globalCompositeOperation = 'soft-light';
-    for (const [cx, cy, r, a] of [[0, 0, 900, 0.5], [w, 0, 900, 0.5], [w, h, 760, 0.42], [0, h, 640, 0.26]]) {
-      const gr = g.createRadialGradient(cx, cy, 0, cx, cy, r);
-      gr.addColorStop(0, hexA('#ffb35c', a)); gr.addColorStop(0.55, hexA('#ffb35c', a * 0.3)); gr.addColorStop(1, hexA('#ffb35c', 0));
-      g.fillStyle = gr; g.fillRect(0, 0, w, h);
-    }
-    g.globalCompositeOperation = 'multiply';
-    for (const [x0, y0, x1, y1] of [[w / 2, 0, w / 2, 170], [w / 2, h, w / 2, h - 190], [0, h / 2, 220, h / 2], [w, h / 2, w - 220, h / 2]]) {
-      const lg = g.createLinearGradient(x0, y0, x1, y1);
-      lg.addColorStop(0, hexA('#8e9bb0', 0.34)); lg.addColorStop(1, hexA('#8e9bb0', 0));
-      g.fillStyle = lg; g.fillRect(0, 0, w, h);
-    }
-    g.restore();
-
-    // 7c. the sheet as the room lights it (fix 10, round 4). The two candles
-    //     standing over the rail's top corners and the one on the desk at its
-    //     front right corner each throw a warm pool down onto the paper, and
-    //     the paper falls away from the lit middle into a brown shadow at all
-    //     four edges, deepest in the corners the light does not reach: a sheet
-    //     lying in a candlelit room, not a card lit evenly by a screen.
-    g.save();
-    g.globalCompositeOperation = 'multiply';
-    const fall = g.createRadialGradient(w * .5, h * .44, Math.min(w, h) * .34, w * .5, h * .46, Math.hypot(w, h) * .6);
-    fall.addColorStop(0, hexA('#8c6a45', 0));
-    fall.addColorStop(.55, hexA('#8c6a45', .14));
-    fall.addColorStop(.85, hexA('#6a4a2c', .34));
-    fall.addColorStop(1, hexA('#4e341e', .5));
-    g.fillStyle = fall; g.fillRect(0, 0, w, h);
-    g.globalCompositeOperation = 'soft-light';
-    for (const [cx, cy, r, a] of [[w * .1, -h * .06, 760, .62], [w * .9, -h * .06, 760, .62], [w * .97, h * 1.02, 620, .5]]) {
+    for (const [cx, cy, r, a] of [[w * .1, -h * .06, 820, .5], [w * .9, -h * .06, 820, .5], [w * .97, h * 1.02, 640, .4], [w * .5, h * .46, 900, .2]]) {
       const gr = g.createRadialGradient(cx, cy, 0, cx, cy, r);
       gr.addColorStop(0, hexA('#ffc27a', a)); gr.addColorStop(.5, hexA('#ffb35c', a * .38)); gr.addColorStop(1, hexA('#ffb35c', 0));
       g.fillStyle = gr; g.fillRect(0, 0, w, h);
     }
     g.globalCompositeOperation = 'screen';
-    for (const [cx, cy, r, a] of [[w * .1, 0, 520, .07], [w * .9, 0, 520, .07], [w * .97, h, 420, .06]]) {
+    for (const [cx, cy, r, a] of [[w * .1, 0, 520, .06], [w * .9, 0, 520, .06], [w * .5, h * .46, 760, .045]]) {
       const gr = g.createRadialGradient(cx, cy, 0, cx, cy, r);
       gr.addColorStop(0, hexA('#ffcf94', a)); gr.addColorStop(1, hexA('#ffcf94', 0));
       g.fillStyle = gr; g.fillRect(0, 0, w, h);
     }
     g.restore();
+    void shade; void rng;
 
-    // 8. the ink — this wing's own section drawing, re-inked
+    // 4. the ink — this wing's own section drawing, re-inked
     this._layPlan(g, ink);
 
-    // 9. drawn border, title block, compass, scale bar
+    // 5. drawn border, title block, compass, scale bar
     this._drawFurniture(g, w, h, ink, rng);
   }
 
@@ -845,7 +792,9 @@ export class MapScene extends Scene {
     //    engraved double-ruled box, the wing's name and its form in the wide
     //    cell, the record in small caps over the value in the rest.
     const tx = WIN.x, ty = WIN.y + WIN.h + 32, tw = WIN.w, th = 86;
-    g.fillStyle = hexA('#f6eeda', 0.16); g.fillRect(tx, ty, tw, th);
+    // round 30: the block is a dark inked band on the old paper, lettered in
+    // gilt -- a pale band here was the milkiest thing left on the sheet
+    g.fillStyle = hexA(GALL, 0.42); g.fillRect(tx, ty, tw, th);
     g.strokeStyle = hexA(ink, 0.78); g.lineWidth = 2.2; g.strokeRect(tx, ty, tw, th);
     g.strokeStyle = hexA(ink, 0.4); g.lineWidth = 0.9; g.strokeRect(tx + 5, ty + 5, tw - 10, th - 10);
     const cells = [0.40, 0.58, 0.70, 0.83];
@@ -873,8 +822,11 @@ export class MapScene extends Scene {
     // Round 19, both survey judges: the title block and the margin notes were
     // "ghost type". The rules stay in the plan's blue; the LETTERING is inked
     // in the draughtsman's own dark iron-gall, solid, as a title block is.
-    const letter = '#241910';
+    // Round 30: on the old paper the lettering is GILT over a hair of ink
+    // shadow; iron-gall on tea-dark paper measured 2.5:1.
+    const letter = GILT;
     ink = letter;
+    g.shadowColor = hexA(GALL, 0.9); g.shadowOffsetY = 1.5; g.shadowBlur = 1.5;
     g.fillStyle = hexA(ink, 0.97);
     g.font = '700 32px Cinzel, Georgia, serif'; spaced('2px');
     g.fillText(meta.name.toUpperCase(), tx + 22, ty + 42);
@@ -898,6 +850,7 @@ export class MapScene extends Scene {
     cell(3, 'SCALE', '1 : 96');
     cell(4, 'SURVEY REF.', 'MM-' + String(this.model.seed).toUpperCase());
     spaced('0px');
+    g.shadowColor = 'transparent'; g.shadowBlur = 0; g.shadowOffsetY = 0;
 
     // how to drive it, pencilled up the right-hand margin the way THE WAY IN
     // is printed up the left
@@ -905,7 +858,7 @@ export class MapScene extends Scene {
     g.translate(w - 58, WIN.y + WIN.h / 2);
     g.rotate(Math.PI / 2);
     g.textAlign = 'center'; g.textBaseline = 'middle';
-    g.fillStyle = hexA(letter, 0.84);
+    g.fillStyle = hexA(letter, 0.8);
     g.font = '600 14px Cinzel, Georgia, serif'; spaced('3px');
     g.fillText('DRAG TO PAN  \u00b7  SCROLL TO ZOOM  \u00b7  ARROWS CHOOSE  \u00b7  ENTER GOES', 0, 0);
     spaced('0px');
@@ -1062,11 +1015,20 @@ export class MapScene extends Scene {
       const ix = w * .07, iy = h * .12;
       const cxz = x + w / 2, cyz = y + h / 2;
       const stainUrl = STAIN[hz.kind === 'boon' ? 'boon' : 'bane'];
+      /* ROUND 30: the wash becomes CRISP TIDE-MARKED INK (BRIEF-r30 fix 2:
+         "the red and blue watercolour washes become crisp tide-marked ink
+         with a key"). On the old paper a soft bloom of pigment read as a
+         stain on the drawing; this is the wing ruled round in the key's ink
+         the way a surveyor marks a condition -- a firm deckled line, the
+         paler tide line the ink left inside it as it dried, and a breath of
+         the pigment pooled along the inside of the edge -- keyed by the wax
+         seal on its corner and the plate of the same colour below. */
+      const tide = deckledRect(s ^ 0x5bd1, x + 9, y + 9, w - 18, h - 18, 32, 2.2);
+      void stainUrl; void ix; void iy; void sx; void sy; void cxz; void cyz;
       stains.push(`<g class="mi-zone mi-zone--${hz.kind}" data-hz="${hz.id}">
-        <image class="mi-zone-stain" href="${stainUrl}" preserveAspectRatio="none"
-               x="${(-w / 2 - ix).toFixed(1)}" y="${(-h / 2 - iy).toFixed(1)}"
-               width="${(w + 2 * ix).toFixed(1)}" height="${(h + 2 * iy).toFixed(1)}"
-               transform="translate(${cxz.toFixed(1)} ${cyz.toFixed(1)}) scale(${sx} ${sy})"/></g>`);
+        <path class="mi-zone-pool" d="${deck}"/>
+        <path class="mi-zone-edge" d="${deck}"/>
+        <path class="mi-zone-tide" d="${tide}"/></g>`);
       parts.push(`<g class="mi-zone mi-zone--${hz.kind}" data-hz="${hz.id}">
         <path class="mi-zone-hatch" d="${deck}"
               fill="url(#${hz.kind === 'boon' ? 'mm-dots' : 'mm-hatch'})"/>

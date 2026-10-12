@@ -232,6 +232,17 @@
   --kit-silver:          #dfe2ee;   /* silver in the boards' moonlight */
   --kit-bronze:          #e2a47a;   /* bronze: a darker, redder brass */
 
+  /* THE OLD PAPER (round 30): the house's survey sheets, tea-dark and burnt
+     (oldpaper-*.webp, tools/prep_ui_polish.py). A pale tan sheet over 80% of
+     the map was survey 3's system defect; this keeps the darks. */
+  --kit-oldpaper:        #6f5230;   /* the sheet's mid tone under the candles */
+  --kit-oldpaper-hi:     #9b7a4e;   /* where the candle lights it */
+  --kit-oldpaper-lo:     #3b2814;   /* browned toward its burnt edge */
+  --kit-gall:            #1f130a;   /* iron-gall ink: the plan, inked over */
+  --kit-pencil:          #2c1d10;   /* faded pencil: a room not yet within reach */
+  --kit-madder:          #b4402f;   /* a bane wing's ink on the old paper */
+  --kit-indigo:          #3f7d9a;   /* a boon wing's ink on the old paper */
+
   /* the house's hardware (round 19, ui/kit.css "hardware"): a cast brass
      chevron, lit on its upper face over the dark cut under it, for striking
      on an enamel button (.kit-hw-chev, the Curiosity's entry nibs) */
