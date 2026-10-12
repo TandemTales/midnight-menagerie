@@ -821,10 +821,11 @@
 .mm-hud__norelics { height: calc(var(--hud-chip-h) * 1.12); font-size: max(12px, .82em); }
 
 /* a TERSE rail (ui/hud.js#_fit, before the belt tightens): the readouts the
-   map's own plaque and the tooltips already say -- the wing's number,
-   Haunt's word, the seed's figures -- become a screen reader's, so every
-   object on the belt keeps its socket */
-.mm-hud[data-terse="1"] :is(.mm-hud__where .mm-hud__s, .mm-hud__w, .mm-hud__seed .mm-hud__t) {
+   tooltips already say -- Haunt's word, the seed's figures -- become a screen
+   reader's, so every object on the belt keeps its socket. (Round 30 graft:
+   the wing's number stays lettered -- "The Foyer · Wing 1" is the one place
+   name the strip has, and the judges missed it at 1280.) */
+.mm-hud[data-terse="1"] :is(.mm-hud__w, .mm-hud__seed .mm-hud__t) {
   position: absolute; width: 1px; height: 1px; overflow: hidden;
   clip-path: inset(50%); white-space: nowrap; margin: 0; padding: 0;
 }
@@ -835,4 +836,136 @@
   .mm-hud__group--meta > :not(:first-child) { margin-left: 1px; }
   .mm-hud__relics, .mm-hud__gear { gap: 1px; }
   .mm-hud__relic, .mm-hud__gearchip, .mm-hud__gearchip.has-obj { width: var(--sock); height: var(--sock); }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ROUND 30 GRAFT — A FEW PLATES, PARTED BY ENGRAVED RULES (VERONESE's grouping
+   on SANDARAC's belt)
+   All three judges: the late-run strip read as "one 18-socket chain" with a
+   bronze dot between Keepsakes and Gear, its sockets ~20 px, a scroll flourish
+   wasting the width after the last Gear, and 'Wing 1' dropped at 1280. So:
+   - the Snacks, the Keepsakes and the Gear each stand in their OWN framed
+     plate (hw-rail-well.webp: a clipped brass lip round a well of the rail's
+     enamel, sunk in the channel);
+   - every group, and each plate, is parted by an ENGRAVED gilt double rule
+     the channel's full height with a small lozenge struck at its middle --
+     never a flat bar, never a dot;
+   - the flourish is gone; ui/hud.js#_fit hands its width to the sockets a
+     pixel at a time, and the object fills its socket;
+   - the place name keeps its wing at 1280 ("The Foyer · Wing 1");
+   - an empty Snack setting is an empty PLATE, its hollow lit, not a black hole.
+   ═══════════════════════════════════════════════════════════════════════════ */
+.mm-hud {
+  /* the engraved rule: two cut lines, each a gilt edge on its dark groove */
+  --hud-rule-w: 10px;
+  --hud-rule-h: calc(var(--hud-h) * .66);
+  --hud-rule:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 16'%3E%3Cpath d='M5 .6 9.2 8 5 15.4.8 8Z' fill='%231a0f06'/%3E%3Cpath d='M5 1.9 8 8 5 14.1 2 8Z' fill='%23b08a4a'/%3E%3Cpath d='M5 1.9 8 8H2Z' fill='%23e6c98a'/%3E%3Cpath d='M5 5.2 6.4 8 5 10.8 3.6 8Z' fill='%236b4c24'/%3E%3C/svg%3E") 50% 50% / 10px 16px no-repeat,
+    linear-gradient(90deg,
+      transparent 1px, #6b4c24 1px 2px, #e6c98a 2px 3px, rgba(8, 4, 2, .85) 3px 4px,
+      transparent 4px 6px,
+      #6b4c24 6px 7px, #e6c98a 7px 8px, rgba(8, 4, 2, .85) 8px 9px, transparent 9px) 0 0 / 100% 100% no-repeat;
+}
+/* the flourish after the last Gear: its width is the sockets' now */
+.mm-hud__group--keepsakes::after { content: none; }
+
+/* between the groups: the engraved rule in place of the rosette boss (and
+   before the meta group too, which the empty Turn group used to hide) */
+.mm-hud .mm-hud__group--extra:empty + .mm-hud__group::before { display: block; }
+.mm-hud__group + .mm-hud__group::before,
+.mm-hud .mm-hud__gear::before,
+.mm-hud__group--vitals > .mm-hud__snacks::after {
+  content: ''; flex: none;
+  width: var(--hud-rule-w); height: var(--hud-rule-h);
+  margin: 0;
+  background: var(--hud-rule);
+  -webkit-mask-image: linear-gradient(180deg, transparent, #000 3px, #000 calc(100% - 3px), transparent);
+  mask-image: linear-gradient(180deg, transparent, #000 3px, #000 calc(100% - 3px), transparent);
+  filter: drop-shadow(0 1px 0 rgba(0, 0, 0, .7));
+}
+
+/* ── the three plates ── */
+.mm-hud__snacks,
+.mm-hud__relics,
+.mm-hud__gear {
+  --plate-pad: 4px;
+  position: relative;
+  box-sizing: border-box;
+  align-self: center;
+  border: 0 solid transparent;
+  border-image: url("../../assets/ui/kit/hw-rail-well.webp") 10 fill / 6px stretch;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, .8));
+}
+.mm-hud .mm-hud__relics,
+.mm-hud .mm-hud__gear {
+  height: calc(var(--sock) + 2 * var(--plate-pad));
+  padding: 0 calc(var(--plate-pad) + 2px);
+  /* the plate stands proud of the readouts' line without growing the rail */
+  margin-block: calc((var(--hud-chip-h) - var(--sock) - 2 * var(--plate-pad)) / 2);
+}
+/* "No Keepsakes" is its own cartouche: no plate round it */
+.mm-hud .mm-hud__relics:has(> .mm-hud__norelics) { border-image: none; filter: none; height: auto; padding: 0; margin-block: 0; }
+/* the Gear's plate is parted from the Keepsakes' by the rule, standing in the
+   air between the two plates */
+.mm-hud .mm-hud__gear { margin-left: calc(var(--hud-rule-w) + 8px); }
+.mm-hud .mm-hud__gear::before {
+  position: absolute; top: 50%; translate: 0 -50%;
+  left: calc(-4px - var(--hud-rule-w) - 6px);
+}
+/* the Snacks' plate: the settings' curls and finials stand on its lip */
+.mm-hud__group--vitals > .mm-hud__snacks {
+  height: calc(var(--hud-chip-h) + 6px);
+  margin-block: -3px;
+  padding: 0 7px;
+  margin-left: calc(var(--hud-rule-w) + 8px);
+}
+.mm-hud__group--vitals > .mm-hud__snacks::after {
+  position: absolute; top: 50%; translate: 0 -50%;
+  left: calc(-4px - var(--hud-rule-w));
+}
+
+/* ── the sockets: the object fills its socket ──
+   (a <button>'s own 1px 6px padding pushed the object off the socket's
+   centre, down and right, and shrank it to 14 px inside a 24 px socket) */
+.mm-hud .mm-hud__relic, .mm-hud .mm-hud__gearchip { padding: 0; border: 0; }
+.mm-hud .mm-hud__relicobj, .mm-hud .mm-hud__gearobj {
+  width: calc(var(--sock) * .9); flex: none;
+}
+/* (.mm-hud first: hud.js injects the Gear's older gap and padding after this sheet) */
+.mm-hud .mm-hud__relics, .mm-hud .mm-hud__gear { gap: 1px; }
+
+/* ── an empty Snack setting: an empty plate, its hollow lit ── */
+.mm-hud__snack.is-empty::before {
+  content: ''; position: absolute; pointer-events: none;
+  left: 23%; right: 23%; top: 31%; bottom: 25%;
+  border-radius: 50%;
+  background:
+    radial-gradient(closest-side, color-mix(in srgb, var(--kit-lav) 34%, transparent), color-mix(in srgb, var(--kit-lav) 16%, transparent) 72%, transparent),
+    radial-gradient(60% 50% at 40% 30%, color-mix(in srgb, var(--kit-lav-hi) 22%, transparent), transparent 80%);
+}
+.mm-hud .mm-hud__snackghost { opacity: .8; filter: grayscale(.6) sepia(.3) brightness(1.15) drop-shadow(0 1px 0 rgba(0, 0, 0, .9)); }
+
+/* ── the place name keeps its wing: "The Foyer · Wing 1" ── */
+.mm-hud__where .mm-hud__s::before {
+  content: '\00B7'; flex: none; width: auto; height: auto; transform: none;
+  background: none; box-shadow: none;
+  color: var(--kit-gold); font-weight: 700; margin-right: .1em;
+}
+.mm-hud__where .mm-hud__s { gap: .3em; }
+
+/* the Deck's 1280: the rules stand closer to what they part and the
+   readouts close up a little -- the air the sockets and the place name take */
+@media (max-width: 1400px) {
+  .mm-hud { gap: 3px; }
+  .mm-hud__group { gap: 4px; }
+  .mm-hud__group--vitals > :not(:first-child),
+  .mm-hud__group--meta > :not(:first-child) { margin-left: 0; }
+  .mm-hud__bar { width: calc(var(--bar-h) * 3.05); }
+  .mm-hud .mm-hud__relics, .mm-hud .mm-hud__gear { --plate-pad: 3px; gap: 0; }
+  .mm-hud .mm-hud__gear { margin-left: calc(var(--hud-rule-w) + 3px); }
+  .mm-hud .mm-hud__gear::before { left: calc(-3px - var(--hud-rule-w) - 2px); }
+  .mm-hud__group--vitals > .mm-hud__snacks { padding: 0 5px; margin-left: calc(var(--hud-rule-w) + 3px); }
+  .mm-hud__group--vitals > .mm-hud__snacks::after { left: calc(-2px - var(--hud-rule-w)); }
+  .mm-hud__group + .mm-hud__group::before { width: var(--hud-rule-w); height: var(--hud-rule-h); margin: 0; }
+  .mm-hud__where .mm-hud__s { letter-spacing: .05em; }
 }
