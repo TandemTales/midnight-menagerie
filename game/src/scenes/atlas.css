@@ -988,6 +988,8 @@
   --mark: color-mix(in srgb, var(--kit-gold-hi) 78%, var(--kit-gold));
 }
 .at-paper {
+  /* the sheet itself is the kit's .kit-oldpaper (atlas.js); this only undoes
+     the pale paper's overlay blend that .at-paper carried above */
   background: url("../../assets/ui/kit/oldpaper-plate.webp") 0 0 / 100% 100% no-repeat, var(--kit-oldpaper-lo);
   background-blend-mode: normal;
   box-shadow: 0 0 0 1px rgb(8 4 2 / .9), 0 3px 8px rgba(0, 0, 0, .6);
@@ -996,13 +998,22 @@
   border-color: color-mix(in srgb, var(--kit-gall) 60%, transparent);
   box-shadow: 0 0 0 3px transparent, 0 0 0 4px color-mix(in srgb, var(--kit-gall) 38%, transparent);
 }
+/* the candles' light IN the paper, as the Map's canvas lays it: the dark
+   sheet takes it as amber, best lit where the plan is read */
+.at-paper::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  background:
+    radial-gradient(62% 58% at 44% 44%, rgb(255 196 120 / .55), rgb(255 180 100 / .2) 55%, transparent 80%),
+    radial-gradient(40% 40% at 8% 0%, rgb(255 190 110 / .45), transparent 70%);
+  mix-blend-mode: soft-light;
+}
 .at-vp { background: transparent; box-shadow: none; }
 /* the printed master gives way to its pencil once that is laid */
 .at-root[data-pencil="1"] .at-estate { opacity: 0; }
 .at-pencil {
   position: absolute; inset: 0; width: 100%; height: 100%;
   pointer-events: none;
-  opacity: .4;
+  opacity: .42;
   transition: opacity var(--t-base) var(--ease-out);
 }
 .at-root[data-zoom="1"] .at-pencil { opacity: .3; }
@@ -1014,7 +1025,7 @@
 .at-survey__gild {
   margin: -1.5%;
   background:
-    radial-gradient(70% 70% at 50% 50%, color-mix(in srgb, var(--kit-gold-hi) 62%, transparent), color-mix(in srgb, var(--kit-gold) 40%, transparent) 70%, color-mix(in srgb, var(--kit-gold) 0%, transparent) 100%);
+    radial-gradient(70% 70% at 50% 50%, color-mix(in srgb, var(--kit-gold-hi) 84%, transparent), color-mix(in srgb, var(--kit-gold) 58%, transparent) 70%, color-mix(in srgb, var(--kit-gold) 0%, transparent) 100%);
   mix-blend-mode: screen;
   border-radius: 6%;
   filter: blur(3px);
@@ -1071,11 +1082,17 @@
 /* the still life on a ledge: a gilt plinth along the floor under the panel */
 .at-floor::before {
   content: ''; position: absolute; z-index: 0; pointer-events: none;
-  left: 6%; right: 6%;
-  bottom: calc(-1 * clamp(26px, 3.8vh, 34px));
+  /* its cap is the line the props stand on: their feet sit a few pixels
+     below the floor's own edge (the .at-floor__* bottoms), so the cap is too */
+  left: 4%; right: 4%;
+  top: calc(100% + clamp(9px, 1.5vh, 13px));
   height: clamp(30px, 4.2vh, 38px);
   border: 0 solid transparent;
   border-image: url("../../assets/ui/kit/plinth.webp") 0 24 0 24 fill / 0 calc(clamp(30px, 4.2vh, 38px) * 24 / 56) 0 calc(clamp(30px, 4.2vh, 38px) * 24 / 56) stretch;
   filter: drop-shadow(0 6px 8px rgba(0, 0, 0, .8)) brightness(.92);
 }
 @container (max-height: 44px) { .at-floor::before { display: none; } }
+/* the zoomed redraw (atlas.js _paintInk) lies on the old paper as ink, not
+   multiplied into a pale sheet */
+.at-ink { mix-blend-mode: normal; }
+.at-root[data-zoom="1"] .at-ink:not([hidden]) { opacity: .95; }

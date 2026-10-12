@@ -417,7 +417,7 @@ export class AtlasScene extends Scene {
     /* The recovered sheet itself, laid on the frame's dark purple velvet mat
        (OCHRE's): its own browned edges show inside the gilt rail. The drawing
        is printed on it; the light and the curl are laid over both. */
-    sheet.appendChild(el('div', 'at-paper'));
+    sheet.appendChild(el('div', 'at-paper kit-oldpaper'));   // round 30: the old paper (ui/kit.css)
     /* The mat the sheet is laid on. It was a flat band of velvet and read as
        one: this is the kit's tufted velvet liner (ui/kit.css .kit-liner) with
        its gilt fillet on the paper's edge, and a brass fleuron set into each
@@ -851,8 +851,10 @@ export class AtlasScene extends Scene {
     cv.width = cw; cv.height = ch;
 
     const g = cv.getContext('2d');
-    const ink = this._tok('--blueprint-ink', '#2d4a7a');
-    const paper = this._tok('--parchment', '#e8dcc0');
+    /* round 30: the redraw is iron-gall on the old paper, over the house's
+       faded pencil (which recedes further while a wing is read) */
+    const ink = GALL;
+    const paper = this._tok('--kit-oldpaper-hi', '#9b7a4e');
 
     /* A fresh sheet under the redraw. Feathered, because the section is a
        RECTANGLE of the master and its neighbours overlap it — a hard-edged
@@ -861,9 +863,9 @@ export class AtlasScene extends Scene {
     g.save();
     const feather = Math.max(2, Math.round(Math.min(cw, ch) * 0.05));
     g.fillStyle = paper;
-    g.globalAlpha = 0.82;
+    g.globalAlpha = 0.3;
     g.fillRect(feather, feather, cw - feather * 2, ch - feather * 2);
-    g.globalAlpha = 0.42;
+    g.globalAlpha = 0.14;
     g.fillRect(0, 0, cw, ch);
     g.restore();
 

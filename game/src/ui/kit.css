@@ -4261,3 +4261,66 @@ button.kit-hw-enamel:focus-visible {
   left: calc(var(--spur) - 1.4 * var(--u)); right: calc(var(--spur) - 1.4 * var(--u));
   background: linear-gradient(180deg, var(--kit-gold-hi), var(--kit-gold) 46%, var(--kit-gold-lo) 78%, var(--kit-gold) 100%);
 }
+
+/* ── the old paper (round 30) ──
+   The house's survey sheets: tea-dark sepia clouded unevenly, foxed, a tide
+   mark, every edge browned, scorched and charred (oldpaper-*.webp,
+   tools/prep_ui_polish.py `oldpaper`). Survey 3's system defect was pale
+   parchment breaking the darks; anything that is PAPER in this house -- a
+   plan, a chart, a letter -- is laid on this, and is written on it in
+   iron-gall (--kit-gall) or lettered in gilt. The Map paints the same sheet
+   into its canvas (scenes/map.js) so the two are one paper.
+     .kit-oldpaper          the sheet, stretched to its box (the plate cut: a
+                            box near 7:5; the Map's 2:1 is painted in canvas)
+     .kit-oldpaper--ink     its text in iron-gall
+   */
+.kit-oldpaper {
+  background: url("../../assets/ui/kit/oldpaper-plate.webp") 0 0 / 100% 100% no-repeat, var(--kit-oldpaper-lo);
+  background-blend-mode: normal;
+}
+.kit-oldpaper--ink { color: var(--kit-gall); }
+
+/* ── a belt socket (round 30) ──
+   One carried thing in its own round gold-rimmed socket: the house's velvet
+   well in its brass ring (hw-well.webp), the object standing proud of the
+   hollow. The run strip's Keepsakes and Gear wear it (ui/hud.css "THE BELT");
+   --sock sets its size, --rar a Keepsake's rarity glaze round the object.
+     .kit-beltsock                 the socket (holds one .kit-obj)
+     .kit-beltsock--moon           lit by the moon instead of the candle (Gear)
+     .kit-beltsock__more           the overflow medallion, "+N", in enamel
+   */
+.kit-beltsock {
+  position: relative;
+  display: grid; place-items: center;
+  width: var(--sock, 30px); height: var(--sock, 30px);
+  border-radius: 50%;
+  background: url("../../assets/ui/kit/hw-well.webp") 50% 50% / 100% 100% no-repeat;
+  filter: drop-shadow(0 1.5px 1.5px rgba(0, 0, 0, .85));
+}
+.kit-beltsock::before {
+  content: ''; position: absolute; inset: 15%; pointer-events: none;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--kit-candle) 30%, transparent), color-mix(in srgb, var(--kit-candle) 6%, transparent) 70%, transparent);
+  box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--rar, var(--kit-gold)) 55%, transparent);
+}
+.kit-beltsock--moon::before {
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--kit-moon) 30%, transparent), color-mix(in srgb, var(--kit-moon) 6%, transparent) 70%, transparent);
+  box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--kit-moon) 45%, transparent);
+}
+.kit-beltsock > .kit-obj {
+  position: relative; width: 116%; max-width: none;
+  filter: brightness(1.14) saturate(1.08) drop-shadow(0 1.5px 1px rgba(0, 0, 0, .9));
+}
+.kit-beltsock__more {
+  display: grid; place-items: center;
+  width: var(--sock, 30px); height: var(--sock, 30px);
+  border-radius: 50%;
+  background-image: url("../../assets/ui/kit/hw-glaze.webp"), url("../../assets/ui/kit/button.webp");
+  background-position: 50% 50%, 50% 50%;
+  background-size: 100% 100%, 100% 100%;
+  background-repeat: no-repeat;
+  color: var(--kit-gold-hi);
+  font-family: var(--font-num); font-weight: 700;
+  font-variant-numeric: lining-nums tabular-nums;
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .8));
+}

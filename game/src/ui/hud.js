@@ -567,7 +567,8 @@ export class HUD {
        1  the words the map and the tooltips already say go to a screen
           reader (the wing's number, Haunt's word, the seed's figures)
        2  every socket, a size down
-       3  the first sockets, and "+N" for the rest (never fewer than two) */
+       3  every socket, two sizes down, shoulder to shoulder
+       4  the first sockets, and "+N" for the rest (never fewer than two) */
   _fit() {
     if (!this.el || !this.el.isConnected || !this.el.offsetWidth) return;
     const total = (this._keepChips?.length || 0) + (this._gearChips?.length || 0);
@@ -577,11 +578,12 @@ export class HUD {
     this._applyFold(lv);
     if (this._tight()) this.el.dataset.terse = '1';
     if (this._tight()) { lv = { snack: true, compact: true, over: 0 }; this._applyFold(lv); }
+    if (this._tight()) { lv = { snack: true, compact: 2, over: 0 }; this._applyFold(lv); }
     while (this._tight() && lv.over < total - 1) {
-      lv = { snack: true, compact: true, over: lv.over ? lv.over + 1 : 2 };
+      lv = { snack: true, compact: 2, over: lv.over ? lv.over + 1 : 2 };
       this._applyFold(lv);
     }
-    this.el.dataset.fold = String(lv.over ? 3 : lv.compact ? 2 : this.el.dataset.terse === '1' ? 1 : 0);
+    this.el.dataset.fold = String(lv.over ? 4 : lv.compact === 2 ? 3 : lv.compact ? 2 : this.el.dataset.terse === '1' ? 1 : 0);
     /* and if even that is over-full -- a late wing's long name with a
        four-figure purse -- the rail closes up rather than drop a row: the
        wing's name ends in an ellipsis (its tooltip says it whole) */
@@ -617,7 +619,7 @@ export class HUD {
     const showK = keep.slice(0, Math.min(keep.length, showN));
     const showG = gear.slice(0, Math.max(0, showN - keep.length));
     const rest = [...keep.slice(showK.length), ...gear.slice(showG.length)];
-    this.el.dataset.belt = f.compact ? 'tight' : 'wide';
+    this.el.dataset.belt = f.compact === 2 ? 'tighter' : f.compact ? 'tight' : 'wide';
     if (keep.length) layBelt(this.$relics, showK);
     if (gear.length) layBelt(this.$gear, showG);
     if (rest.length) {
@@ -769,7 +771,7 @@ function moreMedallion(list, rest, nKeep, nGear) {
   const n = rest.length;
   const btn = document.createElement('button');
   btn.type = 'button';
-  btn.className = 'mm-hud__more';
+  btn.className = 'mm-hud__more kit-beltsock__more';
   btn.setAttribute('aria-expanded', 'false');
   const what = [nKeep ? plural(nKeep, 'more Keepsake', 'more Keepsakes') : '', nGear ? plural(nGear, 'more Gear', 'more Gear') : '']
     .filter(Boolean).join(' and ');
@@ -893,7 +895,7 @@ function isGear(k) {
 function keepsakeChip(k) {
   const chip = document.createElement('button');
   chip.type = 'button';
-  chip.className = 'mm-hud__relic';
+  chip.className = 'mm-hud__relic kit-beltsock';
   chip.setAttribute('role', 'listitem');
   chip.dataset.rarity = k.rarity || 'common';
   chip.appendChild(keepsakePicture(k.id));
@@ -954,7 +956,7 @@ const GEAR_GLYPHS = {
 function gearChip(g) {
   const chip = document.createElement('button');
   chip.type = 'button';
-  chip.className = 'mm-hud__gearchip';
+  chip.className = 'mm-hud__gearchip kit-beltsock kit-beltsock--moon';
   chip.setAttribute('role', 'listitem');
   const icon = String(g.icon || g.id || '').replace(/^gear\//, '');
   chip.dataset.gear = icon;

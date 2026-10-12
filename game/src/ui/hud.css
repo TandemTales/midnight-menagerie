@@ -711,6 +711,8 @@
   gap: 7px;
 }
 .mm-hud[data-belt="tight"] { --sock: calc(var(--hud-chip-h) * 1.16); }
+.mm-hud[data-belt="tighter"] { --sock: calc(var(--hud-chip-h) * 1.06); }
+.mm-hud[data-belt="tighter"] :is(.mm-hud__relics, .mm-hud__gear) { gap: 0; }
 
 /* no studs: the channel's own air parts the readouts */
 .mm-hud__group--vitals > :not(:first-child),
