@@ -122,6 +122,15 @@ const GALL = '#1f130a';
 /** A surveyed wing is inked a pen heavier than the plan's own solve, so it
  *  holds as ink at the Deck's 1280 rather than greying into hatching. */
 const SURVEY_COVER = 0.075;
+/** Round 30 graft: ...and never lighter than this pen, in screen px, so the
+ *  surveyed wing is the darkest, heaviest ink on the sheet at the Deck's 1280
+ *  too (VERONESE's weight on SANDARAC's paper). */
+const SURVEY_PEN_MIN = 2.3;
+/** Round 30 graft: every UNKNOWN wing at one hairline, in screen px -- the
+ *  same pen for all sixteen, drawn from their own vectors so they stay crisp
+ *  at 1280 instead of the master scan's uneven grey (its gardens read as dark
+ *  as the surveyed wing). */
+const HAIRLINE = 0.95;
 
 /**
  * The master drawing lifted off its own paper (round 30): every line it
@@ -506,6 +515,9 @@ export class AtlasScene extends Scene {
       if (this.offered.has(w.slug)) { if (this.choosing) b.classList.add('is-open'); }
       else if (this.choosing || this.entering) b.classList.add('is-shut');
       if (this.surveyed.has(w.slug)) b.classList.add('is-surveyed');
+      /* round 30 graft: a surveyed wing's nameplate hangs BELOW it, or above
+         it for a wing at the foot of the plan (atlas.css) */
+      if (w.ny + w.nh > 0.86) b.dataset.foot = '1';
       if (this.trail.includes(w.slug)) b.classList.add('is-walked');
       if (this.trail[this.trail.length - 1] === w.slug) b.classList.add('is-here');
       b.setAttribute('aria-label', this._hotLabel(w));
@@ -897,6 +909,33 @@ export class AtlasScene extends Scene {
     const token = this._surveyToken = (this._surveyToken || 0) + 1;
     host.textContent = '';
     const dpr = window.devicePixelRatio || 1;
+    /* ROUND 30 GRAFT: the sixteen unknown wings, re-drawn from their own
+       vectors at ONE hairline into ONE canvas the size of the plate. The
+       sections overlap on the master, so each is drawn opaque into the same
+       layer and the layer is laid down once (atlas.css .at-survey__hair): a
+       wall two sections share is no darker than any other. */
+    const hair = document.createElement('canvas');
+    hair.className = 'at-survey__hair';
+    hair.width = Math.max(1, Math.round(pw * dpr)); hair.height = Math.max(1, Math.round(ph * dpr));
+    host.appendChild(hair);
+    const hg = hair.getContext('2d');
+    for (const w of this.wings) {
+      if (this.surveyed.has(w.slug)) continue;
+      const t = await loadPlanTrace(new URL(`../../${blueprintTraceUrl(w.slug)}`, import.meta.url).href);
+      if (token !== this._surveyToken) return;
+      if (!t) continue;
+      const D = (w.nw * pw) / w.w;
+      hg.save();
+      hg.setTransform(dpr, 0, 0, dpr, 0, 0);
+      hg.translate(w.nx * pw, w.ny * ph);
+      hg.scale((w.nw * pw) / w.w, (w.nh * ph) / w.h);
+      /* the walls alone: the fine marks (door swings, hatch ticks) and the
+         piers' beads are what turned the old scan to mud at this size */
+      inkTrace(hg, { ...t, f: [], p: [] }, { pen: HAIRLINE, scale: D, ink: GALL, layerAlpha: 1 });
+      hg.restore();
+    }
+    if (token !== this._surveyToken) return;
+    this.root?.setAttribute('data-hair', '1');
     for (const w of this.wings) {
       if (!this.surveyed.has(w.slug)) continue;
       const at = `left:${w.nx * 100}%;top:${w.ny * 100}%;width:${w.nw * 100}%;height:${w.nh * 100}%`;
@@ -915,7 +954,7 @@ export class AtlasScene extends Scene {
       const g = cv.getContext('2d');
       g.save();
       g.scale(cv.width / w.w, cv.height / w.h);
-      inkTrace(g, t, { pen: solvePen(t, D, SURVEY_COVER), scale: D, ink: GALL, layerAlpha: 1 });
+      inkTrace(g, t, { pen: Math.max(SURVEY_PEN_MIN, solvePen(t, D, SURVEY_COVER)), scale: D, ink: GALL, layerAlpha: 1 });
       g.restore();
     }
   }
