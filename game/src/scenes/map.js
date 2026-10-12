@@ -928,6 +928,16 @@ export class MapScene extends Scene {
       <pattern id="mm-hatch" width="11" height="11" patternUnits="userSpaceOnUse" patternTransform="rotate(38)">
         <line x1="0" y1="0" x2="0" y2="11" stroke="currentColor" stroke-width="2.1" opacity=".5"/>
       </pattern>
+      <!-- round 30 graft (ALIZARIN's surveyor's hatching): each wing condition
+           is hatched in its OWN ink, the bane one way and the boon the other,
+           one hand for both. A pattern's currentColor is the SVG's, not the
+           wing's, so the inks are spelled out here (tokens.css --kit-*-ink). -->
+      <pattern id="mm-hatch-bane" width="9" height="9" patternUnits="userSpaceOnUse" patternTransform="rotate(38)">
+        <line x1="0" y1="0" x2="0" y2="9" stroke="#6e1e15" stroke-width="1.7"/>
+      </pattern>
+      <pattern id="mm-hatch-boon" width="9" height="9" patternUnits="userSpaceOnUse" patternTransform="rotate(-38)">
+        <line x1="0" y1="0" x2="0" y2="9" stroke="#163d57" stroke-width="1.7"/>
+      </pattern>
       <pattern id="mm-dots" width="13" height="13" patternUnits="userSpaceOnUse">
         <circle cx="3" cy="3" r="1.7" fill="currentColor" opacity=".5"/>
         <circle cx="9.5" cy="9.5" r="1.2" fill="currentColor" opacity=".35"/>
@@ -1042,7 +1052,7 @@ export class MapScene extends Scene {
         <path class="mi-zone-tide" d="${tide}"/></g>`);
       parts.push(`<g class="mi-zone mi-zone--${hz.kind}" data-hz="${hz.id}">
         <path class="mi-zone-hatch" d="${deck}"
-              fill="url(#${hz.kind === 'boon' ? 'mm-dots' : 'mm-hatch'})"/>
+              fill="url(#${hz.kind === 'boon' ? 'mm-hatch-boon' : 'mm-hatch-bane'})"/>
         <g class="mi-zone-key">
           <path class="mi-zone-lead" d="M${ax.toFixed(1)} ${ay.toFixed(1)} L${bx.toFixed(1)} ${by.toFixed(1)}"/>
           <path class="mi-seal-melt" d="${sealMelt(s, ax, ay, KEY / 2 + 4)}"/>

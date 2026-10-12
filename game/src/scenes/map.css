@@ -1368,3 +1368,29 @@
     color-mix(in srgb, var(--flame-200) 9%, transparent) 34%,
     transparent 60%);
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ROUND 30 GRAFT — THE WING CONDITIONS IN ONE HAND
+   All three judges: the boon wing was "a milky, glowing blue-grey fill with a
+   soft neon rim -- a UI selection box, not ink wash on old paper", and the red
+   one "a cleaner, softer rectangle" in another hand. Both inks were LIGHTER
+   than the sheet, so every layer of them lightened it. Now each is a thin,
+   uneven wash of its own DARK ink (darkening the paper as ink does), hatched
+   in that ink like a surveyor's marking (ALIZARIN's; map.js mm-hatch-bane /
+   -boon, one way for a bane and the other for a boon), inside a hand-drawn
+   wandering line a pen heavier than before -- the same hand for both, legible
+   at 1280 without any glow.
+   ═══════════════════════════════════════════════════════════════════════════ */
+.mi-zone { color: var(--kit-madder-ink); }
+.mi-zone--boon { color: var(--kit-indigo-ink); }
+.mi-zone-pool { fill: currentColor; opacity: .1; }
+.mi-zone-rim { stroke-width: 16; opacity: .1; }
+.mi-zone-edge { stroke-width: 3.4; opacity: .82; stroke-linecap: round; }
+.mi-zone-tide { stroke-width: 1.3; opacity: .42; stroke-dasharray: 26 5 9 4; }
+.mi-zone-hatch { opacity: .34; }
+.mi-zone-lead { opacity: .85; }
+@media (max-width: 1500px) {
+  /* the sheet is drawn smaller at the Deck's 1280: the pen holds its weight */
+  .mi-zone-edge { stroke-width: 4; }
+  .mi-zone-hatch { opacity: .4; }
+}
