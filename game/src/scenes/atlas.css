@@ -1096,3 +1096,61 @@
    multiplied into a pale sheet */
 .at-ink { mix-blend-mode: normal; }
 .at-root[data-zoom="1"] .at-ink:not([hidden]) { opacity: .95; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ROUND 30 GRAFT — THE SURVEYED WING INKED ON, THE REST AT ONE HAIRLINE
+   All three judges: the Foyer "sits in a lighter square of paper inside its
+   corner brackets -- a highlighted tile rather than a wing inked onto the
+   sheet", its walls "a shade softer than VERONESE's"; the unknown wings in the
+   lower half "turn to mud" at 1280, some (the garden, left) "nearly as dark as
+   the Foyer". So:
+   - no lit square: at most a soft, uneven warm candle halo, feathered far past
+     the wing's box so it has no edge;
+   - the surveyed wing in the darkest, heaviest ink on the sheet (atlas.js
+     SURVEY_PEN_MIN), its corners still ticked but its box no longer ruled;
+   - the sixteen unknown wings from their own vectors at ONE crisp hairline
+     (atlas.js HAIRLINE, .at-survey__hair), the master scan's uneven pencil
+     kept only as a ghost of the corridors between them;
+   - the surveyed wing's nameplate BELOW it;
+   - ALIZARIN's clean inner double rule round the plan, inside the burnt edge.
+   ═══════════════════════════════════════════════════════════════════════════ */
+.at-survey__gild {
+  /* a margin only SHIFTS a box placed by left/top/width/height (it sat up
+     and left of the wing); the halo is scaled out from the wing's middle */
+  margin: 0;
+  transform: scale(1.75, 1.9);
+  border-radius: 50%;
+  background:
+    radial-gradient(closest-side at 46% 54%, rgb(255 186 104 / .26), rgb(255 166 86 / .1) 58%, transparent 100%),
+    radial-gradient(closest-side at 63% 36%, rgb(255 204 130 / .1), transparent 85%);
+  /* normal blending: the plate is its own compositing group with nothing
+     under the survey layer to soft-light against */
+  mix-blend-mode: normal;
+  filter: blur(6px);
+}
+.at-survey__hair {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  display: block;
+  opacity: .5;
+}
+/* once the hairlines are laid, the scan's own pencil is only a ghost */
+.at-root[data-hair="1"] .at-pencil { opacity: .16; }
+.at-root[data-hair="1"][data-zoom="1"] .at-pencil { opacity: .12; }
+
+/* the surveyed wing's box: ticked at its corners, never a ruled tile */
+.at-hot.is-surveyed .at-hot__box,
+.at-hot.is-surveyed.is-sel .at-hot__box { border-color: transparent; background: transparent; }
+.at-root[data-zoom="1"] .at-hot.is-surveyed.is-sel .at-hot__box { border-color: var(--mark); }
+.at-hot.is-surveyed .at-hot__box::before { --t: calc(2.2px / var(--k, 1)); }
+/* its nameplate hangs below the wing (above it for a wing at the plan's foot) */
+.at-hot.is-surveyed .at-hot__tag { top: 100%; transform: translate(-50%, 28%) scale(calc(1 / var(--k, 1))); }
+.at-hot.is-surveyed[data-foot="1"] .at-hot__tag { top: 0; transform: translate(-50%, -128%) scale(calc(1 / var(--k, 1))); }
+
+/* ALIZARIN's clean inner double rule round the plan, inside the burnt edge:
+   the plan's own edge ruled in ink, and a hair rule a few pixels outside it
+   -- the samples' double-ruled frames, drawn on the survey */
+.at-vp {
+  box-shadow: 0 0 0 1.5px color-mix(in srgb, var(--kit-gall) 78%, transparent);
+  outline: 1px solid color-mix(in srgb, var(--kit-gall) 62%, transparent);
+  outline-offset: 5px;
+}

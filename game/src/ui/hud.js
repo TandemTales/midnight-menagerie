@@ -184,6 +184,13 @@ const WINGS = Object.keys(REGION_LABEL).length;
 /** Snack slots are keyed ⇧1..⇧3 — the plain digits belong to the hand. */
 const SNACK_KEYS = ['⇧1', '⇧2', '⇧3'];
 
+/** Round 30 graft: the smallest a belt socket gets before the belt gives its
+ *  last few to a "+N" medallion. */
+const SOCK_MIN = 22;
+/** ...and the largest it grows to where the rail has channel to spare: the
+ *  plate round it (2 x 4 px) still clears the rail's mouldings. */
+const SOCK_MAX = 33;
+
 export class HUD {
   /**
    * @param {object} ctx  shared app context
@@ -537,7 +544,9 @@ export class HUD {
    *  belt spills or wraps inside its group? */
   _tight() {
     const groups = [...this.el.querySelectorAll(':scope > .mm-hud__group')].filter((g) => g.offsetWidth);
-    const tops = groups.map((g) => g.offsetTop);
+    /* round 30 graft: by the groups' MIDDLES -- the Keepsake and Gear plates
+       stand taller than a readout, so their tops sit higher on one row */
+    const tops = groups.map((g) => g.offsetTop + g.offsetHeight / 2);
     if (Math.max(...tops) - Math.min(...tops) > 6) return true;
     if (this.el.scrollWidth > this.el.clientWidth + 1) return true;
     const keep = this.$relics.parentElement;
@@ -574,11 +583,41 @@ export class HUD {
     const total = (this._keepChips?.length || 0) + (this._gearChips?.length || 0);
     this.el.dataset.dense = '0';
     this.el.dataset.terse = '0';
+    this.el.style.removeProperty('--sock');
+    // the vine is a flex item: a stale one from the last fit costs its gap
+    this.$relics.parentElement.dataset.vine = '0';
     let lv = { snack: true, compact: false, over: 0 };
     this._applyFold(lv);
     if (this._tight()) this.el.dataset.terse = '1';
-    if (this._tight()) { lv = { snack: true, compact: true, over: 0 }; this._applyFold(lv); }
-    if (this._tight()) { lv = { snack: true, compact: 2, over: 0 }; this._applyFold(lv); }
+    /* ROUND 30 GRAFT: the belt takes every pixel the channel has. The scroll
+       flourish that filled the leftover channel is gone (hud.css), and the
+       sockets shrink a PIXEL at a time from the belt's wide size until the
+       rail holds one row -- 26 px or so on the Deck's 1280, never under 22 --
+       instead of dropping two whole sizes and leaving the rest as ornament. */
+    const first = (this._keepChips || [])[0] || (this._gearChips || [])[0];
+    if (this._tight() && first && first.offsetWidth) {
+      const wide = Math.floor(first.offsetWidth);
+      let s = wide;
+      while (this._tight() && s > SOCK_MIN) {
+        s -= 1;
+        lv = { snack: true, compact: s <= SOCK_MIN + 2 ? 2 : 1, over: 0 };
+        this.el.style.setProperty('--sock', `${s}px`);
+        this._applyFold(lv);
+      }
+    }
+    /* ...and where the rail has channel to spare (1600 and up), the sockets
+       grow into it, up to a sixth over the belt's wide size, rather than
+       leave a run of bare channel where the flourish was */
+    if (!this._tight() && first && first.offsetWidth && !lv.compact) {
+      const wide = first.offsetWidth;
+      let s = Math.floor(wide);
+      while (s + 1 <= Math.min(wide * 1.16, SOCK_MAX)) {
+        this.el.style.setProperty('--sock', `${s + 1}px`);
+        this._applyFold(lv);
+        if (this._tight()) { this.el.style.setProperty('--sock', `${s}px`); this._applyFold(lv); break; }
+        s += 1;
+      }
+    }
     while (this._tight() && lv.over < total - 1) {
       lv = { snack: true, compact: 2, over: lv.over ? lv.over + 1 : 2 };
       this._applyFold(lv);
@@ -594,7 +633,11 @@ export class HUD {
     const keep = this.$relics.parentElement;
     const kids = [...keep.children].filter((k) => k.offsetWidth);
     const used = kids.reduce((a, k) => a + k.offsetWidth, 0) + (kids.length ? parseFloat(getComputedStyle(keep).columnGap) * kids.length : 0);
-    keep.dataset.vine = keep.clientWidth - used >= 72 ? '1' : '0';
+    /* round 30 graft: only where the sockets can take no more of it (they
+       grow to SOCK_MAX first) -- a run with nothing in its belt, a wide
+       screen -- does the vine fill a long bare channel; never a stub of it
+       after the last Gear */
+    keep.dataset.vine = keep.clientWidth - used >= 140 ? '1' : '0';
   }
 
   _applyFold(lv) {
