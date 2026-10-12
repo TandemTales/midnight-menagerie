@@ -52,13 +52,15 @@ check reads Taffy's cream gloss as background; leave it red, do not lower it).
   does something.
 - **Survey 3** (`docs/ui-pass/SURVEY-2026-10-04.md`): what is owed next.
 
-**ROUND 30 IS MERGED, VERIFIED AND PUSHED (2026-10-12): SANDARAC, 2 of 3,
-6.94 vs 4.22 (+2.72)** (`65899599`). Battery green but the sprites halo and
-the known kid-clips flake. **NEXT: its graft, `docs/ui-pass/GRAFT-r30.md`**
-(VERONESE's grouped strip, the map's blue zone as ink, the atlas's surveyed
-wing inked not tiled). Survey 3 is then DONE: the next step is SURVEY 4 (the
-whole game re-photographed, two blind judges, `survey-2026-10-04.sh` as the
-template) to find what is owed next.
+**ROUND 30 AND ITS GRAFT ARE MERGED, VERIFIED AND PUSHED (2026-10-12):**
+SANDARAC +2.72 (`65899599`), graft `4019037b`. **SURVEY 3 IS DONE** (rounds
+27-30 + grafts: the card, the props and darks, four more rooms, the strip and
+the parchment). Battery green but the sprites halo and the kid-clips flake
+(a task chip holds its investigation). **NEXT: SURVEY 4** -- re-photograph
+every screen and all seventeen rooms at the Deck's tier
+(`docs/ui-pass/survey-2026-10-04.sh` as the template, `SURVEY3-judge-prompt.md`
+for the judges), two blind judges in opposite orders, and brief round 31 from
+their shared defects.
 
 **ROUNDS 28 AND 29 AND BOTH GRAFTS ARE MERGED, VERIFIED AND PUSHED
 (2026-10-11).** Round 29: VIRIDIAN +1.75 (`d6e73e3f`), graft `d736df00`
