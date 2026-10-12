@@ -52,6 +52,13 @@ check reads Taffy's cream gloss as background; leave it red, do not lower it).
   does something.
 - **Survey 3** (`docs/ui-pass/SURVEY-2026-10-04.md`): what is owed next.
 
+**IN FLIGHT (2026-10-12): ROUND 30** -- the run strip late in a run, the
+map's and atlas's parchment (`BRIEF-r30.md`), Workflow run `wf_ad94f91d-9de`
+at base `04664c31`; worktrees `C:/UILOOP/r30/wt/r30-strip-{a,b,c}` (ALIZARIN
+9161, VERONESE 9162, SANDARAC 9163), baselines CHALLIS in
+`C:/UILOOP/r30/judging/r30/strip/`. If it stops on a limit, finish it as a NEW
+run with `resume` notes (never resumeFromRunId).
+
 **ROUNDS 28 AND 29 AND BOTH GRAFTS ARE MERGED, VERIFIED AND PUSHED
 (2026-10-11).** Round 29: VIRIDIAN +1.75 (`d6e73e3f`), graft `d736df00`
 (Greenhouse back under budget at 15.25 ms settled). Battery green but the
