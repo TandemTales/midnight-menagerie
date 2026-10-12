@@ -509,20 +509,11 @@ export class HUD {
   /** Does the rail hold ONE row? Tried after layout (and again on a resize,
    *  and once the fonts are in).
    *
-   *  ROUND 20 -- the Steam Deck bug (BRIEF-r20 item 1). Round 19 made the rail
-   *  hold one row with a run's OPENING state; a run carrying ten Keepsakes and
-   *  a full backpack wrapped it to two rows at 1280 again, dropping Haunt, the
-   *  seed, Tricks and Settings onto a second line over the room. The rail now
-   *  folds, in order, only as far as it must:
-   *
-   *    0  everything spread
-   *    1  the Gear folds into one plate, "8 Gear", its tray under it
-   *    2  the Keepsakes fold the same way, "10 Keepsakes"
-   *
-   *  A folded group is a plate that SAYS what it holds -- its count and its
-   *  noun, and the first of its objects fanned on it -- and opens its tray of
-   *  the real chips on hover, on focus, or on a click (a pad or a finger).
-   *  Every chip keeps its own tooltip in the tray. */
+   *  ROUND 20 -- the Steam Deck bug: a run carrying ten Keepsakes and a full
+   *  backpack wrapped the rail to two rows at 1280, dropping Haunt, the seed,
+   *  Tricks and Settings onto a second line over the room. Round 20 answered
+   *  by folding whole groups into plates of words; round 30 (`_fit`) keeps
+   *  every object on the rail instead, as a belt of sockets. */
   _fitSoon() {
     if (this._fitQueued) return;
     this._fitQueued = true;

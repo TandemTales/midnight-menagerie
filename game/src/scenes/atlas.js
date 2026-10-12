@@ -145,6 +145,17 @@ function pencilOf(img) {
     v = v <= 0 ? 0 : v >= 1 ? 1 : v;
     p[i] = 31; p[i + 1] = 19; p[i + 2] = 10; p[i + 3] = (v * 255) | 0;
   }
+  /* a pencil, not a hairline: each line is thickened by a pixel either way,
+     or the plan laid at the Deck's 0.55x sinks into the paper's grain */
+  const W = MASTER.w, H = MASTER.h, a0 = new Uint8ClampedArray(W * H);
+  for (let j = 0; j < W * H; j++) a0[j] = p[j * 4 + 3];
+  for (let y = 1; y < H - 1; y++) {
+    for (let x = 1; x < W - 1; x++) {
+      const j = y * W + x;
+      const m = Math.max(a0[j], a0[j - 1], a0[j + 1], a0[j - W], a0[j + W]);
+      p[j * 4 + 3] = m;
+    }
+  }
   g.putImageData(d, 0, 0);
   return (PENCIL = c);
 }

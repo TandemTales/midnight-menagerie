@@ -747,7 +747,7 @@
 /* ── the belt ── */
 .mm-hud__relics, .mm-hud__gear { display: flex; align-items: center; gap: 2px; flex-wrap: nowrap; }
 .mm-hud__relics[data-folded="1"], .mm-hud__gear[data-folded="1"] { position: relative; }
-.mm-hud__gear::before { margin: 0 4px 0 2px; }
+.mm-hud .mm-hud__gear::before { margin: 0 4px 0 2px; }
 .mm-hud__relic,
 .mm-hud__gearchip,
 .mm-hud__gearchip.has-obj {
@@ -774,8 +774,9 @@
   background: radial-gradient(closest-side, color-mix(in srgb, var(--kit-moon) 30%, transparent), color-mix(in srgb, var(--kit-moon) 6%, transparent) 70%, transparent);
   box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--kit-moon) 45%, transparent);
 }
-/* the object stands proud of its well, as large as the hollow allows */
-.mm-hud__relicobj, .mm-hud__gearobj {
+/* the object stands proud of its well, as large as the hollow allows
+   (`.mm-hud` first: hud.js injects the Gear's older rules after this sheet) */
+.mm-hud .mm-hud__relicobj, .mm-hud .mm-hud__gearobj {
   position: relative; width: 116%; max-width: none;
   filter: brightness(1.14) saturate(1.08) drop-shadow(0 1.5px 1px rgba(0, 0, 0, .9));
 }

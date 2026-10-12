@@ -1236,14 +1236,20 @@
 /* ── the wing conditions: crisp tide-marked ink (map.js) ── */
 .mi-zone { color: var(--kit-madder); }
 .mi-zone--boon { color: var(--kit-indigo); }
-.mi-zone-pool { fill: currentColor; opacity: .1; }
+.mi-zone-pool { fill: currentColor; opacity: .07; }
+/* the pigment pooled along the inside of the dried edge: a wide stroke
+   clipped to the wing, so only its inner half lies on the paper */
+.mi-zone-rim {
+  fill: none; stroke: currentColor; stroke-width: 22;
+  stroke-linejoin: round; opacity: .2;
+}
 .mi-zone-edge {
-  fill: none; stroke: currentColor; stroke-width: 3.2;
-  stroke-linejoin: round; opacity: .9;
+  fill: none; stroke: currentColor; stroke-width: 2.6;
+  stroke-linejoin: round; opacity: .85;
 }
 .mi-zone-tide {
-  fill: none; stroke: currentColor; stroke-width: 1.3;
-  stroke-linejoin: round; opacity: .55;
+  fill: none; stroke: currentColor; stroke-width: 1.2;
+  stroke-linejoin: round; opacity: .38;
 }
 .mi-zone-hatch { opacity: .16; }
 .mi-zone-lead { opacity: .9; }
@@ -1324,7 +1330,7 @@
 .map-node--boss.is-dim .mn-pool { opacity: 1; }
 .mn-art .crownin { fill: color-mix(in srgb, var(--kit-gold-lo) 70%, var(--kit-gall)); }
 /* the seal in real gilt wax, a step deeper than the open route's gold */
-.map-node--boss .mn-art .seal { fill: var(--kit-gold); }
+.map-node--boss .mn-art .seal { fill: url(#mm-gilt); }
 .map-node--boss .mn-art .sealrim { stroke: var(--kit-gold-lo); }
 .map-node--boss .mn-art .crownline { stroke: color-mix(in srgb, var(--kit-gold-hi) 70%, white); }
 
@@ -1346,4 +1352,19 @@
   .lg-ico { width: 23px; height: 23px; }
   .lg-ico svg { width: 14px; height: 14px; }
   .map-legend { column-gap: 8px; }
+}
+
+/* the lamp that follows the pointer: on the old paper a full-strength pool
+   blanched the middle of the sheet to straw, so it is a warmer, lower flame */
+.map-lamp {
+  background: radial-gradient(circle closest-side,
+    color-mix(in srgb, var(--flame-glow) 13%, transparent) 0%,
+    color-mix(in srgb, var(--flame-500) 6%, transparent) 42%,
+    transparent 70%);
+}
+.map-lamp--warm {
+  background: radial-gradient(circle closest-side,
+    color-mix(in srgb, var(--flame-100) 26%, transparent) 0%,
+    color-mix(in srgb, var(--flame-200) 9%, transparent) 34%,
+    transparent 60%);
 }

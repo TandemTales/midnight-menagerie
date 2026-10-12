@@ -940,6 +940,11 @@ export class MapScene extends Scene {
       <radialGradient id="mm-wax" cx="38%" cy="32%" r="72%">
         <stop offset="0" stop-color="#e87a6a"/><stop offset=".45" stop-color="#b0343a"/><stop offset="1" stop-color="#5c1520"/>
       </radialGradient>
+      <!-- the boss's seal is gilt wax, lit from the candle above it (round 30);
+           the marks' own SVGs reference this one by id -->
+      <radialGradient id="mm-gilt" cx="36%" cy="28%" r="78%">
+        <stop offset="0" stop-color="#fbeabf"/><stop offset=".38" stop-color="#e0bd73"/><stop offset=".75" stop-color="#a07a3c"/><stop offset="1" stop-color="#5e4220"/>
+      </radialGradient>
       <radialGradient id="mm-wax-boon" cx="38%" cy="32%" r="72%">
         <stop offset="0" stop-color="#8fd3df"/><stop offset=".45" stop-color="#2f7f96"/><stop offset="1" stop-color="#123745"/>
       </radialGradient>
@@ -1023,11 +1028,17 @@ export class MapScene extends Scene {
          paler tide line the ink left inside it as it dried, and a breath of
          the pigment pooled along the inside of the edge -- keyed by the wax
          seal on its corner and the plate of the same colour below. */
-      const tide = deckledRect(s ^ 0x5bd1, x + 9, y + 9, w - 18, h - 18, 32, 2.2);
+      // the edge wanders the way a wash dries, never a ruled box (a ruled
+      // box read as a selection rectangle laid over the drawing)
+      const edge = deckledRect(s ^ 0x77a1, x - 6, y - 6, w + 12, h + 12, 46, 7);
+      const tide = deckledRect(s ^ 0x5bd1, x + 11, y + 11, w - 22, h - 22, 36, 5);
+      const clip = `mm-tide-${String(hz.id).replace(/[^a-z0-9-]/gi, '')}`;
       void stainUrl; void ix; void iy; void sx; void sy; void cxz; void cyz;
       stains.push(`<g class="mi-zone mi-zone--${hz.kind}" data-hz="${hz.id}">
-        <path class="mi-zone-pool" d="${deck}"/>
-        <path class="mi-zone-edge" d="${deck}"/>
+        <clipPath id="${clip}"><path d="${edge}"/></clipPath>
+        <path class="mi-zone-pool" d="${edge}"/>
+        <path class="mi-zone-rim" d="${edge}" clip-path="url(#${clip})"/>
+        <path class="mi-zone-edge" d="${edge}"/>
         <path class="mi-zone-tide" d="${tide}"/></g>`);
       parts.push(`<g class="mi-zone mi-zone--${hz.kind}" data-hz="${hz.id}">
         <path class="mi-zone-hatch" d="${deck}"
