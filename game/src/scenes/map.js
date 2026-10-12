@@ -109,6 +109,9 @@ const GALL = '#1f130a';
 /** The gilt the title block is lettered in: dark ink on tea-dark paper is
  *  2.5:1, gold leaf on it is a survey's presentation copy, and reads. */
 const GILT = '#e0bf7c';
+/** Round 30 graft: the title block's record cells and the scale's figures,
+ *  a step brighter, so they read in the sheet's burnt corner. */
+const GILT_HI = '#fae6b8';
 /** Pseudo-node standing for the doorway you came in through. */
 const ENTRY = '__in';
 /** The walked route as this screen draws it: the doorway, then the rooms. */
@@ -794,7 +797,9 @@ export class MapScene extends Scene {
     const tx = WIN.x, ty = WIN.y + WIN.h + 32, tw = WIN.w, th = 86;
     // round 30: the block is a dark inked band on the old paper, lettered in
     // gilt -- a pale band here was the milkiest thing left on the sheet
-    g.fillStyle = hexA(GALL, 0.42); g.fillRect(tx, ty, tw, th);
+    // (round 30 graft: a shade darker, so the gilt lettering holds under the
+    // sheet's burnt corner -- "SURVEY REF." faded into it at both sizes)
+    g.fillStyle = hexA(GALL, 0.58); g.fillRect(tx, ty, tw, th);
     g.strokeStyle = hexA(ink, 0.78); g.lineWidth = 2.2; g.strokeRect(tx, ty, tw, th);
     g.strokeStyle = hexA(ink, 0.4); g.lineWidth = 0.9; g.strokeRect(tx + 5, ty + 5, tw - 10, th - 10);
     const cells = [0.40, 0.58, 0.70, 0.83];
@@ -837,10 +842,12 @@ export class MapScene extends Scene {
       const x0 = tx + tw * cells[i - 1], x1 = i < cells.length ? tx + tw * cells[i] : tx + tw;
       const cx = (x0 + x1) / 2;
       g.textAlign = 'center';
-      g.fillStyle = hexA(ink, 0.9);
+      // round 30 graft: the record's cells in the brighter gilt -- the last
+      // two sit in the sheet's burnt corner, under the shade's darkest
+      g.fillStyle = hexA(GILT_HI, i >= 3 ? 1 : 0.94);
       g.font = '700 18px Cinzel, Georgia, serif'; spaced('2.5px');
       g.fillText(head, cx, ty + 33);
-      g.fillStyle = hexA(ink, 0.98);
+      g.fillStyle = hexA(GILT_HI, 1);
       g.font = '700 26px Cinzel, Georgia, serif'; spaced('1.5px');
       g.fillText(val, cx, ty + 67);
       g.textAlign = 'left';
@@ -910,8 +917,14 @@ export class MapScene extends Scene {
     g.strokeRect(bx, by, 180, 10);
     g.fillStyle = hexA(ink, 0.7);
     for (let i = 0; i < 4; i++) if (i % 2 === 0) g.fillRect(bx + i * 45, by, 45, 10);
-    g.font = '400 11px Grenze, Georgia, serif'; g.textBaseline = 'top';
-    g.fillText('0', bx - 3, by + 15); g.fillText('40 FT', bx + 166, by + 15);
+    // round 30 graft: the scale's figures readable at the Deck's 0.57x --
+    // set either side of the bar in the title block's gilt, not 11 px under it
+    g.font = '700 15px Cinzel, Georgia, serif'; g.textBaseline = 'middle';
+    g.shadowColor = hexA(GALL, 0.95); g.shadowOffsetY = 1.2; g.shadowBlur = 1.5;
+    g.fillStyle = hexA(GILT_HI, 0.98);
+    g.textAlign = 'right'; g.fillText('0', bx - 7, by + 6);
+    g.textAlign = 'left'; spaced('1.5px'); g.fillText('40 FT', bx + 190, by + 6); spaced('0px');
+    g.shadowColor = 'transparent'; g.shadowBlur = 0; g.shadowOffsetY = 0;
     g.restore();
   }
 

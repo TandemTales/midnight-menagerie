@@ -1145,3 +1145,12 @@
 /* its nameplate hangs below the wing (above it for a wing at the plan's foot) */
 .at-hot.is-surveyed .at-hot__tag { top: 100%; transform: translate(-50%, 28%) scale(calc(1 / var(--k, 1))); }
 .at-hot.is-surveyed[data-foot="1"] .at-hot__tag { top: 0; transform: translate(-50%, -128%) scale(calc(1 / var(--k, 1))); }
+
+/* ALIZARIN's clean inner double rule round the plan, inside the burnt edge:
+   the plan's own edge ruled in ink, and a hair rule a few pixels outside it
+   -- the samples' double-ruled frames, drawn on the survey */
+.at-vp {
+  box-shadow: 0 0 0 1.5px color-mix(in srgb, var(--kit-gall) 78%, transparent);
+  outline: 1px solid color-mix(in srgb, var(--kit-gall) 62%, transparent);
+  outline-offset: 5px;
+}
