@@ -584,6 +584,8 @@ export class HUD {
     this.el.dataset.dense = '0';
     this.el.dataset.terse = '0';
     this.el.style.removeProperty('--sock');
+    // the vine is a flex item: a stale one from the last fit costs its gap
+    this.$relics.parentElement.dataset.vine = '0';
     let lv = { snack: true, compact: false, over: 0 };
     this._applyFold(lv);
     if (this._tight()) this.el.dataset.terse = '1';
