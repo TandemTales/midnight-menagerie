@@ -24,8 +24,29 @@ import { lastResolver } from './twin.js';
 import { runProofs, add, play, addPlay, M, emptyHand, st, enemyHit, DEFS } from './proofkit.js';
 
 /* [id, what the board needs, { setup(e, t), target(e, t), party, resolver, after(e, t) }] */
+/* Taffy's Belly is the stash, flagged; a Stretched Trick carries its count in meta. */
+const belly = (e, ...ids) => { for (const id of ids) add(e, id, 'stash').meta.belly = true; };
+const stretched = (e, id, n = 1) => { const k = add(e, id); k.meta['#stretch'] = n; k.meta.stretched = true; return k; };
+
 const PROOFS = [
   ['marmalade/all-nine', 'Lives below 9', { setup: (e) => e.setCounter('lives', 3, 'proof') }],
+
+  // ── Taffy ─────────────────────────────────────────────────────────────────
+  ['taffy/spit-take', 'a Trick in the Belly', { setup: (e) => belly(e, 'taffy/pinch-off') }],
+  ['taffy/sample-size', 'a Common Attack in hand', { setup: (e) => { add(e, 'taffy/gummy-jab'); } }],
+  ['taffy/chew-slowly', 'Stretched Tricks in hand', { setup: (e) => { stretched(e, 'taffy/sugar-bonk'); stretched(e, 'taffy/squish'); } }],
+  ['taffy/regurgitate', 'Tricks in the Belly', { setup: (e) => belly(e, 'taffy/pinch-off', 'taffy/sugar-bonk') }],
+  ['taffy/taste-memory', 'an Absorbed Attack', { setup: (e) => belly(e, 'taffy/sugar-bonk') }],
+  ['taffy/borrowed-price', 'a 0-cost Trick in the Belly to swap with one in hand', { setup: (e) => belly(e, 'taffy/wobble-room') }],
+  ['taffy/overstretch', 'a Stretched Trick in hand', { setup: (e) => { stretched(e, 'taffy/stretch-punch'); } }],
+  ['taffy/let-it-sag', 'a Stretched Trick in hand', { setup: (e) => { stretched(e, 'taffy/stretch-punch', 2); } }],
+  ['taffy/mouthfeel', 'Tricks in the Belly', { setup: (e) => belly(e, 'taffy/sugar-bonk', 'taffy/squish') }],
+  ['taffy/stretch-transfer', 'a Stretched Trick and another Attack in hand', { setup: (e) => { stretched(e, 'taffy/stretch-punch', 2); add(e, 'taffy/gummy-jab'); } }],
+  ['taffy/copycat-cannon', 'an Absorbed Attack', { setup: (e) => belly(e, 'taffy/sugar-bonk') }],
+  ['taffy/spit-the-whole-bag', 'Tricks in the Belly', { setup: (e) => belly(e, 'taffy/pinch-off', 'taffy/sugar-bonk') }],
+  ['taffy/perfect-replica', 'an Absorbed Attack', { setup: (e) => belly(e, 'taffy/sugar-bonk') }],
+  ['taffy/cross-flavor', 'an Absorbed Attack and an Absorbed Skill', { setup: (e) => belly(e, 'taffy/sugar-bonk', 'taffy/squish') }],
+  ['taffy/keep-the-wrapper', 'a Gummy copy in hand', { setup: (e) => { add(e, 'taffy/sugar-bonk', 'hand', { exhaust: true, meta: { gummy: true } }); } }],
 ];
 
 runProofs(PROOFS);

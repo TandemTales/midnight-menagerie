@@ -196,6 +196,32 @@ U.onTracker(SLUG, (e, s, seat) => {
   if (e.schedule) e.schedule({ turns: 1, repeat: 1, when: 'enemyTurnEnd', label: 'Runny', run: runnyTick });
   else e.on('enemyTurn:end', runnyTick);
   U.onPlayerTurn(e, 'start', () => { s.played = 0; });
+  /* CHEWED. Perfect Replica and Keep the Wrapper both promise a Gummy that
+     survives ONE play and Vanishes on the next. Both set `survivesOnce` and
+     nothing read it: Perfect Replica's copy kept the copy's printed Vanish
+     (its `exhaust: false` and `flags` were options `addCard` never reads) and
+     Vanished on its first play, and Keep the Wrapper's copy never Vanished
+     again. `card:resolved` fires after the card has landed, so the play that
+     was spared goes to the discard and the NEXT one Vanishes it. */
+  e.on('card:resolved', (ev) => {
+    const live = ev && ev.cardUid != null ? e.card(ev.cardUid) : null;
+    if (!live || !U.flag(live, 'survivesOnce')) return;
+    if (seat && e.seatOfCard(live) !== seat) return;
+    U.clearFlag(live, 'survivesOnce');
+    U.setFlag(live, 'chewed', true);
+    live.exhaust = true;
+    live.meta.vanish = true;
+  });
+  /* BORROWED PRICE swaps two costs "until each has been played once". The
+     engine has no such scope ('untilPlayed' fell through to the whole
+     combat), so each swapped Trick drops its borrowed cost here, once played. */
+  e.on('card:resolved', (ev) => {
+    const live = ev && ev.cardUid != null ? e.card(ev.cardUid) : null;
+    if (!live || !U.flag(live, 'borrowedPrice')) return;
+    if (seat && e.seatOfCard(live) !== seat) return;
+    U.clearFlag(live, 'borrowedPrice');
+    e.setCardCost(live, null, 'combat', 'taffy/borrowed-price');
+  });
   /* SAME AGAIN reads `lastPlayed`: "the last non-Gummy Attack or Skill you
      played this turn". Nothing ever wrote it, so the card did nothing at all.
      Written on `card:resolved`, AFTER the effect, so Same Again resolving sees
@@ -585,7 +611,15 @@ const uncommons = [
     text: '[Spit Out] every Trick in your [Belly]. Choose one of them to cost {n} this turn.',
     flavor: 'Unpleasant. Effective. Slightly warm.',
     nums: { n: 0 },
-    effect: eff(c => { const ks = belly(c); ks.forEach(k => spitOut(c, k)); if (ks[0]) U.costSet(c, ks[0], N(c).n, 'turn'); }),
+    /* "Choose one of them": it always discounted the first one out, which the
+       player never picked. They are in hand now, so ask among them. */
+    effect: eff(async c => {
+      const ks = belly(c); ks.forEach(k => spitOut(c, k));
+      const out = ks.filter(k => U.cardsIn(c, 'hand').includes(k));
+      if (!out.length) return;
+      const [k] = out.length > 1 ? await U.pickCards(c, { pile: 'hand', count: 1, prompt: 'Which one costs ' + N(c).n + '?', filter: (x) => out.includes(x) }) : out;
+      if (k) U.costSet(c, k, N(c).n, 'turn');
+    }),
     upgrade: { cost: 0, nums: { n: 0 } },
   },
   {
@@ -616,8 +650,12 @@ const uncommons = [
       const [a] = await U.pickCards(c, { pile: 'hand', count: 1, prompt: 'Trick in hand', filter: priced });
       const [b] = await U.pickCards(c, { pile: 'stash', count: 1, prompt: 'Trick in Belly', filter: (x) => U.flag(x, 'belly') && priced(x) });
       if (!a || !b) return;
-      const ca = U.nowCost(a), cb = U.nowCost(b);
-      U.costSet(c, a, cb, 'untilPlayed'); U.costSet(c, b, ca, 'untilPlayed');
+      /* CURRENT costs (`nowCost` is the printed one), and the swap ends for
+         each Trick when it is played: the tracker's `borrowedPrice` reader. */
+      const now = (k) => (c.e && c.e.costOf ? c.e.costOf(k) : U.nowCost(k));
+      const ca = now(a), cb = now(b);
+      U.costSet(c, a, cb, 'combat'); U.costSet(c, b, ca, 'combat');
+      U.setFlag(a, 'borrowedPrice', true); U.setFlag(b, 'borrowedPrice', true);
     }),
     upgrade: { cost: 0 },
   },
@@ -672,7 +710,9 @@ const uncommons = [
     text: 'Gain {b} Guard and draw {n} Trick for each different Trick type in your [Belly].',
     flavor: 'Attack, Skill and Power have completely different textures.',
     nums: { b: 8, n: 1 },
-    effect: eff(c => { const t = new Set(belly(c).map(typeOf)).size; U.guard(c, t * N(c).b); U.draw(c, t >= 2 ? N(c).n * (t - 1) : 0); }),
+    /* "draw {n} Trick for each different Trick type": it drew one type short
+       (nothing for one type, 1 for two), against its own text. */
+    effect: eff(c => { const t = new Set(belly(c).map(typeOf)).size; U.guard(c, t * N(c).b); U.draw(c, N(c).n * t); }),
     upgrade: { nums: { b: 11, n: 1 } },
   },
   {
@@ -854,7 +894,24 @@ const rares = [
       if (!k) return;
       const def = gummyDef(k, 0, 0);
       gummy(c, k, 'discard');
-      if (def) { U.spawn(c, def, 'hand', { gummy: true, exhaust: true, cost: 0, playImmediately: true, meta: { gummy: true } }); }
+      if (!def) return;
+      /* "Play one immediately without paying for it." It spawned the copy in
+         HAND with a `playImmediately` option `addCard` never reads, so the
+         Cannon only ever handed over a 0-cost copy to play yourself, for
+         Nerve the turn may not have. The copy now resolves here, free, on an
+         enemy of your choosing, and then Vanishes as a Gummy does (wink's
+         House Spider runs a Trick's own effect the same way). */
+      const made = c.addCard(def, 'limbo', { exhaust: true, cost: 0, meta: { gummy: true } });
+      const copy = Array.isArray(made) ? made[0] : made;
+      if (!copy || !c.e || !c.e.ctxFor) return;
+      let t = null;
+      if (def.target === ENEMY) {
+        const es = U.enemies(c);
+        t = es.length > 1 ? ((await c.chooseEnemy({ prompt: 'Fire the copy at?' }))[0] || es[0]) : (es[0] || null);
+      }
+      U.bump(c, 'gummyPlayed');
+      try { await def.effect(c.e.ctxFor(copy, t, def.cost === -1 ? (c.self.energy || 0) : 0)); } catch (_) { /* the copy is optional value */ }
+      if (U.cardsIn(c, 'limbo').includes(copy)) c.exhaust(copy);
     }),
     upgrade: { cost: 1 },
   },
@@ -944,7 +1001,7 @@ const rares = [
     text: 'Choose an [Absorb]ed Attack or Skill. Create a {n}-cost [Gummy] copy. The first time that copy is played it does not [Vanish]. Its second play does.',
     flavor: 'Indistinguishable. Slightly sweeter.',
     nums: { n: 0 },
-    effect: eff(async c => { const [k] = await U.pickCards(c, { pile: 'stash', count: 1, prompt: 'Replicate', filter: (x) => U.flag(x, 'belly') && copyable(x) }); if (!k) return; const def = gummyDef(k, 0, N(c).n); if (def) U.spawn(c, def, 'hand', { gummy: true, exhaust: false, cost: N(c).n, flags: { gummy: true, chewed: false, survivesOnce: true } }); }),
+    effect: eff(async c => { const [k] = await U.pickCards(c, { pile: 'stash', count: 1, prompt: 'Replicate', filter: (x) => U.flag(x, 'belly') && copyable(x) }); if (!k) return; const def = gummyDef(k, 0, N(c).n); if (def) U.spawn(c, { ...def, exhaust: false }, 'hand', { cost: N(c).n, meta: { gummy: true, survivesOnce: true } }); }),
     upgrade: { cost: 1, nums: { n: 0 } },
   },
   {
