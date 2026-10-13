@@ -380,10 +380,12 @@ U.onTracker(SLUG, (e, s, seat) => {
     if (!k) return;
 
     if (st.marginalia && k.meta && k.meta.paperCopy && U.once(c, 'marginalia')) U.draw(c, 1);
-    if (st.watermarkId && (k.def ? k.def.id : k.id) === st.watermarkId && k.meta && k.meta.paperCopy) {
-      gainPaper(c, 1);
-    }
     const id = k.def ? k.def.id : k.id;
+    /* Watermark pays ITS {p} (a literal 1 here made the Sharpened 2 pay 1),
+       and only this turn (the mark used to last the fight). Two Watermarks on
+       one Trick each pay. */
+    const wm = st.watermarks;
+    if (wm && wm.turn === U.turn(c) && wm.paper[id] && k.meta && k.meta.paperCopy) gainPaper(c, wm.paper[id]);
     st.playedIdsThisTurn = st.playedIdsThisTurn || {};
     st.playedIdsThisTurn[id] = (st.playedIdsThisTurn[id] || 0) + 1;
   });
@@ -988,7 +990,11 @@ const uncommons = [
     nums: { p: 1 },
     effect: eff(async (c) => {
       const k = await pickHand(c, { prompt: 'Watermark which Trick?' });
-      if (k) U.mm(c).watermarkId = (k.def ? k.def.id : k.id);
+      if (!k) return;
+      const s = U.mm(c);
+      if (!s.watermarks || s.watermarks.turn !== U.turn(c)) s.watermarks = { turn: U.turn(c), paper: {} };
+      const id = k.def ? k.def.id : k.id;
+      s.watermarks.paper[id] = (s.watermarks.paper[id] || 0) + N(c).p;
     }),
     upgrade: { nums: { p: 2 } },
   },

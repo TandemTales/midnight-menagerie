@@ -411,6 +411,33 @@ try {
     check(both === upOnly, 'Pressed Flat then Pressed Flat+ pays the upgraded 13, not the base 9',
       `base then upgraded ${both}, upgraded alone ${upOnly}`);
   }
+
+  // ══ Watermark pays its {p}, this turn only (tests/base-effects) ═══════════
+  {
+    /* The Paper a Paper Copy of Paper Cut brings in when played: its own Vanish
+       pays 1 regardless, so each reading is taken against a control with no
+       Watermark. `mark` = null (none), false (base), true (Sharpened). */
+    const run = async (mark, endTurnFirst = false) => {
+      const e = await crinkle();
+      const cut = give(e, 'crinkle/paper-cut');
+      onlyInHand(e, cut);
+      if (mark !== null) {
+        e.addCard(CARDS.cardById('crinkle/watermark'), 'hand', { upgraded: mark });
+        await playCard(e, e.piles.hand[e.piles.hand.length - 1]);
+      }
+      if (endTurnFirst) { await e.endTurn(); onlyInHand(e, give(e, 'crinkle/paper-cut')); }
+      await play(e, 'crinkle/trace-it');
+      const copy = e.piles.hand.find(k => k.meta && k.meta.paperCopy);
+      if (!copy) return 'no copy';
+      const p0 = e.counter('paper');
+      await playCard(e, copy, e.livingEnemies()[0]);
+      return e.counter('paper') - p0;
+    };
+    const none = await run(null), base = await run(false), up = await run(true), late = await run(false, true);
+    check(base - none === 1, 'Watermark: a Paper Copy of the marked Trick played this turn gives 1 Paper', `control ${none}, marked ${base}`);
+    check(up - none === 2, 'Watermark+: gives its 2 Paper, not a literal 1', `control ${none}, marked ${up}`);
+    check(late === none, 'and the mark is gone the next turn', `control ${none}, next turn ${late}`);
+  }
 } catch (err) {
   fails.push('THREW: ' + (err && err.stack || err));
 }

@@ -171,7 +171,21 @@ function harvest(c, obj) {
   const s = U.mm(c);
   const cultivar = obj.data.cultivar;
   const times = (s.noEmptyRooms && overgrown(c)) ? 2 : 1;
-  for (let i = 0; i < times; i++) harvestEffect(c, cultivar, obj);
+  if (obj.data.wild) {
+    /* Borrowed Sunlight: "may be Harvested as any of them". `wild` was set and
+       only Trick conditions (matureOf) read it, so the Harvest itself always
+       paid the Plant's own Cultivar. The choice offers its own first, so the
+       auto-pick is the normal Harvest. Asked the way Moonflower's put-back
+       is, because harvest() is synchronous for every caller. */
+    (async () => {
+      const order = [cultivar, ...CULTIVARS.filter(k => k !== cultivar)];
+      const picked = await c.choose({ options: order.map(k => CULTIVAR_NAME[k]), prompt: 'Harvest it as which Cultivar?' });
+      const as = order[picked && picked[0]] || cultivar;
+      for (let i = 0; i < times; i++) harvestEffect(c, as, obj);
+    })();
+  } else {
+    for (let i = 0; i < times; i++) harvestEffect(c, cultivar, obj);
+  }
 
   s.remembered = s.remembered || {};
   s.remembered[cultivar] = true;
@@ -207,9 +221,9 @@ function onPlantLeft(c, cultivar) {
   }
 }
 
-function propagate(c, obj) {
+function propagate(c, obj, growth = 0) {
   if (!obj || plotsFree(c) <= 0) return null;
-  return plant(c, obj.data.cultivar, { growth: 0 });
+  return plant(c, obj.data.cultivar, { growth });
 }
 
 // ── the four Cultivars ──────────────────────────────────────────────────────
@@ -465,6 +479,9 @@ U.onTracker(SLUG, (e, s, seat) => {
   U.onPlayerTurn(e, 'end', () => {
     const c = fake();
     const st = U.mm(c);
+
+    /* Borrowed Sunlight lasts "until end of turn"; it used to last the fight. */
+    for (const o of garden(c)) if (o.data.wild) { o.data.wild = false; c.updateObject(o.id, { wild: false }); }
 
     /* Closed Terrarium: pull one Plant to keep the Weed away. Offered before
        Growth, because the choice is about whether to STAY Overgrown. */
@@ -943,7 +960,8 @@ const commons = [
     playable: (c) => plotsFree(c) > 0 && garden(c).length > 0,
     effect: eff(async (c) => {
       const p = await pickPlant(c, { prompt: 'Take a cutting from which Plant?' });
-      if (p) propagate(c, p);
+      // The Sharpened "with 1 Growth" was text only: the cutting came up at 0 either way.
+      if (p) propagate(c, p, U.up(c) ? 1 : 0);
     }),
     upgrade: { text: '[Propagate] one of your Plants into an empty Plot with 1 Growth.' },
   },
