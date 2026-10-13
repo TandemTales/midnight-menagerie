@@ -23,8 +23,104 @@ import * as U from '../../game/src/data/companions/_util.js';
 import { lastResolver } from './twin.js';
 import { runProofs, add, play, addPlay, M, emptyHand, st, enemyHit, DEFS } from './proofkit.js';
 
+// ── Drizzle ─────────────────────────────────────────────────────────────────
+/* The seeded board puts Weather at Thunderstorm through the counter (min(3, max)),
+   so nothing can Advance, nothing was ENTERED, and the Forecast row is empty. */
+const CLEAR = 0, DOWNPOUR = 2;
+const setWeather = (e, w) => e.setCounter('weather', w, 'proof');
+
+// ── Brambleboo ──────────────────────────────────────────────────────────────
+/* The seeded board's Garden is empty (the counter says 3, no Plant is in the
+   ground), and no enemy has Vines and no Weed is anywhere. */
+const plants = (e) => e.objects.filter(o => o.kind === 'plant').sort((a, b) => a.slot - b.slot);
+/** Put a Plant in the ground through its own Trick, and hand it back. */
+async function sow(e, id = 'brambleboo/tiny-creeper') {
+  const before = new Set(plants(e).map(o => o.id));
+  await addPlay(e, id);
+  return plants(e).find(o => !before.has(o.id));
+}
+/** The same, already Mature. */
+async function ripe(e, id = 'brambleboo/tiny-creeper') {
+  const o = await sow(e, id);
+  e.updateObject(o.id, { growth: 2, mature: true });
+  return o;
+}
+const weeds = (e, n) => { for (let i = 0; i < n; i++) add(e, 'brambleboo/weed', 'discard'); };
+
+// ── Crinkle ─────────────────────────────────────────────────────────────────
+/* No Trick in the seeded hand carries a Crease. `U.setCounter` is what fold()
+   itself writes; the cost hook and every Crease reader read it straight back. */
+const crease = (k, n) => { U.setCounter(k, 'crease', n); return k; };
+const creasedFirst = (e, n) => { emptyHand(e); crease(add(e, 'crinkle/paper-cut'), n); add(e, 'crinkle/flatten'); };
+
 /* [id, what the board needs, { setup(e, t), target(e, t), party, resolver, after(e, t) }] */
 const PROOFS = [
+  // ── Drizzle: Weather with room to move ────────────────────────────────────
+  ['drizzle/just-a-sprinkle', 'Weather below Thunderstorm (Clear)', { setup: (e) => setWeather(e, CLEAR) }],
+  ['drizzle/drip-drip-drip', 'Weather below Thunderstorm (Clear)', { setup: (e) => setWeather(e, CLEAR) }],
+  ['drizzle/turn-the-tap', 'Weather the auto-picked Advance can move (Clear)', { setup: (e) => setWeather(e, CLEAR) }],
+  ['drizzle/after-the-flash', 'Weather changed this turn (Clear, then Just a Sprinkle)', {
+    setup: async (e) => { setWeather(e, CLEAR); await addPlay(e, 'drizzle/just-a-sprinkle'); } }],
+  ['drizzle/hold-the-downpour', 'Downpour', { setup: (e) => setWeather(e, DOWNPOUR) }],
+  // ── Drizzle: a Forecast waiting, or one in the draw pile ──────────────────
+  ['drizzle/cloud-shelf', 'a Forecast waiting (Rain Check)', { setup: async (e) => { await addPlay(e, 'drizzle/rain-check'); } }],
+  ['drizzle/cloud-storage', 'a Forecast waiting (Rain Check)', { setup: async (e) => { await addPlay(e, 'drizzle/rain-check'); } }],
+  ['drizzle/reforecast', 'a Forecast waiting on Downpour, re-aimed at the Clear the Stormbreak brings', {
+    setup: async (e) => { await addPlay(e, 'drizzle/rain-check'); } }],
+  ['drizzle/perfect-forecast', 'a Forecast Trick in the draw pile', { setup: (e) => { add(e, 'drizzle/rain-check', 'draw'); } }],
+  ['drizzle/set-the-whole-week', 'Forecast Tricks with different triggers in the draw pile', {
+    setup: (e) => { add(e, 'drizzle/rain-check', 'draw'); add(e, 'drizzle/save-a-drop', 'draw'); add(e, 'drizzle/watch-the-glass', 'draw'); } }],
+  ['drizzle/puddle-map', 'a Soaked target, and a Conduct (Splashdown) after it', {
+    setup: (e) => { for (const x of e.livingEnemies()) e.applyStatus(x, 'soaked', 1); },
+    after: async (e, t) => { await addPlay(e, 'drizzle/splashdown', t); } }],
+
+  // ── Mossbit ───────────────────────────────────────────────────────────────
+  ['mossbit/rewrite-the-headstone', 'an active Epitaph (Written in Stone) and a free slot', {
+    setup: async (e, t) => { await addPlay(e, 'mossbit/written-in-stone', t); } }],
+
+  // ── Brambleboo: a Mature Plant ────────────────────────────────────────────
+  ...['brambleboo/careful-snip', 'brambleboo/take-a-cutting', 'brambleboo/deadhead', 'brambleboo/keep-the-cutting',
+    'brambleboo/perfect-cutting', 'brambleboo/prune-to-the-heart', 'brambleboo/four-seasons']
+    .map(id => [id, 'a Mature Plant', { setup: async (e) => { await ripe(e); } }]),
+  ['brambleboo/moonlit-conservatory', 'a Mature Moonflower, Harvested after it (Careful Snip)', {
+    setup: async (e) => { await ripe(e, 'brambleboo/moon-in-the-window'); },
+    after: async (e) => { await addPlay(e, 'brambleboo/careful-snip'); } }],
+  ['brambleboo/borrowed-sunlight', 'a Mature Creeping Ivy, Harvested after it as Grave Moss', {
+    setup: async (e) => { await ripe(e); }, resolver: lastResolver,
+    after: async (e) => { await addPlay(e, 'brambleboo/careful-snip'); } }],
+  ['brambleboo/pass-the-cutting', 'a Mature Plant and a friend at the table', {
+    party: true, setup: async (e) => { await ripe(e); } }],
+  // ── Brambleboo: an immature Plant ─────────────────────────────────────────
+  ...['brambleboo/water-please', 'brambleboo/careful-pruning', 'brambleboo/easy-cutting', 'brambleboo/repot',
+    'brambleboo/compost-tea', 'brambleboo/midnight-bloom', 'brambleboo/tear-up-the-floorboards']
+    .map(id => [id, 'an immature Plant', { setup: async (e) => { await sow(e); } }]),
+  ['brambleboo/graft', 'two Plants', { setup: async (e) => { await ripe(e, 'brambleboo/damp-corner'); await sow(e); } }],
+  // ── Brambleboo: Vines and Weeds ───────────────────────────────────────────
+  ['brambleboo/follow-the-draft', '5 Vines on one enemy', { setup: (e, t) => { e.applyStatus(t, 'vines', 5); } }],
+  ['brambleboo/tug-the-whole-room', '3 Vines on each enemy', { setup: (e) => { for (const x of e.livingEnemies()) e.applyStatus(x, 'vines', 3); } }],
+  ['brambleboo/invasive-species', '3 Vines on the chosen enemy', { setup: (e, t) => { e.applyStatus(t, 'vines', 3); } }],
+  ['brambleboo/mulch-the-evidence', 'two Weeds in the discard', { setup: (e) => weeds(e, 2) }],
+  ['brambleboo/sweep-the-weeds', 'two Weeds in the discard', { setup: (e) => weeds(e, 2) }],
+
+  // ── Crinkle ───────────────────────────────────────────────────────────────
+  ['crinkle/reference-copy', 'a Trick in hand that costs nothing (Watermark)', { setup: (e) => { add(e, 'crinkle/watermark'); } }],
+  ['crinkle/fold-along-the-fold', 'a Creased Trick in hand', { setup: (e) => creasedFirst(e, 1) }],
+  ['crinkle/straighten', 'a Creased Trick in hand', { setup: (e) => creasedFirst(e, 2) }],
+  ['crinkle/unfold', 'a Creased Trick in hand', { setup: (e) => creasedFirst(e, 2) }],
+  ['crinkle/bind', 'a Creased Trick in hand', { setup: (e) => creasedFirst(e, 2) }],
+  ['crinkle/kept-flat', 'an Overfolded Trick in hand, played after it', {
+    setup: (e) => creasedFirst(e, 3),
+    after: async (e) => { const k = e.piles.hand.find(x => U.counter(x, 'crease') >= 3); if (k) await play(e, k); } }],
+  ['crinkle/watermark', 'a Paper Copy of the chosen Trick (Trace It) played after it', {
+    setup: (e) => { emptyHand(e); add(e, 'crinkle/paper-cut'); },
+    after: async (e) => {
+      await addPlay(e, 'crinkle/trace-it');
+      const copy = e.piles.hand.find(x => x.meta && x.meta.paperCopy);
+      if (copy) await play(e, copy);
+    } }],
+
+  // ── the shared pool ───────────────────────────────────────────────────────
+  ['neutral/second-wind', 'two Skills in hand', { setup: (e) => { add(e, 'neutral/quick-look'); add(e, 'neutral/dust-off'); } }],
 ];
 
 runProofs(PROOFS);
