@@ -196,6 +196,16 @@ U.onTracker(SLUG, (e, s, seat) => {
   if (e.schedule) e.schedule({ turns: 1, repeat: 1, when: 'enemyTurnEnd', label: 'Runny', run: runnyTick });
   else e.on('enemyTurn:end', runnyTick);
   U.onPlayerTurn(e, 'start', () => { s.played = 0; });
+  /* SAME AGAIN reads `lastPlayed`: "the last non-Gummy Attack or Skill you
+     played this turn". Nothing ever wrote it, so the card did nothing at all.
+     Written on `card:resolved`, AFTER the effect, so Same Again resolving sees
+     the Trick before it rather than itself; `tf` is per turn, so it clears. */
+  e.on('card:resolved', (ev) => {
+    const live = ev && ev.cardUid != null ? e.card(ev.cardUid) : null;
+    if (!live || !copyable(live) || live.id === 'taffy/same-again') return;
+    if (seat && e.seatOfCard(live) !== seat) return;
+    U.tf(fake()).lastPlayed = live;
+  });
 });
 
 // ── Power hooks ─────────────────────────────────────────────────────────────

@@ -126,9 +126,21 @@ function setPocketBonus(c, bonus) {
 function scurry(c, card, to, opts = {}) {
   if (!card) return false;
   if (to === POCKET && !pocketRoom(c) && !opts.overflow) return false;
+  const piles = c.self && c.self.piles;
+  const from = piles && piles.pileOf ? piles.pileOf(card) : card.pile;
   U.moveCard(c, card, to, opts.moveOpts || {});
   if (card.meta && card.meta.contraband) return true;   // Contraband never Scurries
   const s = U.mm(c);
+  /* THREE PLACES AT ONCE: "the first time each Trick Scurries it leaves a free
+     temporary copy behind" (chapter 08: a Shadow Copy in its PREVIOUS zone,
+     played once for 0 Nerve, then gone; one per original per turn). The card
+     set `threePlaces` and nothing read it. A copy never copies itself. */
+  const tp = s.threePlaces;
+  if (tp && tp.turn === U.turn(c) && from && from !== to && card.def
+      && !(card.meta && (card.meta.shadowCopy || card.meta.temporary)) && !tp.seen.has(card.uid)) {
+    tp.seen.add(card.uid);
+    U.spawn(c, card.def, from, { upgraded: card.upgraded, cost: 0, exhaust: true, meta: { temporary: true, shadowCopy: true } });
+  }
   s.scurriesThisTurn = (s.scurriesThisTurn || 0) + 1;
   s.pocketTouched = true;
   /* The Power's own {b}, as its stacks: a literal 6 here left the upgrade's 9
@@ -1358,7 +1370,12 @@ const rares = [
     text: 'This turn, the first time each Trick [Scurry]s it leaves a free temporary copy behind.',
     flavor: 'He is not. It only looks that way.',
     nums: {},
-    effect: eff((c) => { U.mm(c).threePlaces = new Set(); }),
+    /* Read in `scurry()`. Scoped to the turn it was played in; a second copy
+       the same turn keeps the first one's "already copied" list. */
+    effect: eff((c) => {
+      const s = U.mm(c);
+      if (!(s.threePlaces && s.threePlaces.turn === U.turn(c))) s.threePlaces = { turn: U.turn(c), seen: new Set() };
+    }),
     upgrade: { cost: 1 },
   },
 

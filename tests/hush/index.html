@@ -278,6 +278,41 @@ try {
       check(!e.piles.discard.includes(top), 'and it has left the discard pile');
     }
   }
+  {
+    /* THREE PLACES AT ONCE: "the first time each Trick Scurries this turn it
+       leaves a free temporary copy behind". It set `threePlaces` and nothing
+       read it, so the 2-Nerve Rare did nothing (tests/base-effects). */
+    const shadowStash = async (withPower) => {
+      const e = await hush();
+      e.piles.stash.length = 0;
+      e.piles.hand.length = 0;
+      if (withPower) await play(e, put(e, 'hush/three-places-at-once'));
+      const k = put(e, 'hush/quick-nip');
+      await play(e, put(e, 'hush/pocket-this'));
+      const copies = e.piles.hand.filter(x => x.id === 'hush/quick-nip' && x !== k && x.meta && x.meta.shadowCopy);
+      return { e, k, copies };
+    };
+    const off = await shadowStash(false), on = await shadowStash(true);
+    check(off.copies.length === 0 && pocket(off.e).includes(off.k), 'setup: Pocket This alone just Stashes the Trick',
+      `copies=${off.copies.length}`);
+    check(pocket(on.e).includes(on.k) && on.copies.length === 1,
+      'Three Places at Once: the Stashed Trick leaves a copy behind in the hand', `copies=${on.copies.length}`);
+    const copy = on.copies[0];
+    if (copy) {
+      check(on.e.costOf(copy) === 0, 'the copy is free', `costs ${on.e.costOf(copy)}`);
+      const t = on.e.livingEnemies()[0];
+      on.e.player.energy = 9; await on.e.playCard(copy.uid, t.id);
+      check(on.e.piles.exhaust.includes(copy) && !on.e.piles.discard.includes(copy),
+        'and it is temporary: played once, then gone');
+      /* "Each original Trick can create only one Shadow Copy this turn." */
+      on.e.piles.hand.length = 0;
+      on.e.moveCard(on.k, 'hand', {});
+      await play(on.e, put(on.e, 'hush/pocket-this'));
+      check(on.e.piles.hand.filter(x => x.meta && x.meta.shadowCopy).length === 0,
+        'the same Trick Scurrying again this turn leaves no second copy',
+        `hand: ${on.e.piles.hand.map(x => x.id + (x === on.k ? '(original)' : '')).join(', ')}, pocket: ${pocket(on.e).map(x => x.id).join(', ')}`);
+    }
+  }
 } catch (err) {
   fails.push('THREW: ' + (err && err.stack || err));
 }
