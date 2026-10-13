@@ -27,6 +27,8 @@ import { runProofs, add, play, addPlay, M, emptyHand, st, enemyHit, DEFS } from 
 /* Taffy's Belly is the stash, flagged; a Stretched Trick carries its count in meta. */
 const belly = (e, ...ids) => { for (const id of ids) add(e, id, 'stash').meta.belly = true; };
 const stretched = (e, id, n = 1) => { const k = add(e, id); k.meta['#stretch'] = n; k.meta.stretched = true; return k; };
+/* A Fetched Trick back in Bones's discard, still Slobbered. */
+const slobbered = (e, id = 'bones/bite') => { const k = add(e, id, 'discard'); k.meta.slobbered = true; return k; };
 
 const PROOFS = [
   ['marmalade/all-nine', 'Lives below 9', { setup: (e) => e.setCounter('lives', 3, 'proof') }],
@@ -47,6 +49,17 @@ const PROOFS = [
   ['taffy/perfect-replica', 'an Absorbed Attack', { setup: (e) => belly(e, 'taffy/sugar-bonk') }],
   ['taffy/cross-flavor', 'an Absorbed Attack and an Absorbed Skill', { setup: (e) => belly(e, 'taffy/sugar-bonk', 'taffy/squish') }],
   ['taffy/keep-the-wrapper', 'a Gummy copy in hand', { setup: (e) => { add(e, 'taffy/sugar-bonk', 'hand', { exhaust: true, meta: { gummy: true } }); } }],
+
+  // ── Bones ─────────────────────────────────────────────────────────────────
+  ['bones/shake-dry', 'a Slobbered Trick in the discard', { setup: (e) => slobbered(e) }],
+  ['bones/bury-the-evidence', 'a Slobbered Trick in the discard', { setup: (e) => slobbered(e) }],
+  ['bones/one-more-throw', 'a Slobbered Trick in the discard', { setup: (e) => slobbered(e) }],
+  ['bones/emergency-reassembly', 'Scattered (4 Loose Bones)', { setup: (e) => e.setCounter('loose-bones', 4, 'proof') }],
+  ['bones/every-bone-at-once', 'Whole (0 Loose Bones)', { setup: (e) => e.setCounter('loose-bones', 0, 'proof') }],
+  ['bones/good-boy', 'a Fetch this turn', { setup: async (e) => { add(e, 'bones/bite', 'discard'); await addPlay(e, 'bones/fetch'); } }],
+  ['bones/jingle-collar', 'something that counts its two Rattles (Off Leash, played after)', { after: async (e, t) => { await addPlay(e, 'bones/off-leash', t); } }],
+  ['bones/dig-to-the-basement', 'a Buried Trick', { setup: (e) => { add(e, 'bones/bite', 'stash').meta['#buried'] = 2; } }],
+  ['bones/bring-it-back-friend', 'a friend with a cheap Trick in their discard', { party: true, setup: (e) => { e.addCard(DEFS.get('bones/bite'), 'discard', { to: e.players[1] }); } }],
 ];
 
 runProofs(PROOFS);

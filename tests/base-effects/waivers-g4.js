@@ -18,4 +18,13 @@ export default [
   ['taffy/perfect-replica', 'the Belly is empty, so there is no Absorbed Trick to copy'],
   ['taffy/cross-flavor', 'the Belly is empty, so there is no Absorbed Trick to copy'],
   ['taffy/keep-the-wrapper', 'no Gummy copy is in hand'],
+  ['bones/shake-dry', 'nothing has been Fetched, so no Slobbered Trick is in the discard'],
+  ['bones/bury-the-evidence', 'nothing has been Fetched, so no Slobbered Trick is in the discard'],
+  ['bones/one-more-throw', 'nothing has been Fetched, so no Slobbered Trick is in the discard'],
+  ['bones/emergency-reassembly', 'the seeded 3 Loose Bones is not Scattered, so it cannot be played'],
+  ['bones/every-bone-at-once', 'the seeded 3 Loose Bones is not Whole, so it cannot be played'],
+  ['bones/good-boy', 'nothing was Fetched or Dug Up this turn, so it cannot be played'],
+  ['bones/jingle-collar', 'its two Rattles net 0 Loose Bones, and nothing that counts Rattles is out or played after it'],
+  ['bones/dig-to-the-basement', 'nothing is Buried'],
+  ['bones/bring-it-back-friend', 'the friend has no Trick in their discard to return'],
 ];
