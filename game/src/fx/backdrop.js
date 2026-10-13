@@ -618,8 +618,14 @@ function freshLightSlots(uniforms) {
   if (uniforms.uSpan) uniforms.uSpan.value = uniforms.uSpan.value.clone();
   if (uniforms.uCamera) uniforms.uCamera.value = uniforms.uCamera.value.clone();
   if (uniforms.uAmbient) uniforms.uAmbient.value = uniforms.uAmbient.value.clone();
+  if (uniforms.uNearPool) uniforms.uNearPool.value = uniforms.uNearPool.value.clone();
+  if (uniforms.uNearPoolC) uniforms.uNearPoolC.value = uniforms.uNearPoolC.value.clone();
+  if (uniforms.uNearFwd) uniforms.uNearFwd.value = uniforms.uNearFwd.value.clone();
   return uniforms;
 }
+
+/* scratch for syncCamera's heading (round 31) */
+const _fwd = new THREE.Vector3();
 
 /* the room's mansion: UI/mainMenu.png's house, cut out (round 28) */
 const HOUSE_STILL_URL = new URL('../../assets/ui/house-still.webp', import.meta.url).href;
@@ -782,6 +788,16 @@ export class Backdrop {
       uStage: { value: new THREE.Vector4(0, 0, 1, 1) },
       uStageCol: { value: new THREE.Color(0, 0, 0) },
       uNearDark: { value: 0 },
+      /* ROUND 31: THE NEAR FLOOR (pal.nearFloor; FLOOR_FRAG): the
+         foreground's fall (0 = the program's own), a pool of lamplight in
+         eye metres and its colour x strength, the eye's heading on the
+         floor (syncCamera), and the runner in its Turkey dyes */
+      uNearFall: { value: 0 },
+      uNearPool: { value: new THREE.Vector4(4, 0, 2, 2) },
+      uNearPoolC: { value: new THREE.Color(0, 0, 0) },
+      uNearFwd: { value: new THREE.Vector2(0, -1) },
+      uRugDye: { value: 0 },
+      uNearCalm: { value: 0 },
       /* THE PASSAGES' OPEN DOORS (round 22 graft): the wedge of lamplight
          each one's slit throws across the floor -- the slit's world x and z,
          and the unit direction into the room, and in uWedgeK how strong
@@ -2735,6 +2751,23 @@ export class Backdrop {
     f.uNearDark.value = p.nearDark ?? 0;
     if (p.rug) f.uRug.value.set(p.rug.x, p.rug.z, p.rug.hw, p.rug.hd);
     else f.uRug.value.set(0, 0, 0, 0);
+    /* ROUND 31: THE NEAR FLOOR, one rule for any room that asks
+       (pal.nearFloor -- see atmosphere.js NEAR FLOOR): how far its
+       foreground falls, the pool of lamplight in front of the eye, the
+       runner's dyes. Zero everywhere else, so no other room moves. */
+    {
+      const nf = p.nearFloor;
+      f.uNearFall.value = nf ? (nf.fall ?? 0) : 0;
+      f.uRugDye.value = nf && nf.dye ? 1 : 0;
+      f.uNearCalm.value = nf ? (nf.calm ?? 0) : 0;
+      if (nf && nf.pool) {
+        const q = nf.pool;
+        f.uNearPool.value.set(q.ahead ?? 4.0, q.across ?? 0, q.rAlong ?? 2.0, q.rAcross ?? 2.0);
+        f.uNearPoolC.value.set(q.color ?? '#ffb36a').multiplyScalar(q.k ?? 0.6);
+      } else {
+        f.uNearPoolC.value.setRGB(0, 0, 0);
+      }
+    }
     /* the moon on the court's flags and in its pond (round 22 graft) */
     if (p.moonFloor) {
       f.uMoonF.value.set(p.moonFloor[0], p.moonFloor[1], p.moonFloor[2]);
@@ -3264,6 +3297,12 @@ export class Backdrop {
     }
     this.wallMat.uniforms.uCamera.value.copy(pos);
     this.floorMat.uniforms.uCamera.value.copy(pos);
+    /* (round 31: the eye's heading on the floor, for the near floor's pool) */
+    if (quat) {
+      _fwd.set(0, 0, -1).applyQuaternion(quat);
+      const l = Math.hypot(_fwd.x, _fwd.z);
+      if (l > 1e-4) this.floorMat.uniforms.uNearFwd.value.set(_fwd.x / l, _fwd.z / l);
+    }
     this.ceilMat.uniforms.uCamera.value.copy(pos);
     this.propMat.uniforms.uCamera.value.copy(pos);
     for (const m of this.sides) m.material.uniforms.uCamera.value.copy(pos);

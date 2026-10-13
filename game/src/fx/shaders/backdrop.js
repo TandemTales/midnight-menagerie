@@ -4194,7 +4194,19 @@ float subjectH(vec2 q, float far, out float occ){
          each buttress stands proud of the wall (a step the ink draws down
          both its sides), its set-offs are ledges, the plinth steps out under
          the whole building. */
-      br = body*1.25 + sbut*0.42 + butt*0.30 + bOff*0.30 + plF*0.28 - wallF*cJ*0.22 - slate*0.20 + ridgeL*0.40 + gut*0.45 - eShade*0.30
+#if MM_R25W == 4
+      /* ROUND 31 (both survey-4 judges: "repaint the scan-lined chapel wall
+         as crisp masonry", "re-texture the chapel gable at full
+         resolution"). The joints and the slates were RELIEF -- a step in the
+         height field the lighting reads off 2x2 derivatives -- and a step a
+         pixel wide lit that way breaks into the dashed bright-and-dark rows
+         both judges called scan-lines. They are INK now (below), each block
+         its own value, and the relief keeps only what stands proud. */
+      const float kRel = 0.0;
+#else
+      const float kRel = 1.0;
+#endif
+      br = body*1.25 + sbut*0.42 + butt*0.30 + bOff*0.30 + plF*0.28 - (wallF*cJ*0.22 + slate*0.20)*kRel + ridgeL*0.40 + gut*0.45 - eShade*0.30
          + (1.0 - smoothstep(0.05, 0.12, abs(win - 0.10)))*step(2.4, q.y)*0.40
          - mmSolid(win)*(1.0 - trac)*0.55 - swin*0.55
          + bOff*0.55 + plC*0.50 + plF*0.16 + corb*0.40
@@ -4209,6 +4221,26 @@ float subjectH(vec2 q, float far, out float occ){
             /* the eaves a lit lead gutter over the dark corbel table -- the
                line against the sky (round 18, SIENNA's) */
             + gut*0.40;
+#if MM_R25W == 4
+      {
+        /* the ashlar INKED: the bed joints a pixel and a bit, the perpends
+           finer and broken course by course, both fading where a course is
+           under three pixels (mmLod) so the gable never moires; each block
+           its own value; the slates' courses inked on the roof; and the
+           rain-streaks under the window and the set-offs */
+        float px = max(dqm, 1e-4);
+        float lodC = mmLod(0.45, px);
+        float jB = mmInkP(0.225 - mmRowX(cy, 0.45), px, 1.1);
+        float jP = mmInkP(mmRowX(q.x + mod(crw, 2.0)*0.45, 0.90) - 0.45, px, 0.9);
+        float blk = mmHash11(floor(q.x/0.90 + mod(crw, 2.0)*0.5)*5.3 + crw*3.7 + uSeed);
+        gInk = max(gInk, wallF*lodC*max(jB*0.62, jP*0.46*(0.6 + 0.4*step(0.3, blk))));
+        gTint += wallF*(blk - 0.5)*0.30*lodC;
+        float sl = mmInkP(0.15*(1.0 - 0.13*st) - mmRowX(q.y - sEav, 0.30*(1.0 - 0.13*st)), px, 1.0);
+        gInk = max(gInk, roofP*sl*0.55*mmLod(0.30, px));
+        float strk = smoothstep(0.62, 0.88, mmNoise(vec2(q.x*5.0, 3.1)))*mmNoise(vec2(q.x*14.0, q.y*0.6));
+        gTint -= wallF*strk*0.22;
+      }
+#endif
     } else if (uSubject > 24.5) {
       /* 25  MAUSOLEA -- Mausoleum Lane, the Family Plot, the Tomb Garden:
          four monuments by four different families, right of the axis, with
@@ -4552,32 +4584,36 @@ float wLobes(vec2 c, float jit, float sd, out float id, out vec2 off){
    which is all the moon finds on a crown. */
 float gYewI = 0.5;     // (round 29 graft, BOLUS's: the spray's own hash, for its colour)
 float yewFace(vec2 p, float px, float sd, out float tone, out float lit){
-  float i1, i2;
-  vec2 o1, o2;
-  /* (round 29: "one stamped leaf-blob texture repeated" -- the big sprays
-     are thrown off their grid, and below they carry less of the tone and
-     the relief; the face is the dense fine needle of a clipped yew) */
-  vec2 pw = p + (vec2(mmNoise(p*1.3 + sd), mmNoise(p*1.3 + sd + 5.1)) - 0.5)*0.30;
-  float a = wLobes(pw/0.34, 0.74, sd, i1, o1);
-  gYewI = i1;
-  float l1 = mmLod(0.34, px), l2 = mmLod(0.115, px);
-  float b = -1.0;
-  if (l2 > 0.001) {
-    vec2 pr = vec2(p.x*0.92 - p.y*0.39, p.x*0.39 + p.y*0.92);
-    b = wLobes(pr/0.115, 0.82, sd + 7.3, i2, o2);
-  } else { i2 = 0.5; o2 = vec2(0.0); }
-  float up1 = clamp(o1.y*1.7 + 0.30, 0.0, 1.0);
-  float s1 = smoothstep(-0.02, 0.24, a) * (0.42 + 0.58*up1) * (0.80 + 0.40*i1);
-  float s2 = smoothstep(-0.02, 0.22, b) * (0.55 + 0.45*clamp(o2.y*1.7 + 0.30, 0.0, 1.0))
-           * (0.85 + 0.30*i2);
-  float nd = mmLod(0.05, px);
-  float needle = mix(1.0, 0.78 + 0.40*mmNoise(vec2(p.x*34.0, p.y*22.0) + sd), nd);
-  /* (round 29 graft, judge 2: "keep the crisp leaf clusters across the
-     whole wall face" -- the sprays at BOLUS's two-thirds swing, from 0.40,
-     so every hand of the hedge is a cluster, not a slab) */
-  tone = mix(0.52, s1, l1*0.66) * mix(0.72, s2, l2*0.70) * needle;
-  lit = mix(0.35, smoothstep(0.05, 0.30, a) * up1 * up1, l1) * mix(0.8, 0.55 + 0.45*s2, l2);
-  return a*0.080*l1*0.35 + b*0.028*l2*0.70;
+  /* ROUND 31 (both survey-4 judges: "the hedge texture is wrong
+     outright", "replace the repeated scallop tile with drawn clipped
+     hedges"). The scallop WAS the shading in each lobe -- every dome lit on
+     its upper half and ringed dark under it -- which is a fish-scale at any
+     jitter. A clipped yew's leaf is a MOSAIC of sprays, each laid flat in its
+     own value (no dome, no ring), long and slanted the way the shoots grow,
+     with a hairline of shade only where two meet; and the hedge reads by its
+     FORM -- lit up the face toward the sheared top, soft swells where the
+     shears rode the growth, a few deep soft hollows. */
+  vec2 bq = p*vec2(0.62, 0.95) + sd*1.3;
+  float bul = mmFbm3(bq);
+  float n1 = mmNoise(p*vec2(1.7, 2.2) + sd*0.7);
+  float rise = mmNoise(bq*1.7 + vec2(0.0, 0.16)) - mmNoise(bq*1.7 - vec2(0.0, 0.16));
+  float up = clamp(0.52 + rise*2.4, 0.0, 1.0);
+  float lf = mmLod(0.10, px);
+  float ia = 0.5; vec2 oa = vec2(0.0);
+  float a = 0.5;
+  if (lf > 0.001) {
+    vec2 pr = vec2(p.x*0.80 - p.y*0.60, p.x*0.60 + p.y*0.80);
+    a = wLobes(pr/vec2(0.135, 0.082), 0.95, sd + 7.3, ia, oa);
+  }
+  gYewI = 0.5 + (n1 - 0.5)*0.4;
+  float gapS = smoothstep(-0.06, 0.12, a);
+  float spray = mix(0.62, (0.48 + 0.72*ia)*(0.55 + 0.45*gapS)*(0.92 + 0.12*clamp(oa.y*1.5 + 0.5, 0.0, 1.0)), lf);
+  float hollow = smoothstep(0.36, 0.22, bul*0.75 + n1*0.25);
+  float hT = smoothstep(0.3, 3.0, p.y);
+  float face = 0.58 + 0.42*hT;
+  tone = face*(0.78 + 0.36*bul)*(0.88 + 0.22*n1)*(0.84 + 0.22*up)*(0.62 + 0.62*spray)*(1.0 - 0.40*hollow);
+  lit = up*(0.55 + 0.55*bul)*(0.55 + 0.75*spray*gapS)*(1.0 - 0.6*hollow);
+  return (bul - 0.5)*0.16 + (n1 - 0.5)*0.05 - hollow*0.05 + (gapS - 0.5)*0.012*lf;
 }
 /* THE CROWN: a clipped top is level to a few centimetres, but it is LEAF --
    against the sky its edge is the domes of the sprays along it, each its
@@ -4609,7 +4645,9 @@ vec3 hzWither(vec2 p, float sd, float px, float holes, out float gap, out float 
   float ol = smoothstep(0.36, 0.56, w + 0.10*w2);
   float die = smoothstep(0.48, 0.70, w + 0.20*footB + 0.08*w2);
   vec3 c = mix(green, olive, ol);
-  c = mix(c, rust, die*0.85);
+  /* (round 31: the dead patches a step quieter -- under the clumps'
+     own light they read as camouflage blotches across the face) */
+  c = mix(c, rust, die*0.55);
   float gv = w + 0.10*footB + 0.07*(w2 - 0.5);
   gap = smoothstep(0.670, 0.700, gv)*holes;
   /* the leaf round a hole is in its shadow (round 29 graft: narrower and
@@ -4631,7 +4669,11 @@ vec3 hzWither(vec2 p, float sd, float px, float holes, out float gap, out float 
     }
   }
   c = mix(c, vec3(0.010, 0.009, 0.011), gap);
-  c = mix(c, vec3(0.30, 0.235, 0.165)*(0.70 + 0.50*w2), twig*gap);
+  /* (round 31, judge 2: "remove the floating gold lattice" -- the dead
+     stems across a hole were pale tan pen lines, a lattice hung on the
+     hedge; they are dead wood in the hedge's own dark now, a stop over the
+     hole and no more) */
+  c = mix(c, vec3(0.060, 0.046, 0.034)*(0.70 + 0.50*w2), twig*gap);
   return c;
 }
 /* how much of this pixel's light is the hedge's leaf (for main()'s lamps:
@@ -4834,7 +4876,9 @@ float hedgeWallH(vec2 q, float qpx, out float occ){
      turned toward the rust -- so no two lie side by side alike and the
      dead patches are leaf, not a flat field) */
   yew *= 0.70 + 0.55*gYewI;
-  yew = mix(yew, yew*vec3(1.18, 0.98, 0.66), step(0.64, fract(gYewI*7.3))*0.6);
+  /* (round 31: gYewI is a smooth field now, not a spray's hash -- a step on
+     its fraction drew contour bands; the rust comes in where it runs high) */
+  yew = mix(yew, yew*vec3(1.18, 0.98, 0.66), smoothstep(0.56, 0.66, gYewI)*0.6);
   gapY *= hedge*(1.0 - corr);
   yew *= mix(0.24 + 1.25*tone, 1.0, gapY);
   yew *= mix(1.0, 0.40, foot);
@@ -5069,6 +5113,35 @@ float passWallH(vec2 q, float qpx, out float occ){
     float inD = step(SK, q.y)*step(q.y, DR0), inT = step(DR1, q.y)*step(q.y, HR0), inF = step(HR1, q.y)*step(q.y, FR1);
     float pv = dp*inD + tp*inT + fp*inF;
     h += pv*0.55;
+    /* ROUND 31 (both survey-4 judges: "re-model the corridor wainscot with
+       crisp panels and lit edges"). sPanel's relief is right and SOFT -- its
+       moulding is a few centimetres of bevel that the lighting reads off
+       2x2 derivatives, so seen down the passage every panel was a blur in a
+       blur. Each panel's moulding is INKED now, outer edge and field, a
+       pixel and a bit at any distance, and its upper rail takes the sconce
+       light from above (a bright line along the top of the ovolo, its under
+       rail in shadow), which is how a raised panel reads at night. */
+    {
+      vec2 cD = vec2(bx, q.y - (SK + DR0)*0.5), hD = vec2(BW*0.5 - 0.10, (DR0 - SK)*0.5 - 0.07);
+      vec2 cT = vec2(bx, q.y - (DR1 + HR0)*0.5 - 0.03), hT = vec2(BW*0.5 - 0.10, (HR0 - DR1)*0.5 - 0.09);
+      vec2 cF = vec2(bx, q.y - (HR1 + FR1)*0.5), hF = vec2(BW*0.5 - 0.10, max((FR1 - HR1)*0.5 - 0.07, 0.05));
+      vec2 cp = inD > 0.5 ? cD : (inT > 0.5 ? cT : cF);
+      vec2 hp = inD > 0.5 ? hD : (inT > 0.5 ? hT : hF);
+      float tq = inD > 0.5 ? 0.032 : (inT > 0.5 ? 0.036 : 0.030);
+      float inAny = max(inD, max(inT, inF));
+      float oD = mmBox(cp, hp, 0.025), iD = mmBox(cp, hp - vec2(tq), 0.018);
+      gInk = max(gInk, (mmInkP(oD, px, 1.2)*0.85 + mmInkP(iD, px, 1.0)*0.55)*inAny);
+      float rail = mmCover(-oD)*(1.0 - mmCover(-iD))*inAny;
+      float topR = rail*step(hp.y - tq - 0.004, cp.y);
+      float botR = rail*step(cp.y, -(hp.y - tq - 0.004));
+      oak *= 1.0 + 0.95*topR - 0.40*botR;
+      /* the field's upper edge, where its bevel turns to the light */
+      float fTop = mmCover(-iD)*smoothstep(hp.y - tq - 0.06, hp.y - tq - 0.01, cp.y)*inAny;
+      oak *= 1.0 + 0.45*fTop;
+    }
+    /* the rails' own top edges catch the light too */
+    oak *= 1.0 + 0.55*(mmBandA(q.y, DR1 - 0.025, DR1, px) + mmBandA(q.y, HR1 - 0.025, HR1, px)
+                     + mmBandA(q.y, FR1 + 0.075, FR1 + 0.10, px));
     /* the sunk ground round a field is where the dark lives, and the field's
        bevel is where the lantern lands */
     oak *= 1.0 + 0.22*clamp(pv, -1.0, 1.0);
@@ -5303,7 +5376,8 @@ float passWallH(vec2 q, float qpx, out float occ){
       }
       p28Pool(vec2(bx, q.y - 1.30), vec2(0.38, 0.42), 2.2*(1.0 - inN*0.4), scWarm);
     }
-    if (kk >= 0.0 && mine > 0.5 && isDoor < 0.5 && clo < 0.5) {
+    /* (round 31: from two pairs nearer the eye, as FLOOR_FRAG's pools) */
+    if (kk >= -2.0 && mine > 0.5 && isDoor < 0.5 && clo < 0.5) {
       vec2 sp2 = vec2(zl - zk, q.y - 1.66);
       p28Sconce(sp2, px, scBrass, scWax, oak, h, scE);
       p28Pool(vec2(sp2.x, q.y - 1.85), vec2(1.45, 1.30), 3.2, scWarm);
@@ -5357,31 +5431,98 @@ float kPan(vec2 p, float r, float hy, float px, float lum, out vec3 col, out flo
    has one too): its pot cupboard, its top, three shelves of plates leaning
    back against the rack. dxr is metres from its axis; on 0..1. */
 float kDresser(float dxr, vec2 q, float px, float lum, float on, inout vec3 col, inout float h){
-      float dres = mmBox(vec2(dxr, q.y - 1.05), vec2(1.30, 1.05), 0.02);
+      /* ROUND 31 (both survey-4 judges: "draw the plate dresser"). It was a
+         black rack with white dots in it. A Welsh dresser is BUILT: a pot
+         cupboard of two panelled doors under a row of drawers, a worktop
+         that oversails it, the open rack above -- its back boarded in
+         tongue-and-groove, its two stiles, three shelves each with a lit
+         front edge and a shadow under it -- and a moulded cornice that
+         flares over the whole. On the shelves the plates stand leaning back,
+         willow-pattern blue on cream with their rims, a platter at each end;
+         cups hang from hooks under the shelf edges. */
+      float base = mmBox(vec2(dxr, q.y - 0.43), vec2(1.30, 0.43), 0.010);
+      float wtop = mmBox(vec2(dxr, q.y - 0.895), vec2(1.37, 0.030), 0.008);
+      float rack = mmBox(vec2(dxr, q.y - 1.49), vec2(1.22, 0.57), 0.0);
+      float cfl = clamp((q.y - 2.04)/0.18, 0.0, 1.0);
+      float corn = mmBox(vec2(dxr, q.y - 2.13), vec2(1.24 + 0.10*cfl, 0.09), 0.008);
+      float dres = min(min(base, wtop), min(rack, corn));
       float onD = mmCover(-dres) * on;
-      vec3 pine = vec3(0.36, 0.22, 0.12)*(lum*1.8 + 0.01)*(0.85 + 0.25*mmNoise(vec2(q.x*30.0, q.y*2.0)));
-      float top = mmBandA(q.y, 0.86, 0.92, px);
-      float shelf = 0.0;
+      float gr = 0.85 + 0.25*mmNoise(vec2(q.x*30.0, q.y*2.0));
+      vec3 pine = vec3(0.46, 0.28, 0.14)*(lum*2.4 + 0.016)*gr;
+      vec3 dcol = pine;
+      /* the rack: boarded back in shadow, the stiles, the shelves */
+      float inR = mmCover(-rack)*(1.0 - mmCover(-corn));
+      float bd = mmInkP(mmRowX(dxr + 1.22, 0.115) - 0.0575, px, 0.9);
+      vec3 backC = pine*0.50*(0.85 + 0.30*mmHash11(floor((dxr + 1.22)/0.115)*3.7));
+      float stile = step(1.10, abs(dxr));
+      dcol = mix(dcol, mix(backC*(1.0 - 0.45*bd), pine*1.10, stile), inR);
+      float shelfF = 0.0, shelfS = 0.0;
       for (int s2 = 0; s2 < 3; s2++){
-        float sy = 1.26 + float(s2)*0.36;
-        shelf = max(shelf, mmBandA(q.y, sy - 0.03, sy, px));
+        float sy = 1.20 + float(s2)*0.34;
+        shelfF = max(shelfF, mmBandA(q.y, sy - 0.035, sy, px));
+        shelfS = max(shelfS, mmBandA(q.y, sy - 0.10, sy - 0.035, px));
+        gInk = max(gInk, mmInkP(q.y - (sy - 0.035), px, 1.0)*0.75*inR);
       }
-      float drr = step(q.y, 0.86)*(1.0 - smoothstep(0.012, 0.012 + px, abs(mod(dxr + 1.30, 0.65) - 0.325)));
-      float pli = floor((dxr + 1.3)/0.20);
-      float plx2 = dxr + 1.3 - (pli + 0.5)*0.20;
-      /* the plates stand ON each shelf, leaning back against the rack */
-      float srow = floor((q.y - 1.26)/0.36);
-      float ply = q.y - (1.26 + srow*0.36) - 0.10;
-      float plt = mmCover(-(length(vec2(plx2, ply)) - 0.085)) * step(1.26, q.y) * step(srow, 1.5) * step(0.12, mmHash11(pli*2.1 + srow*5.0));
-      float plr = plt * smoothstep(0.055, 0.070, length(vec2(plx2, ply)));
-      vec3 dcol = mix(pine, pine*1.3, top + shelf);
-      dcol = mix(dcol, dcol*0.45, drr);
-      dcol = mix(dcol, pine*0.40, step(0.92, q.y)*(1.0 - shelf)*(1.0 - plt));
-      dcol = mix(dcol, mix(vec3(0.82, 0.80, 0.74), vec3(0.20, 0.30, 0.60), plr)*(lum*2.6 + 0.04), plt);
+      shelfF *= inR*(1.0 - stile); shelfS *= inR*(1.0 - stile);
+      dcol = mix(dcol, pine*1.75, shelfF);
+      dcol *= 1.0 - 0.45*shelfS;
+      /* the plates, leaning back on the shelves: 0.20 m apart, a platter at
+         each end of a shelf, each with its rim, its border and its blue */
+      float srow = floor((q.y - 1.20)/0.34);
+      float inRow = step(1.20, q.y)*step(srow, 2.5)*(1.0 - stile)*inR;
+      float sy0 = 1.20 + srow*0.34;
+      float endP = step(0.86, abs(dxr));
+      float pr = mix(0.082, 0.125, endP);
+      float pp = mix(0.20, 0.30, endP);
+      float pli = floor((dxr + 1.22)/pp);
+      float plx = dxr + 1.22 - (pli + 0.5)*pp;
+      vec2 pq = vec2(plx, (q.y - sy0 - pr - 0.005)*1.08);
+      float pd = length(pq) - pr;
+      float has = step(0.10, mmHash11(pli*2.1 + srow*5.0 + endP*7.0));
+      float plt = mmCover(-pd)*inRow*has;
+      float rr = length(pq)/pr;
+      vec3 cream = vec3(0.86, 0.84, 0.76);
+      vec3 blue = vec3(0.16, 0.26, 0.58);
+      vec3 pc = cream;
+      pc = mix(pc, blue, smoothstep(0.80, 0.84, rr)*(1.0 - smoothstep(0.90, 0.94, rr)));
+      pc = mix(pc, blue*1.1, (1.0 - smoothstep(0.50, 0.56, rr))*(0.55 + 0.45*mmNoise(pq*60.0)));
+      pc *= 0.80 + 0.32*smoothstep(0.2, -0.6, pq.y/pr);
+      dcol = mix(dcol, pc*(lum*2.8 + 0.05), plt);
+      gInk = max(gInk, mmInkP(pd, px, 1.0)*0.70*inRow*has);
+      /* cups on their hooks under the shelf edges */
+      float ci = floor((dxr + 1.10)/0.22);
+      vec2 cq = vec2(dxr + 1.10 - (ci + 0.5)*0.22, q.y - (sy0 + 0.34 - 0.135));
+      float cupD = mmBox(cq, vec2(0.040 - 0.010*smoothstep(0.04, -0.04, cq.y), 0.036), 0.015);
+      cupD = min(cupD, abs(length(cq - vec2(0.050, 0.004)) - 0.022) - 0.006);
+      float cupOn = mmCover(-cupD)*step(srow, 1.5)*inRow*step(0.25, mmHash11(ci*3.3 + srow*1.7))
+                  *(1.0 - endP);
+      dcol = mix(dcol, mix(cream, blue, step(0.55, mmHash11(ci*5.1 + srow)))*(lum*2.6 + 0.04)*(0.75 + 0.30*smoothstep(-0.04, 0.03, cq.x)), cupOn);
+      gInk = max(gInk, mmInkP(cupD, px, 1.0)*0.6*step(0.001, cupOn));
+      /* the cornice, flaring, its fillet lit */
+      float inC = mmCover(-corn);
+      dcol = mix(dcol, pine*(1.05 + 0.55*mmBandA(q.y, 2.15, 2.19, px)), inC);
+      gInk = max(gInk, mmInkP(q.y - 2.04, px, 1.1)*0.8*inC);
+      /* the worktop, scrubbed, its front edge lit */
+      float inW = mmCover(-wtop)*(1.0 - inC);
+      dcol = mix(dcol, pine*1.65, inW);
+      /* the base: a row of three drawers, two panelled doors under them */
+      float inB = mmCover(-base)*(1.0 - inW);
+      float drw = step(0.66, q.y);
+      float dxl = abs(fract((dxr + 1.30)/0.8667 + 0.5) - 0.5)*0.8667;
+      float drwS = mmInkP(dxl - 0.4333 + 0.005, px, 1.0)*drw;
+      float knob = mmCover(-(length(vec2(fract((dxr + 1.30)/0.8667) - 0.5, (q.y - 0.765)/0.8667)*0.8667) - 0.020))*drw;
+      float dsx = abs(dxr) - 0.65;
+      float door = mmBox(vec2(dsx, q.y - 0.36), vec2(0.52, 0.26), 0.010);
+      float doorF = mmBox(vec2(dsx, q.y - 0.36), vec2(0.42, 0.18), 0.010);
+      float dk = mmCover(-(length(vec2(abs(dxr) - 0.20, q.y - 0.42)) - 0.018));
+      vec3 baseC = pine*(0.95 - 0.30*mmCover(-doorF) + 0.25*mmBandA(q.y, 0.62, 0.66, px));
+      baseC = mix(baseC, vec3(0.70, 0.50, 0.22)*(lum*3.0 + 0.04), max(knob, dk));
+      dcol = mix(dcol, baseC, inB);
+      gInk = max(gInk, inB*max(max(drwS*0.7, mmInkP(q.y - 0.66, px, 1.0)*0.7),
+                               max(mmInkP(door, px, 1.1)*0.8, mmInkP(doorF, px, 1.0)*0.55)));
       col = mix(col, dcol, onD);
-      h += onD*(0.20 + 0.20*(top + shelf) + 0.10*plt);
+      h += onD*(0.20 + 0.25*(shelfF + inW + inC) + 0.12*plt - 0.10*inR*(1.0 - stile));
       mmPen(dres, 1.3, 0.9*on);
-      mmPen(q.y - 0.86, 1.0, 0.8*onD);
       return onD;
 }
 /* A MANGLE (graft: the scullery's empty left half, all three judges): two
@@ -12992,12 +13133,33 @@ uniform vec3  uStageCol;
    how far the floor under the hand and at the frame's two edges falls, 0 for
    a room that keeps its own. The frame's position comes from vClip. */
 uniform float uNearDark;
-#if MM_R25W == 1
 /* A CARPET LAID ON THE FLOOR (round 25 graft, PAYNE's): its centre's world
    x and z, its half-width and half-depth in metres; z = 0, none. The
-   Foyer's floor variant only. */
+   Foyer's floor variant drew it first; since round 31 any room may lay one
+   (the near floor, below). */
 uniform vec4  uRug;
-#endif
+/* ═══ ROUND 31: THE NEAR FLOOR (both survey-4 judges' first shared defect:
+   "every room puts its horizon at y≈320-400 and leaves 50-60% of the frame
+   as undressed floor fading to black"). ONE rule, palette data
+   (nearFloor), zero in every room that does not ask, so those rooms draw
+   exactly what they drew:
+     uNearFall   how far the foreground falls (the default program's 0.40,
+                 the churchyard's 0.74); 0 = the program's own number
+     uNearPool   a pool of lamplight on the floor in front of the eye, in
+                 EYE metres: x how far ahead, y how far across (+ right),
+                 z its reach along the view, w across it
+     uNearPoolC  its colour times its strength (black = none)
+     uNearFwd    the eye's heading on the floor (xz, unit) -- syncCamera
+     uRugDye     1: the runner is woven in the Turkey dyes (the Foyer's
+                 program always is) */
+uniform float uNearFall;
+uniform vec4  uNearPool;
+uniform vec3  uNearPoolC;
+uniform vec2  uNearFwd;
+uniform float uRugDye;
+/* ...and uNearCalm, how far the floor's mottle and grit are laid to rest
+   (each flag its own even stone): 0 = as authored */
+uniform float uNearCalm;
 /* THE PASSAGES' OPEN DOORS (round 22 graft): each slit's world xz and the
    unit direction into the room (uWedge), how strong its wedge of lamplight
    is (uWedgeK, 0 = none); and uCrisp, the passages' boards drawn crisp
@@ -13223,6 +13385,18 @@ void main(){
           pat += ((bladeC*0.22 + tipC*0.30) - rootC*0.16 - (1.0 - bladeC)*0.06) * gRes;
           cellv = mix(cellv, 0.42 + 0.30*tipC, gRes*bladeC*0.6);
         }
+      }
+      /* ROUND 31: THE LAWN HAS TONE AND EDGES (both survey-4 judges: "give
+         the lawn tone and edges"). It was one dark value with blades in it.
+         A churchyard's turf is mown in swathes and grows rank between the
+         graves: broad patches a stop apart that survive any distance (one
+         fbm in metres, slow), and the long grass drawn darker in bands
+         across the yard, where the scythe does not reach. */
+      {
+        float sw = mmFbm3(w*vec2(0.10, 0.16) + uSeed*2.3);
+        pat += (sw - 0.5)*0.30*(1.0 - earth*0.5);
+        float rowB = 0.5 + 0.5*sin(w.y*0.62 + 1.3*mmNoise(w*0.20 + uSeed));
+        pat -= smoothstep(0.70, 0.98, rowB)*0.07*(1.0 - earth);
       }
       /* ROUND 28: LEAF LITTER, and the lawn a true dark (both survey judges:
          "the grass is a flat milky grey-green field"). The yews and the
@@ -13843,6 +14017,12 @@ void main(){
     float guard = max(1.0 - smoothstep(0.0, aaX*1.8 + 0.014, abs(ins - 0.115)),
                       1.0 - smoothstep(0.0, aaX*1.8 + 0.012, abs(ins - 0.520)));
     float bord  = smoothstep(0.150, 0.175, ins)*(1.0 - smoothstep(0.470, 0.495, ins));
+    /* (round 31: where a runner is part of a dressed near floor -- uRugDye --
+       its border and its medallions are drawn over their own PIXEL: at the
+       eye's feet a fixed 2.5 cm and 7 cm ramp is a dozen pixels of blur,
+       and soft is worse than stepped. The Foyer's runner is as it was.) */
+    float eB = mix(0.0125, max(aaX*0.8, 0.002), uRugDye);
+    bord = mix(bord, smoothstep(0.1625 - eB, 0.1625 + eB, ins)*(1.0 - smoothstep(0.4825 - eB, 0.4825 + eB, ins)), uRugDye);
     /* A CHAIN OF MEDALLIONS up the centre, 1.6 m apart and 1.24 m long, which
        is big enough to survive the compression up the hall. A 0.64 m lozenge
        lattice was tried first and vanished: a whole repeat packs into a pixel
@@ -13851,6 +14031,11 @@ void main(){
     float md  = length(vec2((w.x - uRunX)/0.44, my/0.60));
     float med = (1.0 - smoothstep(0.84, 1.00, md))*0.55
               - (1.0 - smoothstep(0.40, 0.56, md))*0.34;
+    if (uRugDye > 0.5) {
+      float eM = max(fwidth(md)*0.75, 0.004);
+      med = (1.0 - smoothstep(0.92 - eM, 0.92 + eM, md))*0.55
+          - (1.0 - smoothstep(0.48 - eM, 0.48 + eM, md))*0.34;
+    }
     /* No pile tap. A noise call on every floor pixel of this room, for a grain
        the post grade's own tooth already lays over the whole frame, is time the
        budget would rather keep. */
@@ -13983,7 +14168,7 @@ void main(){
   /* (graft: the passages' boards are not a cloud -- the fbm drift under
      their pools is what made the pools "soft smears"; uCrisp is 0 in every
      other room) */
-  vec3 alb = mix(uDeep, uMid, 0.24 + 0.78*mix(mmFbm3(w*0.42 + uSeed), 0.46, uCrisp*0.70));
+  vec3 alb = mix(uDeep, uMid, 0.24 + 0.78*mix(mmFbm3(w*0.42 + uSeed), 0.46, max(uCrisp*0.70, uNearCalm)));
   /* PER STONE. Value, and then hue: in selectKid's floor no two flags are the
      same colour either, some pulling warm and some plum, and that alone is
      most of the difference between a floor and a fill. */
@@ -14108,19 +14293,29 @@ void main(){
   }
 #endif
 #if MM_R25W == 1
+  const float kDye = 1.0;
+#else
+  /* (round 31: and in any room whose near floor asks for it -- uRugDye) */
+  float kDye = uRugDye;
+#endif
   /* ROUND 25: THE HALL RUNNER IS A TURKEY CARPET, in its own dyes. Laid
      only as value it photographed as a dark strip up the boards -- "its
      empty foreground floor" both judges asked to see dressed. A madder
      field, its chain of medallions in old gold and ivory, the indigo
      border between two gold guards, the ivory fringe at its end: the
      same drawing as before, every line the same pixel, now in colour. */
-  if (runner > 0.001) {
+  if (runner > 0.001 && kDye > 0.5) {
     float Lf = mmLum(mix(uDeep, uMid, 0.55));
     vec3 rug = vec3(0.42, 0.07, 0.055);
     rug = mix(rug, vec3(0.62, 0.44, 0.17), clamp(rMed/0.55, 0.0, 1.0)*0.85);
     rug = mix(rug, vec3(0.05, 0.08, 0.24), rBord*(1.0 - rGuard)*0.92);
     rug = mix(rug, vec3(0.70, 0.52, 0.20), rGuard);
     rug = mix(rug, vec3(0.76, 0.70, 0.56), rFr*0.85);
+#if MM_R25W != 1
+    /* (round 31: a runner laid in a passage behind the rooms is an old one,
+       its dyes worn toward the wool's own fawn) */
+    rug = mix(rug, vec3(mmLum(rug))*vec3(1.30, 0.95, 0.68), 0.42);
+#endif
     alb = mix(alb, rug*Lf*5.2*(0.80 + 0.30*cellv), runner*0.94);
     /* (round 25 graft, both judges on fight-foyer: "darken or interrupt the
        red runner where it passes under the enemy's HP bar, so the bar stays
@@ -14144,7 +14339,10 @@ void main(){
      reads at any distance; every edge is antialiased over its own pixel per
      axis, and the pile takes no lamp's mirror smear (wetK, below). */
   float rugCov = 0.0;
-  if (uRug.z > 0.01 && uIsCeiling < 0.5
+  /* (round 31: in any room whose near floor is dressed -- kDye; the
+     rooms that carried a carpet before round 31 drew one only in the Foyer's
+     program, and they still draw what they drew) */
+  if (uRug.z > 0.01 && uIsCeiling < 0.5 && kDye > 0.5
       && all(lessThan(abs(vWorld.xz - uRug.xy), uRug.zw + vec2(0.25)))) {
     vec2 rp = vWorld.xz - uRug.xy;
     vec2 rpx = vec2(length(vec2(dFdx(rp.x), dFdy(rp.x))), length(vec2(dFdx(rp.y), dFdy(rp.y))));
@@ -14190,11 +14388,15 @@ void main(){
     /* (laid in the runner's own value: the hall's lit board tone, as the
        runner's dyes are) */
     float LfR = mmLum(mix(uDeep, uMid, 0.55));
+#if MM_R25W != 1
+    /* (round 31: a hearth rug before a range takes the fire; laid at the
+       hall's value it was a black mat on the lit flags) */
+    LfR *= 1.9;
+#endif
     alb = mix(alb, rugCol*LfR*5.2*(0.86 + 0.20*mmNoise(rp*0.9 + 7.0)), rugCov*0.95);
     /* its edge stands a centimetre proud: a hairline of shadow round it */
     alb *= 1.0 - (1.0 - smoothstep(0.0, max(ePx*2.0, 0.02), abs(eIn)))*0.30*step(eIn, 0.0)*(1.0 - frg);
   }
-#endif
   alb *= mix(0.58, 1.0, smoothstep(uSpan.x*0.52, uSpan.x*0.24, abs(w.x)));   // creeps into shadow at the walls
   /* A tooth in SCREEN space: authored in metres it is 4 px at the camera's
      feet and a fifth of a pixel at the far wall, which is the spectrum the
@@ -14208,7 +14410,7 @@ void main(){
        perf A/B, and for the same reason. */
     float gritty = (mmHash21(floor(spx) + 11.3) - 0.5)*0.75
                  + (mmNoise(spx*0.52 + 41.7) - 0.5);
-    alb *= 1.0 + gritty*0.30;
+    alb *= 1.0 + gritty*0.30*(1.0 - 0.6*uNearCalm);
   }
 
   vec3 N = vec3(0.0, uIsCeiling > 0.5 ? -1.0 : 1.0, 0.0);
@@ -14230,9 +14432,7 @@ void main(){
      for floor pattern 9; that ground was not grafted, so only the runner's
      term is here, and wetK is exactly 1.0 on every floor but the Foyer's.) */
   float wetK = (1.0 - runner*0.86) * (1.0 - turf*0.85);   // nor does grass
-#if MM_R25W == 1
   wetK *= 1.0 - rugCov*0.92;            // (nor does the carpet: round 25 graft)
-#endif
   /* ...and WATER mirrors a lamp far harder than a wet tile, the image broken
      up by the ripples on it */
   float rip = 0.0;
@@ -14345,7 +14545,10 @@ void main(){
   if (uSconce.w > 0.001) {
     float onC = uIsCeiling;
     float zz = vWorld.z;
-    float kq = max(floor((-zz - uSconce.y)/uSconce.z + 0.5), 0.0);
+    /* (round 31: and two pairs nearer the eye than the first -- the near
+       floor and the near panelling lit in their pools, not a black void at
+       the sides of the frame: both judges on sheet-passages) */
+    float kq = max(floor((-zz - uSconce.y)/uSconce.z + 0.5), -2.0);
     float zk = -(uSconce.y + kq*uSconce.z);
     float inRun = step(uSconceEnd + 0.6, zk);
     float acc = 0.0;
@@ -14763,7 +14966,7 @@ void main(){
      fell to 40% toward the lens was the near-black lawn both judges asked to
      see filled -- with the near stones and the walk in it now, it runs lit
      to the frame's foot, a stop under the middle distance) */
-  col *= mix(0.74, 1.0, smoothstep(2.0, 13.0, vDepth));    // foreground falls away
+  col *= mix(uNearFall > 0.0 ? uNearFall : 0.74, 1.0, smoothstep(2.0, 13.0, vDepth));    // foreground falls away
 #elif MM_R25W == 1
   /* (round 25 graft, both judges on the parlour and the gallery: "carry the
      lit boards and flagstones into the near-black near floor" -- the hall's
@@ -14777,8 +14980,26 @@ void main(){
   if (uIsCeiling < 0.5)
     col += alb * vec3(1.00, 0.76, 0.50) * 0.95 * (1.0 - smoothstep(4.0, 12.0, vDepth));
 #else
-  col *= mix(0.40, 1.0, smoothstep(2.0, 13.0, vDepth));    // foreground falls away
+  col *= mix(uNearFall > 0.0 ? uNearFall : 0.40, 1.0, smoothstep(2.0, 13.0, vDepth));    // foreground falls away
 #endif
+  /* ---- ROUND 31: THE NEAR FLOOR'S OWN LAMP ------------------------------
+     A pool of lamplight lying on the boards or the flags in front of the
+     eye -- the lantern stood just inside the frame, the sconce over your
+     shoulder -- placed in EYE metres (uNearPool) so it is on the near floor
+     from every vantage and in the fight. The floor's own albedo lit by it,
+     so its joints, grain and crumbs run on through it; broken by the wet
+     smear's field, so it lies on a surface and is not a gradient; and it
+     falls off as a lamp does, a bright core and a long soft spill. Black
+     in every room that does not ask. */
+  if (uIsCeiling < 0.5 && (uNearPoolC.r + uNearPoolC.g + uNearPoolC.b) > 0.0001) {
+    vec2 de = vWorld.xz - uCamera.xz;
+    float alongE = dot(de, uNearFwd);
+    float acrossE = de.x*(-uNearFwd.y) + de.y*uNearFwd.x;
+    vec2 qe = vec2((alongE - uNearPool.x)/max(uNearPool.z, 0.1), (acrossE - uNearPool.y)/max(uNearPool.w, 0.1));
+    float re2 = dot(qe, qe);
+    float poolE = exp(-re2*1.6)*0.80 + exp(-sqrt(re2)*1.3)*0.38;
+    col += alb * uNearPoolC * poolE * (0.62 + 0.38*smear);
+  }
   /* ...and in a room that asks, the floor under the hand and at the two
      edges of the frame goes down toward near-black, the way a painted room
      is vignetted into its own dark (round 21 graft). A multiply, so the
@@ -16996,29 +17217,36 @@ float yLobes(vec2 c, float jit, float sd, out float id, out vec2 off){
   return h;
 }
 float yewFaceP(vec2 p, float px, float sd, out float tone, out float lit){
-  float i1, i2;
-  vec2 o1, o2;
-  /* (round 29: off its grid, as the walls' -- yewFace) */
-  vec2 pw = p + (vec2(mmNoise(p*1.3 + sd), mmNoise(p*1.3 + sd + 5.1)) - 0.5)*0.30;
-  float a = yLobes(pw/0.34, 0.74, sd, i1, o1);
-  float l1 = smoothstep(2.5*px, 6.0*px, 0.34), l2 = smoothstep(2.5*px, 6.0*px, 0.115);
-  float b = -1.0;
-  if (l2 > 0.001) {
-    vec2 pr = vec2(p.x*0.92 - p.y*0.39, p.x*0.39 + p.y*0.92);
-    b = yLobes(pr/0.115, 0.82, sd + 7.3, i2, o2);
-  } else { i2 = 0.5; o2 = vec2(0.0); }
-  float up1 = clamp(o1.y*1.7 + 0.30, 0.0, 1.0);
-  float s1 = smoothstep(-0.02, 0.24, a) * (0.42 + 0.58*up1) * (0.80 + 0.40*i1);
-  float s2 = smoothstep(-0.02, 0.22, b) * (0.55 + 0.45*clamp(o2.y*1.7 + 0.30, 0.0, 1.0))
-           * (0.85 + 0.30*i2);
-  float nd = smoothstep(2.5*px, 6.0*px, 0.05);
-  float needle = mix(1.0, 0.78 + 0.40*mmNoise(vec2(p.x*34.0, p.y*22.0) + sd), nd);
-  /* (round 29 graft, judge 2: "keep the crisp leaf clusters across the
-     whole wall face" -- the sprays at BOLUS's two-thirds swing, from 0.40,
-     so every hand of the hedge is a cluster, not a slab) */
-  tone = mix(0.52, s1, l1*0.66) * mix(0.72, s2, l2*0.70) * needle;
-  lit = mix(0.35, smoothstep(0.05, 0.30, a) * up1 * up1, l1) * mix(0.8, 0.55 + 0.45*s2, l2);
-  return a*0.080*l1*0.35 + b*0.028*l2*0.70;
+  /* ROUND 31 (both survey-4 judges: "the hedge texture is wrong
+     outright", "replace the repeated scallop tile with drawn clipped
+     hedges"). The scallop WAS the shading in each lobe -- every dome lit on
+     its upper half and ringed dark under it -- which is a fish-scale at any
+     jitter. A clipped yew's leaf is a MOSAIC of sprays, each laid flat in its
+     own value (no dome, no ring), long and slanted the way the shoots grow,
+     with a hairline of shade only where two meet; and the hedge reads by its
+     FORM -- lit up the face toward the sheared top, soft swells where the
+     shears rode the growth, a few deep soft hollows. */
+  vec2 bq = p*vec2(0.62, 0.95) + sd*1.3;
+  float bul = mmFbm3(bq);
+  float n1 = mmNoise(p*vec2(1.7, 2.2) + sd*0.7);
+  float rise = mmNoise(bq*1.7 + vec2(0.0, 0.16)) - mmNoise(bq*1.7 - vec2(0.0, 0.16));
+  float up = clamp(0.52 + rise*2.4, 0.0, 1.0);
+  float lf = smoothstep(2.5*px, 6.0*px, 0.10);
+  float ia = 0.5; vec2 oa = vec2(0.0);
+  float a = 0.5;
+  if (lf > 0.001) {
+    vec2 pr = vec2(p.x*0.80 - p.y*0.60, p.x*0.60 + p.y*0.80);
+    a = yLobes(pr/vec2(0.135, 0.082), 0.95, sd + 7.3, ia, oa);
+  }
+  
+  float gapS = smoothstep(-0.06, 0.12, a);
+  float spray = mix(0.62, (0.48 + 0.72*ia)*(0.55 + 0.45*gapS)*(0.92 + 0.12*clamp(oa.y*1.5 + 0.5, 0.0, 1.0)), lf);
+  float hollow = smoothstep(0.36, 0.22, bul*0.75 + n1*0.25);
+  float hT = smoothstep(0.3, 3.0, p.y);
+  float face = 0.58 + 0.42*hT;
+  tone = face*(0.78 + 0.36*bul)*(0.88 + 0.22*n1)*(0.84 + 0.22*up)*(0.62 + 0.62*spray)*(1.0 - 0.40*hollow);
+  lit = up*(0.55 + 0.55*bul)*(0.55 + 0.75*spray*gapS)*(1.0 - 0.6*hollow);
+  return (bul - 0.5)*0.16 + (n1 - 0.5)*0.05 - hollow*0.05 + (gapS - 0.5)*0.012*lf;
 }
 float topKind(float seed){ return mmHash11(seed*7.31 + 0.4); }
 vec2 topSD(vec2 m, vec2 msz, float seed){
@@ -17085,6 +17313,37 @@ float tbSD(vec2 m, vec2 msz, float seed, out float ok){
   float hw = msz.x*0.5 - 0.05;
   const float TOP = 0.86;
   ok = 0.0;
+  /* ROUND 31: THE KITCHEN BENCH (a near-floor piece, placed by hand with
+     its seed over 20 -- no dealt table is ever one): a long scrubbed deal
+     seat on two splayed trestle ends with a stretcher between them, set
+     along the table, and on the flags at its end a wicker basket with its
+     bow handle and the loaves in it (ok 6 the wicker, 3 a loaf). */
+  if (seed > 19.5) {
+    const float ST = 0.47;
+    float bc = -hw*0.16, bw = hw*0.58;
+    float d = mmBox(m - vec2(bc, ST - 0.032), vec2(bw, 0.032), 0.010);          // the seat
+    float ex = abs(m.x - bc) - (bw - 0.20);
+    float splay = 0.030 + 0.050*(1.0 - clamp(m.y/ST, 0.0, 1.0));
+    float end = mmBox(vec2(ex, m.y - (ST - 0.06)*0.5), vec2(splay, (ST - 0.06)*0.5), 0.004);
+    /* the trestle end's foot cut in a V, so it stands on two points */
+    end = max(end, -(0.11 - abs(ex)*1.6 - m.y));
+    d = min(d, end);
+    d = min(d, mmBox(m - vec2(bc, 0.17), vec2(bw - 0.22, 0.020), 0.004));        // the stretcher
+    /* the basket */
+    vec2 bq = m - vec2(hw - 0.30, 0.0);
+    float bhw = 0.17 + 0.05*clamp(bq.y/0.28, 0.0, 1.0);
+    float bk = mmBox(vec2(bq.x, bq.y - 0.14), vec2(bhw, 0.14), 0.035);
+    float hd = max(abs(length((bq - vec2(0.0, 0.26))/vec2(0.19, 0.25)) - 1.0)*0.19 - 0.013, 0.24 - bq.y);
+    float wk = min(bk, hd);
+    if (wk < d) ok = 6.0;
+    d = min(d, wk);
+    float lf = min(length((bq - vec2(-0.07, 0.29))/vec2(0.11, 0.065)) - 1.0,
+                   length((bq - vec2(0.08, 0.30))/vec2(0.10, 0.07)) - 1.0)*0.065;
+    lf = max(lf, 0.27 - bq.y - 0.04);
+    if (lf < d) ok = 3.0;
+    d = min(d, lf);
+    return d;
+  }
   float d = mmBox(m - vec2(0.0, TOP - 0.04), vec2(hw, 0.045), 0.012);          // the top
   d = min(d, mmBox(m - vec2(0.0, TOP - 0.14), vec2(hw - 0.07, 0.065), 0.005));  // its apron, a drawer's depth
   for (int i = 0; i < 2; i++){
@@ -17151,7 +17410,9 @@ vec3 hzWither(vec2 p, float sd, float px, float holes, out float gap, out float 
   float ol = smoothstep(0.36, 0.56, w + 0.10*w2);
   float die = smoothstep(0.48, 0.70, w + 0.20*footB + 0.08*w2);
   vec3 c = mix(green, olive, ol);
-  c = mix(c, rust, die*0.85);
+  /* (round 31: the dead patches a step quieter -- under the clumps'
+     own light they read as camouflage blotches across the face) */
+  c = mix(c, rust, die*0.55);
   float gv = w + 0.10*footB + 0.07*(w2 - 0.5);
   gap = smoothstep(0.670, 0.700, gv)*holes;
   /* the leaf round a hole is in its shadow (round 29 graft: narrower and
@@ -17173,7 +17434,11 @@ vec3 hzWither(vec2 p, float sd, float px, float holes, out float gap, out float 
     }
   }
   c = mix(c, vec3(0.010, 0.009, 0.011), gap);
-  c = mix(c, vec3(0.30, 0.235, 0.165)*(0.70 + 0.50*w2), twig*gap);
+  /* (round 31, judge 2: "remove the floating gold lattice" -- the dead
+     stems across a hole were pale tan pen lines, a lattice hung on the
+     hedge; they are dead wood in the hedge's own dark now, a stop over the
+     hole and no more) */
+  c = mix(c, vec3(0.060, 0.046, 0.034)*(0.70 + 0.50*w2), twig*gap);
   return c;
 }
 
@@ -23208,15 +23473,36 @@ void main(){
     /* (round 28: 2.0 from 0.9 -- against the range behind them the tables
        were dark frames, "black wire outlines"; the scrubbed top is the one
        pale plank in the room) */
+    float bench = step(19.5, vSeed);         // (round 31: the bench -- tbSD)
+    /* ROUND 31 (judge 1: "grain the tables"): DEAL HAS A GRAIN, and it runs
+       along each member -- down a leg, along the apron and the top -- in
+       streaks of the pale spring wood and the darker late wood, with a knot
+       here and there; drawn in metres where a streak is resolvable */
+    {
+      float vert = step(tm.y, mix(0.66, 0.40, bench))*(1.0 - step(abs(tm.x), 0.0));
+      vec2 gq = mix(vec2(tm.x*1.4, tm.y*20.0), vec2(tm.x*20.0, tm.y*1.4), vert) + vSeed*3.1;
+      float gs = mmNoise(gq) + 0.5*mmNoise(gq*vec2(2.3, 1.7) + 5.0);
+      float gl = smoothstep(0.018, 0.007, max(mpp.x, mpp.y));
+      deal *= mix(1.0, 0.76 + 0.32*gs, gl);
+      float kn = 1.0 - smoothstep(0.012, 0.030, length(vec2(fract(tm.x/0.83 + vSeed) - 0.5, (tm.y - 0.83)*6.0)));
+      deal *= 1.0 - 0.35*kn*gl*(1.0 - vert);
+    }
+    if (bench < 0.5) {
     deal *= 1.0 + 2.0*smoothstep(0.80, 0.84, tm.y)*step(tm.y, 0.865);
     deal *= 1.0 - 0.45*step(tm.y, 0.77);
+    } else {
+      /* the bench's seat is scrubbed as the table's top, its face a band of
+         light, its trestles in the seat's shadow */
+      deal *= 0.62 + 1.50*smoothstep(0.425, 0.452, tm.y)*step(tm.y, 0.476);
+      deal *= 1.0 - 0.30*step(tm.y, 0.40)*smoothstep(0.30, 0.40, tm.y);
+    }
     /* (round 28) the apron is a row of DRAWERS: each front a board a step
        lighter than the rails round it, a dark seam about it and a brass knob
        at its middle -- what tells a working table from a frame of sticks */
     {
       float dwP = 0.52;
       float dxl = abs(fract(tm.x/dwP + 0.5) - 0.5)*dwP;
-      float inAp = step(0.665, tm.y)*step(tm.y, 0.775)*step(abs(tm.x), vSize.x*0.5 - 0.20);
+      float inAp = step(0.665, tm.y)*step(tm.y, 0.775)*step(abs(tm.x), vSize.x*0.5 - 0.20)*(1.0 - bench);
       float seam = (1.0 - smoothstep(0.0, 0.012 + mpp.x, abs(dxl - dwP*0.5 + 0.02)))
                  + (1.0 - smoothstep(0.0, 0.010 + mpp.y, abs(tm.y - 0.672)))
                  + (1.0 - smoothstep(0.0, 0.010 + mpp.y, abs(tm.y - 0.768)));
@@ -23230,6 +23516,14 @@ void main(){
             : (gTbOk < 4.5 ? vec3(0.74, 0.30, 0.11) : vec3(0.48, 0.40, 0.30))));
     /* (round 28 graft: the crockery a stop up -- the bowls and the crock came
        back as black half-discs on the scrubbed top) */
+    /* (round 31: the bench's basket is WICKER -- its weave in rows of
+       stakes and rods, the bow handle a twist of it) */
+    if (gTbOk > 5.5) {
+      vec2 wq = tm - vec2(vSize.x*0.5 - 0.35, 0.0);
+      float rod = 0.5 + 0.5*sin(wq.y*150.0 + 2.2*sin(wq.x*60.0));
+      float stake = 1.0 - smoothstep(0.0, 0.006 + mpp.x, abs(fract(wq.x/0.045) - 0.5)*0.045);
+      oc = vec3(0.80, 0.56, 0.26)*(0.62 + 0.42*rod)*(1.0 - 0.35*stake*step(wq.y, 0.27));
+    }
     oc *= (lum*3.8 + 0.060);
     albedo = mix(deal, oc, step(0.5, gTbOk));
   }
