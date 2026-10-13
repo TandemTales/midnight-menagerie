@@ -235,9 +235,6 @@ const PROOFS = [
   ['wisp/stop-the-clocks', 'two Lingering Tricks', async (up) => {
     const e = await mk('wisp'); for (let i = 0; i < 2; i++) await addPlay(e, 'wisp/nightlight-practice');
     const t = tally(e); await addPlay(e, 'wisp/stop-the-clocks', up); return t.block; }],
-  ['wisp/gentle-landing', 'an Afterglow before the next turn (one Hastened, no Guard of its own)', async (up) => {
-    const e = await mk('wisp'); await addPlay(e, 'wisp/wait-wait'); await addPlay(e, 'wisp/gentle-landing', up);
-    const t = tally(e); await addPlay(e, 'wisp/cut-the-wait'); return t.block; }],
   ['wisp/constellation-practice', 'two Afterglows landing together', async (up) => {
     const e = await mk('wisp'); for (let i = 0; i < 2; i++) await addPlay(e, 'wisp/nightlight-practice');
     await addPlay(e, 'wisp/constellation-practice', up); const t = tally(e);

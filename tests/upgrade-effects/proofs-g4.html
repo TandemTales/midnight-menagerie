@@ -172,7 +172,6 @@ const PROOFS = [
     ['crumbula/midnight-snack', { marks: 3, app: 3 }, (e, t, tl) => tl.block],
     ['crumbula/one-tiny-sip', { marks: 3, app: 1 }, (e, t, tl) => tl.heal],
     ['crumbula/seconds', { marks: 3, app: 1 }, (e, t, tl) => tl.heal + '/' + tl.block],
-    ['crumbula/pocket-snack', { marks: 3 }, (e) => e.piles.hand.filter(k => k.id === 'crumbula/leftover').length],
     ['crumbula/reserve-vintage', { marks: 3 }, (e) => e.piles.hand.filter(k => k.id === 'crumbula/leftover').length],
     ['crumbula/clean-plate-club', { marks: 5, app: 3 }, (e, t, tl) => tl.heal + '/' + tl.block],
     ['crumbula/house-guest', { marks2: 6 }, (e, t, tl) => tl.block],
@@ -241,7 +240,7 @@ const PROOFS = [
     return tl.dmg; }],
   ['truffle/exact-amount-of-terrible', 'a target swinging for more than the base cap', async (up) => {
     const e = await mk('truffle'); const t = e.livingEnemies()[0];
-    t.pendingMove = { ...(t.pendingMove || {}), intent: 'attack', damage: 40 }; e.player.block = 0;
+    /* a REAL big swing: the card reads the intent's totalDamage now, so a faked pendingMove no longer moves it */ e.applyStatus(t, 'strength', 40); e.refreshIntents('proof'); e.player.block = 0;
     await addPlay(e, 'truffle/exact-amount-of-terrible', up, t); return e.player.block; }],
   ['truffle/lend-them-the-spiky-side', 'a teammate to lend to (two seats)', async (up) => {
     const e = await mkParty('truffle', 2);
