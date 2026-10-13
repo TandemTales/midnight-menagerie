@@ -64,8 +64,8 @@
  * by proofs-g1..g4.html (python tests/base-effects/run.py).
  */
 import * as CARDS from '../../game/src/data/cards.js';
-import { sourceFor, literalOf, PARTY, CHOICE } from '../upgrade-effects/harness.js';
-import { compare, lastResolver } from './twin.js';
+import { sourceFor, literalOf, PARTY } from '../upgrade-effects/harness.js';
+import { compare, lastResolver, ASKS } from './twin.js';
 
 /* [id, 'why this board cannot show it'], in four groups. Checked in BOTH
    directions, and every entry is proved live by proofs-g<N>.html (run.py). */
@@ -96,7 +96,7 @@ const say = (html, cls) => { const d = document.createElement('div'); if (cls) d
       const p = await compare(def, { party: true });
       if (p && !p.same) { r = p; rescued.party.push(def.id); }
     }
-    if (r.same && r.played && CHOICE.test(literalOf(await sourceFor(def.companion), def.id))) {
+    if (r.same && r.played && ASKS.test(literalOf(await sourceFor(def.companion), def.id))) {
       const q = await compare(def, { resolver: lastResolver });
       if (q && !q.same) { r = q; rescued.choice.push(def.id); }
     }

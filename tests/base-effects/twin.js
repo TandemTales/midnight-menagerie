@@ -119,6 +119,11 @@ function blindOf(snap) {
   }).join(' # ');
 }
 
+/** Every way a card effect asks the player something. Wider than the upgrade
+ *  gate's CHOICE: the ctx's own `choose` / `chooseCard` and Brambleboo's
+ *  `pickPlant` ask too, and a card asking that way deserves the second try. */
+export const ASKS = /chooseOne|pickCards|pickEpitaph|pickHand|askRead|\.choose\(|chooseCard|pickPlant|choices\.ask/;
+
 /** Pick the LAST offered options instead of the first. */
 export const lastResolver = (req) => {
   const n = Math.min(req.count, req.pool.length);
@@ -145,6 +150,11 @@ export async function playOnce(def, blank, o = {}) {
   if (!card) return null;
   const tally = startTally(e);
 
+  /* PLAYED is "the engine announced the play", not "it left the hand": Dog-Ear
+     comes back to the hand by its own text, and a hand check called it a card
+     this board cannot play. */
+  let played = false;
+  e.on('card:play', (ev) => { if (ev && ev.cardUid === card.uid) played = true; });
   e.player.energy = 9;
   const rng = e.rng.snapshot();
   let threw = '';
@@ -152,7 +162,6 @@ export async function playOnce(def, blank, o = {}) {
     await e.playCard(card.uid, def.target === 'enemy' ? (t && t.id) : undefined);
   } catch (err) { threw = String((err && err.message) || err); }
   e.rng.restore(rng);
-  const played = !((e.piles.hand || []).includes(card));
   const onPlay = richSnap(e, card);
   if (o.after) await o.after(e, t);
   const after = await playTurns(e, t);
