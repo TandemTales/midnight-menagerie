@@ -1,0 +1,66 @@
+{
+  "round": "r31",
+  "maxBuilders": 3,
+  "briefs": [
+    "docs/ui-pass/BRIEF-r0.md",
+    "docs/ui-pass/BRIEF-r1.md",
+    "docs/ui-pass/BRIEF-r11.md",
+    "docs/ui-pass/BRIEF-r16.md",
+    "docs/ui-pass/BRIEF-r21.md",
+    "docs/ui-pass/BRIEF-r22.md",
+    "docs/ui-pass/BRIEF-r23.md",
+    "docs/ui-pass/BRIEF-r24.md",
+    "docs/ui-pass/BRIEF-r25.md",
+    "docs/ui-pass/BRIEF-r28.md",
+    "docs/ui-pass/BRIEF-r29.md",
+    "docs/ui-pass/BRIEF-r31.md"
+  ],
+  "rubrics": [
+    "docs/ui-pass/RUBRIC.md",
+    "docs/ui-pass/RUBRIC-r31.md"
+  ],
+  "samples": [
+    "UI/title.png",
+    "UI/mainMenu.png",
+    "UI/selectCompanion.png",
+    "UI/selectKid.png"
+  ],
+  "tracks": [
+    {
+      "key": "rooms",
+      "name": "ROOMS",
+      "rule": "refine",
+      "screens": [
+        "sheet-passages",
+        "sheet-hedge",
+        "sheet-kitchens",
+        "sheet-graveyard",
+        "fight-kitchens"
+      ],
+      "smallScreens": [
+        "fight-kitchens"
+      ],
+      "baseline": "MOREEN",
+      "builders": [
+        {
+          "slot": "a",
+          "code": "MANGANESE",
+          "port": 9181,
+          "angle": "LITERAL -- the angle that won rounds 20, 23-25 and 29. Work BRIEF-r31's fix list 1 to 3 in order and exactly as written, one wing at a time, the Passages FIRST (the lowest-scored room in the house). Keep every change inside your four wings."
+        },
+        {
+          "slot": "b",
+          "code": "HEMATITE",
+          "port": 9182,
+          "angle": "THE NEAR FLOOR FIRST -- both judges' shared defect. Build the dressed, lit near floor (a rug or flags, a pool of lamplight, a prop or two above the hand's edge) as ONE rule your four wings use, prove it there, then sweep all seventeen SEEDED and keep it only where it lifts a room; then each wing's own defect in that light."
+        },
+        {
+          "slot": "c",
+          "code": "SAFFLOWER",
+          "port": 9183,
+          "angle": "THE OBJECT DRAWN, NOT TILED. Each wing's worst thing is a material that reads as a texture: the maze's scallop tile, the passage's soft panels, the kitchen's tangled tables, the chapel's scan-lined gable. Draw each as a real object with crisp inked edges first -- clipped hedge, panelled wainscot, a table with benches, coursed masonry -- then dress and light the near floor."
+        }
+      ]
+    }
+  ]
+}
