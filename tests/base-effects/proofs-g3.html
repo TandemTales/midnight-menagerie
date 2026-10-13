@@ -23,8 +23,77 @@ import * as U from '../../game/src/data/companions/_util.js';
 import { lastResolver } from './twin.js';
 import { runProofs, add, play, addPlay, M, emptyHand, st, enemyHit, DEFS } from './proofkit.js';
 
+/* Board builders, all on the gate's own seeded board. */
+const marks = (n) => async (e, t) => { e.applyStatus(t, 'bite-mark', n); };
+const leftover = (pile) => async (e) => { const k = add(e, 'crumbula/leftover'); if (pile !== 'hand') e.moveCard(k, pile); };
+/* Wait... Wait... lands at 1, Long Fuse at 3: each is played for real, so it
+   enters the Gloaming the way a Lingering Trick does. */
+const linger = (...ids) => async (e, t) => { for (const id of ids) await addPlay(e, id, t); };
+const WAIT = 'wisp/wait-wait', FUSE = 'wisp/long-fuse';
+/* A Torn Trick: Sock Kick moved to the Torn pile (the engine's stash), unplayable there. */
+const torn = (patches) => async (e) => {
+  const k = add(e, 'mopsy/sock-kick');
+  e.moveCard(k, 'stash'); k.unplayable = true;
+  if (patches) U.setFlag(k, 'patches', patches);
+};
+const patched = (stitches = 1) => async (e) => {
+  const k = add(e, 'mopsy/folded-arms'); U.setFlag(k, 'patches', [{ id: 'guard', stitches }]); e.__patched = k;
+};
+
 /* [id, what the board needs, { setup(e, t), target(e, t), party, resolver, after(e, t) }] */
 const PROOFS = [
+  // ── Count Crumbula: Feed eats Bite Marks, and the seeded target has none ──
+  ['crumbula/midnight-snack', 'a Bite Mark to Feed on (Appetite 3 -> 4, Sated)', { setup: marks(3) }],
+  ['crumbula/one-tiny-sip', 'a Bite Mark to Feed on', { setup: marks(3) }],
+  ['crumbula/seconds', 'Bite Marks to Feed on', { setup: marks(3) }],
+  ['crumbula/reserve-vintage', 'Bite Marks to remove', { setup: marks(3) }],
+  ['crumbula/clean-plate-club', 'Bite Marks to Feed on', { setup: marks(5) }],
+  ['crumbula/choice-of-vintage', 'a marked enemy to choose', { setup: marks(3) }],
+  ['crumbula/royal-taste-test', 'Bite Marks on the target', { setup: marks(5) }],
+  ['crumbula/house-guest', 'Bite Marks on ANOTHER enemy', {
+    setup: async (e, t) => { const o = e.livingEnemies().find(x => x !== t); e.applyStatus(o, 'bite-mark', 3); } }],
+  ['crumbula/first-course', 'Hungry (Appetite 0)', { setup: async (e) => e.setCounter('appetite', 0, 'proof') }],
+  ['crumbula/emergency-rations', 'a Leftover in hand', { setup: leftover('hand') }],
+  ['crumbula/one-for-the-road', 'Leftovers in hand', { setup: async (e) => { for (let i = 0; i < 3; i++) add(e, 'crumbula/leftover'); } }],
+  ['crumbula/secret-pantry', 'a Leftover in the discard pile', { setup: leftover('discard') }],
+  ['crumbula/polite-refusal', 'a Feed after it (a Bite Mark and One Tiny Sip)', {
+    setup: marks(3), after: async (e, t) => { await addPlay(e, 'crumbula/one-tiny-sip', t); } }],
+  ['crumbula/the-good-napkin', 'an Indulge after it (Bad Idea, Delicious)', {
+    after: async (e, t) => { await addPlay(e, 'crumbula/bad-idea-delicious', t); } }],
+  ['crumbula/pass-the-plate', 'a friend at the table and Bite Marks to turn into Leftovers', { party: true, setup: marks(3) }],
+  ['crumbula/family-banquet', 'a marked enemy, and a Kid hitting it this round (Tiny Nibble)', {
+    setup: async (e, t) => { e.applyStatus(t, 'bite-mark', 3); e.player.hp = 40; },
+    after: async (e, t) => { await addPlay(e, 'crumbula/tiny-nibble', t); } }],
+
+  // ── Wisp: nothing is Lingering on the seeded board ────────────────────────
+  ['wisp/not-yet', 'a Lingering Trick at 1', { setup: linger(WAIT) }],
+  ['wisp/scoot-the-spark', 'a Lingering Trick', { setup: linger(WAIT) }],
+  ['wisp/still-here', 'a Lingering Trick', { setup: linger(WAIT) }],
+  ['wisp/orbiting-sparks', 'a Trick in the Gloaming', { setup: linger(WAIT) }],
+  ['wisp/line-them-up', 'two Lingering Tricks at different countdowns (1 and 3)', { setup: linger(WAIT, FUSE) }],
+  ['wisp/cut-the-wait', 'a Lingering Trick', { setup: linger(WAIT) }],
+  ['wisp/borrowed-tomorrow', 'a Lingering Trick', { setup: linger(FUSE) }],
+  ['wisp/all-at-once', 'a Lingering Trick', { setup: linger(WAIT) }],
+  ['wisp/same-time-tomorrow', 'a Lingering Trick whose countdown the choice changes (3 -> 1)', { setup: linger(FUSE) }],
+  ['wisp/skip-to-the-good-part', 'a Lingering Trick', { setup: linger(FUSE) }],
+  ['wisp/double-exposure', 'a Lingering Trick to copy', { setup: linger(FUSE) }],
+  ['wisp/encore', 'a Linger Trick in the discard pile', { setup: async (e) => { e.moveCard(add(e, WAIT), 'discard'); } }],
+  ['wisp/one-bright-problem', 'Blazing (6 Glow)', { setup: async (e) => e.setCounter('glow', 6, 'proof') }],
+  ['wisp/count-with-me', 'a friend at the table and a Lingering Trick that resolves', { party: true, setup: linger(WAIT) }],
+  ['wisp/make-a-constellation', 'a friend at the table and a Lingering Trick that resolves', { party: true, setup: linger(WAIT) }],
+
+  // ── Mopsy: nothing is Torn and nothing is Patched on the seeded board ─────
+  ['mopsy/little-repair', 'a Torn Trick', { setup: torn() }],
+  ['mopsy/find-that-piece', 'a Torn Trick with a Patch', { setup: torn([{ id: 'guard', stitches: 1 }]) }],
+  ['mopsy/mend-with-love', 'a Torn Trick', { setup: torn() }],
+  ['mopsy/cross-stitch', 'a Patched Trick in hand and another to take it', { setup: patched(1) }],
+  ['mopsy/neat-hem', 'a Patch in hand', { setup: patched(1) }],
+  ['mopsy/borrowed-pattern', 'a Patched Trick and another to copy it onto', { setup: patched(1) }],
+  ['mopsy/two-good-stitches', 'a Patched Trick played after it', {
+    setup: patched(2), after: async (e) => { await play(e, e.__patched); } }],
+  ['mopsy/hand-me-down', 'a friend at the table and a Patched Trick', { party: true, setup: patched(1) }],
+  ...['mopsy/inside-out', 'mopsy/turn-me-inside-out'].map(id =>
+    [id, 'Stuffing off the middle (0, so it turns Plump)', { setup: async (e) => e.setCounter('stuffing', 0, 'proof') }]),
 ];
 
 runProofs(PROOFS);
