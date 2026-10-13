@@ -119,6 +119,10 @@ function blindOf(snap) {
   }).join(' # ');
 }
 
+/** Text that pays somebody other than the player. Wider than the upgrade
+ *  gate's PARTY: "a chosen Kid" (Lend Them the Spiky Side) never matched it. */
+export const FRIENDLY = /friend|teammate|\bally\b|another Kid|other Kid|each Kid|every Kid|chosen Kid|a Kid\b|party/i;
+
 /** Every way a card effect asks the player something. Wider than the upgrade
  *  gate's CHOICE: the ctx's own `choose` / `chooseCard` and Brambleboo's
  *  `pickPlant` ask too, and a card asking that way deserves the second try. */

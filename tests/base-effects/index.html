@@ -64,8 +64,8 @@
  * by proofs-g1..g4.html (python tests/base-effects/run.py).
  */
 import * as CARDS from '../../game/src/data/cards.js';
-import { sourceFor, literalOf, PARTY } from '../upgrade-effects/harness.js';
-import { compare, lastResolver, ASKS } from './twin.js';
+import { sourceFor, literalOf } from '../upgrade-effects/harness.js';
+import { compare, lastResolver, ASKS, FRIENDLY } from './twin.js';
 
 /* [id, 'why this board cannot show it'], in four groups. Checked in BOTH
    directions, and every entry is proved live by proofs-g<N>.html (run.py). */
@@ -92,7 +92,7 @@ const say = (html, cls) => { const d = document.createElement('div'); if (cls) d
     checked++;
     if (r.unfair) { broken.push(def.id + ': the card plays here but its blank twin is refused, so the comparison is unfair'); continue; }
     /* Second chances: a friend at the table, then the other end of a choice. */
-    if (r.same && r.played && PARTY.test(def.text || '')) {
+    if (r.same && r.played && FRIENDLY.test(def.text || '')) {
       const p = await compare(def, { party: true });
       if (p && !p.same) { r = p; rescued.party.push(def.id); }
     }

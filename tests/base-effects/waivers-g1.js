@@ -6,7 +6,6 @@ export default [
      Advance, nothing was ENTERED this turn, and the Forecast row is empty. */
   ['drizzle/just-a-sprinkle', 'Weather is seeded at Thunderstorm, so the Advance cannot change it'],
   ['drizzle/drip-drip-drip', 'Weather is seeded at Thunderstorm, so the Advance cannot change it'],
-  ['drizzle/turn-the-tap', 'the auto-pick is Advance and Weather is seeded at Thunderstorm, so nothing changes'],
   ['drizzle/after-the-flash', 'Weather never changed this turn, so it cannot be played'],
   ['drizzle/hold-the-downpour', 'Weather is Thunderstorm, not Downpour, so it cannot be played'],
   ['drizzle/cloud-shelf', 'no Forecast is waiting to be returned'],

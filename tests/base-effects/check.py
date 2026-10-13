@@ -35,11 +35,13 @@ cannot play at all - is dead unless the page's WAIVED_LIST names it WITH the
 reason. A waiver that starts showing a difference FAILS, and every waiver is
 proved live on a board that reaches its condition by `run.py` (proofs-g1..g4.html).
 
-REPORT-ONLY, UNTIL THE LIST IS EMPTY
-------------------------------------
-The exit code is about the gate's health (a card it cannot instantiate, a stale
-waiver, a console error) until the dead list reaches zero; then the list itself
-fails, as tests/upgrade-effects did on 2026-10-04. See main.
+IT FAILS ON THE LIST (since 2026-10-13)
+---------------------------------------
+It started report-only at 174 identical Tricks. Burned down the same day:
+fixed where the card was genuinely dead, waived-and-proved where only this
+board could not show it. At zero, the list itself fails, as tests/upgrade-
+effects has since 2026-10-04: a Trick that does nothing is a card reward the
+player wasted.
 """
 import argparse
 import sys
@@ -105,9 +107,9 @@ def main():
               f"{len(stale)} stale waivers, {len(broken)} broken, {len(bad)} console errors",
               flush=True)
         browser.close()
-        # REPORT-ONLY while the list is long (a red nobody can clear is a red
-        # nobody believes); the exit code is the gate's own health.
-        return 1 if (stale or broken or bad) else 0
+        # 2026-10-13: the list reached ZERO (174 -> 0), so it fails now. A live
+        # Trick this board cannot show belongs in waivers-g<N>.js WITH its proof.
+        return 1 if (dead or stale or broken or bad) else 0
 
 
 if __name__ == "__main__":

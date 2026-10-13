@@ -58,7 +58,6 @@ const PROOFS = [
   // ── Drizzle: Weather with room to move ────────────────────────────────────
   ['drizzle/just-a-sprinkle', 'Weather below Thunderstorm (Clear)', { setup: (e) => setWeather(e, CLEAR) }],
   ['drizzle/drip-drip-drip', 'Weather below Thunderstorm (Clear)', { setup: (e) => setWeather(e, CLEAR) }],
-  ['drizzle/turn-the-tap', 'Weather the auto-picked Advance can move (Clear)', { setup: (e) => setWeather(e, CLEAR) }],
   ['drizzle/after-the-flash', 'Weather changed this turn (Clear, then Just a Sprinkle)', {
     setup: async (e) => { setWeather(e, CLEAR); await addPlay(e, 'drizzle/just-a-sprinkle'); } }],
   ['drizzle/hold-the-downpour', 'Downpour', { setup: (e) => setWeather(e, DOWNPOUR) }],
