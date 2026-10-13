@@ -27,6 +27,18 @@ import { runProofs, add, play, addPlay, M, emptyHand, st, enemyHit, DEFS } from 
 /* Taffy's Belly is the stash, flagged; a Stretched Trick carries its count in meta. */
 const belly = (e, ...ids) => { for (const id of ids) add(e, id, 'stash').meta.belly = true; };
 const stretched = (e, id, n = 1) => { const k = add(e, id); k.meta['#stretch'] = n; k.meta.stretched = true; return k; };
+/* A Trick Buried in one of Pudding's Plots, as pudding.js `bury` leaves it:
+   in the stash, unplayable, in the first empty Plot, which is still unused
+   this turn so a Dig Up can turn it over. */
+const plot = (e, id = 'pudding/little-chomp') => {
+  const k = add(e, id, 'stash'), s = M(e);
+  if (!s.plots) s.plots = [];
+  while (s.plots.length < 3) s.plots.push({ card: null, used: false });
+  s.plots.find(p => !p.card).card = k;
+  k.unplayable = true; k.meta.buried = true;
+  e.setCounter('plots', s.plots.filter(p => p.card).length, 'proof');
+  return k;
+};
 /* A Fetched Trick back in Bones's discard, still Slobbered. */
 const slobbered = (e, id = 'bones/bite') => { const k = add(e, id, 'discard'); k.meta.slobbered = true; return k; };
 
@@ -60,6 +72,17 @@ const PROOFS = [
   ['bones/jingle-collar', 'something that counts its two Rattles (Off Leash, played after)', { after: async (e, t) => { await addPlay(e, 'bones/off-leash', t); } }],
   ['bones/dig-to-the-basement', 'a Buried Trick', { setup: (e) => { add(e, 'bones/bite', 'stash').meta['#buried'] = 2; } }],
   ['bones/bring-it-back-friend', 'a friend with a cheap Trick in their discard', { party: true, setup: (e) => { e.addCard(DEFS.get('bones/bite'), 'discard', { to: e.players[1] }); } }],
+
+  // ── Pudding ───────────────────────────────────────────────────────────────
+  ['pudding/dig-here', 'a Buried Trick', { setup: (e) => { plot(e); } }],
+  ['pudding/reburial', 'a Buried Trick', { setup: (e) => { plot(e); } }],
+  ['pudding/careful-excavation', 'a Buried Trick', { setup: (e) => { plot(e); } }],
+  ['pudding/move-the-flowers', 'a Buried Trick', { setup: (e) => { plot(e); } }],
+  ['pudding/double-dig', 'two Buried Tricks', { setup: (e) => { plot(e); plot(e, 'pudding/guard-the-ankles'); } }],
+  ['pudding/exhume', 'Buried Tricks', { setup: (e) => { plot(e); plot(e, 'pudding/guard-the-ankles'); } }],
+  ['pudding/graveyard-picnic', 'Graveside (two Plots filled)', { setup: (e) => { plot(e); plot(e, 'pudding/guard-the-ankles'); } }],
+  ['pudding/seance-at-supper', 'Graveside (two Plots filled)', { setup: (e) => { plot(e); plot(e, 'pudding/guard-the-ankles'); } }],
+  ['pudding/whos-a-good-pug', 'maximum Loyalty (5)', { setup: (e) => e.setCounter('loyalty', 5, 'proof') }],
 ];
 
 runProofs(PROOFS);

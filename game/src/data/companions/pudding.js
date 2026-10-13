@@ -1392,7 +1392,9 @@ const rares = [
     effect: eff(async (c) => {
       const pool = buriedCards(c).filter(k => k.type !== POWER);
       if (!pool.length) return;
-      const [k] = await U.pickCards(c, { pile: 'stash', pool, count: 1, prompt: 'Copy which Buried Trick?' });
+      /* `pickCards` has no `pool` option - it offers its pile through `filter`
+         - so the Power exclusion above never reached the chooser. */
+      const [k] = await U.pickCards(c, { pile: 'stash', filter: (x) => pool.includes(x), count: 1, prompt: 'Copy which Buried Trick?' });
       if (k) spectralCopy(c, k.def);
     }),
     upgrade: { cost: 1 },
@@ -1419,8 +1421,11 @@ const rares = [
     flavor: 'He is. He is a good pug. It has been established.',
     nums: { e: 2, c1: 3 },
     playable: (c) => atMaxLoyalty(c),
+    /* "Spend it all." It ZEROED the track with setRes, which is not spending:
+       Never Off Duty never paid its Guard, and nothing reading "Loyalty spent
+       this turn" counted the biggest spend in the deck. */
     effect: eff((c) => {
-      U.setRes(c, LOYALTY, 0, 0, BIG_LOYALTY);
+      spendLoyalty(c, loyalty(c));
       U.energy(c, N(c).e);
       U.draw(c, N(c).c1);
     }),

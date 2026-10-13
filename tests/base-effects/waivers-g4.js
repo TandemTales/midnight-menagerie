@@ -27,4 +27,13 @@ export default [
   ['bones/jingle-collar', 'its two Rattles net 0 Loose Bones, and nothing that counts Rattles is out or played after it'],
   ['bones/dig-to-the-basement', 'nothing is Buried'],
   ['bones/bring-it-back-friend', 'the friend has no Trick in their discard to return'],
+  ['pudding/dig-here', 'nothing is Buried, so there is nothing to Dig Up'],
+  ['pudding/reburial', 'nothing is Buried, so there is nothing to Dig Up'],
+  ['pudding/careful-excavation', 'nothing is Buried, so there is nothing to Dig Up'],
+  ['pudding/move-the-flowers', 'nothing is Buried, so there is nothing to swap with'],
+  ['pudding/double-dig', 'nothing is Buried, so there is nothing to Dig Up'],
+  ['pudding/exhume', 'nothing is Buried, so there is nothing to Dig Up'],
+  ['pudding/graveyard-picnic', 'no Plot is filled, so Pudding is not Graveside and it cannot be played'],
+  ['pudding/seance-at-supper', 'no Plot is filled, so Pudding is not Graveside and it cannot be played'],
+  ['pudding/whos-a-good-pug', 'the seeded 3 Loyalty is under the maximum 5, so it cannot be played'],
 ];
