@@ -52,6 +52,17 @@ check reads Taffy's cream gloss as background; leave it red, do not lower it).
   does something.
 - **Survey 3** (`docs/ui-pass/SURVEY-2026-10-04.md`): what is owed next.
 
+**IN FLIGHT (2026-10-12): ROUND 31** -- survey 4 (`SURVEY-2026-10-12.md`)
+found the rooms now the weakest part; round 31 is the Passages, Hedge Maze,
+Kitchens and Graveyard and the near floor (`BRIEF-r31.md`), Workflow run
+`wf_6924e554-dda` at base `ee60b07a`; worktrees
+`C:/UILOOP/r31/wt/r31-rooms-{a,b,c}` (MANGANESE 9181, HEMATITE 9182, SAFFLOWER
+9183), baselines MOREEN in `C:/UILOOP/r31/judging/r31/rooms/`. If it stops on
+a limit, finish it as a NEW run with `resume` notes. Survey 4's note: room
+captures MUST be seeded (the unseeded base shell is never played). After
+round 31: the fights (the Butler on his frame's void, the nine-card fan),
+then density at 1280 and web-shaped controls.
+
 **ROUND 30 AND ITS GRAFT ARE MERGED, VERIFIED AND PUSHED (2026-10-12):**
 SANDARAC +2.72 (`65899599`), graft `4019037b`. **SURVEY 3 IS DONE** (rounds
 27-30 + grafts: the card, the props and darks, four more rooms, the strip and
