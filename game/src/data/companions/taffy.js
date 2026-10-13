@@ -212,6 +212,21 @@ U.onTracker(SLUG, (e, s, seat) => {
     live.exhaust = true;
     live.meta.vanish = true;
   });
+  /* FAMILY SIZE: "Gummy copies no longer Vanish the first time they are played.
+     They go to your discard pile Chewed instead, and Vanish when played again."
+     The Power applied its marker and nothing read it. `card:play` comes before
+     the engine decides where the card lands, so a fresh Gummy is spared here
+     and handed to the Chewed reader above, which Vanishes it next time. */
+  e.on('card:play', (ev) => {
+    const live = ev && ev.cardUid != null ? e.card(ev.cardUid) : null;
+    if (!live || !U.flag(live, 'gummy') || U.flag(live, 'chewed') || U.flag(live, 'survivesOnce')) return;
+    if (seat && e.seatOfCard(live) !== seat) return;
+    const c = fake();
+    if (U.stacks(c, c.self, 'taffy/family-size') <= 0) return;
+    U.setFlag(live, 'survivesOnce', true);
+    live.exhaust = false;
+    live.meta.vanish = false;
+  });
   /* BORROWED PRICE swaps two costs "until each has been played once". The
      engine has no such scope ('untilPlayed' fell through to the whole
      combat), so each swapped Trick drops its borrowed cost here, once played. */

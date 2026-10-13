@@ -260,6 +260,34 @@ try {
       'Pinch Off borrows the 0 until it is played, then costs 2 again; Wobble Room keeps 2 until it is played',
       `swapped ${swapped}, after playing Pinch Off: Pinch Off ${e.costOf(a)}, Wobble Room ${e.costOf(b)}`);
   }
+
+  say('<h2>Family Size: a Gummy survives its first play, Chewed</h2>');
+  {
+    /* The Power applied its marker and no hook read it, so every Gummy still
+       Vanished on its first play. The upgrade gate could not see it (a cost
+       cut) and the base gate only saw the buff icon. */
+    const run = async (withPower) => {
+      const e = await taffy();
+      if (withPower) await play(e, 'taffy/family-size');
+      e.addCard(CARDS.cardById('taffy/gummy-jab'), 'hand', {});
+      await play(e, 'taffy/sample-size');
+      const g = gummies(e)[0];
+      if (!g) return { e, g: null };
+      const t = e.livingEnemies()[0];
+      e.player.energy = 9; await e.playCard(g.uid, t.id);
+      return { e, g };
+    };
+    const off = await run(false), on = await run(true);
+    check(off.g && off.e.piles.exhaust.includes(off.g), 'setup: without it, a Gummy Vanishes on its first play');
+    check(on.g && on.e.piles.discard.includes(on.g) && flag(on.g, 'chewed') === true,
+      'with Family Size out, the first play sends it to the discard, Chewed',
+      on.g ? `in ${on.e.piles.pileOf ? on.e.piles.pileOf(on.g) : on.g.pile}, chewed=${flag(on.g, 'chewed')}` : 'no Gummy');
+    if (on.g && on.e.piles.discard.includes(on.g)) {
+      on.e.moveCard(on.g, 'hand', {});
+      on.e.player.energy = 9; await on.e.playCard(on.g.uid, on.e.livingEnemies()[0].id);
+      check(on.e.piles.exhaust.includes(on.g), 'and its second play Vanishes it');
+    }
+  }
 } catch (err) {
   fails.push('THREW: ' + (err && err.stack || err));
 }
