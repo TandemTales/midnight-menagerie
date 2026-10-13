@@ -244,6 +244,7 @@ U.onTracker(SLUG, (e, s, seat) => {
     st.goodNapkin = false;
     st.doubleMarksOn = null;
     st.openBar = false;
+    st.familyBanquet = null;   // "This round" ends when his next turn starts
     /* Queasy pays for itself from its own onTurnStart hook in keywords.js. It
        cannot be done here: turn:start is emitted BEFORE the Nerve refill. */
     if (st.sipSlowly) { const sip = st.sipSlowly; const en = U.enemies(c).find((x) => (x.id ?? x.uid) === sip.id); if (en && marksOn(c, en) > 0) feed(c, en, sip.n || 1); st.sipSlowly = null; }
@@ -265,6 +266,27 @@ U.onTracker(SLUG, (e, s, seat) => {
     if (st.tab) { U.bleed(c, st.tab); st.tab = 0; }
     setAppetite(c, appetite(c) - 1);
   }, seat);
+
+  /* FAMILY BANQUET: "This round, the first time each Kid damages a marked
+     enemy, remove a [Bite Mark] and heal them {h}." The card stored its
+     numbers and nothing ever read them, so the Rare did nothing at all. Any
+     Kid's hit that lands on an enemy carrying a mark, once per Kid; the
+     `damage` event carries `sourceId` / `targetId` (trap 26). */
+  e.on('damage', (ev) => {
+    if (!ev || !ev.sourceId || !ev.targetId || ev.prevented || !(ev.amount > 0)) return;
+    const c = fake();
+    const st = U.mm(c);
+    const fb = st.familyBanquet;
+    if (!fb) return;
+    const from = e.actor(ev.sourceId);
+    if (!from || from.side !== 'player' || fb.used.includes(from.id)) return;
+    const target = e.actor(ev.targetId);
+    if (!target || target.side === 'player' || marksOn(c, target) <= 0) return;
+    fb.used.push(from.id);
+    unbite(c, target, 1);
+    if (from === c.self) U.mend(c, fb.heal);
+    else c.giveHeal(from, fb.heal);
+  });
 
   /* House Rules: marks on a dying enemy are normally lost. */
   e.on('death', (ev) => {
@@ -479,7 +501,10 @@ const commons = [
     text: 'Remove {n} [Bite Mark] without [Feed]ing and make {m} [Leftover].',
     flavor: 'For the walk home.',
     nums: { n: 1, m: 1 },
-    effect: eff((c) => { const t = c.target || markedEnemies(c)[0]; if (unbite(c, t, N(c).n) > 0) makeLeftovers(c, N(c).m); }),
+    /* The printed text makes the Leftovers either way; the code made them
+       only when a mark came off, so on an unmarked target the Trick did
+       nothing (the design chapter reads "remove ... and create", too). */
+    effect: eff((c) => { const t = c.target || markedEnemies(c)[0]; if (t) unbite(c, t, N(c).n); makeLeftovers(c, N(c).m); }),
     upgrade: { nums: { n: 2, m: 2 } },
   },
   {

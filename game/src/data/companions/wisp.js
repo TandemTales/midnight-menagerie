@@ -416,6 +416,11 @@ U.onTracker(SLUG, (e, s, seat) => {
     st.hotPotato = 0;
     st.hotPotatoId = null;
     st.everybodyBoo = null;
+    /* Gentle Landing is worded "until your next turn" too, and was cleared on
+       `turn:start` - which runs BEFORE this tick - so the Afterglows that land
+       on the natural countdown, the ones the card is for, never paid it. It
+       expires here, after the batch, the same as Hot Potato. */
+    st.gentleLanding = null;
   });
 
   U.onPlayerTurn(e, 'start', () => {
@@ -423,7 +428,6 @@ U.onTracker(SLUG, (e, s, seat) => {
     const st = U.mm(c);
     st.afterglowsThisTurn = 0;
     st.convergedThisTurn = 0;
-    st.gentleLanding = null;
     if (st.bottled != null) { gainGlow(c, st.bottled + (st.bottledPlus | 0)); st.bottled = null; st.bottledPlus = 0; }
     if (st.pocketTomorrow && st.pocketTomorrow.length) {
       for (const k of st.pocketTomorrow) { U.toHand(c, k); U.costSet(c, k, 0, 'turn'); }
