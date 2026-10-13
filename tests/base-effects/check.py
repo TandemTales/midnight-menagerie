@@ -33,7 +33,7 @@ and one that asks a choice gets a second try with the last options picked.
 Nothing else is bucketed away: an identical Trick - including one this board
 cannot play at all - is dead unless the page's WAIVED_LIST names it WITH the
 reason. A waiver that starts showing a difference FAILS, and every waiver is
-proved live on a board that reaches its condition by `run.py` (proofs.html).
+proved live on a board that reaches its condition by `run.py` (proofs-g1..g4.html).
 
 REPORT-ONLY, UNTIL THE LIST IS EMPTY
 ------------------------------------

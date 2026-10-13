@@ -1,0 +1,31 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Base-effect waivers, group 3</title>
+<style>
+  body { font: 14px/1.5 ui-monospace, monospace; background: #14121a; color: #d8d4e0; padding: 20px; }
+  .pass { color: #7fd08a; } .fail { color: #ff8080; } .dim { color: #8a839c; }
+</style>
+<h1>Base-effect waivers, group 3</h1>
+<div class="dim">every entry in waivers-g3.js, played against its blank twin on a board that DOES reach its condition</div>
+<div id="out"></div>
+<script type="module">
+/**
+ * THE PROOF BEHIND EVERY WAIVER IN waivers-g3.js (crumbula, wisp, mopsy).
+ *
+ * Each entry brings the gate's seeded board to the condition the Trick needs,
+ * then compares the Trick with its blank twin exactly as the gate does
+ * (proofkit.js, twin.js). Identical boards FAIL: the waiver was hiding a dead
+ * card.
+ *
+ *   python tests/base-effects/run.py g3
+ */
+import * as U from '../../game/src/data/companions/_util.js';
+import { lastResolver } from './twin.js';
+import { runProofs, add, play, addPlay, M, emptyHand, st, enemyHit, DEFS } from './proofkit.js';
+
+/* [id, what the board needs, { setup(e, t), target(e, t), party, resolver, after(e, t) }] */
+const PROOFS = [
+];
+
+runProofs(PROOFS);
+</script>

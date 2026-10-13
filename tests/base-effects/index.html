@@ -61,16 +61,19 @@
  * Trick is DEAD unless WAIVED_LIST names it with the reason, and a waiver that
  * starts showing a difference FAILS, because a control that cannot fail is not
  * a control. Each waiver is proved live on a board that reaches its condition
- * by proofs.html (python tests/base-effects/run.py).
+ * by proofs-g1..g4.html (python tests/base-effects/run.py).
  */
 import * as CARDS from '../../game/src/data/cards.js';
 import { sourceFor, literalOf, PARTY, CHOICE } from '../upgrade-effects/harness.js';
 import { compare, lastResolver } from './twin.js';
 
-/** [id, 'why this board cannot show it']. Checked in BOTH directions, and
- *  every entry is proved live by proofs.html. */
-const WAIVED_LIST = [
-];
+/* [id, 'why this board cannot show it'], in four groups. Checked in BOTH
+   directions, and every entry is proved live by proofs-g<N>.html (run.py). */
+import WAIVED_G1 from './waivers-g1.js';
+import WAIVED_G2 from './waivers-g2.js';
+import WAIVED_G3 from './waivers-g3.js';
+import WAIVED_G4 from './waivers-g4.js';
+const WAIVED_LIST = [...WAIVED_G1, ...WAIVED_G2, ...WAIVED_G3, ...WAIVED_G4];
 const WAIVED = new Map(WAIVED_LIST);
 
 const out = document.getElementById('out');
@@ -119,7 +122,7 @@ const say = (html, cls) => { const d = document.createElement('div'); if (cls) d
   }
   for (const line of staleWaivers) say('STALE WAIVER ' + line, 'fail');
   for (const line of broken) say('BROKEN ' + line, 'fail');
-  say('<h2>' + WAIVED_LIST.length + ' waived, each proved live in proofs.html</h2>', 'dim');
+  say('<h2>' + WAIVED_LIST.length + ' waived, each proved live in proofs-g1..g4.html</h2>', 'dim');
   say('<h2>' + rescued.party.length + ' showed only with a friend at the table; ' + rescued.choice.length + ' only with the last options picked</h2>', 'dim');
   say('<h2>' + buffOnly.length + ' show only a status on the Kid that changed nothing in two turns (not a failure)</h2>', 'dim');
   say('&nbsp;&nbsp;' + buffOnly.join(', '), 'dim');
