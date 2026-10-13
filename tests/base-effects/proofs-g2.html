@@ -23,8 +23,124 @@ import * as U from '../../game/src/data/companions/_util.js';
 import { lastResolver } from './twin.js';
 import { runProofs, add, play, addPlay, M, emptyHand, st, enemyHit, DEFS } from './proofkit.js';
 
+/* ── Pipkin: the Patch is an array on the seat's scratch (the gate reads it). */
+const fill = (e, ...objs) => { M(e).patch.splice(0, 99, ...objs); };
+const SEEDS = ['seed', 'seed', 'seed'];
+const PUMPKINS = ['pumpkin', 'pumpkin', 'pumpkin'];
+const patchOf = (...objs) => ({ setup: (e) => fill(e, ...objs) });
+
+/* ── Hush: the gate deals every Trick to the HAND. "Only from the Shadow
+   Pocket" needs the next card dealt into the Pocket instead - once, so
+   nothing the fight adds later is redirected. */
+const dealToPocket = (e) => {
+  const real = e.addCard.bind(e);
+  e.addCard = (def, pile, opts) => { e.addCard = real; return real(def, pile === 'hand' ? 'stash' : pile, opts); };
+};
+
+/* ── Wink: a Read on the target, called right or wrong against what the enemy
+   will ACTUALLY do next, and resolved by Snip Here (a real advance of the
+   queue: the Read on position 1 is scored against the action that becomes
+   current). */
+const FAMS = ['Attack', 'Defense', 'Scheme', 'Special'];
+const callAs = (e, label) => e.setChoiceResolver(async (req) => {
+  const pool = req.pool || req.options || [];
+  const i = pool.findIndex(o => (o && o.label ? o.label : o) === label);
+  return [i >= 0 ? i : 0];
+});
+const nextFam = (e, t) => e.intentFamilyOf(t, 1);
+async function readOn(e, t, right) {
+  const truth = nextFam(e, t);
+  callAs(e, right ? truth : FAMS.find(f => f !== truth));
+  await addPlay(e, 'wink/call-it', t);
+  e.setChoiceResolver(async (req) => [0]);
+}
+async function snip(e, t) {
+  const need = DEFS.get('wink/snip-here').nums.n;
+  if (st(t, 'web') < need) e.applyStatus(t, 'web', need - st(t, 'web'));
+  await addPlay(e, 'wink/snip-here', t);
+}
+
+/* ── A friend's play: the card is dealt into seat 1's hand and played as them. */
+async function friendPlays(e, id, tgt) {
+  const mate = e.players[1];
+  const made = e._asSeat(mate, () => e.addCard(DEFS.get(id), 'hand'));
+  const k = Array.isArray(made) ? made[0] : made;
+  mate.energy = 9;
+  await e.playCard(k.uid, tgt && tgt.id);
+}
+
 /* [id, what the board needs, { setup(e, t), target(e, t), party, resolver, after(e, t) }] */
 const PROOFS = [
+  // ── Pipkin ────────────────────────────────────────────────────────────────
+  ['pipkin/damp-corner', '3 Seeds in the Patch', patchOf(...SEEDS)],
+  ['pipkin/warm-windowsill', '3 Seeds in the Patch', patchOf(...SEEDS)],
+  ['pipkin/overnight-miracle', '3 Seeds in the Patch', patchOf(...SEEDS)],
+  ['pipkin/moonbeam-on-the-patch', 'Sprouts in the Patch (the first choice is Sprouts)', patchOf('sprout', 'sprout', 'seed')],
+  ...['pipkin/pick-one', 'pipkin/choose-the-biggest', 'pipkin/pantry-raid', 'pipkin/replant-the-rind',
+    'pipkin/picnic-basket', 'pipkin/perfect-harvest', 'pipkin/back-to-seed', 'pipkin/store-for-supper',
+    'pipkin/pick-of-the-patch', 'pipkin/harvest-festival']
+    .map(id => [id, '3 Pumpkins in the Patch', patchOf(...PUMPKINS)]),
+
+  // ── Boggle ────────────────────────────────────────────────────────────────
+  ['boggle/dont-move', 'an Unaware target', { setup: (e, t) => e.applyStatus(t, 'unaware', 1) }],
+  ['boggle/cozy-darkness', 'one Unaware enemy', { setup: (e, t) => e.applyStatus(t, 'unaware', 1) }],
+  ['boggle/closer-closer', 'an Unaware enemy', { setup: (e, t) => e.applyStatus(t, 'unaware', 1) }],
+  ['boggle/lump-under-the-blanket', 'the target made Suspicious by an Ambush after it', {
+    setup: (e, t) => e.applyStatus(t, 'unaware', 1),
+    after: async (e, t) => { await addPlay(e, 'boggle/little-chomp', t); } }],
+  ...['boggle/dont-turn-around', 'boggle/dont-check-again'].map(id => [id, 'a hidden target (Under the Bed) that Searches before any Attack', {
+    setup: async (e, t) => { await addPlay(e, 'boggle/under-the-bed', t); },
+    after: async (e) => { await e.endTurn(); } }]),
+  ['boggle/keep-the-lights-off', 'an Attack on an Unaware enemy after it', {
+    after: async (e, t) => { e.applyStatus(t, 'unaware', 1); await addPlay(e, 'boggle/little-chomp', t); } }],
+  ['boggle/hide-in-plain-sight', 'an Attack on an Unaware enemy after it', {
+    setup: (e, t) => e.applyStatus(t, 'unaware', 1),
+    after: async (e, t) => { await addPlay(e, 'boggle/little-chomp', t); } }],
+  ['boggle/too-late-to-run', '8 Fright on the target', { setup: (e, t) => e.applyStatus(t, 'fright', 8) }],
+  ['boggle/every-creak-means-me', '4 Fright on the target', { setup: (e, t) => e.applyStatus(t, 'fright', 4) }],
+  ['boggle/dont-scream-yet', '12 Fright and two Scares (Ankle Grab) after it', {
+    setup: (e, t) => e.applyStatus(t, 'fright', 12),
+    after: async (e, t) => { await addPlay(e, 'boggle/ankle-grab', t); await addPlay(e, 'boggle/ankle-grab', t); } }],
+  ['boggle/perfect-distraction', 'a friend at the table who then Attacks', {
+    party: true, after: async (e, t) => { await friendPlays(e, 'boggle/little-chomp', t); } }],
+  ['boggle/count-to-three', 'a friend at the table who then damages the target', {
+    party: true, after: async (e, t) => { await friendPlays(e, 'boggle/little-chomp', t); } }],
+
+  // ── Hush ──────────────────────────────────────────────────────────────────
+  ['hush/make-room', 'a Trick in the Shadow Pocket', { setup: (e) => { add(e, 'hush/quick-nip', 'stash'); } }],
+  ['hush/shhh', 'a 2-cost Trick in the Shadow Pocket', { setup: (e) => { add(e, 'hush/stash-and-dash', 'stash'); } }],
+  ['hush/under-the-door', 'a Trick taken out of the Pocket this turn (Make Room)', {
+    setup: async (e) => { add(e, 'hush/quick-nip', 'stash'); await addPlay(e, 'hush/make-room'); } }],
+  ['hush/behind-you', 'dealt into the Shadow Pocket', { setup: (e) => dealToPocket(e) }],
+  ['hush/whole-ferret-no-warning', 'dealt into the Shadow Pocket', { setup: (e) => dealToPocket(e) }],
+  ['hush/empty-the-pockets', 'two Contraband in the Pocket', {
+    setup: (e) => { for (let i = 0; i < 2; i++) add(e, 'hush/snatched-swipe', 'stash').meta.contraband = true; } }],
+  ['hush/all-according-to-hush', 'Unseen, a Trick in the Pocket, then Seen (an Attack from hand)', {
+    setup: (e) => { add(e, 'hush/quick-nip', 'stash'); e.applyStatus(e.player, 'unseen', 1); },
+    after: async (e, t) => { await addPlay(e, 'hush/quick-nip', t); } }],
+  ['hush/buried-in-the-couch', 'four Spooked in the discard', {
+    setup: (e) => { for (let i = 0; i < 4; i++) add(e, 'status/spooked', 'discard'); } }],
+  ['hush/three-places-at-once', 'a Scurry after it (Make Room on a Pocketed Trick)', {
+    after: async (e) => { add(e, 'hush/quick-nip', 'stash'); await addPlay(e, 'hush/make-room'); } }],
+
+  // ── Wink ──────────────────────────────────────────────────────────────────
+  ['wink/watch-this-one', 'an unresolved Read on the target', { setup: async (e, t) => { await readOn(e, t, true); } }],
+  ['wink/rehearsed-pounce', 'an unresolved Read on the target', { setup: async (e, t) => { await readOn(e, t, true); } }],
+  ['wink/gotcha', 'a Read that succeeded this turn (called right, resolved by Snip Here)', {
+    setup: async (e, t) => { await readOn(e, t, true); await snip(e, t); } }],
+  ['wink/i-meant-that-one', 'a Read that would fail, resolved (Snip Here), then Gotcha!', {
+    setup: async (e, t) => { await readOn(e, t, false); },
+    after: async (e, t) => { await snip(e, t); await addPlay(e, 'wink/gotcha', t); } }],
+  ['wink/red-string-theory', 'a Previewed enemy (Peek Around the Corner)', {
+    setup: async (e, t) => { await addPlay(e, 'wink/peek-around-the-corner', t); } }],
+  ['wink/set-the-table', 'a Set Trick played after it with no Nerve left (Lampshade Lookout)', {
+    after: async (e) => { const k = add(e, 'wink/lampshade-lookout'); e.current.energy = 0; await e.playCard(k.uid); } }],
+  ['wink/house-spider', 'a Set Trick in the discard', { setup: (e) => { add(e, 'wink/lampshade-lookout', 'discard'); } }],
+  ['wink/snip-here', '8 Web on the target (seeded at 6)', { setup: (e, t) => e.applyStatus(t, 'web', 2) }],
+  ['wink/forked-future', 'two Previewed Intents on the target, and the second branch picked', {
+    resolver: lastResolver,
+    setup: async (e, t) => { await addPlay(e, 'wink/peek-around-the-corner', t); await addPlay(e, 'wink/peek-around-the-corner', t); } }],
+  ['wink/back-pocket-web', 'an active Set (Lampshade Lookout)', { setup: async (e) => { await addPlay(e, 'wink/lampshade-lookout'); } }],
 ];
 
 runProofs(PROOFS);
