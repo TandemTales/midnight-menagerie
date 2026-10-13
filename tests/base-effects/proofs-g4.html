@@ -1,0 +1,98 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Base-effect waivers, group 4</title>
+<style>
+  body { font: 14px/1.5 ui-monospace, monospace; background: #14121a; color: #d8d4e0; padding: 20px; }
+  .pass { color: #7fd08a; } .fail { color: #ff8080; } .dim { color: #8a839c; }
+</style>
+<h1>Base-effect waivers, group 4</h1>
+<div class="dim">every entry in waivers-g4.js, played against its blank twin on a board that DOES reach its condition</div>
+<div id="out"></div>
+<script type="module">
+/**
+ * THE PROOF BEHIND EVERY WAIVER IN waivers-g4.js (taffy, bones, pudding, marmalade, truffle).
+ *
+ * Each entry brings the gate's seeded board to the condition the Trick needs,
+ * then compares the Trick with its blank twin exactly as the gate does
+ * (proofkit.js, twin.js). Identical boards FAIL: the waiver was hiding a dead
+ * card.
+ *
+ *   python tests/base-effects/run.py g4
+ */
+import * as U from '../../game/src/data/companions/_util.js';
+import { lastResolver } from './twin.js';
+import { runProofs, add, play, addPlay, M, emptyHand, st, enemyHit, DEFS } from './proofkit.js';
+
+/* [id, what the board needs, { setup(e, t), target(e, t), party, resolver, after(e, t) }] */
+/* Taffy's Belly is the stash, flagged; a Stretched Trick carries its count in meta. */
+const belly = (e, ...ids) => { for (const id of ids) add(e, id, 'stash').meta.belly = true; };
+const stretched = (e, id, n = 1) => { const k = add(e, id); k.meta['#stretch'] = n; k.meta.stretched = true; return k; };
+/* A Trick Buried in one of Pudding's Plots, as pudding.js `bury` leaves it:
+   in the stash, unplayable, in the first empty Plot, which is still unused
+   this turn so a Dig Up can turn it over. */
+const plot = (e, id = 'pudding/little-chomp') => {
+  const k = add(e, id, 'stash'), s = M(e);
+  if (!s.plots) s.plots = [];
+  while (s.plots.length < 3) s.plots.push({ card: null, used: false });
+  s.plots.find(p => !p.card).card = k;
+  k.unplayable = true; k.meta.buried = true;
+  e.setCounter('plots', s.plots.filter(p => p.card).length, 'proof');
+  return k;
+};
+/* A Fetched Trick back in Bones's discard, still Slobbered. */
+const slobbered = (e, id = 'bones/bite') => { const k = add(e, id, 'discard'); k.meta.slobbered = true; return k; };
+
+const PROOFS = [
+  ['marmalade/all-nine', 'Lives below 9', { setup: (e) => e.setCounter('lives', 3, 'proof') }],
+  ['marmalade/across-the-veil', 'Ghoststep to spend', { setup: (e) => e.applyStatus(e.player, 'ghoststep', 2) }],
+  ['marmalade/spectral-stampede', 'Lives spent this combat', { setup: async (e) => { await addPlay(e, 'marmalade/nine-lived-nerve'); await addPlay(e, 'marmalade/nine-lived-nerve'); } }],
+  ['marmalade/but-satisfaction-brought-it-back', 'Tricks that Vanished this combat', { setup: (e) => { add(e, 'marmalade/scratch', 'exhaust'); add(e, 'marmalade/curl-up', 'exhaust'); } }],
+
+  // ── Taffy ─────────────────────────────────────────────────────────────────
+  ['taffy/spit-take', 'a Trick in the Belly', { setup: (e) => belly(e, 'taffy/pinch-off') }],
+  ['taffy/sample-size', 'a Common Attack in hand', { setup: (e) => { add(e, 'taffy/gummy-jab'); } }],
+  ['taffy/chew-slowly', 'Stretched Tricks in hand', { setup: (e) => { stretched(e, 'taffy/sugar-bonk'); stretched(e, 'taffy/squish'); } }],
+  ['taffy/regurgitate', 'Tricks in the Belly', { setup: (e) => belly(e, 'taffy/pinch-off', 'taffy/sugar-bonk') }],
+  ['taffy/taste-memory', 'an Absorbed Attack', { setup: (e) => belly(e, 'taffy/sugar-bonk') }],
+  ['taffy/borrowed-price', 'a 0-cost Trick in the Belly to swap with one in hand', { setup: (e) => belly(e, 'taffy/wobble-room') }],
+  ['taffy/overstretch', 'a Stretched Trick in hand', { setup: (e) => { stretched(e, 'taffy/stretch-punch'); } }],
+  ['taffy/let-it-sag', 'a Stretched Trick in hand', { setup: (e) => { stretched(e, 'taffy/stretch-punch', 2); } }],
+  ['taffy/mouthfeel', 'Tricks in the Belly', { setup: (e) => belly(e, 'taffy/sugar-bonk', 'taffy/squish') }],
+  ['taffy/stretch-transfer', 'a Stretched Trick and another Attack in hand', { setup: (e) => { stretched(e, 'taffy/stretch-punch', 2); add(e, 'taffy/gummy-jab'); } }],
+  ['taffy/copycat-cannon', 'an Absorbed Attack', { setup: (e) => belly(e, 'taffy/sugar-bonk') }],
+  ['taffy/spit-the-whole-bag', 'Tricks in the Belly', { setup: (e) => belly(e, 'taffy/pinch-off', 'taffy/sugar-bonk') }],
+  ['taffy/perfect-replica', 'an Absorbed Attack', { setup: (e) => belly(e, 'taffy/sugar-bonk') }],
+  ['taffy/cross-flavor', 'an Absorbed Attack and an Absorbed Skill', { setup: (e) => belly(e, 'taffy/sugar-bonk', 'taffy/squish') }],
+  ['taffy/keep-the-wrapper', 'a Gummy copy in hand', { setup: (e) => { add(e, 'taffy/sugar-bonk', 'hand', { exhaust: true, meta: { gummy: true } }); } }],
+
+  // ── Bones ─────────────────────────────────────────────────────────────────
+  ['bones/shake-dry', 'a Slobbered Trick in the discard', { setup: (e) => slobbered(e) }],
+  ['bones/bury-the-evidence', 'a Slobbered Trick in the discard', { setup: (e) => slobbered(e) }],
+  ['bones/one-more-throw', 'a Slobbered Trick in the discard', { setup: (e) => slobbered(e) }],
+  ['bones/emergency-reassembly', 'Scattered (4 Loose Bones)', { setup: (e) => e.setCounter('loose-bones', 4, 'proof') }],
+  ['bones/every-bone-at-once', 'Whole (0 Loose Bones)', { setup: (e) => e.setCounter('loose-bones', 0, 'proof') }],
+  ['bones/good-boy', 'a Fetch this turn', { setup: async (e) => { add(e, 'bones/bite', 'discard'); await addPlay(e, 'bones/fetch'); } }],
+  ['bones/jingle-collar', 'something that counts its two Rattles (Off Leash, played after)', { after: async (e, t) => { await addPlay(e, 'bones/off-leash', t); } }],
+  ['bones/dig-to-the-basement', 'a Buried Trick', { setup: (e) => { add(e, 'bones/bite', 'stash').meta['#buried'] = 2; } }],
+  ['bones/bring-it-back-friend', 'a friend with a cheap Trick in their discard', { party: true, setup: (e) => { e.addCard(DEFS.get('bones/bite'), 'discard', { to: e.players[1] }); } }],
+
+  // ── Pudding ───────────────────────────────────────────────────────────────
+  ['pudding/dig-here', 'a Buried Trick', { setup: (e) => { plot(e); } }],
+  ['pudding/reburial', 'a Buried Trick', { setup: (e) => { plot(e); } }],
+  ['pudding/careful-excavation', 'a Buried Trick', { setup: (e) => { plot(e); } }],
+  ['pudding/move-the-flowers', 'a Buried Trick', { setup: (e) => { plot(e); } }],
+  ['pudding/double-dig', 'two Buried Tricks', { setup: (e) => { plot(e); plot(e, 'pudding/guard-the-ankles'); } }],
+  ['pudding/exhume', 'Buried Tricks', { setup: (e) => { plot(e); plot(e, 'pudding/guard-the-ankles'); } }],
+  ['pudding/graveyard-picnic', 'Graveside (two Plots filled)', { setup: (e) => { plot(e); plot(e, 'pudding/guard-the-ankles'); } }],
+  ['pudding/seance-at-supper', 'Graveside (two Plots filled)', { setup: (e) => { plot(e); plot(e, 'pudding/guard-the-ankles'); } }],
+  ['pudding/whos-a-good-pug', 'maximum Loyalty (5)', { setup: (e) => e.setCounter('loyalty', 5, 'proof') }],
+
+  // ── Truffle ───────────────────────────────────────────────────────────────
+  ['truffle/needle-exchange', 'Bristle to consume', { setup: (e) => e.applyStatus(e.player, 'bristle', 2) }],
+  ['truffle/tiny-disaster', 'Ragged (half Courage or less)', { setup: (e) => { e.player.hp = 20; } }],
+  ['truffle/ragged-reset', 'Ragged (half Courage or less)', { setup: (e) => { e.player.hp = 20; } }],
+  ['truffle/exact-amount-of-terrible', 'a target swinging for more than his Guard plus 2', { setup: (e, t) => { e.applyStatus(t, 'strength', 20); e.refreshIntents('proof'); } }],
+];
+
+runProofs(PROOFS);
+</script>

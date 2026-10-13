@@ -1318,8 +1318,14 @@ const rares = [
        that Power's rule is blanket and prints no exception list, and this card
        already says "almost exactly". */
     effect: eff((c) => {
+      /* The swing the player SEES: the intent's total, after Weak, Strength
+         and every hit. It read the move's raw `damage`, which a `damageFn`
+         move (every scaling Attack) does not have - 0 Guard, the card did
+         nothing - and which ignored Weak and counted a multi-hit move once. */
       const t = c.target;
-      const dmg = (t && t.pendingMove && t.pendingMove.damage) || 0;
+      const pm = t && t.pendingMove;
+      const dmg = (t && t.intent && typeof t.intent.totalDamage === 'number') ? t.intent.totalDamage
+        : ((pm && pm.damage) || 0) * ((pm && pm.hits) || 1);
       const want = Math.max(0, Math.min(N(c).b, dmg - N(c).n - c.self.block));
       gd(c, want);
     }),

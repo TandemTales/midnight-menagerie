@@ -690,7 +690,7 @@ const rares = [
   {
     id: 'marmalade/final-pounce', name: 'Final Pounce', companion: SLUG, type: ATTACK, rarity: RARE,
     cost: 2, target: ENEMY, keywords: ['untouched'],
-    text: 'Deal {d} damage. While [Untouched], gain {n} Pluck and return this Trick to your hand. Once each turn.',
+    text: 'Deal {d} damage. While [Untouched], gain {n} Nerve and return this Trick to your hand. Once each turn.',
     flavor: 'She has been sitting perfectly still for four turns. This is why.',
     nums: { d: 18, n: 1 },
     effect: eff(c => {

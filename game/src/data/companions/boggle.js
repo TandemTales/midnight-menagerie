@@ -177,8 +177,16 @@ function ambush(c, e) {
   const hidden = isUnaware(c, e);
   if (!hidden) return false;
   const s = U.mm(c);
-  if (s.plainSight) markSuspicious(c, e, { to: 'aware', ambushed: true });
-  else if (s.quietAsDust && U.once(c, 'quietAsDust')) markSuspicious(c, e, { to: 'aware', ambushed: true });
+  /* HIDE IN PLAIN SIGHT: "This turn your Attacks do not change an Unaware
+     target's Awareness. At end of turn each becomes Aware instead." It used
+     to queue the target to turn Aware the moment the Trick resolved, so the
+     next Attack on it that turn got no Ambush. The target now stays Unaware
+     for the rest of the turn and is remembered; the turn-end listener below
+     makes it Aware. */
+  if (s.plainSight) {
+    if (!s.plainSightHit) s.plainSightHit = {};
+    s.plainSightHit[eid(e)] = e;
+  } else if (s.quietAsDust && U.once(c, 'quietAsDust')) markSuspicious(c, e, { to: 'aware', ambushed: true });
   else if (s.lightsOff > 0) { s.lightsOff--; markSuspicious(c, e, { to: 'aware', ambushed: true }); }
   else markSuspicious(c, e, { ambushed: true });
   s.ambushedThisTurn = (s.ambushedThisTurn || 0) + 1;
@@ -465,6 +473,47 @@ U.onTracker(SLUG, (e, s, seat) => {
     st.squadRound.seen.push(from.id);
   });
 
+  /* PERFECT DISTRACTION: "Choose another Kid. The next time they Attack this
+     round, make a different Aware enemy Unaware and apply {n} Fright. With one
+     enemy, apply {n2} and gain {l} Lurk." The card stored the chosen seat and
+     its numbers and nothing read them, so it was a 1-Nerve blank. This is the
+     reader: the friend's next Attack, once, until Boggle's next turn. */
+  e.on('card:play', (ev) => {
+    if (!ev || !seat || ev.actorId === seat.id) return;
+    const c = fake();
+    const st = U.mm(c);
+    const d = st.distraction;
+    if (!d || ev.seat !== d.seat || !isAttackCard(ev.card)) return;
+    st.distraction = null;
+    const all = U.enemies(c);
+    if (all.length === 1) { fright(c, all[0], d.n2); gainLurk(c, d.l); return; }
+    const aimed = e.actor(ev.targetId);
+    const other = awareEnemies(c).find((x) => x !== aimed) || all.find((x) => x !== aimed);
+    if (!other) return;
+    hide(c, other);
+    fright(c, other, d.n);
+  });
+
+  /* COUNT TO THREE: "The first time they damage it before your next turn,
+     deal {d} damage to it. If it is Unaware that hit gets Ambush; otherwise
+     apply {n} Fright." It marked the enemy and nothing ever read the mark.
+     The follow-up is Boggle's own hit, so its damage event is not the
+     friend's and cannot set this off again. */
+  e.on('damage', (ev) => {
+    if (!ev || !seat || !ev.sourceId || ev.sourceId === seat.id) return;
+    const from = e.actor(ev.sourceId);
+    if (!from || from.side !== 'player') return;
+    const target = e.actor(ev.targetId);
+    if (!target || target.side === 'player' || !target.alive) return;
+    const c = fake();
+    const st = U.mm(c);
+    if (from.seat !== st.countSeat) return;
+    const d = takeMark(c, target, 'countTo');
+    if (!(d > 0)) return;
+    if (ambush(c, target)) { U.hitAt(c, target, d); settle(c); }
+    else { U.hitAt(c, target, d); fright(c, target, st.countFright || 0); }
+  });
+
   U.onPlayerTurn(e, 'start', () => {
     const c = fake();
     const st = U.mm(c);
@@ -477,9 +526,12 @@ U.onTracker(SLUG, (e, s, seat) => {
     st.plainSight = false;
     st.noScreamYet = 0;
     st.attackedThisTurn = false;
-    // "before your next turn": Lump Under the Blanket and Blanket Fort lapse here
-    if (st.marks) for (const id of Object.keys(st.marks)) delete st.marks[id].lump;
+    // "before your next turn": Lump Under the Blanket, Count to Three and
+    // Blanket Fort lapse here; Perfect Distraction's "this round" ends here.
+    if (st.marks) for (const id of Object.keys(st.marks)) { delete st.marks[id].lump; delete st.marks[id].countTo; }
     st.fortGuard = 0;
+    st.distraction = null;
+    st.plainSightHit = null;
     if (st.noAttacks) {
       st.noAttacks = false;
       for (const k of U.cardsIn(c, 'hand')) if (isAttackCard(k)) k.unplayable = false;
@@ -508,6 +560,13 @@ U.onTracker(SLUG, (e, s, seat) => {
     if (st.beneathEveryBed && U.enemies(c).length > 0 && unawareEnemies(c).length === U.enemies(c).length) {
       gainLurk(c, 1);
       st.bedTimeDraw = (st.bedTimeDraw || 0) + 1;
+    }
+    // Hide in Plain Sight: "At end of turn each becomes Aware instead." After
+    // the Lurk above, which they still count for, and before Good Night,
+    // which may hide them again.
+    if (st.plainSightHit) {
+      for (const x of Object.values(st.plainSightHit)) if (x && x.alive && isUnaware(c, x)) setAware(c, x);
+      st.plainSightHit = null;
     }
     // Good Night, Sleep Tight
     if (st.goodNight && U.enemies(c).length > 0 && U.enemies(c).every((x) => frightOn(c, x) >= 8)) {
@@ -1460,8 +1519,11 @@ const rares = [
     flavor: 'Save it. Save it. Now.',
     nums: { n: 2 },
     effect: eff((c) => {
+      /* It also set `fearOfDark`, which is Fear of the Dark's own flag: one
+         0-Nerve Vanish quietly installed a 2-Nerve Rare Power for the rest of
+         the fight (the first Scare on each enemy, every turn, free), and that
+         free Scare spent none of these charges either. Only the charges now. */
       const st = U.mm(c);
-      st.fearOfDark = true;
       st.noScreamYet = (st.noScreamYet || 0) + N(c).n;
     }),
     upgrade: { nums: { n: 3 } },

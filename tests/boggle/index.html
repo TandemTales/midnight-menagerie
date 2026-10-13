@@ -313,6 +313,108 @@ try {
         `unaware=${stacks(e, t, 'unaware')} suspicious=${stacks(e, t, 'suspicious')}`);
     }
   }
+
+  // ── 11. Hide in Plain Sight: the target stays Unaware all turn ────────────
+  {
+    /* It used to queue the target to turn Aware the moment the Attack
+       resolved, so the second Attack that turn got no Ambush. */
+    const e = await boggle();
+    const t = e.livingEnemies()[0];
+    t.maxHp = 999; t.hp = 999;
+    await play(e, 'boggle/hide-in-plain-sight', null);
+    await play(e, 'boggle/under-the-bed', t);
+    await play(e, 'boggle/little-chomp', t);
+    check(stacks(e, t, 'unaware') === 1 && stacks(e, t, 'suspicious') === 0,
+      'Hide in Plain Sight: an Ambush leaves the target Unaware',
+      `unaware=${stacks(e, t, 'unaware')} suspicious=${stacks(e, t, 'suspicious')}`);
+    await play(e, 'boggle/little-chomp', t);
+    const amb = (e.player.__mm && e.player.__mm.ambushedThisTurn) || 0;
+    check(amb === 2 && stacks(e, t, 'unaware') === 1, 'and the second Attack on it that turn is an Ambush too',
+      `ambushed=${amb} unaware=${stacks(e, t, 'unaware')}`);
+    await e.endTurn();
+    check(t.alive && stacks(e, t, 'unaware') === 0 && stacks(e, t, 'suspicious') === 0,
+      'at end of turn it becomes Aware, not Suspicious',
+      `unaware=${stacks(e, t, 'unaware')} suspicious=${stacks(e, t, 'suspicious')}`);
+  }
+
+  // ── 12. Don't Scream Yet: its charges, and nothing else ──────────────────
+  {
+    /* It also set Fear of the Dark's flag, which made the first Scare on each
+       enemy free every turn for the rest of the fight, without spending a
+       charge. Two charges: the third Scare spends its Fright. */
+    const e = await boggle();
+    const t = e.livingEnemies()[0];
+    t.maxHp = 999; t.hp = 999;
+    e.applyStatus(t, 'fright', 12);
+    await play(e, 'boggle/dont-scream-yet', null);
+    const seen = [];
+    for (let i = 0; i < 3; i++) { await play(e, 'boggle/ankle-grab', t); seen.push(stacks(e, t, 'fright')); }
+    check(seen.join(',') === '12,12,9', "Don't Scream Yet: two Scares keep their Fright, the third spends 3",
+      `fright after each: ${seen.join(',')}`);
+    await e.endTurn();
+    const f0 = stacks(e, t, 'fright');
+    await play(e, 'boggle/ankle-grab', t);
+    check(t.alive && stacks(e, t, 'fright') === f0 - 3, 'and next turn a Scare spends its Fright again (no Fear of the Dark left behind)',
+      `fright ${f0} -> ${stacks(e, t, 'fright')}`);
+  }
+
+  // ── 13-14. Perfect Distraction and Count to Three: nothing read them ─────
+  const party = async () => {
+    const e = await startDummyParty(new RNG(4242), 2, {
+      companion: 'boggle', maxHp: 68,
+      decks: [CARDS.startingDeckFor('boggle'), CARDS.startingDeckFor('boggle')],
+    });
+    installTrackers(e, 'boggle');
+    for (const x of e.enemies) { x.maxHp = 999; x.hp = 999; }
+    return e;
+  };
+  const seatPlays = async (e, who, id, target) => {
+    e.addCard(CARDS.cardById(id), 'hand', { to: who });
+    const hand = e.pilesOf(who).hand;
+    who.energy = 9;
+    return e.playCard(hand[hand.length - 1].uid, target ? target.id : undefined);
+  };
+  {
+    const e = await party();
+    const [a, b] = e.players;
+    const [t, o] = e.livingEnemies();
+    if (!o) check(false, 'two enemies at the table (setup)');
+    else {
+      await seatPlays(e, a, 'boggle/perfect-distraction', null);
+      check(stacks(e, o, 'unaware') === 0, 'the other enemy starts Aware (setup)');
+      await seatPlays(e, b, 'boggle/little-chomp', t);
+      check(stacks(e, o, 'unaware') === 1 && stacks(e, o, 'fright') === 2 && stacks(e, t, 'fright') === 0,
+        "Perfect Distraction: the friend's next Attack makes a DIFFERENT Aware enemy Unaware with 2 Fright",
+        `other unaware=${stacks(e, o, 'unaware')} fright=${stacks(e, o, 'fright')}; target fright=${stacks(e, t, 'fright')}`);
+      await seatPlays(e, b, 'boggle/little-chomp', t);
+      check(stacks(e, o, 'fright') === 2, 'and only the next one', `other fright=${stacks(e, o, 'fright')}`);
+    }
+  }
+  {
+    const e = await party();
+    const [a, b] = e.players;
+    const t = e.livingEnemies()[0];
+    const hits = [];
+    e.on('damage', (ev) => { if (ev.targetId === t.id) hits.push((ev.sourceId === a.id ? 'boggle:' : 'friend:') + ev.amount); });
+    await seatPlays(e, a, 'boggle/count-to-three', t);
+    await seatPlays(e, b, 'boggle/little-chomp', t);
+    check(hits.slice().sort().join(',') === 'boggle:7,friend:7' && stacks(e, t, 'fright') === 3,
+      'Count to Three: the friend damaging an Aware target makes Boggle hit it for 7, then 3 Fright',
+      `hits ${hits.join(',')} fright=${stacks(e, t, 'fright')}`);
+    await seatPlays(e, b, 'boggle/little-chomp', t);
+    check(hits.length === 3, 'and only the first time', `hits ${hits.join(',')}`);
+
+    const e2 = await party();
+    const [a2, b2] = e2.players;
+    const t2 = e2.livingEnemies()[0];
+    await seatPlays(e2, a2, 'boggle/under-the-bed', t2);
+    await seatPlays(e2, a2, 'boggle/count-to-three', t2);
+    const hp0 = t2.hp;
+    await seatPlays(e2, b2, 'boggle/little-chomp', t2);
+    check(hp0 - t2.hp === 14 && stacks(e2, t2, 'fright') === 0 && stacks(e2, t2, 'suspicious') === 1,
+      'on an Unaware target the follow-up is an Ambush: no Fright, and it ends Suspicious',
+      `lost ${hp0 - t2.hp} fright=${stacks(e2, t2, 'fright')} suspicious=${stacks(e2, t2, 'suspicious')}`);
+  }
 } catch (err) {
   fails.push('THREW: ' + (err && err.stack || err));
 }

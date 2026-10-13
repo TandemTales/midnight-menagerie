@@ -415,6 +415,66 @@ try {
       plants(e).map(p => p.data.growth).join(','));
     check(plants(e)[0].data.mature === true, 'so the first replant is already Mature');
   }
+
+  // ══ Borrowed Sunlight and Easy Cutting do their text (tests/base-effects) ══
+  const matureIvy = (e, slot = 0) => e.addObject({ kind: 'plant', name: 'Creeping Ivy', slot, data: { cultivar: 'ivy', growth: 2, mature: true, seat: e.player.id, graft: null } });
+  const settle = () => new Promise(r => setTimeout(r, 0));
+  const allVines = (e) => e.livingEnemies().reduce((s, x) => s + vines(x), 0);
+  {
+    /* "may be Harvested as any of them": the flag was read only by Trick
+       conditions, so the Harvest always paid the Plant's own Cultivar. */
+    const e = await boo();
+    matureIvy(e);
+    await play(e, 'brambleboo/borrowed-sunlight', null);
+    e.setChoiceResolver((req) => (req.prompt === 'Harvest it as which Cultivar?'
+      ? [req.pool.findIndex(o => o.label === 'Grave Moss')] : e.choices.auto(req)));
+    const v = allVines(e), g = e.player.block;
+    await play(e, 'brambleboo/careful-snip', null);
+    await settle();
+    check(e.player.block - g === 16 && allVines(e) === v,
+      'Borrowed Sunlight: a Mature Ivy Harvested as Grave Moss gives the Moss Harvest (16 Guard), not the Ivy one',
+      `guard +${e.player.block - g}, vines +${allVines(e) - v}`);
+    check(plants(e).length === 0 && e.counter('compost') === 1, 'and still leaves the Garden for 1 Compost',
+      `plants=${plants(e).length} compost=${e.counter('compost')}`);
+  }
+  {
+    // The auto-pick (nobody answering) is the Plant's own Harvest.
+    const e = await boo();
+    matureIvy(e);
+    await play(e, 'brambleboo/borrowed-sunlight', null);
+    const v = allVines(e);
+    await play(e, 'brambleboo/careful-snip', null);
+    await settle();
+    check(allVines(e) - v === 3, 'Borrowed Sunlight: left alone, the Ivy Harvests as an Ivy (Entwine 3)', `vines +${allVines(e) - v}`);
+  }
+  {
+    // "Until end of turn": it counts as a Briar for Thorn Flick this turn, and not the next.
+    const e = await boo();
+    matureIvy(e);
+    await play(e, 'brambleboo/borrowed-sunlight', null);
+    const t = e.livingEnemies()[0];
+    const dmg = watchDamage(e);
+    t.block = 0;
+    await play(e, 'brambleboo/thorn-flick', t);
+    const thisTurn = dmg.total;
+    await e.endTurn();
+    t.block = 0;
+    e.player.statuses.delete('weak');   // the enemy turn may Weaken him; this reads the Briar bonus only
+    const before = dmg.total;
+    await play(e, 'brambleboo/thorn-flick', t);
+    const nextTurn = dmg.total - before;
+    check(thisTurn === 14, 'Borrowed Sunlight: the Ivy counts as a Mature Briar this turn (Thorn Flick 9 + 5)', `dealt ${thisTurn}`);
+    check(nextTurn === 9, 'and not once the turn has ended (Thorn Flick 9)', `dealt ${nextTurn}`);
+  }
+  for (const [up, want] of [[false, 0], [true, 1]]) {
+    // Easy Cutting+'s "with 1 Growth" was text only.
+    const e = await boo();
+    matureIvy(e);
+    await (up ? playUp : play)(e, 'brambleboo/easy-cutting', null);
+    const cut = plants(e).find(p => p.slot !== 0);
+    check(!!cut && cut.data.cultivar === 'ivy' && cut.data.growth === want,
+      `Easy Cutting${up ? '+' : ''} Propagates the Ivy with ${want} Growth`, `growth=${cut && cut.data.growth}`);
+  }
 } catch (err) {
   fails.push('THREW: ' + (err && err.stack || err));
 }

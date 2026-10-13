@@ -11,7 +11,7 @@
 <script type="module">
 import { RNG } from '../../game/src/core/rng.js';
 import { CombatEngine } from '../../game/src/combat/engine.js';
-import { makeDummySetup } from '../../game/src/combat/dummy.js';
+import { makeDummySetup, makeDummyParty } from '../../game/src/combat/dummy.js';
 import { installTrackers } from '../../game/src/data/companions/_util.js';
 import * as CARDS from '../../game/src/data/cards.js';
 
@@ -248,6 +248,47 @@ try {
       `${none.stuffing} -> ${base.stuffing}`);
     check(base.stitches === 3, 'and Reinforces the Patch in hand', `stitches=${base.stitches}`);
     check(both.stuffing - none.stuffing === 3, 'Heart on Her Sleeve then Heart on Her Sleeve+ gains 1 + 2', `${none.stuffing} -> ${both.stuffing}`);
+  }
+
+  // ── card truth (2026-10-13): Hand Me Down, "from one of your Tricks" ─────
+  {
+    /* It looked only in her hand, and tore the Patch off before asking whether
+       the friend had anything to take it - so with an empty friend's hand the
+       Patch was destroyed. */
+    const party = async (pile) => {
+      const deck = CARDS.startingDeckFor('mopsy');
+      const e = makeDummyParty(new RNG(90210), 2, { companion: 'mopsy', decks: [deck, deck] });
+      e.setTrackerInstaller(installTrackers);
+      await e.startCombat();
+      const me = e.players[0];
+      for (const k of me.piles.hand.slice()) e.discardCard(k, 'test');   // nothing patched in her hand
+      const src = e.addCard(CARDS.cardById('mopsy/folded-arms'), pile, { to: me });
+      const k = Array.isArray(src) ? src[0] : src;
+      k.meta.patches = [{ id: 'guard', stitches: 1 }];
+      return { e, k, me, mate: e.players[1] };
+    };
+    const handMeDown = async (e, me) => {
+      const made = e.addCard(CARDS.cardById('mopsy/hand-me-down'), 'hand', { to: me });
+      const card = Array.isArray(made) ? made[0] : made;
+      me.energy = 9;
+      await e.playCard(card.uid);
+    };
+    {
+      const { e, k, me, mate } = await party('discard');
+      await handMeDown(e, me);
+      const got = mate.piles.hand.flatMap(x => patchesOf(x));
+      check(patchesOf(k).length === 0 && got.length === 1 && got[0].stitches === 2,
+        'Hand Me Down: a Patch on a Trick in her DISCARD moves to the friend\'s hand, Reinforced by 1',
+        `left on hers ${patchesOf(k).length}, theirs ${JSON.stringify(got)}`);
+    }
+    {
+      const { e, k, me, mate } = await party('hand');
+      for (const x of mate.piles.hand.slice()) e._asSeat(mate, () => e.discardCard(x, 'test'));
+      await handMeDown(e, me);
+      check(mate.piles.hand.length === 0 && patchesOf(k).length === 1,
+        'and with nothing in the friend\'s hand to take it, the Patch stays on her Trick in hand',
+        `friend hand ${mate.piles.hand.length}, hers ${JSON.stringify(patchesOf(k))}`);
+    }
   }
 } catch (err) {
   fails.push('THREW: ' + (err && err.stack || err));

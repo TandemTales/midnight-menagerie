@@ -159,6 +159,135 @@ try {
     check(base === printed + 1, 'Family Pack: the Gummy copy costs 1 more', `printed ${printed}, Gummy ${base}`);
     check(both === printed, 'Family Pack then Family Pack+ charges the upgraded 0 more', `printed ${printed}, Gummy ${both}`);
   }
+
+  say('<h2>Same Again copies the last Trick you played</h2>');
+  {
+    /* It read `tf(c).lastPlayed`, which nothing in the tree ever wrote, so the
+       Uncommon did nothing at all, base or upgraded (tests/base-effects). */
+    const e = await taffy();
+    await play(e, 'taffy/sugar-bonk', e.livingEnemies()[0]);
+    const before = gummies(e).length;
+    await play(e, 'taffy/same-again');
+    const made = gummies(e);
+    check(made.length === before + 1 && made[made.length - 1].def.id === 'taffy/sugar-bonk',
+      'after Sugar Bonk, Same Again puts a Gummy Sugar Bonk in hand',
+      `gummies in hand: ${made.map(k => k.def.id).join(', ') || 'none'}`);
+    const e2 = await taffy();
+    const g0 = gummies(e2).length;
+    await play(e2, 'taffy/same-again');
+    check(gummies(e2).length === g0, 'played first, it copies nothing - not even itself',
+      `gummies in hand: ${gummies(e2).map(k => k.def.id).join(', ') || 'none'}`);
+    const e3 = await taffy();
+    await play(e3, 'taffy/sugar-bonk', e3.livingEnemies()[0]);
+    await play(e3, 'taffy/same-again');
+    const g = gummies(e3)[0];
+    if (g) { e3.player.energy = 9; await e3.playCard(g.uid, e3.livingEnemies()[0].id); }
+    const n3 = gummies(e3).length;
+    await play(e3, 'taffy/same-again');
+    check(gummies(e3).length === n3, 'a Gummy is never the source, and it works once each turn',
+      `${n3} -> ${gummies(e3).length}`);
+  }
+
+  /* tests/base-effects: six Belly and Gummy Tricks that did something other
+     than their text once the board could reach them. */
+  const emptyHand = (e) => { for (const k of e.piles.hand.slice()) e.discardCard(k, 'test'); };
+  const toBelly = (e, id) => { const k = e.addCard(CARDS.cardById(id), 'stash', {}); k.meta.belly = true; return k; };
+  const where = (e, k) => e.piles.pileOf(k);
+
+  say('<h2>Regurgitate discounts the one you CHOOSE</h2>');
+  {
+    const e = await taffy(); emptyHand(e);
+    const a = toBelly(e, 'taffy/pinch-off'), b = toBelly(e, 'taffy/sugar-bonk');
+    e.setChoiceResolver((req) => [req.pool.length - 1]);   // pick the LAST one offered
+    await play(e, 'taffy/regurgitate');
+    check(where(e, a) === 'hand' && where(e, b) === 'hand' && e.costOf(b) === 0 && e.costOf(a) === 2,
+      'choosing Sugar Bonk makes Sugar Bonk cost 0, not the first Trick out',
+      `Pinch Off ${e.costOf(a)}, Sugar Bonk ${e.costOf(b)}`);
+  }
+
+  say('<h2>Mouthfeel draws for EACH type in the Belly</h2>');
+  {
+    const e = await taffy(); emptyHand(e);
+    toBelly(e, 'taffy/sugar-bonk');
+    await play(e, 'taffy/mouthfeel');
+    check(e.piles.hand.length === 1, 'one type in the Belly draws 1 Trick (it drew 0)', `hand ${e.piles.hand.length}`);
+  }
+
+  say('<h2>Copycat Cannon PLAYS one copy</h2>');
+  {
+    const e = await taffy(); emptyHand(e);
+    toBelly(e, 'taffy/sugar-bonk');
+    const t = e.livingEnemies()[0]; const hp = t.hp;
+    await play(e, 'taffy/copycat-cannon');
+    const ids = (p) => e.piles[p].filter(k => flag(k, 'gummy') && k.def.id === 'taffy/sugar-bonk').length;
+    check(t.hp < hp, 'the copy hits for free the moment the Cannon resolves', `enemy ${hp} -> ${t.hp}`);
+    check(ids('hand') === 0 && ids('discard') === 1 && ids('exhaust') === 1,
+      'the played copy Vanished, the other is in the discard, none waits in hand',
+      `hand ${ids('hand')}, discard ${ids('discard')}, vanished ${ids('exhaust')}`);
+  }
+
+  say('<h2>Perfect Replica and Keep the Wrapper: survive one play, Vanish on the next</h2>');
+  {
+    const twice = async (e, k) => {
+      e.player.energy = 9; await e.playCard(k.uid, e.livingEnemies()[0].id);
+      const first = where(e, k);
+      e.moveCard(k, 'hand'); e.player.energy = 9; await e.playCard(k.uid, e.livingEnemies()[0].id);
+      return first + ' then ' + where(e, k);
+    };
+    const e = await taffy(); emptyHand(e);
+    toBelly(e, 'taffy/sugar-bonk');
+    await play(e, 'taffy/perfect-replica');
+    const r = gummies(e)[0];
+    check(!!r, 'Perfect Replica puts a marked Gummy in hand', `hand: ${e.piles.hand.map(k => k.def.id).join(', ')}`);
+    if (r) check((await twice(e, r)) === 'discard then exhaust', 'its copy is discarded on the first play and Vanishes on the second',
+      where(e, r));
+    const e2 = await taffy(); emptyHand(e2);
+    const g = e2.addCard(CARDS.cardById('taffy/sugar-bonk'), 'hand', { exhaust: true, meta: { gummy: true } });
+    await play(e2, 'taffy/keep-the-wrapper');
+    const res = await twice(e2, g);
+    check(res === 'discard then exhaust', 'a Kept Gummy is discarded once, then Chewed: it Vanishes on the next play', res);
+  }
+
+  say('<h2>Borrowed Price lasts until the Trick is played</h2>');
+  {
+    const e = await taffy(); emptyHand(e);
+    const b = toBelly(e, 'taffy/wobble-room');
+    const a = e.addCard(CARDS.cardById('taffy/pinch-off'), 'hand', {});
+    await play(e, 'taffy/borrowed-price');
+    const swapped = e.costOf(a) + '/' + e.costOf(b);
+    e.player.energy = 9; await e.playCard(a.uid);
+    check(swapped === '0/2' && e.costOf(a) === 2 && e.costOf(b) === 2,
+      'Pinch Off borrows the 0 until it is played, then costs 2 again; Wobble Room keeps 2 until it is played',
+      `swapped ${swapped}, after playing Pinch Off: Pinch Off ${e.costOf(a)}, Wobble Room ${e.costOf(b)}`);
+  }
+
+  say('<h2>Family Size: a Gummy survives its first play, Chewed</h2>');
+  {
+    /* The Power applied its marker and no hook read it, so every Gummy still
+       Vanished on its first play. The upgrade gate could not see it (a cost
+       cut) and the base gate only saw the buff icon. */
+    const run = async (withPower) => {
+      const e = await taffy();
+      if (withPower) await play(e, 'taffy/family-size');
+      e.addCard(CARDS.cardById('taffy/gummy-jab'), 'hand', {});
+      await play(e, 'taffy/sample-size');
+      const g = gummies(e)[0];
+      if (!g) return { e, g: null };
+      const t = e.livingEnemies()[0];
+      e.player.energy = 9; await e.playCard(g.uid, t.id);
+      return { e, g };
+    };
+    const off = await run(false), on = await run(true);
+    check(off.g && off.e.piles.exhaust.includes(off.g), 'setup: without it, a Gummy Vanishes on its first play');
+    check(on.g && on.e.piles.discard.includes(on.g) && flag(on.g, 'chewed') === true,
+      'with Family Size out, the first play sends it to the discard, Chewed',
+      on.g ? `in ${on.e.piles.pileOf ? on.e.piles.pileOf(on.g) : on.g.pile}, chewed=${flag(on.g, 'chewed')}` : 'no Gummy');
+    if (on.g && on.e.piles.discard.includes(on.g)) {
+      on.e.moveCard(on.g, 'hand', {});
+      on.e.player.energy = 9; await on.e.playCard(on.g.uid, on.e.livingEnemies()[0].id);
+      check(on.e.piles.exhaust.includes(on.g), 'and its second play Vanishes it');
+    }
+  }
 } catch (err) {
   fails.push('THREW: ' + (err && err.stack || err));
 }

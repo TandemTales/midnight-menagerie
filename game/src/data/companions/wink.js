@@ -187,7 +187,7 @@ async function askRead(c, e, pos) {
 function resolveRead(c, r, actualFamily, enemy) {
   if (!r || r.resolved) return;
   r.resolved = true;
-  if (r.forceFail) { readFail(c, r, enemy); return; }
+  if (r.forceFail) { readFail(c, r, enemy); readResolved(c, r, enemy, false); return; }
   /* I MEANT THAT ONE: "If it WOULD FAIL, treat it as successful instead, but
      Close {n} Eyes when it resolves." The rescue and its price are one thing,
      so a Read that was going to be right anyway costs nothing — which is why
@@ -207,6 +207,19 @@ function resolveRead(c, r, actualFamily, enemy) {
     if (r.shutDraw > 0) { const n = r.shutDraw; U.nextTurn(c, (x) => U.draw(x, n)); }
     U.fire(c, 'readSuccess', { read: r, enemy });
   } else readFail(c, r, enemy);
+  readResolved(c, r, enemy, real || rescued);
+}
+/**
+ * A Read has resolved: the Sets written "when that Read resolves" fire now.
+ *
+ * Watch This One and Rehearsed Pounce waited for ANY `intent` event on their
+ * enemy, which is every redraw of its plan -- a Preview, a status landing, a
+ * Trick played -- so they went off with the Read still standing and judged
+ * "if it succeeded" by whether ANY Read had succeeded this turn. This event
+ * is the Read itself, carrying its own result.
+ */
+function readResolved(c, r, enemy, success) {
+  checkSets(c, { type: 'read', enemy: enemy || null, enemyId: r.enemyId, read: r, success: !!success });
 }
 function readFail(c, r, enemy) {
   U.bump(c, 'readFail');
@@ -929,7 +942,8 @@ const commons = [
     text: '[Set] on an enemy with an unresolved [Read]. When that Read resolves, draw {n} Trick, and {m0} more if it succeeded. Then discard this Trick.',
     flavor: 'That one. Definitely that one.',
     nums: { n: 1, m0: 1 },
-    effect: setEff(c => { const t = c.target, n = N(c).n, m = N(c).m0; placeSet(c, (x, ev) => ev.type === 'intent' && ev.enemy === t, (x, ev) => { U.draw(x, n); if (U.got(x, 'readSuccess') > 0) U.draw(x, m); }, { enemy: t }); }),
+    /* Fires on the Read RESOLVING, with that Read's own result: see readResolved. */
+    effect: setEff(c => { const t = c.target, n = N(c).n, m = N(c).m0; placeSet(c, (x, ev) => ev.type === 'read' && ev.enemyId === eid(t), (x, ev) => { U.draw(x, n); if (ev.success) U.draw(x, m); }, { enemy: t }); }),
     playable: (c) => readsOn(c, c.target).length > 0,
     upgrade: { nums: { n: 2, m0: 1 } },
   },
@@ -1059,8 +1073,9 @@ const uncommons = [
     nums: { d: 20 },
     effect: setEff(c => {
       const t = c.target, d = N(c).d, card = c.card;
-      placeSet(c, (x, ev) => ev.type === 'intent' && ev.enemy === t, (x) => {
-        if (U.got(x, 'readSuccess') > 0) U.hitAt(x, t, d);
+      /* Fires on the Read RESOLVING, with that Read's own result: see readResolved. */
+      placeSet(c, (x, ev) => ev.type === 'read' && ev.enemyId === eid(t), (x, ev) => {
+        if (ev.success) U.hitAt(x, t, d);
         else U.nextTurn(x, (y) => U.toHand(y, card));
       }, { enemy: t });
     }),

@@ -252,6 +252,46 @@ try {
     const l = e.piles.hand[e.piles.hand.length - 1];
     check(e.costOf(l) === CARDS.cardById('crumbula/leftover').cost, 'and it costs no more than printed (the text no longer says "cost 1")', `cost ${e.costOf(l)}`);
   }
+
+  // ── card truth (2026-10-13): Family Banquet set a flag nothing read ──────
+  {
+    const banquet = async (withIt) => {
+      const e = await count();
+      const t = e.livingEnemies()[0];
+      e.player.hp = 40;
+      e.applyStatus(t, 'bite-mark', 3);
+      if (withIt) await play(e, 'crumbula/family-banquet');
+      await play(e, 'crumbula/tiny-nibble', t);     // hits (marked) THEN marks +1
+      await play(e, 'crumbula/tiny-nibble', t);     // a second hit this round: no second payout
+      return { hp: e.player.hp, marks: marks(e, t) };
+    };
+    const off = await banquet(false), on = await banquet(true);
+    check(off.hp === 40 && off.marks === 5, 'without Family Banquet, two Tiny Nibbles heal nothing and leave 5 marks', JSON.stringify(off));
+    check(on.hp === 44, 'Family Banquet: the first hit on a marked enemy heals that Kid 4, once', `hp 40 -> ${on.hp}`);
+    check(on.marks === 4, 'and removes one Bite Mark (3, -1, +1, +1)', `marks=${on.marks}`);
+    const e = await count();
+    const t = e.livingEnemies()[0];
+    e.player.hp = 40;
+    e.applyStatus(t, 'bite-mark', 3);
+    await play(e, 'crumbula/family-banquet');
+    await e.endTurn();
+    e.player.hp = 40;
+    await play(e, 'crumbula/tiny-nibble', t);
+    check(e.player.hp === 40, 'and only this round: it is spent when his next turn starts', `hp=${e.player.hp}`);
+  }
+
+  // ── card truth (2026-10-13): Pocket Snack made Leftovers only off a mark ─
+  {
+    const e = await count();
+    const t = e.livingEnemies()[0];
+    const left = () => e.piles.hand.filter(k => k.id === 'crumbula/leftover').length;
+    const before = left();
+    await play(e, 'crumbula/pocket-snack', t);
+    check(left() === before + 1, 'Pocket Snack makes its Leftover even with no Bite Mark to remove', `${before} -> ${left()}`);
+    e.applyStatus(t, 'bite-mark', 2);
+    await play(e, 'crumbula/pocket-snack', t);
+    check(marks(e, t) === 1 && left() === before + 2, 'and with marks, removes 1 and makes 1', `marks=${marks(e, t)} leftovers=${left()}`);
+  }
 } catch (err) {
   fails.push('THREW: ' + (err && err.stack || err));
 }

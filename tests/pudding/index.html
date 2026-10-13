@@ -442,6 +442,38 @@ try {
     check(both - none === 8, 'Haunted Headstones then Haunted Headstones+ gives the upgraded 8', `${none} -> ${both}`);
   }
 
+  /* tests/base-effects: two Tricks that did something other than their text
+     once the board could reach them. */
+  {
+    // Who's a Good Pug? SPENDS the Loyalty: Never Off Duty pays on it.
+    const e = await pudding();
+    await play(e, 'pudding/never-off-duty');
+    e.setCounter('loyalty', 5, 'test');
+    e.player.block = 0;
+    await play(e, 'pudding/whos-a-good-pug');
+    check(e.counter('loyalty') === 0 && e.player.block > 0,
+      "Who's a Good Pug? spends all 5 Loyalty, so Never Off Duty gives its Guard",
+      `loyalty ${e.counter('loyalty')}, guard ${e.player.block}`);
+  }
+  {
+    // Seance at Supper never copies a Buried Power.
+    const e = await pudding();
+    const s = e.player.__mm;
+    if (!s.plots) s.plots = [];
+    while (s.plots.length < 3) s.plots.push({ card: null, used: false });
+    for (const id of ['pudding/haunted-headstones', 'pudding/little-chomp']) {
+      e.addCard(CARDS.cardById(id), 'stash', {});
+      const k = e.piles.stash[e.piles.stash.length - 1];
+      s.plots.find(p => !p.card).card = k; k.unplayable = true; k.meta.buried = true;
+    }
+    e.setCounter('plots', 2, 'test');
+    onlyInHand(e, null);
+    await play(e, 'pudding/seance-at-supper');
+    check(e.piles.hand.length === 1 && e.piles.hand[0].id === 'pudding/little-chomp',
+      'Seance at Supper copies the Buried Attack, never the Buried Power',
+      `hand: ${e.piles.hand.map(k => k.id).join(', ') || 'empty'}`);
+  }
+
 } catch (err) {
   fails.push('THREW: ' + (err && err.stack || err));
 }

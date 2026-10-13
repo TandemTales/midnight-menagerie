@@ -536,6 +536,29 @@ try {
         `gained ${e.players[0].block - before}, printed {b}=${n.b}`);
     }
   }
+  {
+    /* Card truth (2026-10-13): "until your next turn" was cleared on
+       turn:start, which runs BEFORE the countdown tick, so an Afterglow that
+       landed on its own at the start of the next turn - the case the card is
+       for - paid nothing. Wait... Wait... lands as damage, no Guard of its own. */
+    const landed = async (withIt) => {
+      const e = await arena();
+      await play(e, 'wisp/wait-wait', e.livingEnemies()[0]);
+      if (withIt) await play(e, 'wisp/gentle-landing', null);
+      await e.endTurn();                                          // it lands at the start of this turn
+      return { block: e.players[0].block, left: gloaming(e).length };
+    };
+    const off = await landed(false), on = await landed(true);
+    const n = nums('wisp/gentle-landing', false);
+    check(off.left === 0 && on.left === 0, 'Wait... Wait... lands on the natural tick', `${off.left}/${on.left} still Lingering`);
+    check(on.block - off.block === n.b,
+      'Gentle Landing: an Afterglow landing on the next turn\'s tick still gains {b} Guard',
+      `block ${off.block} without, ${on.block} with, printed {b}=${n.b}`);
+    const e = await arena();
+    await play(e, 'wisp/gentle-landing', null);
+    await e.endTurn();
+    check(st(e).gentleLanding == null, 'and it expires after that tick', JSON.stringify(st(e).gentleLanding));
+  }
 
   // ── 14. Small Orbit's return is not an Afterglow ────────────────────────
   {

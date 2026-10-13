@@ -38,17 +38,11 @@
  * Those go in WAIVED with a reason, and a waiver that starts showing a
  * difference FAILS, because a control that cannot fail is not a control.
  */
-import { RNG } from '../../game/src/core/rng.js';
-import { CombatEngine } from '../../game/src/combat/engine.js';
-import { makeDummySetup } from '../../game/src/combat/dummy.js';
-import { installTrackers } from '../../game/src/data/companions/_util.js';
 import * as CARDS from '../../game/src/data/cards.js';
-
-const SEED = 20260911;
-const TURNS_AFTER = 2;
-const SEED_COUNTERS = [['lives', 9], ['loose-bones', 3], ['height', 2], ['plump', 2],
-  ['globs', 3], ['open-eyes', 3], ['patience', 2], ['stretch', 2], ['forecast', 2]];
-const SEED_ENEMY_STATUS = [['haunt', 6], ['web', 6], ['weak', 1]];
+/* The board, the snapshot, the tally and the follow-up turns are shared with
+   tests/base-effects (harness.js), so the two gates can never disagree about
+   what a fair comparison is. */
+import { seededBoard, snapshot, startTally, tallyText, playTurns, sourceFor, literalOf, PARTY, CHOICE } from './harness.js';
 
 /** id -> why a dummy fight cannot show this upgrade. Checked in BOTH directions. */
 /* WAIVERS, group 1 (drizzle, brambleboo, the shared pool): [id, 'why this board cannot show it'] */
@@ -140,7 +134,7 @@ const WAIVED_G2 = [
   ['boggle/lump-under-the-blanket', 'Pays when the enemy becomes Suspicious, which needs an Ambush on an Unaware enemy: Fright 2 -> 3'],
   ['boggle/dont-turn-around', 'Marks an Unaware enemy and none is: hidden, then it Searches, Fright 5 -> 7'],
   ['boggle/dont-check-again', 'Marks an Unaware enemy and none is: hidden, then it Searches, Fright 7 -> 10 and it ends Aware'],
-  ['boggle/dont-scream-yet', 'Needs Scares, which need Fright, which starts at 0: 12 Fright and five Ankle Grabs, Fright left 9 -> 12'],
+  ['boggle/dont-scream-yet', 'Needs Scares, which need Fright, which starts at 0: 12 Fright and five Ankle Grabs, Fright left 3 -> 6'],
   ['boggle/you-didnt-see-anything', 'Pays for hiding a Suspicious enemy, and none is hidden here: Lurk 3, hide a Suspicious one, Lurk left 1 -> 2'],
   /* Hush: his Shadow Pocket starts empty, he starts Seen, and nothing in the
      deck is a Status or Curse. */
@@ -195,7 +189,6 @@ const WAIVED_G3 = [
   ['wisp/cut-the-wait', 'nothing Lingering; with three at 1 it lands 2 vs 3 and draws 1 vs 2'],
   ['wisp/all-at-once', 'nothing Lingering; with two at 1 it regains 1 vs 2 Nerve'],
   ['wisp/stop-the-clocks', 'nothing Lingering; with two it gives 8 vs 12 Guard'],
-  ['wisp/gentle-landing', 'no Afterglow before the next turn here; one Hastened gives 4 vs 6 Guard'],
   ['wisp/constellation-practice', 'no Convergence here; two landing together draw 1 vs 2'],
   ['wisp/small-orbit', 'the 1-cost top card floors at 0 both ways; a 2-cost one comes back at 1 vs 0'],
   ['wisp/glow-bank', 'the seeded 3 Glow caps both at 6; from 0 it gains 3 vs 4, with a Linger 4 vs 5'],
@@ -246,7 +239,6 @@ const WAIVED_G4 = [
   ['crumbula/midnight-snack', 'no Bite Mark to Feed on, so it never makes him Sated'],
   ['crumbula/one-tiny-sip', 'no Bite Mark to Feed on'],
   ['crumbula/seconds', 'no Bite Mark to Feed on'],
-  ['crumbula/pocket-snack', 'no Bite Mark to remove'],
   ['crumbula/reserve-vintage', 'no Bite Mark to remove'],
   ['crumbula/sip-slowly', 'no Bite Mark to Feed on'],
   ['crumbula/clean-plate-club', 'no Bite Mark to Feed on'],
@@ -282,57 +274,8 @@ const WAIVED = new Map([...WAIVED_G1, ...WAIVED_G2, ...WAIVED_G3, ...WAIVED_G4])
 const out = document.getElementById('out');
 const say = (html, cls) => { const d = document.createElement('div'); if (cls) d.className = cls; d.innerHTML = html; out.appendChild(d); };
 
-function buildEngine(slug) {
-  const deck = CARDS.companion(slug) ? CARDS.startingDeckFor(slug) : CARDS.sharedPool().slice(0, 8);
-  return new CombatEngine(makeDummySetup(new RNG(SEED), { companion: slug, deck: deck.length ? deck : CARDS.sharedPool() }));
-}
-
-/** Everything one play can move, flattened. Same seed on both sides, so a
- *  difference is the card and SAMENESS is the finding. */
-function snapshot(e) {
-  const st = (a) => [...a.statuses].map(([k, v]) => k + ':' + v).sort().join(' ');
-  const bodies = [...e.enemies, ...(e.allies || [])]
-    .map(x => [x.id, x.hp, x.block, x.alive ? 1 : 0, st(x)].join('/')).join(' | ');
-  const counters = [...e.counters.values()].map(c => c.id + ':' + e.counter(c.id)).sort().join(' ');
-  const piles = ['hand', 'draw', 'discard', 'exhaust', 'stash', 'limbo']
-    .map(n => n + '=' + ((e.piles && e.piles[n]) || []).length).join(' ');
-  const p = e.player;
-  return [bodies, 'hp' + p.hp, 'guard' + p.block, 'nerve' + p.energy, st(p), counters, piles,
-    'timers' + ((e.timers || []).length), 'objects' + ((e.objects || []).length)].join(' # ');
-}
-
 async function playOnce(def, upgraded) {
-  const e = buildEngine(def.companion);
-  await e.startCombat();
-  installTrackers(e, def.companion);
-  // Bodies that cannot die: a kill ends the fight and truncates the comparison,
-  // and the DIFFERENCE in damage is exactly what has to stay visible.
-  for (const x of e.enemies) { x.maxHp = 9999; x.hp = 9999; }
-  /* EVERY declared counter, not a hand-written six: a Companion's upgrade
-     usually pays off through their own track (Quills, Glow, Creases, Paper,
-     Lurk, Loyalty, Patience), and a track sitting at 0 hides the difference. */
-  for (const c of e.counters.values()) {
-    const want = Math.min(c.max === undefined ? 3 : c.max, 3);
-    if (want > (c.min || 0)) e.setCounter(c.id, want, 'test');
-  }
-  for (const [id, v] of SEED_COUNTERS) if (e.counters.has(id)) e.setCounter(id, v, 'test');
-  const t = e.livingEnemies()[0];
-  if (t) for (const [id, v] of SEED_ENEMY_STATUS) e.applyStatus(t, id, v);
-
-  /* A turn that has already started. "Gain {b} Guard for each Trick you
-     discarded this turn" is 5x0 and 7x0 on an untouched board, and "the first
-     Trick each turn" never fires if this is the first. One ordinary play and
-     one discard first -- identical on both sides -- give those a foothold. */
-  const warm = e.piles.hand[0];
-  if (warm) {
-    e.player.energy = 9;
-    const chk = e.canPlay(warm.uid, t && t.id);
-    if (!chk || chk.ok !== false) {
-      try { await e.playCard(warm.uid, warm.target === 'enemy' ? (t && t.id) : undefined); } catch (_) { /* affordability */ }
-    }
-  }
-  const spare = e.piles.hand[0];
-  if (spare) { try { e.moveCard(spare, 'discard', { reason: 'test' }); } catch (_) { /* pile guard */ } }
+  const { e, t } = await seededBoard(def.companion);
 
   const made = e.addCard(def, 'hand', { upgraded });
   const card = Array.isArray(made) ? made[0] : made;
@@ -345,12 +288,7 @@ async function playOnce(def, upgraded) {
      a running tally of what the fight EMITTED (damage, Guard, healing, status
      stacks - which survives the wipe), and the board two turns later for
      anything delayed. */
-  const tally = { dmg: 0, hits: 0, block: 0, heal: 0, status: 0 };
-  const amt = (ev) => ((ev && ev.amount) || 0);
-  e.on('damage', (ev) => { tally.dmg += amt(ev); tally.hits += 1; });
-  e.on('block', (ev) => { tally.block += amt(ev); });
-  e.on('heal', (ev) => { tally.heal += amt(ev); });
-  e.on('status', (ev) => { tally.status += Math.abs((ev && ev.delta) || 0); });
+  const tally = startTally(e);
 
   e.player.energy = 9;
   const cost = e.costOf(card);
@@ -364,48 +302,9 @@ async function playOnce(def, upgraded) {
      a reason that has nothing to do with the upgrade. Those are counted apart. */
   const played = !((e.piles.hand || []).includes(card));
   const onPlay = snapshot(e);
-  /* A Power buffs what you play NEXT. Playing nothing after it means "your
-     Attacks deal 2 more" and "your Attacks deal 3 more" end the fight on
-     identical boards, so two ordinary Tricks are played each turn afterwards -
-     same hand, same order, both sides - and the Power shows up in the damage. */
-  for (let i = 0; i < TURNS_AFTER && !e.over; i++) {
-    e.player.energy = 9;
-    for (const k of e.piles.hand.slice(0, 2)) {
-      const chk = e.canPlay(k.uid, t && t.id);
-      if (chk && chk.ok === false) continue;
-      try { await e.playCard(k.uid, k.target === 'enemy' ? (t && t.id) : undefined); }
-      catch (err) { if (!threw) threw = String((err && err.message) || err); }
-      if (e.over) break;
-    }
-    e.player.energy = 9;
-    try { await e.endTurn(); } catch (err) { if (!threw) threw = String((err && err.message) || err); }
-  }
-  const emitted = ['dmg' + tally.dmg, 'hits' + tally.hits, 'guard' + tally.block,
-    'heal' + tally.heal, 'status' + tally.status].join(' ');
-  return { cost, played, snap: onPlay + ' || ' + emitted + ' || ' + snapshot(e), threw };
-}
-
-/* A card's own source text, so the report can tell "dead" from "this board
-   could not ask the question". `def.effect` is wrapped in `eff()`, so reading
-   the function back gives the wrapper; the module text gives the card. */
-const SRC = new Map();
-async function sourceFor(slug) {
-  // Neutral Tricks live in data/neutral.js, not companions/: asking for
-  // companions/neutral.js is a 404 in the console and a red gate.
-  if (!slug || !CARDS.companion(slug)) return '';
-  if (!SRC.has(slug)) {
-    try {
-      const r = await fetch('/game/src/data/companions/' + slug + '.js');
-      SRC.set(slug, r.ok ? await r.text() : '');
-    } catch (_) { SRC.set(slug, ''); }
-  }
-  return SRC.get(slug);
-}
-function literalOf(text, id) {
-  const at = text.indexOf("id: '" + id + "'");
-  if (at < 0) return '';
-  const next = text.indexOf("id: '", at + 5);
-  return text.slice(at, next < 0 ? text.length : next);
+  const after = await playTurns(e, t);
+  if (!threw) threw = after;
+  return { cost, played, snap: onPlay + ' || ' + tallyText(tally) + ' || ' + snapshot(e), threw };
 }
 
 /** What the upgrade SAYS it changes, for the report. */
@@ -430,8 +329,6 @@ function claim(def) {
   /* This board is one Kid. A Trick that pays a FRIEND cannot show a difference
      here however big its upgrade is, so those are counted apart rather than
      called dead - a gate that lists cards it cannot judge is trap 54 waiting. */
-  const PARTY = /friend|teammate|\bally\b|another Kid|other Kid|each Kid|every Kid|party/i;
-  const CHOICE = /chooseOne|pickCards|pickEpitaph|pickHand|askRead/;
 
   for (const def of all) {
     const a = await playOnce(def, false);

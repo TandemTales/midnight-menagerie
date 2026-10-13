@@ -1465,14 +1465,18 @@ const coopCards = [
     flavor: 'It was always going to end up theirs.',
     nums: { n: 1 },
     effect: eff(async (c) => {
+      /* "From one of your Tricks", as Borrowed Pattern reads it: the hand
+         first, then any pile. It looked only in hand, and it tore the Patch
+         off BEFORE asking whether the friend had a Trick to take it, so with
+         nothing eligible in their hand the Patch was simply destroyed. */
       const ally = await c.chooseAlly();
-      const src = patchedInHand(c)[0];
+      const src = patchedInHand(c)[0] || allPatched(c)[0];
       if (!ally || !src) return;
+      const theirs = c.allyCards(ally, 'hand').filter(patchable);
+      if (!theirs.length) return;
       const list = patchesOn(src).slice();
       const moved = list.shift();
       setPatches(src, list);
-      const theirs = c.allyCards(ally, 'hand').filter(patchable);
-      if (!theirs.length) return;
       const k = theirs[0];
       setPatches(k, patchesOn(k).concat([{ ...moved, stitches: Math.min(MAX_STITCHES, moved.stitches + N(c).n) }]));
     }),
