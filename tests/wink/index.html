@@ -732,6 +732,65 @@ try {
       `block=${e.player.block}`);
     check(e.piles.exhaust.includes(trip), 'and then it Vanishes, exactly as the card says');
   }
+
+  /**
+   * WATCH THIS ONE and REHEARSED POUNCE: "When that Read resolves ... if it
+   * succeeded". They fired on ANY `intent` event on their enemy -- Snip
+   * Here's own delete redraws the intent BEFORE the Read on position 1 is
+   * scored -- and judged "succeeded" by whether any Read had succeeded this
+   * turn. So a Read called right still paid as a miss.
+   */
+  {
+    const id = 'wink/watch-this-one';
+    const e = await winkVs(ATTACKER);
+    const t = e.livingEnemies()[0];
+    chooseFamily(e, 'Attack');
+    await play(e, 'wink/call-it', t);
+    await play(e, id, t);
+    check(sets(e).length === 1, 'setup: Watch This One is Set on the enemy with the Read');
+    await play(e, 'wink/peek-around-the-corner', t);
+    check(sets(e).length === 1 && reads(e).some(r => !r.resolved), 'Watch This One waits for the Read, not for a Preview');
+    const h0 = e.piles.hand.length;
+    await snipToResolve(e, t);
+    const n = NUMS(id);
+    check(sets(e).length === 0 && e.piles.hand.length - h0 === n.n + n.m0,
+      `when the Read resolves RIGHT it draws ${n.n} and ${n.m0} more`, `drew ${e.piles.hand.length - h0}, sets left=${sets(e).length}`);
+
+    const w = await winkVs(DEFENDER);
+    const wt = w.livingEnemies()[0];
+    chooseFamily(w, 'Attack');
+    await play(w, 'wink/call-it', wt);
+    await play(w, id, wt);
+    const w0 = w.piles.hand.length;
+    await snipToResolve(w, wt);
+    check(sets(w).length === 0 && w.piles.hand.length - w0 === n.n,
+      `and a WRONG Read draws only ${n.n}`, `drew ${w.piles.hand.length - w0}`);
+  }
+  {
+    const id = 'wink/rehearsed-pounce';
+    const e = await winkVs(ATTACKER);
+    const t = e.livingEnemies()[0];
+    chooseFamily(e, 'Attack');
+    await play(e, 'wink/call-it', t);
+    const card = await play(e, id, t);
+    const hits = [];
+    e.on('damage', (ev) => { if (ev.targetId === t.id && ev.sourceId === e.player.id) hits.push(ev.amount); });
+    await snipToResolve(e, t);
+    check(sets(e).length === 0 && hits.includes(NUMS(id).d),
+      `Rehearsed Pounce: a Read resolving RIGHT deals its ${NUMS(id).d}`, `hits ${hits.join(',')}`);
+    check(!e.piles.hand.includes(card), 'and it does not come back to hand');
+
+    const w = await winkVs(DEFENDER);
+    const wt = w.livingEnemies()[0];
+    chooseFamily(w, 'Attack');
+    await play(w, 'wink/call-it', wt);
+    const wc = await play(w, id, wt);
+    const hp0 = wt.hp;
+    await snipToResolve(w, wt);
+    check(wt.hp === hp0 && sets(w).length === 0, 'a WRONG Read deals nothing', `hp ${hp0} -> ${wt.hp}`);
+    await w.endTurn();
+    check(w.piles.hand.includes(wc), 'and the Trick is back in hand at the start of the next turn');
+  }
 } catch (err) {
   fails.push('THREW: ' + (err && err.stack || err));
 }
