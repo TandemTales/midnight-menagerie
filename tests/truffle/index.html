@@ -752,6 +752,26 @@ try {
     check(both === want, 'All Spines, No Plan then All Spines, No Plan+ Guards the upgraded amount', `${both} want ${want}`);
     check(back === want, 'and upgraded then base still Guards the upgraded amount', `${back} want ${want}`);
   }
+
+  say('<h2>Exact Amount of Terrible reads the swing on the intent</h2>');
+  {
+    /* tests/base-effects: it read the move's RAW damage, so Strength, Weak, a
+       multi-hit move and every `damageFn` Attack (no raw number at all) were
+       invisible to it. */
+    const e = await truffle();
+    const t = e.livingEnemies().find(x => x.intent && x.intent.totalDamage > 0);
+    check(!!t, 'setup: an enemy is winding up an Attack');
+    if (t) {
+      e.applyStatus(t, 'strength', 10);
+      e.refreshIntents('test');
+      e.player.block = 0;
+      const { n, b } = NUMS('truffle/exact-amount-of-terrible');
+      const want = Math.max(0, Math.min(b, t.intent.totalDamage - n));
+      await play(e, 'truffle/exact-amount-of-terrible', t);
+      check(e.player.block === want, 'against a Strength-10 swing it Guards all but ' + n + ' of what the intent shows',
+        `intent ${t.intent.totalDamage}, guard ${e.player.block}, want ${want}`);
+    }
+  }
 } catch (err) {
   fails.push('THREW: ' + (err && err.stack || err));
 }

@@ -36,4 +36,9 @@ export default [
   ['pudding/graveyard-picnic', 'no Plot is filled, so Pudding is not Graveside and it cannot be played'],
   ['pudding/seance-at-supper', 'no Plot is filled, so Pudding is not Graveside and it cannot be played'],
   ['pudding/whos-a-good-pug', 'the seeded 3 Loyalty is under the maximum 5, so it cannot be played'],
+  ['truffle/needle-exchange', 'Truffle has no Bristle to consume'],
+  ['truffle/tiny-disaster', 'Truffle is at full Courage, not Ragged, so it cannot be played'],
+  ['truffle/ragged-reset', 'Truffle is at full Courage, not Ragged, so it cannot be played'],
+  ['truffle/exact-amount-of-terrible', 'the warm-up Guard already covers all but 2 of the target\'s Weakened 4'],
+  ['truffle/lend-them-the-spiky-side', 'one seat: there is no Kid to lend to, and its "a chosen Kid" escapes the gate\'s party second chance'],
 ];

@@ -83,6 +83,13 @@ const PROOFS = [
   ['pudding/graveyard-picnic', 'Graveside (two Plots filled)', { setup: (e) => { plot(e); plot(e, 'pudding/guard-the-ankles'); } }],
   ['pudding/seance-at-supper', 'Graveside (two Plots filled)', { setup: (e) => { plot(e); plot(e, 'pudding/guard-the-ankles'); } }],
   ['pudding/whos-a-good-pug', 'maximum Loyalty (5)', { setup: (e) => e.setCounter('loyalty', 5, 'proof') }],
+
+  // ── Truffle ───────────────────────────────────────────────────────────────
+  ['truffle/needle-exchange', 'Bristle to consume', { setup: (e) => e.applyStatus(e.player, 'bristle', 2) }],
+  ['truffle/tiny-disaster', 'Ragged (half Courage or less)', { setup: (e) => { e.player.hp = 20; } }],
+  ['truffle/ragged-reset', 'Ragged (half Courage or less)', { setup: (e) => { e.player.hp = 20; } }],
+  ['truffle/exact-amount-of-terrible', 'a target swinging for more than his Guard plus 2', { setup: (e, t) => { e.applyStatus(t, 'strength', 20); e.refreshIntents('proof'); } }],
+  ['truffle/lend-them-the-spiky-side', 'a teammate to lend to (two seats)', { party: true }],
 ];
 
 runProofs(PROOFS);
