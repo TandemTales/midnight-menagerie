@@ -1,0 +1,139 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Tricks that do nothing in play</title>
+<style>
+  body { font: 14px/1.5 ui-monospace, monospace; background: #14121a; color: #d8d4e0; padding: 20px; }
+  .pass { color: #7fd08a; } .fail { color: #ff8080; } .dim { color: #8a839c; }
+  h2 { color: #c9a9ff; margin: 18px 0 6px; }
+  .dead { color: #ffcf7f; }
+</style>
+<h1>Base effects</h1>
+<div class="dim">every playable Trick played in a real fight against a blank twin of itself, and the two boards compared</div>
+<div id="out"></div>
+<script type="module">
+/**
+ * A TRICK WHOSE EFFECT DOES NOTHING.
+ *
+ * tests/upgrade-effects asks whether an UPGRADE moved anything, by playing base
+ * against upgraded. Both of those can be equally dead: a card whose effect sets
+ * a flag nothing reads, reads a status nobody applies, or hardcodes a branch
+ * that never fires plays base and upgraded identically AND does nothing at all,
+ * and that gate calls it a dead upgrade at best. The 2026-09-11 cost pass found
+ * dozens of those by reading the code. This gate plays them.
+ *
+ * THE CONTROL IS A BLANK TWIN, NOT AN EMPTY SLOT. Each Trick is played onto the
+ * seeded board (tests/upgrade-effects/harness.js, the SAME board the upgrade
+ * gate uses), and so is a twin of it: same type, cost, target, keywords, tags
+ * and playability, a different id, and an effect that does nothing. Simply not
+ * playing the card is not a fair control, because the PLAY is visible on its
+ * own: it spends Nerve, lands a card in the discard (which the next shuffle
+ * deals differently), counts toward "the Nth Trick this turn", triggers every
+ * "when you play an Attack" Power and enemy reaction. A control without the
+ * play would call every card alive. With the twin, the hand, the Nerve spent,
+ * the piles and every play-triggered hook are identical, and the only thing
+ * that differs is what the CARD's effect did.
+ *
+ * The RNG is snapshotted before the play and restored after it on both sides,
+ * so an effect that draws a random number it then ignores does not shuffle the
+ * rest of the fight differently and pass for alive.
+ *
+ * Then the same two turns pass on both boards (two ordinary Tricks a turn, so a
+ * Power shows in the damage) and three readings are compared: the board the
+ * moment the play resolves, a tally of everything the fight EMITTED (damage,
+ * Guard, healing, status stacks), and the board after the turns. The board
+ * reading here is wider than the upgrade gate's: every pile by CONTENT (id,
+ * upgrade, current cost, card meta) rather than by size, enemy intents, the
+ * Kid's Nerve cap, draw and hand cap, the Companion's visible scratch state
+ * (Patch, Sets, Buried, Belly cap, Gloaming, Buried Harm, Pocket size) and the
+ * timers and objects on the table. Where the card itself ended up is read too,
+ * since "return this to your hand" is an effect.
+ *
+ * Identical readings mean the card did nothing anybody could see.
+ *
+ * Two second chances before a card is called dead. A Trick whose text pays a
+ * FRIEND is played again on the same board with a second Kid at the table, and
+ * one whose effect asks a CHOICE is played again with the last options picked
+ * instead of the first. Either one differing is enough.
+ *
+ * A dummy board still cannot reach every condition: a threshold this fight
+ * never crosses, a pile it never fills, a Trick it cannot play at all. Unlike
+ * the upgrade gate, nothing here is bucketed away silently: every identical
+ * Trick is DEAD unless WAIVED_LIST names it with the reason, and a waiver that
+ * starts showing a difference FAILS, because a control that cannot fail is not
+ * a control. Each waiver is proved live on a board that reaches its condition
+ * by proofs.html (python tests/base-effects/run.py).
+ */
+import * as CARDS from '../../game/src/data/cards.js';
+import { sourceFor, literalOf, PARTY, CHOICE } from '../upgrade-effects/harness.js';
+import { compare, lastResolver } from './twin.js';
+
+/** [id, 'why this board cannot show it']. Checked in BOTH directions, and
+ *  every entry is proved live by proofs.html. */
+const WAIVED_LIST = [
+];
+const WAIVED = new Map(WAIVED_LIST);
+
+const out = document.getElementById('out');
+const say = (html, cls) => { const d = document.createElement('div'); if (cls) d.className = cls; d.innerHTML = html; out.appendChild(d); };
+
+(async () => {
+  const all = CARDS.allCards().filter(c =>
+    !['status', 'curse'].includes(c.type) && !['curse', 'special'].includes(c.rarity) && !c.unplayable && c.cost !== -2);
+  const dead = [], broken = [], staleWaivers = [], buffOnly = [];
+  const rescued = { party: [], choice: [] };
+  let checked = 0, unplayable = 0;
+
+  for (const def of all) {
+    let r = await compare(def);
+    if (!r) { broken.push(def.id + ': the engine could not instantiate it'); continue; }
+    checked++;
+    if (r.unfair) { broken.push(def.id + ': the card plays here but its blank twin is refused, so the comparison is unfair'); continue; }
+    /* Second chances: a friend at the table, then the other end of a choice. */
+    if (r.same && r.played && PARTY.test(def.text || '')) {
+      const p = await compare(def, { party: true });
+      if (p && !p.same) { r = p; rescued.party.push(def.id); }
+    }
+    if (r.same && r.played && CHOICE.test(literalOf(await sourceFor(def.companion), def.id))) {
+      const q = await compare(def, { resolver: lastResolver });
+      if (q && !q.same) { r = q; rescued.choice.push(def.id); }
+    }
+    const waived = WAIVED.get(def.id);
+    if (r.same && !waived) {
+      if (!r.played) unplayable++;
+      dead.push({ id: def.id, comp: def.companion || 'neutral', type: def.type, text: def.text || '',
+        why: r.played ? '' : 'THIS BOARD CANNOT PLAY IT', threw: r.threw });
+    }
+    if (!r.same && waived) staleWaivers.push(def.id + ' waived as "' + waived + '", but it DOES differ now');
+    if (r.buffOnly) buffOnly.push(def.id);
+  }
+  for (const [id] of WAIVED_LIST) if (!CARDS.cardById(id)) staleWaivers.push(id + ' is waived but no such card exists');
+  const ids = WAIVED_LIST.map(w => w[0]);
+  for (const id of new Set(ids.filter((x, i) => ids.indexOf(x) !== i))) staleWaivers.push(id + ' is waived twice');
+
+  const byComp = new Map();
+  for (const d of dead) { if (!byComp.has(d.comp)) byComp.set(d.comp, []); byComp.get(d.comp).push(d); }
+  say('<h2>' + dead.length + ' of ' + checked + ' Tricks moved nothing a dummy fight can see</h2>', dead.length ? 'dead' : 'pass');
+  for (const [comp, list] of [...byComp].sort()) {
+    say('<b>' + comp + '</b> (' + list.length + ')', 'dead');
+    for (const d of list) say('&nbsp;&nbsp;' + d.id + ' [' + d.type + '] ' + (d.why ? d.why + ' - ' : '') + d.text + (d.threw ? ' - THREW: ' + d.threw : ''), 'dim');
+  }
+  for (const line of staleWaivers) say('STALE WAIVER ' + line, 'fail');
+  for (const line of broken) say('BROKEN ' + line, 'fail');
+  say('<h2>' + WAIVED_LIST.length + ' waived, each proved live in proofs.html</h2>', 'dim');
+  say('<h2>' + rescued.party.length + ' showed only with a friend at the table; ' + rescued.choice.length + ' only with the last options picked</h2>', 'dim');
+  say('<h2>' + buffOnly.length + ' show only a status on the Kid that changed nothing in two turns (not a failure)</h2>', 'dim');
+  say('&nbsp;&nbsp;' + buffOnly.join(', '), 'dim');
+
+  window.__RESULT = {
+    checked, unplayable, waived: WAIVED_LIST.length,
+    dead: dead.map(d => d.comp + ' ' + d.id + ' [' + d.type + '] ' + (d.why ? d.why + ' - ' : '') + d.text + (d.threw ? ' THREW: ' + d.threw : '')),
+    byCompanion: [...byComp].map(([c, l]) => c + ':' + l.length).sort(),
+    rescuedParty: rescued.party, rescuedChoice: rescued.choice, buffOnly, staleWaivers, broken,
+  };
+  window.__DONE = true;
+})().catch(err => {
+  say('CRASHED: ' + ((err && err.stack) || err), 'fail');
+  window.__RESULT = { checked: 0, unplayable: 0, waived: 0, dead: [], byCompanion: [], rescuedParty: [], rescuedChoice: [], buffOnly: [], staleWaivers: [], broken: ['CRASHED ' + err] };
+  window.__DONE = true;
+});
+</script>
