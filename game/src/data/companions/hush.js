@@ -90,7 +90,41 @@ function reveal(c) {
     if (top) scurry(c, top, POCKET);
   }
   U.fire(c, 'seen', {});
+  playPrimed(c);
   return true;
+}
+
+/**
+ * ALL ACCORDING TO HUSH: "Prime a Trick in your Shadow Pocket. The next time
+ * you become Seen, it plays free." The card wrote `primed` and nothing read
+ * it, so it was a 1-Nerve blank. Chapter 08: played for 0 Nerve "if it has a
+ * legal target", and no Ambush, since he is already Seen when it begins. It
+ * leaves the Pocket the way a played Trick does (limbo, then the discard or,
+ * for a Vanish, the exhaust pile). With no living enemy to aim at, it stays
+ * Primed for the next time.
+ */
+function playPrimed(c) {
+  const s = U.mm(c);
+  const k = s.primed;
+  if (!k) return;
+  if (!pocket(c).includes(k) || !k.def || typeof k.def.effect !== 'function') { s.primed = null; return; }
+  const aimed = (k.target || k.def.target) === ENEMY;
+  const ct = c.target;
+  const t = aimed ? ((ct && ct.alive && ct.side !== 'player') ? ct : U.enemies(c)[0]) : null;
+  if (aimed && !t) return;
+  s.primed = null;
+  k._playedFrom = POCKET;
+  U.moveCard(c, k, 'limbo', {});
+  const done = () => {
+    const piles = c.self && c.self.piles;
+    const at = piles && piles.pileOf ? piles.pileOf(k) : k.pile;
+    if (at !== 'limbo') return;                      // the effect moved it itself
+    if ((k.type || k.def.type) === POWER) { k.meta.zone = 'power'; return; }   // a Power stays in play, as the engine parks one
+    if (k.exhaust) c.exhaust(k); else U.moveCard(c, k, 'discard', {});
+  };
+  let r = null;
+  try { r = k.def.effect(c.e.ctxFor(k, t)); } catch (_) { r = null; }
+  if (r && typeof r.then === 'function') r.then(done, done); else done();
 }
 
 /** Ambush: played out of the Pocket while still Unseen. */

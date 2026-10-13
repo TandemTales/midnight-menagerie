@@ -313,6 +313,39 @@ try {
         `hand: ${on.e.piles.hand.map(x => x.id + (x === on.k ? '(original)' : '')).join(', ')}, pocket: ${pocket(on.e).map(x => x.id).join(', ')}`);
     }
   }
+  {
+    /* ALL ACCORDING TO HUSH: "Prime a Trick in your Shadow Pocket. The next
+       time you become Seen, it plays free." It wrote `primed` and nothing read
+       it, so it was a 1-Nerve blank (tests/base-effects). */
+    const primedBoard = async () => {
+      const e = await hush();
+      e.piles.stash.length = 0;
+      e.piles.hand.length = 0;
+      const k = put(e, 'hush/quick-nip', 'stash');
+      e.applyStatus(e.player, 'unseen', 1);
+      await play(e, put(e, 'hush/all-according-to-hush'));
+      const t = e.livingEnemies()[0];
+      const hits = [];
+      e.on('damage', (ev) => { if (ev.targetId === t.id) hits.push(ev.amount); });
+      return { e, k, t, hits };
+    };
+    const a = await primedBoard();
+    check(st(a.e).primed === a.k, 'setup: All According to Hush Primes the Pocketed Trick');
+    a.e.player.energy = 9;
+    await a.e.playCard(put(a.e, 'hush/quick-nip').uid, a.t.id);
+    check(unseen(a.e) === 0 && a.hits.length === 2,
+      'All According to Hush: becoming Seen (an Attack from the hand) plays the Primed Trick too',
+      `unseen=${unseen(a.e)} hits on the target: ${a.hits.join(',')}`);
+    check(a.e.player.energy === 8 && !pocket(a.e).includes(a.k) && a.e.piles.discard.includes(a.k),
+      'for free, and it leaves the Pocket for the discard pile like a played Trick',
+      `nerve 9 -> ${a.e.player.energy}, in pocket=${pocket(a.e).includes(a.k)}, in discard=${a.e.piles.discard.includes(a.k)}`);
+
+    const b = await primedBoard();
+    b.e.player.block = 0;
+    b.e.dealDamage({ attacker: b.t, defender: b.e.player, amount: 5, kind: 'attack' });
+    check(unseen(b.e) === 0 && b.hits.length === 1 && !pocket(b.e).includes(b.k),
+      'and so does an enemy Attack getting through', `unseen=${unseen(b.e)} hits: ${b.hits.join(',')}`);
+  }
 } catch (err) {
   fails.push('THREW: ' + (err && err.stack || err));
 }
