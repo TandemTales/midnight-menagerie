@@ -3,6 +3,9 @@
    live by proofs-g4.html (python tests/base-effects/run.py g4). */
 export default [
   ['marmalade/all-nine', 'Lives are seeded at 9, so restoring them to 9 changes nothing'],
+  ['marmalade/across-the-veil', 'Marmalade has no Ghoststep, so it cannot be played'],
+  ['marmalade/spectral-stampede', 'no Lives have been spent this combat, so it swings 0 times'],
+  ['marmalade/but-satisfaction-brought-it-back', 'nothing has Vanished this combat, so there is nothing to return'],
   ['taffy/spit-take', 'the Belly is empty, so there is nothing to Spit Out'],
   ['taffy/sample-size', 'the hand holds only Basic Tricks, so there is no Common to copy'],
   ['taffy/chew-slowly', 'no Stretched Trick is in hand'],

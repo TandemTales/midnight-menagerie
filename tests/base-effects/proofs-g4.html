@@ -44,6 +44,9 @@ const slobbered = (e, id = 'bones/bite') => { const k = add(e, id, 'discard'); k
 
 const PROOFS = [
   ['marmalade/all-nine', 'Lives below 9', { setup: (e) => e.setCounter('lives', 3, 'proof') }],
+  ['marmalade/across-the-veil', 'Ghoststep to spend', { setup: (e) => e.applyStatus(e.player, 'ghoststep', 2) }],
+  ['marmalade/spectral-stampede', 'Lives spent this combat', { setup: async (e) => { await addPlay(e, 'marmalade/nine-lived-nerve'); await addPlay(e, 'marmalade/nine-lived-nerve'); } }],
+  ['marmalade/but-satisfaction-brought-it-back', 'Tricks that Vanished this combat', { setup: (e) => { add(e, 'marmalade/scratch', 'exhaust'); add(e, 'marmalade/curl-up', 'exhaust'); } }],
 
   // ── Taffy ─────────────────────────────────────────────────────────────────
   ['taffy/spit-take', 'a Trick in the Belly', { setup: (e) => belly(e, 'taffy/pinch-off') }],

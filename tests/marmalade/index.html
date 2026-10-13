@@ -330,6 +330,18 @@ async function swing(e, id, seat = null) {
       `guard ${both.guard}, damage ${both.patience}`);
   }
 
+  say('<h2>Final Pounce pays NERVE, and says so</h2>');
+  {
+    /* tests/base-effects: its text promised "Pluck", the pre-Nerve name for
+       Nerve that no keyword, HUD or other card uses any more. */
+    const e = await cat();
+    const card = await play(e, 'marmalade/final-pounce');
+    const def = CARDS.cardById('marmalade/final-pounce');
+    check(e.player.energy === 9 - def.cost + def.nums.n && e.piles.hand.includes(card),
+      'played Untouched, it refunds its Nerve and comes back to hand', `Nerve ${e.player.energy}`);
+    check(/\bNerve\b/.test(def.text) && !/Pluck/.test(def.text), 'and its text names Nerve', def.text);
+  }
+
   for (const line of passes) say('PASS ' + line, 'pass');
   for (const line of fails) say('FAIL ' + line, 'fail');
   say(`<h2>${passes.length} passed, ${fails.length} failed</h2>`);
