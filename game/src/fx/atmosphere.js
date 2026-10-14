@@ -428,7 +428,7 @@ export const REGIONS = {
        of the eye, and a rag hearth rug on the flags before the fire */
     /* (round 31, judge 1: "calm the floor to stone flags" -- each flag its
        own even stone, not a mottle: nearFloor.calm) */
-    nearFloor: { fall: 0.90, dye: 1, calm: 0.75, rug: { ahead: 6.4, hw: 1.45, hd: 0.85 },
+    nearFloor: { fall: 0.90, dye: 1, calm: 0.95, rug: { ahead: 6.4, hw: 1.45, hd: 0.85 },
                  pool: { ahead: 3.6, across: 0.0, rAlong: 3.0, rAcross: 3.4, k: 1.1, color: '#ff9a50' } },
     particles: { mix: [[PTYPE.EMBER, 0.46], [PTYPE.DUST, 0.40], [PTYPE.PLASTER, 0.14]],
                  tint: '#ffcf9a', wispTint: '#8fd9a8', emberTint: '#ff7a28',
@@ -441,7 +441,10 @@ export const REGIONS = {
        fill at 9.76 and the cold lamp at 5.24, in a pale cyan: now a deep
        blue at a quarter and a fifth of that. A LIGHT's colour, said here
        because it is the palette's: the darks were too pale.) */
-    fill: { glow: 0, kind: 'cold', x: 5.0, y: 2.2, z: 1.2, color: '#3d5a8c', intensity: 2.2, radius: 7.0, flicker: false },
+    /* (round 31: and 1.4 from 2.2 -- with the near flags lit it laid a
+       lilac slab across the left foreground, the palest dark in the room;
+       the window's moon keeps the second, cold value on the range) */
+    fill: { glow: 0, kind: 'cold', x: 5.0, y: 2.2, z: 1.2, color: '#3d5a8c', intensity: 1.4, radius: 7.0, flicker: false },
     lights: [
       /* (graft, VANDYKE's, two judges: the kitchen's lamps are BRASS
          CHANDELIERS hung over its range and its tables -- at 2.9 m in a 4.4 m
@@ -1039,7 +1042,11 @@ export const REGIONS = {
        lit oak mauve: each is now a tighter pool at under two-thirds and
        under half its strength) */
     key:  { glow: 0, kind: 'warm', x: -1.9, y: 2.4, z: 1.8, color: '#e2b171', intensity: 2.5, radius: 4.6 },
-    fill: { glow: 0, kind: 'cold', x: 1.9, y: 1.8, z: 0.8, color: '#8e78ca', intensity: 1.4, radius: 4.2, flicker: false },
+    /* (round 31: and the violet itself a deep indigo at under three-quarters
+       -- with the near floor lit, its pool on the boards was the palest dark
+       left in the corridor, a milky lilac slab beside the runner. A LIGHT's
+       colour, said here because it is the palette's: the dark was too pale) */
+    fill: { glow: 0, kind: 'cold', x: 1.9, y: 1.8, z: 0.8, color: '#5f5aa6', intensity: 1.0, radius: 4.2, flicker: false },
     /* (round 22: the lanterns stand AT the walls, where a passage's lamps
        are set, so each lays its pool on the panelling beside it -- "lit
        only in pools by the lanterns". Positions only; colours, strengths
@@ -1511,7 +1518,7 @@ const GRAVE_NEAR_GATE = [
   { shape: 70, edge: 0.64, z: 6.6, tone: 0.92, scale: 1.15, seed: 6.0 },
   { shape: 69, edge: 0.875, z: 9.0, tone: 0.92, scale: 1.20, seed: 3.0 },
   /* (round 31: and a large one in the near turf right of the walk) */
-  { shape: 69, edge: 0.76, z: 10.6, tone: 0.95, scale: 1.45, seed: 1.25 },
+  { shape: 69, edge: 0.72, z: 8.8, tone: 0.95, scale: 1.40, seed: 1.25 },
 ];
 /* ...and in the yard, seen down its row from beside the walk (round 25):
    the stones begin at your feet there too, not at the first rank 2 m
@@ -1523,7 +1530,9 @@ const GRAVE_NEAR_YARD = [
      turf right of the walk, and a kerbed grave beside it) */
   { shape: 69, edge: 0.70, z: 3.6, tone: 0.95, scale: 1.50, seed: 1.25 },
   { shape: 70, edge: 0.985, z: 2.6, tone: 0.93, scale: 1.20, seed: 2.5 },
-  { shape: 73, edge: 0.42, z: 1.4, tone: 0.94, scale: 1.05 },
+  /* ...and a kerbed grave in the turf between the walk and that stone,
+     low, so the chapel door behind stays clear */
+  { shape: 70, edge: 0.50, z: 4.4, tone: 0.93, scale: 1.10, seed: 4.5 },
   { shape: 70, edge: 0.03, z: -5.0, tone: 0.88 },
   { shape: 73, x:  2.80, z: -4.40, tone: 0.86, free: true },
 ];

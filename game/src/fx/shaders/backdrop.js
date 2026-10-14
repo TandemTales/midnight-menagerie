@@ -4104,6 +4104,14 @@ float subjectH(vec2 q, float far, out float occ){
       float farV = step(xf - 0.25 + (q.y - yf)/1.28*0.87, gx);
       float roofP = step(gx, 0.0)*step(q.y, rY)*farV
                   *step(max(rake, sEav*onS + EAV*(1.0 - onS)) - 0.02, q.y)*(1.0 - front);
+#if MM_R25W == 4
+      /* (round 31: the roof's three edges against the sky -- the ridge, the
+         far verge, the rake -- are its silhouette, and a step() there is a
+         staircase down the whole gable; covered over their own pixel) */
+      farV = mmCover(gx - (xf - 0.25 + (q.y - yf)/1.28*0.87));
+      roofP = step(gx, 0.0)*mmCover(rY - q.y)*farV
+            *mmCover(q.y - (max(rake, sEav*onS + EAV*(1.0 - onS)) - 0.02))*(1.0 - front);
+#endif
       /* buttresses: stepped, at the front's corners and down the side */
       float bw = 0.33 - 0.08*step(1.8, q.y) - 0.08*step(3.2, q.y);
       float butt = step(abs(gax - 3.88), bw)*step(q.y, 4.25)*step(-HWF - 0.4, gx);
@@ -4145,6 +4153,11 @@ float subjectH(vec2 q, float far, out float occ){
          ridge's own line */
       float slate = (1.0 - smoothstep(0.010, 0.010 + aaB*1.2, mmRowX(q.y - sEav, 0.30*(1.0 - 0.13*st))))*roofP;
       float ridgeL = (1.0 - smoothstep(0.0, 0.06 + aaB, abs(q.y - rY + 0.05)))*step(gx, 0.0)*step(-gx, HWF + SL);
+#if MM_R25W == 4
+      /* (round 31: and the ridge stops at the far verge -- past it, it was a
+         dashed line ruled across the sky) */
+      ridgeL *= farV;
+#endif
       /* THE EAVES: a gutter catching the moon along the side's top, and the
          hard shadow the roof's oversail throws on the wall under it */
       float gut = onS*(1.0 - smoothstep(0.0, 0.08 + aaB, abs(q.y - sEav - 0.04)))*(1.0 - front);
@@ -4583,37 +4596,66 @@ float wLobes(vec2 c, float jit, float sd, out float id, out vec2 off){
    light); lit 0..1 how much of this pixel is the UPPER face of a big spray,
    which is all the moon finds on a crown. */
 float gYewI = 0.5;     // (round 29 graft, BOLUS's: the spray's own hash, for its colour)
+/* (round 31: the crease under each clump, as ink -- hedgeWallH pens it) */
+float gYewCrease = 0.0;
 float yewFace(vec2 p, float px, float sd, out float tone, out float lit){
   /* ROUND 31 (both survey-4 judges: "the hedge texture is wrong
      outright", "replace the repeated scallop tile with drawn clipped
-     hedges"). The scallop WAS the shading in each lobe -- every dome lit on
-     its upper half and ringed dark under it -- which is a fish-scale at any
-     jitter. A clipped yew's leaf is a MOSAIC of sprays, each laid flat in its
-     own value (no dome, no ring), long and slanted the way the shoots grow,
-     with a hairline of shade only where two meet; and the hedge reads by its
-     FORM -- lit up the face toward the sheared top, soft swells where the
-     shears rode the growth, a few deep soft hollows. */
+     hedges"). The scallop was ONE size of dome in a grid, each ringed dark
+     all round -- a fish-scale. A clipped yew is drawn as a painter draws
+     it: the FORM first -- soft swells where the shears rode the growth, lit
+     on their upper faces, shadowed under, a few deep hollows -- and on it
+     the LEAF MASS in clumps of two sizes on two slanted, warped grids, each
+     clump its own value, lit across its top, dark along its underside, with
+     an inked crease where it overhangs the clump below (never round its
+     top: no ring, so no scale); and on the nearest walls the leaves catch
+     the light one by one. */
   vec2 bq = p*vec2(0.62, 0.95) + sd*1.3;
   float bul = mmFbm3(bq);
   float n1 = mmNoise(p*vec2(1.7, 2.2) + sd*0.7);
   float rise = mmNoise(bq*1.7 + vec2(0.0, 0.16)) - mmNoise(bq*1.7 - vec2(0.0, 0.16));
   float up = clamp(0.52 + rise*2.4, 0.0, 1.0);
-  float lf = mmLod(0.10, px);
-  float ia = 0.5; vec2 oa = vec2(0.0);
-  float a = 0.5;
-  if (lf > 0.001) {
-    vec2 pr = vec2(p.x*0.80 - p.y*0.60, p.x*0.60 + p.y*0.80);
-    a = wLobes(pr/vec2(0.135, 0.082), 0.95, sd + 7.3, ia, oa);
-  }
-  gYewI = 0.5 + (n1 - 0.5)*0.4;
-  float gapS = smoothstep(-0.06, 0.12, a);
-  float spray = mix(0.62, (0.48 + 0.72*ia)*(0.55 + 0.45*gapS)*(0.92 + 0.12*clamp(oa.y*1.5 + 0.5, 0.0, 1.0)), lf);
   float hollow = smoothstep(0.36, 0.22, bul*0.75 + n1*0.25);
+  /* the clumps: a big one a long hand across, a small one in it */
+  vec2 pw = p + (vec2(mmNoise(p*2.3 + sd), mmNoise(p*2.3 + sd + 3.7)) - 0.5)*0.14;
+  float l1 = mmLod(0.30, px), l2 = mmLod(0.15, px), l3 = mmLod(0.045, px);
+  float i1 = 0.5, i2 = 0.5; vec2 o1 = vec2(0.0), o2 = vec2(0.0);
+  float a1 = 0.4, a2 = 0.4;
+  if (l1 > 0.001) {
+    vec2 pr1 = vec2(pw.x*0.97 + pw.y*0.24, -pw.x*0.24 + pw.y*0.97);
+    a1 = wLobes(pr1/vec2(0.30, 0.20), 0.92, sd + 2.1, i1, o1);
+  }
+  if (l2 > 0.001) {
+    vec2 pr2 = vec2(pw.x*0.93 - pw.y*0.37, pw.x*0.37 + pw.y*0.93);
+    a2 = wLobes(pr2/vec2(0.15, 0.105), 0.92, sd + 7.3, i2, o2);
+  }
+  /* across a clump: lit along its top, dark along its underside (o.y in
+     cell units, +- ~0.7); the crease only on its LOWER rim */
+  float g1 = clamp(0.5 + o1.y*0.95, 0.0, 1.0);
+  float g2 = clamp(0.5 + o2.y*0.95, 0.0, 1.0);
+  float lowR1 = smoothstep(0.05, -0.30, o1.y);
+  float lowR2 = smoothstep(0.05, -0.30, o2.y);
+  float cr1 = (1.0 - smoothstep(0.0, 0.11, a1))*lowR1;
+  float cr2 = (1.0 - smoothstep(0.0, 0.12, a2))*lowR2;
+  float c1 = (0.62 + 0.62*i1)*(0.52 + 0.70*g1)*(1.0 - 0.62*cr1);
+  float c2 = (0.70 + 0.50*i2)*(0.60 + 0.55*g2)*(1.0 - 0.55*cr2);
+  float clump = mix(0.80, c1, l1)*mix(0.86, c2, l2*0.85);
+  /* the leaves themselves, where they are big enough to see one */
+  float leaf = 1.0;
+  if (l3 > 0.001) {
+    vec2 lq = vec2(pw.x*0.80 - pw.y*0.60, pw.x*0.60 + pw.y*0.80)/vec2(0.045, 0.030);
+    vec2 lc = floor(lq), lf = fract(lq) - 0.5;
+    float lh = mmHash11(dot(lc, vec2(7.13, 3.71)) + sd);
+    float ld = length(lf*vec2(1.0, 1.6));
+    leaf = mix(1.0, 0.86 + 0.34*lh*smoothstep(0.50, 0.30, ld)*(0.4 + 0.6*g2), l3);
+  }
+  gYewI = 0.5 + (n1 - 0.5)*0.4 + (i1 - 0.5)*0.12*l1;
+  gYewCrease = max(cr1*l1*0.62, cr2*l2*0.40)*(1.0 - hollow);
   float hT = smoothstep(0.3, 3.0, p.y);
   float face = 0.58 + 0.42*hT;
-  tone = face*(0.78 + 0.36*bul)*(0.88 + 0.22*n1)*(0.84 + 0.22*up)*(0.62 + 0.62*spray)*(1.0 - 0.40*hollow);
-  lit = up*(0.55 + 0.55*bul)*(0.55 + 0.75*spray*gapS)*(1.0 - 0.6*hollow);
-  return (bul - 0.5)*0.16 + (n1 - 0.5)*0.05 - hollow*0.05 + (gapS - 0.5)*0.012*lf;
+  tone = face*(0.80 + 0.30*bul)*(0.90 + 0.18*n1)*(0.80 + 0.28*up)*clump*leaf*(1.0 - 0.45*hollow)*1.06;
+  lit = up*(0.55 + 0.55*bul)*mix(0.7, g1*(1.0 - cr1), l1)*mix(0.8, 0.5 + 0.5*g2, l2)*(1.0 - 0.6*hollow);
+  return (bul - 0.5)*0.16 + (n1 - 0.5)*0.05 - hollow*0.05 + (a1 - 0.35)*0.018*l1;
 }
 /* THE CROWN: a clipped top is level to a few centimetres, but it is LEAF --
    against the sky its edge is the domes of the sprays along it, each its
@@ -4895,6 +4937,9 @@ float hedgeWallH(vec2 q, float qpx, out float occ){
      sky blended into it -- the court's niches read as pale lavender panels */
   h = mix(h, max(h, 0.92), hedge*(1.0 - corr));
   gWLit *= 1.0 - gapY;
+  /* (round 31: the crease under each clump of leaf, inked -- the drawn
+     line that makes the face a hedge and not a mottle) */
+  gInk = max(gInk, gYewCrease*hedge*(1.0 - inGap)*(1.0 - gapY)*(1.0 - niche)*0.55);
   /* THE SHEARED EDGE: the last hand of the crown takes the moon along its
      cut -- broken by the sprays and by the dead patches, never a line */
   gHedgeEdge = hedge*(1.0 - inGap)*smoothstep(top - 0.085, top - 0.03, q.y)*(0.45 + 0.55*lit)*(1.0 - gapY);
@@ -13996,6 +14041,7 @@ void main(){
   float runner = 0.0;
   /* (round 25: what the runner is woven with, kept for its colour below) */
   float rBord = 0.0, rGuard = 0.0, rMed = 0.0, rFr = 0.0;
+  float rLine = 0.0, rLoz = 0.0;     // (round 31: the medallions' outlines and their lozenge, uRugDye)
   /* (the turf draws its own walk from the same two numbers: a carpet laid
      over grass would be a runner on a lawn) */
   if (uRunner > 0.001 && uIsCeiling < 0.5 && uPattern < 10.5) {
@@ -14040,6 +14086,16 @@ void main(){
       float eM = max(fwidth(md)*0.75, 0.004);
       med = (1.0 - smoothstep(0.92 - eM, 0.92 + eM, md))*0.55
           - (1.0 - smoothstep(0.48 - eM, 0.48 + eM, md))*0.34;
+      /* (round 31: and DRAWN -- each medallion outlined in the border's
+         indigo, a lozenge in its heart, so at the eye's feet it is a woven
+         figure and not a soft gold ring under the grain) */
+      float eL = max(fwidth(md), 0.004);
+      rLine = max(1.0 - smoothstep(0.6*eL, 1.8*eL, abs(md - 0.92)),
+                  1.0 - smoothstep(0.6*eL, 1.8*eL, abs(md - 0.48)));
+      float lz = abs(w.x - uRunX)/0.44 + abs(my)/0.60;
+      float eZ = max(fwidth(lz), 0.004);
+      rLoz = 1.0 - smoothstep(0.24 - eZ, 0.24 + eZ, lz);
+      rLine = max(rLine, 1.0 - smoothstep(0.6*eZ, 1.8*eZ, abs(lz - 0.24)));
     }
     /* No pile tap. A noise call on every floor pixel of this room, for a grain
        the post grade's own tooth already lays over the whole frame, is time the
@@ -14316,6 +14372,8 @@ void main(){
     rug = mix(rug, vec3(0.05, 0.08, 0.24), rBord*(1.0 - rGuard)*0.92);
     rug = mix(rug, vec3(0.70, 0.52, 0.20), rGuard);
     rug = mix(rug, vec3(0.76, 0.70, 0.56), rFr*0.85);
+    rug = mix(rug, vec3(0.30, 0.05, 0.04), rLoz*0.90);
+    rug = mix(rug, vec3(0.04, 0.05, 0.14), rLine*0.90);
 #if MM_R25W != 1
     /* (round 31: a runner laid in a passage behind the rooms is an old one,
        its dyes worn toward the wool's own fawn) */
@@ -17222,36 +17280,52 @@ float yLobes(vec2 c, float jit, float sd, out float id, out vec2 off){
   return h;
 }
 float yewFaceP(vec2 p, float px, float sd, out float tone, out float lit){
-  /* ROUND 31 (both survey-4 judges: "the hedge texture is wrong
-     outright", "replace the repeated scallop tile with drawn clipped
-     hedges"). The scallop WAS the shading in each lobe -- every dome lit on
-     its upper half and ringed dark under it -- which is a fish-scale at any
-     jitter. A clipped yew's leaf is a MOSAIC of sprays, each laid flat in its
-     own value (no dome, no ring), long and slanted the way the shoots grow,
-     with a hairline of shade only where two meet; and the hedge reads by its
-     FORM -- lit up the face toward the sheared top, soft swells where the
-     shears rode the growth, a few deep soft hollows. */
+  /* ROUND 31: the wall program's yewFace, line for line, so a run, a
+     topiary and the walls either side are one hedge */
   vec2 bq = p*vec2(0.62, 0.95) + sd*1.3;
   float bul = mmFbm3(bq);
   float n1 = mmNoise(p*vec2(1.7, 2.2) + sd*0.7);
   float rise = mmNoise(bq*1.7 + vec2(0.0, 0.16)) - mmNoise(bq*1.7 - vec2(0.0, 0.16));
   float up = clamp(0.52 + rise*2.4, 0.0, 1.0);
-  float lf = smoothstep(2.5*px, 6.0*px, 0.10);
-  float ia = 0.5; vec2 oa = vec2(0.0);
-  float a = 0.5;
-  if (lf > 0.001) {
-    vec2 pr = vec2(p.x*0.80 - p.y*0.60, p.x*0.60 + p.y*0.80);
-    a = yLobes(pr/vec2(0.135, 0.082), 0.95, sd + 7.3, ia, oa);
-  }
-  
-  float gapS = smoothstep(-0.06, 0.12, a);
-  float spray = mix(0.62, (0.48 + 0.72*ia)*(0.55 + 0.45*gapS)*(0.92 + 0.12*clamp(oa.y*1.5 + 0.5, 0.0, 1.0)), lf);
   float hollow = smoothstep(0.36, 0.22, bul*0.75 + n1*0.25);
+  /* the clumps: a big one a long hand across, a small one in it */
+  vec2 pw = p + (vec2(mmNoise(p*2.3 + sd), mmNoise(p*2.3 + sd + 3.7)) - 0.5)*0.14;
+  float l1 = smoothstep(2.5*px, 6.0*px, 0.30), l2 = smoothstep(2.5*px, 6.0*px, 0.15), l3 = smoothstep(2.5*px, 6.0*px, 0.045);
+  float i1 = 0.5, i2 = 0.5; vec2 o1 = vec2(0.0), o2 = vec2(0.0);
+  float a1 = 0.4, a2 = 0.4;
+  if (l1 > 0.001) {
+    vec2 pr1 = vec2(pw.x*0.97 + pw.y*0.24, -pw.x*0.24 + pw.y*0.97);
+    a1 = yLobes(pr1/vec2(0.30, 0.20), 0.92, sd + 2.1, i1, o1);
+  }
+  if (l2 > 0.001) {
+    vec2 pr2 = vec2(pw.x*0.93 - pw.y*0.37, pw.x*0.37 + pw.y*0.93);
+    a2 = yLobes(pr2/vec2(0.15, 0.105), 0.92, sd + 7.3, i2, o2);
+  }
+  /* across a clump: lit along its top, dark along its underside (o.y in
+     cell units, +- ~0.7); the crease only on its LOWER rim */
+  float g1 = clamp(0.5 + o1.y*0.95, 0.0, 1.0);
+  float g2 = clamp(0.5 + o2.y*0.95, 0.0, 1.0);
+  float lowR1 = smoothstep(0.05, -0.30, o1.y);
+  float lowR2 = smoothstep(0.05, -0.30, o2.y);
+  float cr1 = (1.0 - smoothstep(0.0, 0.11, a1))*lowR1;
+  float cr2 = (1.0 - smoothstep(0.0, 0.12, a2))*lowR2;
+  float c1 = (0.62 + 0.62*i1)*(0.52 + 0.70*g1)*(1.0 - 0.62*cr1);
+  float c2 = (0.70 + 0.50*i2)*(0.60 + 0.55*g2)*(1.0 - 0.55*cr2);
+  float clump = mix(0.80, c1, l1)*mix(0.86, c2, l2*0.85);
+  /* the leaves themselves, where they are big enough to see one */
+  float leaf = 1.0;
+  if (l3 > 0.001) {
+    vec2 lq = vec2(pw.x*0.80 - pw.y*0.60, pw.x*0.60 + pw.y*0.80)/vec2(0.045, 0.030);
+    vec2 lc = floor(lq), lf = fract(lq) - 0.5;
+    float lh = mmHash11(dot(lc, vec2(7.13, 3.71)) + sd);
+    float ld = length(lf*vec2(1.0, 1.6));
+    leaf = mix(1.0, 0.86 + 0.34*lh*smoothstep(0.50, 0.30, ld)*(0.4 + 0.6*g2), l3);
+  }
   float hT = smoothstep(0.3, 3.0, p.y);
   float face = 0.58 + 0.42*hT;
-  tone = face*(0.78 + 0.36*bul)*(0.88 + 0.22*n1)*(0.84 + 0.22*up)*(0.62 + 0.62*spray)*(1.0 - 0.40*hollow);
-  lit = up*(0.55 + 0.55*bul)*(0.55 + 0.75*spray*gapS)*(1.0 - 0.6*hollow);
-  return (bul - 0.5)*0.16 + (n1 - 0.5)*0.05 - hollow*0.05 + (gapS - 0.5)*0.012*lf;
+  tone = face*(0.80 + 0.30*bul)*(0.90 + 0.18*n1)*(0.80 + 0.28*up)*clump*leaf*(1.0 - 0.45*hollow)*1.06;
+  lit = up*(0.55 + 0.55*bul)*mix(0.7, g1*(1.0 - cr1), l1)*mix(0.8, 0.5 + 0.5*g2, l2)*(1.0 - 0.6*hollow);
+  return (bul - 0.5)*0.16 + (n1 - 0.5)*0.05 - hollow*0.05 + (a1 - 0.35)*0.018*l1;
 }
 float topKind(float seed){ return mmHash11(seed*7.31 + 0.4); }
 vec2 topSD(vec2 m, vec2 msz, float seed){
