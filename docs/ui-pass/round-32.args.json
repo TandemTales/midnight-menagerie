@@ -1,0 +1,52 @@
+{
+  "round": "r32",
+  "maxBuilders": 3,
+  "briefs": [
+    "docs/ui-pass/BRIEF-r0.md",
+    "docs/ui-pass/BRIEF-r1.md",
+    "docs/ui-pass/BRIEF-r32.md"
+  ],
+  "rubrics": [
+    "docs/ui-pass/RUBRIC.md",
+    "docs/ui-pass/RUBRIC-r32.md"
+  ],
+  "samples": [
+    "UI/title.png",
+    "UI/mainMenu.png",
+    "UI/selectCompanion.png",
+    "UI/selectKid.png"
+  ],
+  "tracks": [
+    {
+      "key": "fight",
+      "name": "FIGHT",
+      "rule": "refine",
+      "screens": [
+        "combat-boss",
+        "combat-crowd",
+        "combat"
+      ],
+      "baseline": "GINGHAM",
+      "builders": [
+        {
+          "slot": "a",
+          "code": "CERULEAN",
+          "port": 9201,
+          "angle": "LITERAL -- the angle that won rounds 20, 23-25 and 29. Work BRIEF-r32's fix list 1 to 4 in order and exactly as written: the boss out of his private backdrop and onto the floor FIRST, then one stage, then the crowded hand, then the chips."
+        },
+        {
+          "slot": "b",
+          "code": "PHTHALO",
+          "port": 9202,
+          "angle": "THE STAGE. Treat the fight as one lit stage in the room: a floor line every fighter stands on, contact shadows and light pools under each, the Kid and Companion at a size that holds their own against the boss, the boss frame as a gilt ornament he steps out of. Build that composition first, at 1280 first, then fit the crowded hand to it."
+        },
+        {
+          "slot": "c",
+          "code": "RAWUMBER",
+          "port": 9203,
+          "angle": "THE HAND AT 1280 FIRST. The crowded fan is the screen a judge scores readability on: make nine cards keep every name on one line and every cost visible at the Deck's size, the hovered card lifting clear and the hand clear of the dial and panel, then the chips, then put the boss and the fighters on the floor."
+        }
+      ]
+    }
+  ]
+}
