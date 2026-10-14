@@ -14486,9 +14486,6 @@ void main(){
      reads at any distance; every edge is antialiased over its own pixel per
      axis, and the pile takes no lamp's mirror smear (wetK, below). */
   float rugCov = 0.0;
-#if MM_R25W != 4
-  /* (round 31 graft, the frame budget: a churchyard lays no carpet, and the
-     whole drawing compiled into its program cost the Graveyard's floor) */
   /* (round 31: in any room whose near floor is dressed -- kDye; the
      rooms that carried a carpet before round 31 drew one only in the Foyer's
      program, and they still draw what they drew) */
@@ -14547,7 +14544,6 @@ void main(){
     /* its edge stands a centimetre proud: a hairline of shadow round it */
     alb *= 1.0 - (1.0 - smoothstep(0.0, max(ePx*2.0, 0.02), abs(eIn)))*0.30*step(eIn, 0.0)*(1.0 - frg);
   }
-#endif
   alb *= mix(0.58, 1.0, smoothstep(uSpan.x*0.52, uSpan.x*0.24, abs(w.x)));   // creeps into shadow at the walls
   /* A tooth in SCREEN space: authored in metres it is 4 px at the camera's
      feet and a fifth of a pixel at the far wall, which is the spectrum the
