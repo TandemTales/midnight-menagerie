@@ -140,6 +140,9 @@ const D = {
   gain: 1.85, propGain: 1.55, propGloss: 0.62, propCeil: 0.469, propMat: 'wood',
   bloom: 0.72, bloomThreshold: 0.86, warmTone: 0.05, halation: 0.30, exposure: 1.55,
   vignette: 1.39, grain: 0.026, saturate: 0.89, contrast: 1.26,
+  /* (round 31 graft: the post grade's canvas tooth, per wing -- grade.js's
+     own 0.097 everywhere a wing does not say; _applyGrade) */
+  tooth: 0.097,
   fogDensity: 0.014,
   room: { w: 24, d: 19, h: 6.6, side: 0.0, ceilPattern: 3, wallPad: 7.0 },
   cam: { y: 2.3, z: 9.6, look: 2.4, fov: 42 },
@@ -483,7 +486,11 @@ export const REGIONS = {
        bloom with no ink line" -- the film grain at under half the house's
        0.026 in this wing, so the pen's lines and the drawn joints carry the
        surface and not a mottle over it) */
-    bloom: 1.0, warmTone: 0.06, halation: 0.75, saturate: 0.94, grain: 0.011,
+    /* (round 31 graft, all three judges: the lit flags' "heavy blotchy mottle
+       that reads as noise rather than stone" was the post grade's canvas tooth,
+       blotchy by design, at its loudest on a broad lit floor: two-fifths of it
+       here, so each flag reads as one worn stone) */
+    bloom: 1.0, warmTone: 0.06, halation: 0.75, saturate: 0.94, grain: 0.011, tooth: 0.040,
   },
 
   /* ── 5. The Impossible Greenhouse ──────────────────────────────────────────
@@ -1042,7 +1049,11 @@ export const REGIONS = {
        the lit planks ... so they read as crisp inked boards over a warm
        dark" -- calm: the cloud, the grit and the wet smear laid to rest) */
     nearFloor: { fall: 0.92, dye: 1, calm: 0.9,
-                 pool: { ahead: 2.6, across: 0.6, rAlong: 2.6, rAcross: 2.4, k: 7.0, color: '#f0a65a' } },
+                 pool: { ahead: 2.6, across: 0.6, rAlong: 2.6, rAcross: 2.4, k: 7.0, color: '#f0a65a' },
+                 /* (round 31 graft, judge 3: "the near-left wall foot and floor
+                    corner still fall to black; carry the light pool across to
+                    that side" -- the other lantern's spill, on the left) */
+                 pool2: { ahead: 2.8, across: -1.0, rAlong: 2.4, rAcross: 1.9, k: 4.5, color: '#f0a65a' } },
     /* (round 28 graft: its cases and lamp posts set down on the boards in a
        denser contact shadow -- Backdrop.build's pal.propShadow) */
     propShadow: 1.6,
@@ -1069,8 +1080,8 @@ export const REGIONS = {
                        chest) on each side of the near floor" -- an old pier
                        table pushed back here out of the hall, each side, in
                        the near lamps' pools) */
-                    { shape: 66, edge: 0.12, z: 0.6, tone: 0.94, fore: 1, keep: true, seed: 1.4 },
-                    { shape: 66, edge: 0.88, z: -0.6, tone: 0.94, fore: 1, keep: true, seed: 3.9 }] },
+                    { shape: 66, edge: 0.15, z: 3.4, tone: 0.94, fore: 1, keep: true, seed: 1.4 },
+                    { shape: 66, edge: 0.85, z: 2.8, tone: 0.94, fore: 1, keep: true, seed: 3.9 }] },
     particles: { mix: [[PTYPE.DUST, 0.78], [PTYPE.PLASTER, 0.16], [PTYPE.WISP, 0.06]],
                  /* (round 28: 0.45, from 1.0 -- a thousand lit motes against
                     the dark end of the passage were "a starfield indoors") */
@@ -1107,7 +1118,9 @@ export const REGIONS = {
        bloom with no ink line" -- the film grain at under half the house's
        0.026 in this wing, so the pen's lines and the drawn joints carry the
        surface and not a mottle over it) */
-    vignette: 1.36, bloom: 0.80, grain: 0.011,
+    /* (round 31 graft: and the passage's tooth at three-fifths -- the "milky,
+       blotchy grain on the lit planks", all three judges) */
+    vignette: 1.36, bloom: 0.80, grain: 0.011, tooth: 0.060,
   },
 
   /* ── 14. The Bathhouse and Rain Wing ───────────────────────────────────────
@@ -1418,7 +1431,7 @@ const COLOR_KEYS = [
 const NUM_KEYS = ['coolFill', 'grime', 'openGlow', 'wallFog', 'gloss', 'rim', 'gain',
   'frameAmount', 'ceil', 'bloom', 'bloomThreshold', 'warmTone', 'halation',
   'exposure', 'vignette', 'grain', 'fogDensity', 'propGain', 'propGloss', 'saturate',
-  'contrast'];
+  'contrast', 'tooth'];
 
 /**
  * PER-ROOM VARIATION.
@@ -3366,6 +3379,7 @@ export class Atmosphere {
     u.uExposure.value = pal.exposure;
     u.uVignette.value = pal.vignette;
     u.uGrain.value = pal.grain;
+    if (u.uTooth) u.uTooth.value = pal.tooth ?? 0.097;    // (round 31 graft: per wing)
     u.uSaturate.value = pal.saturate ?? 1.2;
     u.uContrast.value = pal.contrast ?? 1.3;
     u.uHaloColor.value.copy(pal._rim).lerp(this._col.set(1, 1, 1), 0.25);
