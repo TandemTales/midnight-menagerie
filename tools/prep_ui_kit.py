@@ -999,34 +999,27 @@ def cartouche():
             save(np.ascontiguousarray(out[:, ::-1]), "cart-bat-r.webp", 92)
 
 
-RESIDENT_IDS = ["lady", "master", "dowager", "children", "gardener", "scholar"]
-
-
-def residents():
-    """hang-res-<id>.webp: the house's own family (ui/hang.js RESIDENTS), from
-    Josh's paintings in art/portraits/<id>.png (docs/art/portrait-prompts.md).
-    Each is centre-cropped to 4:5 (the frame's opening) and set at 432x540.
-    A painting that is not there yet is skipped, and its portrait stays off
-    the walls until ui/hang.js marks it ready."""
-    src = os.path.join(ROOT, "art", "portraits")
-    for rid in RESIDENT_IDS:
-        path = os.path.join(src, rid + ".png")
-        if not os.path.exists(path):
-            print("  (no painting yet)", os.path.relpath(path, ROOT))
+def paintings():
+    """hang-art-<name>.webp: Josh's house paintings (2026-10-13) -- the family's
+    portraits and the house's own scenes -- from game/assets/portrait paintings/
+    (ui/hang.js PAINTINGS). Each keeps its own shape, set 600 px tall: a wall
+    picture is never shown larger than about a third of the board, and the
+    PNGs are 2-3 MB apiece, far too heavy to ship as they are. The originals
+    stay where Josh put them; only the webp files are referenced."""
+    src = os.path.join(ROOT, "game", "assets", "portrait paintings")
+    if not os.path.isdir(src):
+        print("  (no paintings folder)", os.path.relpath(src, ROOT))
+        return
+    for f in sorted(os.listdir(src)):
+        if not f.lower().endswith(".png"):
             continue
-        im = Image.open(path).convert("RGB")
+        im = Image.open(os.path.join(src, f)).convert("RGB")
         w, h = im.size
-        if w / h > 4 / 5:                       # too wide: trim the sides
-            nw = round(h * 4 / 5); x0 = (w - nw) // 2
-            im = im.crop((x0, 0, x0 + nw, h))
-        else:                                   # too tall: trim mostly from the foot
-            nh = round(w * 5 / 4); y0 = (h - nh) // 3
-            im = im.crop((0, y0, w, y0 + nh))
-        im = im.resize((432, 540), Image.LANCZOS)
-        save(np.asarray(im), f"hang-res-{rid}.webp", 90)
+        im = im.resize((round(w * 600 / h), 600), Image.LANCZOS)
+        save(np.asarray(im), f"hang-art-{os.path.splitext(f)[0].lower()}.webp", 86)
 
 
-PIECES = {"hang": hang, "residents": residents}
+PIECES = {"hang": hang, "paintings": paintings}
 
 
 def main(only=None):

@@ -1,5 +1,10 @@
 # The house's family portraits — prompt pack
 
+> **DONE, 2026-10-13.** Josh painted the six AND fourteen more (the house's
+> rooms and still lifes) into `game/assets/portrait paintings/`. They hang
+> through `ui/hang.js` PAINTINGS / PICTURE_POOLS; `python tools/prep_ui_kit.py
+> --only paintings` re-cuts them. Kept for the record of what each depicts.
+
 Josh, 2026-10-09: *"there shouldn't be pictures of pets when it doesn't pertain
 specifically to their role/room ... if there are pictures to be hung, just make
 a haunted house portrait that would fit in this place, maybe a painting of the

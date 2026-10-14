@@ -82,52 +82,81 @@ export function gallery(arts, classes, { skip = '', spares = ['marmalade', 'wisp
   }).join('');
 }
 
-/* ── THE HOUSE'S OWN PEOPLE (Josh, 2026-10-09) ────────────────────────────
+/* ── THE HOUSE'S OWN PICTURES (Josh, 2026-10-09 and 10-13) ───────────────
    "There shouldn't be pictures of pets when it doesn't pertain specifically
    to their role or room ... make a haunted house portrait that would fit in
-   this place, maybe a painting of the previous owner and her cat from 200
-   years ago." So the boards that are no Companion's room -- the reward
-   alcove, an event's hall, the rest fort, game over -- hang the family who
-   lived here, each with the ORDINARY pet the Drawing Room's photographs keep
-   showing (docs/design/01-mansion-structure.md: "family photographs and
-   sketches contain recurring household cats"). The family has no name in the
-   design, so the plates name their places in the house, not a surname.
-
-   A portrait hangs once its painting exists: drop it in art/portraits/
-   (prompts: docs/art/portrait-prompts.md), run
-   `python tools/prep_ui_kit.py --only residents`, and set `ready`. Until then
-   the house itself stands in, once per board. */
-export const RESIDENTS = [
-  { id: 'lady',     name: 'The Lady of the House',   title: 'and her cat, 1826',            ready: false },
-  { id: 'master',   name: 'The Master of the House', title: 'and his hound, 1824',          ready: false },
-  { id: 'dowager',  name: 'The Dowager',             title: 'and her parrot, 1811',         ready: false },
-  { id: 'children', name: 'The Children',            title: 'and the nursery rabbit, 1838', ready: false },
-  { id: 'gardener', name: 'The Gardener',            title: 'and the stable cat, 1833',     ready: false },
-  { id: 'scholar',  name: 'The Younger Son',         title: 'and his tortoise, 1849',       ready: false },
+   this place." So the boards that are no Companion's room -- the reward
+   alcove, an event's hall, the rest fort, game over -- hang the house's own
+   paintings: the family who lived here, each with the ORDINARY pet the
+   Drawing Room's photographs keep showing (docs/design/01-mansion-structure.md),
+   and the house's own rooms and still lifes. Josh painted all twenty
+   (game/assets/portrait paintings/); `python tools/prep_ui_kit.py --only
+   paintings` sets each 600 px tall as kit/hang-art-<file>.webp. The family
+   has no name in the design, so its plates name places in the house, not a
+   surname. `ar` is each painting's own width / height. */
+export const PAINTINGS = [
+  // the family
+  { id: 'lady',     file: 'ladyofthehouse',    ar: '1122 / 1402', name: 'The Lady of the House',   title: 'and her cat, 1826' },
+  { id: 'master',   file: 'masterofthehouse',  ar: '1122 / 1402', name: 'The Master of the House', title: 'and his hound, 1824' },
+  { id: 'dowager',  file: 'dowager',           ar: '1024 / 1536', name: 'The Dowager',             title: 'and her parrot, 1811' },
+  { id: 'children', file: 'children',          ar: '1122 / 1402', name: 'The Children',            title: 'and the nursery rabbit, 1838' },
+  { id: 'gardener', file: 'gardener',          ar: '1122 / 1402', name: 'The Gardener',            title: 'and the stable cat, 1833' },
+  { id: 'son',      file: 'son',               ar: '1122 / 1402', name: 'The Younger Son',         title: 'at his studies, 1849' },
+  // the house
+  { id: 'ball',       file: 'ball',        ar: '1024 / 1536', name: 'The Midwinter Ball' },
+  { id: 'dining',     file: 'diningroom',  ar: '1122 / 1402', name: 'The Dining Room' },
+  { id: 'music',      file: 'piano',       ar: '1122 / 1402', name: 'The Music Room' },
+  { id: 'fireside',   file: 'fireplace',   ar: '1024 / 1536', name: 'The Drawing Room Fire' },
+  { id: 'bedroom',    file: 'bedroom',     ar: '948 / 1659',  name: 'The Blue Bedroom' },
+  { id: 'nursery',    file: 'toys',        ar: '1024 / 1536', name: 'The Nursery Shelf' },
+  { id: 'hound',      file: 'dog',         ar: '1024 / 1536', name: 'The Hound at Rest' },
+  { id: 'fountain',   file: 'fountain',    ar: '1024 / 1536', name: 'The Fountain Court' },
+  { id: 'garden',     file: 'garden01',    ar: '1122 / 1402', name: 'The Moon Garden' },
+  { id: 'glasshouse', file: 'greenhouse',  ar: '1122 / 1402', name: 'The Conservatory' },
+  { id: 'ship',       file: 'ship',        ar: '1024 / 1536', name: 'The Homeward Ship' },
+  { id: 'crow',       file: 'crow',        ar: '1024 / 1536', name: 'Still Life with Crow' },
+  { id: 'candle',     file: 'stilllife01', ar: '1024 / 1280', name: 'Still Life with Candle' },
+  { id: 'keepsake',   file: 'stilllife02', ar: '1024 / 1280', name: 'Still Life with a Keepsake Box' },
 ];
-const RES = Object.fromEntries(RESIDENTS.map(r => [r.id, r]));
+const ART = Object.fromEntries(PAINTINGS.map(p => [p.id, p]));
 
-/** One of the family's portraits, in the same carved frame and brass plate. */
-export function residentHtml(id, cls = '') {
-  const r = RES[id];
-  if (!r) return '';
-  return `<figure class="kit-hang kit-hang--named kit-hang--resident${cls ? ' ' + cls : ''}" data-art="res-${id}" aria-hidden="true">`
+/** Which pictures a board chooses among. A rest fort is a cosy place; the
+ *  reward alcove and the event's hall are the house's grand rooms. */
+export const PICTURE_POOLS = {
+  grand: ['lady', 'master', 'dowager', 'son', 'gardener', 'children', 'ball', 'dining', 'music',
+          'fountain', 'garden', 'glasshouse', 'ship', 'crow'],
+  cosy:  ['fireside', 'nursery', 'hound', 'bedroom', 'children', 'candle', 'keepsake', 'gardener'],
+  family: ['lady', 'master', 'dowager', 'son', 'children', 'gardener'],
+};
+
+/** One of the house's paintings, in the Kid board's carved frame and a brass plate. */
+export function paintingHtml(id, cls = '') {
+  const p = ART[id];
+  if (!p) return '';
+  const plate = `<span class="kit-hang__plate"><b>${p.name}</b>${p.title ? `<em>${p.title}</em>` : ''}</span>`;
+  return `<figure class="kit-hang kit-hang--named kit-hang--painting${cls ? ' ' + cls : ''}" data-art="art-${id}" aria-hidden="true">`
     + '<i class="kit-hang__cord"></i>'
-    + `<span class="kit-hang__frame"><img class="kit-hang__pic" src="${KIT}hang-res-${id}.webp" alt="" decoding="async" draggable="false" style="--pic-ar:4 / 5"></span>`
-    + `<span class="kit-hang__plate"><b>${r.name}</b><em>${r.title}</em></span>`
+    + `<span class="kit-hang__frame"><img class="kit-hang__pic" src="${KIT}hang-art-${p.file}.webp" alt="" decoding="async" draggable="false" style="--pic-ar:${p.ar}"></span>`
+    + plate
     + '</figure>';
 }
 
 /**
- * The family's portraits for a board, one per class. Those not painted yet
- * leave their place bare; if NONE is painted and `house` is set, the house's
- * own picture hangs in the first place instead, so the wall is never a row of
- * empty frames and never a row of somebody else's pets.
+ * A board's pictures: one per class, DIFFERENT paintings drawn from `pool`,
+ * chosen by `seed` -- so a room keeps its pictures while you are in it, and
+ * the next room hangs others. The same seed always hangs the same pictures.
  */
-export function houseGallery(ids, classes, { house = true } = {}) {
-  const ready = ids.map(id => RES[id] && RES[id].ready);
-  if (!ready.some(Boolean)) return house ? hangHtml('house', classes[0] || '') : '';
-  return ids.map((id, i) => (ready[i] ? residentHtml(id, classes[i] || '') : '')).join('');
+export function houseGallery(pool, classes, { seed = '' } = {}) {
+  const ids = (Array.isArray(pool) ? pool : (PICTURE_POOLS[pool] || PICTURE_POOLS.grand)).filter(id => ART[id]);
+  let h = 2166136261;
+  for (const ch of String(seed)) { h ^= ch.charCodeAt(0); h = Math.imul(h, 16777619) >>> 0; }
+  const left = ids.slice();
+  return classes.map((cls) => {
+    if (!left.length) return '';
+    h = Math.imul(h ^ (h >>> 15), 2246822507) >>> 0;
+    const [id] = left.splice(h % left.length, 1);
+    return paintingHtml(id, cls);
+  }).join('');
 }
 
 /**
