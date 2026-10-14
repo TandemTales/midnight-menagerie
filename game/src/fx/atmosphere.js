@@ -985,18 +985,17 @@ export const REGIONS = {
                 square planters" (MANGANESE's seeds) in the near lawn) */
              /* (the frame budget: a near topiary is a frame-tall field of
                 clipped yew and every near piece is a term in each floor
-                pixel's contact shadows -- so three, not four) */
+                pixel's contact shadows -- so two here, the urn and the seat;
+                the ball-trees stand in the walk's own near floor) */
              near: [{ shape: 81, edge: 0.10, z: 3.0, tone: 0.94, seed: 1.1, fore: 1, keep: true },
-                    { shape: 83, edge: 0.36, z: 4.4, tone: 0.94, seed: 2.0, fore: 1, keep: true },
-                    { shape: 30, edge: 0.965, z: 1.4, tone: 0.95, scale: 0.85, fore: 1, seed: 5.0 }] },
+                    { shape: 83, edge: 0.36, z: 4.4, tone: 0.94, seed: 2.0, fore: 1, keep: true }] },
     /* ...and the moon laid on the walk and the turf in front of you, the
        foreground falling to nine-tenths and not two-fifths */
     /* (round 31 graft, judges 1 and 3: "lift the near path out of black with
-       a lantern spill" -- a warm second pool nearer the eye, beside the
-       moon's: pool2) */
+       a lantern spill" -- the near pool is the walk's lanterns' warm, not a
+       second cold moon on the path; one pool, the frame budget) */
     nearFloor: { fall: 0.88,
-                 pool: { ahead: 4.2, across: 0.0, rAlong: 3.6, rAcross: 3.0, k: 1.5, color: '#9eb0d6' },
-                 pool2: { ahead: 3.4, across: -0.5, rAlong: 2.2, rAcross: 2.4, k: 1.6, color: '#eaa45e' } },
+                 pool: { ahead: 3.8, across: -0.3, rAlong: 3.4, rAcross: 3.0, k: 1.6, color: '#d9a66e' } },
     particles: { mix: [[PTYPE.SPORE, 0.44], [PTYPE.ASH, 0.30], [PTYPE.DUST, 0.26]],
                  tint: '#e0d8a8', wispTint: '#b08fd8', emberTint: '#d8a04a',
                  speed: 0.75, scale: 1.3, wind: 1.4, density: 0.95 },
