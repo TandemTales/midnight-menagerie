@@ -56,6 +56,13 @@ check reads Taffy's cream gloss as background; leave it red, do not lower it).
 game-over walls (`1f6bc8af`, ui/hang.js PAINTINGS); a base-card dead-effect
 gate (`tests/base-effects`) and 24 cards fixed (`c39ec0cc`).
 
+**IN FLIGHT (2026-10-14): ROUND 32 -- THE FIGHTS** (`BRIEF-r32.md`), Workflow
+run `wf_3b402e1f-eb2` at base `2c237d34`; worktrees
+`C:/UILOOP/r32/wt/r32-fight-{a,b,c}` (CERULEAN 9201, PHTHALO 9202, RAWUMBER
+9203), baselines GINGHAM in `C:/UILOOP/r32/judging/r32/fight/`. It changes
+ui/enemy.js: the merge note must say what. If it stops on a limit, finish it
+as a NEW run with `resume` notes.
+
 **ROUND 31 AND ITS GRAFT ARE MERGED, VERIFIED AND PUSHED (2026-10-14):**
 HEMATITE +1.70 (`9bba05dc`), graft `7dc45984` (Hedge 15.47, Kitchens 13.71 ms
 settled; the Graveyard still ~16.5, over budget since before round 31).
