@@ -56,18 +56,13 @@ check reads Taffy's cream gloss as background; leave it red, do not lower it).
 game-over walls (`1f6bc8af`, ui/hang.js PAINTINGS); a base-card dead-effect
 gate (`tests/base-effects`) and 24 cards fixed (`c39ec0cc`).
 
-**IN FLIGHT (2026-10-12): ROUND 31** -- survey 4 (`SURVEY-2026-10-12.md`)
-found the rooms now the weakest part; round 31 is the Passages, Hedge Maze,
-Kitchens and Graveyard and the near floor (`BRIEF-r31.md`), Workflow run
-`wf_6924e554-dda` at base `ee60b07a` (weekly limit; resumed 2026-10-13 as
-`wf_4a6c0844-d0b`, then a session limit; WRAP-UP run 2026-10-14 00:25 as
-`wf_82c5d2af-7e9`); worktrees
-`C:/UILOOP/r31/wt/r31-rooms-{a,b,c}` (MANGANESE 9181, HEMATITE 9182, SAFFLOWER
-9183), baselines MOREEN in `C:/UILOOP/r31/judging/r31/rooms/`. If it stops on
-a limit, finish it as a NEW run with `resume` notes. Survey 4's note: room
-captures MUST be seeded (the unseeded base shell is never played). After
-round 31: the fights (the Butler on his frame's void, the nine-card fan),
-then density at 1280 and web-shaped controls.
+**ROUND 31 IS MERGED, VERIFIED AND PUSHED (2026-10-14): HEMATITE, 2 of 3,
+5.43 vs 3.73 (+1.70)** (`9bba05dc`). The other 13 wings proven pixel-identical
+(seeded). Battery green but the sprites halo and the kid-clips flake.
+**NEXT: its graft, `docs/ui-pass/GRAFT-r31.md`** -- first the frame (Hedge
+17.38, Kitchens 15.75 settled), then SAFFLOWER's hedge and the near-floor
+fixes. After it, from survey 4: the fights (the Butler on his frame's void,
+the nine-card fan), then density at 1280 and web-shaped controls.
 
 **ROUND 30 AND ITS GRAFT ARE MERGED, VERIFIED AND PUSHED (2026-10-12):**
 SANDARAC +2.72 (`65899599`), graft `4019037b`. **SURVEY 3 IS DONE** (rounds
