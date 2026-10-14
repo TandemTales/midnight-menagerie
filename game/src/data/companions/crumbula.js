@@ -143,7 +143,14 @@ function feed(c, e, x, opts = {}) {
   let overate = false;
   for (let i = 0; i < x; i++) {
     if (!opts.free) {
-      if (!e || marksOn(c, e) <= 0) break;
+      if (!e || marksOn(c, e) <= 0) {
+        /* OPEN BAR: "This turn, a Feed may take marks from several." It set a
+           flag nothing read. A Feed that empties its enemy moves on to the
+           next marked one. */
+        const next = s.openBar ? U.enemies(c).find((x) => marksOn(c, x) > 0) : null;
+        if (!next) break;
+        e = next;
+      }
       U.unapply(c, e, BITE, 1);
     }
     eaten++;

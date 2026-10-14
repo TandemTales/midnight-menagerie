@@ -321,6 +321,23 @@ try {
     const a = await healed(false), b = await healed(true);
     check(b === a + 3, 'solo, Hospitality’s heal goes to Crumbula himself', `Feed healed ${a} without it, ${b} with it`);
   }
+
+  say('<h2>Open Bar: a Feed takes marks from several</h2>');
+  {
+    /* Open Bar set a flag nothing read, so a Feed stopped at its own enemy. */
+    const e = await count();
+    const [t, o] = e.livingEnemies();
+    if (!o) check(false, 'two enemies at the table (setup)');
+    else {
+      await play(e, 'crumbula/open-bar');
+      e.applyStatus(t, 'bite-mark', -marks(e, t) + 1);
+      const before = marks(e, t) + marks(e, o);
+      await play(e, 'crumbula/seconds', t);
+      check(marks(e, t) === 0 && before - (marks(e, t) + marks(e, o)) === 2,
+        'after Open Bar a Feed that empties its enemy moves on to the next marked one',
+        `marks ${before} -> ${marks(e, t) + marks(e, o)}`);
+    }
+  }
 } catch (err) {
   fails.push('THREW: ' + (err && err.stack || err));
 }
