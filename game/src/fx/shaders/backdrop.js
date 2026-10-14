@@ -4923,10 +4923,9 @@ float hedgeWallH(vec2 q, float qpx, out float occ){
   /* (round 31 graft: no dead-through holes in the fountain court's hedge --
      a court is the kept heart of a maze; all three judges saw its holes, one
      swallowing a statue niche) */
-  /* (...and none in any FAR hedge: the maze's back wall carried a brown
-     blotch, the shadow ring of one, at the eye's own height -- judges 1
-     and 2. The side walls keep their rare dead holes) */
-  vec3 yew = hzWither(vec2(u, q.y), sd, qpx, 1.0 - far, gapY, twigY)*(lum*2.6 + 0.020)*1.30;
+  /* (...and none in any hedge: judge 3's "black notches along the walk's
+     left hedge top" were these, cut through the crown against the sky) */
+  vec3 yew = hzWither(vec2(u, q.y), sd, qpx, 0.0, gapY, twigY)*(lum*2.6 + 0.020)*1.30;
   /* (round 29 GRAFT, BOLUS's, both judges: darker and more withered, the
      leaf in clusters. Each spray its own value and cast -- one in three
      turned toward the rust -- so no two lie side by side alike and the
@@ -14487,6 +14486,9 @@ void main(){
      reads at any distance; every edge is antialiased over its own pixel per
      axis, and the pile takes no lamp's mirror smear (wetK, below). */
   float rugCov = 0.0;
+#if MM_R25W != 4
+  /* (round 31 graft, the frame budget: a churchyard lays no carpet, and the
+     whole drawing compiled into its program cost the Graveyard's floor) */
   /* (round 31: in any room whose near floor is dressed -- kDye; the
      rooms that carried a carpet before round 31 drew one only in the Foyer's
      program, and they still draw what they drew) */
@@ -14545,6 +14547,7 @@ void main(){
     /* its edge stands a centimetre proud: a hairline of shadow round it */
     alb *= 1.0 - (1.0 - smoothstep(0.0, max(ePx*2.0, 0.02), abs(eIn)))*0.30*step(eIn, 0.0)*(1.0 - frg);
   }
+#endif
   alb *= mix(0.58, 1.0, smoothstep(uSpan.x*0.52, uSpan.x*0.24, abs(w.x)));   // creeps into shadow at the walls
   /* A tooth in SCREEN space: authored in metres it is 4 px at the camera's
      feet and a fifth of a pixel at the far wall, which is the spectrum the
