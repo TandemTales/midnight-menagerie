@@ -3433,13 +3433,14 @@
 .cb-root:not([data-arena="boss"]):not([data-arena="elite"]) .cb-arena__spot { display: none; }
 .cb-root .cb-arena__floor,
 .cb-root[data-arena] .cb-arena__floor {
-  top: auto; left: 2%; right: 4%;
-  bottom: calc(var(--stage-band) - 7vh); height: 14vh;
+  top: auto; left: 6%; right: 12%;
+  bottom: calc(var(--stage-band) - 8vh); height: 16vh;
   background:
     radial-gradient(50% 50% at 50% 50%,
-      color-mix(in srgb, var(--atmo-key, var(--flame-300)) 20%, transparent) 0%,
-      color-mix(in srgb, var(--flame-400) 10%, transparent) 46%,
-      transparent 74%);
+      color-mix(in srgb, var(--atmo-key, var(--flame-300)) 26%, transparent) 0%,
+      color-mix(in srgb, var(--flame-400) 13%, transparent) 44%,
+      color-mix(in srgb, var(--flame-400) 4%, transparent) 64%,
+      transparent 76%);
   mix-blend-mode: screen;
 }
 .cb-enemy__pool::before {
@@ -3455,7 +3456,7 @@
   /* as tall as the floor line leaves under the HUD once his crown's
      medallion (centred 7px over his stage, ~.11 of it in radius) is clear of
      the rail: 276 px of Butler at 1280x800, 360 at 1600x900 */
-  --boss-h: min(calc(430px * var(--e-sz)), calc((var(--stage-fl) - 92px - var(--e-rise, 0px)) * 1.03));
+  --boss-h: min(calc(430px * var(--e-sz)), calc((var(--stage-fl) - 100px - var(--e-rise, 0px)) * 1.03));
   /* a painting is fitted a few rig units over its stage's foot and carries a
      little floor of its own under the soles: the stage stands that much lower,
      so his soles, not the box, are on the line; the plate keeps its place */
