@@ -288,6 +288,29 @@ try {
       check(on.e.piles.exhaust.includes(on.g), 'and its second play Vanishes it');
     }
   }
+
+  say('<h2>Retain for the rest of combat lasts the rest of combat</h2>');
+  {
+    /* U.retain(c, k, 'combat') wrote a flag nothing read, so the Retain
+       Make It Sticky promises "for the rest of combat" lasted one turn. */
+    const e = await taffy(); emptyHand(e);
+    const k = e.addCard(CARDS.cardById('taffy/squish'), 'hand', {});
+    await play(e, 'taffy/make-it-sticky');
+    const held = [];
+    for (let i = 0; i < 3; i++) { e.player.block = 999; await e.endTurn(); held.push(where(e, k)); }
+    check(held.every(w => w === 'hand'), 'Make It Sticky keeps its Trick in hand through three turn ends', held.join(', '));
+
+    /* Candy Surgery's Swap Retain read a 'retain' flag nothing wrote. */
+    const e2 = await taffy(); emptyHand(e2);
+    const a = e2.addCard(CARDS.cardById('taffy/squish'), 'hand', {}); a.retain = true;
+    const b = e2.addCard(CARDS.cardById('taffy/sugar-bonk'), 'hand', {});
+    await play(e2, 'taffy/candy-surgery');
+    const seen = [];
+    for (let i = 0; i < 2; i++) { e2.player.block = 999; await e2.endTurn(); seen.push(where(e2, a) + '/' + where(e2, b)); }
+    check(!a.retain && seen[1] !== undefined && where(e2, b) === 'hand' && seen.every(s => s.endsWith('/hand')),
+      'Candy Surgery hands the printed Retain to the other Trick, for the rest of combat',
+      'Retainer/receiver after each turn end: ' + seen.join(', ') + ', a.retain=' + a.retain);
+  }
 } catch (err) {
   fails.push('THREW: ' + (err && err.stack || err));
 }

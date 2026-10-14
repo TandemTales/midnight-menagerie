@@ -349,6 +349,22 @@ async function swing(e, id) {
           JSON.stringify(seen));
   }
 
+  say('<h2>Sit, Stay: [Retain] this Trick</h2>');
+  {
+    /* The printed keyword had no `retain` on the def; the effect retained the
+       card it was PLAYING, already bound for the discard. Held, it was
+       discarded at the end of the turn like any other Trick. */
+    const e = await dog();
+    const who = e.players[0];
+    e.addCard(CARDS.cardById('bones/sit-stay'), 'hand', { to: who });
+    const hand = e.pilesOf(who).hand;
+    const k = hand[hand.length - 1];
+    who.block = 999;
+    await e.endTurn();
+    check(e.pilesOf(who).hand.includes(k), 'an unplayed Sit, Stay is still in hand after the turn ends',
+      'in ' + e.pilesOf(who).pileOf(k));
+  }
+
   for (const line of passes) say('PASS ' + line, 'pass');
   for (const line of fails) say('FAIL ' + line, 'fail');
   say(`<h2>${passes.length} passed, ${fails.length} failed</h2>`);

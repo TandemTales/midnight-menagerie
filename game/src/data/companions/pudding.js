@@ -957,7 +957,7 @@ const uncommons = [
     flavor: 'A small brush. Immense concentration.',
     nums: {},
     /* The upgrade is text only ("two Tricks"), and the effect dug up one. */
-    effect: eff((c) => { for (let i = 0; i < (U.up(c) ? 2 : 1); i++) { const k = digUp(c); if (!k) break; U.retain(c, k, 'combat'); } }),
+    effect: eff((c) => { for (let i = 0; i < (U.up(c) ? 2 : 1); i++) { const k = digUp(c); if (!k) break; U.retain(c, k); } }),
     upgrade: { text: '[Dig Up] two Tricks. If you do not play them this turn, keep them in hand. They still lose [Unearthed].' },
   },
   {

@@ -415,6 +415,52 @@ try {
       'on an Unaware target the follow-up is an Ambush: no Fright, and it ends Suspicious',
       `lost ${hp0 - t2.hp} fright=${stacks(e2, t2, 'fright')} suspicious=${stacks(e2, t2, 'suspicious')}`);
   }
+
+  // ── 15. Hide Behind Me! and Everybody Under the Bed!: the redirect ───────
+  /* Hide Behind Me wrote `{ seat, guard }` into Boggle's scratch and nothing
+     read it, so only its Guard worked; Everybody Under the Bed never
+     redirected anyone. Both enemies are pointed at the FRIEND with a plain
+     directed Attack (Dust Bunny's Puff), so the only way Boggle is hit is the
+     redirect. */
+  const PUFF = (n) => ({ id: 'puff', name: 'Puff', intent: 'attack', damage: n, effect: (c) => c.damage(n) });
+  const aimAtFriend = (e, b) => {
+    for (const x of e.livingEnemies()) { x.targetSeatId = b.id; e.overrideIntent(x, PUFF(6)); }
+    e.refreshIntents('test');
+  };
+  const landed = (e) => {
+    const log = [];
+    e.on('damage', (ev) => { if (ev.sourceId && e.actor(ev.sourceId)?.side !== 'player') log.push(ev.sourceId + '>' + ev.targetId); });
+    return log;
+  };
+  for (const id of ['boggle/hide-behind-me', 'boggle/everybody-under-the-bed']) {
+    const e = await party();
+    const [a, b] = e.players;
+    const [t, o] = e.livingEnemies();
+    aimAtFriend(e, b);
+    const log = landed(e);
+    await seatPlays(e, a, id, null);
+    check(e.intentTargetFor(t) === a && e.intentTargetFor(o) === b,
+      `${id}: the first Attack at the friend now aims at Boggle, the second still at the friend`,
+      `first -> ${e.intentTargetFor(t).name}, second -> ${e.intentTargetFor(o).name}`);
+    a.block = 0; b.block = 0;
+    await e.endTurn();
+    check(log.join(',') === `${t.id}>${a.id},${o.id}>${b.id}`,
+      `${id}: the first lands on Boggle, the second on the friend`, log.join(', '));
+  }
+  {
+    const e = await party();
+    const [a, b] = e.players;
+    const [t, o] = e.livingEnemies();
+    aimAtFriend(e, b);
+    e.applyStatus(t, 'unaware', 1);
+    const log = landed(e);
+    await seatPlays(e, a, 'boggle/hide-behind-me', null);
+    check(t.pendingMove && t.pendingMove.id === 'boggle-search',
+      'Hide Behind Me!: an Unaware first attacker Searches instead', t.pendingMove && t.pendingMove.id);
+    await e.endTurn();
+    check(!log.includes(`${t.id}>${b.id}`) && !log.includes(`${t.id}>${a.id}`) && stacks(e, t, 'fright') >= 2,
+      'and nobody takes its Attack', `${log.join(', ')} fright=${stacks(e, t, 'fright')}`);
+  }
 } catch (err) {
   fails.push('THREW: ' + (err && err.stack || err));
 }

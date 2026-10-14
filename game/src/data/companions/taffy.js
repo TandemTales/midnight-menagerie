@@ -35,8 +35,19 @@ function stretch(c, k, n = 1) {
   const before = stretchOf(k);
   U.setCounter(k, 'stretch', Math.min(3, before + n));
   U.setFlag(k, 'stretched', true);
-  U.retain(c, k, 'combat');
+  /* The one-turn kind: the turn-end tracker below renews it for as long as the
+     Trick stays Stretched, and Stretch is removed when it is played. 'combat'
+     here would have kept every once-Stretched Trick for the rest of the fight
+     now that the engine honours it (Make It Sticky is the card that says so). */
+  U.retain(c, k);
   return stretchOf(k) - before;
+}
+/* Does this Trick Retain for good: printed, or granted for the rest of combat?
+   Swap Retain read a 'retain' flag nothing ever wrote, so it swapped nothing. */
+const holdsRetain = (k) => !!(k.retain || U.flag(k, 'retainCombat'));
+function setRetain(c, k, on) {
+  if (on) { U.retain(c, k, 'combat'); return; }
+  k.retain = false; k.retainThisTurn = false; U.clearFlag(k, 'retainCombat');
 }
 function clearStretch(c, k) { U.setCounter(k, 'stretch', 0); U.clearFlag(k, 'stretched'); }
 const stretchedInHand = (c) => U.cardsIn(c, 'hand').filter(k => stretchOf(k) > 0);
@@ -1046,7 +1057,7 @@ const rares = [
       const [a, b] = ks;
       await U.chooseOne(c, [
         { label: 'Swap costs', fn: (x) => { if (!priced(a) || !priced(b)) return; const ca = U.nowCost(a), cb = U.nowCost(b); U.costSet(x, a, cb, 'combat'); U.costSet(x, b, ca, 'combat'); } },
-        { label: 'Swap Retain', fn: (x) => { const ra = U.flag(a, 'retain'), rb = U.flag(b, 'retain'); U.setFlag(a, 'retain', rb); U.setFlag(b, 'retain', ra); if (rb) U.retain(x, a, 'combat'); if (ra) U.retain(x, b, 'combat'); } },
+        { label: 'Swap Retain', fn: (x) => { const ra = holdsRetain(a), rb = holdsRetain(b); setRetain(x, a, rb); setRetain(x, b, ra); } },
         { label: 'Swap Stretch', fn: (x) => { const sa = stretchOf(a), sb = stretchOf(b); clearStretch(x, a); clearStretch(x, b); if (sb) stretch(x, a, sb); if (sa) stretch(x, b, sa); } },
       ], 3);
     }),

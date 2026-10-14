@@ -1652,14 +1652,22 @@ const coopCards = [
   {
     id: 'boggle/hide-behind-me', name: 'Hide Behind Me! Wait, You Hide Behind Me!', companion: SLUG, type: SKILL, rarity: UNCOMMON,
     cost: 1, target: SELF, keywords: ['unaware', 'search'],
-    text: 'Choose another Kid. Until your next turn the first directed Attack aimed at them comes to you instead. If the attacker is [Unaware] it [Search]es; otherwise gain {b} Guard first.',
+    text: 'Gain {b} Guard. Choose another Kid. Until your next turn the first directed Attack aimed at them comes to you instead; if the attacker is [Unaware] it [Search]es.',
     flavor: 'Both of them are already under the bed. There is not room.',
     nums: { b: 10 },
+    /* The redirect was stored in Boggle's scratch and nothing read it, so only
+       the Guard worked. The engine's cover (engine.coverSeat) is the reader:
+       the first directed Attack at the friend now aims at Boggle, arrow and
+       all. The Guard was always granted on play, attacker Unaware or not, and
+       stays that way (the generous reading); the text now says so. */
     effect: eff(async (c) => {
       const ally = await c.chooseAlly();
       if (!ally) return;
-      U.mm(c).redirect = { seat: ally.seat, guard: N(c).b };
       U.guard(c, N(c).b);
+      if (!c.e.coverSeat || !c.e.coverSeat(ally, c.self, 'Hide Behind Me!')) return;
+      // An Unaware attacker Searches instead, and that was the Attack.
+      const first = c.e.coverClaimant(ally);
+      if (first && isUnaware(c, first) && armSearch(c, first)) c.e.endCover(ally);
     }),
     upgrade: { nums: { b: 14 } },
   },
@@ -1700,7 +1708,18 @@ const coopCards = [
     effect: eff((c) => {
       U.guard(c, N(c).b);
       for (const mate of c.teammates()) c.giveBlock(mate, N(c).b);
+      /* "Redirect one attacker from each other Kid to you": nothing did. Each
+         friend gets a cover (engine.coverSeat), so their first directed
+         attacker swings at Boggle; an Unaware one Searches instead, and that
+         was the Attack. */
       let searches = 0;
+      if (c.e.coverSeat) {
+        for (const mate of c.teammates()) {
+          if (!c.e.coverSeat(mate, c.self, 'Everybody Under the Bed!')) continue;
+          const first = c.e.coverClaimant(mate);
+          if (first && isUnaware(c, first) && armSearch(c, first)) { c.e.endCover(mate); searches++; }
+        }
+      }
       for (const e of U.enemies(c)) {
         if (!isUnaware(c, e)) continue;
         if (armSearch(c, e)) searches++;

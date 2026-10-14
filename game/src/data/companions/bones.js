@@ -340,11 +340,14 @@ const commons = [
   },
   {
     id: 'bones/sit-stay', name: 'Sit, Stay', companion: SLUG, type: SKILL, rarity: COMMON,
-    cost: 1, target: SELF, keywords: ['retain'],
+    cost: 1, target: SELF, keywords: ['retain'], retain: true,
     text: 'Gain {b} Guard. [Retain] this Trick.',
     flavor: 'He will stay. He will stay for as long as it takes.',
     nums: { b: 7 },
-    effect: eff(c => { U.guard(c, N(c).b); U.retain(c, c.card); }),
+    /* "[Retain] this Trick" is the printed keyword: it stays in hand while it is
+       NOT played. The effect retained the card it was playing, which is already
+       on its way to the discard, so an unplayed Sit, Stay was discarded. */
+    effect: eff(c => { U.guard(c, N(c).b); }),
     upgrade: { nums: { b: 10 } },
   },
   {
