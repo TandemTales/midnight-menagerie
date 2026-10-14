@@ -4624,7 +4624,7 @@ float yewClipF(vec2 p, float px, float sd, out float tone, out float lit, out fl
      here were the face's dearest line after the shoots -- the frame budget) */
   vec2 pw = p + (mmNoise(p*0.9 + sd) - 0.5)*vec2(0.20, -0.15);
   float n0 = mmNoise(pw*1.6 + sd);
-  float m0 = 0.66*n0 + 0.34*mmNoise(pw*3.5 + sd + 2.3);
+  float m0 = n0;     // (the frame budget: its finer octave lay under the shoots)
   float rise0 = 0.66*(n0 - mmNoise((pw + vec2(0.0, 0.10))*1.6 + sd));
   /* (round 31 graft: the swell a little gentler -- at 1.5 a long fall of
      the noise read as a dark blotch on the lit back wall, judges 1 and 2) */
@@ -4675,7 +4675,10 @@ float yewCrown(float u, float sd){
    its dead stems crossing it, drawn with the pen. Unit colour; gap and twig
    say how much of the pixel is the hole and the stem in it. p in metres. */
 vec3 hzWither(vec2 p, float sd, float px, float holes, out float gap, out float twig){
-  float w = mmFbm3(p*0.30 + sd*1.7);
+  /* (round 31 graft, the frame budget: the withering's broad patch from one
+     tap, not an fbm -- its two finer octaves were under the clipped face's
+     own tufts and could not be seen; two taps on every pixel of yew) */
+  float w = 0.5 + (mmNoise(p*0.30 + sd*1.7) - 0.5)*0.80;
   float w2 = mmNoise(p*1.6 + sd*0.9);
   float footB = smoothstep(1.7, 0.1, p.y);
   /* (round 31 graft, SAFFLOWER's: the withering quieter and lower -- a
@@ -13492,9 +13495,12 @@ void main(){
          fbm in metres, slow), and the long grass drawn darker in bands
          across the yard, where the scythe does not reach. */
       {
-        float sw = mmFbm3(w*vec2(0.10, 0.16) + uSeed*2.3);
-        pat += (sw - 0.5)*0.48*(1.0 - earth*0.5);
-        float rowB = 0.5 + 0.5*sin(w.y*0.62 + 1.3*mmNoise(w*0.20 + uSeed));
+        /* (round 31 graft, the frame budget: one tap for the swathes, not an
+           fbm, and the long-grass bands wander by a sine -- four noise taps on
+           every pixel of the lawn were most of the yard's new cost) */
+        float sw = mmNoise(w*vec2(0.10, 0.16) + uSeed*2.3);
+        pat += (sw - 0.5)*0.40*(1.0 - earth*0.5);
+        float rowB = 0.5 + 0.5*sin(w.y*0.62 + 1.3*sin(w.x*0.23 + w.y*0.07 + uSeed));
         pat -= smoothstep(0.70, 0.98, rowB)*0.07*(1.0 - earth);
       }
       /* ROUND 28: LEAF LITTER, and the lawn a true dark (both survey judges:
@@ -17373,7 +17379,7 @@ float yewFaceP(vec2 p, float px, float sd, out float tone, out float lit){
      here were the face's dearest line after the shoots -- the frame budget) */
   vec2 pw = p + (mmNoise(p*0.9 + sd) - 0.5)*vec2(0.20, -0.15);
   float n0 = mmNoise(pw*1.6 + sd);
-  float m0 = 0.66*n0 + 0.34*mmNoise(pw*3.5 + sd + 2.3);
+  float m0 = n0;     // (the frame budget: its finer octave lay under the shoots)
   float rise0 = 0.66*(n0 - mmNoise((pw + vec2(0.0, 0.10))*1.6 + sd));
   /* (round 31 graft: the swell a little gentler -- at 1.5 a long fall of
      the noise read as a dark blotch on the lit back wall, judges 1 and 2) */
@@ -17549,7 +17555,10 @@ float tbSD(vec2 m, vec2 msz, float seed, out float ok){
    its dead stems crossing it, drawn with the pen. Unit colour; gap and twig
    say how much of the pixel is the hole and the stem in it. p in metres. */
 vec3 hzWither(vec2 p, float sd, float px, float holes, out float gap, out float twig){
-  float w = mmFbm3(p*0.30 + sd*1.7);
+  /* (round 31 graft, the frame budget: the withering's broad patch from one
+     tap, not an fbm -- its two finer octaves were under the clipped face's
+     own tufts and could not be seen; two taps on every pixel of yew) */
+  float w = 0.5 + (mmNoise(p*0.30 + sd*1.7) - 0.5)*0.80;
   float w2 = mmNoise(p*1.6 + sd*0.9);
   float footB = smoothstep(1.7, 0.1, p.y);
   /* (round 31 graft, SAFFLOWER's: the withering quieter and lower -- a

@@ -614,12 +614,8 @@ export const REGIONS = {
        nine-tenths of the middle distance's (it fell to three-quarters), with
        a cold pool of it broken by the clouds in front of you, and every room
        has a LARGE stone in its near turf (GRAVE_NEAR_*) */
-    /* (round 31 graft, judges 2 and 3: "dress the bottom band below the near
-       headstones ... fallen leaves in a lantern light pool" -- a warm lantern's
-       spill nearer the eye than the moon's pool, on the leaf litter: pool2) */
     nearFloor: { fall: 0.92,
-                 pool: { ahead: 4.6, across: 1.2, rAlong: 3.8, rAcross: 3.6, k: 2.0, color: '#94aad0' },
-                 pool2: { ahead: 3.2, across: -1.2, rAlong: 2.0, rAcross: 2.4, k: 1.3, color: '#e29a56' } },
+                 pool: { ahead: 4.6, across: 1.2, rAlong: 3.8, rAcross: 3.6, k: 2.0, color: '#94aad0' } },
     props: { shapes: [69, 69, 70, 71, 69], solo: [71], count: 34, height: 1.5, layout: 'rows',
              near: [{ shape: 69, edge: 0.90, z: -0.8, tone: 0.90 },
                     { shape: 70, edge: 0.975, z: 1.6, tone: 0.90 },
@@ -1825,6 +1821,11 @@ export const ROOM_KINDS = {
          piers and wrought-iron overthrow (FRAME_FRAG mode 5, MADDER's), the
          gravel walk running from your feet to the house. */
       { subject: 'fence', layout: 'rows', runX: -1.2, nearView: GRAVE_NEAR_GATE,
+        /* (round 31 graft, judges 2 and 3: "dress the bottom band below the
+           near headstones ... fallen leaves in a lantern light pool" -- a warm
+           lantern's spill nearer the eye than the moon's pool: pool2, in this
+           room and not the fight's, the frame budget) */
+        nearFloor: { pool2: { ahead: 3.2, across: -1.2, rAlong: 2.0, rAcross: 2.4, k: 1.3, color: '#e29a56' } },
         vantage: { at: 'threshold', back: 2.2, lens: 0.90, dip: 0.30 } },
       /* the chapel stands left of the axis, so the house goes right; the
          moon rises behind the chapel's cross */
@@ -1844,6 +1845,11 @@ export const ROOM_KINDS = {
          chest tombs at arm's length and the house nearer and larger */
       { subject: 'mausolea', houseX: -11.5, moonX: 16.0, houseS: 1.18, layout: 'rows', runner: 0,
         near: GRAVE_NEAR_PLOTS,
+        /* (round 31 graft, judges 2 and 3: "dress the bottom band below the
+           near headstones ... fallen leaves in a lantern light pool" -- a warm
+           lantern's spill nearer the eye than the moon's pool: pool2, in this
+           room and not the fight's, the frame budget) */
+        nearFloor: { pool2: { ahead: 3.2, across: -1.2, rAlong: 2.0, rAcross: 2.4, k: 1.3, color: '#e29a56' } },
         cam: { y: 0.25, z: -0.4, look: 0.3, fov: -1 },
         vantage: { at: 'among', fwd: 6.2, low: 0.46, pitch: 3.0, off: 0.03, wide: 2 } },
     ],
