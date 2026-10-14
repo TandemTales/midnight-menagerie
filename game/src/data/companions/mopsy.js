@@ -67,8 +67,6 @@ function spendStuffing(c, n) {
   const have = Math.min(n, stuffing(c));
   if (have <= 0) return 0;
   U.addRes(c, STUFFING, -have, 0, MAX_STUFFING);
-  const s = U.mm(c);
-  if (s.memoryFoam && U.once(c, 'memoryFoam')) s.nextTrickCheaper = true;
   return have;
 }
 
@@ -263,6 +261,18 @@ U.onTracker(SLUG, (e, s, seat) => {
   const c0 = fake();
   if (U.stacks(c0, c0.self, 'cushion') === 0) U.applySelf(c0, 'cushion', 1);
 
+  /* MEMORY FOAM: "The first time each turn you spend Stuffing, your next Trick
+     costs 1 less." It set `nextTrickCheaper`, which nothing read. Watched on
+     the counter, so a Cushion (which spends in keywords.js, not through
+     spendStuffing) counts too; the shared discount status lowers the next
+     Trick and is spent on it. */
+  e.on('counter', (ev) => {
+    if (!ev || ev.id !== STUFFING || !((ev.delta || 0) < 0) || ev.reason === 'test') return;
+    const c = fake();
+    if (seat && ev.ownerId && ev.ownerId !== seat.id) return;
+    if (!U.mm(c).memoryFoam || U.stacks(c, c.self, 'mopsy/memory-foam') <= 0 || !U.once(c, 'memoryFoam')) return;
+    U.applySelf(c, 'next-trick-discount', 1);
+  });
 
   /* Patches fire when their Trick is played. `card:play` carries `card`, and
      CONTRACTS trap 11 is explicit that it does NOT carry `type` — the card

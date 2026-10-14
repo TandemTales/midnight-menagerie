@@ -474,6 +474,23 @@ try {
       `hand: ${e.piles.hand.map(k => k.id).join(', ') || 'empty'}`);
   }
 
+
+  say('<h2>Cemetery Gates: the swap is offered once the hand is in</h2>');
+  {
+    /* It was offered at turn:start, before the deal, to an empty hand. */
+    const e = await pudding();
+    await play(e, 'pudding/cemetery-gates');
+    for (const k of e.piles.hand.slice()) e.discardCard(k, 'test');
+    const g = give(e, 'pudding/little-chomp');
+    await play(e, 'pudding/bury-this');
+    const buriedNow = pileOf(e, g);
+    e.player.block = 999;
+    await e.endTurn();
+    for (let i = 0; i < 20; i++) await Promise.resolve();
+    check(buriedNow === 'stash' && pileOf(e, g) === 'hand' && g.meta.unearthedTurn === e.turn,
+      'next turn the Buried Trick comes back to hand, Unearthed, for one from the new hand',
+      `buried in ${buriedNow}, now in ${pileOf(e, g)}, unearthed on turn ${g.meta.unearthedTurn} (turn ${e.turn})`);
+  }
 } catch (err) {
   fails.push('THREW: ' + (err && err.stack || err));
 }

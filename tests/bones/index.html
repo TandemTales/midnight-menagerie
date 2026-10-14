@@ -365,6 +365,25 @@ async function swing(e, id) {
       'in ' + e.pilesOf(who).pileOf(k));
   }
 
+  say('<h2>Favorite Toy: Fetched even while Slobbered</h2>');
+  {
+    /* It set a `favorite` flag that nothing read. */
+    const e = await dog();
+    const who = e.players[0];
+    for (const k of e.pilesOf(who).hand.slice()) e.discardCard(k, 'test');
+    e.addCard(CARDS.cardById('bones/sit-stay'), 'hand', { to: who });
+    const fav = e.pilesOf(who).hand[e.pilesOf(who).hand.length - 1];
+    await play(e, 'bones/favorite-toy', null);
+    e.moveCard(fav, 'discard');
+    for (const k of e.pilesOf(who).discard) { k.meta.slobbered = true; }
+    await play(e, 'bones/fetch', null);
+    const first = e.pilesOf(who).pileOf(fav);
+    e.moveCard(fav, 'discard'); fav.meta.slobbered = true;
+    await play(e, 'bones/fetch', null);
+    check(first === 'hand' && e.pilesOf(who).pileOf(fav) === 'discard',
+      'the Favorite is Fetched while Slobbered, once a turn', `first Fetch: ${first}, second: ${e.pilesOf(who).pileOf(fav)}`);
+  }
+
   for (const line of passes) say('PASS ' + line, 'pass');
   for (const line of fails) say('FAIL ' + line, 'fail');
   say(`<h2>${passes.length} passed, ${fails.length} failed</h2>`);

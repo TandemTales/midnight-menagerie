@@ -434,11 +434,24 @@ U.onTracker(SLUG, (e, s, seat) => {
       st.pocketTomorrow = [];
     }
     if (st.threeLightsDraw) { U.draw(c, st.threeLightsDraw); st.threeLightsDraw = 0; }
+    /* Too Bright for Bedtime: Blazing is judged here, at turn start, but the
+       discount waits for the hand. turn:start fires BEFORE the deal, so the
+       "first two Tricks" it discounted were whatever had been Retained,
+       usually nothing, and only the Glow loss ever happened. */
     if (st.tooBright && isBlazing(c)) {
-      for (const k of U.cardsIn(c, 'hand').slice(0, 2)) U.costMod(c, k, -1, 'turn');
+      st.tooBrightPending = true;
       U.atTurnEnd(c, (x) => spendGlow(x, 2));
     }
   }, seat);
+
+  e.on('phase', (ev) => {
+    if (!ev || ev.phase !== 'playerReady') return;
+    const c = fake();
+    const st = U.mm(c);
+    if (!st.tooBrightPending) return;
+    st.tooBrightPending = false;
+    for (const k of U.cardsIn(c, 'hand').slice(0, 2)) U.costMod(c, k, -1, 'turn');
+  });
 
   U.onPlayerTurn(e, 'end', () => {
     const c = fake();

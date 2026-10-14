@@ -47,9 +47,22 @@ const canFetch = (k) => k && !U.flag(k, 'slobbered');
  *  returns only true 0-cost cards; Madness and Snecko Eye skip X). */
 const pricedAtMost = (k, n) => { const p = U.printedCost(k); return p >= 0 && p <= n; };
 /** Fetch: pull a Trick out of the discard pile. It becomes Slobbered. */
+/* FAVORITE TOY: "It can be [Fetch]ed even while [Slobbered], at most once each
+   turn. After its first Fetch, each later Fetch makes it cost {n} more that
+   turn." It set a `favorite` flag nothing read, so the Rare did nothing. The
+   bypass is once a turn; the surcharge counts Fetches of it within the turn. */
+const favoriteOn = (c) => U.stacks(c, c.self, 'bones/favorite-toy') > 0;
+const favoriteBypass = (c, k) => favoriteOn(c) && U.flag(k, 'favorite') && U.flag(k, 'favBypassTurn') !== U.turn(c);
 async function fetch(c, filter, prompt = 'Fetch a Trick') {
-  const [k] = await U.pickCards(c, { pile: 'discard', count: 1, prompt, filter: (x) => canFetch(x) && (!filter || filter(x)) });
+  const [k] = await U.pickCards(c, { pile: 'discard', count: 1, prompt, filter: (x) => (canFetch(x) || favoriteBypass(c, x)) && (!filter || filter(x)) });
   if (!k) return null;
+  if (U.flag(k, 'favorite') && favoriteOn(c)) {
+    if (!canFetch(k)) U.setFlag(k, 'favBypassTurn', U.turn(c));
+    const turn = U.turn(c);
+    const seen = U.flag(k, 'favFetchTurn') === turn ? (U.flag(k, 'favFetches') | 0) : 0;
+    if (seen >= 1) U.costMod(c, k, 1, 'turn');
+    U.setFlag(k, 'favFetchTurn', turn); U.setFlag(k, 'favFetches', seen + 1);
+  }
   U.toHand(c, k);
   U.setFlag(k, 'slobbered', true);
   U.bump(c, 'retrieved'); U.bump(c, 'fetched');

@@ -311,6 +311,45 @@ try {
       'Candy Surgery hands the printed Retain to the other Trick, for the rest of combat',
       'Retainer/receiver after each turn end: ' + seen.join(', ') + ', a.retain=' + a.retain);
   }
+
+  say('<h2>Status-only Powers whose hook never fired</h2>');
+  {
+    /* tests/base-effects drives every status-only Power to its trigger; these
+       three changed nothing when it came. */
+    const e = await taffy(); emptyHand(e);
+    await play(e, 'taffy/house-of-mirrors');
+    const gd = () => e.piles.discard.filter(k => flag(k, 'gummy'));
+    const t = e.livingEnemies()[0];
+    await play(e, 'taffy/sugar-bonk', t);
+    const made = gd();
+    await play(e, 'taffy/sugar-bonk', t);
+    check(made.length === 1 && made[0].id === 'taffy/sugar-bonk' && e.costOf(made[0]) === 2 && gd().length === 1,
+      'House of Mirrors: the first Attack puts a Gummy copy costing 1 more in the discard, once a turn',
+      `copies ${made.map(k => k.id + '@' + e.costOf(k)).join(', ') || 'none'}, then ${gd().length}`);
+
+    const e2 = await taffy(); emptyHand(e2);
+    const k = e2.addCard(CARDS.cardById('taffy/stretch-punch'), 'hand', {});
+    k.meta['#stretch'] = 3;
+    const was = e2.costOf(k);
+    await play(e2, 'taffy/slow-pull');
+    const low = e2.costOf(k);
+    e2.player.energy = 9; await e2.playCard(k.uid, e2.livingEnemies()[0].id);
+    check(was === 2 && low === 1 && e2.costOf(k) === 2,
+      'Slow Pull: a Trick at 3 Stretch costs 1 less, and its price comes back once the Stretch is spent',
+      `${was} -> ${low} -> ${e2.costOf(k)} after playing it`);
+
+    const lost = async (withPower) => {
+      const e3 = await taffy(); emptyHand(e3);
+      e3.setCounter('globs', 0, 'test');
+      if (withPower) await play(e3, 'taffy/one-big-piece');
+      const t3 = e3.livingEnemies()[0];
+      const hp = t3.hp + t3.block;
+      await play(e3, 'taffy/sugar-bonk', t3);
+      return hp - (t3.hp + t3.block);
+    };
+    const plain = await lost(false), big = await lost(true);
+    check(plain > 0 && big === plain * 2, 'One Big Piece: at 0 Globs the first Attack hits again', `${plain} without it, ${big} with it`);
+  }
 } catch (err) {
   fails.push('THREW: ' + (err && err.stack || err));
 }

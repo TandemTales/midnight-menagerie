@@ -475,6 +475,26 @@ try {
     check(!!cut && cut.data.cultivar === 'ivy' && cut.data.growth === want,
       `Easy Cutting${up ? '+' : ''} Propagates the Ivy with ${want} Growth`, `growth=${cut && cut.data.growth}`);
   }
+
+  say('<h2>Closed Terrarium keeps THAT turn’s Weed out</h2>');
+  {
+    /* The Uproot was answered after the Overgrown Weed had already been added,
+       so the Weed came anyway and the block was saved for a later one. */
+    const e = await boo();
+    await play(e, 'brambleboo/closed-terrarium', null);
+    for (let i = 0; i < 4; i++) {
+      await play(e, 'brambleboo/tiny-creeper', null);
+      const o = plants(e)[plants(e).length - 1];
+      e.updateObject(o.id, { growth: 2, mature: true });
+    }
+    e.setChoiceResolver(() => [0]);
+    const weeds = () => [...e.piles.hand, ...e.piles.discard, ...e.piles.draw].filter(k => k.id === 'brambleboo/weed').length;
+    e.player.block = 999;
+    await e.endTurn();
+    for (let i = 0; i < 20; i++) await Promise.resolve();
+    check(plants(e).length === 3 && weeds() === 0, 'Uprooting one at the turn end keeps that turn’s Weed out',
+      `plants ${plants(e).length}, weeds ${weeds()}`);
+  }
 } catch (err) {
   fails.push('THREW: ' + (err && err.stack || err));
 }

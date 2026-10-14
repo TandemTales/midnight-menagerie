@@ -292,6 +292,35 @@ try {
     await play(e, 'crumbula/pocket-snack', t);
     check(marks(e, t) === 1 && left() === before + 2, 'and with marks, removes 1 and makes 1', `marks=${marks(e, t)} leftovers=${left()}`);
   }
+
+  say('<h2>Not Dead, Just Napping and The Count’s Hospitality</h2>');
+  {
+    /* Napping applied Marmalade's not-dead-yet: it spends 3 Lives Crumbula
+       does not have and lapses at the next turn start. */
+    const e = await count();
+    await play(e, 'crumbula/not-dead-just-napping');
+    for (let i = 0; i < 2; i++) { e.player.block = 999; await e.endTurn(); }
+    e.player.block = 0;
+    e.dealDamage({ attacker: e.livingEnemies()[0], defender: e.player, amount: 999, kind: 'attack', pierce: true });
+    check(!e.over && e.player.hp === 1 && e.counter('appetite') === 0 && e.piles.hand.length === 0,
+      'two turns later a killing blow leaves him at 1, Appetite 0, hand discarded',
+      `over=${e.over} hp=${e.player.hp} appetite=${e.counter('appetite')} hand=${e.piles.hand.length}`);
+    e.dealDamage({ attacker: e.livingEnemies()[0], defender: e.player, amount: 999, kind: 'attack', pierce: true });
+    check(e.player.hp === 0, 'and only once a combat', `hp=${e.player.hp}`);
+
+    /* Hospitality healed the weakest TEAMMATE, so solo it healed nobody. */
+    const healed = async (withPower) => {
+      const e2 = await count();
+      const t = e2.livingEnemies()[0];
+      if (withPower) await play(e2, 'crumbula/the-counts-hospitality');
+      e2.player.hp = 20;
+      e2.applyStatus(t, 'bite-mark', 2);
+      await play(e2, 'crumbula/midnight-snack', t);
+      return e2.player.hp - 20;
+    };
+    const a = await healed(false), b = await healed(true);
+    check(b === a + 3, 'solo, Hospitality’s heal goes to Crumbula himself', `Feed healed ${a} without it, ${b} with it`);
+  }
 } catch (err) {
   fails.push('THREW: ' + (err && err.stack || err));
 }

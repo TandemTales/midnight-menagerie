@@ -156,7 +156,9 @@ function feed(c, e, x, opts = {}) {
     else if (appetite(c) >= appetiteCap(c)) overate = true;
     else addAppetite(c, 1);
     if (s.hospitality && U.once(c, 'hospitality')) {
-      const mates = c.teammates ? c.teammates() : [];
+      /* "The weakest Kid" counts Crumbula too. It read teammates only, so in a
+         solo run, where there are none, the Rare healed nobody. */
+      const mates = [c.self, ...(c.teammates ? c.teammates() : [])].filter((x) => x && x.alive !== false);
       const worst = mates.slice().sort((a, b) => (a.hp / a.maxHp) - (b.hp / b.maxHp))[0];
       if (worst) { c.giveHeal(worst, s.hospitality > 0 ? s.hospitality : HEAL_PER_MARK); addAppetite(c, 1); }
     }
@@ -217,6 +219,38 @@ const power = (c, id, n, install) => {
   const s = U.mm(c);
   if (install && !s['pw:' + id]) { s['pw:' + id] = true; install(c); }
 };
+
+/* NOT DEAD, JUST NAPPING: "Once per combat, lethal damage leaves you at 1
+   Courage. Set Appetite to 0 and discard your hand." It applied Marmalade's
+   `not-dead-yet`, which spends 3 Lives (Crumbula has none) and lapses at the
+   next turn start, so it saved nobody, ever. His own status carries it for
+   the whole combat and is spent the one time it saves him. */
+const NAPPING = 'crumbula/napping';
+const OWN_STATUSES = [{
+  id: NAPPING, name: 'Just Napping', kind: 'buff', icon: 'appetite', decay: 'never', stacks: false, companion: SLUG,
+  desc: 'Once this combat, lethal damage leaves you at 1 Courage; Appetite goes to 0 and you discard your hand.',
+  hooks: {
+    onLethal: (h) => {
+      const c = U.trackerCtx(h.e, h.defender);
+      if (!c) return false;
+      h.setHp(1);
+      setAppetite(c, 0, { force: true });
+      const drop = () => { for (const k of U.cardsIn(c, 'hand').slice()) h.e.discardCard(k, 'napping'); };
+      if (h.e._asSeat) h.e._asSeat(h.defender, drop); else drop();
+      U.mm(c).napped = true;
+      h.remove();
+      return true;
+    },
+  },
+}];
+try {
+  const S = await import('../statuses.js');
+  S.registerStatuses(OWN_STATUSES);
+  const K = await import('../keywords.js');
+  K.registerKeywords(OWN_STATUSES.map((s) => ({
+    id: s.id, name: s.name, desc: s.desc, category: 'buff', status: true, icon: s.icon, companion: SLUG,
+  })));
+} catch (_) { /* headless tooling with no combat folder still loads the cards */ }
 
 // ── per-combat bookkeeping ──────────────────────────────────────────────────
 U.onTracker(SLUG, (e, s, seat) => {
@@ -1236,7 +1270,7 @@ const rares = [
     text: 'Once per combat, lethal damage leaves you at 1 Courage. Set [Appetite] to 0 and discard your hand.',
     flavor: 'A common misunderstanding, and one he encourages.',
     nums: {},
-    effect: eff((c) => power(c, 'crumbula/not-dead-just-napping', 1, (x) => { U.applySelf(x, 'not-dead-yet', 1); })),
+    effect: eff((c) => power(c, 'crumbula/not-dead-just-napping', 1, (x) => { if (!U.mm(x).napped) U.applySelf(x, NAPPING, 1); })),
     upgrade: { cost: 2 },
   },
   {

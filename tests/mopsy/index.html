@@ -290,6 +290,20 @@ try {
         `friend hand ${mate.piles.hand.length}, hers ${JSON.stringify(patchesOf(k))}`);
     }
   }
+
+  say('<h2>Memory Foam: spending Stuffing makes the next Trick cheaper</h2>');
+  {
+    /* It set `nextTrickCheaper`, which nothing read. */
+    const e = await mopsy();
+    e.setCounter('stuffing', 4, 'test');
+    await play(e, 'mopsy/memory-foam');
+    for (const k of e.piles.hand.slice()) e.discardCard(k, 'test');
+    const k = e.addCard(CARDS.cardById('mopsy/beginners-patch'), 'hand', {});
+    const was = e.costOf(k);
+    await play(e, 'mopsy/shake-out-the-fluff');
+    const now = e.costOf(k);
+    check(was >= 1 && now === was - 1, 'after Stuffing is spent the next Trick costs 1 less', `${was} -> ${now}`);
+  }
 } catch (err) {
   fails.push('THREW: ' + (err && err.stack || err));
 }
