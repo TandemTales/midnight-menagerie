@@ -545,7 +545,7 @@ export const ROOM_VARIANTS = [
   { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 2 }, wings: ['ballroom'] },
   { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 3 }, wings: ['greenhouse'] },
   { mat: 'floor', defines: { MM_FLOORX: 1, MM_R25W: 4 }, wings: ['graveyard'] },
-  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 4 }, wings: ['foyer', 'ballroom'] },
+  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 4 }, wings: ['foyer', 'ballroom', 'passages'] },   // passages: round 31 graft's pier tables
   { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 1, MM_WINGS: 4 }, wings: ['foyer'] },
   { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 5 }, wings: ['graveyard'] },
   { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 6 }, wings: ['greenhouse'] },
