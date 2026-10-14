@@ -52,10 +52,15 @@ check reads Taffy's cream gloss as background; leave it red, do not lower it).
   does something.
 - **Survey 3** (`docs/ui-pass/SURVEY-2026-10-04.md`): what is owed next.
 
+**DONE 2026-10-13:** Josh's 20 paintings hang on the reward, event, rest and
+game-over walls (`1f6bc8af`, ui/hang.js PAINTINGS); a base-card dead-effect
+gate (`tests/base-effects`) and 24 cards fixed (`c39ec0cc`).
+
 **IN FLIGHT (2026-10-12): ROUND 31** -- survey 4 (`SURVEY-2026-10-12.md`)
 found the rooms now the weakest part; round 31 is the Passages, Hedge Maze,
 Kitchens and Graveyard and the near floor (`BRIEF-r31.md`), Workflow run
-`wf_6924e554-dda` at base `ee60b07a`; worktrees
+`wf_6924e554-dda` at base `ee60b07a` (weekly limit; resumed 2026-10-13 as
+`wf_4a6c0844-d0b`); worktrees
 `C:/UILOOP/r31/wt/r31-rooms-{a,b,c}` (MANGANESE 9181, HEMATITE 9182, SAFFLOWER
 9183), baselines MOREEN in `C:/UILOOP/r31/judging/r31/rooms/`. If it stops on
 a limit, finish it as a NEW run with `resume` notes. Survey 4's note: room
