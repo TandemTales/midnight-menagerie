@@ -262,8 +262,7 @@ export class EventScene extends RoomScene {
       <i class="ev-hall__beam ev-hall__beam--r"></i>
       <i class="kit-window ev-hall__window ev-hall__window--l"></i>
       <i class="kit-window kit-window--r ev-hall__window ev-hall__window--r"></i>
-      ${houseGallery('grand', ['ev-hall__pic ev-hall__pic--l', 'ev-hall__pic ev-hall__pic--r'],
-        { seed: `event|${this.run?.seed ?? ''}|${this.run?.currentNodeId ?? ''}` })}
+      ${houseGallery('grand', ['ev-hall__pic ev-hall__pic--l', 'ev-hall__pic ev-hall__pic--r'])}
       <i class="kit-web ev-hall__web ev-hall__web--l"></i>
       <i class="kit-web kit-web--r ev-hall__web ev-hall__web--r"></i>
       <i class="kit-sconce ev-hall__sconce ev-hall__sconce--l"></i>

@@ -595,7 +595,7 @@ export class RewardScene extends RoomScene {
     // Josh, 2026-10-09: the house's own family, not the menagerie's pets --
     // the alcove is no Companion's room (ui/hang.js RESIDENTS).
     sec.insertAdjacentHTML('beforeend', houseGallery('grand',
-      ['rw-hang rw-hang--l', 'rw-hang rw-hang--r'], { seed: `reward|${this.run?.seed ?? ''}|${this.run?.currentNodeId ?? ''}` }));
+      ['rw-hang rw-hang--l', 'rw-hang rw-hang--r']));
     // Round 26 graft (VERMEILLE's, both judges): the moonlit gothic lancets
     // back, cold against the candles' warm. They hang OUTSIDE the flanks the
     // portraits fill -- high on the wall at the board's outer edges, in the

@@ -671,7 +671,7 @@ export class GameOverScene extends Scene {
     altar.appendChild(mvp);
 
     const said = el('div', 'go-said go-tri', `<i class="go-said__mark" aria-hidden="true"></i><p class="go-mvp__note"></p><i class="go-tri__rule" aria-hidden="true"></i>`
-      + houseGallery('family', ['go-hang go-hang--r'], { seed: `gameover|${s.seed ?? ''}` }));   // the house hangs left
+      + houseGallery('family', ['go-hang go-hang--r']));   // the house hangs left
     said.hidden = true;
     this._mvpNote = said.querySelector('.go-mvp__note');
     this._mvpSaid = said;

@@ -459,7 +459,7 @@ export class RestScene extends RoomScene {
     // of the plaque, between it and the corner candles (ui/hang.js). The
     // room's own picture used to bleed out from behind the REST panel.
     this.root.querySelector('.rm')?.insertAdjacentHTML('beforeend', houseGallery('cosy',
-      ['rs-hang rs-hang--l', 'rs-hang rs-hang--r'], { seed: `rest|${this.run?.seed ?? ''}|${this.run?.currentNodeId ?? ''}` }));   // the house's paintings, not the pets (Josh)
+      ['rs-hang rs-hang--l', 'rs-hang rs-hang--r']));   // the house's paintings, not the pets (Josh)
 
     this._buildBody();
     this._buildFoot();

@@ -142,14 +142,24 @@ export function paintingHtml(id, cls = '') {
 }
 
 /**
- * A board's pictures: one per class, DIFFERENT paintings drawn from `pool`,
- * chosen by `seed` -- so a room keeps its pictures while you are in it, and
- * the next room hangs others. The same seed always hangs the same pictures.
+ * A board's pictures: one per class, DIFFERENT paintings drawn from `pool`.
+ * RANDOM every time the board is shown (Josh, 2026-10-13: "I'd like the
+ * paintings to change randomly each time"). Pictures are decoration, never
+ * game state, so they may differ between co-op clients and between visits.
+ * A `seed` still fixes the choice, for a test or a capture that must repeat.
  */
-export function houseGallery(pool, classes, { seed = '' } = {}) {
+export function houseGallery(pool, classes, { seed = null } = {}) {
   const ids = (Array.isArray(pool) ? pool : (PICTURE_POOLS[pool] || PICTURE_POOLS.grand)).filter(id => ART[id]);
   let h = 2166136261;
-  for (const ch of String(seed)) { h ^= ch.charCodeAt(0); h = Math.imul(h, 16777619) >>> 0; }
+  /* `#...&pics=<anything>` in the URL fixes the choice for a judged capture:
+     builds compared side by side must hang the same pictures, or the judges
+     score the paintings instead of the board. Players never set it. */
+  if (seed == null && typeof location !== 'undefined') {
+    const fixed = new URLSearchParams(location.hash.slice(1)).get('pics');
+    if (fixed) seed = `${fixed}|${classes.join(' ')}`;
+  }
+  if (seed == null) h = (Math.random() * 4294967296) >>> 0;
+  else for (const ch of String(seed)) { h ^= ch.charCodeAt(0); h = Math.imul(h, 16777619) >>> 0; }
   const left = ids.slice();
   return classes.map((cls) => {
     if (!left.length) return '';
