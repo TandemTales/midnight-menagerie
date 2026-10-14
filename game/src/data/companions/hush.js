@@ -64,7 +64,13 @@ const eff = (fn) => (c) => {
   const keepHidden = isAttack && fromPocket && isUnseen(c) && U.mm(c).nowYouSeeMe
     && U.stacks(c, c.self, 'hush/now-you-see-me') > 0 && U.once(c, 'nowYouSeeMe');
   const r = fn(c);
-  const after = () => { if (isAttack && fromPocket && !U.mm(c).stayHidden && !keepHidden) reveal(c); };
+  /* `hideAfter` is "become [Unseen] after" (One Two Gone, Hit and Hide, Gone
+     Before the Squeak). Three Tricks set it and nothing read it, so none of
+     them ever hid him. It lands here, after any reveal this play caused. */
+  const after = () => {
+    if (isAttack && fromPocket && !U.mm(c).stayHidden && !keepHidden) reveal(c);
+    if (U.mm(c).hideAfter) { U.mm(c).hideAfter = false; hide(c); }
+  };
   if (r && typeof r.then === 'function') return r.then((v) => { after(); return v; });
   after();
   return r;
@@ -1041,14 +1047,16 @@ const uncommons = [
   {
     id: 'hush/stash-and-dash', name: 'Stash and Dash', companion: SLUG, type: SKILL, rarity: UNCOMMON,
     cost: 2, target: NONE, keywords: ['stash', 'unseen'],
-    text: '[Stash] up to {n}. Gain {b} Guard each. Become [Unseen]. End your turn.',
+    text: '[Stash] up to {n}. Gain {b} Guard each. Become [Unseen].',
     flavor: 'And he is gone, and so is the turn.',
     nums: { n: 3, b: 6 },
     effect: eff(async (c) => {
       const got = await stashSome(c, N(c).n);
       U.guard(c, got * N(c).b);
       hide(c);
-      U.mm(c).endTurnAfter = true;
+      /* The text said "End your turn." and nothing ever ended it (it set an
+         `endTurnAfter` flag no code read). The generous reading is the one it
+         has always played as, so the text lost the sentence. */
     }),
     upgrade: { nums: { n: 3, b: 9 } },
   },

@@ -346,6 +346,29 @@ try {
     check(unseen(b.e) === 0 && b.hits.length === 1 && !pocket(b.e).includes(b.k),
       'and so does an enemy Attack getting through', `unseen=${unseen(b.e)} hits: ${b.hits.join(',')}`);
   }
+
+  say('<h2>"Become Unseen after" hides him</h2>');
+  {
+    /* One Two Gone, Hit and Hide and Gone Before the Squeak set `hideAfter`,
+       and nothing read it. */
+    const e = await hush();
+    const t = e.livingEnemies()[0];
+    for (const k of e.piles.hand.slice()) e.discardCard(k, 'test');
+    await play(e, put(e, 'hush/one-two-gone'), t);
+    const a = unseen(e);
+    const e2 = await hush();
+    for (const k of e2.piles.hand.slice()) e2.discardCard(k, 'test');
+    put(e2, 'hush/cushion-dive');
+    await play(e2, put(e2, 'hush/hit-and-hide'), e2.livingEnemies()[0]);
+    const b = unseen(e2);
+    const e3 = await hush();
+    e3.applyStatus(e3.player, 'unseen', 1);
+    await play(e3, put(e3, 'hush/gone-before-the-squeak', 'stash'), e3.livingEnemies()[0]);
+    const c = unseen(e3);
+    check(a === 1 && b === 1 && c === 1,
+      'One Two Gone (only Attack from hand), Hit and Hide (a Skill Stashed) and Gone Before the Squeak (an Ambush) each leave him Unseen',
+      `unseen after each: ${a}, ${b}, ${c}`);
+  }
 } catch (err) {
   fails.push('THREW: ' + (err && err.stack || err));
 }

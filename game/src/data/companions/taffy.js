@@ -30,15 +30,39 @@ function recombine(c, n) {
 
 // ── Stretch ─────────────────────────────────────────────────────────────────
 const stretchOf = (k) => U.counter(k, 'stretch');
+/* SLOW PULL's second sentence: "A Trick at 3 Stretch costs {m0} less while it
+   remains Stretched." Nothing read it. The discount is a combat cost change
+   put on when a Trick reaches 3 and taken off when its Stretch goes, so every
+   path that moves Stretch calls this. */
+function syncSlowPull(c, k) {
+  if (!k) return;
+  const on = U.flag(k, 'slowPullOff') | 0;
+  const want = (U.stacks(c, c.self, 'taffy/slow-pull') > 0 && stretchOf(k) >= 3) ? 1 : 0;
+  if (want === on) return;
+  U.costMod(c, k, on - want, 'combat');
+  if (want) U.setFlag(k, 'slowPullOff', want); else U.clearFlag(k, 'slowPullOff');
+}
 function stretch(c, k, n = 1) {
   if (!k) return 0;
   const before = stretchOf(k);
   U.setCounter(k, 'stretch', Math.min(3, before + n));
+  syncSlowPull(c, k);
   U.setFlag(k, 'stretched', true);
-  U.retain(c, k, 'combat');
+  /* The one-turn kind: the turn-end tracker below renews it for as long as the
+     Trick stays Stretched, and Stretch is removed when it is played. 'combat'
+     here would have kept every once-Stretched Trick for the rest of the fight
+     now that the engine honours it (Make It Sticky is the card that says so). */
+  U.retain(c, k);
   return stretchOf(k) - before;
 }
-function clearStretch(c, k) { U.setCounter(k, 'stretch', 0); U.clearFlag(k, 'stretched'); }
+/* Does this Trick Retain for good: printed, or granted for the rest of combat?
+   Swap Retain read a 'retain' flag nothing ever wrote, so it swapped nothing. */
+const holdsRetain = (k) => !!(k.retain || U.flag(k, 'retainCombat'));
+function setRetain(c, k, on) {
+  if (on) { U.retain(c, k, 'combat'); return; }
+  k.retain = false; k.retainThisTurn = false; U.clearFlag(k, 'retainCombat');
+}
+function clearStretch(c, k) { U.setCounter(k, 'stretch', 0); U.clearFlag(k, 'stretched'); syncSlowPull(c, k); }
 const stretchedInHand = (c) => U.cardsIn(c, 'hand').filter(k => stretchOf(k) > 0);
 
 // ── Belly ───────────────────────────────────────────────────────────────────
@@ -179,6 +203,7 @@ U.onTracker(SLUG, (e, s, seat) => {
     for (const k of U.cardsIn(c, 'hand')) {
       if (U.counter(k, 'stretch') <= 0) continue;
       U.setCounter(k, 'stretch', Math.min(3, U.counter(k, 'stretch') + extra));
+      syncSlowPull(c, k);
       /* "A Stretched Trick Retains." `stretch()` could only grant the one-turn
          kind (retainThisTurn), which the engine spends at THIS turn end, so a
          Trick held into its second turn was discarded at 3 Stretch and never
@@ -226,6 +251,56 @@ U.onTracker(SLUG, (e, s, seat) => {
     U.setFlag(live, 'survivesOnce', true);
     live.exhaust = false;
     live.meta.vanish = false;
+  });
+  /* HOUSE OF MIRRORS: "The first non-Gummy Attack or Skill you play each turn
+     creates a Gummy copy of itself in your discard pile. That copy costs {n}
+     more." The Power applied its marker and nothing read it. */
+  e.on('card:play', (ev) => {
+    const live = ev && ev.cardUid != null ? e.card(ev.cardUid) : null;
+    if (!live || !copyable(live)) return;
+    if (seat && e.seatOfCard(live) !== seat) return;
+    const c = fake();
+    if (U.stacks(c, c.self, 'taffy/house-of-mirrors') <= 0 || !U.once(c, 'houseOfMirrors')) return;
+    gummy(c, live, 'discard', 1);
+  });
+  /* ONE BIG PIECE: "While you have exactly 0 Globs, the first non-Gummy Attack
+     or Skill you play each turn repeats its damage, Guard, healing and enemy
+     statuses once. Splitting turns this off until you return to 0." The Power
+     applied its marker and nothing read it. What the Trick does is recorded
+     while it resolves and done once more when it lands: each hit again at its
+     printed size (Strength and Weak apply again, as a second hit would), the
+     Guard and healing it produced, and each status it put on an enemy.
+     "Off until you return to 0" is the same test as "while at 0". */
+  let bigPiece = null;
+  e.on('card:play', (ev) => {
+    const live = ev && ev.cardUid != null ? e.card(ev.cardUid) : null;
+    if (!live || !copyable(live)) return;
+    if (seat && e.seatOfCard(live) !== seat) return;
+    const c = fake();
+    if (U.stacks(c, c.self, 'taffy/one-big-piece') <= 0 || globs(c) !== 0) return;
+    if (!U.once(c, 'oneBigPiece')) return;
+    bigPiece = { uid: live.uid, self: c.self.id, hits: [], guard: 0, heal: 0, statuses: [] };
+  });
+  e.on('damage', (ev) => {
+    if (!bigPiece || !ev || ev.sourceId !== bigPiece.self || ev.prevented) return;
+    const t = e.actor(ev.targetId);
+    if (t && t.side === 'enemy') bigPiece.hits.push([ev.targetId, ev.base != null ? ev.base : ev.amount]);
+  });
+  e.on('block', (ev) => { if (bigPiece && ev && ev.actorId === bigPiece.self && ev.amount > 0) bigPiece.guard += ev.amount; });
+  e.on('heal', (ev) => { if (bigPiece && ev && ev.actorId === bigPiece.self && ev.amount > 0) bigPiece.heal += ev.amount; });
+  e.on('status', (ev) => {
+    if (!bigPiece || !ev || !((ev.delta || 0) > 0)) return;
+    const a = e.actor(ev.actorId);
+    if (a && a.side === 'enemy') bigPiece.statuses.push([ev.actorId, ev.id, ev.delta]);
+  });
+  e.on('card:resolved', (ev) => {
+    if (!bigPiece || !ev || ev.cardUid !== bigPiece.uid) return;
+    const r = bigPiece; bigPiece = null;
+    const c = fake();
+    for (const [id, amt] of r.hits) { const t = e.actor(id); if (t && t.alive) U.hitAt(c, t, amt); }
+    if (r.guard > 0) e.gainBlock(c.self, r.guard, { fromCard: false, reason: 'one-big-piece' });
+    if (r.heal > 0) e.heal(c.self, r.heal, 'one-big-piece');
+    for (const [id, sid, n] of r.statuses) { const t = e.actor(id); if (t && t.alive) e.applyStatus(t, sid, n); }
   });
   /* BORROWED PRICE swaps two costs "until each has been played once". The
      engine has no such scope ('untilPlayed' fell through to the whole
@@ -998,7 +1073,7 @@ const rares = [
     text: '[Stretch] an Attack or Skill straight to {n} Stretch. It gains [Vanish] when played.',
     flavor: 'The whole investment, immediately, with no waiting.',
     nums: { n: 3 },
-    effect: eff(async c => { const [k] = await U.pickCards(c, { pile: 'hand', count: 1, prompt: 'Stretch to 3', filter: copyable }); if (k) { stretch(c, k, N(c).n); U.setCounter(k, 'stretch', N(c).n); U.makeVanish(c, k); } }),
+    effect: eff(async c => { const [k] = await U.pickCards(c, { pile: 'hand', count: 1, prompt: 'Stretch to 3', filter: copyable }); if (k) { stretch(c, k, N(c).n); U.setCounter(k, 'stretch', N(c).n); syncSlowPull(c, k); U.makeVanish(c, k); } }),
     upgrade: { cost: 0, nums: { n: 3 } },
   },
   {
@@ -1046,7 +1121,7 @@ const rares = [
       const [a, b] = ks;
       await U.chooseOne(c, [
         { label: 'Swap costs', fn: (x) => { if (!priced(a) || !priced(b)) return; const ca = U.nowCost(a), cb = U.nowCost(b); U.costSet(x, a, cb, 'combat'); U.costSet(x, b, ca, 'combat'); } },
-        { label: 'Swap Retain', fn: (x) => { const ra = U.flag(a, 'retain'), rb = U.flag(b, 'retain'); U.setFlag(a, 'retain', rb); U.setFlag(b, 'retain', ra); if (rb) U.retain(x, a, 'combat'); if (ra) U.retain(x, b, 'combat'); } },
+        { label: 'Swap Retain', fn: (x) => { const ra = holdsRetain(a), rb = holdsRetain(b); setRetain(x, a, rb); setRetain(x, b, ra); } },
         { label: 'Swap Stretch', fn: (x) => { const sa = stretchOf(a), sb = stretchOf(b); clearStretch(x, a); clearStretch(x, b); if (sb) stretch(x, a, sb); if (sa) stretch(x, b, sa); } },
       ], 3);
     }),
@@ -1120,7 +1195,7 @@ const rares = [
     text: '[Stretch]ed Tricks gain {n} additional Stretch at the end of your turn. A Trick at 3 Stretch costs {m0} less while it remains Stretched.',
     flavor: 'Slower is better. Slower is always better.',
     nums: { n: 1, m0: 1 },
-    effect: eff(c => power(c, 'taffy/slow-pull', 1)),
+    effect: eff(c => { power(c, 'taffy/slow-pull', 1); for (const k of U.cardsIn(c, 'hand')) syncSlowPull(c, k); }),
     upgrade: { cost: 1, nums: { n: 1, m0: 1 } },
   },
   {

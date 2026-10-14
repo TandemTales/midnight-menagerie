@@ -63,7 +63,7 @@ import { Card, Piles } from './piles.js';
 import { applyDamage, previewDamageValue } from './damage.js';
 import { getStatus, FRAIL_MULT } from './statuses.js';
 import {
-  buildIntent, chooseMove, refreshIntents, intentFamily, FAMILY_LABEL,
+  buildIntent, chooseMove, refreshIntents, intentFamily, FAMILY_LABEL, isAttackIntent,
   queueSnapshot, consumePlan, rebuildPlan, moveAt, isAnchored,
   previewIntent, previewDepthOf, previewedFamilies,
   swapIntents, postponeIntent, deleteIntent, forkFuture, setIntentControl, MAX_PLAN,
@@ -227,6 +227,8 @@ export class CombatEngine {
     this._sharedCounters = new Set();
     /** @type {Object[]} countdown triggers */
     this.timers = [];
+    /** Covered seat id -> { by, label, claimedBy }. See `coverSeat`. */
+    this.covers = new Map();
     /** @type {Object[]} board objects (Plants, Plots, Pumpkins, Graves) */
     this.objects = [];
     /** @type {Enemy[]} */
@@ -788,7 +790,7 @@ export class CombatEngine {
       cost, baseCost: card.baseCost, costModified: cost !== Math.max(0, card.baseCost) && card.baseCost >= 0,
       upgraded: card.upgraded, nums: { ...card.nums }, display,
       exhaust: card.exhaust, ethereal: card.ethereal, innate: card.innate,
-      retain: card.retain || card.retainThisTurn, unplayable: card.unplayable,
+      retain: card.retain || card.retainThisTurn || !!(card.meta && card.meta.retainCombat), unplayable: card.unplayable,
       pile: card.pile, meta: JSON.parse(JSON.stringify(card.meta || {})),
       playable: (card.pile === Pile.HAND || card.pile === Pile.STASH)
         ? this.canPlay(card.uid, targetId).ok : false,
@@ -1141,8 +1143,89 @@ export class CombatEngine {
    * read during planning would not be the one that resolved. "Who Did That?"
    * (Marmalade, multiplayer-only) reads this target directly, so it has to be
    * stable between preview and resolution.
+   *
+   * A COVER (`coverSeat`, below) is laid over all four: the one enemy whose
+   * directed Attack is the first aimed at a covered Kid swings at the Kid
+   * covering them instead. It is applied HERE, not in the damage call, so the
+   * intent's arrow, the incoming rail, `partyTargets`, the move's `c.player`
+   * and every explicit `c.damage(c.player, n)` all agree on who is hit.
    */
   intentTargetFor(enemy) {
+    const aim = this._aimFor(enemy);
+    if (!this.covers.size) return aim;
+    return this._coverFor(enemy, aim) || aim;
+  }
+
+  /**
+   * COVER: "Until your next turn the first directed Attack aimed at them comes
+   * to you instead" (Boggle's Hide Behind Me!, and Everybody Under the Bed!'s
+   * "redirect one attacker from each other Kid to you").
+   *
+   * Hide Behind Me used to write `{ seat, guard }` into Boggle's scratch, and
+   * nothing anywhere read it: only its Guard worked. A redirect has to live in
+   * the engine because the thing it changes, who an enemy swings at, is the
+   * engine's to decide.
+   *
+   * ONE Attack per cover. The claimant is the first living enemy, in the order
+   * enemies act, whose pending move is a DIRECTED Attack (an Attack intent, one
+   * seat, no splash) aimed at the covered Kid. It is computed, not stored, so
+   * the arrow points at the cover from the moment it is laid, and the next
+   * enemy's arrow stays on the Kid it was already aimed at. When the claimant
+   * acts the cover is pinned to it for the whole move (every hit of a multi-hit
+   * Attack lands on the cover) and spent afterwards.
+   *
+   * An Attack that never happens does not spend it: a claimant whose move is
+   * replaced (a Search, a stun) stops qualifying, and the next directed Attack
+   * at that Kid is the first. Covers lapse at the start of the next player turn.
+   */
+  coverSeat(protectedSeat, bySeat, label = '') {
+    if (!protectedSeat || !bySeat || protectedSeat === bySeat) return false;
+    if (!this.players.includes(protectedSeat) || !this.players.includes(bySeat)) return false;
+    this.covers.set(protectedSeat.id, { by: bySeat.id, label, claimedBy: null });
+    this.refreshIntents('cover');
+    return true;
+  }
+
+  /** Drop the cover on a seat (spent, or replaced by a Search). */
+  endCover(protectedSeat) {
+    if (!protectedSeat || !this.covers.delete(protectedSeat.id)) return false;
+    this.refreshIntents('cover');
+    return true;
+  }
+
+  /** The enemy whose Attack the cover on this seat will take, or null. */
+  coverClaimant(seat) {
+    if (!seat || !this.covers.has(seat.id)) return null;
+    const cov = this.covers.get(seat.id);
+    if (cov.claimedBy) return this.enemies.find(en => en.id === cov.claimedBy) || null;
+    for (const en of this.enemies) {
+      if (!en.alive || !this._directedAttack(en)) continue;
+      if (this._aimFor(en) === seat) return en;
+    }
+    return null;
+  }
+
+  _directedAttack(enemy, move = null) {
+    const m = move || enemy.pendingMove;
+    if (!m || !isAttackIntent(m.intent)) return false;
+    let mode = m.partyTarget;
+    if (typeof mode === 'function') { try { mode = mode(enemy, this); } catch (_) { mode = null; } }
+    if (mode === 'all' || mode === 'two') return false;
+    if (m.splash > 0 || m.splashFn) return false;
+    return true;
+  }
+
+  _coverFor(enemy, aim) {
+    if (!aim || !this.players.includes(aim)) return null;
+    const cov = this.covers.get(aim.id);
+    if (!cov) return null;
+    const by = this.players.find(p => p.id === cov.by);
+    if (!by || !by.alive || by.fallen) return null;
+    return this.coverClaimant(aim) === enemy ? by : null;
+  }
+
+  /** Who the enemy aims at before any cover: the four steps above. */
+  _aimFor(enemy) {
     const ally = this.allies.find(a => a.alive && a.flags.taunt);
     if (ally) return ally;
 
@@ -2831,6 +2914,8 @@ export class CombatEngine {
     if (this.over) return;
     this.turn++;
     this.phase = 'player';
+    // "Until your next turn": every cover lapses, spent or not.
+    this.covers.clear();
     // Turn rollover changes `turn`, `phase`, every per-turn stat and every
     // turn-scoped card cost, none of which go through _emit. Invalidate here so
     // a `turn:start` listener reading `engine.state.turn` cannot see last turn's
@@ -3585,8 +3670,13 @@ export class CombatEngine {
           * here. Read the flag BEFORE clearing it or every retain reports as
           * the permanent kind.
           */
-         const why = card.retain ? 'retain' : 'retainThisTurn';
-         if (card.retain || card.retainThisTurn) {
+         /* `meta.retainCombat` is "Retain for the rest of combat" (U.retain(c, k,
+            'combat'): Make It Sticky, Stretch, Pudding's dug-up Tricks). It was
+            written and never read, so the promise lasted exactly one turn. It
+            is the lasting kind, so it reports as 'retain'. */
+         const lasting = card.retain || !!(card.meta && card.meta.retainCombat);
+         const why = lasting ? 'retain' : 'retainThisTurn';
+         if (lasting || card.retainThisTurn) {
            card.retainThisTurn = false;
            this._emit(EV.CARD_RETAIN, {
              cardUid: card.uid, card: this.cardSnap(card), reason: why,
@@ -3655,8 +3745,16 @@ export class CombatEngine {
         const move = en.pendingMove;
         if (move) {
           en.history.push(move.id);
+          // A cover this Attack claims is pinned to it for the whole move, then spent.
+          const covered = this.covers.size ? this._aimFor(en) : null;
+          const cover = covered && this._coverFor(en, covered) ? this.covers.get(covered.id) : null;
+          if (cover) {
+            cover.claimedBy = en.id;
+            this.say(`${en.name} swings at ${covered.name}, and hits the Kid in front of them instead.`);
+          }
           try { move.effect?.(this.enemyCtx(en, move)); }
           catch (err) { console.error(`[combat] enemy ${en.defId} move ${move.id} threw`, err); }
+          if (cover) this.covers.delete(covered.id);
           consumePlan(en);
         }
         if (en.def?.onTurnEnd) { try { en.def.onTurnEnd(this.enemyCtx(en, null)); } catch (err) { console.error(err); } }
@@ -3805,6 +3903,7 @@ export class CombatEngine {
     c.counters = new Map();
     for (const [k, v] of s.counters) c.counters.set(k, { ...v, states: (v.states || []).map(x => ({ ...x })) });
     c.timers = s.timers.map(t => ({ ...t, data: { ...t.data } }));
+    c.covers = new Map([...this.covers].map(([k, v]) => [k, { ...v }]));
     c.objects = s.objects.map(o => ({ ...o, data: JSON.parse(JSON.stringify(o.data || {})) }));
     c.field = JSON.parse(JSON.stringify(s.field));
     // `_firedTurn` is a per-seat map, so a shallow spread would leave the

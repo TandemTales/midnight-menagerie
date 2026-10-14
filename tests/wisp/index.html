@@ -745,6 +745,18 @@ try {
       'and her Afterglow makes their next Trick cheaper',
       `stacks=${mate.status('next-trick-discount')}`);
   }
+
+  say('<h2>Too Bright for Bedtime discounts the hand it is dealt</h2>');
+  {
+    /* The discount ran at turn:start, before the deal, on an empty hand. */
+    const e = await wisp();
+    await play(e, 'wisp/too-bright-for-bedtime');
+    e.setCounter('glow', 6, 'test');
+    e.player.block = 999;
+    await e.endTurn();
+    const cut = e.piles.hand.filter(k => k.costTurnDelta === -1).length;
+    check(cut === 2, 'Blazing at turn start, the first two Tricks of the new hand cost 1 less', `${cut} discounted of ${e.piles.hand.length}`);
+  }
 } catch (err) {
   fails.push('THREW: ' + (err && err.stack || err));
 }

@@ -357,29 +357,40 @@ U.onTracker(SLUG, (e, s, seat) => {
         if (who && setBestFriend(c, who)) U.guardOn(c, who, st.wholePack);
       })();
     }
-    if (st.cemeteryGates && buriedCards(c).length && U.cardsIn(c, 'hand').length) {
-      (async () => {
-        const [want] = await U.pickCards(c, {
-          pile: 'stash', pool: buriedCards(c), count: 1, optional: true,
-          prompt: 'Cemetery Gates — bring back which Trick?',
-        });
-        if (!want) return;
-        const [give] = await U.pickCards(c, {
-          pile: 'hand', count: 1, optional: true,
-          prompt: 'And put which one in its place?', filter: (x) => canBury(c, x),
-        });
-        if (!give) return;
-        const p = plots(c).find(x => x.card === want);
-        if (!p) return;
-        p.card = give; p.used = true;
-        want.unplayable = false; want.meta.buried = false;
-        give.unplayable = true; give.meta.buried = true;
-        U.moveCard(c, want, 'hand', {});
-        U.moveCard(c, give, 'stash', { buried: true });
-        markUnearthed(c, want);
-      })();
-    }
   }, seat);
+
+  /* CEMETERY GATES: "Once each turn, swap a Trick in your hand for a Buried
+     one." It was offered at turn:start, which fires BEFORE the hand is dealt,
+     so the hand was empty and the offer was never made. It is made once the
+     hand is in. (`pickCards` reads only `filter`, never `pool`: the filter is
+     what keeps the choice to Buried Tricks.) */
+  e.on('phase', (ev) => {
+    if (!ev || ev.phase !== 'playerReady') return;
+    const c = fake();
+    const st = U.mm(c);
+    if (!st.cemeteryGates || !buriedCards(c).length || !U.cardsIn(c, 'hand').length) return;
+    (async () => {
+      const buried = buriedCards(c);
+      const [want] = await U.pickCards(c, {
+        pile: 'stash', filter: (x) => buried.includes(x), count: 1, optional: true,
+        prompt: 'Cemetery Gates — bring back which Trick?',
+      });
+      if (!want) return;
+      const [give] = await U.pickCards(c, {
+        pile: 'hand', count: 1, optional: true,
+        prompt: 'And put which one in its place?', filter: (x) => canBury(c, x),
+      });
+      if (!give) return;
+      const p = plots(c).find(x => x.card === want);
+      if (!p) return;
+      p.card = give; p.used = true;
+      want.unplayable = false; want.meta.buried = false;
+      give.unplayable = true; give.meta.buried = true;
+      U.moveCard(c, want, 'hand', {});
+      U.moveCard(c, give, 'stash', { buried: true });
+      markUnearthed(c, want);
+    })();
+  });
 
   U.onPlayerTurn(e, 'end', () => {
     const c = fake();
@@ -957,7 +968,7 @@ const uncommons = [
     flavor: 'A small brush. Immense concentration.',
     nums: {},
     /* The upgrade is text only ("two Tricks"), and the effect dug up one. */
-    effect: eff((c) => { for (let i = 0; i < (U.up(c) ? 2 : 1); i++) { const k = digUp(c); if (!k) break; U.retain(c, k, 'combat'); } }),
+    effect: eff((c) => { for (let i = 0; i < (U.up(c) ? 2 : 1); i++) { const k = digUp(c); if (!k) break; U.retain(c, k); } }),
     upgrade: { text: '[Dig Up] two Tricks. If you do not play them this turn, keep them in hand. They still lose [Unearthed].' },
   },
   {

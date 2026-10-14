@@ -35,6 +35,15 @@ cannot play at all - is dead unless the page's WAIVED_LIST names it WITH the
 reason. A waiver that starts showing a difference FAILS, and every waiver is
 proved live on a board that reaches its condition by `run.py` (proofs-g1..g4.html).
 
+STATUS-ONLY TRICKS ARE DRIVEN (since 2026-10-13, later the same day)
+--------------------------------------------------------------------
+A Power whose only difference is its own icon used to pass as "status only"
+(about 175 of them). Each is now played again and both boards are DRIVEN
+through the Companion's own Tricks, hits, turn ends, low Courage and a killing
+blow (drive.js), or through the board its trigger needs (drives.js), with the
+card's own statuses and card marks left out of the reading. Identical means
+the trigger came and did nothing: STATUS-ONLY DEAD fails the gate.
+
 IT FAILS ON THE LIST (since 2026-10-13)
 ---------------------------------------
 It started report-only at 174 identical Tricks. Burned down the same day:
@@ -75,6 +84,7 @@ def main():
 
         r = page.evaluate("window.__RESULT")
         dead, broken, stale = r["dead"], r["broken"], r["staleWaivers"]
+        sdead, sdrives = r.get("statusDead", []), r.get("staleDrives", [])
 
         print("  Tricks that moved nothing, by Companion:", flush=True)
         for line in r["byCompanion"]:
@@ -90,6 +100,10 @@ def main():
                 for line in r.get(key, []):
                     print("   ", line, flush=True)
 
+        for line in sdead:
+            print("  STATUS-ONLY DEAD ", line, flush=True)
+        for line in sdrives:
+            print("  STALE DRIVE ", line, flush=True)
         for line in stale:
             print("  STALE WAIVER ", line, flush=True)
         for line in broken:
@@ -106,10 +120,14 @@ def main():
               f"{len(r.get('rescuedChoice', []))} shown by the other choice, "
               f"{len(stale)} stale waivers, {len(broken)} broken, {len(bad)} console errors",
               flush=True)
+        print(f"STATUS-ONLY: {len(r.get('buffOnly', []))} show only their own status, "
+              f"{len(sdead)} changed nothing when driven to their trigger "
+              f"({len(r.get('driven', []))} by a drive in drives.js), {len(sdrives)} stale drives", flush=True)
         browser.close()
         # 2026-10-13: the list reached ZERO (174 -> 0), so it fails now. A live
         # Trick this board cannot show belongs in waivers-g<N>.js WITH its proof.
-        return 1 if (dead or stale or broken or bad) else 0
+        # 2026-10-13: a status-only Trick whose trigger changes nothing fails too.
+        return 1 if (dead or stale or broken or bad or sdead or sdrives) else 0
 
 
 if __name__ == "__main__":

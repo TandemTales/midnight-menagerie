@@ -347,8 +347,6 @@ const WEED = {
 };
 
 function addWeed(c, n = 1) {
-  const s = U.mm(c);
-  if (s.terrariumBlocking) { s.terrariumBlocking = false; return; }
   for (let i = 0; i < n; i++) U.spawn(c, WEED, 'discard', {});
 }
 
@@ -484,11 +482,22 @@ U.onTracker(SLUG, (e, s, seat) => {
     for (const o of garden(c)) if (o.data.wild) { o.data.wild = false; c.updateObject(o.id, { wild: false }); }
 
     /* Closed Terrarium: pull one Plant to keep the Weed away. Offered before
-       Growth, because the choice is about whether to STAY Overgrown. */
+       Growth, because the choice is about whether to STAY Overgrown.
+       The answer arrives after this handler has finished (the choice is
+       awaited), and the Overgrown Weed below used to be added before it: the
+       Uproot happened, THIS turn's Weed came anyway, and the block was saved
+       for some later Weed. So this turn's Overgrown Weed now waits for the
+       answer: Uproot and it never comes; decline and it is added then. */
+    let terrariumAsking = false;
     if (st.closedTerrarium && overgrown(c)) {
+      terrariumAsking = true;
+      st.terrariumOwed = 0;
       (async () => {
         const p = await pickPlant(c, { optional: true, prompt: 'Closed Terrarium — Uproot one to keep the Weed out?' });
-        if (p) { uproot(c, p); st.terrariumBlocking = true; }
+        const owed = st.terrariumOwed || 0;
+        st.terrariumOwed = 0;
+        if (p) uproot(c, p);
+        else if (owed > 0) { addWeed(c, owed); syncGardenCounter(c); }
       })();
     }
 
@@ -503,7 +512,10 @@ U.onTracker(SLUG, (e, s, seat) => {
 
     /* The price of standing still. Checked AFTER Growth, because a Plant that
        matured this turn is what makes the Garden Overgrown. */
-    if (overgrown(c)) addWeed(c, st.greenEveryRoom ? 2 : 1);
+    if (overgrown(c)) {
+      if (terrariumAsking) st.terrariumOwed = st.greenEveryRoom ? 2 : 1;
+      else addWeed(c, st.greenEveryRoom ? 2 : 1);
+    }
     if (st.mansionWatersWeed) { addWeed(c, 1); st.mansionWatersWeed = false; }
     st.mansionWaters = false;
     syncGardenCounter(c);

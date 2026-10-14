@@ -62,10 +62,24 @@
  * starts showing a difference FAILS, because a control that cannot fail is not
  * a control. Each waiver is proved live on a board that reaches its condition
  * by proofs-g1..g4.html (python tests/base-effects/run.py).
+ *
+ * STATUS-ONLY TRICKS ARE DRIVEN (since 2026-10-13). A Power whose only
+ * difference is its own icon on the Kid passed as "status only": the icon is
+ * visible, so the board differed. If its hook never fires, the icon is all it
+ * ever does - Taffy's Family Size was exactly that. Each one is now played
+ * again with drive.js: the same card and twin, then both boards driven through
+ * the Companion's own Tricks, enemy hits, a discard, an exhaust, a draw, turn
+ * ends, low Courage and a killing blow, and read after every step WITHOUT the
+ * card's own statuses and card marks. A trigger that battery cannot reach has
+ * its board in drives.js. Still identical means the trigger came and changed
+ * nothing: STATUS-ONLY DEAD, a failure. A drive whose card the battery already
+ * shows alive, or that is not status-only any more, is stale and fails too.
  */
 import * as CARDS from '../../game/src/data/cards.js';
 import { sourceFor, literalOf } from '../upgrade-effects/harness.js';
 import { compare, lastResolver, ASKS, FRIENDLY } from './twin.js';
+import { driveCompare } from './drive.js';
+import { DRIVES } from './drives.js';
 
 /* [id, 'why this board cannot show it'], in four groups. Checked in BOTH
    directions, and every entry is proved live by proofs-g<N>.html (run.py). */
@@ -110,6 +124,19 @@ const say = (html, cls) => { const d = document.createElement('div'); if (cls) d
     if (r.buffOnly) buffOnly.push(def.id);
   }
   for (const [id] of WAIVED_LIST) if (!CARDS.cardById(id)) staleWaivers.push(id + ' is waived but no such card exists');
+
+  /* Status-only, driven to the trigger (see the header). */
+  const DRIVE = new Map(DRIVES.map(d => [d[0], d]));
+  const statusDead = [], staleDrives = [], driven = [];
+  for (const id of buffOnly) {
+    const def = CARDS.cardById(id);
+    let r = await driveCompare(def);
+    const d = DRIVE.get(id);
+    if (!r.same) { if (d) staleDrives.push(id + ': the standard battery shows it alive now, so its drive in drives.js is not needed'); continue; }
+    if (d) { r = await driveCompare(def, d[2]); driven.push(id); }
+    if (r.same) statusDead.push((def.companion || 'neutral') + ' ' + id + ' [' + def.type + '] ' + (d ? 'driven to "' + d[1] + '" - ' : '') + (def.text || ''));
+  }
+  for (const [id] of DRIVES) if (!buffOnly.includes(id)) staleDrives.push(id + ' has a drive in drives.js but is not a status-only Trick');
   const ids = WAIVED_LIST.map(w => w[0]);
   for (const id of new Set(ids.filter((x, i) => ids.indexOf(x) !== i))) staleWaivers.push(id + ' is waived twice');
 
@@ -126,17 +153,21 @@ const say = (html, cls) => { const d = document.createElement('div'); if (cls) d
   say('<h2>' + rescued.party.length + ' showed only with a friend at the table; ' + rescued.choice.length + ' only with the last options picked</h2>', 'dim');
   say('<h2>' + buffOnly.length + ' show only a status on the Kid that changed nothing in two turns (not a failure)</h2>', 'dim');
   say('&nbsp;&nbsp;' + buffOnly.join(', '), 'dim');
+  say('<h2>' + statusDead.length + ' of them changed nothing when their trigger came (' + driven.length + ' needed a drive)</h2>', statusDead.length ? 'dead' : 'pass');
+  for (const line of statusDead) say('&nbsp;&nbsp;' + line, 'dim');
+  for (const line of staleDrives) say('STALE DRIVE ' + line, 'fail');
 
   window.__RESULT = {
     checked, unplayable, waived: WAIVED_LIST.length,
     dead: dead.map(d => d.comp + ' ' + d.id + ' [' + d.type + '] ' + (d.why ? d.why + ' - ' : '') + d.text + (d.threw ? ' THREW: ' + d.threw : '')),
     byCompanion: [...byComp].map(([c, l]) => c + ':' + l.length).sort(),
     rescuedParty: rescued.party, rescuedChoice: rescued.choice, buffOnly, staleWaivers, broken,
+    statusDead, staleDrives, driven,
   };
   window.__DONE = true;
 })().catch(err => {
   say('CRASHED: ' + ((err && err.stack) || err), 'fail');
-  window.__RESULT = { checked: 0, unplayable: 0, waived: 0, dead: [], byCompanion: [], rescuedParty: [], rescuedChoice: [], buffOnly: [], staleWaivers: [], broken: ['CRASHED ' + err] };
+  window.__RESULT = { checked: 0, unplayable: 0, waived: 0, dead: [], byCompanion: [], rescuedParty: [], rescuedChoice: [], buffOnly: [], staleWaivers: [], broken: ['CRASHED ' + err], statusDead: [], staleDrives: [], driven: [] };
   window.__DONE = true;
 });
 </script>
