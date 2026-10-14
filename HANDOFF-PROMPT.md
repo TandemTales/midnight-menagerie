@@ -56,13 +56,14 @@ check reads Taffy's cream gloss as background; leave it red, do not lower it).
 game-over walls (`1f6bc8af`, ui/hang.js PAINTINGS); a base-card dead-effect
 gate (`tests/base-effects`) and 24 cards fixed (`c39ec0cc`).
 
-**ROUND 31 IS MERGED, VERIFIED AND PUSHED (2026-10-14): HEMATITE, 2 of 3,
-5.43 vs 3.73 (+1.70)** (`9bba05dc`). The other 13 wings proven pixel-identical
-(seeded). Battery green but the sprites halo and the kid-clips flake.
-**NEXT: its graft, `docs/ui-pass/GRAFT-r31.md`** -- first the frame (Hedge
-17.38, Kitchens 15.75 settled), then SAFFLOWER's hedge and the near-floor
-fixes. After it, from survey 4: the fights (the Butler on his frame's void,
-the nine-card fan), then density at 1280 and web-shaped controls.
+**ROUND 31 AND ITS GRAFT ARE MERGED, VERIFIED AND PUSHED (2026-10-14):**
+HEMATITE +1.70 (`9bba05dc`), graft `7dc45984` (Hedge 15.47, Kitchens 13.71 ms
+settled; the Graveyard still ~16.5, over budget since before round 31).
+Battery green but the sprites halo and the kid-clips flake. **NEXT, from
+survey 4: round 32 = THE FIGHTS** -- the Butler stands on his frame's own
+black void, not the Foyer floor; past seven cards the fan loses titles and
+costs (SURVEY-2026-10-12.md item 4). Then density at 1280 and web-shaped
+controls (items 5-6).
 
 **ROUND 30 AND ITS GRAFT ARE MERGED, VERIFIED AND PUSHED (2026-10-12):**
 SANDARAC +2.72 (`65899599`), graft `4019037b`. **SURVEY 3 IS DONE** (rounds
