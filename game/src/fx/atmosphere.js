@@ -976,8 +976,10 @@ export const REGIONS = {
              /* (round 31 graft: all three judges -- "stone benches and urns on
                 plinths" (SAFFLOWER's gkDraw 81 and 83) and "ball topiaries in
                 square planters" (MANGANESE's seeds) in the near lawn) */
-             near: [{ shape: 30, edge: 0.03, z: 2.4, tone: 0.95, scale: 0.95, fore: 1, seed: 7.0 },
-                    { shape: 81, edge: 0.17, z: 3.2, tone: 0.94, seed: 1.1, fore: 1, keep: true },
+             /* (the frame budget: a near topiary is a frame-tall field of
+                clipped yew and every near piece is a term in each floor
+                pixel's contact shadows -- so three, not four) */
+             near: [{ shape: 81, edge: 0.10, z: 3.0, tone: 0.94, seed: 1.1, fore: 1, keep: true },
                     { shape: 83, edge: 0.36, z: 4.4, tone: 0.94, seed: 2.0, fore: 1, keep: true },
                     { shape: 30, edge: 0.965, z: 1.4, tone: 0.95, scale: 0.85, fore: 1, seed: 5.0 }] },
     /* ...and the moon laid on the walk and the turf in front of you, the

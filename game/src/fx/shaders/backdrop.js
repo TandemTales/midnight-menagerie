@@ -4620,8 +4620,9 @@ float gYewI = 0.5;     // (round 29 graft, BOLUS's: the spray's own hash, for it
    frame budget's answer too: two noise octaves and one fine wLobes where the
    chunky clumps paid an fbm, four noises and two wLobes. */
 float yewClipF(vec2 p, float px, float sd, out float tone, out float lit, out float cidOut){
-  vec2 wv = vec2(mmNoise(p*0.9 + sd), mmNoise(p*0.9 + sd + 5.1)) - 0.5;
-  vec2 pw = p + wv*0.20;
+  /* (the warp off the grid from ONE noise tap, thrown diagonally: two taps
+     here were the face's dearest line after the shoots -- the frame budget) */
+  vec2 pw = p + (mmNoise(p*0.9 + sd) - 0.5)*vec2(0.20, -0.15);
   float n0 = mmNoise(pw*1.6 + sd);
   float m0 = 0.66*n0 + 0.34*mmNoise(pw*3.5 + sd + 2.3);
   float rise0 = 0.66*(n0 - mmNoise((pw + vec2(0.0, 0.10))*1.6 + sd));
@@ -4642,7 +4643,7 @@ float yewClipF(vec2 p, float px, float sd, out float tone, out float lit, out fl
   }
   tone = massT * mix(0.84, 0.52 + 0.52*s1, l1) * mix(1.0, 0.70 + 0.38*s2, l2);
   lit = clamp(0.30 + 4.0*rise0, 0.0, 1.0) * mix(0.8, 0.55 + 0.55*s1, l1);
-  cidOut = mmNoise(p*0.85 + sd*0.7);
+  cidOut = n0;     // (the broad patch is the mass's own swell: no tap of its own)
   return (m0 - 0.45)*0.10 + a*0.022*l1 + b*0.008*l2;
 }
 float yewFace(vec2 p, float px, float sd, out float tone, out float lit){
@@ -4790,7 +4791,9 @@ float hedgeWallH(vec2 q, float qpx, out float occ){
   /* the face: sprays, a slow swell, the foot */
   float tone, lit;
   float rel = yewFace(vec2(u, q.y), qpx, sd, tone, lit);
-  float h = 1.20 + rel*3.2 + 0.14*(mmNoise(q*0.8 + uSeed*2.0) - 0.5);
+  /* (round 31 graft: the face's own mass swell -- rel -- carries the slow
+     relief now; the extra noise tap under it is the frame's) */
+  float h = 1.20 + rel*3.2;
   /* the clipped shoulder: the last 0.25 m rounds over onto the top */
   float sh = smoothstep(top - 0.30, top, q.y);
   h -= sh*sh*0.30;
@@ -17364,8 +17367,9 @@ float yLobes(vec2 c, float jit, float sd, out float id, out vec2 off){
 /* (round 31 graft: the walls' clipped face -- yewClipF -- so a run of yew
    across the way, a topiary and the walls either side are one hedge) */
 float yewFaceP(vec2 p, float px, float sd, out float tone, out float lit){
-  vec2 wv = vec2(mmNoise(p*0.9 + sd), mmNoise(p*0.9 + sd + 5.1)) - 0.5;
-  vec2 pw = p + wv*0.20;
+  /* (the warp off the grid from ONE noise tap, thrown diagonally: two taps
+     here were the face's dearest line after the shoots -- the frame budget) */
+  vec2 pw = p + (mmNoise(p*0.9 + sd) - 0.5)*vec2(0.20, -0.15);
   float n0 = mmNoise(pw*1.6 + sd);
   float m0 = 0.66*n0 + 0.34*mmNoise(pw*3.5 + sd + 2.3);
   float rise0 = 0.66*(n0 - mmNoise((pw + vec2(0.0, 0.10))*1.6 + sd));
