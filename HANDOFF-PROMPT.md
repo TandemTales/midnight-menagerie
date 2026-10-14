@@ -60,7 +60,8 @@ gate (`tests/base-effects`) and 24 cards fixed (`c39ec0cc`).
 found the rooms now the weakest part; round 31 is the Passages, Hedge Maze,
 Kitchens and Graveyard and the near floor (`BRIEF-r31.md`), Workflow run
 `wf_6924e554-dda` at base `ee60b07a` (weekly limit; resumed 2026-10-13 as
-`wf_4a6c0844-d0b`); worktrees
+`wf_4a6c0844-d0b`, then a session limit; WRAP-UP run 2026-10-14 00:25 as
+`wf_82c5d2af-7e9`); worktrees
 `C:/UILOOP/r31/wt/r31-rooms-{a,b,c}` (MANGANESE 9181, HEMATITE 9182, SAFFLOWER
 9183), baselines MOREEN in `C:/UILOOP/r31/judging/r31/rooms/`. If it stops on
 a limit, finish it as a NEW run with `resume` notes. Survey 4's note: room
