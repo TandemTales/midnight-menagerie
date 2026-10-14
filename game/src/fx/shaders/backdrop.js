@@ -4233,7 +4233,7 @@ float subjectH(vec2 q, float far, out float occ){
         float jB = mmInkP(0.225 - mmRowX(cy, 0.45), px, 1.1);
         float jP = mmInkP(mmRowX(q.x + mod(crw, 2.0)*0.45, 0.90) - 0.45, px, 0.9);
         float blk = mmHash11(floor(q.x/0.90 + mod(crw, 2.0)*0.5)*5.3 + crw*3.7 + uSeed);
-        gInk = max(gInk, wallF*lodC*max(jB*0.62, jP*0.46*(0.6 + 0.4*step(0.3, blk))));
+        gInk = max(gInk, wallF*lodC*max(jB*0.85, jP*0.62*(0.6 + 0.4*step(0.3, blk))));
         gTint += wallF*(blk - 0.5)*0.30*lodC;
         float sl = mmInkP(0.15*(1.0 - 0.13*st) - mmRowX(q.y - sEav, 0.30*(1.0 - 0.13*st)), px, 1.0);
         gInk = max(gInk, roofP*sl*0.55*mmLod(0.30, px));
@@ -5287,6 +5287,11 @@ float passWallH(vec2 q, float qpx, out float occ){
          lit from inside it, not a black slot with a lit end) */
       p28Pool(vec2(vWorld.z + 5.4, q.y - 1.6), vec2(1.7, 1.5), 1.5, vec3(1.00, 0.64, 0.32)*1.4);
       p28Pool(vec2(vWorld.z + 2.4, q.y - 1.6), vec2(1.5, 1.4), 0.8, vec3(1.00, 0.64, 0.32)*1.4);
+      /* (round 31, both survey-4 judges: "no black void at the sides" -- the
+         closet seen from its door had its near coats in the dark; the lamp
+         over the door you stand in lays its light on the near walls too) */
+      p28Pool(vec2(vWorld.z - 0.8, q.y - 1.5), vec2(1.8, 1.6), 1.1, vec3(1.00, 0.64, 0.32)*1.4);
+      p28Pool(vec2(vWorld.z - 3.6, q.y - 1.4), vec2(1.9, 1.7), 1.0, vec3(1.00, 0.64, 0.32)*1.4);
       h += peg*0.4 + shelf*0.45 + box*0.2;
       mmPen(q.y - 2.04, 1.2, 0.8*(1.0 - isDoor));
       mmPen(boxD, 1.0, 0.7*step(0.35, mmHash11(bxi*5.7 + uSeed))*(1.0 - isDoor));
@@ -13394,7 +13399,7 @@ void main(){
          across the yard, where the scythe does not reach. */
       {
         float sw = mmFbm3(w*vec2(0.10, 0.16) + uSeed*2.3);
-        pat += (sw - 0.5)*0.30*(1.0 - earth*0.5);
+        pat += (sw - 0.5)*0.48*(1.0 - earth*0.5);
         float rowB = 0.5 + 0.5*sin(w.y*0.62 + 1.3*mmNoise(w*0.20 + uSeed));
         pat -= smoothstep(0.70, 0.98, rowB)*0.07*(1.0 - earth);
       }

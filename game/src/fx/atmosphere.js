@@ -591,7 +591,7 @@ export const REGIONS = {
        a cold pool of it broken by the clouds in front of you, and every room
        has a LARGE stone in its near turf (GRAVE_NEAR_*) */
     nearFloor: { fall: 0.92,
-                 pool: { ahead: 4.6, across: 1.2, rAlong: 3.8, rAcross: 3.6, k: 1.25, color: '#94aad0' } },
+                 pool: { ahead: 4.6, across: 1.2, rAlong: 3.8, rAcross: 3.6, k: 2.0, color: '#94aad0' } },
     props: { shapes: [69, 69, 70, 71, 69], solo: [71], count: 34, height: 1.5, layout: 'rows',
              near: [{ shape: 69, edge: 0.90, z: -0.8, tone: 0.90 },
                     { shape: 70, edge: 0.975, z: 1.6, tone: 0.90 },
@@ -1523,6 +1523,7 @@ const GRAVE_NEAR_YARD = [
      turf right of the walk, and a kerbed grave beside it) */
   { shape: 69, edge: 0.70, z: 3.6, tone: 0.95, scale: 1.50, seed: 1.25 },
   { shape: 70, edge: 0.985, z: 2.6, tone: 0.93, scale: 1.20, seed: 2.5 },
+  { shape: 73, edge: 0.42, z: 1.4, tone: 0.94, scale: 1.05 },
   { shape: 70, edge: 0.03, z: -5.0, tone: 0.88 },
   { shape: 73, x:  2.80, z: -4.40, tone: 0.86, free: true },
 ];
