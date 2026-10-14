@@ -422,14 +422,24 @@ export const REGIONS = {
                     { shape: 29, x: 4.0, z: -2.85, tone: 0.96, free: true, seed: 23.0 },
                     { shape: 8, edge: 0.03, z: 0.4, tone: 0.95, scale: 1.15, fore: 1 },
                     { shape: 8, x: -6.4, z: -5.6, tone: 0.90, free: true },
-                    { shape: 8, x: 6.6, z: -5.4, tone: 0.90, free: true }] },
+                    { shape: 8, x: 6.6, z: -5.4, tone: 0.90, free: true },
+                    /* (round 31 graft, SAFFLOWER's: the day's vegetables in
+                       their wicker baskets on the flags in front of the
+                       tables -- gkDraw 82) */
+                    { shape: 82, edge: 0.30, z: -0.4, tone: 0.94, keep: true, fore: 1 },
+                    { shape: 82, edge: 0.72, z: -1.4, tone: 0.92, keep: true, fore: 1, seed: 5.5 }] },
     /* ROUND 31: THE NEAR FLOOR -- the flags run on lit toward the hand (to
        nine-tenths, not two-fifths), the range's warmth laid on them in front
        of the eye, and a rag hearth rug on the flags before the fire */
     /* (round 31, judge 1: "calm the floor to stone flags" -- each flag its
        own even stone, not a mottle: nearFloor.calm) */
-    nearFloor: { fall: 0.90, dye: 1, calm: 0.95, rug: { ahead: 6.4, hw: 1.45, hd: 0.85 },
-                 pool: { ahead: 3.6, across: 0.0, rAlong: 3.0, rAcross: 3.4, k: 1.1, color: '#ff9a50' } },
+    /* (round 31 graft: the fight's rug a touch upstage -- judge 3: its border
+       ran behind the KITCHEN IMP's nameplate -- and a second warm pool laid
+       through the lower third, judges 1 and 2: "carry the floor lighting
+       down through the lower 35% of the frame") */
+    nearFloor: { fall: 0.90, dye: 1, calm: 0.95, rug: { ahead: 6.9, hw: 1.45, hd: 0.85 },
+                 pool: { ahead: 3.6, across: 0.0, rAlong: 3.0, rAcross: 3.4, k: 1.1, color: '#ff9a50' },
+                 pool2: { ahead: 2.6, across: 0.0, rAlong: 2.0, rAcross: 4.0, k: 0.9, color: '#ffa860' } },
     particles: { mix: [[PTYPE.EMBER, 0.46], [PTYPE.DUST, 0.40], [PTYPE.PLASTER, 0.14]],
                  tint: '#ffcf9a', wispTint: '#8fd9a8', emberTint: '#ff7a28',
                  speed: 1.2, scale: 1.05, wind: 1.3, density: 0.95 },
@@ -469,7 +479,11 @@ export const REGIONS = {
     ],
     /* (no shafts: a kitchen has no window for one to come through) */
     shafts: { count: 2, spread: 11, y: 5.0, z: -8.0, angle: 0.18, width: 2.4, intensity: 0.0, pool: 1.6 },
-    bloom: 1.0, warmTone: 0.06, halation: 0.75, saturate: 0.94,
+    /* (round 31 graft, SAFFLOWER's: "every room wears the same grain and soft
+       bloom with no ink line" -- the film grain at under half the house's
+       0.026 in this wing, so the pen's lines and the drawn joints carry the
+       surface and not a mottle over it) */
+    bloom: 1.0, warmTone: 0.06, halation: 0.75, saturate: 0.94, grain: 0.011,
   },
 
   /* ── 5. The Impossible Greenhouse ──────────────────────────────────────────
@@ -593,8 +607,12 @@ export const REGIONS = {
        nine-tenths of the middle distance's (it fell to three-quarters), with
        a cold pool of it broken by the clouds in front of you, and every room
        has a LARGE stone in its near turf (GRAVE_NEAR_*) */
+    /* (round 31 graft, judges 2 and 3: "dress the bottom band below the near
+       headstones ... fallen leaves in a lantern light pool" -- a warm lantern's
+       spill nearer the eye than the moon's pool, on the leaf litter: pool2) */
     nearFloor: { fall: 0.92,
-                 pool: { ahead: 4.6, across: 1.2, rAlong: 3.8, rAcross: 3.6, k: 2.0, color: '#94aad0' } },
+                 pool: { ahead: 4.6, across: 1.2, rAlong: 3.8, rAcross: 3.6, k: 2.0, color: '#94aad0' },
+                 pool2: { ahead: 3.2, across: -1.2, rAlong: 2.0, rAcross: 2.4, k: 1.3, color: '#e29a56' } },
     props: { shapes: [69, 69, 70, 71, 69], solo: [71], count: 34, height: 1.5, layout: 'rows',
              near: [{ shape: 69, edge: 0.90, z: -0.8, tone: 0.90 },
                     { shape: 70, edge: 0.975, z: 1.6, tone: 0.90 },
@@ -631,7 +649,11 @@ export const REGIONS = {
        as searchlights -- the loudest unpainted thing in the capture. Kept only
        as the faintest haze the moon puts in the air. */
     shafts: { count: 2, spread: 26, y: 12.0, z: -12, angle: 0.16, width: 5.2, intensity: 0.075, pool: 1.5 },
-    vignette: 1.19,
+    /* (round 31 graft, SAFFLOWER's: "every room wears the same grain and soft
+       bloom with no ink line" -- the film grain at under half the house's
+       0.026 in this wing, so the pen's lines and the drawn joints carry the
+       surface and not a mottle over it) */
+    vignette: 1.19, grain: 0.011,
   },
 
   /* ── 7. The Grand Study and Library ────────────────────────────────────────
@@ -937,7 +959,7 @@ export const REGIONS = {
        khaki clouds"), and the sky's gradient a fifth down, 1.20 -> 0.95; the
        moon and the stars keep their own light) */
     skyGlow: 0.95,
-    grain: 0.014, propShadow: 1.5,
+    grain: 0.010, propShadow: 1.5,     // (round 31 graft: 0.010 from 0.014 -- ink, not grain)
     /* A HEADSTONE IN A HEDGE MAZE (BRIEF-r9 fix 4) was the second set I would
        question: defensible in a haunted house, but a formal maze's set piece
        is a GARDEN STATUE on a plinth at the turn of a walk, and shape 15 now
@@ -951,12 +973,21 @@ export const REGIONS = {
                 frame "undressed floor fading to black"): a clipped bay tree
                 in its box at each side of the frame where the walk begins,
                 `fore`, so a vantage down the walk keeps them at your feet */
-             near: [{ shape: 30, edge: 0.03, z: 2.4, tone: 0.95, scale: 0.95, fore: 1, seed: 7.7 },
-                    { shape: 30, edge: 0.965, z: 1.4, tone: 0.95, scale: 0.85, fore: 1, seed: 2.2 }] },
+             /* (round 31 graft: all three judges -- "stone benches and urns on
+                plinths" (SAFFLOWER's gkDraw 81 and 83) and "ball topiaries in
+                square planters" (MANGANESE's seeds) in the near lawn) */
+             near: [{ shape: 30, edge: 0.03, z: 2.4, tone: 0.95, scale: 0.95, fore: 1, seed: 7.0 },
+                    { shape: 81, edge: 0.17, z: 3.2, tone: 0.94, seed: 1.1, fore: 1, keep: true },
+                    { shape: 83, edge: 0.36, z: 4.4, tone: 0.94, seed: 2.0, fore: 1, keep: true },
+                    { shape: 30, edge: 0.965, z: 1.4, tone: 0.95, scale: 0.85, fore: 1, seed: 5.0 }] },
     /* ...and the moon laid on the walk and the turf in front of you, the
        foreground falling to nine-tenths and not two-fifths */
+    /* (round 31 graft, judges 1 and 3: "lift the near path out of black with
+       a lantern spill" -- a warm second pool nearer the eye, beside the
+       moon's: pool2) */
     nearFloor: { fall: 0.88,
-                 pool: { ahead: 4.2, across: 0.0, rAlong: 3.6, rAcross: 3.0, k: 1.5, color: '#9eb0d6' } },
+                 pool: { ahead: 4.2, across: 0.0, rAlong: 3.6, rAcross: 3.0, k: 1.5, color: '#9eb0d6' },
+                 pool2: { ahead: 3.4, across: -0.5, rAlong: 2.2, rAcross: 2.4, k: 1.6, color: '#eaa45e' } },
     particles: { mix: [[PTYPE.SPORE, 0.44], [PTYPE.ASH, 0.30], [PTYPE.DUST, 0.26]],
                  tint: '#e0d8a8', wispTint: '#b08fd8', emberTint: '#d8a04a',
                  speed: 0.75, scale: 1.3, wind: 1.4, density: 0.95 },
@@ -1005,7 +1036,10 @@ export const REGIONS = {
        lantern stood just inside the frame laying its pool on the runner
        and the boards in front of you (FLOOR_FRAG, uNearPool) */
     runner: 0.78,
-    nearFloor: { fall: 0.92, dye: 1,
+    /* (round 31 graft, all three judges: "reduce the milky, blotchy grain on
+       the lit planks ... so they read as crisp inked boards over a warm
+       dark" -- calm: the cloud, the grit and the wet smear laid to rest) */
+    nearFloor: { fall: 0.92, dye: 1, calm: 0.9,
                  pool: { ahead: 2.6, across: 0.6, rAlong: 2.6, rAcross: 2.4, k: 7.0, color: '#f0a65a' } },
     /* (round 28 graft: its cases and lamp posts set down on the boards in a
        denser contact shadow -- Backdrop.build's pal.propShadow) */
@@ -1028,7 +1062,13 @@ export const REGIONS = {
        near lamp's pool, `fore` so a vantage down the wall keeps them) */
     props: { shapes: [8], count: 6, height: 1.9, layout: 'aisle',
              near: [{ shape: 8, edge: 0.04, z: 2.6, tone: 0.95, scale: 1.25, fore: 1 },
-                    { shape: 8, edge: 0.955, z: 1.6, tone: 0.95, scale: 1.10, fore: 1 }] },
+                    { shape: 8, edge: 0.955, z: 1.6, tone: 0.95, scale: 1.10, fore: 1 },
+                    /* (round 31 graft, judge 1: "one prop (a side table or a
+                       chest) on each side of the near floor" -- an old pier
+                       table pushed back here out of the hall, each side, in
+                       the near lamps' pools) */
+                    { shape: 66, edge: 0.12, z: 0.6, tone: 0.94, fore: 1, keep: true, seed: 1.4 },
+                    { shape: 66, edge: 0.88, z: -0.6, tone: 0.94, fore: 1, keep: true, seed: 3.9 }] },
     particles: { mix: [[PTYPE.DUST, 0.78], [PTYPE.PLASTER, 0.16], [PTYPE.WISP, 0.06]],
                  /* (round 28: 0.45, from 1.0 -- a thousand lit motes against
                     the dark end of the passage were "a starfield indoors") */
@@ -1061,7 +1101,11 @@ export const REGIONS = {
     ],
     /* (graft: a passage behind the walls has no window for a shaft) */
     shafts: { count: 2, spread: 4, y: 4.0, z: -11.0, angle: 0.08, width: 1.5, intensity: 0.0, pool: 2.1 },
-    vignette: 1.36, bloom: 0.80,
+    /* (round 31 graft, SAFFLOWER's: "every room wears the same grain and soft
+       bloom with no ink line" -- the film grain at under half the house's
+       0.026 in this wing, so the pen's lines and the drawn joints carry the
+       surface and not a mottle over it) */
+    vignette: 1.36, bloom: 0.80, grain: 0.011,
   },
 
   /* ── 14. The Bathhouse and Rain Wing ───────────────────────────────────────
@@ -1498,6 +1542,9 @@ const GRAVE_NEAR_PLOTS = [
      arched stone with five lines cut, a kerbed plot with its headstone. */
   { shape: 69, edge: 0.17, z: 2.4, tone: 0.94, scale: 1.32, seed: 1.25 },
   { shape: 70, edge: 0.58, z: 1.8, tone: 0.92, scale: 1.15, seed: 2.5 },
+  /* (round 31 graft, judges 2 and 3: the plots' bottom band "a dark band with
+     nothing in it" -- a low stone in the near turf, in the lantern's spill) */
+  { shape: 69, edge: 0.36, z: 3.4, tone: 0.95, scale: 0.90, seed: 4.0, keep: true },
 ];
 /* ...and just inside the GATE, the first graves either side of the walk --
    seen from the gateway, the churchyard begins at your feet, not twenty
@@ -1532,7 +1579,10 @@ const GRAVE_NEAR_YARD = [
   { shape: 70, edge: 0.985, z: 2.6, tone: 0.93, scale: 1.20, seed: 2.5 },
   /* ...and a kerbed grave in the turf between the walk and that stone,
      low, so the chapel door behind stays clear */
-  { shape: 70, edge: 0.50, z: 4.4, tone: 0.93, scale: 1.10, seed: 4.5 },
+  /* (round 31 graft, judge 1: "the near table tomb is cut off by the frame
+     bottom", and "a table tomb on the empty near-left lawn": a step back and
+     to the left, so all of it stands in the turf) */
+  { shape: 70, edge: 0.30, z: 3.2, tone: 0.93, scale: 1.10, seed: 4.5 },
   { shape: 70, edge: 0.03, z: -5.0, tone: 0.88 },
   { shape: 73, x:  2.80, z: -4.40, tone: 0.86, free: true },
 ];
@@ -1923,8 +1973,12 @@ export const ROOM_KINDS = {
                      { shape: 29, x: 3.6, z: -2.55, tone: 0.96, free: true, seed: 24.0 },
                      { shape: 8, edge: 0.965, z: 0.6, tone: 0.95, scale: 1.10, fore: 1 },
                      { shape: 8, x: -5.6, z: -5.0, tone: 0.90, free: true },
-                     { shape: 8, x: 5.8, z: -4.8, tone: 0.90, free: true }],
-              nearFloor: { pool: { ahead: 3.4, across: 0.0, rAlong: 2.8, rAcross: 3.2, k: 1.4, color: '#e8a060' } },
+                     { shape: 8, x: 5.8, z: -4.8, tone: 0.90, free: true },
+                     { shape: 82, edge: 0.26, z: -0.2, tone: 0.94, keep: true, fore: 1, seed: 2.5 }],
+              /* (round 31 graft, judges 2 and 3: "light the scullery's near-left
+                 corner" -- the copper's spill as a second pool there) */
+              nearFloor: { pool: { ahead: 3.4, across: 0.0, rAlong: 2.8, rAcross: 3.2, k: 1.4, color: '#e8a060' },
+                           pool2: { ahead: 3.0, across: -2.6, rAlong: 2.4, rAcross: 2.2, k: 1.6, color: '#e8a060' } },
               lamps: [{ i: 0, x: -1.95, z: 0.62 }, { i: 1, x: 1.95, z: 0.66 },
                       { i: 2, x: 4.9, z: 0.94, k: 0.30 }, { i: 3, x: 0.0, z: 0.80 }] }],
     names: [
@@ -2062,6 +2116,12 @@ export const ROOM_KINDS = {
       { subject: 'court', layout: 'maze', maze: { court: 0, first: 12, ways: 0 },
         room: { w: 1.55, d: 0.46 },
         centre: { shape: 25, z: -5.0, clear: 3.2 },
+        /* (round 31 graft, SAFFLOWER's: the court is small and seen from among
+           it -- its own near floor, a pair of urns on their pedestals flanking
+           the walk to the fountain and a stone seat on the right-hand lawn) */
+        near: [{ shape: 81, edge: 0.10, z: 1.2, tone: 0.94, seed: 1.1, fore: 1, keep: true },
+               { shape: 81, edge: 0.90, z: 1.2, tone: 0.94, seed: 2.6, fore: 1, keep: true },
+               { shape: 83, edge: 0.66, z: 3.4, tone: 0.94, seed: 2.0, fore: 1, keep: true }],
         vantage: { at: 'among', low: 0.62, fwd: 2.0, pitch: 3.0, off: 0.04, wide: 3 } },
       /* the gate into the maze, seen from in it */
       { subject: 'topiary', layout: 'maze', maze: { gate: true, first: 4.2 },
@@ -2070,6 +2130,11 @@ export const ROOM_KINDS = {
       /* (round 22: the walk's bank IS the side wall now, so the runs across
          it stand further off, where the walk turns) */
       { subject: 'topiary', layout: 'maze', maze: { first: 9.0, ways: 2 },
+        /* (round 31 graft: the walk's own near floor -- MANGANESE's pair of
+           ball-trees in their boxes staggered down it, and SAFFLOWER's seat) */
+        near: [{ shape: 30, x: -2.5, z: 2.6, tone: 0.95, free: true, keep: true, seed: 7.0 },
+               { shape: 30, x: 2.6, z: 0.4, tone: 0.95, free: true, keep: true, seed: 5.0 },
+               { shape: 83, edge: 0.40, z: 4.2, tone: 0.94, seed: 2.0, fore: 1, keep: true }],
         vantage: { at: 'along', off: 0.14, wall: 4.0, fwd: 1.6, yaw: 12, wide: 3 } },
     ],
     names: [
@@ -3142,6 +3207,8 @@ export class Atmosphere {
     if (pal.nearFloor && pal.nearFloor.pool) {
       pal.nearFloor = Object.assign({}, pal.nearFloor, {
         pool: Object.assign({}, pal.nearFloor.pool, { across: (pal.nearFloor.pool.across ?? 0) * flip }) });
+      /* (round 31 graft: and its second lamp, nearFloor.pool2) */
+      if (pal.nearFloor.pool2) pal.nearFloor.pool2 = Object.assign({}, pal.nearFloor.pool2, { across: (pal.nearFloor.pool2.across ?? 0) * flip });
     }
     if (pal.props.near) {
       /* (...but not what stands ON a stage, round 18: the suite's stage is
