@@ -3659,12 +3659,13 @@
 /* ── 4. CONDITIONS A SIZE UP AGAIN ─────────────────────────────────────────
    "make the Kid's and the Butler's chips about 25% bigger so the count
    numerals are at least 12px and their gold rings read as medallions".
-   ~41px of medallion at 1280 (it was 34), its count struck on a 23px coin. */
-.cb-root .cb-status,
-.cb-player .cb-status,
-.cb-enemy__vitals > .cb-enemy__statuses,
+   The Kid's and a lone boss's: ~41px of medallion at 1280 (it was 34). Every
+   count, the creatures' rows' too, is struck on a 23px coin (it was 19).
+   A row of creatures keeps round 32's medallion (CERULEAN's size or more):
+   beside a gauge in a 130px column a larger one wraps the row upward over
+   the creature's own body after two conditions. */
+.cb-root .cb-player .cb-status,
 .cb-root[data-arena="boss"] .cb-enemies[data-n="1"] .cb-enemy[data-tier="boss"]:not([data-role="bossPart"]) .cb-enemy__vitals > .cb-enemy__statuses { --roundel: clamp(41px, 3.2vw, 48px); }
-.cb-enemies:is([data-n="4"], [data-n="5"], [data-n="6"]) .cb-enemy__vitals > .cb-enemy__statuses { --roundel: 35px; }
 .cb-status.kit-roundel > .kit-coin {
   --coin: max(23px, calc(var(--roundel) * .56));
   font-size: calc(var(--coin) * .76);
