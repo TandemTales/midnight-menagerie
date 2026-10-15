@@ -56,13 +56,12 @@ check reads Taffy's cream gloss as background; leave it red, do not lower it).
 game-over walls (`1f6bc8af`, ui/hang.js PAINTINGS); a base-card dead-effect
 gate (`tests/base-effects`) and 24 cards fixed (`c39ec0cc`).
 
-**ROUND 32 IS MERGED AND PUSHED; ITS GRAFT IS IN FLIGHT (2026-10-14):**
+**ROUND 32 AND ITS GRAFT ARE MERGED AND PUSHED (2026-10-15):** graft
+`abbf882b` (frame unchanged; every fight gate green as written).
 PHTHALO +1.83 (`27d6081f`): one floor line `--stage-fl`, the boss out of his
 mirror onto the floor, a crowded fan that keeps names on one line. enemy.js
-NOT changed. Frame no slower (foyer-boss 14.55 -> 14.21 ms settled). Graft
-(`GRAFT-r32.md`) building in `C:/UILOOP/r32/wt/r32-graft` (branch
-`ui/r32-graft`, port 9196): the long title on one line, the party 15-20%
-larger, the boss planted, chips up, hover lift.
+NOT changed. Frame no slower (foyer-boss 14.55 -> 14.21 ms settled). Graft: the long title condensed onto one line, the Kid +12%, the boss
+planted, chips up, hover lift. **NEXT: round 33 from survey 4 items 5-6.**
 **Machine traps found today:** (1) `localhost` cost 0.22 s per connection
 (::1 first) -- fixed, devserver binds ::1 too (`59094aa4`); (2) a D3D11
 driver state where a page cannot navigate after ~6 s on WebGL, on EVERY
