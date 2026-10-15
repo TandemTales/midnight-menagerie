@@ -56,12 +56,19 @@ check reads Taffy's cream gloss as background; leave it red, do not lower it).
 game-over walls (`1f6bc8af`, ui/hang.js PAINTINGS); a base-card dead-effect
 gate (`tests/base-effects`) and 24 cards fixed (`c39ec0cc`).
 
-**IN FLIGHT (2026-10-14): ROUND 32 -- THE FIGHTS** (`BRIEF-r32.md`), Workflow
-run `wf_3b402e1f-eb2` at base `2c237d34`; worktrees
-`C:/UILOOP/r32/wt/r32-fight-{a,b,c}` (CERULEAN 9201, PHTHALO 9202, RAWUMBER
-9203), baselines GINGHAM in `C:/UILOOP/r32/judging/r32/fight/`. It changes
-ui/enemy.js: the merge note must say what. If it stops on a limit, finish it
-as a NEW run with `resume` notes.
+**ROUND 32 IS MERGED AND PUSHED; ITS GRAFT IS IN FLIGHT (2026-10-14):**
+PHTHALO +1.83 (`27d6081f`): one floor line `--stage-fl`, the boss out of his
+mirror onto the floor, a crowded fan that keeps names on one line. enemy.js
+NOT changed. Frame no slower (foyer-boss 14.55 -> 14.21 ms settled). Graft
+(`GRAFT-r32.md`) building in `C:/UILOOP/r32/wt/r32-graft` (branch
+`ui/r32-graft`, port 9196): the long title on one line, the party 15-20%
+larger, the boss planted, chips up, hover lift.
+**Machine traps found today:** (1) `localhost` cost 0.22 s per connection
+(::1 first) -- fixed, devserver binds ::1 too (`59094aa4`); (2) a D3D11
+driver state where a page cannot navigate after ~6 s on WebGL, on EVERY
+build -- steam-deck/gamepad red as written; verified on the merge with a
+fresh page per screen and `--use-angle=d3d9` copies. A reboot should clear
+(2). Then, from survey 4: density at 1280 and web-shaped controls.
 
 **ROUND 31 AND ITS GRAFT ARE MERGED, VERIFIED AND PUSHED (2026-10-14):**
 HEMATITE +1.70 (`9bba05dc`), graft `7dc45984` (Hedge 15.47, Kitchens 13.71 ms
