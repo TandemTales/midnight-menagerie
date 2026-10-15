@@ -29,6 +29,28 @@ import { clock as defaultClock, Clock } from '../core/clock.js';
 import { bus as defaultBus } from '../core/bus.js';
 import { CardView, CARD_SS } from './card.js';
 
+/* ROUND 32 GRAFT: a name's whole width, in em of the face it is lettered in,
+   at `track` em of tracking a letter (Hand#_squeezeOf). A canvas measure,
+   cached only once the fonts are in: before the display face lands a
+   fallback serif is a fifth narrower and would condense the name too little. */
+const NAME_EM = new Map();
+let nameCtx = null;
+function nameEm(text, font, track) {
+  const key = font + '|' + text;
+  let em = NAME_EM.get(key);
+  if (em == null) {
+    if (typeof document === 'undefined') return null;
+    if (!nameCtx) {
+      try { nameCtx = document.createElement('canvas').getContext('2d'); } catch { nameCtx = null; }
+      if (!nameCtx) return null;
+    }
+    nameCtx.font = font;
+    em = nameCtx.measureText(text).width / 100;
+    if (!document.fonts || document.fonts.status === 'loaded') NAME_EM.set(key, em);
+  }
+  return em + track * [...text].length;
+}
+
 /** Every tuned number in one place. Milliseconds are seconds here. */
 export const TUNE = {
   /* ── hover: the single most-felt interaction ────────────────────────────
@@ -55,6 +77,12 @@ export const TUNE = {
      measured rise is `hoverLift + height·(scale-1)/2` ≈ 50 px at 1.18x. */
   hoverIn: 0.078, hoverOut: 0.070,
   hoverLift: 26, hoverScale: 1.18, hoverNudge: 30,
+  /* ROUND 32 GRAFT: IN A CROWDED FAN THE CARD LIFTS CLEAR. Nine Tricks overlap
+     by half a card, so a hovered one at the open hand's 26 px still stood in
+     the row, its neighbours' tops level with its name. It rises further
+     (its bottom edge clears the row's lowest corners) and its neighbours step
+     a little further aside, so the names either side of it stay readable. */
+  crowdLift: 46, crowdNudge: 40,
   kick: 1 / 60,          // sub-frame advance applied in the event handler
   // fan
   refan: 0.30, refanStagger: 0.010,
@@ -151,6 +179,18 @@ export const TUNE = {
   oneLineFloorPx: 10.5,
   crowdCardPx: 110,     // round 32: band per card under which a hand of 8+ ...
   crowdFit: 0.875,      // ...takes seven-eighths cards (Hand#_fit; a rehearsed scale)
+  /* ROUND 32 GRAFT: THE LONG NAME ON ONE LINE TOO. "Put Yourself Back
+     Together" at the row's size is 1.4 cards wide: no strip can hold it, and
+     a size small enough to (CERULEAN's 8.7 px at the Deck) made it the
+     weakest title in the hand. So it keeps the row's SIZE -- its capitals as
+     tall as every other name's -- and is set closer instead: tracking pulled
+     in (`squeezeTrack`, em) and the lettering condensed across, down to
+     `squeezeMin` of its width, in a strip dealt up to `squeezeStrip` of a
+     whole card (the overlap pays for it out of the short cards' art). Below
+     `squeezeMin` the row's size steps down, as it does for every name. */
+  squeezeMin: 0.62,
+  squeezeTrack: -0.03,
+  squeezeStrip: 0.985,
   boundDipMax: 32,
   boundBottomPad: 13,
   boundHitPadTop: 6,    // the backstop's slack above a bounded fan, px      // …and the arc's drop at the ends follows the flatter bend
@@ -1061,12 +1101,12 @@ export class Hand {
     // the middle of the free band: the viewport's, unless a scene measured one
     f.cx = this._bounded() ? (bandL + bandR) / 2 : this.w / 2;
     f.crowded = n > 1 && f.step < cw * T.crowdAt;
-    f.lift = T.hoverLift * fit;
+    f.lift = (f.crowded ? T.crowdLift : T.hoverLift) * fit;
     // Hover growth is centred on the card, not on its bottom edge: see the
     // GEOMETRY note in TUNE. `_layout` pushes the anchor back down by this so
     // the card grows equally in both directions.
     f.grow = ch * (T.hoverScale - 1) / 2;
-    f.nudge = T.hoverNudge * fit;
+    f.nudge = (f.crowded ? T.crowdNudge : T.hoverNudge) * fit;
     this.fit = fit;
     this._fanKey = key;
     return f;
@@ -1171,16 +1211,28 @@ export class Hand {
           if (lad.length && lad[0].n === 1) { k = 1; break; }
         }
       }
+      /* round 32 graft: a name no strip holds on one line at the row's size
+         keeps that size on one line set closer (TUNE.squeezeMin) */
+      s._squeeze = k === 2 && !!o.oneLine && this._squeezeOf(s.view, strip * TUNE.stripTake, o.nameCap) != null;
+      if (s._squeeze) k = 1;
       lines.set(s, k);
       s._nameLines = k;
     }
+    const sqCap = Math.min(224 * TUNE.squeezeStrip, strip * TUNE.stripTake);
     const ok = (s, sw) => {
       if (sw < tabNeed(s.view)) return false;
+      if (s._squeeze) {
+        const q = this._squeezeOf(s.view, sw, o.nameCap);
+        const p = q != null && this._stripFit(this._oneLineView(s.view, o.nameCap), sw, o, 1);
+        return !!p && q >= TUNE.squeezeMin && p.rf >= o.read;
+      }
       const k = lines.get(s) || 2;
       const p = this._stripFit(s.view, sw, o, k);
       return !!p && p.f >= o.nameCap * 0.97 && p.rf >= o.read && p.n <= k;
     };
     const want = cov.map((s) => {
+      // the long name asks for all it may have: every unit is less condensing
+      if (s._squeeze) return { need: Math.max(strip, sqCap), give: 0 };
       if (ok(s, strip)) {
         let lo = strip;
         for (let sw = strip - 2; sw >= strip * TUNE.stripGive; sw -= 2) { if (ok(s, sw)) lo = sw; else break; }
@@ -1193,11 +1245,40 @@ export class Hand {
     const A = want.reduce((acc, w) => acc + w.give, 0);
     const t = Math.min(D, A);
     // round 32: whether every card got what its words need at this size
-    const fits = cov.every((s, i) => ok(s, Math.min(want[i].need, strip * TUNE.stripTake))) && D <= A + 0.5;
-    if (!(t > 0)) { const out = cov.map(() => strip); out.fits = fits; return out; }
-    const out = want.map((w) => strip + (w.need - strip) * t / D - w.give * t / A);
-    out.fits = fits;
+    const out = !(t > 0) ? cov.map(() => strip) : want.map((w) => strip + (w.need - strip) * t / D - w.give * t / A);
+    // (graft: the long name is judged in the strip it is actually dealt)
+    out.fits = cov.every((s, i) => ok(s, s._squeeze ? out[i] : Math.min(want[i].need, strip * TUNE.stripTake)))
+      && (D <= A + 0.5 || cov.every((s, i) => !(want[i].need > strip) || s._squeeze));
     return out;
+  }
+
+  /**
+   * ROUND 32 GRAFT: how far across a name must be condensed to sit on ONE
+   * line at size `f` (design units) in a strip `sw` wide, its tracking pulled
+   * in to TUNE.squeezeTrack: 1 when it fits as it is, null when it cannot be
+   * measured yet. The plate of a condensed name (scenes/combat.css,
+   * `.is-name-squeezed`) starts 2u inside the strip with 7u caps and stops
+   * 8u short of its right edge, where the next card tilts over it, and the
+   * lettering keeps 8u clear of each cap: the strip less 26u.
+   */
+  _squeezeOf(view, sw, f) {
+    const el = view.$name;
+    if (!el || typeof getComputedStyle !== 'function') return null;
+    if (!view._nameFont) {
+      const cs = getComputedStyle(el);
+      if (!cs.fontFamily) return null;
+      view._nameFont = `${cs.fontWeight || 700} 100px ${cs.fontFamily}`;
+    }
+    const em = nameEm((view.def?.name || view.def?.id || '') + (view.state?.upgraded ? '+' : ''), view._nameFont, TUNE.squeezeTrack);
+    if (!(em > 0)) return null;
+    return Math.min(1, ((sw - 26) * 0.97) / (em * f));
+  }
+
+  /** `view`, its name held to one line at `f` (Hand#_stripFit asks nameLadder). */
+  _oneLineView(view, f) {
+    const v = Object.create(view);
+    v.nameLadder = () => [{ n: 1, f }];
+    return v;
   }
 
   _layout(o = {}) {
@@ -1288,8 +1369,15 @@ export class Hand {
           const covered = i < n - 1;
           s._rise = 0;
           s._strip = covered ? strips[i] : 0;
+          // round 32 graft: the long name, condensed to one line at the row's size
+          const sq = covered && s._squeeze ? this._squeezeOf(s.view, strips[i], fo.nameCap) : null;
+          s.view.el.classList.toggle('is-name-squeezed', sq != null);
+          if (sq != null) s.view.el.style.setProperty('--name-sq', sq.toFixed(3));
+          else s.view.el.style.removeProperty('--name-sq');
           if (covered) {
-            const pick = this._stripFit(s.view, strips[i], fo, s._nameLines || 2);
+            const pick = sq != null
+              ? this._stripFit(this._oneLineView(s.view, fo.nameCap), strips[i], fo, 1)
+              : this._stripFit(s.view, strips[i], fo, s._nameLines || 2);
             if (pick) { s.view.setNameFit(pick.f, pick.n); s._rise = pick.rise; }
             s.view.el.style.setProperty('--fan-vis', (strips[i] / 224).toFixed(3));
           } else s.view.el.style.removeProperty('--fan-vis');
@@ -1311,6 +1399,7 @@ export class Hand {
          rule is read from furthest away. */
       for (const s of this.slots) {
         s.view.el.style.removeProperty('--fan-vis');
+        s.view.el.classList.remove('is-name-squeezed');
         s.view.fitRules?.(176, 116, { lo: T.floorPx / uPx, hi: Math.min(15.5, Math.max(T.openCapPx, 18.5 * uPx)) / uPx });
       }
     }
