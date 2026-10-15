@@ -79,10 +79,11 @@ export const TUNE = {
   hoverLift: 26, hoverScale: 1.18, hoverNudge: 30,
   /* ROUND 32 GRAFT: IN A CROWDED FAN THE CARD LIFTS CLEAR. Nine Tricks overlap
      by half a card, so a hovered one at the open hand's 26 px still stood in
-     the row, its neighbours' tops level with its name. It rises further
-     (its bottom edge clears the row's lowest corners) and its neighbours step
-     a little further aside, so the names either side of it stay readable. */
-  crowdLift: 46, crowdNudge: 40,
+     the row, its neighbours' tops level with its name. It rises further, on
+     top of the row, its whole face clear. (Its neighbours step aside no
+     further than an open hand's: at the row's ends a wider step pushed the
+     outer card over the draw pile.) */
+  crowdLift: 46,
   kick: 1 / 60,          // sub-frame advance applied in the event handler
   // fan
   refan: 0.30, refanStagger: 0.010,
@@ -1106,7 +1107,7 @@ export class Hand {
     // GEOMETRY note in TUNE. `_layout` pushes the anchor back down by this so
     // the card grows equally in both directions.
     f.grow = ch * (T.hoverScale - 1) / 2;
-    f.nudge = (f.crowded ? T.crowdNudge : T.hoverNudge) * fit;
+    f.nudge = T.hoverNudge * fit;
     this.fit = fit;
     this._fanKey = key;
     return f;
