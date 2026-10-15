@@ -3614,9 +3614,9 @@
   transform: translate(-50%, -50%);
   border-radius: 50%;
   background: radial-gradient(50% 50% at 50% 50%,
-    rgba(170, 192, 240, .17) 0%,
-    rgba(150, 172, 226, .10) 38%,
-    rgba(140, 160, 214, .04) 62%,
+    rgba(170, 192, 240, .24) 0%,
+    rgba(150, 172, 226, .14) 38%,
+    rgba(140, 160, 214, .05) 62%,
     transparent 78%);
 }
 /* THE BUTLER's regalia plate hangs lower under his shoes (BOSS_PLATE_DROP,
@@ -3642,7 +3642,9 @@
    origin, the rig's ground line 20 of its 320 units off its foot), which
    the open frame behind him has the room for -- his blue flame stays left of
    the crown, where his lean carries it. */
-.cb-root[data-arena="boss"] .cb-enemies[data-n="1"] .cb-enemy[data-tier="boss"][data-silhouette="butler"]:not([data-role="bossPart"]) { --mirror-k: 1.07; }
+/* (and he stands square under the crown rather than a step toward his
+   coat-tails, so the flame of his head leans clear of its medallion) */
+.cb-root[data-arena="boss"] .cb-enemies[data-n="1"] .cb-enemy[data-tier="boss"][data-silhouette="butler"]:not([data-role="bossPart"]) { --mirror-k: 1.07; --mirror-x: 0px; }
 .cb-root[data-arena="boss"] .cb-enemies[data-n="1"] .cb-enemy[data-tier="boss"][data-silhouette="butler"]:not([data-role="bossPart"]) .cb-enemy__rig,
 .cb-root[data-arena="boss"] .cb-enemies[data-n="1"] .cb-enemy[data-tier="boss"][data-silhouette="butler"]:not([data-role="bossPart"]) .cb-enemy__flash { transform-origin: 50% 93.75%; }
 
