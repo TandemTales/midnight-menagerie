@@ -135,6 +135,22 @@ export const TUNE = {
      (see `riseMax`) so its name and rules keep the strip. */
   boundVisible: 0.47,
   boundFanDeg: 8,
+  /* ROUND 32: A CROWDED FAN BENDS LESS. At eight Tricks and more a bounded fan
+     tilts its outer cards no further than this: an outer card at 8 degrees
+     hangs ch*sin(8) = 30 px of the Deck's band out past its own corner on each
+     side, and that band is what every covered card's NAME is dealt from. At
+     3.5 the nine-card fan at 1280 gives its covered row ~36 px more. Seven
+     cards sit between the two. */
+  crowdFanDeg: 3.5,
+  /* ROUND 32: THE ROW'S NAMES ON ONE LINE. A crowded row's names are set at
+     one size (round 27) no larger than `nameCapPx`; the fan now takes the
+     largest size, down to this floor, at which every covered card whose name
+     CAN sit on one line in the strip it may be dealt keeps it on one line
+     ("Sit Pretty", "Shake, Boy!"), and only a name that wraps even on an open
+     card ("Put Yourself Back Together") takes two. */
+  oneLineFloorPx: 10.5,
+  crowdCardPx: 110,     // round 32: band per card under which a hand of 8+ ...
+  crowdFit: 0.875,      // ...takes seven-eighths cards (Hand#_fit; a rehearsed scale)
   boundDipMax: 32,
   boundBottomPad: 13,
   boundHitPadTop: 6,    // the backstop's slack above a bounded fan, px      // …and the arc's drop at the ends follows the flatter bend
@@ -546,6 +562,16 @@ export class Hand {
       const vis = this._bounded() ? TUNE.boundVisible : 1 - TUNE.maxOverlap;
       const need = s * ((n - 1) * cw * vis + 2 * A);
       if (need > band) s *= band / need;
+      /* ROUND 32: A BIG HAND OF SMALLER CARDS, where the band is short. Past
+         seven Tricks every covered card shows a strip, and a strip's name and
+         rules are held in SCREEN px (`readPx`, `nameCapPx`): what a covered
+         card gives up to a smaller face is art the next card covers anyway,
+         while the last card's width and every strip's padding come back to
+         the row. Nine Tricks on the Deck's 903 px band at a whole card dealt
+         "Sit Pretty" an 82 px strip and wrapped it; at seven eighths every
+         name that fits one line keeps it. A band with the room (1600: 125 px
+         a card) keeps whole cards. */
+      if (this._bounded() && n >= 8 && band / n < TUNE.crowdCardPx) s = Math.min(s, TUNE.crowdFit);
     }
     // QUANTISED, and this matters more than it looks. The compositor rasters a
     // card at its current transform scale; a scale it has not seen before is a
@@ -579,7 +605,10 @@ export class Hand {
   _fanTh(n) {
     if (n <= 1) return 0;
     const c = (n - 1) / 2;
-    const cap = this._bounded() ? TUNE.boundFanDeg : TUNE.maxFanDeg;
+    const cap = !this._bounded() ? TUNE.maxFanDeg
+      : n >= 8 ? TUNE.crowdFanDeg
+      : n === 7 ? (TUNE.boundFanDeg + TUNE.crowdFanDeg) / 2
+      : TUNE.boundFanDeg;
     return Math.min(TUNE.rotPerCard * this._flat(n) * c, cap) * Math.PI / 180;
   }
 
@@ -1083,15 +1112,16 @@ export class Hand {
    * on a tie. `strip` is this card's own strip, in design units.
    * @returns {{f:number,n:number,rf:number,rise:number}|null}
    */
-  _stripFit(view, strip, { read, floor, capU, nameCap, nameFloor }) {
+  _stripFit(view, strip, { read, floor, capU, nameCap, nameFloor }, maxLines = 2) {
     // round 27: the rules run from 13u to 19u short of the strip's edge, and
-    // the plate is 17u short of it; a name takes two lines at most
+    // the plate is 17u short of it; a name takes two lines at most (round 32:
+    // one, where the row has dealt it the strip for one -- Hand#_strips)
     const W = strip - 33;
-    const ladder = view.nameLadder?.(strip - 17, { hi: nameCap, floor: nameFloor, maxLines: 2 }) || [];
+    const ladder = view.nameLadder?.(strip - 17, { hi: nameCap, floor: nameFloor, maxLines }) || [];
     if (!ladder.length || !view.rulesNeed) return null;
     let best = null;
     for (const o of ladder) {
-      if (o.n === 1 && o.f < Math.min(14, nameCap * 0.9)) continue;
+      if (o.n === 1 && maxLines > 1 && o.f < Math.min(14, nameCap * 0.9)) continue;
       // the plate stands on the type line and may not climb past 82u, where
       // the cost coin's shadow ends: a name on four lines is set no larger
       // than that allows (measured: 4 x 18u lines put the plate over the coin)
@@ -1129,10 +1159,26 @@ export class Hand {
     // round 27: a covered card's type tab (scenes/combat.css) is 40u of
     // padding and margin round its word at `o.type` design units
     const tabNeed = (v) => 40 + (o.type || 0) * (v.typeWordEm || 4.4);
+    /* round 32: the lines each name is held to. One, wherever a strip the
+       fan may deal (up to `stripTake`) holds the name on one line at the
+       row's size; two only for a name that cannot. */
+    const lines = new Map();
+    for (const s of cov) {
+      let k = 2;
+      if (o.oneLine) {
+        for (let sw = Math.floor(strip * TUNE.stripGive); sw <= strip * TUNE.stripTake; sw += 2) {
+          const lad = s.view.nameLadder?.(sw - 17, { hi: o.nameCap, floor: o.nameCap * 0.97, maxLines: 1 }) || [];
+          if (lad.length && lad[0].n === 1) { k = 1; break; }
+        }
+      }
+      lines.set(s, k);
+      s._nameLines = k;
+    }
     const ok = (s, sw) => {
       if (sw < tabNeed(s.view)) return false;
-      const p = this._stripFit(s.view, sw, o);
-      return !!p && p.f >= o.nameCap * 0.97 && p.rf >= o.read;
+      const k = lines.get(s) || 2;
+      const p = this._stripFit(s.view, sw, o, k);
+      return !!p && p.f >= o.nameCap * 0.97 && p.rf >= o.read && p.n <= k;
     };
     const want = cov.map((s) => {
       if (ok(s, strip)) {
@@ -1146,8 +1192,12 @@ export class Hand {
     const D = want.reduce((acc, w) => acc + (w.need - strip), 0);
     const A = want.reduce((acc, w) => acc + w.give, 0);
     const t = Math.min(D, A);
-    if (!(t > 0)) return cov.map(() => strip);
-    return want.map((w) => strip + (w.need - strip) * t / D - w.give * t / A);
+    // round 32: whether every card got what its words need at this size
+    const fits = cov.every((s, i) => ok(s, Math.min(want[i].need, strip * TUNE.stripTake))) && D <= A + 0.5;
+    if (!(t > 0)) { const out = cov.map(() => strip); out.fits = fits; return out; }
+    const out = want.map((w) => strip + (w.need - strip) * t / D - w.give * t / A);
+    out.fits = fits;
+    return out;
   }
 
   _layout(o = {}) {
@@ -1214,7 +1264,21 @@ export class Hand {
         + this.slots.map((s) => s.view.el.dataset.uid + ':' + (s.view.textRev || 0)).join(',');
       if (this._dealKey !== dealKey || !this._deal) {
         this._dealKey = dealKey;
-        const strips = this._strips(strip, fo);
+        /* round 32: the largest name size, from the row's cap down to
+           `oneLineFloorPx`, at which every name that can sit on one line
+           does and every card's words still fit what it is dealt; failing
+           that, round 20's deal at the cap, two lines allowed */
+        let strips = null;
+        const capPx = fo.nameCap * uPx;
+        for (let px = capPx; px >= T.oneLineFloorPx - 1e-6; px -= 0.25) {
+          const tryO = Object.assign({}, fo, { nameCap: px / uPx, oneLine: true });
+          const got = this._strips(strip, tryO);
+          if (got.fits) { strips = got; fo.nameCap = tryO.nameCap; fo.oneLine = true; break; }
+        }
+        if (!strips) {
+          strips = this._strips(strip, fo);
+          for (const sl of this.slots) sl._nameLines = 2;
+        }
         const x = new Array(n);
         x[0] = -c * F.step;
         for (let i = 1; i < n; i++) x[i] = x[i - 1] + strips[i - 1] * uPx;
@@ -1225,7 +1289,7 @@ export class Hand {
           s._rise = 0;
           s._strip = covered ? strips[i] : 0;
           if (covered) {
-            const pick = this._stripFit(s.view, strips[i], fo);
+            const pick = this._stripFit(s.view, strips[i], fo, s._nameLines || 2);
             if (pick) { s.view.setNameFit(pick.f, pick.n); s._rise = pick.rise; }
             s.view.el.style.setProperty('--fan-vis', (strips[i] / 224).toFixed(3));
           } else s.view.el.style.removeProperty('--fan-vis');

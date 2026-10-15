@@ -46,6 +46,18 @@ const PORTRAITS = new URL('../../assets/portraits/', import.meta.url).href;
 const PLATE_GAP = 12;
 
 /**
+ * ROUND 32, ONE STAGE: how far above the top of a resting five-card fan every
+ * fighter's feet stand. The Kid stood on the field's bottom edge and the
+ * creatures on a line 84px above it, so at 1280 her boots were 60px lower down
+ * the floor than The Butler's and the board read as two islands. Now one line,
+ * measured from the hand (`--stage-fl`, CombatScene#_syncStage), carries them
+ * all, and it leaves exactly a plate's height above the cards.
+ */
+const STAGE_FLOOR_GAP = 96;
+/** How far under a boss's soles his regalia plate hangs (combat.css). */
+const BOSS_PLATE_DROP = 14;
+
+/**
  * HOUSE RULE TEXTS, so an intent can say what the rule DOES before it lands.
  *
  * The Door Greeter's intent tooltip read "Announces the House Rule NO RUNNING."
@@ -1090,6 +1102,7 @@ export class CombatScene extends Scene {
 
   _fitPlates() {
     if (!this.views || !this.views.size || !this.$handHost) return;
+    this._syncStage();
     let top = window.innerHeight;
     // the visible cards…
     for (const c of this.$handHost.querySelectorAll('.mm-card')) {
@@ -1357,6 +1370,42 @@ export class CombatScene extends Scene {
       if (et && !et.hidden) for (const el of et.querySelectorAll('.cb-endturn__medal, .cb-endturn__k')) put('right', el);
     }
     this.hand.setBounds({ left, right, low });
+    this._syncStage();
+  }
+
+  /**
+   * ROUND 32: THE FLOOR LINE. Every fighter -- the Kid, her Companion and each
+   * creature -- stands on one line, `--stage-fl` on the root (viewport px),
+   * set a plate's height above where a resting five-card fan's top stands, so
+   * the floor never moves as cards are drawn and played. combat.css hangs the
+   * field, the Kid and the stage's light from it. Cheap and idempotent: it
+   * runs with the hand's bounds (resize, fonts, a pile appearing).
+   */
+  _syncStage() {
+    if (!this.hand || !this.hand.restTop || !this.$handHost || !this.root) return;
+    const host = this.$handHost.getBoundingClientRect();
+    if (!host.height) return;
+    const rest = host.top + this.hand.restTop(5);
+    if (!Number.isFinite(rest)) return;
+    /* A creature's plate lies in its 84px ground band; a boss's regalia
+       plate (crest, winged cartouche, heavier tube) hangs from his soles and
+       is taller than that, by an amount that grows with the screen. His
+       board's floor stands as much higher, so his plate clears the cards
+       without his ground line rising away from the Kid's
+       (EnemyView#setPlateLimit, combat.css `--boss-sole`). */
+    let below = STAGE_FLOOR_GAP - PLATE_GAP;
+    if (this.views) {
+      for (const v of this.views.values()) {
+        if (v.$plate && v._risesForPlate && v._risesForPlate()) below = Math.max(below, v.$plate.offsetHeight + BOSS_PLATE_DROP);
+      }
+    }
+    // (+8: the fan's pointer catcher stands 6px over its cards, and the
+    // plates are kept clear of that, CombatScene#_fitPlates)
+    const gap = below + PLATE_GAP + (below > STAGE_FLOOR_GAP - PLATE_GAP ? 8 : 0);
+    const fl = Math.round(Math.max(window.innerHeight * 0.44, rest - gap));
+    if (fl === this._stageFl) return;
+    this._stageFl = fl;
+    this.root.style.setProperty('--stage-fl', fl + 'px');
   }
 
   /** Hand asked to commit a card. Returning false rejects it with a shake. */
