@@ -3525,3 +3525,187 @@
    intent at the row's right end stays clear of it. */
 .cb-rules,
 .cb:has(.cb-mates:not([hidden])) .cb-rules { left: auto; right: clamp(12px, 1.6vw, 30px); width: min(300px, 23vw); }
+
+/* ══ ROUND 32 GRAFT · ONTO PHTHALO'S ONE STAGE ══════════════════════════════
+   All three judges of round 32 (VERDICTS-r32.md, GRAFT-r32.md items 1-7).
+   Appended after round 32's own sections, so each rule here wins by order
+   where its selector matches theirs. */
+
+/* ── 1. THE LONG NAME ON ONE LINE ──────────────────────────────────────────
+   "Put Yourself Back Together" at the crowded row's one name size is 1.4
+   cards wide; it wrapped to two lines at 1280. ui/hand.js (TUNE.squeeze*,
+   Hand#_squeezeOf) deals it nearly a whole card of strip, out of the short
+   cards' art, and publishes `--name-sq`: the fraction of its width its
+   lettering is condensed to so that, at the row's size and with its tracking
+   pulled in, it sits on ONE line. Its capitals stay as tall as every other
+   name's in the row; only their set is closer. Its plate runs 2u inside the
+   strip with 7u caps and stops 8u short of its right edge, where the next card tilts over it; the lettering keeps 8u clear of each cap (the 26u hand.js keeps). */
+.cb-handhost.kit-cards .mm-hand.is-crowded .mm-card.is-name-squeezed[data-rarity][data-type][data-uid]:not(.is-fan-last):not(.is-hover):not(.is-selected):not(.is-dragging):not(.is-aiming):not(.is-hero) .mm-card__banner {
+  left: calc(2 * var(--u));
+  width: calc((var(--strip) - 10) * var(--u));
+  border-image-width: calc(10.7 * var(--u)) calc(7 * var(--u));
+}
+.cb-handhost.kit-cards .mm-hand.is-crowded .mm-card.is-name-squeezed[data-rarity][data-type][data-uid]:not(.is-fan-last):not(.is-hover):not(.is-selected):not(.is-dragging):not(.is-aiming):not(.is-hero) .mm-card__name {
+  position: absolute; left: 50%; top: 50%;
+  padding: 0;
+  white-space: nowrap;
+  letter-spacing: -.03em;
+  transform: translate(-50%, -50%) scaleX(var(--name-sq, 1));
+}
+
+/* ── 2. THE PARTY AN EQUAL ON THE STAGE ────────────────────────────────────
+   "the Kid and Bones stand small and well left of centre, about half the
+   Butler's height, so the left half of the stage between them and the boss
+   is empty floor". A step larger again (x1.12, the rig's 260 x 285 at
+   0.1316vh a unit) on the SAME line, `--stage-fl` (her soles 15 rig units
+   over the box's foot, which scales with her), and stood further in: on a
+   boss's board well toward him, on an ordinary board a little, with the
+   creatures' row stepped right to keep air between her crutch and the first
+   of them. */
+.cb-root .cb-hero,
+.cb-root[data-arena] .cb-hero {
+  --hero-w: 34.2vh;
+  --hero-x: 25vw;
+  width: var(--hero-w); height: 37.5vh;
+  left: max(8px, calc(var(--hero-x) - var(--hero-w) * .46));
+  bottom: calc(var(--stage-band) - 1.97vh);
+  /* ONE filter, as before (round 21's): a chain of three -- a dark edge, a
+     warm rim, the soft shadow -- measured a slower frame on the Foyer's
+     ordinary fight, where the Deck's iGPU already runs at the vsync edge, and
+     the render-scale governor answered it by dropping the room's resolution.
+     Her warmth comes from the floor pool round her boots instead (below). */
+}
+.cb-root[data-arena="boss"] .cb-hero { --hero-x: 29vw; }
+.cb-enemies:is([data-n="4"], [data-n="5"], [data-n="6"]) ~ .cb-herohost .cb-hero { --hero-x: 13vw; left: max(8px, calc(var(--hero-x) - var(--hero-w) * .46)); }
+.cb-enemies:is([data-n="1"], [data-n="2"], [data-n="3"]) { padding-left: clamp(0px, 14vw, 260px); }
+/* the contact under her boots and under her Companion's paws: dense and dark
+   at the soles, a warm dark in lamplight, and the warm pool round it a step
+   brighter so she stands in a light of her own as they do */
+.cb-root .cb-hero .pr-s1 { stop-color: color-mix(in srgb, var(--ink-900) 94%, var(--atmo-key, var(--flame-400))); stop-opacity: 1; }
+.cb-root .cb-hero .pr-s2 { stop-opacity: .72; }
+.cb-root .cb-hero .pr-p1 { stop-opacity: .5; }
+
+/* ── 3. THE BOSS PLANTED ───────────────────────────────────────────────────
+   "his contact shadow is so faint his shoes look pasted onto the
+   floorboards", and RAWUMBER's lit floor pool asked for, without its cone. */
+/* a tighter, darker contact under his shoes... */
+.cb-root[data-arena="boss"] .cb-enemy[data-tier="boss"]:not([data-role="bossPart"]) .cb-enemy__pool {
+  width: 92%; height: 36px; bottom: -14px;
+  background:
+    radial-gradient(21% 30% at 50% 42%,
+      rgba(0, 0, 0, .98) 0%,
+      rgba(0, 0, 0, .78) 55%,
+      transparent 82%),
+    radial-gradient(44% 50% at 50% 48%,
+      color-mix(in srgb, var(--ink-900) 88%, transparent) 0%,
+      color-mix(in srgb, var(--ink-900) 40%, transparent) 55%,
+      transparent 80%);
+  filter: blur(1px);
+}
+/* ...and the soft oval of cold light he stands in, the moonlight off his
+   frame's glass landing on the boards: plain alpha, the size of his stance,
+   no cone above it */
+.cb-root[data-arena="boss"] .cb-enemy[data-tier="boss"]:not([data-role="bossPart"]) .cb-enemy__pool::after {
+  content: ''; position: absolute; z-index: -2; pointer-events: none;
+  left: 50%; top: 50%;
+  width: 230%; height: 330%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(50% 50% at 50% 50%,
+    rgba(170, 192, 240, .24) 0%,
+    rgba(150, 172, 226, .14) 38%,
+    rgba(140, 160, 214, .05) 62%,
+    transparent 78%);
+}
+/* THE BUTLER's regalia plate hangs lower under his shoes (BOSS_PLATE_DROP,
+   combat.js: 14 -> 30) and a size slimmer, so its crescent and fleur never
+   reach his feet; the floor line gives the difference */
+.cb-root[data-arena="boss"] .cb-enemy[data-tier="boss"]:not([data-role="bossPart"]) .cb-enemy__plate {
+  top: calc(100% - var(--e-band) - var(--e-rise, 0px) + 30px);
+}
+.cb-root[data-arena="boss"] .cb-enemy[data-tier="boss"]:not([data-role="bossPart"]) .cb-enemy__name {
+  --bp-h: clamp(46px, 3.45vw, 56px);
+  margin-top: calc(var(--bp-h) * .3);
+}
+/* The frame and the intent in its crown come down 20px, so the crown's
+   medallion has air under the HUD's rail, and a boss stands as much shorter
+   under it, so an upright one's head (the Confectioner's hat) keeps its gap
+   under the crown. The Butler keeps his height (below): he stoops, and the
+   flame of his head is carried left of the crown. */
+.cb-root[data-arena="boss"] .cb-enemy[data-tier="boss"]:not([data-role="bossPart"]) {
+  --boss-h: min(calc(430px * var(--e-sz)), calc((var(--stage-fl) - 120px - var(--e-rise, 0px)) * 1.03));
+}
+.cb-root[data-arena="boss"] .cb-enemies[data-n="1"] .cb-enemy[data-tier="boss"][data-silhouette="butler"]:not([data-role="bossPart"]) {
+  --boss-h: min(calc(430px * var(--e-sz)), calc((var(--stage-fl) - 100px - var(--e-rise, 0px)) * 1.03));
+}
+.cb-root[data-arena="boss"] .cb-enemy[data-tier="boss"]:not([data-role="bossPart"]) > .cb-enemy__above { bottom: calc(100% - 30px); }
+/* (the Butler's column is the full height, so his crown comes down into
+   its head instead) */
+.cb-root[data-arena="boss"] .cb-enemies[data-n="1"] .cb-enemy[data-tier="boss"][data-silhouette="butler"]:not([data-role="bossPart"]) > .cb-enemy__above { bottom: calc(100% - 50px); }
+.cb-root[data-arena="boss"] .cb-enemies[data-n="1"] .cb-enemy[data-tier="boss"][data-silhouette="butler"]:not([data-role="bossPart"]) .cb-enemy__alcove {
+  top: calc(60px - var(--al-ph) - var(--al-iv) / 2 - var(--al-w) * 62 / 437);
+}
+/* The Butler stoops from the waist, so his painting stands well under his
+   stage's height: he is drawn a step larger from his shoes (RAWUMBER's
+   origin, the rig's ground line 20 of its 320 units off its foot), which
+   the open frame behind him has the room for -- his blue flame stays left of
+   the crown, where his lean carries it. */
+/* (and he stands square under the crown rather than a step toward his
+   coat-tails, so the flame of his head leans clear of its medallion) */
+.cb-root[data-arena="boss"] .cb-enemies[data-n="1"] .cb-enemy[data-tier="boss"][data-silhouette="butler"]:not([data-role="bossPart"]) { --mirror-k: 1.07; --mirror-x: 0px; }
+.cb-root[data-arena="boss"] .cb-enemies[data-n="1"] .cb-enemy[data-tier="boss"][data-silhouette="butler"]:not([data-role="bossPart"]) .cb-enemy__rig,
+.cb-root[data-arena="boss"] .cb-enemies[data-n="1"] .cb-enemy[data-tier="boss"][data-silhouette="butler"]:not([data-role="bossPart"]) .cb-enemy__flash { transform-origin: 50% 93.75%; }
+
+/* ── 4. CONDITIONS A SIZE UP AGAIN ─────────────────────────────────────────
+   "make the Kid's and the Butler's chips about 25% bigger so the count
+   numerals are at least 12px and their gold rings read as medallions".
+   The Kid's and a lone boss's: ~41px of medallion at 1280 (it was 34). Every
+   count, the creatures' rows' too, is struck on a 23px coin (it was 19).
+   A row of creatures keeps round 32's medallion (CERULEAN's size or more):
+   beside a gauge in a 130px column a larger one wraps the row upward over
+   the creature's own body after two conditions. */
+.cb-root .cb-player .cb-status,
+.cb-root[data-arena="boss"] .cb-enemies[data-n="1"] .cb-enemy[data-tier="boss"]:not([data-role="bossPart"]) .cb-enemy__vitals > .cb-enemy__statuses { --roundel: clamp(41px, 3.2vw, 48px); }
+.cb-status.kit-roundel > .kit-coin {
+  --coin: max(23px, calc(var(--roundel) * .56));
+  font-size: calc(var(--coin) * .76);
+}
+/* the boss's tray tucked up to his gauge's end knob, its medallions closer */
+.cb-root[data-arena="boss"] .cb-enemies[data-n="1"] .cb-enemy[data-tier="boss"]:not([data-role="bossPart"]) .cb-enemy__vitals > .cb-enemy__statuses {
+  left: calc(100% - 6px);
+  gap: 7px 8px;
+}
+.cb-root[data-arena="boss"] .cb-enemies[data-n="1"] .cb-enemy[data-tier="boss"]:not([data-role="bossPart"]) .cb-enemy__vitals > .cb-enemy__statuses:not(:empty) {
+  padding: 4px 22px 11px 14px;
+}
+
+/* ── 5. THE ORDINARY FIGHT'S ENEMY ROW ─────────────────────────────────────
+   The floor stands 16px further above the cards (STAGE_FLOOR_GAP, combat.js:
+   96 -> 112), each plate hangs 6px closer under its creature, and each
+   creature sits down into its own shadow: the contact pool comes up 6px to
+   where the paintings' feet are, its core a step darker. */
+.cb-root .cb-enemy:not([data-tier="boss"]) .cb-enemy__plate { margin-bottom: 6px; }
+.cb-root .cb-enemy:not([data-tier="boss"]) .cb-enemy__pool {
+  bottom: -7px;
+  background:
+    radial-gradient(27% 34% at 50% 40%,
+      rgba(0, 0, 0, .98) 0%,
+      rgba(0, 0, 0, .72) 55%,
+      transparent 80%),
+    radial-gradient(58% 58% at 50% 50%,
+      color-mix(in srgb, var(--ink-900) 84%, transparent) 0%,
+      transparent 76%);
+}
+
+/* ── 6. THE HOVERED CARD LIFTS CLEAR ───────────────────────────────────────
+   In a crowded fan the card under the pointer or the keyboard rises fully
+   clear of its neighbours (TUNE.crowdLift, ui/hand.js) on a deeper shadow,
+   its edge lit gold. The glow is on the card's own always-present lift
+   layer, so only its opacity changes on hover. */
+.cb-handhost.kit-cards .mm-hand.is-crowded .mm-card .mm-card__lift {
+  box-shadow:
+    0 calc(12 * var(--u)) calc(22 * var(--u)) rgba(0, 0, 0, .7),
+    0 calc(30 * var(--u)) calc(60 * var(--u)) rgba(0, 0, 0, .6),
+    0 0 0 calc(1.5 * var(--u)) color-mix(in srgb, var(--kit-gold-hi) 85%, transparent),
+    0 0 calc(18 * var(--u)) calc(2 * var(--u)) color-mix(in srgb, var(--kit-candle) 55%, transparent);
+}

@@ -52,10 +52,13 @@ const PLATE_GAP = 12;
  * the floor than The Butler's and the board read as two islands. Now one line,
  * measured from the hand (`--stage-fl`, CombatScene#_syncStage), carries them
  * all, and it leaves exactly a plate's height above the cards.
+ * (Round 32 graft: 96 -> 112. The judges: "the Door Greeter's 29/29 bar nearly
+ * touches the first Sit Pretty card"; 16px more floor between them.)
  */
-const STAGE_FLOOR_GAP = 96;
-/** How far under a boss's soles his regalia plate hangs (combat.css). */
-const BOSS_PLATE_DROP = 14;
+const STAGE_FLOOR_GAP = 112;
+/** How far under a boss's soles his regalia plate hangs (combat.css).
+ *  (Round 32 graft: 14 -> 30, so its crescent never reaches his shoes.) */
+const BOSS_PLATE_DROP = 30;
 
 /**
  * HOUSE RULE TEXTS, so an intent can say what the rule DOES before it lands.

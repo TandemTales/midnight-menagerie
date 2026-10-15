@@ -2416,6 +2416,10 @@ export class PlayerView {
         <g class="pr-cast">
           <ellipse class="pr-pool" cx="4" cy="6" rx="104" ry="30" fill="url(#${gid}p)"/>
           <ellipse class="pr-shadow" cx="4" cy="5" rx="52" ry="12" fill="url(#${gid}s)"/>
+          <!-- (round 32 graft) her Companion's own contact, under its paws: on
+               the floor, so it does not bob with it (see _tickKid). Not .pr-shadow:
+               fx/atmosphere.js casts the room's shadow from that one. -->
+          <ellipse class="pr-palshadow" cx="-72" cy="4" rx="30" ry="7" fill="url(#${gid}s)"/>
         </g>
         <g class="pr-root">
           <!-- The Kid's own art, behind the Companion so she is never drawn over
@@ -2545,6 +2549,7 @@ export class PlayerView {
     this.$kidImg = el.querySelector('.pr-kidimg');
     this.$kidRect = el.querySelector('.pr-kidrect');
     this.$palSet = el.querySelector('.pr-palset');
+    this.$palShadow = el.querySelector('.pr-palshadow');
     /* Everything the drawn Kid is made of. Held as a list because the swap hides
        all of it at once and `update()` goes on writing transforms into it -- the
        writes are harmless on a hidden node, and keeping them means the rig is
@@ -2772,6 +2777,8 @@ export class PlayerView {
       if (this.$palSet) {
         this.$palSet.setAttribute('transform',
           `translate(${f(-(fr.fw * s / 2 + 10))} ${f(-SPRITE_RIG_DY)})`);
+        // (round 32 graft) and its contact shadow under it, on the floor line
+        this.$palShadow?.setAttribute('cx', f(-(fr.fw * s / 2 + 10)));
       }
       this._kidClip = fr.clip;
     }
