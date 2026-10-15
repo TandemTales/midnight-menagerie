@@ -87,7 +87,25 @@ class Server(socketserver.ThreadingTCPServer):
     allow_reuse_address = True
     daemon_threads = True
 
+class Server6(Server):
+    address_family = __import__('socket').AF_INET6
+
+# Every test and tool says http://localhost, and Windows resolves localhost to ::1
+# FIRST.  With only 127.0.0.1 bound, each connection waited out a failed ::1
+# attempt -- 0.22 s on 2026-10-14 against 0.002 s for 127.0.0.1 -- so a page's
+# ~200 module requests took 10 s to load, and steam-deck, gamepad and
+# sprites/clips timed out on every build.  So listen on ::1 as well (loopback
+# only, like 127.0.0.1); a machine with no IPv6 just skips it.
+def _serve6():
+    try:
+        httpd6 = Server6(('::1', PORT), Handler)
+    except OSError as e:
+        print(f"(no ::1 listener: {e})", flush=True)
+        return
+    httpd6.serve_forever()
+
 if __name__ == '__main__':
     with Server(('127.0.0.1', PORT), Handler) as httpd:
+        threading.Thread(target=_serve6, daemon=True).start()
         print(f"Midnight Menagerie dev server → http://localhost:{PORT}/game/index.html", flush=True)
         httpd.serve_forever()
