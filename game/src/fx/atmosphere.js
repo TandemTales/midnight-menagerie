@@ -1007,10 +1007,13 @@ export const REGIONS = {
        second cold moon on the path; one pool, the frame budget) */
     /* (round 34: the lanterns' pool stronger and wider, and the moon on
        the near lawn across from it -- both survey-5 judges: the lower half
-       "an empty, soft, unlit floor plane"; its tufts and blades read lit) */
+       "an empty, soft, unlit floor plane"; its tufts and blades read lit)
+       (second pass: 6.0 and 4.4, from 3.2 and 2.0 -- painted red and green
+       they lay where they were meant to, and at the old strengths the dark
+       turf took them as nothing) */
     nearFloor: { fall: 0.95,
-                 pool: { ahead: 3.8, across: -0.3, rAlong: 3.6, rAcross: 4.0, k: 3.2, color: '#d9a66e' },
-                 pool2: { ahead: 3.2, across: 2.6, rAlong: 3.0, rAcross: 2.6, k: 2.0, color: '#8ea6cc' } },
+                 pool: { ahead: 3.8, across: -0.3, rAlong: 3.6, rAcross: 4.0, k: 6.0, color: '#d9a66e' },
+                 pool2: { ahead: 3.2, across: 2.6, rAlong: 3.0, rAcross: 2.6, k: 4.4, color: '#8ea6cc' } },
     particles: { mix: [[PTYPE.SPORE, 0.44], [PTYPE.ASH, 0.30], [PTYPE.DUST, 0.26]],
                  tint: '#e0d8a8', wispTint: '#b08fd8', emberTint: '#d8a04a',
                  speed: 0.75, scale: 1.3, wind: 1.4, density: 0.95 },
@@ -1799,10 +1802,15 @@ export const ROOM_KINDS = {
              unlit floor plane"): the gardener's things on the flags under
              the gallery rail -- a stand of pots by the lantern, a fern and
              a pair of pots set down at the left, a tall fern at the right */
-          { shape: 74, edge: 0.22, z: -0.6, tone: 0.94, centre: 1, fore: 1, seed: 6.05, hM: 0.85 },
-          { shape: 74, edge: 0.29, z: -1.4, tone: 0.94, centre: 1, fore: 1, seed: 5.25, hM: 0.65 },
-          { shape: 76, edge: 0.70, z: 2.0, tone: 0.94, centre: 1, fore: 1, scale: 1.30 },
-          { shape: 74, edge: 0.90, z: 3.0, tone: 0.94, centre: 1, fore: 1, seed: 1.75, hM: 1.5 },
+          /* (second pass: at a metre and under they read from the gallery
+             as "a handful of small plants" -- the gardener's big pots, and a
+             palm in its tub standing up into the view at either hand, so
+             the planting is at several heights from the flags up) */
+          { shape: 74, edge: 0.22, z: -0.6, tone: 0.94, centre: 1, fore: 1, seed: 6.05, hM: 1.55 },
+          { shape: 74, edge: 0.30, z: -1.6, tone: 0.94, centre: 1, fore: 1, seed: 5.25, hM: 1.10 },
+          { shape: 76, edge: 0.70, z: 2.0, tone: 0.94, centre: 1, fore: 1, scale: 1.55 },
+          { shape: 74, edge: 0.92, z: 3.0, tone: 0.94, centre: 1, fore: 1, seed: 1.75, hM: 2.6 },
+          { shape: 74, edge: 0.07, z: 2.4, tone: 0.94, centre: 1, fore: 1, seed: 4.15, hM: 2.9 },
         ],
         /* (round 34: 1.0 of the wing's 36 -- the 0.82 of 44 it was judged with) */
         vantage: { at: 'above', rise: 2.9, drop: 0.0, fwd: 0.4, ahead: 9.0, count: 1.0 } },
@@ -1858,8 +1866,11 @@ export const ROOM_KINDS = {
           { shape: 75, x: -5.60, z: -1.60, tone: 0.86 },
         ],
         /* ...and the moon through the roof on the near flags at the left, so
-           the walk's left half is not a black field under the lamp's right */
-        nearFloor: { pool2: { ahead: 3.0, across: -1.8, rAlong: 2.8, rAcross: 2.8, k: 2.2, color: '#7fa6c8' } } },
+           the walk's left half is not a black field under the lamp's right
+           (second pass: + across, 5.4 m on -- this vantage draws mirrored,
+           and at 3 m the pool lay under the frame's foot; measured with the
+           pool painted red) */
+        nearFloor: { pool2: { ahead: 5.4, across: 2.9, rAlong: 3.4, rAcross: 2.4, k: 3.6, color: '#7fa6c8' } } },
       /* and a vinery's floor is bedded out in rows under the rods; it is a
          lean-to against the garden wall, so it is shallower than the great
          house (0.7 of its depth) and that wall is near enough to read */

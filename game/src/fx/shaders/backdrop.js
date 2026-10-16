@@ -4782,19 +4782,29 @@ float mmSeg2V(vec2 p, vec2 a, vec2 b, float r){
    is the tallest clump. Continuous in u (every dome falls to nothing at its
    cell's edge), so its coverage and its pen line are smooth. */
 float yewRagW(float u, float sd, float amp){
+  /* (round 34, second pass: the silhouette read at the far run's
+     distance -- 12-20 m off a 0.2 m clump is a ruled line with a fur on
+     it. So the crown is built in three sizes ON one another: great swells
+     two strides across, each its own height (and a few slumped, where the
+     old wood has died back), the clumps a stride across grown out of them,
+     and the sprays of a hand on those -- a broken leaf line at every
+     distance the maze is seen from) */
+  float x0 = u/1.85 + sd*0.23;
+  float f0 = fract(x0), h0 = mmHash11(floor(x0)*0.91 + sd*0.7);
+  float d0 = sqrt(max(1.0 - 4.0*(f0 - 0.5)*(f0 - 0.5), 0.0))*(0.18 + 0.82*h0*h0)*amp;
   float x1 = u/0.66 + sd*0.37;
   float f1 = fract(x1), h1 = mmHash11(floor(x1)*1.37 + sd);
-  float d1 = sqrt(max(1.0 - 4.0*(f1 - 0.5)*(f1 - 0.5), 0.0))*(0.22 + 0.78*h1*h1)*amp;
+  float d1 = sqrt(max(1.0 - 4.0*(f1 - 0.5)*(f1 - 0.5), 0.0))*(0.20 + 0.80*h1)*amp*0.42 + d0*0.80;
   float x2 = u/0.27 + 0.5 + sd*0.71;
   float f2 = fract(x2), h2 = mmHash11(floor(x2)*2.71 + sd*1.3);
-  float d2 = sqrt(max(1.0 - 4.0*(f2 - 0.5)*(f2 - 0.5), 0.0))*(0.15 + 0.50*h2)*amp*0.50 + d1*0.62;
+  float d2 = sqrt(max(1.0 - 4.0*(f2 - 0.5)*(f2 - 0.5), 0.0))*(0.15 + 0.50*h2)*amp*0.22 + d1*0.90;
   float x3 = u/0.085 + sd*1.9;
   float f3 = fract(x3), h3 = mmHash11(floor(x3)*5.19 + sd*2.1);
-  float sp = max(1.0 - abs(f3 - 0.5)*2.4, 0.0)*step(0.66, h3)*(0.35 + 0.65*h3)*amp*0.60;
-  float sag = 0.040*sin(u*0.37 + sd) + 0.026*sin(u*0.93 + sd*1.7);
+  float sp = max(1.0 - abs(f3 - 0.5)*2.4, 0.0)*step(0.70, h3)*(0.35 + 0.65*h3)*amp*0.38;
+  float sag = 0.060*sin(u*0.37 + sd) + 0.034*sin(u*0.93 + sd*1.7);
   /* the edge feathered with single leaves, a few centimetres, every way */
-  float fth = (abs(fract(u/0.034 + 0.4*sin(u*7.0 + sd)) - 0.5) - 0.25)*0.030;
-  return max(max(d1, d2), d1*0.55 + sp) + sag + fth - 0.32*amp;
+  float fth = (abs(fract(u/0.034 + 0.4*sin(u*7.0 + sd)) - 0.5) - 0.25)*0.034;
+  return max(max(d0, max(d1, d2)), d1*0.70 + sp) + sag + fth - 0.45*amp;
 }
 /* THE HEDGE MAZE'S WALLS. Clipped yew 3.2 m high -- the yew runs' (shape
    28) own height, so a run across the way and the walls either side are one
@@ -4816,7 +4826,11 @@ float hedgeWallH(vec2 q, float qpx, out float occ){
   float wx = q.x - uSize.x*0.5;                  // metres off the far wall's axis
   float u = far > 0.5 ? wx : q.x;
   float sd = uSeed*3.1 + (far > 0.5 ? 0.0 : sign(vWorld.x)*5.7);
-  float top = HH + yewRagW(u, sd, 0.21);
+  /* (round 34, second pass: the swells a metre high -- at 0.2 m the far
+     run's crown read ruled from twenty metres; the court's far hedge,
+     furthest off, the most -- its piers and their balls stand up out of it) */
+  float ragA = court > 0.5 ? 1.00 : (far > 0.5 ? 0.85 : 0.75);
+  float top = HH + yewRagW(u, sd, ragA);
   /* the finials on the far hedge: a ball on a neck or a cone; in the court,
      a clipped ball on every pier, all alike */
   float fp = court > 0.5 ? 3.4 : 6.5;
@@ -4828,8 +4842,12 @@ float hedgeWallH(vec2 q, float qpx, out float occ){
      distance set to a constant where there is none made mmCover's gradient
      a thousand across every cell boundary, and a half-covered pixel there) */
   float fin = 1e3;
+  /* (round 34: a finial stands on the crown where it is, not on a ruled
+     line the crown has grown up round) */
+  float finY = HH;
   if (far > 0.5) {
-    vec2 c = vec2(fxl, q.y - HH);
+    finY += max(yewRagW(u - fxl, sd, ragA), -0.10);
+    vec2 c = vec2(fxl, q.y - finY);
     float nk = mmBox(c - vec2(0.0, 0.10), vec2(0.20, 0.16), 0.06);
     float br = court > 0.5 ? 0.50 : 0.44;
     fin = fk < 0.72 ? length(c - vec2(0.0, 0.18 + br)) - br : wTri(c - vec2(0.0, 0.16), 0.44, 1.15);
@@ -4856,7 +4874,7 @@ float hedgeWallH(vec2 q, float qpx, out float occ){
   /* above the hedge a SIDE wall is not there: skip the leaf entirely (it
      is a third of the side walls' pixels and all of the sky over them) */
   gWDisc = (1.0 - far) * (1.0 - hedge);
-  if (far < 0.5 && q.y > HH + 0.32) { gHedgeAmt = 0.0; return 0.0; }
+  if (far < 0.5 && q.y > HH + 1.05) { gHedgeAmt = 0.0; return 0.0; }
   /* the face: sprays, a slow swell, the foot */
   float tone, lit;
   float rel = yewFace(vec2(u, q.y), qpx, sd, tone, lit);
@@ -4881,7 +4899,7 @@ float hedgeWallH(vec2 q, float qpx, out float occ){
      turning, and its ball is a dome of clipped yew */
   float pier = court * mmCover(0.42 - abs(fxl));
   h += pier*(0.20 - 0.10*smoothstep(0.28, 0.42, abs(fxl)));
-  vec2 bq = vec2(fxl, q.y - HH - 0.68);
+  vec2 bq = vec2(fxl, q.y - finY - 0.68);
   float bdome = sqrt(max(1.0 - dot(bq, bq)/0.25, 0.0));
   h = mix(h, 1.15 + rel*2.4 + bdome*0.6, finC*court);
   /* the painted way through, on the far wall: the path on between the two
@@ -16829,7 +16847,7 @@ float ghMassL(vec2 q, float u, float base, float cw, float h0, float h1, float s
   float ci = floor(x), f = fract(x);
   float cn = f < 0.5 ? ci - 1.0 : ci + 1.0;
   /* ...and a neighbour's fan only where it can reach: its outer third */
-  int nK = abs(f - 0.5) > 0.18 ? 2 : 1;
+  int nK = abs(f - 0.5) > 0.06 ? 2 : 1;
   float d = 1e3;
   for (int k = 0; k < 2; k++){
     if (k >= nK) break;
@@ -17586,7 +17604,7 @@ float yewTop(vec2 msz, float seed){
   float k = yewKind(seed);
   /* (round 34: 0.89 from 0.93 -- the grown-out crown wants the quad's
      room over the set top, yewAmp) */
-  return msz.y*(k < 0.52 ? 0.89 : 0.74);
+  return msz.y*(k < 0.52 ? 0.72 : 0.573);
 }
 float yewArch(vec2 m, float seed){
   if (seed < 19.5) return 1e3;
@@ -17604,22 +17622,32 @@ float yewArch(vec2 m, float seed){
    is the tallest clump. Continuous in u (every dome falls to nothing at its
    cell's edge), so its coverage and its pen line are smooth. */
 float yewRagP(float u, float sd, float amp){
+  /* (round 34, second pass: the silhouette read at the far run's
+     distance -- 12-20 m off a 0.2 m clump is a ruled line with a fur on
+     it. So the crown is built in three sizes ON one another: great swells
+     two strides across, each its own height (and a few slumped, where the
+     old wood has died back), the clumps a stride across grown out of them,
+     and the sprays of a hand on those -- a broken leaf line at every
+     distance the maze is seen from) */
+  float x0 = u/1.85 + sd*0.23;
+  float f0 = fract(x0), h0 = mmHash11(floor(x0)*0.91 + sd*0.7);
+  float d0 = sqrt(max(1.0 - 4.0*(f0 - 0.5)*(f0 - 0.5), 0.0))*(0.18 + 0.82*h0*h0)*amp;
   float x1 = u/0.66 + sd*0.37;
   float f1 = fract(x1), h1 = mmHash11(floor(x1)*1.37 + sd);
-  float d1 = sqrt(max(1.0 - 4.0*(f1 - 0.5)*(f1 - 0.5), 0.0))*(0.22 + 0.78*h1*h1)*amp;
+  float d1 = sqrt(max(1.0 - 4.0*(f1 - 0.5)*(f1 - 0.5), 0.0))*(0.20 + 0.80*h1)*amp*0.42 + d0*0.80;
   float x2 = u/0.27 + 0.5 + sd*0.71;
   float f2 = fract(x2), h2 = mmHash11(floor(x2)*2.71 + sd*1.3);
-  float d2 = sqrt(max(1.0 - 4.0*(f2 - 0.5)*(f2 - 0.5), 0.0))*(0.15 + 0.50*h2)*amp*0.50 + d1*0.62;
+  float d2 = sqrt(max(1.0 - 4.0*(f2 - 0.5)*(f2 - 0.5), 0.0))*(0.15 + 0.50*h2)*amp*0.22 + d1*0.90;
   float x3 = u/0.085 + sd*1.9;
   float f3 = fract(x3), h3 = mmHash11(floor(x3)*5.19 + sd*2.1);
-  float sp = max(1.0 - abs(f3 - 0.5)*2.4, 0.0)*step(0.66, h3)*(0.35 + 0.65*h3)*amp*0.60;
-  float sag = 0.040*sin(u*0.37 + sd) + 0.026*sin(u*0.93 + sd*1.7);
+  float sp = max(1.0 - abs(f3 - 0.5)*2.4, 0.0)*step(0.70, h3)*(0.35 + 0.65*h3)*amp*0.38;
+  float sag = 0.060*sin(u*0.37 + sd) + 0.034*sin(u*0.93 + sd*1.7);
   /* the edge feathered with single leaves, a few centimetres, every way */
-  float fth = (abs(fract(u/0.034 + 0.4*sin(u*7.0 + sd)) - 0.5) - 0.25)*0.030;
-  return max(max(d1, d2), d1*0.55 + sp) + sag + fth - 0.32*amp;
+  float fth = (abs(fract(u/0.034 + 0.4*sin(u*7.0 + sd)) - 0.5) - 0.25)*0.034;
+  return max(max(d0, max(d1, d2)), d1*0.70 + sp) + sag + fth - 0.45*amp;
 }
 /* (the tallest clump a run's quad has room for over its set top) */
-float yewAmp(vec2 msz, float seed){ return min(0.20, (msz.y - yewTop(msz, seed))*0.72); }
+float yewAmp(vec2 msz, float seed){ return min(0.85, (msz.y - yewTop(msz, seed))*0.82); }
 float yewSD(vec2 m, vec2 msz, float seed){
   float hw = msz.x*0.5 - 0.06;
   float k = yewKind(seed);
@@ -17646,7 +17674,7 @@ float yewSD(vec2 m, vec2 msz, float seed){
      ends of a run left ragged with it, never a ruled corner) */
   float ct = m.y - top;
   float endW = smoothstep(hw - 0.05, hw - 0.50, abs(m.x));
-  d -= yewRagP(m.x + seed*2.3, seed, yewAmp(msz, seed)) * smoothstep(-0.55, -0.15, ct) * endW;
+  d -= yewRagP(m.x + seed*2.3, seed, yewAmp(msz, seed)) * smoothstep(-1.10, -0.40, ct) * endW;
   d -= (mmNoise(vec2(m.y*3.2, seed*5.0 + sign(m.x)*3.0)) - 0.5)*0.11 * smoothstep(hw - 0.45, hw - 0.05, abs(m.x)) * step(0.30, m.y);
   return d;
 }
