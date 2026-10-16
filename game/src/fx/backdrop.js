@@ -3098,6 +3098,12 @@ export class Backdrop {
    * the stand-in up for up to a minute. (A note here used to say 29 fps and
    * a worst gap of 2.6 s; that was measured with five jobs.)
    *
+   * (2026-10-15: since every program carries only its own room -- see
+   * ROOM_VARIANTS -- none links in more than ~9 s alone on this machine, and
+   * behind the map the whole queue ran with no frame gap over 0.45 s; the
+   * old prop variants were 13-90 s, the warm-up's own wall and props 150-190
+   * s after the 10-13 Windows update.)
+   *
    * A room shown before its program is ready links it on demand, the
    * stand-in room up meanwhile (Stage._gateLinks, CombatScene._syncColdRoom):
    * never a different picture, and never a frozen one -- a Kennels room set 10
