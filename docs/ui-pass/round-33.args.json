@@ -1,0 +1,53 @@
+{
+  "round": "r33",
+  "maxBuilders": 3,
+  "briefs": [
+    "docs/ui-pass/BRIEF-r0.md",
+    "docs/ui-pass/BRIEF-r1.md",
+    "docs/ui-pass/BRIEF-r33.md"
+  ],
+  "rubrics": [
+    "docs/ui-pass/RUBRIC.md",
+    "docs/ui-pass/RUBRIC-r33.md"
+  ],
+  "samples": [
+    "UI/title.png",
+    "UI/mainMenu.png",
+    "UI/selectCompanion.png",
+    "UI/selectKid.png"
+  ],
+  "tracks": [
+    {
+      "key": "controls",
+      "name": "CONTROLS",
+      "rule": "refine",
+      "screens": [
+        "settings",
+        "piles",
+        "shop",
+        "hud-late"
+      ],
+      "baseline": "TAFFETA",
+      "builders": [
+        {
+          "slot": "a",
+          "code": "COBALT",
+          "port": 9201,
+          "angle": "LITERAL -- the angle that won rounds 20, 23-25 and 29. Work BRIEF-r33's fix list 1 to 4 in order and exactly as written: the small text to 11px FIRST on all four screens, then the one button, then the sliders and the piles rail, then the late run strip."
+        },
+        {
+          "slot": "b",
+          "code": "CADMIUM",
+          "port": 9202,
+          "angle": "ONE CONTROL VOCABULARY. Design the house's control set once, as appended kit.css sections -- the enamel-disc-plus-cartouche button, the price-tag button, the engraved brass rail with its knob, the medallion toggle that cycles -- each drawn to the samples' ornament, then apply that one vocabulary to every control on the four screens and TAKE NONE, then fit the text to 11px around it."
+        },
+        {
+          "slot": "c",
+          "code": "BONEBLACK",
+          "port": 9203,
+          "angle": "THE DECK FIRST. The judges score these boards at 1280: work at 1280x800 first and measure -- every running line at 11px or more and readable contrast, the run strip's icons at 30px or more with the pouch overflow, each control big enough for a trackpad -- then restyle the controls into house objects within that layout, then check the default size."
+        }
+      ]
+    }
+  ]
+}
