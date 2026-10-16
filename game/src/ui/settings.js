@@ -42,30 +42,30 @@ export const SETTINGS_SPEC = [
   { group: 'Motion', items: [
     { key: 'speed', label: 'Animation speed', type: 'range', min: 0.5, max: 2, step: 0.1,
       fmt: v => `${Number(v).toFixed(1)}x`,
-      hint: 'Scales every animation in the game. Rules and timings are unaffected.' },
+      hint: 'Scales every animation. Rules and timings stay the same.' },
     { key: 'fastMode', label: 'Fast mode', type: 'toggle',
-      hint: 'Skips the pauses between enemy actions. Nothing is hidden — it just stops waiting.' },
+      hint: 'Skips the pauses between enemy actions. Nothing is hidden.' },
     { key: 'screenShake', label: 'Screen shake', type: 'range', min: 0, max: 1, step: 0.1, fmt: pct,
-      hint: 'How hard the screen kicks on a big hit. 0% turns it off entirely.' },
+      hint: 'How hard the screen kicks on a big hit. 0% is off.' },
     { key: 'flashes', label: 'Flashes', type: 'range', min: 0, max: 1, step: 0.1, fmt: pct,
-      hint: 'Brightness of impact and status flashes.' },
+      hint: 'How bright hits and status changes flash.' },
     { key: 'reduceMotion', label: 'Reduced motion', type: 'toggle',
-      hint: 'Collapses every transition to near-instant and stops particles. Overrides the settings above.' },
+      hint: 'Near-instant transitions, no particles. Overrides the above.' },
   ]},
   { group: 'Reading', items: [
     { key: 'largeText', label: 'Large text', type: 'toggle',
-      hint: 'Grows the whole type scale. Panels reflow to fit — nothing is clipped.' },
+      hint: 'Grows all the type. Panels reflow to fit.' },
     { key: 'colorblind', label: 'Colour palette', type: 'choice',
       options: [['off', 'Standard'], ['protanopia', 'Protanopia'], ['deuteranopia', 'Deuteranopia'], ['tritanopia', 'Tritanopia']],
-      hint: 'Re-assigns the hues that carry information — Attack vs Skill, buff vs debuff, and the four rarity tiers. Shape and icon cues never change; colour is never the only channel.' },
+      hint: 'Re-colours Attack and Skill, buffs and debuffs, and the rarities. Shapes and icons never change.' },
     { key: 'showDamageNumbers', label: 'Damage numbers', type: 'toggle',
       hint: 'Floating numbers on every hit.' },
   ]},
   { group: 'Play', items: [
     { key: 'autoEndTurn', label: 'Auto end turn', type: 'toggle',
-      hint: 'Ends your turn automatically once nothing in hand is playable.' },
+      hint: 'Ends your turn once nothing in hand can be played.' },
     { key: 'confirmSingleTarget', label: 'Confirm single target', type: 'toggle',
-      hint: 'Ask before playing a targeted Trick when there is only one enemy left. Off is faster; on is safer.' },
+      hint: 'Asks before a targeted Trick when one enemy is left.' },
   ]},
 ];
 
@@ -226,7 +226,7 @@ export async function openSettings(ctx = {}) {
   // .kit-hw-tag) — a tag left blank and unpolished when there is none
   cur.innerHTML =
     `<div class="mm-set__label"><span>Current expedition</span>` +
-    `<span class="mm-set__hint">A seed reproduces a run exactly: the same rooms, rewards and shop stock.</span></div>` +
+    `<span class="mm-set__hint">The same seed deals the same rooms, rewards and shop.</span></div>` +
     `<i class="kit-leader mm-set__lead" aria-hidden="true"></i>` +
     `<output class="mm-set__seed kit-hw-tag${rawSeed == null ? ' is-empty is-blank' : ''}"><b class="kit-enamel__value">${escape_(curSeed)}</b></output>`;
   seedFs.appendChild(cur);
@@ -280,14 +280,13 @@ export async function openSettings(ctx = {}) {
     const tRow = document.createElement('div');
     tRow.className = 'mm-set__row';
     const why = live
-      ? 'Your expedition saves itself after every room. '
-        + 'Quitting now keeps it exactly where it is — Continue on the title screen picks it back up.'
-        + (party ? ' In a party this ends the expedition for everyone.' : '')
+      ? 'It saves after every room. Continue on the title screen picks it back up.'
+        + (party ? ' In a party this ends it for everyone.' : '')
       : !ctx.run
-        ? 'There is no expedition under way. Once one is, it saves itself after every room, and this is where you leave it.'
+        ? 'No expedition under way. Once one is, it saves after every room.'
         : ctx.run.result
-          ? 'This expedition is over, so there is nothing left to save.'
-          : 'This expedition is a preview and is never saved, so there is nothing to quit from.';
+          ? 'This expedition is over; there is nothing to save.'
+          : 'A preview is never saved, so there is nothing to quit.';
     tRow.innerHTML =
       `<div class="mm-set__label"><span>Save and quit</span>` +
       `<span class="mm-set__hint">${escape_(why)}</span></div>` +
@@ -296,7 +295,19 @@ export async function openSettings(ctx = {}) {
     quit.type = 'button';
     quit.className = 'mm-btn';
     quit.textContent = 'Save and quit';
-    kitButton(quit, { quiet: true });
+    /* ROUND 33: the house's own button, as DONE is -- the gold-lettered plate
+       with a round enamel disc on its end, here a door with the way out
+       struck on it. It was a quiet plate with no disc ("a plain black
+       stadium with no rim or icon", survey 4). */
+    kitButton(quit);
+    {
+      const m = document.createElement('i');
+      m.className = 'kit-medallion kit-btn__medal mm-dlg-medal';
+      m.setAttribute('aria-hidden', 'true');
+      m.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.6 2.4h10.8v5h-2.6V5H6.2v14h5.6v-2.4h2.6v5H3.6z"/><path d="M10.4 10.7h6.9V7.6l5.1 4.4-5.1 4.4v-3.1h-6.9z"/></svg>';
+      quit.classList.add('mm-dlg-btn--medal', 'mm-set__act');
+      quit.appendChild(m);
+    }
     quit.disabled = !live;
     if (live) quit.addEventListener('click', async () => {
       if (party) {
@@ -349,7 +360,7 @@ export async function openSettings(ctx = {}) {
   dRow.className = 'mm-set__row';
   dRow.innerHTML =
     `<div class="mm-set__label"><span>Reset all progress</span>` +
-    `<span class="mm-set__hint">Deletes every rescued Companion, every clue, the Haunt Level and the current expedition. This cannot be undone.</span></div>` +
+    `<span class="mm-set__hint">Erases every Companion, clue, Haunt Level and the current expedition. No undo.</span></div>` +
     `<i class="kit-leader mm-set__lead" aria-hidden="true"></i>`;
   const reset = document.createElement('button');
   reset.type = 'button';
@@ -364,6 +375,7 @@ export async function openSettings(ctx = {}) {
      medallion at the plate's end, as DONE wears its tick, the lettering in the
      Courage bar's red. The panel's own crest is the skull. */
   kitButton(reset, { medal: 'warn' });
+  reset.classList.add('mm-set__act');
   reset.addEventListener('click', async () => {
     const ok = await confirmModal({
       title: 'Reset all progress?',
@@ -452,10 +464,15 @@ function buildRow(ctx, Save, item, rerender) {
     slot.className = 'mm-set__slot';
     /* the groove the knob runs in (ui/kit.css .kit-hw-groove): a channel sunk
        in a gilt-rimmed plate, a run of gilt in it as far as the knob */
+    /* ROUND 33: an engraved BRASS RAIL (ui/kit.css .kit-hw-rail): two brass
+       rods between cast collars, the gilt lit between them as far as the
+       knob, its quarters engraved under it; the knob a brass boss with a
+       violet cabochon. Survey 4: the plate-and-cog "read as styled range
+       inputs". */
     const tube = document.createElement('span');
-    tube.className = 'mm-set__tube kit-hw-groove kit-hw-groove--ticks';
+    tube.className = 'mm-set__tube kit-hw-rail';
     tube.setAttribute('aria-hidden', 'true');
-    tube.innerHTML = '<span class="kit-hw-groove__fill"></span>';
+    tube.innerHTML = '<i class="kit-hw-rail__lit"></i><i class="kit-hw-rail__ticks"></i>';
     const input = document.createElement('input');
     input.type = 'range'; input.id = id;
     input.min = String(item.min); input.max = String(item.max); input.step = String(item.step);
@@ -463,7 +480,8 @@ function buildRow(ctx, Save, item, rerender) {
     /* the figure, in the ledger's column of readings: gold lining numerals
        struck on the boards' enamel cartouche at the end of the line */
     const out = document.createElement('output');
-    out.className = 'mm-set__out mm-set__reading kit-enamel';
+    /* the figure ENGRAVED beside the rail's end, no cartouche of its own */
+    out.className = 'mm-set__out mm-set__figure';
     out.htmlFor = id;
     const fig = document.createElement('b');
     fig.className = 'kit-enamel__value';
