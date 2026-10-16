@@ -1855,8 +1855,10 @@ export class Backdrop {
              for the planting. */
           const beds = Math.max(3, Math.round((span * 2) / Math.max(lift * 2.6, 2.2)));
           for (let i = 0; i < beds; i++) {
+            /* (round 34: the Greenhouse's staging carries its planting in
+               its own quad, 0.95 m over the brick -- GH_STAGE_PLANT) */
             pushArch(bedShape, bMid + ((i + 0.5) / beds - 0.5) * 2 * span,
-                     z + 0.6, (span * 2) / beds + 0.25, lift, 0.30 + f * 0.42);
+                     z + 0.6, (span * 2) / beds + 0.25, lift + (bedShape === 77 ? 0.95 : 0), 0.30 + f * 0.42);
           }
         }
         for (let i = 0; i < per && out.length - archN < n; i++) {
@@ -2972,7 +2974,11 @@ export class Backdrop {
         ? (p.rail === 'iron' ? 1 : 0)
         /* (round 25: the churchyard's gate, 2, is drawn with the pen --
            the Hedge Maze's and the Pumpkin Grounds' keep theirs, 0) */
-        : (m === this.portals[2] && p.r25w === 4 ? 2 : (p.door === 'case' ? 1 : 0));
+        : (m === this.portals[2] && p.r25w === 4 ? 2
+          /* (round 34: the Foyer's parlour doorcase is CARVED, kind 3 --
+             both survey-5 judges read kind 1's flat jambs and head as "grey
+             slabs ... a 3D scene's bounding box". The ballroom suite keeps 1) */
+          : (p.door === 'case' ? (p.r25w === 1 ? 3 : 1) : 0));
     }
   }
 

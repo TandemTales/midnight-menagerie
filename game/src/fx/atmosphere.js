@@ -277,6 +277,13 @@ export const REGIONS = {
        default 0.18. The beams stay -- the moon through the landing window --
        as a breath, and the far wall keeps its darks. */
     shafts: { count: 3, spread: 15, y: 9.6, z: -13.5, angle: 0.28, width: 3.2, intensity: 0.10, pool: 1.5 },
+    /* ROUND 34: THE NEAR FLOOR (both survey-5 judges: "the lower half is an
+       empty plank floor", "an empty, soft, unlit floor plane falling to
+       black"): round 31's rule, here -- the boards running on lit toward
+       the hand, and a pool of candlelight laid on them in front of you from
+       the near torchere, with the runner in its Turkey dyes */
+    nearFloor: { fall: 0.90, dye: 1, calm: 0.6,
+                 pool: { ahead: 3.6, across: -0.8, rAlong: 2.8, rAcross: 3.0, k: 1.15, color: '#e8a460' } },
     wallFog: 0.06,
     bloom: 0.80, warmTone: 0.05, halation: 0.55,
   },
@@ -539,6 +546,11 @@ export const REGIONS = {
        pots -- and the terrace's tiers on drawn brick staging (77). */
     props: { shapes: [74, 75, 74, 76, 6], count: 44, height: 2.6, layout: 'terrace', depth: 16, bedShape: 77 },
     r25w: 3,
+    /* ROUND 34: THE NEAR FLOOR (both survey-5 judges): round 31's rule --
+       the flags running on lit toward the hand, a lamp's pool laid on them
+       in front of you, the York stone calm (no mottle through the pool) */
+    nearFloor: { fall: 0.80, calm: 0.7,
+                 pool: { ahead: 3.6, across: 0.4, rAlong: 3.0, rAcross: 3.4, k: 0.55, color: '#e0b06a' } },
     particles: { mix: [[PTYPE.SPORE, 0.52], [PTYPE.DUST, 0.30], [PTYPE.WISP, 0.18]],
                  tint: '#d9ffcf', wispTint: '#7fffc9', emberTint: '#cfff6a',
                  speed: 0.85, scale: 1.35, wind: 0.7, density: 0.95 },
@@ -1208,7 +1220,10 @@ export const REGIONS = {
        straw and name plates are the wall's (program 15). */
     /* (graft: 11 dealt, from 14 -- the four set by hand are the big ones,
        and the fight's frame paid for every kennel twice) */
-    props: { shapes: [39, 40, 41, 39, 40], count: 11, height: 1.6, layout: 'rows',
+    /* (round 34: `family` -- a seeded Kennels drew `terrace` from rows'
+       family, and stood the glasshouse's stepped masonry beds (16.25) in two
+       ranks across the range: the "flat grey slabs" before the stalls) */
+    props: { shapes: [39, 40, 41, 39, 40], count: 11, height: 1.6, layout: 'rows', family: ['rows'],
              /* (graft, ULTRAMARINE's, all three judges: "the peaked, lit
                 doghouses with nameplates and the oval bone-plate dog beds IN
                 FRONT of the stalls", with their water bowls) -- set by hand
@@ -1217,7 +1232,23 @@ export const REGIONS = {
                { shape: 39, edge: 0.80, z: -0.8, tone: 0.95 },
                { shape: 40, edge: 0.64, z: -1.9, tone: 0.95 },
                { shape: 40, edge: 0.22, z: -3.0, tone: 0.94 },
+               /* ROUND 34 (both survey-5 judges: "the floor below the
+                  doghouses (the lower 55%) is empty dim brown"): a dog's bed
+                  and its bowls in the near straw at the left, and a kennel
+                  at your right shoulder, its lit door on the flags */
+               { shape: 40, edge: 0.16, z: 2.2, tone: 0.95, fore: 1, keep: true, scale: 1.1 },
+               { shape: 39, edge: 0.93, z: 1.4, tone: 0.95, fore: 1, keep: true },
              ] },
+    /* ROUND 34: the brown-grey haze off the stalls (both survey-5 judges:
+       "the back stall wall is muddy and indistinct under an overall brown-
+       grey haze"). Bisected: the wall's own fog at the default 0.18 over a
+       range 9 m off -- the darks of the stalls keep their colour without it */
+    wallFog: 0.05,
+    /* ...and THE NEAR FLOOR (round 31's rule): the flags run on toward the
+       hand, the lantern's pool laid on them in front of you, and the straw
+       heaped where the dogs drag it (FLOOR_FRAG, uStraw's heaps) */
+    nearFloor: { fall: 0.86, calm: 0.5,
+                 pool: { ahead: 3.4, across: -0.6, rAlong: 2.8, rAcross: 3.0, k: 1.1, color: '#e2a862' } },
     /* (round 23: dust in the lamplight, not a field of sparks -- at 0.95 with
        embers in it the motes were the "speckle" over the stalls) */
     particles: { mix: [[PTYPE.DUST, 0.82], [PTYPE.ASH, 0.18]],
@@ -1243,7 +1274,10 @@ export const REGIONS = {
        from the windows onto the floor, and put real darks in the corners"):
        the high windows' moonlight down onto the boards in three narrow
        beams, each laying its cold pool among the lanterns' warm ones */
-    shafts: { count: 3, spread: 14, y: 4.0, z: -8.4, angle: 0.34, width: 1.2, intensity: 0.26, pool: 2.4 },
+    /* (round 34: the beams at half, and wider -- at 1.2 m and 0.26 they
+       crossed the stall range as two thin bright lines, the "laser" shafts
+       the survey named in the Crypt; their pools on the flags stay) */
+    shafts: { count: 3, spread: 14, y: 4.0, z: -8.4, angle: 0.34, width: 1.9, intensity: 0.12, pool: 2.4 },
     warmTone: 0.05,
   },
 
@@ -1516,6 +1550,15 @@ const FOYER_NEAR_HEARTH = [
   { shape: 64, x:  7.60, z: -7.00, tone: 0.88 },   // a cabinet opposite it
   { shape: 65, x: -3.20, z: -5.40, tone: 0.72, under: 2 },
   { shape: 64, x:  6.60, z: -2.10, tone: 0.94 },   // a glazed cabinet
+  /* ROUND 34, both survey-5 judges: "the lower half is an empty plank
+     floor". The parlour's own near furniture, IN the near floor and not
+     against a wall: a buttoned hall chair by the door on the left, a
+     torchere standing out on the boards with its pool round it, and the
+     stick stand by the door on the right -- `fore`, so the threshold's
+     step back keeps them at your feet. */
+  { shape: 63, edge: 0.165, z: 4.6, tone: 0.95, fore: 1, keep: true, scale: 1.1 },
+  { shape: 65, edge: 0.27, z: 2.6, tone: 0.95, fore: 1, keep: true },
+  { shape: 67, edge: 0.885, z: 4.8, tone: 0.95, fore: 1, keep: true, scale: 1.2 },
 ];
 const FOYER_NEAR_GALLERY = [
   /* (busts on term pedestals, round 14: the gallery's statues read as "dark
@@ -1629,6 +1672,9 @@ export const ROOM_KINDS = {
          its flags, and a bust on its term at the near end, by the frame) */
       { subject: 'arcade', near: FOYER_NEAR_GALLERY.concat([{ shape: 26, edge: 0.13, z: 1.0, tone: 0.96, fore: 1, scale: 1.1 }]),
         room: { w: 0.84, d: 1.10 }, rug: { ahead: 5.2, hw: 1.5, hd: 2.6 },
+        /* (round 34: the near pool longer down the flags, so no dark band
+           lies across the floor between it and the lantern's) */
+        nearFloor: { pool: { ahead: 5.0, across: -0.6, rAlong: 4.6, rAcross: 3.4, k: 1.15, color: '#e8a460' } },
         floor: 2, ceil: 4, cam: { y: 0.45, z: 1.2, look: -0.10, fov: 3 },
         vantage: { at: 'along', off: 0.30, wall: 2.6, fwd: 0.8, yaw: 26, wide: 5 } },
     ],
@@ -1720,7 +1766,11 @@ export const ROOM_KINDS = {
              the fountain back to the staging, 12 m off (measured: z -12.4),
              where no lamp reached it -- the room's low cold lamp goes there,
              warm, beside it and the bed behind) */
-          { i: 3, x: 1.4, z: 0.46, y: 1.80, color: '#e6b872', k: 5.0, radius: 8.0 }],
+          /* (round 34: 3.0 at 2.6 m, from 5.0 at 1.8 -- the fountain it was
+             set beside is walked back to the staging, and at that height
+             and strength it burned the "blown-out white smear" both survey-5
+             judges named into the raised paving; higher, its pool spreads) */
+          { i: 3, x: 1.4, z: 0.46, y: 2.60, color: '#e6b872', k: 3.0, radius: 8.5 }],
         /* (...and, both judges, "one or two planted urns or a fern stand at
            mid-depth on the empty floor": set by the frame, dealt first --
            the terrace spends the whole prop budget) */
@@ -1738,6 +1788,14 @@ export const ROOM_KINDS = {
              foreground the conservatory lacks") */
           { shape: 6, edge: 0.17, z: -7.6, tone: 0.96, centre: 1 },
           { shape: 6, edge: 0.83, z: -7.8, tone: 0.96, centre: 1 },
+          /* ROUND 34 (both survey-5 judges: the near floor "an empty, soft,
+             unlit floor plane"): the gardener's things on the flags under
+             the gallery rail -- a stand of pots by the lantern, a fern and
+             a pair of pots set down at the left, a tall fern at the right */
+          { shape: 74, edge: 0.22, z: -0.6, tone: 0.94, centre: 1, seed: 6.05, hM: 0.85 },
+          { shape: 74, edge: 0.29, z: -1.4, tone: 0.94, centre: 1, seed: 5.25, hM: 0.65 },
+          { shape: 76, edge: 0.70, z: 2.0, tone: 0.94, centre: 1, scale: 1.30 },
+          { shape: 74, edge: 0.90, z: 3.0, tone: 0.94, centre: 1, seed: 1.75, hM: 1.5 },
         ],
         vantage: { at: 'above', rise: 2.9, drop: 0.0, fwd: 0.4, ahead: 9.0, count: 0.82 } },
       /* a palm house is walked down between two files of palms, close in
@@ -1779,12 +1837,20 @@ export const ROOM_KINDS = {
              flags at the front of the walk) */
           { shape: 74, edge: 0.30, z: -1.0, tone: 0.90, centre: 1, seed: 5.25, hM: 1.0 },
           { shape: 76, edge: 0.68, z: -0.9, tone: 0.90, centre: 1 },
-          { shape: 74, x: -2.30, z: 3.60, tone: 0.90 },
-          { shape: 74, x:  2.70, z: 2.70, tone: 0.90 },
-          { shape: 74, x: -3.90, z: 0.90, tone: 0.88 },
-          { shape: 74, x:  4.30, z: 0.10, tone: 0.88 },
+          /* (round 34: these four were dealt after the layout and cut by its
+             budget, so the near half of the palm house stood empty -- both
+             survey-5 judges' "lower 55%". Dealt first now, at the frame:
+             a tall fern and a palm at your elbows, a stand of pots and a
+             fern set down on the near flags) */
+          { shape: 74, edge: 0.04, z: 3.4, tone: 0.92, centre: 1, seed: 3.35, hM: 2.3 },
+          { shape: 74, edge: 0.97, z: 3.0, tone: 0.92, centre: 1, seed: 4.15, hM: 2.6 },
+          { shape: 76, edge: 0.24, z: 1.6, tone: 0.92, centre: 1, scale: 1.2 },
+          { shape: 74, edge: 0.78, z: 1.2, tone: 0.92, centre: 1, seed: 6.05, hM: 1.0 },
           { shape: 75, x: -5.60, z: -1.60, tone: 0.86 },
-        ] },
+        ],
+        /* ...and the moon through the roof on the near flags at the left, so
+           the walk's left half is not a black field under the lamp's right */
+        nearFloor: { pool2: { ahead: 3.0, across: -1.8, rAlong: 2.6, rAcross: 2.4, k: 0.9, color: '#7fa6c8' } } },
       /* and a vinery's floor is bedded out in rows under the rods; it is a
          lean-to against the garden wall, so it is shallower than the great
          house (0.7 of its depth) and that wall is near enough to read */
@@ -1804,6 +1870,14 @@ export const ROOM_KINDS = {
           /* (round 29 GRAFT, judge 2: pots on the bare front slabs) */
           { shape: 74, edge: 0.42, z: -1.2, tone: 0.90, centre: 1, seed: 6.05, hM: 0.9 },
           { shape: 76, edge: 0.66, z: -1.4, tone: 0.90, centre: 1 },
+          /* (round 34: an OVERGROWN house -- what has seeded itself and been
+             left in pots on the near flags, both survey-5 judges' empty lower
+             half: a fern grown huge at your left, a palm at your right, pots
+             set down between) */
+          { shape: 74, edge: 0.03, z: 3.0, tone: 0.92, centre: 1, seed: 3.35, hM: 2.2 },
+          { shape: 74, edge: 0.96, z: 2.6, tone: 0.92, centre: 1, seed: 2.45, hM: 2.5 },
+          { shape: 74, edge: 0.24, z: 2.2, tone: 0.92, centre: 1, seed: 5.25, hM: 0.75 },
+          { shape: 76, edge: 0.76, z: 1.0, tone: 0.92, centre: 1, scale: 1.2 },
         ],
         cam: { y: 0.35, z: 0.6, look: -0.2 },
         vantage: { at: 'along', off: 0.30, wall: 3.2, fwd: 3.2, yaw: 33, wide: 4, dlook: 0.5 } },
@@ -2245,12 +2319,20 @@ export const ROOM_KINDS = {
      dado and brass standpipes the Bathhouse draws, and no pens. */
   kennels: {
     /* (round 23: the kennel range, and its wash room with the tubs) */
-    kinds: [{ subject: 'kennel' },
+    /* (round 34: the range's floor deals beds where it dealt the grooming
+       table -- in rows before the stalls the tables read as "flat grey
+       slabs" along the boarding; the wash room keeps its own) */
+    kinds: [{ subject: 'kennel', swap: [[41, 40]] },
             /* (graft, ULTRAMARINE's: a zinc tub on its trestle and the
                grooming table set by hand where the eye is) */
             { subject: 'washroom', swap: [[39, 42], [40, 42]], countScale: 0.75, shaftK: 0.45,
               near: [{ shape: 42, edge: 0.80, z: -1.0, tone: 0.95 }, { shape: 41, edge: 0.22, z: -3.4, tone: 0.92 },
-                     { shape: 42, edge: 0.30, z: -1.6, tone: 0.94 }] }],
+                     { shape: 42, edge: 0.30, z: -1.6, tone: 0.94 },
+                     /* (round 34: the near floor -- a dog's bed waiting by
+                        the door at the left, the grooming table at your
+                        right, in the straw) */
+                     { shape: 40, edge: 0.14, z: 2.2, tone: 0.95, fore: 1, keep: true, scale: 1.1 },
+                     { shape: 41, edge: 0.92, z: 1.8, tone: 0.95, fore: 1, keep: true }] }],
     names: [
       [/wash|groom|veterinar|quarantine|kitchen/i, 1],
       [/./, 0],
