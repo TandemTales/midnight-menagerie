@@ -646,13 +646,15 @@
   filter: drop-shadow(0 1px 1px rgba(0, 0, 0, .85));
 }
 .mm-set__slot > .mm-set__tube .kit-hw-rail__ticks { height: 7px; margin-top: 0; opacity: 1; }
-.mm-set__rangewrap { gap: 13px; }
+.mm-set { --slot-w: clamp(100px, 7.3vw, 130px); }
+.mm-set__rangewrap { gap: 13px; padding-left: 9px; }
+.mm-set__text.kit-hw-slip { width: calc(var(--slip-h) * 3.3); }
 .mm-set__figure {
   --fig-h: 26px;
   box-sizing: border-box;
   display: inline-flex; align-items: center; justify-content: center;
-  min-width: 62px; height: var(--fig-h);
-  padding: 1px 12px 0;
+  min-width: 66px; height: var(--fig-h);
+  padding: 1px 15px 0;
   border: 0 solid transparent;
   border-image: url("../../assets/ui/kit/cartouche-dark.webp") 18 34 fill / calc(var(--fig-h) * 18 / 64) calc(var(--fig-h) * 34 / 64) stretch;
   font-size: 16px; text-align: center;
