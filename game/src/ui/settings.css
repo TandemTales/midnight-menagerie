@@ -524,7 +524,7 @@
    never a black stadium -- and its note says why. */
 .mm-set__row > .kit-btn.mm-set__act {
   --plate-h: 40px;
-  font-size: 12.5px; letter-spacing: .1em; white-space: nowrap;
+  font-size: 12.5px; letter-spacing: .085em; white-space: nowrap;
   padding-left: calc(var(--plate-h) * .46);
   margin-block: 1px;
 }
@@ -623,7 +623,50 @@
 
 /* RESET: the hazard on its own disc, set off the plate by a gap */
 .mm-set__row > .mm-btn--danger.kit-btn.mm-set__act.mm-dlg-btn--medal {
-  padding-right: calc(var(--plate-h) * .5);
-  margin-right: calc(var(--plate-h) * 1.08 + 7px);
+  padding-right: calc(var(--plate-h) * .3);
+  margin-right: calc(var(--plate-h) * .96 + 4px);
 }
-.mm-set__row > .mm-btn--danger.kit-btn.mm-set__act > .kit-btn__medal { right: calc(var(--plate-h) * -1.08 - 7px); }
+.mm-set__row > .mm-btn--danger.kit-btn.mm-set__act > .kit-btn__medal { --md: calc(var(--plate-h) * .96); right: calc(var(--plate-h) * -.96 - 4px); }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ROUND 33 GRAFT — THE RAILS AS FITTED HARDWARE (all three judges)
+   A heavier rail, a cast rosette stud capping each end beyond its collar,
+   the quarters engraved twice as tall, and the reading in a small engraved
+   cartouche at the rail's end (cartouche-dark.webp, scrolled ends), its
+   lining figures in bright gold (TAFFETA's cartouche, BONEBLACK's figures).
+   ═══════════════════════════════════════════════════════════════════════════ */
+.mm-set { --rail-h: 27px; }
+@media (max-height: 920px) { .mm-set { --rail-h: 25px; } }
+.mm-set__slot > .mm-set__tube.kit-hw-rail::after {
+  content: ''; position: absolute; top: 50%; left: -9px; right: -9px;
+  height: 13px; translate: 0 -50%; z-index: -2;
+  background:
+    url("../../assets/ui/kit/hw-rail-stud.webp") 0 50% / 13px 13px no-repeat,
+    url("../../assets/ui/kit/hw-rail-stud.webp") 100% 50% / 13px 13px no-repeat;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, .85));
+}
+.mm-set__slot > .mm-set__tube .kit-hw-rail__ticks { height: 7px; margin-top: 0; opacity: 1; }
+.mm-set__rangewrap { gap: 13px; }
+.mm-set__figure {
+  --fig-h: 26px;
+  box-sizing: border-box;
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 62px; height: var(--fig-h);
+  padding: 1px 12px 0;
+  border: 0 solid transparent;
+  border-image: url("../../assets/ui/kit/cartouche-dark.webp") 18 34 fill / calc(var(--fig-h) * 18 / 64) calc(var(--fig-h) * 34 / 64) stretch;
+  font-size: 16px; text-align: center;
+  color: #f4dc9c;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .95), 0 0 8px color-mix(in srgb, var(--kit-candle) 35%, transparent);
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .8));
+}
+.mm-set__rangewrap:focus-within .mm-set__figure { color: #fff6dc; filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .8)) drop-shadow(0 0 7px color-mix(in srgb, var(--kit-candle) 45%, transparent)); }
+@media (max-width: 1400px) {
+  /* the Deck's width: the Sound page is the narrowest, and "Master volume"
+     with its rail, its studs and its cartouche must stand inside it */
+  .mm-set { --slot-w: 86px; }
+  .mm-set__rangewrap { gap: 8px; padding-left: 9px; }
+  .mm-set__figure { min-width: 52px; padding-inline: 12px; font-size: 15px; letter-spacing: 0; }
+  /* the next seed's slip stood over the Seed page's right frame at 1280 */
+  .mm-set__text.kit-hw-slip { width: calc(var(--slip-h) * 2.45); }
+}
