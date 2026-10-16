@@ -227,10 +227,30 @@ precision highp float;
 #endif
 ${GLSL_LIB}
 ${LIGHT_LIB}
-uniform float uTime, uSeed, uDread, uFogAmt, uArch, uCool, uGrime, uOpen, uCeil, uGain;
+uniform float uTime, uSeed, uDread, uFogAmt, uCool, uGrime, uOpen, uCeil, uGain;
 uniform float uGable;          // the RISE of a pitched glass roof, metres; 0 under any other (round 18)
 uniform float uGloss, uAlbLift, uInk, uLip, uDamask, uDamCell, uDamKind;
-uniform float uSubject, uFar;
+uniform float uFar;
+/* THE ROOM'S ARCHITECTURE MODE AND ITS SUBJECT ARE COMPILED IN (2026-10-15).
+   uArch picks wallH's mode and uSubject subjectH's branch, and as uniforms
+   every mode and every subject a program carries was compiled into it and
+   chosen per pixel: the Foyer's wall was 71k tokens after inlining and took
+   38 s to link alone on this machine (Intel UHD, ANGLE D3D11) -- 150 s in
+   the warm-up beside the props'. As constants (MM_ARCH, MM_SUBJ, set with
+   MM_ROOMS by Backdrop._setRoomsProgram) the compiler drops every branch
+   the room cannot take: the same wall, 3 s. The maths is untouched -- each
+   name below still reads as the number the uniform held. Without the
+   defines (a tool's own material) they are the uniforms they always were. */
+#ifdef MM_ARCH
+#define uArch float(MM_ARCH)
+#else
+uniform float uArch;
+#endif
+#ifdef MM_SUBJ
+#define uSubject float(MM_SUBJ)
+#else
+uniform float uSubject;
+#endif
 /* THE PASSAGES' OPEN DOOR (round 22 graft): the wall-space centre of the one
    hidden door on this side wall that stands ajar, and its half-width -- set
    by Backdrop._applyPalette, which also lays the wedge of light its slit
@@ -13180,7 +13200,16 @@ ${LIGHT_LIB}
 #ifndef MM_FLOORX
 #define MM_FLOORX 1
 #endif
-uniform float uTime, uSeed, uDread, uFogNear, uFogFar, uGloss, uPattern, uGain, uAlbLift;
+uniform float uTime, uSeed, uDread, uFogNear, uFogFar, uGloss, uGain, uAlbLift;
+/* THE PATTERN IS COMPILED IN (2026-10-15), as the wall's mode and subject
+   are (see WALL_FRAG): MM_PAT, set by Backdrop._setSurfaceProgram, makes
+   uPattern the number it held, and the compiler drops the patterns this
+   floor is not laid with. Undefined, it is the uniform it always was. */
+#ifdef MM_PAT
+#define uPattern float(MM_PAT)
+#else
+uniform float uPattern;
+#endif
 uniform float uInk, uLip, uWet;
 uniform float uRunner;         // half-width of the hall runner, metres; 0 = none
 /* ...and where its centre line runs, metres across (round 14): a runner is
@@ -13286,7 +13315,13 @@ uniform vec3  uMoonF;
 uniform vec4  uMoonW;
 varying vec3  vClip;
 uniform vec3  uCamera;
+/* (and which of the two surfaces this is, MM_CEIL: a material is one or
+   the other for life, so the floor never carries the ceiling's code) */
+#ifdef MM_CEIL
+#define uIsCeiling float(MM_CEIL)
+#else
 uniform float uIsCeiling;
+#endif
 varying vec2  vUv;
 varying float vDepth;
 varying vec3  vWorld;
@@ -16898,28 +16933,63 @@ float wfDraw(vec2 m, vec2 msz, float s, float seed, float px, bool paint){
   gWfCol = vec3(0.3); gWfInk = 0.0; gWfEmit = vec3(0.0); gWfMoon = 0.0; gWfGloss = 0.2;
   float d = 1e3;
 #if MM_WINGS == 4
-  if (s < 62.5)      d = wfClock(q, qpx, seed, kq, paint);
+  if (false) {}
+#if MM_SH45 || MM_SH46 || MM_SH47 || MM_SH48 || MM_SH49 || MM_SH50 || MM_SH51 || MM_SH52 || MM_SH53 || MM_SH54 || MM_SH55 || MM_SH56 || MM_SH57 || MM_SH58 || MM_SH59 || MM_SH60 || MM_SH61 || MM_SH62
+  else if (s < 62.5)      d = wfClock(q, qpx, seed, kq, paint);
+#endif
+#if MM_SH63
   else if (s < 63.5) d = wfArmchair(q, qpx, seed, kq, paint, 0.0);
+#endif
+#if MM_SH64
   else if (s < 64.5) d = wfVitrine(q, qpx, seed, kq, paint);
+#endif
+#if MM_SH65
   else if (s < 65.5) d = wfTorchere(q, qpx, seed, kq, paint);
+#endif
+#if MM_SH66
   else if (s < 66.5) d = wfHallTable(q, qpx, seed, kq, paint);
+#endif
+#if MM_SH67
   else if (s < 67.5) d = wfUmbrella(q, qpx, seed, kq, paint);
+#endif
+#if MM_SH68
   else if (s < 68.5) d = wfPierGlass(q, qpx, seed, kq, paint);
+#endif
+#if MM_SH69 || MM_SH70 || MM_SH71 || MM_SH72
   else if (s < 72.5) d = wfArmchair(q, qpx, seed, kq, paint, 1.0);
+#endif
+#if MM_SH73 || MM_SH74 || MM_SH75 || MM_SH76 || MM_SH77 || MM_SH78
   else if (s < 78.5) d = wfPiano(q, qpx, seed, kq, paint);
+#endif
   else               d = wfFan(q, qpx, seed, kq, paint);
 #endif
 #if MM_WINGS == 5
-  if (s < 69.5)      d = wfHeadstone(q, qpx, seed, kq, paint);
+  if (false) {}
+#if MM_SH45 || MM_SH46 || MM_SH47 || MM_SH48 || MM_SH49 || MM_SH50 || MM_SH51 || MM_SH52 || MM_SH53 || MM_SH54 || MM_SH55 || MM_SH56 || MM_SH57 || MM_SH58 || MM_SH59 || MM_SH60 || MM_SH61 || MM_SH62 || MM_SH63 || MM_SH64 || MM_SH65 || MM_SH66 || MM_SH67 || MM_SH68 || MM_SH69
+  else if (s < 69.5)      d = wfHeadstone(q, qpx, seed, kq, paint);
+#endif
+#if MM_SH70
   else if (s < 70.5) d = wfTomb(q, qpx, seed, kq, paint);
+#endif
+#if MM_SH71
   else if (s < 71.5) d = wfAngel(q, qpx, seed, kq, paint);
+#endif
   else               d = wfCross(q, qpx, seed, kq, paint);
 #endif
 #if MM_WINGS == 6
-  if (s < 74.5)      d = wfPlant(q, qpx, seed, kq, paint);
+  if (false) {}
+#if MM_SH45 || MM_SH46 || MM_SH47 || MM_SH48 || MM_SH49 || MM_SH50 || MM_SH51 || MM_SH52 || MM_SH53 || MM_SH54 || MM_SH55 || MM_SH56 || MM_SH57 || MM_SH58 || MM_SH59 || MM_SH60 || MM_SH61 || MM_SH62 || MM_SH63 || MM_SH64 || MM_SH65 || MM_SH66 || MM_SH67 || MM_SH68 || MM_SH69 || MM_SH70 || MM_SH71 || MM_SH72 || MM_SH73 || MM_SH74
+  else if (s < 74.5)      d = wfPlant(q, qpx, seed, kq, paint);
+#endif
+#if MM_SH75
   else if (s < 75.5) d = wfBed(q, qpx, seed, kq, paint);
+#endif
+#if MM_SH76
   else if (s < 76.5) d = wfStand(q, qpx, seed, kq, paint);
+#endif
+#if MM_SH80 || MM_SH81 || MM_SH82 || MM_SH83
   else if (s > 79.5) d = wfBirdcage(q, qpx, seed, kq, paint);   // 80 (graft)
+#endif
   /* 77, the staging, is architecture sized to the room: in its own metres */
   else return wfStaging(m, msz, px, (uKeyDir.x >= 0.0 ? 1.0 : -1.0), paint);
 #endif
@@ -16927,6 +16997,10 @@ float wfDraw(vec2 m, vec2 msz, float s, float seed, float px, bool paint){
 }
 #endif
 `;
+
+/* MM_SH0..MM_SH89, each shape's bit of MM_SHM0-2 (see PROP_FRAG) */
+const MM_SH_BITS = Array.from({ length: 90 },
+  (_, k) => '#define MM_SH' + k + ' ((MM_SHM' + Math.floor(k / 30) + ' >> ' + (k % 30) + ') & 1)').join('\n');
 
 export const PROP_FRAG = /* glsl */`
 precision highp float;
@@ -16950,6 +17024,25 @@ ${LIGHT_LIB}
 #ifndef MM_WINGS
 #define MM_WINGS 1
 #endif
+/* ...AND, OF EVERYTHING THE PROGRAM CARRIES, ONLY THE SHAPES THIS ROOM
+   DEALS (2026-10-15). A prop's shape is per instance, so a program drew
+   every shape it carried and chose per pixel: the Foyer's props were 85k
+   tokens after inlining and 49 s to link alone on this machine (Intel UHD,
+   ANGLE D3D11), 190 s in the warm-up. MM_SHM0-2 are the room's shapes as
+   bits, 30 to a word (Backdrop._setPropProgram), and MM_SH<k> is 1 where
+   the room deals shape k: every branch below that draws a shape sits in an
+   #if naming the shapes that can reach it, so a shape the room does not
+   deal is not compiled. A guard only ever drops a branch NO dealt shape can
+   reach, so a dealt shape draws exactly as it did. (#if, not a constant in
+   the condition: ANGLE unfolds a constant && into a temporary the D3D
+   compiler did not fold, and the link came out slower.) Undefined (a tool's
+   own material) means every shape. */
+#ifndef MM_SHM0
+#define MM_SHM0 1073741823
+#define MM_SHM1 1073741823
+#define MM_SHM2 1073741823
+#endif
+${MM_SH_BITS}
 uniform vec3  uAlbedo, uAlbedoHi, uFog, uRim, uAccent, uAmbient, uCamera;
 uniform float uRimAmt, uDread, uGain, uGloss, uInk;
 uniform vec2  uYaw;      // the lens's right vector in XZ; see PROP_VERT
@@ -18053,7 +18146,9 @@ float gkDraw(vec2 m, vec2 msz, float shape, float seed, float px, bool paint){
   vec3 col = vec3(0.1);
   float ink = 0.0, moon = 0.0;
   float d = 1e3;
-  if (shape < 81.5) {
+  if (false) {
+#if MM_SH81
+  } else if (shape < 81.5) {
     /* ---- 81 THE URN ---- */
     float base = mmBox(q - vec2(0.0, 0.045), vec2(0.31, 0.045), 0.008);
     float die = mmBox(q - vec2(0.0, 0.33), vec2(0.245, 0.24), 0.004);
@@ -18124,6 +18219,8 @@ float gkDraw(vec2 m, vec2 msz, float shape, float seed, float px, bool paint){
     wfLay(col, ink, plant, dead, qpx, 0.85);
     moon += 0.35*wfIn(plant, qpx)*smoothstep(1.36, 1.46, q.y)*ln;
     wfLay(col, ink, ivy, vec3(0.08, 0.13, 0.06)*(0.8 + 0.5*ln), qpx, 0.6);
+#endif
+#if MM_SH82
   } else if (shape < 82.5) {
     /* ---- 82 THE BASKET ---- */
     float bw = 0.295 + 0.06*clamp(q.y/0.34, 0.0, 1.0);
@@ -18167,6 +18264,7 @@ float gkDraw(vec2 m, vec2 msz, float shape, float seed, float px, bool paint){
     wfLay(col, ink, on1, onion*(0.60 + 0.50*smoothstep(0.33, 0.43, q.y)), qpx, 0.9);
     wfLay(col, ink, on2, onion*(0.55 + 0.50*smoothstep(0.33, 0.42, q.y)), qpx, 0.9);
     wfLay(col, ink, car, vec3(0.80, 0.38, 0.10)*(0.75 + 0.35*mv), qpx, 0.8);
+#endif
   } else {
     /* ---- 83 THE STONE SEAT ---- */
     float seat = mmBox(q - vec2(0.0, 0.455), vec2(0.82, 0.040), 0.018);
@@ -18734,20 +18832,41 @@ float wgMirror(float shape, float seed){
 float gWgMem;
 /* the silhouette, in METRES */
 float wgField(vec2 m, vec2 msz, float shape, float seed){
+#if MM_SH33
   if (shape < 32.5) return wgLanSD(m, msz, seed);
+#endif
+#if MM_SH38
   if (shape > 34.5 && shape < 35.5) return wgTrussSD(m, msz, seed, gWgMem);
+#endif
   float sc = msz.y/wgNom(shape);
   vec2 q = m/sc;
   q.x *= wgMirror(shape, seed);
   float d;
-  if (shape < 33.5)      d = wgBnSD(q, seed);
+  if (false) {}
+#if MM_SH33 || MM_SH34
+  else if (shape < 33.5)      d = wgBnSD(q, seed);
+#endif
+#if MM_SH35
   else if (shape < 34.5) d = wgTelSD(q, seed);
+#endif
+#if MM_SH38 || MM_SH39
   else if (shape < 36.5) d = wgKnSD(q);
+#endif
+#if MM_SH40
   else if (shape < 37.5) d = wgBkSD(q);
+#endif
+#if MM_SH41
   else if (shape < 38.5) d = wgGtSD(q);
+#endif
+#if MM_SH32
   else if (shape < 39.5) d = wgBtSD(q, seed);
+#endif
+#if MM_SH42
   else if (shape < 40.5) d = wgZtSD(q);
+#endif
+#if MM_SH43
   else if (shape < 41.5) d = wgRackSD(q, seed);
+#endif
   else { float pt; d = wgOrrery(q, seed, pt); }
   return d*sc;
 }
@@ -18768,6 +18887,7 @@ vec3 wgPaint(vec2 m, vec2 msz, float shape, float seed, float px, float lum,
   vec3 col = vec3(0.3)*E;
   float kx = kd.x >= 0.0 ? 1.0 : -1.0;               // the key's side of a form
 
+#if MM_SH33
   if (shape < 32.5) {
     /* ---- THE LANTERN ---- */
     float s = wgLanS(seed), k = wgLanKind(seed), lit = wgLanLit(seed);
@@ -18823,7 +18943,9 @@ vec3 wgPaint(vec2 m, vec2 msz, float shape, float seed, float px, float lum,
     ink = max(ink, onC*mmInkP(lk - 0.47, px/0.055, 1.0)*0.6);
     return col;
   }
+#endif
 
+#if MM_SH38
   if (shape > 34.5 && shape < 35.5) {
     /* ---- THE TRUSS: sawn oak gone dark, lit from below ---- */
     float mem;
@@ -18864,6 +18986,7 @@ vec3 wgPaint(vec2 m, vec2 msz, float shape, float seed, float px, float lum,
     moon = smoothstep(0.1, -0.9, face)*step(mem, 2.5);
     return col;
   }
+#endif
 
   float sc = msz.y/wgNom(shape);
   vec2 q = m/sc;
@@ -18872,6 +18995,7 @@ vec3 wgPaint(vec2 m, vec2 msz, float shape, float seed, float px, float lum,
   float qpx = px/sc;
   float kq = kx*mir;                                   // the key's side, in q
 
+#if MM_SH34
   if (shape < 33.5) {
     /* ---- THE BENCH ---- */
     float hw = 1.18, TOP = 0.90;
@@ -18939,7 +19063,9 @@ vec3 wgPaint(vec2 m, vec2 msz, float shape, float seed, float px, float lum,
     emit += vec3(0.62, 0.72, 0.84)*onR*mmInkP(rg + 0.008, qpx, 1.0)*0.08;
     return col;
   }
+#endif
 
+#if MM_SH35
   if (shape < 34.5) {
     /* ---- THE TELESCOPE ---- */
     vec3 brass = vec3(0.86, 0.62, 0.26);
@@ -19002,7 +19128,9 @@ vec3 wgPaint(vec2 m, vec2 msz, float shape, float seed, float px, float lum,
     moon = step(0.0, v)*onTube*smoothstep(0.0, 1.0, v/0.1);
     return col;
   }
+#endif
 
+#if MM_SH39
   if (shape < 36.5) {
     /* ---- THE KENNEL ---- */
     vec2 k = q - vec2(-0.16, 0.0);
@@ -19140,7 +19268,9 @@ vec3 wgPaint(vec2 m, vec2 msz, float shape, float seed, float px, float lum,
     col *= 1.0 - 0.35*smoothstep(0.20, 0.0, k.y)*onBody*(1.0 - onS);
     return col;
   }
+#endif
 
+#if MM_SH40
   if (shape < 37.5) {
     /* ---- THE BASKET ---- */
     vec2 q0 = q;
@@ -19203,7 +19333,9 @@ vec3 wgPaint(vec2 m, vec2 msz, float shape, float seed, float px, float lum,
     ink = max(ink, mmInkP(min(brim, bw), qpx, 1.0)*0.9);
     return col;
   }
+#endif
 
+#if MM_SH41
   if (shape < 38.5) {
     /* ---- THE GROOMING TABLE ---- */
     vec3 wood = vec3(0.46, 0.33, 0.20)*E*1.2;
@@ -19230,7 +19362,9 @@ vec3 wgPaint(vec2 m, vec2 msz, float shape, float seed, float px, float lum,
     ink = max(ink, mmInkP(q.y - 0.78, qpx, 1.0)*step(abs(q.x), 0.62)*0.8);
     return col;
   }
+#endif
 
+#if MM_SH32
   if (shape < 39.5) {
     /* ---- THE BATH ---- */
     float pk = mmHash11(seed*7.3 + 0.2);
@@ -19304,7 +19438,9 @@ vec3 wgPaint(vec2 m, vec2 msz, float shape, float seed, float px, float lum,
     moon = onRoll*smoothstep(0.76, 0.88, q.y);
     return col;
   }
+#endif
 
+#if MM_SH44 || MM_SH45 || MM_SH46 || MM_SH47 || MM_SH48 || MM_SH49 || MM_SH50 || MM_SH51 || MM_SH52 || MM_SH53 || MM_SH54 || MM_SH55 || MM_SH56 || MM_SH57 || MM_SH58 || MM_SH59 || MM_SH60 || MM_SH61 || MM_SH62 || MM_SH63 || MM_SH64 || MM_SH65 || MM_SH66 || MM_SH67 || MM_SH68 || MM_SH69 || MM_SH70 || MM_SH71 || MM_SH72 || MM_SH73 || MM_SH74 || MM_SH75 || MM_SH76 || MM_SH77 || MM_SH78 || MM_SH79 || MM_SH80 || MM_SH81 || MM_SH82 || MM_SH83
   if (shape > 41.5) {
     /* ---- THE ORRERY ---- */
     float pt;
@@ -19321,6 +19457,8 @@ vec3 wgPaint(vec2 m, vec2 msz, float shape, float seed, float px, float lum,
     moon = step(0.5, pt)*smoothstep(0.0, 0.3, c.y + 0.3)*0.6;
     return col;
   }
+#endif
+#if MM_SH43
   if (shape > 40.5) {
     /* ---- THE DIPPING RACK ---- */
     vec3 oak = vec3(0.42, 0.28, 0.16)*E*1.3;
@@ -19354,6 +19492,7 @@ vec3 wgPaint(vec2 m, vec2 msz, float shape, float seed, float px, float lum,
     moon = 0.0;
     return col;
   }
+#endif
 
   /* ---- THE ZINC TUB ---- */
   vec3 zinc = vec3(0.62, 0.64, 0.66);
@@ -20918,22 +21057,55 @@ float wfDraw(vec2 m, vec2 msz, float s, float seed, float px, bool paint){
   float kq = (uKeyDir.x >= 0.0 ? 1.0 : -1.0)*mir;
   gWfCol = vec3(0.3); gWfInk = 0.0; gWfEmit = vec3(0.0); gWfMoon = 0.0; gWfGloss = 0.2;
   float d;
-  if (s < 45.5)      d = wfCot(q, qpx, seed, kq, paint);
+  if (false) {}
+#if MM_SH45
+  else if (s < 45.5)      d = wfCot(q, qpx, seed, kq, paint);
+#endif
+#if MM_SH46
   else if (s < 46.5) d = wfHorse(q, qpx, seed, kq, paint);
+#endif
+#if MM_SH47
   else if (s < 47.5) d = wfChest(q, qpx, seed, kq, paint);
+#endif
+#if MM_SH48
   else if (s < 48.5) d = wfSewing(q, qpx, seed, kq, paint);
+#endif
+#if MM_SH49
   else if (s < 49.5) d = wfDummy(q, qpx, seed, kq, paint);
+#endif
+#if MM_SH50
   else if (s < 50.5) d = wfFourPoster(q, qpx, seed, kq, paint);
+#endif
+#if MM_SH51
   else if (s < 51.5) d = wfDormBed(q, qpx, seed, kq, paint);
+#endif
+#if MM_SH52
   else if (s < 52.5) d = wfWashstand(q, qpx, seed, kq, paint);
+#endif
+#if MM_SH53
   else if (s < 53.5) d = wfDesk(q, qpx, seed, kq, paint);
+#endif
+#if MM_SH54
   else if (s < 54.5) d = wfGlobe(q, qpx, seed, kq, paint);
+#endif
+#if MM_SH55
   else if (s < 55.5) d = wfCase(q, qpx, seed, kq, paint);
+#endif
+#if MM_SH56
   else if (s < 56.5) d = wfChair(q, qpx, seed, kq, paint);
+#endif
+#if MM_SH57
   else if (s < 57.5) d = wfSarc(q, qpx, seed, kq, paint);
+#endif
+#if MM_SH58
   else if (s < 58.5) d = wfCandles(q, qpx, seed, kq, paint);
+#endif
+#if MM_SH59
   else if (s < 59.5) d = wfCharnel(q, qpx, seed, kq, paint);
+#endif
+#if MM_SH60
   else if (s < 60.5) d = wfWardrobe(q, qpx, seed, kq, paint);
+#endif
   else               d = wfDollhouse(q, qpx, seed, kq, paint);
   return d*sc;
 }
@@ -21097,15 +21269,23 @@ float shapeField(vec2 uv, vec2 msz, float shape, float seed){
 #if MM_WINGS == 1
   /* (round 29: and now it is CARVED -- stDraw, painted in the one pass as
      round 24's drawings are; the old mapping onto 15's figure is gone) */
+#if MM_SH31
   if (shape > 30.5 && shape < 31.5) return -(stDraw(p*msz, msz, seed, max(wfPx, 1e-5), true)/msz.y);
+#endif
   /* (round 31: the near floor's urn, basket and seat -- gkDraw) */
+#if MM_SH81 || MM_SH82 || MM_SH83
   if (shape > 80.5 && shape < 83.5) return -(gkDraw(p*msz, msz, shape, seed, max(wfPx, 1e-5), true)/msz.y);
+#endif
 #if MM_STONES == 1
   /* (round 29 graft: and the maze court's fountain, 25, DRAWN -- ftDraw) */
+#if MM_SH25
   if (shape > 24.5 && shape < 25.5) return -ftDraw(p*msz, msz, seed, max(wfPx, 1e-5), true)/msz.y;
 #endif
 #endif
-  if (shape < 0.5) {                      // 0 — armchair / settle
+#endif
+  if (false) {
+#if MM_SH0
+  } else if (shape < 0.5) {                      // 0 — armchair / settle
     /* IT HAD NO LEGS. The seat box ran to the floor, so a 0.88 m armchair was
        a box with two ears on it -- BRIEF-r9's rubric question 2, "is each thing
        built the way that thing is built". The seat now sits at 0.46 m (table:
@@ -21125,6 +21305,8 @@ float shapeField(vec2 uv, vec2 msz, float shape, float seed){
       d = min(d, mmBox(p - vec2(s2*0.150, 0.056), vec2(0.024, 0.056), 0.008));
       d = min(d, mmBox(p - vec2(s2*0.240, 0.122), vec2(0.038, 0.020), 0.006));
     }
+#endif
+#if MM_SH1
   } else if (shape < 1.5) {               // 1 — candelabra
     /* GRAFTED FROM ui/r9-bg2-b (UMBER) -- round 10 fix 6 names "its torchere",
        and this is why. A STRAIGHT POST WITH A HORIZONTAL BAR ACROSS IT IS A
@@ -21165,6 +21347,8 @@ float shapeField(vec2 uv, vec2 msz, float shape, float seed){
       d = min(d, mmCaps(p - vec2(cx1, cy1 + 0.030),
                         ch1*(0.80 + 0.30*mmHash11(seed*3.0 + float(i))), 0.020));
     }
+#endif
+#if MM_SH2
   } else if (shape < 2.5) {               // 2 — tall potted plant
     /* FRONDS, not a bouquet of circles. Seven discs blended at 0.13 fuse into
        one lobed blob, which is what the Greenhouse's thirty plants came back
@@ -21292,6 +21476,8 @@ float shapeField(vec2 uv, vec2 msz, float shape, float seed){
        term was mmRidge at 26 cycles, whose creases are straight segments of a
        bilinear noise -- which is most of what made the margin look blocky. */
     d += (mmFbm3(uv*11.0 + seed*2.7) - 0.50) * 0.014;
+#endif
+#if MM_SH3
   } else if (shape < 3.5) {               // 3 — headstone
     /* IT LEANS, and that is the only thing worth adding to it.
 
@@ -21312,6 +21498,8 @@ float shapeField(vec2 uv, vec2 msz, float shape, float seed){
     d = mmArch(q - vec2(0.0, 0.08), 0.26, 0.44);
     d = min(d, mmBox(q - vec2(0.0,0.06), vec2(0.34,0.06), 0.02));
 #endif
+#endif
+#if MM_SH4
   } else if (shape < 4.5) {               // 4 — chandelier, hangs from the top
     d = mmBox(g + vec2(0.0,0.20), vec2(0.016,0.20), 0.01);
     // ceiling rose: the chain has to visibly come OUT of something
@@ -21324,11 +21512,15 @@ float shapeField(vec2 uv, vec2 msz, float shape, float seed){
       d = mmSmin(d, mmCaps(g - cc, 0.12, 0.020), 0.05);
       d = min(d, mmCircle(g - cc - vec2(0.0,0.02), 0.034));
     }
+#endif
+#if MM_SH5
   } else if (shape < 5.5) {               // 5 — cabinet / bookcase
     d = mmBox(p - vec2(0.0,0.46), vec2(0.30,0.46), 0.02);
     d = min(d, mmBox(p - vec2(0.0,0.94), vec2(0.36,0.038), 0.02));
     d = min(d, mmBox(p - vec2(0.0,0.30), vec2(0.34,0.026), 0.01));
     d = min(d, mmBox(p - vec2(0.0,0.62), vec2(0.34,0.026), 0.01));
+#endif
+#if MM_SH6
   } else if (shape < 6.5) {               // 6 — column with capital
     /* The profile, bottom to top: plinth, torus, a shaft with ENTASIS, an
        astragal at the neck, an echinus flaring into a square abacus. The old
@@ -21348,6 +21540,8 @@ float shapeField(vec2 uv, vec2 msz, float shape, float seed){
     d = min(d, mmBox(p - vec2(0.0, 0.898), vec2(0.124 + 0.085*ey*ey, 0.030), 0.014));
     d = min(d, mmBox(p - vec2(0.0, 0.952), vec2(0.222, 0.026), 0.008));   // abacus
     d = min(d, mmBox(p - vec2(0.0, 0.982), vec2(0.236, 0.012), 0.006));   // its fillet
+#endif
+#if MM_SH7
   } else if (shape < 7.5) {               // 7 — drape on a rail
     float fold = 0.085*sin(uv.x*19.0 + seed*9.0)*uv.y;
     d = mmBox(g + vec2(fold, 0.48), vec2(0.30, 0.50), 0.05);
@@ -21361,9 +21555,13 @@ float shapeField(vec2 uv, vec2 msz, float shape, float seed){
     d = min(d, mmCircle(g + vec2( 0.42, 0.030), 0.055));
     d = min(d, mmBox(g + vec2(-0.30, 0.006), vec2(0.020, 0.040), 0.008));
     d = min(d, mmBox(g + vec2( 0.30, 0.006), vec2(0.020, 0.040), 0.008));
+#endif
+#if MM_SH8
   } else if (shape < 8.5) {               // 8 — crate stack
     d = mmBox(p - vec2(-0.10,0.22), vec2(0.24,0.22), 0.02);
     d = min(d, mmBox(p - vec2(0.16,0.62), vec2(0.19,0.19), 0.02));
+#endif
+#if MM_SH9
   } else if (shape < 9.5) {               // 9 — shrub / hedge
     for (int i = 0; i < 5; i++){
       float f = float(i)/4.0;
@@ -21394,6 +21592,8 @@ float shapeField(vec2 uv, vec2 msz, float shape, float seed){
       vec2 tip = vec2(sin(a)*(0.30 + 0.16*f), 0.34 + cos(a)*0.30 + 0.12*f);
       d = min(d, mmCaps(p - tip, 0.055 + 0.030*f, 0.022));
     }
+#endif
+#if MM_SH10
   } else if (shape < 10.5) {              // 10 — cot / crib with bars
     d = mmBox(p - vec2(0.0,0.26), vec2(0.34,0.10), 0.03);
     d = min(d, mmBox(p - vec2(-0.34,0.30), vec2(0.035,0.30), 0.02));
@@ -21405,6 +21605,8 @@ float shapeField(vec2 uv, vec2 msz, float shape, float seed){
     }
     d = min(d, mmBox(p - vec2(-0.28,0.08), vec2(0.035,0.10), 0.01));
     d = min(d, mmBox(p - vec2( 0.28,0.08), vec2(0.035,0.10), 0.01));
+#endif
+#if MM_SH11
   } else if (shape < 11.5) {              // 11 — rocking horse
     d = mmCircle(p - vec2(0.0,0.52), 0.20);
     d = mmSmin(d, mmCircle(p - vec2(0.30,0.68), 0.13), 0.10);   // head
@@ -21412,6 +21614,8 @@ float shapeField(vec2 uv, vec2 msz, float shape, float seed){
     d = mmSmin(d, mmCaps(p - vec2( 0.16,0.30), 0.24, 0.045), 0.06);
     float rock = abs(mmCircle(p - vec2(0.0, 0.62), 0.62)) - 0.035;
     d = min(d, max(rock, p.y - 0.16));
+#endif
+#if MM_SH12
   } else if (shape < 12.5) {              // 12 — four-poster bed
     d = mmBox(p - vec2(0.0,0.22), vec2(0.44,0.12), 0.04);
     d = min(d, mmBox(p - vec2(-0.44,0.52), vec2(0.040,0.52), 0.02));
@@ -21420,6 +21624,8 @@ float shapeField(vec2 uv, vec2 msz, float shape, float seed){
     float drop = 0.06*sin(uv.x*13.0 + seed*5.0);
     d = min(d, mmBox(p - vec2(0.0, 0.86 + drop), vec2(0.44,0.16), 0.03));
     d = min(d, mmBox(p - vec2(0.0,0.10), vec2(0.40,0.08), 0.05));   // bedding
+#endif
+#if MM_SH13
   } else if (shape < 13.5) {              // 13 — range / stove with flue
     d = mmBox(p - vec2(0.0,0.30), vec2(0.33,0.30), 0.03);
     d = min(d, mmBox(p - vec2(0.0,0.63), vec2(0.38,0.045), 0.02));
@@ -21427,12 +21633,16 @@ float shapeField(vec2 uv, vec2 msz, float shape, float seed){
     d = min(d, mmBox(p - vec2(0.18,1.10), vec2(0.11,0.035), 0.02));
     d = min(d, mmCircle(p - vec2(-0.12,0.30), 0.13));                 // fire door
     d = min(d, mmBox(p - vec2(0.0,0.04), vec2(0.30,0.045), 0.01));
+#endif
+#if MM_SH14
   } else if (shape < 14.5) {              // 14 — longcase clock
     d = mmBox(p - vec2(0.0,0.44), vec2(0.16,0.44), 0.02);
     d = min(d, mmArch(p - vec2(0.0,0.88), 0.20, 0.16));
     d = min(d, mmCircle(p - vec2(0.0,0.86), 0.12));
     d = min(d, mmBox(p - vec2(0.0,0.05), vec2(0.21,0.05), 0.02));
     d = min(d, mmBox(p - vec2(0.0,1.02), vec2(0.23,0.035), 0.02));
+#endif
+#if MM_SH15
   } else if (shape < 15.5) {              // 15 — statue on a plinth
     /* A FIGURE READS BY ITS SEQUENCE: a flared skirt of drapery, a waist,
        shoulders wider than the waist, a neck, a head narrower than the
@@ -21515,6 +21725,8 @@ float shapeField(vec2 uv, vec2 msz, float shape, float seed){
       float ww = 0.092 * (1.0 - 0.92*wt2*wt2) * (0.88 + 0.12*cos(wt2*24.0));
       d = mmSmin(d, (length(p - wax) - ww) + (1.0 - ang)*1e3, 0.020);
     }
+#endif
+#if MM_SH16
   } else if (shape < 16.5) {              // 16 — sarcophagus chest
 #if MM_STONES == 1
     if (shape > 16.1) {
@@ -21532,6 +21744,8 @@ float shapeField(vec2 uv, vec2 msz, float shape, float seed){
       d = ctSD(p*msz, msz, seed) / msz.y;
     }
 #endif
+#endif
+#if MM_SH17
   } else if (shape < 17.5) {              // 17 — clawfoot bath
     d = mmBox(p - vec2(0.0,0.34), vec2(0.46,0.20), 0.18);
     d = max(d, -mmBox(p - vec2(0.0,0.52), vec2(0.40,0.16), 0.12));    // hollow it
@@ -21539,6 +21753,8 @@ float shapeField(vec2 uv, vec2 msz, float shape, float seed){
     d = min(d, mmCaps(p - vec2( 0.38,0.06), 0.12, 0.055));
     d = min(d, mmCaps(p - vec2(0.42,0.54), 0.22, 0.026));             // tap riser
     d = min(d, mmCircle(p - vec2(0.36,0.76), 0.045));
+#endif
+#if MM_SH18
   } else if (shape < 18.5) {              // 18 — gas lamp post
     d = mmCaps(p, 0.78, 0.032);
     d = min(d, mmBox(p - vec2(0.0,0.05), vec2(0.13,0.05), 0.03));
@@ -21546,6 +21762,8 @@ float shapeField(vec2 uv, vec2 msz, float shape, float seed){
     d = min(d, mmArch(p - vec2(0.0,0.93), 0.10, 0.10));
     d = min(d, mmBox(p - vec2(0.0,1.06), vec2(0.03,0.04), 0.01));
     d = min(d, mmCaps(p - vec2(0.0,0.40), 0.02, 0.055));
+#endif
+#if MM_SH19
   } else if (shape < 19.5) {              // 19 — birdcage on a stand
     d = mmCaps(p, 0.44, 0.028);
     d = min(d, mmBox(p - vec2(0.0,0.04), vec2(0.15,0.04), 0.03));
@@ -21557,6 +21775,8 @@ float shapeField(vec2 uv, vec2 msz, float shape, float seed){
       d = min(d, mmCaps(p - vec2(sin(a)*0.245, 0.46), 0.26*cos(a*0.5), 0.014));
     }
     d = min(d, mmCircle(p - vec2(0.0,0.98), 0.045));
+#endif
+#if MM_SH20
   } else if (shape < 20.5) {              // 20 -- pier glass over a console
     /* A BALLROOM'S WALLS ARE MIRRORS, and this room had none. Twenty
        silhouettes covered seventeen rooms and not one of them was a thing a
@@ -21582,6 +21802,8 @@ float shapeField(vec2 uv, vec2 msz, float shape, float seed){
     d = min(d, mmCircle(p - vec2(0.0, 0.900), 0.068));
     d = min(d, mmCaps(p - vec2(-0.132, 0.842), 0.052, 0.019));
     d = min(d, mmCaps(p - vec2( 0.132, 0.842), 0.052, 0.019));
+#endif
+#if MM_SH21
   } else if (shape < 21.5) {              // 21 -- grand piano, lid propped
     /* ...AND A BALLROOM HAS A PIANO. ONE of them, which is why the region data
        can deal a shape at most once: the picker is uniform, and three grand
@@ -21626,6 +21848,8 @@ float shapeField(vec2 uv, vec2 msz, float shape, float seed){
        (the piano's quad is 1.15 of life), 1.50 m left of the quad's axis. */
     d = min(d, ptPianist(p*msz) / msz.y);
 
+#endif
+#if MM_SH22
   } else if (shape < 22.5) {              // 22 -- PENDANT FITTING ON A CHAIN
     /* BRIEF-r10 fix 1. Both judges, in two rooms each: the room draws a flame
        at every practical light and NOTHING draws the lamp, so a light hung in
@@ -21701,6 +21925,8 @@ float shapeField(vec2 uv, vec2 msz, float shape, float seed){
     d = min(d, mmCircle(mm - vec2(0.0, sk - 0.440), 0.056));
     d /= max(msz.x, 0.02);                // back into fractions of the quad
 
+#endif
+#if MM_SH23
   } else if (shape < 23.5) {              // 23 -- A LIGHT STANDARD
     /* The other half of fix 1: a lamp too low to hang. A stepped foot, a stem
        as long as the light is high, and a glazed lantern with the flame inside
@@ -21726,6 +21952,8 @@ float shapeField(vec2 uv, vec2 msz, float shape, float seed){
     d = min(d, mmCircle(mm - vec2(0.0, sk + 0.334), 0.028));
     d /= max(msz.x, 0.02);
 
+#endif
+#if MM_SH24
   } else if (shape < 24.5) {              // 24 -- coursed brick planting bed
     /* ROUND 10, FIX 3. Both judges on the Greenhouse's mid-ground: the masses
        "are mottled lumps with no leaf edges and read as moss boulders", and
@@ -21753,7 +21981,9 @@ float shapeField(vec2 uv, vec2 msz, float shape, float seed){
       d = mmSmin(d, bb.x - bb.y, 0.016);
     }
     d += (mmFbm3(uv*13.0 + seed*2.7) - 0.50) * 0.013 * smoothstep(0.31, 0.40, uv.y);
+#endif
 #if MM_STONES == 1
+#if MM_SH25
   } else if (shape < 25.5) {              // 25 -- a conservatory fountain
     /* ROUND 14, both judges: "the conservatory is unchanged from before round
        11: give it its own centre of interest (a fountain, a stove-pipe heater,
@@ -21816,7 +22046,9 @@ float shapeField(vec2 uv, vec2 msz, float shape, float seed){
     fd = min(fd, max(w2, max(m.y - 2.27, 1.70 - m.y)));
     d = fd / msz.y;
 #endif
+#endif
 #if MM_BUST == 1
+#if MM_SH26
   } else if (shape < 26.5) {              // 26 -- a bust on a term pedestal
     /* ROUND 14, both judges: the Foyer gallery's near figures were "dark
        armoured figures ... unreadable silhouettes: light them or make them
@@ -21861,7 +22093,9 @@ float shapeField(vec2 uv, vec2 msz, float shape, float seed){
     bd = min(bd, hd);
     d = bd / msz.y;
 #endif
+#endif
 #if MM_WINGS == 1
+#if MM_SH27
   } else if (shape < 27.5) {              // 27 -- a pumpkin (round 22)
     vec2 m = p*msz;
     vec3 F = pkFrame(msz, seed);
@@ -21876,27 +22110,42 @@ float shapeField(vec2 uv, vec2 msz, float shape, float seed){
     gPkSt = m.y > F.z ? pkStem(m, F, msz.y, seed) : 1e3;
     gPkLf = m.y < 0.20*msz.y ? pkLeaf(m, F, msz, seed) : 1e3;
     d = min(pd, min(gPkSt, gPkLf)) / msz.y;
+#endif
+#if MM_SH28
   } else if (shape < 28.5) {              // 28 -- a clipped yew (round 22)
     d = yewSD(p*msz, msz, seed) / msz.y;
+#endif
+#if MM_SH29
   } else if (shape < 29.5) {              // 29 -- a kitchen table (round 22)
     float tok;
     d = tbSD(p*msz, msz, seed, tok) / msz.y;
+#endif
+#if MM_SH30
   } else if (shape < 30.5) {              // 30 -- a clipped topiary (graft)
     vec2 tw = topSD(p*msz, msz, seed);
     d = min(tw.x, tw.y) / msz.y;
 #endif
+#endif
 #if MM_WINGS == 2
+#if MM_SH36
   } else if (shape > 35.5 && shape < 36.5) {   // 36 -- a steamer trunk (round 23)
     float pt;
     d = trSD(p*msz, msz, seed, pt) / msz.y;
+#endif
+#if MM_SH37
   } else if (shape > 36.5 && shape < 37.5) {   // 37 -- furniture under a dust sheet (round 23)
     d = dsSD(p*msz, msz, seed) / msz.y;
+#endif
+#if MM_SH32 || MM_SH33 || MM_SH34 || MM_SH35 || MM_SH36 || MM_SH37 || MM_SH38 || MM_SH39 || MM_SH40 || MM_SH41 || MM_SH42 || MM_SH43 || MM_SH44
   } else if (shape > 31.5) {              // 32-35, 38-42 -- ULTRAMARINE's drawings (graft)
     d = wgField(p*msz, msz, wgU(shape), seed) / msz.y;
 #endif
+#endif
 #if MM_WINGS >= 3
+#if MM_SH45 || MM_SH46 || MM_SH47 || MM_SH48 || MM_SH49 || MM_SH50 || MM_SH51 || MM_SH52 || MM_SH53 || MM_SH54 || MM_SH55 || MM_SH56 || MM_SH57 || MM_SH58 || MM_SH59 || MM_SH60 || MM_SH61 || MM_SH62 || MM_SH63 || MM_SH64 || MM_SH65 || MM_SH66 || MM_SH67 || MM_SH68 || MM_SH69 || MM_SH70 || MM_SH71 || MM_SH72 || MM_SH73 || MM_SH74 || MM_SH75 || MM_SH76 || MM_SH77 || MM_SH78 || MM_SH79 || MM_SH80 || MM_SH81 || MM_SH82 || MM_SH83
   } else if (shape > 44.5) {              // 45+ -- round 24's drawings, painted in the one pass
     d = wfDraw(p*msz, msz, shape, seed, max(wfPx, 1e-5), true) / msz.y;
+#endif
 #endif
   }
   /* A BRASS FITTING HAS NO ERODED EDGE. The fbm below is what keeps stone and
@@ -22042,6 +22291,7 @@ float reliefH(vec2 uv, vec2 msz, vec2 mpp, float shape, float seed, out float ti
      that turns each part. (graft: ULTRAMARINE's drawings, 32-35 and 38-42,
      carry their form in wgPaint's own shading and lines, so they take no
      relief here; the trunk and the dust sheet keep VERDITER's) */
+#if MM_SH32 || MM_SH33 || MM_SH34 || MM_SH35 || MM_SH36 || MM_SH37 || MM_SH38 || MM_SH39 || MM_SH40 || MM_SH41 || MM_SH42 || MM_SH43 || MM_SH44 || MM_SH45 || MM_SH46 || MM_SH47 || MM_SH48 || MM_SH49 || MM_SH50 || MM_SH51 || MM_SH52 || MM_SH53 || MM_SH54 || MM_SH55 || MM_SH56 || MM_SH57 || MM_SH58 || MM_SH59 || MM_SH60 || MM_SH61 || MM_SH62 || MM_SH63 || MM_SH64 || MM_SH65 || MM_SH66 || MM_SH67 || MM_SH68 || MM_SH69 || MM_SH70 || MM_SH71 || MM_SH72 || MM_SH73 || MM_SH74 || MM_SH75 || MM_SH76 || MM_SH77 || MM_SH78 || MM_SH79 || MM_SH80 || MM_SH81 || MM_SH82 || MM_SH83
   if (shape > 31.5) {
     gBedLeaf = 0.0;
     float pt = 0.0;
@@ -22060,6 +22310,7 @@ float reliefH(vec2 uv, vec2 msz, vec2 mpp, float shape, float seed, out float ti
     return h;
   }
 #endif
+#endif
 #if MM_WINGS >= 3
   /* round 24's drawings carry their form in their own paint */
   if (shape > 44.5) { gBedLeaf = 0.0; return 0.0; }
@@ -22075,6 +22326,7 @@ float reliefH(vec2 uv, vec2 msz, vec2 mpp, float shape, float seed, out float ti
 #if MM_STONES == 1
   if (shape > 24.5 && shape < 25.5) return 0.0;     // (round 29 graft: ftDraw paints it)
 #endif
+#if MM_SH31
   if (shape > 30.5 && shape < 31.5) {
     /* THE STATUE, CLEAN (round 22 graft, all three judges on the Heart:
        "the statues beside the columns are stair-stepped low-res silhouettes
@@ -22105,8 +22357,11 @@ float reliefH(vec2 uv, vec2 msz, vec2 mpp, float shape, float seed, out float ti
     return h;
   }
 #endif
+#endif
 
-  if (shape < 0.5) {                      // 0 — armchair / settle
+  if (false) {
+#if MM_SH0
+  } else if (shape < 0.5) {                      // 0 — armchair / settle
     /* An armchair at its real 0.88 m occupies 120-200 px in the Ballroom's and
        the Foyer's foreground, and it has read as "three rounded boxes" in every
        capture since round 2. What an upholstered chair is, as relief: a seat
@@ -22141,6 +22396,8 @@ float reliefH(vec2 uv, vec2 msz, vec2 mpp, float shape, float seed, out float ti
     tint -= 0.40 * smoothstep(0.135, 0.02, uv.y);
     tint -= 0.22 * back * (1.0 - smoothstep(0.0, 0.055, length(bc)));
 
+#endif
+#if MM_SH1
   } else if (shape < 1.5) {               // 1 — candelabra
     /* ...and its interior, rebuilt on the grafted silhouette's own landmarks.
        A turned brass stem is a CYLINDER with knops rung into it, not a flat
@@ -22165,6 +22422,8 @@ float reliefH(vec2 uv, vec2 msz, vec2 mpp, float shape, float seed, out float ti
     h -= 0.012 * wx * pB(uv.y, 0.500, 0.760) * pRes(0.222*msz.x, mpp.x);
     tint -= 0.30 * smoothstep(0.10, 0.01, uv.y);
 
+#endif
+#if MM_SH2
   } else if (shape < 2.5) {               // 2 — tall potted plant
     /* THE GREENHOUSE, which is the room Josh named first: "nothing in the
        greenhouse looks like plants". The prop SET is right and the silhouette
@@ -22360,6 +22619,8 @@ float reliefH(vec2 uv, vec2 msz, vec2 mpp, float shape, float seed, out float ti
     tint -= 0.55 * fcrl * smoothstep(0.58, 0.95, ft);
     tint -= 0.90 * sA * smoothstep(0.88, 0.99, ft);
 
+#endif
+#if MM_SH3
   } else if (shape < 3.5) {               // 3 — headstone
     /* At the ~30 px a headstone occupies the CUE beats the parts, and round 8
        was right to revert a fuller PROFILE. But relief is not profile: a sunk
@@ -22447,6 +22708,8 @@ float reliefH(vec2 uv, vec2 msz, vec2 mpp, float shape, float seed, out float ti
     tint -= 0.34 * smoothstep(0.26, 0.05, uv.y);              // lichen at the foot
 #endif
 
+#endif
+#if MM_SH4
   } else if (shape < 4.5) {               // 4 — chandelier
     vec2 g = uv - vec2(0.5, 1.0);
     h += 0.016 * pR(g.y + 0.020, 0.014);                      // the ceiling rose
@@ -22459,6 +22722,8 @@ float reliefH(vec2 uv, vec2 msz, vec2 mpp, float shape, float seed, out float ti
                * pB(g.y + 0.62, 0.0, 0.26) * pRes(dp*msz.x, mpp.x);
     tint -= 0.22 * smoothstep(-0.70, -0.30, g.y);
 
+#endif
+#if MM_SH5
   } else if (shape < 5.5) {               // 5 — cabinet / bookcase
     /* The commonest prop in the house, 58 instances. Its books and its glazing
        went in as ALBEDO in round 8, which draws the lines; this is what makes
@@ -22484,6 +22749,8 @@ float reliefH(vec2 uv, vec2 msz, vec2 mpp, float shape, float seed, out float ti
     h -= 0.014 * (1.0 - smoothstep(0.006, 0.015, abs(fract(uv.y*3.0) - 0.10))) * door;
     tint -= 0.30 * door * 0.30;
 
+#endif
+#if MM_SH6
   } else if (shape < 6.5) {               // 6 — column with capital
     /* THE FLUTES ARE RELIEF, not albedo. Round 8 put them in as an albedo
        groove, which draws the line and leaves the shaft shading as a flat
@@ -22512,6 +22779,8 @@ float reliefH(vec2 uv, vec2 msz, vec2 mpp, float shape, float seed, out float ti
     h -= 0.024 * pR(uv.y - 0.121, 0.004);
     tint -= 0.26 * smoothstep(0.16, 0.02, uv.y);
 
+#endif
+#if MM_SH7
   } else if (shape < 7.5) {               // 7 — drape on a rail
     /* CLOTH IS FOLDS, and it is the one material whose whole appearance is
        relief: a curtain drawn as a coverage mask with a sine on its outline is
@@ -22537,6 +22806,8 @@ float reliefH(vec2 uv, vec2 msz, vec2 mpp, float shape, float seed, out float ti
                * pB(uv.y, 0.948, 0.994) * pRes(rp, mpp.x);
     tint -= 0.34 * smoothstep(0.26, 0.02, uv.y);
 
+#endif
+#if MM_SH8
   } else if (shape < 8.5) {               // 8 — crate stack
     /* Planks with thickness, corner battens and a diagonal brace. A packing
        case is the most DRAWN object in the house -- it is nothing but joinery
@@ -22556,6 +22827,8 @@ float reliefH(vec2 uv, vec2 msz, vec2 mpp, float shape, float seed, out float ti
     h -= 0.032 * pR(cm.y - 0.006, 0.012) * up;                 // where it sits on
     tint -= 0.30 * smoothstep(0.10, 0.01, uv.y);
 
+#endif
+#if MM_SH9
   } else if (shape < 9.5) {               // 9 — shrub / hedge
     /* LEAVES, AT LEAF SCALE. 61 instances -- more than any other prop -- and
        they carry the Greenhouse, the Hedge Maze, the Pumpkin Grounds and the
@@ -22607,6 +22880,8 @@ float reliefH(vec2 uv, vec2 msz, vec2 mpp, float shape, float seed, out float ti
     float gone9 = 1.0 - pRes(0.185, max(mpp.x, mpp.y));
     tint -= (0.20 + 0.50*mmHash21(lgi + seed*3.9)) * (0.10 + 0.90*gone9);
 
+#endif
+#if MM_SH10
   } else if (shape < 10.5) {              // 10 — cot / crib
     h += 0.026 * pB(uv.y, 0.552, 0.612);                      // the top rail
     h -= 0.022 * pR(uv.y - 0.549, 0.006);
@@ -22617,6 +22892,8 @@ float reliefH(vec2 uv, vec2 msz, vec2 mpp, float shape, float seed, out float ti
     h += 0.018 * (1.0 - smoothstep(0.0, 0.07, abs(uv.y - 0.300)));  // the mattress
     tint -= 0.34 * smoothstep(0.30, 0.03, uv.y);
 
+#endif
+#if MM_SH11
   } else if (shape < 11.5) {              // 11 — rocking horse
     h += 0.030 * (1.0 - smoothstep(0.0, 0.13, length(p - vec2(0.02, 0.56))));  // the barrel
     h -= 0.020 * pR(length(p - vec2(0.30, 0.68)) - 0.105, 0.020);              // the jaw
@@ -22627,6 +22904,8 @@ float reliefH(vec2 uv, vec2 msz, vec2 mpp, float shape, float seed, out float ti
     h += 0.014 * pR(abs(mmCircle(p - vec2(0.0, 0.62), 0.62)) - 0.035, 0.016);   // the bow
     tint -= 0.30 * smoothstep(0.14, 0.02, uv.y);
 
+#endif
+#if MM_SH12
   } else if (shape < 12.5) {              // 12 — four-poster bed
     float post = min(abs(p.x + 0.44), abs(p.x - 0.44));
     h += 0.030 * pR(post, 0.028);                             // the posts stand proud
@@ -22641,6 +22920,8 @@ float reliefH(vec2 uv, vec2 msz, vec2 mpp, float shape, float seed, out float ti
     h -= 0.024 * pR(uv.y - 0.100, 0.010);
     tint -= 0.34 * smoothstep(0.10, 0.01, uv.y);
 
+#endif
+#if MM_SH13
   } else if (shape < 13.5) {              // 13 — range / stove
     h += 0.030 * pB(uv.y, 0.585, 0.668);                      // the hotplate
     h -= 0.026 * pR(uv.y - 0.583, 0.006);
@@ -22653,6 +22934,8 @@ float reliefH(vec2 uv, vec2 msz, vec2 mpp, float shape, float seed, out float ti
     h += 0.018 * pB(uv.y, 0.030, 0.092);                      // the fret at the foot
     tint -= 0.30 * smoothstep(0.12, 0.01, uv.y);
 
+#endif
+#if MM_SH14
   } else if (shape < 14.5) {              // 14 — longcase clock
     h += 0.034 * pB(uv.y, 0.980, 1.000);                      // the hood's cornice
     h -= 0.028 * pR(uv.y - 0.978, 0.006);
@@ -22665,6 +22948,8 @@ float reliefH(vec2 uv, vec2 msz, vec2 mpp, float shape, float seed, out float ti
     h -= 0.024 * pR(uv.y - 0.092, 0.005);
     tint -= 0.28 * smoothstep(0.10, 0.01, uv.y);
 
+#endif
+#if MM_SH15
   } else if (shape < 15.5) {              // 15 — statue on a plinth
     /* THE PROOF OBJECT, and Josh named it: "the ballroom seems to be occupied
        by statues or oversized oscar awards or something". An award statuette is
@@ -22860,6 +23145,8 @@ float reliefH(vec2 uv, vec2 msz, vec2 mpp, float shape, float seed, out float ti
     tint -= 0.34 * pR(fract(vy + seed*0.7) - 0.5, 0.055) * step(0.32, mmHash11(seed*5.9));
     tint -= 0.26 * smoothstep(0.34, 0.02, uv.y);
 
+#endif
+#if MM_SH16
   } else if (shape < 16.5) {              // 16 — chest tomb / masonry bed
 #if MM_STONES == 1
     if (shape > 16.1) {
@@ -22967,6 +23254,8 @@ float reliefH(vec2 uv, vec2 msz, vec2 mpp, float shape, float seed, out float ti
     }
 #endif
 
+#endif
+#if MM_SH17
   } else if (shape < 17.5) {              // 17 — clawfoot bath
     h += 0.034 * pR(mmCircle(p - vec2(0.0, 0.345), 0.455) + 0.045, 0.030);   // the roll rim
     h -= 0.030 * pR(uv.y - 0.520, 0.012);                     // under the rim
@@ -22977,6 +23266,8 @@ float reliefH(vec2 uv, vec2 msz, vec2 mpp, float shape, float seed, out float ti
     h += 0.014 * pR(length(p - vec2(0.360, 0.760)) - 0.038, 0.014);   // the tap
     tint -= 0.30 * smoothstep(0.12, 0.01, uv.y);
 
+#endif
+#if MM_SH18
   } else if (shape < 18.5) {              // 18 — gas lamp standard
     float u = (uv.x - 0.5)*2.0;
     h += 0.022 * (1.0 - u*u*6.0) * pB(uv.y, 0.100, 0.760);     // the shaft is round
@@ -22997,6 +23288,8 @@ float reliefH(vec2 uv, vec2 msz, vec2 mpp, float shape, float seed, out float ti
     h -= 0.026 * pR(uv.y - 0.923, 0.006);
     tint -= 0.26 * smoothstep(0.10, 0.01, uv.y);
 
+#endif
+#if MM_SH19
   } else if (shape < 19.5) {              // 19 — birdcage on a stand
     float ring = abs(mmCircle(p - vec2(0.0, 0.720), 0.260)) - 0.022;
     h += 0.024 * pR(ring, 0.016);                              // the hoop
@@ -23008,6 +23301,8 @@ float reliefH(vec2 uv, vec2 msz, vec2 mpp, float shape, float seed, out float ti
     h += 0.014 * pR(uv.y - 0.240, 0.014);                      // the stand's knop
     h += 0.018 * pB(uv.y, 0.000, 0.070);
     tint -= 0.26 * smoothstep(0.08, 0.01, uv.y);
+#endif
+#if MM_SH20
   } else if (shape < 20.5) {              // 20 -- pier glass over a console
     /* The surround is a MOULDED frame: a bead at its outer arris, a hollow
        behind it, and the plate SUNK inside it, which is what makes the glass
@@ -23038,6 +23333,8 @@ float reliefH(vec2 uv, vec2 msz, vec2 mpp, float shape, float seed, out float ti
        and the room is candlelit and dark, so the glass reads as glass rather
        than as a hole in the wall. */
     tint += 0.30 * smoothstep(0.006, -0.010, gl);
+#endif
+#if MM_SH21
   } else if (shape < 21.5) {              // 21 -- grand piano, lid propped
     vec2 pp = vec2((p.x - 0.10)*1.25, p.y);          // the piano's old frame (shapeField 21)
     h += 0.048 * pB(uv.y, 0.538, 0.568);                        // the case rim
@@ -23081,6 +23378,8 @@ float reliefH(vec2 uv, vec2 msz, vec2 mpp, float shape, float seed, out float ti
     h += 0.012 * onP * (1.0 - smoothstep(0.0, 0.10, length(vec2(pf.x - 0.15, (pf.y - 1.35)*0.8))));
     h += 0.010 * onP * smoothstep(0.004, -0.004, pnSeg(pf, vec2(-0.03, 0.62), vec2(0.07, 1.10), 0.135));
 
+#endif
+#if MM_SH22
   } else if (shape < 22.5) {              // 22 -- pendant fitting on a chain
     /* Everything here is in METRES off the bottom centre, like the silhouette,
        and every mark is DARK: a fitting hangs in the brightest part of its own
@@ -23128,6 +23427,8 @@ float reliefH(vec2 uv, vec2 msz, vec2 mpp, float shape, float seed, out float ti
                * pB(m.y, sk - 0.350, sk - 0.255) * pRes(gp, mpp.x);
     tint -= 0.30 * smoothstep(sk - 0.20, sk - 0.46, m.y);        // soot under the bowl
 
+#endif
+#if MM_SH23
   } else if (shape < 23.5) {              // 23 -- a light standard
     float H = msz.y, sk = H - 0.46;
     /* THE FOOT is three steps, and each step's underside is a dark line. */
@@ -23154,6 +23455,8 @@ float reliefH(vec2 uv, vec2 msz, vec2 mpp, float shape, float seed, out float ti
     h += 0.016 * pR(m.y - (sk + 0.300), 0.040) * pR(m.x, 0.070);
     tint -= 0.34 * smoothstep(0.24, 0.02, m.y/max(H, 0.1));
 
+#endif
+#if MM_SH24
   } else if (shape < 24.5) {              // 24 -- coursed brick planting bed
     /* THE COURSES ARE 0.075 M, which is BRIEF-r9's table for a brick course,
        and the perpends are staggered half a brick per course -- the run of
@@ -23206,7 +23509,9 @@ float reliefH(vec2 uv, vec2 msz, vec2 mpp, float shape, float seed, out float ti
       if (hh > fh) fh = hh;
     }
     h = mix(h, max(h, fh), step(1.0e-5, fh));
+#endif
 #if MM_STONES == 1
+#if MM_SH25
   } else if (shape < 25.5) {              // 25 -- a conservatory fountain
     /* CARVED, in the same metres shapeField draws it in: the basin panelled
        between pilasters with a mask in each panel and a moulded rim; the
@@ -23282,7 +23587,9 @@ float reliefH(vec2 uv, vec2 msz, vec2 mpp, float shape, float seed, out float ti
     tint -= 0.28 * smoothstep(0.22, 0.02, m.y);
     tint -= 0.22 * smoothstep(0.62, 0.82, mmFbm3(m*vec2(4.0, 6.0) + seed*3.0)) * (1.0 - clamp(sheet, 0.0, 1.0));
 #endif
+#endif
 #if MM_BUST == 1
+#if MM_SH26
   } else if (shape < 26.5) {              // 26 -- a bust on a term pedestal
     /* the term's sunk panel and its cap's mouldings; the bust's drapery
        falling from the shoulders in folds, the brow, the eye sockets, the
@@ -23354,7 +23661,9 @@ float reliefH(vec2 uv, vec2 msz, vec2 mpp, float shape, float seed, out float ti
     float bShd = onH*smoothstep(-0.01, 0.05, -bmf*(f.x - bf*0.030))*(1.0 - hairB);
     tint -= 0.90*bSock + 0.60*bNose + 0.75*bChin + 0.30*bShd;
 #endif
+#endif
 #if MM_WINGS == 1
+#if MM_SH27
   } else if (shape < 27.5) {              // 27 -- a pumpkin (round 22)
     /* each lobe DOMED, a RIB where two lobes meet (a dark groove, drawn as
        well as carved, because at thirty pixels the ribs are the pumpkin),
@@ -23388,6 +23697,8 @@ float reliefH(vec2 uv, vec2 msz, vec2 mpp, float shape, float seed, out float ti
     }
     gPkOn = onB * (1.0 - onS); gPkLobe = lb; gPkRib = rib; gPkStem = onS;
     gPkLeaf = onL; gPkCut = cut; gPkNear = near;
+#endif
+#if MM_SH28 || MM_SH30
   } else if (shape < 28.5 || (shape > 29.5 && shape < 30.5)) {   // 28 a clipped yew, 30 topiary
     /* LEAF (graft): the maze walls' own two scales of lobed sprays, each a
        lighter body in a dark crease -- CASSEL's small sprays here read as
@@ -23432,6 +23743,8 @@ float reliefH(vec2 uv, vec2 msz, vec2 mpp, float shape, float seed, out float ti
       h -= pan*0.012;
       h -= 0.010*pR(m.y - 0.36, 0.012)*gTopWood;
     }
+#endif
+#if MM_SH28 || MM_SH29
   } else if (shape < 29.5) {              // 29 -- a kitchen table (round 22)
     /* the top's scrubbed boards, the legs' turning, the things on it round */
     float tok;
@@ -23443,6 +23756,7 @@ float reliefH(vec2 uv, vec2 msz, vec2 mpp, float shape, float seed, out float ti
     h -= 0.008*pR(m.y - 0.775, 0.006);                        // under the top's edge
     h += step(0.5, tok)*0.030*clamp(-td/0.06, 0.0, 1.0);      // the round of a bowl, a jug
     tint -= 0.45*pR(m.y - 0.68, 0.02)*step(m.y, 0.70);        // in the apron's shadow
+#endif
 #endif
   }
 
@@ -23646,6 +23960,7 @@ void main(){
      and the Title, and an absolute terracotta would be the one warm object in
      a cold blue room. Fired clay is warm and a little brighter than the
      foliage; weathered lead is cool, paler and almost grey. */
+#if MM_SH2
   if (vShape > 1.5 && vShape < 2.5) {
     float lead = step(0.62, mmHash11(vSeed*17.77 + 3.31));
     float potM = smoothstep(0.234, 0.206, vUv.y);
@@ -23660,12 +23975,14 @@ void main(){
     potc *= 1.0 - 0.26*smoothstep(0.62, 0.95, mmFbm3(sp*7.0 + vSeed*5.5));  // weathering
     albedo = mix(albedo, potc, potM);
   }
+#endif
 
   /* A PACKING CASE IS DEAL (round 28, the shared finish's material half):
      sawn white pine gone honey with age, each board its own value -- off
      the prop's own luminance like the pot's clay, so it keeps its room's
      light. It was taking the region's colour, and in the Secret Passages
      that is a violet-grey: "a few crates" read as grey cut-outs. */
+#if MM_SH8
   if (vShape > 7.5 && vShape < 8.5) {
     float lum  = max(mmLum(albedo), 0.02);
     float brd = mmHash11(floor(sp.y/0.14)*3.7 + floor(sp.x/0.5)*1.3 + vSeed);
@@ -23702,6 +24019,7 @@ void main(){
       albedo *= 1.0 - 0.55*clamp(lines, 0.0, 1.0)*step(0.0, cm.y)*step(cm.y, ch);
     }
   }
+#endif
 
   /* A HANGING IS TRIMMED, AND THAT IS WHAT NAMES IT. Round 15 fix 4, both
      judges on the Foyer landing: "the tall wall hangings flanking the stair
@@ -23721,6 +24039,7 @@ void main(){
      the room where it is. Derived from the prop's own luminance like the pot's
      clay, so a drape in the Attic and one in the Ballroom each stay their own
      room's colour. 33 instances across the house. */
+#if MM_SH7
   if (vShape > 6.5 && vShape < 7.5) {
     float lum  = max(mmLum(albedo), 0.02);
     vec3  tape = vec3(1.00, 0.855, 0.560) * (lum*1.95 + 0.050);
@@ -23739,6 +24058,7 @@ void main(){
                  (1.0 - smoothstep(rp*0.16, rp*0.30, abs(mod(vUv.x + rp*0.5, rp) - rp*0.5)))
                  * smoothstep(0.948, 0.960, vUv.y) * smoothstep(0.998, 0.986, vUv.y) * 0.80);
   }
+#endif
 
   /* ...AND A PLANTING BED IS MADE OF BRICK. Same argument as the pot, one
      shape along: the trough was taking the foliage albedo, so a bed of brick
@@ -23748,6 +24068,7 @@ void main(){
      "uniform full-width horizontal stripes" the judges caught elsewhere.
      Shape 24 -- it was 22 on the branch that built it, and 22 and 23 are the
      light fittings on this one. */
+#if MM_SH24
   if (vShape > 23.5 && vShape < 24.5) {
     float bedM = smoothstep(0.330, 0.300, vUv.y) * (1.0 - gBedLeaf);
     float rowi = floor(sp.y / 0.075);
@@ -23765,6 +24086,7 @@ void main(){
     albedo = mix(albedo, cope, smoothstep(0.250, 0.262, vUv.y)
                              * smoothstep(0.322, 0.306, vUv.y) * (1.0 - gBedLeaf));
   }
+#endif
 
   /* ROUND 22: A PUMPKIN IS ORANGE AND A YEW IS DARK GREEN, which are
      material facts as a pot's clay is (above): both are derived from the
@@ -23776,6 +24098,7 @@ void main(){
      surface) and the rind round each cut takes the glow through it. */
   vec3 pkEmit = vec3(0.0);
 #if MM_WINGS == 1
+#if MM_SH27
   if (vShape > 26.5 && vShape < 27.5) {
     float lum = max(mmLum(albedo), 0.02);
     float kc = mmHash11(vSeed*12.3 + 0.7);
@@ -23803,6 +24126,8 @@ void main(){
     albedo *= 1.0 - gPkCut*0.85;
     pkEmit = vec3(1.00, 0.60, 0.18)*gPkCut + vec3(1.00, 0.46, 0.12)*gPkNear*(1.0 - gPkCut)*0.16;
   }
+#endif
+#if MM_SH29
   if (vShape > 28.5 && vShape < 29.5) {
     float lum = max(mmLum(albedo), 0.02);
     /* (round 28 graft, TERREVERTE's; both judges: "warm up the table wood so
@@ -23869,6 +24194,8 @@ void main(){
     oc *= (lum*3.8 + 0.060);
     albedo = mix(deal, oc, step(0.5, gTbOk));
   }
+#endif
+#if MM_SH28
   if (vShape > 27.5 && vShape < 28.5) {
     float lum = max(mmLum(albedo), 0.02);
     /* (round 29: withered, as the walls' -- hzWither) */
@@ -23885,8 +24212,10 @@ void main(){
     yew = mix(yew, yew*vec3(0.50, 0.42, 0.36), gYewFoot*0.80);
     albedo = yew * (1.0 - gYewRev*0.85);
   }
+#endif
   /* the topiary (30, graft): the same yew, and a Versailles box painted a
      dark lead green on a pale stone plinth */
+#if MM_SH30
   if (vShape > 29.5 && vShape < 30.5) {
     float lum = max(mmLum(albedo), 0.02);
     /* (a landmark stands out in the alley, a step over the hedge behind) */
@@ -23901,6 +24230,7 @@ void main(){
     albedo = mix(yew, mix(boxC, stnC, step(1.5, gTopPart)), gTopWood);
   }
 #endif
+#endif
 
   /* ROUND 23: EACH OBJECT IN ITS OWN MATERIALS, off the prop's own
      luminance as the pumpkin's skin is, so each keeps its room's light */
@@ -23912,12 +24242,15 @@ void main(){
   float wgInk = 0.0, wgMoon = 0.0, wgOn = 0.0;
 #if MM_WINGS == 2
   float wgS = wgU(vShape);
+#if MM_SH32 || MM_SH33 || MM_SH34 || MM_SH35 || MM_SH38 || MM_SH39 || MM_SH40 || MM_SH41 || MM_SH42 || MM_SH43 || MM_SH44 || MM_SH45 || MM_SH46 || MM_SH47 || MM_SH48 || MM_SH49 || MM_SH50 || MM_SH51 || MM_SH52 || MM_SH53 || MM_SH54 || MM_SH55 || MM_SH56 || MM_SH57 || MM_SH58 || MM_SH59 || MM_SH60 || MM_SH61 || MM_SH62 || MM_SH63 || MM_SH64 || MM_SH65 || MM_SH66 || MM_SH67 || MM_SH68 || MM_SH69 || MM_SH70 || MM_SH71 || MM_SH72 || MM_SH73 || MM_SH74 || MM_SH75 || MM_SH76 || MM_SH77 || MM_SH78 || MM_SH79 || MM_SH80 || MM_SH81 || MM_SH82 || MM_SH83
   if (wgS > 0.5) {
     wgOn = 1.0;
     float lumW = max(mmLum(albedo), 0.02);
     albedo = wgPaint((vUv - vec2(0.5, 0.0))*vSize, vSize, wgS, vSeed,
                      max(max(mpp.x, mpp.y), 1e-5), lumW, uKeyDir, wgE, wgInk, wgMoon);
   }
+#endif
+#if MM_SH36 || MM_SH37
   if (vShape > 35.5 && vShape < 37.5) {
     float lum = max(mmLum(albedo), 0.02);
     float pt = gW2Part;
@@ -23935,9 +24268,11 @@ void main(){
     }
   }
 #endif
+#endif
 #if MM_WINGS >= 3
   /* ROUND 24: each drawing in its own materials (wfDraw, painted in the
      one pass), at the prop's own light level as round 23's are */
+#if MM_SH45 || MM_SH46 || MM_SH47 || MM_SH48 || MM_SH49 || MM_SH50 || MM_SH51 || MM_SH52 || MM_SH53 || MM_SH54 || MM_SH55 || MM_SH56 || MM_SH57 || MM_SH58 || MM_SH59 || MM_SH60 || MM_SH61 || MM_SH62 || MM_SH63 || MM_SH64 || MM_SH65 || MM_SH66 || MM_SH67 || MM_SH68 || MM_SH69 || MM_SH70 || MM_SH71 || MM_SH72 || MM_SH73 || MM_SH74 || MM_SH75 || MM_SH76 || MM_SH77 || MM_SH78 || MM_SH79 || MM_SH80 || MM_SH81 || MM_SH82 || MM_SH83
   if (vShape > 44.5) {
     wgOn = 1.0;
     float Ew = max(mmLum(albedo), 0.02)*2.2 + 0.060;
@@ -23959,15 +24294,18 @@ void main(){
     wgE = gWfEmit; wgInk = gWfInk; wgMoon = gWfMoon;
   }
 #endif
+#endif
 #if MM_WINGS == 1
   /* (round 29: the carved statue, in its own marble, as round 24's are;
      round 31: and the near floor's urn, basket and seat, gkDraw) */
+#if MM_SH31 || MM_SH81 || MM_SH82 || MM_SH83
   if ((vShape > 30.5 && vShape < 31.5) || (vShape > 80.5 && vShape < 83.5)) {
     wgOn = 1.0;
     float Ew = max(mmLum(albedo), 0.02)*2.2 + 0.060;
     albedo = gWfCol*Ew;
     wgE = gWfEmit; wgInk = gWfInk; wgMoon = gWfMoon;
   }
+#endif
 #endif
 
   /* ...AND A FOUNTAIN IS STONE, with water on it (25, round 14). It stands in
@@ -23976,6 +24314,7 @@ void main(){
      as the bed's coping is, and the falling sheet a cool, lighter grey-blue. */
   float waterM = 0.0;
 #if MM_STONES == 1 || MM_BUST == 1
+#if MM_SH25 || MM_SH26
   if (vShape > 24.5 && vShape < 26.5) {
     vec2  fm   = (vUv - vec2(0.5, 0.0)) * vSize;
     float lum  = max(mmLum(albedo), 0.02);
@@ -23994,9 +24333,11 @@ void main(){
     albedo = mix(albedo, vec3(0.62, 0.74, 0.80) * (lum*1.30 + 0.05), waterM*0.85);
   }
 #endif
+#endif
 #if MM_STONES == 1 && MM_WINGS == 1
   /* (round 29 graft, GRISAILLE's) the maze court's drawn fountain in its own
      stone and water, at the prop's own light without its material noise */
+#if MM_SH25
   if (vShape > 24.5 && vShape < 25.5) {
     wgOn = 1.0;
     float Ew = max(mmLum(mix(uAlbedo, uAlbedoHi, clamp(vUv.y*0.85 + 0.10, 0.0, 1.0))*(0.70 + 0.60*vTone)), 0.02)*2.2 + 0.060;
@@ -24005,6 +24346,7 @@ void main(){
     waterM = gFtWater;
   }
 #endif
+#endif
 
   /* WHAT IS IN THE CABINET. Shape 5 is the Foyer's and the Study's commonest
      prop and it was a box with two shelf rails in it. The samples' props carry
@@ -24012,6 +24354,7 @@ void main(){
      and contents are albedo, not silhouette, so this costs one branch and no
      geometry. Each shelf holds books of its own heights and colours, leaning
      where a shelf is not full. */
+#if MM_SH5
   if (vShape > 4.5 && vShape < 5.5) {
     float shelf = floor(vUv.y * 3.0);                 // three shelves
     float sy = fract(vUv.y * 3.0);
@@ -24104,6 +24447,7 @@ void main(){
     albedo *= 1.0 - (1.0 - smoothstep(0.0, 0.015, abs(vUv.y - 0.095))) * 0.46;
     albedo *= 1.0 - (1.0 - smoothstep(0.0, 0.015, abs(vUv.y - 0.905))) * 0.40;
   }
+#endif
 
   /* THE CLOCK'S DIAL AND ITS DOOR. Shape 14 stands in the Foyer, the Study and
      the Heart, and in the Foyer's capture it is 230 px tall -- big enough for
@@ -24112,6 +24456,7 @@ void main(){
      same depth as the trunk it is set into has no edge. Contents are albedo,
      like the cabinet's books: a paper dial inside a brass bezel, the chapter
      ring's hour marks, two hands, and a glazed trunk door with its lenticle. */
+#if MM_SH14
   if (vShape > 13.5 && vShape < 14.5) {
     vec2 c = (vUv - vec2(0.5, 0.855)) * vec2(1.0, 0.62);
     float r = length(c);
@@ -24134,12 +24479,14 @@ void main(){
     albedo *= 1.0 + (1.0 - smoothstep(0.0, 0.010, abs(lens))) * 0.55;
     albedo *= 1.0 - smoothstep(0.004, -0.004, lens) * 0.42;
   }
+#endif
 
   /* FLUTES, on the shaft of a column, and nowhere else. They are not
      silhouette -- they are twenty-four grooves drawn round a cylinder, and a
      column without them is a post. Width in pixels, like every other drawn
      line in this file, so they survive the back of the room; and they fall
      away at the neck and the base the way a real flute stops short. */
+#if MM_SH6
   if (vShape > 5.5 && vShape < 6.5) {
     /* -1 TO 1 ACROSS THE SHAFT, WHICH IS NOT ACROSS THE QUAD, and that one
        line is why no column in this game has ever had a visible flute. The
@@ -24185,6 +24532,7 @@ void main(){
     albedo *= 1.0 - (1.0 - mmLod(1.0, tpx)) * onShaft * 0.10;   // a packed flank's mean
     albedo *= 1.0 + onShaft * 0.10 * toward;
   }
+#endif
 
   /* THE GLASS IN A FITTING, AND ITS BRASS. Shapes 22 and 23 are the only props
      in the house made of two materials at once, and the difference between
@@ -24196,6 +24544,7 @@ void main(){
      glass's tint += 0.30 has never done anything. Albedo can, and it is the
      same channel the cabinet's books and the clock's dial are drawn in. */
   vec3 fitEmit = vec3(0.0);
+#if MM_SH22 || MM_SH23
   if (isFit > 0.5) {
     vec2  sm = (vUv - vec2(0.5, 0.0)) * vSize;
     float glass;
@@ -24276,6 +24625,7 @@ void main(){
     fitEmit = mix(uRim, vec3(1.00, 0.80, 0.52), 0.55) * uPropMax
             * (0.16 + 0.78*burn) * (0.26 + 1.40*clamp(glass, 0.0, 1.0));
   }
+#endif
 
   /* Occlusion. A prop is a volume: it is darker where it meets the floor and
      darker in the last few millimetres before its own silhouette. Without these
@@ -24368,9 +24718,11 @@ void main(){
      room in which the same shader draws a column, a birdcage and a leaf. The
      leaf keeps the roll; the pot below it is fired clay and stays matt. */
   float glossP = uGloss;
+#if MM_SH2
   if (vShape > 1.5 && vShape < 2.5) {
     glossP = uGloss * mix(1.85, 0.55, smoothstep(0.234, 0.206, vUv.y));
   }
+#endif
   glossP = mix(glossP, uGloss*2.4, waterM);        // falling water catches the lamp
   /* (round 22: a sheared yew is ten thousand tiny leaves at every angle,
      so it has no sheen of its own to run along a spray) */
@@ -24448,6 +24800,7 @@ void main(){
      what the samples' night gardens do -- "dark leaf masses with lit top
      edges". The same moon the wall program lays on the maze's side walls,
      so the runs across and the walls either side are one hedge. */
+#if MM_SH28 || MM_SH30
   if (vShape > 27.5 && vShape < 30.5 && (vShape < 28.5 || vShape > 29.5)) {
     vec3 moonP = mix(uAccent, vec3(0.74, 0.82, 1.00), 0.62);
     /* (graft: a topiary out in the alley is lit by nothing else, and at
@@ -24455,13 +24808,16 @@ void main(){
     col += albedo * moonP * (0.18 + 0.75*max(N.y, 0.0) + 1.8*gYewTop);
     col += mix(moonP, vec3(0.46, 0.56, 0.42), 0.5) * 0.050 * gYewEdge;   // (round 29)
   }
+#endif
   /* ...and on a pumpkin, lying out under the same sky: the tops of its
      lobes take the moon, so an uncarved one is a round orange thing in the
      dark and not a hole in the ground */
+#if MM_SH27
   if (vShape > 26.5 && vShape < 27.5) {
     vec3 moonK = mix(uAccent, vec3(0.74, 0.82, 1.00), 0.62);
     col += albedo * moonK * (0.22 + 0.70*max(N.y, 0.0)) * (0.55 + 0.45*gPkLobe) * gPkOn;
   }
+#endif
 #endif
 #if MM_WINGS >= 1
   /* (round 29: and MM_WINGS 1, for the carved statue -- 0 on its other
@@ -24545,7 +24901,9 @@ void main(){
   if (vShape > 31.5 && (vShape < 37.5 || vShape > 38.5)) { satK = max(uPropSat, 0.40); satM = max(uPropSatMax, 0.58); }
 #endif
 #if MM_WINGS >= 3
+#if MM_SH45 || MM_SH46 || MM_SH47 || MM_SH48 || MM_SH49 || MM_SH50 || MM_SH51 || MM_SH52 || MM_SH53 || MM_SH54 || MM_SH55 || MM_SH56 || MM_SH57 || MM_SH58 || MM_SH59 || MM_SH60 || MM_SH61 || MM_SH62 || MM_SH63 || MM_SH64 || MM_SH65 || MM_SH66 || MM_SH67 || MM_SH68 || MM_SH69 || MM_SH70 || MM_SH71 || MM_SH72 || MM_SH73 || MM_SH74 || MM_SH75 || MM_SH76 || MM_SH77 || MM_SH78 || MM_SH79 || MM_SH80 || MM_SH81 || MM_SH82 || MM_SH83
   if (vShape > 44.5) { satK = max(uPropSat, 0.42); satM = max(uPropSatMax, 0.62); }
+#endif
 #endif
 #if MM_WINGS == 1
   /* (round 28: a kitchen table is scrubbed DEAL and the crocks on it are
@@ -24554,11 +24912,15 @@ void main(){
      wire outlines" both judges) */
   /* (round 28 graft, TERREVERTE's: 0.46 from 0.38 -- the warm deal still came
      back a grey-lilac between the fire and the moon) */
+#if MM_SH29
   if (vShape > 28.5 && vShape < 29.5) { satK = max(uPropSat, 0.46); satM = max(uPropSatMax, 0.64); }
+#endif
   /* (round 31: the basket's wicker and greens, the urn's moss -- their own) */
   if (vShape > 80.5 && vShape < 83.5) { satK = max(uPropSat, 0.38); satM = max(uPropSatMax, 0.56); }
 #endif
+#if MM_SH8
   if (vShape > 7.5 && vShape < 8.5) { satK = max(uPropSat, 0.30); satM = max(uPropSatMax, 0.46); }
+#endif
   if (sat > satK) {
     float over = sat - satK;
     float span = max(satM - satK, 1e-3);
@@ -24751,7 +25113,15 @@ ${GLSL_LIB}
 #define MM_PORTAL 1
 #endif
 uniform vec3  uColor, uRim;
-uniform float uTime, uSeed, uMode, uAmount, uDread;
+uniform float uTime, uSeed, uAmount, uDread;
+/* (2026-10-15: a portal's mode is fixed for the life of its material, so
+   each portal compiles its own, MM_PMODE -- see WALL_FRAG's MM_ARCH. The
+   near frame's four quads share one program and keep the uniform.) */
+#ifdef MM_PMODE
+#define uMode float(MM_PMODE)
+#else
+uniform float uMode;
+#endif
 /* Modes 3, 4 and 5 (MADDER, round 11; driven by the room kinds in round 14)
    are the vantages that put something of the house between you and the room:
    the doorway you stand back in, the gallery rail you lean on, and the

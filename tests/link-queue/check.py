@@ -4,6 +4,8 @@ that wing, and every wing the queue names really draws it.
 OWNER: atmosphere.
 
     python tests/link-queue/check.py          (needs tools/devserver.py on :8777)
+    python tests/link-queue/check.py --table  (prints ROOM_VARIANTS as the
+                                               census finds it, to paste)
 
 WHY THIS EXISTS
 ---------------
@@ -88,7 +90,8 @@ JS = r"""
     missing: (KEYS[e.mat] || ['?']).filter((x) => !(x in e.defines)),
     key: e.mat + ':' + (KEYS[e.mat] || []).map((x) => x + '=' + (e.defines[x] ?? 0)).join(','),
   }));
-  return { drawn, base, entries, KEYS };
+  const ORDER_KEYS = Object.fromEntries(Object.entries(keysOf).map(([r, m]) => [r, Object.keys(m.defines || {})]));
+  return { drawn, base, entries, KEYS, ORDER_KEYS };
 })()
 """
 
@@ -107,8 +110,39 @@ async def collect():
     return out, errs
 
 
+ORDER = ["wall", "prop", "floor", "ceil", "portal"]
+
+
+def table(out):
+    """ROOM_VARIANTS as the census finds it, one line per program, to paste
+    into fx/backdrop.js: every variant any room draws (the all-zero 'base'
+    keys too -- since 2026-10-15 every program is a room's own and there is
+    no shared base for the warm-up to have linked), with the wings that draw
+    it, in the order ORDER, then by the first wing."""
+    by = {}
+    for wing, ks in out["drawn"].items():
+        for k in ks:
+            by.setdefault(k, set()).add(wing)
+    keys = out["KEYS"]
+    rows = []
+    for k, wings in by.items():
+        mat, rest = k.split(":", 1)
+        d = dict(kv.split("=") for kv in rest.split(","))
+        # the material's own key order (its constructor's), not alphabetical
+        own = out["ORDER_KEYS"][mat]
+        rows.append((ORDER.index(mat), sorted(wings)[0], [int(d[x]) for x in own], mat, own, sorted(wings)))
+    rows.sort()
+    for _, _, vals, mat, own, wings in rows:
+        defs = ", ".join(f"{x}: {v}" for x, v in zip(own, vals))
+        ws = ", ".join(f"'{w}'" for w in wings)
+        print(f"  {{ mat: '{mat}', defines: {{ {defs} }}, wings: [{ws}] }},")
+
+
 def main():
     out, errs = asyncio.run(collect())
+    if "--table" in sys.argv:
+        table(out)
+        return 0
     fails = []
     for e in errs[:3]:
         fails.append(e)

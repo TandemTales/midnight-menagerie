@@ -456,105 +456,163 @@ export const ROOMS_PROGRAM = {
   libraryroom: 19, studyfire: 19, catacombs: 20, cryptchapel: 20, charnel: 20,
 };
 
+/* EVERY PROP SHAPE EACH WING DEALS, in any of its rooms (atmosphere keys,
+   as ROOM_VARIANTS' wings). The props' program compiles only the shapes it
+   is given (MM_SHM in shaders/backdrop.js), and it is given these, so every
+   room of a wing shares one prop program -- given only the room's own
+   shapes, the Foyer alone drew 25 different programs, one per layout.
+   Measured 2026-10-15 by tests/link-queue/check.py's census; a shape a room
+   deals that is not listed still compiles in (Backdrop._setPropProgram), as
+   a program of its own, linked on demand and named by that test. */
+export const PROP_SHAPES = {
+  attic: [5, 8, 14, 18, 23, 35, 36, 37, 38, 44],
+  ballroom: [4, 6, 22, 65, 72, 78, 79],
+  bathhouse: [2, 6, 8, 23, 32],
+  crypt: [6, 15, 57, 58, 59],
+  foyer: [4, 6, 22, 23, 26, 62, 63, 64, 65, 66, 67, 68],
+  graveyard: [23, 69, 70, 71, 73],
+  greenhouse: [6, 23, 25, 74, 75, 76, 77, 80],
+  heart: [0, 4, 5, 6, 22, 23, 31],
+  hedge: [23, 25, 28, 30, 31, 81, 83],
+  kennels: [16.25, 22, 23, 39, 40, 41, 42],
+  kitchens: [8, 22, 29, 82],
+  lampworks: [18, 22, 23, 33, 34, 43],
+  nursery: [22, 45, 46, 47, 48, 49, 61],
+  passages: [8, 23, 66],
+  pumpkin: [23, 27],
+  sleeping: [0, 14, 22, 50, 51, 52, 56, 60],
+  study: [22, 53, 54, 55, 56],
+};
+
 /**
- * EVERY PROGRAM VARIANT A ROOM CAN NEED BEYOND THE BASE ONES, AND THE WINGS
- * THAT DRAW IT -- the list Backdrop.precompileRooms links behind the game.
+ * EVERY PROGRAM A ROOM CAN NEED, AND THE WINGS THAT DRAW IT -- the list
+ * Backdrop.precompileRooms links behind the game.
  *
  * `mat` is which backdrop material it is a variant of (wall -- the back and
  * both side walls --, prop, floor, ceil, portal); `defines` sets EVERY key
  * that material's variants differ by (a key left out would be taken from
  * whatever room happened to be live when the job ran, and link the wrong
  * variant); `wings` are atmosphere keys (REGION_ALIAS in atmosphere.js, so
- * 'sleeping', 'kitchens', 'hedge' -- not the run's slugs). The base variants
- * (wall 0, props 0/0/0, floor and ceiling 0) are not here: every boot links
- * them in the stage warm-up.
+ * 'sleeping', 'kitchens', 'hedge' -- not the run's slugs).
+ *
+ * SINCE 2026-10-15 EVERY PROGRAM IS A ROOM KIND'S OWN. The wall compiles its
+ * room's architecture mode and subject (MM_ARCH, MM_SUBJ), the floor and the
+ * ceiling their pattern (MM_PAT, MM_CEIL), a portal its mode (MM_PMODE), and
+ * the props the shapes their wing deals (MM_SHM, PROP_SHAPES above), so no
+ * program carries a room it cannot draw: on this machine (Intel UHD, ANGLE
+ * D3D11) the Foyer's wall went from 38 s alone to 3 s and its props from 49
+ * s to 7, and the stage's warm-up from 80-197 s to ~10. There is no shared
+ * base any more -- the warm-up links the room on screen, whatever it is --
+ * so the table names all of them, 89 where it was 53 variants of five
+ * uber-programs, none of them over ~9 s alone (most 1-4).
  *
  * The queue takes these in the order of the wings the party can meet next
  * (Atmosphere._linkOrder), and within a wing in the order written here. A
  * variant whose `wings` is empty is linked last, after everything a wing
  * claims.
  *
- * TO ADD A VARIANT (a round that adds MM_WINGS 4, or wall program 21): add
- * the define in shaders/backdrop.js and the line that selects it here in
- * backdrop.js (_setPropProgram, _setRoomsProgram, _setSurfaceProgram), then
- * ONE line below naming the wings whose rooms draw it, e.g.
- *     { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 4 }, wings: ['ballroom'] },
- * and run tests/link-queue/check.py: it puts every authored room of every
- * wing on the stage and fails on a variant a wing draws that this table does
- * not give that wing (it would link on demand, the stand-in room up while it
- * does), and on an entry no room draws.
+ * TO CHANGE IT, do not write it by hand: run
+ *     python tests/link-queue/check.py --table
+ * and paste what it prints over the entries below. The same test, without
+ * the flag, fails on a variant a wing draws that this table does not give
+ * that wing (it would link on demand, the stand-in room up while it does),
+ * and on an entry no room draws. A new define on a material goes in its
+ * constructor's `defines` with the rest, and the line that selects it in
+ * _setPropProgram, _setRoomsProgram or _setSurfaceProgram.
  *
- * `wings` measured 2026-10-02 by that census (all 340 authored rooms, the
+ * `wings` measured 2026-10-15 by that census (all 340 authored rooms, the
  * names twelve generated maps per wing give them, and each wing unseeded).
  */
 export const ROOM_VARIANTS = [
-  /* the walls: a wing's own program, 0.7-5 s each on this machine */
-  { mat: 'wall', defines: { MM_ROOMS: 1, MM_R25W: 0 },  wings: ['heart'] },
-  { mat: 'wall', defines: { MM_ROOMS: 2, MM_R25W: 0 },  wings: [] },
-  { mat: 'wall', defines: { MM_ROOMS: 3, MM_R25W: 0 },  wings: [] },
-  { mat: 'wall', defines: { MM_ROOMS: 4, MM_R25W: 0 },  wings: [] },
-  { mat: 'wall', defines: { MM_ROOMS: 6, MM_R25W: 0 },  wings: ['lampworks'] },
-  { mat: 'wall', defines: { MM_ROOMS: 7, MM_R25W: 0 },  wings: ['bathhouse'] },
-  { mat: 'wall', defines: { MM_ROOMS: 8, MM_R25W: 0 },  wings: ['hedge'] },
-  { mat: 'wall', defines: { MM_ROOMS: 9, MM_R25W: 0 },  wings: ['kitchens'] },
-  { mat: 'wall', defines: { MM_ROOMS: 10, MM_R25W: 0 }, wings: ['passages'] },
-  { mat: 'wall', defines: { MM_ROOMS: 11, MM_R25W: 0 }, wings: ['pumpkin'] },
-  /* round 23 */
-  { mat: 'wall', defines: { MM_ROOMS: 12, MM_R25W: 0 }, wings: ['bathhouse'] },
-  { mat: 'wall', defines: { MM_ROOMS: 13, MM_R25W: 0 }, wings: ['lampworks'] },
-  { mat: 'wall', defines: { MM_ROOMS: 14, MM_R25W: 0 }, wings: ['attic'] },
-  { mat: 'wall', defines: { MM_ROOMS: 15, MM_R25W: 0 }, wings: ['kennels'] },
-  { mat: 'wall', defines: { MM_ROOMS: 16, MM_R25W: 0 }, wings: ['kennels'] },
-  /* round 24 */
-  { mat: 'wall', defines: { MM_ROOMS: 17, MM_R25W: 0 }, wings: ['nursery'] },
-  { mat: 'wall', defines: { MM_ROOMS: 18, MM_R25W: 0 }, wings: ['sleeping'] },
-  { mat: 'wall', defines: { MM_ROOMS: 19, MM_R25W: 0 }, wings: ['study'] },
-  { mat: 'wall', defines: { MM_ROOMS: 20, MM_R25W: 0 }, wings: ['crypt'] },
-  /* round 14: the doorway, the rail, the gate and the steam (one program) */
-  { mat: 'portal', defines: { MM_PORTAL: 1 }, wings: ['foyer', 'ballroom', 'greenhouse', 'lampworks', 'passages', 'bathhouse'] },
-  /* the room-kind floors and ceilings (MM_FLOORX) */
-  { mat: 'floor', defines: { MM_FLOORX: 1, MM_R25W: 0 }, wings: ['ballroom', 'hedge', 'pumpkin'] },
-  { mat: 'floor', defines: { MM_FLOORX: 2, MM_R25W: 0 }, wings: ['bathhouse'] },
-  { mat: 'ceil',  defines: { MM_FLOORX: 2 }, wings: ['attic', 'passages'] },   // (round 28 graft: and the passage's beams, ceilPattern 16)
-  /* (the Greenhouse's glass roof: never in the old fixed list, so it linked
-     on demand in every Greenhouse fight that had one) */
-  { mat: 'ceil',  defines: { MM_FLOORX: 1 }, wings: ['greenhouse'] },
-  /* the props: the gallery's busts, the grounds' carved stone, and rounds
-     22-24's wing objects (13-90 s each on this machine) */
-  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 1, MM_WINGS: 0 }, wings: [] },
-  { mat: 'prop', defines: { MM_STONES: 1, MM_BUST: 0, MM_WINGS: 0 }, wings: [] },
-  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 1 }, wings: ['kitchens', 'hedge', 'pumpkin', 'heart'] },
-  { mat: 'prop', defines: { MM_STONES: 1, MM_BUST: 0, MM_WINGS: 1 }, wings: ['hedge'] },
-  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 2 }, wings: ['lampworks', 'bathhouse', 'attic', 'kennels'] },
-  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 3 }, wings: ['nursery', 'sleeping', 'study', 'crypt'] },
-  /* (rounds 8-18's programs 2-4, the Foyer's bust and the grounds' stone, with
-     MM_R25W 0, are drawn by no room since round 25 moved its wings to their own
-     variants: they stay, unclaimed, so they link last.)
-     round 25: the last four wings (MM_R25W 1 Foyer, 2 Ballroom, 3 Greenhouse,
-     4 Graveyard), in the wall and floor programs they share -- R25_WALLS and
-     R25_FLOORS -- and their drawn objects (MM_WINGS 4 the Foyer's furniture,
-     5 the churchyard's stone, 6 the glasshouse's plants) */
-  { mat: 'wall', defines: { MM_ROOMS: 0, MM_R25W: 1 }, wings: ['foyer'] },
-  { mat: 'wall', defines: { MM_ROOMS: 1, MM_R25W: 1 }, wings: ['foyer'] },
-  { mat: 'wall', defines: { MM_ROOMS: 2, MM_R25W: 2 }, wings: ['ballroom'] },
-  { mat: 'wall', defines: { MM_ROOMS: 0, MM_R25W: 3 }, wings: ['greenhouse'] },
-  { mat: 'wall', defines: { MM_ROOMS: 3, MM_R25W: 3 }, wings: ['greenhouse'] },
-  { mat: 'wall', defines: { MM_ROOMS: 0, MM_R25W: 4 }, wings: ['graveyard'] },
-  { mat: 'wall', defines: { MM_ROOMS: 4, MM_R25W: 4 }, wings: ['graveyard'] },
-  { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 1 }, wings: ['foyer'] },
-  { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 2 }, wings: ['ballroom'] },
-  { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 3 }, wings: ['greenhouse'] },
-  { mat: 'floor', defines: { MM_FLOORX: 1, MM_R25W: 4 }, wings: ['graveyard'] },
-  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 4 }, wings: ['foyer', 'ballroom', 'passages'] },   // passages: round 31 graft's pier tables
-  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 1, MM_WINGS: 4 }, wings: ['foyer'] },
-  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 5 }, wings: ['graveyard'] },
-  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 6 }, wings: ['greenhouse'] },
-  { mat: 'prop', defines: { MM_STONES: 1, MM_BUST: 0, MM_WINGS: 6 }, wings: ['greenhouse'] },
-  /* linked since rounds 11 and 24 for the Crypt's old tomb and ossuary walls
-     and its stone, which no authored room draws any more (the Crypt is wall
-     20): kept, and last */
-  { mat: 'wall', defines: { MM_ROOMS: 5, MM_R25W: 0 }, wings: [] },
-  { mat: 'prop', defines: { MM_STONES: 1, MM_BUST: 0, MM_WINGS: 3 }, wings: [] },
+  { mat: 'wall', defines: { MM_ROOMS: 14, MM_R25W: 0, MM_ARCH: 4, MM_SUBJ: 40 }, wings: ['attic'] },
+  { mat: 'wall', defines: { MM_ROOMS: 14, MM_R25W: 0, MM_ARCH: 4, MM_SUBJ: 41 }, wings: ['attic'] },
+  { mat: 'wall', defines: { MM_ROOMS: 2, MM_R25W: 2, MM_ARCH: 0, MM_SUBJ: 10 }, wings: ['ballroom'] },
+  { mat: 'wall', defines: { MM_ROOMS: 2, MM_R25W: 2, MM_ARCH: 0, MM_SUBJ: 20 }, wings: ['ballroom'] },
+  { mat: 'wall', defines: { MM_ROOMS: 2, MM_R25W: 2, MM_ARCH: 0, MM_SUBJ: 21 }, wings: ['ballroom'] },
+  { mat: 'wall', defines: { MM_ROOMS: 7, MM_R25W: 0, MM_ARCH: 1, MM_SUBJ: 33 }, wings: ['bathhouse'] },
+  { mat: 'wall', defines: { MM_ROOMS: 12, MM_R25W: 0, MM_ARCH: 1, MM_SUBJ: 31 }, wings: ['bathhouse'] },
+  { mat: 'wall', defines: { MM_ROOMS: 12, MM_R25W: 0, MM_ARCH: 1, MM_SUBJ: 32 }, wings: ['bathhouse'] },
+  { mat: 'wall', defines: { MM_ROOMS: 12, MM_R25W: 0, MM_ARCH: 1, MM_SUBJ: 38 }, wings: ['bathhouse'] },
+  { mat: 'wall', defines: { MM_ROOMS: 20, MM_R25W: 0, MM_ARCH: 2, MM_SUBJ: 50 }, wings: ['crypt'] },
+  { mat: 'wall', defines: { MM_ROOMS: 20, MM_R25W: 0, MM_ARCH: 2, MM_SUBJ: 51 }, wings: ['crypt'] },
+  { mat: 'wall', defines: { MM_ROOMS: 20, MM_R25W: 0, MM_ARCH: 2, MM_SUBJ: 52 }, wings: ['crypt'] },
+  { mat: 'wall', defines: { MM_ROOMS: 0, MM_R25W: 1, MM_ARCH: 0, MM_SUBJ: 1 }, wings: ['foyer'] },
+  { mat: 'wall', defines: { MM_ROOMS: 1, MM_R25W: 1, MM_ARCH: 0, MM_SUBJ: 18 }, wings: ['foyer'] },
+  { mat: 'wall', defines: { MM_ROOMS: 1, MM_R25W: 1, MM_ARCH: 0, MM_SUBJ: 19 }, wings: ['foyer'] },
+  { mat: 'wall', defines: { MM_ROOMS: 0, MM_R25W: 4, MM_ARCH: 5, MM_SUBJ: 13 }, wings: ['graveyard'] },
+  { mat: 'wall', defines: { MM_ROOMS: 4, MM_R25W: 4, MM_ARCH: 5, MM_SUBJ: 24 }, wings: ['graveyard'] },
+  { mat: 'wall', defines: { MM_ROOMS: 4, MM_R25W: 4, MM_ARCH: 5, MM_SUBJ: 25 }, wings: ['graveyard'] },
+  { mat: 'wall', defines: { MM_ROOMS: 0, MM_R25W: 3, MM_ARCH: 1, MM_SUBJ: 4 }, wings: ['greenhouse'] },
+  { mat: 'wall', defines: { MM_ROOMS: 3, MM_R25W: 3, MM_ARCH: 1, MM_SUBJ: 22 }, wings: ['greenhouse'] },
+  { mat: 'wall', defines: { MM_ROOMS: 3, MM_R25W: 3, MM_ARCH: 1, MM_SUBJ: 23 }, wings: ['greenhouse'] },
+  { mat: 'wall', defines: { MM_ROOMS: 0, MM_R25W: 0, MM_ARCH: 0, MM_SUBJ: 1 }, wings: ['heart'] },
+  { mat: 'wall', defines: { MM_ROOMS: 0, MM_R25W: 0, MM_ARCH: 0, MM_SUBJ: 2 }, wings: ['heart'] },
+  { mat: 'wall', defines: { MM_ROOMS: 0, MM_R25W: 0, MM_ARCH: 0, MM_SUBJ: 17 }, wings: ['heart'] },
+  { mat: 'wall', defines: { MM_ROOMS: 1, MM_R25W: 0, MM_ARCH: 0, MM_SUBJ: 19 }, wings: ['heart'] },
+  { mat: 'wall', defines: { MM_ROOMS: 8, MM_R25W: 0, MM_ARCH: 3, MM_SUBJ: 8 }, wings: ['hedge'] },
+  { mat: 'wall', defines: { MM_ROOMS: 8, MM_R25W: 0, MM_ARCH: 3, MM_SUBJ: 37 }, wings: ['hedge'] },
+  { mat: 'wall', defines: { MM_ROOMS: 15, MM_R25W: 0, MM_ARCH: 0, MM_SUBJ: 42 }, wings: ['kennels'] },
+  { mat: 'wall', defines: { MM_ROOMS: 16, MM_R25W: 0, MM_ARCH: 0, MM_SUBJ: 43 }, wings: ['kennels'] },
+  { mat: 'wall', defines: { MM_ROOMS: 9, MM_R25W: 0, MM_ARCH: 4, MM_SUBJ: 16 }, wings: ['kitchens'] },
+  { mat: 'wall', defines: { MM_ROOMS: 9, MM_R25W: 0, MM_ARCH: 4, MM_SUBJ: 34 }, wings: ['kitchens'] },
+  { mat: 'wall', defines: { MM_ROOMS: 6, MM_R25W: 0, MM_ARCH: 4, MM_SUBJ: 30 }, wings: ['lampworks'] },
+  { mat: 'wall', defines: { MM_ROOMS: 13, MM_R25W: 0, MM_ARCH: 4, MM_SUBJ: 28 }, wings: ['lampworks'] },
+  { mat: 'wall', defines: { MM_ROOMS: 13, MM_R25W: 0, MM_ARCH: 4, MM_SUBJ: 29 }, wings: ['lampworks'] },
+  { mat: 'wall', defines: { MM_ROOMS: 13, MM_R25W: 0, MM_ARCH: 4, MM_SUBJ: 39 }, wings: ['lampworks'] },
+  { mat: 'wall', defines: { MM_ROOMS: 17, MM_R25W: 0, MM_ARCH: 0, MM_SUBJ: 44 }, wings: ['nursery'] },
+  { mat: 'wall', defines: { MM_ROOMS: 17, MM_R25W: 0, MM_ARCH: 0, MM_SUBJ: 45 }, wings: ['nursery'] },
+  { mat: 'wall', defines: { MM_ROOMS: 10, MM_R25W: 0, MM_ARCH: 2, MM_SUBJ: 9 }, wings: ['passages'] },
+  { mat: 'wall', defines: { MM_ROOMS: 10, MM_R25W: 0, MM_ARCH: 2, MM_SUBJ: 35 }, wings: ['passages'] },
+  { mat: 'wall', defines: { MM_ROOMS: 10, MM_R25W: 0, MM_ARCH: 2, MM_SUBJ: 36 }, wings: ['passages'] },
+  { mat: 'wall', defines: { MM_ROOMS: 11, MM_R25W: 0, MM_ARCH: 5, MM_SUBJ: 14 }, wings: ['pumpkin'] },
+  { mat: 'wall', defines: { MM_ROOMS: 18, MM_R25W: 0, MM_ARCH: 0, MM_SUBJ: 46 }, wings: ['sleeping'] },
+  { mat: 'wall', defines: { MM_ROOMS: 18, MM_R25W: 0, MM_ARCH: 0, MM_SUBJ: 47 }, wings: ['sleeping'] },
+  { mat: 'wall', defines: { MM_ROOMS: 19, MM_R25W: 0, MM_ARCH: 0, MM_SUBJ: 48 }, wings: ['study'] },
+  { mat: 'wall', defines: { MM_ROOMS: 19, MM_R25W: 0, MM_ARCH: 0, MM_SUBJ: 49 }, wings: ['study'] },
+  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 2, MM_SHM0: 8667424, MM_SHM1: 16864, MM_SHM2: 0 }, wings: ['attic'] },
+  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 4, MM_SHM0: 4194384, MM_SHM1: 0, MM_SHM2: 790560 }, wings: ['ballroom'] },
+  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 2, MM_SHM0: 8388932, MM_SHM1: 4, MM_SHM2: 0 }, wings: ['bathhouse'] },
+  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 3, MM_SHM0: 32832, MM_SHM1: 939524096, MM_SHM2: 0 }, wings: ['crypt'] },
+  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 1, MM_WINGS: 4, MM_SHM0: 79691856, MM_SHM1: 0, MM_SHM2: 508 }, wings: ['foyer'] },
+  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 5, MM_SHM0: 8388608, MM_SHM1: 0, MM_SHM2: 11776 }, wings: ['graveyard'] },
+  { mat: 'prop', defines: { MM_STONES: 1, MM_BUST: 0, MM_WINGS: 6, MM_SHM0: 41943104, MM_SHM1: 0, MM_SHM2: 1294336 }, wings: ['greenhouse'] },
+  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 1, MM_SHM0: 12583025, MM_SHM1: 2, MM_SHM2: 0 }, wings: ['heart'] },
+  { mat: 'prop', defines: { MM_STONES: 1, MM_BUST: 0, MM_WINGS: 1, MM_SHM0: 310378496, MM_SHM1: 3, MM_SHM2: 10485760 }, wings: ['hedge'] },
+  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 2, MM_SHM0: 12648448, MM_SHM1: 7680, MM_SHM2: 0 }, wings: ['kennels'] },
+  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 1, MM_SHM0: 541065472, MM_SHM1: 0, MM_SHM2: 4194304 }, wings: ['kitchens'] },
+  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 2, MM_SHM0: 12845056, MM_SHM1: 8216, MM_SHM2: 0 }, wings: ['lampworks'] },
+  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 3, MM_SHM0: 4194304, MM_SHM1: 1015808, MM_SHM2: 2 }, wings: ['nursery'] },
+  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 4, MM_SHM0: 8388864, MM_SHM1: 0, MM_SHM2: 64 }, wings: ['passages'] },
+  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 1, MM_SHM0: 142606336, MM_SHM1: 0, MM_SHM2: 0 }, wings: ['pumpkin'] },
+  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 3, MM_SHM0: 4210689, MM_SHM1: 74448896, MM_SHM2: 1 }, wings: ['sleeping'] },
+  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 3, MM_SHM0: 4194304, MM_SHM1: 125829120, MM_SHM2: 0 }, wings: ['study'] },
+  { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 0, MM_PAT: 0, MM_CEIL: 0 }, wings: ['attic', 'heart', 'nursery', 'passages', 'sleeping', 'study'] },
+  { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 2, MM_PAT: 1, MM_CEIL: 0 }, wings: ['ballroom'] },
+  { mat: 'floor', defines: { MM_FLOORX: 1, MM_R25W: 0, MM_PAT: 10, MM_CEIL: 0 }, wings: ['ballroom'] },
+  { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 0, MM_PAT: 1, MM_CEIL: 0 }, wings: ['bathhouse'] },
+  { mat: 'floor', defines: { MM_FLOORX: 2, MM_R25W: 0, MM_PAT: 1, MM_CEIL: 0 }, wings: ['bathhouse'] },
+  { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 0, MM_PAT: 2, MM_CEIL: 0 }, wings: ['crypt', 'kennels', 'kitchens', 'lampworks', 'pumpkin'] },
+  { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 1, MM_PAT: 0, MM_CEIL: 0 }, wings: ['foyer'] },
+  { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 1, MM_PAT: 2, MM_CEIL: 0 }, wings: ['foyer'] },
+  { mat: 'floor', defines: { MM_FLOORX: 1, MM_R25W: 4, MM_PAT: 11, MM_CEIL: 0 }, wings: ['graveyard'] },
+  { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 3, MM_PAT: 2, MM_CEIL: 0 }, wings: ['greenhouse'] },
+  { mat: 'floor', defines: { MM_FLOORX: 1, MM_R25W: 0, MM_PAT: 13, MM_CEIL: 0 }, wings: ['hedge'] },
+  { mat: 'floor', defines: { MM_FLOORX: 1, MM_R25W: 0, MM_PAT: 2, MM_CEIL: 0 }, wings: ['pumpkin'] },
+  { mat: 'floor', defines: { MM_FLOORX: 1, MM_R25W: 0, MM_PAT: 14, MM_CEIL: 0 }, wings: ['pumpkin'] },
+  { mat: 'ceil', defines: { MM_FLOORX: 2, MM_PAT: 15, MM_CEIL: 1 }, wings: ['attic'] },
+  { mat: 'ceil', defines: { MM_FLOORX: 0, MM_PAT: 4, MM_CEIL: 1 }, wings: ['ballroom', 'bathhouse', 'crypt', 'foyer', 'heart'] },
+  { mat: 'ceil', defines: { MM_FLOORX: 0, MM_PAT: 7, MM_CEIL: 1 }, wings: ['ballroom', 'foyer'] },
+  { mat: 'ceil', defines: { MM_FLOORX: 0, MM_PAT: 3, MM_CEIL: 1 }, wings: ['bathhouse', 'foyer', 'nursery', 'sleeping', 'study'] },
+  { mat: 'ceil', defines: { MM_FLOORX: 0, MM_PAT: 5, MM_CEIL: 1 }, wings: ['bathhouse'] },
+  { mat: 'ceil', defines: { MM_FLOORX: 0, MM_PAT: 9, MM_CEIL: 1 }, wings: ['greenhouse'] },
+  { mat: 'ceil', defines: { MM_FLOORX: 1, MM_PAT: 12, MM_CEIL: 1 }, wings: ['greenhouse'] },
+  { mat: 'ceil', defines: { MM_FLOORX: 0, MM_PAT: 6, MM_CEIL: 1 }, wings: ['kennels', 'kitchens', 'lampworks'] },
+  { mat: 'ceil', defines: { MM_FLOORX: 0, MM_PAT: 8, MM_CEIL: 1 }, wings: ['lampworks'] },
+  { mat: 'ceil', defines: { MM_FLOORX: 2, MM_PAT: 16, MM_CEIL: 1 }, wings: ['passages'] },
+  { mat: 'portal', defines: { MM_PORTAL: 1, MM_PMODE: 3 }, wings: ['ballroom', 'foyer', 'passages'] },
+  { mat: 'portal', defines: { MM_PORTAL: 1, MM_PMODE: 4 }, wings: ['bathhouse', 'greenhouse', 'lampworks'] },
+  { mat: 'portal', defines: { MM_PORTAL: 1, MM_PMODE: 6 }, wings: ['bathhouse'] },
+  { mat: 'portal', defines: { MM_PORTAL: 1, MM_PMODE: 5 }, wings: ['graveyard', 'hedge', 'pumpkin'] },
 ];
 
 /**
@@ -712,7 +770,7 @@ export class Backdrop {
         uLights: { value: v4arr() }, uLightCol: { value: colArr() },
       },
       vertexShader: WALL_VERT, fragmentShader: WALL_FRAG,
-      defines: { MM_ROOMS: 0, MM_R25W: 0 },
+      defines: { MM_ROOMS: 0, MM_R25W: 0, MM_ARCH: 0, MM_SUBJ: 0 },
       /* LESS, not LEQUAL: this wall now draws AFTER the ceiling and the side
          walls, and must lose a depth tie to them exactly as it did when it
          drew first. See OPAQUE DRAW ORDER at the ceiling below. */
@@ -745,7 +803,7 @@ export class Backdrop {
       const mat = new THREE.ShaderMaterial({
         uniforms: freshLightSlots(THREE.UniformsUtils.clone(this.wallMat.uniforms)),
         vertexShader: WALL_VERT, fragmentShader: WALL_FRAG,
-        defines: { MM_ROOMS: 0, MM_R25W: 0 },
+        defines: { MM_ROOMS: 0, MM_R25W: 0, MM_ARCH: 0, MM_SUBJ: 0 },
         // LESS for the same reason as the far wall's: it now follows the ceiling
         depthWrite: true, depthFunc: THREE.LessDepth, fog: false,
       });
@@ -833,7 +891,7 @@ export class Backdrop {
     this.floorMat = new THREE.ShaderMaterial({
       uniforms: surfaceUniforms(),
       /* the room-kind floors are a variant of their own: _setSurfaceProgram */
-      defines: { MM_FLOORX: 0, MM_R25W: 0 },
+      defines: { MM_FLOORX: 0, MM_R25W: 0, MM_PAT: 0, MM_CEIL: 0 },
       vertexShader: FLOOR_VERT, fragmentShader: FLOOR_FRAG,
       depthWrite: true, fog: false,
     });
@@ -847,7 +905,7 @@ export class Backdrop {
     // room, which is what stops the top of the frame reading as an empty void.
     this.ceilMat = new THREE.ShaderMaterial({
       uniforms: surfaceUniforms(),
-      defines: { MM_FLOORX: 0 },
+      defines: { MM_FLOORX: 0, MM_PAT: 3, MM_CEIL: 1 },
       vertexShader: FLOOR_VERT, fragmentShader: FLOOR_FRAG,
       depthWrite: true, fog: false,
     });
@@ -944,7 +1002,7 @@ export class Backdrop {
         uYaw: { value: new THREE.Vector2(1, 0) },
       },
       /* the grounds' carved stone, and the gallery's bust: _setPropProgram */
-      defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 0 },
+      defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 0, MM_SHM0: 0, MM_SHM1: 0, MM_SHM2: 0 },
       vertexShader: PROP_VERT, fragmentShader: PROP_FRAG,
       transparent: true, depthWrite: false, side: THREE.DoubleSide, fog: false,
     });
@@ -1175,7 +1233,7 @@ export class Backdrop {
           uColor: { value: new THREE.Color(0x06050c) },
           uRim: { value: new THREE.Color(0xffb64a) },
         },
-        defines: { MM_PORTAL: 1 },
+        defines: { MM_PORTAL: 1, MM_PMODE: mode },
         vertexShader: FRAME_VERT, fragmentShader: FRAME_FRAG,
         transparent: true, depthWrite: false, depthTest: false,
         side: THREE.DoubleSide, fog: false,
@@ -2243,7 +2301,7 @@ export class Backdrop {
     const fixtures = this._fixtures(pal, room);
     const placed = fixtures
       .concat(this._layoutProps(pal, room, rand, fixtures)).slice(0, MAX_PROPS);
-    this._setPropProgram(placed);
+    this._setPropProgram(placed, pal.regionKey);
     const off = this._propOffset.array, sc = this._propScale.array,
       sh = this._propShape.array, sd = this._propSeed.array, tn = this._propTone.array;
     const so2 = this._shdOffset.array, ss2 = this._shdScale.array, st2 = this._shdStr.array;
@@ -2669,7 +2727,7 @@ export class Backdrop {
     w.uArch.value = arch;
     const subj = SUBJECT[p.subject] ?? 0;
     const prog = ROOMS_PROGRAM[p.subject] ?? 0;
-    this._setRoomsProgram(prog, (R25_WALLS[p.r25w] || []).includes(prog) ? p.r25w : 0);
+    this._setRoomsProgram(prog, (R25_WALLS[p.r25w] || []).includes(prog) ? p.r25w : 0, arch, subj);
     w.uSubject.value = subj;
     w.uWains.value = p.wainscot ? 1 : 0;
     /* WHICH WALL CARRIES THE ROOM'S ONE-OFF (round 14). uFar has always
@@ -2927,8 +2985,14 @@ export class Backdrop {
        floor program for one of the last four wings -- R25_FLOORS. The
        ceiling never carries it.) */
     const want = w === null ? {} : { MM_R25W: w };
-    if (mat.defines && mat.defines.MM_FLOORX === n && (w === null || mat.defines.MM_R25W === w)) return;
-    mat.defines = Object.assign({}, mat.defines, { MM_FLOORX: n }, want);
+    /* (2026-10-15: and its pattern and whether it is the ceiling, compiled in
+       as MM_PAT and MM_CEIL -- see FLOOR_FRAG. Both callers set uPattern just
+       before; uIsCeiling never changes on a material.) */
+    const pat = Math.round(mat.uniforms.uPattern.value) || 0;
+    const ceil = mat.uniforms.uIsCeiling.value ? 1 : 0;
+    const d = mat.defines || {};
+    if (d.MM_FLOORX === n && (w === null || d.MM_R25W === w) && d.MM_PAT === pat && d.MM_CEIL === ceil) return;
+    mat.defines = Object.assign({}, d, { MM_FLOORX: n, MM_PAT: pat, MM_CEIL: ceil }, want);
     mat.needsUpdate = true;
   }
 
@@ -2941,10 +3005,15 @@ export class Backdrop {
    *  variants, so no room needs one that was not linked behind the game:
    *  the hedge's fountain court has stones AND a fountain, and those are one
    *  variant; nothing that has a bust has either. */
-  _setPropProgram(placed) {
+  _setPropProgram(placed, wing = null) {
+    /* (2026-10-15: the shapes are the room's AND every shape its wing deals
+       anywhere -- PROP_SHAPES -- so a wing's rooms share one prop program
+       instead of one per layout; a shape the table does not know still
+       comes in with the room that deals it.) */
+    const shapes = new Set(PROP_SHAPES[wing] || []);
+    for (const p of placed) shapes.add(p.shape);
     let stones = 0, bust = 0, wings = 0, w25 = 0;
-    for (const p of placed) {
-      const s = p.shape;
+    for (const s of shapes) {
       /* round 31: the near floor's urn, basket and seat (81-83) are drawn in
          the round-22 program, with the yew and the kitchen table they stand
          among (gkDraw, MM_WINGS 1) -- not round 25's, whose 62+ they follow */
@@ -2959,21 +3028,40 @@ export class Backdrop {
       else if (s > 25.5) bust = 1;
     }
     if (w25) wings = w25;
+    /* (2026-10-15: and the shapes themselves, as bits -- 30 to a word, so
+       no word needs its sign bit -- see MM_SH in PROP_FRAG. A shape is
+       its whole number: the kennels' kerb, 16.25, is drawn in 16's branch.
+       A shape past the words would draw nothing, so it compiles everything.) */
+    const m = [0, 0, 0];
+    for (const s of shapes) {
+      const k = Math.round(s);
+      if (k >= 0 && k < 90) m[Math.floor(k / 30)] |= 1 << (k % 30);
+      else { m[0] = m[1] = m[2] = -1; break; }
+    }
     const d = this.propMat.defines || {};
-    if (d.MM_STONES === stones && d.MM_BUST === bust && d.MM_WINGS === wings) return;
-    this.propMat.defines = Object.assign({}, d, { MM_STONES: stones, MM_BUST: bust, MM_WINGS: wings });
+    if (d.MM_STONES === stones && d.MM_BUST === bust && d.MM_WINGS === wings
+        && d.MM_SHM0 === m[0] && d.MM_SHM1 === m[1] && d.MM_SHM2 === m[2]) return;
+    this.propMat.defines = Object.assign({}, d, { MM_STONES: stones, MM_BUST: bust, MM_WINGS: wings,
+      MM_SHM0: m[0], MM_SHM1: m[1], MM_SHM2: m[2] });
     this.propMat.needsUpdate = true;
   }
 
   /** Switch the three wall planes to the program that carries this subject
    *  -- and, round 25, the wing (MM_R25W) when it is one of the last four
    *  and round 25 drew something in that program for it (R25_WALLS). */
-  _setRoomsProgram(n, w = 0) {
-    if (this._roomsProg === n && this._roomsW === w) return;
+  _setRoomsProgram(n, w = 0, arch = 0, subj = 0) {
+    /* (2026-10-15: and the room's architecture mode and subject, compiled in
+       as MM_ARCH and MM_SUBJ -- see WALL_FRAG. Both are whole numbers that
+       switch, never lerp, through a cross-fade, so this is a program per
+       room KIND, as MM_ROOMS already was per wing.) */
+    const a = Math.round(arch) || 0, sj = Math.round(subj) || 0;
+    if (this._roomsProg === n && this._roomsW === w && this._roomsA === a && this._roomsS === sj) return;
     this._roomsProg = n;
     this._roomsW = w;
+    this._roomsA = a;
+    this._roomsS = sj;
     for (const m of [this.wallMat, this.sides[0].material, this.sides[1].material]) {
-      m.defines = Object.assign({}, m.defines, { MM_ROOMS: n, MM_R25W: w });
+      m.defines = Object.assign({}, m.defines, { MM_ROOMS: n, MM_R25W: w, MM_ARCH: a, MM_SUBJ: sj });
       m.needsUpdate = true;
     }
   }
