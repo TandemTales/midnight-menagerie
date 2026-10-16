@@ -65,6 +65,22 @@ and each wing's prop shapes are now #defines: warm-up 12-21 s, no freeze, map
 captures 9/9, fights ~5% faster. **Rule for fx/: a room or shape choice is a
 #define, never a uniform;** `tools/linkprof.py` times each program alone.
 
+**SURVEY 5 IS DONE, AND THE PAINTINGS COLLISION IT FOUND IS FIXED
+(2026-10-16):** `docs/ui-pass/SURVEY-2026-10-16.md` (script
+`survey-2026-10-16.sh`, judges `SURVEY5-judge-prompt.md`, verdicts in
+`C:/UILOOP/survey5/`). Every screen held or rose (boards now 6-7.5); the rooms
+are still 4-6.5, the weakest part of the game. Shared by both judges: the
+EMPTY NEAR FLOOR in the thirteen wings round 31 did not touch; render-box
+materials (the Hedge's walls top of both lists, the Foyer's grey edge slabs,
+the Greenhouse's white blowout, the chapel, the range); milky darks (the
+Kennels' haze); the paintings colliding on all four boards they hang on --
+**fixed and merged** (`3674ee34`, `fix/hang-fit`: `ui/hang.js fitHung`
+narrows a painting until it clears, swaps in one that fits at 1280; tests
+green) -- the last web controls (seed slips, the lobby password) and the
+crowded nine-card hand. **NEXT: ROUND 34** (`BRIEF-r34.md`, `RUBRIC-r34.md`):
+the Hedge, the Foyer, the Greenhouse, the Kennels and their near floor. Not
+started: no worktrees, no baselines.
+
 **ROUND 33 AND ITS GRAFT ARE MERGED, VERIFIED AND PUSHED (2026-10-16):**
 graft `9d008119`. COBALT +1.59 (`531126e4`): no running line under 11 px at
 1280, one house button, each shop price one button, brass slider rails, the
