@@ -304,7 +304,13 @@ export async function openSettings(ctx = {}) {
       const m = document.createElement('i');
       m.className = 'kit-medallion kit-btn__medal mm-dlg-medal';
       m.setAttribute('aria-hidden', 'true');
-      m.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.6 2.4h10.8v5h-2.6V5H6.2v14h5.6v-2.4h2.6v5H3.6z"/><path d="M10.4 10.7h6.9V7.6l5.1 4.4-5.1 4.4v-3.1h-6.9z"/></svg>';
+      /* round 33 graft: with no expedition to leave, the disc is LOCKED --
+         a padlock struck on it in place of the door, so the plate says why
+         it will not press before its note does */
+      m.innerHTML = live
+        ? '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.6 2.4h10.8v5h-2.6V5H6.2v14h5.6v-2.4h2.6v5H3.6z"/><path d="M10.4 10.7h6.9V7.6l5.1 4.4-5.1 4.4v-3.1h-6.9z"/></svg>'
+        : '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M6.8 10.2V7.6a5.2 5.2 0 0 1 10.4 0v2.6h1.5v11.2H5.3V10.2zm2.7 0h5V7.6a2.5 2.5 0 0 0-5 0zm1.4 4.1a1.1 1.1 0 1 1 2.2 0c0 .5-.3.9-.6 1.1l.4 2.6h-1.8l.4-2.6c-.4-.2-.6-.6-.6-1.1z"/></svg>';
+      if (!live) quit.classList.add('is-locked');
       quit.classList.add('mm-dlg-btn--medal', 'mm-set__act');
       quit.appendChild(m);
     }

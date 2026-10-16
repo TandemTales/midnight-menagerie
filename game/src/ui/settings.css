@@ -579,3 +579,51 @@
 }
 .mm-set__figure .kit-enamel__value { font: inherit; color: inherit; letter-spacing: inherit; }
 .mm-set__rangewrap:focus-within .mm-set__figure { color: #fff3d6; filter: drop-shadow(0 0 8px color-mix(in srgb, var(--kit-candle) 45%, transparent)); }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ROUND 33 GRAFT — THE STATES (all three judges, settings at 1280)
+   - SAVE AND QUIT unavailable was grey on dark, "a greyed web button": it is
+     the same lit plate in its whole gilt rim, engraved in a DIMMED antique
+     gold, its disc locked (a padlock in place of the door, settings.js);
+   - each lever's word it does NOT point at was dim grey: muted gold now, over
+     4.5:1 on the panel; the word it points at stays lit, and ON has a lamp
+     that lights with it (CADMIUM's lamp, on COBALT's two-word lever);
+   - RESET's hazard disc stands off its plate, its own disc after a gap.
+   ═══════════════════════════════════════════════════════════════════════════ */
+.mm-set__row > .kit-btn.mm-set__act:disabled,
+.mm-set__row > .kit-btn.mm-set__act:disabled:hover {
+  opacity: 1; transform: none; cursor: default;
+  color: #b39867;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .95), 0 -1px 0 rgba(0, 0, 0, .55);
+  border-image-source: url("../../assets/ui/kit/plate-lit.webp");
+  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .7)) saturate(.78);
+}
+.mm-set__row > .kit-btn.mm-set__act.is-locked > .kit-btn__medal {
+  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .8)) saturate(.55) brightness(.9);
+}
+.mm-set__row > .kit-btn.mm-set__act.is-locked > .kit-btn__medal svg * { fill: color-mix(in oklab, var(--kit-gold) 80%, var(--kit-gold-hi)); }
+
+/* the lever's other word: cut in muted gold, still read */
+.mm-set__switch > .kit-hw-throw__word { color: #a98f60; text-shadow: 0 -1px 0 rgba(0, 0, 0, .95), 0 1px 0 rgba(0, 0, 0, .6); }
+/* ON's lamp: a jewel set in a brass collar between the boss and the word,
+   dark when the lever is thrown to OFF, lit by the candle when it is ON */
+.mm-set__switch > .kit-hw-throw__word:last-child { position: relative; }
+.mm-set__switch > .kit-hw-throw__word:last-child::after {
+  content: ''; position: absolute; top: 50%; left: -10px;
+  width: 8px; height: 8px; translate: 0 -50%;
+  border-radius: 50%;
+  background: radial-gradient(circle at 38% 34%, #6a5a4a, #2a1d14 60%, #120a06);
+  box-shadow: 0 0 0 1.5px var(--kit-gold-lo), 0 0 0 2.5px rgba(0, 0, 0, .7), inset 0 1px 1px rgba(0, 0, 0, .8);
+  transition: background var(--t-quick) var(--ease-out), box-shadow var(--t-quick) var(--ease-out);
+}
+.mm-set__switch[data-on="1"] > .kit-hw-throw__word:last-child::after {
+  background: radial-gradient(circle at 40% 36%, #fffbe8, #ffd88a 40%, #ff9c3c 80%, #b5561a);
+  box-shadow: 0 0 0 1.5px var(--kit-gold), 0 0 0 2.5px rgba(0, 0, 0, .7), 0 0 8px 2px color-mix(in srgb, var(--kit-candle) 85%, transparent), 0 0 16px 4px color-mix(in srgb, var(--kit-candle) 35%, transparent);
+}
+
+/* RESET: the hazard on its own disc, set off the plate by a gap */
+.mm-set__row > .mm-btn--danger.kit-btn.mm-set__act.mm-dlg-btn--medal {
+  padding-right: calc(var(--plate-h) * .5);
+  margin-right: calc(var(--plate-h) * 1.08 + 7px);
+}
+.mm-set__row > .mm-btn--danger.kit-btn.mm-set__act > .kit-btn__medal { right: calc(var(--plate-h) * -1.08 - 7px); }
