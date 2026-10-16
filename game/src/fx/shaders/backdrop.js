@@ -4800,7 +4800,7 @@ float yewRagW(float u, float sd, float amp){
   float d2 = sqrt(max(1.0 - 4.0*(f2 - 0.5)*(f2 - 0.5), 0.0))*(0.15 + 0.50*h2)*amp*0.22 + d1*0.90;
   float x3 = u/0.085 + sd*1.9;
   float f3 = fract(x3), h3 = mmHash11(floor(x3)*5.19 + sd*2.1);
-  float sp = max(1.0 - abs(f3 - 0.5)*2.4, 0.0)*step(0.70, h3)*(0.35 + 0.65*h3)*amp*0.38;
+  float sp = max(1.0 - abs(f3 - 0.5)*2.4, 0.0)*step(0.70, h3)*(0.35 + 0.65*h3)*min(amp, 0.8)*0.38;
   float sag = 0.060*sin(u*0.37 + sd) + 0.034*sin(u*0.93 + sd*1.7);
   /* the edge feathered with single leaves, a few centimetres, every way */
   float fth = (abs(fract(u/0.034 + 0.4*sin(u*7.0 + sd)) - 0.5) - 0.25)*0.034;
@@ -4829,7 +4829,7 @@ float hedgeWallH(vec2 q, float qpx, out float occ){
   /* (round 34, second pass: the swells a metre high -- at 0.2 m the far
      run's crown read ruled from twenty metres; the court's far hedge,
      furthest off, the most -- its piers and their balls stand up out of it) */
-  float ragA = court > 0.5 ? 1.00 : (far > 0.5 ? 0.85 : 0.75);
+  float ragA = court > 0.5 ? 1.70 : (far > 0.5 ? 0.85 : 0.75);
   float top = HH + yewRagW(u, sd, ragA);
   /* the finials on the far hedge: a ball on a neck or a cone; in the court,
      a clipped ball on every pier, all alike */
@@ -17640,7 +17640,7 @@ float yewRagP(float u, float sd, float amp){
   float d2 = sqrt(max(1.0 - 4.0*(f2 - 0.5)*(f2 - 0.5), 0.0))*(0.15 + 0.50*h2)*amp*0.22 + d1*0.90;
   float x3 = u/0.085 + sd*1.9;
   float f3 = fract(x3), h3 = mmHash11(floor(x3)*5.19 + sd*2.1);
-  float sp = max(1.0 - abs(f3 - 0.5)*2.4, 0.0)*step(0.70, h3)*(0.35 + 0.65*h3)*amp*0.38;
+  float sp = max(1.0 - abs(f3 - 0.5)*2.4, 0.0)*step(0.70, h3)*(0.35 + 0.65*h3)*min(amp, 0.8)*0.38;
   float sag = 0.060*sin(u*0.37 + sd) + 0.034*sin(u*0.93 + sd*1.7);
   /* the edge feathered with single leaves, a few centimetres, every way */
   float fth = (abs(fract(u/0.034 + 0.4*sin(u*7.0 + sd)) - 0.5) - 0.25)*0.034;
