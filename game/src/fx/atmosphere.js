@@ -999,7 +999,11 @@ export const REGIONS = {
                 pixel's contact shadows -- so two here, the urn and the seat;
                 the ball-trees stand in the walk's own near floor) */
              near: [{ shape: 81, edge: 0.10, z: 3.0, tone: 0.94, seed: 1.1, fore: 1, keep: true },
-                    { shape: 83, edge: 0.36, z: 4.4, tone: 0.94, seed: 2.0, fore: 1, keep: true }] },
+                    { shape: 83, edge: 0.36, z: 4.4, tone: 0.94, seed: 2.0, fore: 1, keep: true },
+                    /* (round 34: and its fellow on the right-hand lawn, so
+                       the near turf is not empty on the side away from the
+                       seat -- one more term, measured in the hm-1 frame) */
+                    { shape: 81, edge: 0.88, z: 2.2, tone: 0.94, seed: 2.6, fore: 1, keep: true }] },
     /* ...and the moon laid on the walk and the turf in front of you, the
        foreground falling to nine-tenths and not two-fifths */
     /* (round 31 graft, judges 1 and 3: "lift the near path out of black with
@@ -1011,7 +1015,7 @@ export const REGIONS = {
        (second pass: 6.0 and 4.4, from 3.2 and 2.0 -- painted red and green
        they lay where they were meant to, and at the old strengths the dark
        turf took them as nothing) */
-    nearFloor: { fall: 0.95,
+    nearFloor: { fall: 0.95, calm: 0.75,
                  pool: { ahead: 3.8, across: -0.3, rAlong: 3.6, rAcross: 4.0, k: 6.0, color: '#d9a66e' },
                  pool2: { ahead: 3.2, across: 2.6, rAlong: 3.0, rAcross: 2.6, k: 4.4, color: '#8ea6cc' } },
     particles: { mix: [[PTYPE.SPORE, 0.44], [PTYPE.ASH, 0.30], [PTYPE.DUST, 0.26]],
@@ -1810,7 +1814,7 @@ export const ROOM_KINDS = {
           { shape: 74, edge: 0.30, z: -1.6, tone: 0.94, centre: 1, fore: 1, seed: 5.25, hM: 1.10 },
           { shape: 76, edge: 0.70, z: 2.0, tone: 0.94, centre: 1, fore: 1, scale: 1.55 },
           { shape: 74, edge: 0.92, z: 3.0, tone: 0.94, centre: 1, fore: 1, seed: 1.75, hM: 2.6 },
-          { shape: 74, edge: 0.07, z: 2.4, tone: 0.94, centre: 1, fore: 1, seed: 4.15, hM: 2.9 },
+          { shape: 74, edge: 0.12, z: 2.4, tone: 0.94, centre: 1, fore: 1, seed: 4.15, hM: 2.9 },
         ],
         /* (round 34: 1.0 of the wing's 36 -- the 0.82 of 44 it was judged with) */
         vantage: { at: 'above', rise: 2.9, drop: 0.0, fwd: 0.4, ahead: 9.0, count: 1.0 } },
@@ -1894,9 +1898,9 @@ export const ROOM_KINDS = {
              left in pots on the near flags, both survey-5 judges' empty lower
              half: a fern grown huge at your left, a palm at your right, pots
              set down between) */
-          { shape: 74, edge: 0.03, z: 3.0, tone: 0.92, centre: 1, fore: 1, seed: 3.35, hM: 2.2 },
-          { shape: 74, edge: 0.96, z: 2.6, tone: 0.92, centre: 1, fore: 1, seed: 2.45, hM: 2.5 },
-          { shape: 74, edge: 0.24, z: 2.2, tone: 0.92, centre: 1, fore: 1, seed: 5.25, hM: 0.75 },
+          { shape: 74, edge: 0.11, z: 3.0, tone: 0.92, centre: 1, fore: 1, seed: 3.35, hM: 2.4 },   // (second pass: in from 0.03 -- the frame cut it away)
+          { shape: 74, edge: 0.89, z: 2.6, tone: 0.92, centre: 1, fore: 1, seed: 2.45, hM: 2.5 },
+          { shape: 74, edge: 0.30, z: 2.2, tone: 0.92, centre: 1, fore: 1, seed: 5.25, hM: 1.15 },
           { shape: 76, edge: 0.76, z: 1.0, tone: 0.92, centre: 1, fore: 1, scale: 1.2 },
           { shape: 75, edge: 0.50, z: -0.6, tone: 0.90, centre: 1, fore: 1, seed: 2.2 },
         ],
