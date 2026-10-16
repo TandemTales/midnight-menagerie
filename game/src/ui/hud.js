@@ -199,6 +199,9 @@ const SOCK_MAX = 33;
 const POUCH_AT = 6;
 const POUCH_PEEK = 6;
 const SOCK_FLOOR = 30;
+/** Round 33 graft: the objects a pouched group shows beside its cartouche
+ *  before the socket starts giving up pixels (all three judges: three). */
+const PEEK_WANT = 3;
 
 export class HUD {
   /**
@@ -558,6 +561,11 @@ export class HUD {
     const tops = groups.map((g) => g.offsetTop + g.offsetHeight / 2);
     if (Math.max(...tops) - Math.min(...tops) > 6) return true;
     if (this.el.scrollWidth > this.el.clientWidth + 1) return true;
+    /* round 33 graft (BONEBLACK): the wing's name squeezed into its ellipsis
+       is over-full too -- a flex rail shrinks it before anything wraps --
+       unless the rail has already closed up on purpose (data-dense) */
+    const wt = this.$where?.querySelector('.mm-hud__t');
+    if (wt && this.el.dataset.dense !== '1' && wt.scrollWidth > wt.clientWidth + 1) return true;
     const keep = this.$relics.parentElement;
     if (keep.scrollWidth > keep.clientWidth + 1) return true;
     for (const list of [this.$relics, this.$gear]) {
@@ -655,27 +663,40 @@ export class HUD {
    *  every readout's word (Haunt, the seed) and gives up PEEKS -- the objects
    *  shown beside a pouch -- before it gives up anything else. */
   _fitPouch(nK, nG) {
-    const wide = window.innerWidth > 1400;
-    this.el.style.setProperty('--sock', `${wide ? 34 : 32}px`);
-    const p = {
-      k: nK > POUCH_AT, g: nG > POUCH_AT,
-      vk: nK > POUCH_AT ? Math.min(nK, POUCH_PEEK) : nK,
-      vg: nG > POUCH_AT ? Math.min(nG, POUCH_PEEK) : nG,
-    };
-    let lv = { snack: true, compact: false, over: 0, pouch: { ...p } };
-    this._applyFold(lv);
-    while (this._tight()) {
-      /* the larger peek gives one up first; a group still laid whole
-         folds into its own pouch only once both peeks are gone */
-      if (p.k && p.vk >= p.vg && p.vk > 0) p.vk -= 1;
-      else if (p.g && p.vg > 0) p.vg -= 1;
-      else if (p.k && p.vk > 0) p.vk -= 1;
-      else if (!p.k && nK) { p.k = true; p.vk = 0; }
-      else if (!p.g && nG) { p.g = true; p.vg = 0; }
-      else break;
-      lv = { ...lv, pouch: { ...p } };
+    /* round 33 graft: the socket gives up a pixel at a time (34 at 1600, 32
+       under 1400, never under SOCK_FLOOR) before a group gives up its third
+       object; the largest socket that keeps PEEK_WANT a group wins */
+    const top = window.innerWidth > 1400 ? 34 : 32;
+    const lay = (sock) => {
+      this.el.style.setProperty('--sock', `${sock}px`);
+      const p = {
+        k: nK > POUCH_AT, g: nG > POUCH_AT,
+        vk: nK > POUCH_AT ? Math.min(nK, POUCH_PEEK) : nK,
+        vg: nG > POUCH_AT ? Math.min(nG, POUCH_PEEK) : nG,
+      };
+      let lv = { snack: true, compact: false, over: 0, pouch: { ...p } };
       this._applyFold(lv);
+      while (this._tight()) {
+        /* the larger peek gives one up first; a group still laid whole
+           folds into its own pouch only once both peeks are gone */
+        if (p.k && p.vk >= p.vg && p.vk > 0) p.vk -= 1;
+        else if (p.g && p.vg > 0) p.vg -= 1;
+        else if (p.k && p.vk > 0) p.vk -= 1;
+        else if (!p.k && nK) { p.k = true; p.vk = 0; }
+        else if (!p.g && nG) { p.g = true; p.vg = 0; }
+        else break;
+        lv = { ...lv, pouch: { ...p } };
+        this._applyFold(lv);
+      }
+      return Math.min(p.k ? p.vk : 99, p.g ? p.vg : 99);
+    };
+    let best = top, bestN = -1;
+    for (let sock = top; sock >= SOCK_FLOOR; sock--) {
+      const got = lay(sock);
+      if (got > bestN) { best = sock; bestN = got; }
+      if (got >= PEEK_WANT) break;
     }
+    if (parseFloat(this.el.style.getPropertyValue('--sock')) !== best) lay(best);
     this.el.dataset.fold = '5';
     if (this._tight()) this.el.dataset.dense = '1';
     this.$relics.parentElement.dataset.vine = '0';
@@ -779,7 +800,8 @@ export class HUD {
     // must too or the same run shows three different 'seeds'.
     const seed = (r.seed === undefined || r.seed === null) ? '—' : formatSeed(r.seed);
     this.$seed.textContent = '';
-    this.$seed.append(icon('res.seed'), text(seed));
+    /* round 33 graft: the seed is labelled the way Haunt is (BONEBLACK) */
+    this.$seed.append(icon('res.seed'), wideWord('Seed '), text(seed));
     this.$seed.dataset.tipTitle = 'Seed';
     this.$seed.dataset.tip = `${seed} — this number generates the entire expedition. The same seed replays the same rooms, the same rewards and the same shop.`;
 
@@ -878,7 +900,8 @@ function layPouch(list, chips, pouched, peek, kind) {
   list.removeAttribute('data-open');
   const btn = document.createElement('button');
   btn.type = 'button';
-  btn.className = 'mm-hud__pouch kit-beltpouch';
+  /* round 33 graft: ONE line in a scrolled cartouche, "KEEPSAKES 10" (CADMIUM) */
+  btn.className = 'mm-hud__pouch kit-beltpouch kit-beltpouch--cart';
   btn.dataset.kind = kind;
   btn.setAttribute('aria-expanded', 'false');
   btn.setAttribute('aria-label', `${n} ${name}${rest.length ? `, ${rest.length} more in the pouch. Show them.` : ''}`);

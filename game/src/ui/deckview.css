@@ -389,3 +389,38 @@
   font-style: normal; font-size: 14px; line-height: 1.25;
   color: color-mix(in oklab, var(--kit-text) 88%, var(--kit-lav-hi));
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ROUND 33 GRAFT — THE RAIL AS ONE OBJECT, ITS CAPTIONS CUT DEEPER
+   All three judges: the TYPE / COST / RARITY / UPGRADED / SORT captions read
+   weaker than the values under them; one asked for a centred rail about 75%
+   wide with ~34 px medallions, each its own enamel. So the captions are a
+   size up in the bright gold, cut with a dark lip; the stops close up so the
+   rail stands centred at about three quarters of the dialog; the medallions
+   grow, and each one's enamel takes its own tint (the brass ring untouched):
+   type violet, cost amber, rarity sapphire, upgraded verdigris, sort madder.
+   The note above the cards: upright, cream, a size up.
+   ═══════════════════════════════════════════════════════════════════════════ */
+.mm-deck__filters.kit-hw-dialrail { --dr-gap: clamp(22px, 2.1vw, 40px); }
+.mm-deck__filters .kit-hw-stop__label {
+  font-size: 13.5px; letter-spacing: .15em;
+  color: var(--kit-gold-hi);
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, .95), 0 1px 0 rgba(0, 0, 0, .7), 0 0 8px color-mix(in srgb, var(--kit-candle) 25%, transparent);
+}
+.mm-deck__filters .kit-hw-stop__value { font-size: 16.5px; }
+.mm-deck__filters .kit-hw-stop__medal.kit-medallion {
+  --md: calc(var(--dr-h) * .9);
+  --tint: transparent;
+  background:
+    radial-gradient(circle, var(--tint) 0 50%, transparent 53%) 50% 50% / 100% 100% no-repeat,
+    url("../../assets/ui/kit/button.webp") 50% 50% / 100% 100% no-repeat;
+  background-blend-mode: color, normal;
+}
+.mm-deck__filters .kit-hw-stop[data-filter="cost"] .kit-hw-stop__medal { --tint: rgba(222, 156, 54, .86); }
+.mm-deck__filters .kit-hw-stop[data-filter="rarity"] .kit-hw-stop__medal { --tint: rgba(52, 92, 186, .78); }
+.mm-deck__filters .kit-hw-stop[data-filter="upgraded"] .kit-hw-stop__medal { --tint: rgba(46, 132, 108, .74); }
+.mm-deck__filters .kit-hw-stop[data-filter="sort"] .kit-hw-stop__medal { --tint: rgba(168, 44, 58, .74); }
+.mm-deck__table > .mm-deck__note {
+  font-size: 15.5px; letter-spacing: .01em;
+  color: var(--kit-text);
+}

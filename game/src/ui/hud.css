@@ -1018,3 +1018,52 @@
   box-shadow: inset 0 0 0 1.5px rgba(26, 14, 6, .85), inset 0 0 6px 1px rgba(12, 6, 16, .7), 0 0 0 .5px color-mix(in srgb, var(--kit-gold) 40%, transparent);
 }
 .mm-hud .mm-hud__relicn { z-index: 2; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ROUND 33 GRAFT — THE STRIP AT 1280: SEED LABELLED, ONE-LINE CARTOUCHES,
+   THREE OBJECTS A GROUP
+   All three judges, hud-late at 1280: the seed was a bare 0000-0000 by a die,
+   the stacked KEEPSAKES / 10 was small dim gold beside one or two discs, and
+   ~35 px of the channel sat unused. So:
+   - the seed carries its word, "SEED", the way HAUNT does (BONEBLACK), and at
+     the Deck's width both readouts are their WORDS, parted by a struck brass
+     lozenge (their icons stand down there: the words say it);
+   - each pouch is one line in a scrolled cartouche (kit .kit-beltpouch--cart);
+   - the room that buys goes to the belt: at 1280 at least three objects a
+     group at 30 px, 4 px apart, and a clear rule between the two groups.
+   ═══════════════════════════════════════════════════════════════════════════ */
+.mm-hud__seed .mm-hud__w { padding-right: .3em; }
+.mm-hud__haunt .mm-hud__w { padding-right: .15em; }
+.mm-hud[data-belt="pouch"] .mm-hud__pouch { margin-right: 1px; }
+/* on the strip the cartouche IS the pouch: its medallion stands down, and
+   its width is a third object beside it */
+.mm-hud .kit-beltpouch--cart > .kit-beltpouch__medal { display: none; }
+.mm-hud .kit-beltpouch--cart > .kit-beltpouch__txt { padding-left: calc(var(--cart-h) * .5); padding-right: calc(var(--cart-h) * .46); }
+.mm-hud[data-belt="pouch"] :is(.mm-hud__relics, .mm-hud__gear) { gap: 4px; }
+/* the Deck's width: the rail's figures a size down (13 px; every word on it
+   stays at 11.7 px or over), Haunt and the seed their WORDS parted by a
+   struck lozenge, and the air between the readouts closed up -- the width
+   all of that frees is the third object in each group */
+@media (max-width: 1400px) {
+  .mm-hud { --hud-fs: calc(13px * var(--type-scale, 1)); gap: 2px; }
+  .mm-hud .mm-hud__chip:is(.mm-hud__seed, .mm-hud__haunt) > .mm-icon { display: none; }
+  .mm-hud .mm-hud__chip.mm-hud__seed { margin-left: 2px; }
+  .mm-hud .mm-hud__chip.mm-hud__seed::before {
+    content: ''; display: block; flex: none; position: static;
+    width: 5px; height: 5px; margin: 0 6px 0 1px; rotate: 45deg;
+    background: linear-gradient(135deg, var(--kit-gold-hi), var(--kit-gold) 50%, var(--kit-gold-lo));
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, .75);
+  }
+  .mm-hud .kit-beltpouch--cart > .kit-beltpouch__txt { padding-left: calc(var(--cart-h) * .48); padding-right: calc(var(--cart-h) * .44); }
+  .mm-hud .kit-beltpouch--cart .kit-beltpouch__label { font-size: 12px; letter-spacing: .06em; }
+  .mm-hud[data-belt="pouch"] :is(.mm-hud__relics, .mm-hud__gear) { gap: 3px; }
+  .mm-hud[data-belt="pouch"] .mm-hud__pouch { margin-right: 0; }
+  .mm-hud__group--vitals > .mm-hud__snacks { padding: 0 3px; }
+  .mm-hud__bar { width: calc(var(--bar-h) * 2.95); }
+  .mm-hud .mm-hud__gear { margin-left: calc(var(--hud-rule-w) + 1px); }
+  .mm-hud .mm-hud__gear::before { left: calc(-2px - var(--hud-rule-w) - 1px); }
+  .mm-hud__where .mm-hud__t { letter-spacing: .015em; }
+  .mm-hud__seed .mm-hud__t { letter-spacing: 0; }
+  .mm-hud__haunt .mm-hud__w { padding-right: .1em; }
+  .mm-hud__seed .mm-hud__w { padding-right: .22em; }
+}
