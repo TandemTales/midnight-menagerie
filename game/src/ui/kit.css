@@ -4509,3 +4509,34 @@ button.kit-hw-enamel:focus-visible {
 .kit-beltpouch[data-kind="gear"] .kit-beltpouch__label { color: color-mix(in srgb, var(--kit-moon) 55%, var(--kit-gold-hi)); }
 .kit-beltpouch:hover, .kit-beltpouch[aria-expanded="true"] { filter: brightness(1.18) drop-shadow(0 0 6px color-mix(in srgb, var(--kit-candle) 40%, transparent)); }
 .kit-beltpouch:focus-visible { outline: none; filter: brightness(1.2) drop-shadow(0 0 1.5px var(--kit-gold-hi)) drop-shadow(0 0 8px color-mix(in srgb, var(--kit-candle) 55%, transparent)); }
+
+/* ── round 33 graft: the belt pouch on ONE line, in a scrolled cartouche ──
+   All three judges, hud-late at 1280: the stacked "KEEPSAKES / 10" caption
+   was small dim gold caps. The group's name and its count now stand on one
+   line, as bright and as large as HAUNT, in the strip's own scrolled
+   cartouche (cartouche-hud.webp, 160x44, 9-sliced 11 24), and the enamel
+   medallion with the group's glyph sits over its near end (CADMIUM).
+     .kit-beltpouch.kit-beltpouch--cart   (the same markup as .kit-beltpouch) */
+.kit-beltpouch.kit-beltpouch--cart { gap: 0; padding: 0; }
+.kit-beltpouch--cart > .kit-beltpouch__medal { z-index: 2; margin-right: calc(var(--sock, 32px) * -.3); }
+.kit-beltpouch--cart > .kit-beltpouch__txt {
+  --cart-h: calc(var(--sock, 32px) * .84);
+  box-sizing: border-box;
+  display: inline-flex; align-items: center; gap: .32em;
+  height: var(--cart-h);
+  padding: 1px calc(var(--cart-h) * .5) 0 calc(var(--sock, 32px) * .3 + var(--cart-h) * .2);
+  border: 0 solid transparent;
+  border-image: url("../../assets/ui/kit/cartouche-hud.webp") 11 24 fill / calc(var(--cart-h) * 11 / 44) calc(var(--cart-h) * 24 / 44) stretch;
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .8));
+}
+.kit-beltpouch--cart .kit-beltpouch__label {
+  font-size: 12.5px; line-height: 1; letter-spacing: .07em;
+  color: var(--kit-gold-hi);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .95), 0 -1px 0 rgba(0, 0, 0, .5), 0 0 8px color-mix(in srgb, var(--kit-candle) 22%, transparent);
+}
+.kit-beltpouch--cart .kit-beltpouch__n {
+  font-size: 15px; line-height: 1; translate: 0 -1px;
+  color: #fff3d6;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .95), 0 0 8px color-mix(in srgb, var(--kit-candle) 35%, transparent);
+}
+.kit-beltpouch--cart[data-kind="gear"] .kit-beltpouch__label { color: color-mix(in srgb, var(--kit-moon) 35%, var(--kit-gold-hi)); }
