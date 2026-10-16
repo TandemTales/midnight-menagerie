@@ -4455,3 +4455,57 @@ button.kit-hw-enamel:focus-visible {
 .kit-hw-stop.is-set .kit-hw-stop__medal {
   filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .8)) drop-shadow(0 0 8px color-mix(in srgb, var(--kit-candle) 60%, transparent));
 }
+
+/* ── a belt pouch: a group of carried things, folded (round 33) ──
+   Survey 4, hud-late at 1280: ten Keepsakes and eight Gear shrank every
+   socket to about 20 px. Past six, a group folds into its POUCH: the house's
+   round enamel button with a pouch (or a knapsack) struck on it, and beside
+   it the group's name engraved over its count -- "KEEPSAKES / 10" -- that
+   fans the whole group out under the rail (ui/hud.js layPouch).
+     .kit-beltpouch            the press (a <button>), --sock sizes it
+       > .kit-beltpouch__medal   the enamel disc and its glyph
+       > .kit-beltpouch__txt > .kit-beltpouch__label + .kit-beltpouch__n
+     .kit-beltpouch[data-kind="gear"]   lettered in the moon's colour  */
+.kit-beltpouch {
+  position: relative; flex: none;
+  display: inline-flex; align-items: center; gap: 6px;
+  height: var(--sock, 32px);
+  margin: 0; padding: 0 7px 0 0;
+  background: none; border: 0; border-radius: 0;
+  font: inherit; color: inherit; text-align: left;
+  cursor: pointer;
+  transition: filter var(--t-quick) var(--ease-out);
+}
+.kit-beltpouch__medal {
+  position: relative; flex: none;
+  display: grid; place-items: center;
+  width: var(--sock, 32px); height: var(--sock, 32px);
+  border-radius: 50%;
+  background:
+    url("../../assets/ui/kit/hw-glaze.webp") 50% 50% / 100% 100% no-repeat,
+    url("../../assets/ui/kit/button.webp") 50% 50% / 100% 100% no-repeat;
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .8));
+}
+.kit-beltpouch__medal svg { width: 56%; height: 56%; overflow: visible; }
+.kit-beltpouch__medal svg path {
+  fill: color-mix(in oklab, var(--kit-gold-hi) 72%, var(--kit-gold));
+  stroke: #24170a; stroke-width: 1.1; stroke-linejoin: round; paint-order: stroke fill;
+}
+.kit-beltpouch__txt { display: grid; gap: 2px; line-height: 1; }
+.kit-beltpouch__label {
+  font-family: var(--font-display); font-weight: 700; font-style: normal;
+  font-size: 11.5px; line-height: 1; letter-spacing: .1em; text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--kit-gold);
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, .95);
+}
+.kit-beltpouch__n {
+  font-family: var(--font-num); font-weight: 700; font-style: normal;
+  font-size: 16px; line-height: .95;
+  font-variant-numeric: lining-nums tabular-nums;
+  color: var(--kit-name);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .95);
+}
+.kit-beltpouch[data-kind="gear"] .kit-beltpouch__label { color: color-mix(in srgb, var(--kit-moon) 55%, var(--kit-gold-hi)); }
+.kit-beltpouch:hover, .kit-beltpouch[aria-expanded="true"] { filter: brightness(1.18) drop-shadow(0 0 6px color-mix(in srgb, var(--kit-candle) 40%, transparent)); }
+.kit-beltpouch:focus-visible { outline: none; filter: brightness(1.2) drop-shadow(0 0 1.5px var(--kit-gold-hi)) drop-shadow(0 0 8px color-mix(in srgb, var(--kit-candle) 55%, transparent)); }

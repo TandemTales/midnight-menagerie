@@ -190,6 +190,15 @@ const SOCK_MIN = 22;
 /** ...and the largest it grows to where the rail has channel to spare: the
  *  plate round it (2 x 4 px) still clears the rail's mouldings. */
 const SOCK_MAX = 33;
+/** ROUND 33 -- THE POUCH. Survey 4, both judges, hud-late at 1280: ten
+ *  Keepsakes and eight Gear shrank every icon to about 20 px, and HAUNT and
+ *  the seed lost their labels. A group of more than POUCH_AT now folds into
+ *  a labelled pouch medallion ("KEEPSAKES 10") that fans the whole group out
+ *  on hover, focus or a press; beside it as many of the group's objects as
+ *  the rail holds at 32-34 px (never under SOCK_FLOOR), a gap between each. */
+const POUCH_AT = 6;
+const POUCH_PEEK = 6;
+const SOCK_FLOOR = 30;
 
 export class HUD {
   /**
@@ -586,6 +595,8 @@ export class HUD {
     this.el.style.removeProperty('--sock');
     // the vine is a flex item: a stale one from the last fit costs its gap
     this.$relics.parentElement.dataset.vine = '0';
+    const nK = this._keepChips?.length || 0, nG = this._gearChips?.length || 0;
+    if (nK > POUCH_AT || nG > POUCH_AT) { this._fitPouch(nK, nG); return; }
     let lv = { snack: true, compact: false, over: 0 };
     this._applyFold(lv);
     if (this._tight()) this.el.dataset.terse = '1';
@@ -598,7 +609,7 @@ export class HUD {
     if (this._tight() && first && first.offsetWidth) {
       const wide = Math.floor(first.offsetWidth);
       let s = wide;
-      while (this._tight() && s > SOCK_MIN) {
+      while (this._tight() && s > Math.max(SOCK_MIN, SOCK_FLOOR)) {
         s -= 1;
         lv = { snack: true, compact: s <= SOCK_MIN + 2 ? 2 : 1, over: 0 };
         this.el.style.setProperty('--sock', `${s}px`);
@@ -640,6 +651,36 @@ export class HUD {
     keep.dataset.vine = keep.clientWidth - used >= 140 ? '1' : '0';
   }
 
+  /** ROUND 33: a group past POUCH_AT folds into its pouch; the rail keeps
+   *  every readout's word (Haunt, the seed) and gives up PEEKS -- the objects
+   *  shown beside a pouch -- before it gives up anything else. */
+  _fitPouch(nK, nG) {
+    const wide = window.innerWidth > 1400;
+    this.el.style.setProperty('--sock', `${wide ? 34 : 32}px`);
+    const p = {
+      k: nK > POUCH_AT, g: nG > POUCH_AT,
+      vk: nK > POUCH_AT ? Math.min(nK, POUCH_PEEK) : nK,
+      vg: nG > POUCH_AT ? Math.min(nG, POUCH_PEEK) : nG,
+    };
+    let lv = { snack: true, compact: false, over: 0, pouch: { ...p } };
+    this._applyFold(lv);
+    while (this._tight()) {
+      /* the larger peek gives one up first; a group still laid whole
+         folds into its own pouch only once both peeks are gone */
+      if (p.k && p.vk >= p.vg && p.vk > 0) p.vk -= 1;
+      else if (p.g && p.vg > 0) p.vg -= 1;
+      else if (p.k && p.vk > 0) p.vk -= 1;
+      else if (!p.k && nK) { p.k = true; p.vk = 0; }
+      else if (!p.g && nG) { p.g = true; p.vg = 0; }
+      else break;
+      lv = { ...lv, pouch: { ...p } };
+      this._applyFold(lv);
+    }
+    this.el.dataset.fold = '5';
+    if (this._tight()) this.el.dataset.dense = '1';
+    this.$relics.parentElement.dataset.vine = '0';
+  }
+
   _applyFold(lv) {
     if (this._snackSpread !== lv.snack) {
       this._snackSpread = lv.snack;
@@ -656,6 +697,12 @@ export class HUD {
   _arrange() {
     const f = this._fold || {};
     const keep = this._keepChips || [], gear = this._gearChips || [];
+    if (f.pouch) {
+      this.el.dataset.belt = 'pouch';
+      if (keep.length) layPouch(this.$relics, keep, f.pouch.k, f.pouch.vk, 'keepsakes');
+      if (gear.length) layPouch(this.$gear, gear, f.pouch.g, f.pouch.vg, 'gear');
+      return;
+    }
     const total = keep.length + gear.length;
     const over = Math.min(f.over || 0, total);
     const showN = total - over;
@@ -802,6 +849,88 @@ function layBelt(list, chips) {
   list.dataset.folded = '0';
   list.setAttribute('role', 'list');
   list.removeAttribute('data-open');
+}
+
+/** What each pouch has struck on its enamel: a drawstring pouch for the
+ *  Keepsakes, a knapsack for the Gear (24-unit grid, even-odd filled). */
+const POUCH_GLYPH = {
+  keepsakes: 'M8.4 2.6h7.2l-1.7 3.4c4.1 1.7 6.9 5.9 6.9 10.1 0 3.6-3 5.6-8.8 5.6s-8.8-2-8.8-5.6c0-4.2 2.8-8.4 6.9-10.1zM9.2 6.6h5.6v1.5H9.2zM11.2 12.2h1.6l.5 3.6h-2.6z',
+  gear: 'M9 2.4h6v2.4h-1.8v-.7h-2.4v.7H9zM6.6 5.2h10.8A2.6 2.6 0 0 1 20 7.8v11.6a2.2 2.2 0 0 1-2.2 2.2H6.2A2.2 2.2 0 0 1 4 19.4V7.8a2.6 2.6 0 0 1 2.6-2.6zM7.4 12h9.2v5.6H7.4zM9.2 13.5v1.5h5.6v-1.5z',
+};
+const POUCH_WORD = { keepsakes: ['Keepsake', 'Keepsakes'], gear: ['Gear', 'Gear'] };
+
+/**
+ * ROUND 33: lay a group either whole (layBelt) or as its POUCH: a labelled
+ * enamel medallion with the group's count ("KEEPSAKES 10"), then the tray of
+ * the rest (hidden until fanned), then `peek` of its objects in their
+ * sockets. The tray fans out on hovering or focusing the pouch, or pressing
+ * it (a pad, a finger); Escape or a press elsewhere shuts it. Every object is
+ * still its own chip with its own tooltip, and the same node either way.
+ */
+function layPouch(list, chips, pouched, peek, kind) {
+  if (!pouched) { layBelt(list, chips); return; }
+  const n = chips.length;
+  const shown = chips.slice(0, peek), rest = chips.slice(peek);
+  const [one, many] = POUCH_WORD[kind];
+  const name = n === 1 ? one : many;
+  list.textContent = '';
+  list.dataset.folded = '2';
+  list.removeAttribute('data-open');
+  const btn = document.createElement('button');
+  btn.type = 'button';
+  btn.className = 'mm-hud__pouch kit-beltpouch';
+  btn.dataset.kind = kind;
+  btn.setAttribute('aria-expanded', 'false');
+  btn.setAttribute('aria-label', `${n} ${name}${rest.length ? `, ${rest.length} more in the pouch. Show them.` : ''}`);
+  /* no tooltip of its own: pointing at the pouch fans the group out in the
+     tooltip's place, and each object there carries its own */
+  btn.innerHTML = `<i class="kit-beltpouch__medal" aria-hidden="true"><svg viewBox="0 0 24 24"><path fill-rule="evenodd" d="${POUCH_GLYPH[kind]}"/></svg></i>`
+    + `<span class="kit-beltpouch__txt" aria-hidden="true"><b class="kit-beltpouch__label">${name}</b><b class="kit-beltpouch__n">${n}</b></span>`;
+  list.appendChild(btn);
+  if (rest.length) {
+    const tray = document.createElement('div');
+    tray.className = 'mm-hud__tray mm-hud__tray--pouch';
+    tray.setAttribute('role', 'list');
+    tray.setAttribute('aria-label', `The rest of your ${many}`);
+    const head = document.createElement('b');
+    head.className = 'mm-hud__trayt';
+    head.setAttribute('aria-hidden', 'true');
+    head.textContent = shown.length ? `${rest.length} more ${rest.length === 1 ? one : many}` : `${n} ${name}`;
+    tray.appendChild(head);
+    for (const c of rest) tray.appendChild(c);
+    list.appendChild(tray);
+    const sync = () => btn.setAttribute('aria-expanded', list.dataset.open === '1' ? 'true' : 'false');
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      list.dataset.open = list.dataset.open === '1' ? '0' : '1';
+      sync();
+      if (list.dataset.open === '1') {
+        const shut = (ev) => {
+          if (list.contains(ev.target)) return;
+          list.dataset.open = '0'; sync();
+          document.removeEventListener('pointerdown', shut, true);
+        };
+        document.addEventListener('pointerdown', shut, true);
+      }
+    });
+    if (!list._pouchKeys) {
+      list._pouchKeys = true;
+      list.addEventListener('keydown', (e) => {
+        const b = list.querySelector(':scope > .mm-hud__pouch');
+        if (!b || e.key !== 'Escape' || !list.querySelector(':scope > .mm-hud__tray')) return;
+        e.preventDefault(); e.stopPropagation();
+        list.dataset.open = '0';
+        b.setAttribute('aria-expanded', 'false');
+        b.focus();
+        list.classList.add('is-shut');
+        const lift = () => { list.classList.remove('is-shut'); b.removeEventListener('blur', lift); list.removeEventListener('mouseleave', lift); };
+        b.addEventListener('blur', lift);
+        list.addEventListener('mouseleave', lift);
+      });
+    }
+  }
+  for (const c of shown) list.appendChild(c);
+  list.setAttribute('role', 'list');
 }
 
 /**

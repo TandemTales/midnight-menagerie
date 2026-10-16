@@ -972,3 +972,49 @@
   .mm-hud__group + .mm-hud__group::before { width: var(--hud-rule-w); height: var(--hud-rule-h); margin: 0; }
   .mm-hud__where .mm-hud__s { letter-spacing: .05em; }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ROUND 33 — THE POUCH, THE GAP, AND THE HOUSE'S PALETTE ON THE STRIP
+   Survey 4, both judges, hud-late at 1280: every icon about 20 px, HAUNT and
+   the seed unlabelled, and "bright, saturated sticker art (a lime tennis
+   ball, a green rubber glove, an orange box) that clash with the antique
+   gold". So:
+   - past six, a group folds into its labelled pouch (ui/kit.css
+     .kit-beltpouch, ui/hud.js layPouch), and beside it as many of its
+     objects as the rail holds at 32 px (34 at 1600), never under 30, with a
+     5 px gap between sockets; the pouch fans the rest out under the rail;
+   - Haunt's word and the seed's figures stay lettered at every width;
+   - every object on the strip is TREATED, never repainted: a muted wash
+     toward bone and old gold (sepia, less saturation) and a dark engraved
+     ring cut round it in its well, so a lime ball reads as a ball in the
+     house's light and not as a sticker.
+   ═══════════════════════════════════════════════════════════════════════════ */
+.mm-hud[data-belt="pouch"] :is(.mm-hud__relics, .mm-hud__gear) { gap: 5px; }
+.mm-hud[data-belt="pouch"] .mm-hud__relic,
+.mm-hud[data-belt="pouch"] .mm-hud__gearchip { width: var(--sock); height: var(--sock); }
+:is(.mm-hud__relics, .mm-hud__gear)[data-folded="2"] { position: relative; }
+:is(.mm-hud__relics, .mm-hud__gear)[data-folded="2"] > .mm-hud__tray { left: calc(var(--plate-pad, 4px) * -1); }
+:is(.mm-hud__relics, .mm-hud__gear)[data-folded="2"]:is([data-open="1"], :has(> .mm-hud__pouch:hover), :has(> .mm-hud__pouch:focus-visible), :has(> .mm-hud__tray:hover), :has(> .mm-hud__tray:focus-within)):not(.is-shut) > .mm-hud__tray {
+  display: grid;
+  animation: mm-hud-tray var(--t-quick) var(--ease-out);
+}
+.mm-hud__tray--pouch { grid-template-columns: repeat(5, auto); }
+.mm-hud__tray--pouch > :is(.mm-hud__relic, .mm-hud__gearchip) { width: 42px; height: 42px; }
+
+/* the readouts keep their words, at every width */
+.mm-hud[data-terse="1"] :is(.mm-hud__w, .mm-hud__seed .mm-hud__t) {
+  position: static; width: auto; height: auto; overflow: visible; clip-path: none;
+}
+
+/* the treatment: a wash toward bone and old gold, and an engraved ring */
+.mm-hud .mm-hud__relicobj, .mm-hud .mm-hud__gearobj,
+.mm-hud .mm-hud__snack .kit-obj {
+  filter: sepia(.46) saturate(.66) hue-rotate(-6deg) brightness(1.02) contrast(1.06) drop-shadow(0 1.5px 1px rgba(0, 0, 0, .9));
+}
+.mm-hud .mm-hud__relic::after,
+.mm-hud .mm-hud__gearchip::after {
+  content: ''; position: absolute; inset: 10%; z-index: 1; pointer-events: none;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 1.5px rgba(26, 14, 6, .85), inset 0 0 6px 1px rgba(12, 6, 16, .7), 0 0 0 .5px color-mix(in srgb, var(--kit-gold) 40%, transparent);
+}
+.mm-hud .mm-hud__relicn { z-index: 2; }
