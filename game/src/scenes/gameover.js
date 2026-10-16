@@ -958,14 +958,35 @@ export class GameOverScene extends Scene {
       return { a, rim, k: a + 2 * rim };
     };
     const ks = figs.map(kOf);
-    let F = Math.min(foot - cornice - 18, ...ks.map(k => k.k * triW * .98));
-    if (F < 56) { show(false); return; }
+    /* each frame as tall as the bay lets it (survey 5: the one height the
+       wide house allowed left the Dowager "a tiny dark rectangle"), its foot
+       ABOVE its nameplate: the plate hangs below the frame, and at one shared
+       height the Dowager's plate stood on the epitaph (both judges) */
     show(true);
+    for (const f of figs) f.style.setProperty('--go-plate-w', `${(triW * .96).toFixed(1)}px`);
+    const plateOf = (f) => f.querySelector('.kit-hang__plate')?.offsetHeight || 0;
+    const size = (plate) => {
+      const room = foot - plate - cornice - 18;
+      return ks.map(k => Math.min(room, k.k * triW * .98));
+    };
+    // a narrower frame wraps its plate onto more lines: settle the two together
+    let plate = 0, Fs = size(0);
+    for (let pass = 0; pass < 4; pass++) {
+      if (Math.min(...Fs) < 56) { show(false); return; }
+      figs.forEach((f, i) => f.style.setProperty('--hang-w', `${(Fs[i] / ks[i].k).toFixed(1)}px`));
+      const p = Math.max(0, ...figs.map(plateOf));
+      if (p <= plate) break;
+      plate = p;
+      Fs = size(plate);
+    }
+    if (Math.min(...Fs) < 56) { show(false); return; }
+    const footP = foot - plate;
     figs.forEach((f, i) => {
       const { rim, k } = ks[i];
+      const F = Fs[i];
       const w = F / k;
       const host = f.offsetParent || f.parentElement;
-      const picTop = foot - F + w * rim;
+      const picTop = footP - F + w * rim;
       f.style.setProperty('--hang-w', `${w.toFixed(1)}px`);
       f.style.top = `${(picTop - y(host)).toFixed(1)}px`;
       f.style.bottom = 'auto';

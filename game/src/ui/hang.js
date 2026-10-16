@@ -170,6 +170,76 @@ export function houseGallery(pool, classes, { seed = null } = {}) {
 }
 
 /**
+ * Fit each hung painting to the wall it has (survey 5, both judges: on the
+ * event, rest, reward and game-over walls a sconce, a panel or a card stood
+ * over a painting's nameplate). The boards were laid out for the Companions'
+ * portraits, which share one shape; Josh's paintings run from 1024x1280 to
+ * 948x1659, so at a board's --hang-w a tall one dropped its plate onto
+ * whatever stands below it. Each picture keeps its board's width when it
+ * clears and is otherwise narrowed -- never moved -- until its frame (with the
+ * moulding outside it) and its plate clear every `obstacles` box by `gap` px.
+ * A painting that cannot clear at `min` px wide gives its place to the first
+ * painting of `pool` not already hung that can (at the Deck's 1280 the tallest
+ * canvases do not fit over the event hall's sconces); a picture with no such
+ * stand-in does not hang. Measured on screen, so call it once the board has
+ * laid out, and again on resize. Returns the pictures as hung.
+ */
+export function fitHung(figs, obstacles, { gap = 8, min = 72, pool = null } = {}) {
+  const boxes = obstacles.filter(o => o && !o.hidden && o.getClientRects().length)
+    .map(o => o.getBoundingClientRect()).filter(r => r.width && r.height);
+  const hit = (a, b) => a.left < b.right + gap && a.right > b.left - gap
+    && a.top < b.bottom + gap && a.bottom > b.top - gap;
+  const clear = (f) => {
+    const a = f.querySelector('.kit-hang__frame')?.getBoundingClientRect();
+    if (!a) return true;
+    const rim = a.width * .085;
+    const u = { left: a.left - rim, right: a.right + rim, top: a.top - rim, bottom: a.bottom + rim };
+    const p = f.querySelector('.kit-hang__plate')?.getBoundingClientRect();
+    if (p && p.width) {
+      u.left = Math.min(u.left, p.left); u.right = Math.max(u.right, p.right);
+      u.bottom = Math.max(u.bottom, p.bottom);
+    }
+    return !boxes.some(b => hit(u, b));
+  };
+  // the widest width up to the board's own at which `f` clears, set on it; false if none
+  const fit = (f) => {
+    f.style.removeProperty('--hang-w');
+    f.hidden = false;
+    const W0 = f.offsetWidth;
+    if (!W0 || clear(f)) return true;
+    const set = (w) => f.style.setProperty('--hang-w', `${w.toFixed(1)}px`);
+    let lo = min, hi = W0;
+    set(lo);
+    if (!clear(f)) { f.style.removeProperty('--hang-w'); return false; }
+    for (let i = 0; i < 8; i++) { const m = (lo + hi) / 2; set(m); if (clear(f)) lo = m; else hi = m; }
+    set(lo);
+    return true;
+  };
+  const spares = (Array.isArray(pool) ? pool : PICTURE_POOLS[pool] || []).filter(id => ART[id]);
+  const hung = figs.filter(Boolean);
+  return hung.map((f, i) => {
+    if (fit(f)) return f;
+    if (f.classList.contains('kit-hang--painting')) {
+      const cls = [...f.classList].filter(c => !c.startsWith('kit-hang')).join(' ');
+      const taken = new Set(hung.map(g => g.dataset.art));
+      // the pool read on from the painting it stands in for, so the stand-ins vary
+      const at = spares.indexOf(String(f.dataset.art).slice(4)) + 1;
+      for (const id of [...spares.slice(at), ...spares.slice(0, at)]) {
+        if (taken.has(`art-${id}`)) continue;
+        const t = document.createElement('div');
+        t.innerHTML = paintingHtml(id, cls);
+        const n = t.firstElementChild;
+        f.replaceWith(n);
+        if (fit(n)) { hung[i] = n; return n; }
+        n.replaceWith(f);
+      }
+    }
+    f.hidden = true;
+    return f;
+  });
+}
+
+/**
  * The room behind a dialog (round 26, both survey judges: Settings and the pile
  * viewer stood "on a flat black void"). Round 26 graft (VERMEILLE's; both
  * judges asked for it in effect): the dialog stands over the ACTUAL screen it

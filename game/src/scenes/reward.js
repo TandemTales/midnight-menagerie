@@ -25,7 +25,7 @@ import { TERMS, NodeType } from '../data/schema.js';
 import { cardById } from '../data/cards.js';
 import { relicById } from '../data/relics.js';
 import { objectHtml, keepsakeKey } from '../ui/objects.js';
-import { houseGallery } from '../ui/hang.js';
+import { houseGallery, fitHung } from '../ui/hang.js';
 import { Run } from '../state/run.js';
 import { act, ACT } from '../net/actions.js';
 import { INPUT } from '../net/session.js';
@@ -88,6 +88,23 @@ export class RoomScene extends Scene {
   _on(target, ev, fn, opts) {
     target.addEventListener(ev, fn, opts);
     this._own(() => target.removeEventListener(ev, fn, opts));
+  }
+
+  /**
+   * Keep the board's hung paintings (`figSel`) clear of what stands below and
+   * beside them (`obstacleSel`), as the board lays out and on every resize
+   * (ui/hang.js fitHung; survey 5, both judges).
+   */
+  _fitPictures(figSel, obstacleSel, opts) {
+    const fit = () => {
+      if (this._dead || !this.root) return;
+      fitHung([...this.root.querySelectorAll(figSel)], [...this.root.querySelectorAll(obstacleSel)], opts);
+    };
+    requestAnimationFrame(() => requestAnimationFrame(fit));
+    document.fonts?.ready?.then(fit);
+    this._on(window, 'resize', fit);
+    this._own(bus.on('scene:entered', fit));
+    return fit;
   }
 
   /**
@@ -596,6 +613,9 @@ export class RewardScene extends RoomScene {
     // the alcove is no Companion's room (ui/hang.js RESIDENTS).
     sec.insertAdjacentHTML('beforeend', houseGallery('grand',
       ['rw-hang rw-hang--l', 'rw-hang rw-hang--r']));
+    // at the Deck's 1280 a painting stood behind the outer cards (survey 5):
+    // each is narrowed until it clears the slots and their rings
+    this._fitPictures('.rw-hang', '.rw-slot, .rm-where', { gap: 14, pool: 'grand' });
     // Round 26 graft (VERMEILLE's, both judges): the moonlit gothic lancets
     // back, cold against the candles' warm. They hang OUTSIDE the flanks the
     // portraits fill -- high on the wall at the board's outer edges, in the

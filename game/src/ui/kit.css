@@ -4540,3 +4540,12 @@ button.kit-hw-enamel:focus-visible {
   text-shadow: 0 1px 0 rgba(0, 0, 0, .95), 0 0 8px color-mix(in srgb, var(--kit-candle) 35%, transparent);
 }
 .kit-beltpouch--cart[data-kind="gear"] .kit-beltpouch__label { color: color-mix(in srgb, var(--kit-moon) 35%, var(--kit-gold-hi)); }
+
+/* a hung picture the wall has no room for does not hang (ui/hang.js fitHung) */
+.kit-hang[hidden] { display: none; }
+/* a painting's plate wraps to about its frame's width, so a long name ("The Lady
+   of the House") stands under its own picture, not across the wall beside it */
+.kit-hang--painting > .kit-hang__plate {
+  white-space: normal; text-wrap: balance;
+  max-width: calc(100% + 2 * var(--hang-rim) + 8px);
+}
