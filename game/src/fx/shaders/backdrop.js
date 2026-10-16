@@ -4672,11 +4672,13 @@ float yewClipF(vec2 p, float px, float sd, out float tone, out float lit, out fl
      shrubs) and a tuft field at one scale does not. */
   float i3 = 0.5;
   vec2 o3 = vec2(0.0);
-  vec2 pm = pw + (vec2(mmNoise(pw*0.55 + sd*1.3), mmNoise(pw*0.55 - sd)) - 0.5)*0.55;
+  /* (the frame budget: warped by the swell already tapped, n0, not two
+     taps of its own) */
+  vec2 pm = pw + vec2(n0 - 0.5, 0.5 - n0)*0.60;
   float a3 = wLobes(vec2(pm.x*0.96 + pm.y*0.28, -pm.x*0.28 + pm.y*0.96)/vec2(0.66, 0.44), 0.98, sd + 3.7, i3, o3);
   float massL = smoothstep(-0.34, 0.40, a3);
   float upF = clamp(0.5 + o3.y*1.3, 0.0, 1.0);
-  tone *= mix(0.70, 1.0, massL)*(0.86 + 0.30*upF*massL);
+  tone *= mix(0.80, 1.0, massL)*(0.86 + 0.30*upF*massL);
   lit *= 0.62 + 0.55*upF*massL;
   cidOut = n0;     // (the broad patch is the mass's own swell: no tap of its own)
   return (m0 - 0.45)*0.10 + a*0.022*l1 + b*0.008*l2 + a3*0.018;
@@ -4788,9 +4790,11 @@ float yewRagW(float u, float sd, float amp){
   float d2 = sqrt(max(1.0 - 4.0*(f2 - 0.5)*(f2 - 0.5), 0.0))*(0.15 + 0.50*h2)*amp*0.50 + d1*0.62;
   float x3 = u/0.085 + sd*1.9;
   float f3 = fract(x3), h3 = mmHash11(floor(x3)*5.19 + sd*2.1);
-  float sp = max(1.0 - abs(f3 - 0.5)*2.4, 0.0)*step(0.80, h3)*(0.35 + 0.65*h3)*amp*0.55;
+  float sp = max(1.0 - abs(f3 - 0.5)*2.4, 0.0)*step(0.66, h3)*(0.35 + 0.65*h3)*amp*0.60;
   float sag = 0.040*sin(u*0.37 + sd) + 0.026*sin(u*0.93 + sd*1.7);
-  return max(max(d1, d2), d1*0.55 + sp) + sag - 0.32*amp;
+  /* the edge feathered with single leaves, a few centimetres, every way */
+  float fth = (abs(fract(u/0.034 + 0.4*sin(u*7.0 + sd)) - 0.5) - 0.25)*0.030;
+  return max(max(d1, d2), d1*0.55 + sp) + sag + fth - 0.32*amp;
 }
 /* THE HEDGE MAZE'S WALLS. Clipped yew 3.2 m high -- the yew runs' (shape
    28) own height, so a run across the way and the walls either side are one
@@ -4843,7 +4847,7 @@ float hedgeWallH(vec2 q, float qpx, out float occ){
   }
   /* (round 34: the two jambs of a way through are LEAF too -- grown out a
      hand into the gap and back, never a ruled upright) */
-  gw += (mmNoise(vec2(q.y*3.4, sign(gx)*7.0 + floor(u/4.3) + sd)) - 0.5)*0.16*step(0.01, gw);
+  gw += (0.06*sin(q.y*3.4 + sign(gx)*7.0 + sd) + 0.03*sin(q.y*9.1 - sign(gx)*3.0))*step(0.01, gw);
   float inGap = (1.0 - smoothstep(gw - qpx, gw + qpx, abs(gx))) * step(0.01, gw);
   /* the hedge's coverage: under its crown, or in a finial */
   float finC = mmCover(-fin) * finOn;
@@ -4867,10 +4871,10 @@ float hedgeWallH(vec2 q, float qpx, out float occ){
      lower hem hangs ragged a hand or two over the turf, the face falls into
      its own shade for most of a metre above it, and under the hem is the
      old wood of the hedge -- dark stems in the dark of its inside */
-  float hemY = 0.20 + 0.16*mmNoise(vec2(u*2.6 + sd, 0.5)) + 0.07*mmNoise(vec2(u*9.0 - sd, 1.5));
+  float hemY = 0.20 + 0.16*mmNoise(vec2(u*2.6 + sd, 0.5)) + 0.035*sin(u*9.0 - sd) + 0.02*sin(u*23.0 + sd);
   float foot = smoothstep(hemY + 0.80, hemY + 0.02, q.y);
   float hemB = smoothstep(hemY + 0.5*qpx, hemY - 0.5*qpx, q.y);
-  float stx = u/0.23 + 0.55*mmNoise(vec2(u*1.3, q.y*2.0) + sd);
+  float stx = u/0.23 + 0.25*sin(u*1.3 + q.y*4.0 + sd);
   float stem = hemB*(1.0 - smoothstep(0.035, 0.035 + max(qpx/0.23, 0.02)*1.5, abs(fract(stx) - 0.5)))*step(0.45, mmHash11(floor(stx) + sd));
   h -= foot*0.30 + hemB*(1.0 - stem)*0.12;
   /* a court pier stands proud of the hedge between the niches, its sides
@@ -16799,7 +16803,7 @@ float ghFan(vec2 q, float cx, float base, float H, float sd, float px, out float
   float k = a/0.24 + sd*1.7;
   float fid = floor(k), fa = fract(k) - 0.5;
   float hf = mmHash11(fid*3.7 + sd*5.0);
-  float env = pow(max(cos(a*0.92), 0.0), 0.50);
+  float env = sqrt(max(cos(a*0.92), 0.0));
   float R = 0.04 + H*env*(0.58 + 0.42*hf)*(1.0 - 1.6*fa*fa);
   float rl = length(r);
   float d = (rl - R)*0.70;
@@ -16816,12 +16820,19 @@ float ghFan(vec2 q, float cx, float base, float H, float sd, float px, out float
 }
 float ghMassL(vec2 q, float u, float base, float cw, float h0, float h1, float sd, float px, out float shade){
   shade = 0.0;
+  /* (the frame budget: nothing to draw above the tallest clump or under the
+     coping, which every caller clips at -- the staging's brick and the
+     bed's are most of their quads) */
   if (q.y > base + h1 + 0.12) return q.y - base - h1 - 0.12;
+  if (q.y < base - 0.02) return base - q.y;
   float x = u/cw + sd;
   float ci = floor(x), f = fract(x);
   float cn = f < 0.5 ? ci - 1.0 : ci + 1.0;
+  /* ...and a neighbour's fan only where it can reach: its outer third */
+  int nK = abs(f - 0.5) > 0.18 ? 2 : 1;
   float d = 1e3;
   for (int k = 0; k < 2; k++){
+    if (k >= nK) break;
     float cc = k == 0 ? ci : cn;
     float hc = mmHash11(cc*1.71 + sd*3.1);
     float cxu = (cc + 0.5 + (mmHash11(cc*4.3 + sd) - 0.5)*0.45 - sd)*cw;
@@ -17601,9 +17612,11 @@ float yewRagP(float u, float sd, float amp){
   float d2 = sqrt(max(1.0 - 4.0*(f2 - 0.5)*(f2 - 0.5), 0.0))*(0.15 + 0.50*h2)*amp*0.50 + d1*0.62;
   float x3 = u/0.085 + sd*1.9;
   float f3 = fract(x3), h3 = mmHash11(floor(x3)*5.19 + sd*2.1);
-  float sp = max(1.0 - abs(f3 - 0.5)*2.4, 0.0)*step(0.80, h3)*(0.35 + 0.65*h3)*amp*0.55;
+  float sp = max(1.0 - abs(f3 - 0.5)*2.4, 0.0)*step(0.66, h3)*(0.35 + 0.65*h3)*amp*0.60;
   float sag = 0.040*sin(u*0.37 + sd) + 0.026*sin(u*0.93 + sd*1.7);
-  return max(max(d1, d2), d1*0.55 + sp) + sag - 0.32*amp;
+  /* the edge feathered with single leaves, a few centimetres, every way */
+  float fth = (abs(fract(u/0.034 + 0.4*sin(u*7.0 + sd)) - 0.5) - 0.25)*0.030;
+  return max(max(d1, d2), d1*0.55 + sp) + sag + fth - 0.32*amp;
 }
 /* (the tallest clump a run's quad has room for over its set top) */
 float yewAmp(vec2 msz, float seed){ return min(0.20, (msz.y - yewTop(msz, seed))*0.72); }
@@ -17700,11 +17713,13 @@ float yewFaceP(vec2 p, float px, float sd, out float tone, out float lit){
      shrubs) and a tuft field at one scale does not. */
   float i3 = 0.5;
   vec2 o3 = vec2(0.0);
-  vec2 pm = pw + (vec2(mmNoise(pw*0.55 + sd*1.3), mmNoise(pw*0.55 - sd)) - 0.5)*0.55;
+  /* (the frame budget: warped by the swell already tapped, n0, not two
+     taps of its own) */
+  vec2 pm = pw + vec2(n0 - 0.5, 0.5 - n0)*0.60;
   float a3 = yLobes(vec2(pm.x*0.96 + pm.y*0.28, -pm.x*0.28 + pm.y*0.96)/vec2(0.66, 0.44), 0.98, sd + 3.7, i3, o3);
   float massL = smoothstep(-0.34, 0.40, a3);
   float upF = clamp(0.5 + o3.y*1.3, 0.0, 1.0);
-  tone *= mix(0.70, 1.0, massL)*(0.86 + 0.30*upF*massL);
+  tone *= mix(0.80, 1.0, massL)*(0.86 + 0.30*upF*massL);
   lit *= 0.62 + 0.55*upF*massL;
   return (m0 - 0.45)*0.10 + a*0.022*l1 + b*0.008*l2 + a3*0.018;
 }
@@ -23953,10 +23968,10 @@ float reliefH(vec2 uv, vec2 msz, vec2 mpp, float shape, float seed, out float ti
        undersides and bases where they meet the lawn"): the leaf's lower
        hem hangs ragged a hand or two over the turf, and under it the old
        wood of the hedge -- dark stems in the dark of its inside */
-    float hem = 0.20 + 0.16*mmNoise(vec2(m.x*2.6 + seed*3.0, 0.5)) + 0.07*mmNoise(vec2(m.x*9.0 - seed, 1.5));
+    float hem = 0.20 + 0.16*mmNoise(vec2(m.x*2.6 + seed*3.0, 0.5)) + 0.035*sin(m.x*9.0 - seed) + 0.02*sin(m.x*23.0 + seed);
     gYewFoot = smoothstep(hem + 0.75, hem + 0.02, m.y) * (1.0 - topi);
     gYewHem = smoothstep(hem + 0.5*mp, hem - 0.5*mp, m.y) * (1.0 - topi);
-    float stx = m.x/0.23 + 0.55*mmNoise(vec2(m.x*1.3, m.y*2.0) + seed);
+    float stx = m.x/0.23 + 0.25*sin(m.x*1.3 + m.y*4.0 + seed);
     gYewStem = gYewHem * (1.0 - smoothstep(0.035, 0.035 + max(mp/0.23, 0.02)*1.5, abs(fract(stx) - 0.5))) * step(0.45, mmHash11(floor(stx) + seed));
     h -= 0.040*gYewFoot + 0.10*gYewHem*(1.0 - gYewStem);
     float ad = yewArch(m, seed);
