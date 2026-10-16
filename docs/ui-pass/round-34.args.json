@@ -1,0 +1,67 @@
+{
+  "round": "r34",
+  "maxBuilders": 3,
+  "briefs": [
+    "docs/ui-pass/BRIEF-r0.md",
+    "docs/ui-pass/BRIEF-r1.md",
+    "docs/ui-pass/BRIEF-r11.md",
+    "docs/ui-pass/BRIEF-r16.md",
+    "docs/ui-pass/BRIEF-r21.md",
+    "docs/ui-pass/BRIEF-r22.md",
+    "docs/ui-pass/BRIEF-r23.md",
+    "docs/ui-pass/BRIEF-r24.md",
+    "docs/ui-pass/BRIEF-r25.md",
+    "docs/ui-pass/BRIEF-r28.md",
+    "docs/ui-pass/BRIEF-r29.md",
+    "docs/ui-pass/BRIEF-r31.md",
+    "docs/ui-pass/BRIEF-r34.md"
+  ],
+  "rubrics": [
+    "docs/ui-pass/RUBRIC.md",
+    "docs/ui-pass/RUBRIC-r34.md"
+  ],
+  "samples": [
+    "UI/title.png",
+    "UI/mainMenu.png",
+    "UI/selectCompanion.png",
+    "UI/selectKid.png"
+  ],
+  "tracks": [
+    {
+      "key": "rooms",
+      "name": "ROOMS",
+      "rule": "refine",
+      "screens": [
+        "sheet-hedge",
+        "sheet-foyer",
+        "sheet-greenhouse",
+        "sheet-kennels",
+        "fight-foyer"
+      ],
+      "smallScreens": [
+        "fight-foyer"
+      ],
+      "baseline": "CHAMOIS",
+      "builders": [
+        {
+          "slot": "a",
+          "code": "VIVIANITE",
+          "port": 9241,
+          "angle": "LITERAL -- the angle that won rounds 20, 23-25 and 29. Work BRIEF-r34's fix list 1 to 3 in order and exactly as written, one wing at a time, the Hedge Maze FIRST (the lowest-scored room in the house, top of both judges' headroom lists). Keep every change inside your four wings."
+        },
+        {
+          "slot": "b",
+          "code": "GLAUCONITE",
+          "port": 9242,
+          "angle": "THE NEAR FLOOR FIRST -- both judges' first shared defect, and the angle that won round 31 (HEMATITE). Take round 31's near-floor mechanism (runner or flags, a lamp pool, near props above the hand's edge), carry it into your four wings, prove it there, then sweep all seventeen SEEDED and keep it only where it lifts a room; then each wing's own defect in that light."
+        },
+        {
+          "slot": "c",
+          "code": "CELESTINE",
+          "port": 9243,
+          "angle": "THE SILHOUETTE DRAWN, NOT TEXTURED. Each wing's worst thing is a box wearing a texture: the hedge's ruler-straight top, the Foyer's flat grey edge slabs, the Greenhouse's blown smear over thin beds, the Kennels' blurred stall band. Draw each as a real object with a broken, inked silhouette first -- leaf mass with a ragged top and dark base, carved jambs and a lintel, dense fronds at several heights, crisp boards and gates -- then dress and light the near floor."
+        }
+      ]
+    }
+  ]
+}
