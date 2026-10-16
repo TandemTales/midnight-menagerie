@@ -4324,3 +4324,188 @@ button.kit-hw-enamel:focus-visible {
   font-variant-numeric: lining-nums tabular-nums;
   filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .8));
 }
+
+/* ── a brass rail: the house's slider (round 33) ──
+   Survey 4: the settings sliders "read as styled range inputs". A slider is
+   a THING on a panel: two brass rods run between cast collars (gauge.webp,
+   9-sliced so the collars keep their shape at any length), a sunk channel
+   between them, and the gilt lit in that channel from the left collar to the
+   knob's centre. Put it behind a transparent <input type="range"> whose
+   thumb wears .kit-hw-rail's knob (hw-knob.webp), and set --v (0..1) and
+   --knob on an ancestor; the input stays the control.
+     .kit-hw-rail          the rods, collars and channel
+       > .kit-hw-rail__lit   the lit gilt, as far as the knob
+       > .kit-hw-rail__ticks the quarters, engraved under the rods       */
+.kit-hw-rail {
+  --rail-h: 24px;
+  --rail-cap: calc(var(--rail-h) * 36 / 56);
+  position: relative; display: block;
+  height: var(--rail-h);
+  border: 0 solid transparent;
+  border-image: url("../../assets/ui/kit/gauge.webp") 0 36 fill / 0 var(--rail-cap) stretch;
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .85));
+}
+/* the channel between the rods: sunk, cut dark, its floor faintly velvet */
+.kit-hw-rail::before {
+  content: ''; position: absolute; z-index: -1;
+  left: calc(var(--rail-cap) - 2px); right: calc(var(--rail-cap) - 2px);
+  top: 31%; bottom: 31%;
+  border-radius: 1px;
+  background: linear-gradient(180deg, #050207, #170d1d 55%, #241530);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, .95), 0 0 0 .5px rgba(0, 0, 0, .6);
+}
+.kit-hw-rail__lit {
+  position: absolute; left: calc(var(--rail-cap) - 2px);
+  top: 35%; bottom: 35%;
+  width: max(0px, calc(var(--knob, 24px) / 2 + (100% - var(--knob, 24px)) * var(--v, 0) - var(--rail-cap) + 2px));
+  border-radius: 1px;
+  background: linear-gradient(180deg, #fff3cf 0%, var(--kit-gold-hi) 30%, var(--kit-gold) 70%, var(--kit-gold-lo) 100%);
+  box-shadow: 0 0 6px color-mix(in srgb, var(--kit-candle) 55%, transparent);
+}
+/* the quarters, engraved on the panel under the rods: a dark cut with a
+   gilt edge, at the knob centre's 25 / 50 / 75 % */
+.kit-hw-rail__ticks {
+  position: absolute; top: 100%; height: 4px; margin-top: 1px;
+  left: calc(var(--knob, 24px) / 2); right: calc(var(--knob, 24px) / 2);
+  background:
+    linear-gradient(90deg, transparent calc(25% - 1px), var(--kit-gold-lo) calc(25% - 1px) 25%, var(--kit-gold) 25% calc(25% + 1px), transparent calc(25% + 1px)),
+    linear-gradient(90deg, transparent calc(50% - 1px), var(--kit-gold-lo) calc(50% - 1px) 50%, var(--kit-gold-hi) 50% calc(50% + 1px), transparent calc(50% + 1px)),
+    linear-gradient(90deg, transparent calc(75% - 1px), var(--kit-gold-lo) calc(75% - 1px) 75%, var(--kit-gold) 75% calc(75% + 1px), transparent calc(75% + 1px));
+  opacity: .85;
+}
+
+/* ── a rail of stops: several choosers as ONE engraved rail (round 33) ──
+   Survey 4 on the pile viewer: five identical "< All types >" spinners were
+   "a web form's filter bar given a gold border". The choosers are stops on
+   one carved rail -- the run strip's own (hw-rail.webp: a brass moulding, a
+   near-black enamel face, a channel sunk the length of it, a cast end block
+   with its violet boss at each end) -- each stop a round enamel medallion
+   with its glyph struck on it and, beside it, what it chooses by engraved
+   over its current choice in words. Engraved lozenges part the stops.
+     .kit-hw-dialrail                 the rail (any element holding stops)
+       > .kit-hw-stop                 one chooser (role=group)
+         > .kit-hw-stop__btn          the press: turns it to the next choice
+           > .kit-medallion.kit-hw-stop__medal   its glyph, in enamel
+           > .kit-hw-stop__txt > .kit-hw-stop__label + .kit-hw-stop__value
+       .kit-hw-stop.is-set            a stop away from its "any": lit      */
+.kit-hw-dialrail {
+  --dr-h: 54px;
+  --dr-cap: calc(var(--dr-h) * 50 / 64);
+  position: relative;
+  display: flex; align-items: center; justify-content: space-evenly;
+  min-height: var(--dr-h);
+  padding: 0 calc(var(--dr-cap) + 6px) 2px;
+  border: 0 solid transparent;
+  border-image: url("../../assets/ui/kit/hw-rail.webp") 26 72 52 72 fill /
+    calc(var(--dr-h) * 26 / 64) calc(var(--dr-h) * 72 / 64) calc(var(--dr-h) * 52 / 64) /
+    0 0 calc(var(--dr-h) * 26 / 64) 0 stretch;
+  filter: drop-shadow(0 4px 5px rgba(0, 0, 0, .7));
+}
+.kit-hw-stop { position: relative; display: flex; align-items: center; min-width: 0; }
+/* between two stops, an engraved lozenge on a short cut rule */
+.kit-hw-stop + .kit-hw-stop::before {
+  content: ''; position: absolute; left: calc(var(--dr-gap, 18px) * -.5 - 5px); top: 50%;
+  width: 10px; height: calc(var(--dr-h) * .56); translate: 0 -50%;
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 16'%3E%3Cpath d='M5 .6 9.2 8 5 15.4.8 8Z' fill='%231a0f06'/%3E%3Cpath d='M5 1.9 8 8 5 14.1 2 8Z' fill='%23b08a4a'/%3E%3Cpath d='M5 1.9 8 8H2Z' fill='%23e6c98a'/%3E%3Cpath d='M5 5.2 6.4 8 5 10.8 3.6 8Z' fill='%236b4c24'/%3E%3C/svg%3E") 50% 50% / 8px 13px no-repeat,
+    linear-gradient(90deg, transparent 4px, #6b4c24 4px 5px, rgba(230, 201, 138, .7) 5px 6px, transparent 6px) 0 0 / 100% 100% no-repeat;
+  -webkit-mask-image: linear-gradient(180deg, transparent, #000 25%, #000 75%, transparent);
+          mask-image: linear-gradient(180deg, transparent, #000 25%, #000 75%, transparent);
+  pointer-events: none;
+}
+.kit-hw-stop__btn {
+  display: inline-flex; align-items: center; gap: 9px;
+  margin: 0; padding: 2px 10px 2px 2px;
+  background: none; border: 0; border-radius: 0;
+  font: inherit; color: inherit; text-align: left;
+  cursor: pointer;
+  transition: filter var(--t-quick) var(--ease-out);
+}
+.kit-hw-stop__medal.kit-medallion { --md: calc(var(--dr-h) * .74); }
+.kit-hw-stop__medal svg { width: 52%; height: 52%; }
+.kit-hw-stop__txt { display: grid; gap: 1px; min-width: 0; }
+.kit-hw-stop__label {
+  font-family: var(--font-display); font-weight: 700; font-style: normal;
+  font-size: 11.5px; line-height: 1.05; letter-spacing: .2em; text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--kit-gold);
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, .95), 0 1px 0 color-mix(in srgb, var(--kit-gold-hi) 18%, transparent);
+}
+.kit-hw-stop__value {
+  font-family: var(--font-body); font-weight: 600; font-style: normal;
+  font-size: 16px; line-height: 1.08; white-space: nowrap;
+  color: var(--kit-name);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .95);
+}
+.kit-hw-stop__btn:hover { filter: brightness(1.15); }
+.kit-hw-stop__btn:hover .kit-hw-stop__medal,
+.kit-hw-stop__btn:focus-visible .kit-hw-stop__medal {
+  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .8)) drop-shadow(0 0 10px color-mix(in srgb, var(--kit-candle) 55%, transparent)) brightness(1.15);
+}
+.kit-hw-stop__btn:focus-visible { outline: none; }
+.kit-hw-stop__btn:focus-visible .kit-hw-stop__medal {
+  filter: drop-shadow(0 0 2px var(--kit-gold-hi)) drop-shadow(0 0 12px color-mix(in srgb, var(--kit-candle) 70%, transparent)) brightness(1.2);
+}
+.kit-hw-stop__btn:focus-visible .kit-hw-stop__value { color: #fff3d6; }
+.kit-hw-stop.is-set .kit-hw-stop__value {
+  color: #fff3d6;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .9), 0 0 9px color-mix(in srgb, var(--kit-candle) 75%, transparent);
+}
+.kit-hw-stop.is-set .kit-hw-stop__label { color: var(--kit-gold-hi); }
+.kit-hw-stop.is-set .kit-hw-stop__medal {
+  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .8)) drop-shadow(0 0 8px color-mix(in srgb, var(--kit-candle) 60%, transparent));
+}
+
+/* ── a belt pouch: a group of carried things, folded (round 33) ──
+   Survey 4, hud-late at 1280: ten Keepsakes and eight Gear shrank every
+   socket to about 20 px. Past six, a group folds into its POUCH: the house's
+   round enamel button with a pouch (or a knapsack) struck on it, and beside
+   it the group's name engraved over its count -- "KEEPSAKES / 10" -- that
+   fans the whole group out under the rail (ui/hud.js layPouch).
+     .kit-beltpouch            the press (a <button>), --sock sizes it
+       > .kit-beltpouch__medal   the enamel disc and its glyph
+       > .kit-beltpouch__txt > .kit-beltpouch__label + .kit-beltpouch__n
+     .kit-beltpouch[data-kind="gear"]   lettered in the moon's colour  */
+.kit-beltpouch {
+  position: relative; flex: none;
+  display: inline-flex; align-items: center; gap: 6px;
+  height: var(--sock, 32px);
+  margin: 0; padding: 0 7px 0 0;
+  background: none; border: 0; border-radius: 0;
+  font: inherit; color: inherit; text-align: left;
+  cursor: pointer;
+  transition: filter var(--t-quick) var(--ease-out);
+}
+.kit-beltpouch__medal {
+  position: relative; flex: none;
+  display: grid; place-items: center;
+  width: var(--sock, 32px); height: var(--sock, 32px);
+  border-radius: 50%;
+  background:
+    url("../../assets/ui/kit/hw-glaze.webp") 50% 50% / 100% 100% no-repeat,
+    url("../../assets/ui/kit/button.webp") 50% 50% / 100% 100% no-repeat;
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .8));
+}
+.kit-beltpouch__medal svg { width: 56%; height: 56%; overflow: visible; }
+.kit-beltpouch__medal svg path {
+  fill: color-mix(in oklab, var(--kit-gold-hi) 72%, var(--kit-gold));
+  stroke: #24170a; stroke-width: 1.1; stroke-linejoin: round; paint-order: stroke fill;
+}
+.kit-beltpouch__txt { display: grid; gap: 2px; line-height: 1; }
+.kit-beltpouch__label {
+  font-family: var(--font-display); font-weight: 700; font-style: normal;
+  font-size: 11.5px; line-height: 1; letter-spacing: .1em; text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--kit-gold);
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, .95);
+}
+.kit-beltpouch__n {
+  font-family: var(--font-num); font-weight: 700; font-style: normal;
+  font-size: 16px; line-height: .95;
+  font-variant-numeric: lining-nums tabular-nums;
+  color: var(--kit-name);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .95);
+}
+.kit-beltpouch[data-kind="gear"] .kit-beltpouch__label { color: color-mix(in srgb, var(--kit-moon) 55%, var(--kit-gold-hi)); }
+.kit-beltpouch:hover, .kit-beltpouch[aria-expanded="true"] { filter: brightness(1.18) drop-shadow(0 0 6px color-mix(in srgb, var(--kit-candle) 40%, transparent)); }
+.kit-beltpouch:focus-visible { outline: none; filter: brightness(1.2) drop-shadow(0 0 1.5px var(--kit-gold-hi)) drop-shadow(0 0 8px color-mix(in srgb, var(--kit-candle) 55%, transparent)); }

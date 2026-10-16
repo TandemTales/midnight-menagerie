@@ -497,3 +497,85 @@
   color: #fff3d6;
   text-shadow: 0 -1px 0 rgba(0, 0, 0, .9), 0 0 10px color-mix(in srgb, var(--kit-candle) 95%, transparent);
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ROUND 33 — THE SMALL PRINT, AND THE HOUSE'S CONTROLS
+   Survey 4, both judges, on settings at 1280: "under every setting, the
+   italic help text ... is about 9-10px lavender-grey italic. It is the least
+   legible text in the game." Grenze's italic stands a size smaller than its
+   em, so a 12px italic note read as 9. The note is UPRIGHT now, parchment,
+   at 14px on the Deck (15 at 900) -- and it fits because the notes were cut
+   to one thought each (settings.js), not because anything else shrank.
+   ═══════════════════════════════════════════════════════════════════════════ */
+.mm-set { --hint-fs: 14px; --name-fs: max(16px, calc(var(--fs-md) * 1.04)); }
+@media (min-height: 861px) { .mm-set { --hint-fs: 15px; } }
+.mm-set__hint {
+  margin-top: 2px;
+  font-family: var(--font-body); font-style: normal; font-weight: 400;
+  line-height: 1.18; letter-spacing: .012em;
+  color: color-mix(in oklab, var(--kit-text) 90%, var(--kit-lav-hi));
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .95), 0 0 6px rgba(0, 0, 0, .55);
+}
+
+/* ── ONE BUTTON: SAVE AND QUIT and RESET… are the house's button ──
+   The gold-lettered enamel plate with the round enamel disc on its end,
+   exactly as DONE and LEAVE THE ROOM wear it, at a height a thumb on the Deck
+   hits (40px), the word at 13px. Unavailable, it is the same object unlit --
+   never a black stadium -- and its note says why. */
+.mm-set__row > .kit-btn.mm-set__act {
+  --plate-h: 40px;
+  font-size: 12.5px; letter-spacing: .1em; white-space: nowrap;
+  padding-left: calc(var(--plate-h) * .46);
+  margin-block: 1px;
+}
+.mm-set__row > .kit-btn.mm-set__act.mm-dlg-btn--medal { margin-right: calc(var(--plate-h) * .44); }
+.mm-set__row > .kit-btn.mm-set__act:disabled {
+  opacity: 1;
+  color: color-mix(in oklab, var(--kit-gold) 70%, var(--kit-text-lo));
+  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .7)) saturate(.7) brightness(.8);
+}
+.mm-set__row > .mm-btn--danger.kit-btn.mm-set__act { padding-left: calc(var(--plate-h) * .3); }
+.mm-settings-modal .mm-modal__subtitle { font-size: 14px; font-style: normal; letter-spacing: .02em; }
+/* a palette not chosen is still read: its name in the panel's text, not the
+   brass's dark */
+.mm-set__choice--swatch.kit-hw-swatch:not([aria-checked="true"]) { color: color-mix(in oklab, var(--kit-text-mid) 88%, var(--kit-gold)); }
+.mm-set__choice--swatch.kit-hw-swatch { font-size: 14px; }
+/* the slip's pencilled "random" at the size it is read */
+.mm-set__text.kit-hw-slip { font-size: 15px; }
+
+/* ── HOUSE CONTROLS: the slider is a brass rail with a knob ──
+   (ui/kit.css .kit-hw-rail). The knob is the house's cast brass boss with
+   its violet cabochon (hw-knob.webp), riding the rods; the figure is
+   ENGRAVED beside the rail's end in gold lining numerals, on the panel
+   itself -- the enamel cartouche it used to sit in made every line read as
+   input + output box. The rail takes the cartouche's width. */
+.mm-set { --slot-w: clamp(108px, 8.6vw, 150px); --knob: 26px; --rail-h: 24px; }
+@media (max-height: 920px) { .mm-set { --knob: 25px; --rail-h: 22px; } }
+.mm-set__rangewrap { gap: 10px; }
+.mm-set__slot { height: calc(var(--knob) + 6px); }
+.mm-set__slot > .mm-set__tube.kit-hw-rail {
+  --rail-h: inherit;
+  position: absolute; left: 0; right: 0; top: 50%;
+  translate: 0 -50%;
+  pointer-events: none;
+}
+.mm-set__rangewrap input[type="range"]::-webkit-slider-thumb {
+  width: var(--knob); height: var(--knob);
+  margin-top: calc((var(--knob) + 6px - var(--knob)) / 2);
+  background: url("../../assets/ui/kit/hw-knob.webp") 50% 50% / 100% 100% no-repeat;
+  box-shadow: 0 3px 4px rgba(0, 0, 0, .8);
+}
+.mm-set__rangewrap input[type="range"]::-moz-range-thumb {
+  width: var(--knob); height: var(--knob);
+  background: url("../../assets/ui/kit/hw-knob.webp") 50% 50% / 100% 100% no-repeat;
+}
+.mm-set__figure {
+  flex: none; min-width: 2.75em; text-align: right;
+  font-family: var(--font-num); font-weight: 600; font-style: normal;
+  font-size: 18px; line-height: 1;
+  font-variant-numeric: lining-nums tabular-nums; letter-spacing: .02em;
+  color: var(--kit-gold-hi);
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, .95), 0 1px 0 color-mix(in srgb, var(--kit-gold-hi) 25%, transparent), 0 0 10px color-mix(in srgb, var(--kit-candle) 30%, transparent);
+}
+.mm-set__figure .kit-enamel__value { font: inherit; color: inherit; letter-spacing: inherit; }
+.mm-set__rangewrap:focus-within .mm-set__figure { color: #fff3d6; filter: drop-shadow(0 0 8px color-mix(in srgb, var(--kit-candle) 45%, transparent)); }

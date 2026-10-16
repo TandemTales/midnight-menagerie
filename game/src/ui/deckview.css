@@ -353,3 +353,39 @@
 .mm-deck__sortwrap .kit-hw-cycle__label::after { margin-left: -.24em; }
 .mm-deck__filters { gap: 8px clamp(10px, 1.3vw, 22px); }
 
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ROUND 33 — ONE ENGRAVED FILTER RAIL, AND ITS HEIGHT TO THE TRICKS
+   The five choosers are stops on one carved rail (ui/kit.css
+   .kit-hw-dialrail / .kit-hw-stop; deckview.js _cycle): a medallion each --
+   a fan of Tricks, the Nerve coin, a cut gem, a star, a quill -- with what it
+   chooses by engraved over its choice in words (11.5 / 16 px). One row of
+   54 px where a label row and a row of 46 px cartouches stood; the height
+   it frees goes to the cards.
+   ═══════════════════════════════════════════════════════════════════════════ */
+.mm-deck__filters.kit-hw-dialrail {
+  --dr-h: clamp(58px, 7.2vh, 64px);
+  --dr-gap: clamp(30px, 3vw, 52px);
+  align-self: center;
+  width: fit-content; max-width: 100%;
+  padding-inline: calc(var(--dr-cap) + clamp(14px, 1.6vw, 26px));
+  gap: 0 var(--dr-gap);
+  flex-wrap: nowrap;
+}
+.mm-deck__filters .kit-hw-stop__label { font-size: 12.5px; }
+.mm-deck__filters .kit-hw-stop__value { font-size: 17px; }
+.mm-deck__filters .kit-hw-stop__medal.kit-medallion { --md: calc(var(--dr-h) * .84); margin-block: -4px; }
+.mm-deck__filters.kit-hw-dialrail::before { content: none; }
+.mm-deck__filters .kit-hw-stop + .kit-hw-stop::before { left: calc(var(--dr-gap) * -.5 - 5px); }
+/* the cards take the height the rail gave back (round 27's 29vh - 52px) */
+.mm-deck__grid {
+  --deck-cw: min(
+    clamp(150px, calc(29vh - 34px), 240px),
+    calc((100cqw - 10 * var(--slot-pad) - 34px) / 5));
+}
+/* the note under the moon: upright, a step larger, parchment -- it was a
+   12px grey italic at 1280 */
+.mm-deck__table > .mm-deck__note {
+  font-style: normal; font-size: 14px; line-height: 1.25;
+  color: color-mix(in oklab, var(--kit-text) 88%, var(--kit-lav-hi));
+}

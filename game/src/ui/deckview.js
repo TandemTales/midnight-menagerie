@@ -46,6 +46,16 @@ const RULES_PX = { short: 21, long: 17.5, xlong: 15 };
 /** card.css's own rules size for each class, in card units, before --rules-k. */
 const RULES_U = { short: 15.5, large: 17.5, long: 14, xlong: 12.5 };
 const RARITIES = ['basic', 'common', 'uncommon', 'rare'];
+/** What each filter stop has struck on its medallion (24-unit grid, even-odd
+ *  filled, like the ledger's crests): a fan of Tricks, the Nerve coin, a cut
+ *  gem, a star, a quill. */
+const STOP_GLYPH = {
+  type: 'M1.6 7 9 4.9 7.8 21.4l-4 1.1zM10 2.2l11.3 2-3.1 17.6-11.3-2zM13.3 7.6l1.2 3.3 3.3 1.2-3.3 1.2-1.2 3.3-1.2-3.3-3.3-1.2 3.3-1.2z',
+  cost: 'M12 1.8a10.2 10.2 0 1 1 0 20.4 10.2 10.2 0 0 1 0-20.4zm0 2.4a7.8 7.8 0 1 0 0 15.6 7.8 7.8 0 0 0 0-15.6zM12 6.6l1.5 3.9 3.9 1.5-3.9 1.5-1.5 3.9-1.5-3.9-3.9-1.5 3.9-1.5z',
+  rarity: 'M6.6 2.8h10.8l4.9 6L12 21.6 1.7 8.8zM4.6 8.1h14.8l-.9 1.3H5.5zM9.4 3.6 7.7 8.4l4.3 10.9.5-1.5-3.5-9 1.4-4.1zM14.6 3.6l1.7 4.8-2.6 6.8-.8-2 1.8-4.8z',
+  upgraded: 'M12 1.4l3 6.9 7.4.6-5.6 4.9 1.7 7.3L12 17.2l-6.5 3.9 1.7-7.3L1.6 8.9 9 8.3z',
+  sort: 'M21.4 2.2C14.6 2.4 9 6.6 6.9 13.8l-1.7 5.6 1.4.4 1.5-4.1c1.2.2 2.6 0 4-.6l-1.8-1.1 2.9-.3c2.8-2 4.9-5.3 6-9.1l-2.2.3 2.6-1.4c.6-.5 1.2-1 1.8-1.3zM4.8 20.2l-1 2.3 1.4.5.9-2.4z',
+};
 
 const MODES = {
   deck:    { title: 'Your Tricks',   note: '' },
@@ -139,7 +149,7 @@ export class DeckView {
 
     // filters
     const filt = document.createElement('div');
-    filt.className = 'mm-deck__filters';
+    filt.className = 'mm-deck__filters kit-hw-dialrail';
     filt.append(
       this._select('Type', 'type', [['all', 'All types'], ...TYPES.map(t => [t, cap(t)])]),
       this._select('Cost', 'cost', [['all', 'Any cost'], ['0', '0'], ['1', '1'], ['2', '2'], ['3', '3'], ['4+', '4+'], ['x', 'X']]),
@@ -248,44 +258,53 @@ export class DeckView {
     return wrap;
   }
 
-  /* One of the house's cycling cartouches (ui/kit.css .kit-hw-cycle, round
-     26): what it chooses by engraved over a dark cartouche with the choice
-     lettered on it, and a brass chevron in enamel either side that turns it to
-     the one before or after. Round 19's dial plates were still "HTML dropdowns
-     dressed in gold plaques" to both survey judges. The real <select> stays
-     inside the cartouche, so a click still lists every choice, the keyboard's
-     arrows still turn it, and it is the one tab stop; the chevrons are for the
-     pointer. */
+  /* ROUND 33 -- ONE ENGRAVED FILTER RAIL OF MEDALLIONS. Survey 4: the five
+     "< All types >" cartouches in a row were "a web form's filter bar given a
+     gold border" (J1); "collapse the five steppers into one engraved filter
+     strip" (J2). Each filter is now a STOP on one brass rail
+     (ui/kit.css .kit-hw-dialrail / .kit-hw-stop): a round enamel medallion
+     with what it chooses by struck on it -- a fan of Tricks, the Nerve coin,
+     a cut gem, a star, a quill -- and beside it what it chooses by, engraved,
+     over its current choice in words. Pressing a stop turns it to the next
+     choice (Shift, or the other mouse button, turns it back), so nothing
+     opens and nothing is a dropdown. The real <select> stays inside each stop
+     as the state (and for anything that reads it); the stop's button is the
+     one tab stop, and says "Type: All types" to a reader. */
   _cycle(label, sel) {
     const wrap = document.createElement('div');
-    wrap.className = 'mm-deck__sortwrap kit-hw-cycle';
+    wrap.className = 'mm-deck__sortwrap kit-hw-stop';
+    wrap.dataset.filter = label.toLowerCase();
     wrap.setAttribute('role', 'group');
     wrap.setAttribute('aria-label', label);
-    sel.className = 'mm-deck__select kit-hw-cycle__sel';
+    sel.className = 'mm-deck__select kit-hw-stop__sel sr-only';
     sel.setAttribute('aria-label', label);
-    const step = (dir) => {
-      const b = document.createElement('button');
-      b.type = 'button';
-      b.tabIndex = -1;
-      b.className = `kit-hw-enamel kit-hw-cycle__step kit-hw-cycle__step--${dir < 0 ? 'prev' : 'next'}`;
-      b.setAttribute('aria-label', `${label}: ${dir < 0 ? 'previous' : 'next'}`);
-      b.innerHTML = `<i class="kit-hw-chev${dir < 0 ? ' kit-hw-chev--l' : ''}" aria-hidden="true"></i>`;
-      b.addEventListener('click', () => {
-        const n = sel.options.length;
-        if (!n) return;
-        sel.selectedIndex = (sel.selectedIndex + dir + n) % n;
-        sel.dispatchEvent(new Event('change', { bubbles: true }));
-      });
-      return b;
+    sel.tabIndex = -1;
+    sel.setAttribute('aria-hidden', 'true');
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'kit-hw-stop__btn';
+    btn.innerHTML =
+      `<i class="kit-medallion kit-hw-stop__medal" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="${STOP_GLYPH[label.toLowerCase()] || STOP_GLYPH.sort}"/></svg></i>`
+      + `<span class="kit-hw-stop__txt" aria-hidden="true"><b class="mm-deck__label kit-hw-stop__label">${label}</b>`
+      + `<span class="kit-hw-stop__value"></span></span>`;
+    const value = btn.querySelector('.kit-hw-stop__value');
+    const paint = () => {
+      const t = sel.options[sel.selectedIndex]?.textContent || '';
+      value.textContent = t;
+      btn.setAttribute('aria-label', `${label}: ${t}. Press to change.`);
     };
-    const name = document.createElement('span');
-    name.className = 'mm-deck__label kit-hw-cycle__label';
-    name.setAttribute('aria-hidden', 'true');
-    name.textContent = label;
-    const plate = document.createElement('span');
-    plate.className = 'kit-hw-cycle__plate';
-    plate.appendChild(sel);
-    wrap.append(name, step(-1), plate, step(1));
+    const turn = (dir) => {
+      const n = sel.options.length;
+      if (!n) return;
+      sel.selectedIndex = (sel.selectedIndex + dir + n) % n;
+      sel.dispatchEvent(new Event('change', { bubbles: true }));
+    };
+    btn.addEventListener('click', (e) => turn(e.shiftKey ? -1 : 1));
+    btn.addEventListener('contextmenu', (e) => { e.preventDefault(); turn(-1); });
+    sel.addEventListener('change', paint);
+    (this._paints ||= []).push(paint);
+    paint();
+    wrap.append(btn, sel);
     return wrap;
   }
   get selects() { return this._sels || []; }
@@ -294,6 +313,7 @@ export class DeckView {
     this.filters = { type: 'all', cost: 'all', rarity: 'all', upgraded: 'all', q: '' };
     for (const [, sel] of this.selects) sel.value = 'all';
     for (const lit of this._lits || []) lit();
+    for (const paint of this._paints || []) paint();
     const q = this.el.querySelector('.mm-deck__search input');
     if (q) q.value = '';
     this._apply();

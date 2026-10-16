@@ -734,3 +734,23 @@
 .rm-hudx--luck { color: var(--good-300); }
 .rm-hudx[hidden] { display: none; }
 .is-large .rm-hudx { font-size: var(--fs-sm); }
+
+/* ── round 33: TAKE NONE is the house's button ──
+   Lit like LEAVE THE ROOM, its ornate disc on its near end, its note
+   upright at 13px on the same plate (it was the quiet, unlit plate with a
+   faint italic note -- survey 4). Unavailable once a Trick is taken. */
+.scene--reward .rw-skip.kit-btn {
+  --plate-h: clamp(46px, 5.6vh, 54px);
+  border-image-source: url("../../assets/ui/kit/plate-lit.webp");
+  font-size: var(--fs-md); letter-spacing: .14em;
+  color: var(--kit-gold-hi);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .9), 0 0 14px color-mix(in srgb, var(--kit-candle) 22%, transparent);
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, .8));
+}
+.scene--reward .rw-skip.kit-btn:hover:not(:disabled),
+.scene--reward .rw-skip.kit-btn:focus-visible {
+  color: #fff1d2;
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, .8)) drop-shadow(0 0 12px color-mix(in srgb, var(--kit-candle) 40%, transparent)) brightness(1.12);
+}
+.scene--reward .rw-skip.kit-btn em { font-style: normal; font-size: 13px; color: var(--kit-text); }
+.scene--reward .rw-skip.kit-btn:disabled { opacity: .55; }

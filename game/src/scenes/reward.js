@@ -866,7 +866,10 @@ export class RewardScene extends RoomScene {
   _buildFoot() {
     const r = this.reward;
     if (r.cards.length) {
-      const skip = el('button', 'rm-btn rm-btn--ghost rw-skip kit-btn kit-btn--quiet');
+      /* ROUND 33: the house's own button, lit as LEAVE THE ROOM is -- the
+         gold-lettered plate with its ornate enamel disc on the end -- not a
+         quiet, unlit plate (survey 4: "one button") */
+      const skip = el('button', 'rm-btn rm-btn--ghost rw-skip kit-btn');
       skip.type = 'button';
       skip.innerHTML = `<i class="kit-medallion kit-medallion--ornate kit-btn__medal" aria-hidden="true">${KIT_GLYPH.none}</i>`
         + `<span>Take none</span><em>+12 ${esc(TERMS.gold)} &middot; Luck +2</em><kbd>S</kbd>`;

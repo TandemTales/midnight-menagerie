@@ -827,3 +827,93 @@
   .scene--shop .rm-foot { padding-top: 3px; padding-bottom: 10px; }
   .scene--shop .rm-go { --plate-h: 40px; }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ROUND 33 — ONE CONTROL PER ROW: the price IS the button
+   Survey 4: "the twelve BUY controls are identical small dark stadiums with
+   a disc, and at 1280 their 'BUY' lettering is about 9px ... they crowd the
+   coin price beside them" (J1); "give the BUY medallions a price-and-button
+   lock-up (coin inside the button) so each row has one control" (J2).
+   Every price is now the house's own button -- the gold-lettered enamel
+   plate DONE and LEAVE THE ROOM wear (plate-lit.webp), with a round enamel
+   disc on its end -- and the disc holds the coin: one of the house's
+   Buttons struck in the violet enamel. On the plate: the price, an engraved
+   cut, and BUY in spaced caps at 13px (14 at 900). One press, one object.
+   Too poor: the figure struck through in red and the word says how short;
+   sold: the plate goes cold and says TAKEN.
+   ═══════════════════════════════════════════════════════════════════════════ */
+.sh-buy.kit-price {
+  --disc: max(36px, calc(var(--price-h) * 1.3));
+  isolation: isolate;
+  height: var(--disc);
+  padding: 0 calc(var(--price-h) * .62) 0 calc(var(--disc) * .98);
+  margin-left: calc(var(--disc) * -.04);
+  gap: 0;
+}
+/* the plate: the house button's lit enamel in its gilt rim, the disc's
+   height less a bevel, behind everything on it */
+.sh-buy.kit-price::before {
+  content: ''; position: absolute; z-index: -1; pointer-events: none;
+  left: calc(var(--disc) * .5); right: 0; top: 50%;
+  height: max(30px, calc(var(--price-h) * 1.04)); translate: 0 -50%;
+  --ph: max(30px, calc(var(--price-h) * 1.04));
+  border: 0 solid transparent;
+  border-image: url("../../assets/ui/kit/plate-lit.webp") 12 53 12 46 fill /
+    calc(var(--ph) * 12 / 72) calc(var(--ph) * 53 / 72) calc(var(--ph) * 12 / 72) calc(var(--ph) * 46 / 72) stretch;
+  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .8));
+}
+.sh-buy .kit-price__plate {
+  position: static;
+  height: auto; padding: 0;
+  border: 0; border-image: none; filter: none;
+}
+/* the disc: the house's round enamel button in its gold rim, a brass Button
+   struck in it -- the coin inside the button */
+.sh-buy .kit-price__coin {
+  left: 0; width: var(--disc);
+  background:
+    url("../../assets/ui/kit/coin.webp") 50% 52% / 56% 56% no-repeat,
+    url("../../assets/ui/kit/button.webp") 50% 50% / 100% 100% no-repeat;
+  filter: drop-shadow(0 3px 3px rgba(0, 0, 0, .85));
+}
+.sh-buy .kit-price__value {
+  font-size: max(17px, calc(var(--price-h) * .62));
+  padding-top: 1px;
+}
+/* BUY: lettered on the same plate after an engraved cut, never a second disc */
+.sh-buy .kit-price__buy {
+  width: auto; height: auto;
+  margin: 0 0 0 calc(var(--price-h) * .3); padding: 1px 0 0 calc(var(--price-h) * .3);
+  background:
+    linear-gradient(180deg, transparent 12%, var(--kit-gold-lo) 12% 88%, transparent 88%) 0 0 / 1px 100% no-repeat,
+    linear-gradient(180deg, transparent 12%, rgba(0, 0, 0, .85) 12% 88%, transparent 88%) 1px 0 / 1px 100% no-repeat;
+  border-radius: 0; filter: none;
+  font-size: 13px; letter-spacing: .16em;
+  color: var(--kit-gold-hi);
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, .95), 0 0 8px color-mix(in srgb, var(--kit-candle) 35%, transparent);
+}
+@media (min-height: 861px) { .sh-buy .kit-price__buy { font-size: 14px; } }
+/* not BUY: the word says why, on the same plate, after the same cut */
+.sh-buy.is-poor .sh-buy__state,
+.sh-buy.is-sold .sh-buy__state,
+.sh-buy.is-blocked .sh-buy__state {
+  margin-left: calc(var(--price-h) * .3); padding-left: calc(var(--price-h) * .3);
+  background:
+    linear-gradient(180deg, transparent 12%, var(--kit-gold-lo) 12% 88%, transparent 88%) 0 0 / 1px 100% no-repeat,
+    linear-gradient(180deg, transparent 12%, rgba(0, 0, 0, .85) 12% 88%, transparent 88%) 1px 0 / 1px 100% no-repeat;
+  font-size: 13.5px; white-space: nowrap;
+}
+.sh-buy.is-poor .sh-buy__price, .sh-buy.is-sold .sh-buy__price, .sh-buy.is-blocked .sh-buy__price { padding-right: 0; }
+.sh-buy.is-poor .kit-price__coin { filter: drop-shadow(0 3px 3px rgba(0, 0, 0, .85)) grayscale(.6) brightness(.8); }
+.sh-buy.is-sold .sh-buy__state { font-family: var(--font-display); font-style: normal; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; font-size: 12.5px; }
+
+/* ── the small print on the shop, read at the Deck's 1280 ──
+   Grenze's italic reads a size under its em, so every italic line a player
+   is meant to read stands at 12.5px or more now; the card face's own type
+   line (ui/card.*, round 27's) is not this sheet's. */
+.scene--shop .sh-h.kit-heading--ribbon.kit-heading--inline > em { font-size: max(12.5px, calc(var(--rib-h) * .5)); }
+.sh-service .sh-service__h > em { font-size: max(11.5px, calc(11 * var(--u))); }
+.sh-moth__name .kit-plate__epithet { font-size: max(12px, calc(var(--plate-h) * .28)); }
+.sh-card__own { font-size: 13px; }
+.scene--shop .kit-titleblock--compact .kit-cartouche__sub { font-size: max(13px, var(--fs-sm)); }
+@media (max-width: 1400px) { .sh-moth__you dt { font-size: 11.5px; } }
