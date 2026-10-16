@@ -273,6 +273,11 @@ export class EventScene extends RoomScene {
       <i class="kit-prop kit-prop--candle ev-hall__candle ev-hall__candle--l"></i>
       <i class="kit-prop kit-prop--candle ev-hall__candle ev-hall__candle--r"></i>`;
     board.insertBefore(hall, board.querySelector('.rm-hudhost'));
+    /* a tall painting's plate fell behind the sconce under it ("THE D_WAGER";
+       survey 5, both judges): each is narrowed until it clears the sconces,
+       the page, the plaque and the lancets */
+    const fit = this._fitPictures('.ev-hall__pic',
+      '.ev-hall__sconce, .ev-hall__window, .ev-page, .rm-where', { pool: 'grand' });
     /* where the page stands, so the portraits hang against it and the pair of
        sconces stand on the strip of wall over it */
     const place = () => {
@@ -290,6 +295,7 @@ export class EventScene extends RoomScene {
         board.style.setProperty('--band-h', `${Math.min(band, 110).toFixed(1)}px`);
         board.style.setProperty('--lamp-dx', `${Math.max(110, page.width * .2).toFixed(1)}px`);
       }
+      fit();
     };
     requestAnimationFrame(place);
     document.fonts?.ready?.then(place);

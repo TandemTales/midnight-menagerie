@@ -1094,6 +1094,10 @@
   translate: -50% 0;
 }
 .go-hang[hidden] { display: none; }
+/* the plate may run as wide as the plaque under it (gameover.js sets
+   --go-plate-w), not just its narrow frame: three lines of "The Lady of the
+   House" left the bay no room for the picture (survey 5 fix) */
+.go-hang.kit-hang--painting > .kit-hang__plate { max-width: var(--go-plate-w, 150px); }
 .go-hang.kit-hang .kit-hang__cord { height: var(--go-cord, 24px); }
 .go-hang.kit-hang--tile .kit-hang__cord { width: 44%; }
 
