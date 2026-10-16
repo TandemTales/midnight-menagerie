@@ -56,14 +56,20 @@ check reads Taffy's cream gloss as background; leave it red, do not lower it).
 game-over walls (`1f6bc8af`, ui/hang.js PAINTINGS); a base-card dead-effect
 gate (`tests/base-effects`) and 24 cards fixed (`c39ec0cc`).
 
-**ROUND 33 IS BRIEFED, NOT LAUNCHED (2026-10-15):** THE CONTROLS AND THE
-SMALL TEXT (`BRIEF-r33.md`, `RUBRIC-r33.md`, `round-33.args.json`, base
-`2f5e69ea`). TAFFETA baselines: piles and shop captured; **settings and
-hud-late FAILED** -- the map loses its WebGL context on every capture (blank
-white parchment after an idle), on round 31's build too: the GPU driver after
-55 h and days of captures. **Reboot, re-run `docs/ui-pass/baseline-r33.sh`
-(all 8), then launch** the Workflow with `round-33.args.json` plus
-`repo`/`uiloop: C:/UILOOP/r33`/`base`.
+**DONE 2026-10-16: THE SHADER COMPILE FIX** (`af440e48`, fix/shader-compile):
+the room programs chose their room by UNIFORM, so FXC compiled every room a
+program could draw -- warm-up 80-111 s (a 10-13 Windows update ~doubled it),
+then a ~50 s post-warm link freeze that lost the map's context (Josh's 10-13
+dark screen after New Expedition). Arch/subject, floor pattern, portal mode
+and each wing's prop shapes are now #defines: warm-up 12-21 s, no freeze, map
+captures 9/9, fights ~5% faster. **Rule for fx/: a room or shape choice is a
+#define, never a uniform;** `tools/linkprof.py` times each program alone.
+
+**IN FLIGHT (2026-10-16): ROUND 33 -- THE CONTROLS AND THE SMALL TEXT**
+(`BRIEF-r33.md`), Workflow run `wf_457a35c1-447` at base `af440e48`;
+worktrees `C:/UILOOP/r33/wt/r33-controls-{a,b,c}` (COBALT 9201, CADMIUM 9202,
+BONEBLACK 9203), baselines TAFFETA (8/8) in `C:/UILOOP/r33/judging/`. If it
+stops on a limit, finish it as a NEW run with `resume` notes.
 
 **ROUND 32 AND ITS GRAFT ARE MERGED AND PUSHED (2026-10-15):** graft
 `abbf882b` (frame unchanged; every fight gate green as written).
