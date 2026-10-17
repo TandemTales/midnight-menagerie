@@ -1263,12 +1263,22 @@ export const REGIONS = {
                /* (second pass: the kennel at your right shoulder is gone
                   again -- a frame-tall quad of the prop program, and the
                   kennels fight measured +2.3 ms over BASE with it) */
+               /* (round 34 graft, J3: "a bed or bowl in the centre
+                  foreground" -- a dog's bed and its bowls on the near straw,
+                  in the lantern's pool) */
+               { shape: 40, edge: 0.54, z: 3.0, tone: 0.95, fore: 1, keep: true, seed: 3.3 },
              ] },
     /* ROUND 34: the brown-grey haze off the stalls (both survey-5 judges:
        "the back stall wall is muddy and indistinct under an overall brown-
        grey haze"). Bisected: the wall's own fog at the default 0.18 over a
        range 9 m off -- the darks of the stalls keep their colour without it */
-    wallFog: 0.05,
+    /* (round 34 GRAFT, VIVIANITE's -- J1 and J2: "clear the haze from the
+       upper back wall up to the windows": the wall's fog 0.05 -> 0.03, the
+       bloom 0.72 -> 0.50 and the halation 0.30 -> 0.15 (the lanterns' glow
+       laid a soft veil over the stalls and the brick above), the grain under
+       half; and the grade's saturation 0.89 -> 0.95, so the doghouses keep
+       their paint) */
+    wallFog: 0.03, bloom: 0.50, halation: 0.15, grain: 0.011, saturate: 0.95,
     /* ...and THE NEAR FLOOR (round 31's rule): the flags run on toward the
        hand, the lantern's pool laid on them in front of you, and the straw
        heaped where the dogs drag it (FLOOR_FRAG, uStraw's heaps) */
@@ -2383,8 +2393,9 @@ export const ROOM_KINDS = {
                      /* (round 34: the near floor -- a dog's bed waiting by
                         the door at the left, the grooming table at your
                         right, in the straw) */
-                     { shape: 40, edge: 0.14, z: 2.2, tone: 0.95, fore: 1, keep: true, scale: 1.1 },
-                     { shape: 41, edge: 0.92, z: 1.8, tone: 0.95, fore: 1, keep: true }] }],
+                     { shape: 40, edge: 0.14, z: 2.2, tone: 0.95, fore: 1, keep: true, scale: 1.1 }] }],
+                     /* (round 34 graft, J2: the grooming table at your right
+                        is gone -- cut by the frame it read as an easel) */
     names: [
       [/wash|groom|veterinar|quarantine|kitchen/i, 1],
       [/./, 0],

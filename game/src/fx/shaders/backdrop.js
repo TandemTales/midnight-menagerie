@@ -10195,7 +10195,9 @@ float kennelWallH(vec2 q, float qpx, out float occ){
         col = mix(col, vec3(0.70, 0.86, 0.40)*(lum*2.0 + 0.03), eye);
         float nose = KCV(-(length(hq - vec2(0.0, -0.13)) - 0.022))*dogOn*step(DT, q.y);
         col = mix(col, vec3(0.01), nose);
-        emitW += eye*1.8;
+        /* (round 34 graft, J2: GLAUCONITE's "glowing eyes in the dark stall
+           gates" -- the eyes catch the lantern brighter, in the darker stalls) */
+        emitW += eye*2.8;
       }
       /* the bars over the half door, round iron catching the lantern */
       float barZ = step(DT + 0.05, q.y)*step(q.y, TOPY + 0.26)*inFront;
@@ -10261,7 +10263,11 @@ float kennelWallH(vec2 q, float qpx, out float occ){
          and light"), a warm pool down every third pair of stalls */
       float lpI0 = floor((u + SW*1.5)/(SW*3.0));
       float lpx0 = u + SW*1.5 - (lpI0 + 0.5)*SW*3.0;
-      emitW += 0.10*exp(-length(vec2(lpx0*0.45, (q.y - 1.6)*0.70)))*(door*1.4 + bar + hr + edge*0.5 + 0.20);
+      /* (round 34 GRAFT, GLAUCONITE's: a pool and not a wash -- at door*1.4
+         it laid the "overall brown-grey haze" both survey-5 judges named over
+         every door, and the dark of the stalls the dogs' eyes glint in went
+         with it) */
+      emitW += 0.07*exp(-length(vec2(lpx0*0.55, (q.y - 1.6)*0.80)))*(door*0.8 + bar + hr + edge*0.5 + 0.10);
       /* the water bowl at the door, enamel */
       float bowlD = max(length(vec2(sx - 0.45, (q.y - 0.06)*2.4)) - 0.16, -q.y);
       float bowl = KCV(-bowlD)*(1.0 - open);
@@ -19495,9 +19501,13 @@ vec3 wgPaint(vec2 m, vec2 msz, float shape, float seed, float px, float lum,
     /* ---- THE KENNEL ---- */
     vec2 k = q - vec2(-0.16, 0.0);
     float pk = mmHash11(seed*3.17 + 0.4);
-    vec3 paint = pk < 0.30 ? vec3(0.52, 0.15, 0.10) : (pk < 0.52 ? vec3(0.17, 0.30, 0.20)
-               : (pk < 0.72 ? vec3(0.24, 0.31, 0.40) : vec3(0.50, 0.36, 0.20)));
-    vec3 trim  = pk < 0.72 ? vec3(0.80, 0.76, 0.64) : vec3(0.34, 0.24, 0.14);
+    /* (round 34 GRAFT, VIVIANITE's colours -- ALL THREE judges: washed to
+       grey-blue the row "read as one repeated prop". Each kennel painted its
+       own red, green or blue, a stop fuller, under a cream trim; the ochre
+       one of four, which read as bare timber in the lamplight, is gone) */
+    vec3 paint = pk < 0.36 ? vec3(0.60, 0.11, 0.07) : (pk < 0.68 ? vec3(0.09, 0.38, 0.13)
+               : vec3(0.11, 0.23, 0.56));
+    vec3 trim  = vec3(0.80, 0.76, 0.64);
     float wear = mmNoise(vec2(k.x*9.0, k.y*2.2) + seed*7.0);
     vec3 board = paint*E*1.35*(0.80 + 0.30*wear);
     /* (round 28: WEATHERED -- each board its own value, and the paint worn
@@ -19508,7 +19518,9 @@ vec3 wgPaint(vec2 m, vec2 msz, float shape, float seed, float px, float lum,
       board *= 0.82 + 0.32*mmHash11(bI*7.1 + seed*3.0);
       float bare = smoothstep(0.62, 0.80, wear + 0.30*(1.0 - smoothstep(0.0, 0.30, k.y))
                  + 0.25*mmNoise(vec2(k.x*40.0, k.y*6.0) + seed));
-      board = mix(board, vec3(0.30, 0.27, 0.23)*E*1.25*(0.8 + 0.3*wear), bare*0.75);
+      /* (round 34 graft: worn through less -- at 0.75 the grey timber took
+         most of a small kennel's paint at the Deck's distance) */
+      board = mix(board, vec3(0.30, 0.27, 0.23)*E*1.25*(0.8 + 0.3*wear), bare*0.55);
     }
     col = board;
     float body = mmBox(k - vec2(0.0, 0.470), vec2(0.600, 0.385), 0.008);
@@ -25293,6 +25305,12 @@ void main(){
   float satK = uPropSat, satM = uPropSatMax;
 #if MM_WINGS == 2
   if (vShape > 31.5 && (vShape < 37.5 || vShape > 38.5)) { satK = max(uPropSat, 0.40); satM = max(uPropSatMax, 0.58); }
+#if MM_SH39
+  /* (round 34 graft, all three judges: the doghouses "read as one repeated
+     prop" washed to grey-blue -- a kennel's red, green or blue paint is a
+     material fact, and keeps the chroma VIVIANITE's held) */
+  if (vShape > 38.5 && vShape < 39.5) { satK = max(uPropSat, 0.54); satM = max(uPropSatMax, 0.76); }
+#endif
 #endif
 #if MM_WINGS >= 3
 #if MM_SH45 || MM_SH46 || MM_SH47 || MM_SH48 || MM_SH49 || MM_SH50 || MM_SH51 || MM_SH52 || MM_SH53 || MM_SH54 || MM_SH55 || MM_SH56 || MM_SH57 || MM_SH58 || MM_SH59 || MM_SH60 || MM_SH61 || MM_SH62 || MM_SH63 || MM_SH64 || MM_SH65 || MM_SH66 || MM_SH67 || MM_SH68 || MM_SH69 || MM_SH70 || MM_SH71 || MM_SH72 || MM_SH73 || MM_SH74 || MM_SH75 || MM_SH76 || MM_SH77 || MM_SH78 || MM_SH79 || MM_SH80 || MM_SH81 || MM_SH82 || MM_SH83
