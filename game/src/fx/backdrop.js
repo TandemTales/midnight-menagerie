@@ -1951,7 +1951,9 @@ export class Backdrop {
                grown-out crown's swells stand up to 0.6 m over it, yewAmp in
                the shader; 1/0.72 bought a metre and cost the maze fight a
                sky's worth of prop pixels) */
-            pushArch(28, cx, zr + (rand() - 0.5) * 0.12, sl + 0.34, hh / 0.80, 0.34 + r * 0.16);
+            /* (round 34 graft: 1/0.88 -- VIVIANITE's rounder crown, which
+               stands under half a metre over the cut, yewTop in the shader) */
+            pushArch(28, cx, zr + (rand() - 0.5) * 0.12, sl + 0.34, hh / 0.88, 0.34 + r * 0.16);
             /* a gate section: the run with an arch cut through it */
             if (P.gate && r === 0 && Math.abs(cx) < sl * 0.5 + 0.2) out[out.length - 1].seed = 20 + rand() * 10;
           }

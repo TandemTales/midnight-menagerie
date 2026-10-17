@@ -1003,7 +1003,11 @@ export const REGIONS = {
                     /* (round 34: and its fellow on the right-hand lawn, so
                        the near turf is not empty on the side away from the
                        seat -- one more term, measured in the hm-1 frame) */
-                    { shape: 81, edge: 0.88, z: 2.2, tone: 0.94, seed: 2.6, fore: 1, keep: true }] },
+                    /* (round 34 GRAFT, VIVIANITE's, J3: the big foreground
+                       topiary at the near right -- a ball-tree in its box
+                       standing IN the near lawn, where the urn was: the same
+                       one term) */
+                    { shape: 30, edge: 0.86, z: 3.4, tone: 0.95, seed: 7.0, fore: 1, keep: true }] },
     /* ...and the moon laid on the walk and the turf in front of you, the
        foreground falling to nine-tenths and not two-fifths */
     /* (round 31 graft, judges 1 and 3: "lift the near path out of black with
@@ -1015,15 +1019,20 @@ export const REGIONS = {
        (second pass: 6.0 and 4.4, from 3.2 and 2.0 -- painted red and green
        they lay where they were meant to, and at the old strengths the dark
        turf took them as nothing) */
+    /* (round 34 graft, all three judges: "the bottom third is still a
+       dark empty field" -- the lanterns' pool wider, out over the lawn both
+       sides of the path, and the moon's on the far side a step up) */
     nearFloor: { fall: 0.95, calm: 0.75,
-                 pool: { ahead: 3.8, across: -0.3, rAlong: 3.6, rAcross: 4.0, k: 6.0, color: '#d9a66e' },
-                 pool2: { ahead: 3.2, across: 2.6, rAlong: 3.0, rAcross: 2.6, k: 4.4, color: '#8ea6cc' } },
+                 pool: { ahead: 3.8, across: -0.3, rAlong: 3.8, rAcross: 5.2, k: 6.0, color: '#d9a66e' },
+                 pool2: { ahead: 3.2, across: 2.6, rAlong: 3.0, rAcross: 3.0, k: 5.6, color: '#8ea6cc' } },
     particles: { mix: [[PTYPE.SPORE, 0.44], [PTYPE.ASH, 0.30], [PTYPE.DUST, 0.26]],
                  tint: '#e0d8a8', wispTint: '#b08fd8', emberTint: '#d8a04a',
                  speed: 0.75, scale: 1.3, wind: 1.4, density: 0.95 },
     /* (round 29 graft: the contrast a little up and the moon over the far
        hedges a step down, BOLUS's -- the darks down, the lit tops kept) */
-    exposure: 1.72, vignette: 1.52, contrast: 1.28,
+    /* (round 34 graft, VIVIANITE's: the vignette 1.52 -> 1.40, the near
+       corners of the lawn out of black -- all three judges) */
+    exposure: 1.72, vignette: 1.32, contrast: 1.28,
     key:  { glow: 0, kind: 'cold', x: -4.2, y: 5.6, z: 3.0, color: '#b6c0da', intensity: 2.30, radius: 15.0, flicker: false },
     fill: { glow: 0, kind: 'warm', x: 5.0, y: 1.6, z: 1.6, color: '#dda358', intensity: 1.01, radius: 5.59 },
     lights: [
@@ -2242,7 +2251,16 @@ export const ROOM_KINDS = {
            the walk to the fountain and a stone seat on the right-hand lawn) */
         near: [{ shape: 81, edge: 0.10, z: 1.2, tone: 0.94, seed: 1.1, fore: 1, keep: true },
                { shape: 81, edge: 0.90, z: 1.2, tone: 0.94, seed: 2.6, fore: 1, keep: true },
-               { shape: 83, edge: 0.66, z: 3.4, tone: 0.94, seed: 2.0, fore: 1, keep: true }],
+               { shape: 83, edge: 0.66, z: 3.4, tone: 0.94, seed: 2.0, fore: 1, keep: true },
+               /* (round 34 graft, all three judges: "a prop in each near
+                  corner" -- a ball-tree in its box on the near-left lawn,
+                  across from the seat) */
+               { shape: 30, edge: 0.17, z: 3.6, tone: 0.95, seed: 5.0, fore: 1, keep: true }],
+        /* (round 34 graft, VIVIANITE's: the lanterns' spill carried down the
+           walk to your feet, and the moon on the near-left lawn -- at the
+           wing's strengths, which the dark turf needs) */
+        nearFloor: { pool: { ahead: 3.4, across: 0.2, rAlong: 3.4, rAcross: 3.4, k: 6.0, color: '#d9a66e' },
+                     pool2: { ahead: 3.8, across: -3.0, rAlong: 3.0, rAcross: 2.8, k: 4.4, color: '#8fa2c4' } },
         vantage: { at: 'among', low: 0.62, fwd: 2.0, pitch: 3.0, off: 0.04, wide: 3 } },
       /* the gate into the maze, seen from in it */
       { subject: 'topiary', layout: 'maze', maze: { gate: true, first: 4.2 },
@@ -2255,7 +2273,14 @@ export const ROOM_KINDS = {
            ball-trees in their boxes staggered down it, and SAFFLOWER's seat) */
         near: [{ shape: 30, x: -2.5, z: 2.6, tone: 0.95, free: true, keep: true, seed: 7.0 },
                { shape: 30, x: 2.6, z: 0.4, tone: 0.95, free: true, keep: true, seed: 5.0 },
-               { shape: 83, edge: 0.40, z: 4.2, tone: 0.94, seed: 2.0, fore: 1, keep: true }],
+               { shape: 83, edge: 0.40, z: 4.2, tone: 0.94, seed: 2.0, fore: 1, keep: true },
+               /* (round 34 graft, VIVIANITE's: the walk's near-right lawn was
+                  bare under the moon -- an urn on its pedestal stood in it) */
+               { shape: 81, edge: 0.84, z: 3.2, tone: 0.94, seed: 2.6, fore: 1, keep: true }],
+        /* (round 34 graft, VIVIANITE's: the near walk lit -- the lanterns'
+           warm on the gravel at your feet, the moon on the right-hand turf) */
+        nearFloor: { pool: { ahead: 3.6, across: -0.6, rAlong: 3.6, rAcross: 3.4, k: 6.0, color: '#d9a66e' },
+                     pool2: { ahead: 3.8, across: 3.0, rAlong: 3.0, rAcross: 2.8, k: 4.4, color: '#8fa2c4' } },
         vantage: { at: 'along', off: 0.14, wall: 4.0, fwd: 1.6, yaw: 12, wide: 3 } },
     ],
     names: [

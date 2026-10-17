@@ -4627,6 +4627,7 @@ float wLobes(vec2 c, float jit, float sd, out float id, out vec2 off){
    light); lit 0..1 how much of this pixel is the UPPER face of a big spray,
    which is all the moon finds on a crown. */
 float gYewI = 0.5;     // (round 29 graft, BOLUS's: the spray's own hash, for its colour)
+float gYewDome = 0.0;  // (round 34 graft: the upper face of a clump, for the moon on it)
 /* ROUND 31 GRAFT (SAFFLOWER's, all three judges: "the fine, small-leaf
    clipped hedge texture ... reads as real topiary, not a scale or cobble
    tile -- take it wholesale"). A yew that has been sheared is not domes: it
@@ -4670,18 +4671,24 @@ float yewClipF(vec2 p, float px, float sd, out float tone, out float lit, out fl
      each a swell of leaf lit on its upper face by the moon and creased dark
      where it meets the next -- the depth a painted hedge has (mainMenu.png's
      shrubs) and a tuft field at one scale does not. */
-  float i3 = 0.5;
-  vec2 o3 = vec2(0.0);
-  /* (the frame budget: warped by the swell already tapped, n0, not two
-     taps of its own) */
-  vec2 pm = pw + vec2(n0 - 0.5, 0.5 - n0)*0.60;
-  float a3 = wLobes(vec2(pm.x*0.96 + pm.y*0.28, -pm.x*0.28 + pm.y*0.96)/vec2(0.66, 0.44), 0.98, sd + 3.7, i3, o3);
-  float massL = smoothstep(-0.34, 0.40, a3);
-  float upF = clamp(0.5 + o3.y*1.3, 0.0, 1.0);
-  tone *= mix(0.80, 1.0, massL)*(0.86 + 0.30*upF*massL);
-  lit *= 0.62 + 0.55*upF*massL;
+  /* (round 34 GRAFT, VIVIANITE's clumps in place of the first pass's lobes
+     -- J1 and J3: "rounder, lumpy clipped leaf mass with lit domes and
+     shadowed undercuts"; the lobes' lit tops, foreshortened on the side
+     walls, read as the "flame/stalagmite spikes" J2 named. Each clump
+     swells out of the hedge irregular in size and warped off any grid, its
+     upper face taking the sky, its underside in the crease under it, low in
+     contrast at the crease, and most where the hedge has grown out (the
+     broad patch, n0) -- its upper face handed on as gYewDome) */
+  float cid3; vec2 co;
+  vec2 cp = vec2(p.x + 0.22*sin(p.y*2.1 + sd), p.y + 0.14*sin(p.x*1.7 + sd*2.0));
+  float cl = wLobes(cp/vec2(0.66, 0.46), 0.95, sd*5.1 + 3.0, cid3, co);
+  float clB = smoothstep(-0.02, 0.48, cl + (tone - 0.85)*0.25);
+  float clU = smoothstep(-0.45, 0.50, co.y);
+  float clL = mmLod(0.50, px)*mix(0.35, 1.0, smoothstep(0.30, 0.62, n0));
+  tone *= mix(1.0, mix(0.72, 1.0, clB)*(0.86 + 0.28*clU), clL);
+  gYewDome = clU*clB*clL;
   cidOut = n0;     // (the broad patch is the mass's own swell: no tap of its own)
-  return (m0 - 0.45)*0.10 + a*0.022*l1 + b*0.008*l2 + a3*0.018;
+  return (m0 - 0.45)*0.10 + a*0.022*l1 + b*0.008*l2 + 0.020*clB*clL;
 }
 float yewFace(vec2 p, float px, float sd, out float tone, out float lit){
   float cid;
@@ -4782,29 +4789,35 @@ float mmSeg2V(vec2 p, vec2 a, vec2 b, float r){
    is the tallest clump. Continuous in u (every dome falls to nothing at its
    cell's edge), so its coverage and its pen line are smooth. */
 float yewRagW(float u, float sd, float amp){
-  /* (round 34, second pass: the silhouette read at the far run's
-     distance -- 12-20 m off a 0.2 m clump is a ruled line with a fur on
-     it. So the crown is built in three sizes ON one another: great swells
-     two strides across, each its own height (and a few slumped, where the
-     old wood has died back), the clumps a stride across grown out of them,
-     and the sprays of a hand on those -- a broken leaf line at every
-     distance the maze is seen from) */
-  float x0 = u/1.85 + sd*0.23;
-  float f0 = fract(x0), h0 = mmHash11(floor(x0)*0.91 + sd*0.7);
-  float d0 = sqrt(max(1.0 - 4.0*(f0 - 0.5)*(f0 - 0.5), 0.0))*(0.18 + 0.82*h0*h0)*amp;
-  float x1 = u/0.66 + sd*0.37;
-  float f1 = fract(x1), h1 = mmHash11(floor(x1)*1.37 + sd);
-  float d1 = sqrt(max(1.0 - 4.0*(f1 - 0.5)*(f1 - 0.5), 0.0))*(0.20 + 0.80*h1)*amp*0.42 + d0*0.80;
-  float x2 = u/0.27 + 0.5 + sd*0.71;
-  float f2 = fract(x2), h2 = mmHash11(floor(x2)*2.71 + sd*1.3);
-  float d2 = sqrt(max(1.0 - 4.0*(f2 - 0.5)*(f2 - 0.5), 0.0))*(0.15 + 0.50*h2)*amp*0.22 + d1*0.90;
-  float x3 = u/0.085 + sd*1.9;
-  float f3 = fract(x3), h3 = mmHash11(floor(x3)*5.19 + sd*2.1);
-  float sp = max(1.0 - abs(f3 - 0.5)*2.4, 0.0)*step(0.70, h3)*(0.35 + 0.65*h3)*min(amp, 0.8)*0.38;
-  float sag = 0.060*sin(u*0.37 + sd) + 0.034*sin(u*0.93 + sd*1.7);
-  /* the edge feathered with single leaves, a few centimetres, every way */
-  float fth = (abs(fract(u/0.034 + 0.4*sin(u*7.0 + sd)) - 0.5) - 0.25)*0.034;
-  return max(max(d0, max(d1, d2)), d1*0.70 + sp) + sag + fth - 0.45*amp;
+  /* (round 34 GRAFT, VIVIANITE's crown -- J1 and J3: "rounder, lumpy
+     clipped tops", where CELESTINE's metre-high swells read as "crags or a
+     mountain range" (J1), "flame/stalagmite spikes" (J2). Clumps a half
+     metre across swelling ROUND over the cut, each its own width and height,
+     the neighbours overlapping; small sprays crowding between them; a
+     leader shoot standing up out of one cell in five. amp scales the whole
+     crown -- a far run is seen from further off, so its clumps are taller
+     to read -- and CELESTINE's sag and feathered leaf edge are kept.) */
+  float r = 0.0;
+  float q1 = u/0.55 + sd*1.37;
+  float i1 = floor(q1), f1 = fract(q1);
+  for (int k = -1; k <= 1; k++){
+    float ii = i1 + float(k);
+    float hh = mmHash11(ii*1.71 + sd);
+    float cx = float(k) + 0.5 + (hh - 0.5)*0.55;
+    float hw = 0.52 + 0.42*mmHash11(ii*3.31 + sd*0.7);
+    float x = (f1 - cx)/hw;
+    r = max(r, sqrt(max(1.0 - x*x, 0.0))*(0.04 + 0.26*hh*hh + 0.05*hh));
+  }
+  float q2 = u/0.21 + sd*2.13;
+  float f2 = fract(q2), h2 = mmHash11(floor(q2)*2.77 + sd);
+  r = max(r, sqrt(max(1.0 - 4.0*(f2 - 0.5)*(f2 - 0.5), 0.0))*(0.025 + 0.050*h2) + r*0.55);
+  float q3 = u/0.13 + sd*3.71;
+  float f3 = fract(q3), h3 = mmHash11(floor(q3)*5.93 + sd);
+  float tip = max(1.0 - abs(f3 - 0.5 - (h3 - 0.5)*0.3)/0.45, 0.0);
+  r = max(r, step(0.80, h3)*sqrt(tip)*(0.06 + 0.12*fract(h3*13.7)) + r*0.75);
+  float sag = 0.040*sin(u*0.37 + sd) + 0.022*sin(u*0.93 + sd*1.7);
+  float fth = (abs(fract(u/0.034 + 0.4*sin(u*7.0 + sd)) - 0.5) - 0.25)*0.030;
+  return (r - 0.10)*amp + sag + fth;
 }
 /* THE HEDGE MAZE'S WALLS. Clipped yew 3.2 m high -- the yew runs' (shape
    28) own height, so a run across the way and the walls either side are one
@@ -4829,7 +4842,9 @@ float hedgeWallH(vec2 q, float qpx, out float occ){
   /* (round 34, second pass: the swells a metre high -- at 0.2 m the far
      run's crown read ruled from twenty metres; the court's far hedge,
      furthest off, the most -- its piers and their balls stand up out of it) */
-  float ragA = court > 0.5 ? 1.70 : (far > 0.5 ? 0.85 : 0.75);
+  /* (round 34 graft: VIVIANITE's rounder clumps, a third taller on the
+     far runs and a half on the court's far hedge, which is furthest off) */
+  float ragA = court > 0.5 ? 1.50 : (far > 0.5 ? 1.30 : 1.00);
   float top = HH + yewRagW(u, sd, ragA);
   /* the finials on the far hedge: a ball on a neck or a cone; in the court,
      a clipped ball on every pier, all alike */
@@ -4892,7 +4907,12 @@ float hedgeWallH(vec2 q, float qpx, out float occ){
      lower hem hangs ragged a hand or two over the turf, the face falls into
      its own shade for most of a metre above it, and under the hem is the
      old wood of the hedge -- dark stems in the dark of its inside */
-  float hemY = 0.20 + 0.16*mmNoise(vec2(u*2.6 + sd, 0.5)) + 0.035*sin(u*9.0 - sd) + 0.02*sin(u*23.0 + sd);
+  /* (round 34 graft, J1: "break the back hedge's long straight lower edge
+     with a root shadow and gaps" -- the hem hangs to the turf in places and
+     stands a knee high in others, a stride or two at a time, so the foot is
+     broken by the dark old wood showing under it) */
+  float hemY = 0.08 + 0.42*smoothstep(0.38, 0.72, mmNoise(vec2(u*0.85 + sd*1.3, 2.5)))
+             + 0.10*mmNoise(vec2(u*2.6 + sd, 0.5)) + 0.035*sin(u*9.0 - sd) + 0.02*sin(u*23.0 + sd);
   float foot = smoothstep(hemY + 0.80, hemY + 0.02, q.y);
   float hemB = smoothstep(hemY + 0.5*qpx, hemY - 0.5*qpx, q.y);
   float stx = u/0.23 + 0.25*sin(u*1.3 + q.y*4.0 + sd);
@@ -4920,6 +4940,10 @@ float hedgeWallH(vec2 q, float qpx, out float occ){
   float crownB = smoothstep(top - 0.55, top - 0.06, q.y);
   gWLit = crownB * lit * hedge * 0.85
         + finC * court * smoothstep(-0.10, 0.45, bq.y) * lit * 0.8;
+  /* (round 34 graft, VIVIANITE's: and the upper face of every clump down the
+     face takes a share of it, falling off toward the dark foot -- lit domes
+     over shadowed undercuts, a mass lit from above) */
+  gWLit += 0.24*gYewDome*smoothstep(0.6, HH - 0.4, q.y)*hedge*(1.0 - foot)*(0.6 + 0.4*lit);
   float solidM = max(hedge, corr);
   /* the niches (the court only): an arch 1.24 m wide cut 0.7 m into the yew
      in every bay between the piers, dark inside, and in it a statue on its
@@ -13654,9 +13678,43 @@ void main(){
         float lane = w.x/1.4 + 0.25;
         float st = smoothstep(0.46, 0.54, abs(fract(lane) - 0.5)*2.0);
         earth *= 0.30;
+#if MM_PAT == 13
+        /* (round 34 graft, VIVIANITE's: the lanes a step up, 0.20 -> 0.30 --
+           under the house's tooth the mown stripes had gone, and the near
+           lawn was a flat dark) */
+        pat = 0.50 + (tuft*0.20 + blade*0.20)*(1.0 - earth) - earth*0.14 + (st - 0.5)*0.30;
+#else
         pat = 0.50 + (tuft*0.20 + blade*0.20)*(1.0 - earth) - earth*0.14 + (st - 0.5)*0.20;
+#endif
         cellv = 0.36 + 0.30*pch + 0.18*st;
         turf = 1.0 - earth*0.65;
+#if MM_PAT == 13
+        /* ROUND 34 GRAFT, GLAUCONITE's (all three judges: "light and dress
+           the near lawn"; the brief's "turf with tone and edges"). A maze
+           untended since the house went quiet: the stripes half grown out,
+           rank grass a stop darker in broad swathes (one slow tap, in metres
+           -- it survives any distance), and leaves blown across the near turf,
+           each drawn while it is two pixels long */
+        {
+          float swM = mmNoise(w*vec2(0.11, 0.17) + uSeed*2.3);
+          pat += (swM - 0.5)*0.34;
+          float lRes = smoothstep(0.030, 0.011, mp);
+          if (lRes > 0.001) {
+            const float LC = 0.34;
+            vec2 lci = floor(w/LC);
+            vec2 lh = mmHash22(lci + 41.7);
+            vec2 lp = w - (lci + 0.2 + 0.6*lh)*LC;
+            float la = mmHash21(lci + 9.1)*6.2832;
+            vec2 lr = vec2(cos(la)*lp.x + sin(la)*lp.y, -sin(la)*lp.x + cos(la)*lp.y);
+            float lw = 0.028*(1.0 - pow(abs(lr.x)/0.066, 2.0));
+            float leaf = (1.0 - smoothstep(lw, lw + mp*1.1, abs(lr.y))) * step(abs(lr.x), 0.066)
+                       * step(mmHash21(lci + 3.3), 0.42) * lRes;
+            earth = max(earth, leaf*0.95);
+            turf = min(turf, 1.0 - leaf*0.85);
+            pat += leaf*(0.12 + 0.10*lh.x);
+          }
+        }
+#endif
       }
       if (uPattern > 13.5) {
         /* 14 THE PUMPKIN PATCH (round 22): tilled earth, and the vines
@@ -17620,7 +17678,10 @@ float yewTop(vec2 msz, float seed){
   float k = yewKind(seed);
   /* (round 34: 0.89 from 0.93 -- the grown-out crown wants the quad's
      room over the set top, yewAmp) */
-  return msz.y*(k < 0.52 ? 0.80 : 0.637);
+  /* (round 34 graft: 0.88 -- VIVIANITE's rounder crown stands under half a
+     metre over the cut, so the quad gives back the sky CELESTINE's metre-high
+     swells needed: Backdrop._layoutProps, hh/0.88) */
+  return msz.y*(k < 0.52 ? 0.88 : 0.700);
 }
 float yewArch(vec2 m, float seed){
   if (seed < 19.5) return 1e3;
@@ -17638,32 +17699,35 @@ float yewArch(vec2 m, float seed){
    is the tallest clump. Continuous in u (every dome falls to nothing at its
    cell's edge), so its coverage and its pen line are smooth. */
 float yewRagP(float u, float sd, float amp){
-  /* (round 34, second pass: the silhouette read at the far run's
-     distance -- 12-20 m off a 0.2 m clump is a ruled line with a fur on
-     it. So the crown is built in three sizes ON one another: great swells
-     two strides across, each its own height (and a few slumped, where the
-     old wood has died back), the clumps a stride across grown out of them,
-     and the sprays of a hand on those -- a broken leaf line at every
-     distance the maze is seen from) */
-  float x0 = u/1.85 + sd*0.23;
-  float f0 = fract(x0), h0 = mmHash11(floor(x0)*0.91 + sd*0.7);
-  float d0 = sqrt(max(1.0 - 4.0*(f0 - 0.5)*(f0 - 0.5), 0.0))*(0.18 + 0.82*h0*h0)*amp;
-  float x1 = u/0.66 + sd*0.37;
-  float f1 = fract(x1), h1 = mmHash11(floor(x1)*1.37 + sd);
-  float d1 = sqrt(max(1.0 - 4.0*(f1 - 0.5)*(f1 - 0.5), 0.0))*(0.20 + 0.80*h1)*amp*0.42 + d0*0.80;
-  float x2 = u/0.27 + 0.5 + sd*0.71;
-  float f2 = fract(x2), h2 = mmHash11(floor(x2)*2.71 + sd*1.3);
-  float d2 = sqrt(max(1.0 - 4.0*(f2 - 0.5)*(f2 - 0.5), 0.0))*(0.15 + 0.50*h2)*amp*0.22 + d1*0.90;
-  float x3 = u/0.085 + sd*1.9;
-  float f3 = fract(x3), h3 = mmHash11(floor(x3)*5.19 + sd*2.1);
-  float sp = max(1.0 - abs(f3 - 0.5)*2.4, 0.0)*step(0.70, h3)*(0.35 + 0.65*h3)*min(amp, 0.8)*0.38;
-  float sag = 0.060*sin(u*0.37 + sd) + 0.034*sin(u*0.93 + sd*1.7);
-  /* the edge feathered with single leaves, a few centimetres, every way */
-  float fth = (abs(fract(u/0.034 + 0.4*sin(u*7.0 + sd)) - 0.5) - 0.25)*0.034;
-  return max(max(d0, max(d1, d2)), d1*0.70 + sp) + sag + fth - 0.45*amp;
+  /* (round 34 GRAFT: VIVIANITE's rounder clumps, the wall program's
+     yewRagW -- the same rule, so a run across the way and the walls either
+     side are one hedge) */
+  float r = 0.0;
+  float q1 = u/0.55 + sd*1.37;
+  float i1 = floor(q1), f1 = fract(q1);
+  for (int k = -1; k <= 1; k++){
+    float ii = i1 + float(k);
+    float hh = mmHash11(ii*1.71 + sd);
+    float cx = float(k) + 0.5 + (hh - 0.5)*0.55;
+    float hw = 0.52 + 0.42*mmHash11(ii*3.31 + sd*0.7);
+    float x = (f1 - cx)/hw;
+    r = max(r, sqrt(max(1.0 - x*x, 0.0))*(0.04 + 0.26*hh*hh + 0.05*hh));
+  }
+  float q2 = u/0.21 + sd*2.13;
+  float f2 = fract(q2), h2 = mmHash11(floor(q2)*2.77 + sd);
+  r = max(r, sqrt(max(1.0 - 4.0*(f2 - 0.5)*(f2 - 0.5), 0.0))*(0.025 + 0.050*h2) + r*0.55);
+  float q3 = u/0.13 + sd*3.71;
+  float f3 = fract(q3), h3 = mmHash11(floor(q3)*5.93 + sd);
+  float tip = max(1.0 - abs(f3 - 0.5 - (h3 - 0.5)*0.3)/0.45, 0.0);
+  r = max(r, step(0.80, h3)*sqrt(tip)*(0.06 + 0.12*fract(h3*13.7)) + r*0.75);
+  float sag = 0.040*sin(u*0.37 + sd) + 0.022*sin(u*0.93 + sd*1.7);
+  float fth = (abs(fract(u/0.034 + 0.4*sin(u*7.0 + sd)) - 0.5) - 0.25)*0.030;
+  return (r - 0.10)*amp + sag + fth;
 }
 /* (the tallest clump a run's quad has room for over its set top) */
-float yewAmp(vec2 msz, float seed){ return min(0.62, (msz.y - yewTop(msz, seed))*0.82); }
+/* (round 34 graft: the crown's scale, 1.3 as the far wall's, held so its
+   tallest leader -- 0.40 m of r at 1.0 -- stays inside the quad) */
+float yewAmp(vec2 msz, float seed){ return min(1.30, (msz.y - yewTop(msz, seed))/0.36); }
 float yewSD(vec2 m, vec2 msz, float seed){
   float hw = msz.x*0.5 - 0.06;
   float k = yewKind(seed);
@@ -17724,6 +17788,9 @@ float yLobes(vec2 c, float jit, float sd, out float id, out vec2 off){
 }
 /* (round 31 graft: the walls' clipped face -- yewClipF -- so a run of yew
    across the way, a topiary and the walls either side are one hedge) */
+float gYewDomeP = 0.0;   // (round 34 graft: the upper face of a clump, for the moon on it)
+float gYewClB = 0.0;     // (...and how much of the pixel is the clump's swell, for its relief)
+vec2 gTopTq = vec2(0.0, 1.0);   // (round 34 graft, VIVIANITE's: the pixel in its tier, a tiered stand's)
 float yewFaceP(vec2 p, float px, float sd, out float tone, out float lit){
   /* (the warp off the grid from ONE noise tap, thrown diagonally: two taps
      here were the face's dearest line after the shoots -- the frame budget) */
@@ -17755,17 +17822,17 @@ float yewFaceP(vec2 p, float px, float sd, out float tone, out float lit){
      each a swell of leaf lit on its upper face by the moon and creased dark
      where it meets the next -- the depth a painted hedge has (mainMenu.png's
      shrubs) and a tuft field at one scale does not. */
-  float i3 = 0.5;
-  vec2 o3 = vec2(0.0);
-  /* (the frame budget: warped by the swell already tapped, n0, not two
-     taps of its own) */
-  vec2 pm = pw + vec2(n0 - 0.5, 0.5 - n0)*0.60;
-  float a3 = yLobes(vec2(pm.x*0.96 + pm.y*0.28, -pm.x*0.28 + pm.y*0.96)/vec2(0.66, 0.44), 0.98, sd + 3.7, i3, o3);
-  float massL = smoothstep(-0.34, 0.40, a3);
-  float upF = clamp(0.5 + o3.y*1.3, 0.0, 1.0);
-  tone *= mix(0.80, 1.0, massL)*(0.86 + 0.30*upF*massL);
-  lit *= 0.62 + 0.55*upF*massL;
-  return (m0 - 0.45)*0.10 + a*0.022*l1 + b*0.008*l2 + a3*0.018;
+  /* (round 34 GRAFT, VIVIANITE's clumps -- the wall program's, yewClipF) */
+  float cid3; vec2 co;
+  vec2 cp = vec2(p.x + 0.22*sin(p.y*2.1 + sd), p.y + 0.14*sin(p.x*1.7 + sd*2.0));
+  float cl = yLobes(cp/vec2(0.66, 0.46), 0.95, sd*5.1 + 3.0, cid3, co);
+  float clB = smoothstep(-0.02, 0.48, cl + (tone - 0.85)*0.25);
+  float clU = smoothstep(-0.45, 0.50, co.y);
+  float clL = mmLod(0.50, px)*mix(0.35, 1.0, smoothstep(0.38, 0.62, n0));
+  tone *= mix(1.0, mix(0.72, 1.0, clB)*(0.86 + 0.28*clU), clL);
+  gYewDomeP = clU*clB*clL;
+  gYewClB = clB*clL;
+  return (m0 - 0.45)*0.10 + a*0.022*l1 + b*0.008*l2 + 0.020*clB*clL;
 }
 float topKind(float seed){ return mmHash11(seed*7.31 + 0.4); }
 vec2 topSD(vec2 m, vec2 msz, float seed){
@@ -17794,21 +17861,31 @@ vec2 topSD(vec2 m, vec2 msz, float seed){
     leaf = length(m - vec2(0.0, H - r)) - r;
   } else if (k < 0.78) {
     /* a TIERED STAND: three clipped discs up one stem, and a ball on it */
-    wood = mmBox(m - vec2(0.0, H*0.45), vec2(0.034, H*0.45), 0.01);
+    /* (round 34 GRAFT, VIVIANITE's, J2: "the topiary as leaf clumps, not
+       stacked discs" -- each tier a POM-POM, four-fifths as deep as it is
+       wide, the three crowding up the stem so their bellies meet, their
+       outlines broken by sprays at a hand's scale; gTopTq the pixel's place
+       in its own tier, so reliefH rounds each in its own light) */
+    wood = mmBox(m - vec2(0.0, H*0.45), vec2(0.040, H*0.45), 0.01);
+    gTopTq = vec2(0.0, 1.0);
+    float best = 9.0;
     for (int i = 0; i < 3; i++){
       float f = float(i)/2.0;
-      float cy = mix(0.30, 0.76, f)*H;
-      /* (round 34, both judges: "the topiary at left is stacked discs" --
-         each tier a CUSHION of clipped leaf, deep as it is grown, its
-         top domed and its underside tucked in, so three of them read as a
-         yew clipped into tiers and not as plates on a pole) */
-      vec2 rr = vec2(mix(0.46, 0.27, f)*msz.x, mix(0.30, 0.21, f));
-      vec2 tq = (m - vec2(0.0, cy))/rr;
-      tq.y *= tq.y < 0.0 ? 1.35 : 1.0;
-      float cu = (pow(pow(abs(tq.x), 2.6) + pow(abs(tq.y), 2.2), 1.0/2.4) - 1.0)*min(rr.x, rr.y);
-      leaf = min(leaf, cu);
+      float cy = mix(0.25, 0.71, f)*H;
+      float rx = mix(0.37, 0.25, f)*msz.x;
+      vec2 rr = vec2(rx, min(rx*0.80, mix(0.185, 0.150, f)*H));
+      vec2 e = (m - vec2(0.0, cy))/rr;
+      float an = atan(e.y, e.x);
+      float lob = (0.05*sin(an*5.0 + seed*3.0 + f*2.0) + 0.035*sin(an*11.0 + seed + f*4.0))
+                + (mmNoise(normalize(e + vec2(1e-4, 0.0))*1.7 + vec2(f*7.0, seed*1.3)) - 0.5)*0.16;
+      float dd = (length(e) - 1.0 - lob)*min(rr.x, rr.y);
+      if (dd < best) { best = dd; gTopTq = e; }
+      leaf = min(leaf, dd);
     }
-    leaf = min(leaf, length(m - vec2(0.0, H - 0.13)) - 0.13);
+    float br = 0.15*H/2.4;
+    float bd = length(m - vec2(0.0, H - br)) - br;
+    if (bd < best) gTopTq = (m - vec2(0.0, H - br))/br;
+    leaf = min(leaf, bd);
   } else {
     /* a SPIRAL: a cone with a groove wound up it, so its two edges are
        notched out of step with each other -- the one topiary form nobody
@@ -23998,6 +24075,11 @@ float reliefH(vec2 uv, vec2 msz, vec2 mpp, float shape, float seed, out float ti
     float yrel = yewFaceP(m + seed*1.7, mp, seed*3.1, ytone, ylit);
     gYewCl = mix(0.5, ytone, onLf);
     h += yrel*0.22*onLf;
+    /* (round 34 graft, VIVIANITE's: each clump a swell of relief, so the
+       light rounds it; and a mass lit from above -- its upper face takes the
+       night, its lower falls into its own shade toward the foot) */
+    h += 0.060*gYewClB*onLf;
+    tint -= 0.22*smoothstep(0.55*msz.y, 0.10*msz.y, m.y)*(1.0 - topi);
     tint -= 0.30*(1.0 - smoothstep(0.10, 0.45, ytone))*onLf;
     h += 0.040*(mmNoise(m*0.9 + seed*2.0) - 0.5)*onLf;
     /* THE CROWN TAKES THE MOON ON ITS LEAVES (graft: CASSEL's was one
@@ -24012,12 +24094,20 @@ float reliefH(vec2 uv, vec2 msz, vec2 mpp, float shape, float seed, out float ti
        undersides and bases where they meet the lawn"): the leaf's lower
        hem hangs ragged a hand or two over the turf, and under it the old
        wood of the hedge -- dark stems in the dark of its inside */
-    float hem = 0.20 + 0.16*mmNoise(vec2(m.x*2.6 + seed*3.0, 0.5)) + 0.035*sin(m.x*9.0 - seed) + 0.02*sin(m.x*23.0 + seed);
+    /* (round 34 graft, J1: "break the back hedge's long straight lower edge
+       with a root shadow and gaps" -- the hem to the turf in places and a
+       knee high in others, as the walls' own) */
+    float hem = 0.08 + 0.42*smoothstep(0.38, 0.72, mmNoise(vec2(m.x*0.85 + seed*1.3, 2.5)))
+              + 0.10*mmNoise(vec2(m.x*2.6 + seed*3.0, 0.5)) + 0.035*sin(m.x*9.0 - seed) + 0.02*sin(m.x*23.0 + seed);
     gYewFoot = smoothstep(hem + 0.75, hem + 0.02, m.y) * (1.0 - topi);
     gYewHem = smoothstep(hem + 0.5*mp, hem - 0.5*mp, m.y) * (1.0 - topi);
     float stx = m.x/0.23 + 0.25*sin(m.x*1.3 + m.y*4.0 + seed);
     gYewStem = gYewHem * (1.0 - smoothstep(0.035, 0.035 + max(mp/0.23, 0.02)*1.5, abs(fract(stx) - 0.5))) * step(0.45, mmHash11(floor(stx) + seed));
     h -= 0.040*gYewFoot + 0.10*gYewHem*(1.0 - gYewStem);
+    /* (round 34 graft, VIVIANITE's: the upper face of every clump down the
+       run takes a share of the moon, falling off toward the dark foot -- lit
+       domes over shadowed undercuts) */
+    gYewTop += 0.24*gYewDomeP*smoothstep(0.6, top - 0.4, m.y)*(1.0 - gYewFoot)*(1.0 - topi)*(0.6 + 0.4*ylit);
     float ad = yewArch(m, seed);
     gYewRev = (1.0 - smoothstep(0.02, 0.20, ad)) * step(ad, 0.20) * (1.0 - topi);
     gYewDead = smoothstep(0.62, 0.84, mmNoise(m*0.55 + seed*4.0)) * (1.0 - topi);
@@ -24025,6 +24115,14 @@ float reliefH(vec2 uv, vec2 msz, vec2 mpp, float shape, float seed, out float ti
       /* a clipped form is a SOLID: in shade under its own overhang and
          toward its foot, lit across its crown */
       tint -= 0.22*smoothstep(0.55, 0.05, uv.y)*onLf;
+      /* (round 34 graft, VIVIANITE's: a tiered stand's pom-poms each rounded
+         in its own light -- a dome of relief, the underside dark over the
+         stem, the crown lit) */
+      float tier = step(0.55, gTopKind)*step(gTopKind, 0.78)*onLf;
+      float tr2 = clamp(dot(gTopTq, gTopTq), 0.0, 1.0);
+      h += tier*0.10*sqrt(1.0 - tr2);
+      tint -= tier*0.40*smoothstep(0.15, -0.85, gTopTq.y);
+      gYewTop = max(gYewTop, tier*smoothstep(0.10, 0.80, gTopTq.y)*(0.5 + 0.5*ylit)*0.8);
       /* the spiral's groove, wound up the cone */
       float gro = (1.0 - smoothstep(0.08, 0.16, abs(fract((m.y - 0.14 + m.x*0.62)/0.36) - 0.5)))
                 * step(0.78, gTopKind) * onLf;
