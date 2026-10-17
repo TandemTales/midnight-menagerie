@@ -17037,6 +17037,101 @@ float wfBed(vec2 q, float px, float seed, float kq, bool paint){
   return min(dAll, min(body, cop));
 }
 
+#if MM_SH84
+/* ── 84 THE POTTING BENCH (round 34 graft, VIVIANITE's) ───────────────────────────────────────
+   Both survey-5 judges: the Greenhouse's near floor "empty", its beds "a few
+   tiny plants" -- and BRIEF-r34 names what a glasshouse keeps at your feet:
+   "a potting bench, terracotta pots, a watering can". A gardener's slatted
+   deal bench, grey with wet and wear, on four square legs with a pot board
+   between them: on its top a fern potted on, a stack of nested pots and a
+   trowel left in the soil; on the pot board pots laid on their sides; and on
+   the flags at its end a galvanised watering can with its rose. 1.15 m
+   nominal; the bench 1.6 m of it, the can beside. */
+float wfPotBench(vec2 q, float px, float seed, float kq, bool paint){
+  const float TOP = 0.84, HL = 0.78;
+  vec3 col = vec3(0.1);
+  float ink = 0.0;
+  float bx = q.x + 0.18;                     // the bench sits left of the quad's axis, the can right
+  float ax = abs(bx);
+  /* the frame: four legs, the apron under the top, the pot board, the top's
+     three boards */
+  float legs = min(mmBox(vec2(ax - (HL - 0.05), q.y - TOP*0.5), vec2(0.028, TOP*0.5), 0.004),
+                   mmBox(vec2(ax - (HL - 0.20), q.y - TOP*0.5 - 0.02), vec2(0.022, TOP*0.5 - 0.02), 0.004));
+  float apron = mmBox(vec2(bx, q.y - (TOP - 0.07)), vec2(HL - 0.03, 0.045), 0.004);
+  float board = mmBox(vec2(bx, q.y - 0.22), vec2(HL - 0.04, 0.018), 0.004);
+  float top = mmBox(vec2(bx, q.y - (TOP + 0.020)), vec2(HL, 0.022), 0.006);
+  float frame = min(min(legs, apron), min(board, top));
+  float d = frame;
+  vec3 deal = vec3(0.40, 0.31, 0.21)*(0.82 + 0.30*mmNoise(vec2(q.x*30.0, q.y*3.0) + seed));
+  if (frame < max(px, 1e-5)) {
+    /* the back legs a stop darker, in the bench's own shadow */
+    float back = 1.0 - wfIn(mmBox(vec2(ax - (HL - 0.05), q.y - TOP*0.5), vec2(0.028, TOP*0.5), 0.004), px);
+    ghLay(col, ink, legs, deal*mix(1.0, 0.55, back)*(0.70 + 0.30*smoothstep(0.0, TOP, q.y)), px, 0.85);
+    ghLay(col, ink, apron, deal*0.62, px, 0.85);
+    ghLay(col, ink, board, deal*0.70, px, 0.85);
+    /* the top's boards: three, their joints and their worn front arris lit */
+    vec3 tc = deal*(0.95 + 0.35*smoothstep(TOP + 0.00, TOP + 0.042, q.y));
+    ghLay(col, ink, top, tc, px, 0.95);
+    float jt = abs(fract(bx/0.52 + 0.5) - 0.5)*0.52;
+    ink = max(ink, mmInkP(jt, px, 1.0)*wfIn(top, px)*0.5);
+  }
+  /* on the top: a fern potted on, a stack of nested pots, the trowel */
+  float p1 = ghPot(q - vec2(-0.58, TOP + 0.042), 0.22, 0.0, seed + 1.0, px, kq, col, ink);
+  d = min(d, p1);
+  float fern = ghCrown(q, vec2(-0.58, TOP + 0.042 + 0.21), 0.42, 1.0, seed + 3.1, px, kq, 0.2, TOP + 0.042 + 0.20, col, ink);
+  d = min(d, fern);
+  for (int i = 0; i < 3; i++){
+    float fi = float(i);
+    float pk = ghPot(q - vec2(-0.12, TOP + 0.042 + fi*0.055), 0.16, 0.0, seed + 5.0 + fi, px, kq, col, ink);
+    d = min(d, pk);
+  }
+  float p3 = ghPot(q - vec2(0.30, TOP + 0.042), 0.15, 0.0, seed + 9.0, px, kq, col, ink);
+  d = min(d, p3);
+  /* the trowel, stood in that pot's soil: a wooden handle and its blade */
+  float th = wfSeg(q, vec2(0.33, TOP + 0.19), vec2(0.40, TOP + 0.34), 0.012);
+  ghLay(col, ink, th, vec3(0.45, 0.28, 0.14), px, 0.8);
+  d = min(d, th);
+  /* on the pot board: two pots on their sides, mouths toward you */
+  for (int i = 0; i < 2; i++){
+    float fi = float(i);
+    vec2 c = vec2(-0.40 + fi*0.46, 0.24 + 0.075);
+    float mouth = wfEll(q - c, vec2(0.075, 0.072));
+    float ring = abs(mouth) - 0.010;
+    if (min(mouth, ring) < max(px, 1e-5)) {
+      vec3 clay = vec3(0.60, 0.29, 0.16)*(0.75 + 0.35*smoothstep(-0.07, 0.07, q.y - c.y));
+      ghLay(col, ink, mouth, vec3(0.06, 0.04, 0.03), px, 0.7);
+      ghLay(col, ink, ring, clay, px, 0.8);
+    }
+    d = min(d, mouth - 0.010);
+  }
+  /* THE WATERING CAN, on the flags at the bench's end: a galvanised drum,
+     its long spout raked up to the rose, the handle arched over its back */
+  vec2 cq = q - vec2(HL - 0.18 + 0.40, 0.0);
+  float can = mmBox(cq - vec2(0.0, 0.17), vec2(0.13, 0.17), 0.02);
+  float lid = max(wfEll(cq - vec2(0.0, 0.34), vec2(0.13, 0.03)), 0.34 - cq.y);
+  float spout = wfSeg(cq, vec2(-0.10, 0.08), vec2(-0.34, 0.40), 0.018);
+  float rose = wfEll(cq - vec2(-0.36, 0.43), vec2(0.035, 0.045));
+  float hnd = max(abs(length(vec2((cq.x - 0.02)/1.15, cq.y - 0.32)) - 0.13) - 0.014, 0.30 - cq.y);
+  float canD = min(min(can, lid), min(min(spout, rose), hnd));
+  if (canD < max(px, 1e-5)) {
+    float u = ghCyl(cq.x, 0.13);
+    vec3 zinc = vec3(0.50, 0.54, 0.52)*(0.45 + 0.55*wfRound(u))*(1.0 + 0.30*kq*u);
+    /* its seams, two hoops round the drum, inked below */
+    ghLay(col, ink, can, zinc, px, 0.9);
+    ink = max(ink, max(mmInkP(cq.y - 0.08, px, 1.0), mmInkP(cq.y - 0.27, px, 1.0))*wfIn(can, px)*0.55);
+    ghLay(col, ink, lid, vec3(0.58, 0.62, 0.60)*0.95, px, 0.9);
+    ghLay(col, ink, spout, vec3(0.46, 0.50, 0.48)*0.85, px, 0.9);
+    ghLay(col, ink, rose, vec3(0.52, 0.56, 0.54), px, 0.9);
+    ghLay(col, ink, hnd, vec3(0.44, 0.48, 0.46)*0.9, px, 0.9);
+  }
+  d = min(d, canD);
+  gWfCol = col; gWfInk = ink;
+  gWfGloss = 0.20 + 0.35*wfIn(canD, px);
+  gWfMoon = 0.30*wfIn(top, px) + 0.40*wfIn(canD, px)*smoothstep(0.1, 0.4, q.y);
+  return d;
+}
+#endif
+
 /* ── 80 A BIRDCAGE ON ITS STAND (SINOPIA's; round 25 graft) ───────────────
    Both judges: "brass birdcages on stands in the planters". A tripod foot,
    a slender pole in conservatory-green iron, and the cage -- a drum of
@@ -17198,6 +17293,7 @@ float wfNom(float s){
   if (s < 77.5) return 1.00;   // (77, the staging, is sized to the room)
   if (s < 78.5) return 2.05;   // the grand piano and its stool
   if (s < 79.5) return 0.30;   // 79, a fan dropped on the floor
+  if (s > 83.5) return 1.15;   // 84, the potting bench (round 34 graft)
   return 1.56;                 // 80, a birdcage on its stand (graft)
 }
 /* which way it faces: the room's seed turns some round */
@@ -17270,6 +17366,9 @@ float wfDraw(vec2 m, vec2 msz, float s, float seed, float px, bool paint){
 #endif
 #if MM_SH76
   else if (s < 76.5) d = wfStand(q, qpx, seed, kq, paint);
+#endif
+#if MM_SH84
+  else if (s > 83.5) d = wfPotBench(q, qpx, seed, kq, paint);   // 84 (round 34 graft)
 #endif
 #if MM_SH80 || MM_SH81 || MM_SH82 || MM_SH83
   else if (s > 79.5) d = wfBirdcage(q, qpx, seed, kq, paint);   // 80 (graft)
@@ -19812,7 +19911,7 @@ vec3 wgPaint(vec2 m, vec2 msz, float shape, float seed, float px, float lum,
   }
 #endif
 
-#if MM_SH44 || MM_SH45 || MM_SH46 || MM_SH47 || MM_SH48 || MM_SH49 || MM_SH50 || MM_SH51 || MM_SH52 || MM_SH53 || MM_SH54 || MM_SH55 || MM_SH56 || MM_SH57 || MM_SH58 || MM_SH59 || MM_SH60 || MM_SH61 || MM_SH62 || MM_SH63 || MM_SH64 || MM_SH65 || MM_SH66 || MM_SH67 || MM_SH68 || MM_SH69 || MM_SH70 || MM_SH71 || MM_SH72 || MM_SH73 || MM_SH74 || MM_SH75 || MM_SH76 || MM_SH77 || MM_SH78 || MM_SH79 || MM_SH80 || MM_SH81 || MM_SH82 || MM_SH83
+#if MM_SH44 || MM_SH45 || MM_SH46 || MM_SH47 || MM_SH48 || MM_SH49 || MM_SH50 || MM_SH51 || MM_SH52 || MM_SH53 || MM_SH54 || MM_SH55 || MM_SH56 || MM_SH57 || MM_SH58 || MM_SH59 || MM_SH60 || MM_SH61 || MM_SH62 || MM_SH63 || MM_SH64 || MM_SH65 || MM_SH66 || MM_SH67 || MM_SH68 || MM_SH69 || MM_SH70 || MM_SH71 || MM_SH72 || MM_SH73 || MM_SH74 || MM_SH75 || MM_SH76 || MM_SH77 || MM_SH78 || MM_SH79 || MM_SH80 || MM_SH81 || MM_SH82 || MM_SH83 || MM_SH84
   if (shape > 41.5) {
     /* ---- THE ORRERY ---- */
     float pt;
@@ -22514,7 +22613,7 @@ float shapeField(vec2 uv, vec2 msz, float shape, float seed){
 #endif
 #endif
 #if MM_WINGS >= 3
-#if MM_SH45 || MM_SH46 || MM_SH47 || MM_SH48 || MM_SH49 || MM_SH50 || MM_SH51 || MM_SH52 || MM_SH53 || MM_SH54 || MM_SH55 || MM_SH56 || MM_SH57 || MM_SH58 || MM_SH59 || MM_SH60 || MM_SH61 || MM_SH62 || MM_SH63 || MM_SH64 || MM_SH65 || MM_SH66 || MM_SH67 || MM_SH68 || MM_SH69 || MM_SH70 || MM_SH71 || MM_SH72 || MM_SH73 || MM_SH74 || MM_SH75 || MM_SH76 || MM_SH77 || MM_SH78 || MM_SH79 || MM_SH80 || MM_SH81 || MM_SH82 || MM_SH83
+#if MM_SH45 || MM_SH46 || MM_SH47 || MM_SH48 || MM_SH49 || MM_SH50 || MM_SH51 || MM_SH52 || MM_SH53 || MM_SH54 || MM_SH55 || MM_SH56 || MM_SH57 || MM_SH58 || MM_SH59 || MM_SH60 || MM_SH61 || MM_SH62 || MM_SH63 || MM_SH64 || MM_SH65 || MM_SH66 || MM_SH67 || MM_SH68 || MM_SH69 || MM_SH70 || MM_SH71 || MM_SH72 || MM_SH73 || MM_SH74 || MM_SH75 || MM_SH76 || MM_SH77 || MM_SH78 || MM_SH79 || MM_SH80 || MM_SH81 || MM_SH82 || MM_SH83 || MM_SH84
   } else if (shape > 44.5) {              // 45+ -- round 24's drawings, painted in the one pass
     d = wfDraw(p*msz, msz, shape, seed, max(wfPx, 1e-5), true) / msz.y;
 #endif
@@ -22664,7 +22763,7 @@ float reliefH(vec2 uv, vec2 msz, vec2 mpp, float shape, float seed, out float ti
      that turns each part. (graft: ULTRAMARINE's drawings, 32-35 and 38-42,
      carry their form in wgPaint's own shading and lines, so they take no
      relief here; the trunk and the dust sheet keep VERDITER's) */
-#if MM_SH32 || MM_SH33 || MM_SH34 || MM_SH35 || MM_SH36 || MM_SH37 || MM_SH38 || MM_SH39 || MM_SH40 || MM_SH41 || MM_SH42 || MM_SH43 || MM_SH44 || MM_SH45 || MM_SH46 || MM_SH47 || MM_SH48 || MM_SH49 || MM_SH50 || MM_SH51 || MM_SH52 || MM_SH53 || MM_SH54 || MM_SH55 || MM_SH56 || MM_SH57 || MM_SH58 || MM_SH59 || MM_SH60 || MM_SH61 || MM_SH62 || MM_SH63 || MM_SH64 || MM_SH65 || MM_SH66 || MM_SH67 || MM_SH68 || MM_SH69 || MM_SH70 || MM_SH71 || MM_SH72 || MM_SH73 || MM_SH74 || MM_SH75 || MM_SH76 || MM_SH77 || MM_SH78 || MM_SH79 || MM_SH80 || MM_SH81 || MM_SH82 || MM_SH83
+#if MM_SH32 || MM_SH33 || MM_SH34 || MM_SH35 || MM_SH36 || MM_SH37 || MM_SH38 || MM_SH39 || MM_SH40 || MM_SH41 || MM_SH42 || MM_SH43 || MM_SH44 || MM_SH45 || MM_SH46 || MM_SH47 || MM_SH48 || MM_SH49 || MM_SH50 || MM_SH51 || MM_SH52 || MM_SH53 || MM_SH54 || MM_SH55 || MM_SH56 || MM_SH57 || MM_SH58 || MM_SH59 || MM_SH60 || MM_SH61 || MM_SH62 || MM_SH63 || MM_SH64 || MM_SH65 || MM_SH66 || MM_SH67 || MM_SH68 || MM_SH69 || MM_SH70 || MM_SH71 || MM_SH72 || MM_SH73 || MM_SH74 || MM_SH75 || MM_SH76 || MM_SH77 || MM_SH78 || MM_SH79 || MM_SH80 || MM_SH81 || MM_SH82 || MM_SH83 || MM_SH84
   if (shape > 31.5) {
     gBedLeaf = 0.0;
     float pt = 0.0;
@@ -24648,7 +24747,7 @@ void main(){
   float wgInk = 0.0, wgMoon = 0.0, wgOn = 0.0;
 #if MM_WINGS == 2
   float wgS = wgU(vShape);
-#if MM_SH32 || MM_SH33 || MM_SH34 || MM_SH35 || MM_SH38 || MM_SH39 || MM_SH40 || MM_SH41 || MM_SH42 || MM_SH43 || MM_SH44 || MM_SH45 || MM_SH46 || MM_SH47 || MM_SH48 || MM_SH49 || MM_SH50 || MM_SH51 || MM_SH52 || MM_SH53 || MM_SH54 || MM_SH55 || MM_SH56 || MM_SH57 || MM_SH58 || MM_SH59 || MM_SH60 || MM_SH61 || MM_SH62 || MM_SH63 || MM_SH64 || MM_SH65 || MM_SH66 || MM_SH67 || MM_SH68 || MM_SH69 || MM_SH70 || MM_SH71 || MM_SH72 || MM_SH73 || MM_SH74 || MM_SH75 || MM_SH76 || MM_SH77 || MM_SH78 || MM_SH79 || MM_SH80 || MM_SH81 || MM_SH82 || MM_SH83
+#if MM_SH32 || MM_SH33 || MM_SH34 || MM_SH35 || MM_SH38 || MM_SH39 || MM_SH40 || MM_SH41 || MM_SH42 || MM_SH43 || MM_SH44 || MM_SH45 || MM_SH46 || MM_SH47 || MM_SH48 || MM_SH49 || MM_SH50 || MM_SH51 || MM_SH52 || MM_SH53 || MM_SH54 || MM_SH55 || MM_SH56 || MM_SH57 || MM_SH58 || MM_SH59 || MM_SH60 || MM_SH61 || MM_SH62 || MM_SH63 || MM_SH64 || MM_SH65 || MM_SH66 || MM_SH67 || MM_SH68 || MM_SH69 || MM_SH70 || MM_SH71 || MM_SH72 || MM_SH73 || MM_SH74 || MM_SH75 || MM_SH76 || MM_SH77 || MM_SH78 || MM_SH79 || MM_SH80 || MM_SH81 || MM_SH82 || MM_SH83 || MM_SH84
   if (wgS > 0.5) {
     wgOn = 1.0;
     float lumW = max(mmLum(albedo), 0.02);
@@ -24678,7 +24777,7 @@ void main(){
 #if MM_WINGS >= 3
   /* ROUND 24: each drawing in its own materials (wfDraw, painted in the
      one pass), at the prop's own light level as round 23's are */
-#if MM_SH45 || MM_SH46 || MM_SH47 || MM_SH48 || MM_SH49 || MM_SH50 || MM_SH51 || MM_SH52 || MM_SH53 || MM_SH54 || MM_SH55 || MM_SH56 || MM_SH57 || MM_SH58 || MM_SH59 || MM_SH60 || MM_SH61 || MM_SH62 || MM_SH63 || MM_SH64 || MM_SH65 || MM_SH66 || MM_SH67 || MM_SH68 || MM_SH69 || MM_SH70 || MM_SH71 || MM_SH72 || MM_SH73 || MM_SH74 || MM_SH75 || MM_SH76 || MM_SH77 || MM_SH78 || MM_SH79 || MM_SH80 || MM_SH81 || MM_SH82 || MM_SH83
+#if MM_SH45 || MM_SH46 || MM_SH47 || MM_SH48 || MM_SH49 || MM_SH50 || MM_SH51 || MM_SH52 || MM_SH53 || MM_SH54 || MM_SH55 || MM_SH56 || MM_SH57 || MM_SH58 || MM_SH59 || MM_SH60 || MM_SH61 || MM_SH62 || MM_SH63 || MM_SH64 || MM_SH65 || MM_SH66 || MM_SH67 || MM_SH68 || MM_SH69 || MM_SH70 || MM_SH71 || MM_SH72 || MM_SH73 || MM_SH74 || MM_SH75 || MM_SH76 || MM_SH77 || MM_SH78 || MM_SH79 || MM_SH80 || MM_SH81 || MM_SH82 || MM_SH83 || MM_SH84
   if (vShape > 44.5) {
     wgOn = 1.0;
     float Ew = max(mmLum(albedo), 0.02)*2.2 + 0.060;
@@ -25313,7 +25412,7 @@ void main(){
 #endif
 #endif
 #if MM_WINGS >= 3
-#if MM_SH45 || MM_SH46 || MM_SH47 || MM_SH48 || MM_SH49 || MM_SH50 || MM_SH51 || MM_SH52 || MM_SH53 || MM_SH54 || MM_SH55 || MM_SH56 || MM_SH57 || MM_SH58 || MM_SH59 || MM_SH60 || MM_SH61 || MM_SH62 || MM_SH63 || MM_SH64 || MM_SH65 || MM_SH66 || MM_SH67 || MM_SH68 || MM_SH69 || MM_SH70 || MM_SH71 || MM_SH72 || MM_SH73 || MM_SH74 || MM_SH75 || MM_SH76 || MM_SH77 || MM_SH78 || MM_SH79 || MM_SH80 || MM_SH81 || MM_SH82 || MM_SH83
+#if MM_SH45 || MM_SH46 || MM_SH47 || MM_SH48 || MM_SH49 || MM_SH50 || MM_SH51 || MM_SH52 || MM_SH53 || MM_SH54 || MM_SH55 || MM_SH56 || MM_SH57 || MM_SH58 || MM_SH59 || MM_SH60 || MM_SH61 || MM_SH62 || MM_SH63 || MM_SH64 || MM_SH65 || MM_SH66 || MM_SH67 || MM_SH68 || MM_SH69 || MM_SH70 || MM_SH71 || MM_SH72 || MM_SH73 || MM_SH74 || MM_SH75 || MM_SH76 || MM_SH77 || MM_SH78 || MM_SH79 || MM_SH80 || MM_SH81 || MM_SH82 || MM_SH83 || MM_SH84
   if (vShape > 44.5) { satK = max(uPropSat, 0.42); satM = max(uPropSatMax, 0.62); }
 #endif
 #endif

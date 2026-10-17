@@ -1793,7 +1793,10 @@ export const ROOM_KINDS = {
         centre: { shape: 25, z: -2.9, clear: 2.9 },
         /* from up there the columns stand at the back and the birdcage stands
            are more planting (the view only: the fight's room is as it was) */
-        backOnly: [6], swapView: [[76, 74]],
+        /* (round 34 graft, GLAUCONITE's tierScale: the staging's planting
+           grown larger in this room -- J1: "the back beds raised into a full,
+           lit mass") */
+        backOnly: [6], swapView: [[76, 74]], tierScale: 2.1,
         /* its warm lamp stands beside the fountain, where it lights it */
         lampsView: [{ i: 2, x: 3.3, z: 0.10, k: 0.55 },   // (round 25: no white hole in the flags)
           /* (round 25 graft, both judges: "light the fountain and the back
@@ -1805,40 +1808,55 @@ export const ROOM_KINDS = {
              set beside is walked back to the staging, and at that height
              and strength it burned the "blown-out white smear" both survey-5
              judges named into the raised paving; higher, its pool spreads) */
-          { i: 3, x: 1.4, z: 0.46, y: 2.60, color: '#e6b872', k: 3.0, radius: 8.5 }],
+          /* (round 34 graft: GLAUCONITE's 2.0 at 9 m -- nearer the fountain
+             from the new vantage, 3.0 laid a hot pool on its paving) */
+          { i: 3, x: 1.4, z: 0.46, y: 2.60, color: '#e6b872', k: 2.0, radius: 9.0 }],
         /* (...and, both judges, "one or two planted urns or a fern stand at
            mid-depth on the empty floor": set by the frame, dealt first --
            the terrace spends the whole prop budget) */
         nearView: [
-          { shape: 74, edge: 0.30, z: -3.6, tone: 0.94, centre: 1, scale: 2.60, seed: 1.75 },   // a kentia in a stone urn, by the lamp
+          /* (round 34 GRAFT, GLAUCONITE's conservatory -- J1 and J2: "tall
+             drawn ferns in urns in the conservatory's near corners and the
+             fountain at its back". From the gallery's near end the planting
+             the eye looks down on is set by the frame down both sides of the
+             floor -- palms and ferns in their urns, brick beds of fern and
+             aloe -- at several heights, and the fountain is the room's
+             centre at a size that reads) */
+          { shape: 74, edge: 0.21, z: -4.6, tone: 0.94, centre: 1, seed: 1.75, hM: 2.8 },   // a kentia in a stone urn, by the lamp
           { shape: 76, edge: 0.76, z: -2.4, tone: 0.92, centre: 1, scale: 1.90 },
-          /* (round 29: and a palm in its tub at the right, so the planting
-             crowds both sides of the floor) */
           { shape: 74, edge: 0.94, z: -3.8, tone: 0.92, centre: 1, seed: 2.45, hM: 2.9 },
           { shape: 74, edge: 0.07, z: -3.0, tone: 0.92, centre: 1, seed: 4.15, hM: 2.6 },
           { shape: 76, edge: 0.15, z: -5.6, tone: 0.90, centre: 1 },
           { shape: 74, edge: 0.84, z: -6.4, tone: 0.90, centre: 1, seed: 3.35, hM: 2.2 },
-          /* (round 29 GRAFT, judge 1, BOLUS's: "the pair of fluted green
-             iron columns framing the arched bays; they add a structural
-             foreground the conservatory lacks") */
           { shape: 6, edge: 0.17, z: -7.6, tone: 0.96, centre: 1 },
           { shape: 6, edge: 0.83, z: -7.8, tone: 0.96, centre: 1 },
-          /* ROUND 34 (both survey-5 judges: the near floor "an empty, soft,
-             unlit floor plane"): the gardener's things on the flags under
-             the gallery rail -- a stand of pots by the lantern, a fern and
-             a pair of pots set down at the left, a tall fern at the right */
-          /* (second pass: at a metre and under they read from the gallery
-             as "a handful of small plants" -- the gardener's big pots, and a
-             tall fern standing up into the view at the right, so the
-             planting is at several heights from the flags up; a palm at the
-             left as well cost the glasshouse fight its frame) */
-          { shape: 74, edge: 0.22, z: -0.6, tone: 0.94, centre: 1, fore: 1, seed: 6.05, hM: 1.55 },
-          { shape: 74, edge: 0.30, z: -1.6, tone: 0.94, centre: 1, fore: 1, seed: 5.25, hM: 1.10 },
-          { shape: 76, edge: 0.70, z: 2.0, tone: 0.94, centre: 1, fore: 1, scale: 1.55 },
-          { shape: 74, edge: 0.92, z: 3.0, tone: 0.94, centre: 1, fore: 1, seed: 1.75, hM: 2.6 },
+          { shape: 75, edge: 0.03, z: -1.2, tone: 0.94, centre: 1, seed: 3.1 },
+          { shape: 75, edge: 0.97, z: -1.6, tone: 0.94, centre: 1, seed: 6.4 },
+          { shape: 74, edge: 0.02, z: -2.2, tone: 0.95, centre: 1, seed: 5.25, hM: 3.4 },
+          { shape: 74, edge: 0.98, z: -2.6, tone: 0.95, centre: 1, seed: 1.15, hM: 3.2 },
+          { shape: 74, edge: 0.24, z: -5.6, tone: 0.92, centre: 1, seed: 4.65, hM: 1.9 },
+          { shape: 75, edge: 0.70, z: -6.2, tone: 0.92, centre: 1, seed: 2.2 },
+          { shape: 75, edge: 0.36, z: -9.4, y: 0.44, tone: 0.90, centre: 1, seed: 4.4 },
+          { shape: 75, edge: 0.64, z: -9.8, y: 0.44, tone: 0.90, centre: 1, seed: 5.9 },
+          { shape: 74, edge: 0.31, z: -11.6, y: 0.44, tone: 0.90, centre: 1, seed: 2.85, hM: 3.6 },
+          { shape: 74, edge: 0.69, z: -12.0, y: 0.44, tone: 0.90, centre: 1, seed: 6.55, hM: 3.8 },
+          { shape: 74, edge: 0.10, z: -8.8, tone: 0.90, centre: 1, seed: 7.45, hM: 3.4 },
+          { shape: 74, edge: 0.90, z: -9.2, tone: 0.90, centre: 1, seed: 8.35, hM: 3.2 },
+          { shape: 75, edge: 0.11, z: -4.0, tone: 0.93, centre: 1, seed: 5.5 },
+          { shape: 75, edge: 0.89, z: -4.6, tone: 0.93, centre: 1, seed: 3.9 },
+          { shape: 74, edge: 0.79, z: -5.8, tone: 0.92, centre: 1, seed: 4.65, hM: 2.6 },
+          { shape: 74, edge: 0.33, z: -7.0, y: 0.42, tone: 0.92, centre: 1, seed: 6.05, hM: 0.9 },
+          { shape: 74, edge: 0.41, z: -7.0, y: 0.42, tone: 0.92, centre: 1, seed: 2.25, hM: 0.8 },
+          { shape: 74, edge: 0.60, z: -7.0, y: 0.42, tone: 0.92, centre: 1, seed: 5.25, hM: 0.9 },
+          { shape: 74, edge: 0.68, z: -7.0, y: 0.42, tone: 0.92, centre: 1, seed: 3.35, hM: 0.8 },
+          /* (...and VIVIANITE's, J2 and J3: the gardener's potting table, its
+             pots and a watering can, on the flags under the gallery) */
+          { shape: 84, edge: 0.66, z: -3.4, tone: 0.95, centre: 1, still: true, scale: 1.2 },
         ],
         /* (round 34: 1.0 of the wing's 36 -- the 0.82 of 44 it was judged with) */
-        vantage: { at: 'above', rise: 2.9, drop: 0.0, fwd: 0.4, ahead: 9.0, count: 1.0 } },
+        /* (round 34 graft, GLAUCONITE's: from the gallery's near end and not
+           its far one -- at fwd 0.4 the house's planting was 20-25 m off) */
+        vantage: { at: 'above', rise: 2.9, drop: 0.0, fwd: 4.0, ahead: 7.0, count: 1.0 } },
       /* a palm house is walked down between two files of palms, close in
          along the walk where the lamps are, and its columns are the iron
          ones on its walls, so the pack deals palms where the hall deals a
@@ -1889,13 +1907,20 @@ export const ROOM_KINDS = {
           { shape: 74, edge: 0.78, z: 1.2, tone: 0.92, centre: 1, fore: 1, seed: 6.05, hM: 1.0 },
           { shape: 74, edge: 0.40, z: 4.6, tone: 0.92, centre: 1, fore: 1, seed: 5.25, hM: 0.7 },
           { shape: 75, x: -5.60, z: -1.60, tone: 0.86 },
+          /* (round 34 GRAFT, VIVIANITE's -- J2: "the palm house's black
+             near-left carried into the light, a pot or watering can in it":
+             the potting bench and its can on the flags there) */
+          { shape: 84, edge: 0.27, z: 2.8, tone: 0.95, keep: true, still: true },   // (in from 0.20: the frame cut its end)
         ],
         /* ...and the moon through the roof on the near flags at the left, so
            the walk's left half is not a black field under the lamp's right
            (second pass: + across, 5.4 m on -- this vantage draws mirrored,
            and at 3 m the pool lay under the frame's foot; measured with the
            pool painted red) */
-        nearFloor: { pool2: { ahead: 5.4, across: 2.9, rAlong: 3.4, rAcross: 2.4, k: 3.6, color: '#7fa6c8' } } },
+        /* (round 34 graft, J2 and VIVIANITE's: and the lantern's warm on the
+           near-left flags where the bench stands -- + across, as the moon's) */
+        nearFloor: { pool: { ahead: 5.0, across: 2.4, rAlong: 3.4, rAcross: 3.0, k: 4.2, color: '#e0b266' },
+                     pool2: { ahead: 5.4, across: 2.9, rAlong: 3.4, rAcross: 2.4, k: 3.6, color: '#7fa6c8' } } },
       /* and a vinery's floor is bedded out in rows under the rods; it is a
          lean-to against the garden wall, so it is shallower than the great
          house (0.7 of its depth) and that wall is near enough to read */
@@ -3297,6 +3322,9 @@ export class Atmosphere {
           pal.props.shapes = pal.props.shapes.map((sh) => (sh === from ? to : sh));
         }
         if (kind.backOnly) pal.props.backOnly = kind.backOnly;
+        /* (round 34 graft, GLAUCONITE's: and the size its staging's planting
+           grows to) */
+        if (kind.tierScale) pal.props.tierScale = kind.tierScale;
         /* ...and lamps the vantage's room places (as `lamps`, main room excepted) */
         for (const m of (kind.lampsView || [])) {
           const L = pal.lights[m.i];
