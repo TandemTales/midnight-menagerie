@@ -1591,9 +1591,13 @@ const FOYER_NEAR_HEARTH = [
      torchere standing out on the boards with its pool round it, and the
      stick stand by the door on the right -- `fore`, so the threshold's
      step back keeps them at your feet. */
-  { shape: 63, edge: 0.165, z: 4.6, tone: 0.95, fore: 1, keep: true, scale: 1.1 },
+  /* (round 34 GRAFT, GLAUCONITE's -- J1 and J2: "the green chairs in the
+     parlour's near corners", a PAIR of hall chairs either side of the runner
+     as a parlour sets them to the fire, in its green velvet (seeds 2.2 and
+     6.7); the stick stand they displace goes to the gallery) */
+  { shape: 63, edge: 0.150, z: 4.8, tone: 0.95, fore: 1, keep: true, scale: 1.1, seed: 2.2 },
   { shape: 65, edge: 0.27, z: 2.6, tone: 0.95, fore: 1, keep: true },
-  { shape: 67, edge: 0.885, z: 4.8, tone: 0.95, fore: 1, keep: true, scale: 1.2 },
+  { shape: 63, edge: 0.855, z: 4.6, tone: 0.95, fore: 1, keep: true, scale: 1.1, seed: 6.7 },
 ];
 const FOYER_NEAR_GALLERY = [
   /* (busts on term pedestals, round 14: the gallery's statues read as "dark
@@ -1609,6 +1613,9 @@ const FOYER_NEAR_GALLERY = [
   { shape: 64, x:  7.60, z: -7.40, tone: 0.90 },
   { shape: 65, x: -3.20, z: -5.40, tone: 0.72, under: 2 },
   { shape: 63, x: -5.40, z: -1.60, tone: 0.86 },   // a hall chair by the near wall
+  /* (round 34 graft, GLAUCONITE's: the stick stand on the flags at your
+     right, across from the bust) */
+  { shape: 67, edge: 0.90, z: 3.6, tone: 0.95, fore: 1, keep: true },
 ];
 /* A FAMILY PLOT AT ARM'S LENGTH (round 14): the Graveyard's plots are seen
    from AMONG the graves, and the rows layout puts its nearest rank eight metres
@@ -1697,6 +1704,11 @@ export const ROOM_KINDS = {
            this hall has brought nearer, so the paper beside the fire is
            not washed a milky lavender) */
         lamps: [{ i: 3, z: 0.42, k: 0.70 }],
+        /* (round 34 GRAFT, GLAUCONITE's -- J1 and J2: "the warmer pool along
+           the runner": the torchere's candles laid long and warm down the
+           runner between the chairs, where the parlour's lower half was a
+           dark plank field) */
+        nearFloor: { pool: { ahead: 4.6, across: 0.0, rAlong: 3.8, rAcross: 3.0, k: 2.1, color: '#f0a65a' } },
         door: 'case', vantage: { at: 'threshold', back: 2.4, lens: 0.88, dip: 0.30, dy: -0.20 } },
       /* a gallery is long and narrow, so its arcade runs away down both
          sides; it is paved in flags and vaulted bay by bay */
@@ -1709,7 +1721,11 @@ export const ROOM_KINDS = {
         room: { w: 0.84, d: 1.10 }, rug: { ahead: 5.2, hw: 1.5, hd: 2.6 },
         /* (round 34: the near pool longer down the flags, so no dark band
            lies across the floor between it and the lantern's) */
-        nearFloor: { pool: { ahead: 5.0, across: -0.6, rAlong: 4.6, rAcross: 3.4, k: 1.15, color: '#e8a460' } },
+        nearFloor: { pool: { ahead: 5.0, across: -0.6, rAlong: 4.6, rAcross: 3.4, k: 1.15, color: '#e8a460' },
+                     /* (round 34 graft, J1: "a light or a prop in the gallery's
+                        near-left black hole" -- the near torchere's candles on
+                        the flags there, under the bust) */
+                     pool2: { ahead: 2.8, across: -2.2, rAlong: 2.4, rAcross: 2.2, k: 1.6, color: '#e8a460' } },
         floor: 2, ceil: 4, cam: { y: 0.45, z: 1.2, look: -0.10, fov: 3 },
         vantage: { at: 'along', off: 0.30, wall: 2.6, fwd: 0.8, yaw: 26, wide: 5 } },
     ],

@@ -25722,7 +25722,9 @@ void main(){
         float dl = (1.0/max(k, 1e-3) - 1.0)/(1.0/R - 1.0);      // depth: 0 the hall face, 1 the far arris
         float dlx = (1.0/max(kx, 1e-3) - 1.0)/(1.0/R - 1.0);    // ...along a side plane
         float hS = yv/max(kx, 1e-3);                             // height on a side plane, near-plane units
-        const float LEAF = 3.3;
+        /* (round 34 graft, J2: "the open door leaf ... cropping less of the
+           room" -- 2.5 of the reveal's depth, from 3.3) */
+        const float LEAF = 2.5;
         float hTop = (YA - VY)*0.975;
         float isL = smoothstep(0.004, -0.004, s.x);
         float xL = xa/(1.0 + LEAF*(1.0/R - 1.0));
@@ -25872,13 +25874,29 @@ void main(){
           ink = max(ink, (1.0 - smoothstep(0.0, 1.2*fwD, eD))*max(step(0.0, hS)*step(hS, hTop - 0.070), step(hS, -0.090)));
           float eH = min(min(abs(hS), abs(hS - hTop + 0.070)), abs(hS + 0.090));
           ink = max(ink, (1.0 - smoothstep(0.0, 1.2*fwH, eH))*inS);
+          /* (round 34 graft, J2: "given mouldings and lit edges" -- a
+             bolection moulding proud of the stiles round each panel, its
+             room-side and upper members catching the lamp, the others in
+             shade, every member inked) */
+          float mD = 0.12, mH = 0.016;
+          float inM = inS*(1.0 - pnl);
+          float ringD = min(abs(dd - 0.30 + mD*0.5), abs(dd - span + 0.30 - mD*0.5));
+          float ringOn = inM*step(ringD, mD*0.5)*max(step(-mH, hS)*step(hS, hTop - 0.070 + mH), step(-1.40 - mH, hS)*step(hS, -0.090 + mH));
+          float eHm = min(min(abs(hS + mH*0.5), abs(hS - hTop + 0.070 - mH*0.5)), min(abs(hS + 0.090 - mH*0.5), abs(hS + 1.40 + mH*0.5)));
+          float ringH = step(0.30 - mD, dd)*step(dd, span - 0.30 + mD)*step(eHm, mH*0.5)*(1.0 - pnl);
+          float mould = clamp(ringOn + ringH, 0.0, 1.0);
+          float mLit = ringH > 0.5 ? 0.85 : step(span*0.5, dd);
+          t = mix(t, mix(0.46, 1.05, mLit), mould);
+          ink = max(ink, (1.0 - smoothstep(0.0, 1.2*fwD, abs(ringD - mD*0.5)))*inM*step(-mH, hS)*0.7);
           float lit = 0.40 + 0.30*smoothstep(0.0, span, dd);
           float gl = mmNoise(vec2(dd*3.0 + uSeed, hS*40.0));
           vec3 mah = vec3(0.060, 0.026, 0.014)*(0.80 + 0.40*gl);
           c3 = mah*t*(0.9 + 3.0*lit) + uRim*lit*0.040*t;
           /* the free edge: the leaf's thickness, lit square on */
-          float edge = smoothstep(span - 0.10, span - 0.02, dd);
-          c3 = mix(c3, mah*1.4 + uRim*0.085, edge);
+          /* (round 34 graft, J2: the free edge lit -- wider, and the lamp's
+             catch along it brighter) */
+          float edge = smoothstep(span - 0.18, span - 0.06, dd);
+          c3 = mix(c3, mah*1.9 + uRim*0.22, edge);
           /* the brass knob */
           float kk = 1.0/(1.0 + (LEAF - 0.32)*(1.0/R - 1.0));
           vec2 kc = vec2(-xa*kk, VY - 0.045*kk);
