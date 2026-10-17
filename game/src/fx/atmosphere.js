@@ -283,7 +283,13 @@ export const REGIONS = {
        the hand, and a pool of candlelight laid on them in front of you from
        the near torchere, with the runner in its Turkey dyes */
     nearFloor: { fall: 0.90, dye: 1, calm: 0.6,
-                 pool: { ahead: 3.6, across: -0.8, rAlong: 2.8, rAcross: 3.0, k: 1.15, color: '#e8a460' } },
+                 pool: { ahead: 3.6, across: -0.8, rAlong: 2.8, rAcross: 3.0, k: 1.15, color: '#e8a460' },
+                 /* (round 34 GRAFT, all three judges on the fight: "a warm
+                    light pool on the floor between the Kid and the enemies,
+                    so they stand on a lit stage" -- the chandelier's candles
+                    laid on the boards where the fight stands, 9-10 m out;
+                    measured with it painted red) */
+                 pool2: { ahead: 9.6, across: 0.0, rAlong: 2.6, rAcross: 4.4, k: 5.5, color: '#eaa860' } },
     wallFog: 0.06,
     bloom: 0.80, warmTone: 0.05, halation: 0.55,
   },
