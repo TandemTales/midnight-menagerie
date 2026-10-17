@@ -17047,6 +17047,23 @@ float wfBed(vec2 q, float px, float seed, float kq, bool paint){
    trowel left in the soil; on the pot board pots laid on their sides; and on
    the flags at its end a galvanised watering can with its rose. 1.15 m
    nominal; the bench 1.6 m of it, the can beside. */
+/* (round 34 graft: a plain clay pot for the bench, one taper and its rim --
+   ghPot's five inlined copies and the fern's ghCrown took the Greenhouse
+   prop program's link from 9.6 s to 14.2 s, over linkprof's 12) */
+float bpPot(vec2 q, float H, float sd, float px, float kq, inout vec3 col, inout float ink){
+  float bw = H*0.40, tw = H*0.56;
+  float body = ghTaper(q, 0.0, H*0.84, bw, tw);
+  float rim = mmBox(q - vec2(0.0, H*0.915), vec2(tw*1.08, H*0.085), H*0.03);
+  float d = min(body, rim);
+  if (d < max(px, 1e-5)) {
+    vec3 clay = mix(vec3(0.66, 0.31, 0.17), vec3(0.58, 0.34, 0.24), mmHash11(sd*2.7));
+    float u = ghCyl(q.x, mix(bw, tw, clamp(q.y/H, 0.0, 1.0)));
+    vec3 bc = clay*(0.55 + 0.45*wfRound(u))*(1.0 + 0.30*kq*u)*(1.0 - 0.40*smoothstep(H*0.72, H*0.83, q.y));
+    ghLay(col, ink, body, bc, px, 0.95);
+    ghLay(col, ink, rim, clay*(0.70 + 0.40*wfRound(ghCyl(q.x, tw*1.08)))*(0.85 + 0.30*smoothstep(H*0.83, H, q.y)), px, 0.95);
+  }
+  return d;
+}
 float wfPotBench(vec2 q, float px, float seed, float kq, bool paint){
   const float TOP = 0.84, HL = 0.78;
   vec3 col = vec3(0.1);
@@ -17064,9 +17081,7 @@ float wfPotBench(vec2 q, float px, float seed, float kq, bool paint){
   float d = frame;
   vec3 deal = vec3(0.40, 0.31, 0.21)*(0.82 + 0.30*mmNoise(vec2(q.x*30.0, q.y*3.0) + seed));
   if (frame < max(px, 1e-5)) {
-    /* the back legs a stop darker, in the bench's own shadow */
-    float back = 1.0 - wfIn(mmBox(vec2(ax - (HL - 0.05), q.y - TOP*0.5), vec2(0.028, TOP*0.5), 0.004), px);
-    ghLay(col, ink, legs, deal*mix(1.0, 0.55, back)*(0.70 + 0.30*smoothstep(0.0, TOP, q.y)), px, 0.85);
+    ghLay(col, ink, legs, deal*(0.62 + 0.30*smoothstep(0.0, TOP, q.y)), px, 0.85);
     ghLay(col, ink, apron, deal*0.62, px, 0.85);
     ghLay(col, ink, board, deal*0.70, px, 0.85);
     /* the top's boards: three, their joints and their worn front arris lit */
@@ -17076,53 +17091,39 @@ float wfPotBench(vec2 q, float px, float seed, float kq, bool paint){
     ink = max(ink, mmInkP(jt, px, 1.0)*wfIn(top, px)*0.5);
   }
   /* on the top: a fern potted on, a stack of nested pots, the trowel */
-  float p1 = ghPot(q - vec2(-0.58, TOP + 0.042), 0.22, 0.0, seed + 1.0, px, kq, col, ink);
+  float p1 = bpPot(q - vec2(-0.58, TOP + 0.042), 0.22, seed + 1.0, px, kq, col, ink);
   d = min(d, p1);
-  float fern = ghCrown(q, vec2(-0.58, TOP + 0.042 + 0.21), 0.42, 1.0, seed + 3.1, px, kq, 0.2, TOP + 0.042 + 0.20, col, ink);
+  /* (a fern potted on in it: one fan of fronds, ghFan, the beds' own) */
+  float fsh;
+  float fern = max(ghFan(q, -0.58, TOP + 0.042 + 0.20, 0.40, seed + 3.1, px, fsh), TOP + 0.042 + 0.19 - q.y);
+  if (fern < max(px, 1e-5)) ghLay(col, ink, fern, vec3(0.12, 0.26, 0.10)*fsh, px, 0.85);
   d = min(d, fern);
-  for (int i = 0; i < 3; i++){
-    float fi = float(i);
-    float pk = ghPot(q - vec2(-0.12, TOP + 0.042 + fi*0.055), 0.16, 0.0, seed + 5.0 + fi, px, kq, col, ink);
-    d = min(d, pk);
-  }
-  float p3 = ghPot(q - vec2(0.30, TOP + 0.042), 0.15, 0.0, seed + 9.0, px, kq, col, ink);
+  /* (a stack of nested pots: one pot, its rims inked up it) */
+  float pk = bpPot(q - vec2(-0.12, TOP + 0.042), 0.27, seed + 5.0, px, kq, col, ink);
+  ink = max(ink, max(mmInkP(q.y - (TOP + 0.042 + 0.10), px, 1.0), mmInkP(q.y - (TOP + 0.042 + 0.17), px, 1.0))*wfIn(pk, px)*0.6);
+  d = min(d, pk);
+  float p3 = bpPot(q - vec2(0.30, TOP + 0.042), 0.15, seed + 9.0, px, kq, col, ink);
   d = min(d, p3);
-  /* the trowel, stood in that pot's soil: a wooden handle and its blade */
-  float th = wfSeg(q, vec2(0.33, TOP + 0.19), vec2(0.40, TOP + 0.34), 0.012);
-  ghLay(col, ink, th, vec3(0.45, 0.28, 0.14), px, 0.8);
-  d = min(d, th);
-  /* on the pot board: two pots on their sides, mouths toward you */
-  for (int i = 0; i < 2; i++){
-    float fi = float(i);
-    vec2 c = vec2(-0.40 + fi*0.46, 0.24 + 0.075);
-    float mouth = wfEll(q - c, vec2(0.075, 0.072));
-    float ring = abs(mouth) - 0.010;
-    if (min(mouth, ring) < max(px, 1e-5)) {
-      vec3 clay = vec3(0.60, 0.29, 0.16)*(0.75 + 0.35*smoothstep(-0.07, 0.07, q.y - c.y));
-      ghLay(col, ink, mouth, vec3(0.06, 0.04, 0.03), px, 0.7);
-      ghLay(col, ink, ring, clay, px, 0.8);
-    }
-    d = min(d, mouth - 0.010);
-  }
+  /* (round 34 graft: the trowel and the pots on the pot board are gone --
+     the frame's link time; a pot set down under the bench instead) */
+  float pb = bpPot(q - vec2(-0.30, 0.24), 0.17, seed + 7.0, px, kq, col, ink);
+  d = min(d, pb);
   /* THE WATERING CAN, on the flags at the bench's end: a galvanised drum,
      its long spout raked up to the rose, the handle arched over its back */
   vec2 cq = q - vec2(HL - 0.18 + 0.40, 0.0);
-  float can = mmBox(cq - vec2(0.0, 0.17), vec2(0.13, 0.17), 0.02);
-  float lid = max(wfEll(cq - vec2(0.0, 0.34), vec2(0.13, 0.03)), 0.34 - cq.y);
-  float spout = wfSeg(cq, vec2(-0.10, 0.08), vec2(-0.34, 0.40), 0.018);
-  float rose = wfEll(cq - vec2(-0.36, 0.43), vec2(0.035, 0.045));
+  float can = min(mmBox(cq - vec2(0.0, 0.17), vec2(0.13, 0.17), 0.02),
+                  max(wfEll(cq - vec2(0.0, 0.34), vec2(0.13, 0.03)), 0.34 - cq.y));
+  float spout = min(wfSeg(cq, vec2(-0.10, 0.08), vec2(-0.34, 0.40), 0.018),
+                    wfEll(cq - vec2(-0.36, 0.43), vec2(0.035, 0.045)));
   float hnd = max(abs(length(vec2((cq.x - 0.02)/1.15, cq.y - 0.32)) - 0.13) - 0.014, 0.30 - cq.y);
-  float canD = min(min(can, lid), min(min(spout, rose), hnd));
+  float canD = min(can, min(spout, hnd));
   if (canD < max(px, 1e-5)) {
     float u = ghCyl(cq.x, 0.13);
     vec3 zinc = vec3(0.50, 0.54, 0.52)*(0.45 + 0.55*wfRound(u))*(1.0 + 0.30*kq*u);
     /* its seams, two hoops round the drum, inked below */
     ghLay(col, ink, can, zinc, px, 0.9);
     ink = max(ink, max(mmInkP(cq.y - 0.08, px, 1.0), mmInkP(cq.y - 0.27, px, 1.0))*wfIn(can, px)*0.55);
-    ghLay(col, ink, lid, vec3(0.58, 0.62, 0.60)*0.95, px, 0.9);
-    ghLay(col, ink, spout, vec3(0.46, 0.50, 0.48)*0.85, px, 0.9);
-    ghLay(col, ink, rose, vec3(0.52, 0.56, 0.54), px, 0.9);
-    ghLay(col, ink, hnd, vec3(0.44, 0.48, 0.46)*0.9, px, 0.9);
+    ghLay(col, ink, min(spout, hnd), vec3(0.46, 0.50, 0.48)*0.88, px, 0.9);
   }
   d = min(d, canD);
   gWfCol = col; gWfInk = ink;

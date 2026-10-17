@@ -479,7 +479,11 @@ export const PROP_SHAPES = {
   crypt: [6, 15, 57, 58, 59],
   foyer: [4, 6, 22, 23, 26, 62, 63, 64, 65, 66, 67, 68],
   graveyard: [23, 69, 70, 71, 73],
-  greenhouse: [6, 23, 25, 74, 75, 76, 77, 80, 84],
+  /* (round 34 graft: NOT 84, the potting bench -- the rooms that set one
+     down (the conservatory and the palm house seen from their vantages)
+     bring it in themselves, so the wing's fight keeps its program: with
+     the bench compiled in, the Greenhouse prop link went 9.6 -> 12-14 s) */
+  greenhouse: [6, 23, 25, 74, 75, 76, 77, 80],
   heart: [0, 4, 5, 6, 22, 23, 31],
   hedge: [23, 25, 28, 30, 31, 81, 83],
   kennels: [16.25, 22, 23, 39, 40, 41, 42],
@@ -583,6 +587,8 @@ export const ROOM_VARIANTS = [
   { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 3, MM_SHM0: 32832, MM_SHM1: 939524096, MM_SHM2: 0 }, wings: ['crypt'] },
   { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 1, MM_WINGS: 4, MM_SHM0: 79691856, MM_SHM1: 0, MM_SHM2: 508 }, wings: ['foyer'] },
   { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 5, MM_SHM0: 8388608, MM_SHM1: 0, MM_SHM2: 11776 }, wings: ['graveyard'] },
+  { mat: 'prop', defines: { MM_STONES: 1, MM_BUST: 0, MM_WINGS: 6, MM_SHM0: 41943104, MM_SHM1: 0, MM_SHM2: 1294336 }, wings: ['greenhouse'] },
+  /* (round 34 graft: and the Greenhouse rooms with the potting bench, 84) */
   { mat: 'prop', defines: { MM_STONES: 1, MM_BUST: 0, MM_WINGS: 6, MM_SHM0: 41943104, MM_SHM1: 0, MM_SHM2: 18071552 }, wings: ['greenhouse'] },
   { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 1, MM_SHM0: 12583025, MM_SHM1: 2, MM_SHM2: 0 }, wings: ['heart'] },
   { mat: 'prop', defines: { MM_STONES: 1, MM_BUST: 0, MM_WINGS: 1, MM_SHM0: 310378496, MM_SHM1: 3, MM_SHM2: 10485760 }, wings: ['hedge'] },
