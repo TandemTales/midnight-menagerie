@@ -1946,10 +1946,11 @@ export class Backdrop {
           for (let i = 0; i < nSec; i++) {
             const cx = a + (i + 0.5) * sl;
             const hh = HH * (0.97 + rand() * 0.06);
-            /* (round 34: the quad 1/0.72 of the sheared top, from 1/0.93 -- the
-               grown-out crown's swells stand up to most of a metre over it,
-               yewAmp in the shader) */
-            pushArch(28, cx, zr + (rand() - 0.5) * 0.12, sl + 0.34, hh / 0.72, 0.34 + r * 0.16);
+            /* (round 34: the quad 1/0.80 of the sheared top, from 1/0.93 -- the
+               grown-out crown's swells stand up to 0.6 m over it, yewAmp in
+               the shader; 1/0.72 bought a metre and cost the maze fight a
+               sky's worth of prop pixels) */
+            pushArch(28, cx, zr + (rand() - 0.5) * 0.12, sl + 0.34, hh / 0.80, 0.34 + r * 0.16);
             /* a gate section: the run with an arch cut through it */
             if (P.gate && r === 0 && Math.abs(cx) < sl * 0.5 + 0.2) out[out.length - 1].seed = 20 + rand() * 10;
           }

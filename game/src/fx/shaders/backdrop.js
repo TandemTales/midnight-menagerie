@@ -4874,7 +4874,10 @@ float hedgeWallH(vec2 q, float qpx, out float occ){
   /* above the hedge a SIDE wall is not there: skip the leaf entirely (it
      is a third of the side walls' pixels and all of the sky over them) */
   gWDisc = (1.0 - far) * (1.0 - hedge);
-  if (far < 0.5 && q.y > HH + 1.05) { gHedgeAmt = 0.0; return 0.0; }
+  /* (round 34: above the crown where it IS, not above a ruled line a metre
+     over it -- the side walls are near and tall in the frame, and a metre
+     of sky over each run through the whole face cost the maze fight ~4 ms) */
+  if (far < 0.5 && q.y > top + max(0.08, 3.0*qpx)) { gHedgeAmt = 0.0; return 0.0; }
   /* the face: sprays, a slow swell, the foot */
   float tone, lit;
   float rel = yewFace(vec2(u, q.y), qpx, sd, tone, lit);
@@ -14497,8 +14500,10 @@ void main(){
       /* the matted stalks, three layers of them packed every way, each a
          short bright stroke over the dark of the heap */
       float stk = 0.0;
-      for (int l = 0; l < 3; l++){
-        float cs = 0.060 - float(l)*0.012;
+      /* (the frame budget: two layers, from three -- the kennels fight
+         measured +2.3 ms over BASE) */
+      for (int l = 0; l < 2; l++){
+        float cs = 0.060 - float(l)*0.016;
         vec2 g = w/cs + float(l)*3.7;
         vec2 gi = floor(g);
         vec2 hh = mmHash22(gi + float(l)*9.1);
@@ -16847,7 +16852,7 @@ float ghMassL(vec2 q, float u, float base, float cw, float h0, float h1, float s
   float ci = floor(x), f = fract(x);
   float cn = f < 0.5 ? ci - 1.0 : ci + 1.0;
   /* ...and a neighbour's fan only where it can reach: its outer third */
-  int nK = abs(f - 0.5) > 0.06 ? 2 : 1;
+  int nK = abs(f - 0.5) > 0.18 ? 2 : 1;
   float d = 1e3;
   for (int k = 0; k < 2; k++){
     if (k >= nK) break;
@@ -17604,7 +17609,7 @@ float yewTop(vec2 msz, float seed){
   float k = yewKind(seed);
   /* (round 34: 0.89 from 0.93 -- the grown-out crown wants the quad's
      room over the set top, yewAmp) */
-  return msz.y*(k < 0.52 ? 0.72 : 0.573);
+  return msz.y*(k < 0.52 ? 0.80 : 0.637);
 }
 float yewArch(vec2 m, float seed){
   if (seed < 19.5) return 1e3;
@@ -17647,7 +17652,7 @@ float yewRagP(float u, float sd, float amp){
   return max(max(d0, max(d1, d2)), d1*0.70 + sp) + sag + fth - 0.45*amp;
 }
 /* (the tallest clump a run's quad has room for over its set top) */
-float yewAmp(vec2 msz, float seed){ return min(0.85, (msz.y - yewTop(msz, seed))*0.82); }
+float yewAmp(vec2 msz, float seed){ return min(0.62, (msz.y - yewTop(msz, seed))*0.82); }
 float yewSD(vec2 m, vec2 msz, float seed){
   float hw = msz.x*0.5 - 0.06;
   float k = yewKind(seed);

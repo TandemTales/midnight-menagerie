@@ -1251,7 +1251,9 @@ export const REGIONS = {
                   and its bowls in the near straw at the left, and a kennel
                   at your right shoulder, its lit door on the flags */
                { shape: 40, edge: 0.16, z: 2.2, tone: 0.95, fore: 1, keep: true, scale: 1.1 },
-               { shape: 39, edge: 0.93, z: 1.4, tone: 0.95, fore: 1, keep: true },
+               /* (second pass: the kennel at your right shoulder is gone
+                  again -- a frame-tall quad of the prop program, and the
+                  kennels fight measured +2.3 ms over BASE with it) */
              ] },
     /* ROUND 34: the brown-grey haze off the stalls (both survey-5 judges:
        "the back stall wall is muddy and indistinct under an overall brown-
@@ -1808,13 +1810,13 @@ export const ROOM_KINDS = {
              a pair of pots set down at the left, a tall fern at the right */
           /* (second pass: at a metre and under they read from the gallery
              as "a handful of small plants" -- the gardener's big pots, and a
-             palm in its tub standing up into the view at either hand, so
-             the planting is at several heights from the flags up) */
+             tall fern standing up into the view at the right, so the
+             planting is at several heights from the flags up; a palm at the
+             left as well cost the glasshouse fight its frame) */
           { shape: 74, edge: 0.22, z: -0.6, tone: 0.94, centre: 1, fore: 1, seed: 6.05, hM: 1.55 },
           { shape: 74, edge: 0.30, z: -1.6, tone: 0.94, centre: 1, fore: 1, seed: 5.25, hM: 1.10 },
           { shape: 76, edge: 0.70, z: 2.0, tone: 0.94, centre: 1, fore: 1, scale: 1.55 },
           { shape: 74, edge: 0.92, z: 3.0, tone: 0.94, centre: 1, fore: 1, seed: 1.75, hM: 2.6 },
-          { shape: 74, edge: 0.12, z: 2.4, tone: 0.94, centre: 1, fore: 1, seed: 4.15, hM: 2.9 },
         ],
         /* (round 34: 1.0 of the wing's 36 -- the 0.82 of 44 it was judged with) */
         vantage: { at: 'above', rise: 2.9, drop: 0.0, fwd: 0.4, ahead: 9.0, count: 1.0 } },
