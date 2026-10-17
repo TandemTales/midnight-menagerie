@@ -17230,19 +17230,22 @@ float wfStand(vec2 q, float px, float seed, float kq, bool paint){
    planting, ghMassL, two layers of fronds packed along the whole tier) */
 /* (round 34 GRAFT, item 0 -- the frame budget: the Greenhouse fight came
    back +2.4 ms over BASE in every pair, and this planting is most of it: the
-   staging's quads 0.95 m taller across the whole width of three tiers. So
-   0.80, the back layer's tallest clump 0.74 m from 0.88 (its tips stay under
-   the quad's top), and the back layer is not drawn where the front one
-   already covers the pixel -- which is most of the band's lower half) */
-#define GH_STAGE_PLANT 0.80
+   staging's quads 0.95 m taller across the whole width of three tiers --
+   31 of them in the fight, every planted pixel lit by the whole prop
+   pipeline (measured in one page, aScale 0 per shape: the staging +0.9 ms
+   over BASE's bare brick). So 0.66, the back layer's tallest clump 0.60 m
+   from 0.88 and the front's 0.40 from 0.48 (the tips stay under the quad's
+   top), and the back layer is not drawn where the front one already covers
+   the pixel -- which is most of the band's lower half) */
+#define GH_STAGE_PLANT 0.66
 float wfStaging(vec2 m, vec2 msz, float px, float kq, bool paint){
   float HW = msz.x*0.5, H = msz.y - GH_STAGE_PLANT;
   float wall = mmBox(m - vec2(0.0, (H - 0.06)*0.5), vec2(HW, (H - 0.06)*0.5), 0.0);
   float cop = mmBox(m - vec2(0.0, H - 0.045), vec2(HW, 0.045), 0.006);
   float shB = 0.0, shF = 0.0;
-  float mF = max(max(ghMassL(m, vWorld.x, H - 0.01, 0.46, 0.20, 0.44, 0.77, px, shF), abs(m.x) - HW), H - 0.012 - m.y);
+  float mF = max(max(ghMassL(m, vWorld.x, H - 0.01, 0.46, 0.18, 0.40, 0.77, px, shF), abs(m.x) - HW), H - 0.012 - m.y);
   float mB = 1e3;
-  if (mF > -max(px, 1e-5)) mB = max(max(ghMassL(m, vWorld.x, H - 0.01, 0.70, 0.32, 0.74, 0.31, px, shB), abs(m.x) - HW), H - 0.012 - m.y);
+  if (mF > -max(px, 1e-5)) mB = max(max(ghMassL(m, vWorld.x, H - 0.01, 0.70, 0.28, 0.60, 0.31, px, shB), abs(m.x) - HW), H - 0.012 - m.y);
   float d = min(min(wall, cop), min(mB, mF));
   if (!paint) return d;
   vec3 col = vec3(0.1);

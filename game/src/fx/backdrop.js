@@ -1869,9 +1869,9 @@ export class Backdrop {
           for (let i = 0; i < beds; i++) {
             /* (round 34: the Greenhouse's staging carries its planting in
                its own quad, 0.95 m over the brick -- GH_STAGE_PLANT) */
-            /* (round 34 graft, item 0: 0.80 -- the frame budget) */
+            /* (round 34 graft, item 0: 0.66 -- the frame budget) */
             pushArch(bedShape, bMid + ((i + 0.5) / beds - 0.5) * 2 * span,
-                     z + 0.6, (span * 2) / beds + 0.25, lift + (bedShape === 77 ? 0.80 : 0), 0.30 + f * 0.42);
+                     z + 0.6, (span * 2) / beds + 0.25, lift + (bedShape === 77 ? 0.66 : 0), 0.30 + f * 0.42);
           }
         }
         for (let i = 0; i < per && out.length - archN < n; i++) {

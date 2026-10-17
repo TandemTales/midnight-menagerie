@@ -553,7 +553,10 @@ export const REGIONS = {
     /* (round 34: 36 dealt, from 44 -- the staging carries its own planting
        now (GH_STAGE_PLANT), packed along every tier, so the loose pots it
        stood are fewer; the frame budget the planting costs is paid here) */
-    props: { shapes: [74, 75, 74, 76, 6], count: 36, height: 2.6, layout: 'terrace', depth: 16, bedShape: 77 },
+    /* (round 34 graft, item 0: 30 -- measured in one page, the props cost
+       the fight +0.9 ms over BASE with 36; the planted staging is the
+       planting now, and the beds (75) dealt loose are its dearest piece) */
+    props: { shapes: [74, 75, 74, 76, 6], count: 30, height: 2.6, layout: 'terrace', depth: 16, bedShape: 77 },
     r25w: 3,
     /* ROUND 34: THE NEAR FLOOR (both survey-5 judges): round 31's rule --
        the flags running on lit toward the hand, a lamp's pool laid on them
@@ -1878,7 +1881,7 @@ export const ROOM_KINDS = {
         /* (round 34: 1.0 of the wing's 36 -- the 0.82 of 44 it was judged with) */
         /* (round 34 graft, GLAUCONITE's: from the gallery's near end and not
            its far one -- at fwd 0.4 the house's planting was 20-25 m off) */
-        vantage: { at: 'above', rise: 2.9, drop: 0.0, fwd: 4.0, ahead: 7.0, count: 1.0 } },
+        vantage: { at: 'above', rise: 2.9, drop: 0.0, fwd: 4.0, ahead: 7.0, count: 1.2 } },   // (round 34 graft: 36 of the wing's 30, as judged)
       /* a palm house is walked down between two files of palms, close in
          along the walk where the lamps are, and its columns are the iron
          ones on its walls, so the pack deals palms where the hall deals a
@@ -1901,7 +1904,7 @@ export const ROOM_KINDS = {
            of the floor would be black) */
         lampsView: [{ i: 3, x: 3.4, z: 0.24, y: 1.5, k: 0.85 }],
         cam: { y: -0.20, z: -0.6, look: 0.35, fov: 2 },
-        vantage: { at: 'among', fwd: 3.2, low: 0.58, pitch: 4.5, off: 0.04, wide: 4, count: 0.76 },   // (round 34: of 36, the 0.62 of 44 it had)
+        vantage: { at: 'among', fwd: 3.2, low: 0.58, pitch: 4.5, off: 0.04, wide: 4, count: 0.91 },   // (round 34: of 36, the 0.62 of 44 it had; graft: of 30)
         /* and palms at arm's length either side of the walk, which is where
            you are standing: among them, not looking at them across a floor */
         nearView: [
@@ -1973,7 +1976,7 @@ export const ROOM_KINDS = {
           { shape: 75, edge: 0.50, z: -0.6, tone: 0.90, centre: 1, fore: 1, seed: 2.2 },
         ],
         cam: { y: 0.35, z: 0.6, look: -0.2 },
-        vantage: { at: 'along', off: 0.30, wall: 3.2, fwd: 3.2, yaw: 33, wide: 4, dlook: 0.5, count: 1.22 } },   // (round 34: 44 of the wing's 36)
+        vantage: { at: 'along', off: 0.30, wall: 3.2, fwd: 3.2, yaw: 33, wide: 4, dlook: 0.5, count: 1.47 } },   // (round 34: 44 of the wing's 36; graft: of 30)
     ],
     names: [
       [/overgrown|vine|ivy/i, 2],
