@@ -16926,8 +16926,13 @@ float wfBed(vec2 q, float px, float seed, float kq, bool paint){
   dAll = min(dAll, soil);
   /* (round 34: the bed planted solid -- ghMassL -- the back layer behind
      the specimen crowns) */
-  float shM;
-  float mB = max(ghMassL(q, q.x, CT - 0.01, 0.62, 0.40, 0.92, seed*1.31 + 0.2, px, shM), CT + 0.035 - q.y);
+  /* (round 34 graft, item 0: the front layer first, and the back one only
+     where the front does not already cover the pixel -- painted in the same
+     order as before, so what shows is what showed) */
+  float shM, shMF;
+  float mF = max(ghMassL(q, q.x, CT - 0.01, 0.44, 0.22, 0.50, seed*2.71 + 0.6, px, shMF), CT + 0.035 - q.y);
+  float mB = 1e3;
+  if (mF > -max(px, 1e-5)) mB = max(ghMassL(q, q.x, CT - 0.01, 0.62, 0.40, 0.92, seed*1.31 + 0.2, px, shM), CT + 0.035 - q.y);
   if (mB < max(px, 1e-5)) ghLay(col, ink, mB, vec3(0.075, 0.180, 0.078)*shM, px, 0.80);
   dAll = min(dAll, mB);
   gGhFew = 1.0;
@@ -16942,8 +16947,7 @@ float wfBed(vec2 q, float px, float seed, float kq, bool paint){
   }
   gGhFew = 0.0;
   /* (round 34: ...and the front layer, low, over the crowns' feet) */
-  float mF = max(ghMassL(q, q.x, CT - 0.01, 0.44, 0.22, 0.50, seed*2.71 + 0.6, px, shM), CT + 0.035 - q.y);
-  if (mF < max(px, 1e-5)) ghLay(col, ink, mF, vec3(0.12, 0.25, 0.095)*shM, px, 0.85);
+  if (mF < max(px, 1e-5)) ghLay(col, ink, mF, vec3(0.12, 0.25, 0.095)*shMF, px, 0.85);
   dAll = min(dAll, mF);
   /* ivy, two trails over the coping and down the brick */
   for (int i = 0; i < 2; i++){
@@ -17065,14 +17069,21 @@ float wfStand(vec2 q, float px, float seed, float kq, bool paint){
 /* (round 34: the staging's quad is 0.95 m taller than its brick -- see
    Backdrop._layoutProps, bedShape 77 -- and the band over the coping is its
    planting, ghMassL, two layers of fronds packed along the whole tier) */
-#define GH_STAGE_PLANT 0.95
+/* (round 34 GRAFT, item 0 -- the frame budget: the Greenhouse fight came
+   back +2.4 ms over BASE in every pair, and this planting is most of it: the
+   staging's quads 0.95 m taller across the whole width of three tiers. So
+   0.80, the back layer's tallest clump 0.74 m from 0.88 (its tips stay under
+   the quad's top), and the back layer is not drawn where the front one
+   already covers the pixel -- which is most of the band's lower half) */
+#define GH_STAGE_PLANT 0.80
 float wfStaging(vec2 m, vec2 msz, float px, float kq, bool paint){
   float HW = msz.x*0.5, H = msz.y - GH_STAGE_PLANT;
   float wall = mmBox(m - vec2(0.0, (H - 0.06)*0.5), vec2(HW, (H - 0.06)*0.5), 0.0);
   float cop = mmBox(m - vec2(0.0, H - 0.045), vec2(HW, 0.045), 0.006);
   float shB = 0.0, shF = 0.0;
-  float mB = max(max(ghMassL(m, vWorld.x, H - 0.01, 0.70, 0.36, 0.88, 0.31, px, shB), abs(m.x) - HW), H - 0.012 - m.y);
-  float mF = max(max(ghMassL(m, vWorld.x, H - 0.01, 0.46, 0.20, 0.48, 0.77, px, shF), abs(m.x) - HW), H - 0.012 - m.y);
+  float mF = max(max(ghMassL(m, vWorld.x, H - 0.01, 0.46, 0.20, 0.44, 0.77, px, shF), abs(m.x) - HW), H - 0.012 - m.y);
+  float mB = 1e3;
+  if (mF > -max(px, 1e-5)) mB = max(max(ghMassL(m, vWorld.x, H - 0.01, 0.70, 0.32, 0.74, 0.31, px, shB), abs(m.x) - HW), H - 0.012 - m.y);
   float d = min(min(wall, cop), min(mB, mF));
   if (!paint) return d;
   vec3 col = vec3(0.1);
