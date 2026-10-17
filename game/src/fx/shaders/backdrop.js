@@ -4679,8 +4679,9 @@ float yewClipF(vec2 p, float px, float sd, out float tone, out float lit, out fl
      upper face taking the sky, its underside in the crease under it, low in
      contrast at the crease, and most where the hedge has grown out (the
      broad patch, n0) -- its upper face handed on as gYewDome) */
-  float cid3; vec2 co;
+  vec2 co;
   vec2 cp = vec2(p.x + 0.22*sin(p.y*2.1 + sd), p.y + 0.14*sin(p.x*1.7 + sd*2.0));
+  float cid3;   // (the nearest of four jittered lobes: one cell's rows read as a tile, measured 0.04 ms dearer)
   float cl = wLobes(cp/vec2(0.66, 0.46), 0.95, sd*5.1 + 3.0, cid3, co);
   float clB = smoothstep(-0.02, 0.48, cl + (tone - 0.85)*0.25);
   float clU = smoothstep(-0.45, 0.50, co.y);
@@ -4845,7 +4846,10 @@ float hedgeWallH(vec2 q, float qpx, out float occ){
   /* (round 34 graft: VIVIANITE's rounder clumps, a third taller on the
      far runs and a half on the court's far hedge, which is furthest off) */
   float ragA = court > 0.5 ? 1.50 : (far > 0.5 ? 1.30 : 1.00);
-  float top = HH + yewRagW(u, sd, ragA);
+  /* (round 34 graft, the frame budget: the crown only where it can be --
+     every use of it below is in its top metre, and under that the hedge is
+     covered whatever it is; it ran on every pixel of every hedge) */
+  float top = HH + (q.y > HH - 0.95 ? yewRagW(u, sd, ragA) : 0.0);
   /* the finials on the far hedge: a ball on a neck or a cone; in the court,
      a clipped ball on every pier, all alike */
   float fp = court > 0.5 ? 3.4 : 6.5;
@@ -4860,7 +4864,9 @@ float hedgeWallH(vec2 q, float qpx, out float occ){
   /* (round 34: a finial stands on the crown where it is, not on a ruled
      line the crown has grown up round) */
   float finY = HH;
-  if (far > 0.5) {
+  /* (round 34 graft, the frame budget: only up where a finial can be -- the
+     lowest one's foot is a hand under the cut) */
+  if (far > 0.5 && q.y > HH - 0.60) {
     finY += max(yewRagW(u - fxl, sd, ragA), -0.10);
     vec2 c = vec2(fxl, q.y - finY);
     float nk = mmBox(c - vec2(0.0, 0.10), vec2(0.20, 0.16), 0.06);
@@ -4911,12 +4917,16 @@ float hedgeWallH(vec2 q, float qpx, out float occ){
      with a root shadow and gaps" -- the hem hangs to the turf in places and
      stands a knee high in others, a stride or two at a time, so the foot is
      broken by the dark old wood showing under it) */
-  float hemY = 0.08 + 0.42*smoothstep(0.38, 0.72, mmNoise(vec2(u*0.85 + sd*1.3, 2.5)))
-             + 0.10*mmNoise(vec2(u*2.6 + sd, 0.5)) + 0.035*sin(u*9.0 - sd) + 0.02*sin(u*23.0 + sd);
-  float foot = smoothstep(hemY + 0.80, hemY + 0.02, q.y);
-  float hemB = smoothstep(hemY + 0.5*qpx, hemY - 0.5*qpx, q.y);
-  float stx = u/0.23 + 0.25*sin(u*1.3 + q.y*4.0 + sd);
-  float stem = hemB*(1.0 - smoothstep(0.035, 0.035 + max(qpx/0.23, 0.02)*1.5, abs(fract(stx) - 0.5)))*step(0.45, mmHash11(floor(stx) + sd));
+  /* (...and the foot only in the metre and a half where it is) */
+  float foot = 0.0, hemB = 0.0, stem = 0.0;
+  if (q.y < 1.50) {
+    float hemY = 0.08 + 0.42*smoothstep(0.30, 0.80, 0.5 + 0.5*sin(u*0.85 + sd*1.3)*sin(u*0.37 + sd*2.1))
+               + 0.10*mmNoise(vec2(u*2.6 + sd, 0.5)) + 0.035*sin(u*9.0 - sd) + 0.02*sin(u*23.0 + sd);
+    foot = smoothstep(hemY + 0.80, hemY + 0.02, q.y);
+    hemB = smoothstep(hemY + 0.5*qpx, hemY - 0.5*qpx, q.y);
+    float stx = u/0.23 + 0.25*sin(u*1.3 + q.y*4.0 + sd);
+    stem = hemB*(1.0 - smoothstep(0.035, 0.035 + max(qpx/0.23, 0.02)*1.5, abs(fract(stx) - 0.5)))*step(0.45, mmHash11(floor(stx) + sd));
+  }
   h -= foot*0.30 + hemB*(1.0 - stem)*0.12;
   /* a court pier stands proud of the hedge between the niches, its sides
      turning, and its ball is a dome of clipped yew */
@@ -13704,21 +13714,8 @@ void main(){
         {
           float swM = mmNoise(w*vec2(0.11, 0.17) + uSeed*2.3);
           pat += (swM - 0.5)*0.34;
-          float lRes = smoothstep(0.030, 0.011, mp);
-          if (lRes > 0.001) {
-            const float LC = 0.34;
-            vec2 lci = floor(w/LC);
-            vec2 lh = mmHash22(lci + 41.7);
-            vec2 lp = w - (lci + 0.2 + 0.6*lh)*LC;
-            float la = mmHash21(lci + 9.1)*6.2832;
-            vec2 lr = vec2(cos(la)*lp.x + sin(la)*lp.y, -sin(la)*lp.x + cos(la)*lp.y);
-            float lw = 0.028*(1.0 - pow(abs(lr.x)/0.066, 2.0));
-            float leaf = (1.0 - smoothstep(lw, lw + mp*1.1, abs(lr.y))) * step(abs(lr.x), 0.066)
-                       * step(mmHash21(lci + 3.3), 0.42) * lRes;
-            earth = max(earth, leaf*0.95);
-            turf = min(turf, 1.0 - leaf*0.85);
-            pat += leaf*(0.12 + 0.10*lh.x);
-          }
+          /* (round 34 graft: GLAUCONITE's blown leaves are not kept -- the
+             maze fight's frame budget; the swathes are one slow tap) */
         }
 #endif
       }
@@ -14556,7 +14553,10 @@ void main(){
        straw lies in HEAPS a stride or two across, a matted golden mass
        thick with stalks, darker into its own shadow at the edge, with a
        ring of loose stalks round it */
-    float hpN = mmNoise(w*0.85 + 5.3)*0.75 + mmNoise(w*2.3 - 1.9)*0.25;
+    /* (round 34 graft, the frame budget: one tap -- the second octave was a
+       noise on every pixel of the kennels' floor, +0.8 ms over BASE with
+       the heaps' stalks) */
+    float hpN = mmNoise(w*0.85 + 5.3)*0.88 + 0.06;
     float heap = smoothstep(0.62, 0.70, hpN)*uStraw;
     float heapRim = smoothstep(0.54, 0.63, hpN)*(1.0 - heap)*uStraw;
     if (heap > 0.001) {
@@ -17863,8 +17863,9 @@ float yewSD(vec2 m, vec2 msz, float seed){
      ends of a run left ragged with it, never a ruled corner) */
   float ct = m.y - top;
   float endW = smoothstep(hw - 0.05, hw - 0.50, abs(m.x));
-  d -= yewRagP(m.x + seed*2.3, seed, yewAmp(msz, seed)) * smoothstep(-1.10, -0.40, ct) * endW;
-  d -= (mmNoise(vec2(m.y*3.2, seed*5.0 + sign(m.x)*3.0)) - 0.5)*0.11 * smoothstep(hw - 0.45, hw - 0.05, abs(m.x)) * step(0.30, m.y);
+  if (ct > -1.10) d -= yewRagP(m.x + seed*2.3, seed, yewAmp(msz, seed)) * smoothstep(-1.10, -0.40, ct) * endW;   // (graft: only where it is)
+  if (abs(m.x) > hw - 0.45 && m.y > 0.30)   // (graft, the frame budget: only at the two ends)
+    d -= (mmNoise(vec2(m.y*3.2, seed*5.0 + sign(m.x)*3.0)) - 0.5)*0.11 * smoothstep(hw - 0.45, hw - 0.05, abs(m.x));
   return d;
 }
 
@@ -17932,8 +17933,9 @@ float yewFaceP(vec2 p, float px, float sd, out float tone, out float lit){
      where it meets the next -- the depth a painted hedge has (mainMenu.png's
      shrubs) and a tuft field at one scale does not. */
   /* (round 34 GRAFT, VIVIANITE's clumps -- the wall program's, yewClipF) */
-  float cid3; vec2 co;
+  vec2 co;
   vec2 cp = vec2(p.x + 0.22*sin(p.y*2.1 + sd), p.y + 0.14*sin(p.x*1.7 + sd*2.0));
+  float cid3;   // (the nearest of four jittered lobes: one cell's rows read as a tile, measured 0.04 ms dearer)
   float cl = yLobes(cp/vec2(0.66, 0.46), 0.95, sd*5.1 + 3.0, cid3, co);
   float clB = smoothstep(-0.02, 0.48, cl + (tone - 0.85)*0.25);
   float clU = smoothstep(-0.45, 0.50, co.y);
@@ -17985,8 +17987,9 @@ vec2 topSD(vec2 m, vec2 msz, float seed){
       vec2 rr = vec2(rx, min(rx*0.80, mix(0.185, 0.150, f)*H));
       vec2 e = (m - vec2(0.0, cy))/rr;
       float an = atan(e.y, e.x);
-      float lob = (0.05*sin(an*5.0 + seed*3.0 + f*2.0) + 0.035*sin(an*11.0 + seed + f*4.0))
-                + (mmNoise(normalize(e + vec2(1e-4, 0.0))*1.7 + vec2(f*7.0, seed*1.3)) - 0.5)*0.16;
+      /* (the frame budget: two more sines, not a noise tap round it) */
+      float lob = 0.05*sin(an*5.0 + seed*3.0 + f*2.0) + 0.035*sin(an*11.0 + seed + f*4.0)
+                + 0.045*sin(an*3.0 - seed*1.7 + f*5.0) + 0.025*sin(an*17.0 + seed*2.3);
       float dd = (length(e) - 1.0 - lob)*min(rr.x, rr.y);
       if (dd < best) { best = dd; gTopTq = e; }
       leaf = min(leaf, dd);
@@ -24202,7 +24205,7 @@ float reliefH(vec2 uv, vec2 msz, vec2 mpp, float shape, float seed, out float ti
        judges named on VANDYKE's): only the upper faces of the sprays in its
        top half-metre, so the light breaks with the leaf */
     /* (round 34: the moon follows the grown-out crown, yewRagP) */
-    if (topi < 0.5) top += yewRagP(m.x + seed*2.3, seed, yewAmp(msz, seed)) * smoothstep(msz.x*0.5 - 0.11, msz.x*0.5 - 0.56, abs(m.x));
+    if (topi < 0.5 && m.y > top - 0.95) top += yewRagP(m.x + seed*2.3, seed, yewAmp(msz, seed)) * smoothstep(msz.x*0.5 - 0.11, msz.x*0.5 - 0.56, abs(m.x));   // (graft: only in the crown's metre)
     gYewTop  = smoothstep(top - 0.55, top - 0.05, m.y) * step(m.y, top + 0.10) * ylit;
     gYewEdge = smoothstep(top - 0.085, top - 0.03, m.y) * step(m.y, top + 0.06) * (0.45 + 0.55*ylit) * (1.0 - topi);
     /* ROUND 34: THE FOOT IN ITS OWN SHADOW (both judges: "dark shadowed
@@ -24212,12 +24215,15 @@ float reliefH(vec2 uv, vec2 msz, vec2 mpp, float shape, float seed, out float ti
     /* (round 34 graft, J1: "break the back hedge's long straight lower edge
        with a root shadow and gaps" -- the hem to the turf in places and a
        knee high in others, as the walls' own) */
-    float hem = 0.08 + 0.42*smoothstep(0.38, 0.72, mmNoise(vec2(m.x*0.85 + seed*1.3, 2.5)))
-              + 0.10*mmNoise(vec2(m.x*2.6 + seed*3.0, 0.5)) + 0.035*sin(m.x*9.0 - seed) + 0.02*sin(m.x*23.0 + seed);
-    gYewFoot = smoothstep(hem + 0.75, hem + 0.02, m.y) * (1.0 - topi);
-    gYewHem = smoothstep(hem + 0.5*mp, hem - 0.5*mp, m.y) * (1.0 - topi);
-    float stx = m.x/0.23 + 0.25*sin(m.x*1.3 + m.y*4.0 + seed);
-    gYewStem = gYewHem * (1.0 - smoothstep(0.035, 0.035 + max(mp/0.23, 0.02)*1.5, abs(fract(stx) - 0.5))) * step(0.45, mmHash11(floor(stx) + seed));
+    /* (graft, the frame budget: the foot only in the metre and a half where it is) */
+    if (m.y < 1.50 && topi < 0.5) {
+      float hem = 0.08 + 0.42*smoothstep(0.30, 0.80, 0.5 + 0.5*sin(m.x*0.85 + seed*1.3)*sin(m.x*0.37 + seed*2.1))
+                + 0.10*mmNoise(vec2(m.x*2.6 + seed*3.0, 0.5)) + 0.035*sin(m.x*9.0 - seed) + 0.02*sin(m.x*23.0 + seed);
+      gYewFoot = smoothstep(hem + 0.75, hem + 0.02, m.y);
+      gYewHem = smoothstep(hem + 0.5*mp, hem - 0.5*mp, m.y);
+      float stx = m.x/0.23 + 0.25*sin(m.x*1.3 + m.y*4.0 + seed);
+      gYewStem = gYewHem * (1.0 - smoothstep(0.035, 0.035 + max(mp/0.23, 0.02)*1.5, abs(fract(stx) - 0.5))) * step(0.45, mmHash11(floor(stx) + seed));
+    }
     h -= 0.040*gYewFoot + 0.10*gYewHem*(1.0 - gYewStem);
     /* (round 34 graft, VIVIANITE's: the upper face of every clump down the
        run takes a share of the moon, falling off toward the dark foot -- lit

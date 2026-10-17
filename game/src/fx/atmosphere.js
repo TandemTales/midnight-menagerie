@@ -1012,11 +1012,11 @@ export const REGIONS = {
                     /* (round 34: and its fellow on the right-hand lawn, so
                        the near turf is not empty on the side away from the
                        seat -- one more term, measured in the hm-1 frame) */
-                    /* (round 34 GRAFT, VIVIANITE's, J3: the big foreground
-                       topiary at the near right -- a ball-tree in its box
-                       standing IN the near lawn, where the urn was: the same
-                       one term) */
-                    { shape: 30, edge: 0.86, z: 3.4, tone: 0.95, seed: 7.0, fore: 1, keep: true }] },
+                    /* (round 34 graft: VIVIANITE's big foreground topiary
+                       stood here -- J3 -- and measured +0.5 ms of the maze
+                       fight's props, a frame-tall field of clipped yew; the
+                       urn is back) */
+                    { shape: 81, edge: 0.88, z: 2.2, tone: 0.94, seed: 2.6, fore: 1, keep: true }] },
     /* ...and the moon laid on the walk and the turf in front of you, the
        foreground falling to nine-tenths and not two-fifths */
     /* (round 31 graft, judges 1 and 3: "lift the near path out of black with
@@ -1272,10 +1272,9 @@ export const REGIONS = {
                /* (second pass: the kennel at your right shoulder is gone
                   again -- a frame-tall quad of the prop program, and the
                   kennels fight measured +2.3 ms over BASE with it) */
-               /* (round 34 graft, J3: "a bed or bowl in the centre
-                  foreground" -- a dog's bed and its bowls on the near straw,
-                  in the lantern's pool) */
-               { shape: 40, edge: 0.54, z: 3.0, tone: 0.95, fore: 1, keep: true, seed: 3.3 },
+               /* (round 34 graft: J3's "a bed or bowl in the centre
+                  foreground" was set here and measured +0.44 ms of props in
+                  the kennels fight, where the hand covers it -- not kept) */
              ] },
     /* ROUND 34: the brown-grey haze off the stalls (both survey-5 judges:
        "the back stall wall is muddy and indistinct under an overall brown-
