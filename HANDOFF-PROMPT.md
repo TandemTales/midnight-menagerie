@@ -79,12 +79,16 @@ narrows a painting until it clears, swaps in one that fits at 1280; tests
 green) -- the last web controls (seed slips, the lobby password) and the
 crowded nine-card hand. **NEXT: ROUND 34** (`BRIEF-r34.md`, `RUBRIC-r34.md`):
 the Hedge, the Foyer, the Greenhouse, the Kennels and their near floor.
-**RUNNING since 2026-10-16** (`round-34.args.json`, base `39768613`):
-VIVIANITE / GLAUCONITE / CELESTINE in `C:/UILOOP/r34/wt/r34-rooms-{a,b,c}`
-(branches `ui/r34-rooms-*`, ports 9241-9243), CHAMOIS baselines in
-`C:/UILOOP/r34/judging/r34/rooms/CHAMOIS/` (6 of 6, looked at). If the
-session died mid-round, resume as a NEW run of the unfinished part (memory:
-workflow resume replays by call order).
+**ROUND 34 IS MERGED, VERIFIED AND PUSHED (2026-10-17); ITS GRAFT IS IN
+FLIGHT:** CELESTINE +1.28 (`8d00791f`, 6.42 vs CHAMOIS 5.14) with NO
+majority -- each judge named a different winner; head-to-head 3-2-1. Battery
+106 gates green but the sprites halo; the other 13 wings pixel-identical
+(seeded sweep, max 1). Greenhouse fight +2.4 ms vs BASE (graft item 0).
+Graft (`GRAFT-r34.md`) building in `C:/UILOOP/r34/wt/r34-graft` (branch
+`ui/r34-graft`, port 9244, BASE 9344 from `C:/UILOOP/r34/base`), notes into
+`C:/UILOOP/r34/graft/`: the Greenhouse's cost, VIVIANITE's hedge, coloured
+doghouses, GLAUCONITE's ferns and chairs, a lit stage in the fight. The
+builders ran three times (two usage limits): commit after every item.
 
 **ROUND 33 AND ITS GRAFT ARE MERGED, VERIFIED AND PUSHED (2026-10-16):**
 graft `9d008119`. COBALT +1.59 (`531126e4`): no running line under 11 px at
