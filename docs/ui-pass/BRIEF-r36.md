@@ -127,11 +127,14 @@ Each screen at the default size AND at `--w 1280 --h 800` as
 ```
 DECK="js:(s=>{s.setTier('medium',{persist:false});s.tierForced=true;s._scaleAdjust=1;s.resize()})(MM.ctx.stage)"
 cd "WT" && timeout 600 python tools/shot.py CODE-settings     --port PORT --scene map --seed 7 --companion bones --kid maya --wait 3 --steps "click:.mm-hud__settings|wait:1"
-cd "WT" && timeout 600 python tools/shot.py CODE-lobby        --port PORT --scene lobby --seed 7 --companion bones --kid maya --wait 3
+cd "WT" && timeout 600 python tools/shot.py CODE-lobby        --port PORT --scene lobby --seed 7 --companion bones --kid maya --wait 3 --steps "js:(i=>{i.value='whispering-hideout';i.dispatchEvent(new Event('input',{bubbles:true}))})(document.querySelector('input[aria-label=Password]'))|wait:1"
 cd "WT" && timeout 600 python tools/shot.py CODE-shop         --port PORT --scene shop --seed 7 --companion bones --kid maya --wait 3
 cd "WT" && timeout 600 python tools/shot.py CODE-piles        --port PORT --scene combat --encounter foyer-14 --seed 7 --companion bones --kid maya --wait 5 --steps "click:#draw-pile|wait:1"
 cd "WT" && timeout 600 python tools/shot.py CODE-combat-crowd --port PORT --scene combat --encounter foyer-boss --seed 7 --companion bones --kid maya --wait 8 --script @tools/shot-scripts/combat-crowd.js --steps "$DECK|wait:3"
 ```
 
 (append `--w 1280 --h 800` and `-1280` to the name for the second size).
+The lobby's password is drawn at random on every load; the step above types
+the SAME words into it (by its accessible name, `input[aria-label=Password]`
+-- keep that name) so every build is photographed showing one password.
 Copy each PNG to `JUDGING/CODE/<screen>.png` with the `CODE-` prefix removed.

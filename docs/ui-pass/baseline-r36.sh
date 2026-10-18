@@ -28,7 +28,7 @@ except Exception: print(1)")
 for size in "" "-1280"; do
   S=""; [ -n "$size" ] && S="--w 1280 --h 800"
   one "settings$size"     $S --scene map $KID --wait 3 --steps "click:.mm-hud__settings|wait:1"
-  one "lobby$size"        $S --scene lobby $KID --wait 3
+  one "lobby$size"        $S --scene lobby $KID --wait 3 --steps "js:(i=>{i.value='whispering-hideout';i.dispatchEvent(new Event('input',{bubbles:true}))})(document.querySelector('input[aria-label=Password]'))|wait:1"
   one "shop$size"         $S --scene shop $KID --wait 3
   one "piles$size"        $S --scene combat --encounter foyer-14 $KID --wait 5 --steps "click:#draw-pile|wait:1"
   one "combat-crowd$size" $S --scene combat --encounter foyer-boss $KID --wait 8 --script @tools/shot-scripts/combat-crowd.js --steps "$DECK|wait:3"
