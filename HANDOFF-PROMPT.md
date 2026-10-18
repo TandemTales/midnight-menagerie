@@ -79,16 +79,20 @@ narrows a painting until it clears, swaps in one that fits at 1280; tests
 green) -- the last web controls (seed slips, the lobby password) and the
 crowded nine-card hand. **NEXT: ROUND 34** (`BRIEF-r34.md`, `RUBRIC-r34.md`):
 the Hedge, the Foyer, the Greenhouse, the Kennels and their near floor.
-**ROUND 34 IS MERGED, VERIFIED AND PUSHED (2026-10-17); ITS GRAFT IS IN
-FLIGHT:** CELESTINE +1.28 (`8d00791f`, 6.42 vs CHAMOIS 5.14) with NO
-majority -- each judge named a different winner; head-to-head 3-2-1. Battery
-106 gates green but the sprites halo; the other 13 wings pixel-identical
-(seeded sweep, max 1). Greenhouse fight +2.4 ms vs BASE (graft item 0).
-Graft (`GRAFT-r34.md`) building in `C:/UILOOP/r34/wt/r34-graft` (branch
-`ui/r34-graft`, port 9244, BASE 9344 from `C:/UILOOP/r34/base`), notes into
-`C:/UILOOP/r34/graft/`: the Greenhouse's cost, VIVIANITE's hedge, coloured
-doghouses, GLAUCONITE's ferns and chairs, a lit stage in the fight. The
-builders ran three times (two usage limits): commit after every item.
+**ROUND 34 AND ITS GRAFT ARE MERGED, VERIFIED AND PUSHED (2026-10-17):**
+CELESTINE +1.28 (`8d00791f`, 6.42 vs CHAMOIS 5.14) with NO majority -- each
+judge named a different winner; head-to-head 3-2-1. Graft `b1a84725`:
+VIVIANITE's rounder hedge crowns, painted doghouses, GLAUCONITE's ferns,
+fountain and chairs, VIVIANITE's potting bench, a lit stage in the fight; the
+Greenhouse fight back under BASE. Battery 106 gates green but the sprites halo
+(on the round's merge); the graft's region gates, chrome, steam-deck,
+link-queue and seam green on dev; the other 13 wings pixel-identical.
+**OPEN: the Hedge fight is +1.2 ms over BASE (15.51 ms, at the 15.5 line),
+the Kennels +0.4** -- the graft's notes (`C:/UILOOP/r34/graft/NOTES.md`) name
+the next cuts: the hem's stems and the moonlight on the clumps. Make it item
+0 of the next rooms round. **NEXT: round 35** from survey 5: the attic, crypt,
+heart, sleeping quarters and graveyard with the near floor; then the last web
+controls and the crowded hand.
 
 **ROUND 33 AND ITS GRAFT ARE MERGED, VERIFIED AND PUSHED (2026-10-16):**
 graft `9d008119`. COBALT +1.59 (`531126e4`): no running line under 11 px at
