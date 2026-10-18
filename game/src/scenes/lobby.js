@@ -113,8 +113,12 @@ function boardMarkup() {
     + '<div class="lo-floor"><i class="lo-hatch"><i class="lo-hatch__ring"></i></i>'
     + '<i class="kit-prop kit-prop--rope lo-floor__coil"></i>'
     + '<i class="kit-lantern lo-floor__lamp"></i>'
-    /* and the rope ladder itself, hung from the shelf's edge by the way up */
-    + '<i class="lo-floor__ladder"></i></div>'
+    /* round 36 graft (OBSIDIAN's): the Kids' toy chest against the trunk,
+       its lid down and its brass hasp shut */
+    + '<i class="lo-crate"><i class="lo-crate__lid"></i><i class="lo-crate__hasp"></i></i>'
+    /* and the rope ladder itself, hung from the shelf's edge by the way up --
+       pulled up short, clear of CLIMB UP, from a gilt rim on the shelf's edge */
+    + '<i class="lo-floor__ladder"><i class="lo-floor__ladder-rim"></i></i></div>'
     /* two small windows high in the wall either side of the plaque, and the
        night of the title painting through them: the old tree's boughs, the moon */
     + '<i class="kit-casement lo-case lo-case--l"></i><i class="kit-casement kit-casement--moon lo-case lo-case--r"></i>'
@@ -392,7 +396,20 @@ export class LobbyScene extends Scene {
     input.addEventListener('input', fitCode);
     requestAnimationFrame(fitCode);
     document.fonts?.ready?.then(() => fitCode());
-    const onFitResize = () => fitCode();
+    /* round 36 graft: the ladder's gilt rim sits on the shelf's visible front
+       edge -- plank.webp is the plank in its upper 84 of 120 rows, its thrown
+       shadow under that -- wherever the stage put the shelf at this size */
+    const hangLadder = () => {
+      const lad = card.ownerDocument.querySelector('.lo-floor__ladder');
+      const sill = card.ownerDocument.querySelector('.lo-view__sill');
+      if (!lad || !sill || !lad.isConnected) return;
+      const s = sill.getBoundingClientRect(), l = lad.getBoundingClientRect();
+      if (!s.height || !l.height) return;
+      lad.style.setProperty('--rim-y', `${Math.round(s.top + s.height * 84 / 120 - l.top - 2)}px`);
+    };
+    requestAnimationFrame(hangLadder);
+    document.fonts?.ready?.then(() => hangLadder());
+    const onFitResize = () => { fitCode(); hangLadder(); };
     window.addEventListener('resize', onFitResize);
     (this._offs ||= []).push(() => window.removeEventListener('resize', onFitResize));
 

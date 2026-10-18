@@ -462,3 +462,28 @@
   color: #fff1d2;
   text-shadow: 0 1px 0 rgba(0, 0, 0, .95), 0 0 10px color-mix(in srgb, var(--kit-candle) 75%, transparent);
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ROUND 36 GRAFT 3 (OBSIDIAN's, both judges) -- CLEAR wears the reset curl
+   (deckview.js), so the dialog's one cross is CLOSE's; and the stop in force
+   is lit: a small lamp in a brass collar under each stop's medallion, dark
+   while the filter lets everything through, lit while it narrows the pile,
+   and always lit for the sort (an order is always in force).
+   ═══════════════════════════════════════════════════════════════════════════ */
+.mm-deck__filters .kit-hw-stop__btn { position: relative; }
+.mm-deck__filters .kit-hw-stop__medal.kit-medallion::after {
+  content: ''; position: absolute; left: 50%; bottom: -5px;
+  width: 9px; height: 9px; translate: -50% 0;
+  border-radius: 50%;
+  background: radial-gradient(circle at 38% 34%, #6a5a4a, #2a1d14 60%, #120a06);
+  box-shadow: 0 0 0 1.5px var(--kit-gold-lo), 0 0 0 2.5px rgba(0, 0, 0, .75), inset 0 1px 1px rgba(0, 0, 0, .8);
+}
+.mm-deck__filters .kit-hw-stop.is-set .kit-hw-stop__medal.kit-medallion::after,
+.mm-deck__filters .kit-hw-stop.is-in-force .kit-hw-stop__medal.kit-medallion::after {
+  background: radial-gradient(circle at 40% 36%, #fffbe8, #ffd88a 40%, #ff9c3c 80%, #b5561a);
+  box-shadow: 0 0 0 1.5px var(--kit-gold), 0 0 0 2.5px rgba(0, 0, 0, .7), 0 0 8px 2px color-mix(in srgb, var(--kit-candle) 85%, transparent), 0 0 16px 4px color-mix(in srgb, var(--kit-candle) 35%, transparent);
+}
+.mm-deck__filters .kit-hw-stop.is-in-force .kit-hw-stop__value {
+  color: #fff3d6;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .9), 0 0 9px color-mix(in srgb, var(--kit-candle) 60%, transparent);
+}

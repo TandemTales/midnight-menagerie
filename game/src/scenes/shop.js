@@ -217,9 +217,10 @@ export class ShopScene extends RoomScene {
         <section class="sh-counter sh-counter--cards kit-panel kit-mat--curtain" data-medal="star2" aria-label="${esc(TERMS.card)}s for sale">
           <h2 class="sh-h sh-h--cards kit-heading kit-heading--ribbon kit-heading--inline kit-heading--clasp">${esc(TERMS.deck)} <em>on the table</em></h2>
           <!-- round 36: the curtain hangs in folds, lit by his lamp from the
-               left and the lantern over the crest, under a fringed pelmet -->
+               left and the lantern over the crest, under a scalloped valance
+               of swags (graft: SAPPHIRINE's .kit-valance, lit) -->
           <i class="sh-drape" aria-hidden="true"></i>
-          <div class="sh-pelmet"></div>
+          <i class="sh-pelmet kit-valance" aria-hidden="true"></i>
           <!-- Mr. Moth, standing at the left end of the shelf: not for sale, so
                outside the list of things that are. Round 5: the Kid board's
                mirror is his portrait frame, its moon on the crest and its paw
@@ -342,11 +343,11 @@ export class ShopScene extends RoomScene {
       row.setAttribute('role', 'listitem');
       row.dataset.key = key;
       row.innerHTML = `
-        <span class="sh-row__sig kit-hw-well" data-rarity="${esc(def.rarity)}" aria-hidden="true">
-          <!-- the Keepsake itself, painted (ui/objects.js), on a velvet cushion
-               under its own glass bell (round 36) -->
-          ${objectHtml(keepsakeKey(def.id), { well: false })}
-          <i class="sh-glass sh-glass--bell"></i>
+        <span class="sh-row__sig sh-vessel sh-vessel--bell" data-rarity="${esc(def.rarity)}" aria-hidden="true">
+          <!-- the Keepsake itself, painted (ui/objects.js), under its own clear
+               glass bell on a turned walnut stand, standing on the shelf's lip
+               (round 36 graft, SAPPHIRINE's bell) -->
+          <i class="sh-vessel__foot"></i>${objectHtml(keepsakeKey(def.id), { well: false })}<i class="sh-vessel__glass"></i>
         </span>
         <span class="sh-row__txt">
           <b>${esc(def.name)}</b>
@@ -368,11 +369,11 @@ export class ShopScene extends RoomScene {
       row.setAttribute('role', 'listitem');
       row.dataset.key = key;
       row.innerHTML = `
-        <span class="sh-row__sig sh-row__sig--snack kit-hw-well" aria-hidden="true">
+        <span class="sh-row__sig sh-row__sig--snack sh-vessel sh-vessel--jar" aria-hidden="true">
           <!-- each Snack its own painted sweet (ui/objects.js), never one shared
-               glyph, in its own glass jar (round 36) -->
-          ${objectHtml(snackKey(item.id), { well: false })}
-          <i class="sh-glass sh-glass--jar"></i>
+               glyph, in its own lidded sweet jar on a turned walnut stand
+               (round 36 graft, SAPPHIRINE's jar) -->
+          <i class="sh-vessel__foot"></i>${objectHtml(snackKey(item.id), { well: false })}<i class="sh-vessel__glass"></i>
         </span>
         <span class="sh-row__txt"><b>${esc(item.name)}</b><em>${esc(item.desc)}</em></span>`;
       // Fullness is recomputed in `_syncAffordable()`, not frozen here: buying
@@ -393,6 +394,7 @@ export class ShopScene extends RoomScene {
 
     this._renderRemoval();
     this._own(rovingFocus(wrap, '.sh-buy', { cols: 0 }));
+    this._bindStall(wrap);
     this._layout();
     const onResize = () => this._layout();
     window.addEventListener('resize', onResize);
@@ -505,6 +507,46 @@ export class ShopScene extends RoomScene {
     });
   }
 
+  /**
+   * ROUND 36 GRAFT (OBSIDIAN's rule): ONE WARE IS ALWAYS IN HAND. BUY lit only
+   * under the pointer left an untouched board -- every still capture, and a
+   * pad player's first look -- with twelve prices and no way to buy. So one
+   * ware is always held: the first Trick you can afford until the pointer or
+   * focus moves, then the last one hovered or focused. Its BUY unfolds beside
+   * its price on the tag (shop.css); every other tag shows its price alone.
+   * The `.sh-buy` button stays the control, the focus stop and the name.
+   */
+  _bindStall(wrap) {
+    const WARE = '.sh-card, .sh-row, .sh-service';
+    this._wares = () => [...wrap.querySelectorAll(WARE)].filter((w) => w.querySelector('.sh-buy'));
+    const wareOf = (n) => n?.closest?.(WARE);
+    this._handMoved = false;
+    const take = (e) => {
+      const w = wareOf(e.target);
+      if (!w || !w.querySelector('.sh-buy')) return;
+      this._handMoved = true;
+      this._hold(w);
+    };
+    this._on(wrap, 'pointerover', take);
+    this._on(wrap, 'focusin', take);
+  }
+
+  /** Put one ware in hand (or, before anything has moved, the first one you can buy). */
+  _hold(ware) {
+    const wares = this._wares?.() || [];
+    if (!ware) {
+      const ready = (w) => { const b = w.querySelector('.sh-buy'); return b && !b.disabled && !b.classList.contains('is-poor'); };
+      ware = wares.find((w) => w.classList.contains('sh-card') && ready(w)) || wares.find(ready) || wares[0];
+    }
+    if (!ware || ware === this._inHand) return;
+    for (const w of wares) {
+      const on = w === ware;
+      w.classList.toggle('is-in-hand', on);
+      w.querySelector('.sh-buy')?.classList.toggle('is-in-hand', on);
+    }
+    this._inHand = ware;
+  }
+
   _bump(b) {
     b.classList.remove('is-refused'); void b.offsetWidth; b.classList.add('is-refused');
   }
@@ -559,6 +601,9 @@ export class ShopScene extends RoomScene {
       else if (short < 0) state.textContent = `${-short} short`;
       else state.textContent = 'Buy';
     }
+    // before the pointer or focus has moved, the ware in hand is the first one
+    // you can still buy (a purchase can make the first one taken or too dear)
+    if (!this._handMoved) { this._inHand = null; this._hold(null); }
     // The removal price can move mid-visit.
     const rm = this.$remove?.querySelector('.sh-buy');
     if (rm) {

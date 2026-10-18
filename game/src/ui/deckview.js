@@ -170,7 +170,11 @@ export class DeckView {
     }
     sortSel.value = this.sort;
     sortSel.addEventListener('change', () => { this.sort = sortSel.value; this._apply(); });
-    filt.appendChild(this._cycle('Sort', sortSel));
+    /* round 36 graft (OBSIDIAN's): an order is always in force, so the sort's
+       pip is always lit; a filter's lights while it filters anything out */
+    const sortStop = this._cycle('Sort', sortSel);
+    sortStop.classList.add('is-in-force');
+    filt.appendChild(sortStop);
 
     const clear = document.createElement('button');
     clear.type = 'button'; clear.className = 'mm-btn mm-btn--ghost mm-deck__clear';
@@ -186,7 +190,18 @@ export class DeckView {
        plate's end, as CLOSE does (round 26 graft, VERMEILLE's; both judges),
        and stands on the bar beside the search it also wipes, so the five
        choosers have the filters' row to themselves at a size the Deck reads */
-    kitButton(clear, { quiet: true, medal: 'close' });
+    kitButton(clear, { quiet: true });
+    /* round 36 graft (OBSIDIAN's): not the cross -- that is CLOSE's, and two
+       crosses read as two closes -- but the arrow turning back on itself, the
+       reset curl Settings' RESTORE DEFAULTS wears */
+    {
+      const m = document.createElement('i');
+      m.className = 'kit-medallion kit-btn__medal mm-dlg-medal';
+      m.setAttribute('aria-hidden', 'true');
+      m.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12.4 4.2a7.8 7.8 0 1 1-7.4 10.4l2.7-1a4.9 4.9 0 1 0 4.7-6.5V10L6.8 5.7 12.4 1.4z"/></svg>';
+      clear.classList.add('mm-dlg-btn--medal');
+      clear.appendChild(m);
+    }
     bar.appendChild(clear);
     this.clearBtn = clear;
 

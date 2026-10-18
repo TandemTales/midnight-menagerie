@@ -208,9 +208,9 @@ export const TUNE = {
      hand of four. Copies stand side by side below this (gathered next to each
      other, Hand#_regroup, so the step to a stack never reshuffles them). */
   stackFrom: 7,
-  stackDy: 7,           // px each copy behind the top stands higher, at fit 1
-  stackDx: 3,           // ...and to the left
-  stackRot: 2.2,        // ...and tilted further left, degrees
+  stackDy: 11,           // px each copy behind the top stands higher, at fit 1
+  stackDx: 7,           // ...and to the left
+  stackRot: 3.4,        // ...and tilted further left, degrees
   stackMax: 3,          // copies deeper than this tuck exactly behind the third
   /* ROUND 36: A LOWER ARC. The arc's dip is what RAISES the middle of the fan
      (baseY = bottom - dip: the outer cards sit at the bottom, the middle a dip

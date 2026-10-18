@@ -335,3 +335,35 @@
    with the rest of its face */
 .mm-hand .mm-card.is-dragging > .mm-hand__stack,
 .mm-hand .mm-card.is-flying > .mm-hand__stack { display: none; }
+
+/* ── round 36 graft 6: the stack's count, larger, gold-rimmed, ON its top edge ──
+   Both judges: the "x3" medallion was small, its rim a thin brass line, and
+   it hung off the card's corner. It is the house's own round enamel button
+   now (button.webp, glazed: the purple enamel in its cast gold rim, as the
+   Kid board's buttons and the shop's BUY wear it), a size up, and seated
+   squarely ON the top card's top rule -- straddling it, half on the face and
+   half above it -- at the right-hand end of what its neighbour leaves in
+   view. The copies behind stand a step further out (hand.js TUNE.stackDy,
+   stackDx, stackRot) so each one's cost coin shows above and left of the
+   one in front, and a stack reads as several cards at a glance. */
+.mm-hand .mm-card > .mm-hand__stack {
+  top: calc(-31 * var(--u));
+  left: clamp(calc(58 * var(--u)), calc(var(--stack-vis, 1) * 100% - 74 * var(--u)), calc(100% - 70 * var(--u)));
+  width: calc(64 * var(--u)); height: calc(64 * var(--u));
+  font: 700 calc(28 * var(--u)) / 1 var(--font-display);
+  padding-top: calc(2 * var(--u));
+  color: #fff1d2;
+  text-shadow: 0 calc(-1 * var(--u)) 0 rgba(0,0,0,.95), 0 0 calc(8 * var(--u)) color-mix(in srgb, var(--kit-candle) 45%, transparent);
+  background:
+    url("../../assets/ui/kit/hw-glaze.webp") 50% 50% / 100% 100% no-repeat,
+    url("../../assets/ui/kit/button.webp") 50% 50% / 100% 100% no-repeat;
+  /* a polished gold ring laid round the button's own cast rim */
+  border-radius: 50%;
+  box-shadow:
+    0 0 0 calc(1.5 * var(--u)) #2a1a09,
+    0 0 0 calc(3.5 * var(--u)) var(--kit-gold),
+    0 0 0 calc(4.5 * var(--u)) var(--kit-gold-hi),
+    0 0 0 calc(6 * var(--u)) #1a0f12;
+  filter: drop-shadow(0 calc(3 * var(--u)) calc(4 * var(--u)) rgba(0,0,0,.85)) drop-shadow(0 0 calc(5 * var(--u)) color-mix(in srgb, var(--kit-gold) 35%, transparent));
+}
+.mm-hand .mm-card > .mm-hand__stack i { color: var(--kit-gold-hi); font-size: .74em; }
