@@ -19184,13 +19184,13 @@ vec3 trPaint(vec2 m, vec2 msz, float seed, float px, float E, float kx, out floa
   float qpx = px/sc;
   float L = min(msz.x/sc*0.5 - 0.06, 0.50);
   float ax = abs(q.x);
-  float pt;
-  float dAll = trSD(m, msz, seed, pt)/sc;
   float body = mmBox(q - vec2(0.0, 0.25), vec2(L, 0.25), 0.012);
   float lid = max(length((q - vec2(0.0, 0.46))/vec2(L + 0.008, 0.15)) - 1.0, 0.46 - q.y)*0.15;
   float hasSmall = step(mmHash11(seed*5.1), 0.5);
   float L2 = L*0.62;
   float small = mix(1e3, mmBox(q - vec2(L*0.12, 0.61 + 0.15), vec2(L2, 0.15), 0.015), hasSmall);
+  /* (the outline without the handles -- the frame budget: no second trSD) */
+  float dAll = min(min(body, lid), small);
   /* the canvas: oxblood, bottle green or a dark navy, by the trunk */
   float tk = mmHash11(seed*8.3 + 0.7);
   vec3 canvas = tk < 0.34 ? vec3(0.40, 0.13, 0.09) : (tk < 0.67 ? vec3(0.13, 0.24, 0.17) : vec3(0.14, 0.17, 0.30));
@@ -19227,7 +19227,7 @@ vec3 trPaint(vec2 m, vec2 msz, float seed, float px, float E, float kx, out floa
   float sx = abs(ax - L*0.70);
   float lidTop = 0.46 + 0.15*sqrt(max(1.0 - pow(ax/(L + 0.01), 2.0), 0.0));
   float strap = step(sx, 0.040)*step(q.y, lidTop)*step(0.04, q.y);
-  vec3 stC = leather*(0.75 + 0.40*smoothstep(0.0, 0.6, q.y))*(0.85 + 0.25*mmNoise(vec2(q.y*30.0, q.x*4.0)));
+  vec3 stC = leather*(0.75 + 0.40*smoothstep(0.0, 0.6, q.y))*(0.90 + 0.20*grain);
   col = mix(col, stC, strap);
   ink = max(ink, step(q.y, lidTop)*step(0.04, q.y)*mmInkP(sx - 0.040, qpx, 1.1)*0.85*step(sx, 0.06));
   vec2 bk = vec2(sx, q.y - 0.37);
