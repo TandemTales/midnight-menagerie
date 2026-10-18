@@ -614,7 +614,9 @@ export const ROOM_VARIANTS = [
   { mat: 'floor', defines: { MM_FLOORX: 1, MM_R25W: 0, MM_PAT: 2, MM_CEIL: 0 }, wings: ['pumpkin'] },
   { mat: 'floor', defines: { MM_FLOORX: 1, MM_R25W: 0, MM_PAT: 14, MM_CEIL: 0 }, wings: ['pumpkin'] },
   { mat: 'ceil', defines: { MM_FLOORX: 2, MM_PAT: 15, MM_CEIL: 1 }, wings: ['attic'] },
-  { mat: 'ceil', defines: { MM_FLOORX: 0, MM_PAT: 4, MM_CEIL: 1 }, wings: ['ballroom', 'bathhouse', 'crypt', 'foyer', 'heart'] },
+  { mat: 'ceil', defines: { MM_FLOORX: 0, MM_PAT: 4, MM_CEIL: 1 }, wings: ['ballroom', 'bathhouse', 'foyer', 'heart'] },
+  /* (round 35 graft: the Crypt's rib vault, its own pattern -- SCHEELITE's) */
+  { mat: 'ceil', defines: { MM_FLOORX: 1, MM_PAT: 17, MM_CEIL: 1 }, wings: ['crypt'] },
   { mat: 'ceil', defines: { MM_FLOORX: 0, MM_PAT: 7, MM_CEIL: 1 }, wings: ['ballroom', 'foyer'] },
   { mat: 'ceil', defines: { MM_FLOORX: 0, MM_PAT: 3, MM_CEIL: 1 }, wings: ['bathhouse', 'foyer', 'nursery', 'sleeping', 'study'] },
   { mat: 'ceil', defines: { MM_FLOORX: 0, MM_PAT: 5, MM_CEIL: 1 }, wings: ['bathhouse'] },
@@ -884,7 +886,6 @@ export class Backdrop {
       uRugDye: { value: 0 },
       uNearCalm: { value: 0 },
       uNearClean: { value: 0 },          // (round 35: nearFloor.clean)
-      uRibK: { value: 0 },               // (round 35: the crypt's vault drawn, pal.ribs -- ceiling only)
       /* THE PASSAGES' OPEN DOORS (round 22 graft): the wedge of lamplight
          each one's slit throws across the floor -- the slit's world x and z,
          and the unit direction into the room, and in uWedgeK how strong
@@ -2180,6 +2181,10 @@ export class Backdrop {
         const o = out[out.length - 1];
         o.w *= it.hM / o.h; o.h = it.hM;
       }
+      /* (round 35 graft, SCHEELITE's: and its width in metres -- a litter of
+         bones on the Crypt's flags is wide and low, and no ratio of its
+         height says so. Read only where written.) */
+      if (it.wM !== undefined && out.length > n0) out[out.length - 1].w = it.wM;
       if (!it.keep && yields(it, out[out.length - 1])) out.pop();
     }
     return out.slice(0, MAX_PROPS);
@@ -2914,7 +2919,6 @@ export class Backdrop {
        shows the ceiling over a room's chandeliers showed it as a flat grey
        slab, where the wing's other rooms keep it dark. */
     c.uGain.value = (p.gain ?? 3.4) * 0.085 * (p.ceilGain ?? 1);
-    c.uRibK.value = p.ribs ?? 0;          // (round 35: the vault drawn rib by rib, the Crypt)
 
     const pr = this.propMat.uniforms;
     pr.uAlbedo.value.copy(p._propAlb);
