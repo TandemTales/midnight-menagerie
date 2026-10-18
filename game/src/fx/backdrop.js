@@ -902,11 +902,6 @@ export class Backdrop {
          variant reads it): world x and z of its centre, its half-width and
          half-depth in metres; z = 0, none */
       uRug: { value: new THREE.Vector4(0, 0, 0, 0) },
-      /* ROUND 35: what lies on the near floor (pal.litter): world x and z of
-         the patch's centre, its half-width and half-depth; z = 0, none; and
-         uLitterK what it is (1 the crypt's bones and rubble) */
-      uLitter: { value: new THREE.Vector4(0, 0, 0, 0) },
-      uLitterK: { value: 0 },
     });
 
     this.floorMat = new THREE.ShaderMaterial({
@@ -2867,9 +2862,6 @@ export class Backdrop {
     f.uNearDark.value = p.nearDark ?? 0;
     if (p.rug) f.uRug.value.set(p.rug.x, p.rug.z, p.rug.hw, p.rug.hd);
     else f.uRug.value.set(0, 0, 0, 0);
-    /* (round 35: and what lies on the near floor -- pal.litter) */
-    if (p.litter) { f.uLitter.value.set(p.litter.x, p.litter.z, p.litter.hw, p.litter.hd); f.uLitterK.value = p.litter.k ?? 1; }
-    else { f.uLitter.value.set(0, 0, 0, 0); f.uLitterK.value = 0; }
     /* ROUND 31: THE NEAR FLOOR, one rule for any room that asks
        (pal.nearFloor -- see atmosphere.js NEAR FLOOR): how far its
        foreground falls, the pool of lamplight in front of the eye, the

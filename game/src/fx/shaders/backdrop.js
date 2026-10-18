@@ -13653,11 +13653,6 @@ uniform float uCrisp;
 /* (round 28 graft, NAPLES's: straw tracked across the kennels' flags, its
    strength; 0 elsewhere) */
 uniform float uStraw;
-/* ROUND 35: WHAT LIES ON THE NEAR FLOOR (pal.litter): the patch's world
-   centre and half extents (z = 0, none) and what it is -- 1 the crypt's
-   long bones and fallen rubble. Zero in every other room. */
-uniform vec4  uLitter;
-uniform float uLitterK;
 /* (round 28 graft: the passage's sconce pools on its boards and its beams --
    x the line of the sconces off the axis, y the first one's depth, z their
    pitch, w the strength (0 in every other room); uSconceEnd the end wall's z,
@@ -14873,81 +14868,6 @@ void main(){
         if (on > strw) { strw = on; strT = hh.y; }
       }
       alb = mix(alb, vec3(mmLum(uMid))*vec3(2.6, 1.9, 0.85)*(1.0 + 0.7*strT)*uStraw, strw*0.70);
-    }
-  }
-  /* ---- ROUND 35: WHAT LIES ON THE NEAR FLOOR (uLitter; the Crypt) --------
-     Survey-5 judge 2 on the Crypt: "the centre of the floor [is] black void
-     and the floor flags are soft"; the brief: "bones or rubble on the
-     flags". A patch of the flags in front of the eye strewn with what a
-     crypt lets fall: long bones lying where they were dropped, each a
-     shaft with its two-lobed knuckle at both ends, ivory gone grey, inked
-     round and its shadow under it; and spalled stone, a few lumps to a
-     cluster, lit on top, dark at the foot. Drawn while a bone is two
-     pixels across; past that the floor is as it was. */
-  if (uLitter.z > 0.01 && uIsCeiling < 0.5) {
-    vec2 lp = vWorld.xz - uLitter.xy;
-    vec2 lq = abs(lp)/uLitter.zw;
-    float fadeL = 1.0 - smoothstep(0.70, 1.0, max(lq.x, lq.y));
-    float lRes = smoothstep(0.050, 0.018, mp);
-    if (fadeL*lRes > 0.001) {
-      float Lf = mmLum(mix(uDeep, uMid, 0.55));
-      vec3 boneC = vec3(Lf)*vec3(4.0, 3.8, 3.4);
-      vec3 stoneC = vec3(Lf)*vec3(2.3, 2.3, 2.15);
-      float cov = 0.0, shd = 0.0, inkL = 0.0;
-      vec3 lc = vec3(0.0);
-      for (int l = 0; l < 2; l++){
-        float cs = 0.66 - 0.20*float(l);
-        vec2 g = lp/cs + float(l)*0.37;
-        vec2 gi = floor(g);
-        vec2 hh = mmHash22(gi + 17.0*float(l) + 3.1);
-        float kind = mmHash21(gi*1.7 + float(l)*5.3 + 0.4);
-        vec2 c0 = (gi + 0.25 + 0.5*hh - float(l)*0.37)*cs;
-        vec2 v = lp - c0;
-        if (kind < 0.34) {
-          /* a long bone */
-          float an = (hh.x - 0.5)*1.2;     // (lying across the view: along it a bone foreshortens to a rune)
-          vec2 dir = vec2(cos(an), sin(an)), nrm = vec2(-dir.y, dir.x);
-          float L = 0.20 + 0.09*hh.y;
-          float t = clamp(dot(v, dir), -L, L);
-          float dB = length(v - dir*t) - 0.022*(1.0 + 0.25*abs(t)/L);
-          for (int e = 0; e < 2; e++){
-            vec2 ec = dir*L*(float(e)*2.0 - 1.0);
-            dB = min(dB, min(length(v - ec - nrm*0.020) - 0.031, length(v - ec + nrm*0.020) - 0.031));
-          }
-          vec2 vs = v - vec2(0.0, 0.028);
-          float ts = clamp(dot(vs, dir), -L, L);
-          float dS = length(vs - dir*ts) - 0.030;
-          float cB = clamp(0.5 - dB/mp, 0.0, 1.0);
-          float sB = 1.0 - smoothstep(-0.01, 0.03, dS);
-          float lit = 0.62 + 0.55*smoothstep(0.0, -0.022, dB);
-          lc = mix(lc, boneC*lit*(0.82 + 0.30*hh.y), cB*(1.0 - cov));
-          shd = max(shd, sB*(1.0 - cB));
-          inkL = max(inkL, mmInkP(dB, mp, 1.0)*0.85);
-          cov = max(cov, cB);
-        } else if (kind < 0.62) {
-          /* spalled stone: three lumps */
-          for (int r = 0; r < 3; r++){
-            vec2 rh = mmHash22(gi*3.1 + float(r)*7.7 + float(l)*1.3);
-            vec2 rc = (rh - 0.5)*cs*0.42;
-            float rs = 0.030 + 0.050*rh.x*(1.0 - 0.3*float(r));
-            float ra = rh.y*3.14159;
-            vec2 rv = v - rc;
-            rv = vec2(rv.x*cos(ra) - rv.y*sin(ra), rv.x*sin(ra) + rv.y*cos(ra));
-            float dR = mmBox(rv, vec2(rs, rs*0.72), rs*0.35);
-            float dRs = mmBox(rv - vec2(0.0, 0.02), vec2(rs*1.1, rs*0.9), rs*0.4);
-            float cR = clamp(0.5 - dR/mp, 0.0, 1.0);
-            float litR = 0.55 + 0.65*smoothstep(rs*0.2, -rs*0.6, rv.y + rv.x*0.3);
-            lc = mix(lc, stoneC*litR*(0.80 + 0.35*rh.y), cR*(1.0 - cov));
-            shd = max(shd, (1.0 - smoothstep(-0.005, 0.025, dRs))*(1.0 - cR));
-            inkL = max(inkL, mmInkP(dR, mp, 1.0)*0.75);
-            cov = max(cov, cR);
-          }
-        }
-      }
-      float kL = fadeL*lRes;
-      alb *= 1.0 - 0.55*shd*kL;
-      alb = mix(alb, lc, cov*kL);
-      alb *= 1.0 - inkL*0.80*kL;
     }
   }
 #if MM_FLOORX == 2

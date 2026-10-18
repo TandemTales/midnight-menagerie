@@ -1017,12 +1017,13 @@ export const REGIONS = {
        centre of the floor are black void and the floor flags are soft").
        The flags each their own stone with a pen-weight joint (calm); a
        pricket stand of candles stood on them at your left, its pool laid on
-       the flags round it; what a crypt lets fall lying in front of you --
-       long bones and spalled stone (litter); the foreground falling to
-       nine-tenths, not two-fifths; the grain at half the house's */
+       the flags round it; the foreground falling to nine-tenths, not
+       two-fifths; the grain at half the house's. (Round 35 graft: the
+       bones painted flat on the flags -- nearFloor.litter, "flat
+       stick-bones", J1 -- are retired; the floor program carried their
+       loop in every wing for the frame budget's sake too.) */
     nearFloor: { fall: 0.90, calm: 0.90, clean: 1,
-                 pool: { ahead: 4.8, across: -2.0, abs: true, rAlong: 2.8, rAcross: 2.5, k: 6.0, color: '#f0a55a' },
-                 litter: { ahead: 5.0, hw: 3.4, hd: 2.2, k: 1 } },
+                 pool: { ahead: 4.8, across: -2.0, abs: true, rAlong: 2.8, rAcross: 2.5, k: 6.0, color: '#f0a55a' } },
     grain: 0.012,
     /* (round 35: "the ceiling ... [is] black void" -- the vault's ribs lit
        by the candles under them, as the attic's roof is) */
@@ -3079,21 +3080,6 @@ export class Atmosphere {
       pal.rug = { x: (c.x ?? 0) + dx * a + (pal.rugK.dx ?? 0), z: (c.z ?? 9.6) + dz * a,
                   hw: pal.rugK.hw ?? 2.2, hd: pal.rugK.hd ?? 1.5 };
     }
-    /* ROUND 35: WHAT LIES ON THE NEAR FLOOR (nearFloor.litter) -- a patch of
-       the floor in front of the eye, placed as the carpet is, strewn with
-       what the room drops: the crypt's long bones and fallen rubble
-       (FLOOR_FRAG, uLitter). None in a room that does not ask. */
-    pal.litter = null;
-    const lt = pal.nearFloor && pal.nearFloor.litter;
-    if (lt && pal.cam) {
-      const c = pal.cam;
-      let dx = (c.lookX ?? 0) - (c.x ?? 0), dz = (c.lookZ ?? 0) - (c.z ?? 9.6);
-      const dl = Math.hypot(dx, dz) || 1;
-      dx /= dl; dz /= dl;
-      const a = lt.ahead ?? 6.0;
-      pal.litter = { x: (c.x ?? 0) + dx * a - dz * (lt.dx ?? 0), z: (c.z ?? 9.6) + dz * a + dx * (lt.dx ?? 0),
-                     hw: lt.hw ?? 3.0, hd: lt.hd ?? 2.0, k: lt.k ?? 1 };
-    }
     this.backdrop.build(pal, () => this._rand());
     // material is structural, like the geometry: it swaps with the room rather
     // than cross-fading, because a cabinet does not gradually stop being oak.
@@ -3795,7 +3781,6 @@ export class Atmosphere {
       L.nearDark = T.nearDark;
       L.nearFloor = T.nearFloor;        // (round 31: the near floor goes with the room)
       L.rug = T.rug;                    // (round 25 graft: the carpet goes with the room)
-      L.litter = T.litter;              // (round 35: and what lies on its near floor)
       L.ribs = T.ribs;                  // (round 35: and the crypt's vault drawn)
       L.straw = T.straw;                // (round 28 graft: and the kennels' straw)
       this.backdrop.applyPalette(L);
