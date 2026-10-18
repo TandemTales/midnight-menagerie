@@ -400,6 +400,17 @@ export const REGIONS = {
     ],
     shafts: { count: 2, spread: 11, y: 6.0, z: -7.0, angle: 0.40, width: 3.0, intensity: 0.06, pool: 2.0 },
     bloom: 0.78, vignette: 1.23,
+    /* ROUND 35: THE NEAR FLOOR (survey-5 judge 2: "the centre floor (the
+       lower 55%) is an empty purple-black plank field"). The boards drawn
+       crisp (uCrisp), the dormitory's runner woven in its worn Turkey dyes
+       (dye) and the bedroom's carpet laid before its hearth, the moon from
+       the tall side window laid across the boards in front of you, and a
+       washstand candle's pool by the near beds; the foreground falls to
+       nine-tenths, not two-fifths. The grain at half the house's. */
+    crispFloor: true, grain: 0.012,
+    nearFloor: { fall: 0.90, dye: 1, calm: 0.70, clean: 1,
+                 pool: { ahead: 5.6, across: 1.6, rAlong: 3.0, rAcross: 2.2, k: 1.5, color: '#9cb2e8' },
+                 pool2: { ahead: 4.2, across: -1.9, rAlong: 1.9, rAcross: 1.7, k: 1.6, color: '#f0a65a' } },
   },
 
   /* ── 4. The Kitchens and Cellars ───────────────────────────────────────────
@@ -638,7 +649,10 @@ export const REGIONS = {
        nine-tenths of the middle distance's (it fell to three-quarters), with
        a cold pool of it broken by the clouds in front of you, and every room
        has a LARGE stone in its near turf (GRAVE_NEAR_*) */
-    nearFloor: { fall: 0.92,
+    /* (round 35: and the turf's cloud laid to rest -- the wet sheen's fbm and
+       the pools' break-up were the "uniform milky grey murk" lying on the
+       lawn: nearFloor.clean) */
+    nearFloor: { fall: 0.92, clean: 0.85,
                  pool: { ahead: 4.6, across: 1.2, rAlong: 3.8, rAcross: 3.6, k: 2.0, color: '#94aad0' } },
     props: { shapes: [69, 69, 70, 71, 69], solo: [71], count: 34, height: 1.5, layout: 'rows',
              near: [{ shape: 69, edge: 0.90, z: -0.8, tone: 0.90 },
@@ -648,7 +662,13 @@ export const REGIONS = {
                        midground headstone or tomb between the Kid and the
                        Moth" -- a stone in the turf between them, its right
                        end at 0.40 of the frame) */
-                    { shape: 69, edge: 0.40, z: -2.6, tone: 0.92, scale: 1.10, seed: 3.0 }] },
+                    { shape: 69, edge: 0.40, z: -2.6, tone: 0.92, scale: 1.10, seed: 3.0 },
+                    /* ROUND 35: THE NEAR FLOOR, in the band of the fight
+                       above the hand: a tall arched stone with its lines cut
+                       in the near turf at your left, over the Companion's
+                       panel, and a wheel cross by the lantern at your right */
+                    { shape: 69, edge: 0.13, z: 1.4, tone: 0.95, scale: 1.30, seed: 1.25, fore: 1, keep: true },
+                    { shape: 73, edge: 0.84, z: 0.4, tone: 0.95, scale: 0.92, fore: 1, keep: true }] },
     r25w: 4,
     /* (round 28: the moon on the lawn at two-thirds -- [0.62, 0.86, 1.05]
        lifted the turf to "a flat milky grey-green field", both judges; the
@@ -669,7 +689,11 @@ export const REGIONS = {
     lights: [
       { kind: 'cold', x: -3.0, y: 8.00, z: -12.0, color: '#b1c7dd', intensity: 1.98, radius: 16.0, flicker: false },
       { kind: 'warm', x: 2.8, y: 0.90, z: -5.0, color: '#dda558', intensity: 5.7, radius: 4.47 },
-      { kind: 'cold', x: 7.0, y: 1.20, z: -9.5, color: '#91c4d7', intensity: 0.94, radius: 6.8 },
+      /* (round 35: the churchyard's LANTERN on its post brought up into the
+         near turf, warm, so the band of lawn above the hand has a light that
+         stands in it and its pool -- it was a cold lamp nineteen metres off
+         that nobody read as a lantern) */
+      { kind: 'warm', x: 4.6, y: 0.95, z: -0.9, color: '#e2a052', intensity: 3.4, radius: 4.6 },
     ],
     /* A SHAFT NEEDS SOMETHING TO COME THROUGH. This region has no ceiling and
        no windows, so three hard-edged bright stripes across the night sky read
@@ -750,7 +774,9 @@ export const REGIONS = {
     deep: '#17152c', mid: '#2a2746', hi: '#433e69', accent: '#8592cd',
     shaft: '#b1bce4', rimCol: '#dfc191', floorDeep: '#100e1e', floorMid: '#232135',
     ambient: '#19172e', propAlb: '#342e4b', propHi: '#605b7e',
-    gloss: 0.36, grime: 0.78, coolFill: 1.20, wallFog: 0.18,
+    /* (round 35: 0.18 from 0.36 -- an attic's boards are DUSTY, and their
+       wet mirror of the key was the "orange haze" on the right foreground) */
+    gloss: 0.18, grime: 0.78, coolFill: 1.20, wallFog: 0.18,
     /* an attic's floor: trunks (36), furniture under dust sheets (37), a
        crate, a case, a clock -- along the knee walls, the middle kept; and
        before the gable's window, the TELESCOPE on its tripod (35) */
@@ -764,8 +790,26 @@ export const REGIONS = {
              near: [{ shape: 35, x: 1.3, z: -7.4, tone: 0.97, scale: 1.30, free: true },
                     { shape: 44, x: -1.9, z: -8.0, tone: 0.95, free: true },
                     { shape: 14, x: 3.7, z: -12.6, tone: 0.92 },
-                    { shape: 36, x: -3.9, z: -11.8, tone: 0.92 }],
+                    { shape: 36, x: -3.9, z: -11.8, tone: 0.92 },
+                    /* ROUND 35: THE NEAR FLOOR (both survey-5 judges: "the
+                       left half of the attic is black void (left wall and
+                       trunks dissolve), and the floor is a soft purple
+                       haze"). What an attic keeps where you come up the
+                       stair: a strapped trunk on the boards at your left
+                       in the lamp's pool, a chair under its dust sheet at
+                       your right in the moon's, `fore` so a vantage down the
+                       eaves keeps them at your feet */
+                    { shape: 36, edge: 0.24, z: 4.5, tone: 0.97, scale: 1.30, fore: 1, keep: true, seed: 1.5 },
+                    { shape: 37, edge: 0.80, z: 3.6, tone: 0.95, scale: 1.05, fore: 1, keep: true, seed: 0.3 },
+                    { shape: 37, edge: 0.93, z: 1.0, tone: 0.93, scale: 1.0, fore: 1, keep: true, seed: 2.0 }],
              trusses: { shape: 38, every: 3.4, first: 2.2 } },
+    /* ...and the boards they stand on lit and calm: a lamp's pool at your
+       left and the skylight's moon laid on the boards at your right, the
+       foreground falling to nine-tenths and not two-fifths, and the boards'
+       cloud laid to rest so each one is a board and not a haze */
+    nearFloor: { fall: 0.90, calm: 0.85, clean: 1, dye: 1, rug: { ahead: 5.6, hw: 1.5, hd: 1.0 },
+                 pool: { ahead: 9.6, across: 2.8, rAlong: 4.2, rAcross: 3.0, k: 2.6, color: '#f0a65a' },
+                 pool2: { ahead: 10.0, across: -2.4, rAlong: 4.0, rAcross: 2.6, k: 0.9, color: '#9fb0e6' } },
     particles: { mix: [[PTYPE.DUST, 0.62], [PTYPE.WISP, 0.26], [PTYPE.ASH, 0.12]],
                  tint: '#d8dcf5', wispTint: '#b0b8ff', emberTint: '#ffcf7a',
                  speed: 0.6, scale: 1.0, wind: 0.4, density: 0.60 },
@@ -776,8 +820,18 @@ export const REGIONS = {
       { kind: 'cold', x: 5.0, y: 5.60, z: -12.0, color: '#b1bbeb', intensity: 2.73, radius: 13.0, flicker: false },
       { kind: 'warm', x: -3.8, y: 1.10, z: -5.0, color: '#dda558', intensity: 7.11, radius: 4.64 },
       { kind: 'cold', x: -6.4, y: 3.40, z: -10.0, color: '#91a3d7', intensity: 1.06, radius: 8.0 },
+      /* ROUND 35: THE NEAR FLOOR'S LAMP -- a lantern stood on the boards
+         just inside the frame, on the side away from the key, so the half
+         of the attic the key never reached has its wall, its trunks and
+         its boards (both judges: "the left half ... is black void"); its
+         pool is nearFloor.pool, mirrored with it */
+      { kind: 'warm', x: 2.9, y: 1.05, z: -1.7, color: '#e8a050', intensity: 5.2, radius: 5.6 },
     ],
     shafts: { count: 3, spread: 16, y: 8.0, z: -11.0, angle: 0.40, width: 2.8, intensity: 0.45, pool: 1.9 },
+    /* (round 35: the boards drawn, not a cloud -- uCrisp, as the Foyer's and
+       the passages'; and the film grain at under half the house's, so the
+       board joints carry the floor and not a mottle over it) */
+    crispFloor: true, grain: 0.012,
   },
 
   /* ── 9. The Lampworks ──────────────────────────────────────────────────────
@@ -928,7 +982,12 @@ export const REGIONS = {
     props: { shapes: [57, 15, 58, 57, 6], count: 9, height: 1.8, layout: 'perimeter',
              near: [{ shape: 58, x: -2.6, z: -4.3, tone: 0.95, free: true },
                     { shape: 57, edge: 0.76, z: -2.8, tone: 0.96 },
-                    { shape: 58, x: 2.8, z: -9.5, tone: 0.92, free: true }] },
+                    { shape: 58, x: 2.8, z: -9.5, tone: 0.92, free: true },
+                    /* (round 35: the near floor's candles -- nearFloor.pool) */
+                    { shape: 58, edge: 0.20, z: 2.2, tone: 0.97, scale: 1.05, fore: 1, keep: true, seed: 4.0 },
+                    /* (round 35: and a heap of what fell from the shelves, on
+                       the flags a stride from you -- wfBoneHeap, seed > 19.5) */
+                    { shape: 59, edge: 0.60, z: 2.9, tone: 0.97, scale: 1.15, fore: 1, keep: true, seed: 21.0 }] },
     /* (round 24: dust in the candlelight -- the teal wisps were a field of
        green specks over the bone) */
     particles: { mix: [[PTYPE.DUST, 0.84], [PTYPE.ASH, 0.16]],
@@ -936,7 +995,9 @@ export const REGIONS = {
                  speed: 0.5, scale: 1.0, wind: 0.3, density: 0.40 },
     exposure: 2.46, contrast: 1.69,
     key:  { glow: 0, kind: 'warm', x: -3.0, y: 2.8, z: 2.0, color: '#e0a866', intensity: 1.61, radius: 6.88 },
-    fill: { glow: 0, kind: 'cold', x: 3.6, y: 2.4, z: 1.2, color: '#6cacc8', intensity: 1.94, radius: 7.5, flicker: false },
+    /* (round 35: the fill a stop down -- at 1.94 it laid a cyan haze on the
+       near flags' corner, the "haze" every judge marks down) */
+    fill: { glow: 0, kind: 'cold', x: 3.6, y: 2.4, z: 1.2, color: '#6cacc8', intensity: 1.05, radius: 7.5, flicker: false },
     lights: [
       { kind: 'warm', x: -2.6, y: 1.40, z: -4.3, color: '#e0a35a', intensity: 2.9, radius: 6.5, fit: 'none' },
       { kind: 'cold', x: 3.4, y: 2.20, z: -9.0, color: '#7aa9c0', intensity: 1.70, radius: 7.5 },
@@ -945,6 +1006,20 @@ export const REGIONS = {
     ],
     shafts: { count: 1, spread: 4, y: 5.0, z: -9.0, angle: 0.10, width: 4.2, intensity: 0.0, pool: 1.2 },
     vignette: 1.28, bloom: 0.90,
+    /* ROUND 35: THE NEAR FLOOR (survey-5 judge 2: "the ceiling and the
+       centre of the floor are black void and the floor flags are soft").
+       The flags each their own stone with a pen-weight joint (calm); a
+       pricket stand of candles stood on them at your left, its pool laid on
+       the flags round it; what a crypt lets fall lying in front of you --
+       long bones and spalled stone (litter); the foreground falling to
+       nine-tenths, not two-fifths; the grain at half the house's */
+    nearFloor: { fall: 0.90, calm: 0.90, clean: 1,
+                 pool: { ahead: 5.4, across: -1.7, rAlong: 2.6, rAcross: 2.3, k: 2.2, color: '#f0a55a' },
+                 litter: { ahead: 5.0, hw: 3.4, hd: 2.2, k: 1 } },
+    grain: 0.012,
+    /* (round 35: "the ceiling ... [is] black void" -- the vault's ribs lit
+       by the candles under them, as the attic's roof is) */
+    ceilGain: 2.4,
   },
 
   /* ── 12. The Withered Hedge Maze ───────────────────────────────────────────
@@ -2085,7 +2160,10 @@ export const ROOM_KINDS = {
        heads to the walls; and a bedroom with its hearth, its four-poster
        and its washstand -- each drawn in program 18) */
     kinds: [{ subject: 'dormroom', layout: 'wings', count: 0, swap: [[0, 51], [14, 51]],
-              runner: 1.25,
+              /* (round 35: the runner narrowed to a runner -- at 1.25 m a
+                 side it was a carpet wall to wall, and dyed it hid the
+                 boards the moon lies on) */
+              runner: 0.82,
               lamps: [{ i: 0, x: 0.0, z: 0.30, k: 1.4 },
                       { i: 3, x: 3.3, z: 0.60, y: 1.25, color: '#eab070', k: 1.5, radius: 4.5, fit: 'none' }],
               /* (graft, all three judges: "bring the iron beds in from the
@@ -2119,20 +2197,36 @@ export const ROOM_KINDS = {
                      { shape: 51, x: -1, fromWall: 1.05, z: -5.95, tone: 0.93, free: true, keep: true },
                      { shape: 51, x: 1, fromWall: 1.05, z: -5.80, tone: 0.93, free: true, keep: true },
                      { shape: 51, x: -1, fromWall: 1.05, z: -7.30, tone: 0.91, free: true, keep: true },
-                     { shape: 51, x: 1, fromWall: 1.05, z: -7.15, tone: 0.91, free: true, keep: true }],
+                     { shape: 51, x: 1, fromWall: 1.05, z: -7.15, tone: 0.91, free: true, keep: true },
+                     /* ROUND 35: THE NEAR FLOOR -- at the foot of the near
+                        left bed the child's painted toy chest with its lid
+                        up and the bear sat against it, and across the
+                        runner a rocking horse left where it was ridden;
+                        `fore`, in the candle's and the moon's pools */
+                     { shape: 47, edge: 0.27, z: 1.6, tone: 0.97, scale: 1.0, fore: 1, keep: true, seed: 1.0 },
+                     { shape: 46, edge: 0.73, z: 0.9, tone: 0.95, scale: 1.0, fore: 1, keep: true, seed: 2.0 }],
               cam: { z: -1.6, look: 0.10 } },
             { subject: 'bedchamber', layout: 'wings', count: 0,
-              room: { d: 1.053, w: 1.72 }, runner: 1.5,
+              room: { d: 1.053, w: 1.72 }, runner: 0,
               /* (round 29: a Turkey carpet laid before the hearth -- the
                  bedroom's middle floor was a bare dark field) */
-              rug: { ahead: 8.6, hw: 2.1, hd: 1.35 },
+              /* (round 35: and it is laid NOW -- it drew only in a dyed
+                 floor, which this room never had -- a stride nearer and
+                 larger, so it is the near floor and the runner under it
+                 goes) */
+              rug: { ahead: 6.6, hw: 2.3, hd: 1.6 },
+              nearFloor: { pool: { ahead: 5.2, across: -1.4, rAlong: 2.8, rAcross: 2.2, k: 1.3, color: '#9cb2e8' },
+                           pool2: { ahead: 5.0, across: 2.3, rAlong: 2.2, rAcross: 1.8, k: 1.7, color: '#f0a65a' } },
               lamps: [{ i: 0, x: 0.0, z: 0.95, y: 0.45, fit: 'none', color: '#ff9848', radius: 4.2, k: 1.10 },
                       { i: 3, x: 3.4, z: 0.42 },
                       { i: 2, x: 4.0, z: 0.38, y: 1.25, color: '#eab070', k: 1.5, radius: 4.0, fit: 'none' }],
               near: [{ shape: 50, x: -2.7, z: -2.0, tone: 0.97, scale: 1.2, free: true },
                      { shape: 52, x: 4.0, z: -3.4, tone: 0.95, free: true },
                      { shape: 60, x: 4.7, z: -6.4, tone: 0.93, free: true },
-                     { shape: 56, x: 2.0, z: -5.4, tone: 0.92, free: true }],
+                     { shape: 56, x: 2.0, z: -5.4, tone: 0.92, free: true },
+                     /* (round 35: the near floor -- a wing chair drawn up on
+                        the carpet's edge to the fire, `fore`) */
+                     { shape: 56, edge: 0.76, z: 1.2, tone: 0.97, scale: 1.05, fore: 1, keep: true, seed: 3.0 }],
               cam: { z: -1.4, look: 0.10 } }],
     names: [
       [/bedroom|moon window|dreaming/i, 1],
@@ -2181,7 +2275,13 @@ export const ROOM_KINDS = {
        table and its lamp where the telescope stood) */
     kinds: [{ subject: 'observatory' },
             { subject: 'eaves', swap: [[37, 5], [14, 5]],
-              near: [{ shape: 18, x: -0.8, z: -10.5, tone: 0.92 }, { shape: 36, x: 0.7, z: -10.2, tone: 0.92 }],
+              near: [{ shape: 18, x: -0.8, z: -10.5, tone: 0.92 }, { shape: 36, x: 0.7, z: -10.2, tone: 0.92 },
+                     /* (round 35: the near floor -- the archive's trunks
+                        and the form someone left among them, at your feet,
+                        `fore`) */
+                     { shape: 36, edge: 0.28, z: 3.0, tone: 0.97, scale: 1.20, fore: 1, keep: true, seed: 3.5 },
+                     { shape: 37, edge: 0.82, z: 3.2, tone: 0.95, scale: 1.05, fore: 1, keep: true, seed: 5.0 }],
+              rug: { ahead: 7.4, hw: 1.6, hd: 1.0 },
               vantage: { at: 'along', off: 0.12, wall: 2.0, fwd: 1.4, yaw: 10, wide: 3 } }],
     names: [
       [/library|chart|archive|watcher/i, 1],
@@ -2463,11 +2563,19 @@ export const ROOM_KINDS = {
         lamps: [{ i: 1, x: 0.0, z: 0.86, y: 1.6, color: '#e2a660', k: 0.85, fit: 'none' }],
         near: [{ shape: 57, edge: 0.74, z: -3.0, tone: 0.96 },
                { shape: 58, x: -2.4, z: -6.0, tone: 0.95, free: true },
-               { shape: 58, x: 2.4, z: -9.6, tone: 0.92, free: true }] },
+               { shape: 58, x: 2.4, z: -9.6, tone: 0.92, free: true },
+               { shape: 58, edge: 0.20, z: 2.2, tone: 0.97, scale: 1.05, fore: 1, keep: true, seed: 4.0 },
+               /* (round 35: and a heap of what fell from the shelves, on the
+                  flags a stride from you -- wfBoneHeap, seed > 19.5) */
+               { shape: 59, edge: 0.60, z: 2.9, tone: 0.97, scale: 1.15, fore: 1, keep: true, seed: 21.0 }] },
       { subject: 'charnel', swap: [[57, 59], [15, 59]], count: 3, cam: { y: -0.20, z: -0.4, fov: 3 },
         near: [{ shape: 58, x: -2.6, z: -4.3, tone: 0.95, free: true },
                { shape: 59, edge: 0.78, z: -3.2, tone: 0.96 },
-               { shape: 58, x: 2.8, z: -9.5, tone: 0.92, free: true }] },
+               { shape: 58, x: 2.8, z: -9.5, tone: 0.92, free: true },
+               { shape: 58, edge: 0.20, z: 2.2, tone: 0.97, scale: 1.05, fore: 1, keep: true, seed: 4.0 },
+               /* (round 35: and a heap of what fell from the shelves, on the
+                  flags a stride from you -- wfBoneHeap, seed > 19.5) */
+               { shape: 59, edge: 0.60, z: 2.9, tone: 0.97, scale: 1.15, fore: 1, keep: true, seed: 21.0 }] },
     ],
     names: [
       [/ossuar|bone|skull/i, 2],
@@ -2953,6 +3061,21 @@ export class Atmosphere {
       const a = pal.rugK.ahead ?? 6.0;
       pal.rug = { x: (c.x ?? 0) + dx * a + (pal.rugK.dx ?? 0), z: (c.z ?? 9.6) + dz * a,
                   hw: pal.rugK.hw ?? 2.2, hd: pal.rugK.hd ?? 1.5 };
+    }
+    /* ROUND 35: WHAT LIES ON THE NEAR FLOOR (nearFloor.litter) -- a patch of
+       the floor in front of the eye, placed as the carpet is, strewn with
+       what the room drops: the crypt's long bones and fallen rubble
+       (FLOOR_FRAG, uLitter). None in a room that does not ask. */
+    pal.litter = null;
+    const lt = pal.nearFloor && pal.nearFloor.litter;
+    if (lt && pal.cam) {
+      const c = pal.cam;
+      let dx = (c.lookX ?? 0) - (c.x ?? 0), dz = (c.lookZ ?? 0) - (c.z ?? 9.6);
+      const dl = Math.hypot(dx, dz) || 1;
+      dx /= dl; dz /= dl;
+      const a = lt.ahead ?? 6.0;
+      pal.litter = { x: (c.x ?? 0) + dx * a - dz * (lt.dx ?? 0), z: (c.z ?? 9.6) + dz * a + dx * (lt.dx ?? 0),
+                     hw: lt.hw ?? 3.0, hd: lt.hd ?? 2.0, k: lt.k ?? 1 };
     }
     this.backdrop.build(pal, () => this._rand());
     // material is structural, like the geometry: it swaps with the room rather
@@ -3653,6 +3776,7 @@ export class Atmosphere {
       L.nearDark = T.nearDark;
       L.nearFloor = T.nearFloor;        // (round 31: the near floor goes with the room)
       L.rug = T.rug;                    // (round 25 graft: the carpet goes with the room)
+      L.litter = T.litter;              // (round 35: and what lies on its near floor)
       L.straw = T.straw;                // (round 28 graft: and the kennels' straw)
       this.backdrop.applyPalette(L);
       this._applyGrade(L, k);
