@@ -1,0 +1,68 @@
+{
+  "round": "r35",
+  "maxBuilders": 3,
+  "briefs": [
+    "docs/ui-pass/BRIEF-r0.md",
+    "docs/ui-pass/BRIEF-r1.md",
+    "docs/ui-pass/BRIEF-r11.md",
+    "docs/ui-pass/BRIEF-r16.md",
+    "docs/ui-pass/BRIEF-r21.md",
+    "docs/ui-pass/BRIEF-r22.md",
+    "docs/ui-pass/BRIEF-r23.md",
+    "docs/ui-pass/BRIEF-r24.md",
+    "docs/ui-pass/BRIEF-r25.md",
+    "docs/ui-pass/BRIEF-r28.md",
+    "docs/ui-pass/BRIEF-r29.md",
+    "docs/ui-pass/BRIEF-r31.md",
+    "docs/ui-pass/BRIEF-r34.md",
+    "docs/ui-pass/BRIEF-r35.md"
+  ],
+  "rubrics": [
+    "docs/ui-pass/RUBRIC.md",
+    "docs/ui-pass/RUBRIC-r35.md"
+  ],
+  "samples": [
+    "UI/title.png",
+    "UI/mainMenu.png",
+    "UI/selectCompanion.png",
+    "UI/selectKid.png"
+  ],
+  "tracks": [
+    {
+      "key": "rooms",
+      "name": "ROOMS",
+      "rule": "refine",
+      "screens": [
+        "sheet-attic",
+        "sheet-sleeping",
+        "sheet-graveyard",
+        "sheet-crypt",
+        "fight-graveyard"
+      ],
+      "smallScreens": [
+        "fight-graveyard"
+      ],
+      "baseline": "GROSGRAIN",
+      "builders": [
+        {
+          "slot": "a",
+          "code": "SCHEELITE",
+          "port": 9261,
+          "angle": "LITERAL -- work BRIEF-r35's fix list 1 to 3 in order and exactly as written, one wing at a time, the Sleeping Quarters FIRST (the lowest-scored of the four, 4 from judge 1). Keep every change inside your four wings."
+        },
+        {
+          "slot": "b",
+          "code": "ANTHRACITE",
+          "port": 9262,
+          "angle": "THE NEAR FLOOR FIRST -- both survey judges' first shared defect. Build a dressed, lit near floor (boards, flags or turf with edges, a light pool from a source the room has, one or two props standing IN it above the hand's edge) in each of your four wings, prove it there, then each wing's own defect in that light. Reuse round 31's and 34's mechanisms."
+        },
+        {
+          "slot": "c",
+          "code": "SODALITE",
+          "port": 9263,
+          "angle": "THE OBJECT DRAWN, NOT BOXED -- round 34's winning angle. Each wing's worst thing is a box wearing a texture: the attic's cube trunks, the dormitory's boxy beds, the chapel with a brick tile, the crypt's milky plaque boxes. Draw each as a real object with an inked, broken silhouette first -- strapped lids and hasps, rails with finials and quilted folds, buttresses and a slate roof, carved and grimed stone -- then dress and light the near floor."
+        }
+      ]
+    }
+  ]
+}
