@@ -98,9 +98,15 @@ sarcophagi, the Graveyard fight back UNDER BASE (14.74 vs 15.41). Battery 106
 gates green but the sprites halo (on the round's merge); the graft's region
 gates, chrome, steam-deck, link-queue and seam green on dev; the other 13
 wings identical. Known: the Greenhouse potting-bench prop program links in
-12.1-12.8 s (over the 12 s budget since round 34's graft). **NEXT: round 36**
-from survey 5: the last web-shaped controls and the crowded hand; then the
-Heart and the remaining rooms' near floor; then survey 6.
+12.1-12.8 s (over the 12 s budget since round 34's graft). **ROUND 36 IS RUNNING (2026-10-18)** (`BRIEF-r36.md`, `round-36.args.json`,
+base `b3cccaad`): the last web controls and the crowded hand -- settings,
+lobby, shop, piles, combat-crowd at both sizes; SAPPHIRINE / KYANITE /
+OBSIDIAN in `C:/UILOOP/r36/wt/r36-controls-{a,b,c}` (ports 9271-9273), SATEEN
+baselines in `C:/UILOOP/r36/judging/r36/controls/SATEEN/` (10 of 10, looked
+at; the lobby's password is typed in by the capture step -- it is random per
+load). Then: the Heart and the remaining rooms' near floor, the map's nodes
+and region boxes with the atlas; then survey 6. **Josh asked 10-18 for a
+3-hour pause in which nothing may launch a program -- respect such asks.**
 
 **ROUND 33 AND ITS GRAFT ARE MERGED, VERIFIED AND PUSHED (2026-10-16):**
 graft `9d008119`. COBALT +1.59 (`531126e4`): no running line under 11 px at
