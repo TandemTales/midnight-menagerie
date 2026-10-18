@@ -21287,7 +21287,10 @@ float wfFourPoster(vec2 q, float px, float seed, float kq, bool paint){
   vC = mix(vC, gilt*(0.7 + 0.4*step(0.5, fract(q.x/0.02))), fringe);
   vC = mix(vC, gilt, mmInkP(q.y - TT + 0.035, px, 1.6));
   wfLay(col, ink, val, vC, px, 0.9);
-  gWfGloss = 0.20 + 0.6*wfIn(min(posts, corn), px) + 0.5*wfIn(cp, px);
+  /* (round 35: no sheen on the counterpane -- on a flat quad facing the
+     key the lamp's lobe lay over the whole of it and washed the wine to a
+     beige panel) */
+  gWfGloss = 0.04 + 0.6*wfIn(min(posts, corn), px);
   gWfMoon = 0.6*wfIn(min(pils, cp), px)*smoothstep(MT - 0.1, MT + 0.3, q.y);
   gWfCol = col; gWfInk = ink;
   return d;
