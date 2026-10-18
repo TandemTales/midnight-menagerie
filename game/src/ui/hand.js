@@ -1113,7 +1113,8 @@ export class Hand {
       u.forEach((s, m) => {
         const top = m === u.length - 1;
         const k = top && u.length > 1 ? u.length : 0;
-        if (s._stackShown === k && s._stackUnder === !top) return;
+        // (and the medallion is still on the card: a face that re-renders may drop it)
+        if (s._stackShown === k && s._stackUnder === !top && (!k || s._stackBadge?.parentNode === s.view.el)) return;
         s._stackShown = k; s._stackUnder = !top;
         const el = s.view.el;
         el.classList.toggle('is-stack-top', k > 0);

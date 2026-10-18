@@ -998,7 +998,7 @@
 }
 /* the room's name, on the TRICKS ribbon's right half, in the ribbon's own
    engraved italic */
-.sh-h--cards > .sh-h__room > .sh-rail__room.rm-room.kit-titleblock__note {
+.sh-h--cards > .sh-h__room > .sh-rail__room.sh-rail__room.sh-rail__room {
   display: inline; position: static;
   margin: 0; padding: 0;
   font: inherit; letter-spacing: inherit; text-transform: none;
@@ -1090,15 +1090,15 @@
 
 /* the object under glass: a velvet cushion on a turned brass foot, the bell
    over it (a Keepsake) or the jar round it (a Snack) */
-.sh-row .sh-row__sig.kit-hw-well {
+.sh-row .sh-row__sig.sh-row__sig {
   --well: clamp(48px, 3.6vw, 56px);
   background: none; filter: none;
   align-self: center; margin: -6px 0 -4px calc(var(--well) * -.34);
   overflow: visible;
 }
-.sh-row .sh-row__sig.kit-hw-well > .kit-obj { position: relative; z-index: 1; width: 66%; translate: 0 4%; }
+.sh-row .sh-row__sig.sh-row__sig > .kit-obj { position: relative; z-index: 1; width: 66%; translate: 0 4%; }
 /* the foot: a turned brass disc seen from a little above */
-.sh-row .sh-row__sig.kit-hw-well::before {
+.sh-row .sh-row__sig.sh-row__sig::before {
   content: ''; position: absolute; z-index: 0; pointer-events: none;
   left: 4%; right: 4%; bottom: 2%; height: 22%;
   border-radius: 50%;
@@ -1142,7 +1142,7 @@
   background: linear-gradient(180deg, var(--kit-gold-hi), var(--kit-gold) 40%, var(--kit-gold-lo) 85%);
   box-shadow: 0 2px 2px rgb(0 0 0 / .6), inset 0 -1px 0 rgb(0 0 0 / .4);
 }
-.sh-row--snack .sh-row__sig.kit-hw-well > .kit-obj { width: 62%; translate: 0 8%; }
+.sh-row--snack .sh-row__sig.sh-row__sig > .kit-obj { width: 62%; translate: 0 8%; }
 
 /* ── the header at 1280: two tiers, each with air ── */
 @media (max-height: 860px) {
