@@ -21238,131 +21238,137 @@ float wfFourPoster(vec2 q, float px, float seed, float kq, bool paint){
    blanket with a red stripe at its hem, the sheet turned down at the head
    and the pillow on it; and under it on the boards, the chamber pot. */
 float wfDormBed(vec2 q, float px, float seed, float kq, bool paint){
-  /* ROUND 35 (survey-5 judge 1: "the iron beds left and right are boxy
-     low-poly forms with smeared flat blankets"; judge 2: "the bed frames are
-     thin"; the rubric: "inked head- and foot-rails with finials, quilts with
-     a pattern and folds, pillows"). The bedstead is IRON WORK now: each end
-     two heavy posts with brass ball finials on their collars, an arched top
-     rail with a brass cap, a mid rail, the bars between and a scroll in the
-     arch; the side rail a flat iron angle. The bedding is a PATCHWORK QUILT
-     in four old dyes, stitched round every square and bound at its edge,
-     lying flat on the mattress and falling in folds down the side to a
-     scalloped hem; the sheet turned down over it at the head and a plump
-     pillow, its seam and its dent drawn. */
   const float HX = -0.96, FX = 0.96, MT = 0.60;
-  const float HD = 0.22, FD = 0.17;                 // each end's depth, foreshortened
-  float hTopY = 1.07, fTopY = 0.86;
-  /* the head end: near post, far post, the arched top rail, mid rail, bars */
-  float hpN = mmBox(q - vec2(HX, hTopY*0.5), vec2(0.040, hTopY*0.5), 0.012);
-  float hpF = mmBox(q - vec2(HX + HD, (hTopY + 0.04)*0.5), vec2(0.032, (hTopY + 0.04)*0.5), 0.010);
-  float hArcY = hTopY + 0.07*sin(clamp((q.x - HX)/HD, 0.0, 1.0)*3.14159);
-  float hTop = max(abs(q.y - hArcY + 0.01) - 0.030, max(HX - q.x, q.x - HX - HD));
-  float hMid = wfSeg(q, vec2(HX, 0.64), vec2(HX + HD, 0.67), 0.020);
+  const float HW = 0.34, FW = 0.28;            // how much of each end shows
+  /* the head end: two posts, an arched top rail, a lower rail, bars, ring */
+  float hpN = mmBox(q - vec2(HX, 0.60), vec2(0.046, 0.60), 0.012);
+  float hpF = mmBox(q - vec2(HX + HW, 0.64), vec2(0.036, 0.56), 0.010);
+  float hArch = 1.13 + 0.07*sin(clamp((q.x - HX)/HW, 0.0, 1.0)*3.1416);
+  float hTop = max(abs(q.y - hArch) - 0.026, max(HX - q.x, q.x - HX - HW));
+  float hMid = wfSeg(q, vec2(HX, 0.64), vec2(HX + HW, 0.68), 0.020);
   float hBars = 1e3;
-  for (int i = 1; i < 4; i++){
-    float bx = HX + HD*float(i)/4.0;
-    hBars = min(hBars, max(abs(q.x - bx) - 0.012, max(0.66 - q.y, q.y - hArcY + 0.02)));
+  for (int i = 1; i < 5; i++){
+    float t = float(i)/5.0;
+    float bx = HX + HW*t;
+    hBars = min(hBars, max(abs(q.x - bx) - 0.010, max(0.66 - q.y, q.y - hArch)));
   }
-  float hScroll = abs(length(q - vec2(HX + HD*0.5, hTopY - 0.13)) - 0.055) - 0.010;
-  float knobs = min(length(q - vec2(HX, hTopY + 0.075)) - 0.052, length(q - vec2(HX + HD, hTopY + 0.115)) - 0.042);
-  float collars = min(mmBox(q - vec2(HX, hTopY + 0.010), vec2(0.050, 0.016), 0.005), mmBox(q - vec2(HX + HD, hTopY + 0.050), vec2(0.040, 0.014), 0.005));
-  float headE = min(min(min(hpN, hpF), min(hTop, hMid)), min(hBars, hScroll));
-  /* the foot end, lower, the same iron */
-  float fpN = mmBox(q - vec2(FX, fTopY*0.5), vec2(0.040, fTopY*0.5), 0.012);
-  float fpF = mmBox(q - vec2(FX - FD, (fTopY + 0.03)*0.5), vec2(0.030, (fTopY + 0.03)*0.5), 0.010);
-  float fArcY = fTopY + 0.04*sin(clamp((FX - q.x)/FD, 0.0, 1.0)*3.14159);
-  float fTop = max(abs(q.y - fArcY + 0.01) - 0.026, max(FX - FD - q.x, q.x - FX));
+  vec2 hrc = q - vec2(HX + HW*0.5, 0.91);
+  float hRing = abs(length(hrc) - 0.070) - 0.014;
+  float hCol = min(mmBox(q - vec2(HX, 1.215), vec2(0.056, 0.016), 0.006), mmBox(q - vec2(HX + HW, 1.215), vec2(0.046, 0.014), 0.005));
+  float knobs = min(length(q - vec2(HX, 1.285)) - 0.058, length(q - vec2(HX + HW, 1.275)) - 0.048);
+  float headE = min(min(min(hpN, hpF), min(hTop, hMid)), min(hBars, hCol));
+  /* the foot end, lower, seen past the quilt */
+  float fpN = mmBox(q - vec2(FX, 0.46), vec2(0.044, 0.46), 0.012);
+  float fpF = mmBox(q - vec2(FX - FW, 0.50), vec2(0.034, 0.42), 0.010);
+  float fArch = 0.88 + 0.05*sin(clamp((FX - q.x)/FW, 0.0, 1.0)*3.1416);
+  float fTop = max(abs(q.y - fArch) - 0.024, max(FX - FW - q.x, q.x - FX));
   float fBars = 1e3;
-  for (int i = 1; i < 3; i++){
-    float bx = FX - FD*float(i)/3.0;
-    fBars = min(fBars, max(abs(q.x - bx) - 0.011, max(MT - 0.02 - q.y, q.y - fArcY + 0.02)));
+  for (int i = 1; i < 4; i++){
+    float t = float(i)/4.0;
+    float bx = FX - FW*t;
+    fBars = min(fBars, max(abs(q.x - bx) - 0.009, max(0.62 - q.y, q.y - fArch)));
   }
-  float fknob = min(length(q - vec2(FX, fTopY + 0.065)) - 0.046, length(q - vec2(FX - FD, fTopY + 0.095)) - 0.038);
-  fknob = min(fknob, min(mmBox(q - vec2(FX, fTopY + 0.008), vec2(0.046, 0.014), 0.005), mmBox(q - vec2(FX - FD, fTopY + 0.038), vec2(0.036, 0.012), 0.005)));
-  float footE = min(min(fpN, fpF), min(fTop, fBars));
-  /* the side rail: a flat iron angle */
-  float rail = mmBox(q - vec2(0.0, 0.36), vec2(FX - 0.02, 0.030), 0.006);
-  /* the bedding: the quilt over the mattress and down the side */
-  float hem = 0.20 + 0.022*abs(sin(q.x*19.0 + seed));
-  float topY = MT + 0.015*sin(q.x*3.0 + seed) + 0.03*smoothstep(HX + 0.70, HX + 0.40, q.x);
-  float blank = max(max(HX + 0.04 - q.x, q.x - FX + 0.03), max(hem - q.y, q.y - topY));
-  float pil = mmBox(q - vec2(HX + 0.27, MT + 0.085), vec2(0.20 - 0.06*abs(q.y - MT - 0.085)/0.09, 0.080), 0.065);
+  vec2 frc = q - vec2(FX - FW*0.5, 0.76);
+  float fRing = abs(length(frc) - 0.055) - 0.012;
+  float fCol = min(mmBox(q - vec2(FX, 0.935), vec2(0.054, 0.015), 0.006), mmBox(q - vec2(FX - FW, 0.935), vec2(0.044, 0.013), 0.005));
+  float fknob = min(length(q - vec2(FX, 1.00)) - 0.054, length(q - vec2(FX - FW, 0.995)) - 0.044);
+  float footE = min(min(min(fpN, fTop), min(fpF, fBars)), fCol);
+  float brassR = min(hRing, fRing);
+  /* the side rail */
+  float rail = mmBox(q - vec2(0.0, 0.36), vec2(FX - 0.02, 0.038), 0.006);
+  /* the bedding */
+  float hem = 0.20 + 0.025*sin(q.x*21.0 + seed);
+  float blank = max(max(HX + 0.04 - q.x, q.x - FX + 0.03), max(hem - q.y, q.y - MT - 0.025*sin(q.x*4.0 + seed)));
+  float pil = mmBox(q - vec2(HX + 0.30, MT + 0.09), vec2(0.23 - 0.06*abs(q.y - MT - 0.09)/0.09, 0.085), 0.07);
   /* the chamber pot */
   float pot = min(mmBox(q - vec2(0.18, 0.07), vec2(0.10 - 0.02*smoothstep(0.0, 0.14, q.y), 0.07), 0.03), length(q - vec2(0.30, 0.08)) - 0.035);
   pot = min(pot, mmBox(q - vec2(0.18, 0.145), vec2(0.11, 0.012), 0.006));
-  /* (round 29: the boards in the bed's own shadow between its legs) */
+  /* (round 29: the dark under it -- the boards in the bed's own shadow
+     between its legs, so it stands ON the floor) */
   float under = max(abs(q.x) - 0.90, max(-q.y, q.y - 0.30 - 0.06*smoothstep(0.9, 0.0, abs(q.x))));
-  float d = min(min(headE, min(knobs, collars)), min(min(footE, fknob), rail));
+  float d = min(min(headE, knobs), min(min(footE, fknob), rail));
   d = min(d, min(min(blank, pil), pot));
-  d = min(d, under);
+  d = min(d, min(under, brassR));
   if (!paint) return d;
 
   vec3 col = vec3(0.1);
   float ink = 0.0;
   col = mix(col, vec3(0.010, 0.009, 0.012), wfIn(under, px));
   gWfGloss = 0.0;
-  vec3 iron = vec3(0.055, 0.055, 0.062);
-  vec3 brass = vec3(0.94, 0.70, 0.30);
-  /* the iron: black, a lit edge on each member toward the key */
-  float ironE = min(headE, footE);
-  /* (the iron BLACK: lit only along a hairline on the key's side of each
-     member, the way a japanned rail takes a candle) */
-  vec3 ironC = iron*(1.0 + 3.0*(1.0 - smoothstep(0.0, max(px*1.5, 0.006), abs(ironE + 0.012))));
-  wfLay(col, ink, headE, ironC*(1.0 + 0.6*smoothstep(0.03, 0.0, abs(q.y - hArcY))), px, 0.90);
-  wfLay(col, ink, footE, ironC*(1.0 + 0.6*smoothstep(0.03, 0.0, abs(q.y - fArcY))), px, 0.90);
-  wfLay(col, ink, rail, iron*0.95, px, 0.85);
-  /* the quilt: patchwork in four old dyes, stitched, bound at its edge */
+  vec3 iron = vec3(0.075, 0.075, 0.085);
+  vec3 brass = vec3(0.92, 0.68, 0.30);
+  /* the iron's catchlight: a lit line down the key's side of every post,
+     along the top of every rail -- the black's only light, and what lets it
+     read against the dark paper */
+  float lp = 0.0;
+  lp = max(lp, smoothstep(0.024, 0.0, abs(kq*(q.x - HX) - 0.020))*step(abs(q.x - HX), 0.046));
+  lp = max(lp, smoothstep(0.020, 0.0, abs(kq*(q.x - HX - HW) - 0.016))*step(abs(q.x - HX - HW), 0.036));
+  lp = max(lp, smoothstep(0.022, 0.0, abs(kq*(q.x - FX) - 0.018))*step(abs(q.x - FX), 0.044));
+  lp = max(lp, smoothstep(0.018, 0.0, abs(kq*(q.x - FX + FW) - 0.014))*step(abs(q.x - FX + FW), 0.034));
+  float lpH = smoothstep(0.014, 0.0, abs(q.y - hArch - 0.012));
+  float lpF = smoothstep(0.014, 0.0, abs(q.y - fArch - 0.012));
+  vec3 ironL = vec3(0.46, 0.44, 0.48);
+  wfLay(col, ink, headE, mix(iron, ironL, clamp(max(lp, lpH*wfIn(hTop, px)), 0.0, 1.0)*0.85), px, 0.95);
+  wfLay(col, ink, footE, mix(iron, ironL, clamp(max(lp, lpF*wfIn(fTop, px)), 0.0, 1.0)*0.85), px, 0.95);
+  wfLay(col, ink, rail, mix(iron, ironL, smoothstep(0.016, 0.0, abs(q.y - 0.388))*0.8), px, 0.9);
+  wfLay(col, ink, brassR, brass*(0.55 + 0.55*smoothstep(-0.04, 0.06, kq*(q.x - HX - HW*0.5))), px, 0.9);
+  wfLay(col, ink, min(hCol, fCol), brass*0.75, px, 0.9);
+  /* THE QUILT: patchwork squares, pieced by the bed's seed */
   float bk = mmHash11(seed*2.3);
-  vec3 dyeA = bk < 0.34 ? vec3(0.48, 0.14, 0.12) : (bk < 0.67 ? vec3(0.20, 0.30, 0.46) : vec3(0.22, 0.36, 0.24));
-  vec3 dyeB = vec3(0.78, 0.70, 0.52);
-  vec3 dyeC = bk < 0.34 ? vec3(0.26, 0.30, 0.44) : (bk < 0.67 ? vec3(0.54, 0.22, 0.16) : vec3(0.56, 0.42, 0.20));
-  vec3 dyeD = vec3(0.30, 0.18, 0.22);
-  float edgeY = topY - 0.035;
+  float edgeY = MT - 0.10;
   float drop = clamp((edgeY - q.y)/(edgeY - hem), 0.0, 1.0);
-  /* the folds where it falls: crests lit, valleys inked */
-  float bph = q.x*(24.0 - 4.0*drop) + 1.1*sin(q.y*6.0 + seed) + drop*1.6;
+  float bph = q.x*(28.0 - 6.0*drop) + 1.2*sin(q.y*5.0 + seed) + drop*1.5;
   float bf = 0.5 + 0.5*cos(bph);
-  float fAmt = smoothstep(0.10, 0.55, drop);
-  /* the squares follow the cloth: across the top they lie flat, down the
-     side they ride the folds */
-  vec2 pq = vec2(q.x + 0.012*sin(bph)*fAmt, q.y) / 0.115;
+  /* the patches, laid on the cloth -- they follow the folds a little */
+  const float PS = 0.15;
+  vec2 pq = vec2(q.x + 0.012*sin(bph), q.y)/PS;
   vec2 pc = floor(pq);
   vec2 pf = fract(pq) - 0.5;
-  float pk = mmHash21(pc + floor(seed*7.0));
-  vec3 patchC = pk < 0.30 ? dyeA : (pk < 0.55 ? dyeB : (pk < 0.80 ? dyeC : dyeD));
-  /* a few squares pieced in a smaller print */
-  patchC *= 0.86 + 0.14*step(0.5, fract((pf.x + pf.y)*4.0 + pk*3.0))*step(0.5, fract(pk*11.0));
-  vec3 qC = patchC*mix(1.0, 0.56 + 0.62*bf, fAmt)*(0.62 + 0.42*smoothstep(hem, topY, q.y));
-  /* the binding along its top edge and its hem */
-  float bind = max(smoothstep(0.022, 0.012, abs(q.y - edgeY - 0.012)), smoothstep(0.030, 0.016, q.y - hem));
-  qC = mix(qC, dyeA*0.80, bind*0.85);
-  /* the top of the mattress catches the light */
-  qC *= 1.0 + 0.40*smoothstep(edgeY - 0.01, topY, q.y);
-  /* the sheet turned down at the head */
-  float sheet = step(q.x, HX + 0.60)*step(edgeY - 0.06, q.y);
-  qC = mix(qC, vec3(0.88, 0.87, 0.84)*(0.62 + 0.40*smoothstep(edgeY - 0.06, topY, q.y)), sheet);
-  wfLay(col, ink, blank, qC, px, 0.95);
-  float onQ = wfIn(blank, px);
-  ink = max(ink, mmInkP(max(abs(pf.x), abs(pf.y)) - 0.5, px/0.115, 1.0)*0.40*onQ*(1.0 - sheet)*mmLod(0.115, px));
-  ink = max(ink, mmInkP(abs(fract(bph/6.2832) - 0.5)*6.2832/(24.0 - 4.0*drop), px, 0.9)*fAmt*onQ*0.55*(1.0 - sheet));
-  ink = max(ink, mmInkP(q.x - HX - 0.60, px, 1.0)*step(edgeY - 0.06, q.y)*onQ*0.70);
-  ink = max(ink, mmInkP(q.y - edgeY, px, 1.0)*onQ*0.45*step(HX + 0.60, q.x));
+  float ph = mmHash21(pc + floor(seed*7.0));
+  /* three palettes: madder and indigo on cream; ochre and bottle green on
+     madder; indigo and cream on bottle green -- a quarter of each square a
+     triangle of the third, so the pieced pattern reads as a quilt at 0.8 */
+  vec3 cA, cB, cC;
+  if (bk < 0.34)      { cA = vec3(0.30, 0.07, 0.06); cB = vec3(0.07, 0.10, 0.24); cC = vec3(0.55, 0.50, 0.40); }
+  else if (bk < 0.67) { cA = vec3(0.40, 0.25, 0.07); cB = vec3(0.08, 0.20, 0.12); cC = vec3(0.30, 0.07, 0.06); }
+  else                { cA = vec3(0.08, 0.19, 0.12); cB = vec3(0.07, 0.10, 0.24); cC = vec3(0.52, 0.46, 0.36); }
+  float chk = mod(pc.x + pc.y, 2.0);
+  vec3 pat = mix(cA, cB, chk);
+  float tri = step(0.0, pf.x + pf.y)*step(0.55, ph);
+  pat = mix(pat, cC, tri);
+  /* the border band at the hem, plain, and the binding */
+  float bandB = step(q.y, hem + 0.10);
+  pat = mix(pat, cB*0.9, bandB);
+  /* the cloth: the fall's folds, its top rolled and lit */
+  vec3 bC = pat*mix(1.0, 0.50 + 0.72*bf, smoothstep(0.0, 0.40, drop))*(0.66 + 0.42*smoothstep(0.2, MT, q.y));
+  bC *= 1.0 + 0.55*smoothstep(0.05, 0.0, abs(q.y - edgeY - 0.015));
+  /* the seams, inked, and the quilting stitch across each square */
+  float seam = max(mmInkP(max(abs(pf.x), abs(pf.y)) - 0.5, px/PS, 1.0), mmInkP((pf.x + pf.y)*0.7071, px/PS, 0.8)*step(0.55, ph))*(1.0 - bandB);
+  float stitch = mmInkP(length(pf) - 0.30, px/PS, 0.7)*step(0.5, fract((atan(pf.y, pf.x) + 3.1416)*3.0))*(1.0 - bandB);
+  float lodP = mmLod(PS, px);
+  ink = max(ink, seam*0.55*lodP*wfIn(blank, px));
+  bC *= 1.0 - 0.25*stitch*lodP;
+  ink = max(ink, mmInkP(abs(fract(bph/6.2832) - 0.5)*6.2832/(28.0 - 6.0*drop), px, 0.9)*smoothstep(0.15, 0.6, drop)*wfIn(blank, px)*0.55);
+  ink = max(ink, mmInkP(q.y - hem - 0.10, px, 1.1)*wfIn(blank, px)*0.8);
+  bC = mix(bC, cC*0.85, smoothstep(0.028, 0.0, q.y - hem));
+  /* the sheet turned down over it at the head */
+  float sheet = step(q.x, HX + 0.64)*step(MT - 0.10, q.y);
+  bC = mix(bC, vec3(0.80, 0.79, 0.76)*(0.55 + 0.45*smoothstep(MT - 0.10, MT, q.y)), sheet);
+  wfLay(col, ink, blank, bC, px, 0.95);
+  ink = max(ink, mmInkP(q.x - HX - 0.64, px, 1.0)*step(MT - 0.10, q.y)*wfIn(blank, px)*0.7);
   /* the pillow: plump, its seam and the dent where a head lay */
-  float pu = clamp((q.x - HX - 0.27)/0.20, -1.0, 1.0);
-  vec3 pC = vec3(0.90, 0.89, 0.86)*(0.48 + 0.52*smoothstep(MT, MT + 0.16, q.y))*(0.85 + 0.20*sqrt(max(1.0 - pu*pu, 0.0)));
-  pC *= 1.0 - 0.18*exp(-pow((q.x - HX - 0.30)/0.06, 2.0))*smoothstep(MT + 0.05, MT + 0.15, q.y);
-  wfLay(col, ink, pil, pC, px, 0.90);
-  ink = max(ink, mmInkP(q.y - MT - 0.085, px, 1.0)*0.30*wfIn(pil, px));
-  /* the brass */
-  wfLay(col, ink, collars, brass*0.75, px, 0.8);
-  wfLay(col, ink, knobs, brass*(0.55 + 0.75*smoothstep(-0.03, 0.04, q.y - hTopY - 0.075 + 0.5*kq*(q.x - HX))), px, 0.9);
-  wfLay(col, ink, fknob, brass*(0.55 + 0.75*smoothstep(-0.03, 0.04, q.y - fTopY - 0.065 + 0.5*kq*(q.x - FX))), px, 0.9);
-  col = mix(col, brass*0.85, wfIn(max(hTop, -(q.y - hArcY - 0.010)), px)*0.8);
+  vec2 pp = q - vec2(HX + 0.30, MT + 0.09);
+  vec3 pC = vec3(0.84, 0.83, 0.80)*(0.42 + 0.58*smoothstep(-0.07, 0.08, pp.y));
+  pC *= 1.0 - 0.30*exp(-dot(pp - vec2(0.03, 0.03), pp - vec2(0.03, 0.03))/0.004);
+  wfLay(col, ink, pil, pC, px, 0.95);
+  ink = max(ink, mmInkP(pp.y + 0.005 + 0.012*sin(pp.x*30.0), px, 0.8)*wfIn(pil + 0.02, px)*0.45);
+  wfLay(col, ink, knobs, brass*(0.55 + 0.65*smoothstep(1.24, 1.32, q.y)), px, 0.95);
+  wfLay(col, ink, fknob, brass*(0.55 + 0.65*smoothstep(0.96, 1.04, q.y)), px, 0.95);
   /* the pot: white china, a blue band */
   vec3 china = vec3(0.86, 0.86, 0.84)*(0.6 + 0.5*wfRound(clamp((q.x - 0.18)/0.10, -1.0, 1.0)));
   china = mix(china, vec3(0.20, 0.30, 0.62), mmInkP(q.y - 0.10, px, 1.6));
   wfLay(col, ink, pot, china*0.7, px, 0.8);
-  gWfGloss = 0.20 + 0.8*wfIn(min(knobs, fknob), px) + 0.5*wfIn(pot, px);
+  gWfGloss = 0.20 + 0.7*wfIn(min(min(knobs, fknob), brassR), px) + 0.5*wfIn(pot, px) + 0.35*wfIn(min(headE, footE), px);
   gWfMoon = 0.6*wfIn(min(pil, blank), px)*smoothstep(MT - 0.1, MT + 0.1, q.y);
   gWfCol = col; gWfInk = ink;
   return d;

@@ -403,7 +403,12 @@ export const REGIONS = {
                  speed: 0.6, scale: 1.0, wind: 0.4, density: 0.40 },
     exposure: 1.46, contrast: 1.63,
     key:  { glow: 0, kind: 'warm', x: -4.0, y: 3.2, z: 2.4, color: '#e4ad7b', intensity: 2.99, radius: 7.31 },
-    fill: { glow: 0, kind: 'cold', x: 5.4, y: 2.6, z: 1.0, color: '#92aae4', intensity: 1.78, radius: 8.5, flicker: false },
+    /* (round 35 graft, both judges: "the cold blue wash on the dormitory's
+       right near floor" cut -- the fill from behind the eye 1.78 -> 1.05,
+       and the moon's pool on the near boards (nearFloor.pool) 1.5 -> 1.0
+       and a grey moonlight, #9cb2e8 -> #aab0c6, not a blue wash: the boards
+       keep their light without the cold cast) */
+    fill: { glow: 0, kind: 'cold', x: 5.4, y: 2.6, z: 1.0, color: '#92aae4', intensity: 1.05, radius: 8.5, flicker: false },
     lights: [
       { kind: 'warm', x: -3.4, y: 2.90, z: -4.6, color: '#dda558', intensity: 2.40, radius: 5.0 },
       { kind: 'cold', x: 3.0, y: 2.60, z: -7.5, color: '#92aae4', intensity: 1.50, radius: 7.0 },
@@ -421,7 +426,7 @@ export const REGIONS = {
        nine-tenths, not two-fifths. The grain at half the house's. */
     crispFloor: true, grain: 0.012,
     nearFloor: { fall: 0.90, dye: 1, calm: 0.70, clean: 1,
-                 pool: { ahead: 5.6, across: 1.6, rAlong: 3.0, rAcross: 2.2, k: 1.5, color: '#9cb2e8' },
+                 pool: { ahead: 5.6, across: 1.6, rAlong: 3.0, rAcross: 2.2, k: 1.0, color: '#aab0c6' },
                  pool2: { ahead: 3.9, across: -1.7, abs: true, rAlong: 2.2, rAcross: 2.0, k: 6.0, color: '#f0a65a' } },
   },
 
@@ -2261,7 +2266,10 @@ export const ROOM_KINDS = {
                      { shape: 56, x: 2.0, z: -5.4, tone: 0.92, free: true },
                      /* (round 35: the near floor -- a wing chair drawn up on
                         the carpet's edge to the fire, `fore`) */
-                     { shape: 56, edge: 0.72, z: 0.4, tone: 0.97, scale: 1.0, fore: 1, keep: true, seed: 3.0 }],
+                     { shape: 56, edge: 0.72, z: 0.4, tone: 0.97, scale: 1.0, fore: 1, keep: true, seed: 3.0 },
+                     /* (round 35 graft, both judges, SCHEELITE's: the toy chest
+                        and its bear at the four-poster's foot) */
+                     { shape: 47, x: -1.30, z: 0.2, tone: 0.95, free: true, keep: true, still: true }],
               cam: { z: -1.4, look: 0.10 } }],
     names: [
       [/bedroom|moon window|dreaming/i, 1],
