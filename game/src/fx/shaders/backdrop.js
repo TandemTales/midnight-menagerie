@@ -4145,10 +4145,10 @@ float subjectH(vec2 q, float far, out float occ){
       float bell = mmSolid(min(mmCircle(vec2(gx, (q.y - apex - 0.08)*1.25), 0.13),
                                mmBox(vec2(gx, q.y - apex + 0.04), vec2(0.16, 0.025), 0.01)));
       /* the west window: a lancet of two lights under a roundel, intact */
-      float win = sPoint(vec2(gx, q.y - 2.60), 0.95, 2.55, 1.90);
-      float trac = (1.0 - smoothstep(0.045, 0.045 + aaB, abs(gx)))*step(q.y, 5.30)
-                 + mmSolid(abs(sPoint(vec2(abs(gx) - 0.47, q.y - 2.60), 0.43, 2.35, 0.86)) - 0.04)
-                 + mmSolid(abs(mmCircle(vec2(gx, q.y - 6.12), 0.36)) - 0.04);
+      float win = sPoint(vec2(gx, q.y - 3.55), 0.95, 2.55, 1.90);   // (round 35: 0.95 m up, over the porch)
+      float trac = (1.0 - smoothstep(0.045, 0.045 + aaB, abs(gx)))*step(q.y, 6.25)
+                 + mmSolid(abs(sPoint(vec2(abs(gx) - 0.47, q.y - 3.55), 0.43, 2.35, 0.86)) - 0.04)
+                 + mmSolid(abs(mmCircle(vec2(gx, q.y - 7.07), 0.36)) - 0.04);
       trac = clamp(trac, 0.0, 1.0);
       /* two lancets in the side, narrowing with it */
       float swx = mod(sx - 1.15 + 0.9, 2.3) - 1.15;
@@ -4240,7 +4240,7 @@ float subjectH(vec2 q, float far, out float occ){
       const float kRel = 1.0;
 #endif
       br = body*1.25 + sbut*0.42 + butt*0.30 + bOff*0.30 + plF*0.28 - (wallF*cJ*0.22 + slate*0.20)*kRel + ridgeL*0.40 + gut*0.45 - eShade*0.30
-         + (1.0 - smoothstep(0.05, 0.12, abs(win - 0.10)))*step(2.4, q.y)*0.40
+         + (1.0 - smoothstep(0.05, 0.12, abs(win - 0.10)))*step(3.35, q.y)*0.40
          - mmSolid(win)*(1.0 - trac)*0.55 - swin*0.55
          + bOff*0.55 + plC*0.50 + plF*0.16 + corb*0.40
          - bo*(1.0 - bell)*1.0 - door*0.30;
@@ -4274,22 +4274,22 @@ float subjectH(vec2 q, float far, out float occ){
            length in them, each sitting a little off its neighbours' bed, each
            its own stone; the joints inked a pixel wide, under three pixels a
            course the wall's own tone */
-        const float CHr = 0.30;
+        const float CHr = 0.40;
         float rrow = floor(cy/CHr);
-        float Lr = 0.36 + 0.42*mmHash11(rrow*2.7 + 1.1);
+        float Lr = 0.52 + 0.55*mmHash11(rrow*2.7 + 1.1);
         float xo2 = q.x + mmHash11(rrow*5.3 + 0.7)*Lr;
         float sI = floor(xo2/Lr);
         float xl2 = xo2 - sI*Lr;
         float sh2 = mmHash21(vec2(sI, rrow) + 3.3 + uSeed);
         float yl2 = cy - rrow*CHr;
-        float jt = (sh2 - 0.5)*0.06;
+        float jt = (sh2 - 0.5)*0.08;
         float dY = min(abs(yl2 - max(jt, 0.0)), abs(CHr - yl2 + min(jt, 0.0)));
         float dX = min(xl2, Lr - xl2);
         float lodC = mmLod(CHr, px);
         float onW = wallF*(1.0 - trac*mmSolid(win));
         float jnt = max(mmInkP(dY, px, 1.0), mmInkP(dX, px, 1.0)*step(max(jt, 0.0), yl2)*step(yl2, CHr + min(jt, 0.0)))*lodC;
         gTint += onW*((sh2 - 0.5)*0.40*lodC + 0.16*smoothstep(0.05, 0.0, abs(yl2 - CHr + 0.03))*lodC);
-        gInk = max(gInk, jnt*onW*0.80);
+        gInk = max(gInk, jnt*onW*0.65);
         float sl = mmInkP(0.15*(1.0 - 0.13*st) - mmRowX(q.y - sEav, 0.30*(1.0 - 0.13*st)), px, 1.0);
         gInk = max(gInk, roofP*sl*0.55*mmLod(0.30, px));
         float strk = smoothstep(0.62, 0.88, mmNoise(vec2(q.x*5.0, 3.1)))*mmNoise(vec2(q.x*14.0, q.y*0.6));
@@ -4324,8 +4324,8 @@ float subjectH(vec2 q, float far, out float occ){
         gInk = max(gInk, roofP*sJ*0.60);
         gTint += roofP*(sId - 0.5)*0.30*mmLod(0.30, px2);
         float rMoss = roofP*smoothstep(0.60, 0.82, mmNoise(vec2(sxx*0.9, q.y*1.4) + uSeed))*smoothstep(sEav + 2.2, sEav, q.y);
-        gCol = mix(gCol, vec3(0.10, 0.14, 0.07), rMoss);
-        gColAmt = max(gColAmt, rMoss*0.75);
+        gCol = mix(gCol, vec3(0.035, 0.050, 0.025), rMoss);
+        gColAmt = max(gColAmt, rMoss*0.45);
         float crest = step(gx, 0.0)*step(-gx, HWF + SL)*farV*(1.0 - smoothstep(0.10, 0.10 + aaB, abs(q.y - rY - 0.08)));
         float crestT = crest*step(0.5, fract(-gx/0.45));
         gTint += crest*0.25 + crestT*0.20;
@@ -4333,24 +4333,24 @@ float subjectH(vec2 q, float far, out float occ){
         /* THE PORCH: gabled, before the west door, in the front's stone; its
            pointed arch open on the lantern hung inside, its bargeboards and a
            cross on its apex */
-        const float PW = 1.30, PE = 2.70;
+        const float PW = 1.30, PE = 2.55;
         float pg = abs(gx);
-        float pApex = PE + PW*0.95;
-        float pRake = PE + (PW - pg)*0.95;
+        float pApex = PE + PW*0.80;
+        float pRake = PE + (PW - pg)*0.80;
         float porchW = mmCover(PW - pg)*mmCover(pRake - q.y)*step(0.0, q.y);
         float pOpD = sPoint(vec2(gx, q.y), 0.66, 1.50, 1.05);
         float pOpen = mmSolid(pOpD)*porchW;
-        float verge = (1.0 - smoothstep(0.075, 0.075 + aaB, abs(q.y - (PE + (PW + 0.12 - pg)*0.95) + 0.02)))*step(pg, PW + 0.20)*step(PE - 0.15, q.y);
+        float verge = (1.0 - smoothstep(0.075, 0.075 + aaB, abs(q.y - (PE + (PW + 0.12 - pg)*0.80) + 0.02)))*step(pg, PW + 0.20)*step(PE - 0.15, q.y);
         float pCross = mmSolid(min(mmBox(vec2(gx, q.y - pApex - 0.42), vec2(0.035, 0.28), 0.0),
                                    mmBox(vec2(gx, q.y - pApex - 0.50), vec2(0.14, 0.035), 0.0)));
         /* its roof's near slope, running back to the left of the gable as
            the nave's does, a darker slate */
         float pRoof = step(gx, -0.02)*step(-gx, PW + 0.95)*mmCover(pApex - 0.02*(-gx) - q.y)
-                    *mmCover(q.y - (PE + (PW + 0.12 + gx + 0.0)*0.95))*step(PE, q.y)*(1.0 - porchW);
+                    *mmCover(q.y - (PE + (PW + 0.12 + gx)*0.80))*step(PE, q.y)*(1.0 - porchW);
         pRoof *= step(q.y, pApex);
         float porch = clamp(porchW + verge + pCross + pRoof, 0.0, 1.0);
         /* (it stands in front of everything on the west front) */
-        gTint = mix(gTint, 0.10 + 0.14*(mmHash21(vec2(floor((q.x + mod(crw, 2.0)*0.45)/0.90), crw) + 2.0) - 0.5), porchW*(1.0 - pOpen));
+        gTint = mix(gTint, 0.28 + 0.14*(mmHash21(vec2(floor((q.x + mod(crw, 2.0)*0.45)/0.90), crw) + 2.0) - 0.5), porchW*(1.0 - pOpen));
         gTint = mix(gTint, -0.85, pRoof);
         gInk = max(gInk, pRoof*mmInkP(mmRowX(q.y - PE, 0.22) - 0.11, px2, 1.0)*0.5*mmLod(0.22, px2));
         gTint = mix(gTint, -0.70, pOpen);
@@ -4358,7 +4358,7 @@ float subjectH(vec2 q, float far, out float occ){
         gInk = max(gInk*(1.0 - porchW*0.6), mmInkP(pg - PW, px2, 1.3)*step(q.y, pRake)*0.95);
         gInk = max(gInk, mmInkP(pRake - q.y, px2, 1.2)*step(pg, PW)*0.9);
         gInk = max(gInk, mmInkP(pOpD, px2, 1.3)*porchW*0.95);
-        gInk = max(gInk, (mmInkP(q.y - (PE + (PW + 0.12 - pg)*0.95) + 0.02 - 0.075, px2, 1.0) + mmInkP(q.y - (PE + (PW + 0.12 - pg)*0.95) + 0.02 + 0.075, px2, 1.0))*step(pg, PW + 0.20)*step(PE - 0.15, q.y)*0.8);
+        gInk = max(gInk, (mmInkP(q.y - (PE + (PW + 0.12 - pg)*0.80) + 0.02 - 0.075, px2, 1.0) + mmInkP(q.y - (PE + (PW + 0.12 - pg)*0.80) + 0.02 + 0.075, px2, 1.0))*step(pg, PW + 0.20)*step(PE - 0.15, q.y)*0.8);
         gInk = max(gInk, porchW*(1.0 - pOpen)*mmInkP(mmRowX(q.y, 0.45) - 0.225, px2, 1.0)*0.55*mmLod(0.45, px2));
         /* the arch's voussoirs round the opening */
         float vsr = porchW*(1.0 - pOpen)*(1.0 - smoothstep(0.0, 0.20 + aaB, pOpD))*step(1.2, q.y);
@@ -4372,9 +4372,9 @@ float subjectH(vec2 q, float far, out float occ){
         /* (at the corner where the front meets the side, and over the
            corner buttress: a mass climbing from the plinth, densest low,
            thinning to runners at its top) */
-        float ivyZ = clamp(smoothstep(-4.25, -4.05, gx)*(1.0 - smoothstep(-3.2, -2.7, gx))*front
-                         + side*(1.0 - smoothstep(0.6, 2.0, sx)) + butt*step(gx, -3.2), 0.0, 1.0);
         float ivyN = mmFbm3(q*vec2(1.9, 1.5) + uSeed*1.3);
+        float ivyZ = clamp(smoothstep(-4.25, -4.05, gx)*(1.0 - smoothstep(-3.4, -2.6, gx + 1.4*(ivyN - 0.5) - 0.5*smoothstep(1.5, 0.0, q.y)))*front
+                         + side*(1.0 - smoothstep(0.4, 2.2, sx - 1.6*(ivyN - 0.5))) + butt*step(gx, -3.2), 0.0, 1.0);
         float ivyTop = 2.6 + 3.0*ivyN;
         float ivyM = ivyZ*smoothstep(ivyTop + 0.15, ivyTop - 0.15, q.y)*smoothstep(0.30, 0.38, ivyN + 0.20*smoothstep(2.4, 0.0, q.y));
         ivyM *= 1.0 - porch;
@@ -4385,7 +4385,7 @@ float subjectH(vec2 q, float far, out float occ){
         float leafB = 1.0 - smoothstep(0.24, 0.38, length(lfq*vec2(1.0, 1.25)));
         float lLod = mmLod(0.22, px2);
         float leafLit = mix(0.45, leafB*(0.35 + 0.65*smoothstep(-0.2, 0.3, lfq.y)), lLod);
-        vec3 ivyC = mix(vec3(0.008, 0.014, 0.006), vec3(0.030, 0.050, 0.020), leafLit)*(0.85 + 0.30*lhh.x);
+        vec3 ivyC = mix(vec3(0.012, 0.020, 0.009), vec3(0.055, 0.085, 0.032), leafLit)*(0.85 + 0.30*lhh.x);
         gCol = mix(gCol, ivyC, ivyM);
         gColAmt = max(gColAmt, ivyM*0.96);
         gInk = max(gInk*(1.0 - ivyM*0.7), ivyM*lLod*mmInkP(length(lfq*vec2(1.0, 1.25)) - 0.33, px2/0.22, 1.0)*0.45);
@@ -8802,19 +8802,21 @@ float sleepWallH(vec2 q, float qpx, out float occ){
     col = mix(col, walnut*1.2, prl);
     h += prl*0.35;
     mmPen(q.y - PR, 1.0, 0.8); mmPen(q.y - PR + 0.045, 1.0, 0.6);
-    /* (round 35: a STENCILLED FRIEZE under the picture rail, as a school's
-       dormitory had -- a chain of lozenges and dots in a faded madder on
-       the distemper between two ruled lines) */
+    /* (round 35: a STENCILLED BAND over the dado, as a school's dormitory
+       had -- a chain of lozenges and dots in a faded madder on the
+       distemper between two ruled lines, at the height the eye finds it
+       between the beds) */
     {
-      float fz = mmBandA(q.y, PR - 0.36, PR - 0.08, px);
-      float fy = q.y - (PR - 0.22);
+      const float FB = DR + 0.10, FT = DR + 0.38;
+      float fz = mmBandA(q.y, FB, FT, px);
+      float fy = q.y - (FB + FT)*0.5;
       float fx = mod(u + 0.20, 0.40) - 0.20;
       float lz = abs(fx)*0.9 + abs(fy)*1.4 - 0.11;
       float dt = length(vec2(abs(fx) - 0.20, fy)) - 0.025;
       float st2 = max(mmSolid(lz)*(1.0 - mmSolid(lz + 0.035)), mmSolid(dt));
       vec3 madder = vec3(0.30, 0.10, 0.09)*lw*1.6*(0.80 + 0.30*dst);
       col = mix(col, madder, st2*fz*0.85*mmLod(0.40, px));
-      mmPen(q.y - PR + 0.36, 0.9, 0.55); mmPen(q.y - PR + 0.08, 0.9, 0.55);
+      mmPen(q.y - FB, 0.9, 0.55); mmPen(q.y - FT, 0.9, 0.55);
     }
     float CO = uCeil - 0.24;
     float co = step(CO, q.y);
@@ -13200,16 +13202,16 @@ void main(){
        says the chapel is a building with a room in it, not a flat. */
     if (uSubject > 23.5 && uSubject < 24.5) {
       float cg = q.x - uSize.x*0.5 + 8.0;
-      float wd = sPoint(vec2(cg, q.y - 2.60), 0.95, 2.55, 1.90);
+      float wd = sPoint(vec2(cg, q.y - 3.55), 0.95, 2.55, 1.90);
       float aw = max(max(abs(dFdx(q.x)), abs(dFdy(q.y)))*0.75, 0.006);
-      float tr = (1.0 - smoothstep(0.045, 0.045 + aw, abs(cg)))*step(q.y, 5.30)
-               + mmSolid(abs(sPoint(vec2(abs(cg) - 0.47, q.y - 2.60), 0.43, 2.35, 0.86)) - 0.04)
-               + mmSolid(abs(mmCircle(vec2(cg, q.y - 6.12), 0.36)) - 0.04);
+      float tr = (1.0 - smoothstep(0.045, 0.045 + aw, abs(cg)))*step(q.y, 6.25)
+               + mmSolid(abs(sPoint(vec2(abs(cg) - 0.47, q.y - 3.55), 0.43, 2.35, 0.86)) - 0.04)
+               + mmSolid(abs(mmCircle(vec2(cg, q.y - 7.07), 0.36)) - 0.04);
       float glassW = mmSolid(wd + 0.08) * (1.0 - clamp(tr, 0.0, 1.0));
       float flick = 0.86 + 0.14*mmNoise(vec2(uTime*1.3, 2.7));
-      col += winCol * glassW * 2.4 * uOpen * flick * (0.70 + 0.30*smoothstep(2.6, 4.6, q.y));
+      col += winCol * glassW * 2.4 * uOpen * flick * (0.70 + 0.30*smoothstep(3.55, 5.55, q.y));
       col += winCol * uOpen * 0.30 * exp(-max(wd, 0.0)*3.0) * (1.0 - glassW)
-           * step(abs(cg), 3.6) * step(q.y, 5.6);
+           * step(abs(cg), 3.6) * step(q.y, 6.55) * step(2.6, q.y);
       /* ...and the same lamp, fainter, in the side's lancets */
       float sxw = -cg - 3.60;
       float stw = clamp(sxw/6.20, 0.0, 1.0);
@@ -13222,7 +13224,7 @@ void main(){
          west door, its flame, the door and the reveal warm in it, and a
          little of it spilling down the porch's face) */
       float pgL = abs(cg);
-      float pW = (1.0 - smoothstep(1.30, 1.30 + aw, pgL))*step(q.y, 2.70 + (1.30 - pgL)*0.95);
+      float pW = (1.0 - smoothstep(1.30, 1.30 + aw, pgL))*step(q.y, 2.55 + (1.30 - pgL)*0.80);
       float pOD = sPoint(vec2(cg, q.y), 0.66, 1.50, 1.05);
       float pOp = mmSolid(pOD)*pW;
       vec2 lnp = vec2(cg, q.y - 1.62);
@@ -13639,6 +13641,8 @@ uniform float uNearCalm;
    break-up are laid to rest too (nearFloor.clean) -- on a dry floor in a
    lamp's pool that cloud read as "haze lying on the floor"; 0 = as authored */
 uniform float uNearClean;
+/* (round 35: the crypt's vault drawn rib by rib -- pal.ribs; 0 elsewhere) */
+uniform float uRibK;
 /* THE PASSAGES' OPEN DOORS (round 22 graft): each slit's world xz and the
    unit direction into the room (uWedge), how strong its wedge of lamplight
    is (uWedgeK, 0 = none); and uCrisp, the passages' boards drawn crisp
@@ -14207,6 +14211,33 @@ void main(){
     pat = (1.0 - smoothstep(0.10, 0.42, rib))*0.70
         + (1.0 - smoothstep(0.35, 1.30, abs(w.x)))*0.35
         - arc*0.20 + mmFbm3(w*1.9 + uSeed)*0.22;
+    /* ROUND 35 (survey-5 judge 2 on the Crypt: "the ceiling ... [is] black
+       void"; the brief: "vault ribs overhead lit by the candelabra"). Where
+       a room asks (uRibK, the Crypt; 0 everywhere else, so no other vault
+       moves) the vault is DRAWN: each bay a quadripartite groin vault -- the
+       transverse rib, the two diagonals crossing at a boss on the ridge rib
+       -- every rib a moulded stone band with its arrises inked, the cells
+       between them coursed in a darker stone */
+    if (uRibK > 0.001) {
+      /* (a BARREL VAULT on transverse arches: from the floor a flat ceiling
+         shows its curve only by value -- each cell lit at the crown and
+         falling to dark at its springing, the arch ribs broad moulded
+         bands crossing it at every bay, their arrises inked, a ridge rib
+         down the crown; diagonals at this angle read as strings) */
+      float hwV = max(uSpan.x*0.5, 1.0);
+      float by = (fract(w.y/3.10 + 0.5) - 0.5)*3.10;
+      float ux = clamp(w.x/hwV, -1.0, 1.0);
+      float crownL = 1.0 - ux*ux;
+      float ribW = 0.20;
+      float band = 1.0 - smoothstep(ribW - mp, ribW + mp, abs(by));
+      float arr = mmInkP(abs(by) - ribW, mp, 1.3);
+      float mid = mmInkP(abs(by) - ribW*0.45, mp, 0.9)*band;
+      float ridge = (1.0 - smoothstep(0.07 - mp, 0.07 + mp, abs(w.x)))*(1.0 - band);
+      float cellC = mmInkP(abs(mod(w.x + 0.21, 0.42) - 0.21) - 0.21, mp, 0.8)*mmLod(0.42, mp)*(1.0 - band);
+      float pv = 0.16 + 0.42*crownL + band*(0.38 + 0.25*crownL) + 0.20*ridge - 0.55*arr - 0.25*mid - 0.18*cellC
+               + mmFbm3(w*1.9 + uSeed)*0.10;
+      pat = mix(pat, pv, uRibK);
+    }
   } else if (uPattern < 5.5) {               // 5 glazed panes
     float gx = abs(fract(w.x/1.55 + 0.5) - 0.5)*1.55;
     float gy = abs(fract(w.y/1.55 + 0.5) - 0.5)*1.55;
@@ -14860,7 +14891,7 @@ void main(){
     float lRes = smoothstep(0.050, 0.018, mp);
     if (fadeL*lRes > 0.001) {
       float Lf = mmLum(mix(uDeep, uMid, 0.55));
-      vec3 boneC = vec3(Lf)*vec3(4.4, 4.0, 3.1);
+      vec3 boneC = vec3(Lf)*vec3(4.0, 3.8, 3.4);
       vec3 stoneC = vec3(Lf)*vec3(2.3, 2.3, 2.15);
       float cov = 0.0, shd = 0.0, inkL = 0.0;
       vec3 lc = vec3(0.0);
@@ -19279,10 +19310,10 @@ float dsSD(vec2 m, vec2 msz, float seed){
        as ears, the arms a shoulder either side at 0.74, the seat's front
        between them at 0.50 -- the sheet thrown over all of it */
     float bw = hw*0.78;
-    float back = mmBox(m - vec2(0.0, 0.62), vec2(bw*0.80, 0.60), 0.20);
-    float ears = min(length((m - vec2(-bw*0.78, 1.06))/vec2(1.0, 1.25)) - 0.17, length((m - vec2(bw*0.78, 1.06))/vec2(1.0, 1.25)) - 0.17);
-    float arms = mmBox(m - vec2(0.0, 0.40), vec2(bw*1.10, 0.36), 0.14);
-    d = mmSmin(mmSmin(back, ears, 0.10), arms, 0.10);
+    float crown = 1.18 + 0.05*(1.0 - (m.x/(bw*0.86))*(m.x/(bw*0.86)));
+    float back = max(mmBox(m - vec2(0.0, 0.60), vec2(bw*0.86, 0.66), 0.10), m.y - crown);
+    float arms = mmBox(m - vec2(0.0, 0.38), vec2(bw*1.08, 0.36), 0.12);
+    d = mmSmin(back, arms, 0.06);
   } else if (k < 1.5) {
     /* a cheval glass: tall and narrow, its top rounded */
     d = mmBox(m - vec2(0.0, 0.80), vec2(hw*0.55, 0.78), 0.26);
@@ -19348,13 +19379,13 @@ vec3 dsPaint(vec2 m, vec2 msz, float seed, float px, float E, float kx, out floa
   float crest = 0.5 + 0.5*cos(ph);
   float amt = smoothstep(0.05, 0.45, t);
   vec3 lin = vec3(0.60, 0.60, 0.58);
-  vec3 col = lin*mix(0.92, 0.46 + 0.64*crest, amt)*(0.62 + 0.52*(1.0 - t));
+  vec3 col = lin*mix(0.92, 0.30 + 0.85*crest, amt)*(0.62 + 0.52*(1.0 - t));
   col *= 0.86 + 0.26*smoothstep(-hw, hw, m.x*kx);
   col = mix(col, col*vec3(0.92, 0.88, 0.80), 0.4*(1.0 - t));
   float onSh = w2In(d, px);
   float dv = abs(fract((ph - 3.14159)/6.2832 + 0.5) - 0.5)*6.2832;
   float dpx = px*NF/max(length(vec2(m.x - mix(a1.x, a2.x, 0.5), m.y - top - 0.3)), 0.2);
-  ink = max(ink, mmInkP(dv, dpx, 0.9)*amt*0.55*onSh*step(m.y, top - 0.12));
+  ink = max(ink, mmInkP(dv, dpx, 1.0)*amt*0.80*onSh*step(m.y, top - 0.12));
   /* the wing chair's arms and seat front under the sheet: the creases
      where the cloth turns over them */
   if (k < 0.5) {
@@ -21894,32 +21925,36 @@ float wfCandles(vec2 q, float px, float seed, float kq, bool paint){
    skull a ROUND thing lit on the key's side, its sockets dark; each bone a
    shaft with its two-lobed knuckle at both ends; all of it inked. */
 float wfBoneHeap(vec2 q, float px, float seed, float kq, bool paint){
-  vec3 bone = vec3(0.80, 0.74, 0.58);
-  float d = 1e3, dB = 1e3, dS = 1e3;
-  float hol = 0.0, sLit = 0.0;
-  /* the long bones: five, at their own angles, the heap's frame */
-  for (int i = 0; i < 6; i++){
+  vec3 bone = vec3(0.70, 0.64, 0.50);
+  /* the heap's mass: a low mound the bones lie on and in, dark between */
+  float mound = max((length(vec2(q.x/0.62, q.y/0.24)) - 1.0)*0.24, -q.y);
+  float dB = 1e3, bLit = 0.0;
+  /* the long bones: eleven, mostly lying along the heap, a few thrown
+     across it, each its own angle and length */
+  for (int i = 0; i < 11; i++){
     float fi = float(i);
     vec2 hh = vec2(mmHash11(seed*1.7 + fi*3.1), mmHash11(seed*2.3 + fi*5.7));
-    float an = (hh.x - 0.5)*2.2 + (fi < 2.5 ? 0.0 : 1.5708*0.0);
+    float an = (hh.x - 0.5)*(i < 7 ? 0.7 : 2.6);
     vec2 dir = vec2(cos(an), sin(an));
     vec2 nrm = vec2(-dir.y, dir.x);
-    vec2 c = vec2((hh.y - 0.5)*0.85, 0.05 + 0.04*fi*(1.0 - fi/6.0) + 0.05*hh.x);
-    float L = 0.20 + 0.08*hh.y;
+    float layer = floor(fi/4.0);
+    vec2 c = vec2((hh.y - 0.5)*(0.80 - 0.22*layer), 0.035 + 0.060*layer + 0.03*hh.x);
+    float L = 0.17 + 0.09*hh.y;
     vec2 v = q - c;
     float t = clamp(dot(v, dir), -L, L);
-    float b = length(v - dir*t) - 0.020*(1.0 + 0.30*abs(t)/L);
+    float b = length(v - dir*t) - 0.019*(1.0 + 0.35*abs(t)/L);
     for (int e = 0; e < 2; e++){
       vec2 ec = dir*L*(float(e)*2.0 - 1.0);
-      b = min(b, min(length(v - ec - nrm*0.019) - 0.027, length(v - ec + nrm*0.019) - 0.027));
+      b = min(b, min(length(v - ec - nrm*0.017) - 0.025, length(v - ec + nrm*0.017) - 0.025));
     }
-    dB = min(dB, b);
+    if (b < dB) { dB = b; bLit = clamp(dot(v - dir*t, nrm)*sign(nrm.y + 1e-3)/0.02, -1.0, 1.0); }
   }
-  /* the skulls: three, the middle one highest */
+  /* the skulls: three, on and in the heap */
+  float dS = 1e3, hol = 0.0, sLit = 0.0;
   for (int k = 0; k < 3; k++){
     float fk = float(k);
-    vec2 sc = vec2((fk - 1.0)*0.30 + 0.05*mmHash11(seed + fk), 0.13 + 0.10*(1.0 - abs(fk - 1.0)));
-    float ss = 0.20 - 0.025*abs(fk - 1.0);
+    vec2 sc = vec2((fk - 1.0)*0.26 + 0.04*mmHash11(seed + fk), 0.16 + 0.07*(1.0 - abs(fk - 1.0)));
+    float ss = 0.17 - 0.02*abs(fk - 1.0);
     float h1;
     float sk = crSkullP(q - sc, ss, px, h1);
     if (sk < dS) {
@@ -21929,27 +21964,27 @@ float wfBoneHeap(vec2 q, float px, float seed, float kq, bool paint){
       sLit = clamp(dot(normalize(vec3(sp.x*0.9, sp.y*0.85, nz + 0.05)), normalize(vec3(0.55*kq, 0.60, 0.62))), 0.0, 1.0);
     }
   }
-  /* the stone round its foot */
+  /* spalled stone round its foot */
   float rub = 1e3;
   for (int r = 0; r < 5; r++){
     float fr = float(r);
     vec2 rh = vec2(mmHash11(seed*4.1 + fr*1.9), mmHash11(seed*6.7 + fr*2.3));
-    vec2 rc = vec2((rh.x - 0.5)*1.25, 0.025);
-    rub = min(rub, mmBox(q - rc, vec2(0.035 + 0.035*rh.y, 0.022 + 0.018*rh.x), 0.012));
+    float side = (fr < 2.5 ? -1.0 : 1.0);
+    vec2 rc = vec2(side*(0.58 + 0.20*rh.x), 0.030);
+    rub = min(rub, mmBox(q - rc, vec2(0.045 + 0.035*rh.y, 0.030 + 0.015*rh.x), 0.018));
   }
-  d = min(min(dB, dS), rub);
+  float d = min(min(min(dB, dS), rub), mound + 0.02);
   if (!paint) return d;
-  vec3 col = vec3(0.03);
+  vec3 col = vec3(0.03, 0.025, 0.02);
   float ink = 0.0;
-  /* bones under the skulls first, then the skulls over them */
-  float bl = smoothstep(0.0, -0.03, dB);
-  wfLay(col, ink, rub, vec3(0.40, 0.39, 0.36)*(0.7 + 0.5*smoothstep(0.0, 0.05, q.y)), px, 0.8);
-  wfLay(col, ink, dB, bone*(0.40 + 0.55*bl)*(0.85 + 0.25*smoothstep(-0.2, 0.2, q.x*kq)), px, 0.9);
-  wfLay(col, ink, dS, bone*(0.22 + 0.88*sLit)*(1.0 - 0.90*hol), px, 0.95);
-  /* the dark where the heap meets the flags */
-  col *= 1.0 - 0.45*smoothstep(0.05, 0.0, q.y);
-  gWfGloss = 0.12;
-  gWfMoon = 0.30*wfIn(dS, px);
+  /* the dark of the heap between the bones, and its contact on the flags */
+  wfLay(col, ink, mound + 0.02, vec3(0.06, 0.05, 0.04)*(0.6 + 0.6*smoothstep(0.0, 0.2, q.y)), px, 0.0);
+  wfLay(col, ink, rub, vec3(0.36, 0.35, 0.32)*(0.65 + 0.45*smoothstep(0.0, 0.06, q.y)), px, 0.45);
+  wfLay(col, ink, dB, bone*(0.42 + 0.30*bLit + 0.30*smoothstep(0.0, 0.25, q.y))*(0.88 + 0.20*smoothstep(-0.3, 0.3, q.x*kq)), px, 0.85);
+  wfLay(col, ink, dS, bone*(0.25 + 0.80*sLit)*(1.0 - 0.90*hol), px, 0.90);
+  col *= 1.0 - 0.40*smoothstep(0.04, 0.0, q.y);
+  gWfGloss = 0.10;
+  gWfMoon = 0.25*wfIn(dS, px);
   gWfCol = col; gWfInk = ink;
   return d;
 }

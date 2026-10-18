@@ -598,7 +598,7 @@ export const ROOM_VARIANTS = [
   { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 3, MM_SHM0: 4194304, MM_SHM1: 1015808, MM_SHM2: 2 }, wings: ['nursery'] },
   { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 4, MM_SHM0: 8388864, MM_SHM1: 0, MM_SHM2: 64 }, wings: ['passages'] },
   { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 1, MM_SHM0: 142606336, MM_SHM1: 0, MM_SHM2: 0 }, wings: ['pumpkin'] },
-  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 3, MM_SHM0: 4210689, MM_SHM1: 74448896, MM_SHM2: 1 }, wings: ['sleeping'] },
+  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 3, MM_SHM0: 4210689, MM_SHM1: 74645504, MM_SHM2: 1 }, wings: ['sleeping'] },
   { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 3, MM_SHM0: 4194304, MM_SHM1: 125829120, MM_SHM2: 0 }, wings: ['study'] },
   { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 0, MM_PAT: 0, MM_CEIL: 0 }, wings: ['attic', 'heart', 'nursery', 'passages', 'sleeping', 'study'] },
   { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 2, MM_PAT: 1, MM_CEIL: 0 }, wings: ['ballroom'] },
@@ -884,6 +884,7 @@ export class Backdrop {
       uRugDye: { value: 0 },
       uNearCalm: { value: 0 },
       uNearClean: { value: 0 },          // (round 35: nearFloor.clean)
+      uRibK: { value: 0 },               // (round 35: the crypt's vault drawn, pal.ribs -- ceiling only)
       /* THE PASSAGES' OPEN DOORS (round 22 graft): the wedge of lamplight
          each one's slit throws across the floor -- the slit's world x and z,
          and the unit direction into the room, and in uWedgeK how strong
@@ -2921,6 +2922,7 @@ export class Backdrop {
        shows the ceiling over a room's chandeliers showed it as a flat grey
        slab, where the wing's other rooms keep it dark. */
     c.uGain.value = (p.gain ?? 3.4) * 0.085 * (p.ceilGain ?? 1);
+    c.uRibK.value = p.ribs ?? 0;          // (round 35: the vault drawn rib by rib, the Crypt)
 
     const pr = this.propMat.uniforms;
     pr.uAlbedo.value.copy(p._propAlb);

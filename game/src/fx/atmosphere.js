@@ -410,7 +410,7 @@ export const REGIONS = {
     crispFloor: true, grain: 0.012,
     nearFloor: { fall: 0.90, dye: 1, calm: 0.70, clean: 1,
                  pool: { ahead: 5.6, across: 1.6, rAlong: 3.0, rAcross: 2.2, k: 1.5, color: '#9cb2e8' },
-                 pool2: { ahead: 4.2, across: -1.9, rAlong: 1.9, rAcross: 1.7, k: 1.6, color: '#f0a65a' } },
+                 pool2: { ahead: 3.9, across: -1.7, rAlong: 2.0, rAcross: 1.8, k: 2.8, color: '#f0a65a' } },
   },
 
   /* ── 4. The Kitchens and Cellars ───────────────────────────────────────────
@@ -667,8 +667,9 @@ export const REGIONS = {
                        above the hand: a tall arched stone with its lines cut
                        in the near turf at your left, over the Companion's
                        panel, and a wheel cross by the lantern at your right */
-                    { shape: 69, edge: 0.13, z: 1.4, tone: 0.95, scale: 1.30, seed: 1.25, fore: 1, keep: true },
-                    { shape: 73, edge: 0.84, z: 0.4, tone: 0.95, scale: 0.92, fore: 1, keep: true }] },
+                    { shape: 69, edge: 0.15, z: 3.2, tone: 0.95, scale: 1.30, seed: 1.25, fore: 1, keep: true },
+                    { shape: 73, edge: 0.88, z: 1.2, tone: 0.95, scale: 0.92, fore: 1, keep: true },
+                    { shape: 70, edge: 0.80, z: 3.6, tone: 0.95, scale: 1.05, seed: 2.5, fore: 1, keep: true }] },
     r25w: 4,
     /* (round 28: the moon on the lawn at two-thirds -- [0.62, 0.86, 1.05]
        lifted the turf to "a flat milky grey-green field", both judges; the
@@ -693,7 +694,7 @@ export const REGIONS = {
          near turf, warm, so the band of lawn above the hand has a light that
          stands in it and its pool -- it was a cold lamp nineteen metres off
          that nobody read as a lantern) */
-      { kind: 'warm', x: 4.6, y: 0.95, z: -0.9, color: '#e2a052', intensity: 3.4, radius: 4.6 },
+      { kind: 'warm', x: 4.6, y: 0.95, z: -3.8, color: '#e2a052', intensity: 3.4, radius: 4.6 },
     ],
     /* A SHAFT NEEDS SOMETHING TO COME THROUGH. This region has no ceiling and
        no windows, so three hard-edged bright stripes across the night sky read
@@ -801,7 +802,7 @@ export const REGIONS = {
                        eaves keeps them at your feet */
                     { shape: 36, edge: 0.24, z: 4.5, tone: 0.97, scale: 1.30, fore: 1, keep: true, seed: 1.5 },
                     { shape: 37, edge: 0.80, z: 3.6, tone: 0.95, scale: 1.05, fore: 1, keep: true, seed: 0.3 },
-                    { shape: 37, edge: 0.93, z: 1.0, tone: 0.93, scale: 1.0, fore: 1, keep: true, seed: 2.0 }],
+                    { shape: 37, edge: 0.93, z: 1.0, tone: 0.93, scale: 1.0, fore: 1, keep: true, seed: 0.7 }],
              trusses: { shape: 38, every: 3.4, first: 2.2 } },
     /* ...and the boards they stand on lit and calm: a lamp's pool at your
        left and the skylight's moon laid on the boards at your right, the
@@ -809,7 +810,7 @@ export const REGIONS = {
        cloud laid to rest so each one is a board and not a haze */
     nearFloor: { fall: 0.90, calm: 0.85, clean: 1, dye: 1, rug: { ahead: 5.6, hw: 1.5, hd: 1.0 },
                  pool: { ahead: 9.6, across: 2.8, rAlong: 4.2, rAcross: 3.0, k: 2.6, color: '#f0a65a' },
-                 pool2: { ahead: 10.0, across: -2.4, rAlong: 4.0, rAcross: 2.6, k: 0.9, color: '#9fb0e6' } },
+                 pool2: { ahead: 6.2, across: -0.6, rAlong: 3.0, rAcross: 3.4, k: 1.15, color: '#9fb0e6' } },
     particles: { mix: [[PTYPE.DUST, 0.62], [PTYPE.WISP, 0.26], [PTYPE.ASH, 0.12]],
                  tint: '#d8dcf5', wispTint: '#b0b8ff', emberTint: '#ffcf7a',
                  speed: 0.6, scale: 1.0, wind: 0.4, density: 0.60 },
@@ -1019,7 +1020,7 @@ export const REGIONS = {
     grain: 0.012,
     /* (round 35: "the ceiling ... [is] black void" -- the vault's ribs lit
        by the candles under them, as the attic's roof is) */
-    ceilGain: 2.4,
+    ceilGain: 2.4, ribs: 1,
   },
 
   /* ── 12. The Withered Hedge Maze ───────────────────────────────────────────
@@ -2069,7 +2070,13 @@ export const ROOM_KINDS = {
            near headstones ... fallen leaves in a lantern light pool" -- a warm
            lantern's spill nearer the eye than the moon's pool: pool2, in this
            room and not the fight's, the frame budget) */
-        nearFloor: { pool2: { ahead: 3.2, across: -1.2, rAlong: 2.0, rAcross: 2.4, k: 1.3, color: '#e29a56' } },
+        /* ROUND 35: the lantern's spill laid under the LANTERN -- its post
+           brought into the near turf right of the walk (lights[2], placed
+           here, so unmirrored: `abs`), its warm pool on the grass round its
+           foot; the fight is played in this room's shell, and the band of
+           lawn above the hand has a light standing in it */
+        lamps: [{ i: 2, x: 5.2, z: 0.03 }],
+        nearFloor: { pool2: { ahead: 13.2, across: 5.2, abs: true, rAlong: 3.6, rAcross: 2.8, k: 1.9, color: '#e29a56' } },
         vantage: { at: 'threshold', back: 2.2, lens: 0.90, dip: 0.30 } },
       /* the chapel stands left of the axis, so the house goes right; the
          moon rises behind the chapel's cross */
@@ -2214,19 +2221,21 @@ export const ROOM_KINDS = {
                  floor, which this room never had -- a stride nearer and
                  larger, so it is the near floor and the runner under it
                  goes) */
-              rug: { ahead: 6.6, hw: 2.3, hd: 1.6 },
+              rug: { ahead: 5.9, hw: 2.3, hd: 1.7 },
               nearFloor: { pool: { ahead: 5.2, across: -1.4, rAlong: 2.8, rAcross: 2.2, k: 1.3, color: '#9cb2e8' },
                            pool2: { ahead: 5.0, across: 2.3, rAlong: 2.2, rAcross: 1.8, k: 1.7, color: '#f0a65a' } },
               lamps: [{ i: 0, x: 0.0, z: 0.95, y: 0.45, fit: 'none', color: '#ff9848', radius: 4.2, k: 1.10 },
                       { i: 3, x: 3.4, z: 0.42 },
                       { i: 2, x: 4.0, z: 0.38, y: 1.25, color: '#eab070', k: 1.5, radius: 4.0, fit: 'none' }],
-              near: [{ shape: 50, x: -2.7, z: -2.0, tone: 0.97, scale: 1.2, free: true },
+              /* (round 35: the four-poster a step down in tone -- by the key it
+                 washed to a beige panel, its wine counterpane lost) */
+              near: [{ shape: 50, x: -2.7, z: -2.0, tone: 0.55, scale: 1.2, free: true },
                      { shape: 52, x: 4.0, z: -3.4, tone: 0.95, free: true },
                      { shape: 60, x: 4.7, z: -6.4, tone: 0.93, free: true },
                      { shape: 56, x: 2.0, z: -5.4, tone: 0.92, free: true },
                      /* (round 35: the near floor -- a wing chair drawn up on
                         the carpet's edge to the fire, `fore`) */
-                     { shape: 56, edge: 0.76, z: 1.2, tone: 0.97, scale: 1.05, fore: 1, keep: true, seed: 3.0 }],
+                     { shape: 56, edge: 0.72, z: 0.4, tone: 0.97, scale: 1.0, fore: 1, keep: true, seed: 3.0 }],
               cam: { z: -1.4, look: 0.10 } }],
     names: [
       [/bedroom|moon window|dreaming/i, 1],
@@ -2280,7 +2289,7 @@ export const ROOM_KINDS = {
                         and the form someone left among them, at your feet,
                         `fore`) */
                      { shape: 36, edge: 0.28, z: 3.0, tone: 0.97, scale: 1.20, fore: 1, keep: true, seed: 3.5 },
-                     { shape: 37, edge: 0.82, z: 3.2, tone: 0.95, scale: 1.05, fore: 1, keep: true, seed: 5.0 }],
+                     { shape: 37, edge: 0.80, z: 3.2, tone: 0.95, scale: 1.0, fore: 1, keep: true, seed: 0.5 }],
               rug: { ahead: 7.4, hw: 1.6, hd: 1.0 },
               vantage: { at: 'along', off: 0.12, wall: 2.0, fwd: 1.4, yaw: 10, wide: 3 } }],
     names: [
@@ -3546,9 +3555,11 @@ export class Atmosphere {
        under the lantern that was placed for it) */
     if (pal.nearFloor && pal.nearFloor.pool) {
       pal.nearFloor = Object.assign({}, pal.nearFloor, {
-        pool: Object.assign({}, pal.nearFloor.pool, { across: (pal.nearFloor.pool.across ?? 0) * flip }) });
+        pool: Object.assign({}, pal.nearFloor.pool, { across: (pal.nearFloor.pool.across ?? 0) * (pal.nearFloor.pool.abs ? 1 : flip) }) });
       /* (round 31 graft: and its second lamp, nearFloor.pool2) */
-      if (pal.nearFloor.pool2) pal.nearFloor.pool2 = Object.assign({}, pal.nearFloor.pool2, { across: (pal.nearFloor.pool2.across ?? 0) * flip });
+      /* (round 35: a pool laid under a lamp a ROOM KIND placed -- kind.lamps
+         set x as it is, unmirrored -- says `abs`, and is not mirrored either) */
+      if (pal.nearFloor.pool2) pal.nearFloor.pool2 = Object.assign({}, pal.nearFloor.pool2, { across: (pal.nearFloor.pool2.across ?? 0) * (pal.nearFloor.pool2.abs ? 1 : flip) });
     }
     if (pal.props.near) {
       /* (...but not what stands ON a stage, round 18: the suite's stage is
@@ -3777,6 +3788,7 @@ export class Atmosphere {
       L.nearFloor = T.nearFloor;        // (round 31: the near floor goes with the room)
       L.rug = T.rug;                    // (round 25 graft: the carpet goes with the room)
       L.litter = T.litter;              // (round 35: and what lies on its near floor)
+      L.ribs = T.ribs;                  // (round 35: and the crypt's vault drawn)
       L.straw = T.straw;                // (round 28 graft: and the kennels' straw)
       this.backdrop.applyPalette(L);
       this._applyGrade(L, k);
