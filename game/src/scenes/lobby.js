@@ -106,6 +106,13 @@ function boardMarkup() {
     + '<i class="kit-lookout lo-look"></i>'
     /* a coil of the rope ladder over a nail on the other wall */
     + '<i class="kit-prop kit-prop--rope lo-rope"></i>'
+    /* ROUND 36: the floor ends in things, not in a dark band of planks
+       (survey 5, both judges): the trapdoor the rope ladder comes up through,
+       shut, its iron straps and ring pull; the ladder's rope coiled on the
+       boards beside it; a lantern stood on the floor, its light on both */
+    + '<div class="lo-floor"><i class="lo-hatch"><i class="lo-hatch__ring"></i></i>'
+    + '<i class="kit-prop kit-prop--rope lo-floor__coil"></i>'
+    + '<i class="kit-lantern lo-floor__lamp"></i></div>'
     /* two small windows high in the wall either side of the plaque, and the
        night of the title painting through them: the old tree's boughs, the moon */
     + '<i class="kit-casement lo-case lo-case--l"></i><i class="kit-casement kit-casement--moon lo-case lo-case--r"></i>'
@@ -367,6 +374,25 @@ export class LobbyScene extends Scene {
     paintSeed();
     input.addEventListener('input', paintSeed);
     card.appendChild(seed);
+    /* ROUND 36: the words are cut in the wordmark's capitals, which run wider
+       than the serif did: the longest pair steps the size down until it
+       stands whole on the plate (never under 15 px), so a password is never
+       scrolled out of its own field */
+    const fitCode = () => {
+      if (!input.isConnected) return;
+      input.style.fontSize = '';
+      let fs = parseFloat(getComputedStyle(input).fontSize) || 22;
+      while (input.scrollWidth > input.clientWidth + 1 && fs > 15) {
+        fs -= 0.5;
+        input.style.fontSize = `${fs}px`;
+      }
+    };
+    input.addEventListener('input', fitCode);
+    requestAnimationFrame(fitCode);
+    document.fonts?.ready?.then(() => fitCode());
+    const onFitResize = () => fitCode();
+    window.addEventListener('resize', onFitResize);
+    (this._offs ||= []).push(() => window.removeEventListener('resize', onFitResize));
 
     const actions = el('div', 'lo-card__actions');
     const roll = el('button', 'lo__roll kit-btn kit-btn--quiet');

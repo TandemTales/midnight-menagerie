@@ -140,8 +140,11 @@ export class DeckView {
     glassCap.appendChild(icon('ui.search', { cls: 'mm-deck__glass' }));
     search.prepend(glassCap);
     const input = document.createElement('input');
-    input.type = 'search'; input.placeholder = 'Search…'; input.autocomplete = 'off';
-    input.className = 'kit-hw-slip';
+    input.type = 'search'; input.placeholder = 'Seek a Trick by name…'; input.autocomplete = 'off';
+    /* ROUND 36: a dark enamel well sunk in brass, as the filter rail beside it
+       is brass (ui/kit.css .kit-hw-inlay) -- it was a pale torn slip, "the
+       brightest object on the dialog" and "a web input" (survey 5) */
+    input.className = 'kit-hw-inlay';
     input.addEventListener('input', () => { this.filters.q = input.value.trim().toLowerCase(); this._apply(); });
     search.appendChild(input);
 
@@ -561,6 +564,10 @@ export async function openPile(o = {}) {
     size: 'wide',
     host: o.host || o.ctx?.dom,
   });
+  /* ROUND 36: ONE way to close it -- the plate at the foot (CLOSE, or SKIP in
+     reward mode); the round cross on the frame's corner competed with it
+     (survey 5, J2). Escape and the backdrop still close it, as before. */
+  if (modal.closeBtn) { modal.closeBtn.hidden = true; modal.closeBtn.classList.add('mm-deck__xhidden'); }
   // the case stands in the house's own room, not on a void (round 26)
   roomBehind(modal);
 

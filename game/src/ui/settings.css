@@ -672,3 +672,93 @@
   /* the next seed's slip stood over the Seed page's right frame at 1280 */
   .mm-set__text.kit-hw-slip { width: calc(var(--slip-h) * 2.45); }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ROUND 36 — THE LAST WEB-SHAPED CONTROLS (survey 5, items 5 and 6)
+   - the two seeds: "the khaki slab with a dash and the pale cream 'random'
+     field read as disabled web text inputs" (J1, J2). The current seed is
+     ENGRAVED on the brass plate with its bosses (.kit-hw-inlay--plate), the
+     next one is written into a dark enamel well sunk in the same plate
+     (.kit-hw-inlay), both in the display serif's gilt caps;
+   - the wax seal "a sticker on the frame" (both): pressed onto RESET's near
+     end instead, inside the page (settings.js);
+   - SAVE AND QUIT "a ghosted outline pill" (J1): the filled plate DONE wears,
+     even locked, its padlock and its gold dimmed, never its field;
+   - the palette swatches "like OS radio buttons" (J2): set in small
+     octagonal gold bezels, the chosen one's bezel polished, not haloed;
+   - at 1280 "the six panels pack with almost no gutters" (J2).
+   ═══════════════════════════════════════════════════════════════════════════ */
+.mm-set__seed.kit-hw-inlay {
+  --inlay-h: calc(var(--read-h) + 6px);
+  justify-self: end;
+  min-width: calc(var(--inlay-h) * 4.4);
+  font-size: max(14px, calc(var(--inlay-h) * .42));
+}
+.mm-set__seed.kit-hw-inlay .kit-enamel__value { font: inherit; color: inherit; letter-spacing: inherit; text-shadow: inherit; }
+.mm-set__text.kit-hw-inlay {
+  --inlay-h: calc(var(--read-h) + 8px);
+  justify-self: end;
+  width: calc(var(--inlay-h) * 4.3);
+  text-align: center;
+  font-size: 15px;
+  user-select: text;
+}
+.mm-set__text.kit-hw-inlay::placeholder { font-size: 15px; }
+@media (max-width: 1400px) {
+  .mm-set__text.kit-hw-inlay { width: calc(var(--inlay-h) * 3.35); }
+  .mm-set__seed.kit-hw-inlay { min-width: calc(var(--inlay-h) * 3.9); }
+}
+
+/* the wax, pressed on RESET's near end over the skull it replaces */
+.mm-set__row > .mm-btn--danger.kit-btn.is-sealed { padding-left: calc(var(--plate-h) * .98); }
+.mm-set__row > .mm-btn--danger.kit-btn.is-sealed > .mm-set__resetcrest { display: none; }
+.mm-set__row > .mm-btn--danger.kit-btn > .mm-set__seal.kit-seal {
+  --seal: calc(var(--plate-h) * 1.22);
+  --tilt: -12deg;
+  left: calc(var(--plate-h) * -.3); right: auto; top: 50%; bottom: auto;
+  translate: 0 -50%;
+  z-index: 2;
+}
+
+/* SAVE AND QUIT, locked: the whole filled plate, as DONE is, its words and
+   its padlock in a dimmed gold */
+.mm-set__row > .kit-btn.mm-set__act:disabled,
+.mm-set__row > .kit-btn.mm-set__act:disabled:hover {
+  border-image-source: url("../../assets/ui/kit/plate-lit.webp");
+  color: #c2a46c;
+  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .75)) brightness(.9);
+}
+.mm-set__row > .kit-btn.mm-set__act.is-locked::before {
+  /* the plate's enamel field, filled under the rim: the same body DONE has */
+  content: ''; position: absolute; z-index: -1; pointer-events: none;
+  inset: calc(var(--plate-h) * .1) calc(var(--plate-h) * .24);
+  border-radius: calc(var(--plate-h) * .5);
+  background:
+    radial-gradient(80% 120% at 50% 0%, rgb(255 220 170 / .10), transparent 60%),
+    url("../../assets/ui/kit/enamel.webp") 50% 50% / 240px 240px,
+    #261833;
+  background-blend-mode: normal, overlay, normal;
+  box-shadow: inset 0 2px 4px rgb(0 0 0 / .7);
+}
+
+/* the palettes in small octagonal gold bezels (socket-keep.webp), the four
+   colours enamelled square inside; the chosen one polished bright */
+.kit-hw-swatch.mm-set__choice--swatch > .kit-hw-swatch__disc {
+  border-radius: 0;
+  background:
+    linear-gradient(135deg, rgb(255 255 255 / .28), transparent 40%, transparent 70%, rgb(0 0 0 / .3)) 50% 50% / 58% 58% no-repeat,
+    conic-gradient(from 0deg, var(--sw1) 0 25%, var(--sw2) 0 50%, var(--sw3) 0 75%, var(--sw4) 0 100%) 50% 50% / 58% 58% no-repeat,
+    url("../../assets/ui/kit/socket-keep.webp") 50% 50% / 100% 100% no-repeat;
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .85)) saturate(.6) brightness(.78);
+}
+.kit-hw-swatch.mm-set__choice--swatch[aria-checked="true"] > .kit-hw-swatch__disc {
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .85)) saturate(1.05) brightness(1.12) contrast(1.05);
+}
+.kit-hw-swatch.mm-set__choice--swatch[aria-checked="true"] {
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, .9), 0 1px 0 color-mix(in srgb, var(--kit-gold) 25%, transparent);
+}
+
+/* gutters at the Deck's size: the three columns stand apart */
+@media (max-width: 1400px) {
+  .mm-set { column-gap: 34px; padding-inline: 6px; }
+}

@@ -4549,3 +4549,80 @@ button.kit-hw-enamel:focus-visible {
   white-space: normal; text-wrap: balance;
   max-width: calc(100% + 2 * var(--hang-rim) + 8px);
 }
+
+/* ── an inlaid well to write in ──────────────────────────────────────────
+   ROUND 36 (survey 5, both judges): the settings' seed fields, the piles'
+   search and the lobby's password still read as web text inputs -- a pale
+   cream strip, a khaki slab, a sans word in a glowing pill. Where you write
+   in this house is a WELL: dark enamel sunk into the brass-rimmed plate the
+   switches stand on (hw-plate-plain.webp, its rim only), a fine gilt rule
+   pressed round the inside of the hollow, the words cut in the display
+   serif's gilt caps. The placeholder is the house speaking, in its italic.
+   Focus brightens the rim and warms the hollow, never a glow outside it.
+   It stays a real <input>: everything that types into one still can.
+     <input class="kit-hw-inlay" aria-label="…" placeholder="…">
+   `.kit-hw-inlay--plate` is the same plate when it only SAYS something (an
+   <output>): the enamel flush, the cast bosses on its ends (hw-plate.webp). */
+.kit-hw-inlay {
+  --inlay-h: 38px;
+  box-sizing: border-box;
+  min-width: 0; height: var(--inlay-h);
+  margin: 0;
+  padding: 0 calc(var(--inlay-h) * .42) 0;
+  border: 0 solid transparent;
+  border-width: calc(var(--inlay-h) * 7 / 56) calc(var(--inlay-h) * 9 / 56);
+  border-image: url("../../assets/ui/kit/hw-plate-plain.webp") 14 16 / calc(var(--inlay-h) * 14 / 56) calc(var(--inlay-h) * 16 / 56) stretch;
+  border-radius: calc(var(--inlay-h) * .14);
+  background:
+    radial-gradient(90% 120% at 50% -10%, rgb(255 214 160 / .07), transparent 60%),
+    linear-gradient(180deg, #0b060f 0%, #170e20 38%, #1d1229 100%);
+  background-clip: padding-box;
+  box-shadow:
+    inset 0 3px 6px rgb(0 0 0 / .9),
+    inset 0 -1px 0 rgb(230 200 140 / .10);
+  outline: 1px solid color-mix(in srgb, var(--kit-gold) 42%, transparent);
+  outline-offset: calc(var(--inlay-h) * -.12);
+  -webkit-appearance: none; appearance: none;
+  font-family: var(--font-display); font-weight: 600; font-style: normal;
+  font-size: max(13px, calc(var(--inlay-h) * .4)); line-height: 1;
+  font-variant-numeric: lining-nums;
+  letter-spacing: .1em; text-transform: none;
+  color: var(--kit-gold-hi);
+  caret-color: var(--kit-gold-hi);
+  text-shadow: 0 -1px 0 rgb(0 0 0 / .9), 0 1px 0 rgb(230 200 140 / .16);
+  filter: drop-shadow(0 2px 3px rgb(0 0 0 / .7));
+  transition: outline-color var(--t-quick) var(--ease-out), box-shadow var(--t-quick) var(--ease-out), filter var(--t-quick) var(--ease-out);
+}
+.kit-hw-inlay::placeholder {
+  font-family: var(--font-body); font-weight: 400; font-style: italic;
+  letter-spacing: .02em;
+  color: #a898bd;
+  text-shadow: 0 1px 0 rgb(0 0 0 / .9);
+  opacity: 1;
+}
+.kit-hw-inlay::selection { background: color-mix(in srgb, var(--kit-candle) 40%, transparent); color: #fff4dc; }
+.kit-hw-inlay::-webkit-search-cancel-button,
+.kit-hw-inlay::-webkit-search-decoration { -webkit-appearance: none; appearance: none; display: none; }
+.kit-hw-inlay:hover { filter: drop-shadow(0 2px 3px rgb(0 0 0 / .7)) brightness(1.08); }
+.kit-hw-inlay:focus, .kit-hw-inlay:focus-visible {
+  outline: 1px solid color-mix(in srgb, var(--kit-gold-hi) 85%, transparent);
+  outline-offset: calc(var(--inlay-h) * -.12);
+  box-shadow:
+    inset 0 3px 6px rgb(0 0 0 / .9),
+    inset 0 0 calc(var(--inlay-h) * .5) rgb(255 178 92 / .16),
+    inset 0 -1px 0 rgb(230 200 140 / .14);
+  filter: drop-shadow(0 2px 3px rgb(0 0 0 / .7)) brightness(1.14);
+}
+/* the read-out: the same plate, flush, its two cast bosses on */
+.kit-hw-inlay--plate {
+  display: inline-flex; align-items: center; justify-content: center;
+  padding: 0 calc(var(--inlay-h) * .62);
+  border-width: calc(var(--inlay-h) * 7 / 56) calc(var(--inlay-h) * 30 / 56);
+  border-image: url("../../assets/ui/kit/hw-plate.webp") 14 30 fill / calc(var(--inlay-h) * 14 / 56) calc(var(--inlay-h) * 30 / 56) stretch;
+  background: none; box-shadow: none; outline: 0;
+  user-select: text;
+}
+.kit-hw-inlay--plate.is-blank {
+  font-family: var(--font-body); font-weight: 400; font-style: italic;
+  letter-spacing: .02em; color: #b9aacb;
+}
