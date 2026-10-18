@@ -14772,7 +14772,7 @@ void main(){
      murk"). The churchyard's turf is GRASS: a deep green-black in its own
      hue, a stop under the grey the moon made of it, so the walk's stones
      and kerbs read paler than the lawn they run through */
-  alb = mix(alb, vec3(mmLum(alb))*vec3(0.60, 1.10, 0.56)*0.80, turf*(1.0 - r25Walk)*0.60);
+  alb = mix(alb, vec3(mmLum(alb))*vec3(0.60, 1.10, 0.56)*0.84, turf*(1.0 - r25Walk)*0.55);
 #elif MM_R25W == 0 && MM_FLOORX == 1
   /* (round 29 graft: the maze's flags a dark stone, only a little over the
      lawn -- the lawn and the walk stay near-black, both judges) */
@@ -14905,7 +14905,7 @@ void main(){
         vec2 v = lp - c0;
         if (kind < 0.34) {
           /* a long bone */
-          float an = hh.x*6.2832;
+          float an = (hh.x - 0.5)*1.2;     // (lying across the view: along it a bone foreshortens to a rune)
           vec2 dir = vec2(cos(an), sin(an)), nrm = vec2(-dir.y, dir.x);
           float L = 0.20 + 0.09*hh.y;
           float t = clamp(dot(v, dir), -L, L);
@@ -19320,8 +19320,10 @@ float dsSD(vec2 m, vec2 msz, float seed){
     d = mmSmin(d, mmBox(m - vec2(0.0, 0.10), vec2(hw*0.90, 0.10), 0.05), 0.15);
   } else {
     /* a sideboard: broad and low, something stood on it */
-    d = mmBox(m - vec2(0.0, 0.45), vec2(hw, 0.45), 0.08);
-    d = mmSmin(d, length(m - vec2(hw*0.30, 0.98)) - 0.20, 0.10);
+    /* (round 35: square-cornered, and what stands on it a covered clock --
+       a ball under the sheet read as a ghost's head) */
+    d = mmBox(m - vec2(0.0, 0.45), vec2(hw, 0.45), 0.035);
+    d = min(d, mmBox(m - vec2(hw*0.38, 1.10), vec2(0.15, 0.20), 0.05));
   }
   /* the hem: it flares at the floor and lies in points */
   float flare = smoothstep(0.30, 0.0, m.y);
@@ -19372,22 +19374,19 @@ vec3 dsPaint(vec2 m, vec2 msz, float seed, float px, float E, float kx, out floa
   float t = clamp(1.0 - m.y/top, 0.0, 1.0);
   vec2 a1 = k < 0.5 ? vec2(-hw*0.62, 1.15) : vec2(-hw*0.50, top - 0.10);
   vec2 a2 = k < 0.5 ? vec2(hw*0.62, 1.15) : vec2(hw*0.50, top - 0.10);
-  float f1 = atan(m.x - a1.x, a1.y - m.y + 0.3), f2 = atan(m.x - a2.x, a2.y - m.y + 0.3);
-  float fr = mix(f1, f2, smoothstep(a1.x, a2.x, m.x));
-  float NF = 6.0 + 4.0*t;
-  float ph = fr*NF + seed*3.0 + 0.8*sin(m.y*3.0 + seed);
+  /* the folds: the cloth hangs from what it rests on in vertical folds,
+     more of them toward the hem, each a lit crest and an inked valley */
+  float NF = 9.0 + 7.0*t;
+  float ph = m.x*NF + 0.7*sin(m.y*2.4 + seed*3.0) + seed*5.0;
   float crest = 0.5 + 0.5*cos(ph);
-  float amt = smoothstep(0.05, 0.45, t);
+  float amt = smoothstep(0.02, 0.35, t);
   vec3 lin = vec3(0.60, 0.60, 0.58);
-  vec3 col = lin*mix(0.92, 0.30 + 0.85*crest, amt)*(0.62 + 0.52*(1.0 - t));
+  vec3 col = lin*mix(0.95, 0.34 + 0.80*crest, amt)*(0.62 + 0.52*(1.0 - t));
   col *= 0.86 + 0.26*smoothstep(-hw, hw, m.x*kx);
   col = mix(col, col*vec3(0.92, 0.88, 0.80), 0.4*(1.0 - t));
   float onSh = w2In(d, px);
-  float dv = abs(fract((ph - 3.14159)/6.2832 + 0.5) - 0.5)*6.2832;
-  float dpx = px*NF/max(length(vec2(m.x - mix(a1.x, a2.x, 0.5), m.y - top - 0.3)), 0.2);
-  ink = max(ink, mmInkP(dv, dpx, 1.0)*amt*0.80*onSh*step(m.y, top - 0.12));
-  /* the wing chair's arms and seat front under the sheet: the creases
-     where the cloth turns over them */
+  float dv = abs(fract((ph - 3.14159)/6.2832 + 0.5) - 0.5)*6.2832/NF;
+  ink = max(ink, mmInkP(dv, px, 1.1)*amt*0.85*onSh);
   if (k < 0.5) {
     float bw = hw*0.78;
     ink = max(ink, mmInkP(m.y - 0.74 - 0.025*sin(m.x*7.0 + seed), px, 1.0)*0.50*step(bw*0.62, abs(m.x))*onSh);
@@ -21927,7 +21926,7 @@ float wfCandles(vec2 q, float px, float seed, float kq, bool paint){
 float wfBoneHeap(vec2 q, float px, float seed, float kq, bool paint){
   vec3 bone = vec3(0.70, 0.64, 0.50);
   /* the heap's mass: a low mound the bones lie on and in, dark between */
-  float mound = max((length(vec2(q.x/0.62, q.y/0.24)) - 1.0)*0.24, -q.y);
+  float mound = max((length(vec2(q.x/0.52, q.y/0.18)) - 1.0)*0.18, -q.y);
   float dB = 1e3, bLit = 0.0;
   /* the long bones: eleven, mostly lying along the heap, a few thrown
      across it, each its own angle and length */
@@ -21978,7 +21977,7 @@ float wfBoneHeap(vec2 q, float px, float seed, float kq, bool paint){
   vec3 col = vec3(0.03, 0.025, 0.02);
   float ink = 0.0;
   /* the dark of the heap between the bones, and its contact on the flags */
-  wfLay(col, ink, mound + 0.02, vec3(0.06, 0.05, 0.04)*(0.6 + 0.6*smoothstep(0.0, 0.2, q.y)), px, 0.0);
+  wfLay(col, ink, mound + 0.02, vec3(0.20, 0.18, 0.15)*(0.55 + 0.6*smoothstep(0.0, 0.2, q.y)), px, 0.0);
   wfLay(col, ink, rub, vec3(0.36, 0.35, 0.32)*(0.65 + 0.45*smoothstep(0.0, 0.06, q.y)), px, 0.45);
   wfLay(col, ink, dB, bone*(0.42 + 0.30*bLit + 0.30*smoothstep(0.0, 0.25, q.y))*(0.88 + 0.20*smoothstep(-0.3, 0.3, q.x*kq)), px, 0.85);
   wfLay(col, ink, dS, bone*(0.25 + 0.80*sLit)*(1.0 - 0.90*hol), px, 0.90);

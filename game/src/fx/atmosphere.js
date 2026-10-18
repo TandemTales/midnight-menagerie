@@ -410,7 +410,7 @@ export const REGIONS = {
     crispFloor: true, grain: 0.012,
     nearFloor: { fall: 0.90, dye: 1, calm: 0.70, clean: 1,
                  pool: { ahead: 5.6, across: 1.6, rAlong: 3.0, rAcross: 2.2, k: 1.5, color: '#9cb2e8' },
-                 pool2: { ahead: 3.9, across: -1.7, rAlong: 2.0, rAcross: 1.8, k: 2.8, color: '#f0a65a' } },
+                 pool2: { ahead: 3.9, across: -1.7, abs: true, rAlong: 2.0, rAcross: 1.8, k: 2.8, color: '#f0a65a' } },
   },
 
   /* ── 4. The Kitchens and Cellars ───────────────────────────────────────────
@@ -653,7 +653,10 @@ export const REGIONS = {
        the pools' break-up were the "uniform milky grey murk" lying on the
        lawn: nearFloor.clean) */
     nearFloor: { fall: 0.92, clean: 0.85,
-                 pool: { ahead: 4.6, across: 1.2, rAlong: 3.8, rAcross: 3.6, k: 2.0, color: '#94aad0' } },
+                 /* (round 35: the moon's pool laid where the eye finds the near
+                    turf -- the band of lawn left of the walk, above the hand in a
+                    fight -- not under the bottom of the frame) */
+                 pool: { ahead: 10.5, across: -5.0, abs: true, rAlong: 4.2, rAcross: 3.6, k: 4.5, color: '#94aad0' } },
     props: { shapes: [69, 69, 70, 71, 69], solo: [71], count: 34, height: 1.5, layout: 'rows',
              near: [{ shape: 69, edge: 0.90, z: -0.8, tone: 0.90 },
                     { shape: 70, edge: 0.975, z: 1.6, tone: 0.90 },
@@ -810,7 +813,7 @@ export const REGIONS = {
        cloud laid to rest so each one is a board and not a haze */
     nearFloor: { fall: 0.90, calm: 0.85, clean: 1, dye: 1, rug: { ahead: 5.6, hw: 1.5, hd: 1.0 },
                  pool: { ahead: 9.6, across: 2.8, rAlong: 4.2, rAcross: 3.0, k: 2.6, color: '#f0a65a' },
-                 pool2: { ahead: 6.2, across: -0.6, rAlong: 3.0, rAcross: 3.4, k: 1.15, color: '#9fb0e6' } },
+                 pool2: { ahead: 4.2, across: -0.4, rAlong: 2.4, rAcross: 3.8, k: 2.6, color: '#9fb0e6' } },
     particles: { mix: [[PTYPE.DUST, 0.62], [PTYPE.WISP, 0.26], [PTYPE.ASH, 0.12]],
                  tint: '#d8dcf5', wispTint: '#b0b8ff', emberTint: '#ffcf7a',
                  speed: 0.6, scale: 1.0, wind: 0.4, density: 0.60 },
@@ -1015,7 +1018,7 @@ export const REGIONS = {
        long bones and spalled stone (litter); the foreground falling to
        nine-tenths, not two-fifths; the grain at half the house's */
     nearFloor: { fall: 0.90, calm: 0.90, clean: 1,
-                 pool: { ahead: 5.4, across: -1.7, rAlong: 2.6, rAcross: 2.3, k: 2.2, color: '#f0a55a' },
+                 pool: { ahead: 5.0, across: -2.0, abs: true, rAlong: 2.6, rAcross: 2.3, k: 2.4, color: '#f0a55a' },
                  litter: { ahead: 5.0, hw: 3.4, hd: 2.2, k: 1 } },
     grain: 0.012,
     /* (round 35: "the ceiling ... [is] black void" -- the vault's ribs lit
@@ -2076,7 +2079,7 @@ export const ROOM_KINDS = {
            foot; the fight is played in this room's shell, and the band of
            lawn above the hand has a light standing in it */
         lamps: [{ i: 2, x: 5.2, z: 0.03 }],
-        nearFloor: { pool2: { ahead: 13.2, across: 5.2, abs: true, rAlong: 3.6, rAcross: 2.8, k: 1.9, color: '#e29a56' } },
+        nearFloor: { pool2: { ahead: 12.8, across: 4.8, abs: true, rAlong: 3.8, rAcross: 3.0, k: 6.5, color: '#e29a56' } },
         vantage: { at: 'threshold', back: 2.2, lens: 0.90, dip: 0.30 } },
       /* the chapel stands left of the axis, so the house goes right; the
          moon rises behind the chapel's cross */
@@ -2100,7 +2103,9 @@ export const ROOM_KINDS = {
            near headstones ... fallen leaves in a lantern light pool" -- a warm
            lantern's spill nearer the eye than the moon's pool: pool2, in this
            room and not the fight's, the frame budget) */
-        nearFloor: { pool2: { ahead: 3.2, across: -1.2, rAlong: 2.0, rAcross: 2.4, k: 1.3, color: '#e29a56' } },
+        /* (round 35: none -- with no lantern standing in it the spill was a
+           brown smear across the middle of the lawn, the "murk") */
+        nearFloor: { pool2: { ahead: 3.2, across: -1.2, rAlong: 2.0, rAcross: 2.4, k: 0.0, color: '#e29a56' } },
         cam: { y: 0.25, z: -0.4, look: 0.3, fov: -1 },
         vantage: { at: 'among', fwd: 6.2, low: 0.46, pitch: 3.0, off: 0.03, wide: 2 } },
     ],
