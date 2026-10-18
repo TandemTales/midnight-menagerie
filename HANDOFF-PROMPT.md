@@ -90,16 +90,17 @@ link-queue and seam green on dev; the other 13 wings pixel-identical.
 **The Hedge fight's frame is FIXED** (`46c95755`, fix/hedge-frame): paired
 -0.06 ms vs BASE (was +1.84); the cost was the maze's painted sky running the
 whole yew face only to be mixed away. gpuprof does NOT pin the render-scale
-governor -- check drawW (memory). **ROUND 35 IS MERGED, VERIFIED AND PUSHED (2026-10-18); ITS GRAFT IS IN
-FLIGHT:** ANTHRACITE +1.73, 2 of 2 (`315f052e`, 6.28 vs GROSGRAIN 4.55):
-the near floor in the Attic, Sleeping Quarters, Graveyard and Crypt. Battery
-106 gates green but the sprites halo; the other 13 wings identical. Frame vs
-BASE (quiet machine): Graveyard 15.51 (+0.4, at the line), Sleeping 13.95,
-Crypt 11.13, Attic 12.15. Graft (`GRAFT-r35.md`) building in
-`C:/UILOOP/r35/wt/r35-graft` (port 9264, BASE 9364 from `C:/UILOOP/r35/base`),
-notes into `C:/UILOOP/r35/graft/`: the Graveyard's frame, SCHEELITE's vault
-ribs and iron beds, SODALITE's porch and carved sarcophagi. Then: the Heart,
-the last web controls and the crowded hand.
+governor -- check drawW (memory). **ROUND 35 AND ITS GRAFT ARE MERGED, VERIFIED AND PUSHED (2026-10-18):**
+ANTHRACITE +1.73, 2 of 2 (`315f052e`, 6.28 vs GROSGRAIN 4.55): the near floor
+in the Attic, Sleeping Quarters, Graveyard and Crypt. Graft `1d80b209`:
+SCHEELITE's lit rib vault and iron beds, SODALITE's chapel porch and carved
+sarcophagi, the Graveyard fight back UNDER BASE (14.74 vs 15.41). Battery 106
+gates green but the sprites halo (on the round's merge); the graft's region
+gates, chrome, steam-deck, link-queue and seam green on dev; the other 13
+wings identical. Known: the Greenhouse potting-bench prop program links in
+12.1-12.8 s (over the 12 s budget since round 34's graft). **NEXT: round 36**
+from survey 5: the last web-shaped controls and the crowded hand; then the
+Heart and the remaining rooms' near floor; then survey 6.
 
 **ROUND 33 AND ITS GRAFT ARE MERGED, VERIFIED AND PUSHED (2026-10-16):**
 graft `9d008119`. COBALT +1.59 (`531126e4`): no running line under 11 px at
