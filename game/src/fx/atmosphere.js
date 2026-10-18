@@ -841,7 +841,11 @@ export const REGIONS = {
        foreground falling to nine-tenths and not two-fifths, and the boards'
        cloud laid to rest so each one is a board and not a haze */
     nearFloor: { fall: 0.90, calm: 0.85, clean: 1, dye: 1, rug: { ahead: 5.6, hw: 1.5, hd: 1.0 },
-                 pool: { ahead: 9.6, across: 2.8, rAlong: 4.2, rAcross: 3.0, k: 2.6, color: '#f0a65a' },
+                 /* (round 35 graft: the lamp's pool brought onto the near
+                    boards by the trunk, ahead 9.6 -> 6.0, and a little more
+                    of it, so the floor in front of you is lit by a lamp and
+                    not by the key's wash -- and not black) */
+                 pool: { ahead: 6.0, across: -1.2, rAlong: 3.6, rAcross: 3.2, k: 3.4, color: '#f0a65a' },
                  /* (round 35 graft, both judges: "the blue / purple / orange
                     wash lying across the near boards" -- ONE warm candle pool
                     on them, the lamp's; the cold pool across the middle of
@@ -854,9 +858,9 @@ export const REGIONS = {
     /* (round 35 graft, both judges: the wash on the near boards was the key
        from behind the eye, 6.78, laying itself over every board in front of
        you, and the cold fill, 1.78, over the other half -- SODALITE's
-       answer, a stop down each: 3.4 and 1.05; the lamp's pool is what lights
+       a stop down: 4.2 (SCHEELITE's 4.6, SODALITE's 2.5) and 1.05; the lamp's pool is what lights
        the near floor now) */
-    key:  { glow: 0, kind: 'warm', x: -4.0, y: 3.2, z: 2.4, color: '#e8bc8f', intensity: 3.4, radius: 7.31 },
+    key:  { glow: 0, kind: 'warm', x: -4.0, y: 3.2, z: 2.4, color: '#e8bc8f', intensity: 4.2, radius: 7.31 },
     fill: { glow: 0, kind: 'cold', x: 5.4, y: 2.8, z: 1.4, color: '#9eabe7', intensity: 1.05, radius: 8.5, flicker: false },
     lights: [
       { kind: 'cold', x: 5.0, y: 5.60, z: -12.0, color: '#b1bbeb', intensity: 2.73, radius: 13.0, flicker: false },

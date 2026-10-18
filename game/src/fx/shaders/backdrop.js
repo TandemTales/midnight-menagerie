@@ -19428,8 +19428,10 @@ vec3 dsPaint(vec2 m, vec2 msz, float seed, float px, float E, float kx, out floa
   vec2 a2 = k < 0.5 ? vec2(hw*0.62, 1.15) : vec2(hw*0.50, top - 0.10);
   /* the folds: the cloth hangs from what it rests on in vertical folds,
      more of them toward the hem, each a lit crest and an inked valley */
-  float NF = 9.0 + 7.0*t;
-  float ph = m.x*NF + 0.7*sin(m.y*2.4 + seed*3.0) + seed*5.0;
+  /* (round 35 graft: folds a hand apart, as SODALITE's sheets -- at 9 a
+     metre a sheet's width held two, and read as a box with a crease) */
+  float NF = 20.0 + 10.0*t;
+  float ph = m.x*NF + 0.9*sin(m.y*2.4 + seed*3.0) + seed*5.0;
   float crest = 0.5 + 0.5*cos(ph);
   /* (round 35 graft, J2 on the library's sheet: "folds, a draped hem and a
      darker tone" -- the folds run the whole fall of the cloth, half-weight
@@ -19450,7 +19452,10 @@ vec3 dsPaint(vec2 m, vec2 msz, float seed, float px, float E, float kx, out floa
     col *= 1.0 - 0.22*step(abs(m.x), bw*0.66)*smoothstep(0.80, 0.70, m.y)*step(0.45, m.y);
   }
   col *= 1.0 - 0.45*smoothstep(0.06, 0.0, m.y);
-  moon = 0.55*onSh*(1.0 - t);
+  /* (round 35 graft: a breath of the moon on its crests, not a glaze -- at
+     0.55 over the whole of a sheet seen from the side it washed the folds
+     out to the "pale flat" box J2 named) */
+  moon = 0.18*onSh*(1.0 - t)*crest;
   return col*E;
 }
 
