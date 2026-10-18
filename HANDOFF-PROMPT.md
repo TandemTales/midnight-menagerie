@@ -105,10 +105,12 @@ OBSIDIAN's always-in-hand BUY, wares under glass on their own lips, CLEAR's
 own glyph, the filled SAVE AND QUIT; a scratch check plays a stack's copies
 by mouse, keys and pad. Battery 106 green but the sprites halo; the graft's
 interaction gates green on dev. Known: seven sub-11 px items on the card face
-and the fight HUD's Companion panel (not round 36's). **NEXT: round 37**
-(`BRIEF-r37.md`, `round-37.args.json`): the Heart, the Nursery, the Study, the
-Pumpkin Grounds and their near floor; then the map's nodes and region boxes
-with the atlas; then survey 6. **Josh asked 10-18 for a
+and the fight HUD's Companion panel (not round 36's). **ROUND 37 IS RUNNING (2026-10-18)** (`BRIEF-r37.md`, `round-37.args.json`,
+base `f138b951`): the Heart, the Nursery, the Study, the Pumpkin Grounds and
+their near floor; TOURMALINE / BERYL / CARNELIAN in
+`C:/UILOOP/r37/wt/r37-rooms-{a,b,c}` (ports 9281-9283), TULLE baselines in
+`C:/UILOOP/r37/judging/r37/rooms/TULLE/` (6 of 6, looked at). Then the map's
+nodes and region boxes with the atlas; then survey 6. **Josh asked 10-18 for a
 3-hour pause in which nothing may launch a program -- respect such asks.**
 
 **ROUND 33 AND ITS GRAFT ARE MERGED, VERIFIED AND PUSHED (2026-10-16):**
