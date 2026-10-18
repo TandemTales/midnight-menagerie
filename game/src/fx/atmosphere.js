@@ -171,6 +171,18 @@ const D = {
  * Each region owns a distinct ROOM SHAPE, CEILING, CAMERA and SILHOUETTE SET —
  * recolouring one box seventeen times is what round 1 got wrong.
  */
+/* THE CRYPT'S NEAR FLOOR (round 35 graft, SCHEELITE's): "bones or rubble on
+   the flags, a candelabra pool" -- two skeleton mounds where a loculus gave
+   way, its fallen stones heaped with a skull and long bones on them
+   (59.25, wfBones: wide and low, so its width is given), and a pricket stand
+   burning on the near left, its pool laid on the flags by the wing's
+   nearFloor (both mirror with the room, so the pool stays under it) */
+const CRYPT_NEAR = [
+  { shape: 59.25, x: 2.4, z: 0.4, tone: 0.95, hM: 0.45, wM: 1.7, seed: 2.7, free: true, keep: true, still: true },
+  { shape: 59.25, x: -0.6, z: 1.6, tone: 0.95, hM: 0.45, wM: 1.7, seed: 6.1, free: true, keep: true, still: true },
+  { shape: 58, x: -1.9, z: 1.6, tone: 0.96, free: true, keep: true, still: true },
+];
+
 export const REGIONS = {
   /* ── 1. The Forgotten Foyer ────────────────────────────────────────────────
      Tall, formal, symmetrical. Everything is pushed to the walls so the grand
@@ -391,7 +403,12 @@ export const REGIONS = {
                  speed: 0.6, scale: 1.0, wind: 0.4, density: 0.40 },
     exposure: 1.46, contrast: 1.63,
     key:  { glow: 0, kind: 'warm', x: -4.0, y: 3.2, z: 2.4, color: '#e4ad7b', intensity: 2.99, radius: 7.31 },
-    fill: { glow: 0, kind: 'cold', x: 5.4, y: 2.6, z: 1.0, color: '#92aae4', intensity: 1.78, radius: 8.5, flicker: false },
+    /* (round 35 graft, both judges: "the cold blue wash on the dormitory's
+       right near floor" cut -- the fill from behind the eye 1.78 -> 1.05,
+       and the moon's pool on the near boards (nearFloor.pool) 1.5 -> 1.0
+       and a grey moonlight, #9cb2e8 -> #aab0c6, not a blue wash: the boards
+       keep their light without the cold cast) */
+    fill: { glow: 0, kind: 'cold', x: 5.4, y: 2.6, z: 1.0, color: '#92aae4', intensity: 1.05, radius: 8.5, flicker: false },
     lights: [
       { kind: 'warm', x: -3.4, y: 2.90, z: -4.6, color: '#dda558', intensity: 2.40, radius: 5.0 },
       { kind: 'cold', x: 3.0, y: 2.60, z: -7.5, color: '#92aae4', intensity: 1.50, radius: 7.0 },
@@ -409,7 +426,7 @@ export const REGIONS = {
        nine-tenths, not two-fifths. The grain at half the house's. */
     crispFloor: true, grain: 0.012,
     nearFloor: { fall: 0.90, dye: 1, calm: 0.70, clean: 1,
-                 pool: { ahead: 5.6, across: 1.6, rAlong: 3.0, rAcross: 2.2, k: 1.5, color: '#9cb2e8' },
+                 pool: { ahead: 5.6, across: 1.6, rAlong: 3.0, rAcross: 2.2, k: 1.0, color: '#aab0c6' },
                  pool2: { ahead: 3.9, across: -1.7, abs: true, rAlong: 2.2, rAcross: 2.0, k: 6.0, color: '#f0a65a' } },
   },
 
@@ -672,8 +689,18 @@ export const REGIONS = {
                        panel, and a wheel cross by the lantern at your right */
                     { shape: 69, edge: 0.15, z: 3.2, tone: 0.95, scale: 1.30, seed: 1.25, fore: 1, keep: true },
                     { shape: 73, edge: 0.88, z: 1.2, tone: 0.95, scale: 0.92, fore: 1, keep: true },
-                    { shape: 70, edge: 0.80, z: 3.6, tone: 0.95, scale: 1.05, seed: 2.5, fore: 1, keep: true }] },
+                    /* (round 35 graft, THE FRAME BUDGET: the kerbed grave here
+                       was a 4.6 m quad and a 7 m shadow, most of it empty
+                       turf worked out and thrown away, for a headstone and a
+                       kerb the hand half covers -- the fight came back 0.2 ms
+                       over BASE with it. A headstone in its place, where its
+                       stone stood) */
+                    { shape: 69, edge: 0.83, z: 3.6, tone: 0.95, scale: 1.0, seed: 3.0, fore: 1, keep: true }] },
     r25w: 4,
+    /* (round 35 graft, the frame budget: the fight goes without the near
+       frame -- its drapes under the chrome's border, its clutter band under
+       the hand -- see Backdrop) */
+    fightFrame: false,
     /* (round 28: the moon on the lawn at two-thirds -- [0.62, 0.86, 1.05]
        lifted the turf to "a flat milky grey-green field", both judges; the
        lawn is a true dark now, with its blades, tufts and leaf litter lit) */
@@ -806,7 +833,10 @@ export const REGIONS = {
                        in the lamp's pool, a chair under its dust sheet at
                        your right in the moon's, `fore` so a vantage down the
                        eaves keeps them at your feet */
-                    { shape: 36, edge: 0.24, z: 4.5, tone: 0.97, scale: 1.30, fore: 1, keep: true, seed: 1.5 },
+                    /* (round 35 graft, J1: "a strapped trunk ... in the bottom
+                       fifth" -- the trunk a stride nearer, z 4.5 -> 5.6, so it
+                       stands in the near boards and not at the rug's side) */
+                    { shape: 36, edge: 0.24, z: 5.6, tone: 0.97, scale: 1.30, fore: 1, keep: true, seed: 1.5 },
                     { shape: 37, edge: 0.80, z: 3.6, tone: 0.95, scale: 1.05, fore: 1, keep: true, seed: 0.3 },
                     { shape: 37, edge: 0.93, z: 1.0, tone: 0.93, scale: 1.0, fore: 1, keep: true, seed: 0.7 }],
              trusses: { shape: 38, every: 3.4, first: 2.2 } },
@@ -815,14 +845,27 @@ export const REGIONS = {
        foreground falling to nine-tenths and not two-fifths, and the boards'
        cloud laid to rest so each one is a board and not a haze */
     nearFloor: { fall: 0.90, calm: 0.85, clean: 1, dye: 1, rug: { ahead: 5.6, hw: 1.5, hd: 1.0 },
-                 pool: { ahead: 9.6, across: 2.8, rAlong: 4.2, rAcross: 3.0, k: 2.6, color: '#f0a65a' },
-                 pool2: { ahead: 4.2, across: -0.4, rAlong: 2.4, rAcross: 3.8, k: 2.6, color: '#9fb0e6' } },
+                 /* (round 35 graft: the lamp's pool brought onto the near
+                    boards by the trunk, ahead 9.6 -> 6.0, and a little more
+                    of it, so the floor in front of you is lit by a lamp and
+                    not by the key's wash -- and not black) */
+                 pool: { ahead: 6.0, across: -1.2, rAlong: 3.6, rAcross: 3.2, k: 3.4, color: '#f0a65a' },
+                 /* (round 35 graft, both judges: "the blue / purple / orange
+                    wash lying across the near boards" -- ONE warm candle pool
+                    on them, the lamp's; the cold pool across the middle of
+                    the boards gone, k 2.6 -> 0) */
+                 pool2: { ahead: 4.2, across: -0.4, rAlong: 2.4, rAcross: 3.8, k: 0, color: '#9fb0e6' } },
     particles: { mix: [[PTYPE.DUST, 0.62], [PTYPE.WISP, 0.26], [PTYPE.ASH, 0.12]],
                  tint: '#d8dcf5', wispTint: '#b0b8ff', emberTint: '#ffcf7a',
                  speed: 0.6, scale: 1.0, wind: 0.4, density: 0.60 },
     exposure: 1.54, vignette: 1.32, contrast: 1.65,
-    key:  { glow: 0, kind: 'warm', x: -4.0, y: 3.2, z: 2.4, color: '#e8bc8f', intensity: 6.78, radius: 7.31 },
-    fill: { glow: 0, kind: 'cold', x: 5.4, y: 2.8, z: 1.4, color: '#9eabe7', intensity: 1.78, radius: 8.5, flicker: false },
+    /* (round 35 graft, both judges: the wash on the near boards was the key
+       from behind the eye, 6.78, laying itself over every board in front of
+       you, and the cold fill, 1.78, over the other half -- SODALITE's
+       a stop down: 4.2 (SCHEELITE's 4.6, SODALITE's 2.5) and 1.05; the lamp's pool is what lights
+       the near floor now) */
+    key:  { glow: 0, kind: 'warm', x: -4.0, y: 3.2, z: 2.4, color: '#e8bc8f', intensity: 4.2, radius: 7.31 },
+    fill: { glow: 0, kind: 'cold', x: 5.4, y: 2.8, z: 1.4, color: '#9eabe7', intensity: 1.05, radius: 8.5, flicker: false },
     lights: [
       { kind: 'cold', x: 5.0, y: 5.60, z: -12.0, color: '#b1bbeb', intensity: 2.73, radius: 13.0, flicker: false },
       { kind: 'warm', x: -3.8, y: 1.10, z: -5.0, color: '#dda558', intensity: 7.11, radius: 4.64 },
@@ -980,7 +1023,10 @@ export const REGIONS = {
        (59). 16 m deep, from 25: the end wall is a feature, not a speck. The
        shafts are a breath of moonlight, warmer, wide and faint. */
     arch: 2, floorPattern: 2, subject: 'catacombs', damask: 0,
-    room: { w: 11, d: 16, h: 4.9, side: 0.0, ceilPattern: 4, wallPad: 3.4, floorOver: 0.4 },
+    /* (round 35 graft, SCHEELITE's, both judges' first graft: the vault is
+       RIBBED, bay by bay, its own pattern (17) and its own program, and lit:
+       the candles below find its ribs and bosses, ceilGain) */
+    room: { w: 11, d: 16, h: 4.9, side: 0.0, ceilPattern: 17, wallPad: 3.4, floorOver: 0.4 },
     cam: { y: 1.90, z: 6.4, look: 2.0, fov: 46 },
     deep: '#141720', mid: '#262f33', hi: '#414c49', accent: '#5eb3b1',
     rimCol: '#d1e6d8', shaft: '#b8c6c4', floorDeep: '#0e1018', floorMid: '#1c2226',
@@ -990,18 +1036,16 @@ export const REGIONS = {
              near: [{ shape: 58, x: -2.6, z: -4.3, tone: 0.95, free: true },
                     { shape: 57, edge: 0.76, z: -2.8, tone: 0.96 },
                     { shape: 58, x: 2.8, z: -9.5, tone: 0.92, free: true },
-                    /* (round 35: the near floor's candles -- nearFloor.pool) */
-                    { shape: 58, edge: 0.20, z: 2.2, tone: 0.97, scale: 1.05, fore: 1, keep: true, seed: 4.0 },
-                    /* (round 35: and a heap of what fell from the shelves, on
-                       the flags a stride from you -- wfBoneHeap, seed > 19.5) */
-                    { shape: 59, edge: 0.60, z: 2.9, tone: 0.97, scale: 1.15, fore: 1, keep: true, seed: 21.0 }] },
+                    /* (round 35 graft: the near floor's candles and its skeleton
+                       mounds, SCHEELITE's, in place of the heap of skulls) */
+                    ...CRYPT_NEAR] },
     /* (round 24: dust in the candlelight -- the teal wisps were a field of
        green specks over the bone) */
     particles: { mix: [[PTYPE.DUST, 0.84], [PTYPE.ASH, 0.16]],
                  tint: '#e6e0d2', wispTint: '#9fc8c0', emberTint: '#ffb64a',
                  speed: 0.5, scale: 1.0, wind: 0.3, density: 0.40 },
     exposure: 2.46, contrast: 1.69,
-    key:  { glow: 0, kind: 'warm', x: -3.0, y: 2.8, z: 2.0, color: '#e0a866', intensity: 1.61, radius: 6.88 },
+    key:  { glow: 0, kind: 'warm', x: -3.0, y: 2.8, z: 2.0, color: '#e0a866', intensity: 1.20, radius: 6.88 },
     /* (round 35: the fill a stop down -- at 1.94 it laid a cyan haze on the
        near flags' corner, the "haze" every judge marks down) */
     fill: { glow: 0, kind: 'cold', x: 3.6, y: 2.4, z: 1.2, color: '#6cacc8', intensity: 1.05, radius: 7.5, flicker: false },
@@ -1017,16 +1061,21 @@ export const REGIONS = {
        centre of the floor are black void and the floor flags are soft").
        The flags each their own stone with a pen-weight joint (calm); a
        pricket stand of candles stood on them at your left, its pool laid on
-       the flags round it; what a crypt lets fall lying in front of you --
-       long bones and spalled stone (litter); the foreground falling to
-       nine-tenths, not two-fifths; the grain at half the house's */
-    nearFloor: { fall: 0.90, calm: 0.90, clean: 1,
-                 pool: { ahead: 4.8, across: -2.0, abs: true, rAlong: 2.8, rAcross: 2.5, k: 6.0, color: '#f0a55a' },
-                 litter: { ahead: 5.0, hw: 3.4, hd: 2.2, k: 1 } },
+       the flags round it; the foreground falling to nine-tenths, not
+       two-fifths; the grain at half the house's. (Round 35 graft: the
+       bones painted flat on the flags -- nearFloor.litter, "flat
+       stick-bones", J1 -- are retired; the floor program carried their
+       loop in every wing for the frame budget's sake too.) */
+    /* (round 35 graft, both judges: "the sepia-orange / ochre haze" pulled
+       off the near flags so the stone reads dark and crisp under the candle
+       pools -- SCHEELITE's near floor: the pool a candle's, k 6.0 -> 1.6,
+       laid under the pricket stand and mirrored with it, the foreground
+       falling a little further, and the key from behind the eye a step
+       down, 1.61 -> 1.20: it laid the warm wash across the whole near floor) */
+    nearFloor: { fall: 0.84, calm: 0.90, clean: 1,
+                 pool: { ahead: 4.8, across: -1.9, rAlong: 2.6, rAcross: 2.2, k: 1.6, color: '#f0a55a' } },
     grain: 0.012,
-    /* (round 35: "the ceiling ... [is] black void" -- the vault's ribs lit
-       by the candles under them, as the attic's roof is) */
-    ceilGain: 2.4, ribs: 1,
+    ceilGain: 2.3,
   },
 
   /* ── 12. The Withered Hedge Maze ───────────────────────────────────────────
@@ -1767,7 +1816,10 @@ const GRAVE_NEAR_YARD = [
   /* (round 31 graft, judge 1: "the near table tomb is cut off by the frame
      bottom", and "a table tomb on the empty near-left lawn": a step back and
      to the left, so all of it stands in the turf) */
-  { shape: 70, edge: 0.30, z: 3.2, tone: 0.93, scale: 1.10, seed: 4.5 },
+  /* (round 35 graft, J2: "the pale left table tomb" grimed -- a stone two
+     centuries in the weather is dark, not the palest thing in the yard:
+     tone 0.93 -> 0.55) */
+  { shape: 70, edge: 0.30, z: 3.2, tone: 0.55, scale: 1.10, seed: 4.5 },
   { shape: 70, edge: 0.03, z: -5.0, tone: 0.88 },
   { shape: 73, x:  2.80, z: -4.40, tone: 0.86, free: true },
 ];
@@ -2095,7 +2147,12 @@ export const ROOM_KINDS = {
       { subject: 'chapel', houseX: 9.6, moonX: -7.6, houseS: 1.30, layout: 'rows', runX: -8.0,
         cam: { y: -0.45, z: -1.2, look: 0.9, fov: -2 },
         vantage: { at: 'along', off: 0.10, wall: 8.0, fwd: 3.0, yaw: 9, wide: 2, dy: -0.4, dlook: 0.6 },
-        nearView: GRAVE_NEAR_YARD, nearKeep: true },
+        nearView: GRAVE_NEAR_YARD, nearKeep: true,
+        /* (round 35 graft, SODALITE's, J2: "a warm lamp pool by the cross
+           tomb" -- the lantern brought in from the far railing to stand in
+           the near turf right of the walk, its warm pool on the grass) */
+        nearFloor: { pool2: { ahead: 6.2, across: 2.2, rAlong: 2.8, rAcross: 3.0, k: 6.5, color: '#e29a56' } },
+        lamps: [{ i: 1, x: 3.4, z: 0.12 }] },
       /* the mausolea stand right, so the house goes left and the moon over them */
       /* ...and the family plots are seen from AMONG the graves (both judges:
          "stand the camera among the graves"), low, the nearest stones and
@@ -2243,7 +2300,10 @@ export const ROOM_KINDS = {
                      { shape: 56, x: 2.0, z: -5.4, tone: 0.92, free: true },
                      /* (round 35: the near floor -- a wing chair drawn up on
                         the carpet's edge to the fire, `fore`) */
-                     { shape: 56, edge: 0.72, z: 0.4, tone: 0.97, scale: 1.0, fore: 1, keep: true, seed: 3.0 }],
+                     { shape: 56, edge: 0.72, z: 0.4, tone: 0.97, scale: 1.0, fore: 1, keep: true, seed: 3.0 },
+                     /* (round 35 graft, both judges, SCHEELITE's: the toy chest
+                        and its bear at the four-poster's foot) */
+                     { shape: 47, x: -1.30, z: 0.2, tone: 0.95, free: true, keep: true, still: true }],
               cam: { z: -1.4, look: 0.10 } }],
     names: [
       [/bedroom|moon window|dreaming/i, 1],
@@ -2581,18 +2641,12 @@ export const ROOM_KINDS = {
         near: [{ shape: 57, edge: 0.74, z: -3.0, tone: 0.96 },
                { shape: 58, x: -2.4, z: -6.0, tone: 0.95, free: true },
                { shape: 58, x: 2.4, z: -9.6, tone: 0.92, free: true },
-               { shape: 58, edge: 0.20, z: 2.2, tone: 0.97, scale: 1.05, fore: 1, keep: true, seed: 4.0 },
-               /* (round 35: and a heap of what fell from the shelves, on the
-                  flags a stride from you -- wfBoneHeap, seed > 19.5) */
-               { shape: 59, edge: 0.60, z: 2.9, tone: 0.97, scale: 1.15, fore: 1, keep: true, seed: 21.0 }] },
+               ...CRYPT_NEAR] },
       { subject: 'charnel', swap: [[57, 59], [15, 59]], count: 3, cam: { y: -0.20, z: -0.4, fov: 3 },
         near: [{ shape: 58, x: -2.6, z: -4.3, tone: 0.95, free: true },
                { shape: 59, edge: 0.78, z: -3.2, tone: 0.96 },
                { shape: 58, x: 2.8, z: -9.5, tone: 0.92, free: true },
-               { shape: 58, edge: 0.20, z: 2.2, tone: 0.97, scale: 1.05, fore: 1, keep: true, seed: 4.0 },
-               /* (round 35: and a heap of what fell from the shelves, on the
-                  flags a stride from you -- wfBoneHeap, seed > 19.5) */
-               { shape: 59, edge: 0.60, z: 2.9, tone: 0.97, scale: 1.15, fore: 1, keep: true, seed: 21.0 }] },
+               ...CRYPT_NEAR] },
     ],
     names: [
       [/ossuar|bone|skull/i, 2],
@@ -3078,21 +3132,6 @@ export class Atmosphere {
       const a = pal.rugK.ahead ?? 6.0;
       pal.rug = { x: (c.x ?? 0) + dx * a + (pal.rugK.dx ?? 0), z: (c.z ?? 9.6) + dz * a,
                   hw: pal.rugK.hw ?? 2.2, hd: pal.rugK.hd ?? 1.5 };
-    }
-    /* ROUND 35: WHAT LIES ON THE NEAR FLOOR (nearFloor.litter) -- a patch of
-       the floor in front of the eye, placed as the carpet is, strewn with
-       what the room drops: the crypt's long bones and fallen rubble
-       (FLOOR_FRAG, uLitter). None in a room that does not ask. */
-    pal.litter = null;
-    const lt = pal.nearFloor && pal.nearFloor.litter;
-    if (lt && pal.cam) {
-      const c = pal.cam;
-      let dx = (c.lookX ?? 0) - (c.x ?? 0), dz = (c.lookZ ?? 0) - (c.z ?? 9.6);
-      const dl = Math.hypot(dx, dz) || 1;
-      dx /= dl; dz /= dl;
-      const a = lt.ahead ?? 6.0;
-      pal.litter = { x: (c.x ?? 0) + dx * a - dz * (lt.dx ?? 0), z: (c.z ?? 9.6) + dz * a + dx * (lt.dx ?? 0),
-                     hw: lt.hw ?? 3.0, hd: lt.hd ?? 2.0, k: lt.k ?? 1 };
     }
     this.backdrop.build(pal, () => this._rand());
     // material is structural, like the geometry: it swaps with the room rather
@@ -3795,8 +3834,6 @@ export class Atmosphere {
       L.nearDark = T.nearDark;
       L.nearFloor = T.nearFloor;        // (round 31: the near floor goes with the room)
       L.rug = T.rug;                    // (round 25 graft: the carpet goes with the room)
-      L.litter = T.litter;              // (round 35: and what lies on its near floor)
-      L.ribs = T.ribs;                  // (round 35: and the crypt's vault drawn)
       L.straw = T.straw;                // (round 28 graft: and the kennels' straw)
       this.backdrop.applyPalette(L);
       this._applyGrade(L, k);

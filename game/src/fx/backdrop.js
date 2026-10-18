@@ -614,7 +614,9 @@ export const ROOM_VARIANTS = [
   { mat: 'floor', defines: { MM_FLOORX: 1, MM_R25W: 0, MM_PAT: 2, MM_CEIL: 0 }, wings: ['pumpkin'] },
   { mat: 'floor', defines: { MM_FLOORX: 1, MM_R25W: 0, MM_PAT: 14, MM_CEIL: 0 }, wings: ['pumpkin'] },
   { mat: 'ceil', defines: { MM_FLOORX: 2, MM_PAT: 15, MM_CEIL: 1 }, wings: ['attic'] },
-  { mat: 'ceil', defines: { MM_FLOORX: 0, MM_PAT: 4, MM_CEIL: 1 }, wings: ['ballroom', 'bathhouse', 'crypt', 'foyer', 'heart'] },
+  { mat: 'ceil', defines: { MM_FLOORX: 0, MM_PAT: 4, MM_CEIL: 1 }, wings: ['ballroom', 'bathhouse', 'foyer', 'heart'] },
+  /* (round 35 graft: the Crypt's rib vault, its own pattern -- SCHEELITE's) */
+  { mat: 'ceil', defines: { MM_FLOORX: 1, MM_PAT: 17, MM_CEIL: 1 }, wings: ['crypt'] },
   { mat: 'ceil', defines: { MM_FLOORX: 0, MM_PAT: 7, MM_CEIL: 1 }, wings: ['ballroom', 'foyer'] },
   { mat: 'ceil', defines: { MM_FLOORX: 0, MM_PAT: 3, MM_CEIL: 1 }, wings: ['bathhouse', 'foyer', 'nursery', 'sleeping', 'study'] },
   { mat: 'ceil', defines: { MM_FLOORX: 0, MM_PAT: 5, MM_CEIL: 1 }, wings: ['bathhouse'] },
@@ -884,7 +886,6 @@ export class Backdrop {
       uRugDye: { value: 0 },
       uNearCalm: { value: 0 },
       uNearClean: { value: 0 },          // (round 35: nearFloor.clean)
-      uRibK: { value: 0 },               // (round 35: the crypt's vault drawn, pal.ribs -- ceiling only)
       /* THE PASSAGES' OPEN DOORS (round 22 graft): the wedge of lamplight
          each one's slit throws across the floor -- the slit's world x and z,
          and the unit direction into the room, and in uWedgeK how strong
@@ -902,11 +903,6 @@ export class Backdrop {
          variant reads it): world x and z of its centre, its half-width and
          half-depth in metres; z = 0, none */
       uRug: { value: new THREE.Vector4(0, 0, 0, 0) },
-      /* ROUND 35: what lies on the near floor (pal.litter): world x and z of
-         the patch's centre, its half-width and half-depth; z = 0, none; and
-         uLitterK what it is (1 the crypt's bones and rubble) */
-      uLitter: { value: new THREE.Vector4(0, 0, 0, 0) },
-      uLitterK: { value: 0 },
     });
 
     this.floorMat = new THREE.ShaderMaterial({
@@ -2185,6 +2181,10 @@ export class Backdrop {
         const o = out[out.length - 1];
         o.w *= it.hM / o.h; o.h = it.hM;
       }
+      /* (round 35 graft, SCHEELITE's: and its width in metres -- a litter of
+         bones on the Crypt's flags is wide and low, and no ratio of its
+         height says so. Read only where written.) */
+      if (it.wM !== undefined && out.length > n0) out[out.length - 1].w = it.wM;
       if (!it.keep && yields(it, out[out.length - 1])) out.pop();
     }
     return out.slice(0, MAX_PROPS);
@@ -2867,9 +2867,6 @@ export class Backdrop {
     f.uNearDark.value = p.nearDark ?? 0;
     if (p.rug) f.uRug.value.set(p.rug.x, p.rug.z, p.rug.hw, p.rug.hd);
     else f.uRug.value.set(0, 0, 0, 0);
-    /* (round 35: and what lies on the near floor -- pal.litter) */
-    if (p.litter) { f.uLitter.value.set(p.litter.x, p.litter.z, p.litter.hw, p.litter.hd); f.uLitterK.value = p.litter.k ?? 1; }
-    else { f.uLitter.value.set(0, 0, 0, 0); f.uLitterK.value = 0; }
     /* ROUND 31: THE NEAR FLOOR, one rule for any room that asks
        (pal.nearFloor -- see atmosphere.js NEAR FLOOR): how far its
        foreground falls, the pool of lamplight in front of the eye, the
@@ -2922,7 +2919,6 @@ export class Backdrop {
        shows the ceiling over a room's chandeliers showed it as a flat grey
        slab, where the wing's other rooms keep it dark. */
     c.uGain.value = (p.gain ?? 3.4) * 0.085 * (p.ceilGain ?? 1);
-    c.uRibK.value = p.ribs ?? 0;          // (round 35: the vault drawn rib by rib, the Crypt)
 
     const pr = this.propMat.uniforms;
     pr.uAlbedo.value.copy(p._propAlb);
@@ -3003,9 +2999,19 @@ export class Backdrop {
        clutter band -- whose foot was the seam -- lay across the near floor
        as a dark lid. With no near frame there is no seam and no lid.) */
     const noNear = p.nearFrame === false;
+    /* ROUND 35 GRAFT, THE FRAME BUDGET: a wing may let its FIGHT go without
+       the near frame (pal.fightFrame: false) -- its two side drapes and its
+       clutter band. Seen from the fight's own rig in the churchyard the
+       drapes are a dark ragged band at the frame's two edges, all but every
+       pixel of it under the chrome's border, its candles and its webs, and
+       the clutter band lies across the foot of the frame under the hand and
+       the Companion's panel: about 1 ms of FRAME_FRAG on the Deck, drawn to
+       be covered. Its empty rooms keep both. */
+    const noFightFrame = p.fightFrame === false && p.isMainRoom;
     for (let i = 0; i < this.frames.length; i++) {
       const m = this.frames[i];
-      m.visible = this._frameShow[i] !== false && !((openSky || glassRoof) && i === 2) && !noNear;
+      m.visible = this._frameShow[i] !== false && !((openSky || glassRoof) && i === 2) && !noNear
+               && !(noFightFrame && i !== 2);
       m.material.uniforms.uColor.value.copy(p._frame);
       m.material.uniforms.uRim.value.copy(p._rim);
       m.material.uniforms.uAmount.value = p.frameAmount ?? 0.92;
