@@ -704,3 +704,121 @@
 }
 .lo-floor__ladder::before { left: 0; }
 .lo-floor__ladder::after { right: 0; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ROUND 36 GRAFT 5 -- THE LOBBY (both judges)
+   - the captions under The House and CLIMB UP were ~9 px faint italic: a
+     size up and in the parchment the board's body copy is in;
+   - the rope ladder pulled up short, its last rung clear above CLIMB UP,
+     hung from a gilt rim on the shelf's edge (it ran on down behind the
+     plate and was cut off by it);
+   - OBSIDIAN's toy chest against the trunk, beside KYANITE's trapdoor, and
+     the trapdoor warmed by the lantern between them;
+   - PASSWORD cut thicker into the plate's top edge, and the well under the
+     words given a candle-warm glow from inside, as if the lantern beside
+     the panel lit the enamel.
+   ═══════════════════════════════════════════════════════════════════════════ */
+.lo-view__plate .kit-plate__epithet,
+.lo-foot .kit-btn .lo-go__words > em {
+  font-size: 13.5px; line-height: 1.12; letter-spacing: .02em;
+  color: var(--kit-text); opacity: 1;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .95), 0 0 6px rgba(0, 0, 0, .6);
+}
+@media (min-height: 861px) {
+  .lo-view__plate .kit-plate__epithet, .lo-foot .kit-btn .lo-go__words > em { font-size: 14.5px; }
+}
+
+/* the ladder, pulled up: it hangs a few rungs from the shelf's edge and ends
+   on a rung, clear above CLIMB UP */
+.lo-floor__ladder {
+  bottom: auto;
+  height: calc(var(--lad-w) * 1.3);
+  -webkit-mask-image: none; mask-image: none;
+  filter: brightness(.86) drop-shadow(3px 5px 4px rgb(0 0 0 / .75));
+}
+/* its rails end in a whipped knot under the last rung */
+.lo-floor__ladder::before, .lo-floor__ladder::after { bottom: calc(var(--lad-w) * -.14); border-radius: 3px 3px 5px 5px; }
+/* the gilt rim on the shelf's edge the ladder hangs from: a brass strap with
+   a hook at each rail, the lanterns' light along its top */
+.lo-floor__ladder-rim {
+  position: absolute; z-index: 1;
+  left: -18%; right: -18%; top: var(--rim-y, 0px); height: 8px;
+  border-radius: 2px;
+  background:
+    radial-gradient(circle at 50% 55%, #fff1c8 0 1px, var(--kit-gold) 1.6px, var(--kit-gold-lo) 2.6px, transparent 3.2px) 17% 50% / 8px 8px no-repeat,
+    radial-gradient(circle at 50% 55%, #fff1c8 0 1px, var(--kit-gold) 1.6px, var(--kit-gold-lo) 2.6px, transparent 3.2px) 83% 50% / 8px 8px no-repeat,
+    linear-gradient(180deg, var(--kit-gold-hi), var(--kit-gold) 45%, var(--kit-gold-lo) 85%, #2a1a09);
+  box-shadow: 0 2px 3px rgb(0 0 0 / .8), 0 0 8px color-mix(in srgb, var(--kit-candle) 35%, transparent);
+  /* it hangs in the shelf's thrown shadow: polished a good deal brighter to
+     read as gilt there */
+  filter: brightness(1.85) saturate(1.1);
+}
+
+/* the trapdoor, warmed: the lantern beside it lights its boards */
+.lo-hatch {
+  background:
+    radial-gradient(80% 90% at 100% 30%, rgb(255 176 92 / .42), transparent 72%),
+    linear-gradient(90deg, rgb(0 0 0 / .5) 0 1.2%, transparent 1.6% 24%, rgb(0 0 0 / .5) 24.4% 25.6%, transparent 26% 49.4%, rgb(0 0 0 / .5) 49.6% 50.8%, transparent 51.2% 74.4%, rgb(0 0 0 / .5) 74.6% 75.8%, transparent 76.2% 98.4%, rgb(0 0 0 / .5) 98.8%),
+    url("../../assets/ui/kit/planks-warm.webp") 30% 40% / 420% auto;
+  filter: brightness(.8) saturate(1.02) sepia(.08);
+}
+
+/* the toy chest (OBSIDIAN's), against the trunk right of the lantern, on the
+   boards: planks with iron corners, its lid down, a brass hasp */
+.lo-crate {
+  --cr-w: calc(var(--fl-w) * .92);
+  position: absolute;
+  left: calc(var(--fl-w) * 1.44);
+  bottom: calc(clamp(16px, 2.4vh, 26px) + 2px - clamp(26px, 5.2vh, 52px));
+  width: var(--cr-w); height: calc(var(--cr-w) * .56);
+  border-radius: 2px;
+  background:
+    radial-gradient(70% 90% at 0% 20%, rgb(255 176 92 / .26), transparent 70%),
+    linear-gradient(90deg, #2a1a0c 0 6%, transparent 6% 94%, #2a1a0c 94%),
+    repeating-linear-gradient(180deg, transparent 0 calc(var(--cr-w) * .17), rgba(0, 0, 0, .55) calc(var(--cr-w) * .17) calc(var(--cr-w) * .17 + 2px)),
+    linear-gradient(180deg, rgba(255, 200, 140, .14), transparent 40%, rgba(0, 0, 0, .3)),
+    url("../../assets/ui/kit/walnut.webp") 30% 40% / 260px auto,
+    #4a2f1a;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .6), inset 0 0 14px rgba(0, 0, 0, .5);
+  filter: drop-shadow(5px 8px 7px rgba(0, 0, 0, .65));
+}
+.lo-crate::before {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  background:
+    linear-gradient(#3a3532, #3a3532) 0 0 / 12px 3px no-repeat, linear-gradient(#3a3532, #3a3532) 0 0 / 3px 12px no-repeat,
+    linear-gradient(#3a3532, #3a3532) 100% 0 / 12px 3px no-repeat, linear-gradient(#3a3532, #3a3532) 100% 0 / 3px 12px no-repeat,
+    linear-gradient(#3a3532, #3a3532) 0 100% / 12px 3px no-repeat, linear-gradient(#3a3532, #3a3532) 0 100% / 3px 12px no-repeat,
+    linear-gradient(#3a3532, #3a3532) 100% 100% / 12px 3px no-repeat, linear-gradient(#3a3532, #3a3532) 100% 100% / 3px 12px no-repeat;
+}
+.lo-crate__lid {
+  position: absolute; left: -4px; right: -4px; top: -7px; height: 9px;
+  border-radius: 2px;
+  background: linear-gradient(180deg, #8a6440, #5a3c22 50%, #2e1d0e);
+  box-shadow: 0 2px 2px rgba(0, 0, 0, .55);
+}
+.lo-crate__hasp {
+  position: absolute; left: 50%; top: -3px; width: 12px; height: 15px; translate: -50% 0;
+  border-radius: 2px 2px 5px 5px;
+  background: radial-gradient(circle at 50% 70%, #1a0f06 0 2px, transparent 2.5px), linear-gradient(180deg, #f0d79a, #b08a4a 50%, #6b4c24);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, .7);
+}
+
+/* PASSWORD, cut thicker */
+.lo-plate:not(.lo-plate--pick) > .lo-plate__k {
+  font-size: 12.5px; letter-spacing: .28em;
+  color: var(--kit-gold-hi);
+  -webkit-text-stroke: .45px currentColor;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, .95), 0 1px 0 color-mix(in srgb, var(--kit-gold-hi) 30%, transparent), 0 0 8px color-mix(in srgb, var(--kit-candle) 25%, transparent);
+}
+/* the well, lit from inside by the lantern's candle (under the words: the
+   plate's filter makes it a stacking context, so z-index -1 sits on the
+   plate's enamel and below its type) */
+.lo-plate:not(.lo-plate--pick)::before {
+  content: ''; position: absolute; z-index: -1; pointer-events: none;
+  inset: calc(var(--plate-h) * .13) calc(var(--plate-h) * .42);
+  border-radius: calc(var(--plate-h) * .5);
+  background:
+    radial-gradient(60% 75% at 50% 62%, rgb(255 176 92 / .28), rgb(255 150 70 / .09) 60%, transparent 85%),
+    radial-gradient(30% 60% at 92% 50%, rgb(255 176 92 / .14), transparent 80%);
+  box-shadow: inset 0 0 14px rgb(255 168 84 / .16);
+}
