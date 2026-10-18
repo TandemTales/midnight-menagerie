@@ -87,12 +87,17 @@ fountain and chairs, VIVIANITE's potting bench, a lit stage in the fight; the
 Greenhouse fight back under BASE. Battery 106 gates green but the sprites halo
 (on the round's merge); the graft's region gates, chrome, steam-deck,
 link-queue and seam green on dev; the other 13 wings pixel-identical.
-**OPEN: the Hedge fight is +1.2 ms over BASE (15.51 ms, at the 15.5 line),
-the Kennels +0.4** -- the graft's notes (`C:/UILOOP/r34/graft/NOTES.md`) name
-the next cuts: the hem's stems and the moonlight on the clumps. Make it item
-0 of the next rooms round. **NEXT: round 35** from survey 5: the attic, crypt,
-heart, sleeping quarters and graveyard with the near floor; then the last web
-controls and the crowded hand.
+**The Hedge fight's frame is FIXED** (`46c95755`, fix/hedge-frame): paired
+-0.06 ms vs BASE (was +1.84); the cost was the maze's painted sky running the
+whole yew face only to be mixed away. gpuprof does NOT pin the render-scale
+governor -- check drawW (memory). **ROUND 35 IS RUNNING (2026-10-17)**
+(`BRIEF-r35.md`, `round-35.args.json`, base `46c95755`): the Attic, the
+Sleeping Quarters, the Graveyard, the Crypt; SCHEELITE / ANTHRACITE / SODALITE
+in `C:/UILOOP/r35/wt/r35-rooms-{a,b,c}` (ports 9261-9263), GROSGRAIN
+baselines in `C:/UILOOP/r35/judging/r35/rooms/GROSGRAIN/` (6 of 6, looked
+at). If builders stop at a usage limit, relaunch as a NEW run with each
+builder's `resume` note (round 34 did this twice). Then: the Heart, the last
+web controls and the crowded hand.
 
 **ROUND 33 AND ITS GRAFT ARE MERGED, VERIFIED AND PUSHED (2026-10-16):**
 graft `9d008119`. COBALT +1.59 (`531126e4`): no running line under 11 px at
