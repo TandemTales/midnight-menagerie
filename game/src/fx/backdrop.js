@@ -3000,16 +3000,18 @@ export class Backdrop {
        as a dark lid. With no near frame there is no seam and no lid.) */
     const noNear = p.nearFrame === false;
     /* ROUND 35 GRAFT, THE FRAME BUDGET: a wing may let its FIGHT go without
-       the near frame's two side drapes (pal.fightDrapes: false). Seen from
-       the fight's own rig in the churchyard they are a dark ragged band at
-       the frame's two edges, all but every pixel of it under the chrome's
-       border, its candles and its webs -- 0.5 ms of FRAME_FRAG on the Deck
-       drawn to be covered. Its empty rooms keep them. */
-    const noDrape = p.fightDrapes === false && p.isMainRoom;
+       the near frame (pal.fightFrame: false) -- its two side drapes and its
+       clutter band. Seen from the fight's own rig in the churchyard the
+       drapes are a dark ragged band at the frame's two edges, all but every
+       pixel of it under the chrome's border, its candles and its webs, and
+       the clutter band lies across the foot of the frame under the hand and
+       the Companion's panel: about 1 ms of FRAME_FRAG on the Deck, drawn to
+       be covered. Its empty rooms keep both. */
+    const noFightFrame = p.fightFrame === false && p.isMainRoom;
     for (let i = 0; i < this.frames.length; i++) {
       const m = this.frames[i];
       m.visible = this._frameShow[i] !== false && !((openSky || glassRoof) && i === 2) && !noNear
-               && !(noDrape && i < 2);
+               && !(noFightFrame && i !== 2);
       m.material.uniforms.uColor.value.copy(p._frame);
       m.material.uniforms.uRim.value.copy(p._rim);
       m.material.uniforms.uAmount.value = p.frameAmount ?? 0.92;

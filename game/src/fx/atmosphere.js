@@ -698,8 +698,9 @@ export const REGIONS = {
                     { shape: 69, edge: 0.83, z: 3.6, tone: 0.95, scale: 1.0, seed: 3.0, fore: 1, keep: true }] },
     r25w: 4,
     /* (round 35 graft, the frame budget: the fight goes without the near
-       frame's side drapes -- under the chrome's border -- see Backdrop) */
-    fightDrapes: false,
+       frame -- its drapes under the chrome's border, its clutter band under
+       the hand -- see Backdrop) */
+    fightFrame: false,
     /* (round 28: the moon on the lawn at two-thirds -- [0.62, 0.86, 1.05]
        lifted the turf to "a flat milky grey-green field", both judges; the
        lawn is a true dark now, with its blades, tufts and leaf litter lit) */
