@@ -90,14 +90,16 @@ link-queue and seam green on dev; the other 13 wings pixel-identical.
 **The Hedge fight's frame is FIXED** (`46c95755`, fix/hedge-frame): paired
 -0.06 ms vs BASE (was +1.84); the cost was the maze's painted sky running the
 whole yew face only to be mixed away. gpuprof does NOT pin the render-scale
-governor -- check drawW (memory). **ROUND 35 IS RUNNING (2026-10-17)**
-(`BRIEF-r35.md`, `round-35.args.json`, base `46c95755`): the Attic, the
-Sleeping Quarters, the Graveyard, the Crypt; SCHEELITE / ANTHRACITE / SODALITE
-in `C:/UILOOP/r35/wt/r35-rooms-{a,b,c}` (ports 9261-9263), GROSGRAIN
-baselines in `C:/UILOOP/r35/judging/r35/rooms/GROSGRAIN/` (6 of 6, looked
-at). If builders stop at a usage limit, relaunch as a NEW run with each
-builder's `resume` note (round 34 did this twice). Then: the Heart, the last
-web controls and the crowded hand.
+governor -- check drawW (memory). **ROUND 35 IS MERGED, VERIFIED AND PUSHED (2026-10-18); ITS GRAFT IS IN
+FLIGHT:** ANTHRACITE +1.73, 2 of 2 (`315f052e`, 6.28 vs GROSGRAIN 4.55):
+the near floor in the Attic, Sleeping Quarters, Graveyard and Crypt. Battery
+106 gates green but the sprites halo; the other 13 wings identical. Frame vs
+BASE (quiet machine): Graveyard 15.51 (+0.4, at the line), Sleeping 13.95,
+Crypt 11.13, Attic 12.15. Graft (`GRAFT-r35.md`) building in
+`C:/UILOOP/r35/wt/r35-graft` (port 9264, BASE 9364 from `C:/UILOOP/r35/base`),
+notes into `C:/UILOOP/r35/graft/`: the Graveyard's frame, SCHEELITE's vault
+ribs and iron beds, SODALITE's porch and carved sarcophagi. Then: the Heart,
+the last web controls and the crowded hand.
 
 **ROUND 33 AND ITS GRAFT ARE MERGED, VERIFIED AND PUSHED (2026-10-16):**
 graft `9d008119`. COBALT +1.59 (`531126e4`): no running line under 11 px at
