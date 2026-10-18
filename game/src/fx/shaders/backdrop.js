@@ -4627,6 +4627,7 @@ float wLobes(vec2 c, float jit, float sd, out float id, out vec2 off){
    light); lit 0..1 how much of this pixel is the UPPER face of a big spray,
    which is all the moon finds on a crown. */
 float gYewI = 0.5;     // (round 29 graft, BOLUS's: the spray's own hash, for its colour)
+float gYewDome = 0.0;  // (round 34 graft: the upper face of a clump, for the moon on it)
 /* ROUND 31 GRAFT (SAFFLOWER's, all three judges: "the fine, small-leaf
    clipped hedge texture ... reads as real topiary, not a scale or cobble
    tile -- take it wholesale"). A yew that has been sheared is not domes: it
@@ -4670,18 +4671,25 @@ float yewClipF(vec2 p, float px, float sd, out float tone, out float lit, out fl
      each a swell of leaf lit on its upper face by the moon and creased dark
      where it meets the next -- the depth a painted hedge has (mainMenu.png's
      shrubs) and a tuft field at one scale does not. */
-  float i3 = 0.5;
-  vec2 o3 = vec2(0.0);
-  /* (the frame budget: warped by the swell already tapped, n0, not two
-     taps of its own) */
-  vec2 pm = pw + vec2(n0 - 0.5, 0.5 - n0)*0.60;
-  float a3 = wLobes(vec2(pm.x*0.96 + pm.y*0.28, -pm.x*0.28 + pm.y*0.96)/vec2(0.66, 0.44), 0.98, sd + 3.7, i3, o3);
-  float massL = smoothstep(-0.34, 0.40, a3);
-  float upF = clamp(0.5 + o3.y*1.3, 0.0, 1.0);
-  tone *= mix(0.80, 1.0, massL)*(0.86 + 0.30*upF*massL);
-  lit *= 0.62 + 0.55*upF*massL;
+  /* (round 34 GRAFT, VIVIANITE's clumps in place of the first pass's lobes
+     -- J1 and J3: "rounder, lumpy clipped leaf mass with lit domes and
+     shadowed undercuts"; the lobes' lit tops, foreshortened on the side
+     walls, read as the "flame/stalagmite spikes" J2 named. Each clump
+     swells out of the hedge irregular in size and warped off any grid, its
+     upper face taking the sky, its underside in the crease under it, low in
+     contrast at the crease, and most where the hedge has grown out (the
+     broad patch, n0) -- its upper face handed on as gYewDome) */
+  vec2 co;
+  vec2 cp = vec2(p.x + 0.22*sin(p.y*2.1 + sd), p.y + 0.14*sin(p.x*1.7 + sd*2.0));
+  float cid3;   // (the nearest of four jittered lobes: one cell's rows read as a tile, measured 0.04 ms dearer)
+  float cl = wLobes(cp/vec2(0.66, 0.46), 0.95, sd*5.1 + 3.0, cid3, co);
+  float clB = smoothstep(-0.02, 0.48, cl + (tone - 0.85)*0.25);
+  float clU = smoothstep(-0.45, 0.50, co.y);
+  float clL = mmLod(0.50, px)*mix(0.35, 1.0, smoothstep(0.30, 0.62, n0));
+  tone *= mix(1.0, mix(0.72, 1.0, clB)*(0.86 + 0.28*clU), clL);
+  gYewDome = clU*clB*clL;
   cidOut = n0;     // (the broad patch is the mass's own swell: no tap of its own)
-  return (m0 - 0.45)*0.10 + a*0.022*l1 + b*0.008*l2 + a3*0.018;
+  return (m0 - 0.45)*0.10 + a*0.022*l1 + b*0.008*l2 + 0.020*clB*clL;
 }
 float yewFace(vec2 p, float px, float sd, out float tone, out float lit){
   float cid;
@@ -4782,29 +4790,35 @@ float mmSeg2V(vec2 p, vec2 a, vec2 b, float r){
    is the tallest clump. Continuous in u (every dome falls to nothing at its
    cell's edge), so its coverage and its pen line are smooth. */
 float yewRagW(float u, float sd, float amp){
-  /* (round 34, second pass: the silhouette read at the far run's
-     distance -- 12-20 m off a 0.2 m clump is a ruled line with a fur on
-     it. So the crown is built in three sizes ON one another: great swells
-     two strides across, each its own height (and a few slumped, where the
-     old wood has died back), the clumps a stride across grown out of them,
-     and the sprays of a hand on those -- a broken leaf line at every
-     distance the maze is seen from) */
-  float x0 = u/1.85 + sd*0.23;
-  float f0 = fract(x0), h0 = mmHash11(floor(x0)*0.91 + sd*0.7);
-  float d0 = sqrt(max(1.0 - 4.0*(f0 - 0.5)*(f0 - 0.5), 0.0))*(0.18 + 0.82*h0*h0)*amp;
-  float x1 = u/0.66 + sd*0.37;
-  float f1 = fract(x1), h1 = mmHash11(floor(x1)*1.37 + sd);
-  float d1 = sqrt(max(1.0 - 4.0*(f1 - 0.5)*(f1 - 0.5), 0.0))*(0.20 + 0.80*h1)*amp*0.42 + d0*0.80;
-  float x2 = u/0.27 + 0.5 + sd*0.71;
-  float f2 = fract(x2), h2 = mmHash11(floor(x2)*2.71 + sd*1.3);
-  float d2 = sqrt(max(1.0 - 4.0*(f2 - 0.5)*(f2 - 0.5), 0.0))*(0.15 + 0.50*h2)*amp*0.22 + d1*0.90;
-  float x3 = u/0.085 + sd*1.9;
-  float f3 = fract(x3), h3 = mmHash11(floor(x3)*5.19 + sd*2.1);
-  float sp = max(1.0 - abs(f3 - 0.5)*2.4, 0.0)*step(0.70, h3)*(0.35 + 0.65*h3)*min(amp, 0.8)*0.38;
-  float sag = 0.060*sin(u*0.37 + sd) + 0.034*sin(u*0.93 + sd*1.7);
-  /* the edge feathered with single leaves, a few centimetres, every way */
-  float fth = (abs(fract(u/0.034 + 0.4*sin(u*7.0 + sd)) - 0.5) - 0.25)*0.034;
-  return max(max(d0, max(d1, d2)), d1*0.70 + sp) + sag + fth - 0.45*amp;
+  /* (round 34 GRAFT, VIVIANITE's crown -- J1 and J3: "rounder, lumpy
+     clipped tops", where CELESTINE's metre-high swells read as "crags or a
+     mountain range" (J1), "flame/stalagmite spikes" (J2). Clumps a half
+     metre across swelling ROUND over the cut, each its own width and height,
+     the neighbours overlapping; small sprays crowding between them; a
+     leader shoot standing up out of one cell in five. amp scales the whole
+     crown -- a far run is seen from further off, so its clumps are taller
+     to read -- and CELESTINE's sag and feathered leaf edge are kept.) */
+  float r = 0.0;
+  float q1 = u/0.55 + sd*1.37;
+  float i1 = floor(q1), f1 = fract(q1);
+  for (int k = -1; k <= 1; k++){
+    float ii = i1 + float(k);
+    float hh = mmHash11(ii*1.71 + sd);
+    float cx = float(k) + 0.5 + (hh - 0.5)*0.55;
+    float hw = 0.52 + 0.42*mmHash11(ii*3.31 + sd*0.7);
+    float x = (f1 - cx)/hw;
+    r = max(r, sqrt(max(1.0 - x*x, 0.0))*(0.04 + 0.26*hh*hh + 0.05*hh));
+  }
+  float q2 = u/0.21 + sd*2.13;
+  float f2 = fract(q2), h2 = mmHash11(floor(q2)*2.77 + sd);
+  r = max(r, sqrt(max(1.0 - 4.0*(f2 - 0.5)*(f2 - 0.5), 0.0))*(0.025 + 0.050*h2) + r*0.55);
+  float q3 = u/0.13 + sd*3.71;
+  float f3 = fract(q3), h3 = mmHash11(floor(q3)*5.93 + sd);
+  float tip = max(1.0 - abs(f3 - 0.5 - (h3 - 0.5)*0.3)/0.45, 0.0);
+  r = max(r, step(0.80, h3)*sqrt(tip)*(0.06 + 0.12*fract(h3*13.7)) + r*0.75);
+  float sag = 0.040*sin(u*0.37 + sd) + 0.022*sin(u*0.93 + sd*1.7);
+  float fth = (abs(fract(u/0.034 + 0.4*sin(u*7.0 + sd)) - 0.5) - 0.25)*0.030;
+  return (r - 0.10)*amp + sag + fth;
 }
 /* THE HEDGE MAZE'S WALLS. Clipped yew 3.2 m high -- the yew runs' (shape
    28) own height, so a run across the way and the walls either side are one
@@ -4829,8 +4843,13 @@ float hedgeWallH(vec2 q, float qpx, out float occ){
   /* (round 34, second pass: the swells a metre high -- at 0.2 m the far
      run's crown read ruled from twenty metres; the court's far hedge,
      furthest off, the most -- its piers and their balls stand up out of it) */
-  float ragA = court > 0.5 ? 1.70 : (far > 0.5 ? 0.85 : 0.75);
-  float top = HH + yewRagW(u, sd, ragA);
+  /* (round 34 graft: VIVIANITE's rounder clumps, a third taller on the
+     far runs and a half on the court's far hedge, which is furthest off) */
+  float ragA = court > 0.5 ? 1.50 : (far > 0.5 ? 1.30 : 1.00);
+  /* (round 34 graft, the frame budget: the crown only where it can be --
+     every use of it below is in its top metre, and under that the hedge is
+     covered whatever it is; it ran on every pixel of every hedge) */
+  float top = HH + (q.y > HH - 0.95 ? yewRagW(u, sd, ragA) : 0.0);
   /* the finials on the far hedge: a ball on a neck or a cone; in the court,
      a clipped ball on every pier, all alike */
   float fp = court > 0.5 ? 3.4 : 6.5;
@@ -4845,7 +4864,9 @@ float hedgeWallH(vec2 q, float qpx, out float occ){
   /* (round 34: a finial stands on the crown where it is, not on a ruled
      line the crown has grown up round) */
   float finY = HH;
-  if (far > 0.5) {
+  /* (round 34 graft, the frame budget: only up where a finial can be -- the
+     lowest one's foot is a hand under the cut) */
+  if (far > 0.5 && q.y > HH - 0.60) {
     finY += max(yewRagW(u - fxl, sd, ragA), -0.10);
     vec2 c = vec2(fxl, q.y - finY);
     float nk = mmBox(c - vec2(0.0, 0.10), vec2(0.20, 0.16), 0.06);
@@ -4892,11 +4913,20 @@ float hedgeWallH(vec2 q, float qpx, out float occ){
      lower hem hangs ragged a hand or two over the turf, the face falls into
      its own shade for most of a metre above it, and under the hem is the
      old wood of the hedge -- dark stems in the dark of its inside */
-  float hemY = 0.20 + 0.16*mmNoise(vec2(u*2.6 + sd, 0.5)) + 0.035*sin(u*9.0 - sd) + 0.02*sin(u*23.0 + sd);
-  float foot = smoothstep(hemY + 0.80, hemY + 0.02, q.y);
-  float hemB = smoothstep(hemY + 0.5*qpx, hemY - 0.5*qpx, q.y);
-  float stx = u/0.23 + 0.25*sin(u*1.3 + q.y*4.0 + sd);
-  float stem = hemB*(1.0 - smoothstep(0.035, 0.035 + max(qpx/0.23, 0.02)*1.5, abs(fract(stx) - 0.5)))*step(0.45, mmHash11(floor(stx) + sd));
+  /* (round 34 graft, J1: "break the back hedge's long straight lower edge
+     with a root shadow and gaps" -- the hem hangs to the turf in places and
+     stands a knee high in others, a stride or two at a time, so the foot is
+     broken by the dark old wood showing under it) */
+  /* (...and the foot only in the metre and a half where it is) */
+  float foot = 0.0, hemB = 0.0, stem = 0.0;
+  if (q.y < 1.50) {
+    float hemY = 0.08 + 0.42*smoothstep(0.30, 0.80, 0.5 + 0.5*sin(u*0.85 + sd*1.3)*sin(u*0.37 + sd*2.1))
+               + 0.10*mmNoise(vec2(u*2.6 + sd, 0.5)) + 0.035*sin(u*9.0 - sd) + 0.02*sin(u*23.0 + sd);
+    foot = smoothstep(hemY + 0.80, hemY + 0.02, q.y);
+    hemB = smoothstep(hemY + 0.5*qpx, hemY - 0.5*qpx, q.y);
+    float stx = u/0.23 + 0.25*sin(u*1.3 + q.y*4.0 + sd);
+    stem = hemB*(1.0 - smoothstep(0.035, 0.035 + max(qpx/0.23, 0.02)*1.5, abs(fract(stx) - 0.5)))*step(0.45, mmHash11(floor(stx) + sd));
+  }
   h -= foot*0.30 + hemB*(1.0 - stem)*0.12;
   /* a court pier stands proud of the hedge between the niches, its sides
      turning, and its ball is a dome of clipped yew */
@@ -4920,6 +4950,10 @@ float hedgeWallH(vec2 q, float qpx, out float occ){
   float crownB = smoothstep(top - 0.55, top - 0.06, q.y);
   gWLit = crownB * lit * hedge * 0.85
         + finC * court * smoothstep(-0.10, 0.45, bq.y) * lit * 0.8;
+  /* (round 34 graft, VIVIANITE's: and the upper face of every clump down the
+     face takes a share of it, falling off toward the dark foot -- lit domes
+     over shadowed undercuts, a mass lit from above) */
+  gWLit += 0.24*gYewDome*smoothstep(0.6, HH - 0.4, q.y)*hedge*(1.0 - foot)*(0.6 + 0.4*lit);
   float solidM = max(hedge, corr);
   /* the niches (the court only): an arch 1.24 m wide cut 0.7 m into the yew
      in every bay between the piers, dark inside, and in it a statue on its
@@ -10171,7 +10205,9 @@ float kennelWallH(vec2 q, float qpx, out float occ){
         col = mix(col, vec3(0.70, 0.86, 0.40)*(lum*2.0 + 0.03), eye);
         float nose = KCV(-(length(hq - vec2(0.0, -0.13)) - 0.022))*dogOn*step(DT, q.y);
         col = mix(col, vec3(0.01), nose);
-        emitW += eye*1.8;
+        /* (round 34 graft, J2: GLAUCONITE's "glowing eyes in the dark stall
+           gates" -- the eyes catch the lantern brighter, in the darker stalls) */
+        emitW += eye*2.8;
       }
       /* the bars over the half door, round iron catching the lantern */
       float barZ = step(DT + 0.05, q.y)*step(q.y, TOPY + 0.26)*inFront;
@@ -10237,7 +10273,11 @@ float kennelWallH(vec2 q, float qpx, out float occ){
          and light"), a warm pool down every third pair of stalls */
       float lpI0 = floor((u + SW*1.5)/(SW*3.0));
       float lpx0 = u + SW*1.5 - (lpI0 + 0.5)*SW*3.0;
-      emitW += 0.10*exp(-length(vec2(lpx0*0.45, (q.y - 1.6)*0.70)))*(door*1.4 + bar + hr + edge*0.5 + 0.20);
+      /* (round 34 GRAFT, GLAUCONITE's: a pool and not a wash -- at door*1.4
+         it laid the "overall brown-grey haze" both survey-5 judges named over
+         every door, and the dark of the stalls the dogs' eyes glint in went
+         with it) */
+      emitW += 0.07*exp(-length(vec2(lpx0*0.55, (q.y - 1.6)*0.80)))*(door*0.8 + bar + hr + edge*0.5 + 0.10);
       /* the water bowl at the door, enamel */
       float bowlD = max(length(vec2(sx - 0.45, (q.y - 0.06)*2.4)) - 0.16, -q.y);
       float bowl = KCV(-bowlD)*(1.0 - open);
@@ -13654,9 +13694,30 @@ void main(){
         float lane = w.x/1.4 + 0.25;
         float st = smoothstep(0.46, 0.54, abs(fract(lane) - 0.5)*2.0);
         earth *= 0.30;
+#if MM_PAT == 13
+        /* (round 34 graft, VIVIANITE's: the lanes a step up, 0.20 -> 0.30 --
+           under the house's tooth the mown stripes had gone, and the near
+           lawn was a flat dark) */
+        pat = 0.50 + (tuft*0.20 + blade*0.20)*(1.0 - earth) - earth*0.14 + (st - 0.5)*0.30;
+#else
         pat = 0.50 + (tuft*0.20 + blade*0.20)*(1.0 - earth) - earth*0.14 + (st - 0.5)*0.20;
+#endif
         cellv = 0.36 + 0.30*pch + 0.18*st;
         turf = 1.0 - earth*0.65;
+#if MM_PAT == 13
+        /* ROUND 34 GRAFT, GLAUCONITE's (all three judges: "light and dress
+           the near lawn"; the brief's "turf with tone and edges"). A maze
+           untended since the house went quiet: the stripes half grown out,
+           rank grass a stop darker in broad swathes (one slow tap, in metres
+           -- it survives any distance), and leaves blown across the near turf,
+           each drawn while it is two pixels long */
+        {
+          float swM = mmNoise(w*vec2(0.11, 0.17) + uSeed*2.3);
+          pat += (swM - 0.5)*0.34;
+          /* (round 34 graft: GLAUCONITE's blown leaves are not kept -- the
+             maze fight's frame budget; the swathes are one slow tap) */
+        }
+#endif
       }
       if (uPattern > 13.5) {
         /* 14 THE PUMPKIN PATCH (round 22): tilled earth, and the vines
@@ -14492,7 +14553,10 @@ void main(){
        straw lies in HEAPS a stride or two across, a matted golden mass
        thick with stalks, darker into its own shadow at the edge, with a
        ring of loose stalks round it */
-    float hpN = mmNoise(w*0.85 + 5.3)*0.75 + mmNoise(w*2.3 - 1.9)*0.25;
+    /* (round 34 graft, the frame budget: one tap -- the second octave was a
+       noise on every pixel of the kennels' floor, +0.8 ms over BASE with
+       the heaps' stalks) */
+    float hpN = mmNoise(w*0.85 + 5.3)*0.88 + 0.06;
     float heap = smoothstep(0.62, 0.70, hpN)*uStraw;
     float heapRim = smoothstep(0.54, 0.63, hpN)*(1.0 - heap)*uStraw;
     if (heap > 0.001) {
@@ -16926,8 +16990,13 @@ float wfBed(vec2 q, float px, float seed, float kq, bool paint){
   dAll = min(dAll, soil);
   /* (round 34: the bed planted solid -- ghMassL -- the back layer behind
      the specimen crowns) */
-  float shM;
-  float mB = max(ghMassL(q, q.x, CT - 0.01, 0.62, 0.40, 0.92, seed*1.31 + 0.2, px, shM), CT + 0.035 - q.y);
+  /* (round 34 graft, item 0: the front layer first, and the back one only
+     where the front does not already cover the pixel -- painted in the same
+     order as before, so what shows is what showed) */
+  float shM, shMF;
+  float mF = max(ghMassL(q, q.x, CT - 0.01, 0.44, 0.22, 0.50, seed*2.71 + 0.6, px, shMF), CT + 0.035 - q.y);
+  float mB = 1e3;
+  if (mF > -max(px, 1e-5)) mB = max(ghMassL(q, q.x, CT - 0.01, 0.62, 0.40, 0.92, seed*1.31 + 0.2, px, shM), CT + 0.035 - q.y);
   if (mB < max(px, 1e-5)) ghLay(col, ink, mB, vec3(0.075, 0.180, 0.078)*shM, px, 0.80);
   dAll = min(dAll, mB);
   gGhFew = 1.0;
@@ -16942,8 +17011,7 @@ float wfBed(vec2 q, float px, float seed, float kq, bool paint){
   }
   gGhFew = 0.0;
   /* (round 34: ...and the front layer, low, over the crowns' feet) */
-  float mF = max(ghMassL(q, q.x, CT - 0.01, 0.44, 0.22, 0.50, seed*2.71 + 0.6, px, shM), CT + 0.035 - q.y);
-  if (mF < max(px, 1e-5)) ghLay(col, ink, mF, vec3(0.12, 0.25, 0.095)*shM, px, 0.85);
+  if (mF < max(px, 1e-5)) ghLay(col, ink, mF, vec3(0.12, 0.25, 0.095)*shMF, px, 0.85);
   dAll = min(dAll, mF);
   /* ivy, two trails over the coping and down the brick */
   for (int i = 0; i < 2; i++){
@@ -16968,6 +17036,102 @@ float wfBed(vec2 q, float px, float seed, float kq, bool paint){
   gWfMoon = 0.40*onPl + 0.55*wfIn(cop, px)*smoothstep(BH, CT, q.y);
   return min(dAll, min(body, cop));
 }
+
+#if MM_SH84
+/* ── 84 THE POTTING BENCH (round 34 graft, VIVIANITE's) ───────────────────────────────────────
+   Both survey-5 judges: the Greenhouse's near floor "empty", its beds "a few
+   tiny plants" -- and BRIEF-r34 names what a glasshouse keeps at your feet:
+   "a potting bench, terracotta pots, a watering can". A gardener's slatted
+   deal bench, grey with wet and wear, on four square legs with a pot board
+   between them: on its top a fern potted on, a stack of nested pots and a
+   trowel left in the soil; on the pot board pots laid on their sides; and on
+   the flags at its end a galvanised watering can with its rose. 1.15 m
+   nominal; the bench 1.6 m of it, the can beside. */
+/* (round 34 graft: a plain clay pot for the bench, one taper and its rim --
+   ghPot's five inlined copies and the fern's ghCrown took the Greenhouse
+   prop program's link from 9.6 s to 14.2 s, over linkprof's 12) */
+float bpPot(vec2 q, float H, float sd, float px, float kq, inout vec3 col, inout float ink){
+  float bw = H*0.40, tw = H*0.56;
+  float body = ghTaper(q, 0.0, H*0.84, bw, tw);
+  float rim = mmBox(q - vec2(0.0, H*0.915), vec2(tw*1.08, H*0.085), H*0.03);
+  float d = min(body, rim);
+  if (d < max(px, 1e-5)) {
+    vec3 clay = mix(vec3(0.66, 0.31, 0.17), vec3(0.58, 0.34, 0.24), mmHash11(sd*2.7));
+    float u = ghCyl(q.x, mix(bw, tw, clamp(q.y/H, 0.0, 1.0)));
+    vec3 bc = clay*(0.55 + 0.45*wfRound(u))*(1.0 + 0.30*kq*u)*(1.0 - 0.40*smoothstep(H*0.72, H*0.83, q.y));
+    ghLay(col, ink, body, bc, px, 0.95);
+    ghLay(col, ink, rim, clay*(0.70 + 0.40*wfRound(ghCyl(q.x, tw*1.08)))*(0.85 + 0.30*smoothstep(H*0.83, H, q.y)), px, 0.95);
+  }
+  return d;
+}
+float wfPotBench(vec2 q, float px, float seed, float kq, bool paint){
+  const float TOP = 0.84, HL = 0.78;
+  vec3 col = vec3(0.1);
+  float ink = 0.0;
+  float bx = q.x + 0.18;                     // the bench sits left of the quad's axis, the can right
+  float ax = abs(bx);
+  /* the frame: four legs, the apron under the top, the pot board, the top's
+     three boards */
+  float legs = min(mmBox(vec2(ax - (HL - 0.05), q.y - TOP*0.5), vec2(0.028, TOP*0.5), 0.004),
+                   mmBox(vec2(ax - (HL - 0.20), q.y - TOP*0.5 - 0.02), vec2(0.022, TOP*0.5 - 0.02), 0.004));
+  float apron = mmBox(vec2(bx, q.y - (TOP - 0.07)), vec2(HL - 0.03, 0.045), 0.004);
+  float board = mmBox(vec2(bx, q.y - 0.22), vec2(HL - 0.04, 0.018), 0.004);
+  float top = mmBox(vec2(bx, q.y - (TOP + 0.020)), vec2(HL, 0.022), 0.006);
+  float frame = min(min(legs, apron), min(board, top));
+  float d = frame;
+  vec3 deal = vec3(0.40, 0.31, 0.21)*(0.82 + 0.30*mmNoise(vec2(q.x*30.0, q.y*3.0) + seed));
+  if (frame < max(px, 1e-5)) {
+    ghLay(col, ink, legs, deal*(0.62 + 0.30*smoothstep(0.0, TOP, q.y)), px, 0.85);
+    ghLay(col, ink, apron, deal*0.62, px, 0.85);
+    ghLay(col, ink, board, deal*0.70, px, 0.85);
+    /* the top's boards: three, their joints and their worn front arris lit */
+    vec3 tc = deal*(0.95 + 0.35*smoothstep(TOP + 0.00, TOP + 0.042, q.y));
+    ghLay(col, ink, top, tc, px, 0.95);
+    float jt = abs(fract(bx/0.52 + 0.5) - 0.5)*0.52;
+    ink = max(ink, mmInkP(jt, px, 1.0)*wfIn(top, px)*0.5);
+  }
+  /* on the top: a fern potted on, a stack of nested pots, the trowel */
+  float p1 = bpPot(q - vec2(-0.58, TOP + 0.042), 0.22, seed + 1.0, px, kq, col, ink);
+  d = min(d, p1);
+  /* (a fern potted on in it: one fan of fronds, ghFan, the beds' own) */
+  float fsh;
+  float fern = max(ghFan(q, -0.58, TOP + 0.042 + 0.20, 0.40, seed + 3.1, px, fsh), TOP + 0.042 + 0.19 - q.y);
+  if (fern < max(px, 1e-5)) ghLay(col, ink, fern, vec3(0.12, 0.26, 0.10)*fsh, px, 0.85);
+  d = min(d, fern);
+  /* (a stack of nested pots: one pot, its rims inked up it) */
+  float pk = bpPot(q - vec2(-0.12, TOP + 0.042), 0.27, seed + 5.0, px, kq, col, ink);
+  ink = max(ink, max(mmInkP(q.y - (TOP + 0.042 + 0.10), px, 1.0), mmInkP(q.y - (TOP + 0.042 + 0.17), px, 1.0))*wfIn(pk, px)*0.6);
+  d = min(d, pk);
+  float p3 = bpPot(q - vec2(0.30, TOP + 0.042), 0.15, seed + 9.0, px, kq, col, ink);
+  d = min(d, p3);
+  /* (round 34 graft: the trowel and the pots on the pot board are gone --
+     the frame's link time; a pot set down under the bench instead) */
+  float pb = bpPot(q - vec2(-0.30, 0.24), 0.17, seed + 7.0, px, kq, col, ink);
+  d = min(d, pb);
+  /* THE WATERING CAN, on the flags at the bench's end: a galvanised drum,
+     its long spout raked up to the rose, the handle arched over its back */
+  vec2 cq = q - vec2(HL - 0.18 + 0.40, 0.0);
+  float can = min(mmBox(cq - vec2(0.0, 0.17), vec2(0.13, 0.17), 0.02),
+                  max(wfEll(cq - vec2(0.0, 0.34), vec2(0.13, 0.03)), 0.34 - cq.y));
+  float spout = min(wfSeg(cq, vec2(-0.10, 0.08), vec2(-0.34, 0.40), 0.018),
+                    wfEll(cq - vec2(-0.36, 0.43), vec2(0.035, 0.045)));
+  float hnd = max(abs(length(vec2((cq.x - 0.02)/1.15, cq.y - 0.32)) - 0.13) - 0.014, 0.30 - cq.y);
+  float canD = min(can, min(spout, hnd));
+  if (canD < max(px, 1e-5)) {
+    float u = ghCyl(cq.x, 0.13);
+    vec3 zinc = vec3(0.50, 0.54, 0.52)*(0.45 + 0.55*wfRound(u))*(1.0 + 0.30*kq*u);
+    /* its seams, two hoops round the drum, inked below */
+    ghLay(col, ink, can, zinc, px, 0.9);
+    ink = max(ink, max(mmInkP(cq.y - 0.08, px, 1.0), mmInkP(cq.y - 0.27, px, 1.0))*wfIn(can, px)*0.55);
+    ghLay(col, ink, min(spout, hnd), vec3(0.46, 0.50, 0.48)*0.88, px, 0.9);
+  }
+  d = min(d, canD);
+  gWfCol = col; gWfInk = ink;
+  gWfGloss = 0.20 + 0.35*wfIn(canD, px);
+  gWfMoon = 0.30*wfIn(top, px) + 0.40*wfIn(canD, px)*smoothstep(0.1, 0.4, q.y);
+  return d;
+}
+#endif
 
 /* ── 80 A BIRDCAGE ON ITS STAND (SINOPIA's; round 25 graft) ───────────────
    Both judges: "brass birdcages on stands in the planters". A tripod foot,
@@ -17065,14 +17229,24 @@ float wfStand(vec2 q, float px, float seed, float kq, bool paint){
 /* (round 34: the staging's quad is 0.95 m taller than its brick -- see
    Backdrop._layoutProps, bedShape 77 -- and the band over the coping is its
    planting, ghMassL, two layers of fronds packed along the whole tier) */
-#define GH_STAGE_PLANT 0.95
+/* (round 34 GRAFT, item 0 -- the frame budget: the Greenhouse fight came
+   back +2.4 ms over BASE in every pair, and this planting is most of it: the
+   staging's quads 0.95 m taller across the whole width of three tiers --
+   31 of them in the fight, every planted pixel lit by the whole prop
+   pipeline (measured in one page, aScale 0 per shape: the staging +0.9 ms
+   over BASE's bare brick). So 0.66, the back layer's tallest clump 0.60 m
+   from 0.88 and the front's 0.40 from 0.48 (the tips stay under the quad's
+   top), and the back layer is not drawn where the front one already covers
+   the pixel -- which is most of the band's lower half) */
+#define GH_STAGE_PLANT 0.66
 float wfStaging(vec2 m, vec2 msz, float px, float kq, bool paint){
   float HW = msz.x*0.5, H = msz.y - GH_STAGE_PLANT;
   float wall = mmBox(m - vec2(0.0, (H - 0.06)*0.5), vec2(HW, (H - 0.06)*0.5), 0.0);
   float cop = mmBox(m - vec2(0.0, H - 0.045), vec2(HW, 0.045), 0.006);
   float shB = 0.0, shF = 0.0;
-  float mB = max(max(ghMassL(m, vWorld.x, H - 0.01, 0.70, 0.36, 0.88, 0.31, px, shB), abs(m.x) - HW), H - 0.012 - m.y);
-  float mF = max(max(ghMassL(m, vWorld.x, H - 0.01, 0.46, 0.20, 0.48, 0.77, px, shF), abs(m.x) - HW), H - 0.012 - m.y);
+  float mF = max(max(ghMassL(m, vWorld.x, H - 0.01, 0.46, 0.18, 0.40, 0.77, px, shF), abs(m.x) - HW), H - 0.012 - m.y);
+  float mB = 1e3;
+  if (mF > -max(px, 1e-5)) mB = max(max(ghMassL(m, vWorld.x, H - 0.01, 0.70, 0.28, 0.60, 0.31, px, shB), abs(m.x) - HW), H - 0.012 - m.y);
   float d = min(min(wall, cop), min(mB, mF));
   if (!paint) return d;
   vec3 col = vec3(0.1);
@@ -17123,6 +17297,7 @@ float wfNom(float s){
   if (s < 77.5) return 1.00;   // (77, the staging, is sized to the room)
   if (s < 78.5) return 2.05;   // the grand piano and its stool
   if (s < 79.5) return 0.30;   // 79, a fan dropped on the floor
+  if (s > 83.5) return 1.15;   // 84, the potting bench (round 34 graft)
   return 1.56;                 // 80, a birdcage on its stand (graft)
 }
 /* which way it faces: the room's seed turns some round */
@@ -17195,6 +17370,9 @@ float wfDraw(vec2 m, vec2 msz, float s, float seed, float px, bool paint){
 #endif
 #if MM_SH76
   else if (s < 76.5) d = wfStand(q, qpx, seed, kq, paint);
+#endif
+#if MM_SH84
+  else if (s > 83.5) d = wfPotBench(q, qpx, seed, kq, paint);   // 84 (round 34 graft)
 #endif
 #if MM_SH80 || MM_SH81 || MM_SH82 || MM_SH83
   else if (s > 79.5) d = wfBirdcage(q, qpx, seed, kq, paint);   // 80 (graft)
@@ -17609,7 +17787,10 @@ float yewTop(vec2 msz, float seed){
   float k = yewKind(seed);
   /* (round 34: 0.89 from 0.93 -- the grown-out crown wants the quad's
      room over the set top, yewAmp) */
-  return msz.y*(k < 0.52 ? 0.80 : 0.637);
+  /* (round 34 graft: 0.88 -- VIVIANITE's rounder crown stands under half a
+     metre over the cut, so the quad gives back the sky CELESTINE's metre-high
+     swells needed: Backdrop._layoutProps, hh/0.88) */
+  return msz.y*(k < 0.52 ? 0.88 : 0.700);
 }
 float yewArch(vec2 m, float seed){
   if (seed < 19.5) return 1e3;
@@ -17627,32 +17808,35 @@ float yewArch(vec2 m, float seed){
    is the tallest clump. Continuous in u (every dome falls to nothing at its
    cell's edge), so its coverage and its pen line are smooth. */
 float yewRagP(float u, float sd, float amp){
-  /* (round 34, second pass: the silhouette read at the far run's
-     distance -- 12-20 m off a 0.2 m clump is a ruled line with a fur on
-     it. So the crown is built in three sizes ON one another: great swells
-     two strides across, each its own height (and a few slumped, where the
-     old wood has died back), the clumps a stride across grown out of them,
-     and the sprays of a hand on those -- a broken leaf line at every
-     distance the maze is seen from) */
-  float x0 = u/1.85 + sd*0.23;
-  float f0 = fract(x0), h0 = mmHash11(floor(x0)*0.91 + sd*0.7);
-  float d0 = sqrt(max(1.0 - 4.0*(f0 - 0.5)*(f0 - 0.5), 0.0))*(0.18 + 0.82*h0*h0)*amp;
-  float x1 = u/0.66 + sd*0.37;
-  float f1 = fract(x1), h1 = mmHash11(floor(x1)*1.37 + sd);
-  float d1 = sqrt(max(1.0 - 4.0*(f1 - 0.5)*(f1 - 0.5), 0.0))*(0.20 + 0.80*h1)*amp*0.42 + d0*0.80;
-  float x2 = u/0.27 + 0.5 + sd*0.71;
-  float f2 = fract(x2), h2 = mmHash11(floor(x2)*2.71 + sd*1.3);
-  float d2 = sqrt(max(1.0 - 4.0*(f2 - 0.5)*(f2 - 0.5), 0.0))*(0.15 + 0.50*h2)*amp*0.22 + d1*0.90;
-  float x3 = u/0.085 + sd*1.9;
-  float f3 = fract(x3), h3 = mmHash11(floor(x3)*5.19 + sd*2.1);
-  float sp = max(1.0 - abs(f3 - 0.5)*2.4, 0.0)*step(0.70, h3)*(0.35 + 0.65*h3)*min(amp, 0.8)*0.38;
-  float sag = 0.060*sin(u*0.37 + sd) + 0.034*sin(u*0.93 + sd*1.7);
-  /* the edge feathered with single leaves, a few centimetres, every way */
-  float fth = (abs(fract(u/0.034 + 0.4*sin(u*7.0 + sd)) - 0.5) - 0.25)*0.034;
-  return max(max(d0, max(d1, d2)), d1*0.70 + sp) + sag + fth - 0.45*amp;
+  /* (round 34 GRAFT: VIVIANITE's rounder clumps, the wall program's
+     yewRagW -- the same rule, so a run across the way and the walls either
+     side are one hedge) */
+  float r = 0.0;
+  float q1 = u/0.55 + sd*1.37;
+  float i1 = floor(q1), f1 = fract(q1);
+  for (int k = -1; k <= 1; k++){
+    float ii = i1 + float(k);
+    float hh = mmHash11(ii*1.71 + sd);
+    float cx = float(k) + 0.5 + (hh - 0.5)*0.55;
+    float hw = 0.52 + 0.42*mmHash11(ii*3.31 + sd*0.7);
+    float x = (f1 - cx)/hw;
+    r = max(r, sqrt(max(1.0 - x*x, 0.0))*(0.04 + 0.26*hh*hh + 0.05*hh));
+  }
+  float q2 = u/0.21 + sd*2.13;
+  float f2 = fract(q2), h2 = mmHash11(floor(q2)*2.77 + sd);
+  r = max(r, sqrt(max(1.0 - 4.0*(f2 - 0.5)*(f2 - 0.5), 0.0))*(0.025 + 0.050*h2) + r*0.55);
+  float q3 = u/0.13 + sd*3.71;
+  float f3 = fract(q3), h3 = mmHash11(floor(q3)*5.93 + sd);
+  float tip = max(1.0 - abs(f3 - 0.5 - (h3 - 0.5)*0.3)/0.45, 0.0);
+  r = max(r, step(0.80, h3)*sqrt(tip)*(0.06 + 0.12*fract(h3*13.7)) + r*0.75);
+  float sag = 0.040*sin(u*0.37 + sd) + 0.022*sin(u*0.93 + sd*1.7);
+  float fth = (abs(fract(u/0.034 + 0.4*sin(u*7.0 + sd)) - 0.5) - 0.25)*0.030;
+  return (r - 0.10)*amp + sag + fth;
 }
 /* (the tallest clump a run's quad has room for over its set top) */
-float yewAmp(vec2 msz, float seed){ return min(0.62, (msz.y - yewTop(msz, seed))*0.82); }
+/* (round 34 graft: the crown's scale, 1.3 as the far wall's, held so its
+   tallest leader -- 0.40 m of r at 1.0 -- stays inside the quad) */
+float yewAmp(vec2 msz, float seed){ return min(1.30, (msz.y - yewTop(msz, seed))/0.36); }
 float yewSD(vec2 m, vec2 msz, float seed){
   float hw = msz.x*0.5 - 0.06;
   float k = yewKind(seed);
@@ -17679,8 +17863,9 @@ float yewSD(vec2 m, vec2 msz, float seed){
      ends of a run left ragged with it, never a ruled corner) */
   float ct = m.y - top;
   float endW = smoothstep(hw - 0.05, hw - 0.50, abs(m.x));
-  d -= yewRagP(m.x + seed*2.3, seed, yewAmp(msz, seed)) * smoothstep(-1.10, -0.40, ct) * endW;
-  d -= (mmNoise(vec2(m.y*3.2, seed*5.0 + sign(m.x)*3.0)) - 0.5)*0.11 * smoothstep(hw - 0.45, hw - 0.05, abs(m.x)) * step(0.30, m.y);
+  if (ct > -1.10) d -= yewRagP(m.x + seed*2.3, seed, yewAmp(msz, seed)) * smoothstep(-1.10, -0.40, ct) * endW;   // (graft: only where it is)
+  if (abs(m.x) > hw - 0.45 && m.y > 0.30)   // (graft, the frame budget: only at the two ends)
+    d -= (mmNoise(vec2(m.y*3.2, seed*5.0 + sign(m.x)*3.0)) - 0.5)*0.11 * smoothstep(hw - 0.45, hw - 0.05, abs(m.x));
   return d;
 }
 
@@ -17713,6 +17898,9 @@ float yLobes(vec2 c, float jit, float sd, out float id, out vec2 off){
 }
 /* (round 31 graft: the walls' clipped face -- yewClipF -- so a run of yew
    across the way, a topiary and the walls either side are one hedge) */
+float gYewDomeP = 0.0;   // (round 34 graft: the upper face of a clump, for the moon on it)
+float gYewClB = 0.0;     // (...and how much of the pixel is the clump's swell, for its relief)
+vec2 gTopTq = vec2(0.0, 1.0);   // (round 34 graft, VIVIANITE's: the pixel in its tier, a tiered stand's)
 float yewFaceP(vec2 p, float px, float sd, out float tone, out float lit){
   /* (the warp off the grid from ONE noise tap, thrown diagonally: two taps
      here were the face's dearest line after the shoots -- the frame budget) */
@@ -17744,17 +17932,18 @@ float yewFaceP(vec2 p, float px, float sd, out float tone, out float lit){
      each a swell of leaf lit on its upper face by the moon and creased dark
      where it meets the next -- the depth a painted hedge has (mainMenu.png's
      shrubs) and a tuft field at one scale does not. */
-  float i3 = 0.5;
-  vec2 o3 = vec2(0.0);
-  /* (the frame budget: warped by the swell already tapped, n0, not two
-     taps of its own) */
-  vec2 pm = pw + vec2(n0 - 0.5, 0.5 - n0)*0.60;
-  float a3 = yLobes(vec2(pm.x*0.96 + pm.y*0.28, -pm.x*0.28 + pm.y*0.96)/vec2(0.66, 0.44), 0.98, sd + 3.7, i3, o3);
-  float massL = smoothstep(-0.34, 0.40, a3);
-  float upF = clamp(0.5 + o3.y*1.3, 0.0, 1.0);
-  tone *= mix(0.80, 1.0, massL)*(0.86 + 0.30*upF*massL);
-  lit *= 0.62 + 0.55*upF*massL;
-  return (m0 - 0.45)*0.10 + a*0.022*l1 + b*0.008*l2 + a3*0.018;
+  /* (round 34 GRAFT, VIVIANITE's clumps -- the wall program's, yewClipF) */
+  vec2 co;
+  vec2 cp = vec2(p.x + 0.22*sin(p.y*2.1 + sd), p.y + 0.14*sin(p.x*1.7 + sd*2.0));
+  float cid3;   // (the nearest of four jittered lobes: one cell's rows read as a tile, measured 0.04 ms dearer)
+  float cl = yLobes(cp/vec2(0.66, 0.46), 0.95, sd*5.1 + 3.0, cid3, co);
+  float clB = smoothstep(-0.02, 0.48, cl + (tone - 0.85)*0.25);
+  float clU = smoothstep(-0.45, 0.50, co.y);
+  float clL = mmLod(0.50, px)*mix(0.35, 1.0, smoothstep(0.38, 0.62, n0));
+  tone *= mix(1.0, mix(0.72, 1.0, clB)*(0.86 + 0.28*clU), clL);
+  gYewDomeP = clU*clB*clL;
+  gYewClB = clB*clL;
+  return (m0 - 0.45)*0.10 + a*0.022*l1 + b*0.008*l2 + 0.020*clB*clL;
 }
 float topKind(float seed){ return mmHash11(seed*7.31 + 0.4); }
 vec2 topSD(vec2 m, vec2 msz, float seed){
@@ -17783,21 +17972,32 @@ vec2 topSD(vec2 m, vec2 msz, float seed){
     leaf = length(m - vec2(0.0, H - r)) - r;
   } else if (k < 0.78) {
     /* a TIERED STAND: three clipped discs up one stem, and a ball on it */
-    wood = mmBox(m - vec2(0.0, H*0.45), vec2(0.034, H*0.45), 0.01);
+    /* (round 34 GRAFT, VIVIANITE's, J2: "the topiary as leaf clumps, not
+       stacked discs" -- each tier a POM-POM, four-fifths as deep as it is
+       wide, the three crowding up the stem so their bellies meet, their
+       outlines broken by sprays at a hand's scale; gTopTq the pixel's place
+       in its own tier, so reliefH rounds each in its own light) */
+    wood = mmBox(m - vec2(0.0, H*0.45), vec2(0.040, H*0.45), 0.01);
+    gTopTq = vec2(0.0, 1.0);
+    float best = 9.0;
     for (int i = 0; i < 3; i++){
       float f = float(i)/2.0;
-      float cy = mix(0.30, 0.76, f)*H;
-      /* (round 34, both judges: "the topiary at left is stacked discs" --
-         each tier a CUSHION of clipped leaf, deep as it is grown, its
-         top domed and its underside tucked in, so three of them read as a
-         yew clipped into tiers and not as plates on a pole) */
-      vec2 rr = vec2(mix(0.46, 0.27, f)*msz.x, mix(0.30, 0.21, f));
-      vec2 tq = (m - vec2(0.0, cy))/rr;
-      tq.y *= tq.y < 0.0 ? 1.35 : 1.0;
-      float cu = (pow(pow(abs(tq.x), 2.6) + pow(abs(tq.y), 2.2), 1.0/2.4) - 1.0)*min(rr.x, rr.y);
-      leaf = min(leaf, cu);
+      float cy = mix(0.25, 0.71, f)*H;
+      float rx = mix(0.37, 0.25, f)*msz.x;
+      vec2 rr = vec2(rx, min(rx*0.80, mix(0.185, 0.150, f)*H));
+      vec2 e = (m - vec2(0.0, cy))/rr;
+      float an = atan(e.y, e.x);
+      /* (the frame budget: two more sines, not a noise tap round it) */
+      float lob = 0.05*sin(an*5.0 + seed*3.0 + f*2.0) + 0.035*sin(an*11.0 + seed + f*4.0)
+                + 0.045*sin(an*3.0 - seed*1.7 + f*5.0) + 0.025*sin(an*17.0 + seed*2.3);
+      float dd = (length(e) - 1.0 - lob)*min(rr.x, rr.y);
+      if (dd < best) { best = dd; gTopTq = e; }
+      leaf = min(leaf, dd);
     }
-    leaf = min(leaf, length(m - vec2(0.0, H - 0.13)) - 0.13);
+    float br = 0.15*H/2.4;
+    float bd = length(m - vec2(0.0, H - br)) - br;
+    if (bd < best) gTopTq = (m - vec2(0.0, H - br))/br;
+    leaf = min(leaf, bd);
   } else {
     /* a SPIRAL: a cone with a groove wound up it, so its two edges are
        notched out of step with each other -- the one topiary form nobody
@@ -19407,9 +19607,13 @@ vec3 wgPaint(vec2 m, vec2 msz, float shape, float seed, float px, float lum,
     /* ---- THE KENNEL ---- */
     vec2 k = q - vec2(-0.16, 0.0);
     float pk = mmHash11(seed*3.17 + 0.4);
-    vec3 paint = pk < 0.30 ? vec3(0.52, 0.15, 0.10) : (pk < 0.52 ? vec3(0.17, 0.30, 0.20)
-               : (pk < 0.72 ? vec3(0.24, 0.31, 0.40) : vec3(0.50, 0.36, 0.20)));
-    vec3 trim  = pk < 0.72 ? vec3(0.80, 0.76, 0.64) : vec3(0.34, 0.24, 0.14);
+    /* (round 34 GRAFT, VIVIANITE's colours -- ALL THREE judges: washed to
+       grey-blue the row "read as one repeated prop". Each kennel painted its
+       own red, green or blue, a stop fuller, under a cream trim; the ochre
+       one of four, which read as bare timber in the lamplight, is gone) */
+    vec3 paint = pk < 0.36 ? vec3(0.60, 0.11, 0.07) : (pk < 0.68 ? vec3(0.09, 0.38, 0.13)
+               : vec3(0.11, 0.23, 0.56));
+    vec3 trim  = vec3(0.80, 0.76, 0.64);
     float wear = mmNoise(vec2(k.x*9.0, k.y*2.2) + seed*7.0);
     vec3 board = paint*E*1.35*(0.80 + 0.30*wear);
     /* (round 28: WEATHERED -- each board its own value, and the paint worn
@@ -19420,7 +19624,9 @@ vec3 wgPaint(vec2 m, vec2 msz, float shape, float seed, float px, float lum,
       board *= 0.82 + 0.32*mmHash11(bI*7.1 + seed*3.0);
       float bare = smoothstep(0.62, 0.80, wear + 0.30*(1.0 - smoothstep(0.0, 0.30, k.y))
                  + 0.25*mmNoise(vec2(k.x*40.0, k.y*6.0) + seed));
-      board = mix(board, vec3(0.30, 0.27, 0.23)*E*1.25*(0.8 + 0.3*wear), bare*0.75);
+      /* (round 34 graft: worn through less -- at 0.75 the grey timber took
+         most of a small kennel's paint at the Deck's distance) */
+      board = mix(board, vec3(0.30, 0.27, 0.23)*E*1.25*(0.8 + 0.3*wear), bare*0.55);
     }
     col = board;
     float body = mmBox(k - vec2(0.0, 0.470), vec2(0.600, 0.385), 0.008);
@@ -19712,7 +19918,7 @@ vec3 wgPaint(vec2 m, vec2 msz, float shape, float seed, float px, float lum,
   }
 #endif
 
-#if MM_SH44 || MM_SH45 || MM_SH46 || MM_SH47 || MM_SH48 || MM_SH49 || MM_SH50 || MM_SH51 || MM_SH52 || MM_SH53 || MM_SH54 || MM_SH55 || MM_SH56 || MM_SH57 || MM_SH58 || MM_SH59 || MM_SH60 || MM_SH61 || MM_SH62 || MM_SH63 || MM_SH64 || MM_SH65 || MM_SH66 || MM_SH67 || MM_SH68 || MM_SH69 || MM_SH70 || MM_SH71 || MM_SH72 || MM_SH73 || MM_SH74 || MM_SH75 || MM_SH76 || MM_SH77 || MM_SH78 || MM_SH79 || MM_SH80 || MM_SH81 || MM_SH82 || MM_SH83
+#if MM_SH44 || MM_SH45 || MM_SH46 || MM_SH47 || MM_SH48 || MM_SH49 || MM_SH50 || MM_SH51 || MM_SH52 || MM_SH53 || MM_SH54 || MM_SH55 || MM_SH56 || MM_SH57 || MM_SH58 || MM_SH59 || MM_SH60 || MM_SH61 || MM_SH62 || MM_SH63 || MM_SH64 || MM_SH65 || MM_SH66 || MM_SH67 || MM_SH68 || MM_SH69 || MM_SH70 || MM_SH71 || MM_SH72 || MM_SH73 || MM_SH74 || MM_SH75 || MM_SH76 || MM_SH77 || MM_SH78 || MM_SH79 || MM_SH80 || MM_SH81 || MM_SH82 || MM_SH83 || MM_SH84
   if (shape > 41.5) {
     /* ---- THE ORRERY ---- */
     float pt;
@@ -22414,7 +22620,7 @@ float shapeField(vec2 uv, vec2 msz, float shape, float seed){
 #endif
 #endif
 #if MM_WINGS >= 3
-#if MM_SH45 || MM_SH46 || MM_SH47 || MM_SH48 || MM_SH49 || MM_SH50 || MM_SH51 || MM_SH52 || MM_SH53 || MM_SH54 || MM_SH55 || MM_SH56 || MM_SH57 || MM_SH58 || MM_SH59 || MM_SH60 || MM_SH61 || MM_SH62 || MM_SH63 || MM_SH64 || MM_SH65 || MM_SH66 || MM_SH67 || MM_SH68 || MM_SH69 || MM_SH70 || MM_SH71 || MM_SH72 || MM_SH73 || MM_SH74 || MM_SH75 || MM_SH76 || MM_SH77 || MM_SH78 || MM_SH79 || MM_SH80 || MM_SH81 || MM_SH82 || MM_SH83
+#if MM_SH45 || MM_SH46 || MM_SH47 || MM_SH48 || MM_SH49 || MM_SH50 || MM_SH51 || MM_SH52 || MM_SH53 || MM_SH54 || MM_SH55 || MM_SH56 || MM_SH57 || MM_SH58 || MM_SH59 || MM_SH60 || MM_SH61 || MM_SH62 || MM_SH63 || MM_SH64 || MM_SH65 || MM_SH66 || MM_SH67 || MM_SH68 || MM_SH69 || MM_SH70 || MM_SH71 || MM_SH72 || MM_SH73 || MM_SH74 || MM_SH75 || MM_SH76 || MM_SH77 || MM_SH78 || MM_SH79 || MM_SH80 || MM_SH81 || MM_SH82 || MM_SH83 || MM_SH84
   } else if (shape > 44.5) {              // 45+ -- round 24's drawings, painted in the one pass
     d = wfDraw(p*msz, msz, shape, seed, max(wfPx, 1e-5), true) / msz.y;
 #endif
@@ -22564,7 +22770,7 @@ float reliefH(vec2 uv, vec2 msz, vec2 mpp, float shape, float seed, out float ti
      that turns each part. (graft: ULTRAMARINE's drawings, 32-35 and 38-42,
      carry their form in wgPaint's own shading and lines, so they take no
      relief here; the trunk and the dust sheet keep VERDITER's) */
-#if MM_SH32 || MM_SH33 || MM_SH34 || MM_SH35 || MM_SH36 || MM_SH37 || MM_SH38 || MM_SH39 || MM_SH40 || MM_SH41 || MM_SH42 || MM_SH43 || MM_SH44 || MM_SH45 || MM_SH46 || MM_SH47 || MM_SH48 || MM_SH49 || MM_SH50 || MM_SH51 || MM_SH52 || MM_SH53 || MM_SH54 || MM_SH55 || MM_SH56 || MM_SH57 || MM_SH58 || MM_SH59 || MM_SH60 || MM_SH61 || MM_SH62 || MM_SH63 || MM_SH64 || MM_SH65 || MM_SH66 || MM_SH67 || MM_SH68 || MM_SH69 || MM_SH70 || MM_SH71 || MM_SH72 || MM_SH73 || MM_SH74 || MM_SH75 || MM_SH76 || MM_SH77 || MM_SH78 || MM_SH79 || MM_SH80 || MM_SH81 || MM_SH82 || MM_SH83
+#if MM_SH32 || MM_SH33 || MM_SH34 || MM_SH35 || MM_SH36 || MM_SH37 || MM_SH38 || MM_SH39 || MM_SH40 || MM_SH41 || MM_SH42 || MM_SH43 || MM_SH44 || MM_SH45 || MM_SH46 || MM_SH47 || MM_SH48 || MM_SH49 || MM_SH50 || MM_SH51 || MM_SH52 || MM_SH53 || MM_SH54 || MM_SH55 || MM_SH56 || MM_SH57 || MM_SH58 || MM_SH59 || MM_SH60 || MM_SH61 || MM_SH62 || MM_SH63 || MM_SH64 || MM_SH65 || MM_SH66 || MM_SH67 || MM_SH68 || MM_SH69 || MM_SH70 || MM_SH71 || MM_SH72 || MM_SH73 || MM_SH74 || MM_SH75 || MM_SH76 || MM_SH77 || MM_SH78 || MM_SH79 || MM_SH80 || MM_SH81 || MM_SH82 || MM_SH83 || MM_SH84
   if (shape > 31.5) {
     gBedLeaf = 0.0;
     float pt = 0.0;
@@ -23987,6 +24193,11 @@ float reliefH(vec2 uv, vec2 msz, vec2 mpp, float shape, float seed, out float ti
     float yrel = yewFaceP(m + seed*1.7, mp, seed*3.1, ytone, ylit);
     gYewCl = mix(0.5, ytone, onLf);
     h += yrel*0.22*onLf;
+    /* (round 34 graft, VIVIANITE's: each clump a swell of relief, so the
+       light rounds it; and a mass lit from above -- its upper face takes the
+       night, its lower falls into its own shade toward the foot) */
+    h += 0.060*gYewClB*onLf;
+    tint -= 0.22*smoothstep(0.55*msz.y, 0.10*msz.y, m.y)*(1.0 - topi);
     tint -= 0.30*(1.0 - smoothstep(0.10, 0.45, ytone))*onLf;
     h += 0.040*(mmNoise(m*0.9 + seed*2.0) - 0.5)*onLf;
     /* THE CROWN TAKES THE MOON ON ITS LEAVES (graft: CASSEL's was one
@@ -23994,19 +24205,30 @@ float reliefH(vec2 uv, vec2 msz, vec2 mpp, float shape, float seed, out float ti
        judges named on VANDYKE's): only the upper faces of the sprays in its
        top half-metre, so the light breaks with the leaf */
     /* (round 34: the moon follows the grown-out crown, yewRagP) */
-    if (topi < 0.5) top += yewRagP(m.x + seed*2.3, seed, yewAmp(msz, seed)) * smoothstep(msz.x*0.5 - 0.11, msz.x*0.5 - 0.56, abs(m.x));
+    if (topi < 0.5 && m.y > top - 0.95) top += yewRagP(m.x + seed*2.3, seed, yewAmp(msz, seed)) * smoothstep(msz.x*0.5 - 0.11, msz.x*0.5 - 0.56, abs(m.x));   // (graft: only in the crown's metre)
     gYewTop  = smoothstep(top - 0.55, top - 0.05, m.y) * step(m.y, top + 0.10) * ylit;
     gYewEdge = smoothstep(top - 0.085, top - 0.03, m.y) * step(m.y, top + 0.06) * (0.45 + 0.55*ylit) * (1.0 - topi);
     /* ROUND 34: THE FOOT IN ITS OWN SHADOW (both judges: "dark shadowed
        undersides and bases where they meet the lawn"): the leaf's lower
        hem hangs ragged a hand or two over the turf, and under it the old
        wood of the hedge -- dark stems in the dark of its inside */
-    float hem = 0.20 + 0.16*mmNoise(vec2(m.x*2.6 + seed*3.0, 0.5)) + 0.035*sin(m.x*9.0 - seed) + 0.02*sin(m.x*23.0 + seed);
-    gYewFoot = smoothstep(hem + 0.75, hem + 0.02, m.y) * (1.0 - topi);
-    gYewHem = smoothstep(hem + 0.5*mp, hem - 0.5*mp, m.y) * (1.0 - topi);
-    float stx = m.x/0.23 + 0.25*sin(m.x*1.3 + m.y*4.0 + seed);
-    gYewStem = gYewHem * (1.0 - smoothstep(0.035, 0.035 + max(mp/0.23, 0.02)*1.5, abs(fract(stx) - 0.5))) * step(0.45, mmHash11(floor(stx) + seed));
+    /* (round 34 graft, J1: "break the back hedge's long straight lower edge
+       with a root shadow and gaps" -- the hem to the turf in places and a
+       knee high in others, as the walls' own) */
+    /* (graft, the frame budget: the foot only in the metre and a half where it is) */
+    if (m.y < 1.50 && topi < 0.5) {
+      float hem = 0.08 + 0.42*smoothstep(0.30, 0.80, 0.5 + 0.5*sin(m.x*0.85 + seed*1.3)*sin(m.x*0.37 + seed*2.1))
+                + 0.10*mmNoise(vec2(m.x*2.6 + seed*3.0, 0.5)) + 0.035*sin(m.x*9.0 - seed) + 0.02*sin(m.x*23.0 + seed);
+      gYewFoot = smoothstep(hem + 0.75, hem + 0.02, m.y);
+      gYewHem = smoothstep(hem + 0.5*mp, hem - 0.5*mp, m.y);
+      float stx = m.x/0.23 + 0.25*sin(m.x*1.3 + m.y*4.0 + seed);
+      gYewStem = gYewHem * (1.0 - smoothstep(0.035, 0.035 + max(mp/0.23, 0.02)*1.5, abs(fract(stx) - 0.5))) * step(0.45, mmHash11(floor(stx) + seed));
+    }
     h -= 0.040*gYewFoot + 0.10*gYewHem*(1.0 - gYewStem);
+    /* (round 34 graft, VIVIANITE's: the upper face of every clump down the
+       run takes a share of the moon, falling off toward the dark foot -- lit
+       domes over shadowed undercuts) */
+    gYewTop += 0.24*gYewDomeP*smoothstep(0.6, top - 0.4, m.y)*(1.0 - gYewFoot)*(1.0 - topi)*(0.6 + 0.4*ylit);
     float ad = yewArch(m, seed);
     gYewRev = (1.0 - smoothstep(0.02, 0.20, ad)) * step(ad, 0.20) * (1.0 - topi);
     gYewDead = smoothstep(0.62, 0.84, mmNoise(m*0.55 + seed*4.0)) * (1.0 - topi);
@@ -24014,6 +24236,14 @@ float reliefH(vec2 uv, vec2 msz, vec2 mpp, float shape, float seed, out float ti
       /* a clipped form is a SOLID: in shade under its own overhang and
          toward its foot, lit across its crown */
       tint -= 0.22*smoothstep(0.55, 0.05, uv.y)*onLf;
+      /* (round 34 graft, VIVIANITE's: a tiered stand's pom-poms each rounded
+         in its own light -- a dome of relief, the underside dark over the
+         stem, the crown lit) */
+      float tier = step(0.55, gTopKind)*step(gTopKind, 0.78)*onLf;
+      float tr2 = clamp(dot(gTopTq, gTopTq), 0.0, 1.0);
+      h += tier*0.10*sqrt(1.0 - tr2);
+      tint -= tier*0.40*smoothstep(0.15, -0.85, gTopTq.y);
+      gYewTop = max(gYewTop, tier*smoothstep(0.10, 0.80, gTopTq.y)*(0.5 + 0.5*ylit)*0.8);
       /* the spiral's groove, wound up the cone */
       float gro = (1.0 - smoothstep(0.08, 0.16, abs(fract((m.y - 0.14 + m.x*0.62)/0.36) - 0.5)))
                 * step(0.78, gTopKind) * onLf;
@@ -24527,7 +24757,7 @@ void main(){
   float wgInk = 0.0, wgMoon = 0.0, wgOn = 0.0;
 #if MM_WINGS == 2
   float wgS = wgU(vShape);
-#if MM_SH32 || MM_SH33 || MM_SH34 || MM_SH35 || MM_SH38 || MM_SH39 || MM_SH40 || MM_SH41 || MM_SH42 || MM_SH43 || MM_SH44 || MM_SH45 || MM_SH46 || MM_SH47 || MM_SH48 || MM_SH49 || MM_SH50 || MM_SH51 || MM_SH52 || MM_SH53 || MM_SH54 || MM_SH55 || MM_SH56 || MM_SH57 || MM_SH58 || MM_SH59 || MM_SH60 || MM_SH61 || MM_SH62 || MM_SH63 || MM_SH64 || MM_SH65 || MM_SH66 || MM_SH67 || MM_SH68 || MM_SH69 || MM_SH70 || MM_SH71 || MM_SH72 || MM_SH73 || MM_SH74 || MM_SH75 || MM_SH76 || MM_SH77 || MM_SH78 || MM_SH79 || MM_SH80 || MM_SH81 || MM_SH82 || MM_SH83
+#if MM_SH32 || MM_SH33 || MM_SH34 || MM_SH35 || MM_SH38 || MM_SH39 || MM_SH40 || MM_SH41 || MM_SH42 || MM_SH43 || MM_SH44 || MM_SH45 || MM_SH46 || MM_SH47 || MM_SH48 || MM_SH49 || MM_SH50 || MM_SH51 || MM_SH52 || MM_SH53 || MM_SH54 || MM_SH55 || MM_SH56 || MM_SH57 || MM_SH58 || MM_SH59 || MM_SH60 || MM_SH61 || MM_SH62 || MM_SH63 || MM_SH64 || MM_SH65 || MM_SH66 || MM_SH67 || MM_SH68 || MM_SH69 || MM_SH70 || MM_SH71 || MM_SH72 || MM_SH73 || MM_SH74 || MM_SH75 || MM_SH76 || MM_SH77 || MM_SH78 || MM_SH79 || MM_SH80 || MM_SH81 || MM_SH82 || MM_SH83 || MM_SH84
   if (wgS > 0.5) {
     wgOn = 1.0;
     float lumW = max(mmLum(albedo), 0.02);
@@ -24557,7 +24787,7 @@ void main(){
 #if MM_WINGS >= 3
   /* ROUND 24: each drawing in its own materials (wfDraw, painted in the
      one pass), at the prop's own light level as round 23's are */
-#if MM_SH45 || MM_SH46 || MM_SH47 || MM_SH48 || MM_SH49 || MM_SH50 || MM_SH51 || MM_SH52 || MM_SH53 || MM_SH54 || MM_SH55 || MM_SH56 || MM_SH57 || MM_SH58 || MM_SH59 || MM_SH60 || MM_SH61 || MM_SH62 || MM_SH63 || MM_SH64 || MM_SH65 || MM_SH66 || MM_SH67 || MM_SH68 || MM_SH69 || MM_SH70 || MM_SH71 || MM_SH72 || MM_SH73 || MM_SH74 || MM_SH75 || MM_SH76 || MM_SH77 || MM_SH78 || MM_SH79 || MM_SH80 || MM_SH81 || MM_SH82 || MM_SH83
+#if MM_SH45 || MM_SH46 || MM_SH47 || MM_SH48 || MM_SH49 || MM_SH50 || MM_SH51 || MM_SH52 || MM_SH53 || MM_SH54 || MM_SH55 || MM_SH56 || MM_SH57 || MM_SH58 || MM_SH59 || MM_SH60 || MM_SH61 || MM_SH62 || MM_SH63 || MM_SH64 || MM_SH65 || MM_SH66 || MM_SH67 || MM_SH68 || MM_SH69 || MM_SH70 || MM_SH71 || MM_SH72 || MM_SH73 || MM_SH74 || MM_SH75 || MM_SH76 || MM_SH77 || MM_SH78 || MM_SH79 || MM_SH80 || MM_SH81 || MM_SH82 || MM_SH83 || MM_SH84
   if (vShape > 44.5) {
     wgOn = 1.0;
     float Ew = max(mmLum(albedo), 0.02)*2.2 + 0.060;
@@ -25184,9 +25414,15 @@ void main(){
   float satK = uPropSat, satM = uPropSatMax;
 #if MM_WINGS == 2
   if (vShape > 31.5 && (vShape < 37.5 || vShape > 38.5)) { satK = max(uPropSat, 0.40); satM = max(uPropSatMax, 0.58); }
+#if MM_SH39
+  /* (round 34 graft, all three judges: the doghouses "read as one repeated
+     prop" washed to grey-blue -- a kennel's red, green or blue paint is a
+     material fact, and keeps the chroma VIVIANITE's held) */
+  if (vShape > 38.5 && vShape < 39.5) { satK = max(uPropSat, 0.54); satM = max(uPropSatMax, 0.76); }
+#endif
 #endif
 #if MM_WINGS >= 3
-#if MM_SH45 || MM_SH46 || MM_SH47 || MM_SH48 || MM_SH49 || MM_SH50 || MM_SH51 || MM_SH52 || MM_SH53 || MM_SH54 || MM_SH55 || MM_SH56 || MM_SH57 || MM_SH58 || MM_SH59 || MM_SH60 || MM_SH61 || MM_SH62 || MM_SH63 || MM_SH64 || MM_SH65 || MM_SH66 || MM_SH67 || MM_SH68 || MM_SH69 || MM_SH70 || MM_SH71 || MM_SH72 || MM_SH73 || MM_SH74 || MM_SH75 || MM_SH76 || MM_SH77 || MM_SH78 || MM_SH79 || MM_SH80 || MM_SH81 || MM_SH82 || MM_SH83
+#if MM_SH45 || MM_SH46 || MM_SH47 || MM_SH48 || MM_SH49 || MM_SH50 || MM_SH51 || MM_SH52 || MM_SH53 || MM_SH54 || MM_SH55 || MM_SH56 || MM_SH57 || MM_SH58 || MM_SH59 || MM_SH60 || MM_SH61 || MM_SH62 || MM_SH63 || MM_SH64 || MM_SH65 || MM_SH66 || MM_SH67 || MM_SH68 || MM_SH69 || MM_SH70 || MM_SH71 || MM_SH72 || MM_SH73 || MM_SH74 || MM_SH75 || MM_SH76 || MM_SH77 || MM_SH78 || MM_SH79 || MM_SH80 || MM_SH81 || MM_SH82 || MM_SH83 || MM_SH84
   if (vShape > 44.5) { satK = max(uPropSat, 0.42); satM = max(uPropSatMax, 0.62); }
 #endif
 #endif
@@ -25496,7 +25732,9 @@ void main(){
         float dl = (1.0/max(k, 1e-3) - 1.0)/(1.0/R - 1.0);      // depth: 0 the hall face, 1 the far arris
         float dlx = (1.0/max(kx, 1e-3) - 1.0)/(1.0/R - 1.0);    // ...along a side plane
         float hS = yv/max(kx, 1e-3);                             // height on a side plane, near-plane units
-        const float LEAF = 3.3;
+        /* (round 34 graft, J2: "the open door leaf ... cropping less of the
+           room" -- 2.5 of the reveal's depth, from 3.3) */
+        const float LEAF = 2.5;
         float hTop = (YA - VY)*0.975;
         float isL = smoothstep(0.004, -0.004, s.x);
         float xL = xa/(1.0 + LEAF*(1.0/R - 1.0));
@@ -25646,13 +25884,29 @@ void main(){
           ink = max(ink, (1.0 - smoothstep(0.0, 1.2*fwD, eD))*max(step(0.0, hS)*step(hS, hTop - 0.070), step(hS, -0.090)));
           float eH = min(min(abs(hS), abs(hS - hTop + 0.070)), abs(hS + 0.090));
           ink = max(ink, (1.0 - smoothstep(0.0, 1.2*fwH, eH))*inS);
+          /* (round 34 graft, J2: "given mouldings and lit edges" -- a
+             bolection moulding proud of the stiles round each panel, its
+             room-side and upper members catching the lamp, the others in
+             shade, every member inked) */
+          float mD = 0.12, mH = 0.016;
+          float inM = inS*(1.0 - pnl);
+          float ringD = min(abs(dd - 0.30 + mD*0.5), abs(dd - span + 0.30 - mD*0.5));
+          float ringOn = inM*step(ringD, mD*0.5)*max(step(-mH, hS)*step(hS, hTop - 0.070 + mH), step(-1.40 - mH, hS)*step(hS, -0.090 + mH));
+          float eHm = min(min(abs(hS + mH*0.5), abs(hS - hTop + 0.070 - mH*0.5)), min(abs(hS + 0.090 - mH*0.5), abs(hS + 1.40 + mH*0.5)));
+          float ringH = step(0.30 - mD, dd)*step(dd, span - 0.30 + mD)*step(eHm, mH*0.5)*(1.0 - pnl);
+          float mould = clamp(ringOn + ringH, 0.0, 1.0);
+          float mLit = ringH > 0.5 ? 0.85 : step(span*0.5, dd);
+          t = mix(t, mix(0.46, 1.05, mLit), mould);
+          ink = max(ink, (1.0 - smoothstep(0.0, 1.2*fwD, abs(ringD - mD*0.5)))*inM*step(-mH, hS)*0.7);
           float lit = 0.40 + 0.30*smoothstep(0.0, span, dd);
           float gl = mmNoise(vec2(dd*3.0 + uSeed, hS*40.0));
           vec3 mah = vec3(0.060, 0.026, 0.014)*(0.80 + 0.40*gl);
           c3 = mah*t*(0.9 + 3.0*lit) + uRim*lit*0.040*t;
           /* the free edge: the leaf's thickness, lit square on */
-          float edge = smoothstep(span - 0.10, span - 0.02, dd);
-          c3 = mix(c3, mah*1.4 + uRim*0.085, edge);
+          /* (round 34 graft, J2: the free edge lit -- wider, and the lamp's
+             catch along it brighter) */
+          float edge = smoothstep(span - 0.18, span - 0.06, dd);
+          c3 = mix(c3, mah*1.9 + uRim*0.22, edge);
           /* the brass knob */
           float kk = 1.0/(1.0 + (LEAF - 0.32)*(1.0/R - 1.0));
           vec2 kc = vec2(-xa*kk, VY - 0.045*kk);

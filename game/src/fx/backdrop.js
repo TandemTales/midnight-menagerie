@@ -209,7 +209,11 @@ const SHAPE_M = [1.20, 2.00, 1.30, 1.00, 2.00, 2.00, 3.32, 2.60, 1.17, 1.33,
                  /* round 31 (MM_WINGS 1, gkDraw): 81 a garden urn on its
                     pedestal, 82 a kitchen basket of vegetables, 83 a stone
                     garden seat -- the near floor's things */
-                 1.55, 0.62, 0.95
+                 1.55, 0.62, 0.95,
+                 /* round 34 graft (MM_WINGS 6, VIVIANITE's wfPotBench): 84 a
+                    potting bench, its pots and a watering can -- the
+                    Greenhouse's near floor */
+                 1.15
 ];
 /* ...and a width ratio, so a column is a column and not a capital-T. Four of
  * these were wrong by enough to change what the object was: a longcase clock
@@ -238,7 +242,8 @@ const SHAPE_W = [1.15, 0.55, 1.00, 0.95, 0.72, 0.80, 0.47, 0.85, 0.90, 1.35,
                  1.35, 1.90, 0.66, 1.00,
                  2.05, 2.70,
                  0.42,
-                 0.45, 1.20, 2.05
+                 0.45, 1.20, 2.05,
+                 2.05
 ];
 /* HOW MUCH ONE OF THESE VARIES FROM THE NEXT, as a +-fraction of SHAPE_M.
  *
@@ -280,7 +285,8 @@ const SHAPE_VAR = [0.06, 0.08, 0.62, 0.20, 0.10, 0.08, 0.10, 0.10, 0.16, 0.48,
                  0.62, 0.12, 0.06, 0.00,
                  0.02, 0.04,
                  0.04,
-                 0.03, 0.06, 0.02
+                 0.03, 0.06, 0.02,
+                 0.03
 ];
 /* ROUND 23 (graft): ULTRAMARINE's drawings are in metres at their own
    proportions, so their quads take no width jitter -- a telescope 22%
@@ -294,7 +300,9 @@ const FIXW = { 32: 1, 33: 1, 34: 1, 35: 1, 39: 1, 40: 1, 41: 1, 42: 1, 43: 1, 44
                62: 1, 63: 1, 64: 1, 65: 1, 66: 1, 67: 1, 68: 1, 69: 1, 70: 1, 71: 1, 72: 1, 73: 1,
                75: 1, 76: 1, 77: 1, 78: 1, 79: 1, 80: 1,
                /* and round 31's */
-               81: 1, 82: 1, 83: 1 };
+               81: 1, 82: 1, 83: 1,
+               /* and round 34's graft */
+               84: 1 };
 // Which shapes hang from the ceiling rather than stand on the floor.
 export const HANGING = { 4: 1, 7: 1, 22: 1, 33: 1 };
 /* ...and which stand AGAINST A WALL rather than out on the floor. A tall
@@ -471,6 +479,10 @@ export const PROP_SHAPES = {
   crypt: [6, 15, 57, 58, 59],
   foyer: [4, 6, 22, 23, 26, 62, 63, 64, 65, 66, 67, 68],
   graveyard: [23, 69, 70, 71, 73],
+  /* (round 34 graft: NOT 84, the potting bench -- the rooms that set one
+     down (the conservatory and the palm house seen from their vantages)
+     bring it in themselves, so the wing's fight keeps its program: with
+     the bench compiled in, the Greenhouse prop link went 9.6 -> 12-14 s) */
   greenhouse: [6, 23, 25, 74, 75, 76, 77, 80],
   heart: [0, 4, 5, 6, 22, 23, 31],
   hedge: [23, 25, 28, 30, 31, 81, 83],
@@ -576,6 +588,8 @@ export const ROOM_VARIANTS = [
   { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 1, MM_WINGS: 4, MM_SHM0: 79691856, MM_SHM1: 0, MM_SHM2: 508 }, wings: ['foyer'] },
   { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 5, MM_SHM0: 8388608, MM_SHM1: 0, MM_SHM2: 11776 }, wings: ['graveyard'] },
   { mat: 'prop', defines: { MM_STONES: 1, MM_BUST: 0, MM_WINGS: 6, MM_SHM0: 41943104, MM_SHM1: 0, MM_SHM2: 1294336 }, wings: ['greenhouse'] },
+  /* (round 34 graft: and the Greenhouse rooms with the potting bench, 84) */
+  { mat: 'prop', defines: { MM_STONES: 1, MM_BUST: 0, MM_WINGS: 6, MM_SHM0: 41943104, MM_SHM1: 0, MM_SHM2: 18071552 }, wings: ['greenhouse'] },
   { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 1, MM_SHM0: 12583025, MM_SHM1: 2, MM_SHM2: 0 }, wings: ['heart'] },
   { mat: 'prop', defines: { MM_STONES: 1, MM_BUST: 0, MM_WINGS: 1, MM_SHM0: 310378496, MM_SHM1: 3, MM_SHM2: 10485760 }, wings: ['hedge'] },
   { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 2, MM_SHM0: 12648448, MM_SHM1: 7680, MM_SHM2: 0 }, wings: ['kennels'] },
@@ -1689,8 +1703,12 @@ export class Backdrop {
     for (const it of (P.near || [])) {
       if (!it.centre) continue;
       const n0 = out.length;
+      /* (round 34 graft, VIVIANITE's `still` -- see the near set below) */
+      const rand0 = rand;
+      if (it.still) { let k = 0; rand = () => { const v = Math.sin((++k) * 12.9898 + (it.z ?? 0) * 78.233 + (it.edge ?? it.x ?? 0) * 37.719) * 43758.5453; return v - Math.floor(v); }; }
       push(it.shape, it.x ?? 0, it.z, it.scale ?? 1.0, it.tone ?? 0.9, it.y,
            it.edge !== undefined ? { edge: it.edge } : (it.free ? 'free' : undefined));
+      rand = rand0;
       if (it.seed !== undefined && out.length > n0) out[out.length - 1].seed = it.seed;   // (round 25 graft)
       /* (round 29: and its height in metres, `hM`, where a living thing's
          dealt spread would leave the frame's one specimen palm a fern) */
@@ -1857,8 +1875,9 @@ export class Backdrop {
           for (let i = 0; i < beds; i++) {
             /* (round 34: the Greenhouse's staging carries its planting in
                its own quad, 0.95 m over the brick -- GH_STAGE_PLANT) */
+            /* (round 34 graft, item 0: 0.66 -- the frame budget) */
             pushArch(bedShape, bMid + ((i + 0.5) / beds - 0.5) * 2 * span,
-                     z + 0.6, (span * 2) / beds + 0.25, lift + (bedShape === 77 ? 0.95 : 0), 0.30 + f * 0.42);
+                     z + 0.6, (span * 2) / beds + 0.25, lift + (bedShape === 77 ? 0.66 : 0), 0.30 + f * 0.42);
           }
         }
         for (let i = 0; i < per && out.length - archN < n; i++) {
@@ -1873,7 +1892,10 @@ export class Backdrop {
              stood between the lens and the planting it looks down on */
           let sh = pick();
           for (let tries = 0; tries < 4 && f < 0.5 && (P.backOnly || []).includes(sh); tries++) sh = pick();
-          push(sh, x, z + (rand() - 0.5) * 0.8, 1.15 - f * 0.18, 0.20 + f * 0.66,
+          /* (round 34 graft, GLAUCONITE's: a room may grow its staging's
+             planting larger -- props.tierScale, the conservatory seen from
+             its gallery, where "the beds hold a few tiny plants") */
+          push(sh, x, z + (rand() - 0.5) * 0.8, (1.15 - f * 0.18) * (P.tierScale ?? 1), 0.20 + f * 0.66,
                0.02 + lift);
         }
       }
@@ -1950,7 +1972,9 @@ export class Backdrop {
                grown-out crown's swells stand up to 0.6 m over it, yewAmp in
                the shader; 1/0.72 bought a metre and cost the maze fight a
                sky's worth of prop pixels) */
-            pushArch(28, cx, zr + (rand() - 0.5) * 0.12, sl + 0.34, hh / 0.80, 0.34 + r * 0.16);
+            /* (round 34 graft: 1/0.88 -- VIVIANITE's rounder crown, which
+               stands under half a metre over the cut, yewTop in the shader) */
+            pushArch(28, cx, zr + (rand() - 0.5) * 0.12, sl + 0.34, hh / 0.88, 0.34 + r * 0.16);
             /* a gate section: the run with an arch cut through it */
             if (P.gate && r === 0 && Math.abs(cx) < sl * 0.5 + 0.2) out[out.length - 1].seed = 20 + rand() * 10;
           }
@@ -2136,8 +2160,16 @@ export class Backdrop {
          the room; and `keep` says it was set there on purpose, so a lamp's
          stand beside it does not unseat it. Read only where written.) */
       const ix = it.fromWall !== undefined ? Math.sign(it.x || 1) * (halfW - it.fromWall) : (it.x ?? 0);
+      /* (round 34 graft, VIVIANITE's: a piece added to a room that was
+         judged as it is may say `still` -- it draws its jitter from its own
+         hash, not from the build's rand(), so the stream the shafts and the
+         wall, floor and ceiling seeds draw from next is exactly what it was,
+         and the room round it does not change) */
+      const rand0 = rand;
+      if (it.still) { let k = 0; rand = () => { const v = Math.sin((++k) * 12.9898 + (it.z ?? 0) * 78.233 + (it.edge ?? it.x ?? 0) * 37.719) * 43758.5453; return v - Math.floor(v); }; }
       push(it.shape, ix, it.z, it.scale ?? 1.0, it.tone ?? 0.16, it.y,
            it.wall ? 'wall' : (it.edge !== undefined ? { edge: it.edge } : (it.free ? 'free' : undefined)));
+      rand = rand0;
       /* (round 25 graft: a piece placed by hand may name its own seed -- the
          form a drawing takes off it, a kerbed grave and not a table tomb --
          AFTER it is dealt, so the rand() stream is what it was) */
@@ -3030,7 +3062,7 @@ export class Backdrop {
       if (s > 80.5 && s < 83.5) { if (wings < 1) wings = 1; continue; }
       /* round 25: the last four wings' drawn objects (62+), in a program of
          their own -- so no room that does not deal one moves */
-      if (s > 61.5) w25 = (s > 68.5 && s < 71.5) || (s > 72.5 && s < 73.5) ? 5 : ((s > 73.5 && s < 77.5) || (s > 79.5 && s < 80.5) ? 6 : 4);
+      if (s > 61.5) w25 = (s > 68.5 && s < 71.5) || (s > 72.5 && s < 73.5) ? 5 : ((s > 73.5 && s < 77.5) || (s > 79.5 && s < 80.5) || (s > 83.5 && s < 84.5) ? 6 : 4);   // (round 34 graft: 84, the Greenhouse's potting bench)
       if ((s > 2.5 && s < 3.5) || (s > 15.5 && s < 16.1) || (s > 24.5 && s < 25.5)) stones = 1;
       else if (s > 44.5) wings = 3;          // round 24: the house's own rooms' objects
       else if (s > 31.5) wings = Math.max(wings, 2);          // round 23: the bath, the lamp, the telescope, the kennel

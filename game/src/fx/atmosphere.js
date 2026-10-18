@@ -283,7 +283,13 @@ export const REGIONS = {
        the hand, and a pool of candlelight laid on them in front of you from
        the near torchere, with the runner in its Turkey dyes */
     nearFloor: { fall: 0.90, dye: 1, calm: 0.6,
-                 pool: { ahead: 3.6, across: -0.8, rAlong: 2.8, rAcross: 3.0, k: 1.15, color: '#e8a460' } },
+                 pool: { ahead: 3.6, across: -0.8, rAlong: 2.8, rAcross: 3.0, k: 1.15, color: '#e8a460' },
+                 /* (round 34 GRAFT, all three judges on the fight: "a warm
+                    light pool on the floor between the Kid and the enemies,
+                    so they stand on a lit stage" -- the chandelier's candles
+                    laid on the boards where the fight stands, 9-10 m out;
+                    measured with it painted red) */
+                 pool2: { ahead: 9.6, across: 0.0, rAlong: 2.6, rAcross: 4.4, k: 5.5, color: '#eaa860' } },
     wallFog: 0.06,
     bloom: 0.80, warmTone: 0.05, halation: 0.55,
   },
@@ -547,7 +553,10 @@ export const REGIONS = {
     /* (round 34: 36 dealt, from 44 -- the staging carries its own planting
        now (GH_STAGE_PLANT), packed along every tier, so the loose pots it
        stood are fewer; the frame budget the planting costs is paid here) */
-    props: { shapes: [74, 75, 74, 76, 6], count: 36, height: 2.6, layout: 'terrace', depth: 16, bedShape: 77 },
+    /* (round 34 graft, item 0: 30 -- measured in one page, the props cost
+       the fight +0.9 ms over BASE with 36; the planted staging is the
+       planting now, and the beds (75) dealt loose are its dearest piece) */
+    props: { shapes: [74, 75, 74, 76, 6], count: 30, height: 2.6, layout: 'terrace', depth: 16, bedShape: 77 },
     r25w: 3,
     /* ROUND 34: THE NEAR FLOOR (both survey-5 judges): round 31's rule --
        the flags running on lit toward the hand, a lamp's pool laid on them
@@ -1003,6 +1012,10 @@ export const REGIONS = {
                     /* (round 34: and its fellow on the right-hand lawn, so
                        the near turf is not empty on the side away from the
                        seat -- one more term, measured in the hm-1 frame) */
+                    /* (round 34 graft: VIVIANITE's big foreground topiary
+                       stood here -- J3 -- and measured +0.5 ms of the maze
+                       fight's props, a frame-tall field of clipped yew; the
+                       urn is back) */
                     { shape: 81, edge: 0.88, z: 2.2, tone: 0.94, seed: 2.6, fore: 1, keep: true }] },
     /* ...and the moon laid on the walk and the turf in front of you, the
        foreground falling to nine-tenths and not two-fifths */
@@ -1015,15 +1028,20 @@ export const REGIONS = {
        (second pass: 6.0 and 4.4, from 3.2 and 2.0 -- painted red and green
        they lay where they were meant to, and at the old strengths the dark
        turf took them as nothing) */
+    /* (round 34 graft, all three judges: "the bottom third is still a
+       dark empty field" -- the lanterns' pool wider, out over the lawn both
+       sides of the path, and the moon's on the far side a step up) */
     nearFloor: { fall: 0.95, calm: 0.75,
-                 pool: { ahead: 3.8, across: -0.3, rAlong: 3.6, rAcross: 4.0, k: 6.0, color: '#d9a66e' },
-                 pool2: { ahead: 3.2, across: 2.6, rAlong: 3.0, rAcross: 2.6, k: 4.4, color: '#8ea6cc' } },
+                 pool: { ahead: 3.8, across: -0.3, rAlong: 3.8, rAcross: 5.2, k: 6.0, color: '#d9a66e' },
+                 pool2: { ahead: 3.2, across: 2.6, rAlong: 3.0, rAcross: 3.0, k: 5.6, color: '#8ea6cc' } },
     particles: { mix: [[PTYPE.SPORE, 0.44], [PTYPE.ASH, 0.30], [PTYPE.DUST, 0.26]],
                  tint: '#e0d8a8', wispTint: '#b08fd8', emberTint: '#d8a04a',
                  speed: 0.75, scale: 1.3, wind: 1.4, density: 0.95 },
     /* (round 29 graft: the contrast a little up and the moon over the far
        hedges a step down, BOLUS's -- the darks down, the lit tops kept) */
-    exposure: 1.72, vignette: 1.52, contrast: 1.28,
+    /* (round 34 graft, VIVIANITE's: the vignette 1.52 -> 1.40, the near
+       corners of the lawn out of black -- all three judges) */
+    exposure: 1.72, vignette: 1.32, contrast: 1.28,
     key:  { glow: 0, kind: 'cold', x: -4.2, y: 5.6, z: 3.0, color: '#b6c0da', intensity: 2.30, radius: 15.0, flicker: false },
     fill: { glow: 0, kind: 'warm', x: 5.0, y: 1.6, z: 1.6, color: '#dda358', intensity: 1.01, radius: 5.59 },
     lights: [
@@ -1254,12 +1272,21 @@ export const REGIONS = {
                /* (second pass: the kennel at your right shoulder is gone
                   again -- a frame-tall quad of the prop program, and the
                   kennels fight measured +2.3 ms over BASE with it) */
+               /* (round 34 graft: J3's "a bed or bowl in the centre
+                  foreground" was set here and measured +0.44 ms of props in
+                  the kennels fight, where the hand covers it -- not kept) */
              ] },
     /* ROUND 34: the brown-grey haze off the stalls (both survey-5 judges:
        "the back stall wall is muddy and indistinct under an overall brown-
        grey haze"). Bisected: the wall's own fog at the default 0.18 over a
        range 9 m off -- the darks of the stalls keep their colour without it */
-    wallFog: 0.05,
+    /* (round 34 GRAFT, VIVIANITE's -- J1 and J2: "clear the haze from the
+       upper back wall up to the windows": the wall's fog 0.05 -> 0.03, the
+       bloom 0.72 -> 0.50 and the halation 0.30 -> 0.15 (the lanterns' glow
+       laid a soft veil over the stalls and the brick above), the grain under
+       half; and the grade's saturation 0.89 -> 0.95, so the doghouses keep
+       their paint) */
+    wallFog: 0.03, bloom: 0.50, halation: 0.15, grain: 0.011, saturate: 0.95,
     /* ...and THE NEAR FLOOR (round 31's rule): the flags run on toward the
        hand, the lantern's pool laid on them in front of you, and the straw
        heaped where the dogs drag it (FLOOR_FRAG, uStraw's heaps) */
@@ -1572,9 +1599,13 @@ const FOYER_NEAR_HEARTH = [
      torchere standing out on the boards with its pool round it, and the
      stick stand by the door on the right -- `fore`, so the threshold's
      step back keeps them at your feet. */
-  { shape: 63, edge: 0.165, z: 4.6, tone: 0.95, fore: 1, keep: true, scale: 1.1 },
+  /* (round 34 GRAFT, GLAUCONITE's -- J1 and J2: "the green chairs in the
+     parlour's near corners", a PAIR of hall chairs either side of the runner
+     as a parlour sets them to the fire, in its green velvet (seeds 2.2 and
+     6.7); the stick stand they displace goes to the gallery) */
+  { shape: 63, edge: 0.150, z: 4.8, tone: 0.95, fore: 1, keep: true, scale: 1.1, seed: 2.2 },
   { shape: 65, edge: 0.27, z: 2.6, tone: 0.95, fore: 1, keep: true },
-  { shape: 67, edge: 0.885, z: 4.8, tone: 0.95, fore: 1, keep: true, scale: 1.2 },
+  { shape: 63, edge: 0.855, z: 4.6, tone: 0.95, fore: 1, keep: true, scale: 1.1, seed: 6.7 },
 ];
 const FOYER_NEAR_GALLERY = [
   /* (busts on term pedestals, round 14: the gallery's statues read as "dark
@@ -1590,6 +1621,9 @@ const FOYER_NEAR_GALLERY = [
   { shape: 64, x:  7.60, z: -7.40, tone: 0.90 },
   { shape: 65, x: -3.20, z: -5.40, tone: 0.72, under: 2 },
   { shape: 63, x: -5.40, z: -1.60, tone: 0.86 },   // a hall chair by the near wall
+  /* (round 34 graft, GLAUCONITE's: the stick stand on the flags at your
+     right, across from the bust) */
+  { shape: 67, edge: 0.90, z: 3.6, tone: 0.95, fore: 1, keep: true },
 ];
 /* A FAMILY PLOT AT ARM'S LENGTH (round 14): the Graveyard's plots are seen
    from AMONG the graves, and the rows layout puts its nearest rank eight metres
@@ -1678,6 +1712,11 @@ export const ROOM_KINDS = {
            this hall has brought nearer, so the paper beside the fire is
            not washed a milky lavender) */
         lamps: [{ i: 3, z: 0.42, k: 0.70 }],
+        /* (round 34 GRAFT, GLAUCONITE's -- J1 and J2: "the warmer pool along
+           the runner": the torchere's candles laid long and warm down the
+           runner between the chairs, where the parlour's lower half was a
+           dark plank field) */
+        nearFloor: { pool: { ahead: 4.6, across: 0.0, rAlong: 3.8, rAcross: 3.0, k: 2.1, color: '#f0a65a' } },
         door: 'case', vantage: { at: 'threshold', back: 2.4, lens: 0.88, dip: 0.30, dy: -0.20 } },
       /* a gallery is long and narrow, so its arcade runs away down both
          sides; it is paved in flags and vaulted bay by bay */
@@ -1690,7 +1729,11 @@ export const ROOM_KINDS = {
         room: { w: 0.84, d: 1.10 }, rug: { ahead: 5.2, hw: 1.5, hd: 2.6 },
         /* (round 34: the near pool longer down the flags, so no dark band
            lies across the floor between it and the lantern's) */
-        nearFloor: { pool: { ahead: 5.0, across: -0.6, rAlong: 4.6, rAcross: 3.4, k: 1.15, color: '#e8a460' } },
+        nearFloor: { pool: { ahead: 5.0, across: -0.6, rAlong: 4.6, rAcross: 3.4, k: 1.15, color: '#e8a460' },
+                     /* (round 34 graft, J1: "a light or a prop in the gallery's
+                        near-left black hole" -- the near torchere's candles on
+                        the flags there, under the bust) */
+                     pool2: { ahead: 2.8, across: -2.2, rAlong: 2.4, rAcross: 2.2, k: 1.6, color: '#e8a460' } },
         floor: 2, ceil: 4, cam: { y: 0.45, z: 1.2, look: -0.10, fov: 3 },
         vantage: { at: 'along', off: 0.30, wall: 2.6, fwd: 0.8, yaw: 26, wide: 5 } },
     ],
@@ -1774,7 +1817,10 @@ export const ROOM_KINDS = {
         centre: { shape: 25, z: -2.9, clear: 2.9 },
         /* from up there the columns stand at the back and the birdcage stands
            are more planting (the view only: the fight's room is as it was) */
-        backOnly: [6], swapView: [[76, 74]],
+        /* (round 34 graft, GLAUCONITE's tierScale: the staging's planting
+           grown larger in this room -- J1: "the back beds raised into a full,
+           lit mass") */
+        backOnly: [6], swapView: [[76, 74]], tierScale: 2.1,
         /* its warm lamp stands beside the fountain, where it lights it */
         lampsView: [{ i: 2, x: 3.3, z: 0.10, k: 0.55 },   // (round 25: no white hole in the flags)
           /* (round 25 graft, both judges: "light the fountain and the back
@@ -1786,40 +1832,55 @@ export const ROOM_KINDS = {
              set beside is walked back to the staging, and at that height
              and strength it burned the "blown-out white smear" both survey-5
              judges named into the raised paving; higher, its pool spreads) */
-          { i: 3, x: 1.4, z: 0.46, y: 2.60, color: '#e6b872', k: 3.0, radius: 8.5 }],
+          /* (round 34 graft: GLAUCONITE's 2.0 at 9 m -- nearer the fountain
+             from the new vantage, 3.0 laid a hot pool on its paving) */
+          { i: 3, x: 1.4, z: 0.46, y: 2.60, color: '#e6b872', k: 2.0, radius: 9.0 }],
         /* (...and, both judges, "one or two planted urns or a fern stand at
            mid-depth on the empty floor": set by the frame, dealt first --
            the terrace spends the whole prop budget) */
         nearView: [
-          { shape: 74, edge: 0.30, z: -3.6, tone: 0.94, centre: 1, scale: 2.60, seed: 1.75 },   // a kentia in a stone urn, by the lamp
+          /* (round 34 GRAFT, GLAUCONITE's conservatory -- J1 and J2: "tall
+             drawn ferns in urns in the conservatory's near corners and the
+             fountain at its back". From the gallery's near end the planting
+             the eye looks down on is set by the frame down both sides of the
+             floor -- palms and ferns in their urns, brick beds of fern and
+             aloe -- at several heights, and the fountain is the room's
+             centre at a size that reads) */
+          { shape: 74, edge: 0.21, z: -4.6, tone: 0.94, centre: 1, seed: 1.75, hM: 2.8 },   // a kentia in a stone urn, by the lamp
           { shape: 76, edge: 0.76, z: -2.4, tone: 0.92, centre: 1, scale: 1.90 },
-          /* (round 29: and a palm in its tub at the right, so the planting
-             crowds both sides of the floor) */
           { shape: 74, edge: 0.94, z: -3.8, tone: 0.92, centre: 1, seed: 2.45, hM: 2.9 },
           { shape: 74, edge: 0.07, z: -3.0, tone: 0.92, centre: 1, seed: 4.15, hM: 2.6 },
           { shape: 76, edge: 0.15, z: -5.6, tone: 0.90, centre: 1 },
           { shape: 74, edge: 0.84, z: -6.4, tone: 0.90, centre: 1, seed: 3.35, hM: 2.2 },
-          /* (round 29 GRAFT, judge 1, BOLUS's: "the pair of fluted green
-             iron columns framing the arched bays; they add a structural
-             foreground the conservatory lacks") */
           { shape: 6, edge: 0.17, z: -7.6, tone: 0.96, centre: 1 },
           { shape: 6, edge: 0.83, z: -7.8, tone: 0.96, centre: 1 },
-          /* ROUND 34 (both survey-5 judges: the near floor "an empty, soft,
-             unlit floor plane"): the gardener's things on the flags under
-             the gallery rail -- a stand of pots by the lantern, a fern and
-             a pair of pots set down at the left, a tall fern at the right */
-          /* (second pass: at a metre and under they read from the gallery
-             as "a handful of small plants" -- the gardener's big pots, and a
-             tall fern standing up into the view at the right, so the
-             planting is at several heights from the flags up; a palm at the
-             left as well cost the glasshouse fight its frame) */
-          { shape: 74, edge: 0.22, z: -0.6, tone: 0.94, centre: 1, fore: 1, seed: 6.05, hM: 1.55 },
-          { shape: 74, edge: 0.30, z: -1.6, tone: 0.94, centre: 1, fore: 1, seed: 5.25, hM: 1.10 },
-          { shape: 76, edge: 0.70, z: 2.0, tone: 0.94, centre: 1, fore: 1, scale: 1.55 },
-          { shape: 74, edge: 0.92, z: 3.0, tone: 0.94, centre: 1, fore: 1, seed: 1.75, hM: 2.6 },
+          { shape: 75, edge: 0.03, z: -1.2, tone: 0.94, centre: 1, seed: 3.1 },
+          { shape: 75, edge: 0.97, z: -1.6, tone: 0.94, centre: 1, seed: 6.4 },
+          { shape: 74, edge: 0.02, z: -2.2, tone: 0.95, centre: 1, seed: 5.25, hM: 3.4 },
+          { shape: 74, edge: 0.98, z: -2.6, tone: 0.95, centre: 1, seed: 1.15, hM: 3.2 },
+          { shape: 74, edge: 0.24, z: -5.6, tone: 0.92, centre: 1, seed: 4.65, hM: 1.9 },
+          { shape: 75, edge: 0.70, z: -6.2, tone: 0.92, centre: 1, seed: 2.2 },
+          { shape: 75, edge: 0.36, z: -9.4, y: 0.44, tone: 0.90, centre: 1, seed: 4.4 },
+          { shape: 75, edge: 0.64, z: -9.8, y: 0.44, tone: 0.90, centre: 1, seed: 5.9 },
+          { shape: 74, edge: 0.31, z: -11.6, y: 0.44, tone: 0.90, centre: 1, seed: 2.85, hM: 3.6 },
+          { shape: 74, edge: 0.69, z: -12.0, y: 0.44, tone: 0.90, centre: 1, seed: 6.55, hM: 3.8 },
+          { shape: 74, edge: 0.10, z: -8.8, tone: 0.90, centre: 1, seed: 7.45, hM: 3.4 },
+          { shape: 74, edge: 0.90, z: -9.2, tone: 0.90, centre: 1, seed: 8.35, hM: 3.2 },
+          { shape: 75, edge: 0.11, z: -4.0, tone: 0.93, centre: 1, seed: 5.5 },
+          { shape: 75, edge: 0.89, z: -4.6, tone: 0.93, centre: 1, seed: 3.9 },
+          { shape: 74, edge: 0.79, z: -5.8, tone: 0.92, centre: 1, seed: 4.65, hM: 2.6 },
+          { shape: 74, edge: 0.33, z: -7.0, y: 0.42, tone: 0.92, centre: 1, seed: 6.05, hM: 0.9 },
+          { shape: 74, edge: 0.41, z: -7.0, y: 0.42, tone: 0.92, centre: 1, seed: 2.25, hM: 0.8 },
+          { shape: 74, edge: 0.60, z: -7.0, y: 0.42, tone: 0.92, centre: 1, seed: 5.25, hM: 0.9 },
+          { shape: 74, edge: 0.68, z: -7.0, y: 0.42, tone: 0.92, centre: 1, seed: 3.35, hM: 0.8 },
+          /* (...and VIVIANITE's, J2 and J3: the gardener's potting table, its
+             pots and a watering can, on the flags under the gallery) */
+          { shape: 84, edge: 0.66, z: -3.4, tone: 0.95, centre: 1, still: true, scale: 1.2 },
         ],
         /* (round 34: 1.0 of the wing's 36 -- the 0.82 of 44 it was judged with) */
-        vantage: { at: 'above', rise: 2.9, drop: 0.0, fwd: 0.4, ahead: 9.0, count: 1.0 } },
+        /* (round 34 graft, GLAUCONITE's: from the gallery's near end and not
+           its far one -- at fwd 0.4 the house's planting was 20-25 m off) */
+        vantage: { at: 'above', rise: 2.9, drop: 0.0, fwd: 4.0, ahead: 7.0, count: 1.2 } },   // (round 34 graft: 36 of the wing's 30, as judged)
       /* a palm house is walked down between two files of palms, close in
          along the walk where the lamps are, and its columns are the iron
          ones on its walls, so the pack deals palms where the hall deals a
@@ -1842,7 +1903,7 @@ export const ROOM_KINDS = {
            of the floor would be black) */
         lampsView: [{ i: 3, x: 3.4, z: 0.24, y: 1.5, k: 0.85 }],
         cam: { y: -0.20, z: -0.6, look: 0.35, fov: 2 },
-        vantage: { at: 'among', fwd: 3.2, low: 0.58, pitch: 4.5, off: 0.04, wide: 4, count: 0.76 },   // (round 34: of 36, the 0.62 of 44 it had)
+        vantage: { at: 'among', fwd: 3.2, low: 0.58, pitch: 4.5, off: 0.04, wide: 4, count: 0.91 },   // (round 34: of 36, the 0.62 of 44 it had; graft: of 30)
         /* and palms at arm's length either side of the walk, which is where
            you are standing: among them, not looking at them across a floor */
         nearView: [
@@ -1870,13 +1931,20 @@ export const ROOM_KINDS = {
           { shape: 74, edge: 0.78, z: 1.2, tone: 0.92, centre: 1, fore: 1, seed: 6.05, hM: 1.0 },
           { shape: 74, edge: 0.40, z: 4.6, tone: 0.92, centre: 1, fore: 1, seed: 5.25, hM: 0.7 },
           { shape: 75, x: -5.60, z: -1.60, tone: 0.86 },
+          /* (round 34 GRAFT, VIVIANITE's -- J2: "the palm house's black
+             near-left carried into the light, a pot or watering can in it":
+             the potting bench and its can on the flags there) */
+          { shape: 84, edge: 0.27, z: 2.8, tone: 0.95, keep: true, still: true },   // (in from 0.20: the frame cut its end)
         ],
         /* ...and the moon through the roof on the near flags at the left, so
            the walk's left half is not a black field under the lamp's right
            (second pass: + across, 5.4 m on -- this vantage draws mirrored,
            and at 3 m the pool lay under the frame's foot; measured with the
            pool painted red) */
-        nearFloor: { pool2: { ahead: 5.4, across: 2.9, rAlong: 3.4, rAcross: 2.4, k: 3.6, color: '#7fa6c8' } } },
+        /* (round 34 graft, J2 and VIVIANITE's: and the lantern's warm on the
+           near-left flags where the bench stands -- + across, as the moon's) */
+        nearFloor: { pool: { ahead: 5.0, across: 2.4, rAlong: 3.4, rAcross: 3.0, k: 4.2, color: '#e0b266' },
+                     pool2: { ahead: 5.4, across: 2.9, rAlong: 3.4, rAcross: 2.4, k: 3.6, color: '#7fa6c8' } } },
       /* and a vinery's floor is bedded out in rows under the rods; it is a
          lean-to against the garden wall, so it is shallower than the great
          house (0.7 of its depth) and that wall is near enough to read */
@@ -1907,7 +1975,7 @@ export const ROOM_KINDS = {
           { shape: 75, edge: 0.50, z: -0.6, tone: 0.90, centre: 1, fore: 1, seed: 2.2 },
         ],
         cam: { y: 0.35, z: 0.6, look: -0.2 },
-        vantage: { at: 'along', off: 0.30, wall: 3.2, fwd: 3.2, yaw: 33, wide: 4, dlook: 0.5, count: 1.22 } },   // (round 34: 44 of the wing's 36)
+        vantage: { at: 'along', off: 0.30, wall: 3.2, fwd: 3.2, yaw: 33, wide: 4, dlook: 0.5, count: 1.47 } },   // (round 34: 44 of the wing's 36; graft: of 30)
     ],
     names: [
       [/overgrown|vine|ivy/i, 2],
@@ -2242,7 +2310,16 @@ export const ROOM_KINDS = {
            the walk to the fountain and a stone seat on the right-hand lawn) */
         near: [{ shape: 81, edge: 0.10, z: 1.2, tone: 0.94, seed: 1.1, fore: 1, keep: true },
                { shape: 81, edge: 0.90, z: 1.2, tone: 0.94, seed: 2.6, fore: 1, keep: true },
-               { shape: 83, edge: 0.66, z: 3.4, tone: 0.94, seed: 2.0, fore: 1, keep: true }],
+               { shape: 83, edge: 0.66, z: 3.4, tone: 0.94, seed: 2.0, fore: 1, keep: true },
+               /* (round 34 graft, all three judges: "a prop in each near
+                  corner" -- a ball-tree in its box on the near-left lawn,
+                  across from the seat) */
+               { shape: 30, edge: 0.17, z: 3.6, tone: 0.95, seed: 5.0, fore: 1, keep: true }],
+        /* (round 34 graft, VIVIANITE's: the lanterns' spill carried down the
+           walk to your feet, and the moon on the near-left lawn -- at the
+           wing's strengths, which the dark turf needs) */
+        nearFloor: { pool: { ahead: 3.4, across: 0.2, rAlong: 3.4, rAcross: 3.4, k: 6.0, color: '#d9a66e' },
+                     pool2: { ahead: 3.8, across: -3.0, rAlong: 3.0, rAcross: 2.8, k: 4.4, color: '#8fa2c4' } },
         vantage: { at: 'among', low: 0.62, fwd: 2.0, pitch: 3.0, off: 0.04, wide: 3 } },
       /* the gate into the maze, seen from in it */
       { subject: 'topiary', layout: 'maze', maze: { gate: true, first: 4.2 },
@@ -2255,7 +2332,14 @@ export const ROOM_KINDS = {
            ball-trees in their boxes staggered down it, and SAFFLOWER's seat) */
         near: [{ shape: 30, x: -2.5, z: 2.6, tone: 0.95, free: true, keep: true, seed: 7.0 },
                { shape: 30, x: 2.6, z: 0.4, tone: 0.95, free: true, keep: true, seed: 5.0 },
-               { shape: 83, edge: 0.40, z: 4.2, tone: 0.94, seed: 2.0, fore: 1, keep: true }],
+               { shape: 83, edge: 0.40, z: 4.2, tone: 0.94, seed: 2.0, fore: 1, keep: true },
+               /* (round 34 graft, VIVIANITE's: the walk's near-right lawn was
+                  bare under the moon -- an urn on its pedestal stood in it) */
+               { shape: 81, edge: 0.84, z: 3.2, tone: 0.94, seed: 2.6, fore: 1, keep: true }],
+        /* (round 34 graft, VIVIANITE's: the near walk lit -- the lanterns'
+           warm on the gravel at your feet, the moon on the right-hand turf) */
+        nearFloor: { pool: { ahead: 3.6, across: -0.6, rAlong: 3.6, rAcross: 3.4, k: 6.0, color: '#d9a66e' },
+                     pool2: { ahead: 3.8, across: 3.0, rAlong: 3.0, rAcross: 2.8, k: 4.4, color: '#8fa2c4' } },
         vantage: { at: 'along', off: 0.14, wall: 4.0, fwd: 1.6, yaw: 12, wide: 3 } },
     ],
     names: [
@@ -2358,8 +2442,9 @@ export const ROOM_KINDS = {
                      /* (round 34: the near floor -- a dog's bed waiting by
                         the door at the left, the grooming table at your
                         right, in the straw) */
-                     { shape: 40, edge: 0.14, z: 2.2, tone: 0.95, fore: 1, keep: true, scale: 1.1 },
-                     { shape: 41, edge: 0.92, z: 1.8, tone: 0.95, fore: 1, keep: true }] }],
+                     { shape: 40, edge: 0.14, z: 2.2, tone: 0.95, fore: 1, keep: true, scale: 1.1 }] }],
+                     /* (round 34 graft, J2: the grooming table at your right
+                        is gone -- cut by the frame it read as an easel) */
     names: [
       [/wash|groom|veterinar|quarantine|kitchen/i, 1],
       [/./, 0],
@@ -3261,6 +3346,9 @@ export class Atmosphere {
           pal.props.shapes = pal.props.shapes.map((sh) => (sh === from ? to : sh));
         }
         if (kind.backOnly) pal.props.backOnly = kind.backOnly;
+        /* (round 34 graft, GLAUCONITE's: and the size its staging's planting
+           grows to) */
+        if (kind.tierScale) pal.props.tierScale = kind.tierScale;
         /* ...and lamps the vantage's room places (as `lamps`, main room excepted) */
         for (const m of (kind.lampsView || [])) {
           const L = pal.lights[m.i];
