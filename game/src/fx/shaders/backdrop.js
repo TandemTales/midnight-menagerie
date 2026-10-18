@@ -19046,7 +19046,7 @@ float stDrawG(vec2 m, vec2 msz, float seed, float px0, bool paint){
      flat forms". The marble is MODELLED, not lit flat: the half turned from
      the key goes down into its own shadow and the lit half keeps its
      light, so the figure has a turn on it as a carved round thing does) */
-  col *= mix(1.0, mix(0.46, 1.08, smoothstep(-0.24, 0.24, kq*q.x)), uStatueMod);
+  col *= mix(1.0, mix(0.40, 1.06, smoothstep(-0.22, 0.22, kq*q.x)), uStatueMod);
   gStCol = col; gStInk = ink; gStMoon = clamp(moon, 0.0, 1.0);
   /* (graft: painted through the round-29 statue's own channel) */
   gWfCol = col; gWfInk = ink; gWfMoon = gStMoon; gWfEmit = vec3(0.0); gWfGloss = 0.32;
@@ -19183,7 +19183,7 @@ float stDraw(vec2 m, vec2 msz, float seed, float px, bool paint){
   }
   wfLay(col, ink, extra, xC, qpx, 0.95);
   /* (round 37: modelled, as the mourner above -- the turn from the key) */
-  col *= mix(1.0, mix(0.46, 1.08, smoothstep(-0.26, 0.26, kq*q.x)), uStatueMod);
+  col *= mix(1.0, mix(0.40, 1.06, smoothstep(-0.24, 0.24, kq*q.x)), uStatueMod);
   /* the silhouette is one hard pen line */
   ink = max(ink, mmInkP(d, qpx, 1.4)*0.95);
   gWfGloss = 0.32;
@@ -19227,43 +19227,52 @@ float gkDraw(vec2 m, vec2 msz, float shape, float seed, float px, bool paint){
   if (false) {
 #if MM_SH85
   } else if (shape > 84.5 && shape < 85.5 && seed > 20.0) {
-    /* ---- 85, seed > 20: PILLAR CANDLES STOOD ON THE BOARDS -- five church
-       candles of their own heights in a knot, their wax run down and pooled
-       on the floor, each burning. Drawn in true metres (the near item gives
-       the quad its hM and wM), so the pen is a pixel at any size. */
+    /* ---- 85, seed > 20: PILLAR CANDLES STOOD ON THE BOARDS -- a knot of
+       church candles in two ranks, the tall ones behind and the stubs in
+       front of them, each its own girth and burned down its own way, their
+       wax run down and pooled on the floor, every one burning. Painted back
+       to front, so a flame behind is hidden by the candle before it. Drawn
+       in true metres (the near item gives the quad its hM and wM). */
     vec2 cm = m;
     cm.x *= mir;
-    float dm = 1e3, wx = 1e3, fl = 1e3, glow = 0.0, pool = 1e3;
-    float shade = 0.0;
-    for (int i = 0; i < 5; i++){
+    float dm = 1e3, flAll = 1e3, glow = 0.0, waxAll = 1e3;
+    vec3 wcol = vec3(0.62, 0.52, 0.34)*(0.88 + 0.16*mv);
+    for (int i = 0; i < 7; i++){
       float fi = float(i);
-      /* the tall ones in the middle, each its own girth and burned down
-         its own way, none standing in front of another */
-      float x0 = (fi - 2.0)*0.140 + 0.020*(mmHash11(fi*3.3 + seed) - 0.5);
-      float r = 0.040 + 0.020*mmHash11(fi*5.1 + seed);
-      float tall = 1.0 - 0.55*abs(fi - 2.0)/2.0;
-      float hh = 0.09 + 0.36*tall*(0.45 + 0.55*mmHash11(fi*7.7 + seed*1.3));
-      float c = mmBox(cm - vec2(x0, hh*0.5), vec2(r, hh*0.5), r*0.30);
-      /* the top burned to a cup, the tears run down one side */
-      c = min(c, mmBox(cm - vec2(x0 + r*0.80*sign(sin(fi*2.3 + seed)), hh*0.66), vec2(r*0.28, hh*0.28), r*0.25));
-      if (c < wx) { wx = c; shade = clamp((cm.x - x0)/r, -1.0, 1.0); }
-      vec2 f = cm - vec2(x0, hh + 0.036);
-      fl = min(fl, (length(vec2(f.x/0.014, f.y/(f.y > 0.0 ? 0.040 : 0.016))) - 1.0)*0.014);
+      float back = step(fi, 2.5);                       // 0-2 behind, 3-6 in front
+      float x0 = back > 0.5 ? (fi - 1.0)*0.17 + 0.03 : (fi - 4.5)*0.135;
+      x0 += 0.022*(mmHash11(fi*3.3 + seed) - 0.5);
+      float r = (back > 0.5 ? 0.046 : 0.038) + 0.018*mmHash11(fi*5.1 + seed);
+      float hh = back > 0.5 ? 0.30 + 0.20*mmHash11(fi*7.7 + seed*1.3)
+                            : 0.08 + 0.17*mmHash11(fi*7.7 + seed*1.3);
+      float y0 = back*0.020;
+      float c = mmBox(cm - vec2(x0, y0 + hh*0.5), vec2(r, hh*0.5), r*0.30);
+      /* the tears run down one side */
+      c = min(c, mmBox(cm - vec2(x0 + r*0.80*sign(sin(fi*2.3 + seed)), y0 + hh*0.64), vec2(r*0.28, hh*0.30), r*0.25));
+      vec2 f = cm - vec2(x0, y0 + hh + 0.036);
+      float fl = (length(vec2(f.x/0.014, f.y/(f.y > 0.0 ? 0.042 : 0.016))) - 1.0)*0.014;
       glow = max(glow, exp(-length(f)/0.07));
-      pool = min(pool, wfEll(cm - vec2(x0, 0.004), vec2(r*2.0, 0.012)));
+      float pl = wfEll(cm - vec2(x0, 0.004), vec2(r*2.1, 0.013));
+      dm = min(dm, min(min(c, fl), pl));
+      waxAll = min(waxAll, c);
+      flAll = min(flAll, fl);
+      if (paint) {
+        float sh = clamp((cm.x - x0)/r, -1.0, 1.0);
+        /* each layer over the last: its pool, its wax round and lit on the
+           key's side, its flame over its own wick */
+        wfLay(col, ink, pl, wcol*0.40, px, 0.35);
+        wfLay(col, ink, c, wcol*(0.28 + 0.62*wfRound(sh))*(1.0 + 0.35*kq*sh)*(0.62 + 0.48*smoothstep(y0, y0 + 0.30, cm.y))*(back > 0.5 ? 0.86 : 1.0), px, 0.85);
+        float on = wfIn(fl, px);
+        col = mix(col, vec3(1.0, 0.92, 0.62), on);
+        emit = emit*(1.0 - wfIn(c, px)) + vec3(1.00, 0.80, 0.44)*2.0*on;
+        ink *= 1.0 - on;
+        noInk = max(noInk*(1.0 - wfIn(c, px)), on);
+      }
     }
-    dm = min(min(wx, fl), pool);
     d = dm/sc;
     if (!paint) return d*sc;
-    /* old church wax: ivory gone to honey, dark at the foot */
-    vec3 wcol = vec3(0.62, 0.52, 0.34)*(0.88 + 0.16*mv);
-    wfLay(col, ink, pool, wcol*0.45, px, 0.4);
-    wfLay(col, ink, wx, wcol*(0.30 + 0.60*wfRound(shade))*(1.0 + 0.35*kq*shade)*(0.65 + 0.45*smoothstep(0.0, 0.30, cm.y)), px, 0.8);
-    float flame = wfIn(fl, px);
-    col = mix(col, vec3(1.0, 0.92, 0.62), flame);
-    emit = vec3(1.00, 0.80, 0.44)*2.0*flame + vec3(1.0, 0.62, 0.26)*0.28*glow*(1.0 - flame)*wfIn(wx, px);
-    ink *= 1.0 - flame;
-    noInk = flame;
+    /* the candles lit by their neighbours' flames */
+    emit += vec3(1.0, 0.62, 0.26)*0.22*glow*wfIn(waxAll, px)*(1.0 - wfIn(flAll, px));
     qpx = px;   /* (the outline below is drawn in these true metres) */
     d = dm;
     sc = 1.0;
@@ -26123,7 +26132,7 @@ void main(){
     /* (round 37: the Heart's marble a step down from white -- "pale, flat
        forms" -- so its modelling reads and it is not the brightest thing in
        the hall) */
-    if (vShape > 30.5 && vShape < 31.5) Ew *= mix(1.0, 0.80, uStatueMod);
+    if (vShape > 30.5 && vShape < 31.5) Ew *= mix(1.0, 0.72, uStatueMod);
     albedo = gWfCol*Ew;
     wgE = gWfEmit; wgInk = gWfInk; wgMoon = gWfMoon;
   }
@@ -26450,7 +26459,7 @@ void main(){
        uFitK, pal.fitGain; 1 wherever it is not written. The Study's
        chandeliers were "blown white blobs": pale globes in their own glow) */
     fitEmit *= uFitK;
-    albedo *= mix(1.0, uFitK, clamp(glass, 0.0, 1.0));
+    albedo *= mix(1.0, uFitK, 0.45 + 0.55*clamp(glass, 0.0, 1.0));
   }
 #endif
 
@@ -26724,6 +26733,9 @@ void main(){
      as a pumpkin's orange is: the wings' own objects keep a chroma their
      room's tile or iron would take away) */
   float satK = uPropSat, satM = uPropSatMax;
+  /* (round 37: a fitting set down -- uFitK -- keeps its brass a metal's
+     colour, not the grey the wood's chroma cap left it) */
+  if (isFit > 0.5 && uFitK < 0.99) { satK = max(satK, 0.42); satM = max(satM, 0.60); }
 #if MM_WINGS == 2
   if (vShape > 31.5 && (vShape < 37.5 || vShape > 38.5)) { satK = max(uPropSat, 0.40); satM = max(uPropSatMax, 0.58); }
 #if MM_SH39

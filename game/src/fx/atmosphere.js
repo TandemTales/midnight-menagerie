@@ -815,16 +815,16 @@ export const REGIONS = {
       /* (round 37, survey-5 judge 1: "the chandeliers are blown white
          blobs" -- each candle's halo two-thirds the size and half the
          strength, so the arms and the cups of the fitting read round it) */
-      { kind: 'warm', x: -3.2, y: 3.00, z: -4.6, color: '#e0b266', intensity: 1.50, radius: 5.6, glow: 0.45, glowSize: 0.6 },
-      { kind: 'warm', x: 3.6, y: 3.20, z: -7.0, color: '#dca254', intensity: 1.30, radius: 6.0, glow: 0.45, glowSize: 0.6 },
-      { kind: 'warm', x: -4.0, y: 3.40, z: -7.6, color: '#ce9953', intensity: 0.90, radius: 5.5, glow: 0.45, glowSize: 0.6 },
+      { kind: 'warm', x: -3.2, y: 3.00, z: -4.6, color: '#e0b266', intensity: 1.50, radius: 5.6, glow: 0.32, glowSize: 0.55 },
+      { kind: 'warm', x: 3.6, y: 3.20, z: -7.0, color: '#dca254', intensity: 1.30, radius: 6.0, glow: 0.32, glowSize: 0.55 },
+      { kind: 'warm', x: -4.0, y: 3.40, z: -7.6, color: '#ce9953', intensity: 0.90, radius: 5.5, glow: 0.32, glowSize: 0.55 },
       { kind: 'cold', x: 0.6, y: 5.00, z: -8.0, color: '#769fba', intensity: 1.40, radius: 7.0 },
     ],
     shafts: { count: 1, spread: 6, y: 8.0, z: -8.0, angle: 0.22, width: 2.4, intensity: 0.14, pool: 1.5 },
     /* (round 37: halation 0.68 -> 0.42 -- the chandeliers' "blown white
        blobs" were half halo -- and the vignette 1.47 -> 1.22, judge 2's
        "smeared vignette") */
-    warmTone: 0.06, halation: 0.42, fitGain: 0.42,
+    warmTone: 0.06, halation: 0.42, fitGain: 0.14,
   },
 
   /* ── 8. The Moonlit Attic and Observatory ──────────────────────────────────
@@ -1613,8 +1613,8 @@ export const REGIONS = {
                     /* ...and nearer, a knot of pillar candles stood on the
                        boards either side of the runner's foot (85 with a
                        seed past 20: true metres, hM and wM) */
-                    { shape: 85, ahead: 5.4, across: -1.9, tone: 0.97, keep: true, still: true, seed: 21.3, hM: 0.55, wM: 0.85 },
-                    { shape: 85, ahead: 5.0, across: 2.1, tone: 0.97, keep: true, still: true, seed: 24.9, hM: 0.50, wM: 0.85 }] },
+                    { shape: 85, ahead: 5.4, across: -1.9, tone: 0.97, keep: true, still: true, seed: 21.3, hM: 0.58, wM: 0.98 },
+                    { shape: 85, ahead: 5.0, across: 2.1, tone: 0.97, keep: true, still: true, seed: 24.9, hM: 0.52, wM: 0.98 }] },
     wainscot: true, nearFrame: false,
     /* (round 37: the marble modelled -- uStatueMod) */
     statueModel: 1,
@@ -1653,8 +1653,11 @@ export const REGIONS = {
     fill: { glow: 0, kind: 'cold', x: 5.6, y: 2.6, z: 1.4, color: '#55759c', intensity: 0.35, radius: 8.5, flicker: false },
     lights: [
       { kind: 'warm', x: 0.0, y: 4.20, z: -15.0, color: '#edd7a6', intensity: 1.30, radius: 10.32, flicker: false },
-      { kind: 'warm', x: -5.6, y: 2.40, z: -8.0, color: '#e9c892', intensity: 1.10, radius: 8.6 },
-      { kind: 'warm', x: 5.6, y: 2.40, z: -8.0, color: '#e9c892', intensity: 1.10, radius: 8.6 },
+      /* (round 37, survey-5 judge 2: "the right wall beyond the far statue
+         dissolves into void" -- both side bays a quarter up and reaching
+         further along their walls, so the hall has two lit sides) */
+      { kind: 'warm', x: -5.6, y: 2.40, z: -8.0, color: '#e9c892', intensity: 1.35, radius: 9.6 },
+      { kind: 'warm', x: 5.6, y: 2.40, z: -8.0, color: '#e9c892', intensity: 1.35, radius: 9.6 },
       /* (a lamp's light with no lamp drawn -- glow 0 -- brought forward
          over the runner, so the near half of the hall is lit boards and
          carpet, not a dead dark band: judge 1) */
