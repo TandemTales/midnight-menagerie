@@ -1,0 +1,69 @@
+{
+  "round": "r37",
+  "maxBuilders": 3,
+  "briefs": [
+    "docs/ui-pass/BRIEF-r0.md",
+    "docs/ui-pass/BRIEF-r1.md",
+    "docs/ui-pass/BRIEF-r11.md",
+    "docs/ui-pass/BRIEF-r16.md",
+    "docs/ui-pass/BRIEF-r21.md",
+    "docs/ui-pass/BRIEF-r22.md",
+    "docs/ui-pass/BRIEF-r23.md",
+    "docs/ui-pass/BRIEF-r24.md",
+    "docs/ui-pass/BRIEF-r25.md",
+    "docs/ui-pass/BRIEF-r28.md",
+    "docs/ui-pass/BRIEF-r29.md",
+    "docs/ui-pass/BRIEF-r31.md",
+    "docs/ui-pass/BRIEF-r34.md",
+    "docs/ui-pass/BRIEF-r35.md",
+    "docs/ui-pass/BRIEF-r37.md"
+  ],
+  "rubrics": [
+    "docs/ui-pass/RUBRIC.md",
+    "docs/ui-pass/RUBRIC-r37.md"
+  ],
+  "samples": [
+    "UI/title.png",
+    "UI/mainMenu.png",
+    "UI/selectCompanion.png",
+    "UI/selectKid.png"
+  ],
+  "tracks": [
+    {
+      "key": "rooms",
+      "name": "ROOMS",
+      "rule": "refine",
+      "screens": [
+        "sheet-heart",
+        "sheet-nursery",
+        "sheet-study",
+        "sheet-pumpkin",
+        "fight-heart"
+      ],
+      "smallScreens": [
+        "fight-heart"
+      ],
+      "baseline": "TULLE",
+      "builders": [
+        {
+          "slot": "a",
+          "code": "TOURMALINE",
+          "port": 9281,
+          "angle": "LITERAL -- work BRIEF-r37's fix list 1 to 3 in order and exactly as written, one wing at a time, the Heart FIRST (the round's fight and the lowest of the four, 5 from judge 1). Keep every change inside your four wings."
+        },
+        {
+          "slot": "b",
+          "code": "BERYL",
+          "port": 9282,
+          "angle": "THE NEAR FLOOR FIRST -- the angle that won rounds 31 and 35 (HEMATITE, ANTHRACITE). Carry round 31's nearFloor rule as rounds 34 and 35 extended it into all four wings -- a dressed, lit near floor with a light pool from a source the room has and props standing IN it above the hand's edge -- prove it there, then each wing's own defect in that light."
+        },
+        {
+          "slot": "c",
+          "code": "CARNELIAN",
+          "port": 9283,
+          "angle": "THE OBJECT DRAWN, NOT FLAT -- round 34's winning angle. Each wing's worst object is flat: the Heart's pale statues, the Study's blown chandelier blobs and stepped spines, the Pumpkin wall's dark band and lollipop trees. Draw each as a real object with an inked, broken silhouette first -- carved drapery, crisp spines and tamed glass, coping and niches, ragged crowns -- then dress and light the near floor."
+        }
+      ]
+    }
+  ]
+}

@@ -98,17 +98,17 @@ sarcophagi, the Graveyard fight back UNDER BASE (14.74 vs 15.41). Battery 106
 gates green but the sprites halo (on the round's merge); the graft's region
 gates, chrome, steam-deck, link-queue and seam green on dev; the other 13
 wings identical. Known: the Greenhouse potting-bench prop program links in
-12.1-12.8 s (over the 12 s budget since round 34's graft). **ROUND 36 IS MERGED, VERIFIED AND PUSHED (2026-10-18); ITS GRAFT IS IN
-FLIGHT:** KYANITE +1.69, 2 of 2 (`c924ab66`, 7.48 vs SATEEN 5.79): the
-nine-card hand stacks identical Tricks into one place with a count, the shop's
-wares pressable whole on hung tags, the seed well, the password in the serif.
-Battery 106 gates green but the sprites halo (hand-cards, gamepad, coop/lobby
-all green). Graft (`GRAFT-r36.md`) building in `C:/UILOOP/r36/wt/r36-graft`
-(port 9274), notes into `C:/UILOOP/r36/graft/`: OBSIDIAN's always-in-hand BUY
-(KYANITE's board shows no press point until hovered), domes and jars on plates,
-CLEAR's own glyph, the filled SAVE AND QUIT, a check that each stacked copy
-plays by mouse, keys and pad. Then: the Heart and the remaining rooms' near
-floor, the map's nodes and region boxes with the atlas; then survey 6. **Josh asked 10-18 for a
+12.1-12.8 s (over the 12 s budget since round 34's graft). **ROUND 36 AND ITS GRAFT ARE MERGED, VERIFIED AND PUSHED (2026-10-18):**
+KYANITE +1.69, 2 of 2 (`c924ab66`, 7.48 vs SATEEN 5.79): the nine-card hand
+stacks identical Tricks into one place with a count; graft `4d71ce7b`:
+OBSIDIAN's always-in-hand BUY, wares under glass on their own lips, CLEAR's
+own glyph, the filled SAVE AND QUIT; a scratch check plays a stack's copies
+by mouse, keys and pad. Battery 106 green but the sprites halo; the graft's
+interaction gates green on dev. Known: seven sub-11 px items on the card face
+and the fight HUD's Companion panel (not round 36's). **NEXT: round 37**
+(`BRIEF-r37.md`, `round-37.args.json`): the Heart, the Nursery, the Study, the
+Pumpkin Grounds and their near floor; then the map's nodes and region boxes
+with the atlas; then survey 6. **Josh asked 10-18 for a
 3-hour pause in which nothing may launch a program -- respect such asks.**
 
 **ROUND 33 AND ITS GRAFT ARE MERGED, VERIFIED AND PUSHED (2026-10-16):**
