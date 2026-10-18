@@ -15322,6 +15322,32 @@ void main(){
     vec2 gq = abs(fract(rp/vec2(0.30, 0.30)) - 0.5)*0.30;
     float gul = (1.0 - smoothstep(0.030, 0.030 + max(rpx.x, rpx.y), gq.x + gq.y)) * smoothstep(0.03, 0.012, max(rpx.x, rpx.y));
     fieldC = mix(fieldC, mix(indigo, ivory, 0.35), gul*uRugGul*(1.0 - max(medO, corner)));
+    /* (round 37: a room that asks for a richer carpet -- rugGul past 0.5,
+       the Nursery's and the Study's, seen a few metres off -- gets the
+       drawing a Turkey carpet has at that distance: a lattice of fine
+       indigo lines through the madder field with a gul star in each
+       lozenge, the medallion's own inner ring and a ring of saffron
+       florets round it, and a second guard line inside the border. Every
+       mark over its own pixel; nothing here where rugGul is the house's.) */
+    float rich = smoothstep(0.5, 0.85, uRugGul);
+    if (rich > 0.001) {
+      float pxm = max(rpx.x, rpx.y);
+      vec2 lq = rp/0.30;
+      vec2 lt = vec2(lq.x + lq.y, lq.x - lq.y)*0.7071;
+      vec2 lf = abs(fract(lt) - 0.5)*0.30*0.7071;
+      float latt = 1.0 - smoothstep(0.004, 0.004 + pxm*1.2, min(lf.x, lf.y));
+      vec2 sq = abs(fract(lt) - 0.5);
+      float star = 1.0 - smoothstep(0.16, 0.16 + pxm*4.0, min(sq.x + sq.y, max(sq.x, sq.y)*1.35));
+      float fieldOnly = (1.0 - max(medO, corner))*(1.0 - inBord);
+      fieldC = mix(fieldC, indigo*1.1, latt*fieldOnly*0.85*rich);
+      fieldC = mix(fieldC, mix(saffron, ivory, 0.3), star*fieldOnly*0.75*rich);
+      float ring = 1.0 - smoothstep(0.010, 0.010 + rpx.x*1.3, abs(md2 - 0.44)/1.5);
+      float flor = (1.0 - smoothstep(0.035, 0.035 + rpx.x*2.0, length(vec2(fract(atan(fq.y, fq.x)*2.546) - 0.5, (md2 - 0.53)*2.0))*0.30))*step(md2, 0.62);
+      fieldC = mix(fieldC, ivory*0.85, ring*0.8*rich);
+      fieldC = mix(fieldC, saffron*1.1, flor*medO*0.85*rich);
+      float guard2 = 1.0 - smoothstep(0.008, 0.008 + ePx*1.2, abs(eIn - 0.50));
+      fieldC = mix(fieldC, saffron*0.9, guard2*rich*(1.0 - inBord));
+    }
     vec3 rugCol = mix(fieldC, bordC, inBord);
     rugCol = mix(rugCol, ivory, guard);
     rugCol *= 0.86 + 0.20*mmNoise(rp*1.7 + 3.0);

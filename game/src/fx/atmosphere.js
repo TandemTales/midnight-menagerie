@@ -1618,7 +1618,7 @@ export const REGIONS = {
     wainscot: true, nearFrame: false,
     /* (round 37: the marble modelled -- uStatueMod) */
     statueModel: 1,
-    crispFloor: true, grain: 0.012,
+    crispFloor: true,
     nearFloor: { fall: 0.92, dye: 1, calm: 0.85, clean: 1,
                  pool: { ahead: 5.2, across: 0.0, rAlong: 2.2, rAcross: 3.4, k: 2.6, color: '#f0a65a' },
                  pool2: { ahead: 8.0, across: 0.0, rAlong: 2.6, rAcross: 4.6, k: 2.2, color: '#eaa45e' } },
