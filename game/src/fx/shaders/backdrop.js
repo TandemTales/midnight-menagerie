@@ -4145,10 +4145,10 @@ float subjectH(vec2 q, float far, out float occ){
       float bell = mmSolid(min(mmCircle(vec2(gx, (q.y - apex - 0.08)*1.25), 0.13),
                                mmBox(vec2(gx, q.y - apex + 0.04), vec2(0.16, 0.025), 0.01)));
       /* the west window: a lancet of two lights under a roundel, intact */
-      float win = sPoint(vec2(gx, q.y - 3.55), 0.95, 2.55, 1.90);   // (round 35: 0.95 m up, over the porch)
-      float trac = (1.0 - smoothstep(0.045, 0.045 + aaB, abs(gx)))*step(q.y, 6.25)
-                 + mmSolid(abs(sPoint(vec2(abs(gx) - 0.47, q.y - 3.55), 0.43, 2.35, 0.86)) - 0.04)
-                 + mmSolid(abs(mmCircle(vec2(gx, q.y - 7.07), 0.36)) - 0.04);
+      float win = sPoint(vec2(gx, q.y - 2.60), 0.95, 2.55, 1.90);
+      float trac = (1.0 - smoothstep(0.045, 0.045 + aaB, abs(gx)))*step(q.y, 5.30)
+                 + mmSolid(abs(sPoint(vec2(abs(gx) - 0.47, q.y - 2.60), 0.43, 2.35, 0.86)) - 0.04)
+                 + mmSolid(abs(mmCircle(vec2(gx, q.y - 6.12), 0.36)) - 0.04);
       trac = clamp(trac, 0.0, 1.0);
       /* two lancets in the side, narrowing with it */
       float swx = mod(sx - 1.15 + 0.9, 2.3) - 1.15;
@@ -4240,7 +4240,7 @@ float subjectH(vec2 q, float far, out float occ){
       const float kRel = 1.0;
 #endif
       br = body*1.25 + sbut*0.42 + butt*0.30 + bOff*0.30 + plF*0.28 - (wallF*cJ*0.22 + slate*0.20)*kRel + ridgeL*0.40 + gut*0.45 - eShade*0.30
-         + (1.0 - smoothstep(0.05, 0.12, abs(win - 0.10)))*step(3.35, q.y)*0.40
+         + (1.0 - smoothstep(0.05, 0.12, abs(win - 0.10)))*step(2.4, q.y)*0.40
          - mmSolid(win)*(1.0 - trac)*0.55 - swin*0.55
          + bOff*0.55 + plC*0.50 + plF*0.16 + corb*0.40
          - bo*(1.0 - bell)*1.0 - door*0.30;
@@ -4268,128 +4268,165 @@ float subjectH(vec2 q, float far, out float occ){
            catching the moon a touch; the joints inked a pixel wide at any
            distance, the perpends to their own course's lod; none of it drawn
            across a window's tracery */
-        /* ROUND 35 (both survey-5 judges: "a flat box with a tiled brick
-           texture"): not ashlar in one block size -- a chapel of COURSED
-           RUBBLE, courses of a hand's difference in height, stones of every
-           length in them, each sitting a little off its neighbours' bed, each
-           its own stone; the joints inked a pixel wide, under three pixels a
-           course the wall's own tone */
-        const float CHr = 0.40;
-        float rrow = floor(cy/CHr);
-        float Lr = 0.52 + 0.55*mmHash11(rrow*2.7 + 1.1);
-        float xo2 = q.x + mmHash11(rrow*5.3 + 0.7)*Lr;
-        float sI = floor(xo2/Lr);
-        float xl2 = xo2 - sI*Lr;
-        float sh2 = mmHash21(vec2(sI, rrow) + 3.3 + uSeed);
-        float yl2 = cy - rrow*CHr;
-        float jt = (sh2 - 0.5)*0.08;
-        float dY = min(abs(yl2 - max(jt, 0.0)), abs(CHr - yl2 + min(jt, 0.0)));
-        float dX = min(xl2, Lr - xl2);
-        float lodC = mmLod(CHr, px);
+        /* ROUND 35 (both survey-5 judges: "the chapel is a flat box with a
+           tiled brick texture and a bare roof plane"). Even 0.45 x 0.90 m
+           ashlar over the whole elevation IS a tiled texture, however crisp:
+           so the walls are SQUARED RUBBLE -- courses of four heights in a
+           cycle, every course its own block length and offset, every stone
+           its own value -- and the elevation takes a value down, a dark
+           stone wall under the moon. */
         float onW = wallF*(1.0 - trac*mmSolid(win));
-        float jnt = max(mmInkP(dY, px, 1.0), mmInkP(dX, px, 1.0)*step(max(jt, 0.0), yl2)*step(yl2, CHr + min(jt, 0.0)))*lodC;
-        gTint += onW*((sh2 - 0.5)*0.40*lodC + 0.16*smoothstep(0.05, 0.0, abs(yl2 - CHr + 0.03))*lodC);
-        gInk = max(gInk, jnt*onW*0.65);
-        float sl = mmInkP(0.15*(1.0 - 0.13*st) - mmRowX(q.y - sEav, 0.30*(1.0 - 0.13*st)), px, 1.0);
-        gInk = max(gInk, roofP*sl*0.55*mmLod(0.30, px));
+        float cyc = cy/1.54;
+        float cfr = fract(cyc)*1.54;
+        float ck = step(0.42, cfr) + step(0.72, cfr) + step(1.20, cfr);
+        float cLo = ck < 0.5 ? 0.0 : (ck < 1.5 ? 0.42 : (ck < 2.5 ? 0.72 : 1.20));
+        float cHi = ck < 0.5 ? 0.42 : (ck < 1.5 ? 0.72 : (ck < 2.5 ? 1.20 : 1.54));
+        float crs = floor(cyc)*4.0 + ck;
+        float bedD = min(cfr - cLo, cHi - cfr);
+        float bLen = 0.58 + 0.62*mmHash11(crs*3.17 + 0.4);
+        float bxs = q.x + mmHash11(crs*7.73 + 1.9)*bLen;
+        float bxi = floor(bxs/bLen);
+        float bxf = fract(bxs/bLen)*bLen;
+        float perD = min(bxf, bLen - bxf);
+        float bv = mmHash21(vec2(bxi, crs) + uSeed*1.7);
+        float lodC = mmLod(cHi - cLo, px), lodP = mmLod(bLen, px);
+        float bed = mmInkP(bedD, px, 1.0)*lodC;
+        float per = mmInkP(perD, px, 1.0)*lodP*lodC;
+        gTint += onW*((bv - 0.5)*0.22*lodC + 0.16*smoothstep(0.035, 0.0, cHi - cfr)*lodC
+                      - 0.10*smoothstep(0.04, 0.0, cfr - cLo)*lodC);
+        gInk = max(gInk, max(bed*(0.40 + 0.25*bv), per*0.45)*onW*0.80);
+        gTint -= front*(1.0 - door)*0.58 + side*0.16;
+        /* the stone itself a dark weathered grey -- a stop under the house's
+           dressed stone -- darkest at its foot and streaked under the sills,
+           so the moon makes a building of it and not a lit panel */
+        float weath = smoothstep(3.5, 0.0, q.y)*0.35 + 0.30*smoothstep(0.55, 0.85, mmNoise(vec2(q.x*3.0, q.y*0.4) + 2.0));
+        gCol = mix(gCol, vec3(0.040, 0.042, 0.052)*(0.80 + 0.40*bv)*(1.0 - weath*0.5)*(1.0 - 0.45*side), onW*0.80);
+        gColAmt = max(gColAmt, onW*0.80);
+        /* a hood mould over the west window: a lit, inked arch standing off
+           the wall, with its label stops */
+        float hood = abs(sPoint(vec2(gx, q.y - 2.60), 1.13, 2.73, 2.10)) - 0.07;
+        float hoodM = mmSolid(hood)*step(4.10, q.y + 1.6)*front;
+        gTint += hoodM*0.70;
+        gCol = mix(gCol, vec3(0.050, 0.052, 0.060), hoodM*0.8);
+        mmPen(hood - 0.07, 1.1, 0.85*front*step(2.5, q.y));
+        float stopL = mmSolid(mmBox(vec2(gax - 1.13, q.y - 2.62), vec2(0.10, 0.10), 0.02))*front;
+        gTint += stopL*0.6;
+        /* a string course across the front at the sill and at the eaves, lit
+           on top, its shadow under */
+        float strc = front*(1.0 - door)*(mmBandA(q.y, 2.40, 2.52, px*0.8) + mmBandA(q.y, EAV - 0.18, EAV, px*0.8))
+                   * (1.0 - mmSolid(win));
+        gTint += strc*0.70;
+        gCol = mix(gCol, vec3(0.046, 0.048, 0.056), strc*0.8);
+        mmPen(q.y - 2.52, 1.0, 0.75*front*(1.0 - mmSolid(win)));
+        mmPen(q.y - 2.40, 1.0, 0.55*front*(1.0 - mmSolid(win)));
+        mmPen(q.y - EAV, 1.0, 0.70*front);
+        gTint -= front*(1.0 - strc)*(mmBandA(q.y, 2.26, 2.40, px*0.8) + mmBandA(q.y, EAV - 0.32, EAV - 0.18, px*0.8))*0.35;
+        /* QUOINS up the front's corners above the buttresses: long and short
+           dressed blocks, paler than the rubble, each inked */
+        float qW = mod(crs, 2.0) < 0.5 ? 0.62 : 0.36;
+        float quoin = front*step(HWF - qW, gax)*step(gax, HWF)*step(4.20, q.y)*step(q.y, EAV);
+        gTint += quoin*0.50;
+        gCol = mix(gCol, vec3(0.044, 0.046, 0.054)*(0.9 + 0.2*bv), quoin);
+        mmPen(gax - (HWF - qW), 1.0, 0.75*front*step(4.20, q.y)*step(q.y, EAV)*step(gax, HWF));
         float strk = smoothstep(0.62, 0.88, mmNoise(vec2(q.x*5.0, 3.1)))*mmNoise(vec2(q.x*14.0, q.y*0.6));
-        gTint -= wallF*strk*0.22;
-      }
-#endif
-#if MM_R25W == 4
-      {
-        /* ROUND 35 (survey-5, both judges: "the chapel at upper left is a flat
-           box with a tiled brick texture and a bare roof plane"; the brief: "a
-           building -- buttresses, a slate roof with ridge and eaves, a darker
-           wall, a lit porch, ivy"). Round 31 inked the coursing; what still
-           said BOX was the value -- one pale lifted face -- the grid of
-           identical blocks, and a roof with nothing on it. So: the wall a
-           stop darker (the moon finds its edges, not a pale sheet); the
-           ashlar laid in blocks of different lengths course by course; the
-           roof SLATED -- staggered slates, each its own value, moss in the
-           lower courses, crested ridge tiles; a gabled PORCH stood before
-           the west door, its arch lit by the lantern hung in it; and IVY up
-           the west front's corner and the first bays of the side. */
-        float px2 = max(dqm, 1e-4);
-        float onWall = wallF*(1.0 - trac*mmSolid(win));
-        gTint -= front*(1.0 - door)*0.62 + side*0.12 + butt*0.25;
-        /* THE ROOF, SLATED: courses parallel to the eaves (round 31's), the
-           slates staggered course by course, each its own value, the lower
-           courses mossed, and a crest of ridge tiles along the top */
-        float sp = 0.30*(1.0 - 0.13*st);
-        float scr = floor((q.y - sEav)/sp);
-        float sxx = (gx < 0.0 ? -gx : gx) + mod(scr, 2.0)*0.16;
-        float sId = mmHash21(vec2(floor(sxx/0.32), scr) + 9.1);
-        float sJ = mmInkP(mmRowX(sxx, 0.32) - 0.16, px2, 1.0)*mmLod(0.32, px2);
-        gInk = max(gInk, roofP*sJ*0.60);
-        gTint += roofP*(sId - 0.5)*0.30*mmLod(0.30, px2);
-        float rMoss = roofP*smoothstep(0.60, 0.82, mmNoise(vec2(sxx*0.9, q.y*1.4) + uSeed))*smoothstep(sEav + 2.2, sEav, q.y);
-        gCol = mix(gCol, vec3(0.035, 0.050, 0.025), rMoss);
-        gColAmt = max(gColAmt, rMoss*0.45);
-        float crest = step(gx, 0.0)*step(-gx, HWF + SL)*farV*(1.0 - smoothstep(0.10, 0.10 + aaB, abs(q.y - rY - 0.08)));
-        float crestT = crest*step(0.5, fract(-gx/0.45));
-        gTint += crest*0.25 + crestT*0.20;
-        gInk = max(gInk, crest*mmInkP(abs(fract(-gx/0.45) - 0.5)*0.45, px2, 1.0)*0.7);
-        /* THE PORCH: gabled, before the west door, in the front's stone; its
-           pointed arch open on the lantern hung inside, its bargeboards and a
-           cross on its apex */
-        const float PW = 1.30, PE = 2.55;
-        float pg = abs(gx);
-        float pApex = PE + PW*0.80;
-        float pRake = PE + (PW - pg)*0.80;
-        float porchW = mmCover(PW - pg)*mmCover(pRake - q.y)*step(0.0, q.y);
-        float pOpD = sPoint(vec2(gx, q.y), 0.66, 1.50, 1.05);
-        float pOpen = mmSolid(pOpD)*porchW;
-        float verge = (1.0 - smoothstep(0.075, 0.075 + aaB, abs(q.y - (PE + (PW + 0.12 - pg)*0.80) + 0.02)))*step(pg, PW + 0.20)*step(PE - 0.15, q.y);
-        float pCross = mmSolid(min(mmBox(vec2(gx, q.y - pApex - 0.42), vec2(0.035, 0.28), 0.0),
-                                   mmBox(vec2(gx, q.y - pApex - 0.50), vec2(0.14, 0.035), 0.0)));
-        /* its roof's near slope, running back to the left of the gable as
-           the nave's does, a darker slate */
-        float pRoof = step(gx, -0.02)*step(-gx, PW + 0.95)*mmCover(pApex - 0.02*(-gx) - q.y)
-                    *mmCover(q.y - (PE + (PW + 0.12 + gx)*0.80))*step(PE, q.y)*(1.0 - porchW);
-        pRoof *= step(q.y, pApex);
-        float porch = clamp(porchW + verge + pCross + pRoof, 0.0, 1.0);
-        /* (it stands in front of everything on the west front) */
-        gTint = mix(gTint, 0.28 + 0.14*(mmHash21(vec2(floor((q.x + mod(crw, 2.0)*0.45)/0.90), crw) + 2.0) - 0.5), porchW*(1.0 - pOpen));
-        gTint = mix(gTint, -0.85, pRoof);
-        gInk = max(gInk, pRoof*mmInkP(mmRowX(q.y - PE, 0.22) - 0.11, px2, 1.0)*0.5*mmLod(0.22, px2));
-        gTint = mix(gTint, -0.70, pOpen);
-        gTint = mix(gTint, -0.55, verge + pCross);
-        gInk = max(gInk*(1.0 - porchW*0.6), mmInkP(pg - PW, px2, 1.3)*step(q.y, pRake)*0.95);
-        gInk = max(gInk, mmInkP(pRake - q.y, px2, 1.2)*step(pg, PW)*0.9);
-        gInk = max(gInk, mmInkP(pOpD, px2, 1.3)*porchW*0.95);
-        gInk = max(gInk, (mmInkP(q.y - (PE + (PW + 0.12 - pg)*0.80) + 0.02 - 0.075, px2, 1.0) + mmInkP(q.y - (PE + (PW + 0.12 - pg)*0.80) + 0.02 + 0.075, px2, 1.0))*step(pg, PW + 0.20)*step(PE - 0.15, q.y)*0.8);
-        gInk = max(gInk, porchW*(1.0 - pOpen)*mmInkP(mmRowX(q.y, 0.45) - 0.225, px2, 1.0)*0.55*mmLod(0.45, px2));
-        /* the arch's voussoirs round the opening */
-        float vsr = porchW*(1.0 - pOpen)*(1.0 - smoothstep(0.0, 0.20 + aaB, pOpD))*step(1.2, q.y);
-        gTint += vsr*0.18;
+        gTint -= wallF*strk*0.26;
+
+        /* THE SLATES, one by one: courses of 0.30 m up the plane, each slate
+           0.32 m wide on its own value, some slipped dark, moss in the lower
+           courses; the joints inked; and the ridge capped with its tiles */
+        float sk = 1.0 - 0.13*st;
+        float sCy = (q.y - sEav)/(0.30*sk);
+        float sRow = floor(sCy);
+        float sXs = gx/(0.32*sk) + mod(sRow, 2.0)*0.5;
+        float sId = floor(sXs);
+        float sv = mmHash21(vec2(sId, sRow) + 3.3);
+        float sl = mmInkP(0.15*sk - mmRowX(q.y - sEav, 0.30*sk), px, 1.0);
+        float sp = mmInkP(min(fract(sXs), 1.0 - fract(sXs))*0.32*sk, px, 1.0);
+        float sLod = mmLod(0.30*sk, px);
+        gInk = max(gInk, roofP*max(sl*0.75, sp*0.55)*sLod);
+        gTint += roofP*((sv - 0.5)*0.30 - 0.35*step(0.93, sv) + 0.18*smoothstep(0.30*sk*0.85, 0.30*sk, fract(sCy)*0.30*sk))*sLod;
+        float moss = roofP*smoothstep(0.55, 0.80, mmNoise(vec2(gx*0.9, q.y*1.6) + 7.1))*smoothstep(sEav + 1.6, sEav, q.y);
+        gCol = mix(gCol, vec3(0.012, 0.018, 0.008)*(0.7 + 0.6*sv), moss*0.75);
+        gColAmt = max(gColAmt, moss*0.75);
+        float ridgeT = step(gx, 0.0)*step(-gx, HWF + SL)*farV*mmBandA(q.y, rY - 0.16, rY + 0.10, px*0.8);
+        gTint += ridgeT*0.35;
+        bld = max(bld, ridgeT);
+        mmPen(q.y - (rY + 0.10), 1.2, 0.85*step(gx, 0.0)*step(-gx, HWF + SL)*farV);
+
+        /* THE GABLE'S COPING: a stone parapet 0.24 m deep riding the rake
+           over the slates, its kneelers at the eaves -- the gable's edge is
+           a thick, pale, inked line, not the slope of a fill -- and the hard
+           shadow it lays on the front under it */
+        float gabC = EAV + (3.95 - gax)*1.28;
+        float cop = step(gax, 4.10)*mmBandA(q.y, gabC - 0.02, gabC + 0.34, px*0.8)*step(EAV - 0.05, q.y);
+        float kneel = mmSolid(mmBox(vec2(gax - 3.95, q.y - EAV - 0.10), vec2(0.30, 0.24), 0.0));
+        cop = max(cop, kneel);
+        bld = max(bld, cop);
+        br += cop*0.35;
+        gTint += cop*0.95;
+        mmPen(q.y - (gabC + 0.34), 1.4, 0.9*step(gax, 4.10)*step(EAV + 0.14, q.y));
+        mmPen(q.y - gabC, 1.0, 0.6*step(gax, 3.95)*step(EAV + 0.14, q.y));
+        mmPen(mmBox(vec2(gax - 3.95, q.y - EAV - 0.10), vec2(0.30, 0.24), 0.0), 1.2, 0.8);
+        float underC = front*(1.0 - cop)*mmBandA(q.y, gabC - 0.42, gabC, px*2.0)*step(EAV - 0.2, q.y);
+        gTint -= underC*0.40;
+
+        /* THE FRONT BUTTRESSES, which stood in the wall's own value and were
+           never seen: each stands 0.6 m proud of the corner, its face lit by
+           the moon, its outer flank in its own shade, a weathered set-off at
+           each stage drawn as a lit slope with a line over it, and a sloped
+           cap, all inked round */
+        float bOut = 3.88 + bw;
+        float bTop = 4.25 + 0.42*clamp((bOut - gax)/max(bw*2.0, 0.1), 0.0, 1.0);
+        float fBut = step(abs(gax - 3.88), bw)*step(q.y, bTop)*step(-HWF - 0.4, gx);
+        bld = max(bld, fBut);
+        float flank = fBut*smoothstep(bOut - 0.16, bOut - 0.10, gax);
+        gTint += fBut*(1.0 - flank)*0.70 - flank*0.60;
+        mmPen(gax - bOut, 1.3, 0.85*step(q.y, bTop));
+        mmPen(gax - (3.88 - bw), 1.0, 0.55*step(q.y, bTop)*step(EAV, 99.0));
+        mmPen(q.y - bTop, 1.2, 0.80*step(abs(gax - 3.88), bw));
+        float offL = (1.0 - smoothstep(0.0, 0.07 + px, abs(q.y - 1.80)))*step(abs(gax - 3.88), 0.33)
+                   + (1.0 - smoothstep(0.0, 0.07 + px, abs(q.y - 3.20)))*step(abs(gax - 3.88), 0.25);
+        gTint += offL*0.55;
+        mmPen(q.y - 1.86, 1.0, 0.7*step(abs(gax - 3.88), 0.33));
+        mmPen(q.y - 3.26, 1.0, 0.7*step(abs(gax - 3.88), 0.25));
+
+        /* THE PORCH: a gabled timber porch over the west door, its slate
+           roof and lit bargeboards, two posts, its inside dark -- and the
+           lantern hung in it (the lamp-light is added where the window's
+           is, below) */
+        const float PW = 1.30, PE = 1.95, PA = 2.62;
+        float pGab = PE + (PW - gax)*((PA - PE)/PW);
+        float pRoof = step(gax, PW + 0.14)*step(q.y, pGab + 0.20)*step(PE - 0.10, q.y);
+        float pBarge = step(gax, PW + 0.14)*mmBandA(q.y, pGab - 0.02, pGab + 0.20, px*0.8)*step(PE - 0.10, q.y);
+        float pPost = step(abs(gax - 1.08), 0.09)*step(q.y, PE);
+        float pIn = step(gax, 0.99)*step(q.y, PE - 0.05);
+        float porch = max(max(pRoof, pPost), pIn);
         bld = max(bld, porch);
-        dark = max(dark, pOpen);
-        br += porch*0.55 + verge*0.25 - pOpen*0.70;
-        /* IVY up the west front's corner and along the first bays of the side:
-           a dark mass of leaves, its edge ragged, each leaf a small lit blade
-           where it is resolvable */
-        /* (at the corner where the front meets the side, and over the
-           corner buttress: a mass climbing from the plinth, densest low,
-           thinning to runners at its top) */
-        float ivyN = mmFbm3(q*vec2(1.9, 1.5) + uSeed*1.3);
-        float ivyZ = clamp(smoothstep(-4.25, -4.05, gx)*(1.0 - smoothstep(-3.4, -2.6, gx + 1.4*(ivyN - 0.5) - 0.5*smoothstep(1.5, 0.0, q.y)))*front
-                         + side*(1.0 - smoothstep(0.4, 2.2, sx - 1.6*(ivyN - 0.5))) + butt*step(gx, -3.2), 0.0, 1.0);
-        float ivyTop = 2.6 + 3.0*ivyN;
-        float ivyM = ivyZ*smoothstep(ivyTop + 0.15, ivyTop - 0.15, q.y)*smoothstep(0.30, 0.38, ivyN + 0.20*smoothstep(2.4, 0.0, q.y));
-        ivyM *= 1.0 - porch;
-        vec2 lcq = q/0.22;
-        vec2 lci = floor(lcq);
-        vec2 lhh = mmHash22(lci + 5.3);
-        vec2 lfq = fract(lcq) - 0.5 - (lhh - 0.5)*0.5;
-        float leafB = 1.0 - smoothstep(0.24, 0.38, length(lfq*vec2(1.0, 1.25)));
-        float lLod = mmLod(0.22, px2);
-        float leafLit = mix(0.45, leafB*(0.35 + 0.65*smoothstep(-0.2, 0.3, lfq.y)), lLod);
-        vec3 ivyC = mix(vec3(0.012, 0.020, 0.009), vec3(0.055, 0.085, 0.032), leafLit)*(0.85 + 0.30*lhh.x);
-        gCol = mix(gCol, ivyC, ivyM);
-        gColAmt = max(gColAmt, ivyM*0.96);
-        gInk = max(gInk*(1.0 - ivyM*0.7), ivyM*lLod*mmInkP(length(lfq*vec2(1.0, 1.25)) - 0.33, px2/0.22, 1.0)*0.45);
-        br += ivyM*(0.20 + 0.15*leafB*lLod);
+        dark = max(dark*(1.0 - porch), pIn*(1.0 - pPost)*0.85);
+        br += pRoof*0.20 + pPost*0.25;
+        gTint += pBarge*0.45 - pRoof*(1.0 - pBarge)*0.70 + pPost*0.05 - pIn*(1.0 - pPost)*0.80;
+        gCol = mix(gCol, vec3(0.060, 0.034, 0.018), max(pPost, pBarge)*0.85);
+        gColAmt = max(gColAmt, max(pPost, pBarge)*0.70);
+        mmPen(q.y - (pGab + 0.20), 1.3, 0.9*step(gax, PW + 0.14)*step(PE - 0.10, q.y));
+        mmPen(q.y - (pGab - 0.02), 1.0, 0.6*step(gax, PW + 0.10)*step(PE, q.y));
+        mmPen(abs(gax - 1.08) - 0.09, 1.1, 0.8*step(q.y, PE));
+        mmPen(q.y - PE, 1.0, 0.6*step(gax, PW));
+
+        /* IVY up the near corner: a dark mass of small leaves climbing the
+           corner buttress and the end of the nave wall, thinning as it
+           rises, its edge broken into leaf clusters and a few of them
+           catching the moon */
+        float iv0 = mmNoise(vec2(gx, q.y)*1.3 + uSeed);
+        float iv1 = mmNoise(vec2(gx, q.y)*4.2 + 3.7);
+        float reach = 1.0 - max(q.y - 0.6, 0.0)/5.2 - abs(gx + HWF + 0.4)/1.9;
+        float ivF = reach + 0.45*iv0 + 0.18*iv1 - 0.62;
+        float ivy = mmCover(ivF)*clamp(front + side + fBut + butt + sbut, 0.0, 1.0)*(1.0 - porch);
+        float ivL = 0.50 + 0.9*smoothstep(0.55, 0.85, iv1)*smoothstep(0.0, 0.25, ivF);
+        gCol = mix(gCol, vec3(0.006, 0.012, 0.006)*ivL, ivy);
+        gColAmt = max(gColAmt, ivy);
+        gTint -= ivy*0.30;
+        br += ivy*0.10*iv1;
+        gInk = max(gInk, mmInk(ivF, 1.0)*0.55*clamp(front + side, 0.0, 1.0));
       }
 #endif
     } else if (uSubject > 24.5) {
@@ -13202,16 +13239,41 @@ void main(){
        says the chapel is a building with a room in it, not a flat. */
     if (uSubject > 23.5 && uSubject < 24.5) {
       float cg = q.x - uSize.x*0.5 + 8.0;
-      float wd = sPoint(vec2(cg, q.y - 3.55), 0.95, 2.55, 1.90);
+      float wd = sPoint(vec2(cg, q.y - 2.60), 0.95, 2.55, 1.90);
       float aw = max(max(abs(dFdx(q.x)), abs(dFdy(q.y)))*0.75, 0.006);
-      float tr = (1.0 - smoothstep(0.045, 0.045 + aw, abs(cg)))*step(q.y, 6.25)
-               + mmSolid(abs(sPoint(vec2(abs(cg) - 0.47, q.y - 3.55), 0.43, 2.35, 0.86)) - 0.04)
-               + mmSolid(abs(mmCircle(vec2(cg, q.y - 7.07), 0.36)) - 0.04);
+      float tr = (1.0 - smoothstep(0.045, 0.045 + aw, abs(cg)))*step(q.y, 5.30)
+               + mmSolid(abs(sPoint(vec2(abs(cg) - 0.47, q.y - 2.60), 0.43, 2.35, 0.86)) - 0.04)
+               + mmSolid(abs(mmCircle(vec2(cg, q.y - 6.12), 0.36)) - 0.04);
       float glassW = mmSolid(wd + 0.08) * (1.0 - clamp(tr, 0.0, 1.0));
       float flick = 0.86 + 0.14*mmNoise(vec2(uTime*1.3, 2.7));
-      col += winCol * glassW * 2.4 * uOpen * flick * (0.70 + 0.30*smoothstep(3.55, 5.55, q.y));
-      col += winCol * uOpen * 0.30 * exp(-max(wd, 0.0)*3.0) * (1.0 - glassW)
-           * step(abs(cg), 3.6) * step(q.y, 6.55) * step(2.6, q.y);
+      float pMaskW = 0.0;
+#if MM_R25W == 4
+      /* (round 35: the porch stands in front of the window's foot, so the
+         glass is behind its roof; and the porch's own lantern, hung under
+         its ridge -- the flame in its glass, and its light on the posts,
+         the door and the flags inside the porch) */
+      {
+        float pgx = abs(cg);
+        pMaskW = step(pgx, 1.44)*step(q.y, 1.95 + (1.30 - pgx)*(0.67/1.30) + 0.20)*step(1.85, q.y);
+        glassW *= 1.0 - pMaskW;
+        vec2 lp = vec2(cg, q.y - 1.58);
+        float lanG = mmSolid(mmBox(lp, vec2(0.075, 0.12), 0.03));
+        float hang = mmSolid(mmBox(vec2(cg, q.y - 1.80), vec2(0.008, 0.09), 0.0));
+        float inP = step(pgx, 1.17)*step(q.y, 1.92);
+        col += winCol * uOpen * flick * (lanG*3.4 + 1.10*exp(-length(lp*vec2(1.0, 0.8))*2.2)*inP*(1.0 - lanG));
+        col *= 1.0 - hang*0.8;
+      }
+#endif
+#if MM_R25W == 4
+      /* (round 35: a lamp behind leaded glass is amber, not a cream sheet --
+         at 2.4 the west window burned out to the palest thing in the yard) */
+      col += winCol * vec3(1.0, 0.78, 0.50) * glassW * 1.55 * uOpen * flick * (0.62 + 0.38*smoothstep(2.6, 4.6, q.y))
+           * (0.80 + 0.30*mmNoise(vec2(cg*9.0, q.y*7.0)));
+#else
+      col += winCol * glassW * 2.4 * uOpen * flick * (0.70 + 0.30*smoothstep(2.6, 4.6, q.y));
+#endif
+      col += winCol * uOpen * 0.30 * exp(-max(wd, 0.0)*3.0) * (1.0 - glassW) * (1.0 - pMaskW)
+           * step(abs(cg), 3.6) * step(q.y, 5.6);
       /* ...and the same lamp, fainter, in the side's lancets */
       float sxw = -cg - 3.60;
       float stw = clamp(sxw/6.20, 0.0, 1.0);
@@ -13219,21 +13281,6 @@ void main(){
       float sGl = step(0.0, sxw)*step(sxw, 6.20)*step(0.9, sxw)
                 * mmSolid(sPoint(vec2(swxw/(1.0 - 0.13*stw), q.y - 1.90), 0.34, 1.70, 0.68) + 0.05);
       col += winCol * sGl * 1.3 * uOpen * flick;
-#if MM_R25W == 4
-      /* (round 35: and the PORCH's lantern -- hung in the arch before the
-         west door, its flame, the door and the reveal warm in it, and a
-         little of it spilling down the porch's face) */
-      float pgL = abs(cg);
-      float pW = (1.0 - smoothstep(1.30, 1.30 + aw, pgL))*step(q.y, 2.55 + (1.30 - pgL)*0.80);
-      float pOD = sPoint(vec2(cg, q.y), 0.66, 1.50, 1.05);
-      float pOp = mmSolid(pOD)*pW;
-      vec2 lnp = vec2(cg, q.y - 1.62);
-      float lantern = mmSolid(mmBox(lnp, vec2(0.075, 0.11), 0.03));
-      float lanFrame = mmSolid(abs(mmBox(lnp, vec2(0.075, 0.11), 0.03)) - 0.012) + mmSolid(max(abs(cg) - 0.010, abs(q.y - 1.86) - 0.12));
-      col += winCol * uOpen * flick * pOp * (0.55 + 1.7*exp(-length(lnp)*2.2));
-      col += winCol * uOpen * flick * lantern * (1.0 - clamp(lanFrame, 0.0, 1.0)) * 3.2;
-      col += winCol * uOpen * 0.22 * exp(-max(pOD, 0.0)*4.5) * (1.0 - pOp) * pW;
-#endif
     }
 #endif
     /* MOONLIGHT ON THE MASONRY. Nothing in the light rig reaches a plane 32 m
@@ -13724,6 +13771,7 @@ void main(){
   float r25Joint = 0.0, r25Chk = 0.0;
   float r25Walk = 0.0;      // (round 25 graft: the churchyard's laid walk, for its stone below)
   float r29Edge = 0.0;      // (round 29 graft: the maze walk's dressed edging, for its stone below)
+  float r35Edge = 0.0;      // (round 35 graft: the churchyard's lit turf edge along its walk, for its light below)
 #if MM_FLOORX >= 1
   /* (round 22: 13, the maze's lawn, and 14, the pumpkin patch, are the
      turf's own branch -- see there) */
@@ -13884,9 +13932,9 @@ void main(){
            fbm, and the long-grass bands wander by a sine -- four noise taps on
            every pixel of the lawn were most of the yard's new cost) */
         float sw = mmNoise(w*vec2(0.10, 0.16) + uSeed*2.3);
-        pat += (sw - 0.5)*0.40*(1.0 - earth*0.5);
+        pat += (sw - 0.5)*0.56*(1.0 - earth*0.5);   // (round 35 graft, SODALITE's: the swathes a stop apart, 0.40 -> 0.56)
         float rowB = 0.5 + 0.5*sin(w.y*0.62 + 1.3*sin(w.x*0.23 + w.y*0.07 + uSeed));
-        pat -= smoothstep(0.70, 0.98, rowB)*0.07*(1.0 - earth);
+        pat -= smoothstep(0.70, 0.98, rowB)*0.12*(1.0 - earth);   // (and the long grass darker, 0.07 -> 0.12)
       }
       /* ROUND 28: LEAF LITTER, and the lawn a true dark (both survey judges:
          "the grass is a flat milky grey-green field"). The yews and the
@@ -14071,6 +14119,67 @@ void main(){
           cellv = mix(cellv, 0.62, edge);
           r25Walk = max(r25Walk, edge);
           r29Edge = edge;
+#if MM_R25W == 4
+          /* (round 35 graft, SODALITE's -- the brief's "path edges": the turf GROWS OVER the
+             edging -- a ragged verge of long grass lapping onto the stone
+             and the first flags, its tips lit, and a dark line of shade
+             along its foot where it meets the walk) */
+          {
+            /* tufts, one in each 0.17 m along the edge, each a pointed
+               clump of its own reach leaning over the stone -- a scalloped,
+               leafy edge, drawn over its own pixel */
+            float side = sign(w.x - uRunX);
+            float tv = w.y/0.17 + side*0.37;
+            float tI = floor(tv), tF = fract(tv) - 0.5;
+            float tR = 0.05 + 0.17*mmHash11(tI*3.7 + side*11.0)*(0.6 + 0.4*mmNoise(vec2(w.y*0.8, side)));
+            float lean = (mmHash11(tI*5.3 + side*7.0) - 0.5)*0.5;
+            float tf2 = clamp(1.0 - abs(tF - lean*(1.0 - 0.0))*2.0, 0.0, 1.0);
+            float vn = tf2;
+            float reachV = uRunner + 0.13 - tR*pow(tf2, 1.4)*mmLod(0.17, mpp.y);
+            float aaV = max(mpp.x*1.2, 0.004);
+            float verge = smoothstep(reachV - aaV, reachV + aaV, pxd)*step(uRunner - 0.30, pxd)*smoothstep(0.12, 0.04, mpp.x);
+            float vFoot = (1.0 - smoothstep(0.0, 0.030 + mpp.x, abs(pxd - reachV)))*step(pxd, reachV + 0.02)*smoothstep(0.12, 0.04, mpp.x);
+            pat = mix(pat, 0.46 + 0.18*vn + 0.10*mmNoise(w*vec2(40.0, 9.0)), verge);
+            pat -= vFoot*0.22;
+            /* (round 35 graft, item 5, both judges on the fight: "a lit turf
+               edge either side of the path" -- the strip of grass along the
+               edging takes the moon the pale walk gives back, a step over
+               the lawn, falling off a hand's breadth out, so the turf the
+               near stones stand in has an edge and is not black) */
+            r35Edge = (1.0 - smoothstep(0.0, 0.30, pxd - reachV))*step(reachV - 0.02, pxd)*(1.0 - 0.5*verge) + 0.5*verge*vn;
+            pat += 0.10*verge*vn;
+            turf = max(turf, verge);
+            earth *= 1.0 - verge;
+            r25Walk *= 1.0 - verge;
+            cellv = mix(cellv, 0.40 + 0.25*vn, verge);
+          }
+#endif
+#if MM_R25W == 4
+          /* (round 35 graft, item 5, both judges on the fight: "a few fallen
+             leaves where the path meets" the turf -- the yews' and the limes'
+             leaves blown into the edge of the walk and lying on its kerb
+             and its first flags, each a pointed oval turned its own way in
+             its own russet, drawn while a leaf is two pixels long) */
+          {
+            float lRes2 = smoothstep(0.030, 0.011, mp);
+            float lBand = 1.0 - smoothstep(0.26, 0.42, abs(pxd - uRunner + 0.02));
+            if (lRes2*lBand > 0.001) {
+              const float LC2 = 0.26;
+              vec2 lci = floor(w/LC2);
+              vec2 lh = mmHash22(lci + 13.9);
+              vec2 lp = w - (lci + 0.2 + 0.6*lh)*LC2;
+              float la = mmHash21(lci + 5.7)*6.2832;
+              vec2 lr = vec2(cos(la)*lp.x + sin(la)*lp.y, -sin(la)*lp.x + cos(la)*lp.y);
+              float lw = 0.028*(1.0 - pow(abs(lr.x)/0.065, 2.0));
+              float leaf = (1.0 - smoothstep(lw, lw + mp*1.1, abs(lr.y))) * step(abs(lr.x), 0.065)
+                         * step(mmHash21(lci + 1.1), 0.55) * lRes2 * lBand;
+              pat = mix(pat, 0.52 + 0.16*lh.x, leaf);
+              earth = max(earth, leaf*0.95);
+              r25Walk *= 1.0 - leaf;
+              cellv = mix(cellv, 0.40 + 0.30*lh.y, leaf);
+            }
+          }
+#endif
         }
 #endif
       }
@@ -14774,7 +14883,10 @@ void main(){
      murk"). The churchyard's turf is GRASS: a deep green-black in its own
      hue, a stop under the grey the moon made of it, so the walk's stones
      and kerbs read paler than the lawn they run through */
-  alb = mix(alb, vec3(mmLum(alb))*vec3(0.60, 1.10, 0.56)*0.84, turf*(1.0 - r25Walk)*0.55);
+  /* (round 35 graft, SODALITE's, J2: "the greener, darker turf" -- its hue
+     most of the way to a deep moss, so a lamp on it reads green-gold and
+     the moon green-blue; 0.55 -> 0.70 of the way, a little darker) */
+  alb = mix(alb, vec3(mmLum(alb))*vec3(0.56, 1.12, 0.62)*0.90, 0.70*turf*(1.0 - r25Walk));
 #elif MM_R25W == 0 && MM_FLOORX == 1
   /* (round 29 graft: the maze's flags a dark stone, only a little over the
      lawn -- the lawn and the walk stay near-black, both judges) */
@@ -15625,6 +15737,10 @@ void main(){
      see filled -- with the near stones and the walk in it now, it runs lit
      to the frame's foot, a stop under the middle distance) */
   col *= mix(uNearFall > 0.0 ? uNearFall : 0.74, 1.0, smoothstep(2.0, 13.0, vDepth));    // foreground falls away
+  /* (round 35 graft, item 5: the turf along the walk's edging lit -- the
+     moon the pale stone gives back, cold, on the strip of grass beside it,
+     so the near stones stand on lit ground either side of the path) */
+  col += alb * vec3(0.62, 0.74, 0.92) * r35Edge * 3.0;
 #elif MM_R25W == 1
   /* (round 25 graft, both judges on the parlour and the gallery: "carry the
      lit boards and flagstones into the near-black near floor" -- the hall's
@@ -19315,8 +19431,12 @@ vec3 dsPaint(vec2 m, vec2 msz, float seed, float px, float E, float kx, out floa
   float NF = 9.0 + 7.0*t;
   float ph = m.x*NF + 0.7*sin(m.y*2.4 + seed*3.0) + seed*5.0;
   float crest = 0.5 + 0.5*cos(ph);
-  float amt = smoothstep(0.02, 0.35, t);
-  vec3 lin = vec3(0.60, 0.60, 0.58);
+  /* (round 35 graft, J2 on the library's sheet: "folds, a draped hem and a
+     darker tone" -- the folds run the whole fall of the cloth, half-weight
+     where it lies over the top and full toward the hem; and the linen a
+     stop down, grey in the dark, not the palest thing in the room) */
+  float amt = max(smoothstep(0.02, 0.35, t), 0.55);
+  vec3 lin = vec3(0.44, 0.44, 0.42);
   vec3 col = lin*mix(0.95, 0.34 + 0.80*crest, amt)*(0.62 + 0.52*(1.0 - t));
   col *= 0.86 + 0.26*smoothstep(-hw, hw, m.x*kx);
   col = mix(col, col*vec3(0.92, 0.88, 0.80), 0.4*(1.0 - t));

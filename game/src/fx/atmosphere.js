@@ -689,7 +689,13 @@ export const REGIONS = {
                        panel, and a wheel cross by the lantern at your right */
                     { shape: 69, edge: 0.15, z: 3.2, tone: 0.95, scale: 1.30, seed: 1.25, fore: 1, keep: true },
                     { shape: 73, edge: 0.88, z: 1.2, tone: 0.95, scale: 0.92, fore: 1, keep: true },
-                    { shape: 70, edge: 0.80, z: 3.6, tone: 0.95, scale: 1.05, seed: 2.5, fore: 1, keep: true }] },
+                    /* (round 35 graft, THE FRAME BUDGET: the kerbed grave here
+                       was a 4.6 m quad and a 7 m shadow, most of it empty
+                       turf worked out and thrown away, for a headstone and a
+                       kerb the hand half covers -- the fight came back 0.2 ms
+                       over BASE with it. A headstone in its place, where its
+                       stone stood) */
+                    { shape: 69, edge: 0.83, z: 3.6, tone: 0.95, scale: 1.0, seed: 3.0, fore: 1, keep: true }] },
     r25w: 4,
     /* (round 28: the moon on the lawn at two-thirds -- [0.62, 0.86, 1.05]
        lifted the turf to "a flat milky grey-green field", both judges; the
@@ -823,7 +829,10 @@ export const REGIONS = {
                        in the lamp's pool, a chair under its dust sheet at
                        your right in the moon's, `fore` so a vantage down the
                        eaves keeps them at your feet */
-                    { shape: 36, edge: 0.24, z: 4.5, tone: 0.97, scale: 1.30, fore: 1, keep: true, seed: 1.5 },
+                    /* (round 35 graft, J1: "a strapped trunk ... in the bottom
+                       fifth" -- the trunk a stride nearer, z 4.5 -> 5.6, so it
+                       stands in the near boards and not at the rug's side) */
+                    { shape: 36, edge: 0.24, z: 5.6, tone: 0.97, scale: 1.30, fore: 1, keep: true, seed: 1.5 },
                     { shape: 37, edge: 0.80, z: 3.6, tone: 0.95, scale: 1.05, fore: 1, keep: true, seed: 0.3 },
                     { shape: 37, edge: 0.93, z: 1.0, tone: 0.93, scale: 1.0, fore: 1, keep: true, seed: 0.7 }],
              trusses: { shape: 38, every: 3.4, first: 2.2 } },
@@ -833,13 +842,22 @@ export const REGIONS = {
        cloud laid to rest so each one is a board and not a haze */
     nearFloor: { fall: 0.90, calm: 0.85, clean: 1, dye: 1, rug: { ahead: 5.6, hw: 1.5, hd: 1.0 },
                  pool: { ahead: 9.6, across: 2.8, rAlong: 4.2, rAcross: 3.0, k: 2.6, color: '#f0a65a' },
-                 pool2: { ahead: 4.2, across: -0.4, rAlong: 2.4, rAcross: 3.8, k: 2.6, color: '#9fb0e6' } },
+                 /* (round 35 graft, both judges: "the blue / purple / orange
+                    wash lying across the near boards" -- ONE warm candle pool
+                    on them, the lamp's; the cold pool across the middle of
+                    the boards gone, k 2.6 -> 0) */
+                 pool2: { ahead: 4.2, across: -0.4, rAlong: 2.4, rAcross: 3.8, k: 0, color: '#9fb0e6' } },
     particles: { mix: [[PTYPE.DUST, 0.62], [PTYPE.WISP, 0.26], [PTYPE.ASH, 0.12]],
                  tint: '#d8dcf5', wispTint: '#b0b8ff', emberTint: '#ffcf7a',
                  speed: 0.6, scale: 1.0, wind: 0.4, density: 0.60 },
     exposure: 1.54, vignette: 1.32, contrast: 1.65,
-    key:  { glow: 0, kind: 'warm', x: -4.0, y: 3.2, z: 2.4, color: '#e8bc8f', intensity: 6.78, radius: 7.31 },
-    fill: { glow: 0, kind: 'cold', x: 5.4, y: 2.8, z: 1.4, color: '#9eabe7', intensity: 1.78, radius: 8.5, flicker: false },
+    /* (round 35 graft, both judges: the wash on the near boards was the key
+       from behind the eye, 6.78, laying itself over every board in front of
+       you, and the cold fill, 1.78, over the other half -- SODALITE's
+       answer, a stop down each: 3.4 and 1.05; the lamp's pool is what lights
+       the near floor now) */
+    key:  { glow: 0, kind: 'warm', x: -4.0, y: 3.2, z: 2.4, color: '#e8bc8f', intensity: 3.4, radius: 7.31 },
+    fill: { glow: 0, kind: 'cold', x: 5.4, y: 2.8, z: 1.4, color: '#9eabe7', intensity: 1.05, radius: 8.5, flicker: false },
     lights: [
       { kind: 'cold', x: 5.0, y: 5.60, z: -12.0, color: '#b1bbeb', intensity: 2.73, radius: 13.0, flicker: false },
       { kind: 'warm', x: -3.8, y: 1.10, z: -5.0, color: '#dda558', intensity: 7.11, radius: 4.64 },
@@ -1790,7 +1808,10 @@ const GRAVE_NEAR_YARD = [
   /* (round 31 graft, judge 1: "the near table tomb is cut off by the frame
      bottom", and "a table tomb on the empty near-left lawn": a step back and
      to the left, so all of it stands in the turf) */
-  { shape: 70, edge: 0.30, z: 3.2, tone: 0.93, scale: 1.10, seed: 4.5 },
+  /* (round 35 graft, J2: "the pale left table tomb" grimed -- a stone two
+     centuries in the weather is dark, not the palest thing in the yard:
+     tone 0.93 -> 0.55) */
+  { shape: 70, edge: 0.30, z: 3.2, tone: 0.55, scale: 1.10, seed: 4.5 },
   { shape: 70, edge: 0.03, z: -5.0, tone: 0.88 },
   { shape: 73, x:  2.80, z: -4.40, tone: 0.86, free: true },
 ];
@@ -2118,7 +2139,12 @@ export const ROOM_KINDS = {
       { subject: 'chapel', houseX: 9.6, moonX: -7.6, houseS: 1.30, layout: 'rows', runX: -8.0,
         cam: { y: -0.45, z: -1.2, look: 0.9, fov: -2 },
         vantage: { at: 'along', off: 0.10, wall: 8.0, fwd: 3.0, yaw: 9, wide: 2, dy: -0.4, dlook: 0.6 },
-        nearView: GRAVE_NEAR_YARD, nearKeep: true },
+        nearView: GRAVE_NEAR_YARD, nearKeep: true,
+        /* (round 35 graft, SODALITE's, J2: "a warm lamp pool by the cross
+           tomb" -- the lantern brought in from the far railing to stand in
+           the near turf right of the walk, its warm pool on the grass) */
+        nearFloor: { pool2: { ahead: 6.2, across: 2.2, rAlong: 2.8, rAcross: 3.0, k: 6.5, color: '#e29a56' } },
+        lamps: [{ i: 1, x: 3.4, z: 0.12 }] },
       /* the mausolea stand right, so the house goes left and the moon over them */
       /* ...and the family plots are seen from AMONG the graves (both judges:
          "stand the camera among the graves"), low, the nearest stones and
