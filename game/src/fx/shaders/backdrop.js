@@ -21242,7 +21242,9 @@ float wfFourPoster(vec2 q, float px, float seed, float kq, bool paint){
   /* (round 29 graft: a plum or a wine -- lit flat, without the cloud, the
      old gold came up the pale cream panel judge 1 named on another build's
      bed) */
-  vec3 silk = kc < 0.5 ? vec3(0.30, 0.12, 0.20) : vec3(0.42, 0.15, 0.16);
+  /* (round 35: a step deeper and clearer -- under the key the wine and the
+     plum still came up a beige panel) */
+  vec3 silk = kc < 0.5 ? vec3(0.24, 0.05, 0.14) : vec3(0.34, 0.05, 0.08);
   /* over the mattress's edge it is quilted in diamonds, each one puffed;
      below the edge it FALLS, in deep folds that open toward the floor */
   float edgeY = MT - 0.16;
@@ -26125,6 +26127,10 @@ void main(){
 #if MM_WINGS >= 3
 #if MM_SH45 || MM_SH46 || MM_SH47 || MM_SH48 || MM_SH49 || MM_SH50 || MM_SH51 || MM_SH52 || MM_SH53 || MM_SH54 || MM_SH55 || MM_SH56 || MM_SH57 || MM_SH58 || MM_SH59 || MM_SH60 || MM_SH61 || MM_SH62 || MM_SH63 || MM_SH64 || MM_SH65 || MM_SH66 || MM_SH67 || MM_SH68 || MM_SH69 || MM_SH70 || MM_SH71 || MM_SH72 || MM_SH73 || MM_SH74 || MM_SH75 || MM_SH76 || MM_SH77 || MM_SH78 || MM_SH79 || MM_SH80 || MM_SH81 || MM_SH82 || MM_SH83 || MM_SH84
   if (vShape > 44.5) { satK = max(uPropSat, 0.42); satM = max(uPropSatMax, 0.62); }
+  /* (round 35: the four-poster's wine velvet and counterpane are a material
+     fact -- held at the chroma a dyed silk keeps, or the key's warmth turned
+     the whole bed one beige panel) */
+  if (vShape > 49.5 && vShape < 50.5) { satK = max(uPropSat, 0.60); satM = max(uPropSatMax, 0.85); }
 #endif
 #endif
 #if MM_WINGS == 1

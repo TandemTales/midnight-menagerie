@@ -410,7 +410,7 @@ export const REGIONS = {
     crispFloor: true, grain: 0.012,
     nearFloor: { fall: 0.90, dye: 1, calm: 0.70, clean: 1,
                  pool: { ahead: 5.6, across: 1.6, rAlong: 3.0, rAcross: 2.2, k: 1.5, color: '#9cb2e8' },
-                 pool2: { ahead: 3.9, across: -1.7, abs: true, rAlong: 2.0, rAcross: 1.8, k: 2.8, color: '#f0a65a' } },
+                 pool2: { ahead: 3.9, across: -1.7, abs: true, rAlong: 2.2, rAcross: 2.0, k: 6.0, color: '#f0a65a' } },
   },
 
   /* ── 4. The Kitchens and Cellars ───────────────────────────────────────────
@@ -789,7 +789,10 @@ export const REGIONS = {
        moonbeam under the oculus and clear of the clocks and crates; and
        MADDERLAKE's orrery on its table, the trunks and ONE grandfather
        clock set round it) */
-    props: { shapes: [36, 37, 8, 36, 37, 36], count: 16, height: 2.2, layout: 'perimeter',
+    /* (round 35: no packing case among them -- shape 8 is a plain box, and
+       both survey-5 judges named "the trunks and crates are plain cubes";
+       the attic deals its drawn trunks and sheets) */
+    props: { shapes: [36, 37, 36, 37, 36, 36], count: 16, height: 2.2, layout: 'perimeter',
              family: ['perimeter', 'wings'],
              near: [{ shape: 35, x: 1.3, z: -7.4, tone: 0.97, scale: 1.30, free: true },
                     { shape: 44, x: -1.9, z: -8.0, tone: 0.95, free: true },
@@ -1018,7 +1021,7 @@ export const REGIONS = {
        long bones and spalled stone (litter); the foreground falling to
        nine-tenths, not two-fifths; the grain at half the house's */
     nearFloor: { fall: 0.90, calm: 0.90, clean: 1,
-                 pool: { ahead: 5.0, across: -2.0, abs: true, rAlong: 2.6, rAcross: 2.3, k: 2.4, color: '#f0a55a' },
+                 pool: { ahead: 4.8, across: -2.0, abs: true, rAlong: 2.8, rAcross: 2.5, k: 6.0, color: '#f0a55a' },
                  litter: { ahead: 5.0, hw: 3.4, hd: 2.2, k: 1 } },
     grain: 0.012,
     /* (round 35: "the ceiling ... [is] black void" -- the vault's ribs lit
