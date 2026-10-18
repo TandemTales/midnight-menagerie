@@ -977,24 +977,28 @@
 .sh-drape.is-painted { opacity: 1; }
 .rm.is-still .sh-drape { transition: none; }
 
-/* ── the pelmet: a fringed velvet valance across the top of the curtain, a
-   gilt rope along its foot, and the room's name embroidered on it ── */
-.sh-pelmet {
-  --pel-h: clamp(30px, 4.4vh, 42px);
-  position: absolute; z-index: 0; pointer-events: none;
-  left: 9px; right: 9px; top: 7px;
+/* ── the valance (graft 2: SAPPHIRINE's): the house's scalloped velvet swags
+   on their gilt bullion rope, a tassel where each pair meet
+   (chrome-valance.webp via .kit-valance), across the head of KYANITE's
+   painted curtain -- and LIT: Mr. Moth's lamp warms the swags at his end and
+   the lantern over the crest picks out the middle ones (::after, masked to
+   the swags' own shapes so the light never paints the gaps between them) ── */
+.sh-pelmet.kit-valance {
+  --pel-h: clamp(36px, 5.2vh, 48px);
+  z-index: 1;
+  left: 9px; right: 9px; top: calc(var(--rib-h, 26px) * .5 + 1px);
   height: var(--pel-h);
-  --band: calc(var(--pel-h) * .36);
-  --swag-w: clamp(92px, 8.2vw, 132px);
-  /* a straight velvet band under the rail, a twisted gilt rope at its foot,
-     and below it a row of swagged velvet scallops, each edged in gilt rope;
-     the lamp at the left end warms the near swags */
+  background-size: auto 100%;
+  filter: drop-shadow(0 6px 7px rgba(0, 0, 0, .8)) saturate(.95);
+}
+.sh-pelmet.kit-valance::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
   background:
-    radial-gradient(60% 260% at 6% 0%, rgb(255 178 96 / .30), transparent 60%),
-    linear-gradient(180deg, #120818, #2b1640 55%, #3b2054) 0 0 / 100% var(--band) no-repeat,
-    repeating-linear-gradient(115deg, var(--kit-gold-hi) 0 2px, var(--kit-gold) 2px 3.5px, var(--kit-gold-lo) 3.5px 5px) 0 var(--band) / 100% 3px no-repeat,
-    radial-gradient(50% 100% at 50% 0%, #3d2156 0%, #2c173f 58%, #1c0e29 69%, var(--kit-gold-hi) 70%, var(--kit-gold) 74%, var(--kit-gold-lo) 79%, transparent 83%) 0 calc(var(--band) + 1px) / var(--swag-w) calc(100% - var(--band) - 1px) repeat-x;
-  filter: drop-shadow(0 5px 5px rgb(0 0 0 / .7));
+    radial-gradient(34% 190% at 7% 0%, rgb(255 178 96 / .62), rgb(255 160 80 / .16) 55%, transparent 80%),
+    radial-gradient(40% 170% at 50% -30%, rgb(255 210 150 / .34), transparent 75%);
+  -webkit-mask: url("../../assets/ui/kit/chrome-valance.webp") 50% 0 / auto 100% repeat-x;
+          mask: url("../../assets/ui/kit/chrome-valance.webp") 50% 0 / auto 100% repeat-x;
+  mix-blend-mode: screen;
 }
 /* the room's name, on the TRICKS ribbon's right half, in the ribbon's own
    engraved italic */
@@ -1051,102 +1055,113 @@
 .sh-pressable { cursor: pointer; }
 .sh-pressable.is-sold { cursor: default; }
 
-/* ── Keepsakes and Snacks: each on its own small plate ── */
-.sh-list { gap: clamp(6px, .9vh, 9px); }
+/* ── Keepsakes and Snacks: out of the ruled list (graft 2, both judges) ──
+   Each ware stands on a shelf lip of its own -- a walnut lip, its top face
+   lit, a gilt bead along the head of its front, the lamp warm along it --
+   the bell or the jar standing on the lip at the left (SAPPHIRINE's clear
+   glass on a turned walnut stand), the NAME engraved in gilt into the lip's
+   front BENEATH it, what it does written on the velvet beside the glass,
+   and the price tag hung from the lip's far end on its twine.
+       glass | what it does .............................
+     [ ======= NAME, ENGRAVED ============== (tag) ===== ]            */
+.sh-list { gap: clamp(7px, 1.1vh, 11px); }
+/* the first glass clears the panel's ribbon and rule */
+.sh-side .sh-list { padding-top: clamp(4px, .7vh, 7px); }
 .sh-row + .sh-row::before { content: none; }
 .sh-row.sh-pressable {
-  --row-price-h: clamp(26px, 3.2vh, 30px);
-  /* the house's brass-rimmed enamel plate (hw-plate-plain.webp, the plates
-     the settings' switches stand on), its chamfered corners, one to each
-     Keepsake and Snack, set apart on the counter */
-  border: 0 solid transparent;
-  border-width: 5px 7px;
-  border-image: url("../../assets/ui/kit/hw-plate-plain.webp") 14 16 fill / 6px 7px stretch;
-  padding: 0 6px 1px 4px;
-  margin-left: calc(var(--well, 48px) * .18);
-  filter: drop-shadow(0 4px 4px rgb(0 0 0 / .75));
-  column-gap: clamp(10px, .9vw, 14px);
+  --lip-h: clamp(22px, 2.75vh, 25px);
+  --vw: clamp(46px, 3.5vw, 56px);
+  grid-template-columns: var(--vw) minmax(0, 1fr) auto;
+  grid-template-rows: auto var(--lip-h);
+  grid-template-areas: "sig desc desc" "name name buy";
+  align-items: center;
+  column-gap: clamp(10px, .9vw, 14px); row-gap: 0;
+  padding: 0 4px;
+  border: 0; border-image: none; background: none;
+  filter: none;
   transition: filter var(--t-quick) var(--ease-out);
 }
-/* a brass stud pinning each end, and the lamp's warmth on the enamel */
+/* the lip: a grid item of its own, under the whole ware */
 .sh-row.sh-pressable::before {
-  content: ''; position: absolute; z-index: 0; pointer-events: none;
-  inset: -3px -4px; translate: none; height: auto; left: -4px; right: -4px; top: -3px;
+  content: ''; position: relative; z-index: 0; pointer-events: none;
+  grid-area: 2 / 1 / 3 / -1;
+  inset: auto; left: auto; right: auto; top: auto; translate: none;
+  align-self: stretch; height: auto;
+  margin: 0 -4px;
+  border-radius: 2px 2px 3px 3px;
   background:
-    radial-gradient(3.5px 3.5px at calc(100% - 4px) 50%, var(--kit-gold-hi), var(--kit-gold) 50%, var(--kit-gold-lo) 80%, transparent 90%),
-    radial-gradient(110% 140% at var(--plate-lx, 100%) 0%, rgb(255 190 120 / .09), transparent 62%);
+    radial-gradient(70% 220% at var(--plate-lx, 100%) 0%, rgb(255 186 112 / .20), transparent 72%),
+    linear-gradient(180deg, #8a6140 0, #5e3e26 4px, #160a04 4px, #160a04 5px, var(--kit-gold-hi) 5px, var(--kit-gold) 6px, var(--kit-gold-lo) 7px, rgb(10 4 2 / .5) 7px, transparent 9px, transparent calc(100% - 4px), rgb(0 0 0 / .55)),
+    linear-gradient(rgb(26 12 5 / .42), rgb(26 12 5 / .42)),
+    url("../../assets/ui/kit/walnut.webp") 0 0 / 256px 128px,
+    #2a180c;
+  box-shadow: 0 5px 6px -1px rgb(0 0 0 / .75);
   filter: none;
 }
 .sh-row.sh-pressable > * { position: relative; z-index: 1; }
 .sh-counter--keeps .sh-row.sh-pressable { --plate-lx: 100%; }
 .sh-counter--snacks .sh-row.sh-pressable { --plate-lx: 0%; }
-.sh-row.sh-pressable:hover, .sh-row.sh-pressable:focus-within {
-  filter: brightness(1.12) drop-shadow(0 0 8px color-mix(in srgb, var(--kit-candle) 38%, transparent)) drop-shadow(0 4px 4px rgb(0 0 0 / .75));
+/* the ware in hand takes the candle (the hover alone no longer does: one lit ware) */
+.sh-row.sh-pressable.is-in-hand {
+  filter: brightness(1.1) drop-shadow(0 0 8px color-mix(in srgb, var(--kit-candle) 34%, transparent));
 }
-/* the row's cord is short: it ties to the plate's own rim */
-.sh-row .sh-buy.kit-price::after { height: calc(var(--tag) * .5 + 2px); }
-.sh-row > .sh-buy { justify-self: end; margin-right: -2px; }
+.sh-row.sh-pressable.is-poor { filter: grayscale(.8) brightness(.72); }
+/* the name, engraved in gilt into the lip's front, beneath the glass */
+.sh-row.sh-pressable .sh-row__txt b {
+  grid-area: name; align-self: center; z-index: 2;
+  min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  padding: 3px 0 0 calc(var(--vw) * .06);
+  font-family: var(--font-display); font-weight: 700; font-style: normal;
+  font-size: clamp(13.5px, .95vw, 15px); line-height: 1; letter-spacing: .06em;
+  color: var(--kit-gold-hi);
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, .95), 0 1px 0 rgba(255, 214, 150, .28), 0 0 8px color-mix(in srgb, var(--kit-candle) 22%, transparent);
+}
+/* what it does, written on the velvet beside the glass */
+.sh-row.sh-pressable .sh-row__txt em {
+  grid-area: desc; align-self: center;
+  margin: 0; padding: 3px 0 5px;
+}
+/* the tag, hung from the lip's far end */
+.sh-row.sh-pressable > .sh-buy { grid-area: buy; align-self: center; justify-self: end; margin: 0 2px 0 0; translate: 0 1px; }
+/* its twine runs from the eyelet to a pin in the lip's top face */
+.sh-row .sh-buy.kit-price::after { top: calc(50% - var(--tag) * .5); height: calc(var(--tag) * .3); rotate: -24deg; }
 
-/* the object under glass: a velvet cushion on a turned brass foot, the bell
-   over it (a Keepsake) or the jar round it (a Snack) */
-.sh-row .sh-row__sig.sh-row__sig {
-  --well: clamp(48px, 3.6vw, 56px);
-  background: none; filter: none;
-  align-self: center; margin: -6px 0 -4px calc(var(--well) * -.34);
-  overflow: visible;
+/* the vessel (SAPPHIRINE's): its turned walnut stand under it, the ware on
+   the stand, the clear glass over both -- standing on the lip's top face */
+.sh-row .sh-row__sig.sh-vessel {
+  grid-area: sig; align-self: end; justify-self: center;
+  z-index: 2;
+  position: relative; display: block; flex: none;
+  width: var(--vw); height: calc(var(--vw) * 184 / 160);
+  /* the glass rises into the gap above the ware rather than making the
+     shelf taller: only the lower part of it takes the row's height */
+  margin: calc(var(--vw) * -.3) 0 calc(var(--lip-h) * -.2);
+  background: none; filter: none; overflow: visible;
 }
-.sh-row .sh-row__sig.sh-row__sig > .kit-obj { position: relative; z-index: 1; width: 66%; translate: 0 4%; }
-/* the foot: a turned brass disc seen from a little above */
-.sh-row .sh-row__sig.sh-row__sig::before {
-  content: ''; position: absolute; z-index: 0; pointer-events: none;
-  left: 4%; right: 4%; bottom: 2%; height: 22%;
-  border-radius: 50%;
-  background:
-    radial-gradient(60% 70% at 50% 30%, #4a2a5e, #2a1636 70%, transparent 72%) 50% 0 / 76% 70% no-repeat,
-    linear-gradient(180deg, var(--kit-gold-hi), var(--kit-gold) 38%, var(--kit-gold-lo) 80%, #2b1a0a);
-  box-shadow: 0 3px 4px rgb(0 0 0 / .8);
+.sh-row .sh-vessel--jar { height: calc(var(--vw) * 184 / 150); }
+.sh-vessel > i { position: absolute; display: block; pointer-events: none; }
+.sh-vessel__foot {
+  left: -6%; right: -6%; bottom: 0; height: calc(var(--vw) * 1.12 * 40 / 160);
+  background: url("../../assets/ui/kit/glass-foot.webp") 50% 100% / 100% 100% no-repeat;
+  filter: drop-shadow(0 3px 3px rgba(0, 0, 0, .85));
 }
-.sh-glass {
-  position: absolute; z-index: 2; pointer-events: none;
-  display: block;
+.sh-row .sh-vessel > .kit-obj {
+  position: absolute; left: 50%; bottom: calc(var(--vw) * .17);
+  width: 74%; translate: -50% 0;
+  filter: drop-shadow(0 3px 2px rgba(0, 0, 0, .75));
 }
-/* the bell: a tall dome of old glass, a knob on top, light down its flanks */
-.sh-glass--bell {
-  left: 8%; right: 8%; top: -14%; bottom: 12%;
-  border-radius: 50% 50% 14% 14% / 58% 58% 8% 8%;
-  background:
-    radial-gradient(18% 26% at 32% 24%, rgb(255 255 255 / .42), transparent 70%),
-    linear-gradient(90deg, rgb(230 220 255 / .22) 0, rgb(230 220 255 / .05) 14%, transparent 34%, transparent 70%, rgb(230 220 255 / .07) 86%, rgb(255 230 200 / .26) 97%, transparent);
-  box-shadow: inset 0 0 0 1px rgb(235 225 255 / .30), inset 0 -3px 6px rgb(255 220 180 / .10);
+.sh-row .sh-vessel--jar > .kit-obj { width: 66%; bottom: calc(var(--vw) * .2); }
+.sh-vessel__glass {
+  inset: 0 0 calc(var(--vw) * .1);
+  background: url("../../assets/ui/kit/bell-glass.webp") 50% 100% / 100% 100% no-repeat;
 }
-.sh-glass--bell::before {
-  content: ''; position: absolute; left: 50%; top: -9%;
-  width: 18%; aspect-ratio: 1; translate: -50% 0;
-  border-radius: 50%;
-  background: radial-gradient(circle at 35% 30%, var(--kit-gold-hi), var(--kit-gold) 50%, var(--kit-gold-lo) 90%);
-  box-shadow: 0 1px 1px rgb(0 0 0 / .7);
-}
-/* the jar: a squat glass jar with a brass lid */
-.sh-glass--jar {
-  left: 6%; right: 6%; top: -6%; bottom: 10%;
-  border-radius: 22% 22% 26% 26% / 16% 16% 20% 20%;
-  background:
-    radial-gradient(14% 30% at 26% 40%, rgb(255 255 255 / .34), transparent 70%),
-    linear-gradient(90deg, rgb(220 235 255 / .20) 0, rgb(220 235 255 / .04) 16%, transparent 36%, transparent 68%, rgb(220 235 255 / .06) 86%, rgb(255 230 200 / .22) 97%, transparent);
-  box-shadow: inset 0 0 0 1px rgb(225 235 255 / .30), inset 0 -4px 6px rgb(255 220 180 / .08);
-}
-.sh-glass--jar::before {
-  content: ''; position: absolute; left: 4%; right: 4%; top: -12%; height: 20%;
-  border-radius: 4px 4px 2px 2px;
-  background: linear-gradient(180deg, var(--kit-gold-hi), var(--kit-gold) 40%, var(--kit-gold-lo) 85%);
-  box-shadow: 0 2px 2px rgb(0 0 0 / .6), inset 0 -1px 0 rgb(0 0 0 / .4);
-}
-.sh-row--snack .sh-row__sig.sh-row__sig > .kit-obj { width: 62%; translate: 0 8%; }
+.sh-vessel--jar > .sh-vessel__glass { background-image: url("../../assets/ui/kit/jar-glass.webp"); }
+.sh-row.is-sold .sh-vessel > .kit-obj { opacity: .25; }
 
 /* ── the header at 1280: two tiers, each with air ── */
 @media (max-height: 860px) {
   .scene--shop .kit-titleblock > .kit-ribbon { margin-top: calc(var(--cart-h) * -.16); }
-  .sh-pelmet { --pel-h: 30px; }
+  .sh-pelmet.kit-valance { --pel-h: 34px; }
 }
 /* the counter's plates keep their descriptions to the lines they had as rows:
    the middle counter gives the sides a little width */

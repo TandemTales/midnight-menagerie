@@ -217,9 +217,10 @@ export class ShopScene extends RoomScene {
         <section class="sh-counter sh-counter--cards kit-panel kit-mat--curtain" data-medal="star2" aria-label="${esc(TERMS.card)}s for sale">
           <h2 class="sh-h sh-h--cards kit-heading kit-heading--ribbon kit-heading--inline kit-heading--clasp">${esc(TERMS.deck)} <em>on the table</em></h2>
           <!-- round 36: the curtain hangs in folds, lit by his lamp from the
-               left and the lantern over the crest, under a fringed pelmet -->
+               left and the lantern over the crest, under a scalloped valance
+               of swags (graft: SAPPHIRINE's .kit-valance, lit) -->
           <i class="sh-drape" aria-hidden="true"></i>
-          <div class="sh-pelmet"></div>
+          <i class="sh-pelmet kit-valance" aria-hidden="true"></i>
           <!-- Mr. Moth, standing at the left end of the shelf: not for sale, so
                outside the list of things that are. Round 5: the Kid board's
                mirror is his portrait frame, its moon on the crest and its paw
@@ -342,11 +343,11 @@ export class ShopScene extends RoomScene {
       row.setAttribute('role', 'listitem');
       row.dataset.key = key;
       row.innerHTML = `
-        <span class="sh-row__sig kit-hw-well" data-rarity="${esc(def.rarity)}" aria-hidden="true">
-          <!-- the Keepsake itself, painted (ui/objects.js), on a velvet cushion
-               under its own glass bell (round 36) -->
-          ${objectHtml(keepsakeKey(def.id), { well: false })}
-          <i class="sh-glass sh-glass--bell"></i>
+        <span class="sh-row__sig sh-vessel sh-vessel--bell" data-rarity="${esc(def.rarity)}" aria-hidden="true">
+          <!-- the Keepsake itself, painted (ui/objects.js), under its own clear
+               glass bell on a turned walnut stand, standing on the shelf's lip
+               (round 36 graft, SAPPHIRINE's bell) -->
+          <i class="sh-vessel__foot"></i>${objectHtml(keepsakeKey(def.id), { well: false })}<i class="sh-vessel__glass"></i>
         </span>
         <span class="sh-row__txt">
           <b>${esc(def.name)}</b>
@@ -368,11 +369,11 @@ export class ShopScene extends RoomScene {
       row.setAttribute('role', 'listitem');
       row.dataset.key = key;
       row.innerHTML = `
-        <span class="sh-row__sig sh-row__sig--snack kit-hw-well" aria-hidden="true">
+        <span class="sh-row__sig sh-row__sig--snack sh-vessel sh-vessel--jar" aria-hidden="true">
           <!-- each Snack its own painted sweet (ui/objects.js), never one shared
-               glyph, in its own glass jar (round 36) -->
-          ${objectHtml(snackKey(item.id), { well: false })}
-          <i class="sh-glass sh-glass--jar"></i>
+               glyph, in its own lidded sweet jar on a turned walnut stand
+               (round 36 graft, SAPPHIRINE's jar) -->
+          <i class="sh-vessel__foot"></i>${objectHtml(snackKey(item.id), { well: false })}<i class="sh-vessel__glass"></i>
         </span>
         <span class="sh-row__txt"><b>${esc(item.name)}</b><em>${esc(item.desc)}</em></span>`;
       // Fullness is recomputed in `_syncAffordable()`, not frozen here: buying
