@@ -1,0 +1,56 @@
+{
+  "round": "r36",
+  "maxBuilders": 3,
+  "briefs": [
+    "docs/ui-pass/BRIEF-r0.md",
+    "docs/ui-pass/BRIEF-r1.md",
+    "docs/ui-pass/BRIEF-r32.md",
+    "docs/ui-pass/BRIEF-r33.md",
+    "docs/ui-pass/BRIEF-r36.md"
+  ],
+  "rubrics": [
+    "docs/ui-pass/RUBRIC.md",
+    "docs/ui-pass/RUBRIC-r36.md"
+  ],
+  "samples": [
+    "UI/title.png",
+    "UI/mainMenu.png",
+    "UI/selectCompanion.png",
+    "UI/selectKid.png"
+  ],
+  "tracks": [
+    {
+      "key": "controls",
+      "name": "CONTROLS",
+      "rule": "refine",
+      "screens": [
+        "settings",
+        "lobby",
+        "shop",
+        "piles",
+        "combat-crowd"
+      ],
+      "baseline": "SATEEN",
+      "builders": [
+        {
+          "slot": "a",
+          "code": "SAPPHIRINE",
+          "port": 9271,
+          "angle": "LITERAL -- the angle that won round 33's controls (COBALT). Work BRIEF-r36's fix list 1 to 4 in order and exactly as written, screen by screen, the inputs FIRST (both judges' first defect on three screens). Reuse the kit's own pieces (the lobby's password well, round 33's brass key tag and house button) before inventing new ones."
+        },
+        {
+          "slot": "b",
+          "code": "KYANITE",
+          "port": 9272,
+          "angle": "THE HAND FIRST -- the one defect both judges called illegible. Make the nine-card fan readable at 1280 (overlap shrinks, never type; duplicates stack with a count; a lower arc that stays below the fighters' bars; a raised hover with rules a size up), prove it with gamepad and hand tests, then the shop as a stall, then the inputs."
+        },
+        {
+          "slot": "c",
+          "code": "OBSIDIAN",
+          "port": 9273,
+          "angle": "OBJECTS, NOT WIDGETS. Every control a judge called web-shaped becomes a thing on a shelf in this house: the seed slips as brass-framed vellum plates, the password chalked on a slate, the search well an inset enamel dish, each shop item a priced object under glass or in a jar with ONE lit press point, the curtain with lit folds. Draw the object first, then wire the control into it."
+        }
+      ]
+    }
+  ]
+}
