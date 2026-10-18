@@ -3263,7 +3263,57 @@ float subjCoping(vec2 q, float cx, float dqm, out float occ){
   mmPen(abs(pxl) - 0.46, 1.1, 0.75*mmCover(pierTop + 0.10 - q.y)*step(q.y, pierTop + 0.10));
   mmPen(q.y - (pierTop - 0.14), 1.0, 0.65*onPier);
   h = mix(h, 1.35 + 0.25*sqrt(max(0.0, -fin/0.28)), finCov);
-  gInk = max(gInk, joint*0.55*mmCover(WH - q.y));
+  /* ROUND 37 (survey 5, both judges: "the courtyard wall is a flat dark
+     band"): a NICHE in the middle of every bay -- a round-headed recess
+     0.8 m wide with a lit stone sill, a lantern burning in it, its light on
+     the niche's own back and reveals -- and IVY over the coping, hanging
+     down the face in ragged curtains of its own lengths, each leaf mass
+     lit on its upper edge by the moon. */
+  float bay = floor(cx/pp);
+  float nx = cx - (bay + 0.5)*pp;
+  float nh = mmHash11(bay*5.3 + uSeed*1.7);
+  float nY0 = 0.80, nSp = 1.70, nR = 0.50;
+  float nich = max(abs(nx) - nR, nY0 - q.y);
+  nich = max(nich, q.y - nSp);
+  nich = min(nich, max(length(vec2(nx, q.y - nSp)) - nR, nY0 - q.y));
+  float onN = smoothstep(px, -px, nich)*(1.0 - onPier);
+  float sill = mmBandA(q.y, nY0 - 0.10, nY0, px)*step(abs(nx), nR + 0.10)*(1.0 - onPier);
+  mmPen(nich, 1.2, 0.85*(1.0 - onPier));
+  mmPen(q.y - (nY0 - 0.10), 1.0, 0.6*step(abs(nx), nR + 0.10)*(1.0 - onPier));
+  /* the recess: its back a step in, darker at the head, its reveal on the
+     side away from the lantern's flame */
+  h -= onN*0.42;
+  h += sill*0.20;
+  /* the lantern in it: a little glazed lamp on the sill, its flame */
+  vec2 lq = vec2(nx, q.y - nY0);
+  float lamp = mmBox(lq - vec2(0.0, 0.17), vec2(0.085, 0.13), 0.02);
+  float lcap = wTri(lq - vec2(0.0, 0.30), 0.10, 0.09);
+  float lampCov = mmCover(-min(lamp, lcap))*onN;
+  float flame = exp(-length((lq - vec2(0.0, 0.17))/vec2(0.035, 0.065))*1.6);
+  float nGlow = onN*exp(-length(lq - vec2(0.0, 0.20))/0.42);
+  /* the ivy: a curtain from the coping in each 2.1 m cell, its hem ragged */
+  float icell = floor(cx/2.13 + uSeed*3.0);
+  float ixl = cx/2.13 + uSeed*3.0 - icell;
+  float ih = mmHash11(icell*7.1 + 3.3);
+  float iw = 0.26 + 0.18*mmHash11(icell*3.7);
+  float iLen = (0.45 + 1.60*ih)*step(0.22, ih);
+  float leafN = mmNoise(vec2(cx*6.0, q.y*7.0) + uSeed*11.0);
+  float leafF = mmNoise(vec2(cx*15.0, q.y*15.0) + uSeed*5.0);
+  float hem = WH + CT - iLen*(0.55 + 0.45*cos((ixl - 0.5)/iw*1.5708)) + 0.25*(leafN - 0.5);
+  float ivyD = max(abs(ixl - 0.5)*2.13 - iw*2.13*(0.70 + 0.60*leafN)*(0.75 + 0.25*smoothstep(hem, WH + CT, q.y)), hem - q.y);
+  ivyD = max(ivyD, q.y - (WH + CT + 0.10 + 0.08*leafF));
+  ivyD += 0.10*(leafF - 0.5);
+  float onI = smoothstep(px, -px, ivyD)*(1.0 - onPier*0.7)*step(0.1, iLen);
+  /* each leaf a lobed cell, lit on its upper side */
+  vec2 lc = vec2(cx*9.0, q.y*9.0);
+  vec2 lid = floor(lc);
+  vec2 lf2 = fract(lc) - 0.5;
+  float lh = mmHash21(lid + uSeed);
+  float leaf = length(lf2 + (vec2(mmHash21(lid + 1.3), mmHash21(lid + 7.1)) - 0.5)*0.4) - 0.34;
+  float leafLit = smoothstep(0.10, -0.25, lf2.y)*smoothstep(0.05, -0.05, leaf);
+  h = mix(h, 1.42 + 0.10*leafN - 0.12*smoothstep(-0.05, 0.10, leaf), onI);
+  gInk = max(gInk, joint*0.55*mmCover(WH - q.y)*(1.0 - onI)*(1.0 - onN*0.6));
+  gInk = max(gInk, 0.55*onI*(1.0 - smoothstep(0.0, 0.06, abs(leaf)))*mmLod(0.11, px));
   gWLit = mmBandA(q.y, WH + CT - 0.07, WH + CT, px)*(1.0 - onPier)
         + mmBandA(q.y, pierTop + 0.03, pierTop + 0.10, px)*onPier;
   /* the stone's own colour: a warm grey, every stone a little different,
@@ -3274,6 +3324,17 @@ float subjCoping(vec2 q, float cx, float dqm, out float occ){
   stn = mix(stn, stn*vec3(0.62, 0.72, 0.58), smoothstep(0.9, 0.0, q.y)*0.7);
   vec3 pkc = vec3(1.00, 0.42, 0.08)*(lum*1.6 + 0.015);
   gCol = mix(stn, pkc, finCov*pk);
+  /* (round 37) the niche's back in the lantern's warmth, its lamp's brass
+     and glass; the ivy's dark green, its upper leaves taking the moon */
+  vec3 nBack = stn*0.55*(0.70 + 0.30*smoothstep(nSp + nR, nY0, q.y));
+  gCol = mix(gCol, nBack, onN*(1.0 - lampCov));
+  gCol = mix(gCol, vec3(0.30, 0.22, 0.10)*(lum*1.4 + 0.02), lampCov);
+  gCol = mix(gCol, stn*1.25, sill);
+  /* the coping's top and nosing in the moon, the line that ends the wall */
+  gCol = mix(gCol, stn*1.55, cope*(1.0 - onPier));
+  vec3 ivyC = mix(vec3(0.09, 0.15, 0.07), vec3(0.20, 0.30, 0.13), leafN)*(lum*1.9 + 0.014)*(0.70 + 0.55*lh);
+  ivyC *= 0.70 + 0.90*leafLit;
+  gCol = mix(gCol, ivyC, onI);
   gColAmt = cov;
   /* ...and the candle in the pier's pumpkin, through its cut face */
   vec2 fq = vec2(abs(pq.x) - 0.13, pq.y - 0.30);
@@ -3282,6 +3343,9 @@ float subjCoping(vec2 q, float cx, float dqm, out float occ){
   float face = mmCover(-min(eye, mouth)) * finCov * pk;
   /* ...and the glow of it through the rind round the cuts */
   gWEmit = face + 0.22*finCov*pk*exp(-max(min(eye, mouth), 0.0)/0.05);
+  /* (round 37) the niche lantern's flame through its glass, and its light
+     on the recess round it (not through the ivy) */
+  gWEmit += (flame*1.8*lampCov + nGlow*0.34*(1.0 - lampCov))*(1.0 - onI);
   gWEmitC = vec3(1.00, 0.58, 0.16) * 0.85;
   occ = cov;
   return h * cov;
@@ -9274,7 +9338,12 @@ float stBooks(vec2 q, float y0, float pit, float px, float lw, float sd, inout v
   float bh = pit*(0.66 + 0.30*r2);
   float lean = gapN*which*0.22;
   float u = (cxl - bx0 - lean*sy)/max(bw, 1e-3);
-  float spine = (1.0 - gap)*step(0.0, sy)*step(sy, bh*(1.0 - lean*0.1))
+  /* (round 37, survey-5 judge 2: "the book spines on the shelves stair-step
+     at 1280" -- each head was a hard step, and at the Deck's 0.8 a row of
+     heads at their own heights came back as a staircase; it is a pen edge
+     over its own pixel now, as the sides are) */
+  float bhT = bh*(1.0 - lean*0.1);
+  float spine = (1.0 - gap)*smoothstep(-px*0.7, px*0.7, sy)*smoothstep(bhT + px*0.7, bhT - px*0.7, sy)
               * smoothstep(0.0, px/bw*1.2 + 0.03, u)*smoothstep(1.0, 1.0 - px/bw*1.2 - 0.03, u);
   /* a stack laid flatB in some gaps */
   float flatB = gap*step(0.0, sy)*step(sy, 0.16 + 0.06*r4);
@@ -9295,7 +9364,7 @@ float stBooks(vec2 q, float y0, float pit, float px, float lw, float sd, inout v
   float gilt = max(max(mmInkP(bandY - 0.86, px/bh, 1.4), mmInkP(bandY - 0.14, px/bh, 1.4)),
                    mmInkP(bandY - 0.78, px/bh, 1.0)*step(0.5, r2));
   gilt *= mmLod(0.04, px);
-  float label = step(0.5, r4)*step(abs(bandY - 0.66), 0.07)*step(abs(uu), 0.7);
+  float label = step(0.5, r4)*smoothstep(0.07 + px/bh*0.7, 0.07 - px/bh*0.7, abs(bandY - 0.66))*step(abs(uu), 0.7);
   bcol = mix(bcol, bcol*0.45, label);
   bcol = mix(bcol, vec3(0.90, 0.70, 0.32)*lw*3.0, gilt*spine);
   /* the flatB stack */
@@ -9452,7 +9521,9 @@ float studyWallH(vec2 q, float qpx, out float occ){
         h = mix(h, 1.6, onL);
         gInk = max(gInk, mmInkP(lm, px, 1.0)*0.8*lon);
         float tube = RCV(-max(abs(lp.x) - 0.17, abs(lp.y + 0.072) - 0.010));
-        emitW += lon*(tube*1.6 + 0.10*exp(-length(lp*vec2(1.0, 2.0))*6.0));
+        /* (round 37: the tube a stop down -- at 1.6 each lamp bloomed into a
+           white bar along the cornice, part of the "blown" upper frame) */
+        emitW += lon*(tube*0.70 + 0.07*exp(-length(lp*vec2(1.0, 2.0))*6.0));
         rPool(vec2(lbx, (q.y - ly + 0.75)*0.75), 0.80, 1.35*lon, lampP);
       }
     }
@@ -11763,37 +11834,71 @@ float wallH(vec2 q, out float occ){
            clumps round the crown's centre, the front one winning; no fbm
            holes (they were the blotches). Program 11 only: the Graveyard's
            wood is program 0 and 4 and keeps its own. */
+        /* ROUND 37 (survey 5, both judges: "the trees are cardboard
+           silhouettes"; "the tree silhouettes at upper left are flat
+           lollipop blobs"). The court's broadleaves are DEAD OAKS, the
+           tree mainMenu.png sets beside its gate: a flared bole that leans,
+           forking at a third of its height into three limbs, each limb into
+           two boughs and each bough into two twigs, every member tapering
+           and set at its own angle, the whole drawn in one dark ink against
+           the moon -- a silhouette broken by the sky between its limbs, not
+           a mass. Twenty-two members, drawn only inside the tree's own
+           reach. */
         vec2 pp = vec2(fx2, hq.y);
-        float cd = 1e3, inner = 1.0;
-        vec2 nn = vec2(0.0, 1.0);
-        for (int j = 0; j < 7; j++){
-          float fj = float(j);
-          float a1 = mmHash11(fid*3.1 + fj*1.7), a2 = mmHash11(fid*5.9 + fj*2.3);
-          vec2 cc = j == 0 ? vec2(0.0, ccy + cry*0.30)
-                           : vec2((a1 - 0.5)*1.30*lw, ccy + (a2 - 0.40)*cry*1.15);
-          float rr = min(lw, cry)*(0.44 + 0.20*mmHash11(fid*7.3 + fj));
-          float dj = length(pp - cc) - rr;
-          cd = min(cd, dj);
-          if (dj < 0.0) { inner = dj; nn = (pp - cc)/max(rr, 1e-3); }
+        float S = min(1.0, 3.0/max(0.50*fh, 0.1));
+        float w0 = (0.16 + 0.030*fh)*mix(1.0, S, 0.5);
+        float lean = (mmHash11(fid*6.7 + uSeed) - 0.5)*0.30;
+        vec2 F = vec2(lean*fh*0.38, fh*0.36);
+        float dT = 1e3;
+        /* the bole, flared at its foot */
+        {
+          vec2 pa = pp, ba = F;
+          float t = clamp(dot(pa, ba)/max(dot(ba, ba), 1e-6), 0.0, 1.0);
+          float r = w0*(0.70 + 0.55*pow(1.0 - t, 3.0));
+          dT = length(pa - ba*t) - r;
         }
-        cd += 0.10*(rag - 0.11)*min(lw, cry);
-        cm = smoothstep(hpx, -hpx, cd);
-        float bh = fh*0.36;
-        float bw2 = 0.20 + 0.020*fh;
-        tm = (1.0 - smoothstep(bw2*0.7, bw2*0.7 + hpx*1.5, abs(fx2)))*step(hq.y, bh + 0.3);
-        float lmb = min(abs(fx2 - (hq.y - bh)*0.55), abs(fx2 + (hq.y - bh)*0.42));
-        tm = max(tm, (1.0 - smoothstep(bw2*0.45, bw2*0.45 + hpx*1.5, lmb))
-                     * step(bh, hq.y) * step(hq.y, ccy));
+        for (int i = 0; i < 3; i++){
+          float fi = float(i);
+          float a1 = (fi - 1.0)*0.72 + lean*1.4 + (mmHash11(fid*3.3 + fi*1.9) - 0.5)*0.42;
+          float L1 = fh*0.27*S*(0.80 + 0.35*mmHash11(fid*5.1 + fi*2.7))*(i == 1 ? 1.15 : 1.0);
+          vec2 d1 = vec2(sin(a1), cos(a1));
+          vec2 E1 = F + d1*L1;
+          float r1a = w0*0.62, r1b = w0*0.34;
+          {
+            vec2 pa = pp - F, ba = E1 - F;
+            float t = clamp(dot(pa, ba)/max(dot(ba, ba), 1e-6), 0.0, 1.0);
+            dT = min(dT, length(pa - ba*t) - mix(r1a, r1b, t));
+          }
+          for (int j = 0; j < 2; j++){
+            float fj = float(j)*2.0 - 1.0;
+            float a2 = a1 + fj*(0.40 + 0.25*mmHash11(fid*7.9 + fi*3.1 + fj)) + (mmHash11(fid*2.2 + fi + fj*4.0) - 0.5)*0.30;
+            float L2 = fh*0.19*S*(0.75 + 0.40*mmHash11(fid*9.3 + fi*1.3 + fj*2.0));
+            vec2 E2 = E1 + vec2(sin(a2), cos(a2))*L2;
+            {
+              vec2 pa = pp - E1, ba = E2 - E1;
+              float t = clamp(dot(pa, ba)/max(dot(ba, ba), 1e-6), 0.0, 1.0);
+              dT = min(dT, length(pa - ba*t) - mix(r1b*0.95, w0*0.16, t));
+            }
+            for (int k2 = 0; k2 < 2; k2++){
+              float fk = float(k2)*2.0 - 1.0;
+              float a3 = a2 + fk*(0.45 + 0.30*mmHash11(fid*4.4 + fi*2.0 + fj*3.0 + fk)) + 0.25*sin(fid + fi*2.0 + fj + fk*3.0);
+              float L3 = fh*0.12*S*(0.70 + 0.50*mmHash11(fid*1.7 + fi*5.0 + fj*7.0 + fk*11.0));
+              vec2 E3 = E2 + vec2(sin(a3), cos(a3))*L3;
+              vec2 pa = pp - E2, ba = E3 - E2;
+              float t = clamp(dot(pa, ba)/max(dot(ba, ba), 1e-6), 0.0, 1.0);
+              dT = min(dT, length(pa - ba*t) - mix(w0*0.15, w0*0.05, t));
+            }
+          }
+        }
+        /* the ink: a pixel's coverage of the member, its hairline twigs
+           laid as a pen line a pixel wide and as faint as they are thin */
+        tm = clamp(0.5 - dT/max(hpx, 1e-4), 0.0, 1.0);
+        cm = 0.0;
         fn = 1.0 - clamp(abs(fx2)/max(lw, 0.02), 0.0, 1.0);
-        /* each clump's moonlit upper edge, over the dark of the one behind */
-        float up = smoothstep(-0.15, 0.65, dot(nn, vec2(-0.45, 0.89)));
-        /* (round 28 graft, judge 2: "ink the blobby lollipop trees beside
-           the mansion into crisp silhouettes". A rim round EVERY clump drew
-           each as its own pale bubble -- the lollipop -- so the moon takes
-           only the crown's OUTER edge now, a hairline on its upper side, and
-           the crown is one dark mass inked round its outline as the firs are) */
-        rimB = (1.0 - smoothstep(0.0, 0.10 + hpx*1.4, -cd)) * up * step(cd, 0.0) * 0.45;
-        gInk = max(gInk, clamp(1.1 - abs(cd)/max(hpx, 1e-4), 0.0, 1.0)*0.85*cm);
+
+
+        rimB = 0.0;
+        gInk = max(gInk, clamp(1.1 - abs(dT)/max(hpx, 1e-4), 0.0, 1.0)*0.85);
         brT = 0.0;
 #else
         vec2  cq = vec2(fx2/lw, (hq.y - ccy)/cry);
@@ -13658,6 +13763,10 @@ uniform float uNearDark;
    Foyer's floor variant drew it first; since round 31 any room may lay one
    (the near floor, below). */
 uniform vec4  uRug;
+/* (round 37: a room's carpet in its own light -- nearFloor.rugGain, and how
+   strongly its small gul figure reads, nearFloor.rugGul; 1 and 0.45, the
+   house's carpet as it was, wherever they are not written) */
+uniform float uRugGain, uRugGul;
 /* ═══ ROUND 31: THE NEAR FLOOR (both survey-4 judges' first shared defect:
    "every room puts its horizon at y≈320-400 and leaves 50-60% of the frame
    as undressed floor fading to black"). ONE rule, palette data
@@ -15212,7 +15321,7 @@ void main(){
     fieldC = mix(fieldC, saffron, medI);
     vec2 gq = abs(fract(rp/vec2(0.30, 0.30)) - 0.5)*0.30;
     float gul = (1.0 - smoothstep(0.030, 0.030 + max(rpx.x, rpx.y), gq.x + gq.y)) * smoothstep(0.03, 0.012, max(rpx.x, rpx.y));
-    fieldC = mix(fieldC, mix(indigo, ivory, 0.35), gul*0.45*(1.0 - max(medO, corner)));
+    fieldC = mix(fieldC, mix(indigo, ivory, 0.35), gul*uRugGul*(1.0 - max(medO, corner)));
     vec3 rugCol = mix(fieldC, bordC, inBord);
     rugCol = mix(rugCol, ivory, guard);
     rugCol *= 0.86 + 0.20*mmNoise(rp*1.7 + 3.0);
@@ -15229,7 +15338,7 @@ void main(){
        hall's value it was a black mat on the lit flags) */
     LfR *= 1.9;
 #endif
-    alb = mix(alb, rugCol*LfR*5.2*(0.86 + 0.20*mmNoise(rp*0.9 + 7.0)), rugCov*0.95);
+    alb = mix(alb, rugCol*LfR*5.2*uRugGain*(0.86 + 0.20*mmNoise(rp*0.9 + 7.0)), rugCov*0.95);
     /* its edge stands a centimetre proud: a hairline of shadow round it */
     alb *= 1.0 - (1.0 - smoothstep(0.0, max(ePx*2.0, 0.02), abs(eIn)))*0.30*step(eIn, 0.0)*(1.0 - frg);
   }
@@ -17937,6 +18046,7 @@ uniform float uPropKnee, uPropMax, uPropSat, uPropSatMax;
    key and its marble a step under white; 0 everywhere but the Heart, so the
    maze's figures draw as they were) */
 uniform float uStatueMod;
+uniform float uFitK;          // (round 37: pal.fitGain -- see the fittings' glass)
 varying vec2  vUv;
 varying vec3  vWorld;
 varying vec2  vSize;
@@ -19240,7 +19350,7 @@ float gkDraw(vec2 m, vec2 msz, float shape, float seed, float px, bool paint){
        twines, the stalks running its length in light and shade, and loose
        straw fallen on the flags at its foot. A lantern-pumpkin may be set
        on it (the near item's own y). */
-    float rag = 0.010*(mmNoise(vec2(q.y*40.0, seed*3.0)) - 0.5) + 0.008*(mmNoise(vec2(q.x*38.0, seed*5.0)) - 0.5);
+    float rag = 0.030*(mmNoise(vec2(q.y*34.0, seed*3.0)) - 0.5) + 0.024*(mmNoise(vec2(q.x*30.0, seed*5.0)) - 0.5);
     float body = mmBox(q - vec2(0.0, 0.235), vec2(0.475, 0.215), 0.055) + rag;
     /* tufts standing proud of its top */
     float tuft = 1e3;
@@ -19262,12 +19372,19 @@ float gkDraw(vec2 m, vec2 msz, float shape, float seed, float px, bool paint){
     }
     d = min(min(body, tuft), loose);
     if (!paint) return d*sc;
-    vec3 straw = vec3(0.70, 0.56, 0.28)*(0.85 + 0.22*mv);
-    /* the stalks: fine streaks the bale's length, each its own value */
-    float st = mmNoise(vec2(q.x*3.0, q.y*95.0) + seed*4.0);
-    float st2 = mmNoise(vec2(q.x*7.0, q.y*180.0) + seed*9.0);
+    vec3 straw = vec3(0.80, 0.63, 0.30)*(0.85 + 0.22*mv);
+    /* a baled side is FLAKES -- slices of pressed straw a hand wide, each
+       its own value, a dark seam between -- and in each the stalks lie
+       every way, short and bright */
+    float fk = q.x/0.085 + 0.25*mmNoise(vec2(q.y*6.0, seed));
+    float fid = floor(fk), ff = fract(fk);
+    float fv = 0.80 + 0.35*mmHash11(fid*3.7 + seed);
+    float seam = smoothstep(0.10, 0.0, min(ff, 1.0 - ff));
+    float st = mmNoise(vec2(q.x*70.0 + q.y*40.0, q.y*55.0 - q.x*20.0) + seed*4.0);
+    float st2 = mmNoise(vec2(q.x*55.0 - q.y*60.0, q.y*80.0 + q.x*15.0) + seed*9.0);
+    float stalk = smoothstep(0.55, 0.80, max(st, st2));
     float bu = clamp((q.y - 0.235)/0.215, -1.0, 1.0);
-    vec3 bc = straw*(0.48 + 0.42*wfRound(bu*0.9))*(0.66 + 0.40*st)*(0.82 + 0.22*st2);
+    vec3 bc = straw*fv*(0.50 + 0.40*wfRound(bu*0.9))*(0.72 + 0.45*stalk)*(1.0 - 0.45*seam);
     /* its top face the light band, its end in shadow, its foot dark */
     bc *= 1.0 + 0.35*smoothstep(0.36, 0.44, q.y);
     bc *= 1.0 - 0.35*smoothstep(0.30, 0.48, kq*(-q.x));
@@ -21230,6 +21347,126 @@ float wfHorse(vec2 q, float px, float seed, float kq, bool paint){
    over the edge -- a doll's head and arm, a drum, a ball, a soldier's
    shako -- with a painted moon and stars on its front and iron corners; and
    sat against it on the boards, the bear. */
+/* ── 87 THE NURSERY'S BLOCKS ON THE RUG (round 37) ──────────────────────
+   The brief's near floor: "scattered blocks, a rocking horse or a toy
+   brought forward". A tower of three alphabet blocks set down askew, two
+   more tumbled on the boards, one on its corner against them, and a ball
+   rolled clear -- each block painted in its own nursery colour with the
+   letter on its face in a sunk panel, its top lit, every edge inked.
+   Drawn in metres (wfNom 0.40). */
+float wfBlk(vec2 q, vec2 c, float s, float a){
+  vec2 p = q - c;
+  float cs = cos(a), sn = sin(a);
+  p = vec2(cs*p.x + sn*p.y, -sn*p.x + cs*p.y);
+  return mmBox(p, vec2(s*0.5), s*0.06);
+}
+float wfBlocks(vec2 q, float px, float seed, float kq, bool paint){
+  const float S = 0.105;
+  vec2 c0 = vec2(-0.06, S*0.5), c1 = vec2(-0.045, S*1.5), c2 = vec2(-0.07, S*2.5);
+  vec2 c3 = vec2(0.10, S*0.5), c4 = vec2(-0.24, S*0.5 + 0.032);
+  float a1 = 0.08, a2 = -0.10, a4 = 0.62;
+  float b0 = wfBlk(q, c0, S, 0.0), b1 = wfBlk(q, c1, S, a1), b2 = wfBlk(q, c2, S, a2);
+  float b3 = wfBlk(q, c3, S, 0.0), b4 = wfBlk(q, c4, S, a4);
+  float ball = length(q - vec2(0.34, 0.072)) - 0.072;
+  float d = min(min(min(b0, b1), min(b2, b3)), min(b4, ball));
+  if (!paint) return d;
+  vec3 col = vec3(0.1);
+  float ink = 0.0;
+  /* their paint: red, blue, mustard, green, cream -- old enamel, rubbed */
+  vec3 P0 = vec3(0.62, 0.16, 0.12), P1 = vec3(0.18, 0.28, 0.56), P2 = vec3(0.72, 0.56, 0.18);
+  vec3 P3 = vec3(0.22, 0.44, 0.24), P4 = vec3(0.80, 0.72, 0.56);
+  for (int i = 0; i < 5; i++){
+    vec2 c = i == 0 ? c0 : (i == 1 ? c1 : (i == 2 ? c2 : (i == 3 ? c3 : c4)));
+    float a = i == 1 ? a1 : (i == 2 ? a2 : (i == 4 ? a4 : 0.0));
+    vec3 pc = i == 0 ? P0 : (i == 1 ? P1 : (i == 2 ? P2 : (i == 3 ? P3 : P4)));
+    vec2 p = q - c;
+    float cs = cos(a), sn = sin(a);
+    p = vec2(cs*p.x + sn*p.y, -sn*p.x + cs*p.y);
+    float b = mmBox(p, vec2(S*0.5), S*0.06);
+    /* the face: a sunk panel in the plain wood, the letter in paint */
+    float pan = mmBox(p, vec2(S*0.36), S*0.04);
+    float L = 1e3;
+    float li = mod(float(i) + floor(seed*3.0), 5.0);
+    vec2 g = p/(S*0.30);
+    if (li < 0.5)      L = min(min(wfSeg(g, vec2(-0.55, -0.70), vec2(0.0, 0.75), 0.16), wfSeg(g, vec2(0.55, -0.70), vec2(0.0, 0.75), 0.16)), wfSeg(g, vec2(-0.28, -0.12), vec2(0.28, -0.12), 0.14));
+    else if (li < 1.5) L = abs(length(g/vec2(0.62, 0.78)) - 1.0)*0.62 - 0.12;
+    else if (li < 2.5) L = min(wfSeg(g, vec2(-0.50, -0.70), vec2(0.50, 0.70), 0.15), wfSeg(g, vec2(0.50, -0.70), vec2(-0.50, 0.70), 0.15));
+    else if (li < 3.5) L = min(wfSeg(g, vec2(-0.40, 0.72), vec2(-0.40, -0.70), 0.15), wfSeg(g, vec2(-0.40, -0.70), vec2(0.50, -0.70), 0.15));
+    else               L = min(wfSeg(g, vec2(-0.55, 0.70), vec2(0.55, 0.70), 0.15), wfSeg(g, vec2(0.0, 0.70), vec2(0.0, -0.72), 0.15));
+    L *= S*0.30;
+    /* the side toward the key lit, the top edge catching the light */
+    float lit = 0.70 + 0.30*smoothstep(-S*0.5, S*0.5, kq*p.x) + 0.30*smoothstep(S*0.30, S*0.48, p.y);
+    vec3 wood = vec3(0.70, 0.58, 0.40)*lit;
+    vec3 fc = mix(pc*lit, wood*0.92, wfIn(pan, px));
+    fc = mix(fc, pc*lit*0.85, wfIn(L, px)*wfIn(pan, px));
+    wfLay(col, ink, b, fc, px, 0.95);
+    ink = max(ink, mmInkP(pan, px, 0.8)*0.45*wfIn(b, px));
+  }
+  /* the ball: quartered in red and cream, round, a sheen on its crown */
+  vec2 bq = q - vec2(0.34, 0.072);
+  float ang = atan(bq.y, bq.x);
+  vec3 bc = mix(vec3(0.66, 0.14, 0.12), vec3(0.84, 0.76, 0.60), step(0.0, sin(ang*2.0 + seed)));
+  float bu = clamp(length(bq)/0.072, 0.0, 1.0);
+  bc *= (0.45 + 0.60*sqrt(max(1.0 - bu*bu, 0.0)))*(0.85 + 0.30*smoothstep(-0.05, 0.05, kq*bq.x + bq.y));
+  wfLay(col, ink, ball, bc, px, 0.95);
+  /* each sits in its own shadow on the boards */
+  col *= 1.0 - 0.35*smoothstep(0.03, 0.0, q.y);
+  gWfCol = col; gWfInk = ink; gWfGloss = 0.35; gWfMoon = 0.25*smoothstep(S*2.7, S*3.0, q.y);
+  return d;
+}
+/* ── 88 BOOKS PILED ON THE STUDY'S FLOOR (round 37) ──────────────────────
+   "a rug, a reading table or chair with a lamp's pool, stacked books": two
+   piles taken down and not put back -- calf, morocco and cloth in their
+   own colours and thicknesses, each a little off square on the one under
+   it, gilt bands on the spines, the page block pale at the fore-edge -- and
+   one lying open beside them. Drawn in metres (wfNom 0.34). */
+float wfBooks(vec2 q, float px, float seed, float kq, bool paint){
+  float d = 1e3;
+  vec3 col = vec3(0.1);
+  float ink = 0.0;
+  for (int pile = 0; pile < 2; pile++){
+    float px0 = pile == 0 ? -0.22 : 0.20;
+    float y = 0.0;
+    int nb = pile == 0 ? 6 : 4;
+    for (int i = 0; i < 6; i++){
+      if (i >= nb) break;
+      float fi = float(i) + float(pile)*7.0;
+      float th = 0.034 + 0.024*mmHash11(fi*3.1 + seed);
+      float hw = 0.105 + 0.045*mmHash11(fi*5.7 + seed) - 0.010*float(i);
+      float ox = px0 + 0.035*(mmHash11(fi*7.3 + seed) - 0.5);
+      vec2 c = vec2(ox, y + th*0.5);
+      float b = mmBox(q - c, vec2(hw, th*0.5), 0.006);
+      d = min(d, b);
+      if (paint) {
+        float k = mmHash11(fi*9.1 + seed);
+        vec3 lea = k < 0.25 ? vec3(0.42, 0.10, 0.08) : (k < 0.50 ? vec3(0.12, 0.26, 0.16) : (k < 0.75 ? vec3(0.14, 0.16, 0.30) : vec3(0.40, 0.26, 0.14)));
+        float u = (q.x - ox)/hw;
+        /* the spine faces you on one book in two; the fore-edge of the
+           pages on the rest -- pale, ruled by its leaves */
+        float spine = step(0.5, mmHash11(fi*2.3 + seed*1.7));
+        vec3 pg = vec3(0.78, 0.72, 0.58)*(0.80 + 0.20*sin((q.y - y)*900.0));
+        float board = smoothstep(0.30, 0.0, abs(q.y - c.y) - th*0.5 + 0.007);
+        vec3 bc = mix(mix(pg, lea, board), lea*(1.0 + 0.45*smoothstep(0.004, 0.0, abs(abs(u) - 0.70))), spine);
+        bc = mix(bc, vec3(0.78, 0.60, 0.26), spine*smoothstep(0.006, 0.0, abs(abs(u) - 0.70))*0.8);
+        bc *= 0.70 + 0.35*smoothstep(-1.0, 1.0, kq*u) + 0.25*smoothstep(th*0.25, th*0.5, q.y - c.y);
+        wfLay(col, ink, b, bc, px, 0.9);
+      }
+      y += th;
+    }
+  }
+  /* the open one, lying beside the right pile, its two pages bowed */
+  vec2 oq = q - vec2(0.48, 0.0);
+  float leafL = max(abs(oq.x + 0.075) - 0.075, max(-oq.y, oq.y - (0.026 + 0.012*sin((oq.x + 0.15)*20.9))));
+  float leafR = max(abs(oq.x - 0.075) - 0.075, max(-oq.y, oq.y - (0.026 + 0.012*sin((oq.x)*20.9 + 3.14))));
+  float open = min(leafL, leafR);
+  d = min(d, open);
+  if (!paint) return d;
+  wfLay(col, ink, open, vec3(0.82, 0.76, 0.62)*(0.75 + 0.35*smoothstep(0.0, 0.03, oq.y)), px, 0.8);
+  ink = max(ink, mmInkP(abs(oq.x) - 0.002, px, 0.8)*wfIn(open, px)*0.6);
+  col *= 1.0 - 0.30*smoothstep(0.02, 0.0, q.y);
+  gWfCol = col; gWfInk = ink; gWfGloss = 0.25; gWfMoon = 0.0;
+  return d;
+}
 float wfChest(vec2 q, float px, float seed, float kq, bool paint){
   float CX = -0.16, HW = 0.38, TOP = 0.52;
   vec2 c = q - vec2(CX, 0.0);
@@ -22568,6 +22805,8 @@ float wfDollhouse(vec2 q, float px, float seed, float kq, bool paint){
 
 /* the drawing's nominal height, metres -- its quad is scaled to it */
 float wfNom(float s){
+  if (s > 87.5) return 0.34;   // 88, books on the study's floor (round 37)
+  if (s > 86.5) return 0.40;   // 87, the nursery's blocks (round 37)
   if (s < 45.5) return 1.95;
   if (s < 46.5) return 1.15;
   if (s < 47.5) return 1.00;
@@ -22605,6 +22844,12 @@ float wfDraw(vec2 m, vec2 msz, float s, float seed, float px, bool paint){
   gWfCol = vec3(0.3); gWfInk = 0.0; gWfEmit = vec3(0.0); gWfMoon = 0.0; gWfGloss = 0.2;
   float d;
   if (false) {}
+#if MM_SH87
+  else if (s > 86.5 && s < 87.5) d = wfBlocks(q, qpx, seed, kq, paint);   // (round 37)
+#endif
+#if MM_SH88
+  else if (s > 87.5 && s < 88.5) d = wfBooks(q, qpx, seed, kq, paint);    // (round 37)
+#endif
 #if MM_SH45
   else if (s < 45.5)      d = wfCot(q, qpx, seed, kq, paint);
 #endif
@@ -26201,6 +26446,11 @@ void main(){
        burner sits just under it in every room in the house. */
     fitEmit = mix(uRim, vec3(1.00, 0.80, 0.52), 0.55) * uPropMax
             * (0.16 + 0.78*burn) * (0.26 + 1.40*clamp(glass, 0.0, 1.0));
+    /* (round 37: a room may set its fittings' glass and burner down --
+       uFitK, pal.fitGain; 1 wherever it is not written. The Study's
+       chandeliers were "blown white blobs": pale globes in their own glow) */
+    fitEmit *= uFitK;
+    albedo *= mix(1.0, uFitK, clamp(glass, 0.0, 1.0));
   }
 #endif
 

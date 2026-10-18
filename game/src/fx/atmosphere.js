@@ -351,12 +351,19 @@ export const REGIONS = {
                        the near left, the toy chest on the near right, each
                        in the fire's pool (nearFloor below). `still`, so the
                        room behind them draws exactly what it drew. */
-                    { shape: 46, x: 2.5, z: 0.8, tone: 0.97, free: true, keep: true, still: true, fore: 1, seed: 2.2 },
-                    { shape: 47, x: -2.6, z: 1.3, tone: 0.97, free: true, keep: true, still: true, fore: 1, seed: 4.6 }] },
+                    { shape: 46, ahead: 4.5, across: -2.25, tone: 0.97, keep: true, still: true, seed: 2.2 },
+                    { shape: 47, ahead: 4.2, across: 2.35, tone: 0.97, keep: true, still: true, seed: 4.6 },
+                    /* ...and the blocks tipped out of the chest onto the
+                       rug, a ball rolled clear (87) */
+                    { shape: 87, ahead: 3.2, across: 0.75, tone: 0.98, keep: true, still: true, seed: 1.4, hM: 0.50 },
+                    { shape: 87, ahead: 3.7, across: -1.05, tone: 0.97, keep: true, still: true, seed: 3.7, hM: 0.38 }] },
     crispFloor: true, grain: 0.012,
-    nearFloor: { fall: 0.80, dye: 1, calm: 0.85, clean: 1, rug: { ahead: 5.0, hw: 2.1, hd: 1.4 },
-                 pool: { ahead: 5.0, across: 0.0, rAlong: 2.8, rAcross: 3.2, k: 3.0, color: '#ff9a50' },
-                 pool2: { ahead: 3.4, across: 0.0, rAlong: 1.8, rAcross: 3.4, k: 1.2, color: '#f0a060' } },
+    nearFloor: { fall: 0.80, dye: 1, calm: 0.92, clean: 1, rug: { ahead: 3.6, hw: 1.65, hd: 1.05 }, rugGain: 0.70, rugGul: 0.85,
+                 pool: { ahead: 4.0, across: 0.0, rAlong: 2.6, rAcross: 3.4, k: 2.5, color: '#ff9a50' },
+                 pool2: { ahead: 2.4, across: 0.0, rAlong: 1.6, rAcross: 3.0, k: 1.0, color: '#f0a060' } },
+    /* (round 37: the cold fill from behind the eye laid a lavender haze on
+       the near boards' left -- a third of it reaches the floor) */
+    cineFloor: 0.35,
     /* (round 24: dust in the moonlight, not a field of stars over the
        paper's own) */
     particles: { mix: [[PTYPE.DUST, 0.86], [PTYPE.ASH, 0.14]],
@@ -780,37 +787,44 @@ export const REGIONS = {
        the sconce overlay" -- the cases dealt round the frame's edges stood
        under the chrome's candles; the walls ARE the bookcases) */
     props: { shapes: [56, 55, 56], count: 1, height: 2.7, layout: 'perimeter',
-             near: [{ shape: 53, edge: 0.70, z: -1.6, tone: 0.97 },
-                    { shape: 54, edge: 0.33, z: -4.4, tone: 0.95 },
+             /* ROUND 37: THE NEAR FLOOR (survey 5: "the lower 60% is an
+                empty dark floor under strong shelves"). The reading table is
+                brought out of the far corner onto the carpet before you, its
+                green lamp burning -- the pool it lays on the carpet is
+                nearFloor's -- the books taken
+                down and piled on the carpet beside it (88); the globe stays
+                by the far cases. Placed in eye metres, as the pools are. */
+             near: [{ shape: 53, ahead: 4.9, across: 2.35, tone: 0.98, keep: true, still: true, seed: 3.3 },
                     { shape: 56, edge: 0.85, z: -4.6, tone: 0.94 },
-                    /* ROUND 37: THE NEAR FLOOR (survey 5: "the lower 60% is
-                       an empty dark floor under strong shelves"). A reading
-                       chair drawn up on the carpet at the near left, turned
-                       to the lamp, and a second at the near right: each in
-                       the reading lamp's pool (nearFloor below). `still`,
-                       so the room behind them is what it was. */
-                    { shape: 56, x: 3.3, z: 1.4, tone: 0.98, free: true, keep: true, still: true, fore: 1, seed: 3.1 },
-                    { shape: 54, x: -3.5, z: 1.2, tone: 0.97, free: true, keep: true, still: true, fore: 1, seed: 5.2 }] },
+                    { shape: 88, ahead: 3.5, across: -1.1, tone: 0.98, keep: true, still: true, seed: 2.6, hM: 0.36 },
+                    { shape: 54, ahead: 4.9, across: -2.4, tone: 0.97, keep: true, still: true, seed: 5.2 }] },
     crispFloor: true, grain: 0.012,
-    nearFloor: { fall: 0.92, dye: 1, calm: 0.85, clean: 1, rug: { ahead: 5.4, hw: 2.4, hd: 1.6 },
-                 pool: { ahead: 5.0, across: -1.6, rAlong: 3.2, rAcross: 3.0, k: 2.6, color: '#f0b060' },
-                 pool2: { ahead: 3.6, across: 2.6, rAlong: 2.2, rAcross: 2.2, k: 1.6, color: '#f0a65a' } },
+    nearFloor: { fall: 0.88, dye: 1, calm: 0.90, clean: 1, rug: { ahead: 4.0, hw: 1.6, hd: 1.0 }, rugGain: 0.62, rugGul: 0.85,
+                 pool: { ahead: 4.8, across: 2.0, rAlong: 2.2, rAcross: 2.2, k: 3.6, color: '#f2c070' },
+                 pool2: { ahead: 3.2, across: -0.6, rAlong: 1.8, rAcross: 2.8, k: 1.4, color: '#eaa860' } },
+    cineFloor: 0.5,
     particles: { mix: [[PTYPE.DUST, 0.92], [PTYPE.EMBER, 0.08]],
                  tint: '#ffe6bc', wispTint: '#8fd9ec', emberTint: '#ffb64a',
                  speed: 0.6, scale: 0.95, wind: 0.4, density: 0.45 },
-    exposure: 2.6, vignette: 1.47, contrast: 1.67,
+    exposure: 2.6, vignette: 1.22, contrast: 1.67,
     key:  { glow: 0, kind: 'warm', x: -3.8, y: 3.2, z: 2.2, color: '#e2b271', intensity: 1.63, radius: 7.31 },
     /* (graft: the moon's pool on the boards a stop down -- the judges saw
        the floor's grain dither in it) */
     fill: { glow: 0, kind: 'cold', x: 5.0, y: 3.4, z: 1.2, color: '#769fba', intensity: 2.90, radius: 8.0, flicker: false },
     lights: [
-      { kind: 'warm', x: -3.2, y: 3.00, z: -4.6, color: '#e0b266', intensity: 1.50, radius: 5.6 },
-      { kind: 'warm', x: 3.6, y: 3.20, z: -7.0, color: '#dca254', intensity: 1.30, radius: 6.0 },
-      { kind: 'warm', x: -4.0, y: 3.40, z: -7.6, color: '#ce9953', intensity: 0.90, radius: 5.5 },
+      /* (round 37, survey-5 judge 1: "the chandeliers are blown white
+         blobs" -- each candle's halo two-thirds the size and half the
+         strength, so the arms and the cups of the fitting read round it) */
+      { kind: 'warm', x: -3.2, y: 3.00, z: -4.6, color: '#e0b266', intensity: 1.50, radius: 5.6, glow: 0.45, glowSize: 0.6 },
+      { kind: 'warm', x: 3.6, y: 3.20, z: -7.0, color: '#dca254', intensity: 1.30, radius: 6.0, glow: 0.45, glowSize: 0.6 },
+      { kind: 'warm', x: -4.0, y: 3.40, z: -7.6, color: '#ce9953', intensity: 0.90, radius: 5.5, glow: 0.45, glowSize: 0.6 },
       { kind: 'cold', x: 0.6, y: 5.00, z: -8.0, color: '#769fba', intensity: 1.40, radius: 7.0 },
     ],
     shafts: { count: 1, spread: 6, y: 8.0, z: -8.0, angle: 0.22, width: 2.4, intensity: 0.14, pool: 1.5 },
-    warmTone: 0.06, halation: 0.68,
+    /* (round 37: halation 0.68 -> 0.42 -- the chandeliers' "blown white
+       blobs" were half halo -- and the vignette 1.47 -> 1.22, judge 2's
+       "smeared vignette") */
+    warmTone: 0.06, halation: 0.42, fitGain: 0.42,
   },
 
   /* ── 8. The Moonlit Attic and Observatory ──────────────────────────────────
@@ -1516,18 +1530,22 @@ export const REGIONS = {
                   over their own warm pool (nearFloor below), and a second
                   pair on the other side. `still`, so the patch behind is
                   dealt as it was. */
-               { shape: 86, x: -4.7, z: 1.2, tone: 0.96, free: true, keep: true, still: true, fore: 1, seed: 3.3 },
-               { shape: 27, x: -4.8, z: 1.25, y: 0.44, tone: 0.97, scale: 0.55, free: true, keep: true, still: true, fore: 1, seed: 0.7 },
-               { shape: 27, x: -3.7, z: 2.2, tone: 0.97, scale: 0.95, free: true, keep: true, still: true, fore: 1, seed: 1.1 },
-               { shape: 27, x: -5.6, z: 2.4, tone: 0.97, scale: 0.75, free: true, keep: true, still: true, fore: 1, seed: 2.3 },
-               { shape: 27, x: -2.9, z: 3.1, tone: 0.97, scale: 0.6, free: true, keep: true, still: true, fore: 1, seed: 4.1 },
-               { shape: 27, x: 4.6, z: 2.4, tone: 0.97, scale: 0.8, free: true, keep: true, still: true, fore: 1, seed: 1.5 },
-               { shape: 27, x: 5.4, z: 1.8, tone: 0.96, scale: 0.6, free: true, keep: true, still: true, fore: 1, seed: 6.2 },
+               { shape: 86, ahead: 4.8, across: 3.5, tone: 0.96, keep: true, still: true, seed: 3.3 },
+               { shape: 27, ahead: 4.62, across: 3.40, y: 0.43, tone: 0.97, hM: 0.55, keep: true, still: true, seed: 0.7 },
+               { shape: 27, ahead: 4.2, across: 2.4, tone: 0.97, hM: 0.85, keep: true, still: true, seed: 1.1 },
+               { shape: 27, ahead: 5.6, across: 4.7, tone: 0.97, hM: 0.70, keep: true, still: true, seed: 2.3 },
+               { shape: 27, ahead: 3.6, across: 3.9, tone: 0.97, hM: 0.50, keep: true, still: true, seed: 4.1 },
+               { shape: 27, ahead: 4.4, across: -3.7, tone: 0.97, hM: 0.75, keep: true, still: true, seed: 1.5 },
+               { shape: 27, ahead: 3.8, across: -4.4, tone: 0.96, hM: 0.48, keep: true, still: true, seed: 6.2 },
+               /* ...and two at your feet, the nearest things in the court */
+               { shape: 27, ahead: 2.7, across: 1.75, tone: 0.97, hM: 0.62, keep: true, still: true, seed: 4.5 },
+               { shape: 27, ahead: 3.2, across: -1.95, tone: 0.97, hM: 0.52, keep: true, still: true, seed: 7.5 },
+               { shape: 27, ahead: 3.5, across: -2.45, tone: 0.97, hM: 0.36, keep: true, still: true, seed: 0.3 },
              ] },
     crispFloor: true,
     nearFloor: { fall: 0.92, calm: 0.85, clean: 1,
-                 pool: { ahead: 6.0, across: -4.4, rAlong: 3.0, rAcross: 2.8, k: 3.2, color: '#ff9a40' },
-                 pool2: { ahead: 5.8, across: 4.8, rAlong: 2.4, rAcross: 2.4, k: 2.4, color: '#ff9a40' } },
+                 pool: { ahead: 4.0, across: 2.6, rAlong: 2.2, rAcross: 2.0, k: 16.0, color: '#ffa848' },
+                 pool2: { ahead: 3.3, across: -2.2, rAlong: 1.7, rAcross: 1.5, k: 13.0, color: '#ffa848' } },
     particles: { mix: [[PTYPE.DUST, 0.40], [PTYPE.SPORE, 0.30], [PTYPE.EMBER, 0.30]],
                  tint: '#cfe0e8', wispTint: '#8fe8c0', emberTint: '#ff8a28',
                  speed: 0.9, scale: 1.25, wind: 1.1, density: 1.0 },
@@ -1546,7 +1564,10 @@ export const REGIONS = {
     bloom: 0.98,
     /* (graft, all three judges: the moon on the court's flags, so the lower
        two-thirds of the floor is paving and not a void, and in the pond) */
-    moonFloor: [0.30, 0.40, 0.62], moonPond: 1.0,
+    /* (round 37: the moon on the near flags a stop down -- lit by the
+       lanterns now, the moon's wash read as a milky blue-grey smear) */
+    moonFloor: [0.18, 0.24, 0.38], moonPond: 1.0,
+    cineFloor: 0.25,
     /* (round 28: the mansion over the court wall seen whole -- see the
        Graveyard's houseK) */
     houseK: 0.80,
@@ -2257,7 +2278,14 @@ export const ROOM_KINDS = {
         near: [{ shape: 53, x: 3.0, z: -3.0, tone: 0.97, free: true },
                { shape: 56, x: -2.6, z: -4.8, tone: 0.95, free: true },
                { shape: 56, x: 2.0, z: -5.4, tone: 0.95, free: true },
-               { shape: 54, x: -4.2, z: -3.2, tone: 0.95, free: true }],
+               { shape: 54, x: -4.2, z: -3.2, tone: 0.95, free: true },
+               /* (round 37: the near floor -- books piled on the hearth
+                  rug in the fire's light, a chair turned to the fire) */
+               { shape: 88, ahead: 3.6, across: 1.2, tone: 0.98, keep: true, still: true, seed: 7.1, hM: 0.36 },
+               { shape: 56, ahead: 4.4, across: -2.3, tone: 0.97, keep: true, still: true, seed: 4.4 }],
+        nearFloor: { rug: { ahead: 4.6, hw: 1.8, hd: 1.1 },
+                     pool: { ahead: 5.2, across: 0.0, rAlong: 3.0, rAcross: 2.6, k: 3.2, color: '#ff9a50' },
+                     pool2: { ahead: 3.4, across: 0.0, rAlong: 2.0, rAcross: 3.0, k: 1.2, color: '#f0a060' } },
         cam: { z: -1.0, look: 0.1 } },
     ],
     names: [
@@ -2285,7 +2313,11 @@ export const ROOM_KINDS = {
               near: [{ shape: 48, edge: 0.70, z: -1.6, tone: 0.95 },
                      { shape: 49, x: -2.05, z: -5.9, tone: 0.96, free: true },
                      { shape: 48, x: 2.55, z: -5.6, tone: 0.94, free: true },
-                     { shape: 49, edge: 0.92, z: -5.0, tone: 0.92 }],
+                     { shape: 49, edge: 0.92, z: -5.0, tone: 0.92 },
+                     /* (round 37: a dress form brought out onto the rug in
+                        the lamp's pool, and the blocks the nursery left) */
+                     { shape: 49, ahead: 4.6, across: -2.1, tone: 0.97, keep: true, still: true, seed: 5.5 },
+                     { shape: 87, ahead: 3.3, across: 1.2, tone: 0.97, keep: true, still: true, seed: 6.4, hM: 0.45 }],
               room: { d: 0.82 }, cam: { z: -1.0, look: 0.10 } }],
     names: [
       [/wardrobe|closet|changing|blanket|sewing|mending/i, 1],
@@ -2631,7 +2663,9 @@ export const ROOM_KINDS = {
       /* the pumpkin patch, from down among it */
       /* (round 22: IN ROWS, on the earth they grow in -- turf worn to earth,
          pattern 11 -- where the courtyard is paved) */
-      { subject: 'coping', layout: 'patch', countScale: 1.3, floor: 14, runner: 0,
+      /* (round 37: 1.15, not 1.3 -- at 1.3 the patch filled MAX_PROPS and
+         the near floor's lanterns were never dealt) */
+      { subject: 'coping', layout: 'patch', countScale: 1.15, floor: 14, runner: 0,
         vantage: { at: 'among', low: 0.55, fwd: 2.6, pitch: 2.0, off: 0.05, wide: 3 } },
       /* the moon pond: water in the court, seen along its walk */
       /* (graft: the moon stands over the water and the house beside it, so
@@ -3780,6 +3814,10 @@ export class Atmosphere {
       this.rig.add({
         kind: L.kind, color: L.color, intensity: L.intensity, radius: L.radius,
         flicker: L.flicker !== false, cine: i < 2, fill: i === 1,
+        /* (round 37: a lamp may size its flame's halo -- the Study's
+           chandeliers were "blown white blobs"; unwritten, lights.js's own
+           default, so no other room moves) */
+        glowSize: L.glowSize,
         /* A LIGHT YOU CAN SEE NEEDS A FITTING, and the first half of BRIEF-r10
            fix 1 is that half of them were never meant to be seen at all. Every
            region in the table above authors `glow: 0` on its key and its fill
