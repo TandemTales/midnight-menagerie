@@ -4849,7 +4849,6 @@ float hedgeWallH(vec2 q, float qpx, out float occ){
   /* (round 34 graft, the frame budget: the crown only where it can be --
      every use of it below is in its top metre, and under that the hedge is
      covered whatever it is; it ran on every pixel of every hedge) */
-  float top = HH + (q.y > HH - 0.95 ? yewRagW(u, sd, ragA) : 0.0);
   /* the finials on the far hedge: a ball on a neck or a cone; in the court,
      a clipped ball on every pier, all alike */
   float fp = court > 0.5 ? 3.4 : 6.5;
@@ -4857,6 +4856,11 @@ float hedgeWallH(vec2 q, float qpx, out float occ){
   float fi = floor((wx + fo)/fp + 0.5);
   float fxl = wx + fo - fi*fp;
   float fk = court > 0.5 ? 0.5 : mmHash11(fi*7.13 + uSeed);
+  /* (fix/hedge-frame: ...nor in the sky a metre over its tallest clump,
+     0.58 m at the court's 1.5 -- every pixel up there returns or is dropped
+     below before anything reads it -- save in a finial's column, where a
+     ball stands up to 1.8 m over the cut on the crown it sits on) */
+  float top = HH + (q.y > HH - 0.95 && (q.y < HH + 1.0 || (far > 0.5 && abs(fxl) < 1.5)) ? yewRagW(u, sd, ragA) : 0.0);
   /* (computed on every far-wall pixel and switched off after: a finial's
      distance set to a constant where there is none made mmCover's gradient
      a thousand across every cell boundary, and a half-covered pixel there) */
@@ -4866,7 +4870,13 @@ float hedgeWallH(vec2 q, float qpx, out float occ){
   float finY = HH;
   /* (round 34 graft, the frame budget: only up where a finial can be -- the
      lowest one's foot is a hand under the cut) */
-  if (far > 0.5 && q.y > HH - 0.60) {
+  /* (fix/hedge-frame: and the finial drawn only in its own column -- past
+     1.5 m off its axis it is a metre off, and a capsule round the tallest
+     one, foot to ball, bounds it closely enough that its coverage and pen
+     line read nothing at the seam) */
+  if (far > 0.5 && q.y > HH - 0.60 && abs(fxl) > 1.5)
+    fin = length(vec2(fxl, max(abs(q.y - HH - 0.80) - 0.96, 0.0))) - 0.56;
+  else if (far > 0.5 && q.y > HH - 0.60) {
     finY += max(yewRagW(u - fxl, sd, ragA), -0.10);
     vec2 c = vec2(fxl, q.y - finY);
     float nk = mmBox(c - vec2(0.0, 0.10), vec2(0.20, 0.16), 0.06);
@@ -4891,6 +4901,18 @@ float hedgeWallH(vec2 q, float qpx, out float occ){
   /* the hedge's coverage: under its crown, or in a finial */
   float finC = mmCover(-fin) * finOn;
   float cov = max(mmCover(top - q.y), finC);
+  /* the wood beyond, over the hedge, against the sky: firs and round crowns
+     at their own heights, far off, the foot of it hidden by the hedge */
+  float woodC = 0.0;
+  if (far > 0.5) {
+    float tp = 3.1;
+    float ti = floor((wx + uSeed*5.0)/tp);
+    float tx = wx + uSeed*5.0 - (ti + 0.5)*tp;
+    float th = 3.6 + 4.6*mmHash11(ti*3.7 + uSeed);
+    float tx2 = tx + (mmHash11(ti*2.3 + uSeed) - 0.5)*1.2;
+    float crown = (th - q.y) - abs(tx2)*(2.4 + 0.8*mmHash11(ti*6.1))*(1.0 + 0.14*sin(q.y*6.0 + ti));
+    woodC = mmCover(crown*0.4) * step(0.2, mmHash11(ti*5.3 + uSeed));
+  }
   float hedge = cov * (1.0 - inGap);
   /* above the hedge a SIDE wall is not there: skip the leaf entirely (it
      is a third of the side walls' pixels and all of the sky over them) */
@@ -4899,6 +4921,13 @@ float hedgeWallH(vec2 q, float qpx, out float occ){
      over it -- the side walls are near and tall in the frame, and a metre
      of sky over each run through the whole face cost the maze fight ~4 ms) */
   if (far < 0.5 && q.y > top + max(0.08, 3.0*qpx)) { gHedgeAmt = 0.0; return 0.0; }
+  /* (fix/hedge-frame: and over the FAR hedge's crown and clear of its
+     finials -- the sky, which is half the far wall in the maze fight -- none
+     of the leaf below is seen: solidM is 0 there, so h, the colour, the moon
+     and the edge are all multiplied out, and only the wood beyond is drawn.
+     It is taken above, in the flow every pixel shares, so its edge's
+     coverage reads the same derivatives it always did.) */
+  if (far > 0.5 && q.y > top + max(0.08, 3.0*qpx) && fin > max(0.06, 3.0*qpx)) { gHedgeAmt = 0.0; gWood = woodC; return 0.0; }
   /* the face: sprays, a slow swell, the foot */
   float tone, lit;
   float rel = yewFace(vec2(u, q.y), qpx, sd, tone, lit);
@@ -5094,17 +5123,8 @@ float hedgeWallH(vec2 q, float qpx, out float occ){
   gHedgeLeaf = mix(1.0, (0.20 + 1.30*tone)*(1.0 - niche*0.8), hedge*(1.0 - stone));
   gHedgeLeaf *= 1.0 - 0.85*gapY;
   gHedgeAmt = hedge*(1.0 - stone);
-  /* the wood beyond, over the hedge, against the sky: firs and round crowns
-     at their own heights, far off, the foot of it hidden by the hedge */
-  if (far > 0.5) {
-    float tp = 3.1;
-    float ti = floor((wx + uSeed*5.0)/tp);
-    float tx = wx + uSeed*5.0 - (ti + 0.5)*tp;
-    float th = 3.6 + 4.6*mmHash11(ti*3.7 + uSeed);
-    float tx2 = tx + (mmHash11(ti*2.3 + uSeed) - 0.5)*1.2;
-    float crown = (th - q.y) - abs(tx2)*(2.4 + 0.8*mmHash11(ti*6.1))*(1.0 + 0.14*sin(q.y*6.0 + ti));
-    gWood = mmCover(crown*0.4) * step(0.2, mmHash11(ti*5.3 + uSeed)) * (1.0 - solidM);
-  }
+  /* (the wood beyond: woodC, above) */
+  if (far > 0.5) gWood = woodC * (1.0 - solidM);
   return h * solidM;
 }
 #endif
@@ -12250,7 +12270,16 @@ void main(){
      get darker. */
   alb *= mix(0.42, 1.12, smoothstep(-0.85, 0.85, aoH));
 
+#if MM_ROOMS == 8
+  /* (fix/hedge-frame: the maze is open to the night, and wherever its
+     solidity is 0 (h <= 0.25) the sky replaces everything this wall lights
+     below -- mix(sky, col, 0) is the sky -- so its grime, its lamps and its
+     moon are not summed there: the churchyard's rule, MM_R25W 4 below) */
+  bool litW = uOpenSky < 0.5 || uArch > 4.5 || h > 0.25;
+  float grime = litW ? mmFbm3(q*0.30 - uSeed) : 0.5;
+#else
   float grime = mmFbm3(q*0.30 - uSeed);
+#endif
 #if MM_ROOMS >= 8
   grime = mix(0.66, grime, 0.35);
 #endif
@@ -12284,6 +12313,9 @@ void main(){
      passing through, whatever its arch.) */
   float solidL = smoothstep(0.25, 0.85, h);
   if (uArch < 4.5 || solidL > 0.0)
+#endif
+#if MM_ROOMS == 8
+  if (litW)
 #endif
   for (int i = 0; i < 5; i++){
     vec4 L = uLights[i];
@@ -12357,7 +12389,7 @@ void main(){
      is a dark mass whose sprays catch the moon on their upper faces and
      whose sheared top is one line of light (gWLit) -- "dark leaf masses
      with lit top edges". */
-  if (uArch > 2.5 && uArch < 3.5) {
+  if (uArch > 2.5 && uArch < 3.5 && litW) {
     vec3 moonH = mix(uOpenGlow, vec3(0.74, 0.82, 1.00), 0.62);
     /* (graft, CAPUT's, one judge: the two side hedges face each other
        across the alley, one to the moon and one to the lanterns -- their
