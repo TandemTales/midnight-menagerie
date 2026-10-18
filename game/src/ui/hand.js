@@ -192,6 +192,38 @@ export const TUNE = {
   squeezeMin: 0.62,
   squeezeTrack: -0.03,
   squeezeStrip: 0.985,
+  /* ── ROUND 36: DUPLICATES STACK ──────────────────────────────────────────
+     Three Bites in a nine-card hand were three strips of the same art and the
+     same two words, each one paid for out of every other card's title. Copies
+     of one Trick (same card, same upgrade, same cost) are gathered into ONE
+     fanned stack: the copies stand behind the top one, each a step up and a
+     tilt to the left so their gilt top edges show as a pile, and the top card
+     wears a count medallion. The fan is laid out over the STACKS, so nine
+     Tricks with three Bites deal seven places, and every place is wider.
+     Each copy is still its own card: hover, keyboard, pad and drag reach it
+     (a copy under the top one lifts clear like any other). */
+  stackDupes: true,
+  /* ...only in a hand big enough to crowd: five Tricks in an opening hand have
+     the table to themselves, and two of them on one pile would read as a
+     hand of four. Copies stand side by side below this (gathered next to each
+     other, Hand#_regroup, so the step to a stack never reshuffles them). */
+  stackFrom: 7,
+  stackDy: 7,           // px each copy behind the top stands higher, at fit 1
+  stackDx: 3,           // ...and to the left
+  stackRot: 2.2,        // ...and tilted further left, degrees
+  stackMax: 3,          // copies deeper than this tuck exactly behind the third
+  /* ROUND 36: A LOWER ARC. The arc's dip is what RAISES the middle of the fan
+     (baseY = bottom - dip: the outer cards sit at the bottom, the middle a dip
+     above them), and a crowded fan's middle is where the boss's bars stand
+     over it. A hand of seven Tricks or more bends this far at most. */
+  crowdDipMax: 12,
+  /* ROUND 36: a fixed gutter between the fan and the furniture the scene
+     measured (the Companion panel and the Nerve dial on the left, the
+     discard shelf and END TURN on the right), px each side. */
+  boundGutter: 12,
+  /* ROUND 36: a hovered or focused card in a crowded fan rises further and
+     grows a size more than an open hand's: its rules are read off it. */
+  crowdHoverScale: 1.24,   // (StS2: 1.15-1.25; tests/cards-feel holds it there)
   boundDipMax: 32,
   boundBottomPad: 13,
   boundHitPadTop: 6,    // the backstop's slack above a bounded fan, px      // …and the arc's drop at the ends follows the flatter bend
@@ -474,7 +506,7 @@ export class Hand {
       if (this._hitBox !== 'off') { this._hitBox = 'off'; this.hit.style.display = 'none'; }
       return;
     }
-    const fan = F || this._fan(n);
+    const fan = F || this._fan(this._units().length, n);
     const pad = TUNE.hitPad;
     const half = (n > 1 ? fan.c * fan.step : 0) + fan.overhang + pad;
     const left = Math.max(0, Math.round(fan.cx - half));
@@ -484,7 +516,10 @@ export class Hand {
     // target), so a table with furniture keeps the backstop's top tight: the
     // board above it keeps its tooltips (see TUNE.boundHitPadTop).
     const padTop = this._bounded() ? TUNE.boundHitPadTop : pad;
-    const top = Math.max(0, Math.round(fan.baseY - fan.ch - padTop));
+    // round 36: + the copies a stack stands up behind its top card
+    let deep = 0;
+    for (const u of this._units()) deep = Math.max(deep, Math.min(u.length, TUNE.stackMax) - 1);
+    const top = Math.max(0, Math.round(fan.baseY - fan.ch - padTop - deep * TUNE.stackDy * fan.fit));
     const key = left + ':' + right + ':' + top;
     if (this._hitBox === key) return;      // `_layout` runs on every hover
     this._hitBox = key;
@@ -574,7 +609,8 @@ export class Hand {
           else R = Math.min(R, o.x + inAt(o.top));
         }
       }
-      return [Math.max(0, L), Math.min(this.w, R)];
+      const g = TUNE.boundGutter || 0;
+      return [Math.max(0, L + g), Math.min(this.w, R - g)];
     }
     const m = this._sideMargin();
     return [m, this.w - m];
@@ -589,7 +625,7 @@ export class Hand {
    *   2. laid out at the widest allowed overlap the whole fan still fits
    *      inside the safe band (viewport minus both gutters).
    */
-  _fit(n) {
+  _fit(n, total = n) {
     const ch = this.chh, cw = this.cw;
     let s = Math.min(1, (this.h * TUNE.maxCardHFrac) / (ch || 1));
     if (n > 1) {
@@ -612,7 +648,11 @@ export class Hand {
          "Sit Pretty" an 82 px strip and wrapped it; at seven eighths every
          name that fits one line keeps it. A band with the room (1600: 125 px
          a card) keeps whole cards. */
-      if (this._bounded() && n >= 8 && band / n < TUNE.crowdCardPx) s = Math.min(s, TUNE.crowdFit);
+      /* ROUND 36: counted over the CARDS, not the places: nine Tricks that
+         stack into seven places keep the seven-eighths card, so a stack never
+         makes the fan taller than the crowded hand it replaced. */
+      const many = Math.max(n, total);
+      if (this._bounded() && many >= 8 && band / many < TUNE.crowdCardPx) s = Math.min(s, TUNE.crowdFit);
     }
     // QUANTISED, and this matters more than it looks. The compositor rasters a
     // card at its current transform scale; a scale it has not seen before is a
@@ -861,7 +901,7 @@ export class Hand {
     const out = [];
     for (const c of next) {
       const ex = keep.get(c.uid);
-      if (ex) { keep.delete(c.uid); ex.card = c; out.push(ex); }
+      if (ex) { keep.delete(c.uid); ex.card = c; ex._sk = null; out.push(ex); }
       else out.push(this._makeSlot(c));
     }
     for (const dead of keep.values()) {
@@ -873,6 +913,7 @@ export class Hand {
       dead.view.destroy();
     }
     this.slots = out;
+    this._regroup();
     this.selIdx = -1;            // the hand changed; no stale keyboard selection
     this._clearHover();
     this._refreshPlayable(true);
@@ -889,6 +930,7 @@ export class Hand {
       s.flick = TUNE.drawFlick * (i % 2 ? 1 : -1);
       this.slots.push(s);
     });
+    this._regroup();
     this._refreshPlayable(true);
     return this;
   }
@@ -935,6 +977,7 @@ export class Hand {
       this.slots.push(s);
       return s;
     });
+    this._regroup();
     this._refreshPlayable(true);            // lays the fan out, gap included
     const last = fresh[fresh.length - 1];
     await this.clock.wait(this._d(TUNE.addIn) + (last ? last.enterDelay : 0));
@@ -1014,6 +1057,92 @@ export class Hand {
   viewOf(uid) { return this.slots.find(s => s.card.uid === uid)?.view || null; }
   get count() { return this.slots.length; }
 
+  // ── round 36: stacks of copies ─────────────────────────────────────────────
+  /** What makes two Tricks in hand the same card: id, upgrade, cost. */
+  _stackKey(s) {
+    if (s._sk == null) {
+      const c = s.card || {};
+      s._sk = (c.def?.id || c.uid) + '|' + (c.upgraded ? 1 : 0) + '|' + (c.cost ?? '');
+    }
+    return s._sk;
+  }
+
+  /**
+   * Gather copies together: every Trick moves up to stand right after the
+   * last copy of it already in hand, so the hand reads in the order its
+   * kinds arrived and each kind is one run. Stable, so a hand without
+   * copies keeps its order exactly. The keyboard's selection follows its card.
+   */
+  _regroup() {
+    if (!TUNE.stackDupes || this.slots.length < 2) return;
+    const sel = this.selIdx >= 0 ? this.slots[this.selIdx] : null;
+    const runs = new Map();
+    const order = [];
+    for (const s of this.slots) {
+      const k = this._stackKey(s);
+      let g = runs.get(k);
+      if (!g) { g = []; runs.set(k, g); order.push(g); }
+      g.push(s);
+    }
+    if (order.length === this.slots.length) return;
+    const out = order.flat();
+    if (out.every((s, i) => s === this.slots[i])) return;
+    this.slots = out;
+    if (sel) this.selIdx = out.indexOf(sel);
+  }
+
+  /** The fan's places: each a run of copies, the top card last. */
+  _units() {
+    const out = [];
+    let prev = null, pk = null;
+    const stack = TUNE.stackDupes && this.slots.length >= TUNE.stackFrom;
+    for (const s of this.slots) {
+      const k = stack ? this._stackKey(s) : s.card.uid;
+      if (prev && k === pk && s.playable === prev[0].playable) prev.push(s);
+      else { prev = [s]; pk = k; out.push(prev); }
+    }
+    return out;
+  }
+
+  /** Where slot i stands among the places: its place, and how deep in its stack. */
+  _unitMap() {
+    const units = this._units();
+    const at = new Array(this.slots.length);
+    let i = 0;
+    units.forEach((u, j) => u.forEach((s, m) => { at[i++] = { j, depth: Math.min(u.length - 1 - m, TUNE.stackMax - 1), k: u.length }; }));
+    return { units, at, nu: units.length };
+  }
+
+  /** Mark each stack's top card with its count (a medallion, hand.css). */
+  _syncStackMarks(units) {
+    for (const u of units) {
+      u.forEach((s, m) => {
+        const top = m === u.length - 1;
+        const k = top && u.length > 1 ? u.length : 0;
+        // (and the medallion is still on the card: a face that re-renders may drop it)
+        if (s._stackShown === k && s._stackUnder === !top && (!k || s._stackBadge?.parentNode === s.view.el)) return;
+        s._stackShown = k; s._stackUnder = !top;
+        const el = s.view.el;
+        el.classList.toggle('is-stack-top', k > 0);
+        el.classList.toggle('is-stack-under', !top);
+        let b = s._stackBadge;
+        if (k > 0) {
+          if (!b) {
+            b = s._stackBadge = document.createElement('span');
+            b.className = 'mm-hand__stack';
+            b.setAttribute('aria-hidden', 'true');
+          }
+          b.innerHTML = `<i>&times;</i>${k}`;
+          if (b.parentNode !== el) el.appendChild(b);
+          el.dataset.stack = String(k);
+        } else {
+          if (b && b.parentNode) b.parentNode.removeChild(b);
+          delete el.dataset.stack;
+        }
+      });
+    }
+  }
+
   // ── playability ──────────────────────────────────────────────────────────
   setPlayable(fn) { this.playableFn = fn || this.playableFn; this._refreshPlayable(true); return this; }
   setEnergy(n) { this.energy = n; this._refreshPlayable(true); return this; }
@@ -1043,16 +1172,16 @@ export class Hand {
    * Fan geometry for n cards. Shared by layout and hit-testing so they agree.
    * Everything here is in real screen px at the CURRENT fit scale.
    */
-  _fan(n) {
+  _fan(n, total = n) {
     const T = TUNE;
     // `_baseGeo` calls this once per card on every hit test, and the spread
     // solver below runs a bisection, so memoise on everything it depends on.
-    const key = n + '|' + this.w + '|' + this.h + '|' + this.cw + '|' + this.chh
+    const key = n + '/' + total + '|' + this.w + '|' + this.h + '|' + this.cw + '|' + this.chh
               + '|' + (this._anyUnplayable ? 1 : 0) + '|' + this._bL + '|' + this._bR + '|' + this._bLoKey;
     if (this._fanKey === key && this._fanTmp) { this.fit = this._fanTmp.fit; return this._fanTmp; }
 
     const c = (n - 1) / 2;
-    const fit = this._fit(n);
+    const fit = this._fit(n, total);
     const cw = this.cw * fit, ch = this.chh * fit;
     const [bandL, bandR] = this._band(n, fit);
     const band = Math.max(cw, bandR - bandL);
@@ -1092,6 +1221,8 @@ export class Hand {
 
     // a bounded fan bends less (see TUNE.boundFanDeg), so it dips less too
     f.dip = Math.min(this._bounded() ? T.boundDipMax : T.arcDipMax, 6 + n * T.arcDip) * fit * this._flat(n);
+    // round 36: a crowded table's arc is lower (TUNE.crowdDipMax)
+    if (this._bounded() && Math.max(n, total) >= 7) f.dip = Math.min(f.dip, T.crowdDipMax * fit);
     // A rotated card's bounding box hangs (w/2)·sin(rot) below its anchor, and
     // an unaffordable one drops another 24px. Both are reserved here, so
     // max(card.bottom) == h - bottomPad for EVERY n. Nothing is ever clipped.
@@ -1102,11 +1233,15 @@ export class Hand {
     // the middle of the free band: the viewport's, unless a scene measured one
     f.cx = this._bounded() ? (bandL + bandR) / 2 : this.w / 2;
     f.crowded = n > 1 && f.step < cw * T.crowdAt;
-    f.lift = (f.crowded ? T.crowdLift : T.hoverLift) * fit;
+    // round 36: a hand of eight Tricks or more is crowded for the RAISE even
+    // where its stacks leave the places wide
+    f.busy = f.crowded || (this._bounded() && total >= 8);
+    f.lift = (f.busy ? T.crowdLift : T.hoverLift) * fit;
+    f.hscale = f.busy ? T.crowdHoverScale : T.hoverScale;
     // Hover growth is centred on the card, not on its bottom edge: see the
     // GEOMETRY note in TUNE. `_layout` pushes the anchor back down by this so
     // the card grows equally in both directions.
-    f.grow = ch * (T.hoverScale - 1) / 2;
+    f.grow = ch * (f.hscale - 1) / 2;
     f.nudge = T.hoverNudge * fit;
     this.fit = fit;
     this._fanKey = key;
@@ -1124,7 +1259,7 @@ export class Hand {
     const k = Math.max(1, n | 0);
     const F = this._fan(k);
     const top = F.baseY - F.ch;
-    this._fan(this.slots.length || 1);          // leave the memo on the real hand
+    this._fan(this._units().length || 1, this.slots.length || 1);   // leave the memo on the real hand
     return top;
   }
 
@@ -1196,7 +1331,7 @@ export class Hand {
    * none).
    */
   _strips(strip, o) {
-    const cov = this.slots.slice(0, -1);
+    const cov = (o.tops || this.slots).slice(0, -1);
     // round 27: a covered card's type tab (scenes/combat.css) is 40u of
     // padding and margin round its word at `o.type` design units
     const tabNeed = (v) => 40 + (o.type || 0) * (v.typeWordEm || 4.4);
@@ -1286,7 +1421,13 @@ export class Hand {
     const n = this.slots.length;
     if (!n) { this._syncHitBox(); return; }
     const T = TUNE;
-    const F = this._fan(n);
+    /* round 36: the fan is laid out over its PLACES -- a stack of copies is
+       one place (see TUNE.stackDupes) -- and `nu` of them stand in it */
+    const UM = this._unitMap();
+    const { units, at, nu } = UM;
+    this._um = UM;
+    this._syncStackMarks(units);
+    const F = this._fan(nu, n);
     const c = F.c, step = F.step, rotPer = F.rotPer, dip = F.dip, cx = F.cx, fit = F.fit;
     this.baseY = F.baseY;
     this._syncThreshold(F);
@@ -1297,7 +1438,7 @@ export class Hand {
       this.el.classList.toggle('is-crowded', !!F.crowded);
     }
     // how much of each card its right-hand neighbour leaves showing, 0..1
-    const vis = n > 1 ? Math.min(1, F.step / F.cw).toFixed(3) : '1';
+    const vis = nu > 1 ? Math.min(1, F.step / F.cw).toFixed(3) : '1';
     if (this._vis !== vis) { this._vis = vis; this.el.style.setProperty('--fan-vis', vis); }
     const last = this.slots[n - 1];
     if (this._lastSlot !== last) {
@@ -1342,8 +1483,10 @@ export class Hand {
       // `_layout` runs on every hover: deal and measure only when the hand,
       // its words or the fan changed
       const fonts = typeof document !== 'undefined' && document.fonts ? document.fonts.status : '';
+      const tops = units.map((u) => u[u.length - 1]);
+      fo.tops = tops;
       const dealKey = this._fanKey + '|' + fonts + '|'
-        + this.slots.map((s) => s.view.el.dataset.uid + ':' + (s.view.textRev || 0)).join(',');
+        + this.slots.map((s, i) => s.view.el.dataset.uid + ':' + (s.view.textRev || 0) + ':' + at[i].j).join(',');
       if (this._dealKey !== dealKey || !this._deal) {
         this._dealKey = dealKey;
         /* round 32: the largest name size, from the row's cap down to
@@ -1361,33 +1504,37 @@ export class Hand {
           strips = this._strips(strip, fo);
           for (const sl of this.slots) sl._nameLines = 2;
         }
-        const x = new Array(n);
+        const x = new Array(nu);
         x[0] = -c * F.step;
-        for (let i = 1; i < n; i++) x[i] = x[i - 1] + strips[i - 1] * uPx;
-        this._deal = { n, x };
+        for (let j = 1; j < nu; j++) x[j] = x[j - 1] + strips[j - 1] * uPx;
+        this._deal = { n: nu, x };
         for (let i = 0; i < n; i++) {
           const s = this.slots[i];
-          const covered = i < n - 1;
+          const j = at[i].j, top = tops[j];
+          // a copy under a stack's top is laid out as its top is
+          if (s !== top) { s._squeeze = top._squeeze; s._nameLines = top._nameLines; }
+          const covered = j < nu - 1;
           s._rise = 0;
-          s._strip = covered ? strips[i] : 0;
+          s._strip = covered ? strips[j] : 0;
           // round 32 graft: the long name, condensed to one line at the row's size
-          const sq = covered && s._squeeze ? this._squeezeOf(s.view, strips[i], fo.nameCap) : null;
+          const sq = covered && s._squeeze ? this._squeezeOf(s.view, strips[j], fo.nameCap) : null;
           s.view.el.classList.toggle('is-name-squeezed', sq != null);
           if (sq != null) s.view.el.style.setProperty('--name-sq', sq.toFixed(3));
           else s.view.el.style.removeProperty('--name-sq');
           if (covered) {
             const pick = sq != null
-              ? this._stripFit(this._oneLineView(s.view, fo.nameCap), strips[i], fo, 1)
-              : this._stripFit(s.view, strips[i], fo, s._nameLines || 2);
+              ? this._stripFit(this._oneLineView(s.view, fo.nameCap), strips[j], fo, 1)
+              : this._stripFit(s.view, strips[j], fo, s._nameLines || 2);
             if (pick) { s.view.setNameFit(pick.f, pick.n); s._rise = pick.rise; }
-            s.view.el.style.setProperty('--fan-vis', (strips[i] / 224).toFixed(3));
-          } else s.view.el.style.removeProperty('--fan-vis');
+            s.view.el.style.setProperty('--fan-vis', (strips[j] / 224).toFixed(3));
+          } else if (s !== last) s.view.el.style.setProperty('--fan-vis', '1');
+          else s.view.el.style.removeProperty('--fan-vis');
           s.view.el.style.setProperty('--card-rise', String(s._rise));
         }
       }
       off = this._deal.x;
       for (const s of this.slots) {
-        const covered = s !== last;
+        const covered = s !== last && s._strip > 0;
         s.view.fitRules?.(covered ? s._strip - 33 : 176, covered ? 116 + s._rise : 116, { lo: fo.floor, hi: fo.capU });
       }
     } else {
@@ -1416,6 +1563,16 @@ export class Hand {
 
     const hover = this.hoverSlot;
     const hoverIdx = hover ? this.slots.indexOf(hover) : -1;
+    const hoverJ = hoverIdx >= 0 ? at[hoverIdx].j : -1;
+    // round 36: what each stack's top shows of itself, for its count medallion
+    for (let j = 0; j < nu; j++) {
+      const u = units[j];
+      if (u.length < 2) continue;
+      const sv = j < nu - 1 ? Math.min(1, (off ? off[j + 1] - off[j] : step) / F.cw) : 1;
+      const top = u[u.length - 1];
+      const key = sv.toFixed(3);
+      if (top._stackVis !== key) { top._stackVis = key; top.view.el.style.setProperty('--stack-vis', key); }
+    }
     const dragSlot = this.drag ? this.drag.slot : null;
     /* A card that is being AIMED is not part of the fan any more. `_layout`
        had no idea the aim existed, so on the keyboard path every relayout —
@@ -1427,19 +1584,12 @@ export class Hand {
 
     for (let i = 0; i < n; i++) {
       const s = this.slots[i];
-      const d = i - c;
-      const norm = c ? Math.abs(d) / c : 0;
-
-      let x = cx + (off ? off[i] : d * step);
-      let y = F.baseY + Math.pow(norm, 1.85) * dip;
-      let rot = d * rotPer;
-      let scale = fit;
+      const g = this._slotGeo(i, F, UM);
+      let x = g.x, y = g.y, rot = g.rot, scale = g.scale;
       let z = 20 + i;
 
-      if (!s.playable) { y += T.unplayableDrop * fit; scale = fit * T.unplayableScale; }
-
       if (hoverIdx >= 0 && i !== hoverIdx) {
-        const dd = i - hoverIdx;
+        const dd = at[i].j - hoverJ;
         const fall = Math.abs(dd) === 1 ? 1 : Math.abs(dd) === 2 ? 0.42 : Math.abs(dd) === 3 ? 0.16 : 0;
         x += Math.sign(dd) * F.nudge * fall;
         y += 4 * fall;
@@ -1449,7 +1599,7 @@ export class Hand {
         // Bottom-anchored, a 1.18x card pushes its top edge up by the whole
         // 0.18·height on top of the lift, and a 26 px lift measures as 82.
         y = F.baseY - F.lift + F.grow;
-        rot = 0; scale = fit * T.hoverScale; z = 500;
+        rot = 0; scale = fit * F.hscale; z = 500;
       }
 
       if (s === dragSlot) continue;               // drag owns its own goal
@@ -1464,7 +1614,7 @@ export class Hand {
         s.ease = s.enterEase || Clock.easeOutBack;
         s.arc = s.enterArc || 0;       // consumed by _tick, cleared when it lands
       }
-      else if (o.stagger) delay = Math.abs(d) * this._d(TUNE.refanStagger);
+      else if (o.stagger) delay = Math.abs(at[i].j - c) * this._d(TUNE.refanStagger);
       else s.ease = Clock.easeOutCubic;
 
       this._goal(s, x, y, rot, scale, z, dur, delay);
@@ -1589,24 +1739,39 @@ export class Hand {
       return lx >= -hw && lx <= hw && ly >= -hh && ly <= 0;
     };
     if (this.hoverSlot && inside(this.hoverSlot, this.hoverSlot.cur)) return this.hoverSlot;
-    const n = this.slots.length, c = (n - 1) / 2;
+    const n = this.slots.length;
     for (let i = n - 1; i >= 0; i--) {
       const s = this.slots[i];
-      const base = this._baseGeo(i, c, n);
+      const base = this._baseGeo(i);
       if (inside(s, base)) return s;
     }
     return null;
   }
-  _baseGeo(i, c, n) {
-    const F = this._fan(n);
-    const d = i - c, norm = c ? Math.abs(d) / c : 0;
+  _baseGeo(i) {
+    const UM = this._um && this._um.at.length === this.slots.length ? this._um : this._unitMap();
+    return this._slotGeo(i, this._fan(UM.nu, this.slots.length), UM);
+  }
+
+  /**
+   * Slot i's resting place in the fan: its place's spot on the arc, and, for
+   * a copy under a stack's top (round 36), a step up, left and tilted from it.
+   * Shared by `_layout` and the hit test, so they agree.
+   */
+  _slotGeo(i, F, UM) {
+    const T = TUNE;
+    const { at, nu } = UM;
+    const a = at[i];
+    const c = (nu - 1) / 2;
+    const d = a.j - c, norm = c ? Math.abs(d) / c : 0;
     const g = this._geoTmp || (this._geoTmp = {});
     const deal = this._deal;
-    g.x = F.cx + (deal && deal.n === n ? deal.x[i] : d * F.step);
+    const unplayable = this.slots[i].playable === false;
+    g.x = F.cx + (deal && deal.n === nu ? deal.x[a.j] : d * F.step) - a.depth * T.stackDx * F.fit;
     g.y = F.baseY + Math.pow(norm, 1.85) * F.dip
-        + (this.slots[i].playable === false ? TUNE.unplayableDrop * F.fit : 0);
-    g.rot = d * F.rotPer;
-    g.scale = F.fit * (this.slots[i].playable === false ? TUNE.unplayableScale : 1);
+        + (unplayable ? T.unplayableDrop * F.fit : 0)
+        - a.depth * T.stackDy * F.fit;
+    g.rot = d * F.rotPer - a.depth * T.stackRot;
+    g.scale = F.fit * (unplayable ? T.unplayableScale : 1);
     return g;
   }
 

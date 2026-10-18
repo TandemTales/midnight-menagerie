@@ -221,14 +221,16 @@ export async function openSettings(ctx = {}) {
   cur.className = 'mm-set__row';
   // Same notation as Select, the HUD and Game Over — see formatSeed() in ui/portrait.js.
   const rawSeed = ctx.run ? ctx.run.seed : (Save?.data?.nextSeed ?? null);
-  const curSeed = (rawSeed === undefined || rawSeed === null) ? '—' : formatSeed(rawSeed);
-  // the seed ENGRAVED on a brass key tag (the house's hardware, ui/kit.css
-  // .kit-hw-tag) — a tag left blank and unpolished when there is none
+  const curSeed = (rawSeed === undefined || rawSeed === null) ? 'none yet' : formatSeed(rawSeed);
+  /* ROUND 36: the seed ENGRAVED on the house's brass-rimmed plate (ui/kit.css
+     .kit-hw-inlay--plate), its two bosses on; with none, the plate says so in
+     the house's italic. It was a khaki key tag with a dash on it, "a disabled
+     web text input" (survey 5, both judges). */
   cur.innerHTML =
     `<div class="mm-set__label"><span>Current expedition</span>` +
     `<span class="mm-set__hint">The same seed deals the same rooms, rewards and shop.</span></div>` +
     `<i class="kit-leader mm-set__lead" aria-hidden="true"></i>` +
-    `<output class="mm-set__seed kit-hw-tag${rawSeed == null ? ' is-empty is-blank' : ''}"><b class="kit-enamel__value">${escape_(curSeed)}</b></output>`;
+    `<output class="mm-set__seed kit-hw-inlay kit-hw-inlay--plate${rawSeed == null ? ' is-empty is-blank' : ''}"><b class="kit-enamel__value">${escape_(curSeed)}</b></output>`;
   seedFs.appendChild(cur);
 
   const entry = document.createElement('div');
@@ -239,9 +241,11 @@ export async function openSettings(ctx = {}) {
     `<i class="kit-leader mm-set__lead" aria-hidden="true"></i>`;
   const seedIn = document.createElement('input');
   seedIn.type = 'text';
-  /* somewhere to write: a slip of old card with an inked baseline */
-  seedIn.className = 'mm-set__text kit-hw-slip';
-  seedIn.placeholder = 'random';
+  /* somewhere to write: ROUND 36, a dark enamel well sunk in the brass plate
+     (ui/kit.css .kit-hw-inlay), the words cut in gilt caps; it was a pale
+     cream slip, "a default text input" (survey 5) */
+  seedIn.className = 'mm-set__text kit-hw-inlay';
+  seedIn.placeholder = 'left to chance';
   seedIn.maxLength = 24;
   seedIn.value = Save?.data?.nextSeed ?? '';
   seedIn.setAttribute('aria-label', 'Seed for the next expedition');
@@ -396,6 +400,13 @@ export async function openSettings(ctx = {}) {
     ctx.scenes?.go?.('title', {}, { instant: true });
   });
   dRow.appendChild(reset);
+  /* ROUND 36: the wax is pressed ON the plate that cannot be taken back, over
+     its near end where the skull was struck -- seated inside the page, not
+     stuck across the frame's corner rule (survey 5, both judges) */
+  {
+    const seal = danger.querySelector('.mm-set__seal');
+    if (seal) { reset.prepend(seal); reset.classList.add('is-sealed'); }
+  }
   danger.appendChild(dRow);
   colC.appendChild(danger);
 

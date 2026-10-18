@@ -32,6 +32,89 @@ import { fitCardToSlot } from './_cardfit.js';
 
 const CSS_SHOP = new URL('./shop.css', import.meta.url).href;
 
+/**
+ * ROUND 36: THE CURTAIN, IN FOLDS, LIT BY HIS LAMP. Survey 5 (both judges):
+ * the velvet behind the Tricks was "a soft vertical purple gradient, the one
+ * place on the board that is still a CSS fill". It is drawn now, once per
+ * size, as a lit surface: deep velvet folds (two families of irregular
+ * ridges that open out toward the hem), lit by Mr. Moth's lamp low at the
+ * left end of the shelf -- warm, falling off with distance, catching the
+ * flank of each fold that faces it -- and from above by the lantern over the
+ * crest, cold and faint; the valleys keep their dark, and the nap catches a
+ * sheen where a fold turns away. Painted into a canvas at half size (the
+ * folds are soft; the panel's grain is laid over it in shop.css) and set as
+ * the drape's background. `lamp` and `lantern` are in the drape's own box,
+ * 0..1. Deterministic: the same folds every visit.
+ */
+function paintDrape(w, h, lamp, lantern) {
+  const W = Math.max(64, Math.round(w / 2)), H = Math.max(32, Math.round(h / 2));
+  const cv = document.createElement('canvas');
+  cv.width = W; cv.height = H;
+  const g = cv.getContext('2d');
+  if (!g) return null;
+  const img = g.createImageData(W, H);
+  const d = img.data;
+  // the folds: widths in drape px, seeded so the curtain never reshuffles
+  let s = 0x2f6e2b1;
+  const rnd = () => ((s = (s * 1664525 + 1013904223) >>> 0) / 4294967296);
+  const folds = [];
+  for (let x = 0; x < w + 200;) { const fw = 38 + rnd() * 70; folds.push([x, fw, .55 + rnd() * .45]); x += fw; }
+  const fine = [];
+  for (let x = 0; x < w + 200;) { const fw = 14 + rnd() * 18; fine.push([x, fw, .15 + rnd() * .2]); x += fw; }
+  const prof = (list, x) => {               // height and slope of the ridge field at x
+    let lo = 0, hi = list.length - 1;
+    while (lo < hi) { const m = (lo + hi + 1) >> 1; if (list[m][0] <= x) lo = m; else hi = m - 1; }
+    const [x0, fw, a] = list[lo];
+    const t = (x - x0) / fw;
+    return [a * (0.5 - 0.5 * Math.cos(2 * Math.PI * t)), a * Math.PI * Math.sin(2 * Math.PI * t) / fw];
+  };
+  const Lx = lamp[0] * w, Ly = lamp[1] * h, Lz = 70;
+  const Cx = lantern[0] * w, Cy = lantern[1] * h, Cz = 260;
+  const R2 = Math.pow(Math.max(w, h) * .42, 2), C2 = Math.pow(Math.max(w, h) * .8, 2);
+  const A = 34;                              // the folds' depth, px
+  for (let j = 0; j < H; j++) {
+    const y = (j + .5) * 2;
+    const v = y / h;
+    // folds open out toward the hem and gather under the pelmet
+    const spread = 0.975 + 0.05 * v;
+    for (let i = 0; i < W; i++) {
+      const x = (i + .5) * 2;
+      const xs = w / 2 + (x - w / 2) / spread + Math.sin(v * 3.1 + x * .004) * 6;
+      const [h1, d1] = prof(folds, xs);
+      const [h2, d2] = prof(fine, xs * 1.0 + v * 9);
+      const hh = h1 + h2 * (0.4 + 0.6 * v);
+      const dz = (d1 + d2 * (0.4 + 0.6 * v)) * A / spread;
+      // surface normal (the folds hang plumb: slope across only)
+      const nl = Math.hypot(dz, 1);
+      const nx = -dz / nl, nz = 1 / nl;
+      const z = hh * A;
+      // the lamp: warm, low, close
+      let lx = Lx - x, ly = Ly - y, lz = Lz - z;
+      let ll = Math.hypot(lx, ly, lz);
+      const dl = Math.max(0, (nx * lx + nz * lz) / ll);
+      const fl = 1 / (1 + (lx * lx + ly * ly) / R2);
+      // the lantern: cold, high, far
+      lx = Cx - x; ly = Cy - y; lz = Cz - z; ll = Math.hypot(lx, ly, lz);
+      const dc = Math.max(0, (nx * lx + nz * lz) / ll);
+      const fc = 1 / (1 + (lx * lx + ly * ly) / C2);
+      const ao = 0.28 + 0.72 * Math.pow(hh / 1.2, 0.7);
+      const sheen = Math.pow(1 - nz, 1.6) * 0.5 * (0.35 + fl);
+      // velvet: aubergine body, the lamp's amber, the lantern's lilac
+      const warm = dl * fl * 1.55, cold = dc * fc * 0.55;
+      let r = 12 + ao * (36 + 250 * warm + 62 * cold) + 130 * sheen * fl;
+      let gg = 5 + ao * (13 + 150 * warm + 46 * cold) + 84 * sheen * fl;
+      let b = 18 + ao * (50 + 40 * warm + 112 * cold) + 50 * sheen;
+      // falls into the dark under the pelmet and toward the far end
+      const shade = (0.55 + 0.45 * Math.min(1, v * 3.2)) * (1 - 0.32 * Math.max(0, (x / w) - .55));
+      const n = (rnd() - .5) * 7;
+      const k = (j * W + i) * 4;
+      d[k] = Math.min(255, r * shade + n); d[k + 1] = Math.min(255, gg * shade + n); d[k + 2] = Math.min(255, b * shade + n); d[k + 3] = 255;
+    }
+  }
+  g.putImageData(img, 0, 0);
+  try { return cv.toDataURL('image/webp', .9); } catch { return null; }
+}
+
 /** Mr. Moth says something when you arrive, when you buy, and when you leave. */
 const GREETING = [
   'Buttons, keys, marbles, teeth. I take all of it. Look around.',
@@ -96,6 +179,20 @@ export class ShopScene extends RoomScene {
     this.root.querySelector('.kit-titleblock')?.classList.add('kit-titleblock--compact');
 
     await this._buildCounters();
+    /* ROUND 36: the header's third tier -- where in the house the market is --
+       rides the TRICKS rail instead, on the ribbon's right half where "on the
+       table" was, so the plaque and its ribbon get the air (survey 5, J2:
+       "the header's three tiers ... are crushed together" at 1280). Moved,
+       not removed: the same element. */
+    const room = this.root.querySelector('.rm-head .rm-room');
+    const rail = this.root.querySelector('.sh-h--cards');
+    if (room && rail) {
+      const em = document.createElement('em');
+      em.className = 'sh-h__room';
+      em.appendChild(room);
+      rail.querySelector('em')?.replaceWith(em);
+      room.classList.add('sh-rail__room');
+    }
     this._buildFoot();
     this._bindKeys();
     bus.emit('shop:ready', { node: this.stock.nodeId });
@@ -119,6 +216,10 @@ export class ShopScene extends RoomScene {
       <div class="sh-left">
         <section class="sh-counter sh-counter--cards kit-panel kit-mat--curtain" data-medal="star2" aria-label="${esc(TERMS.card)}s for sale">
           <h2 class="sh-h sh-h--cards kit-heading kit-heading--ribbon kit-heading--inline kit-heading--clasp">${esc(TERMS.deck)} <em>on the table</em></h2>
+          <!-- round 36: the curtain hangs in folds, lit by his lamp from the
+               left and the lantern over the crest, under a fringed pelmet -->
+          <i class="sh-drape" aria-hidden="true"></i>
+          <div class="sh-pelmet"></div>
           <!-- Mr. Moth, standing at the left end of the shelf: not for sale, so
                outside the list of things that are. Round 5: the Kid board's
                mirror is his portrait frame, its moon on the crest and its paw
@@ -207,6 +308,7 @@ export class ShopScene extends RoomScene {
         return `${def.name} is yours.`;
       }));
       this.$cards.appendChild(slot);
+      this._pressable(slot);
       this._views.push(view);
       this._cardSlots.push({ slot, view });
     }
@@ -229,19 +331,22 @@ export class ShopScene extends RoomScene {
     this.$cards.appendChild(service);
     this.$remove = service.querySelector('.sh-remove');
     this.$removeText = service.querySelector('.sh-service__rules');
+    this._pressable(service);
 
     // ── Keepsakes ───────────────────────────────────────────────────────────
     for (const item of this.stock.keepsakes) {
       const def = relicById(item.id);
       if (!def) continue;
       const key = `keep:${item.id}`;
-      const row = el('div', 'sh-row');
+      const row = el('div', 'sh-row sh-row--keep');
       row.setAttribute('role', 'listitem');
       row.dataset.key = key;
       row.innerHTML = `
         <span class="sh-row__sig kit-hw-well" data-rarity="${esc(def.rarity)}" aria-hidden="true">
-          <!-- the Keepsake itself, painted (ui/objects.js), in the kit's velvet well -->
+          <!-- the Keepsake itself, painted (ui/objects.js), on a velvet cushion
+               under its own glass bell (round 36) -->
           ${objectHtml(keepsakeKey(def.id), { well: false })}
+          <i class="sh-glass sh-glass--bell"></i>
         </span>
         <span class="sh-row__txt">
           <b>${esc(def.name)}</b>
@@ -253,6 +358,7 @@ export class ShopScene extends RoomScene {
         return `${def.name} goes in the bag.`;
       }));
       this.$keeps.appendChild(row);
+      this._pressable(row);
     }
 
     // ── Snacks ──────────────────────────────────────────────────────────────
@@ -263,8 +369,10 @@ export class ShopScene extends RoomScene {
       row.dataset.key = key;
       row.innerHTML = `
         <span class="sh-row__sig sh-row__sig--snack kit-hw-well" aria-hidden="true">
-          <!-- each Snack its own painted sweet (ui/objects.js), never one shared glyph -->
+          <!-- each Snack its own painted sweet (ui/objects.js), never one shared
+               glyph, in its own glass jar (round 36) -->
           ${objectHtml(snackKey(item.id), { well: false })}
+          <i class="sh-glass sh-glass--jar"></i>
         </span>
         <span class="sh-row__txt"><b>${esc(item.name)}</b><em>${esc(item.desc)}</em></span>`;
       // Fullness is recomputed in `_syncAffordable()`, not frozen here: buying
@@ -277,6 +385,7 @@ export class ShopScene extends RoomScene {
       tag.dataset.kind = 'snack';
       row.appendChild(tag);
       this.$snacks.appendChild(row);
+      this._pressable(row);
     }
 
     // You are buying Tricks. You can see the deck you are buying them for.
@@ -378,6 +487,24 @@ export class ShopScene extends RoomScene {
     return b;
   }
 
+  /**
+   * ROUND 36: THE STALL, NOT THE STORE. The whole Trick, Keepsake or Snack is
+   * the control: a press anywhere on it presses its one button (the price
+   * tag), which stays the focus stop, the accessible name and the thing the
+   * keyboard and the pad reach. BUY itself only shows on the item under the
+   * pointer or in focus (shop.css), so the shelf shows twelve prices and one
+   * lit press point, never twelve BUY buttons.
+   */
+  _pressable(owner) {
+    owner.classList.add('sh-pressable');
+    this._on(owner, 'click', (e) => {
+      if (e.defaultPrevented || e.target.closest?.('button, a, input')) return;
+      const b = owner.querySelector('.sh-buy');
+      if (b && !b.disabled) b.click();
+      else if (b) this._bump(b);
+    });
+  }
+
   _bump(b) {
     b.classList.remove('is-refused'); void b.offsetWidth; b.classList.add('is-refused');
   }
@@ -447,6 +574,7 @@ export class ShopScene extends RoomScene {
     // the Tricks start after — from it.
     const cab = this.root?.querySelector('.sh-counter--cards');
     if (cab?.clientHeight) cab.style.setProperty('--cab-h', `${cab.clientHeight}px`);
+    this._drapeSoon();
     // The shelf is read, not glanced at: rules type never prints smaller than
     // the pre-kit shop printed it at 1280x800, on a 228 px card (_cardfit.js).
     for (const { slot, view } of this._cardSlots || []) {
@@ -456,6 +584,28 @@ export class ShopScene extends RoomScene {
     const svc = this.root?.querySelector('.sh-service__card');
     const w = svc?.clientWidth || 0;
     if (w) svc.style.setProperty('--rules-k', Math.max(1, Math.min(1.4, 232 / w)).toFixed(3));
+  }
+
+  /** Re-light the curtain when its size settles (round 36, paintDrape). */
+  _drapeSoon() {
+    clearTimeout(this._drapeT);
+    this._drapeT = setTimeout(() => {
+      if (this._dead) return;
+      const drape = this.root?.querySelector('.sh-drape');
+      const lampEl = this.root?.querySelector('.sh-keeper__light');
+      if (!drape || !lampEl) return;
+      const r = drape.getBoundingClientRect();
+      if (r.width < 40 || r.height < 40) return;
+      const key = Math.round(r.width) + 'x' + Math.round(r.height);
+      if (this._drapeKey === key) return;
+      const lr = lampEl.getBoundingClientRect();
+      const lamp = [(lr.left + lr.width / 2 - r.left) / r.width, (lr.top + lr.height / 2 - r.top) / r.height];
+      const url = paintDrape(r.width, r.height, lamp, [0.5, -0.25]);
+      if (!url) return;
+      this._drapeKey = key;
+      drape.style.setProperty('--drape', `url("${url}")`);
+      drape.classList.add('is-painted');
+    }, 60);
   }
 
   _say(html, tone = '') {

@@ -424,3 +424,41 @@
   font-size: 15.5px; letter-spacing: .01em;
   color: var(--kit-text);
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ROUND 36 — THE SEARCH IN BRASS, ONE CLOSE, THE CASE DEEP ENOUGH
+   Survey 5: the search was "a pale torn-parchment strip ... the brightest
+   object on the dialog" (J1), "frame it in brass like the filter rail beside
+   it" (J2); at 1600 the tray's foot clipped the five cards' lower borders
+   (both); two closes competed (J2). The search is the house's inlaid well
+   (ui/kit.css .kit-hw-inlay), the glass on its enamel button over its end;
+   the round corner cross is gone (deckview.js openPile); at 900 tall the
+   cards are cut a notch smaller so the case shows them whole; a filter in
+   force is lit, its medallion polished and its choice in candle-light.
+   ═══════════════════════════════════════════════════════════════════════════ */
+.mm-deck__search .kit-hw-inlay {
+  --inlay-h: var(--field-h);
+  width: 100%;
+  padding-left: calc(var(--field-h) * 1.02);
+  text-align: left;
+  font-size: max(14px, calc(var(--field-h) * .38));
+}
+.mm-deck__search .kit-hw-inlay::placeholder { font-size: max(14px, calc(var(--field-h) * .38)); }
+.mm-deck-modal .mm-modal__close.mm-deck__xhidden,
+.mm-modal__close.mm-deck__xhidden { display: none; }
+@media (min-height: 861px) {
+  .mm-deck__grid {
+    --deck-cw: min(
+      clamp(150px, calc(29vh - 56px), 240px),
+      calc((100cqw - 10 * var(--slot-pad) - 34px) / 5));
+  }
+}
+/* a filter in force: its medallion polished and haloed in candle-light, its
+   choice lettered bright, so what is narrowing the pile is found at a glance */
+.mm-deck__filters .kit-hw-stop.is-set .kit-hw-stop__medal.kit-medallion {
+  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .8)) drop-shadow(0 0 9px color-mix(in srgb, var(--kit-candle) 70%, transparent)) brightness(1.18) saturate(1.15);
+}
+.mm-deck__filters .kit-hw-stop.is-set .kit-hw-stop__value {
+  color: #fff1d2;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .95), 0 0 10px color-mix(in srgb, var(--kit-candle) 75%, transparent);
+}

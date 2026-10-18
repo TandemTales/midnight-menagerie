@@ -289,3 +289,49 @@
 
 .mm-reduce .mm-hand__threshold,
 .mm-reduce .mm-hand__arrow { transition: none; }
+
+/* ── round 36: a stack of copies ──────────────────────────────────────────
+   `Hand#_syncStackMarks` gathers copies of one Trick into one place in the
+   fan: the copies stand behind the top card a step up and to the left, so
+   their gilt top edges read as a pile, and the top card wears this count
+   medallion on its top rule, at the right-hand end of what its neighbour
+   leaves showing (`--stack-vis`, the share of the card in view). Purple
+   enamel, a brass rim, the count in the display face: the house's own
+   round button, not a notification dot. Sizes are in the card's design
+   unit (`--u`), so it scales with the card. */
+.mm-hand .mm-card > .mm-hand__stack {
+  position: absolute;
+  z-index: 30;
+  top: calc(-15 * var(--u));
+  left: clamp(calc(54 * var(--u)), calc(var(--stack-vis, 1) * 100% - 60 * var(--u)), calc(100% - 58 * var(--u)));
+  width: calc(50 * var(--u)); height: calc(50 * var(--u));
+  display: grid; place-items: center;
+  border-radius: 50%;
+  font: 700 calc(22 * var(--u)) / 1 var(--font-display);
+  letter-spacing: .02em;
+  color: var(--kit-gold-hi);
+  text-shadow: 0 calc(1 * var(--u)) 0 rgba(0,0,0,.85), 0 0 calc(6 * var(--u)) rgba(0,0,0,.6);
+  background:
+    radial-gradient(circle at 38% 30%, color-mix(in srgb, var(--kit-lav) 38%, transparent) 0 18%, transparent 46%),
+    radial-gradient(circle at 50% 55%, #4a3470 0%, var(--kit-enamel) 52%, #1c1229 100%);
+  box-shadow:
+    0 0 0 calc(2.5 * var(--u)) var(--kit-gold-lo),
+    0 0 0 calc(4.5 * var(--u)) var(--kit-gold),
+    0 0 0 calc(5.5 * var(--u)) var(--kit-gold-hi),
+    0 0 0 calc(7 * var(--u)) #1a0f12,
+    inset 0 calc(-3 * var(--u)) calc(5 * var(--u)) rgba(0,0,0,.55),
+    inset 0 calc(2 * var(--u)) calc(3 * var(--u)) color-mix(in srgb, var(--kit-lav-hi) 30%, transparent),
+    0 calc(4 * var(--u)) calc(9 * var(--u)) rgba(0,0,0,.6);
+  pointer-events: none;
+}
+.mm-hand .mm-card > .mm-hand__stack i {
+  font: 600 .78em/1 var(--font-body);
+  margin-right: .04em;
+  color: var(--kit-lav-hi);
+  transform: translateY(-.02em);
+}
+.mm-hand .mm-card > .mm-hand__stack { grid-auto-flow: column; align-content: center; justify-content: center; }
+/* the medallion stays on the pile: the top card, lifted to be read, wears it
+   with the rest of its face */
+.mm-hand .mm-card.is-dragging > .mm-hand__stack,
+.mm-hand .mm-card.is-flying > .mm-hand__stack { display: none; }
