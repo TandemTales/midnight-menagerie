@@ -4768,6 +4768,7 @@ vec3 hzWither(vec2 p, float sd, float px, float holes, out float gap, out float 
    a lamp on a clipped yew lights its sprays, not a smooth disc of it --
    CASSEL's orange-and-purple blotch on the back hedge) */
 float gHedgeLeaf = 1.0, gHedgeAmt = 0.0;
+float gHzDrop = 0.0;   // (fix/hedge-frame: deep in a side hedge's way through)
 /* (round 29: the moon along the SHEARED edge of the crown, a light of its
    own and not a share of the leaf's dark colour -- main() adds it) */
 float gHedgeEdge = 0.0;
@@ -4928,6 +4929,11 @@ float hedgeWallH(vec2 q, float qpx, out float occ){
      It is taken above, in the flow every pixel shares, so its edge's
      coverage reads the same derivatives it always did.) */
   if (far > 0.5 && q.y > top + max(0.08, 3.0*qpx) && fin > max(0.06, 3.0*qpx)) { gHedgeAmt = 0.0; gWood = woodC; return 0.0; }
+  /* (fix/hedge-frame: and a SIDE hedge's way through, 3 px in from either
+     jamb -- main() drops every pixel of it (gWDisc); gHzDrop says it may
+     drop these before it lights them, every neighbour in their quads being
+     dropped at the end as well) */
+  if (far < 0.5 && abs(gx) < gw - max(0.05, 3.0*qpx)) { gHedgeAmt = 0.0; gHzDrop = 1.0; return 0.0; }
   /* the face: sprays, a slow swell, the foot */
   float tone, lit;
   float rel = yewFace(vec2(u, q.y), qpx, sd, tone, lit);
@@ -12193,6 +12199,7 @@ void main(){
      drawn there, so it is dropped before it is lit (every quad up here is
      all sky, so no derivative below straddles it) */
   if (gWDisc > 0.5 && q.y > 3.6) discard;
+  if (gHzDrop > 0.5) discard;
 #endif
   if (gPtAmt > 0.002)
     gCol = mix(gCol, sPortrait(gPtP, gPtHs, gPtSd, ptPx, gPtK), clamp(gPtAmt, 0.0, 1.0));
