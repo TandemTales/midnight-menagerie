@@ -203,6 +203,11 @@ export const TUNE = {
      Each copy is still its own card: hover, keyboard, pad and drag reach it
      (a copy under the top one lifts clear like any other). */
   stackDupes: true,
+  /* ...only in a hand big enough to crowd: five Tricks in an opening hand have
+     the table to themselves, and two of them on one pile would read as a
+     hand of four. Copies stand side by side below this (gathered next to each
+     other, Hand#_regroup, so the step to a stack never reshuffles them). */
+  stackFrom: 7,
   stackDy: 7,           // px each copy behind the top stands higher, at fit 1
   stackDx: 3,           // ...and to the left
   stackRot: 2.2,        // ...and tilted further left, degrees
@@ -1090,8 +1095,9 @@ export class Hand {
   _units() {
     const out = [];
     let prev = null, pk = null;
+    const stack = TUNE.stackDupes && this.slots.length >= TUNE.stackFrom;
     for (const s of this.slots) {
-      const k = TUNE.stackDupes ? this._stackKey(s) : s.card.uid;
+      const k = stack ? this._stackKey(s) : s.card.uid;
       if (prev && k === pk && s.playable === prev[0].playable) prev.push(s);
       else { prev = [s]; pk = k; out.push(prev); }
     }
