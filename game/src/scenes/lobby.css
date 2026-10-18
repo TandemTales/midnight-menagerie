@@ -675,3 +675,32 @@
   left: calc(var(--fl-w) * 1.1); top: calc(var(--fl-w) * -.1);
 }
 .lo__room .lo-floor { display: none; }
+/* the rope ladder, hung from the shelf's front edge under the password, by
+   CLIMB UP: two twisted rope rails, wooden rungs lashed between them, its foot
+   running on down past the board's edge; the lanterns' warmth on its top */
+.lo-floor__ladder {
+  --lad-w: calc(var(--fl-w) * .44);
+  position: absolute;
+  left: calc(50vw + var(--lo-stage-w) / 2 - var(--lo-card-w) * .3 - (var(--lo-view-cx) - var(--fl-w) * .5 + var(--lo-view-w) * .04) - var(--lad-w) / 2);
+  top: calc(var(--fl-w) * -.16);
+  bottom: calc(-1 * clamp(26px, 5.2vh, 52px) - 12px);
+  width: var(--lad-w);
+  rotate: 1.2deg; transform-origin: 50% 0;
+  background:
+    linear-gradient(180deg, rgb(255 180 100 / .18), transparent 46%),
+    repeating-linear-gradient(180deg, transparent 0 calc(var(--lad-w) * .42), #2a1a0e calc(var(--lad-w) * .42) calc(var(--lad-w) * .44), #7a5634 calc(var(--lad-w) * .44) calc(var(--lad-w) * .5), #4a321d calc(var(--lad-w) * .5) calc(var(--lad-w) * .55), #1a1008 calc(var(--lad-w) * .55) calc(var(--lad-w) * .57), transparent calc(var(--lad-w) * .57) calc(var(--lad-w) * .62)) 50% 0 / calc(100% - 6px) 100% no-repeat;
+  filter: brightness(.78) drop-shadow(3px 5px 4px rgb(0 0 0 / .75));
+  -webkit-mask-image: linear-gradient(180deg, #000 70%, transparent);
+          mask-image: linear-gradient(180deg, #000 70%, transparent);
+}
+.lo-floor__ladder::before, .lo-floor__ladder::after {
+  content: ''; position: absolute; top: 0; bottom: 0;
+  width: calc(var(--lad-w) * .12);
+  border-radius: 3px;
+  background:
+    repeating-linear-gradient(155deg, #a08560 0 2px, #6b5536 2px 4.5px, #3e301e 4.5px 6px),
+    #6b5536;
+  box-shadow: inset -1px 0 1px rgb(0 0 0 / .5), 1px 2px 2px rgb(0 0 0 / .6);
+}
+.lo-floor__ladder::before { left: 0; }
+.lo-floor__ladder::after { right: 0; }

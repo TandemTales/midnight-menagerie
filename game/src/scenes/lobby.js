@@ -112,7 +112,9 @@ function boardMarkup() {
        boards beside it; a lantern stood on the floor, its light on both */
     + '<div class="lo-floor"><i class="lo-hatch"><i class="lo-hatch__ring"></i></i>'
     + '<i class="kit-prop kit-prop--rope lo-floor__coil"></i>'
-    + '<i class="kit-lantern lo-floor__lamp"></i></div>'
+    + '<i class="kit-lantern lo-floor__lamp"></i>'
+    /* and the rope ladder itself, hung from the shelf's edge by the way up */
+    + '<i class="lo-floor__ladder"></i></div>'
     /* two small windows high in the wall either side of the plaque, and the
        night of the title painting through them: the old tree's boughs, the moon */
     + '<i class="kit-casement lo-case lo-case--l"></i><i class="kit-casement kit-casement--moon lo-case lo-case--r"></i>'
