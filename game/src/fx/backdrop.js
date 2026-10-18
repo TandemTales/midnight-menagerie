@@ -213,7 +213,12 @@ const SHAPE_M = [1.20, 2.00, 1.30, 1.00, 2.00, 2.00, 3.32, 2.60, 1.17, 1.33,
                  /* round 34 graft (MM_WINGS 6, VIVIANITE's wfPotBench): 84 a
                     potting bench, its pots and a watering can -- the
                     Greenhouse's near floor */
-                 1.15
+                 1.15,
+                 /* round 37 (MM_WINGS 1, gkDraw): 85 a standing candelabrum
+                    of gilt brass, its five candles burning (the Heart's near
+                    floor); 86 a straw bale and the straw fallen from it (the
+                    Pumpkin Grounds') */
+                 1.80, 0.62
 ];
 /* ...and a width ratio, so a column is a column and not a capital-T. Four of
  * these were wrong by enough to change what the object was: a longcase clock
@@ -243,7 +248,8 @@ const SHAPE_W = [1.15, 0.55, 1.00, 0.95, 0.72, 0.80, 0.47, 0.85, 0.90, 1.35,
                  2.05, 2.70,
                  0.42,
                  0.45, 1.20, 2.05,
-                 2.05
+                 2.05,
+                 0.47, 2.30
 ];
 /* HOW MUCH ONE OF THESE VARIES FROM THE NEXT, as a +-fraction of SHAPE_M.
  *
@@ -286,7 +292,8 @@ const SHAPE_VAR = [0.06, 0.08, 0.62, 0.20, 0.10, 0.08, 0.10, 0.10, 0.16, 0.48,
                  0.02, 0.04,
                  0.04,
                  0.03, 0.06, 0.02,
-                 0.03
+                 0.03,
+                 0.03, 0.06
 ];
 /* ROUND 23 (graft): ULTRAMARINE's drawings are in metres at their own
    proportions, so their quads take no width jitter -- a telescope 22%
@@ -302,7 +309,9 @@ const FIXW = { 32: 1, 33: 1, 34: 1, 35: 1, 39: 1, 40: 1, 41: 1, 42: 1, 43: 1, 44
                /* and round 31's */
                81: 1, 82: 1, 83: 1,
                /* and round 34's graft */
-               84: 1 };
+               84: 1,
+               /* and round 37's */
+               85: 1, 86: 1 };
 // Which shapes hang from the ceiling rather than stand on the floor.
 export const HANGING = { 4: 1, 7: 1, 22: 1, 33: 1 };
 /* ...and which stand AGAINST A WALL rather than out on the floor. A tall
@@ -484,14 +493,14 @@ export const PROP_SHAPES = {
      bring it in themselves, so the wing's fight keeps its program: with
      the bench compiled in, the Greenhouse prop link went 9.6 -> 12-14 s) */
   greenhouse: [6, 23, 25, 74, 75, 76, 77, 80],
-  heart: [0, 4, 5, 6, 22, 23, 31],
+  heart: [0, 4, 5, 6, 22, 23, 31, 85],
   hedge: [23, 25, 28, 30, 31, 81, 83],
   kennels: [16.25, 22, 23, 39, 40, 41, 42],
   kitchens: [8, 22, 29, 82],
   lampworks: [18, 22, 23, 33, 34, 43],
   nursery: [22, 45, 46, 47, 48, 49, 61],
   passages: [8, 23, 66],
-  pumpkin: [23, 27],
+  pumpkin: [23, 27, 86],
   sleeping: [0, 14, 22, 46, 47, 50, 51, 52, 56, 60],
   study: [22, 53, 54, 55, 56],
 };
@@ -1010,6 +1019,7 @@ export class Backdrop {
            the split tone, bloom and halation all put colour back, and the
            measured chain turns a linear cap of 0.04 into 0.22 on screen. */
         uPropSat: { value: 0.14 }, uPropSatMax: { value: 0.20 },
+        uStatueMod: { value: 0 },          // (round 37: pal.statueModel -- the Heart's carved marble)
         /* WHICH WAY THE LENS FACES, as its right vector in XZ (MADDER, round
            11). A prop is a drawn flat and it is drawn FRONT-ON, so when a
            vantage turns the camera the flats turn with it -- a cabinet drawn
@@ -2162,16 +2172,29 @@ export class Backdrop {
          row of beds keeps its heads to the wall whatever width _vary() gave
          the room; and `keep` says it was set there on purpose, so a lamp's
          stand beside it does not unseat it. Read only where written.) */
-      const ix = it.fromWall !== undefined ? Math.sign(it.x || 1) * (halfW - it.fromWall) : (it.x ?? 0);
+      let ix = it.fromWall !== undefined ? Math.sign(it.x || 1) * (halfW - it.fromWall) : (it.x ?? 0);
+      let iz = it.z;
+      /* (round 37: a piece set on the near floor may be placed in EYE metres
+         -- `ahead` along the eye's heading on the floor, `across` to its
+         right -- the very frame the near floor's pools are laid in
+         (nearFloor.pool), so the candelabrum stands in its own pool from the
+         square rig, a gallery's end or a corner alike. Read only where
+         written.) */
+      if (it.ahead !== undefined) {
+        const hl = Math.hypot(LS.fx, LS.fz) || 1;
+        const ac = it.across ?? 0;
+        ix = LS.ex + (LS.fx / hl) * it.ahead + LS.rx * ac;
+        iz = LS.ez + (LS.fz / hl) * it.ahead + LS.rz * ac;
+      }
       /* (round 34 graft, VIVIANITE's: a piece added to a room that was
          judged as it is may say `still` -- it draws its jitter from its own
          hash, not from the build's rand(), so the stream the shafts and the
          wall, floor and ceiling seeds draw from next is exactly what it was,
          and the room round it does not change) */
       const rand0 = rand;
-      if (it.still) { let k = 0; rand = () => { const v = Math.sin((++k) * 12.9898 + (it.z ?? 0) * 78.233 + (it.edge ?? it.x ?? 0) * 37.719) * 43758.5453; return v - Math.floor(v); }; }
-      push(it.shape, ix, it.z, it.scale ?? 1.0, it.tone ?? 0.16, it.y,
-           it.wall ? 'wall' : (it.edge !== undefined ? { edge: it.edge } : (it.free ? 'free' : undefined)));
+      if (it.still) { let k = 0; rand = () => { const v = Math.sin((++k) * 12.9898 + (it.z ?? it.ahead ?? 0) * 78.233 + (it.edge ?? it.x ?? it.across ?? 0) * 37.719) * 43758.5453; return v - Math.floor(v); }; }
+      push(it.shape, ix, iz, it.scale ?? 1.0, it.tone ?? 0.16, it.y,
+           it.wall ? 'wall' : (it.edge !== undefined ? { edge: it.edge } : (it.free || it.ahead !== undefined ? 'free' : undefined)));
       rand = rand0;
       /* (round 25 graft: a piece placed by hand may name its own seed -- the
          form a drawing takes off it, a kerbed grave and not a table tomb --
@@ -2930,6 +2953,7 @@ export class Backdrop {
     pr.uRimAmt.value = p.rim ?? 1.0;
     pr.uGain.value = (p.gain ?? 3.4) * (p.propGain ?? 1.0);
     pr.uGloss.value = p.propGloss ?? 0.55;
+    pr.uStatueMod.value = p.statueModel ?? 0;
     /* THE PROP LUMINANCE CEILING, in pre-grade units. The grade multiplies by
        uExposure before ACES, so a fixed post-grade target is a MOVING pre-grade
        one: `heart` runs exposure 1.11 and `attic` 2.80, and a single hard clamp
@@ -3077,7 +3101,7 @@ export class Backdrop {
       /* round 31: the near floor's urn, basket and seat (81-83) are drawn in
          the round-22 program, with the yew and the kitchen table they stand
          among (gkDraw, MM_WINGS 1) -- not round 25's, whose 62+ they follow */
-      if (s > 80.5 && s < 83.5) { if (wings < 1) wings = 1; continue; }
+      if ((s > 80.5 && s < 83.5) || (s > 84.5 && s < 86.5)) { if (wings < 1) wings = 1; continue; }   // (round 37: 85 the candelabrum, 86 the straw bale -- gkDraw too)
       /* round 25: the last four wings' drawn objects (62+), in a program of
          their own -- so no room that does not deal one moves */
       if (s > 61.5) w25 = (s > 68.5 && s < 71.5) || (s > 72.5 && s < 73.5) ? 5 : ((s > 73.5 && s < 77.5) || (s > 79.5 && s < 80.5) || (s > 83.5 && s < 84.5) ? 6 : 4);   // (round 34 graft: 84, the Greenhouse's potting bench)

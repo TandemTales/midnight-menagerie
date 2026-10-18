@@ -343,7 +343,20 @@ export const REGIONS = {
                     { shape: 61, x: 2.35, z: -6.9, tone: 0.95, free: true },
                     { shape: 46, x: -1.55, z: -6.8, tone: 0.94, free: true },
                     { shape: 46, x: -2.45, z: -6.1, tone: 0.94, free: true },
-                    { shape: 47, edge: 0.86, z: -5.0, tone: 0.92 }] },
+                    { shape: 47, edge: 0.86, z: -5.0, tone: 0.92 },
+                    /* ROUND 37: THE NEAR FLOOR (survey 5: "the lower 55% of
+                       the frame is an empty dark plank floor under a
+                       well-dressed back wall"). The back wall's toys brought
+                       out onto the rug before the fire: a rocking horse on
+                       the near left, the toy chest on the near right, each
+                       in the fire's pool (nearFloor below). `still`, so the
+                       room behind them draws exactly what it drew. */
+                    { shape: 46, x: 2.5, z: 0.8, tone: 0.97, free: true, keep: true, still: true, fore: 1, seed: 2.2 },
+                    { shape: 47, x: -2.6, z: 1.3, tone: 0.97, free: true, keep: true, still: true, fore: 1, seed: 4.6 }] },
+    crispFloor: true, grain: 0.012,
+    nearFloor: { fall: 0.80, dye: 1, calm: 0.85, clean: 1, rug: { ahead: 5.0, hw: 2.1, hd: 1.4 },
+                 pool: { ahead: 5.0, across: 0.0, rAlong: 2.8, rAcross: 3.2, k: 3.0, color: '#ff9a50' },
+                 pool2: { ahead: 3.4, across: 0.0, rAlong: 1.8, rAcross: 3.4, k: 1.2, color: '#f0a060' } },
     /* (round 24: dust in the moonlight, not a field of stars over the
        paper's own) */
     particles: { mix: [[PTYPE.DUST, 0.86], [PTYPE.ASH, 0.14]],
@@ -769,7 +782,19 @@ export const REGIONS = {
     props: { shapes: [56, 55, 56], count: 1, height: 2.7, layout: 'perimeter',
              near: [{ shape: 53, edge: 0.70, z: -1.6, tone: 0.97 },
                     { shape: 54, edge: 0.33, z: -4.4, tone: 0.95 },
-                    { shape: 56, edge: 0.85, z: -4.6, tone: 0.94 }] },
+                    { shape: 56, edge: 0.85, z: -4.6, tone: 0.94 },
+                    /* ROUND 37: THE NEAR FLOOR (survey 5: "the lower 60% is
+                       an empty dark floor under strong shelves"). A reading
+                       chair drawn up on the carpet at the near left, turned
+                       to the lamp, and a second at the near right: each in
+                       the reading lamp's pool (nearFloor below). `still`,
+                       so the room behind them is what it was. */
+                    { shape: 56, x: 3.3, z: 1.4, tone: 0.98, free: true, keep: true, still: true, fore: 1, seed: 3.1 },
+                    { shape: 54, x: -3.5, z: 1.2, tone: 0.97, free: true, keep: true, still: true, fore: 1, seed: 5.2 }] },
+    crispFloor: true, grain: 0.012,
+    nearFloor: { fall: 0.92, dye: 1, calm: 0.85, clean: 1, rug: { ahead: 5.4, hw: 2.4, hd: 1.6 },
+                 pool: { ahead: 5.0, across: -1.6, rAlong: 3.2, rAcross: 3.0, k: 2.6, color: '#f0b060' },
+                 pool2: { ahead: 3.6, across: 2.6, rAlong: 2.2, rAcross: 2.2, k: 1.6, color: '#f0a65a' } },
     particles: { mix: [[PTYPE.DUST, 0.92], [PTYPE.EMBER, 0.08]],
                  tint: '#ffe6bc', wispTint: '#8fd9ec', emberTint: '#ffb64a',
                  speed: 0.6, scale: 0.95, wind: 0.4, density: 0.45 },
@@ -1483,7 +1508,26 @@ export const REGIONS = {
                { shape: 27, x: 6.4, z: -0.4, tone: 0.9, scale: 1.2 },
                { shape: 27, x: 7.5, z: 0.5, tone: 0.9 },
                { shape: 27, x: 5.6, z: 0.9, tone: 0.9 },
+               /* ROUND 37: THE NEAR FLOOR (survey 5: "the near paving is
+                  empty grey"; "the lower half of the courtyard is an unlit
+                  blue-black flagstone smear"). A cluster of carved
+                  jack-o'-lanterns burning on the flags near the eye, each
+                  lit from inside (their seeds are ones pkCarved cuts), laid
+                  over their own warm pool (nearFloor below), and a second
+                  pair on the other side. `still`, so the patch behind is
+                  dealt as it was. */
+               { shape: 86, x: -4.7, z: 1.2, tone: 0.96, free: true, keep: true, still: true, fore: 1, seed: 3.3 },
+               { shape: 27, x: -4.8, z: 1.25, y: 0.44, tone: 0.97, scale: 0.55, free: true, keep: true, still: true, fore: 1, seed: 0.7 },
+               { shape: 27, x: -3.7, z: 2.2, tone: 0.97, scale: 0.95, free: true, keep: true, still: true, fore: 1, seed: 1.1 },
+               { shape: 27, x: -5.6, z: 2.4, tone: 0.97, scale: 0.75, free: true, keep: true, still: true, fore: 1, seed: 2.3 },
+               { shape: 27, x: -2.9, z: 3.1, tone: 0.97, scale: 0.6, free: true, keep: true, still: true, fore: 1, seed: 4.1 },
+               { shape: 27, x: 4.6, z: 2.4, tone: 0.97, scale: 0.8, free: true, keep: true, still: true, fore: 1, seed: 1.5 },
+               { shape: 27, x: 5.4, z: 1.8, tone: 0.96, scale: 0.6, free: true, keep: true, still: true, fore: 1, seed: 6.2 },
              ] },
+    crispFloor: true,
+    nearFloor: { fall: 0.92, calm: 0.85, clean: 1,
+                 pool: { ahead: 6.0, across: -4.4, rAlong: 3.0, rAcross: 2.8, k: 3.2, color: '#ff9a40' },
+                 pool2: { ahead: 5.8, across: 4.8, rAlong: 2.4, rAcross: 2.4, k: 2.4, color: '#ff9a40' } },
     particles: { mix: [[PTYPE.DUST, 0.40], [PTYPE.SPORE, 0.30], [PTYPE.EMBER, 0.30]],
                  tint: '#cfe0e8', wispTint: '#8fe8c0', emberTint: '#ff8a28',
                  speed: 0.9, scale: 1.25, wind: 1.1, density: 1.0 },
@@ -1534,8 +1578,29 @@ export const REGIONS = {
        the same figure with a surface the Deck's tier can resolve; the wall
        under the portraits is carved wainscot; and the near frame stands down,
        so the floor runs lit to the bottom of the frame -- CAPUT's) */
-    props: { shapes: [31, 6, 4, 0, 5], count: 24, height: 2.6, layout: 'colonnade' },
+    props: { shapes: [31, 6, 4, 0, 5], count: 24, height: 2.6, layout: 'colonnade',
+             /* ROUND 37: THE NEAR FLOOR (survey 5: "the near floor is an
+                empty dark expanse"; "the lower 45% of the frame is a soft
+                repeated-plank floor falling into black"). A pair of standing
+                candelabra either side of the runner where the hall begins,
+                each burning over its own pool on the boards (nearFloor's
+                pool and pool2, below) -- the ceremony's candles, set on the
+                floor of the hall the way a chapel sets its altar lights.
+                `still`, so the colonnade behind them is dealt as it was. */
+             near: [{ shape: 85, ahead: 8.0, across: -3.3, tone: 0.97, hM: 2.05, keep: true, still: true, seed: 1.3 },
+                    { shape: 85, ahead: 8.0, across: 3.3, tone: 0.97, hM: 2.05, keep: true, still: true, seed: 6.7 },
+                    /* ...and nearer, a knot of pillar candles stood on the
+                       boards either side of the runner's foot (85 with a
+                       seed past 20: true metres, hM and wM) */
+                    { shape: 85, ahead: 5.4, across: -1.9, tone: 0.97, keep: true, still: true, seed: 21.3, hM: 0.55, wM: 0.85 },
+                    { shape: 85, ahead: 5.0, across: 2.1, tone: 0.97, keep: true, still: true, seed: 24.9, hM: 0.50, wM: 0.85 }] },
     wainscot: true, nearFrame: false,
+    /* (round 37: the marble modelled -- uStatueMod) */
+    statueModel: 1,
+    crispFloor: true, grain: 0.012,
+    nearFloor: { fall: 0.92, dye: 1, calm: 0.85, clean: 1,
+                 pool: { ahead: 5.2, across: 0.0, rAlong: 2.2, rAcross: 3.4, k: 2.6, color: '#f0a65a' },
+                 pool2: { ahead: 8.0, across: 0.0, rAlong: 2.6, rAcross: 4.6, k: 2.2, color: '#eaa45e' } },
     /* (round 29 graft, judge 1: "give the lower half of the hall drawn
        content -- a long rug" -- the hall's Turkey runner, its medallions and
        guard stripes, laid from the foot of the frame to the door) */
@@ -3613,7 +3678,10 @@ export class Atmosphere {
          set by its own drawing -- the singer stands left of the chairs of
          state and the pianist sits at the keyboard right of them -- and a
          mirrored piano put its pianist on the singer's spot) */
-      pal.props.near = pal.props.near.map((it) => Object.assign({}, it, { x: it.stage ? it.x : it.x * flip }));
+      pal.props.near = pal.props.near.map((it) => Object.assign({}, it, { x: it.stage || it.x === undefined ? it.x : it.x * flip },
+        /* (round 37: a piece placed in eye metres goes with its pool, as
+           nearFloor.pool's across does -- `abs` keeps it where it was set) */
+        it.across !== undefined && !it.abs ? { across: it.across * flip } : {}));
     }
     /* ...AND STAGED FOR WHERE YOU STAND (MADDER, round 11). The near set is
        authored for the square rig, where x = +-6 is the two lower corners of
@@ -3636,7 +3704,7 @@ export class Atmosphere {
         if (it.under !== undefined) return it;
         /* (round 25 graft, SINOPIA's: a piece the FRAME places -- fore --
            stays where the frame puts it, and is not one of the wall's three) */
-        if (it.fore) return it;
+        if (it.fore || it.ahead !== undefined) return it;
         const o = Object.assign({}, it);
         o.x = -camSide * R.w * (0.40 + 0.04 * nr());
         o.z = -3.0 - k * 2.8 - nr() * 0.6;
