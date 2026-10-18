@@ -1032,15 +1032,14 @@
   transition: max-width 140ms var(--ease-out), opacity 140ms var(--ease-out), margin 140ms var(--ease-out), padding 140ms var(--ease-out);
 }
 /* the one lit press point: the item under the pointer, or in focus */
-.sh-pressable:hover .sh-buy:not(.is-poor):not(.is-sold):not(.is-blocked) .kit-price__buy,
-.sh-pressable:focus-within .sh-buy:not(.is-poor):not(.is-sold):not(.is-blocked) .kit-price__buy,
-.sh-buy:focus-visible:not(.is-poor):not(.is-sold):not(.is-blocked) .kit-price__buy {
+/* (graft: the ONE ware in hand -- shop.js _hold -- not hover or focus-within,
+   so a still board shows one BUY, and pointer + focus never light two) */
+.sh-buy.is-in-hand:not(.is-poor):not(.is-sold):not(.is-blocked) .kit-price__buy {
   max-width: 90px; opacity: 1;
   margin-left: calc(var(--tag) * .22);
   padding-inline: calc(var(--tag) * .44);
 }
-.sh-pressable:hover .sh-buy:not(:disabled),
-.sh-pressable:focus-within .sh-buy:not(:disabled) {
+.sh-buy.is-in-hand:not(:disabled) {
   rotate: 0deg;
   filter: drop-shadow(0 0 10px color-mix(in srgb, var(--kit-candle) 55%, transparent)) brightness(1.14);
 }
@@ -1155,3 +1154,30 @@
 @media (max-width: 1400px) {
   .sh-floor { grid-template-columns: minmax(0, 1.14fr) minmax(0, .9fr) minmax(0, 1.14fr); }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ROUND 36 GRAFT 1 -- THE PRESS POINT (both judges, first)
+   One ware is always in hand (shop.js _hold, OBSIDIAN's rule): the first
+   Trick you can afford on a board nobody has touched, then the last one
+   hovered or focused. Its BUY unfolds on the tag's far end, BESIDE the price,
+   never over it; its words lit by the candle; a Trick in hand lifts toward
+   the lamp. Every tag hangs on OBSIDIAN's twine, tied to a pin on the ledge.
+   ═══════════════════════════════════════════════════════════════════════════ */
+.sh-buy.is-in-hand:not(:disabled) .kit-price__buy {
+  color: #fff6de;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .95), 0 0 10px color-mix(in srgb, var(--kit-candle) 70%, transparent);
+}
+.sh-card.is-in-hand .sh-card__face { transform: translateY(-5px); }
+.sh-card.is-in-hand .sh-card__face::before {
+  box-shadow: 0 16px 24px -10px rgba(0, 0, 0, .95), 0 0 22px -4px color-mix(in srgb, var(--kit-candle) 45%, transparent);
+}
+.rm.is-still .sh-card__face { transition: none; }
+/* the twine: pale and a little worn, from the tag's eyelet up to its pin */
+.sh-buy.kit-price::after {
+  left: calc(var(--tag) * .24); bottom: auto; top: calc(50% - var(--tag) * .9);
+  width: 2px; height: calc(var(--tag) * .62);
+  rotate: -16deg; transform-origin: 50% 100%;
+  background: linear-gradient(180deg, #e8dcc0, #9a8a6a);
+  box-shadow: 1px 0 0 rgba(0, 0, 0, .45);
+}
+.sh-row .sh-buy.kit-price::after { top: calc(50% - var(--tag) * .72); height: calc(var(--tag) * .44); }
