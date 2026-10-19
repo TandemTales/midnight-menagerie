@@ -1128,13 +1128,27 @@ export class AtlasScene extends Scene {
       /* while only a few wings are known, each is the candle's subject: a
          warm light pooled on the paper round it */
       if (this.surveyed.size <= 3) {
-        pg.save();
-        pg.setTransform(dpr, 0, 0, dpr, 0, 0);
-        pg.shadowColor = 'rgb(255 184 92 / .75)';
-        pg.shadowBlur = 26 * dpr;
-        pg.fillStyle = 'rgb(255 196 112 / .5)';
-        pg.fill(shape);
-        pg.restore();
+        let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+        for (const r of (w.outline || [])) {
+          for (let i = 0; i + 1 < r.length; i += 2) {
+            x0 = Math.min(x0, r[i]); x1 = Math.max(x1, r[i]); y0 = Math.min(y0, r[i + 1]); y1 = Math.max(y1, r[i + 1]);
+          }
+        }
+        if (Number.isFinite(x0)) {
+          const cx = (x0 + x1) / 2 * S, cy = (y0 + y1) / 2 * S;
+          const rx = (x1 - x0) * S * 0.95, ry = (y1 - y0) * S * 1.05;
+          pg.save();
+          pg.setTransform(dpr, 0, 0, dpr, 0, 0);
+          pg.translate(cx, cy); pg.scale(1, ry / rx);
+          const gl = pg.createRadialGradient(0, 0, rx * 0.35, 0, 0, rx);
+          gl.addColorStop(0, 'rgb(255 206 128 / .42)');
+          gl.addColorStop(0.55, 'rgb(255 180 96 / .16)');
+          gl.addColorStop(1, 'rgb(255 170 90 / 0)');
+          pg.globalCompositeOperation = 'lighter';
+          pg.fillStyle = gl;
+          pg.beginPath(); pg.arc(0, 0, rx, 0, 6.2832); pg.fill();
+          pg.restore();
+        }
       }
       /* the wash, lifted a hair off the paper by its own shadow */
       pg.save();
