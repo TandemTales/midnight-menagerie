@@ -351,16 +351,25 @@ export const REGIONS = {
                        the near left, the toy chest on the near right, each
                        in the fire's pool (nearFloor below). `still`, so the
                        room behind them draws exactly what it drew. */
-                    { shape: 46, ahead: 4.5, across: -2.25, tone: 0.97, keep: true, still: true, seed: 2.2 },
+                    /* (graft: the horse a stride in from the frame's edge,
+                       so the Deck's 1280 sees it whole -- judge 2) */
+                    { shape: 46, ahead: 4.5, across: -1.95, tone: 0.97, keep: true, still: true, seed: 2.2 },
                     { shape: 47, ahead: 4.2, across: 2.35, tone: 0.97, keep: true, still: true, seed: 4.6 },
                     /* ...and the blocks tipped out of the chest onto the
                        rug, a ball rolled clear (87) */
                     { shape: 87, ahead: 3.2, across: 0.75, tone: 0.98, keep: true, still: true, seed: 1.4, hM: 0.50 },
-                    { shape: 87, ahead: 3.7, across: -1.05, tone: 0.97, keep: true, still: true, seed: 3.7, hM: 0.38 }] },
+                    { shape: 87, ahead: 3.7, across: -1.05, tone: 0.97, keep: true, still: true, seed: 3.7, hM: 0.38 },
+                    /* (graft, judge 1: "one more toy in the bottom quarter" --
+                       blocks and a ball strayed off the rug toward you; small,
+                       for the frame budget: near the eye a quad costs its
+                       whole area, and in the fight this one is under the hand) */
+                    { shape: 87, ahead: 2.25, across: -0.55, tone: 0.98, keep: true, still: true, seed: 5.9, hM: 0.32 }] },
     crispFloor: true, grain: 0.012,
     nearFloor: { fall: 0.80, dye: 1, calm: 0.92, clean: 1, rug: { ahead: 3.6, hw: 1.65, hd: 1.05 }, rugGain: 0.70, rugGul: 0.85,
                  pool: { ahead: 4.0, across: 0.0, rAlong: 2.6, rAcross: 3.4, k: 2.5, color: '#ff9a50' },
-                 pool2: { ahead: 2.4, across: 0.0, rAlong: 1.6, rAcross: 3.0, k: 1.0, color: '#f0a060' } },
+                 /* (graft, judge 1: the fire's glow carried on below the
+                    rug, to the frame's foot) */
+                 pool2: { ahead: 2.4, across: 0.0, rAlong: 2.2, rAcross: 3.4, k: 2.0, color: '#f0a060' } },
     /* (round 37: the cold fill from behind the eye laid a lavender haze on
        the near boards' left -- a third of it reaches the floor) */
     cineFloor: 0.35,
@@ -782,7 +791,10 @@ export const REGIONS = {
     deep: '#1c1319', mid: '#3a2824', hi: '#614534', accent: '#5d849d',
     shaft: '#d9bd92', floorDeep: '#151014', floorMid: '#31211c', ambient: '#1a1217',
     propAlb: '#3f2b23', propHi: '#735336', rimCol: '#d8b279',
-    gloss: 0.58, grime: 0.55, open: '#527f8f', openGlow: 0.45,
+    /* (round 37 graft, CARNELIAN's: the boards' sheen and the canvas tooth
+       down -- judge 2's "near-black plank field under a smeared vignette"
+       was the moon's wet smear and the grade's mottle on the near boards) */
+    gloss: 0.42, grime: 0.55, open: '#527f8f', openGlow: 0.45, tooth: 0.055,
     /* (graft, the judges: "on fight-study, keep the left bookcase clear of
        the sconce overlay" -- the cases dealt round the frame's edges stood
        under the chrome's candles; the walls ARE the bookcases) */
@@ -794,23 +806,42 @@ export const REGIONS = {
                 nearFloor's -- the books taken
                 down and piled on the carpet beside it (88); the globe stays
                 by the far cases. Placed in eye metres, as the pools are. */
-             near: [{ shape: 53, ahead: 4.9, across: 2.35, tone: 0.98, keep: true, still: true, seed: 3.3 },
+             /* (round 37 graft: CARNELIAN's composition, all three judges'
+                choice -- the desk and the globe back by the cases where the
+                room had them, a wing chair drawn up at your left on the
+                carpet's corner, scaled and set in so it does not crowd the
+                frame's edge (judge 3), and the books taken down and piled by
+                it (BERYL's 88); the carpet centred between) */
+             near: [{ shape: 53, edge: 0.70, z: -1.6, tone: 0.97 },
+                    { shape: 54, edge: 0.33, z: -4.4, tone: 0.95 },
                     { shape: 56, edge: 0.85, z: -4.6, tone: 0.94 },
-                    { shape: 88, ahead: 3.5, across: -1.1, tone: 0.98, keep: true, still: true, seed: 2.6, hM: 0.36 },
-                    { shape: 54, ahead: 4.9, across: -2.4, tone: 0.97, keep: true, still: true, seed: 5.2 }] },
+                    { shape: 56, ahead: 5.2, across: -2.15, tone: 0.97, scale: 0.86, keep: true, still: true, seed: 4.4 },
+                    { shape: 88, ahead: 3.9, across: -1.35, tone: 0.98, keep: true, still: true, seed: 2.6, hM: 0.36 }] },
     crispFloor: true, grain: 0.012,
-    nearFloor: { fall: 0.88, dye: 1, calm: 0.90, clean: 1, rug: { ahead: 4.0, hw: 1.6, hd: 1.0 }, rugGain: 0.62, rugGul: 0.85,
-                 pool: { ahead: 4.8, across: 2.0, rAlong: 2.2, rAcross: 2.2, k: 3.6, color: '#f2c070' },
-                 pool2: { ahead: 3.2, across: -0.6, rAlong: 1.8, rAcross: 2.8, k: 1.4, color: '#eaa860' } },
-    cineFloor: 0.5,
+    /* (graft: CARNELIAN's even warm floor -- the near floor at 0.95, the
+       carpet centred and the lamps' light lying over the whole of it and
+       the boards to the frame's foot -- with BERYL's lattice carpet on it) */
+    nearFloor: { fall: 0.95, dye: 1, calm: 0.92, clean: 1, rug: { ahead: 4.6, hw: 1.9, hd: 1.15 }, rugGain: 0.70, rugGul: 0.85,
+                 pool: { ahead: 5.0, across: -1.4, rAlong: 2.8, rAcross: 2.6, k: 2.2, color: '#eab26a' },
+                 /* (and the green lamp's warmth on the boards round the desk
+                    and between the cases and the carpet -- the stripe the
+                    judges named, and the cold wash behind the desk) */
+                 pool2: { ahead: 7.4, across: 2.0, rAlong: 2.6, rAcross: 3.4, k: 2.6, color: '#eab26a' } },
+    /* (graft: the cinematic pair's whole light on the boards again -- at
+       half, the boards between the cases and the carpet were the black
+       stripe all three judges named) */
+    cineFloor: 1.0,
     particles: { mix: [[PTYPE.DUST, 0.92], [PTYPE.EMBER, 0.08]],
                  tint: '#ffe6bc', wispTint: '#8fd9ec', emberTint: '#ffb64a',
                  speed: 0.6, scale: 0.95, wind: 0.4, density: 0.45 },
-    exposure: 2.6, vignette: 1.22, contrast: 1.67,
+    /* (graft: CARNELIAN's vignette, 1.22 -> 1.12) */
+    exposure: 2.6, vignette: 1.12, contrast: 1.67,
     key:  { glow: 0, kind: 'warm', x: -3.8, y: 3.2, z: 2.2, color: '#e2b271', intensity: 1.63, radius: 7.31 },
     /* (graft: the moon's pool on the boards a stop down -- the judges saw
-       the floor's grain dither in it) */
-    fill: { glow: 0, kind: 'cold', x: 5.0, y: 3.4, z: 1.2, color: '#769fba', intensity: 2.90, radius: 8.0, flicker: false },
+       the floor's grain dither in it; round 37 graft: and 2.90 -> 2.30,
+       after TOURMALINE's -- its pool behind the desk was the cold blue-grey
+       wash all three judges asked warmed; the green lamp's pool takes it) */
+    fill: { glow: 0, kind: 'cold', x: 5.0, y: 3.4, z: 1.2, color: '#769fba', intensity: 2.30, radius: 8.0, flicker: false },
     lights: [
       /* (round 37, survey-5 judge 1: "the chandeliers are blown white
          blobs" -- each candle's halo two-thirds the size and half the
@@ -818,7 +849,9 @@ export const REGIONS = {
       { kind: 'warm', x: -3.2, y: 3.00, z: -4.6, color: '#e0b266', intensity: 1.50, radius: 5.6, glow: 0.32, glowSize: 0.55 },
       { kind: 'warm', x: 3.6, y: 3.20, z: -7.0, color: '#dca254', intensity: 1.30, radius: 6.0, glow: 0.32, glowSize: 0.55 },
       { kind: 'warm', x: -4.0, y: 3.40, z: -7.6, color: '#ce9953', intensity: 0.90, radius: 5.5, glow: 0.32, glowSize: 0.55 },
-      { kind: 'cold', x: 0.6, y: 5.00, z: -8.0, color: '#769fba', intensity: 1.40, radius: 7.0 },
+      /* (graft: the gallery window's moon at half, TOURMALINE's -- it laid
+         the lilac-grey on the boards behind the desk) */
+      { kind: 'cold', x: 0.6, y: 5.00, z: -8.0, color: '#769fba', intensity: 0.70, radius: 7.0 },
     ],
     shafts: { count: 1, spread: 6, y: 8.0, z: -8.0, angle: 0.22, width: 2.4, intensity: 0.14, pool: 1.5 },
     /* (round 37: halation 0.68 -> 0.42 -- the chandeliers' "blown white
@@ -1514,7 +1547,10 @@ export const REGIONS = {
        round, ribbed pumpkin shape". Shape 27 is a pumpkin. */
     /* (graft: in the PATCH layout -- ranks across the width, nearer and
        bigger, the fight's court kept clear round the Kid and the creature) */
-    props: { shapes: [27], count: 40, height: 2.0, layout: 'patch', depth: 13,
+    /* (round 37 graft, the frame budget: 36 from 40 -- the near floor's
+       lanterns are the court's nearest pumpkins now, and four of the far
+       ones were the cheapest part of a millisecond to give back) */
+    props: { shapes: [27], count: 36, height: 2.0, layout: 'patch', depth: 13,
              family: ['patch'],
              /* and a heap of them in the near corner, clear of the fight, big
                 enough to be the first thing the eye names */
@@ -1532,20 +1568,28 @@ export const REGIONS = {
                   dealt as it was. */
                { shape: 86, ahead: 4.8, across: 3.5, tone: 0.96, keep: true, still: true, seed: 3.3 },
                { shape: 27, ahead: 4.62, across: 3.40, y: 0.43, tone: 0.97, hM: 0.55, keep: true, still: true, seed: 0.7 },
-               { shape: 27, ahead: 4.2, across: 2.4, tone: 0.97, hM: 0.85, keep: true, still: true, seed: 1.1 },
+               { shape: 27, ahead: 4.2, across: 2.4, tone: 0.97, hM: 0.74, keep: true, still: true, seed: 1.1 },
                { shape: 27, ahead: 5.6, across: 4.7, tone: 0.97, hM: 0.70, keep: true, still: true, seed: 2.3 },
                { shape: 27, ahead: 3.6, across: 3.9, tone: 0.97, hM: 0.50, keep: true, still: true, seed: 4.1 },
-               { shape: 27, ahead: 4.4, across: -3.7, tone: 0.97, hM: 0.75, keep: true, still: true, seed: 1.5 },
-               { shape: 27, ahead: 3.8, across: -4.4, tone: 0.96, hM: 0.48, keep: true, still: true, seed: 6.2 },
-               /* ...and two at your feet, the nearest things in the court */
-               { shape: 27, ahead: 2.7, across: 1.75, tone: 0.97, hM: 0.62, keep: true, still: true, seed: 4.5 },
-               { shape: 27, ahead: 3.2, across: -1.95, tone: 0.97, hM: 0.52, keep: true, still: true, seed: 7.5 },
-               { shape: 27, ahead: 3.5, across: -2.45, tone: 0.97, hM: 0.36, keep: true, still: true, seed: 0.3 },
+               /* (round 37 graft, CARNELIAN's repoussoir: one big carved
+                  lantern cropped by the frame's left edge, in place of the
+                  two small ones there -- the nearest, largest, darkest
+                  thing in the court, that the eye goes past into it) */
+               { shape: 27, ahead: 3.7, across: -3.05, tone: 0.97, hM: 1.10, keep: true, still: true, seed: 2.3 },
+               /* ...and one at your feet, the nearest lit thing in the court
+                  (round 37 graft, the frame budget: a step further off and a
+                  little smaller, and the pair at your left gone -- the big
+                  lantern at the frame's edge stands there now; near the eye
+                  a prop quad costs its whole area, and these three were a
+                  millisecond of a fight's frame under the hand) */
+               { shape: 27, ahead: 3.25, across: 1.85, tone: 0.97, hM: 0.58, keep: true, still: true, seed: 4.5 },
              ] },
     crispFloor: true,
     nearFloor: { fall: 0.92, calm: 0.85, clean: 1,
                  pool: { ahead: 4.0, across: 2.6, rAlong: 2.2, rAcross: 2.0, k: 16.0, color: '#ffa848' },
-                 pool2: { ahead: 3.3, across: -2.2, rAlong: 1.7, rAcross: 1.5, k: 13.0, color: '#ffa848' } },
+                 /* (graft, judge 2: the near-left flags kept deep blue-black --
+                    the lanterns' second pool tighter round its lantern) */
+                 pool2: { ahead: 3.4, across: -2.6, rAlong: 1.3, rAcross: 1.2, k: 9.0, color: '#ffa848' } },
     particles: { mix: [[PTYPE.DUST, 0.40], [PTYPE.SPORE, 0.30], [PTYPE.EMBER, 0.30]],
                  tint: '#cfe0e8', wispTint: '#8fe8c0', emberTint: '#ff8a28',
                  speed: 0.9, scale: 1.25, wind: 1.1, density: 1.0 },
@@ -1613,20 +1657,37 @@ export const REGIONS = {
                 pool and pool2, below) -- the ceremony's candles, set on the
                 floor of the hall the way a chapel sets its altar lights.
                 `still`, so the colonnade behind them is dealt as it was. */
-             near: [{ shape: 85, ahead: 10.6, across: -4.15, tone: 0.97, hM: 1.80, keep: true, still: true, seed: 1.3 },
-                    { shape: 85, ahead: 10.6, across: 4.15, tone: 0.97, hM: 1.80, keep: true, still: true, seed: 6.7 },
+             /* (graft: TOURMALINE's tall tiered candelabra, all three judges
+                -- "its tall tiered candelabras on the near floor each casting
+                a warm pool" -- brought in to 3.6 m either side of the runner,
+                so at the Deck's 1280x800 both stand inside the frame and
+                clear of the Kid's panel and the discard pile in the fight) */
+             near: [{ shape: 85, ahead: 9.6, across: -3.6, tone: 0.97, hM: 1.95, keep: true, still: true, seed: 1.3 },
+                    { shape: 85, ahead: 9.6, across: 3.6, tone: 0.97, hM: 1.95, keep: true, still: true, seed: 6.7 },
                     /* ...and nearer, a knot of pillar candles stood on the
                        boards either side of the runner's foot (85 with a
                        seed past 20: true metres, hM and wM) */
-                    { shape: 85, ahead: 5.4, across: -1.9, tone: 0.97, keep: true, still: true, seed: 21.3, hM: 0.54, wM: 0.80 },
-                    { shape: 85, ahead: 5.0, across: 2.1, tone: 0.97, keep: true, still: true, seed: 24.9, hM: 0.50, wM: 0.80 }] },
+                    /* (graft: a stride nearer, 4.2-4.5 m -- at 5 m they stood
+                       in the fight between the Kid's panel and the hand and
+                       behind the discard pile, in pieces; here the hand
+                       covers them in the fight and the empty room still has
+                       them at its foot) */
+                    { shape: 85, ahead: 4.5, across: -1.9, tone: 0.97, keep: true, still: true, seed: 21.3, hM: 0.54, wM: 0.80 },
+                    { shape: 85, ahead: 4.2, across: 2.1, tone: 0.97, keep: true, still: true, seed: 24.9, hM: 0.50, wM: 0.80 }] },
     wainscot: true, nearFrame: false,
-    /* (round 37: the marble modelled -- uStatueMod) */
-    statueModel: 1,
+    /* (round 37: the marble modelled -- uStatueMod; the graft: a quarter
+       of it, since CARNELIAN's carving -- its core shadow and fold troughs
+       laid on the lit colour, MM_SH85 in the shader -- does that work now,
+       and the two together took the figures to black) */
+    statueModel: 0.25,
     crispFloor: true,
+    /* (graft: the candelabra's light laid on the boards in a band along
+       their line -- both their feet and the runner between them in it,
+       TOURMALINE's pools -- and BERYL's pool before the pillar candles kept,
+       so the runner and the boards are lit to the frame's foot) */
     nearFloor: { fall: 0.92, dye: 1, calm: 0.85, clean: 1,
-                 pool: { ahead: 5.2, across: 0.0, rAlong: 2.2, rAcross: 3.4, k: 2.6, color: '#f0a65a' },
-                 pool2: { ahead: 8.0, across: 0.0, rAlong: 2.6, rAcross: 4.6, k: 2.2, color: '#eaa45e' } },
+                 pool: { ahead: 4.6, across: 0.0, rAlong: 2.6, rAcross: 3.6, k: 3.0, color: '#f0a65a' },
+                 pool2: { ahead: 9.2, across: 0.0, rAlong: 2.2, rAcross: 5.2, k: 4.0, color: '#f0a65a' } },
     /* (round 29 graft, judge 1: "give the lower half of the hall drawn
        content -- a long rug" -- the hall's Turkey runner, its medallions and
        guard stripes, laid from the foot of the frame to the door) */
@@ -1635,6 +1696,12 @@ export const REGIONS = {
                  tint: '#fff2d8', wispTint: '#ffd9a8', emberTint: '#ffcf7a',
                  speed: 0.55, scale: 1.15, wind: 0.35, density: 1.0 },
     exposure: 1.8, contrast: 1.67,
+    /* (round 37 graft, item 5, all three judges on the fight: "a warm pool on
+       the floor between the Kid and the hand and right of the Memory Animal;
+       the runner's contrast and warmth up under the creatures" -- the
+       fight's own candle pool half again as strong, wider, and its middle
+       brought toward you; the empty room is not touched) */
+    stagePool: { k: 2.3, x: 2.6, y: 2.2, near: 1.8, dx: 0.6 },
     key:  { glow: 0, kind: 'warm', x: -4.4, y: 3.6, z: 2.6, color: '#ebcc9b', intensity: 0.9, radius: 8.6 },
     /* ROUND 29, both judges: "the floor's right third is a milky blue-grey",
        "the back wall's portraits are lost under shafts of haze". The cold
@@ -2289,11 +2356,18 @@ export const ROOM_KINDS = {
                { shape: 54, x: -4.2, z: -3.2, tone: 0.95, free: true },
                /* (round 37: the near floor -- books piled on the hearth
                   rug in the fire's light, a chair turned to the fire) */
-               { shape: 88, ahead: 3.6, across: 1.2, tone: 0.98, keep: true, still: true, seed: 7.1, hM: 0.36 },
-               { shape: 56, ahead: 4.4, across: -2.3, tone: 0.97, keep: true, still: true, seed: 4.4 }],
+               /* (round 37 graft: CARNELIAN's -- a wing chair drawn up on the
+                  hearth rug at your left, scaled and set in from the frame's
+                  edge, and the books piled at the rug's other corner) */
+               { shape: 56, ahead: 4.6, across: -2.0, tone: 0.97, scale: 0.84, keep: true, still: true, seed: 4.4 },
+               { shape: 88, ahead: 3.6, across: 1.7, tone: 0.98, keep: true, still: true, seed: 7.1, hM: 0.36 }],
+        /* (graft: the fire's own light lying out across the rug toward you,
+           CARNELIAN's, and the boards round it warm) */
         nearFloor: { rug: { ahead: 4.6, hw: 1.8, hd: 1.1 },
-                     pool: { ahead: 5.2, across: 0.0, rAlong: 3.0, rAcross: 2.6, k: 3.2, color: '#ff9a50' },
-                     pool2: { ahead: 3.4, across: 0.0, rAlong: 2.0, rAcross: 3.0, k: 1.2, color: '#f0a060' } },
+                     pool: { ahead: 4.6, across: 0.0, rAlong: 3.6, rAcross: 2.8, k: 2.8, color: '#f0904a' },
+                     /* (and the green lamp's warmth on the boards round the
+                        desk, where the cold wash lay) */
+                     pool2: { ahead: 6.4, across: 2.4, rAlong: 2.4, rAcross: 3.0, k: 2.2, color: '#eab26a' } },
         cam: { z: -1.0, look: 0.1 } },
     ],
     names: [
@@ -2325,7 +2399,16 @@ export const ROOM_KINDS = {
                      /* (round 37: a dress form brought out onto the rug in
                         the lamp's pool, and the blocks the nursery left) */
                      { shape: 49, ahead: 4.6, across: -2.1, tone: 0.97, keep: true, still: true, seed: 5.5 },
-                     { shape: 87, ahead: 3.3, across: 1.2, tone: 0.97, keep: true, still: true, seed: 6.4, hM: 0.45 }],
+                     /* (round 37 graft, TOURMALINE's: the nursery's toy chest
+                        and its bear brought in at your near left, and the
+                        blocks strayed down toward you) */
+                     { shape: 47, ahead: 4.3, across: 2.2, tone: 0.96, keep: true, still: true, seed: 3.1 },
+                     { shape: 87, ahead: 2.9, across: -0.5, tone: 0.97, keep: true, still: true, seed: 6.4, hM: 0.45 }],
+              /* (round 37 graft, CARNELIAN's: a braided oval rag rug, so the
+                 sewing room does not lay the study's Turkey carpet --
+                 MM_RUGO, its own floor program; and the lamp's light on it) */
+              nearFloor: { rug: { ahead: 3.8, hw: 1.95, hd: 1.05, oval: 1 },
+                           pool2: { ahead: 3.6, across: -0.6, rAlong: 2.2, rAcross: 2.8, k: 2.6, color: '#e6b184' } },
               room: { d: 0.82 }, cam: { z: -1.0, look: 0.10 } }],
     names: [
       [/wardrobe|closet|changing|blanket|sewing|mending/i, 1],
@@ -2679,7 +2762,9 @@ export const ROOM_KINDS = {
       /* (graft: the moon stands over the water and the house beside it, so
          the moon lies in the pond -- "a reflection, not a flat blue
          rectangle") */
-      { subject: 'coping', pool: { hw: 3.2, z0: 1.2, back: 12.0 }, moonX: -7.6, houseX: 8.5,
+      /* (round 37 graft: and its moon on the walk and the near flags a
+         little fuller than the court's -- judges 1 and 3) */
+      { subject: 'coping', pool: { hw: 3.2, z0: 1.2, back: 12.0 }, moonX: -7.6, houseX: 8.5, moonFloor: [0.26, 0.34, 0.52],
         vantage: { at: 'along', off: 0.10, wall: 6.0, fwd: 1.4, yaw: 10, wide: 2, dy: 0.6, dlook: -0.2 } },
     ],
     names: [
@@ -2694,13 +2779,29 @@ export const ROOM_KINDS = {
       { subject: 'hearth' },
       /* its galleries of the house's own: an arcade, seen from one end */
       { subject: 'arcade',
-        vantage: { at: 'along', off: 0.26, wall: 2.4, fwd: 1.2, yaw: 24, wide: 4 } },
+        vantage: { at: 'along', off: 0.26, wall: 2.4, fwd: 1.2, yaw: 24, wide: 4 },
+        /* (round 37 graft: the gallery's near floor -- a candelabrum burning
+           at your left over its pool, a stone urn on its pedestal at your
+           right, CARNELIAN's, and a knot of pillar candles between them) */
+        near: [{ shape: 85, ahead: 7.4, across: -2.7, tone: 0.97, hM: 1.95, keep: true, still: true, seed: 2.2 },
+               { shape: 81, ahead: 7.8, across: 3.0, tone: 0.95, hM: 1.40, keep: true, still: true, seed: 1.1 },
+               { shape: 85, ahead: 4.6, across: 1.4, tone: 0.97, keep: true, still: true, seed: 22.7, hM: 0.52, wM: 0.80 }],
+        nearFloor: { pool: { ahead: 7.2, across: -1.6, rAlong: 3.0, rAcross: 3.6, k: 4.6, color: '#f0a65a' },
+                     pool2: { ahead: 5.6, across: 2.2, rAlong: 3.0, rAcross: 3.0, k: 3.4, color: '#eaa45e' } } },
       /* its inner stair, from low beside it */
       { subject: 'stair', subj: { wall: 'far', at: 0.55, mode: 1, dir: 1 },
         vantage: { at: 'among', low: 0.66, fwd: 3.0, pitch: 2.0, off: 0.04, yaw: 30, wide: 4 } },
       /* a memory room: shelves of kept things, from a corner */
       { subject: 'bookcase',
-        vantage: { at: 'corner', off: 0.12, fwd: 2.4, yaw: 28, wide: 3 } },
+        vantage: { at: 'corner', off: 0.12, fwd: 2.4, yaw: 28, wide: 3 },
+        /* (round 37 graft: and the memory room's -- a carved stone bench at
+           your left, CARNELIAN's, a candelabrum burning at your right over
+           its pool, an urn on its pedestal beyond the bench) */
+        near: [{ shape: 83, ahead: 5.6, across: -2.1, tone: 0.95, hM: 0.95, keep: true, still: true, seed: 2.0 },
+               { shape: 85, ahead: 7.6, across: 2.9, tone: 0.97, hM: 1.95, keep: true, still: true, seed: 6.7 },
+               { shape: 81, ahead: 9.8, across: -4.4, tone: 0.95, hM: 1.40, keep: true, still: true, seed: 2.6 }],
+        nearFloor: { pool: { ahead: 7.4, across: 2.7, rAlong: 3.2, rAcross: 2.4, k: 5.0, color: '#f0a65a' },
+                     pool2: { ahead: 5.4, across: -1.8, rAlong: 2.2, rAcross: 2.6, k: 2.6, color: '#eaa45e' } } },
     ],
     names: [
       [/gallery|hall of|collars|names/i, 1],
@@ -3238,7 +3339,9 @@ export class Atmosphere {
       dx /= dl; dz /= dl;
       const a = pal.rugK.ahead ?? 6.0;
       pal.rug = { x: (c.x ?? 0) + dx * a + (pal.rugK.dx ?? 0), z: (c.z ?? 9.6) + dz * a,
-                  hw: pal.rugK.hw ?? 2.2, hd: pal.rugK.hd ?? 1.5 };
+                  hw: pal.rugK.hw ?? 2.2, hd: pal.rugK.hd ?? 1.5,
+                  /* (round 37 graft: a braided oval rug -- MM_RUGO) */
+                  oval: pal.rugK.oval ? 1 : 0 };
     }
     this.backdrop.build(pal, () => this._rand());
     // material is structural, like the geometry: it swaps with the room rather
@@ -3512,6 +3615,8 @@ export class Atmosphere {
       if (kind.doorX !== undefined) pal.doorX = kind.doorX;
       if (kind.houseX !== undefined) pal.houseX = kind.houseX;
       if (kind.moonX !== undefined) pal.moonX = kind.moonX;
+      /* (round 37 graft: and a room's own moon on its flags -- the pond's) */
+      if (kind.moonFloor !== undefined) pal.moonFloor = kind.moonFloor;
       /* how big the house on the horizon is, from where this room is seen */
       if (kind.houseS !== undefined) pal.houseS = kind.houseS;
       /* where a walk or a runner runs (to the gate in the railing, to the

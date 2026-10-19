@@ -215,10 +215,11 @@ const SHAPE_M = [1.20, 2.00, 1.30, 1.00, 2.00, 2.00, 3.32, 2.60, 1.17, 1.33,
                     Greenhouse's near floor */
                  1.15,
                  /* round 37 (MM_WINGS 1, gkDraw): 85 a standing candelabrum
-                    of gilt brass, its five candles burning (the Heart's near
-                    floor); 86 a straw bale and the straw fallen from it (the
-                    Pumpkin Grounds') */
-                 1.80, 0.62,
+                    of old brass, eight candles burning on its dish and crown
+                    (the Heart's near floor; the graft: TOURMALINE's
+                    hcCandles, 1.95 m); 86 a straw bale and the straw fallen
+                    from it (the Pumpkin Grounds') */
+                 1.95, 0.62,
                  /* round 37 (MM_WINGS 3, wfDraw): 87 the nursery's alphabet
                     blocks and a ball on the rug; 88 books piled on the
                     study's floor and one lying open */
@@ -253,7 +254,7 @@ const SHAPE_W = [1.15, 0.55, 1.00, 0.95, 0.72, 0.80, 0.47, 0.85, 0.90, 1.35,
                  0.42,
                  0.45, 1.20, 2.05,
                  2.05,
-                 0.47, 2.30,
+                 0.42, 2.30,
                  2.10, 3.82
 ];
 /* HOW MUCH ONE OF THESE VARIES FROM THE NEXT, as a +-fraction of SHAPE_M.
@@ -499,7 +500,7 @@ export const PROP_SHAPES = {
      bring it in themselves, so the wing's fight keeps its program: with
      the bench compiled in, the Greenhouse prop link went 9.6 -> 12-14 s) */
   greenhouse: [6, 23, 25, 74, 75, 76, 77, 80],
-  heart: [0, 4, 5, 6, 22, 23, 31, 85],
+  heart: [0, 4, 5, 6, 22, 23, 31, 81, 83, 85],   // (round 37 graft: CARNELIAN's urn and seat, 81 and 83)
   hedge: [23, 25, 28, 30, 31, 81, 83],
   kennels: [16.25, 22, 23, 39, 40, 41, 42],
   kitchens: [8, 22, 29, 82],
@@ -605,7 +606,7 @@ export const ROOM_VARIANTS = [
   { mat: 'prop', defines: { MM_STONES: 1, MM_BUST: 0, MM_WINGS: 6, MM_SHM0: 41943104, MM_SHM1: 0, MM_SHM2: 1294336 }, wings: ['greenhouse'] },
   /* (round 34 graft: and the Greenhouse rooms with the potting bench, 84) */
   { mat: 'prop', defines: { MM_STONES: 1, MM_BUST: 0, MM_WINGS: 6, MM_SHM0: 41943104, MM_SHM1: 0, MM_SHM2: 18071552 }, wings: ['greenhouse'] },
-  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 1, MM_SHM0: 12583025, MM_SHM1: 2, MM_SHM2: 33554432 }, wings: ['heart'] },
+  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 1, MM_SHM0: 12583025, MM_SHM1: 2, MM_SHM2: 44040192 }, wings: ['heart'] },
   { mat: 'prop', defines: { MM_STONES: 1, MM_BUST: 0, MM_WINGS: 1, MM_SHM0: 310378496, MM_SHM1: 3, MM_SHM2: 10485760 }, wings: ['hedge'] },
   { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 2, MM_SHM0: 12648448, MM_SHM1: 7680, MM_SHM2: 0 }, wings: ['kennels'] },
   { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 1, MM_SHM0: 541065472, MM_SHM1: 0, MM_SHM2: 4194304 }, wings: ['kitchens'] },
@@ -615,19 +616,21 @@ export const ROOM_VARIANTS = [
   { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 1, MM_SHM0: 142606336, MM_SHM1: 0, MM_SHM2: 67108864 }, wings: ['pumpkin'] },
   { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 3, MM_SHM0: 4210689, MM_SHM1: 74645504, MM_SHM2: 1 }, wings: ['sleeping'] },
   { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 3, MM_SHM0: 4194304, MM_SHM1: 125829120, MM_SHM2: 268435456 }, wings: ['study'] },
-  { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 0, MM_PAT: 0, MM_CEIL: 0 }, wings: ['attic', 'heart', 'nursery', 'passages', 'sleeping', 'study'] },
-  { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 2, MM_PAT: 1, MM_CEIL: 0 }, wings: ['ballroom'] },
-  { mat: 'floor', defines: { MM_FLOORX: 1, MM_R25W: 0, MM_PAT: 10, MM_CEIL: 0 }, wings: ['ballroom'] },
-  { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 0, MM_PAT: 1, MM_CEIL: 0 }, wings: ['bathhouse'] },
-  { mat: 'floor', defines: { MM_FLOORX: 2, MM_R25W: 0, MM_PAT: 1, MM_CEIL: 0 }, wings: ['bathhouse'] },
-  { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 0, MM_PAT: 2, MM_CEIL: 0 }, wings: ['crypt', 'kennels', 'kitchens', 'lampworks', 'pumpkin'] },
-  { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 1, MM_PAT: 0, MM_CEIL: 0 }, wings: ['foyer'] },
-  { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 1, MM_PAT: 2, MM_CEIL: 0 }, wings: ['foyer'] },
-  { mat: 'floor', defines: { MM_FLOORX: 1, MM_R25W: 4, MM_PAT: 11, MM_CEIL: 0 }, wings: ['graveyard'] },
-  { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 3, MM_PAT: 2, MM_CEIL: 0 }, wings: ['greenhouse'] },
-  { mat: 'floor', defines: { MM_FLOORX: 1, MM_R25W: 0, MM_PAT: 13, MM_CEIL: 0 }, wings: ['hedge'] },
-  { mat: 'floor', defines: { MM_FLOORX: 1, MM_R25W: 0, MM_PAT: 2, MM_CEIL: 0 }, wings: ['pumpkin'] },
-  { mat: 'floor', defines: { MM_FLOORX: 1, MM_R25W: 0, MM_PAT: 14, MM_CEIL: 0 }, wings: ['pumpkin'] },
+  { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 0, MM_PAT: 0, MM_CEIL: 0, MM_RUGO: 0 }, wings: ['attic', 'heart', 'nursery', 'passages', 'sleeping', 'study'] },
+  /* (round 37 graft: the Nursery's wardrobe and its braided oval rug, MM_RUGO) */
+  { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 0, MM_PAT: 0, MM_CEIL: 0, MM_RUGO: 1 }, wings: ['nursery'] },
+  { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 2, MM_PAT: 1, MM_CEIL: 0, MM_RUGO: 0 }, wings: ['ballroom'] },
+  { mat: 'floor', defines: { MM_FLOORX: 1, MM_R25W: 0, MM_PAT: 10, MM_CEIL: 0, MM_RUGO: 0 }, wings: ['ballroom'] },
+  { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 0, MM_PAT: 1, MM_CEIL: 0, MM_RUGO: 0 }, wings: ['bathhouse'] },
+  { mat: 'floor', defines: { MM_FLOORX: 2, MM_R25W: 0, MM_PAT: 1, MM_CEIL: 0, MM_RUGO: 0 }, wings: ['bathhouse'] },
+  { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 0, MM_PAT: 2, MM_CEIL: 0, MM_RUGO: 0 }, wings: ['crypt', 'kennels', 'kitchens', 'lampworks', 'pumpkin'] },
+  { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 1, MM_PAT: 0, MM_CEIL: 0, MM_RUGO: 0 }, wings: ['foyer'] },
+  { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 1, MM_PAT: 2, MM_CEIL: 0, MM_RUGO: 0 }, wings: ['foyer'] },
+  { mat: 'floor', defines: { MM_FLOORX: 1, MM_R25W: 4, MM_PAT: 11, MM_CEIL: 0, MM_RUGO: 0 }, wings: ['graveyard'] },
+  { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 3, MM_PAT: 2, MM_CEIL: 0, MM_RUGO: 0 }, wings: ['greenhouse'] },
+  { mat: 'floor', defines: { MM_FLOORX: 1, MM_R25W: 0, MM_PAT: 13, MM_CEIL: 0, MM_RUGO: 0 }, wings: ['hedge'] },
+  { mat: 'floor', defines: { MM_FLOORX: 1, MM_R25W: 0, MM_PAT: 2, MM_CEIL: 0, MM_RUGO: 0 }, wings: ['pumpkin'] },
+  { mat: 'floor', defines: { MM_FLOORX: 1, MM_R25W: 0, MM_PAT: 14, MM_CEIL: 0, MM_RUGO: 0 }, wings: ['pumpkin'] },
   { mat: 'ceil', defines: { MM_FLOORX: 2, MM_PAT: 15, MM_CEIL: 1 }, wings: ['attic'] },
   { mat: 'ceil', defines: { MM_FLOORX: 0, MM_PAT: 4, MM_CEIL: 1 }, wings: ['ballroom', 'bathhouse', 'foyer', 'heart'] },
   /* (round 35 graft: the Crypt's rib vault, its own pattern -- SCHEELITE's) */
@@ -924,7 +927,7 @@ export class Backdrop {
     this.floorMat = new THREE.ShaderMaterial({
       uniforms: surfaceUniforms(),
       /* the room-kind floors are a variant of their own: _setSurfaceProgram */
-      defines: { MM_FLOORX: 0, MM_R25W: 0, MM_PAT: 0, MM_CEIL: 0 },
+      defines: { MM_FLOORX: 0, MM_R25W: 0, MM_PAT: 0, MM_CEIL: 0, MM_RUGO: 0 },
       vertexShader: FLOOR_VERT, fragmentShader: FLOOR_FRAG,
       depthWrite: true, fog: false,
     });
@@ -2884,7 +2887,9 @@ export class Backdrop {
     /* (round 23: an INDOOR bath is variant 2, which lays the hall in its
        water as a mirror; the pond out of doors keeps variant 1) */
     const fx = (p.pool && !p.pool.open) ? 2 : (((p.floorPattern ?? 0) > 9.5 || !!p.pool) ? 1 : 0);
-    this._setSurfaceProgram(this.floorMat, fx, (R25_FLOORS[p.r25w] || []).includes(fx) ? p.r25w : 0);
+    this._setSurfaceProgram(this.floorMat, fx, (R25_FLOORS[p.r25w] || []).includes(fx) ? p.r25w : 0,
+      /* (round 37 graft: a braided oval rug, the wardrobe's -- MM_RUGO) */
+      p.rug && p.rug.oval ? { MM_RUGO: 1 } : { MM_RUGO: 0 });
     f.uRunner.value = p.runner ?? 0;
     /* the runner leads to the door, wherever the subject took it */
     f.uRunX.value = p.runX ?? (p.subjX ?? 0);
@@ -2910,6 +2915,11 @@ export class Backdrop {
     {
       const nf = p.nearFloor;
       this._cineFloor = p.cineFloor ?? 1;
+      /* (round 37 graft, item 5: a room may widen the fight's own warm pool
+         and carry it toward you -- pal.stagePool {k, x, y, near}: its
+         strength, metres more across and along, and metres its middle is
+         brought toward the eye. Unwritten, the pool every fight had.) */
+      this._stagePool = p.stagePool || null;
       f.uNearFall.value = nf ? (nf.fall ?? 0) : 0;
       f.uRugDye.value = nf && nf.dye ? 1 : 0;
       f.uRugGain.value = nf ? (nf.rugGain ?? 1) : 1;
@@ -3080,7 +3090,7 @@ export class Backdrop {
   /** The floor's or the ceiling's program: the room-kind floors (parquet,
    *  turf, a vinery's roof, a pool) are compiled only where they are laid
    *  (MM_FLOORX in shaders/backdrop.js). */
-  _setSurfaceProgram(mat, x, w = null) {
+  _setSurfaceProgram(mat, x, w = null, extra = null) {
     const n = x === 2 ? 2 : (x ? 1 : 0);
     /* (round 25: and the floor's wing, MM_R25W, where round 25 drew in that
        floor program for one of the last four wings -- R25_FLOORS. The
@@ -3092,8 +3102,12 @@ export class Backdrop {
     const pat = Math.round(mat.uniforms.uPattern.value) || 0;
     const ceil = mat.uniforms.uIsCeiling.value ? 1 : 0;
     const d = mat.defines || {};
-    if (d.MM_FLOORX === n && (w === null || d.MM_R25W === w) && d.MM_PAT === pat && d.MM_CEIL === ceil) return;
-    mat.defines = Object.assign({}, d, { MM_FLOORX: n, MM_PAT: pat, MM_CEIL: ceil }, want);
+    /* (round 37 graft: and the floor's rug, MM_RUGO -- the floor's caller
+       only; the ceiling never carries it) */
+    const ex = extra || {};
+    if (d.MM_FLOORX === n && (w === null || d.MM_R25W === w) && d.MM_PAT === pat && d.MM_CEIL === ceil
+        && Object.keys(ex).every((k) => d[k] === ex[k])) return;
+    mat.defines = Object.assign({}, d, { MM_FLOORX: n, MM_PAT: pat, MM_CEIL: ceil }, want, ex);
     mat.needsUpdate = true;
   }
 
@@ -3391,7 +3405,7 @@ export class Backdrop {
     sc2.setRGB(0, 0, 0);
     for (let i = 0; i < NLIGHT; i++) {
       if (rig.cine[i] && !rig.cold[i]) {
-        sc2.copy(rig.colors[i]).multiplyScalar(STAGE_WASH * Math.min(rig.inten[i], 2.5));
+        sc2.copy(rig.colors[i]).multiplyScalar(STAGE_WASH * Math.min(rig.inten[i], 2.5) * (this._stagePool ? (this._stagePool.k ?? 1) : 1));
         break;
       }
     }
@@ -3435,8 +3449,9 @@ export class Backdrop {
         fx0 = Math.min(fx0, a[i].x); fx1 = Math.max(fx1, a[i].x);
         fy0 = Math.min(fy0, a[i].y); fy1 = Math.max(fy1, a[i].y);
       }
-      const cx = (fx0 + fx1) / 2, cy = (fy0 + fy1) / 2;
-      const rx = (fx1 - fx0) * 0.50 + 2.0, ry = (fy1 - fy0) * 0.50 + 1.6;
+      const sp = this._stagePool;
+      const cx = (fx0 + fx1) / 2 + (sp ? (sp.dx ?? 0) : 0), cy = (fy0 + fy1) / 2 - (sp ? (sp.near ?? 0) : 0);
+      const rx = (fx1 - fx0) * 0.50 + 2.0 + (sp ? (sp.x ?? 0) : 0), ry = (fy1 - fy0) * 0.50 + 1.6 + (sp ? (sp.y ?? 0) : 0);
       u.uStage.value.set(cx, cy, rx, ry);
     } else {
       u.uStage.value.set(0, 0, 1, 1);

@@ -3285,32 +3285,46 @@ float subjCoping(vec2 q, float cx, float dqm, out float occ){
   h -= onN*0.42;
   h += sill*0.20;
   /* the lantern in it: a little glazed lamp on the sill, its flame */
+  /* (round 37 graft, the frame budget: the lamp, its flame and its glow
+     only inside the niche -- each is multiplied by onN, 0 outside it; no
+     derivative is taken in here, so its coverage is over the wall's own
+     metres per pixel, px, not mmCover's gradient) */
+  float lampCov = 0.0, flame = 0.0, nGlow = 0.0;
+  if (onN > 0.0) {
   vec2 lq = vec2(nx, q.y - nY0);
   float lamp = mmBox(lq - vec2(0.0, 0.17), vec2(0.085, 0.13), 0.02);
   float lcap = wTri(lq - vec2(0.0, 0.30), 0.10, 0.09);
-  float lampCov = mmCover(-min(lamp, lcap))*onN;
-  float flame = exp(-length((lq - vec2(0.0, 0.17))/vec2(0.035, 0.065))*1.6);
-  float nGlow = onN*exp(-length(lq - vec2(0.0, 0.20))/0.42);
+  lampCov = clamp(0.5 - min(lamp, lcap)/px, 0.0, 1.0)*onN;
+  flame = exp(-length((lq - vec2(0.0, 0.17))/vec2(0.035, 0.065))*1.6);
+  nGlow = onN*exp(-length(lq - vec2(0.0, 0.20))/0.42);
+  }
   /* the ivy: a curtain from the coping in each 2.1 m cell, its hem ragged */
   float icell = floor(cx/2.13 + uSeed*3.0);
   float ixl = cx/2.13 + uSeed*3.0 - icell;
   float ih = mmHash11(icell*7.1 + 3.3);
   float iw = 0.26 + 0.18*mmHash11(icell*3.7);
   float iLen = (0.45 + 1.60*ih)*step(0.22, ih);
-  float leafN = mmNoise(vec2(cx*6.0, q.y*7.0) + uSeed*11.0);
+  /* (round 37 graft, the frame budget: a curtain hangs no lower than its
+     length and its ragged hem below the coping, and stands no higher than
+     its leaves over it -- outside that band every ivy term is multiplied by
+     onI = 0, so its two noise fields and three hashes are not taken) */
+  float onI = 0.0, leafN = 0.5, lh = 0.5, leaf = 1.0, leafLit = 0.0;
+  if (iLen > 0.05 && q.y > WH + CT - iLen - 0.20 - px && q.y < WH + CT + 0.25 + px) {
+  leafN = mmNoise(vec2(cx*6.0, q.y*7.0) + uSeed*11.0);
   float leafF = mmNoise(vec2(cx*15.0, q.y*15.0) + uSeed*5.0);
   float hem = WH + CT - iLen*(0.55 + 0.45*cos((ixl - 0.5)/iw*1.5708)) + 0.25*(leafN - 0.5);
   float ivyD = max(abs(ixl - 0.5)*2.13 - iw*2.13*(0.70 + 0.60*leafN)*(0.75 + 0.25*smoothstep(hem, WH + CT, q.y)), hem - q.y);
   ivyD = max(ivyD, q.y - (WH + CT + 0.10 + 0.08*leafF));
   ivyD += 0.10*(leafF - 0.5);
-  float onI = smoothstep(px, -px, ivyD)*(1.0 - onPier*0.7)*step(0.1, iLen);
+  onI = smoothstep(px, -px, ivyD)*(1.0 - onPier*0.7)*step(0.1, iLen);
   /* each leaf a lobed cell, lit on its upper side */
   vec2 lc = vec2(cx*9.0, q.y*9.0);
   vec2 lid = floor(lc);
   vec2 lf2 = fract(lc) - 0.5;
-  float lh = mmHash21(lid + uSeed);
-  float leaf = length(lf2 + (vec2(mmHash21(lid + 1.3), mmHash21(lid + 7.1)) - 0.5)*0.4) - 0.34;
-  float leafLit = smoothstep(0.10, -0.25, lf2.y)*smoothstep(0.05, -0.05, leaf);
+  lh = mmHash21(lid + uSeed);
+  leaf = length(lf2 + (vec2(mmHash21(lid + 1.3), mmHash21(lid + 7.1)) - 0.5)*0.4) - 0.34;
+  leafLit = smoothstep(0.10, -0.25, lf2.y)*smoothstep(0.05, -0.05, leaf);
+  }
   h = mix(h, 1.42 + 0.10*leafN - 0.12*smoothstep(-0.05, 0.10, leaf), onI);
   gInk = max(gInk, joint*0.55*mmCover(WH - q.y)*(1.0 - onI)*(1.0 - onN*0.6));
   gInk = max(gInk, 0.55*onI*(1.0 - smoothstep(0.0, 0.06, abs(leaf)))*mmLod(0.11, px));
@@ -3345,7 +3359,15 @@ float subjCoping(vec2 q, float cx, float dqm, out float occ){
   gWEmit = face + 0.22*finCov*pk*exp(-max(min(eye, mouth), 0.0)/0.05);
   /* (round 37) the niche lantern's flame through its glass, and its light
      on the recess round it (not through the ivy) */
-  gWEmit += (flame*1.8*lampCov + nGlow*0.34*(1.0 - lampCov))*(1.0 - onI);
+  /* (round 37 graft, CARNELIAN's brighter niches: the flame a little up,
+     its light fuller in the recess, and out of the niche onto the wall's
+     face round it -- a warm pool on the coursed stone, every stone its own
+     value in it and the joints dark through it, so the wall is lit in
+     bays, as a sconce lights a room, and not one dark band) */
+  gWEmit += (flame*2.2*lampCov + nGlow*0.50*(1.0 - lampCov))*(1.0 - onI);
+  float face0 = (1.0 - onPier)*mmCover(WH - q.y);
+  float wash = exp(-length(vec2(nx, q.y - (nY0 + 0.30))/vec2(1.45, 1.00)))*face0*(1.0 - onN);
+  gWEmit += wash*0.42*(0.55 + 0.45*stoneV)*(1.0 - joint*0.8)*(1.0 - 0.8*onI);
   gWEmitC = vec3(1.00, 0.58, 0.16) * 0.85;
   occ = cov;
   return h * cov;
@@ -11722,7 +11744,12 @@ float wallH(vec2 q, out float occ){
        scale), where it can be seen. The whorl scallop now goes to nothing on
        the leader as well as at the tips: on the centre line it stacked into a
        knob and the tall ones read as chess pawns. */
-#if MM_R25W == 4
+#if MM_R25W == 4 || MM_ROOMS == 11
+    /* (round 37 graft, the frame budget: these culls -- the wood's, and the
+       house elevation's onBody ones below -- are the Pumpkin Grounds' too,
+       MM_ROOMS 11: its house is the same house and its wood the same wood,
+       and with the painted house loaded every term they skip was zero there
+       as well. Exact, as they are in the churchyard.) */
     /* (performance pass, 2026-10-02: the wood is drawn only where it can
        show. On the house's own columns every term it adds is multiplied by
        (1 - onHouse2), and above 16.5 m no crown of either band reaches --
@@ -11850,6 +11877,17 @@ float wallH(vec2 q, out float occ){
         float lean = (mmHash11(fid*6.7 + uSeed) - 0.5)*0.30;
         vec2 F = vec2(lean*fh*0.38, fh*0.36);
         float dT = 1e3;
+        /* (round 37 graft, the frame budget: the twenty-two members reach
+           no further from the fork than the three longest limb, bough and
+           twig laid end to end (0.72 of fh*S) and their girth; a pixel
+           outside that box is more than two pixels from every member, so
+           its coverage and its ink are 0 whatever the walk finds -- it is
+           not walked. The columns over each oak were the whole sky.) */
+        float reachT = 0.72*fh*S + w0;
+        bool inTree = abs(pp.x - F.x) < reachT + 2.0*hpx
+                   && pp.y < F.y + reachT + 2.0*hpx
+                   && pp.y > min(-w0*1.3, F.y - reachT) - 2.0*hpx;
+        if (inTree) {
         /* the bole, flared at its foot */
         {
           vec2 pa = pp, ba = F;
@@ -11889,6 +11927,7 @@ float wallH(vec2 q, out float occ){
               dT = min(dT, length(pa - ba*t) - mix(w0*0.15, w0*0.05, t));
             }
           }
+        }
         }
         /* the ink: a pixel's coverage of the member, its hairline twigs
            laid as a pen line a pixel wide and as faint as they are thin */
@@ -11996,7 +12035,7 @@ float wallH(vec2 q, out float occ){
        -- and the moon's disc is bright enough that 5% of it came through a
        fir in front of it as a whole moon. A tree is opaque; the house's
        silhouette stands at 1.4 for the same reason.) */
-#if MM_R25W == 4
+#if MM_R25W == 4 || MM_ROOMS == 11
     }
 #endif
     h += max(nearM, farM) * (1.0 - onHouse2) * noSub * 1.10;
@@ -12026,7 +12065,7 @@ float wallH(vec2 q, out float occ){
        moonlit edge along its top and its moon-side whorls (nearRim, lit and
        out from under the moon cut), and the branch across each gap darker
        than the crown round it.) */
-#if MM_R25W == 4
+#if MM_R25W == 4 || MM_ROOMS == 11
     /* (and with no tree here, every term below is zero or is read only
        where a tree is -- gTreeRim and gTreeTex, under wCov in main()) */
     if (nearM > 0.0 || farM > 0.0) {
@@ -12047,7 +12086,7 @@ float wallH(vec2 q, out float occ){
     gTreeFU = clamp(farM*(1.0 - nearM), 0.0, 1.0)*noSub;
     gTreeRim = clamp(nearRim, 0.0, 1.0);
     gTreeTex = clamp((clA - clB)*3.2 + 0.5 + tex*0.6, 0.0, 1.0)*(1.0 - 0.8*nearBr);
-#if MM_R25W == 4
+#if MM_R25W == 4 || MM_ROOMS == 11
     }
 #endif
     /* A STRING COURSE and QUOINS on the wings. The house is a black silhouette
@@ -12067,25 +12106,25 @@ float wallH(vec2 q, out float occ){
     /* A STRING COURSE AT EACH FLOOR LINE, and a cap on the plinth -- so the
        lines across the elevation say where the floors are instead of landing at
        4.32 and 6.20, which belonged to no storey at all. */
-#if MM_R25W == 4
+#if MM_R25W == 4 || MM_ROOMS == 11
     /* (performance pass: the elevation's courses, quoins, ashlar, window
        surrounds and ivy are each multiplied by onBody, so off the house's
        walls they are skipped -- the churchyard's variant only) */
     if (onBody > 0.0) {
 #endif
     h += onBody * mmBandA(wy, 0.0, 0.16, hpx) * 0.45;
-#if MM_R25W == 4
+#if MM_R25W == 4 || MM_ROOMS == 11
     }
 #endif
     h += mmBandA(hq.y, PLINTH - 0.14, PLINTH, hpx) * 0.55 * step(0.5, onA + onB);
-#if MM_R25W == 4
+#if MM_R25W == 4 || MM_ROOMS == 11
     if (onBody > 0.0) {
 #endif
     float quoin = max(max(1.0 - smoothstep(0.26, 0.52, abs(abs(cx + 2.6) - 6.20)),
                           1.0 - smoothstep(0.26, 0.52, abs(abs(cx - 3.4) - 9.60))),
                       (1.0 - smoothstep(0.20, 0.44, abs(gax - BAYHW)))*onA*step(hq.y, BAYE));
     h += onBody * quoin * (1.0 - smoothstep(0.014, 0.014 + hpx*1.5, mmRowX(hq.y, 0.48))) * 0.45;
-#if MM_R25W == 4
+#if MM_R25W == 4 || MM_ROOMS == 11
     }
 #endif
     /* THE BAY'S PROJECTION, AS VALUE. Relief alone cannot say that 0.85 m of
@@ -12126,7 +12165,7 @@ float wallH(vec2 q, out float occ){
        and that every block carries its own value -- stone is quarried, and a
        wall of it is never one tone. That per-stone jitter is what makes the
        bond legible as blocks. (REALGAR's finding, grafted.) */
-#if MM_R25W == 4
+#if MM_R25W == 4 || MM_ROOMS == 11
     if (onBody > 0.0) {
 #endif
     float crow = floor(hq.y/0.48);
@@ -12187,7 +12226,7 @@ float wallH(vec2 q, out float occ){
     /* AND THE BLIND BAY'S PANEL, which is a shallow recess with a chamfer and
        no glass -- the thing a chimney breast leaves on an elevation. */
     h += onBody * wBlind * (1.0 - smoothstep(0.030, 0.030 + hpx*1.6, abs(pa2 + 0.06))) * 0.30;
-#if MM_R25W == 4
+#if MM_R25W == 4 || MM_ROOMS == 11
     }
 #endif
     /* THE OCULUS in the gable's tympanum: a circular light with a moulded rim
@@ -12207,12 +12246,12 @@ float wallH(vec2 q, out float occ){
     /* Stretched along Y, not X: at 1.15 across and 0.60 up the mass came out in
        horizontal streaks and the front of the house read as SCAFFOLDING. Ivy
        climbs. */
-#if MM_R25W == 4
+#if MM_R25W == 4 || MM_ROOMS == 11
     if (onBody > 0.0) {
 #endif
     float ivy = mmFbm3(vec2((hq.x + uSize.x*0.5)*0.62, hq.y*1.75) + uSeed*3.0);
     h += onBody * smoothstep(0.56, 0.90, ivy) * smoothstep(8.5, 1.8, hq.y) * 0.58;
-#if MM_R25W == 4
+#if MM_R25W == 4 || MM_ROOMS == 11
     }
 #endif
     /* ROUND 18, THE BASELINE'S OWN LEAK: "stray horizontal black lines running
@@ -15354,6 +15393,49 @@ void main(){
     float frg = (1.0 - smoothstep(0.0, 0.10, -ed.y)) * step(ed.y, 0.0)
               * clamp(ed.x/rpx.x + 0.5, 0.0, 1.0)
               * (0.45 + 0.55*step(0.5, fract(rp.x*22.0)));
+#ifdef MM_RUGO
+#if MM_RUGO == 1
+    {
+      /* ROUND 37 GRAFT, CARNELIAN's: A NURSERY'S RAG RUG (MM_RUGO -- the
+         near floor's rug.oval, the Nursery's wardrobe only, so the two rooms
+         do not share the study's carpet). An oval of braided rag coiled
+         round a straight start -- its rounds the offsets of a centre line, a
+         racetrack -- each round its own faded cotton (rose, cream, a washed
+         indigo, ochre, sage) in runs of two or three, its plaits drawn as
+         the chevrons a braid makes, the seam between two rounds dark, the
+         outer round a darker binding; every edge over its own pixel. No
+         fringe. */
+      vec2 ext = max(uRug.zw, vec2(0.3));
+      float cL = max(ext.x - ext.y, 0.0);
+      vec2 cq = vec2(rp.x - clamp(rp.x, -cL, cL), rp.y);
+      float er = length(cq);
+      vec2 en = cq/max(ext.y, 0.3);
+      float eM = ext.y - er;
+      float erPx = max(length(vec2(dFdx(eM), dFdy(eM))), 1e-4);
+      rugCov = clamp(eM/erPx + 0.5, 0.0, 1.0);
+      const float BW = 0.062;
+      float bi = floor(eM/BW), bf = fract(eM/BW);
+      float hb = mmHash11(floor(bi/2.6)*3.71 + 2.0);
+      vec3 rag = hb < 0.2 ? vec3(0.52, 0.22, 0.20) : (hb < 0.4 ? vec3(0.62, 0.56, 0.44)
+               : (hb < 0.6 ? vec3(0.22, 0.25, 0.38) : (hb < 0.8 ? vec3(0.56, 0.42, 0.20) : vec3(0.32, 0.38, 0.27))));
+      rag = mix(rag, vec3(mmLum(rag))*vec3(1.15, 1.0, 0.85), 0.25 + 0.20*mmHash11(bi*1.7));
+      rag = mix(rag, vec3(0.16, 0.11, 0.10), step(bi, 0.5));        // the binding round
+      float an = atan(en.y, en.x);
+      float sArc = (abs(rp.x) < cL ? rp.x : (sign(rp.x)*cL + an*er));
+      float dir = mod(bi, 2.0) < 0.5 ? 1.0 : -1.0;
+      float ch = abs(fract(sArc/0.055 + dir*abs(bf - 0.5)*1.4) - 0.5)*2.0;
+      float chR = smoothstep(1.2, 3.5, 0.055/max(erPx, 1e-4));
+      float seam = 1.0 - smoothstep(0.0, max(erPx/BW*1.2, 0.10), min(bf, 1.0 - bf));
+      rag *= mix(1.0, 0.70 + 0.45*ch, chR*0.85);
+      rag *= 1.0 - 0.42*seam*smoothstep(1.0, 2.5, BW/max(erPx, 1e-4));
+      rag *= 0.80 + 0.40*sqrt(clamp(bf*(1.0 - bf)*4.0, 0.0, 1.0));
+      rugCol = rag*1.22;
+      frg = 0.0;
+      eIn = eM;
+      ePx = erPx;
+    }
+#endif
+#endif
     rugCol = mix(rugCol, ivory*0.85, frg*(1.0 - rugCov));
     rugCov = max(rugCov, frg*0.85);
     /* (laid in the runner's own value: the hall's lit board tone, as the
@@ -15768,7 +15850,15 @@ void main(){
         vec2 ld = normalize(m2 - e2);
         float ax = (vWorld.x - e2.x)*ld.y - (vWorld.z - e2.y)*ld.x;
         float rip2 = (mmNoise(vec2(w.x*3.0, w.y*1.6 + uTime*0.30)) - 0.5)*0.30;
+#if MM_FLOORX == 1 && MM_PAT == 2
+        /* (round 37 graft, judges 1 and 3: "the pond's moonlight carried to
+           the near flags and across the water" -- the column at two-thirds
+           of its far strength at your feet, not a third; the Pumpkin
+           Grounds' pond program only) */
+        float col2 = exp(-pow((ax + rip2)/0.34, 2.0)) * (0.62 + 0.38*farW);
+#else
         float col2 = exp(-pow((ax + rip2)/0.34, 2.0)) * (0.35 + 0.65*farW);
+#endif
         float glit = smoothstep(0.40, 0.78, mmNoise(vec2(w.x*9.0, w.y*3.0 - uTime*0.4)));
         col += vec3(0.80, 0.86, 1.00) * col2 * (0.14 + 0.80*glit) * uMoonW.w * water;
       }
@@ -18898,6 +18988,13 @@ float stFigure(vec2 q, float urn, out float head, out float skirt, out float tor
    in. Paint in gStCol / gStInk / gStMoon for main(). */
 vec3  gStCol = vec3(0.5);
 float gStInk = 0.0, gStMoon = 0.0;
+/* (round 37 graft, CARNELIAN's: the Heart's statue's modelling, laid on the
+   LIT colour after the prop ceiling as the column's flutes are -- in albedo,
+   a figure on the knee had its shadow side pressed back to one pale value.
+   1 everywhere else; written only where MM_SH85 is, the Heart's program) */
+#if MM_SH85
+float gR37Sh = 1.0;
+#endif
 float stEll(vec2 p, vec2 r){ return (length(p/r) - 1.0)*min(r.x, r.y); }
 float stIn(float d, float px){ return clamp(0.5 - d/max(px, 1e-5), 0.0, 1.0); }
 void stLay(inout vec3 col, inout float ink, float d, vec3 c, float px, float k){
@@ -18923,6 +19020,13 @@ float stDrawG(vec2 m, vec2 msz, float seed, float px0, bool paint){
   float qx = q.x - 0.030*sin(y*2.3 + 0.4);
   /* the robe from the hem to the hips, its hem scalloped by its folds */
   float hw = mix(0.235, 0.165, smoothstep(0.0, 0.86, y)) + 0.012*smoothstep(0.30, 0.0, y);
+#if MM_SH85
+  /* (round 37 graft, CARNELIAN's veiled mourner -- the Heart only, the one
+     program with the candelabrum in it, so the Hedge Maze's figures are as
+     they were: the hem breaks out over the plinth, the cloth pooling, and
+     the robe's outline is cut by its folds -- not a tube) */
+  hw += 0.040*smoothstep(0.26, 0.0, y) + 0.010*sin(y*17.0 + seed*2.0)*smoothstep(0.95, 0.20, y);
+#endif
   float hemY = 0.025 + 0.014*sin(qx*42.0 + seed);
   float robe = max(abs(qx) - hw, max(hemY - y, y - 0.92));
   float foot = mmBox(vec2(qx - 0.115, y - 0.028), vec2(0.060, 0.028), 0.024);
@@ -18955,11 +19059,56 @@ float stDrawG(vec2 m, vec2 msz, float seed, float px0, bool paint){
   float wr0 = length(wc/vec2(0.095, 0.105));
   float gar = abs(wr0 - 1.0)*0.10 - 0.030;
   float garId = 0.0;
+#if MM_SH85
+  /* (round 37 graft: every line this adds to the statue is inside MM_SH85,
+     so the programs without the candelabrum -- the Hedge Maze's, and any
+     with gkDraw compiled in, the Kitchens' -- keep the text they had: a
+     changed text moved the Kitchens' tables by up to 18 levels once, a
+     compiler side effect, as round 35's Hedge) */
+  float veil = 1e3;
+  /* (no wreath -- at the size a near figure is seen it was a hoop on a
+     stick; the mantle's end falls free from the crossed arm's elbow nearly
+     to the knee, a tapering hank of folds outside the body, its hem cut in
+     the zigzag a hanging fold makes) */
+  gar = 1e3;
+  {
+    float ht = clamp((elL.y + 0.02 - y)/0.56, 0.0, 1.0);
+    float hx = qx - (elL.x - 0.035 - 0.030*ht + 0.012*sin(ht*9.0 + seed));
+    float zz = abs(fract(hx/0.045) - 0.5)*0.05;
+    float hank = max(abs(hx) - mix(0.024, 0.070, ht), max(y - elL.y - 0.02, elL.y - 0.60 + zz + 0.04*hx/0.07 - y));
+    gath = min(gath, hank);
+  }
+  /* the mourner VEILED: a mantle drawn up over her head and falling over
+     both shoulders to the elbow, its folds running down it, the face framed
+     in it -- one carved mass round the stick arms and the boxed shoulders */
+  {
+    float vt = clamp((1.60 - y)/0.62, 0.0, 1.0);
+    float vHW = mix(0.100, 0.262, smoothstep(0.0, 0.42, vt)) + 0.012*sin(y*28.0 + seed);
+    float vHem = 0.98 + 0.05*cos(qx*22.0 + seed) - 0.06*smoothstep(0.10, 0.26, abs(qx));
+    veil = max(abs(qx - 0.008) - vHW, max(y - 1.585, vHem - y));
+    veil = min(veil, stEll(vec2(qx - 0.004, y - 1.498), vec2(0.108, 0.118)));
+  }
+#endif
   float fig = min(min(min(robe, foot), min(torso, neck)), min(min(head, bun), min(arms, min(gath, gar))));
+#if MM_SH85
+  fig = min(fig, veil);
+#endif
   float d = min(plinth, fig);
   if (!paint) return d*sc;
-
+#if MM_SH85
+  /* (the frame budget: outside the figure the pixel is discarded -- the
+     mask is 0 wherever the field is -- so it is not painted; no derivative
+     is taken inside the paint, so this is exact) */
+  if (d > 0.0) return d*sc;
+  /* the marble two centuries weathered, a warm grey, so the figure is a
+     carved thing in the hall's own dark and not the palest thing in it;
+     the key side modelled hard */
+  const float hk = 1.0;
+  vec3 marble = vec3(0.60, 0.56, 0.50);
+  float kM = 0.66;
+#else
   vec3 marble = vec3(0.84, 0.82, 0.77);
+#endif
   vec3 col = marble*0.5;
   float ink = 0.0, moon = 0.0;
   /* the vein and the weather, which say STONE */
@@ -18990,17 +19139,29 @@ float stDrawG(vec2 m, vec2 msz, float seed, float px0, bool paint){
   float fphase = qx/max(hw, 0.05)*2.6 + 0.55*sin(y*3.6 + seed*2.0) + seed;
   float crest = 0.5 + 0.5*cos(fphase*3.1416);
   float rnd = sqrt(max(1.0 - (qx*qx)/(hw*hw), 0.0));
+#if MM_SH85
+  vec3 rc = mar*(0.36 + 0.62*rnd)*(0.40 + 0.86*crest)*(1.0 + kM*kq*clamp(qx/hw, -1.0, 1.0));
+#else
   vec3 rc = mar*(0.36 + 0.62*rnd)*(0.62 + 0.50*crest)*(1.0 + 0.30*kq*clamp(qx/hw, -1.0, 1.0));
+#endif
   /* the standing leg's knee pushes through the cloth */
   rc *= 1.0 + 0.18*exp(-pow((qx + 0.07)/0.06, 2.0) - pow((y - 0.45)/0.10, 2.0));
   rc *= 0.70 + 0.30*smoothstep(0.0, 0.30, y);
   stLay(col, ink, robe, rc, px, 0.95);
   ink *= 1.0 - stIn(torso + 0.002, px)*step(y, 0.95);
+#if MM_SH85
+  ink = max(ink, smoothstep(0.20, 0.0, crest)*smoothstep(0.92, 0.70, y)*stIn(robe, px)*0.85);
+#else
   ink = max(ink, smoothstep(0.12, 0.0, crest)*smoothstep(0.92, 0.70, y)*stIn(robe, px)*0.55);
+#endif
   stLay(col, ink, foot, mar*0.95, px, 0.8);
   /* ---- the torso, its cloth clinging, the himation across it ---- */
   float rT = sqrt(max(1.0 - (qx*qx)/(hwT*hwT), 0.0));
+#if MM_SH85
+  vec3 tc = mar*(0.40 + 0.65*rT)*(1.0 + kM*kq*clamp(qx/hwT, -1.0, 1.0));
+#else
   vec3 tc = mar*(0.40 + 0.65*rT)*(1.0 + 0.30*kq*clamp(qx/hwT, -1.0, 1.0));
+#endif
   tc *= 1.0 + 0.16*exp(-pow((abs(qx) - 0.070)/0.045, 2.0) - pow((y - 1.135)/0.045, 2.0));
   tc *= 1.0 - 0.18*exp(-pow((abs(qx) - 0.070)/0.050, 2.0) - pow((y - 1.085)/0.025, 2.0));
   /* the MANTLE: slung from the near shoulder across the body to the far
@@ -19017,7 +19178,11 @@ float stDrawG(vec2 m, vec2 msz, float seed, float px0, bool paint){
   float mant = max(abs(acr) - mW, max(-alg - 0.02, alg - sL));
   float mOn = stIn(mant, px)*inBody;
   float mcr = 0.5 + 0.5*cos(acr/mW*4.7 + 0.7*sin(alg*11.0 + seed));
+#if MM_SH85
+  vec3 mc = mar*(0.30 + 0.86*mcr)*(1.0 + kM*kq*clamp(qx/hwT, -1.0, 1.0))*(1.0 + 0.25*smoothstep(-mW*0.3, -mW, acr));
+#else
   vec3 mc = mar*(0.42 + 0.62*mcr)*(1.0 + 0.30*kq*clamp(qx/hwT, -1.0, 1.0))*(1.0 + 0.25*smoothstep(-mW*0.3, -mW, acr));
+#endif
   stLay(col, ink, torso, tc, px, 0.0);
   ink = max(ink, mmInkP(torso, px, 1.0)*0.9*step(0.92, y));
   float shd = stIn(max(abs(acr - mW - 0.03) - 0.03, max(-alg, alg - sL)), px)*inBody*(1.0 - mOn);
@@ -19062,12 +19227,64 @@ float stDrawG(vec2 m, vec2 msz, float seed, float px0, bool paint){
   float uL = clamp((armL + 0.044)/0.044, 0.0, 1.0);
   stLay(col, ink, min(armR, handR), mar*(0.45 + 0.60*sqrt(max(1.0 - uR*uR, 0.0)))*(1.0 + 0.25*kq), px, 0.85);
   stLay(col, ink, min(armL, handL), mar*(0.45 + 0.60*sqrt(max(1.0 - uL*uL, 0.0)))*(1.0 - 0.10*kq), px, 0.85);
+#if MM_SH85
+  {
+    /* the veil laid over her shoulders and arms, its folds down it, lit on
+       the key side; then the face again, framed in its opening, the
+       opening in its own deep shade */
+    float vt2 = clamp((1.60 - y)/0.62, 0.0, 1.0);
+    float vHW2 = mix(0.100, 0.262, smoothstep(0.0, 0.42, vt2));
+    float vf = 0.5 + 0.5*cos(qx/max(vHW2, 0.05)*8.5 + 0.8*sin(y*7.0 + seed));
+    float vr = sqrt(max(1.0 - pow(qx/max(vHW2, 0.05), 2.0), 0.0));
+    vec3 vc = mar*(0.36 + 0.60*vr)*(0.55 + 0.62*vf)*(1.0 + kM*kq*clamp(qx/max(vHW2, 0.05), -1.0, 1.0));
+    ink *= 1.0 - stIn(veil + px*1.5, px);
+    stLay(col, ink, veil, vc, px, 0.95);
+    ink = max(ink, smoothstep(0.16, 0.0, vf)*stIn(veil, px)*smoothstep(1.50, 1.30, y)*0.55);
+    float faceO = stEll(hc*vec2(1.0, 0.92) - vec2(0.004, -0.006), vec2(0.064, 0.090));
+    col *= 1.0 - 0.55*stIn(faceO - 0.030, px)*(1.0 - stIn(faceO, px));
+    stLay(col, ink, faceO, fc*1.22*(1.0 - 0.25*smoothstep(-0.02, 0.0, faceO + 0.012)), px, 0.80);
+  }
+#endif
   /* the fingers of the hand at her breast, three cuts */
   ink = max(ink, smoothstep(0.35, 0.0, abs(fract((qx - haL.x)*55.0) - 0.5))*stIn(handL, px)*step(qy.y, haL.y + 0.012)*0.45);
   /* the wreath: its leaves in two rows round the ring, lit on top */
   float wa = atan(wc.y, wc.x);
   vec3 wreath = mar*(0.55 + 0.35*smoothstep(-0.08, 0.08, wc.y))*(0.75 + 0.35*abs(sin(wa*9.0 + (wr0 - 1.0)*20.0)));
   stLay(col, ink, gar, wreath*1.15, px, 0.45);
+#if MM_SH85
+  {
+    /* (round 37 graft, CARNELIAN's) CARVED, not cut out: the half turned
+       from the key falls a stop and a half into the stone's shade, a core
+       shadow along the turn and the hall's reflected light lifting its very
+       edge; the robe's folds cut deep; the damp in every recess; the
+       figure's own shadow cast down onto the plinth's cornice and die; a
+       lit edge on the key side; and a pen round the whole figure and its
+       plinth, so it stands against the dark wall as a drawn object */
+    float wHalf = y < 0.92 ? hw : hwT;
+    float sideF = clamp(qx/max(wHalf, 0.05), -1.4, 1.4)*kq;
+    float inFig = stIn(fig, px);
+    float core = smoothstep(-0.02, -0.40, sideF)*(1.0 - 0.40*smoothstep(-0.85, -1.15, sideF));
+    float sh = 1.0 - 0.58*core*inFig;
+    sh *= 1.0 - 0.30*exp(-pow((sideF + 0.12)/0.09, 2.0))*inFig;
+    float inRobe = stIn(robe, px)*(1.0 - stIn(min(torso, arms), px));
+    sh *= mix(1.0, 0.58 + 0.62*crest, inRobe*smoothstep(0.92, 0.55, y));
+    float rec = exp(-pow((y - 1.10)/0.05, 2.0))*smoothstep(0.10, 0.16, abs(qx))
+              + exp(-pow((y - 0.05)/0.05, 2.0))
+              + exp(-pow((q.y - 0.625)/0.025, 2.0))*stIn(pDie, px);
+    sh *= 1.0 - 0.38*clamp(rec, 0.0, 1.0);
+    col = mix(col, col*vec3(0.86, 0.90, 0.80), 0.35*smoothstep(0.45, 0.0, q.y));
+    sh *= 1.0 - 0.30*stIn(plinth, px)*(1.0 - inFig)*smoothstep(0.05, -0.25, kq*q.x);
+    /* the shadow the figure throws down on the cornice and the die, away
+       from the key */
+    sh *= 1.0 - 0.42*stIn(plinth, px)*(1.0 - inFig)
+              * smoothstep(0.06, -0.04, abs(q.x + 0.07*kq) - 0.22)*smoothstep(0.40, 0.70, q.y);
+    float edgeL = (1.0 - smoothstep(0.0, 0.035, -fig))*inFig*smoothstep(0.30, 0.90, sideF);
+    sh *= 1.0 + 0.45*edgeL;
+    gR37Sh = sh;
+    ink = max(ink, mmInkP(fig, px, 1.7));
+    ink = max(ink, mmInkP(plinth, px, 1.5)*0.95);
+  }
+#endif
   /* (round 37, both survey-5 judges on the Heart: "the statues are pale,
      flat forms". The marble is MODELLED, not lit flat: the half turned from
      the key goes down into its own shadow and the lit half keeps its
@@ -19082,6 +19299,12 @@ float stDraw(vec2 m, vec2 msz, float seed, float px, bool paint){
   /* (graft: the mourner's lot draws GRISAILLE's draped figure with its
      wreath -- the same hash as urn below, so the urn-bearers are as
      they were) */
+  /* (round 37 graft, CARNELIAN's: in the Heart every figure is the veiled
+     mourner -- the urn-bearer's torso is a rounded box and her arms are
+     sticks, which is the "pale flat form" the judges named) */
+#if MM_SH85
+  return stDrawG(m, msz, seed, px, paint);
+#endif
   if (mmHash11(seed*1.93 + 0.41) < 0.5) return stDrawG(m, msz, seed, px, paint);
   float sc = msz.y/2.62;
   vec2 q = m/sc;
@@ -19311,88 +19534,114 @@ float gkDraw(vec2 m, vec2 msz, float shape, float seed, float px, bool paint){
     d = dm;
     sc = 1.0;
   } else if (shape > 84.5 && shape < 85.5) {
-    /* ---- 85 THE STANDING CANDELABRUM (round 37, the Heart's near floor) --
-       A floor standard of gilt brass, 1.8 m: three scrolled feet on ball
-       toes, a turned baluster stem rung with knops, a drip tray, and two
-       tiers of arms sweeping up and out to five sconces -- the outer pair
-       low and wide, the inner pair high, the middle candle tallest -- each
-       candle burning. The cue that says candelabrum is the arms' CURVE
-       (shape 1's own note); the cue that says this hall is the gilt. */
+    /* ---- 85 THE STANDING CANDELABRUM (round 37, the Heart's near floor;
+       the graft: TOURMALINE's hcCandles, which all three judges asked for)
+       -- a tall brass pricket candelabrum of the kind that flanks a chancel
+       step: three scrolled legs on ball feet, a turned baluster stem with
+       its knops, a broad drip dish carrying five candles and a crown on its
+       own short stem carrying three, every candle guttered to its own
+       height, its wax run down in tears, each burning. 1.95 m to the
+       tallest flame. */
+    /* (its nominal height is 1.95 m, not the 1.80 the line at the head of
+       gkDraw gives 85: the scale is taken again here, inside the Heart's own
+       branch, so that line -- which every program with gkDraw in it
+       compiles, the Kitchens' among them -- keeps the text it had; changed,
+       the Kitchens' tables and baskets moved by up to 18 levels, a shader
+       compiler's side effect) */
+    sc = msz.y/1.95;
+    q = m/sc;
+    q.x *= mir;
+    qpx = px/sc;
     float ax = abs(q.x);
-    /* (performance: most of this quad is the air between the arms and
-       either side of the stem -- there the stem's own distance stands in,
-       and the twenty members are not walked) */
-    if ((q.y > 0.40 && q.y < 1.16 && ax > 0.14) || q.y > 1.98) {
-      d = max(ax - 0.11, q.y - 1.98);
-      if (q.y > 1.98) d = q.y - 1.90;
-      return d*sc;
+    /* (the frame budget: nothing of it stands outside a 0.40 m half-width,
+       so the empty margins of its quad return at once; between the feet and
+       the dish there is only the stem; above the crown's flames, night) */
+    if (ax > 0.40 + 4.0*qpx) return (ax - 0.40)*sc;
+    if (q.y > 0.30 && q.y < 1.19 && ax > 0.085 + 4.0*qpx) return (ax - 0.075)*sc;
+    if (q.y > 1.97 + 4.0*qpx) return (q.y - 1.97)*sc;
+    /* the legs: three scrolls out from the drum to their ball feet (the one
+       toward us seen end on, the two others splayed) */
+    vec2 lq = vec2(ax, q.y);
+    float legs = wfSegT(lq, vec2(0.035, 0.205), vec2(0.250, 0.040), 0.030, 0.018);
+    legs = min(legs, abs(length(lq - vec2(0.215, 0.105)) - 0.060) - 0.014);
+    legs = min(legs, length(lq - vec2(0.270, 0.034)) - 0.034);
+    legs = min(legs, wfSegT(q, vec2(0.0, 0.17), vec2(0.0, 0.05), 0.028, 0.020));
+    legs = min(legs, length(q - vec2(0.0, 0.034)) - 0.036);
+    float drum = mmBox(q - vec2(0.0, 0.215), vec2(0.072, 0.032), 0.012);
+    /* the stem: a baluster between knops */
+    float yb = clamp((q.y - 0.25)/1.00, 0.0, 1.0);
+    float bw = 0.024 + 0.030*exp(-pow((yb - 0.22)/0.13, 2.0)) + 0.010*exp(-pow((yb - 0.70)/0.10, 2.0));
+    float stem = max(ax - bw, max(0.25 - q.y, q.y - 1.25));
+    float knops = min(min(wfEll(q - vec2(0.0, 0.47), vec2(0.060, 0.026)), wfEll(q - vec2(0.0, 0.93), vec2(0.050, 0.022))),
+                      wfEll(q - vec2(0.0, 1.21), vec2(0.064, 0.026)));
+    /* the dish and its gallery, and the crown on its own short stem */
+    float dish = mmBox(q - vec2(0.0, 1.285), vec2(0.360, 0.018), 0.010);
+    float dish2 = wfEll(q - vec2(0.0, 1.262), vec2(0.30, 0.030));
+    float rimD = mmBox(q - vec2(0.0, 1.312), vec2(0.372, 0.008), 0.004);
+    float cstem = mmBox(q - vec2(0.0, 1.47), vec2(0.016, 0.16), 0.006);
+    cstem = min(cstem, wfEll(q - vec2(0.0, 1.45), vec2(0.036, 0.022)));
+    float crown = mmBox(q - vec2(0.0, 1.618), vec2(0.180, 0.013), 0.008);
+    crown = min(crown, wfEll(q - vec2(0.0, 1.600), vec2(0.13, 0.024)));
+    float crim = mmBox(q - vec2(0.0, 1.635), vec2(0.190, 0.006), 0.003);
+    float brass = min(min(min(legs, drum), min(stem, knops)), min(min(dish, dish2), min(min(rimD, cstem), min(crown, crim))));
+    /* the candles: five on the dish, three on the crown -- only looked for
+       above the dish */
+    float cd = 1e3, fl = 1e3, glow = 0.0, tear = 1e3, wick = 1e3, cups = 1e3;
+    if (q.y > 1.30 - 4.0*qpx)
+    for (int i = 0; i < 8; i++){
+      float fi = float(i);
+      float up = step(4.5, fi);
+      float xi = up > 0.5 ? (fi - 6.0)*0.125 : (fi - 2.0)*0.150;
+      /* (and a candle more than a hand off this pixel is not walked) */
+      if (abs(q.x - xi) > 0.11) continue;
+      float base = up > 0.5 ? 1.660 : 1.335;
+      float hgt = (up > 0.5 ? 0.08 : 0.07) + 0.10*mmHash11(fi*3.7 + seed*1.3);
+      float cw = 0.027 - 0.003*up;
+      cups = min(cups, mmBox(q - vec2(xi, base - 0.008), vec2(cw + 0.018, 0.009), 0.006));
+      cd = min(cd, mmBox(q - vec2(xi, base + hgt*0.5), vec2(cw, hgt*0.5), 0.004));
+      /* its tears of wax, down the side away from the draught */
+      float ts = sin(fi*2.3 + seed) > 0.0 ? 1.0 : -1.0;
+      tear = min(tear, wfSegT(q, vec2(xi + ts*cw*0.85, base + hgt - 0.01), vec2(xi + ts*cw*0.95, base + hgt*0.35), 0.008, 0.005));
+      vec2 fp = q - vec2(xi, base + hgt + 0.044);
+      wick = min(wick, mmBox(q - vec2(xi, base + hgt + 0.010), vec2(0.0030, 0.013), 0.001));
+      /* the flame: a teardrop, round below and drawn up to its tip */
+      float fy = fp.y + 0.012;
+      fl = min(fl, length(vec2(fp.x/(0.55 - 0.30*smoothstep(-0.02, 0.05, fy)), fp.y*0.62)) - 0.026);
+      glow = max(glow, exp(-length(fp*vec2(1.0, 0.75))/0.080));
     }
-    /* the feet: two raked legs and the front one, on ball toes */
-    float legs = min(wfSegT(vec2(ax, q.y), vec2(0.0, 0.30), vec2(0.25, 0.05), 0.030, 0.020),
-                     mmBox(q - vec2(0.0, 0.10), vec2(0.034, 0.10), 0.012));
-    legs = min(legs, length(vec2(ax - 0.27, q.y - 0.040)) - 0.040);
-    legs = min(legs, length(q - vec2(0.0, 0.035)) - 0.036);
-    float boss = wfEll(q - vec2(0.0, 0.33), vec2(0.105, 0.065));
-    /* the stem: a vase low, knops up it, tapering to the tray */
-    float ty = clamp((q.y - 0.36)/0.92, 0.0, 1.0);
-    float sw = mix(0.034, 0.022, ty);
-    sw += 0.050*exp(-pow((q.y - 0.50)/0.075, 2.0));
-    sw += 0.028*exp(-pow((q.y - 0.78)/0.022, 2.0)) + 0.024*exp(-pow((q.y - 1.04)/0.020, 2.0));
-    float stem = max(ax - sw, max(0.36 - q.y, q.y - 1.30));
-    float tray = mmBox(q - vec2(0.0, 1.290), vec2(0.150, 0.014), 0.008);
-    /* the arms: the outer pair a low sweep, the inner pair a high one */
-    float a1 = abs(length(vec2(ax, q.y - 1.47)/vec2(0.36, 0.21)) - 1.0)*0.21 - 0.013;
-    a1 = max(a1, max(q.y - 1.47, 0.04 - ax));
-    float a2 = abs(length(vec2(ax, q.y - 1.60)/vec2(0.19, 0.30)) - 1.0)*0.19 - 0.012;
-    a2 = max(a2, max(q.y - 1.60, 0.03 - ax));
-    float arms = min(a1, a2);
-    /* the sconces' cups, each a drip pan and a nozzle */
-    float cups = mmBox(vec2(ax - 0.36, q.y - 1.475), vec2(0.050, 0.012), 0.006);
-    cups = min(cups, mmBox(vec2(ax - 0.19, q.y - 1.605), vec2(0.045, 0.012), 0.006));
-    cups = min(cups, mmBox(q - vec2(0.0, 1.320), vec2(0.040, 0.020), 0.008));
-    float brass = min(min(min(legs, boss), min(stem, tray)), min(arms, cups));
-    /* the candles: their heights, burned down unevenly */
-    float hs = 0.10 + 0.06*mmHash11(seed*1.7 + (q.x > 0.0 ? 1.0 : 0.0));
-    float hi = 0.13 + 0.05*mmHash11(seed*2.3 + (q.x > 0.0 ? 1.0 : 0.0));
-    float hc = 0.30;
-    float c1 = mmBox(vec2(ax - 0.36, q.y - 1.487 - hs*0.5), vec2(0.020, hs*0.5), 0.005);
-    float c2 = mmBox(vec2(ax - 0.19, q.y - 1.617 - hi*0.5), vec2(0.019, hi*0.5), 0.005);
-    float c3 = mmBox(q - vec2(0.0, 1.340 + hc*0.5), vec2(0.022, hc*0.5), 0.005);
-    float wax = min(min(c1, c2), c3);
-    /* the flames, each a teardrop over its wick */
-    vec2 f1 = vec2(ax - 0.36, q.y - 1.487 - hs - 0.032);
-    vec2 f2 = vec2(ax - 0.19, q.y - 1.617 - hi - 0.032);
-    vec2 f3 = q - vec2(0.0, 1.340 + hc + 0.032);
-    float fl = 1e3, glow = 0.0;
-    for (int i = 0; i < 3; i++){
-      vec2 f = i == 0 ? f1 : (i == 1 ? f2 : f3);
-      fl = min(fl, (length(vec2(f.x/0.013, f.y/(f.y > 0.0 ? 0.036 : 0.016))) - 1.0)*0.013);
-      glow = max(glow, exp(-length(f)/0.07));
-    }
+    brass = min(brass, cups);
+    float wax = min(cd, tear);
     d = min(min(brass, wax), fl);
-    /* (performance: a pixel more than a few pixels clear of every member is
-       not painted -- most of this quad is the air between the arms) */
     if (!paint || d > 3.0*qpx) return d*sc;
-    /* GILT BRASS: a dark old gold, round on every turned member, the side
-       toward the key lit, a bright line on each crown, ink at every join */
-    vec3 gold = vec3(0.60, 0.43, 0.19)*(0.86 + 0.20*mv);
-    float su = clamp(q.x/max(sw, 0.02), -1.0, 1.0);
-    vec3 stC = gold*(0.30 + 0.70*wfRound(su))*(1.0 + 0.40*kq*su);
-    wfLay(col, ink, legs, gold*(0.42 + 0.30*kq*sign(q.x)*step(0.04, ax)), qpx, 0.95);
-    wfLay(col, ink, boss, gold*(0.40 + 0.62*wfRound(clamp(q.x/0.105, -1.0, 1.0)))*(1.0 + 0.30*kq*q.x/0.1), qpx, 0.95);
-    wfLay(col, ink, stem, stC, qpx, 0.9);
-    ink = max(ink, mmInkP(abs(q.y - 0.78) - 0.010, qpx, 0.8)*wfIn(stem, qpx)*0.6);
-    ink = max(ink, mmInkP(abs(q.y - 1.04) - 0.009, qpx, 0.8)*wfIn(stem, qpx)*0.6);
-    wfLay(col, ink, arms, gold*(0.55 + 0.35*smoothstep(1.30, 1.55, q.y)), qpx, 0.9);
-    wfLay(col, ink, tray, gold*(0.62 + 0.45*smoothstep(1.285, 1.302, q.y)), qpx, 0.95);
-    wfLay(col, ink, cups, gold*(0.70 + 0.40*smoothstep(-0.01, 0.01, kq*q.x)), qpx, 0.95);
-    moon += 0.6*(wfIn(tray, qpx) + wfIn(cups, qpx))*0.5;
-    /* the wax ivory, rounded, its runs of tears, lit by its own flame */
-    vec3 wc = vec3(0.88, 0.83, 0.68)*(0.62 + 0.42*smoothstep(-0.02, 0.02, kq*(q.x - 0.36*sign(q.x)*step(0.30, ax) - 0.19*sign(q.x)*step(0.12, ax)*step(ax, 0.30))));
-    wfLay(col, ink, wax, wc, qpx, 0.6);
+    /* old brass, gone dark in the hollows and lit on its rounds from the
+       key's side and, above, from its own flames */
+    vec3 br = vec3(0.70, 0.50, 0.22)*(0.86 + 0.20*mv);
+    float roundS = clamp(q.x/max(bw, 0.03), -1.0, 1.0);
+    float fireLit = smoothstep(0.95, 1.40, q.y);
+    wfLay(col, ink, legs, br*(0.42 + 0.30*kq*clamp(q.x/0.25, -1.0, 1.0)), qpx, 0.9);
+    wfLay(col, ink, drum, br*(0.55 + 0.45*smoothstep(0.20, 0.245, q.y)), qpx, 0.9);
+    wfLay(col, ink, stem, br*(0.40 + 0.32*wfRound(clamp(roundS*0.9 - 0.35*kq, -1.0, 1.0)) + 0.40*fireLit), qpx, 0.9);
+    float onK = wfIn(knops, qpx);
+    col = mix(col, br*(0.50 + 0.70*smoothstep(-0.01, 0.02, kq*q.x + 0.012) + 0.35*fireLit), onK);
+    ink = max(ink, mmInkP(knops, qpx, 1.0)*0.8);
+    /* the dish: its underside in shadow, its rim lit gold from the candles */
+    wfLay(col, ink, dish2, br*0.36, qpx, 0.9);
+    wfLay(col, ink, dish, br*(0.70 + 0.55*smoothstep(1.27, 1.30, q.y)), qpx, 0.9);
+    wfLay(col, ink, rimD, vec3(0.95, 0.74, 0.40), qpx, 0.8);
+    wfLay(col, ink, cstem, br*(0.55 + 0.40*fireLit), qpx, 0.8);
+    wfLay(col, ink, crown, br*0.85, qpx, 0.9);
+    wfLay(col, ink, crim, vec3(0.95, 0.76, 0.42), qpx, 0.8);
+    wfLay(col, ink, cups, vec3(0.88, 0.66, 0.32)*(0.80 + 0.30*mv), qpx, 0.6);
+    moon += 0.3*(wfIn(rimD, qpx) + wfIn(crim, qpx));
+    /* the wax: ivory, warm where the flame is over it, the tears paler */
+    vec3 waxC = vec3(0.92, 0.86, 0.70)*(0.62 + 0.40*smoothstep(-0.02, 0.02, kq*(fract(q.x/0.15 + 0.5) - 0.5)));
+    wfLay(col, ink, cd, waxC, qpx, 0.7);
+    wfLay(col, ink, tear, vec3(0.98, 0.94, 0.80), qpx, 0.4);
+    col = mix(col, vec3(0.05, 0.04, 0.03), wfIn(wick, qpx));
     float flame = wfIn(fl, qpx);
-    col = mix(col, vec3(1.0, 0.92, 0.62), flame);
-    emit = vec3(1.00, 0.80, 0.44)*2.0*flame + vec3(1.0, 0.62, 0.26)*0.45*glow*(1.0 - flame)*(wfIn(wax, qpx) + 0.6*wfIn(cups, qpx));
+    col = mix(col, vec3(1.0, 0.86, 0.52), flame);
+    emit = vec3(1.00, 0.82, 0.46)*2.6*flame
+         + vec3(1.0, 0.62, 0.26)*0.60*glow*(1.0 - flame)*wfIn(min(wax, brass), qpx);
     ink *= 1.0 - flame;
     noInk = flame;
 #endif
@@ -19571,6 +19820,78 @@ float gkDraw(vec2 m, vec2 msz, float shape, float seed, float px, bool paint){
     wfLay(col, ink, car, vec3(0.80, 0.38, 0.10)*(0.75 + 0.35*mv), qpx, 0.8);
 #endif
   } else {
+#if MM_SH85
+    /* ---- 83 THE HEART'S CARVED BENCH (round 37 graft: CARNELIAN's bench,
+       which judge 2 called "a flat slab" -- carved now, as the hall's
+       statues are: in the Heart only, the program with the candelabrum,
+       so the Hedge Maze's garden seat is as it was). A marble bench: a
+       thick moulded seat, its top face lit, its nosing a rounded moulding
+       and under it a row of carved eggs; a frieze apron between the legs
+       with a sunk panel and a rosette, its lower edge gadrooned; and two
+       scrolled consoles, each a deep S of a volute over a lion's paw, round
+       and shaded from the key, an acanthus leaf cut down its face. ---- */
+    float seat = mmBox(q - vec2(0.0, 0.455), vec2(0.82, 0.046), 0.012);
+    float apron = mmBox(q - vec2(0.0, 0.365), vec2(0.50, 0.048), 0.006);
+    float sub = 1e3, volD = 1e3, pawD = 1e3;
+    for (int i = 0; i < 2; i++){
+      float sx = i == 0 ? -0.60 : 0.60;
+      vec2 cq = vec2((q.x - sx)*sign(sx), q.y);      // outward is +x
+      float up = max(abs(cq.x + 0.010*sin(cq.y*7.0)) - (0.050 + 0.035*smoothstep(0.30, 0.40, cq.y) + 0.020*smoothstep(0.22, 0.10, cq.y)), max(-cq.y, cq.y - 0.410));
+      float v1 = length(cq - vec2(0.040, 0.330)) - 0.072;
+      float v2 = length(cq - vec2(0.030, 0.075)) - 0.060;
+      float paw = wfEll(cq - vec2(0.045, 0.026), vec2(0.095, 0.028));
+      sub = min(sub, min(min(up, v1), min(v2, paw)));
+      volD = min(volD, abs(length(cq - vec2(0.040, 0.330)) - 0.040 + 0.012*atan(cq.y - 0.330, cq.x - 0.040)) - 0.004);
+      pawD = min(pawD, paw);
+    }
+    d = min(min(seat, apron), sub);
+    if (!paint) return d*sc;
+    if (d > 0.0) return d*sc;     // (outside it, discarded -- see stDrawG)
+    vec3 stone = vec3(0.60, 0.56, 0.50)*(0.90 + 0.16*mv);
+    stone *= 1.0 - 0.20*smoothstep(0.20, 0.0, q.y);
+    /* the consoles: round across their width, lit from the key, the volute's
+       spiral cut in, the leaf's veins down the face, the paw's toes */
+    float cu = clamp((abs(q.x) - 0.60)/0.07, -1.0, 1.0)*sign(q.x);
+    vec3 cc = stone*(0.45 + 0.42*wfRound(cu))*(1.0 + 0.35*kq*cu);
+    wfLay(col, ink, sub, cc, qpx, 0.95);
+    ink = max(ink, mmInkP(volD, qpx, 1.0)*0.85*wfIn(sub, qpx));
+    float lfx = abs(abs(q.x) - 0.60);
+    ink = max(ink, mmInkP(lfx - 0.004, qpx, 0.8)*step(0.14, q.y)*step(q.y, 0.29)*0.55);
+    ink = max(ink, mmInkP(abs(fract((q.y - abs(q.x)*0.6)/0.045) - 0.5)*0.045 - 0.002, qpx, 0.7)*step(lfx, 0.04)*step(0.14, q.y)*step(q.y, 0.29)*0.45);
+    ink = max(ink, mmInkP(abs(fract((abs(q.x) - 0.60)/0.038) - 0.5)*0.038 - 0.001, qpx, 0.7)*wfIn(pawD, qpx)*step(q.y, 0.040)*0.55);
+    /* the frieze apron: its sunk panel in the shade of its upper edge, a
+       rosette in the middle, the lower edge gadrooned */
+    float pan = mmBox(q - vec2(0.0, 0.368), vec2(0.40, 0.028), 0.004);
+    vec3 ac = stone*(0.62 + 0.10*kq*clamp(q.x/0.5, -1.0, 1.0));
+    ac = mix(ac, ac*(0.72 + 0.20*smoothstep(0.385, 0.350, q.y)), wfIn(pan, qpx));
+    float ros = length(q - vec2(0.0, 0.368)) - 0.034;
+    float rosA = atan(q.y - 0.368, q.x);
+    ac = mix(ac, stone*(0.55 + 0.45*(0.5 + 0.5*cos(rosA*8.0)))*(1.0 + 0.3*kq*q.x/0.03), wfIn(ros, qpx));
+    float gadU = fract(q.x/0.050);
+    float gad = smoothstep(0.330, 0.318, q.y)*step(abs(q.x), 0.50);
+    ac *= mix(1.0, 0.55 + 0.60*sin(gadU*3.1416), gad);
+    wfLay(col, ink, apron, ac, qpx, 0.95);
+    ink = max(ink, mmInkP(pan, qpx, 0.9)*0.70*wfIn(apron, qpx));
+    ink = max(ink, mmInkP(ros, qpx, 0.8)*0.70);
+    ink = max(ink, mmInkP(abs(gadU - 0.5)*0.050 - 0.024, qpx, 0.7)*gad*wfIn(apron, qpx)*0.6);
+    /* the seat: its top face the light band; the nosing a rounded moulding,
+       its crown lit and its underside in shade; the egg row under it */
+    float topF = smoothstep(0.478, 0.492, q.y);
+    float nos = clamp((q.y - 0.440)/0.040, 0.0, 1.0);
+    vec3 sc2 = stone*(0.50 + 0.40*sin(nos*3.1416*0.5 + 0.35))*(1.0 + 0.15*kq*clamp(q.x/0.8, -1.0, 1.0));
+    sc2 = mix(sc2, stone*1.18, topF);
+    float egg = smoothstep(0.440, 0.425, q.y);
+    float eu = fract(q.x/0.055) - 0.5;
+    float eggS = length(vec2(eu*0.055, (q.y - 0.424)*1.6)) - 0.018;
+    sc2 = mix(sc2, sc2*(0.48 + 0.55*smoothstep(0.004, -0.010, eggS)), egg);
+    wfLay(col, ink, seat, sc2, qpx, 0.95);
+    ink = max(ink, mmInkP(q.y - 0.478, qpx, 0.9)*wfIn(seat, qpx)*0.75);
+    ink = max(ink, mmInkP(q.y - 0.440, qpx, 0.9)*wfIn(seat, qpx)*0.65);
+    ink = max(ink, mmInkP(eggS, qpx, 0.7)*egg*wfIn(seat, qpx)*0.55);
+    moon += 0.8*wfIn(seat, qpx)*topF;
+    /* and its shadow down the frieze and the inner faces of the legs */
+    col *= 1.0 - 0.30*smoothstep(0.41, 0.34, q.y)*step(abs(q.x), 0.82)*wfIn(min(apron, sub), qpx);
+#else
     /* ---- 83 THE STONE SEAT ---- */
     float seat = mmBox(q - vec2(0.0, 0.455), vec2(0.82, 0.040), 0.018);
     float sub = 1e3;
@@ -19596,6 +19917,7 @@ float gkDraw(vec2 m, vec2 msz, float shape, float seed, float px, bool paint){
     wfLay(col, ink, seat, stone*(0.62 + 0.55*topF), qpx, 0.95);
     moon += 0.8*wfIn(seat, qpx)*topF;
     col *= 1.0 - 0.35*smoothstep(0.40, 0.30, q.y)*step(abs(q.x), 0.80)*(1.0 - wfIn(sub, qpx));
+#endif
   }
   ink = max(ink, mmInkP(d, qpx, 1.3)*0.95*(1.0 - noInk));
   gWfGloss = 0.25;
@@ -26753,6 +27075,11 @@ void main(){
   col *= mix(1.0, 0.74 + 0.36*smoothstep(-0.80, 0.45, pfU), pfSide*0.85);
   col *= 1.0 + pfTop*(0.28 + 0.34*lUp);
   col *= 1.0 - 0.40*pfFoot*pfOn;
+#if MM_WINGS == 1 && MM_SH85
+  /* (round 37 graft: the Heart's carved statue, its modelling on the LIT
+     colour -- gR37Sh, stDrawG) */
+  if (vShape > 30.5 && vShape < 31.5) col *= gR37Sh;
+#endif
 
   /* --- AND A CHROMA CEILING, the same shape and for the same reason -------
      Measured: a prop in UI/*.png reads 0.19-0.43 mean saturation -- the skull
