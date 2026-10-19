@@ -247,7 +247,22 @@ uniform float uFar;
 uniform float uArch;
 #endif
 #ifdef MM_SUBJ
+#if MM_SUBJ == 21
+/* ROUND 39 (RHODONITE): THE SUITE HAD NO WALLS. With its subject folded in as
+   the constant 21 (the Ballroom's dais -- the Velvet Suite, the Mask Room),
+   FXC aborts compiling this program ("internal error: compilation aborted
+   unexpectedly", ps_5_0, with default, skip-validation AND skip-optimization
+   flags alike), ANGLE draws nothing with it, and the suite's back and side
+   walls came out as the clear colour -- a starry purple void with the piano
+   standing against it. Bisected in the page: cutting the dais's own subject
+   and its footlights does NOT clear it; reading the same number through a
+   term the compiler cannot fold does. 0.0*uSeed is not folded (0*x is not 0
+   for every float), so the number is the same and only this one program
+   keeps the dais and the gallery both compiled in. */
+#define uSubject (float(MM_SUBJ) + 0.0*uSeed)
+#else
 #define uSubject float(MM_SUBJ)
+#endif
 #else
 uniform float uSubject;
 #endif
