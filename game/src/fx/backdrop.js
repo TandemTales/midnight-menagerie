@@ -2915,6 +2915,11 @@ export class Backdrop {
     {
       const nf = p.nearFloor;
       this._cineFloor = p.cineFloor ?? 1;
+      /* (round 37 graft, item 5: a room may widen the fight's own warm pool
+         and carry it toward you -- pal.stagePool {k, x, y, near}: its
+         strength, metres more across and along, and metres its middle is
+         brought toward the eye. Unwritten, the pool every fight had.) */
+      this._stagePool = p.stagePool || null;
       f.uNearFall.value = nf ? (nf.fall ?? 0) : 0;
       f.uRugDye.value = nf && nf.dye ? 1 : 0;
       f.uRugGain.value = nf ? (nf.rugGain ?? 1) : 1;
@@ -3400,7 +3405,7 @@ export class Backdrop {
     sc2.setRGB(0, 0, 0);
     for (let i = 0; i < NLIGHT; i++) {
       if (rig.cine[i] && !rig.cold[i]) {
-        sc2.copy(rig.colors[i]).multiplyScalar(STAGE_WASH * Math.min(rig.inten[i], 2.5));
+        sc2.copy(rig.colors[i]).multiplyScalar(STAGE_WASH * Math.min(rig.inten[i], 2.5) * (this._stagePool ? (this._stagePool.k ?? 1) : 1));
         break;
       }
     }
@@ -3444,8 +3449,9 @@ export class Backdrop {
         fx0 = Math.min(fx0, a[i].x); fx1 = Math.max(fx1, a[i].x);
         fy0 = Math.min(fy0, a[i].y); fy1 = Math.max(fy1, a[i].y);
       }
-      const cx = (fx0 + fx1) / 2, cy = (fy0 + fy1) / 2;
-      const rx = (fx1 - fx0) * 0.50 + 2.0, ry = (fy1 - fy0) * 0.50 + 1.6;
+      const sp = this._stagePool;
+      const cx = (fx0 + fx1) / 2 + (sp ? (sp.dx ?? 0) : 0), cy = (fy0 + fy1) / 2 - (sp ? (sp.near ?? 0) : 0);
+      const rx = (fx1 - fx0) * 0.50 + 2.0 + (sp ? (sp.x ?? 0) : 0), ry = (fy1 - fy0) * 0.50 + 1.6 + (sp ? (sp.y ?? 0) : 0);
       u.uStage.value.set(cx, cy, rx, ry);
     } else {
       u.uStage.value.set(0, 0, 1, 1);

@@ -1694,6 +1694,12 @@ export const REGIONS = {
                  tint: '#fff2d8', wispTint: '#ffd9a8', emberTint: '#ffcf7a',
                  speed: 0.55, scale: 1.15, wind: 0.35, density: 1.0 },
     exposure: 1.8, contrast: 1.67,
+    /* (round 37 graft, item 5, all three judges on the fight: "a warm pool on
+       the floor between the Kid and the hand and right of the Memory Animal;
+       the runner's contrast and warmth up under the creatures" -- the
+       fight's own candle pool half again as strong, wider, and its middle
+       brought toward you; the empty room is not touched) */
+    stagePool: { k: 2.3, x: 2.6, y: 2.2, near: 1.8, dx: 0.6 },
     key:  { glow: 0, kind: 'warm', x: -4.4, y: 3.6, z: 2.6, color: '#ebcc9b', intensity: 0.9, radius: 8.6 },
     /* ROUND 29, both judges: "the floor's right third is a milky blue-grey",
        "the back wall's portraits are lost under shafts of haze". The cold
