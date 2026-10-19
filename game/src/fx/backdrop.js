@@ -616,19 +616,21 @@ export const ROOM_VARIANTS = [
   { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 1, MM_SHM0: 142606336, MM_SHM1: 0, MM_SHM2: 67108864 }, wings: ['pumpkin'] },
   { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 3, MM_SHM0: 4210689, MM_SHM1: 74645504, MM_SHM2: 1 }, wings: ['sleeping'] },
   { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 3, MM_SHM0: 4194304, MM_SHM1: 125829120, MM_SHM2: 268435456 }, wings: ['study'] },
-  { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 0, MM_PAT: 0, MM_CEIL: 0 }, wings: ['attic', 'heart', 'nursery', 'passages', 'sleeping', 'study'] },
-  { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 2, MM_PAT: 1, MM_CEIL: 0 }, wings: ['ballroom'] },
-  { mat: 'floor', defines: { MM_FLOORX: 1, MM_R25W: 0, MM_PAT: 10, MM_CEIL: 0 }, wings: ['ballroom'] },
-  { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 0, MM_PAT: 1, MM_CEIL: 0 }, wings: ['bathhouse'] },
-  { mat: 'floor', defines: { MM_FLOORX: 2, MM_R25W: 0, MM_PAT: 1, MM_CEIL: 0 }, wings: ['bathhouse'] },
-  { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 0, MM_PAT: 2, MM_CEIL: 0 }, wings: ['crypt', 'kennels', 'kitchens', 'lampworks', 'pumpkin'] },
-  { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 1, MM_PAT: 0, MM_CEIL: 0 }, wings: ['foyer'] },
-  { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 1, MM_PAT: 2, MM_CEIL: 0 }, wings: ['foyer'] },
-  { mat: 'floor', defines: { MM_FLOORX: 1, MM_R25W: 4, MM_PAT: 11, MM_CEIL: 0 }, wings: ['graveyard'] },
-  { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 3, MM_PAT: 2, MM_CEIL: 0 }, wings: ['greenhouse'] },
-  { mat: 'floor', defines: { MM_FLOORX: 1, MM_R25W: 0, MM_PAT: 13, MM_CEIL: 0 }, wings: ['hedge'] },
-  { mat: 'floor', defines: { MM_FLOORX: 1, MM_R25W: 0, MM_PAT: 2, MM_CEIL: 0 }, wings: ['pumpkin'] },
-  { mat: 'floor', defines: { MM_FLOORX: 1, MM_R25W: 0, MM_PAT: 14, MM_CEIL: 0 }, wings: ['pumpkin'] },
+  { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 0, MM_PAT: 0, MM_CEIL: 0, MM_RUGO: 0 }, wings: ['attic', 'heart', 'nursery', 'passages', 'sleeping', 'study'] },
+  /* (round 37 graft: the Nursery's wardrobe and its braided oval rug, MM_RUGO) */
+  { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 0, MM_PAT: 0, MM_CEIL: 0, MM_RUGO: 1 }, wings: ['nursery'] },
+  { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 2, MM_PAT: 1, MM_CEIL: 0, MM_RUGO: 0 }, wings: ['ballroom'] },
+  { mat: 'floor', defines: { MM_FLOORX: 1, MM_R25W: 0, MM_PAT: 10, MM_CEIL: 0, MM_RUGO: 0 }, wings: ['ballroom'] },
+  { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 0, MM_PAT: 1, MM_CEIL: 0, MM_RUGO: 0 }, wings: ['bathhouse'] },
+  { mat: 'floor', defines: { MM_FLOORX: 2, MM_R25W: 0, MM_PAT: 1, MM_CEIL: 0, MM_RUGO: 0 }, wings: ['bathhouse'] },
+  { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 0, MM_PAT: 2, MM_CEIL: 0, MM_RUGO: 0 }, wings: ['crypt', 'kennels', 'kitchens', 'lampworks', 'pumpkin'] },
+  { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 1, MM_PAT: 0, MM_CEIL: 0, MM_RUGO: 0 }, wings: ['foyer'] },
+  { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 1, MM_PAT: 2, MM_CEIL: 0, MM_RUGO: 0 }, wings: ['foyer'] },
+  { mat: 'floor', defines: { MM_FLOORX: 1, MM_R25W: 4, MM_PAT: 11, MM_CEIL: 0, MM_RUGO: 0 }, wings: ['graveyard'] },
+  { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 3, MM_PAT: 2, MM_CEIL: 0, MM_RUGO: 0 }, wings: ['greenhouse'] },
+  { mat: 'floor', defines: { MM_FLOORX: 1, MM_R25W: 0, MM_PAT: 13, MM_CEIL: 0, MM_RUGO: 0 }, wings: ['hedge'] },
+  { mat: 'floor', defines: { MM_FLOORX: 1, MM_R25W: 0, MM_PAT: 2, MM_CEIL: 0, MM_RUGO: 0 }, wings: ['pumpkin'] },
+  { mat: 'floor', defines: { MM_FLOORX: 1, MM_R25W: 0, MM_PAT: 14, MM_CEIL: 0, MM_RUGO: 0 }, wings: ['pumpkin'] },
   { mat: 'ceil', defines: { MM_FLOORX: 2, MM_PAT: 15, MM_CEIL: 1 }, wings: ['attic'] },
   { mat: 'ceil', defines: { MM_FLOORX: 0, MM_PAT: 4, MM_CEIL: 1 }, wings: ['ballroom', 'bathhouse', 'foyer', 'heart'] },
   /* (round 35 graft: the Crypt's rib vault, its own pattern -- SCHEELITE's) */
@@ -925,7 +927,7 @@ export class Backdrop {
     this.floorMat = new THREE.ShaderMaterial({
       uniforms: surfaceUniforms(),
       /* the room-kind floors are a variant of their own: _setSurfaceProgram */
-      defines: { MM_FLOORX: 0, MM_R25W: 0, MM_PAT: 0, MM_CEIL: 0 },
+      defines: { MM_FLOORX: 0, MM_R25W: 0, MM_PAT: 0, MM_CEIL: 0, MM_RUGO: 0 },
       vertexShader: FLOOR_VERT, fragmentShader: FLOOR_FRAG,
       depthWrite: true, fog: false,
     });
@@ -2885,7 +2887,9 @@ export class Backdrop {
     /* (round 23: an INDOOR bath is variant 2, which lays the hall in its
        water as a mirror; the pond out of doors keeps variant 1) */
     const fx = (p.pool && !p.pool.open) ? 2 : (((p.floorPattern ?? 0) > 9.5 || !!p.pool) ? 1 : 0);
-    this._setSurfaceProgram(this.floorMat, fx, (R25_FLOORS[p.r25w] || []).includes(fx) ? p.r25w : 0);
+    this._setSurfaceProgram(this.floorMat, fx, (R25_FLOORS[p.r25w] || []).includes(fx) ? p.r25w : 0,
+      /* (round 37 graft: a braided oval rug, the wardrobe's -- MM_RUGO) */
+      p.rug && p.rug.oval ? { MM_RUGO: 1 } : { MM_RUGO: 0 });
     f.uRunner.value = p.runner ?? 0;
     /* the runner leads to the door, wherever the subject took it */
     f.uRunX.value = p.runX ?? (p.subjX ?? 0);
@@ -3081,7 +3085,7 @@ export class Backdrop {
   /** The floor's or the ceiling's program: the room-kind floors (parquet,
    *  turf, a vinery's roof, a pool) are compiled only where they are laid
    *  (MM_FLOORX in shaders/backdrop.js). */
-  _setSurfaceProgram(mat, x, w = null) {
+  _setSurfaceProgram(mat, x, w = null, extra = null) {
     const n = x === 2 ? 2 : (x ? 1 : 0);
     /* (round 25: and the floor's wing, MM_R25W, where round 25 drew in that
        floor program for one of the last four wings -- R25_FLOORS. The
@@ -3093,8 +3097,12 @@ export class Backdrop {
     const pat = Math.round(mat.uniforms.uPattern.value) || 0;
     const ceil = mat.uniforms.uIsCeiling.value ? 1 : 0;
     const d = mat.defines || {};
-    if (d.MM_FLOORX === n && (w === null || d.MM_R25W === w) && d.MM_PAT === pat && d.MM_CEIL === ceil) return;
-    mat.defines = Object.assign({}, d, { MM_FLOORX: n, MM_PAT: pat, MM_CEIL: ceil }, want);
+    /* (round 37 graft: and the floor's rug, MM_RUGO -- the floor's caller
+       only; the ceiling never carries it) */
+    const ex = extra || {};
+    if (d.MM_FLOORX === n && (w === null || d.MM_R25W === w) && d.MM_PAT === pat && d.MM_CEIL === ceil
+        && Object.keys(ex).every((k) => d[k] === ex[k])) return;
+    mat.defines = Object.assign({}, d, { MM_FLOORX: n, MM_PAT: pat, MM_CEIL: ceil }, want, ex);
     mat.needsUpdate = true;
   }
 

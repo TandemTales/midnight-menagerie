@@ -15354,6 +15354,49 @@ void main(){
     float frg = (1.0 - smoothstep(0.0, 0.10, -ed.y)) * step(ed.y, 0.0)
               * clamp(ed.x/rpx.x + 0.5, 0.0, 1.0)
               * (0.45 + 0.55*step(0.5, fract(rp.x*22.0)));
+#ifdef MM_RUGO
+#if MM_RUGO == 1
+    {
+      /* ROUND 37 GRAFT, CARNELIAN's: A NURSERY'S RAG RUG (MM_RUGO -- the
+         near floor's rug.oval, the Nursery's wardrobe only, so the two rooms
+         do not share the study's carpet). An oval of braided rag coiled
+         round a straight start -- its rounds the offsets of a centre line, a
+         racetrack -- each round its own faded cotton (rose, cream, a washed
+         indigo, ochre, sage) in runs of two or three, its plaits drawn as
+         the chevrons a braid makes, the seam between two rounds dark, the
+         outer round a darker binding; every edge over its own pixel. No
+         fringe. */
+      vec2 ext = max(uRug.zw, vec2(0.3));
+      float cL = max(ext.x - ext.y, 0.0);
+      vec2 cq = vec2(rp.x - clamp(rp.x, -cL, cL), rp.y);
+      float er = length(cq);
+      vec2 en = cq/max(ext.y, 0.3);
+      float eM = ext.y - er;
+      float erPx = max(length(vec2(dFdx(eM), dFdy(eM))), 1e-4);
+      rugCov = clamp(eM/erPx + 0.5, 0.0, 1.0);
+      const float BW = 0.062;
+      float bi = floor(eM/BW), bf = fract(eM/BW);
+      float hb = mmHash11(floor(bi/2.6)*3.71 + 2.0);
+      vec3 rag = hb < 0.2 ? vec3(0.52, 0.22, 0.20) : (hb < 0.4 ? vec3(0.62, 0.56, 0.44)
+               : (hb < 0.6 ? vec3(0.22, 0.25, 0.38) : (hb < 0.8 ? vec3(0.56, 0.42, 0.20) : vec3(0.32, 0.38, 0.27))));
+      rag = mix(rag, vec3(mmLum(rag))*vec3(1.15, 1.0, 0.85), 0.25 + 0.20*mmHash11(bi*1.7));
+      rag = mix(rag, vec3(0.16, 0.11, 0.10), step(bi, 0.5));        // the binding round
+      float an = atan(en.y, en.x);
+      float sArc = (abs(rp.x) < cL ? rp.x : (sign(rp.x)*cL + an*er));
+      float dir = mod(bi, 2.0) < 0.5 ? 1.0 : -1.0;
+      float ch = abs(fract(sArc/0.055 + dir*abs(bf - 0.5)*1.4) - 0.5)*2.0;
+      float chR = smoothstep(1.2, 3.5, 0.055/max(erPx, 1e-4));
+      float seam = 1.0 - smoothstep(0.0, max(erPx/BW*1.2, 0.10), min(bf, 1.0 - bf));
+      rag *= mix(1.0, 0.70 + 0.45*ch, chR*0.85);
+      rag *= 1.0 - 0.42*seam*smoothstep(1.0, 2.5, BW/max(erPx, 1e-4));
+      rag *= 0.80 + 0.40*sqrt(clamp(bf*(1.0 - bf)*4.0, 0.0, 1.0));
+      rugCol = rag*1.22;
+      frg = 0.0;
+      eIn = eM;
+      ePx = erPx;
+    }
+#endif
+#endif
     rugCol = mix(rugCol, ivory*0.85, frg*(1.0 - rugCov));
     rugCov = max(rugCov, frg*0.85);
     /* (laid in the runner's own value: the hall's lit board tone, as the

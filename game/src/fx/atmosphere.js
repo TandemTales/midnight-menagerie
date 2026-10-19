@@ -351,16 +351,23 @@ export const REGIONS = {
                        the near left, the toy chest on the near right, each
                        in the fire's pool (nearFloor below). `still`, so the
                        room behind them draws exactly what it drew. */
-                    { shape: 46, ahead: 4.5, across: -2.25, tone: 0.97, keep: true, still: true, seed: 2.2 },
+                    /* (graft: the horse a stride in from the frame's edge,
+                       so the Deck's 1280 sees it whole -- judge 2) */
+                    { shape: 46, ahead: 4.5, across: -1.95, tone: 0.97, keep: true, still: true, seed: 2.2 },
                     { shape: 47, ahead: 4.2, across: 2.35, tone: 0.97, keep: true, still: true, seed: 4.6 },
                     /* ...and the blocks tipped out of the chest onto the
                        rug, a ball rolled clear (87) */
                     { shape: 87, ahead: 3.2, across: 0.75, tone: 0.98, keep: true, still: true, seed: 1.4, hM: 0.50 },
-                    { shape: 87, ahead: 3.7, across: -1.05, tone: 0.97, keep: true, still: true, seed: 3.7, hM: 0.38 }] },
+                    { shape: 87, ahead: 3.7, across: -1.05, tone: 0.97, keep: true, still: true, seed: 3.7, hM: 0.38 },
+                    /* (graft, judge 1: "one more toy in the bottom quarter" --
+                       blocks and a ball strayed off the rug toward you) */
+                    { shape: 87, ahead: 2.05, across: -0.55, tone: 0.98, keep: true, still: true, seed: 5.9, hM: 0.40 }] },
     crispFloor: true, grain: 0.012,
     nearFloor: { fall: 0.80, dye: 1, calm: 0.92, clean: 1, rug: { ahead: 3.6, hw: 1.65, hd: 1.05 }, rugGain: 0.70, rugGul: 0.85,
                  pool: { ahead: 4.0, across: 0.0, rAlong: 2.6, rAcross: 3.4, k: 2.5, color: '#ff9a50' },
-                 pool2: { ahead: 2.4, across: 0.0, rAlong: 1.6, rAcross: 3.0, k: 1.0, color: '#f0a060' } },
+                 /* (graft, judge 1: the fire's glow carried on below the
+                    rug, to the frame's foot) */
+                 pool2: { ahead: 2.4, across: 0.0, rAlong: 2.2, rAcross: 3.4, k: 2.0, color: '#f0a060' } },
     /* (round 37: the cold fill from behind the eye laid a lavender haze on
        the near boards' left -- a third of it reaches the floor) */
     cineFloor: 0.35,
@@ -2373,7 +2380,16 @@ export const ROOM_KINDS = {
                      /* (round 37: a dress form brought out onto the rug in
                         the lamp's pool, and the blocks the nursery left) */
                      { shape: 49, ahead: 4.6, across: -2.1, tone: 0.97, keep: true, still: true, seed: 5.5 },
-                     { shape: 87, ahead: 3.3, across: 1.2, tone: 0.97, keep: true, still: true, seed: 6.4, hM: 0.45 }],
+                     /* (round 37 graft, TOURMALINE's: the nursery's toy chest
+                        and its bear brought in at your near left, and the
+                        blocks strayed down toward you) */
+                     { shape: 47, ahead: 4.3, across: 2.2, tone: 0.96, keep: true, still: true, seed: 3.1 },
+                     { shape: 87, ahead: 2.9, across: -0.5, tone: 0.97, keep: true, still: true, seed: 6.4, hM: 0.45 }],
+              /* (round 37 graft, CARNELIAN's: a braided oval rag rug, so the
+                 sewing room does not lay the study's Turkey carpet --
+                 MM_RUGO, its own floor program; and the lamp's light on it) */
+              nearFloor: { rug: { ahead: 3.8, hw: 1.95, hd: 1.05, oval: 1 },
+                           pool2: { ahead: 3.6, across: -0.6, rAlong: 2.2, rAcross: 2.8, k: 2.6, color: '#e6b184' } },
               room: { d: 0.82 }, cam: { z: -1.0, look: 0.10 } }],
     names: [
       [/wardrobe|closet|changing|blanket|sewing|mending/i, 1],
@@ -3302,7 +3318,9 @@ export class Atmosphere {
       dx /= dl; dz /= dl;
       const a = pal.rugK.ahead ?? 6.0;
       pal.rug = { x: (c.x ?? 0) + dx * a + (pal.rugK.dx ?? 0), z: (c.z ?? 9.6) + dz * a,
-                  hw: pal.rugK.hw ?? 2.2, hd: pal.rugK.hd ?? 1.5 };
+                  hw: pal.rugK.hw ?? 2.2, hd: pal.rugK.hd ?? 1.5,
+                  /* (round 37 graft: a braided oval rug -- MM_RUGO) */
+                  oval: pal.rugK.oval ? 1 : 0 };
     }
     this.backdrop.build(pal, () => this._rand());
     // material is structural, like the geometry: it swaps with the room rather
