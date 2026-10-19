@@ -295,8 +295,13 @@ def wings(preview=False):
         e["span"] = [int(px - h_), int(px + h_)]
         print("%-19s rings %d  pts %4d  pole %4d,%4d r%5.1f span %d" % (
             slug, len(rings), sum(len(r) for r in rings), px, py, edt[py, px], 2 * h_))
-    with open(OUT, "w", encoding="utf-8", newline="\n") as fh:
-        json.dump(j, fh, indent=1)
+    # the file as `main` writes it (text mode, so the same line endings), but
+    # each ring of numbers on one line rather than a number to a line
+    txt = json.dumps(j, indent=1)
+    txt = re.sub(r"\[\s*(-?[\d.]+(?:,\s*-?[\d.]+)*)\s*\]",
+                 lambda mm: "[" + ",".join(v.strip() for v in mm.group(1).split(",")) + "]", txt)
+    with open(OUT, "w", encoding="utf-8") as fh:
+        fh.write(txt)
     if preview:
         from PIL import ImageDraw
         ov = Image.open(MANSION).convert("RGB")
