@@ -105,19 +105,16 @@ OBSIDIAN's always-in-hand BUY, wares under glass on their own lips, CLEAR's
 own glyph, the filled SAVE AND QUIT; a scratch check plays a stack's copies
 by mouse, keys and pad. Battery 106 green but the sprites halo; the graft's
 interaction gates green on dev. Known: seven sub-11 px items on the card face
-and the fight HUD's Companion panel (not round 36's). **ROUND 37 IS MERGED, VERIFIED AND PUSHED (2026-10-18); ITS GRAFT IS IN
-FLIGHT:** BERYL +2.21, 2 of 3 (`15d72d5c`, 6.28 vs TULLE 4.07): the near floor
-in the Heart, Nursery, Study and Pumpkin Grounds. Battery 106 green but the
-sprites halo (enemy-clips flaked once under Unreal's load, green twice on
-re-run); the other 13 wings identical but a 4-level strip in the attic. The
-merge's perf A/B ran under UnrealEditor and half its pages timed nothing --
-the Pumpkin is likely ~15.8 ms; the graft re-measures on a quiet machine.
-Graft (`GRAFT-r37.md`) building in `C:/UILOOP/r37/wt/r37-graft` (port 9284,
-BASE 9384 from `C:/UILOOP/r37/base`), notes into `C:/UILOOP/r37/graft/`:
-TOURMALINE's candelabras, CARNELIAN's study, statues carved. **Josh uses
-this machine for Unreal: check tasklist before perf, and he said 10-18 GPU
-work alongside Unreal is fine.** Then: the map's nodes and region boxes with
-the atlas; then survey 6. **Josh asked 10-18 for a
+and the fight HUD's Companion panel (not round 36's). **ROUND 37 AND ITS GRAFT ARE MERGED, VERIFIED AND PUSHED (2026-10-19):**
+BERYL +2.21, 2 of 3 (`15d72d5c`): the near floor in the Heart, Nursery, Study
+and Pumpkin Grounds. Graft `5bda9ed5`: TOURMALINE's candelabras, CARNELIAN's
+study and carved statues; measured on a QUIET machine every fight is under
+15.5 (Pumpkin 15.21). The other 13 wings' compiled HLSL byte-identical. The
+Heart fight is +1.15 ms over BASE (13.80) -- under budget, left as is.
+`tools/shapeprof.py` now exists. **Josh uses this machine for Unreal: check
+tasklist before perf; he said 10-18 GPU work alongside Unreal is fine.**
+**NEXT: round 38** (`BRIEF-r38.md`, `round-38.args.json`): the map's stamps
+and regions and the atlas -- the last item of survey 5's list; then SURVEY 6. **Josh asked 10-18 for a
 3-hour pause in which nothing may launch a program -- respect such asks.**
 
 **ROUND 33 AND ITS GRAFT ARE MERGED, VERIFIED AND PUSHED (2026-10-16):**

@@ -1,0 +1,53 @@
+{
+  "round": "r38",
+  "maxBuilders": 3,
+  "briefs": [
+    "docs/ui-pass/BRIEF-r0.md",
+    "docs/ui-pass/BRIEF-r1.md",
+    "docs/ui-pass/BRIEF-r30.md",
+    "docs/ui-pass/BRIEF-r38.md"
+  ],
+  "rubrics": [
+    "docs/ui-pass/RUBRIC.md",
+    "docs/ui-pass/RUBRIC-r38.md"
+  ],
+  "samples": [
+    "UI/title.png",
+    "UI/mainMenu.png",
+    "UI/selectCompanion.png",
+    "UI/selectKid.png"
+  ],
+  "tracks": [
+    {
+      "key": "parchment",
+      "name": "PARCHMENT",
+      "rule": "refine",
+      "screens": [
+        "map",
+        "atlas",
+        "atlas-house"
+      ],
+      "baseline": "VOILE",
+      "builders": [
+        {
+          "slot": "a",
+          "code": "SARD",
+          "port": 9291,
+          "angle": "LITERAL -- work BRIEF-r38's fix list 1 to 4 in order and exactly as written, the map's stamps FIRST (both judges' first fix). Reuse round 30's parchment and pen before inventing new ones."
+        },
+        {
+          "slot": "b",
+          "code": "MORION",
+          "port": 9292,
+          "angle": "THE ATLAS FIRST -- both judges' worst problem on it is the one earned wing reading as a black blot. Make the atlas a house of seventeen legible parts (pencil outlines with labels, inked plans with a wash, the surveyed wing the focal point with ONE surveyed and still legible with ALL), then the map's stamps and regions in the same ink."
+        },
+        {
+          "slot": "c",
+          "code": "HELIOTROPE",
+          "port": 9293,
+          "angle": "A SURVEYOR'S DRAWING, NOT A UI. Treat both sheets as one draughtsman's work on aged paper: a single ink and pencil vocabulary (stamp weights, hatching, stipple, dashed surveyor's lines, lettered labels, foxing and folds) used for the map's nodes and regions and the atlas's wings alike, so nothing on the parchment reads as a software highlight."
+        }
+      ]
+    }
+  ]
+}
