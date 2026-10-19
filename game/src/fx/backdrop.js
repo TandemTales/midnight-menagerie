@@ -213,7 +213,16 @@ const SHAPE_M = [1.20, 2.00, 1.30, 1.00, 2.00, 2.00, 3.32, 2.60, 1.17, 1.33,
                  /* round 34 graft (MM_WINGS 6, VIVIANITE's wfPotBench): 84 a
                     potting bench, its pots and a watering can -- the
                     Greenhouse's near floor */
-                 1.15
+                 1.15,
+                 /* round 37 (MM_WINGS 1, gkDraw): 85 a standing candelabrum
+                    of gilt brass, its five candles burning (the Heart's near
+                    floor); 86 a straw bale and the straw fallen from it (the
+                    Pumpkin Grounds') */
+                 1.80, 0.62,
+                 /* round 37 (MM_WINGS 3, wfDraw): 87 the nursery's alphabet
+                    blocks and a ball on the rug; 88 books piled on the
+                    study's floor and one lying open */
+                 0.40, 0.34
 ];
 /* ...and a width ratio, so a column is a column and not a capital-T. Four of
  * these were wrong by enough to change what the object was: a longcase clock
@@ -243,7 +252,9 @@ const SHAPE_W = [1.15, 0.55, 1.00, 0.95, 0.72, 0.80, 0.47, 0.85, 0.90, 1.35,
                  2.05, 2.70,
                  0.42,
                  0.45, 1.20, 2.05,
-                 2.05
+                 2.05,
+                 0.47, 2.30,
+                 2.10, 3.82
 ];
 /* HOW MUCH ONE OF THESE VARIES FROM THE NEXT, as a +-fraction of SHAPE_M.
  *
@@ -286,7 +297,9 @@ const SHAPE_VAR = [0.06, 0.08, 0.62, 0.20, 0.10, 0.08, 0.10, 0.10, 0.16, 0.48,
                  0.02, 0.04,
                  0.04,
                  0.03, 0.06, 0.02,
-                 0.03
+                 0.03,
+                 0.03, 0.06,
+                 0.04, 0.04
 ];
 /* ROUND 23 (graft): ULTRAMARINE's drawings are in metres at their own
    proportions, so their quads take no width jitter -- a telescope 22%
@@ -302,7 +315,9 @@ const FIXW = { 32: 1, 33: 1, 34: 1, 35: 1, 39: 1, 40: 1, 41: 1, 42: 1, 43: 1, 44
                /* and round 31's */
                81: 1, 82: 1, 83: 1,
                /* and round 34's graft */
-               84: 1 };
+               84: 1,
+               /* and round 37's */
+               85: 1, 86: 1, 87: 1, 88: 1 };
 // Which shapes hang from the ceiling rather than stand on the floor.
 export const HANGING = { 4: 1, 7: 1, 22: 1, 33: 1 };
 /* ...and which stand AGAINST A WALL rather than out on the floor. A tall
@@ -484,16 +499,16 @@ export const PROP_SHAPES = {
      bring it in themselves, so the wing's fight keeps its program: with
      the bench compiled in, the Greenhouse prop link went 9.6 -> 12-14 s) */
   greenhouse: [6, 23, 25, 74, 75, 76, 77, 80],
-  heart: [0, 4, 5, 6, 22, 23, 31],
+  heart: [0, 4, 5, 6, 22, 23, 31, 85],
   hedge: [23, 25, 28, 30, 31, 81, 83],
   kennels: [16.25, 22, 23, 39, 40, 41, 42],
   kitchens: [8, 22, 29, 82],
   lampworks: [18, 22, 23, 33, 34, 43],
-  nursery: [22, 45, 46, 47, 48, 49, 61],
+  nursery: [22, 45, 46, 47, 48, 49, 61, 87],
   passages: [8, 23, 66],
-  pumpkin: [23, 27],
+  pumpkin: [23, 27, 86],
   sleeping: [0, 14, 22, 46, 47, 50, 51, 52, 56, 60],
-  study: [22, 53, 54, 55, 56],
+  study: [22, 53, 54, 55, 56, 88],
 };
 
 /**
@@ -590,16 +605,16 @@ export const ROOM_VARIANTS = [
   { mat: 'prop', defines: { MM_STONES: 1, MM_BUST: 0, MM_WINGS: 6, MM_SHM0: 41943104, MM_SHM1: 0, MM_SHM2: 1294336 }, wings: ['greenhouse'] },
   /* (round 34 graft: and the Greenhouse rooms with the potting bench, 84) */
   { mat: 'prop', defines: { MM_STONES: 1, MM_BUST: 0, MM_WINGS: 6, MM_SHM0: 41943104, MM_SHM1: 0, MM_SHM2: 18071552 }, wings: ['greenhouse'] },
-  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 1, MM_SHM0: 12583025, MM_SHM1: 2, MM_SHM2: 0 }, wings: ['heart'] },
+  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 1, MM_SHM0: 12583025, MM_SHM1: 2, MM_SHM2: 33554432 }, wings: ['heart'] },
   { mat: 'prop', defines: { MM_STONES: 1, MM_BUST: 0, MM_WINGS: 1, MM_SHM0: 310378496, MM_SHM1: 3, MM_SHM2: 10485760 }, wings: ['hedge'] },
   { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 2, MM_SHM0: 12648448, MM_SHM1: 7680, MM_SHM2: 0 }, wings: ['kennels'] },
   { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 1, MM_SHM0: 541065472, MM_SHM1: 0, MM_SHM2: 4194304 }, wings: ['kitchens'] },
   { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 2, MM_SHM0: 12845056, MM_SHM1: 8216, MM_SHM2: 0 }, wings: ['lampworks'] },
-  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 3, MM_SHM0: 4194304, MM_SHM1: 1015808, MM_SHM2: 2 }, wings: ['nursery'] },
+  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 3, MM_SHM0: 4194304, MM_SHM1: 1015808, MM_SHM2: 134217730 }, wings: ['nursery'] },
   { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 4, MM_SHM0: 8388864, MM_SHM1: 0, MM_SHM2: 64 }, wings: ['passages'] },
-  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 1, MM_SHM0: 142606336, MM_SHM1: 0, MM_SHM2: 0 }, wings: ['pumpkin'] },
+  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 1, MM_SHM0: 142606336, MM_SHM1: 0, MM_SHM2: 67108864 }, wings: ['pumpkin'] },
   { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 3, MM_SHM0: 4210689, MM_SHM1: 74645504, MM_SHM2: 1 }, wings: ['sleeping'] },
-  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 3, MM_SHM0: 4194304, MM_SHM1: 125829120, MM_SHM2: 0 }, wings: ['study'] },
+  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 3, MM_SHM0: 4194304, MM_SHM1: 125829120, MM_SHM2: 268435456 }, wings: ['study'] },
   { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 0, MM_PAT: 0, MM_CEIL: 0 }, wings: ['attic', 'heart', 'nursery', 'passages', 'sleeping', 'study'] },
   { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 2, MM_PAT: 1, MM_CEIL: 0 }, wings: ['ballroom'] },
   { mat: 'floor', defines: { MM_FLOORX: 1, MM_R25W: 0, MM_PAT: 10, MM_CEIL: 0 }, wings: ['ballroom'] },
@@ -884,6 +899,7 @@ export class Backdrop {
       uNearPool2C: { value: new THREE.Color(0, 0, 0) },
       uNearFwd: { value: new THREE.Vector2(0, -1) },
       uRugDye: { value: 0 },
+      uRugGain: { value: 1 }, uRugGul: { value: 0.45 },   // (round 37: nearFloor.rugGain / rugGul)
       uNearCalm: { value: 0 },
       uNearClean: { value: 0 },          // (round 35: nearFloor.clean)
       /* THE PASSAGES' OPEN DOORS (round 22 graft): the wedge of lamplight
@@ -1010,6 +1026,8 @@ export class Backdrop {
            the split tone, bloom and halation all put colour back, and the
            measured chain turns a linear cap of 0.04 into 0.22 on screen. */
         uPropSat: { value: 0.14 }, uPropSatMax: { value: 0.20 },
+        uStatueMod: { value: 0 },          // (round 37: pal.statueModel -- the Heart's carved marble)
+        uFitK: { value: 1 },               // (round 37: pal.fitGain -- a fitting's glass and burner)
         /* WHICH WAY THE LENS FACES, as its right vector in XZ (MADDER, round
            11). A prop is a drawn flat and it is drawn FRONT-ON, so when a
            vantage turns the camera the flats turn with it -- a cabinet drawn
@@ -1422,7 +1440,12 @@ export class Backdrop {
       const spread = 1 + v * (r * r * 2.6 - 0.9);
       const h = (SHAPE_M[shape] ?? 1.2) * nudge * sc * spread;
       const jit = 0.78 + rand() * 0.24;
-      return { h, w: h * (SHAPE_W[shape] ?? 1) * (FIXW[shape] ? 1 : jit) };
+      /* (round 37: a wing may draw a shape on a narrower quad than the
+         house's -- props.shapeW -- where its drawing is narrower than the
+         quad: the Heart's statues stood in quads 2.5x their plinth, and a
+         prop quad costs its whole area on the Deck whatever is drawn in it) */
+      const Wd = (P.shapeW && P.shapeW[shape]) ?? SHAPE_W[shape] ?? 1;
+      return { h, w: h * Wd * (FIXW[shape] ? 1 : jit) };
     };
     /* Keep props inside the lens. A prop at x = +-halfW in a 34 m ballroom is
        simply off-screen, which is how round 1 ended up with a props crop that
@@ -2162,16 +2185,29 @@ export class Backdrop {
          row of beds keeps its heads to the wall whatever width _vary() gave
          the room; and `keep` says it was set there on purpose, so a lamp's
          stand beside it does not unseat it. Read only where written.) */
-      const ix = it.fromWall !== undefined ? Math.sign(it.x || 1) * (halfW - it.fromWall) : (it.x ?? 0);
+      let ix = it.fromWall !== undefined ? Math.sign(it.x || 1) * (halfW - it.fromWall) : (it.x ?? 0);
+      let iz = it.z;
+      /* (round 37: a piece set on the near floor may be placed in EYE metres
+         -- `ahead` along the eye's heading on the floor, `across` to its
+         right -- the very frame the near floor's pools are laid in
+         (nearFloor.pool), so the candelabrum stands in its own pool from the
+         square rig, a gallery's end or a corner alike. Read only where
+         written.) */
+      if (it.ahead !== undefined) {
+        const hl = Math.hypot(LS.fx, LS.fz) || 1;
+        const ac = it.across ?? 0;
+        ix = LS.ex + (LS.fx / hl) * it.ahead + LS.rx * ac;
+        iz = LS.ez + (LS.fz / hl) * it.ahead + LS.rz * ac;
+      }
       /* (round 34 graft, VIVIANITE's: a piece added to a room that was
          judged as it is may say `still` -- it draws its jitter from its own
          hash, not from the build's rand(), so the stream the shafts and the
          wall, floor and ceiling seeds draw from next is exactly what it was,
          and the room round it does not change) */
       const rand0 = rand;
-      if (it.still) { let k = 0; rand = () => { const v = Math.sin((++k) * 12.9898 + (it.z ?? 0) * 78.233 + (it.edge ?? it.x ?? 0) * 37.719) * 43758.5453; return v - Math.floor(v); }; }
-      push(it.shape, ix, it.z, it.scale ?? 1.0, it.tone ?? 0.16, it.y,
-           it.wall ? 'wall' : (it.edge !== undefined ? { edge: it.edge } : (it.free ? 'free' : undefined)));
+      if (it.still) { let k = 0; rand = () => { const v = Math.sin((++k) * 12.9898 + (it.z ?? it.ahead ?? 0) * 78.233 + (it.edge ?? it.x ?? it.across ?? 0) * 37.719) * 43758.5453; return v - Math.floor(v); }; }
+      push(it.shape, ix, iz, it.scale ?? 1.0, it.tone ?? 0.16, it.y,
+           it.wall ? 'wall' : (it.edge !== undefined ? { edge: it.edge } : (it.free || it.ahead !== undefined ? 'free' : undefined)));
       rand = rand0;
       /* (round 25 graft: a piece placed by hand may name its own seed -- the
          form a drawing takes off it, a kerbed grave and not a table tomb --
@@ -2873,8 +2909,11 @@ export class Backdrop {
        runner's dyes. Zero everywhere else, so no other room moves. */
     {
       const nf = p.nearFloor;
+      this._cineFloor = p.cineFloor ?? 1;
       f.uNearFall.value = nf ? (nf.fall ?? 0) : 0;
       f.uRugDye.value = nf && nf.dye ? 1 : 0;
+      f.uRugGain.value = nf ? (nf.rugGain ?? 1) : 1;
+      f.uRugGul.value = nf ? (nf.rugGul ?? 0.45) : 0.45;
       f.uNearCalm.value = nf ? (nf.calm ?? 0) : 0;
       f.uNearClean.value = nf ? (nf.clean ?? 0) : 0;
       if (nf && nf.pool) {
@@ -2930,6 +2969,8 @@ export class Backdrop {
     pr.uRimAmt.value = p.rim ?? 1.0;
     pr.uGain.value = (p.gain ?? 3.4) * (p.propGain ?? 1.0);
     pr.uGloss.value = p.propGloss ?? 0.55;
+    pr.uStatueMod.value = p.statueModel ?? 0;
+    pr.uFitK.value = p.fitGain ?? 1;
     /* THE PROP LUMINANCE CEILING, in pre-grade units. The grade multiplies by
        uExposure before ACES, so a fixed post-grade target is a MOVING pre-grade
        one: `heart` runs exposure 1.11 and `attic` 2.80, and a single hard clamp
@@ -3077,7 +3118,9 @@ export class Backdrop {
       /* round 31: the near floor's urn, basket and seat (81-83) are drawn in
          the round-22 program, with the yew and the kitchen table they stand
          among (gkDraw, MM_WINGS 1) -- not round 25's, whose 62+ they follow */
-      if (s > 80.5 && s < 83.5) { if (wings < 1) wings = 1; continue; }
+      if ((s > 80.5 && s < 83.5) || (s > 84.5 && s < 86.5)) { if (wings < 1) wings = 1; continue; }   // (round 37: 85 the candelabrum, 86 the straw bale -- gkDraw too)
+      /* (round 37: 87 the blocks, 88 the books -- round 24's drawings, wfDraw) */
+      if (s > 86.5 && s < 88.5) { wings = Math.max(wings, 3); continue; }
       /* round 25: the last four wings' drawn objects (62+), in a program of
          their own -- so no room that does not deal one moves */
       if (s > 61.5) w25 = (s > 68.5 && s < 71.5) || (s > 72.5 && s < 73.5) ? 5 : ((s > 73.5 && s < 77.5) || (s > 79.5 && s < 80.5) || (s > 83.5 && s < 84.5) ? 6 : 4);   // (round 34 graft: 84, the Greenhouse's potting bench)
@@ -3271,7 +3314,11 @@ export class Backdrop {
       wl[i].set(p.x + WALL_W / 2, p.y, r, inten / (1 + (dzw / r) * (dzw / r)));
       wc[i].copy(rig.colors[i]);
       const dyf = p.y;
-      fl[i].set(p.x, -(p.z - this._floorCz), r, inten / (1 + (dyf / r) * (dyf / r)));
+      /* (round 37: a room may say how much of its CINEMATIC pair reaches its
+         floor -- pal.cineFloor -- the Pumpkin Grounds' cold moon key laid a
+         milky blue-grey across the near flags its lanterns now light) */
+      const cf = rig.cine[i] ? (this._cineFloor ?? 1) : 1;
+      fl[i].set(p.x, -(p.z - this._floorCz), r, cf * inten / (1 + (dyf / r) * (dyf / r)));
       fc[i].copy(rig.colors[i]);
       for (let sIdx = 0; sIdx < 2; sIdx++) {
         const su = this.sides[sIdx].material.uniforms;
