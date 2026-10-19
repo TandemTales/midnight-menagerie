@@ -125,11 +125,14 @@ survey 5 vs survey 6 captures was run (`C:/UILOOP/pairs56/`): survey 6 won
 24 and 23 of 32 pairs (net +46/+40); the 'equal' pairs were exactly the
 untouched screens and rooms; gameover is the one pair both call worse (the
 10-16 painting fit hung its pictures short). **Survey scores compare within a
-survey only -- measure progress between surveys PAIRED.** **NEXT: ROUND 39**
-(`BRIEF-r39.md`, `round-39.args.json`): the Bathhouse, the Lampworks, the
-Kitchens, the Ballroom -- the four rooms no round has touched since 31; then
-round 40, the boards (a 12 px floor at 1280, the map's regions as drawn
-irregular shapes, the hand's spread, gameover's cords). **Josh asked 10-18 for a
+survey only -- measure progress between surveys PAIRED.** **ROUND 39 IS
+RUNNING (2026-10-19)** (`BRIEF-r39.md`, `round-39.args.json`, base
+`8b813845`): the Bathhouse, the Lampworks, the Kitchens, the Ballroom;
+CHALCEDONY / PERIDOT / RHODONITE in `C:/UILOOP/r39/wt/r39-rooms-{a,b,c}`
+(ports 9301-9303), ORGANDY baselines in `C:/UILOOP/r39/judging/r39/rooms/
+ORGANDY/` (6 of 6, looked at). Then round 40, the boards (a 12 px floor at
+1280, the map's regions as drawn irregular shapes, the hand's spread,
+gameover's cords). **Josh asked 10-18 for a
 3-hour pause in which nothing may launch a program -- respect such asks.**
 
 **ROUND 33 AND ITS GRAFT ARE MERGED, VERIFIED AND PUSHED (2026-10-16):**
