@@ -15459,7 +15459,7 @@ void main(){
           vec2 o = vec2(mod(float(j), 3.0), floor(float(j)/3.0)) - 1.0;
           vec2 cid = pci + o;
           float h = mmHash21(cid*1.7 + 3.3);
-          if (h > dens*0.80) continue;
+          if (h > dens*0.48) continue;   // (round 39 graft: a few, round the fans -- PERIDOT's)
           vec2 cc = (cid + vec2(mmHash21(cid + 9.1), mmHash21(cid + 4.7)))*0.17;
           vec2 d2 = vWorld.xz - cc;
           float an = h*31.0;
@@ -15468,9 +15468,12 @@ void main(){
           if (pd < best) { best = pd; bh = h; }
         }
         float onP = clamp(0.5 - best/max(mp, 1e-4), 0.0, 1.0);
-        vec3 petal = mix(vec3(0.46, 0.04, 0.08), vec3(0.62, 0.10, 0.14), bh*1.6)*(0.80 + 0.30*smoothstep(-0.02, 0.0, best));
-        petal = mix(petal, petal*0.45, 1.0 - smoothstep(-0.020, -0.008, best));
-        alb = mix(alb, petal*Lf*4.0, onP);
+        /* (round 39 graft, PERIDOT's petals: crimson and LIT as the marble
+           round them is -- at RHODONITE's value they were maroon specks on
+           the black squares; a lit lip on each, its heart darker) */
+        vec3 petal = mix(vec3(0.58, 0.05, 0.10), vec3(0.80, 0.14, 0.18), bh*1.6)*(0.80 + 0.40*smoothstep(-0.02, 0.0, best));
+        petal = mix(petal, petal*0.50, 1.0 - smoothstep(-0.020, -0.008, best));
+        alb = mix(alb, petal*max(Lf, 0.030)*6.5, onP);
       }
     }
   }

@@ -1120,12 +1120,18 @@ export const REGIONS = {
                     { shape: 79, ahead: 6.6, across: 0.9, tone: 0.97, keep: true, scale: 1.6, seed: 2.0 },
                     { shape: 65, ahead: 8.2, across: 4.6, tone: 0.95, keep: true },
                     { shape: 65, ahead: 4.6, across: -1.9, tone: 0.97, keep: true, hand: true },
-                    { shape: 72, ahead: 4.0, across: 2.2, tone: 0.97, keep: true, hand: true, seed: 9.0 }] },
+                    { shape: 72, ahead: 4.0, across: 2.2, tone: 0.97, keep: true, hand: true, seed: 9.0 },
+                    /* (round 39 graft: PERIDOT's dropped fans -- a second one
+                       left nearer, at the edge of the petals; and J2, J3: a
+                       candelabrum stood down in the near checker's centre in
+                       its own warm pool -- under the hand in a fight) */
+                    { shape: 79, ahead: 5.0, across: -1.2, tone: 0.97, keep: true, hand: true, scale: 1.3, seed: 7.0 },
+                    { shape: 65, ahead: 5.5, across: 0.2, tone: 0.98, keep: true, hand: true }] },
     /* ROUND 39: THE NEAR FLOOR -- the chandelier's light laid on the marble
        in front of you, the petals where the fan fell, and the cold violet
        fill OFF the floor (cineFloor: "the purple haze off the floor") */
     nearFloor: { fall: 0.92, calm: 0.70, rug: { ahead: 5.4, hw: 2.2, hd: 1.4 },
-                 pool: { ahead: 5.6, across: 0.4, rAlong: 3.4, rAcross: 3.6, k: 1.10, color: '#e9c88c' },
+                 pool: { ahead: 5.6, across: 0.4, rAlong: 3.4, rAcross: 3.6, k: 1.55, color: '#e9c88c' },   // (round 39 graft: the candelabrum's warm pool, J2 J3)
                  pool2: { ahead: 4.6, across: -3.6, abs: true, rAlong: 2.4, rAcross: 2.4, k: 1.10, color: '#eac27e' } },
     cineFloor: 0.30,
     particles: { mix: [[PTYPE.DUST, 0.58], [PTYPE.EMBER, 0.26], [PTYPE.WISP, 0.16]],
@@ -2178,7 +2184,11 @@ export const ROOM_KINDS = {
          (LIMEWASH's, the named graft). */
       { subject: 'mirrors', layout: 'wings', swap: [[6, 72], [68, 65], [78, 72]], solo: [], doorX: -1,
         room: { d: 0.74 }, ceil: 4, ceilGain: 0.35, floor: 10,
-        lamps: [{ i: 2, x: 0.0, z: 0.78 }],
+        /* (round 39 graft, J2 and J3: the salon's violet haze pool gone -- its
+           cold lamp by the long windows a step down, as the suite's) */
+        lamps: [{ i: 2, x: 0.0, z: 0.78 }, { i: 3, k: 0.40 }],
+        /* (...and one more near prop at its lower left: a chair pulled out) */
+        nearPlus: [{ shape: 72, ahead: 4.6, across: -2.6, tone: 0.97, keep: true, seed: 4.0 }],
         cam: { y: 0.25, z: 0.6, look: -0.2, fov: 2 },
         vantage: { at: 'corner', off: 0.16, fwd: 2.0, yaw: 31, wide: 3, dy: 0.25, dlook: -0.15 } },
       /* The back wall of a 26 m ballroom is past the reach of every lamp in
