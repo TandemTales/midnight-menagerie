@@ -1677,3 +1677,20 @@
   .mi-zone-line { stroke-width: 4; }
   .mi-zone-tex--hatch { stroke-width: 2.4; }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ROUND 38 GRAFT 3 — THE BOSS'S PLATE, COMPACT (HELIOTROPE's)
+   Its name in two balanced lines (ui/mapnode.js bossLines) on a plate a
+   third the width, so it tucks beside the crown; _placeTags keeps it off
+   every region, so at 1280 it covers no region and no room.
+   ═══════════════════════════════════════════════════════════════════════════ */
+.map-screen .map-node--boss .mn-label {
+  --plate-h: 82px;
+  font-size: 17px; letter-spacing: .07em; line-height: 1.08;
+  min-width: 0; max-width: 320px;
+  padding: 13px calc(var(--plate-h) * .56) 0;
+}
+.map-screen .map-node--boss .mn-boss-tag {
+  top: calc(100% + 3px + 55px + var(--mn-dy, 0px));
+  font-size: 13.5px; letter-spacing: .3em; text-indent: .3em;
+}

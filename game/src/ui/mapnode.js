@@ -400,10 +400,26 @@ export function mapNodeMarkup(node, info, hazardName = '', at = null) {
              whenever it has moved a chip more than a mark's width. -->
         <path class="mn-lead" d=""/>
       </svg>
-      <span class="mn-label">${escapeHtml(shortName(node.roomName || info.label))}</span>
+      <span class="mn-label">${big ? bossLines(shortName(node.roomName || info.label))
+        : escapeHtml(shortName(node.roomName || info.label))}</span>
       ${big ? '<span class="mn-boss-tag">BOSS</span>' : ''}
     </span>
   </button>`;
+}
+
+/* Round 38 graft 3 (HELIOTROPE's): the boss's name on its plate in two
+   balanced lines, so the plate is a compact block beside the crown instead of
+   a slab laid across the rooms and the wing beside it (survey 5, at 1280). */
+function bossLines(n) {
+  const words = String(n).split(' ');
+  if (words.length < 2 || n.length < 12) return escapeHtml(n);
+  let best = null;
+  for (let i = 1; i < words.length; i++) {
+    const a = words.slice(0, i).join(' '), b = words.slice(i).join(' ');
+    const m = Math.max(a.length, b.length);
+    if (!best || m < best.m) best = { m, a, b };
+  }
+  return `${escapeHtml(best.a)}<br>${escapeHtml(best.b)}`;
 }
 
 function shortName(n) {

@@ -345,6 +345,10 @@ export class MapScene extends Scene {
     // drawn against the fallback serif they measure differently and the cells
     // land in the wrong places.  Free after boot; the sheet is loaded by then.
     try { await document.fonts?.ready; } catch {}
+    // round 38 graft: the regions' engraved names are measured in Cinzel
+    // (zoneLabelWidth) to be set clear of the routes; measured against the
+    // fallback they landed at a different corner from one load to the next
+    try { await document.fonts?.load?.('700 22px Cinzel'); } catch {}
   }
 
   // ─────────────────────────────────────────────────────────────── the run ──
