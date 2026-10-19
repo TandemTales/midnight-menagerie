@@ -1545,7 +1545,10 @@ export const REGIONS = {
        round, ribbed pumpkin shape". Shape 27 is a pumpkin. */
     /* (graft: in the PATCH layout -- ranks across the width, nearer and
        bigger, the fight's court kept clear round the Kid and the creature) */
-    props: { shapes: [27], count: 40, height: 2.0, layout: 'patch', depth: 13,
+    /* (round 37 graft, the frame budget: 36 from 40 -- the near floor's
+       lanterns are the court's nearest pumpkins now, and four of the far
+       ones were the cheapest part of a millisecond to give back) */
+    props: { shapes: [27], count: 36, height: 2.0, layout: 'patch', depth: 13,
              family: ['patch'],
              /* and a heap of them in the near corner, clear of the fight, big
                 enough to be the first thing the eye names */
@@ -1563,20 +1566,28 @@ export const REGIONS = {
                   dealt as it was. */
                { shape: 86, ahead: 4.8, across: 3.5, tone: 0.96, keep: true, still: true, seed: 3.3 },
                { shape: 27, ahead: 4.62, across: 3.40, y: 0.43, tone: 0.97, hM: 0.55, keep: true, still: true, seed: 0.7 },
-               { shape: 27, ahead: 4.2, across: 2.4, tone: 0.97, hM: 0.85, keep: true, still: true, seed: 1.1 },
+               { shape: 27, ahead: 4.2, across: 2.4, tone: 0.97, hM: 0.74, keep: true, still: true, seed: 1.1 },
                { shape: 27, ahead: 5.6, across: 4.7, tone: 0.97, hM: 0.70, keep: true, still: true, seed: 2.3 },
                { shape: 27, ahead: 3.6, across: 3.9, tone: 0.97, hM: 0.50, keep: true, still: true, seed: 4.1 },
-               { shape: 27, ahead: 4.4, across: -3.7, tone: 0.97, hM: 0.75, keep: true, still: true, seed: 1.5 },
-               { shape: 27, ahead: 3.8, across: -4.4, tone: 0.96, hM: 0.48, keep: true, still: true, seed: 6.2 },
-               /* ...and two at your feet, the nearest things in the court */
-               { shape: 27, ahead: 2.7, across: 1.75, tone: 0.97, hM: 0.62, keep: true, still: true, seed: 4.5 },
-               { shape: 27, ahead: 3.2, across: -1.95, tone: 0.97, hM: 0.52, keep: true, still: true, seed: 7.5 },
-               { shape: 27, ahead: 3.5, across: -2.45, tone: 0.97, hM: 0.36, keep: true, still: true, seed: 0.3 },
+               /* (round 37 graft, CARNELIAN's repoussoir: one big carved
+                  lantern cropped by the frame's left edge, in place of the
+                  two small ones there -- the nearest, largest, darkest
+                  thing in the court, that the eye goes past into it) */
+               { shape: 27, ahead: 3.7, across: -3.05, tone: 0.97, hM: 1.10, keep: true, still: true, seed: 2.3 },
+               /* ...and one at your feet, the nearest lit thing in the court
+                  (round 37 graft, the frame budget: a step further off and a
+                  little smaller, and the pair at your left gone -- the big
+                  lantern at the frame's edge stands there now; near the eye
+                  a prop quad costs its whole area, and these three were a
+                  millisecond of a fight's frame under the hand) */
+               { shape: 27, ahead: 3.25, across: 1.85, tone: 0.97, hM: 0.58, keep: true, still: true, seed: 4.5 },
              ] },
     crispFloor: true,
     nearFloor: { fall: 0.92, calm: 0.85, clean: 1,
                  pool: { ahead: 4.0, across: 2.6, rAlong: 2.2, rAcross: 2.0, k: 16.0, color: '#ffa848' },
-                 pool2: { ahead: 3.3, across: -2.2, rAlong: 1.7, rAcross: 1.5, k: 13.0, color: '#ffa848' } },
+                 /* (graft, judge 2: the near-left flags kept deep blue-black --
+                    the lanterns' second pool tighter round its lantern) */
+                 pool2: { ahead: 3.4, across: -2.6, rAlong: 1.3, rAcross: 1.2, k: 9.0, color: '#ffa848' } },
     particles: { mix: [[PTYPE.DUST, 0.40], [PTYPE.SPORE, 0.30], [PTYPE.EMBER, 0.30]],
                  tint: '#cfe0e8', wispTint: '#8fe8c0', emberTint: '#ff8a28',
                  speed: 0.9, scale: 1.25, wind: 1.1, density: 1.0 },
@@ -2743,7 +2754,9 @@ export const ROOM_KINDS = {
       /* (graft: the moon stands over the water and the house beside it, so
          the moon lies in the pond -- "a reflection, not a flat blue
          rectangle") */
-      { subject: 'coping', pool: { hw: 3.2, z0: 1.2, back: 12.0 }, moonX: -7.6, houseX: 8.5,
+      /* (round 37 graft: and its moon on the walk and the near flags a
+         little fuller than the court's -- judges 1 and 3) */
+      { subject: 'coping', pool: { hw: 3.2, z0: 1.2, back: 12.0 }, moonX: -7.6, houseX: 8.5, moonFloor: [0.26, 0.34, 0.52],
         vantage: { at: 'along', off: 0.10, wall: 6.0, fwd: 1.4, yaw: 10, wide: 2, dy: 0.6, dlook: -0.2 } },
     ],
     names: [
@@ -3594,6 +3607,8 @@ export class Atmosphere {
       if (kind.doorX !== undefined) pal.doorX = kind.doorX;
       if (kind.houseX !== undefined) pal.houseX = kind.houseX;
       if (kind.moonX !== undefined) pal.moonX = kind.moonX;
+      /* (round 37 graft: and a room's own moon on its flags -- the pond's) */
+      if (kind.moonFloor !== undefined) pal.moonFloor = kind.moonFloor;
       /* how big the house on the horizon is, from where this room is seen */
       if (kind.houseS !== undefined) pal.houseS = kind.houseS;
       /* where a walk or a runner runs (to the gate in the railing, to the

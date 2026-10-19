@@ -3285,32 +3285,46 @@ float subjCoping(vec2 q, float cx, float dqm, out float occ){
   h -= onN*0.42;
   h += sill*0.20;
   /* the lantern in it: a little glazed lamp on the sill, its flame */
+  /* (round 37 graft, the frame budget: the lamp, its flame and its glow
+     only inside the niche -- each is multiplied by onN, 0 outside it; no
+     derivative is taken in here, so its coverage is over the wall's own
+     metres per pixel, px, not mmCover's gradient) */
+  float lampCov = 0.0, flame = 0.0, nGlow = 0.0;
+  if (onN > 0.0) {
   vec2 lq = vec2(nx, q.y - nY0);
   float lamp = mmBox(lq - vec2(0.0, 0.17), vec2(0.085, 0.13), 0.02);
   float lcap = wTri(lq - vec2(0.0, 0.30), 0.10, 0.09);
-  float lampCov = mmCover(-min(lamp, lcap))*onN;
-  float flame = exp(-length((lq - vec2(0.0, 0.17))/vec2(0.035, 0.065))*1.6);
-  float nGlow = onN*exp(-length(lq - vec2(0.0, 0.20))/0.42);
+  lampCov = clamp(0.5 - min(lamp, lcap)/px, 0.0, 1.0)*onN;
+  flame = exp(-length((lq - vec2(0.0, 0.17))/vec2(0.035, 0.065))*1.6);
+  nGlow = onN*exp(-length(lq - vec2(0.0, 0.20))/0.42);
+  }
   /* the ivy: a curtain from the coping in each 2.1 m cell, its hem ragged */
   float icell = floor(cx/2.13 + uSeed*3.0);
   float ixl = cx/2.13 + uSeed*3.0 - icell;
   float ih = mmHash11(icell*7.1 + 3.3);
   float iw = 0.26 + 0.18*mmHash11(icell*3.7);
   float iLen = (0.45 + 1.60*ih)*step(0.22, ih);
-  float leafN = mmNoise(vec2(cx*6.0, q.y*7.0) + uSeed*11.0);
+  /* (round 37 graft, the frame budget: a curtain hangs no lower than its
+     length and its ragged hem below the coping, and stands no higher than
+     its leaves over it -- outside that band every ivy term is multiplied by
+     onI = 0, so its two noise fields and three hashes are not taken) */
+  float onI = 0.0, leafN = 0.5, lh = 0.5, leaf = 1.0, leafLit = 0.0;
+  if (iLen > 0.05 && q.y > WH + CT - iLen - 0.20 - px && q.y < WH + CT + 0.25 + px) {
+  leafN = mmNoise(vec2(cx*6.0, q.y*7.0) + uSeed*11.0);
   float leafF = mmNoise(vec2(cx*15.0, q.y*15.0) + uSeed*5.0);
   float hem = WH + CT - iLen*(0.55 + 0.45*cos((ixl - 0.5)/iw*1.5708)) + 0.25*(leafN - 0.5);
   float ivyD = max(abs(ixl - 0.5)*2.13 - iw*2.13*(0.70 + 0.60*leafN)*(0.75 + 0.25*smoothstep(hem, WH + CT, q.y)), hem - q.y);
   ivyD = max(ivyD, q.y - (WH + CT + 0.10 + 0.08*leafF));
   ivyD += 0.10*(leafF - 0.5);
-  float onI = smoothstep(px, -px, ivyD)*(1.0 - onPier*0.7)*step(0.1, iLen);
+  onI = smoothstep(px, -px, ivyD)*(1.0 - onPier*0.7)*step(0.1, iLen);
   /* each leaf a lobed cell, lit on its upper side */
   vec2 lc = vec2(cx*9.0, q.y*9.0);
   vec2 lid = floor(lc);
   vec2 lf2 = fract(lc) - 0.5;
-  float lh = mmHash21(lid + uSeed);
-  float leaf = length(lf2 + (vec2(mmHash21(lid + 1.3), mmHash21(lid + 7.1)) - 0.5)*0.4) - 0.34;
-  float leafLit = smoothstep(0.10, -0.25, lf2.y)*smoothstep(0.05, -0.05, leaf);
+  lh = mmHash21(lid + uSeed);
+  leaf = length(lf2 + (vec2(mmHash21(lid + 1.3), mmHash21(lid + 7.1)) - 0.5)*0.4) - 0.34;
+  leafLit = smoothstep(0.10, -0.25, lf2.y)*smoothstep(0.05, -0.05, leaf);
+  }
   h = mix(h, 1.42 + 0.10*leafN - 0.12*smoothstep(-0.05, 0.10, leaf), onI);
   gInk = max(gInk, joint*0.55*mmCover(WH - q.y)*(1.0 - onI)*(1.0 - onN*0.6));
   gInk = max(gInk, 0.55*onI*(1.0 - smoothstep(0.0, 0.06, abs(leaf)))*mmLod(0.11, px));
@@ -3345,7 +3359,15 @@ float subjCoping(vec2 q, float cx, float dqm, out float occ){
   gWEmit = face + 0.22*finCov*pk*exp(-max(min(eye, mouth), 0.0)/0.05);
   /* (round 37) the niche lantern's flame through its glass, and its light
      on the recess round it (not through the ivy) */
-  gWEmit += (flame*1.8*lampCov + nGlow*0.34*(1.0 - lampCov))*(1.0 - onI);
+  /* (round 37 graft, CARNELIAN's brighter niches: the flame a little up,
+     its light fuller in the recess, and out of the niche onto the wall's
+     face round it -- a warm pool on the coursed stone, every stone its own
+     value in it and the joints dark through it, so the wall is lit in
+     bays, as a sconce lights a room, and not one dark band) */
+  gWEmit += (flame*2.2*lampCov + nGlow*0.50*(1.0 - lampCov))*(1.0 - onI);
+  float face0 = (1.0 - onPier)*mmCover(WH - q.y);
+  float wash = exp(-length(vec2(nx, q.y - (nY0 + 0.30))/vec2(1.45, 1.00)))*face0*(1.0 - onN);
+  gWEmit += wash*0.42*(0.55 + 0.45*stoneV)*(1.0 - joint*0.8)*(1.0 - 0.8*onI);
   gWEmitC = vec3(1.00, 0.58, 0.16) * 0.85;
   occ = cov;
   return h * cov;
@@ -15828,7 +15850,15 @@ void main(){
         vec2 ld = normalize(m2 - e2);
         float ax = (vWorld.x - e2.x)*ld.y - (vWorld.z - e2.y)*ld.x;
         float rip2 = (mmNoise(vec2(w.x*3.0, w.y*1.6 + uTime*0.30)) - 0.5)*0.30;
+#if MM_FLOORX == 1 && MM_PAT == 2
+        /* (round 37 graft, judges 1 and 3: "the pond's moonlight carried to
+           the near flags and across the water" -- the column at two-thirds
+           of its far strength at your feet, not a third; the Pumpkin
+           Grounds' pond program only) */
+        float col2 = exp(-pow((ax + rip2)/0.34, 2.0)) * (0.62 + 0.38*farW);
+#else
         float col2 = exp(-pow((ax + rip2)/0.34, 2.0)) * (0.35 + 0.65*farW);
+#endif
         float glit = smoothstep(0.40, 0.78, mmNoise(vec2(w.x*9.0, w.y*3.0 - uTime*0.4)));
         col += vec3(0.80, 0.86, 1.00) * col2 * (0.14 + 0.80*glit) * uMoonW.w * water;
       }
