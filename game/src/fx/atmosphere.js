@@ -507,8 +507,9 @@ export const REGIONS = {
                        sacks at the left, one open with its scoop, and the
                        butcher's block at the right with its cleaver (a
                        basket with seed > 40 / > 60: gkDraw) */
-                    { shape: 82, ahead: 4.6, across: -2.5, tone: 0.95, keep: true, seed: 45.0, hM: 0.95, wM: 1.45 },
-                    { shape: 82, ahead: 5.0, across: 2.6, tone: 0.95, keep: true, seed: 65.0, hM: 1.08, wM: 0.95 }] },
+                    { shape: 82, ahead: 3.7, across: -1.7, tone: 0.95, keep: true, seed: 45.0, hM: 0.95, wM: 1.45 },
+                    { shape: 82, ahead: 3.9, across: 1.8, tone: 0.95, keep: true, seed: 65.0, hM: 1.08, wM: 0.95 },
+                    { shape: 82, ahead: 3.1, across: 0.2, tone: 0.96, keep: true, seed: 9.5 }] },
     /* ROUND 31: THE NEAR FLOOR -- the flags run on lit toward the hand (to
        nine-tenths, not two-fifths), the range's warmth laid on them in front
        of the eye, and a rag hearth rug on the flags before the fire */
@@ -1014,6 +1015,9 @@ export const REGIONS = {
                   seed > 40: wgLcSD) */
                { shape: 34, edge: 0.27, z: 3.0, tone: 0.97, free: true, keep: true, seed: 41.0, wM: 2.30 },
                { shape: 34, ahead: 6.0, across: -0.9, tone: 0.97, keep: true, seed: 43.0, wM: 2.30 },
+               /* (and a third crate of lamps on the near floor, in the
+                  pool the hanging lanterns lay there -- nearFloor.pool2) */
+               { shape: 34, ahead: 3.5, across: -2.4, tone: 0.97, keep: true, seed: 45.0, wM: 2.30 },
                { shape: 34, edge: 0.80, z: -0.8, tone: 0.95 },
                { shape: 34, edge: 0.22, z: -4.6, tone: 0.92 },
                { shape: 33, x: -6.0, z: -3.0, y: 3.2, tone: 0.95 },
@@ -1031,9 +1035,9 @@ export const REGIONS = {
        light at the left; the cinematic key off the floor (it laid the warm
        smear at the foot of the frame) and the canvas tooth down, as the
        Kitchens' */
-    nearFloor: { fall: 0.86, calm: 0.92, clean: 1,
+    nearFloor: { fall: 0.95, calm: 0.92, clean: 1,
                  pool: { ahead: 6.4, across: 2.8, abs: true, rAlong: 2.8, rAcross: 2.6, k: 1.35, color: '#f0a65a' },
-                 pool2: { ahead: 4.8, across: 0.4, abs: true, rAlong: 2.4, rAcross: 3.2, k: 1.00, color: '#e8a45c' } },
+                 pool2: { ahead: 4.2, across: -1.0, abs: true, rAlong: 2.4, rAcross: 3.4, k: 1.30, color: '#e8a45c' } },
     cineFloor: 0.35, grain: 0.012, tooth: 0.045,
     exposure: 1.42, vignette: 1.06, contrast: 1.41,
     key:  { glow: 0, kind: 'warm', x: -4.2, y: 3.2, z: 2.2, color: '#df9f63', intensity: 4.51, radius: 7.74 },
@@ -1101,13 +1105,15 @@ export const REGIONS = {
                     { shape: 72, ahead: 7.4, across: -2.5, tone: 0.95, keep: true, seed: 8.0 },
                     { shape: 72, ahead: 5.8, across: 3.9, tone: 0.96, keep: true, seed: 5.0 },
                     { shape: 79, ahead: 6.6, across: 0.9, tone: 0.97, keep: true, scale: 1.6, seed: 2.0 },
-                    { shape: 65, ahead: 8.2, across: 4.6, tone: 0.95, keep: true }] },
+                    { shape: 65, ahead: 8.2, across: 4.6, tone: 0.95, keep: true },
+                    { shape: 65, ahead: 5.2, across: -3.3, tone: 0.97, keep: true },
+                    { shape: 72, ahead: 4.8, across: 3.3, tone: 0.97, keep: true, seed: 9.0 }] },
     /* ROUND 39: THE NEAR FLOOR -- the chandelier's light laid on the marble
        in front of you, the petals where the fan fell, and the cold violet
        fill OFF the floor (cineFloor: "the purple haze off the floor") */
     nearFloor: { fall: 0.92, calm: 0.70, rug: { ahead: 5.4, hw: 2.2, hd: 1.4 },
                  pool: { ahead: 5.6, across: 0.4, rAlong: 3.4, rAcross: 3.6, k: 1.10, color: '#e9c88c' },
-                 pool2: { ahead: 8.6, across: -3.0, rAlong: 2.6, rAcross: 2.4, k: 0.60, color: '#e2bd7a' } },
+                 pool2: { ahead: 4.6, across: -3.6, abs: true, rAlong: 2.4, rAcross: 2.4, k: 1.10, color: '#eac27e' } },
     cineFloor: 0.30,
     particles: { mix: [[PTYPE.DUST, 0.58], [PTYPE.EMBER, 0.26], [PTYPE.WISP, 0.16]],
                  tint: '#ffe8c0', wispTint: '#d8a8ff', emberTint: '#ffc95a',
@@ -2614,8 +2620,8 @@ export const ROOM_KINDS = {
                      { shape: 82, edge: 0.26, z: -0.2, tone: 0.94, keep: true, fore: 1, seed: 2.5 },
                      /* (round 39: the scullery's near floor -- a sack and a
                         block, as the kitchen's) */
-                     { shape: 82, ahead: 4.4, across: 2.4, tone: 0.95, keep: true, seed: 47.0, hM: 0.95, wM: 1.45 },
-                     { shape: 82, ahead: 4.8, across: -2.6, tone: 0.95, keep: true, seed: 66.0, hM: 1.08, wM: 0.95 }],
+                     { shape: 82, ahead: 3.7, across: 1.7, tone: 0.95, keep: true, seed: 47.0, hM: 0.95, wM: 1.45 },
+                     { shape: 82, ahead: 3.9, across: -1.8, tone: 0.95, keep: true, seed: 66.0, hM: 1.08, wM: 0.95 }],
               /* (round 31 graft, judges 2 and 3: "light the scullery's near-left
                  corner" -- the copper's spill as a second pool there) */
               nearFloor: { pool: { ahead: 3.4, across: 0.0, rAlong: 2.8, rAcross: 3.2, k: 1.4, color: '#e8a060' },
@@ -2688,7 +2694,7 @@ export const ROOM_KINDS = {
            room 0.60 as deep that is BEHIND the boilers' wall -- which they lit
            to a blown silver from the far side. Brought into the room, over
            the walk) */
-        lamps: [{ i: 0, x: -5.0, z: 0.30, k: 0.50 }, { i: 2, x: 6.0, z: 0.34, k: 0.50 }],
+        lamps: [{ i: 0, x: -5.0, z: 0.30, k: 0.50 }, { i: 2, x: 6.0, z: 0.34, k: 0.50 }, { i: 3, x: -2.0, z: 0.42, k: 0.60 }],
         vantage: { at: 'above', rise: 2.4, drop: 0.2, fwd: 2.4, ahead: 5.0 } },
     ],
     names: [
@@ -2718,7 +2724,13 @@ export const ROOM_KINDS = {
          -- the wing's warm lamp, brought down to the firebox */
       { subject: 'steam', layout: 'nook', swap: [[6, 32], [2, 32]], countScale: 0.30,
         room: { w: 0.76, d: 0.62, h: 0.76 }, ceil: 4, ceilGain: 2.1, atmos: { wallFog: 0.20 },
-        near: [{ shape: 32, edge: 0.82, z: -2.6, tone: 0.95 }, { shape: 32, edge: 0.18, z: -3.4, tone: 0.93 }],
+        near: [{ shape: 32, edge: 0.82, z: -2.6, tone: 0.95 }, { shape: 32, edge: 0.18, z: -3.4, tone: 0.93 },
+               /* (round 39: and its near floor -- a bath either side of the
+                  duckboard, cropped by the frame, and the towel horse with
+                  its stool and pail between them) */
+               { shape: 32, ahead: 3.4, across: 3.3, tone: 0.97, scale: 1.12, keep: true, seed: 13.0 },
+               { shape: 32, ahead: 3.9, across: -3.4, tone: 0.97, scale: 1.08, keep: true, seed: 14.0 },
+               { shape: 32, ahead: 5.4, across: 1.4, tone: 0.96, keep: true, seed: 43.0, hM: 1.25, wM: 1.90 }],
         lampsView: [{ i: 1, x: 0.0, z: 0.86, y: 0.55, color: '#ff7a36', k: 0.50, radius: 3.6 }],
         vantage: { at: 'among', low: 0.66, fwd: 1.4, pitch: 3.0, off: 0.06, wide: 3, frame: 'steam' } },
       /* THE INDOOR POOL -- round 14, both judges' first instruction: "a sunk
@@ -2731,7 +2743,10 @@ export const ROOM_KINDS = {
          near end, high enough to look down INTO it. */
       /* (graft: and a bath at the pool's corner, ULTRAMARINE's) */
       { subject: 'pool', layout: 'colonnade', file: 6, fileX: 0.74, swap: [[32, 2]],
-        near: [{ shape: 32, x: 7.4, z: -2.6, tone: 0.95, free: true }],
+        near: [{ shape: 32, x: 7.4, z: -2.6, tone: 0.95, free: true },
+               /* (round 39: the towel horse on the coping at the near
+                  right, and a bath on the near left) */
+               { shape: 32, ahead: 4.8, across: -3.6, tone: 0.97, keep: true, seed: 44.0, hM: 1.25, wM: 1.90 }],
         room: { w: 1.10, d: 1.24 }, rail: 'iron', ceil: 4, ceilGain: 2.4,
         pool: { hw: 5.6, z0: -1.4, back: 3.4 },
         /* the hall's cold light stands over the far end of the water, which is

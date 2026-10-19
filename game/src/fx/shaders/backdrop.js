@@ -1470,6 +1470,127 @@ float subjArcade(vec2 q, float cx, float dqm, out float occ){
 
 #endif
 #if MM_ROOMS == 2
+#if MM_R25W == 2
+/* ROUND 39 (RHODONITE): the ballroom's carved upper wall, as a function: the
+   musicians' gallery wall and the suite's wall either side of its stage both
+   draw it (zon: where; Z0 its dado, yA0 its tall panels' foot, washY the
+   height its light is centred on). */
+void r39Panels(vec2 q, float cx, float aaM, float Z0, float yA0, float washY, float zon, inout float s, inout float occ){
+  const float Z1 = 10.05;
+  if (zon > 0.001) {
+        /* ROUND 39 (RHODONITE): CARVED, NOT A GRID. Survey 6, judge 2: "the
+           back wall above the minstrel gallery is a flat grid of identical red
+           panels outlined by thin gold rectangles, like a CSS box grid". A
+           ballroom's upper wall is a RHYTHM, not a grid: fluted gilt pilasters
+           on every other console (2.9 m), and between each pair ONE tall silk
+           panel in a carved bolection frame -- the frame lit along its lower
+           edges by the chandeliers and the gallery under it and in shade along
+           its upper -- a carved laurel cartouche at its head on a ribbon, the
+           silk a woven damask with a sheen, a garland swagged across the
+           frieze over it, and the whole wall taking the light of the gallery
+           and the chandeliers, falling away to the cornice and the sides. */
+        float bxp = mod(cx + 1.45, 2.90) - 1.45;           // across a bay, 0 at its panel's middle
+        float abx = abs(bxp);
+        const float yA1 = 8.48, yB0 = 8.78, yB1 = 9.52, MW = 0.11;
+        const float PW = 0.17;                              // the pilaster's half-width
+        float pil = smoothstep(1.45 - PW - aaM, 1.45 - PW + aaM, abx);
+        float PH = 1.08;                                    // the panel's half-width
+        float pAy = (yA0 + yA1)*0.5, pAh = (yA1 - yA0)*0.5;
+        float pA = mmBox(vec2(bxp, q.y - pAy), vec2(PH, pAh), 0.04);
+        float pB = mmBox(vec2(bxp, q.y - (yB0 + yB1)*0.5), vec2(PH, (yB1 - yB0)*0.5), 0.03);
+        float pd = min(pA, pB);
+        float field = smoothstep(aaM, -aaM, pd + MW)*(1.0 - pil);
+        float mould = smoothstep(aaM, -aaM, pd)*(1.0 - field)*(1.0 - pil);
+        float mu = clamp(-(pd)/MW, 0.0, 1.0);               // 0 at the frame's outer edge, 1 at its inner
+        /* the bolection's section: an ogee -- out, a deep quirk, a bead in --
+           and which way this side of the frame faces */
+        float prof = 0.55 + 0.45*sin(mu*6.2832*0.75 + 0.6) - 0.50*(1.0 - smoothstep(0.0, 0.10, abs(mu - 0.62)));
+        float upF = q.y > (pA < pB ? pAy : (yB0 + yB1)*0.5) ? 1.0 : -1.0;
+        vec2 rel = vec2(abx/PH, (q.y - (pA < pB ? pAy : (yB0 + yB1)*0.5))/(pA < pB ? pAh : (yB1 - yB0)*0.5));
+        float onTopBot = step(abs(rel.x), abs(rel.y));
+        float faceLit = mix(0.95, mix(0.55, 1.35, step(upF, 0.0)), onTopBot);    // lower rails catch the light from below
+        /* the field: a wine silk woven in a damask, its sheen lifting where
+           the light rakes up it from the gallery */
+        vec2 dmk = mmDamask(vec2(cx, q.y), 0.42, aaM*0.9, 0.0);
+        float dl = mmLod(0.42, aaM);
+        vec3 silk = vec3(0.150, 0.036, 0.058)*(0.80 + 0.62*dmk.x*dl - 0.40*dmk.y*dl);
+        silk *= 0.78 + 0.40*smoothstep(yA1, yA0, q.y);
+        /* the cartouche at the head of the tall panel: an oval of darker
+           silk in a gilt bead, a laurel wreath round it, a ribbon bow over */
+        vec2 cq = vec2(bxp, q.y - (yA1 - 0.62));
+        float ov = length(cq/vec2(0.30, 0.38)) - 1.0;
+        float ovIn = smoothstep(0.02, -0.02, ov);
+        float bead = 1.0 - smoothstep(0.035, 0.035 + aaM*2.0, abs(ov*0.30));
+        float ang = atan(cq.y, cq.x);
+        float wrR = length(cq/vec2(0.40, 0.48));
+        float leaf = smoothstep(0.55, 0.95, 0.5 + 0.5*sin(ang*13.0 + 1.2*sin(wrR*8.0)))*(1.0 - smoothstep(0.16, 0.20, abs(wrR - 1.0)*0.46))
+                   * step(-0.92, cq.y/0.48 + 0.0);
+        float wreath = max(leaf*mmLod(0.07, aaM), bead)*field;
+        vec2 rbq = vec2(abx, q.y - (yA1 - 0.14));
+        float bow = smoothstep(aaM, -aaM, min(length(rbq/vec2(0.13, 0.055) - vec2(0.8, 0.0)) - 1.0,
+                                               max(abs(abx) - 0.03, abs(rbq.y) - 0.045)))*field;
+        float tails = smoothstep(aaM, -aaM, max(abs(abx - 0.10 - (yA1 - 0.14 - q.y)*0.35) - 0.022, max(q.y - (yA1 - 0.16), (yA1 - 0.62) - q.y)))*field*step(0.5, 1.0 - ovIn);
+        /* the frieze panel: a garland of leaves swagged from corner to corner,
+           a rosette at its lowest point */
+        float fy0 = (yB0 + yB1)*0.5;
+        float sagY = fy0 + 0.20 - 0.34*(1.0 - (bxp/PH)*(bxp/PH));
+        float garl = smoothstep(0.075, 0.045, abs(q.y - sagY))*step(abx, PH - 0.12)*smoothstep(aaM, -aaM, pB + MW);
+        float gLeaf = 0.5 + 0.5*sin(bxp*48.0 + q.y*12.0);
+        float ros = smoothstep(aaM, -aaM, length(vec2(bxp, q.y - (fy0 - 0.14))) - 0.075)*smoothstep(aaM, -aaM, pB + MW);
+        /* the pilaster: three flutes, a gilt capital of two volutes under the
+           cornice, a moulded base on the dado */
+        float pu = (abx - (1.45 - PW))/PW;                  // 0 at its edge, 1 at its axis
+        float flute = (1.0 - smoothstep(0.012, 0.012 + aaM, abs(mod(abx - 1.45 + PW, PW*2.0/3.5) - PW/3.5)))
+                    *step(Z0 + 0.36, q.y)*step(q.y, Z1 - 0.86);
+        float cap = mmBandA(q.y, Z1 - 0.86, Z1 - 0.40, aaM)*pil;
+        float vol = smoothstep(aaM, -aaM, abs(length(vec2(abs(abx - 1.45) - 0.11, q.y - (Z1 - 0.52))) - 0.055) - 0.016)*pil;
+        float pbase = mmBandA(q.y, Z0, Z0 + 0.34, aaM)*pil;
+        vec3 gilt = vec3(0.60, 0.43, 0.17);
+        vec3 giltD = vec3(0.26, 0.17, 0.07);
+        vec3 frame = vec3(0.090, 0.042, 0.042);
+        vec3 pc = frame;
+        pc = mix(pc, silk, field);
+        pc = mix(pc, mix(giltD, gilt*1.25, clamp(prof, 0.0, 1.0))*faceLit, mould);
+        pc = mix(pc, silk*0.62, ovIn*field);
+        pc = mix(pc, mix(gilt*(0.55 + 0.6*leaf), gilt*1.20, bead), wreath);
+        pc = mix(pc, gilt*0.95, max(bow, tails));
+        pc = mix(pc, mix(giltD*1.4, gilt*1.05, gLeaf), garl);
+        pc = mix(pc, gilt*1.15, ros);
+        vec3 pilC = mix(vec3(0.20, 0.08, 0.08), vec3(0.30, 0.13, 0.11), smoothstep(0.0, 1.0, pu))*(1.0 - 0.45*flute);
+        pilC = mix(pilC, gilt*(0.70 + 0.35*smoothstep(Z1 - 0.86, Z1 - 0.45, q.y)), max(cap, pbase));
+        pilC = mix(pilC, gilt*1.20, vol);
+        pc = mix(pc, pilC, pil);
+        float dado = mmBandA(q.y, Z0, Z0 + 0.13, aaM);
+        float corn = mmBandA(q.y, Z1 - 0.30, Z1, aaM);
+        float cornB = mmBandA(q.y, Z1 - 0.38, Z1 - 0.32, aaM);
+        float dent = cornB*(1.0 - smoothstep(0.03, 0.03 + aaM, abs(mod(cx, 0.16) - 0.08)));
+        pc = mix(pc, gilt*(0.70 + 0.30*smoothstep(Z0, Z0 + 0.13, q.y)), dado);
+        pc = mix(pc, gilt*(0.45 + 0.55*smoothstep(Z1 - 0.30, Z1 - 0.05, q.y)), corn);
+        pc = mix(pc, mix(giltD, gilt*0.9, dent), cornB);
+        /* THE LIGHT ON IT: the gallery's lamps and the chandeliers below wash
+           the wall warm up its middle and fall away to the cornice and to the
+           far bays, so the panelling recedes into its own dark */
+        float wash = exp(-pow(cx/7.5, 2.0) - pow((q.y - washY)/3.4, 2.0));
+        pc *= (0.44 + 0.86*wash)*mix(1.0, 0.62, smoothstep(8.2, 10.0, q.y));
+        gCol = mix(gCol, pc, zon);
+        gColAmt = max(gColAmt, zon*0.94);
+        /* the relief, so the room's light models them */
+        s = mix(s, 0.20 - field*0.20 + mould*(0.25 + 0.35*clamp(prof, 0.0, 1.0)) + pil*0.45 - flute*pil*0.15
+                 + wreath*0.20 + max(corn, dado)*0.55 + cap*0.25, zon);
+        gTint = mix(gTint, 0.0, zon);
+        mmPen(pd, 1.0, 0.75*zon*(1.0 - pil));
+        mmPen(pd + MW, 1.0, 0.60*zon*(1.0 - pil));
+        mmPen(pd + MW*0.62, 1.0, 0.30*zon*(1.0 - pil));
+        mmPen(ov*0.30, 1.0, 0.55*zon*field);
+        mmPen(abx - (1.45 - PW), 1.0, 0.65*zon);
+        mmPen(q.y - Z0 - 0.13, 1.0, 0.55*zon);
+        mmPen(q.y - (Z1 - 0.30), 1.0, 0.55*zon);
+        mmPen(q.y - (Z1 - 0.86), 1.0, 0.45*zon*pil);
+        occ = max(occ, zon);
+  }
+}
+#endif
+
 /* 20  MUSICIANS' GALLERY -- the Ballroom as the room the band plays in: the
    Grand Ballroom, the Musicians' Gallery. A balcony 13 m long on carved
    consoles, its parapet panelled with a wreath in every panel; behind it, in
@@ -1586,118 +1707,8 @@ float subjMusic(vec2 q, float cx, float ax, float dqm, out float occ){
     float Z0 = mix(FL + 3.16, FL + 0.05, side);
     const float Z1 = 10.05;
     float zon = mmBandA(q.y, Z0, Z1, aaM);
-    if (zon > 0.001) {
-      /* ROUND 39 (RHODONITE): CARVED, NOT A GRID. Survey 6, judge 2: "the
-         back wall above the minstrel gallery is a flat grid of identical red
-         panels outlined by thin gold rectangles, like a CSS box grid". A
-         ballroom's upper wall is a RHYTHM, not a grid: fluted gilt pilasters
-         on every other console (2.9 m), and between each pair ONE tall silk
-         panel in a carved bolection frame -- the frame lit along its lower
-         edges by the chandeliers and the gallery under it and in shade along
-         its upper -- a carved laurel cartouche at its head on a ribbon, the
-         silk a woven damask with a sheen, a garland swagged across the
-         frieze over it, and the whole wall taking the light of the gallery
-         and the chandeliers, falling away to the cornice and the sides. */
-      float bxp = mod(cx + 1.45, 2.90) - 1.45;           // across a bay, 0 at its panel's middle
-      float abx = abs(bxp);
-      float yA0 = mix(FL + 3.48, FL + 0.40, side);
-      const float yA1 = 8.48, yB0 = 8.78, yB1 = 9.52, MW = 0.11;
-      const float PW = 0.17;                              // the pilaster's half-width
-      float pil = smoothstep(1.45 - PW - aaM, 1.45 - PW + aaM, abx);
-      float PH = 1.08;                                    // the panel's half-width
-      float pAy = (yA0 + yA1)*0.5, pAh = (yA1 - yA0)*0.5;
-      float pA = mmBox(vec2(bxp, q.y - pAy), vec2(PH, pAh), 0.04);
-      float pB = mmBox(vec2(bxp, q.y - (yB0 + yB1)*0.5), vec2(PH, (yB1 - yB0)*0.5), 0.03);
-      float pd = min(pA, pB);
-      float field = smoothstep(aaM, -aaM, pd + MW)*(1.0 - pil);
-      float mould = smoothstep(aaM, -aaM, pd)*(1.0 - field)*(1.0 - pil);
-      float mu = clamp(-(pd)/MW, 0.0, 1.0);               // 0 at the frame's outer edge, 1 at its inner
-      /* the bolection's section: an ogee -- out, a deep quirk, a bead in --
-         and which way this side of the frame faces */
-      float prof = 0.55 + 0.45*sin(mu*6.2832*0.75 + 0.6) - 0.50*(1.0 - smoothstep(0.0, 0.10, abs(mu - 0.62)));
-      float upF = q.y > (pA < pB ? pAy : (yB0 + yB1)*0.5) ? 1.0 : -1.0;
-      vec2 rel = vec2(abx/PH, (q.y - (pA < pB ? pAy : (yB0 + yB1)*0.5))/(pA < pB ? pAh : (yB1 - yB0)*0.5));
-      float onTopBot = step(abs(rel.x), abs(rel.y));
-      float faceLit = mix(0.95, mix(0.55, 1.35, step(upF, 0.0)), onTopBot);    // lower rails catch the light from below
-      /* the field: a wine silk woven in a damask, its sheen lifting where
-         the light rakes up it from the gallery */
-      vec2 dmk = mmDamask(vec2(cx, q.y), 0.42, aaM*0.9, 0.0);
-      float dl = mmLod(0.42, aaM);
-      vec3 silk = vec3(0.150, 0.036, 0.058)*(0.80 + 0.62*dmk.x*dl - 0.40*dmk.y*dl);
-      silk *= 0.78 + 0.40*smoothstep(yA1, yA0, q.y);
-      /* the cartouche at the head of the tall panel: an oval of darker
-         silk in a gilt bead, a laurel wreath round it, a ribbon bow over */
-      vec2 cq = vec2(bxp, q.y - (yA1 - 0.62));
-      float ov = length(cq/vec2(0.30, 0.38)) - 1.0;
-      float ovIn = smoothstep(0.02, -0.02, ov);
-      float bead = 1.0 - smoothstep(0.035, 0.035 + aaM*2.0, abs(ov*0.30));
-      float ang = atan(cq.y, cq.x);
-      float wrR = length(cq/vec2(0.40, 0.48));
-      float leaf = smoothstep(0.55, 0.95, 0.5 + 0.5*sin(ang*13.0 + 1.2*sin(wrR*8.0)))*(1.0 - smoothstep(0.16, 0.20, abs(wrR - 1.0)*0.46))
-                 * step(-0.92, cq.y/0.48 + 0.0);
-      float wreath = max(leaf*mmLod(0.07, aaM), bead)*field;
-      vec2 rbq = vec2(abx, q.y - (yA1 - 0.14));
-      float bow = smoothstep(aaM, -aaM, min(length(rbq/vec2(0.13, 0.055) - vec2(0.8, 0.0)) - 1.0,
-                                             max(abs(abx) - 0.03, abs(rbq.y) - 0.045)))*field;
-      float tails = smoothstep(aaM, -aaM, max(abs(abx - 0.10 - (yA1 - 0.14 - q.y)*0.35) - 0.022, max(q.y - (yA1 - 0.16), (yA1 - 0.62) - q.y)))*field*step(0.5, 1.0 - ovIn);
-      /* the frieze panel: a garland of leaves swagged from corner to corner,
-         a rosette at its lowest point */
-      float fy0 = (yB0 + yB1)*0.5;
-      float sagY = fy0 + 0.20 - 0.34*(1.0 - (bxp/PH)*(bxp/PH));
-      float garl = smoothstep(0.075, 0.045, abs(q.y - sagY))*step(abx, PH - 0.12)*smoothstep(aaM, -aaM, pB + MW);
-      float gLeaf = 0.5 + 0.5*sin(bxp*48.0 + q.y*12.0);
-      float ros = smoothstep(aaM, -aaM, length(vec2(bxp, q.y - (fy0 - 0.14))) - 0.075)*smoothstep(aaM, -aaM, pB + MW);
-      /* the pilaster: three flutes, a gilt capital of two volutes under the
-         cornice, a moulded base on the dado */
-      float pu = (abx - (1.45 - PW))/PW;                  // 0 at its edge, 1 at its axis
-      float flute = (1.0 - smoothstep(0.012, 0.012 + aaM, abs(mod(abx - 1.45 + PW, PW*2.0/3.5) - PW/3.5)))
-                  *step(Z0 + 0.36, q.y)*step(q.y, Z1 - 0.86);
-      float cap = mmBandA(q.y, Z1 - 0.86, Z1 - 0.40, aaM)*pil;
-      float vol = smoothstep(aaM, -aaM, abs(length(vec2(abs(abx - 1.45) - 0.11, q.y - (Z1 - 0.52))) - 0.055) - 0.016)*pil;
-      float pbase = mmBandA(q.y, Z0, Z0 + 0.34, aaM)*pil;
-      vec3 gilt = vec3(0.60, 0.43, 0.17);
-      vec3 giltD = vec3(0.26, 0.17, 0.07);
-      vec3 frame = vec3(0.090, 0.042, 0.042);
-      vec3 pc = frame;
-      pc = mix(pc, silk, field);
-      pc = mix(pc, mix(giltD, gilt*1.25, clamp(prof, 0.0, 1.0))*faceLit, mould);
-      pc = mix(pc, silk*0.62, ovIn*field);
-      pc = mix(pc, mix(gilt*(0.55 + 0.6*leaf), gilt*1.20, bead), wreath);
-      pc = mix(pc, gilt*0.95, max(bow, tails));
-      pc = mix(pc, mix(giltD*1.4, gilt*1.05, gLeaf), garl);
-      pc = mix(pc, gilt*1.15, ros);
-      vec3 pilC = mix(vec3(0.20, 0.08, 0.08), vec3(0.30, 0.13, 0.11), smoothstep(0.0, 1.0, pu))*(1.0 - 0.45*flute);
-      pilC = mix(pilC, gilt*(0.70 + 0.35*smoothstep(Z1 - 0.86, Z1 - 0.45, q.y)), max(cap, pbase));
-      pilC = mix(pilC, gilt*1.20, vol);
-      pc = mix(pc, pilC, pil);
-      float dado = mmBandA(q.y, Z0, Z0 + 0.13, aaM);
-      float corn = mmBandA(q.y, Z1 - 0.30, Z1, aaM);
-      float cornB = mmBandA(q.y, Z1 - 0.38, Z1 - 0.32, aaM);
-      float dent = cornB*(1.0 - smoothstep(0.03, 0.03 + aaM, abs(mod(cx, 0.16) - 0.08)));
-      pc = mix(pc, gilt*(0.70 + 0.30*smoothstep(Z0, Z0 + 0.13, q.y)), dado);
-      pc = mix(pc, gilt*(0.45 + 0.55*smoothstep(Z1 - 0.30, Z1 - 0.05, q.y)), corn);
-      pc = mix(pc, mix(giltD, gilt*0.9, dent), cornB);
-      /* THE LIGHT ON IT: the gallery's lamps and the chandeliers below wash
-         the wall warm up its middle and fall away to the cornice and to the
-         far bays, so the panelling recedes into its own dark */
-      float wash = exp(-pow(cx/7.5, 2.0) - pow((q.y - (FL + 3.0))/3.4, 2.0));
-      pc *= (0.50 + 0.95*wash)*mix(1.0, 0.62, smoothstep(8.2, 10.0, q.y));
-      gCol = mix(gCol, pc, zon);
-      gColAmt = max(gColAmt, zon*0.94);
-      /* the relief, so the room's light models them */
-      s = mix(s, 0.20 - field*0.20 + mould*(0.25 + 0.35*clamp(prof, 0.0, 1.0)) + pil*0.45 - flute*pil*0.15
-               + wreath*0.20 + max(corn, dado)*0.55 + cap*0.25, zon);
-      gTint = mix(gTint, 0.0, zon);
-      mmPen(pd, 1.0, 0.75*zon*(1.0 - pil));
-      mmPen(pd + MW, 1.0, 0.60*zon*(1.0 - pil));
-      mmPen(pd + MW*0.62, 1.0, 0.30*zon*(1.0 - pil));
-      mmPen(ov*0.30, 1.0, 0.55*zon*field);
-      mmPen(abx - (1.45 - PW), 1.0, 0.65*zon);
-      mmPen(q.y - Z0 - 0.13, 1.0, 0.55*zon);
-      mmPen(q.y - (Z1 - 0.30), 1.0, 0.55*zon);
-      mmPen(q.y - (Z1 - 0.86), 1.0, 0.45*zon*pil);
-      occ = max(occ, zon);
-    }
+    float yA0 = mix(FL + 3.48, FL + 0.40, side);
+    r39Panels(q, cx, aaM, Z0, yA0, FL + 3.0, zon, s, occ);
   }
 #endif
   return s;
@@ -1920,6 +1931,16 @@ float subjDais(vec2 q, float cx, float ax, out float occ){
     float fr = inOpen*step(SP - 0.10, q.y)*(1.0 - smoothstep(0.0, 0.020 + apx, abs(hemD - 0.012)));
     gCol = mix(gCol, vec3(0.62, 0.44, 0.16), fr);
     gColAmt = max(gColAmt, fr);
+  }
+  /* ROUND 39 (RHODONITE): THE WALL EITHER SIDE OF THE STAGE was its damask
+     ground and nothing else -- a mottled field of cloud, lit violet on one
+     side, across half the suite's upper frame. It is panelled as the
+     ballroom's own upper wall is (r39Panels): a pilaster just clear of the
+     proscenium's entablature, then a bay to every 2.9 m out to the corners. */
+  {
+    float aaD = max(apx*0.8, 0.006);
+    float onW = smoothstep(HW + 0.86, HW + 0.86 + aaD, ax);
+    r39Panels(q, ax - 6.85, aaD, 0.70, 1.30, 3.6, mmBandA(q.y, 0.70, 10.05, aaD)*onW, s, occ);
   }
 #endif
   return s;
@@ -12988,8 +13009,13 @@ void main(){
     float skip = max(step(abs(cg + 3.2), 0.95), step(abs(cg - 2.7), 0.85));
     vec2 lp = vec2(mod(cg + 0.45, 1.80) - 0.90, q.y - 5.98);
     float dl = length(vec2(lp.x, lp.y*1.5));
-    col += vec3(1.0, 0.72, 0.38) * uGain * onG * (1.0 - skip) * (exp(-dl*26.0)*0.60 + exp(-dl*3.0)*0.09);
-    col += vec3(1.0, 0.64, 0.32) * uGain * onG * mmBand(q.y, 5.50, 7.40) * 0.034;
+    col += vec3(1.0, 0.72, 0.38) * uGain * onG * (1.0 - skip) * (exp(-dl*26.0)*0.60 + exp(-dl*3.0)*0.13);
+    col += vec3(1.0, 0.64, 0.32) * uGain * onG * mmBand(q.y, 5.50, 7.40) * 0.052;
+    /* (round 39, judge 1: "the musicians' balcony is tiny" -- so it is the
+       room's lit focal point: its lamps' warmth spilling down the consoles
+       and the wall under it, and up into the valance) */
+    col += vec3(1.0, 0.62, 0.30) * uGain * (1.0 - smoothstep(6.0, 8.6, abs(cg)))
+         * exp(-pow((q.y - 5.2)/1.9, 2.0)) * 0.020;
     /* THE BAND, standing at its desks against that glow (ptPlayer): two
        fiddles, the harpist by her harp, the bass player behind his bass and a
        flute at the far desk. Dark, because a figure between you and a lamp is
@@ -15736,7 +15762,7 @@ void main(){
       float globes = exp(-length(vec2(R.x - pX - sign(pX + 1e-3)*0.30, (R.y - 2.62)*0.6))*6.0)*step(abs(pX), sp*0.9);
       float fres = 0.20 + 0.80*pow(1.0 - clamp(-normalize(vWorld - uCamera).y, 0.0, 1.0), 3.0);
       pudR = (nightW*pane*(0.055 + 0.050*smoothstep(2.3, 5.0, R.y))*(0.6 + 0.8*wn)
-            + vec3(0.85, 0.90, 1.00)*moonR*1.3
+            + vec3(0.85, 0.90, 1.00)*moonR*0.55
             + vec3(1.00, 0.76, 0.44)*globes*1.3) * fres * puddle;
       /* the pool's edge: a hairline of light on its far lip, as standing
          water holds one */
@@ -20138,10 +20164,11 @@ float gkDraw(vec2 m, vec2 msz, float shape, float seed, float px, bool paint){
                            wfSegT(cm, vec2(0.20, 0.44), vec2(0.33, 0.0), 0.040, 0.030)),
                        wfSegT(cm, vec2(0.02, 0.44), vec2(0.04, 0.0), 0.038, 0.030));
       float hoop = mmBox(cm - vec2(0.0, 0.52), vec2(0.305, 0.016), 0.006);
-      vec2 bq = cm - vec2(0.10, 0.93);
+      /* (the cleaver struck into the top: its blade's foot is IN the wood) */
+      vec2 bq = cm - vec2(0.10, 0.895);
       bq = vec2(bq.x*0.97 - bq.y*0.24, bq.x*0.24 + bq.y*0.97);
-      float blade = mmBox(bq, vec2(0.11, 0.065), 0.010);
-      float hdl = wfSeg(cm, vec2(0.21, 0.98), vec2(0.40, 1.04), 0.022);
+      float blade = max(mmBox(bq, vec2(0.11, 0.065), 0.010), 0.858 - cm.y);
+      float hdl = wfSeg(cm, vec2(0.21, 0.945), vec2(0.40, 1.00), 0.022);
       dm = min(min(blk, legs), min(hoop, min(blade, hdl)));
       if (paint) {
         vec3 beech = vec3(0.62, 0.44, 0.26)*(0.86 + 0.20*mv);
