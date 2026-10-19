@@ -18945,7 +18945,9 @@ float gStInk = 0.0, gStMoon = 0.0;
    LIT colour after the prop ceiling as the column's flutes are -- in albedo,
    a figure on the knee had its shadow side pressed back to one pale value.
    1 everywhere else; written only where MM_SH85 is, the Heart's program) */
+#if MM_SH85
 float gR37Sh = 1.0;
+#endif
 float stEll(vec2 p, vec2 r){ return (length(p/r) - 1.0)*min(r.x, r.y); }
 float stIn(float d, float px){ return clamp(0.5 - d/max(px, 1e-5), 0.0, 1.0); }
 void stLay(inout vec3 col, inout float ink, float d, vec3 c, float px, float k){
@@ -19010,8 +19012,13 @@ float stDrawG(vec2 m, vec2 msz, float seed, float px0, bool paint){
   float wr0 = length(wc/vec2(0.095, 0.105));
   float gar = abs(wr0 - 1.0)*0.10 - 0.030;
   float garId = 0.0;
-  float veil = 1e3;
 #if MM_SH85
+  /* (round 37 graft: every line this adds to the statue is inside MM_SH85,
+     so the programs without the candelabrum -- the Hedge Maze's, and any
+     with gkDraw compiled in, the Kitchens' -- keep the text they had: a
+     changed text moved the Kitchens' tables by up to 18 levels once, a
+     compiler side effect, as round 35's Hedge) */
+  float veil = 1e3;
   /* (no wreath -- at the size a near figure is seen it was a hoop on a
      stick; the mantle's end falls free from the crossed arm's elbow nearly
      to the knee, a tapering hank of folds outside the body, its hem cut in
@@ -19036,7 +19043,9 @@ float stDrawG(vec2 m, vec2 msz, float seed, float px0, bool paint){
   }
 #endif
   float fig = min(min(min(robe, foot), min(torso, neck)), min(min(head, bun), min(arms, min(gath, gar))));
+#if MM_SH85
   fig = min(fig, veil);
+#endif
   float d = min(plinth, fig);
   if (!paint) return d*sc;
 #if MM_SH85
@@ -19049,11 +19058,10 @@ float stDrawG(vec2 m, vec2 msz, float seed, float px0, bool paint){
      the key side modelled hard */
   const float hk = 1.0;
   vec3 marble = vec3(0.60, 0.56, 0.50);
+  float kM = 0.66;
 #else
-  const float hk = 0.0;
   vec3 marble = vec3(0.84, 0.82, 0.77);
 #endif
-  float kM = mix(0.30, 0.66, hk);
   vec3 col = marble*0.5;
   float ink = 0.0, moon = 0.0;
   /* the vein and the weather, which say STONE */
@@ -19084,17 +19092,29 @@ float stDrawG(vec2 m, vec2 msz, float seed, float px0, bool paint){
   float fphase = qx/max(hw, 0.05)*2.6 + 0.55*sin(y*3.6 + seed*2.0) + seed;
   float crest = 0.5 + 0.5*cos(fphase*3.1416);
   float rnd = sqrt(max(1.0 - (qx*qx)/(hw*hw), 0.0));
-  vec3 rc = mar*(0.36 + 0.62*rnd)*(mix(0.62, 0.40, hk) + mix(0.50, 0.86, hk)*crest)*(1.0 + kM*kq*clamp(qx/hw, -1.0, 1.0));
+#if MM_SH85
+  vec3 rc = mar*(0.36 + 0.62*rnd)*(0.40 + 0.86*crest)*(1.0 + kM*kq*clamp(qx/hw, -1.0, 1.0));
+#else
+  vec3 rc = mar*(0.36 + 0.62*rnd)*(0.62 + 0.50*crest)*(1.0 + 0.30*kq*clamp(qx/hw, -1.0, 1.0));
+#endif
   /* the standing leg's knee pushes through the cloth */
   rc *= 1.0 + 0.18*exp(-pow((qx + 0.07)/0.06, 2.0) - pow((y - 0.45)/0.10, 2.0));
   rc *= 0.70 + 0.30*smoothstep(0.0, 0.30, y);
   stLay(col, ink, robe, rc, px, 0.95);
   ink *= 1.0 - stIn(torso + 0.002, px)*step(y, 0.95);
-  ink = max(ink, smoothstep(mix(0.12, 0.20, hk), 0.0, crest)*smoothstep(0.92, 0.70, y)*stIn(robe, px)*mix(0.55, 0.85, hk));
+#if MM_SH85
+  ink = max(ink, smoothstep(0.20, 0.0, crest)*smoothstep(0.92, 0.70, y)*stIn(robe, px)*0.85);
+#else
+  ink = max(ink, smoothstep(0.12, 0.0, crest)*smoothstep(0.92, 0.70, y)*stIn(robe, px)*0.55);
+#endif
   stLay(col, ink, foot, mar*0.95, px, 0.8);
   /* ---- the torso, its cloth clinging, the himation across it ---- */
   float rT = sqrt(max(1.0 - (qx*qx)/(hwT*hwT), 0.0));
+#if MM_SH85
   vec3 tc = mar*(0.40 + 0.65*rT)*(1.0 + kM*kq*clamp(qx/hwT, -1.0, 1.0));
+#else
+  vec3 tc = mar*(0.40 + 0.65*rT)*(1.0 + 0.30*kq*clamp(qx/hwT, -1.0, 1.0));
+#endif
   tc *= 1.0 + 0.16*exp(-pow((abs(qx) - 0.070)/0.045, 2.0) - pow((y - 1.135)/0.045, 2.0));
   tc *= 1.0 - 0.18*exp(-pow((abs(qx) - 0.070)/0.050, 2.0) - pow((y - 1.085)/0.025, 2.0));
   /* the MANTLE: slung from the near shoulder across the body to the far
@@ -19111,7 +19131,11 @@ float stDrawG(vec2 m, vec2 msz, float seed, float px0, bool paint){
   float mant = max(abs(acr) - mW, max(-alg - 0.02, alg - sL));
   float mOn = stIn(mant, px)*inBody;
   float mcr = 0.5 + 0.5*cos(acr/mW*4.7 + 0.7*sin(alg*11.0 + seed));
-  vec3 mc = mar*(mix(0.42, 0.30, hk) + mix(0.62, 0.86, hk)*mcr)*(1.0 + kM*kq*clamp(qx/hwT, -1.0, 1.0))*(1.0 + 0.25*smoothstep(-mW*0.3, -mW, acr));
+#if MM_SH85
+  vec3 mc = mar*(0.30 + 0.86*mcr)*(1.0 + kM*kq*clamp(qx/hwT, -1.0, 1.0))*(1.0 + 0.25*smoothstep(-mW*0.3, -mW, acr));
+#else
+  vec3 mc = mar*(0.42 + 0.62*mcr)*(1.0 + 0.30*kq*clamp(qx/hwT, -1.0, 1.0))*(1.0 + 0.25*smoothstep(-mW*0.3, -mW, acr));
+#endif
   stLay(col, ink, torso, tc, px, 0.0);
   ink = max(ink, mmInkP(torso, px, 1.0)*0.9*step(0.92, y));
   float shd = stIn(max(abs(acr - mW - 0.03) - 0.03, max(-alg, alg - sL)), px)*inBody*(1.0 - mOn);
@@ -19389,7 +19413,7 @@ float gkUrnW(float y){
   return 0.20 + 0.11*pow(t, 1.4);
 }
 float gkDraw(vec2 m, vec2 msz, float shape, float seed, float px, bool paint){
-  float nom = shape > 85.5 ? 0.62 : (shape > 84.5 ? 1.95 : (shape < 81.5 ? 1.55 : (shape < 82.5 ? 0.62 : 0.95)));
+  float nom = shape > 85.5 ? 0.62 : (shape > 84.5 ? 1.80 : (shape < 81.5 ? 1.55 : (shape < 82.5 ? 0.62 : 0.95)));
   float sc = msz.y/nom;
   vec2 q = m/sc;
   float mir = mmHash11(seed*3.71 + 1.3) < 0.5 ? -1.0 : 1.0;
@@ -19471,6 +19495,16 @@ float gkDraw(vec2 m, vec2 msz, float shape, float seed, float px, bool paint){
        own short stem carrying three, every candle guttered to its own
        height, its wax run down in tears, each burning. 1.95 m to the
        tallest flame. */
+    /* (its nominal height is 1.95 m, not the 1.80 the line at the head of
+       gkDraw gives 85: the scale is taken again here, inside the Heart's own
+       branch, so that line -- which every program with gkDraw in it
+       compiles, the Kitchens' among them -- keeps the text it had; changed,
+       the Kitchens' tables and baskets moved by up to 18 levels, a shader
+       compiler's side effect) */
+    sc = msz.y/1.95;
+    q = m/sc;
+    q.x *= mir;
+    qpx = px/sc;
     float ax = abs(q.x);
     /* (the frame budget: nothing of it stands outside a 0.40 m half-width,
        so the empty margins of its quad return at once; between the feet and
