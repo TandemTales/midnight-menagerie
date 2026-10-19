@@ -1441,3 +1441,18 @@
   color: #f6e2b2; opacity: 1;
   text-shadow: 0 1px 1px rgb(20 10 4 / .95), 0 0 3px rgb(20 10 4 / .95), 0 0 7px rgb(20 10 4 / .7);
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ROUND 38 GRAFT 5 — THE ATLAS'S SMALLER ITEMS
+   The roman numeral over each wing's name 12 px and up (it was the 11 px
+   floor at 1280, at .92) and with more contrast: full strength, its own gilt,
+   a firmer shade under it. The vellum, its tooth and falloff and the darker
+   pencil edge inside each unsurveyed outline are atlas.js _paintSurvey's.
+   ═══════════════════════════════════════════════════════════════════════════ */
+.at-name__n {
+  font-size: clamp(12px, .84vw, 13.5px);
+  opacity: 1;
+  color: color-mix(in srgb, var(--kit-gold-hi) 70%, var(--kit-name));
+  text-shadow: 0 0 2px rgb(16 8 2), 0 0 4px rgb(16 8 2 / .95), 0 1px 1px rgb(0 0 0), 0 0 8px rgb(16 8 2 / .7);
+}
+.at-name__n::before, .at-name__n::after { opacity: .9; }

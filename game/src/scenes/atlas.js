@@ -213,6 +213,28 @@ function sectionInk(slug, color) {
   return p;
 }
 
+/**
+ * The paper's tooth (round 38 graft 5): a small tile of dark and pale specks,
+ * the same on every load (a fixed LCG), laid over the vellum washes.
+ */
+let TOOTH = null;
+function toothTile() {
+  if (TOOTH) return TOOTH;
+  const c = document.createElement('canvas');
+  c.width = c.height = 96;
+  const g = c.getContext('2d');
+  const d = g.createImageData(96, 96), px = d.data;
+  let r = 0x2f6b3c1d;
+  const rnd = () => ((r = (Math.imul(r, 1664525) + 1013904223) >>> 0) / 4294967296);
+  for (let i = 0; i < px.length; i += 4) {
+    const v = rnd();
+    if (v < 0.22) { px[i] = 70; px[i + 1] = 40; px[i + 2] = 14; px[i + 3] = (rnd() * 40) | 0; }
+    else if (v > 0.9) { px[i] = 255; px[i + 1] = 236; px[i + 2] = 200; px[i + 3] = (rnd() * 34) | 0; }
+  }
+  g.putImageData(d, 0, 0);
+  return (TOOTH = c);
+}
+
 /** Round 38 graft 4: the earned wing's wash while only a few are known. */
 const FOCUS_WASH = ['rgb(210 162 92)', 'rgb(118 72 26)'];
 /** The median wing's ink inside its footprint (measured 10-19 off the
@@ -1126,10 +1148,14 @@ export class AtlasScene extends Scene {
     };
     /* the washes: gilt, and for neighbours a shade toward ochre or toward
        rose madder, so seventeen washed wings side by side are seventeen */
+    /* round 38 graft 5 (J2): not seventeen flat bright cream plates -- a
+       warm AGED VELLUM, a step down from the paper's palest cream, so the
+       sheet keeps its tone with every wing surveyed (its tooth and the
+       candle's falloff are laid over all of them below) */
     const WASH = [
-      ['rgb(236 204 140)', 'rgb(176 128 60)'],
-      ['rgb(226 190 128)', 'rgb(160 112 52)'],
-      ['rgb(232 196 150)', 'rgb(168 112 76)'],
+      ['rgb(224 192 132)', 'rgb(150 104 48)'],
+      ['rgb(214 180 120)', 'rgb(140 96 42)'],
+      ['rgb(220 184 136)', 'rgb(148 96 62)'],
     ];
     const pale = this._tok('--kit-name', '#e9d3a6');
     const goldHi = this._tok('--kit-gold-hi', '#e6c98a');
@@ -1165,6 +1191,18 @@ export class AtlasScene extends Scene {
         pg.strokeStyle = 'rgb(20 10 4)';
         pg.lineWidth = 2.4;
         pg.translate(0.6, 0.9);
+        pg.stroke(shape);
+        pg.restore();
+        /* round 38 graft 5 (J2): a darker pencil edge just INSIDE the line,
+           so two neighbours' shared wall reads as two edges, dark either side
+           of the pale line, and the wings separate */
+        pg.save();
+        pg.setTransform(dpr, 0, 0, dpr, 0, 0);
+        pg.clip(shape);
+        pg.lineJoin = 'round';
+        pg.globalAlpha = 0.62;
+        pg.strokeStyle = 'rgb(24 12 4)';
+        pg.lineWidth = 4.2;
         pg.stroke(shape);
         pg.restore();
         pg.save();
@@ -1288,6 +1326,23 @@ export class AtlasScene extends Scene {
       pg.restore();
     }
     if (token !== this._surveyToken) return;
+    /* round 38 graft 5 (J2): with many wings surveyed, their vellum takes the
+       paper's TOOTH and the candles' FALLOFF -- lit toward the sheet's middle,
+       browning toward its edges -- laid only where a wash is (source-atop) */
+    if (!few && this.surveyed.size) {
+      pg.save();
+      pg.setTransform(dpr, 0, 0, dpr, 0, 0);
+      pg.globalCompositeOperation = 'source-atop';
+      const tooth = pg.createPattern(toothTile(), 'repeat');
+      if (tooth) { pg.fillStyle = tooth; pg.fillRect(0, 0, pw, ph); }
+      const fall = pg.createRadialGradient(pw * 0.5, ph * 0.46, Math.min(pw, ph) * 0.18, pw * 0.5, ph * 0.5, Math.hypot(pw, ph) * 0.56);
+      fall.addColorStop(0, 'rgb(255 214 150 / .12)');
+      fall.addColorStop(0.5, 'rgb(90 52 20 / 0)');
+      fall.addColorStop(1, 'rgb(46 24 8 / .46)');
+      pg.fillStyle = fall;
+      pg.fillRect(0, 0, pw, ph);
+      pg.restore();
+    }
     this._drawRose(pg, dpr, S, pale);
     this.root?.setAttribute('data-hair', '1');
   }
