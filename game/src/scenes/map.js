@@ -18,7 +18,7 @@ import {
   generateRegionMap, regionMeta, blueprintSection,
   NODE_INFO, sceneForNode, legalNextIds, reachableFrom, hazardById,
 } from '../state/mapgen.js';
-import { mapNodeMarkup, nodeSymbol, hazardSymbol, hazardGlyphMarkup, pencilStroke, seedOf, escapeHtml } from '../ui/mapnode.js';
+import { mapNodeMarkup, nodeSymbol, hazardSymbol, hazardGlyphMarkup, pencilStroke, inkLine, wobbler, seedOf, escapeHtml } from '../ui/mapnode.js';
 /* The traced plans, and the pen that inks them. Lifted out of this file when
    `scenes/atlas.js` became the SECOND screen that draws them — the format, the
    cache, the pen solver and the three drawing passes are one thing now, and the
@@ -1049,6 +1049,23 @@ export class MapScene extends Scene {
     const stains = [];
     const zoneNames = [];
     this._zoneTags = [];
+    /* ROUND 38 GRAFT 2: the routes as points every ~12 sheet px, so a
+       region's engraved name can be set where no route line runs under it */
+    const routePts = [];
+    {
+      const leg = (x1, y1, x2, y2) => {
+        const n = Math.max(2, Math.ceil(Math.hypot(x2 - x1, y2 - y1) / 12));
+        for (let i = 0; i <= n; i++) routePts.push([x1 + (x2 - x1) * i / n, y1 + (y2 - y1) * i / n]);
+      };
+      for (const e of map.edges) {
+        const a = m.byId.get(e.from), b = m.byId.get(e.to);
+        if (a && b) leg(a.x * this.SW, a.y * this.SH, b.x * this.SW, b.y * this.SH);
+      }
+      for (const id of map.startIds) {
+        const n = m.byId.get(id);
+        if (n) leg(WIN.x + 16, n.y * this.SH + 14, n.x * this.SW, n.y * this.SH);
+      }
+    }
     parts.push('<g class="mi-zones">');
     for (const hz of map.hazards) {
       const x = hz.rect.x0 * this.SW, y = hz.rect.y0 * this.SH;
@@ -1080,82 +1097,89 @@ export class MapScene extends Scene {
          turned by the wing's own seed so no two wings wear the same stain. The
          key's hatch (dots for a boon) stays in it as a breath of texture, so
          the two kinds still differ by more than colour. */
-      const deck = deckledRect(s, x, y, w, h, 40, 2.6);
-      const sx = (s & 1) ? -1 : 1, sy = (s & 2) ? -1 : 1;
-      const ix = w * .07, iy = h * .12;
-      const cxz = x + w / 2, cyz = y + h / 2;
-      const stainUrl = STAIN[hz.kind === 'boon' ? 'boon' : 'bane'];
-      /* ROUND 30: the wash becomes CRISP TIDE-MARKED INK (BRIEF-r30 fix 2:
-         "the red and blue watercolour washes become crisp tide-marked ink
-         with a key"). On the old paper a soft bloom of pigment read as a
-         stain on the drawing; this is the wing ruled round in the key's ink
-         the way a surveyor marks a condition -- a firm deckled line, the
-         paler tide line the ink left inside it as it dried, and a breath of
-         the pigment pooled along the inside of the edge -- keyed by the wax
-         seal on its corner and the plate of the same colour below. */
-      // the edge wanders the way a wash dries, never a ruled box (a ruled
-      // box read as a selection rectangle laid over the drawing)
-      const edge = deckledRect(s ^ 0x77a1, x - 6, y - 6, w + 12, h + 12, 46, 7);
-      const tide = deckledRect(s ^ 0x5bd1, x + 11, y + 11, w - 22, h - 22, 36, 5);
-      const clip = `mm-tide-${String(hz.id).replace(/[^a-z0-9-]/gi, '')}`;
-      void stainUrl; void ix; void iy; void sx; void sy; void cxz; void cyz;
-      stains.push(`<g class="mi-zone mi-zone--${hz.kind}" data-hz="${hz.id}">
-        <clipPath id="${clip}"><path d="${edge}"/></clipPath>
-        <path class="mi-zone-pool" d="${edge}"/>
-        <path class="mi-zone-rim" d="${edge}" clip-path="url(#${clip})"/>
-        <path class="mi-zone-edge" d="${edge}"/>
-        <path class="mi-zone-tide" d="${tide}"/></g>`);
-      /* ROUND 38: the region's NAME, lettered on its own surveyor's line
-         where the line runs along its top or its foot -- the line broken for
-         it, the way a boundary is labelled on a plan -- at the stretch that
-         covers the fewest rooms. Survey 5, J2's worst: the regions were
-         "translucent tinted rectangles with a felt-tip outline ... a software
-         highlight rather than ink". */
-      {
-        const FS = 21, txt = String(hz.name).toUpperCase();
-        const tw = txt.length * FS * 0.72 + (txt.length - 1) * 2.2;
-        let pick = null;
-        for (const yy of [y - 6, y + h + 6]) {
-          for (let f = 0.14; f <= 0.86; f += 0.06) {
-            const cxl = clampN(x + w * f, x + tw / 2 + 30, x + w - tw / 2 - 30);
-            const box = { left: cxl - tw / 2 - 26, right: cxl + tw / 2 + 26, top: yy - 17, bottom: yy + 17 };
-            if (box.top < WIN.y + 8 || box.bottom > WIN.y + WIN.h - 8) continue;
-            let c = 0;
-            for (const mk of marks) c += rectOverlap(box, mk);
-            const sb = this._seals[this._seals.length - 1];
-            if (sb) c += rectOverlap(box, sb) * 4;
-            /* the paper just right of the way in is where the entrances'
-               nameplates hang (_placeTags): a region's name keeps off it */
-            for (const id of map.startIds) {
-              const sn = this.model.byId.get(id);
-              if (!sn) continue;
-              const ex = sn.x * this.SW, ey = sn.y * this.SH;
-              c += rectOverlap(box, { left: ex - 70, right: ex + 330, top: ey - 50, bottom: ey + 95 }) * 2;
-            }
-            c += Math.abs(f - 0.5) * 40 + (yy > y ? 30 : 0);
-            if (!pick || c < pick.c) pick = { c, cx: cxl, cy: yy, box };
+      /* ROUND 38 GRAFT 2 -- HELIOTROPE's ink, both judges: the condition
+         SURVEYED ONTO THE PAPER, with no translucent tint under it. A bane's
+         ground is HATCHED by hand in red, a boon's STIPPLED in blue -- each
+         stroke and each dot its own, never a repeating pattern -- bounded by
+         a dash-dot surveyor's chain line with a station ringed and crossed at
+         each corner, and the condition's name ENGRAVED straight onto the
+         paper at a corner of that line, set where no room and no route runs
+         under it (in place of round 38's bright ribbon tabs). The wax seal on
+         its corner still keys it to the plate of the same colour below. */
+      void deckledRect; void STAIN;
+      const pad = 12;
+      const bx0 = x - pad, by0 = y - pad, bw = w + pad * 2, bh = h + pad * 2;
+      const rz = wobbler(s ^ 0x3c6e);
+      const clip = `mm-zclip-${String(hz.id).replace(/[^a-z0-9-]/gi, '')}`;
+      let tex = '';
+      if (hz.kind === 'boon') {
+        for (let yy = by0 + 5, row = 0; yy < by0 + bh; yy += 11, row++) {
+          for (let xx = bx0 + 5 + (row % 2) * 5.5; xx < bx0 + bw; xx += 11) {
+            const px = xx + rz() * 7, py = yy + rz() * 7, r = 1.25 + (rz() + .5) * 1.1;
+            tex += `M${(px + r).toFixed(1)} ${py.toFixed(1)}a${r.toFixed(2)} ${r.toFixed(2)} 0 1 0 ${(-2 * r).toFixed(2)} 0a${r.toFixed(2)} ${r.toFixed(2)} 0 1 0 ${(2 * r).toFixed(2)} 0`;
           }
         }
-        if (pick) {
-          (this._zoneTags = this._zoneTags || []).push(pick.box);
-          /* on a swallow-tailed tab of the region's own ink, lettered in
-             the paper's colour: the ink is too dark to read as lettering on
-             the dark sheet, and a tab is how a surveyor flags a boundary */
-          const L0 = pick.cx - tw / 2 - 22, R0 = pick.cx + tw / 2 + 22, T0 = pick.cy - 15, B0 = pick.cy + 15;
-          const tab = (i) => `M${(L0 + i).toFixed(1)} ${(T0 + i).toFixed(1)} L${(R0 - i).toFixed(1)} ${(T0 + i).toFixed(1)}`
-            + ` L${(R0 - 11 - i * .4).toFixed(1)} ${pick.cy.toFixed(1)} L${(R0 - i).toFixed(1)} ${(B0 - i).toFixed(1)}`
-            + ` L${(L0 + i).toFixed(1)} ${(B0 - i).toFixed(1)} L${(L0 + 11 + i * .4).toFixed(1)} ${pick.cy.toFixed(1)} Z`;
-          zoneNames.push(`<g class="mi-zone mi-zone--${hz.kind}" data-hz="${hz.id}">
-            <path class="mi-zone-tabshade" d="${tab(0)}" transform="translate(1.5 3)"/>
-            <path class="mi-zone-tab" d="${tab(0)}"/>
-            <path class="mi-zone-tabrule" d="${tab(3.5)}"/>
-            <text class="mi-zone-name" x="${pick.cx.toFixed(1)}" y="${(pick.cy + FS * 0.36).toFixed(1)}"
-                  text-anchor="middle">${escapeHtml(txt)}</text></g>`);
+      } else {
+        const run = bh / Math.tan(38 * Math.PI / 180);
+        for (let u = bx0 - run; u < bx0 + bw; u += 10.5 + rz() * 2.2) {
+          const a = rz() * 2.4, b = rz() * 2.4;
+          tex += `M${(u + a).toFixed(1)} ${(by0 + bh + 2).toFixed(1)}L${(u + run + b).toFixed(1)} ${(by0 - 2).toFixed(1)}`;
         }
       }
+      const C = [[bx0, by0], [bx0 + bw, by0], [bx0 + bw, by0 + bh], [bx0, by0 + bh]];
+      let chain = '';
+      for (let i = 0; i < 4; i++) {
+        const [ax0, ay0] = C[i], [ax1, ay1] = C[(i + 1) % 4];
+        chain += inkLine(s + i * 97, ax0, ay0, ax1, ay1, 1.1, 7);
+      }
+      let stn = '';
+      for (const [cx0, cy0] of C) {
+        stn += `M${cx0 + 7} ${cy0}a7 7 0 1 0 -14 0a7 7 0 1 0 14 0`
+             + `M${cx0 - 12} ${cy0}L${cx0 + 12} ${cy0}M${cx0} ${cy0 - 12}L${cx0} ${cy0 + 12}`;
+      }
+      // the name, at whichever corner of the line has the clearest paper
+      {
+        const txt = String(hz.name).toUpperCase();
+        const tw = zoneLabelWidth(txt);
+        const plates = map.startIds.map((id) => m.byId.get(id)).filter(Boolean).map((n) => ({
+          left: n.x * this.SW - 70, right: n.x * this.SW + 340, top: n.y * this.SH - 60, bottom: n.y * this.SH + 110 }));
+        const sb = this._seals[this._seals.length - 1];
+        let pick = null;
+        // [corner, which edge it rides, the text's anchor]
+        const corners = [[0, 'top', 'start'], [1, 'top', 'end'], [3, 'foot', 'start'], [2, 'foot', 'end']];
+        corners.forEach(([ci, edgeOf, anchor], order) => {
+          const [cx0, cy0] = C[ci];
+          // on the line (its dark stroke breaks the line under it), just
+          // outside it, or just inside it
+          const offs = edgeOf === 'top' ? [[0, 0], [-21, 6], [23, 10]] : [[0, 0], [21, 6], [-23, 10]];
+          for (const [dy, pen] of offs) {
+            for (const shift of [22, 52, 90, 140]) {
+              const tx = anchor === 'start' ? cx0 + shift : cx0 - shift;
+              const ty = cy0 + dy;
+              const left = anchor === 'start' ? tx : tx - tw, right = left + tw;
+              const box = { left: left - 6, right: right + 6, top: ty - 15, bottom: ty + 15 };
+              let c = pen + order * 8 + shift * 0.12;
+              if (box.left < WIN.x + 8 || box.right > WIN.x + WIN.w - 8 || box.top < WIN.y + 8 || box.bottom > WIN.y + WIN.h - 8) c += 1e7;
+              for (const mk of marks) c += rectOverlap(box, mk);
+              for (const pl of plates) c += rectOverlap(box, pl) * 2;
+              if (sb) c += rectOverlap(box, sb) * 4;
+              for (const [px, py] of routePts) {
+                if (px > box.left - 3 && px < box.right + 3 && py > box.top - 3 && py < box.bottom + 3) c += 400;
+              }
+              if (!pick || c < pick.c) pick = { c, tx, ty, anchor, box };
+            }
+          }
+        });
+        this._zoneTags.push(pick.box);
+        zoneNames.push(`<g class="mi-zone mi-zone--${hz.kind}" data-hz="${hz.id}">
+          <text class="mi-zone-name" x="${pick.tx.toFixed(1)}" y="${pick.ty.toFixed(1)}"
+                text-anchor="${pick.anchor}">${escapeHtml(txt)}</text></g>`);
+      }
       parts.push(`<g class="mi-zone mi-zone--${hz.kind}" data-hz="${hz.id}">
-        <path class="mi-zone-hatch" d="${deck}"
-              fill="url(#${hz.kind === 'boon' ? 'mm-hatch-boon' : 'mm-hatch-bane'})"/>
+        <clipPath id="${clip}"><rect x="${bx0.toFixed(1)}" y="${by0.toFixed(1)}" width="${bw.toFixed(1)}" height="${bh.toFixed(1)}"/></clipPath>
+        <path class="mi-zone-tex mi-zone-tex--${hz.kind === 'boon' ? 'stipple' : 'hatch'}" d="${tex}" clip-path="url(#${clip})"/>
+        <path class="mi-zone-line" d="${chain}"/>
+        <path class="mi-zone-stn" d="${stn}"/>
         <g class="mi-zone-key">
           <path class="mi-zone-lead" d="M${ax.toFixed(1)} ${ay.toFixed(1)} L${bx.toFixed(1)} ${by.toFixed(1)}"/>
           <path class="mi-seal-melt" d="${sealMelt(s, ax, ay, KEY / 2 + 4)}"/>
@@ -2605,6 +2629,16 @@ export class MapScene extends Scene {
 }
 
 // ── little maths ─────────────────────────────────────────────────────────────
+/** A wing condition's engraved name on the sheet (map.css .mi-zone-name):
+    700 22px Cinzel with 3px tracking (HELIOTROPE's measure, round 38). */
+let ZL_CTX = null;
+function zoneLabelWidth(txt) {
+  if (!ZL_CTX && typeof document !== 'undefined') {
+    ZL_CTX = document.createElement('canvas').getContext('2d');
+    ZL_CTX.font = '700 22px Cinzel, Georgia, serif';
+  }
+  return ZL_CTX ? ZL_CTX.measureText(txt).width + txt.length * 3 : txt.length * 17;
+}
 function clampN(v, a, b) { return Math.max(a, Math.min(b, v)); }
 function ordinal(n) {
   const s = ['th', 'st', 'nd', 'rd'], v = n % 100;
