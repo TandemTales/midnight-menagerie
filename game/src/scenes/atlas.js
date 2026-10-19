@@ -322,6 +322,10 @@ export class AtlasScene extends Scene {
        piece can wear an `at-` class: this board's corners are drawn smaller,
        to stand clear of Back and the tally on either side of the plaque. */
     board.innerHTML = `<div class="at-ground kit-ground kit-ground--deep" aria-hidden="true"><i class="kit-ground__warm"></i><i class="kit-ground__moon"></i></div>`
+      /* round 38: the frieze behind the plaque in the house's own damask,
+         crisp and candlelit (survey 5: the painted band "repeats
+         mechanically" and is blurry at this size) */
+      + '<div class="at-frieze" aria-hidden="true"></div>'
       + '<div class="at-bg" aria-hidden="true"></div>'
       /* the candle at the reading panel's foot, lighting the wall behind the
          panel: on the board, so it warms the wall and not the panel's words */
@@ -366,7 +370,10 @@ export class AtlasScene extends Scene {
          stretch of wall under the panel has a lit object standing in it and
          not only a stretch of pool (the Clubhouse's shelf keeps the same one) */
       + '<i class="kit-lantern kit-lantern--standing at-floor__lantern"></i>'
-      + '<i class="kit-prop kit-prop--candle at-floor__candle"></i>');
+      + '<i class="kit-prop kit-prop--candle at-floor__candle"></i>'
+      /* round 38: and they stand on a real ledge -- the kit's carved,
+         parcel-gilt shelf with its own shadow on the wall -- not a gilt line */
+      + '<i class="kit-ledge at-floor__ledge"></i>');
     floor.setAttribute('aria-hidden', 'true');
     side.appendChild(floor);
     body.appendChild(side);
@@ -608,6 +615,13 @@ export class AtlasScene extends Scene {
       hots.appendChild(b);
     }
     plate.appendChild(hots);
+    /* round 38: the sheet's key, in the empty paper at its foot right: what
+       a washed wing and a pencilled one mean, so "1 of 17" reads at a glance */
+    const key = el('div', 'at-key',
+      '<span class="at-key__i"><i class="at-key__sw at-key__sw--seen"></i>Surveyed</span>'
+      + '<span class="at-key__i"><i class="at-key__sw"></i>Unsurveyed</span>');
+    key.setAttribute('aria-hidden', 'true');
+    plate.appendChild(key);
     vp.appendChild(plate);
     sheet.appendChild(vp);
 
@@ -992,6 +1006,24 @@ export class AtlasScene extends Scene {
     host.textContent = '';
     const dpr = window.devicePixelRatio || 1;
     this._fitNames(pw);
+    /* where each wing is lettered, in laid-flat plate px: on a washed wing
+       the plan is lifted off the paper under its name (below) */
+    const vpr = this._vp.getBoundingClientRect();
+    const nameBox = new Map();
+    /* A FEW wings surveyed: each is the sheet's subject, named on its
+       nameplate over its top edge, and its plan is left whole under it.
+       MANY: each is lettered across its own body (atlas.css data-few). */
+    const few = this.surveyed.size <= 3;
+    this.root.dataset.few = few ? '1' : '0';
+    for (const b of this._hots.querySelectorAll('.at-hot')) {
+      const n = b.querySelector('.at-name');
+      if (!n) continue;
+      const r = n.getBoundingClientRect();
+      if (!r.width) continue;
+      nameBox.set(b.dataset.wing, {
+        x: (r.left - vpr.left) / k, y: (r.top - vpr.top) / k, w: r.width / k, h: r.height / k,
+      });
+    }
     /* ROUND 38: A HOUSE OF SEVENTEEN PARTS. Survey 5: "the sixteen unsurveyed
        wings are one faint, fuzzy undifferentiated tint ... and the one surveyed
        wing is a black ink blob". Every wing is drawn by its own FOOTPRINT now
@@ -1139,6 +1171,19 @@ export class AtlasScene extends Scene {
         toSection(pg);
         inkTrace(pg, t, { pen: clamp(2.5 * D, 1.0, 1.5), scale: D, ink: GALL, layerAlpha: 1 });
       }
+      /* the walls left off where the wing's name is lettered, the way a
+         draughtsman letters a plan: the wash laid again over them there,
+         feathered, in the wash's own colour */
+      const nb = few ? null : nameBox.get(w.slug);
+      if (nb) {
+        pg.setTransform(dpr, 0, 0, dpr, 0, 0);
+        pg.shadowColor = hi; pg.shadowBlur = 7 * dpr;
+        pg.fillStyle = hi;
+        pg.beginPath();
+        pg.ellipse(nb.x + nb.w / 2, nb.y + nb.h / 2, nb.w / 2 + 6, nb.h / 2 + 3, 0, 0, 6.2832);
+        pg.fill();
+        pg.shadowBlur = 0; pg.shadowColor = 'transparent';
+      }
       pg.restore();
       /* its edge ruled in iron-gall, and a gilt fillet just inside it */
       pg.save();
@@ -1159,7 +1204,51 @@ export class AtlasScene extends Scene {
       pg.restore();
     }
     if (token !== this._surveyToken) return;
+    this._drawRose(pg, dpr, S, pale);
     this.root?.setAttribute('data-hair', '1');
+  }
+
+  /**
+   * The sheet's compass rose, in the house's pale pencil, in the empty paper
+   * right of the Nursery (round 38): a recovered plan is a drawing, and a
+   * drawing says which way is north.
+   */
+  _drawRose(g, dpr, S, ink) {
+    const cx = 1378 * S, cy = 178 * S, r = 54 * S;
+    if (r < 10) return;
+    g.save();
+    g.setTransform(dpr, 0, 0, dpr, 0, 0);
+    g.translate(cx, cy);
+    g.strokeStyle = ink; g.fillStyle = ink;
+    g.globalAlpha = 0.8;
+    g.lineWidth = 1.1;
+    g.beginPath(); g.arc(0, 0, r, 0, 6.2832); g.stroke();
+    g.lineWidth = 0.8;
+    g.beginPath(); g.arc(0, 0, r * 0.84, 0, 6.2832); g.stroke();
+    for (let i = 0; i < 32; i++) {
+      const t = i / 32 * 6.2832, l = i % 8 === 0 ? 0.2 : i % 2 === 0 ? 0.11 : 0.06;
+      g.beginPath();
+      g.moveTo(Math.cos(t) * r * 0.84, Math.sin(t) * r * 0.84);
+      g.lineTo(Math.cos(t) * r * (0.84 - l), Math.sin(t) * r * (0.84 - l));
+      g.stroke();
+    }
+    const spike = (rot, len, wid, fill) => {
+      g.save(); g.rotate(rot);
+      g.beginPath(); g.moveTo(0, -len); g.lineTo(wid, 0); g.lineTo(0, len * 0.1); g.lineTo(-wid, 0); g.closePath();
+      if (fill) g.fill(); else g.stroke();
+      g.restore();
+    };
+    g.lineWidth = 0.9;
+    spike(0, r * 0.78, r * 0.17, true); spike(Math.PI, r * 0.78, r * 0.17, false);
+    spike(Math.PI / 2, r * 0.6, r * 0.13, false); spike(-Math.PI / 2, r * 0.6, r * 0.13, false);
+    spike(Math.PI / 4, r * 0.42, r * 0.08, false); spike(-Math.PI / 4, r * 0.42, r * 0.08, false);
+    spike(Math.PI * 3 / 4, r * 0.42, r * 0.08, false); spike(-Math.PI * 3 / 4, r * 0.42, r * 0.08, false);
+    g.globalAlpha = 0.92;
+    g.font = `700 ${Math.max(11, Math.round(r * 0.42))}px Cinzel, Georgia, serif`;
+    g.textAlign = 'center'; g.textBaseline = 'alphabetic';
+    g.shadowColor = 'rgb(22 12 4)'; g.shadowBlur = 3;
+    g.fillText('N', 0, -r - 5);
+    g.restore();
   }
 
   /**
@@ -1181,13 +1270,13 @@ export class AtlasScene extends Scene {
     g.font = `${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`;
     const ls = parseFloat(cs.letterSpacing) || 0;
     const width = (s) => g.measureText(s.toUpperCase()).width + ls * s.length;
-    for (const b of this._hots.querySelectorAll('.at-hot')) {
-      const w = this.wings.find((x) => x.slug === b.dataset.wing);
-      const t = b.querySelector('.at-name__t');
-      if (!w || !t) continue;
+    /* every way this wing's name can be set inside its footprint, widest
+       first: its first half on one line, then on two balanced lines, then its
+       shorter forms, then its second half ("The Bathhouse and Rain Wing" ->
+       "Rain Wing"). A single word may run a little past the wing's walls, as
+       lettering on a plan does; a phrase may not. */
+    const optionsFor = (w) => {
       const room = w.span ? (w.span[1] - w.span[0]) * S * 0.96 : w.nw * pw * 0.7;
-      /* "The Moon Courtyard and Pumpkin Grounds": its first half, then its
-         shorter forms, then its second half */
       const halves = String(w.meta.name).replace(/^The\s+/i, '').split(/\s+and\s+/i);
       const tries = [];
       for (const h of halves.slice(0, 2)) {
@@ -1196,39 +1285,57 @@ export class AtlasScene extends Scene {
         if (words.length > 2) tries.push(words.slice(1).join(' '));
         if (words.length > 1) tries.push(words[words.length - 1]);
       }
-      let lines = null;
+      const out = [];
       for (const s of tries) {
-        /* one word may run a little past the wing's walls, as lettering on a
-           plan does; a phrase may not */
-        if (width(s) <= room * (/\s/.test(s) ? 1 : 1.3)) { lines = [s]; break; }
         const ws = s.split(/\s+/);
+        if (width(s) <= room * (ws.length > 1 ? 1 : 1.42)) out.push({ lines: [s], m: width(s) });
         if (ws.length < 2) continue;
         let best = null;
         for (let i = 1; i < ws.length; i++) {
           const a = ws.slice(0, i).join(' '), c = ws.slice(i).join(' ');
           const m = Math.max(width(a), width(c));
-          if (!best || m < best.m) best = { m, l: [a, c] };
+          if (!best || m < best.m) best = { m, lines: [a, c] };
         }
-        if (best && best.m <= room) { lines = best.l; break; }
+        if (best && best.m <= room) out.push(best);
       }
-      t.innerHTML = lines ? lines.map(esc).join('<br>') : '';
-      t.hidden = !lines;
+      return out;
+    };
+    const set = (t, o) => {
+      t.innerHTML = o ? o.lines.map(esc).join('<br>') : '';
+      t.hidden = !o;
+    };
+    const items = [];
+    for (const b of this._hots.querySelectorAll('.at-hot')) {
+      const w = this.wings.find((x) => x.slug === b.dataset.wing);
+      const t = b.querySelector('.at-name__t');
+      if (!w || !t) continue;
+      const opts = optionsFor(w);
+      const it = { n: b.querySelector('.at-name'), t, opts, i: 0 };
+      set(t, opts[0] || null);
+      items.push(it);
     }
     /* and no two names on one line of the sheet: where two wings' lettering
-       would touch, the one with less room keeps its numeral alone */
-    const names = [...this._hots.querySelectorAll('.at-name')];
+       would touch, the one taking more paper steps down to its next, narrower
+       setting -- and to its numeral alone only when it has none left */
     const pad = 3;
-    for (let pass = 0; pass < 3; pass++) {
-      const rs = names.map((n) => n.getBoundingClientRect());
+    for (let pass = 0; pass < 6; pass++) {
+      const rs = items.map((it) => it.n.getBoundingClientRect());
       let moved = false;
-      for (let i = 0; i < names.length; i++) {
-        for (let j = i + 1; j < names.length; j++) {
+      for (let i = 0; i < items.length; i++) {
+        for (let j = i + 1; j < items.length; j++) {
           const a = rs[i], c = rs[j];
           if (a.right + pad < c.left || c.right + pad < a.left || a.bottom + pad < c.top || c.bottom + pad < a.top) continue;
-          const ti = names[i].querySelector('.at-name__t'), tj = names[j].querySelector('.at-name__t');
-          const victim = (!ti.hidden && (tj.hidden || a.width * a.height >= c.width * c.height)) ? ti : tj;
-          if (victim.hidden) continue;
-          victim.hidden = true;
+          const A = items[i], C = items[j];
+          const can = (it) => !it.t.hidden;
+          let v = null;
+          if (can(A) && can(C)) v = a.width * a.height >= c.width * c.height ? A : C;
+          else v = can(A) ? A : can(C) ? C : null;
+          if (!v) continue;
+          const cur = v.opts[v.i];
+          let k = v.i + 1;
+          while (k < v.opts.length && cur && v.opts[k].m >= cur.m && v.opts[k].lines.length >= cur.lines.length) k++;
+          v.i = k;
+          set(v.t, v.opts[k] || null);
           moved = true;
         }
       }

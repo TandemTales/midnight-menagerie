@@ -1282,3 +1282,100 @@
   opacity: .92;
   background: radial-gradient(closest-side, color-mix(in srgb, var(--wash, rgb(236 204 140)) 86%, rgb(150 104 50)) 70%, color-mix(in srgb, var(--wash, rgb(236 204 140)) 50%, transparent) 88%, transparent 100%);
 }
+
+/* ── the frieze behind the plaque: the house's damask, candlelit ──
+   room.webp paints a band of fan damask under its cornice (10.5-17.2% down
+   the picture, which is cover-fitted from its foot); at a screen's size it is
+   a soft, mechanically repeating smear behind the plaque. Over exactly that
+   band: the samples' own scrollwork (damask.webp) at its true size, violet
+   on the wall's dark, brought up where the two corner candles and the
+   plaque's own light reach it and lost in the dark between. */
+.at-frieze {
+  --pic-h: max(56.25vw, 100vh);
+  position: absolute; left: 0; right: 0; z-index: 1; pointer-events: none;
+  top: calc(100vh - var(--pic-h) * .896);
+  height: calc(var(--pic-h) * .068);
+  background:
+    linear-gradient(180deg, rgb(8 5 11 / .7), transparent 22%, transparent 78%, rgb(8 5 11 / .75)),
+    #120a18;
+  box-shadow: inset 0 1px 0 rgb(214 170 104 / .22), inset 0 -1px 0 rgb(214 170 104 / .16);
+  overflow: hidden;
+}
+.at-frieze::before {
+  content: ''; position: absolute; inset: -40% 0;
+  background: url("../../assets/ui/kit/damask.webp") 50% 50% / auto 100% repeat-x;
+  opacity: .5;
+  -webkit-mask-image:
+    radial-gradient(30% 300% at 9% 0%, #000 0%, rgb(0 0 0 / .6) 50%, rgb(0 0 0 / .14) 100%),
+    radial-gradient(30% 300% at 91% 0%, #000 0%, rgb(0 0 0 / .6) 50%, rgb(0 0 0 / .14) 100%),
+    radial-gradient(24% 260% at 50% 0%, rgb(0 0 0 / .8) 0%, transparent 100%),
+    linear-gradient(rgb(0 0 0 / .16), rgb(0 0 0 / .16));
+          mask-image:
+    radial-gradient(30% 300% at 9% 0%, #000 0%, rgb(0 0 0 / .6) 50%, rgb(0 0 0 / .14) 100%),
+    radial-gradient(30% 300% at 91% 0%, #000 0%, rgb(0 0 0 / .6) 50%, rgb(0 0 0 / .14) 100%),
+    radial-gradient(24% 260% at 50% 0%, rgb(0 0 0 / .8) 0%, transparent 100%),
+    linear-gradient(rgb(0 0 0 / .16), rgb(0 0 0 / .16));
+  filter: saturate(.8) brightness(.62);
+}
+.at-frieze::after {
+  content: ''; position: absolute; inset: 0;
+  background:
+    radial-gradient(26% 240% at 9% 0%, rgb(255 184 104 / .3), transparent 70%),
+    radial-gradient(26% 240% at 91% 0%, rgb(255 184 104 / .3), transparent 70%);
+  mix-blend-mode: soft-light;
+}
+.kit-board.has-backdrop .at-frieze { display: none; }
+
+/* ── the still life's ledge ── */
+.at-floor::before { content: none; }
+.at-floor__ledge {
+  position: absolute; z-index: 0;
+  left: -3%; right: -3%;
+  --ledge-h: clamp(30px, 4.4vh, 40px);
+  /* the props' feet are a few px below the floor's own edge (.at-floor__*
+     bottoms): the ledge's top is there, less its walnut top's depth */
+  top: calc(100% + clamp(10px, 1.7vh, 15px) - var(--ledge-h) * .22);
+  filter: drop-shadow(0 8px 10px rgb(0 0 0 / .7));
+}
+@container (max-height: 44px) { .at-floor__ledge { display: none; } }
+
+/* ── the sheet's key (atlas.js), bottom right of the plan ── */
+.at-key {
+  position: absolute; right: 2.2%; bottom: 3.2%;
+  display: grid; gap: 4px;
+  padding: 6px 10px 6px 8px;
+  transform: scale(calc(1 / var(--k, 1)));
+  transform-origin: 100% 100%;
+  pointer-events: none;
+  font-family: var(--font-display); font-weight: 700;
+  font-size: clamp(11px, .76vw, 12.5px);
+  letter-spacing: .08em; text-transform: uppercase;
+  color: var(--kit-name);
+  text-shadow: 0 0 3px rgb(22 12 4), 0 1px 1px rgb(0 0 0);
+  /* ruled round in the pencil, as a drawing's key is */
+  box-shadow: inset 0 0 0 1px rgb(233 211 166 / .55), inset 0 0 0 3px transparent, inset 0 0 0 4px rgb(233 211 166 / .25);
+  background: rgb(26 15 7 / .32);
+  transition: opacity var(--t-quick) var(--ease-out);
+}
+.at-key__i { display: flex; align-items: center; gap: 7px; white-space: nowrap; }
+.at-key__sw {
+  width: 15px; height: 11px; flex: none;
+  border: 1px solid rgb(233 211 166 / .85);
+  border-radius: 2px 4px 2px 3px;
+}
+.at-key__sw--seen {
+  border: 1.5px solid var(--kit-gall);
+  background: rgb(236 204 140);
+  box-shadow: inset 0 0 0 1.5px var(--kit-gold-hi), 0 0 0 1px rgb(236 204 140 / .5);
+}
+.at-root[data-zoom="1"] .at-key { opacity: 0; }
+
+/* the plan is lifted off the paper under a washed wing's name in the canvas
+   itself now (atlas.js _paintSurvey), in exactly its wash: no mask here */
+.at-hot.is-surveyed .at-name::before { content: none; }
+/* a few wings known: each wears its nameplate for good, over its top edge,
+   and is not lettered across its plan; many: each is lettered, hovered or not */
+.at-root[data-few="1"] .at-hots .at-hot.is-surveyed .at-hot__tag { opacity: 1; }
+.at-root[data-few="1"] .at-hots .at-hot.is-surveyed .at-name { opacity: 0; }
+.at-root[data-few="0"] .at-hots .at-hot.is-surveyed.is-hover .at-name { opacity: 1; }
+.at-root[data-zoom="1"] .at-hots .at-hot.is-surveyed .at-name { opacity: 0; }
