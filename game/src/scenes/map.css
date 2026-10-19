@@ -1694,3 +1694,42 @@
   top: calc(100% + 3px + 55px + var(--mn-dy, 0px));
   font-size: 13.5px; letter-spacing: .3em; text-indent: .3em;
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ROUND 38 GRAFT 6 — THE KEY SEATED IN ITS PLATE (both judges)
+   The floating KEY ribbon over the plate's top rule is dropped: KEY is
+   engraved on the plate's own left end again, across both rows, parted from
+   the marks by a gilt hairline (HELIOTROPE's, and the baseline's place), and
+   the marks keep round 38's size up.
+   ═══════════════════════════════════════════════════════════════════════════ */
+.map-screen .map-legend {
+  grid-template-columns: auto repeat(5, auto);
+  padding-top: 4px;
+  padding-left: calc(var(--plate-h) * .5);
+}
+.map-screen .map-legend .lg-h {
+  position: static; transform: none;
+  grid-row: 1 / 3; grid-column: 1;
+  display: block; height: auto;
+  margin: 0 3px 0 0;
+  padding: 2px 10px 2px 0;
+  border: 0; border-image: none;
+  border-right: 1px solid color-mix(in srgb, var(--kit-gold) 55%, transparent);
+  filter: none;
+  font-size: 13px; letter-spacing: .22em; text-indent: 0;
+}
+.map-screen .map-legend .lg-h::before, .map-screen .map-legend .lg-h::after { content: none; }
+@media (max-width: 1500px) {
+  .map-screen .map-legend .lg-h { font-size: 12px; letter-spacing: .16em; padding-right: 7px; }
+}
+/* ...and at the Deck's 1280 the bar takes the KEY's column back out of its
+   air, never its words (HELIOTROPE's tightening): the plates' gaps and their
+   ends' padding a few px tighter, so THE WHOLE HOUSE stays on the screen */
+@media (max-width: 1500px) {
+  .map-screen .map-bar { gap: 5px; }
+  .map-screen .map-legend { column-gap: 6px; padding-right: calc(var(--plate-h) * .46); padding-left: calc(var(--plate-h) * .42); }
+  .map-screen .map-legend .lg-h { letter-spacing: .12em; padding-right: 6px; margin-right: 1px; }
+  .map-screen .lg-i { gap: 4px; }
+  .map-screen .note { gap: 4px; padding-right: calc(var(--plate-h) * .5); }
+  .map-screen .map-atlas { padding-right: calc(var(--plate-h) * .55); }
+}
