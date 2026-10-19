@@ -11850,6 +11850,17 @@ float wallH(vec2 q, out float occ){
         float lean = (mmHash11(fid*6.7 + uSeed) - 0.5)*0.30;
         vec2 F = vec2(lean*fh*0.38, fh*0.36);
         float dT = 1e3;
+        /* (round 37 graft, the frame budget: the twenty-two members reach
+           no further from the fork than the three longest limb, bough and
+           twig laid end to end (0.72 of fh*S) and their girth; a pixel
+           outside that box is more than two pixels from every member, so
+           its coverage and its ink are 0 whatever the walk finds -- it is
+           not walked. The columns over each oak were the whole sky.) */
+        float reachT = 0.72*fh*S + w0;
+        bool inTree = abs(pp.x - F.x) < reachT + 2.0*hpx
+                   && pp.y < F.y + reachT + 2.0*hpx
+                   && pp.y > min(-w0*1.3, F.y - reachT) - 2.0*hpx;
+        if (inTree) {
         /* the bole, flared at its foot */
         {
           vec2 pa = pp, ba = F;
@@ -11889,6 +11900,7 @@ float wallH(vec2 q, out float occ){
               dT = min(dT, length(pa - ba*t) - mix(w0*0.15, w0*0.05, t));
             }
           }
+        }
         }
         /* the ink: a pixel's coverage of the member, its hairline twigs
            laid as a pen line a pixel wide and as faint as they are thin */
