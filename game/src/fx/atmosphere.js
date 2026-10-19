@@ -1474,6 +1474,11 @@ export const REGIONS = {
                   fight -- the empty room's foreground, not the fight's */
                { shape: 32, ahead: 3.3, across: 3.5, tone: 0.97, scale: 1.20, keep: true, hand: true, seed: 11.0 },
                { shape: 32, ahead: 3.8, across: -3.0, tone: 0.97, keep: true, hand: true, seed: 42.0, hM: 1.25, wM: 1.90 },
+               /* (round 39 graft, J2: "a bench or tub in the near centre, not
+                  a lone drain"; J3: the bench with stacked towels and a pail --
+                  a bath dealt with seed 20-40 is the towel bench, wgTwSD) at
+                  the head of the duckboard, under the hand in a fight */
+               { shape: 32, ahead: 4.75, across: 0.35, tone: 0.97, keep: true, hand: true, seed: 24.0, hM: 1.00, wM: 1.50 },
                { shape: 32, edge: 0.88, z: -3.8, tone: 0.93 },
                /* and two more down the hall, on the left and the middle,
                   where the files have room for them */
@@ -1489,6 +1494,9 @@ export const REGIONS = {
                  pool: { ahead: 4.2, across: 0.3, abs: true, rAlong: 2.2, rAcross: 3.0, k: 2.2, color: '#e8b070' },
                  pool2: { ahead: 5.6, across: -3.4, abs: true, rAlong: 2.6, rAcross: 2.2, k: 1.5, color: '#7fb4dc' } },
     cineFloor: 0.12,
+    /* (round 39 graft, PERIDOT's: the fight's own warm pool half the wing's,
+       so the wet tiles round it stay dark and take the windows as a mirror) */
+    stagePool: { k: 0.50 },
     /* (round 39: and the post grade's canvas tooth at under half the house's
        -- on a broad lit floor its blotches were the "mottled tile field") */
     grain: 0.012, tooth: 0.042,
@@ -2731,7 +2739,10 @@ export const ROOM_KINDS = {
                   its stool and pail between them) */
                { shape: 32, ahead: 3.4, across: 3.3, tone: 0.97, scale: 1.12, keep: true, hand: true, seed: 13.0 },
                { shape: 32, ahead: 3.9, across: -3.4, tone: 0.97, scale: 1.08, keep: true, hand: true, seed: 14.0 },
-               { shape: 32, ahead: 5.4, across: 1.4, tone: 0.96, keep: true, seed: 43.0, hM: 1.25, wM: 1.90 }],
+               { shape: 32, ahead: 5.4, across: 1.4, tone: 0.96, keep: true, seed: 43.0, hM: 1.25, wM: 1.90 },
+               /* (round 39 graft: and the towel bench with its pail across
+                  from the horse, under the hand in a fight) */
+               { shape: 32, ahead: 4.6, across: -1.7, tone: 0.97, keep: true, hand: true, seed: 26.0, hM: 1.00, wM: 1.50 }],
         lampsView: [{ i: 1, x: 0.0, z: 0.86, y: 0.55, color: '#ff7a36', k: 0.50, radius: 3.6 }],
         vantage: { at: 'among', low: 0.66, fwd: 1.4, pitch: 3.0, off: 0.06, wide: 3, frame: 'steam' } },
       /* THE INDOOR POOL -- round 14, both judges' first instruction: "a sunk
@@ -2747,7 +2758,15 @@ export const ROOM_KINDS = {
         near: [{ shape: 32, x: 7.4, z: -2.6, tone: 0.95, free: true },
                /* (round 39: the towel horse on the coping at the near
                   right, and a bath on the near left) */
-               { shape: 32, ahead: 4.8, across: -3.6, tone: 0.97, keep: true, seed: 44.0, hM: 1.25, wM: 1.90 }],
+               { shape: 32, ahead: 6.3, across: -4.5, tone: 0.97, keep: true, seed: 44.0, hM: 1.25, wM: 1.90 },
+               /* (round 39 graft, PERIDOT's: a towel bench on the near
+                  apron across from the horse, in the warm lamplight laid
+                  there -- nearFloor below) */
+               { shape: 32, ahead: 6.5, across: 4.3, tone: 0.97, keep: true, seed: 25.0, hM: 1.00, wM: 1.50 }],
+        /* (round 39 graft, PERIDOT's pool: the near apron warm-lit across the
+           frame, the bench in it, the cold light on the far side) */
+        nearFloor: { pool: { ahead: 6.2, across: 3.4, rAlong: 2.6, rAcross: 3.0, k: 2.4, color: '#e8b070' },
+                     pool2: { ahead: 6.0, across: -3.8, rAlong: 2.4, rAcross: 2.6, k: 1.6, color: '#7fb4dc' } },
         room: { w: 1.10, d: 1.24 }, rail: 'iron', ceil: 4, ceilGain: 2.4,
         pool: { hw: 5.6, z0: -1.4, back: 3.4 },
         /* the hall's cold light stands over the far end of the water, which is

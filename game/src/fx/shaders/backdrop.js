@@ -13886,6 +13886,11 @@ uniform vec4  uWater;
    bath hall's standing water, in its own program -- see puddle.) */
 uniform vec4  uMirror;
 #endif
+#if MM_FLOORX == 0 && MM_PAT == 1 && MM_R25W == 0
+/* (round 39 graft, PERIDOT's wet tiles: the bath hall's side walls for the
+   mirror -- x their world |x|, y and z the front and back ends' world z) */
+uniform vec4  uMirror2;
+#endif
 uniform vec2  uSpan;           // plane size in metres (x, z)
 uniform vec3  uDeep, uMid, uFog, uAccent, uAmbient;
 uniform vec4  uLights[5];      // xy = floor-local metres (x, z), z radius, w intensity
@@ -15749,33 +15754,95 @@ void main(){
        of its three windows; set for the bath hall only, Backdrop), finds
        the windows on the rain -- night-blue panes in their iron bars, the
        moon in the middle one -- and the gas globes on the piers between.
-       The pool water's mirror, at a puddle's depth. */
-    if (uMirror.w > 0.5 && puddle > 0.001) {
-      vec3 rd = normalize(vWorld - uCamera);
-      rd.y = -rd.y;
-      float tW = (uMirror.x - vWorld.z)/min(rd.z, -1e-3);
+       The pool water's mirror, at a puddle's depth.
+       ROUND 39 GRAFT (PERIDOT's wet tiles; all three judges, first): NOT
+       only in the puddles. The whole floor is wet -- a film on every glazed
+       tile, the grout dry, the duckboard dry -- so the windows lie in ALL of
+       it as crisp mirror images, strongest at a slant and where the water
+       stands: the end wall's three, and the side walls' bay windows too. The
+       iron in each is the wall's own (bhWindow): two mullions at a third, a
+       glazing bar every half metre, the transom and the fan in the head --
+       inked over the image's own pixel, so the far images stay as crisp as
+       the near. The tile under it keeps RHODONITE's glaze and tooth. */
+    if (uMirror.w > 0.5) {
+      vec3 eyeD = normalize(vWorld - uCamera);
+      vec3 rd = vec3(eyeD.x, -eyeD.y, eyeD.z);
+      float slant = 1.0 - clamp(-eyeD.y, 0.0, 1.0);
+      float fres = 0.06 + 0.94*slant*slant*slant;
+      /* the film: thin on the dry-ish tile, whole in standing water, none in
+         the grout or on the duckboard's slats */
+      float film = mix(0.40, 1.0, puddle)*(1.0 - 0.90*gro*(1.0 - puddle))*(1.0 - rugCov);
       float wn = 0.5 + 0.5*sin(w.x*2.3 + w.y*5.1);
-      vec2 R = vec2(vWorld.x + rd.x*tW, rd.y*tW) + vec2(0.10*(wn - 0.5), 0.0);
-      float sp = uMirror.y;
-      float wi = clamp(floor(R.x/sp + 0.5), -1.0, 1.0);
-      float wx = R.x - wi*sp;
-      float spr = min(5.00, uMirror.z - 0.74 - 1.45);
-      float arch = length(vec2(wx, max(R.y - spr, 0.0))) - 1.45;
-      float win = (1.0 - smoothstep(-0.04, 0.04, max(arch, max(abs(wx) - 1.45, 2.30 - R.y))));
-      float bars = max(1.0 - smoothstep(0.035, 0.07, abs(mod(wx + 0.24, 0.48) - 0.24)),
-                       1.0 - smoothstep(0.035, 0.07, abs(mod(R.y - 2.30, 0.62) - 0.31)))*step(R.y, spr + 1.45);
-      float pane = win*(1.0 - 0.85*bars);
+      float wob = 0.10*(wn - 0.5)*mix(1.0, 0.30, puddle);
+      /* (both images and their pixel sizes are taken out here, where every
+         pixel of the quad runs them: a derivative inside the branch below
+         would be undefined) */
+      float tW = (uMirror.x - vWorld.z)/min(rd.z, -1e-3);
+      vec2 R = vec2(vWorld.x + rd.x*tW + wob, vWorld.y + rd.y*tW);
+      float sxW = rd.x < 0.0 ? -uMirror2.x : uMirror2.x;
+      float tS = (sxW - vWorld.x)/(abs(rd.x) > 1e-3 ? rd.x : 1e-3);
+      vec2 S = vec2(vWorld.z + rd.z*tS + wob, vWorld.y + rd.y*tS);
+      float rpx = clamp(length(fwidth(R)), 0.004, 0.5);
+      float spx = clamp(length(fwidth(S)), 0.004, 0.5);
+      float k = fres*film;
+      float pane = 0.0, moonR = 0.0, globes = 0.0, hiR = 0.0;
+      if (k > 0.004) {
+        /* the end wall: three windows on uMirror.y centres */
+        const float HW = 1.45, SILL = 2.30;
+        float spr = min(5.00, uMirror.z - 0.74 - HW);
+        float sp = uMirror.y;
+        if (R.y > SILL - 0.2 && R.y < spr + HW + 0.6) {
+          float wi = clamp(floor(R.x/sp + 0.5), -1.0, 1.0);
+          float wx = R.x - wi*sp;
+          float r = length(vec2(wx, R.y - spr));
+          float dW = max(R.y > spr ? r - HW : abs(wx) - HW, SILL - R.y);
+          float inW = clamp(0.5 - dW/rpx, 0.0, 1.0);
+          float head = step(spr, R.y);
+          float ir = 0.026;
+          float iron = max(clamp(0.5 + (ir - abs(dW + 0.035))/rpx, 0.0, 1.0),
+                       max(clamp(0.5 + (ir*0.8 - abs(abs(wx) - HW/3.0))/rpx, 0.0, 1.0)*(1.0 - head),
+                       max(clamp(0.5 + (ir*0.6 - abs((abs(fract((R.y - SILL)*2.0 + 0.5) - 0.5)*0.50)))/rpx, 0.0, 1.0)*(1.0 - head),
+                       max(clamp(0.5 + (ir - abs(R.y - spr))/rpx, 0.0, 1.0),
+                           clamp(0.5 + (ir*0.7 - abs(fract(atan(R.y - spr, wx)/0.3927 + 0.5) - 0.5)*0.3927*r)/rpx, 0.0, 1.0)*head*step(0.22, r)))));
+          pane = inW*(1.0 - 0.90*iron)*(0.62 + 0.38*smoothstep(SILL, spr + HW, R.y));
+          hiR = inW;
+          /* the moon behind the middle one, where the wall hangs it */
+          float mr = length(vec2(R.x + 0.55, (R.y - spr - HW*0.20)*0.9));
+          moonR = (clamp(0.5 + (0.19 - mr)/rpx, 0.0, 1.0) + 0.40*exp(-mr*2.8))*inW*step(abs(wi), 0.5);
+        }
+        /* the gas globes on the piers between, each a lit ball */
+        float pX = (floor(R.x/sp) + 0.5)*sp;
+        float gd = length(vec2(R.x - pX - sign(pX + 1e-3)*0.32, R.y - 3.02));
+        globes = (clamp(0.5 + (0.105 - gd)/rpx, 0.0, 1.0) + 0.30*exp(-gd*7.0))*step(abs(pX), sp*0.9);
+        /* the side walls: a window in every 4.2 m bay (bathWallH's sides),
+           the image going out in the tiles' unevenness as the ray runs long */
+        if (tS > 0.0 && tS < 30.0 && abs(rd.x) > 0.04) {
+          float u = rd.x < 0.0 ? (uMirror2.y - S.x) : (S.x - uMirror2.z);
+          float bx = u - (floor(u/4.2) + 0.5)*4.2;
+          const float HS = 1.05, SS = 2.55;
+          float ps = min(4.90, uMirror.z - 0.69 - HS);
+          float rs = length(vec2(bx, S.y - ps));
+          float dS = max(S.y > ps ? rs - HS : abs(bx) - HS, SS - S.y);
+          float inS = clamp(0.5 - dS/spx, 0.0, 1.0)*step(0.0, u)*step(u, uMirror2.y - uMirror2.z);
+          float headS = step(ps, S.y);
+          float ir = 0.024;
+          float ironS = max(clamp(0.5 + (ir - abs(dS + 0.035))/spx, 0.0, 1.0),
+                        max(clamp(0.5 + (ir*0.8 - abs(abs(bx) - HS/3.0))/spx, 0.0, 1.0)*(1.0 - headS),
+                        max(clamp(0.5 + (ir*0.6 - abs((abs(fract((S.y - SS)*2.0 + 0.5) - 0.5)*0.50)))/spx, 0.0, 1.0)*(1.0 - headS),
+                            clamp(0.5 + (ir - abs(S.y - ps))/spx, 0.0, 1.0))));
+          pane += inS*(1.0 - 0.90*ironS)*0.70*mix(0.45, 1.0, puddle)*(1.0 - smoothstep(9.0, 30.0, tS));
+        }
+      }
       vec3 nightW = mix(uAccent, vec3(0.50, 0.62, 0.95), 0.60);
-      float moonR = exp(-length(vec2(R.x + 0.55, (R.y - 4.20)*0.8))*3.2)*step(abs(wi), 0.5);
-      float pX = (floor(R.x/sp) + 0.5)*sp;
-      float globes = exp(-length(vec2(R.x - pX - sign(pX + 1e-3)*0.30, (R.y - 2.62)*0.6))*6.0)*step(abs(pX), sp*0.9);
-      float fres = 0.20 + 0.80*pow(1.0 - clamp(-normalize(vWorld - uCamera).y, 0.0, 1.0), 3.0);
-      pudR = (nightW*pane*(0.055 + 0.050*smoothstep(2.3, 5.0, R.y))*(0.6 + 0.8*wn)
-            + vec3(0.85, 0.90, 1.00)*moonR*0.55
-            + vec3(1.00, 0.76, 0.44)*globes*1.3) * fres * puddle;
+      pudR = (nightW*pane*0.62*(0.80 + 0.40*wn)
+            + vec3(0.85, 0.90, 1.00)*moonR*0.75
+            + vec3(1.00, 0.76, 0.44)*globes*1.1) * k;
       /* the pool's edge: a hairline of light on its far lip, as standing
          water holds one */
       pudR += vec3(0.30, 0.42, 0.55)*mmInk(pf - 0.60, 1.0)*0.05*smoothstep(1.0, 3.0, vDepth);
+      /* (where the glass lies in the tile the tile is that much darker round
+         it: a mirror shows the dark wall as well as the window) */
+      alb *= 1.0 - (0.22*film + 0.40*k)*(1.0 - hiR);
     }
 #endif
   }
@@ -21088,6 +21155,39 @@ float wgThSD(vec2 m, float seed){
   d = min(d, mmBox(m - vec2(0.53, 0.468), vec2(0.050, 0.020), 0.008));      // the soap
   return d;
 }
+/* ROUND 39 GRAFT (PERIDOT's, as CHALCEDONY's bench was asked for -- J3:
+   "the bench with stacked towels and a pail as a near prop in all three
+   rooms"): THE TOWEL BENCH, a bath dealt with seed 20-40 (the towel horse is
+   over 40). A slatted teak bench by the baths, a stack of folded towels on
+   it and one hung over its end, and a brass pail under it. Placed by hand,
+   never dealt; drawn in true metres (the near item gives hM and wM). */
+float wgTwStack(vec2 m, out float id){
+  id = 0.0;
+  float d = 1e3;
+  for (int i = 0; i < 4; i++){
+    float fi = float(i);
+    float y0 = 0.53 + fi*0.088;
+    float w = 0.27 - fi*0.010;
+    float t = mmBox(m - vec2(-0.24 + 0.018*sin(fi*2.1), y0 + 0.042), vec2(w, 0.040), 0.034);
+    if (t < d) { d = t; id = fi; }
+  }
+  return d;
+}
+float wgTwSD(vec2 m, float seed){
+  float seat = mmBox(m - vec2(0.0, 0.495), vec2(0.66, 0.035), 0.008);
+  seat = min(seat, max(abs(m.x) - (0.66 - 0.6*(m.y - 0.53)), max(0.52 - m.y, m.y - 0.56)));
+  float legs = mmBox(vec2(abs(m.x) - 0.55, m.y - 0.23), vec2(0.045, 0.23), 0.006);
+  float rail = mmBox(m - vec2(0.0, 0.13), vec2(0.55, 0.022), 0.004);
+  float id;
+  float stack = wgTwStack(m, id);
+  /* the towel hung over the end: over the seat's edge and down, its hem
+     wavering */
+  float hang = max(abs(m.x - 0.58) - 0.11, max(m.y - 0.55, 0.10 + 0.025*sin(m.x*55.0) - m.y));
+  vec2 pq = m - vec2(0.12, 0.0);
+  float pail = max(abs(pq.x) - (0.13 + 0.04*clamp(pq.y/0.30, 0.0, 1.0)), max(-pq.y, pq.y - 0.30));
+  float hnd = max(abs(length((pq - vec2(0.0, 0.30))/vec2(0.17, 0.12)) - 1.0)*0.12 - 0.007, 0.30 - pq.y);
+  return min(min(min(seat, legs), min(rail, stack)), min(hang, min(pail, hnd)));
+}
 float wgBtSD(vec2 q, float seed){
   float d = wgBtBody(q);
   d = min(d, wgEll(q - vec2(0.0, 0.755), vec2(0.930, 0.135)));
@@ -21246,7 +21346,7 @@ float wgField(vec2 m, vec2 msz, float shape, float seed){
   else if (shape < 38.5) d = wgGtSD(q);
 #endif
 #if MM_SH32
-  else if (shape < 39.5) d = seed > 40.0 ? wgThSD(m, seed)/sc : wgBtSD(q, seed);
+  else if (shape < 39.5) d = seed > 40.0 ? wgThSD(m, seed)/sc : (seed > 19.5 ? wgTwSD(m, seed)/sc : wgBtSD(q, seed));
 #endif
 #if MM_SH42
   else if (shape < 40.5) d = wgZtSD(q);
@@ -21920,6 +22020,67 @@ vec3 wgPaint(vec2 m, vec2 msz, float shape, float seed, float px, float lum,
   }
 #endif
 
+#if MM_SH32
+  if (shape < 39.5 && seed > 19.5 && seed < 40.0) {
+    /* ---- ROUND 39 GRAFT: THE TOWEL BENCH (PERIDOT's; see wgTwSD) ---- */
+    vec2 tm = m;
+    float kt = kx;
+    vec3 teak = vec3(0.46, 0.25, 0.12)*E*1.3;
+    float gr = mmNoise(vec2(tm.x*3.0, tm.y*40.0) + seed);
+    col = teak*(0.55 + 0.30*gr);
+    /* the seat: its top a band of slats seen from a standing eye, its front
+       edge lit, the legs and the rail in its shade */
+    float seat = mmBox(tm - vec2(0.0, 0.495), vec2(0.66, 0.035), 0.008);
+    float seatT = max(abs(tm.x) - (0.66 - 0.6*(tm.y - 0.53)), max(0.52 - tm.y, tm.y - 0.56));
+    seat = min(seat, seatT);
+    float onSeat = clamp(0.5 - seat/max(px, 1e-5), 0.0, 1.0);
+    col = mix(col, teak*(0.85 + 0.30*gr)*(1.0 + 0.9*smoothstep(0.525, 0.535, tm.y)), onSeat);
+    ink = max(ink, mmInkP(seat, px, 1.0)*0.85);
+    ink = max(ink, mmInkP(abs(fract(tm.x/0.105) - 0.5)*0.105, px, 1.0)*onSeat*0.35);
+    float legs = mmBox(vec2(abs(tm.x) - 0.55, tm.y - 0.23), vec2(0.045, 0.23), 0.006);
+    float rail = mmBox(tm - vec2(0.0, 0.13), vec2(0.55, 0.022), 0.004);
+    col = mix(col, teak*(0.42 + 0.20*smoothstep(-0.03, 0.03, kt*(abs(tm.x) - 0.55)*sign(tm.x)))*(0.8 + 0.3*gr),
+              clamp(0.5 - min(legs, rail)/max(px, 1e-5), 0.0, 1.0)*(1.0 - onSeat));
+    ink = max(ink, mmInkP(min(legs, rail), px, 1.0)*0.8);
+    /* the pail under it: brass, round, its rim lit, its handle up */
+    vec2 pq = tm - vec2(0.12, 0.0);
+    float pail = max(abs(pq.x) - (0.13 + 0.04*clamp(pq.y/0.30, 0.0, 1.0)), max(-pq.y, pq.y - 0.30));
+    float hnd = max(abs(length((pq - vec2(0.0, 0.30))/vec2(0.17, 0.12)) - 1.0)*0.12 - 0.007, 0.30 - pq.y);
+    float pu = clamp(pq.x/0.16, -1.0, 1.0);
+    vec3 brass = vec3(0.92, 0.52, 0.22)*E*1.9*(0.35 + 0.75*wgRound(pu))*(1.0 + 0.40*kt*pu);
+    brass *= 0.70 + 0.40*smoothstep(0.0, 0.28, pq.y);
+    col = mix(col, brass, clamp(0.5 - pail/max(px, 1e-5), 0.0, 1.0)*(1.0 - onSeat));
+    col = mix(col, brass*1.5, (1.0 - smoothstep(0.0, px*1.5 + 0.005, abs(pq.y - 0.29)))*step(abs(pq.x), 0.17)*(1.0 - onSeat));
+    col = mix(col, brass*0.55, (1.0 - smoothstep(0.0, px*1.5 + 0.004, abs(pq.y - 0.10)))*step(abs(pq.x), 0.15)*(1.0 - onSeat));
+    col = mix(col, vec3(0.12, 0.11, 0.10)*E, clamp(0.5 - hnd/max(px, 1e-5), 0.0, 1.0)*(1.0 - onSeat));
+    ink = max(ink, mmInkP(min(pail, hnd), px, 1.0)*(1.0 - onSeat)*0.85);
+    /* the folded towels: each its own linen, the fold round and lit along
+       its top, one with a red stripe woven across */
+    float id;
+    float st = wgTwStack(tm, id);
+    float onSt = clamp(0.5 - st/max(px, 1e-5), 0.0, 1.0);
+    float y0 = 0.53 + id*0.088;
+    float fv = clamp((tm.y - y0)/0.084, 0.0, 1.0);
+    vec3 lin = id < 0.5 ? vec3(0.92, 0.90, 0.84) : (id < 1.5 ? vec3(0.94, 0.80, 0.52) : (id < 2.5 ? vec3(0.50, 0.66, 0.84) : vec3(0.92, 0.90, 0.84)));
+    vec3 tc = lin*E*1.55*(0.40 + 0.70*sin(fv*3.1416))*(0.85 + 0.25*smoothstep(-0.25, 0.25, kt*(tm.x + 0.24)));
+    float stripe = step(2.5, id)*step(abs(tm.x + 0.24 + 0.12), 0.022);
+    tc = mix(tc, vec3(0.62, 0.12, 0.08)*E*1.3*(0.5 + 0.6*sin(fv*3.1416)), stripe);
+    col = mix(col, tc, onSt);
+    ink = max(ink, mmInkP(st, px, 1.0)*0.85);
+    ink = max(ink, mmInkP(abs(tm.y - y0 - 0.036), px, 0.8)*onSt*0.25);
+    /* the towel hung over the end, in folds to its hem */
+    float hang = max(abs(tm.x - 0.58) - 0.11, max(tm.y - 0.55, 0.10 + 0.025*sin(tm.x*55.0) - tm.y));
+    float onH = clamp(0.5 - hang/max(px, 1e-5), 0.0, 1.0);
+    float hcr = 0.5 + 0.5*cos((tm.x - 0.58)*70.0 + seed);
+    vec3 hcol = vec3(0.92, 0.90, 0.84)*E*1.45*(0.40 + 0.60*hcr)*(0.65 + 0.45*smoothstep(0.10, 0.52, tm.y));
+    hcol = mix(hcol, vec3(0.62, 0.12, 0.08)*E*1.4*(0.45 + 0.55*hcr), step(abs(tm.y - 0.18), 0.018) + step(abs(tm.y - 0.23), 0.010));
+    col = mix(col, hcol, onH);
+    ink = max(ink, mmInkP(hang, px, 1.0)*0.85);
+    ink = max(ink, mmInkP(abs(fract((tm.x - 0.58)*70.0/6.2832 + 0.5) - 0.5)*0.090 - 0.001, px, 0.8)*onH*0.4);
+    moon = 0.45*onSt*sin(fv*3.1416) + 0.25*onH*hcr;
+    return col;
+  }
+#endif
 #if MM_SH32
   if (shape < 39.5 && seed > 40.0) {
     /* ---- ROUND 39: THE TOWEL HORSE, THE STOOL, THE PAIL ---- */
