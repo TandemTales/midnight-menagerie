@@ -616,21 +616,23 @@ export const ROOM_VARIANTS = [
   { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 1, MM_SHM0: 142606336, MM_SHM1: 0, MM_SHM2: 67108864 }, wings: ['pumpkin'] },
   { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 3, MM_SHM0: 4210689, MM_SHM1: 74645504, MM_SHM2: 1 }, wings: ['sleeping'] },
   { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 3, MM_SHM0: 4194304, MM_SHM1: 125829120, MM_SHM2: 268435456 }, wings: ['study'] },
-  { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 0, MM_PAT: 0, MM_CEIL: 0, MM_RUGO: 0 }, wings: ['attic', 'heart', 'nursery', 'passages', 'sleeping', 'study'] },
+  { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 0, MM_PAT: 0, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0 }, wings: ['attic', 'heart', 'nursery', 'passages', 'sleeping', 'study'] },
   /* (round 37 graft: the Nursery's wardrobe and its braided oval rug, MM_RUGO) */
-  { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 0, MM_PAT: 0, MM_CEIL: 0, MM_RUGO: 1 }, wings: ['nursery'] },
-  { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 2, MM_PAT: 1, MM_CEIL: 0, MM_RUGO: 0 }, wings: ['ballroom'] },
-  { mat: 'floor', defines: { MM_FLOORX: 1, MM_R25W: 0, MM_PAT: 10, MM_CEIL: 0, MM_RUGO: 0 }, wings: ['ballroom'] },
-  { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 0, MM_PAT: 1, MM_CEIL: 0, MM_RUGO: 0 }, wings: ['bathhouse'] },
-  { mat: 'floor', defines: { MM_FLOORX: 2, MM_R25W: 0, MM_PAT: 1, MM_CEIL: 0, MM_RUGO: 0 }, wings: ['bathhouse'] },
-  { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 0, MM_PAT: 2, MM_CEIL: 0, MM_RUGO: 0 }, wings: ['crypt', 'kennels', 'kitchens', 'lampworks', 'pumpkin'] },
-  { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 1, MM_PAT: 0, MM_CEIL: 0, MM_RUGO: 0 }, wings: ['foyer'] },
-  { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 1, MM_PAT: 2, MM_CEIL: 0, MM_RUGO: 0 }, wings: ['foyer'] },
-  { mat: 'floor', defines: { MM_FLOORX: 1, MM_R25W: 4, MM_PAT: 11, MM_CEIL: 0, MM_RUGO: 0 }, wings: ['graveyard'] },
-  { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 3, MM_PAT: 2, MM_CEIL: 0, MM_RUGO: 0 }, wings: ['greenhouse'] },
-  { mat: 'floor', defines: { MM_FLOORX: 1, MM_R25W: 0, MM_PAT: 13, MM_CEIL: 0, MM_RUGO: 0 }, wings: ['hedge'] },
-  { mat: 'floor', defines: { MM_FLOORX: 1, MM_R25W: 0, MM_PAT: 2, MM_CEIL: 0, MM_RUGO: 0 }, wings: ['pumpkin'] },
-  { mat: 'floor', defines: { MM_FLOORX: 1, MM_R25W: 0, MM_PAT: 14, MM_CEIL: 0, MM_RUGO: 0 }, wings: ['pumpkin'] },
+  { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 0, MM_PAT: 0, MM_CEIL: 0, MM_RUGO: 1, MM_FLAGK: 0 }, wings: ['nursery'] },
+  { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 2, MM_PAT: 1, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0 }, wings: ['ballroom'] },
+  { mat: 'floor', defines: { MM_FLOORX: 1, MM_R25W: 0, MM_PAT: 10, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0 }, wings: ['ballroom'] },
+  { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 0, MM_PAT: 1, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0 }, wings: ['bathhouse'] },
+  { mat: 'floor', defines: { MM_FLOORX: 2, MM_R25W: 0, MM_PAT: 1, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0 }, wings: ['bathhouse'] },
+  { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 0, MM_PAT: 2, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0 }, wings: ['crypt', 'kennels', 'lampworks', 'pumpkin'] },
+  /* (round 39: the Kitchens' small worn flags, MM_FLAGK) */
+  { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 0, MM_PAT: 2, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 1 }, wings: ['kitchens'] },
+  { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 1, MM_PAT: 0, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0 }, wings: ['foyer'] },
+  { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 1, MM_PAT: 2, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0 }, wings: ['foyer'] },
+  { mat: 'floor', defines: { MM_FLOORX: 1, MM_R25W: 4, MM_PAT: 11, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0 }, wings: ['graveyard'] },
+  { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 3, MM_PAT: 2, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0 }, wings: ['greenhouse'] },
+  { mat: 'floor', defines: { MM_FLOORX: 1, MM_R25W: 0, MM_PAT: 13, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0 }, wings: ['hedge'] },
+  { mat: 'floor', defines: { MM_FLOORX: 1, MM_R25W: 0, MM_PAT: 2, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0 }, wings: ['pumpkin'] },
+  { mat: 'floor', defines: { MM_FLOORX: 1, MM_R25W: 0, MM_PAT: 14, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0 }, wings: ['pumpkin'] },
   { mat: 'ceil', defines: { MM_FLOORX: 2, MM_PAT: 15, MM_CEIL: 1 }, wings: ['attic'] },
   { mat: 'ceil', defines: { MM_FLOORX: 0, MM_PAT: 4, MM_CEIL: 1 }, wings: ['ballroom', 'bathhouse', 'foyer', 'heart'] },
   /* (round 35 graft: the Crypt's rib vault, its own pattern -- SCHEELITE's) */
@@ -927,7 +929,7 @@ export class Backdrop {
     this.floorMat = new THREE.ShaderMaterial({
       uniforms: surfaceUniforms(),
       /* the room-kind floors are a variant of their own: _setSurfaceProgram */
-      defines: { MM_FLOORX: 0, MM_R25W: 0, MM_PAT: 0, MM_CEIL: 0, MM_RUGO: 0 },
+      defines: { MM_FLOORX: 0, MM_R25W: 0, MM_PAT: 0, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0 },
       vertexShader: FLOOR_VERT, fragmentShader: FLOOR_FRAG,
       depthWrite: true, fog: false,
     });
@@ -2224,6 +2226,10 @@ export class Backdrop {
          bones on the Crypt's flags is wide and low, and no ratio of its
          height says so. Read only where written.) */
       if (it.wM !== undefined && out.length > n0) out[out.length - 1].w = it.wM;
+      /* (round 39: a piece set on the near floor where, in a fight, the HAND
+         lies over it -- `hand` -- dresses the empty room and is not drawn
+         under the cards: _handCull. Read only where written.) */
+      if (it.hand && out.length > n0) out[out.length - 1].hand = 1;
       if (!it.keep && yields(it, out[out.length - 1])) out.pop();
     }
     return out.slice(0, MAX_PROPS);
@@ -2473,7 +2479,17 @@ export class Backdrop {
     this._castSig = NaN;              // the throws are laid at the next syncLights
     this._shdCast.needsUpdate = true;
     this.shadowGeo.instanceCount = shadowN;
+    /* (round 39: the pieces a fight's hand covers, and their shadows) */
+    this._hand = [];
+    for (let k = 0; k < placed.length; k++) {
+      if (!placed[k].hand) continue;
+      const si = castOf.indexOf(placed[k]);
+      this._hand.push({ k, w: sc[k * 2], h: sc[k * 2 + 1], si,
+                        sw: si >= 0 ? ss2[si * 2] : 0, sh: si >= 0 ? ss2[si * 2 + 1] : 0 });
+    }
+    this._handCulled = false;
     if (this._actors?.length) this.setActorShadows(this._actors);
+    this._handCull(!!(this._fightOn));
 
     /* ---- shafts: extend each beam until it reaches the floor, and record the
        elliptical pool where it lands so the floor shader can paint it. ------- */
@@ -2888,8 +2904,9 @@ export class Backdrop {
        water as a mirror; the pond out of doors keeps variant 1) */
     const fx = (p.pool && !p.pool.open) ? 2 : (((p.floorPattern ?? 0) > 9.5 || !!p.pool) ? 1 : 0);
     this._setSurfaceProgram(this.floorMat, fx, (R25_FLOORS[p.r25w] || []).includes(fx) ? p.r25w : 0,
-      /* (round 37 graft: a braided oval rug, the wardrobe's -- MM_RUGO) */
-      p.rug && p.rug.oval ? { MM_RUGO: 1 } : { MM_RUGO: 0 });
+      /* (round 37 graft: a braided oval rug, the wardrobe's -- MM_RUGO;
+         round 39: and the Kitchens' small worn flags -- MM_FLAGK, pal.flagK) */
+      { MM_RUGO: p.rug && p.rug.oval ? 1 : 0, MM_FLAGK: p.flagK ?? 0 });
     f.uRunner.value = p.runner ?? 0;
     /* the runner leads to the door, wherever the subject took it */
     f.uRunX.value = p.runX ?? (p.subjX ?? 0);
@@ -2901,6 +2918,14 @@ export class Backdrop {
       f.uMirror.value.set(-(p.room?.d ?? 17), 3.32, ceil - 0.34, 6.4);
     } else {
       f.uWater.value.set(0, 0, 0, 0);
+      /* (round 39: the bath hall's standing water holds its end wall's three
+         windows -- the end wall's z and the bay its windows are set on, as
+         bathWallH sets them out; w = 1 lays them. FLOOR_FRAG, puddle.) */
+      if (p.subject === 'baths') {
+        f.uMirror.value.set(-(p.room?.d ?? 17), Math.min(5.8, this.wallMat.uniforms.uSize.value.x * 0.28), ceil, 1);
+      } else {
+        f.uMirror.value.set(0, 0, 0, 0);
+      }
     }
     f.uGloss.value = p.gloss ?? 0.5;
     f.uStraw.value = p.straw ?? 0;
@@ -3416,7 +3441,28 @@ export class Backdrop {
    * combatant's feet on the floor in WORLD metres, its footprint radius and
    * the strength of its shadow. Anything past the list is cleared.
    */
+  /** ROUND 39: THE NEAR FLOOR UNDER THE HAND. A piece set by hand on the near
+   *  floor with `hand` dresses the EMPTY room -- the contact sheets, a room
+   *  as the player first sees it -- and in a fight lies under the cards,
+   *  where it is never seen and its quad still costs the frame (the bath
+   *  hall's near baths measured ~0.4 ms of props under the hand). While a
+   *  fight stands on the floor (setActors) those quads and their contact
+   *  shadows are collapsed to nothing, and put back when it leaves. */
+  _handCull(on) {
+    const H = this._hand || [];
+    if (!H.length || on === this._handCulled) { this._handCulled = on; return; }
+    const sc = this._propScale.array, ss2 = this._shdScale.array;
+    for (const e of H) {
+      sc[e.k * 2] = on ? 0 : e.w; sc[e.k * 2 + 1] = on ? 0 : e.h;
+      if (e.si >= 0) { ss2[e.si * 2] = on ? 0 : e.sw; ss2[e.si * 2 + 1] = on ? 0 : e.sh; }
+    }
+    this._propScale.needsUpdate = this._shdScale.needsUpdate = true;
+    this._handCulled = on;
+  }
+
   setActors(list = []) {
+    this._fightOn = (list || []).some((it) => !!it);
+    this._handCull(this._fightOn);
     const u = this.floorMat.uniforms;
     const a = u.uActor.value, k = u.uActorK.value, key = u.uKeyF.value;
     let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
