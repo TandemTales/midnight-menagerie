@@ -1438,3 +1438,142 @@
     linear-gradient(to bottom, rgba(24, 12, 5, .22) 0%, rgba(24, 12, 5, .06) 14%, transparent 26%),
     linear-gradient(to top, rgba(24, 12, 5, .32) 0%, rgba(24, 12, 5, .08) 10%, transparent 20%);
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ROUND 38 — THE STAMPS, AND THE REGIONS AS INK
+   Survey 5: "the fifty-odd room nodes ... are small thin-outline glyphs in
+   identical grey rings on one flat sepia field" (J1); "all room stamps are one
+   sepia tone and one size" (J2); and J2's worst, the two regions "translucent
+   tinted rectangles with a felt-tip outline ... a software highlight rather
+   than ink".
+   - Every room the party cannot enter yet is an INKED STAMP now: a disc of
+     umber ink inside a firm double ring, its glyph knocked out of it in the
+     paper's colour -- weight, not a pencil outline. The stamps are weighted by
+     how far ahead they are (map.js data-ahead): the two rows after the next
+     firm, then fading row by row to a pencilled ghost at the wing's far end;
+     a room no route reaches any more is a ghost wherever it is. The next row
+     stays the lit enamel medallion, the one metal on the sheet.
+   - A region is drawn ON the paper: a bane hatched, a boon stippled, in its
+     own ink, inside a dashed surveyor's line, its name on a swallow-tailed tab
+     of that ink where the line runs past (map.js _buildInk). No tint, no rim.
+   ═══════════════════════════════════════════════════════════════════════════ */
+.map-screen .map-node.is-dim { color: #ecd3a0; }
+.map-screen .map-node.is-dim .mn-pool {
+  inset: 15%;
+  opacity: 1;
+  background:
+    radial-gradient(circle at 36% 30%, rgb(150 102 56 / .5), transparent 58%),
+    radial-gradient(circle closest-side, #3e2714 0%, #301d0e 74%, #24150a 100%);
+  box-shadow:
+    0 0 0 1.4px rgb(226 192 132 / .62),
+    0 0 0 3.4px #1c1108,
+    1px 2.5px 3px 1px rgb(10 5 2 / .5);
+}
+.map-screen .map-node.is-dim .mn-art .pl,
+.map-screen .map-node.is-dim .mn-art .pw { fill: #301d0e; }
+.map-screen .map-node.is-dim .mn-overdraw { display: none; }
+.map-screen .map-node.is-dim .mn-art .w3 { stroke-width: 5; }
+.map-screen .map-node.is-dim .mn-art .w2 { stroke-width: 3.9; }
+.map-screen .map-node.is-dim .mn-art .w1 { stroke-width: 2.6; }
+/* row by row into the distance */
+.map-screen .map-node.is-dim:not(.map-node--boss)[data-ahead="4"] .mn-in,
+.map-screen .map-node.is-dim:not(.map-node--boss)[data-ahead="5"] .mn-in { opacity: .86; }
+.map-screen .map-node.is-dim:not(.map-node--boss)[data-ahead="6"] .mn-in,
+.map-screen .map-node.is-dim:not(.map-node--boss)[data-ahead="7"] .mn-in { opacity: .7; }
+.map-screen .map-node.is-dim:not(.map-node--boss)[data-ahead="8"] .mn-in,
+.map-screen .map-node.is-dim:not(.map-node--boss)[data-ahead="9"] .mn-in { opacity: .56; }
+/* ...and a room no route reaches any more: a ghost of a stamp */
+.map-screen .map-node.is-cold { color: color-mix(in srgb, #ecd3a0 70%, transparent); }
+.map-screen .map-node.is-cold:not(.map-node--boss) .mn-in { opacity: .5; }
+.map-screen .map-node.is-cold .mn-pool {
+  background: radial-gradient(circle closest-side, rgb(48 30 15 / .55) 0%, rgb(40 24 12 / .45) 80%, transparent 100%);
+  box-shadow: 0 0 0 1.4px rgb(28 17 8 / .6);
+}
+/* the boss keeps its seal */
+.map-screen .map-node--boss.is-dim { color: color-mix(in srgb, var(--kit-gall) 92%, transparent); }
+.map-screen .map-node--boss.is-dim .mn-pool {
+  inset: -42%;
+  box-shadow: none;
+  background: radial-gradient(circle closest-side,
+    color-mix(in srgb, var(--kit-candle) 30%, transparent) 0%,
+    color-mix(in srgb, var(--kit-candle) 12%, transparent) 46%,
+    transparent 78%);
+}
+.map-screen .map-node--boss.is-dim .mn-in { opacity: 1; }
+.map-screen .map-node--boss.is-dim .mn-art .pl,
+.map-screen .map-node--boss.is-dim .mn-art .pw { fill: var(--kit-oldpaper); }
+
+/* ── the regions, as ink ── */
+.map-screen .mi-zone-pool, .map-screen .mi-zone-rim, .map-screen .mi-zone-tide { opacity: 0; }
+.map-screen .mi-zone-edge {
+  fill: none; stroke: currentColor;
+  stroke-width: 2.8; opacity: .95;
+  stroke-dasharray: 22 7 3.5 7; stroke-linecap: butt;
+}
+.map-screen .mi-zone-hatch { opacity: .62; }
+.map-screen .mi-zone--boon .mi-zone-hatch { opacity: .78; }
+.mi-zone-tabshade { fill: rgb(10 5 2 / .45); }
+.mi-zone-tab { fill: currentColor; stroke: rgb(10 5 2 / .9); stroke-width: 1.4; stroke-linejoin: round; }
+.mi-zone-tabrule { fill: none; stroke: rgb(244 226 190 / .55); stroke-width: 1.2; stroke-linejoin: round; }
+.mi-zone-name {
+  font-family: Cinzel, Georgia, serif; font-weight: 700; font-size: 21px;
+  letter-spacing: 2.2px;
+  fill: #f6e6c6;
+}
+.mi-zone-names .mi-zone { color: var(--kit-madder-ink); }
+.mi-zone-names .mi-zone--boon { color: var(--kit-indigo-ink); }
+@media (max-width: 1500px) {
+  .map-screen .mi-zone-edge { stroke-width: 3.6; }
+}
+
+/* the boss's plate a size smaller, so at the Deck's 1280 it has paper of
+   its own beside the crown and need lie over no region and no room */
+.map-screen .map-node--boss .mn-label {
+  --plate-h: 62px;
+  font-size: 18px;
+  min-width: 210px;
+  padding-top: 9px;
+}
+.map-screen .map-node--boss .mn-boss-tag { top: calc(100% + 3px + 36px + var(--mn-dy, 0px)); font-size: 12.5px; }
+
+/* ── the key, a size up: a cartouche legend ──
+   Survey 5 (J1): "the KEY strip is a dense two-row list of tiny pairs". Its
+   engraved KEY rides the plate's top rule on a small cartouche now -- the way
+   the select boards seat a medallion on a panel's top edge -- which gives its
+   width back to the marks, and every mark and name is set a size larger. */
+.map-screen .map-legend {
+  position: relative;
+  grid-template-columns: repeat(5, auto);
+  column-gap: clamp(12px, 1vw, 16px);
+  padding-left: calc(var(--plate-h) * .6);
+  padding-top: 7px;
+}
+.map-screen .map-legend .lg-h {
+  position: absolute; left: 50%; top: 0;
+  transform: translate(-50%, -58%);
+  grid-row: auto; grid-column: auto;
+  margin: 0;
+  --h: 24px;
+  height: var(--h);
+  display: inline-flex; align-items: center; gap: .6em;
+  padding: 0 calc(var(--h) * .8) 1px;
+  border: 0 solid transparent;
+  border-image: url("../../assets/ui/kit/cartouche-dark.webp") 18 34 18 34 fill /
+    calc(var(--h) * 18 / 64) calc(var(--h) * 34 / 64) stretch;
+  font-size: 11.5px; letter-spacing: .3em; text-indent: .3em;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, .8));
+}
+.map-screen .map-legend .lg-h::before, .map-screen .map-legend .lg-h::after {
+  content: ''; width: 5px; height: 5px; transform: rotate(45deg);
+  background: linear-gradient(135deg, var(--kit-gold-hi), var(--kit-gold) 50%, var(--kit-gold-lo));
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, .7);
+}
+.map-screen .lg-i { font-size: 15.5px; gap: 6px; }
+.map-screen .lg-ico { width: 27px; height: 27px; }
+.map-screen .lg-ico svg { width: 17px; height: 17px; }
+@media (max-width: 1500px) {
+  .map-screen .lg-i { font-size: 14.5px; gap: 5px; }
+  .map-screen .lg-ico { width: 25px; height: 25px; }
+  .map-screen .lg-ico svg { width: 16px; height: 16px; }
+  .map-screen .map-legend { column-gap: 11px; }
+}

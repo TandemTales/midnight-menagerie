@@ -632,6 +632,37 @@ export class MapScene extends Scene {
       g.fillStyle = gr; g.fillRect(0, 0, w, h);
     }
     g.restore();
+    /* 3b. ROUND 38: the sheet's own LOCAL variation (survey 5: "one uniform
+       mid-tone"). Foxing -- the rust spots old paper takes, a few dozen,
+       clustered toward the damp lower edge -- and two tide rings where
+       something wet stood on it, each laid by multiply so the paper darkens
+       as a stain does. Seeded off the wing, so a sheet keeps its own marks. */
+    {
+      const fx = new RNG(hashSeed(`fox|${this.model.regionId}|${this.model.seed}`));
+      g.save();
+      g.globalCompositeOperation = 'multiply';
+      for (let i = 0; i < 46; i++) {
+        const x = 60 + fx.next() * (w - 120);
+        const y = 60 + Math.pow(fx.next(), 0.7) * (h - 120);
+        const r = 3 + Math.pow(fx.next(), 2.4) * 22;
+        const a = 0.08 + fx.next() * 0.16;
+        const gr = g.createRadialGradient(x, y, 0, x, y, r);
+        gr.addColorStop(0, hexA('#6a3a14', a)); gr.addColorStop(0.55, hexA('#7a4618', a * 0.6)); gr.addColorStop(1, hexA('#7a4618', 0));
+        g.fillStyle = gr;
+        g.beginPath(); g.arc(x, y, r, 0, 6.2832); g.fill();
+      }
+      for (let i = 0; i < 2; i++) {
+        const x = w * (0.18 + fx.next() * 0.64), y = h * (0.2 + fx.next() * 0.5);
+        const r = 70 + fx.next() * 60;
+        g.strokeStyle = hexA('#5a3412', 0.16);
+        g.lineWidth = 3 + fx.next() * 3;
+        g.beginPath(); g.ellipse(x, y, r, r * (0.86 + fx.next() * 0.2), fx.next() * 3, 0, 6.2832); g.stroke();
+        g.strokeStyle = hexA('#5a3412', 0.07);
+        g.lineWidth = 12;
+        g.beginPath(); g.ellipse(x, y, r - 7, r * 0.9 - 7, 0, 0, 6.2832); g.stroke();
+      }
+      g.restore();
+    }
     void shade; void rng;
 
     // 4. the ink — this wing's own section drawing, re-inked
@@ -859,15 +890,17 @@ export class MapScene extends Scene {
     spaced('0px');
     g.shadowColor = 'transparent'; g.shadowBlur = 0; g.shadowOffsetY = 0;
 
-    // how to drive it, pencilled up the right-hand margin the way THE WAY IN
-    // is printed up the left
+    // how to drive it. ROUND 38: it was pencilled up the right-hand margin
+    // at 14 sheet px -- 7.6 screen px at the Deck's 1280, "faint grey at 9-10
+    // px" (survey 5) -- because the margin is 28 px wide. It is lettered along
+    // the strip between the plan and its title block now, right of the scale
+    // bar, at the title block's own size and in its gilt.
     g.save();
-    g.translate(w - 58, WIN.y + WIN.h / 2);
-    g.rotate(Math.PI / 2);
-    g.textAlign = 'center'; g.textBaseline = 'middle';
-    g.fillStyle = hexA(letter, 0.8);
-    g.font = '600 14px Cinzel, Georgia, serif'; spaced('3px');
-    g.fillText('DRAG TO PAN  \u00b7  SCROLL TO ZOOM  \u00b7  ARROWS CHOOSE  \u00b7  ENTER GOES', 0, 0);
+    g.textAlign = 'right'; g.textBaseline = 'middle';
+    g.shadowColor = hexA(GALL, 0.95); g.shadowOffsetY = 1.2; g.shadowBlur = 1.5;
+    g.fillStyle = hexA(GILT_HI, 0.96);
+    g.font = '700 21px Cinzel, Georgia, serif'; spaced('2px');
+    g.fillText('DRAG TO PAN  \u00b7  SCROLL TO ZOOM  \u00b7  ARROWS CHOOSE  \u00b7  ENTER GOES', WIN.x + WIN.w - 4, WIN.y + WIN.h + 16);
     spaced('0px');
     g.restore();
 
@@ -945,11 +978,18 @@ export class MapScene extends Scene {
            is hatched in its OWN ink, the bane one way and the boon the other,
            one hand for both. A pattern's currentColor is the SVG's, not the
            wing's, so the inks are spelled out here (tokens.css --kit-*-ink). -->
-      <pattern id="mm-hatch-bane" width="9" height="9" patternUnits="userSpaceOnUse" patternTransform="rotate(38)">
-        <line x1="0" y1="0" x2="0" y2="9" stroke="#6e1e15" stroke-width="1.7"/>
+      <!-- round 38: a bane is HATCHED, a boon is STIPPLED -- two hands of the
+           same pen, drawn on the paper rather than tinted over it -->
+      <pattern id="mm-hatch-bane" width="13" height="13" patternUnits="userSpaceOnUse" patternTransform="rotate(38)">
+        <line x1="2" y1="0" x2="2" y2="13" stroke="#5e1810" stroke-width="1.5"/>
       </pattern>
-      <pattern id="mm-hatch-boon" width="9" height="9" patternUnits="userSpaceOnUse" patternTransform="rotate(-38)">
-        <line x1="0" y1="0" x2="0" y2="9" stroke="#163d57" stroke-width="1.7"/>
+      <pattern id="mm-hatch-boon" width="34" height="34" patternUnits="userSpaceOnUse">
+        <g fill="#123a52">
+          <circle cx="3" cy="4" r="1.7"/><circle cx="14" cy="2.5" r="1.4"/><circle cx="25" cy="6" r="1.8"/>
+          <circle cx="8.5" cy="12" r="1.5"/><circle cx="20" cy="14" r="1.7"/><circle cx="31" cy="12.5" r="1.4"/>
+          <circle cx="2.5" cy="21" r="1.4"/><circle cx="13.5" cy="23" r="1.8"/><circle cx="26" cy="21.5" r="1.5"/>
+          <circle cx="7" cy="30" r="1.7"/><circle cx="19" cy="31" r="1.4"/><circle cx="30" cy="28.5" r="1.7"/>
+        </g>
       </pattern>
       <pattern id="mm-dots" width="13" height="13" patternUnits="userSpaceOnUse">
         <circle cx="3" cy="3" r="1.7" fill="currentColor" opacity=".5"/>
@@ -1007,6 +1047,8 @@ export class MapScene extends Scene {
     // the stains are laid over the route's clean-paper halos, pigment on the
     // paper the pencil wiped, and under the graphite itself (see below)
     const stains = [];
+    const zoneNames = [];
+    this._zoneTags = [];
     parts.push('<g class="mi-zones">');
     for (const hz of map.hazards) {
       const x = hz.rect.x0 * this.SW, y = hz.rect.y0 * this.SH;
@@ -1063,6 +1105,54 @@ export class MapScene extends Scene {
         <path class="mi-zone-rim" d="${edge}" clip-path="url(#${clip})"/>
         <path class="mi-zone-edge" d="${edge}"/>
         <path class="mi-zone-tide" d="${tide}"/></g>`);
+      /* ROUND 38: the region's NAME, lettered on its own surveyor's line
+         where the line runs along its top or its foot -- the line broken for
+         it, the way a boundary is labelled on a plan -- at the stretch that
+         covers the fewest rooms. Survey 5, J2's worst: the regions were
+         "translucent tinted rectangles with a felt-tip outline ... a software
+         highlight rather than ink". */
+      {
+        const FS = 21, txt = String(hz.name).toUpperCase();
+        const tw = txt.length * FS * 0.72 + (txt.length - 1) * 2.2;
+        let pick = null;
+        for (const yy of [y - 6, y + h + 6]) {
+          for (let f = 0.14; f <= 0.86; f += 0.06) {
+            const cxl = clampN(x + w * f, x + tw / 2 + 30, x + w - tw / 2 - 30);
+            const box = { left: cxl - tw / 2 - 26, right: cxl + tw / 2 + 26, top: yy - 17, bottom: yy + 17 };
+            if (box.top < WIN.y + 8 || box.bottom > WIN.y + WIN.h - 8) continue;
+            let c = 0;
+            for (const mk of marks) c += rectOverlap(box, mk);
+            const sb = this._seals[this._seals.length - 1];
+            if (sb) c += rectOverlap(box, sb) * 4;
+            /* the paper just right of the way in is where the entrances'
+               nameplates hang (_placeTags): a region's name keeps off it */
+            for (const id of map.startIds) {
+              const sn = this.model.byId.get(id);
+              if (!sn) continue;
+              const ex = sn.x * this.SW, ey = sn.y * this.SH;
+              c += rectOverlap(box, { left: ex - 70, right: ex + 330, top: ey - 50, bottom: ey + 95 }) * 2;
+            }
+            c += Math.abs(f - 0.5) * 40 + (yy > y ? 30 : 0);
+            if (!pick || c < pick.c) pick = { c, cx: cxl, cy: yy, box };
+          }
+        }
+        if (pick) {
+          (this._zoneTags = this._zoneTags || []).push(pick.box);
+          /* on a swallow-tailed tab of the region's own ink, lettered in
+             the paper's colour: the ink is too dark to read as lettering on
+             the dark sheet, and a tab is how a surveyor flags a boundary */
+          const L0 = pick.cx - tw / 2 - 22, R0 = pick.cx + tw / 2 + 22, T0 = pick.cy - 15, B0 = pick.cy + 15;
+          const tab = (i) => `M${(L0 + i).toFixed(1)} ${(T0 + i).toFixed(1)} L${(R0 - i).toFixed(1)} ${(T0 + i).toFixed(1)}`
+            + ` L${(R0 - 11 - i * .4).toFixed(1)} ${pick.cy.toFixed(1)} L${(R0 - i).toFixed(1)} ${(B0 - i).toFixed(1)}`
+            + ` L${(L0 + i).toFixed(1)} ${(B0 - i).toFixed(1)} L${(L0 + 11 + i * .4).toFixed(1)} ${pick.cy.toFixed(1)} Z`;
+          zoneNames.push(`<g class="mi-zone mi-zone--${hz.kind}" data-hz="${hz.id}">
+            <path class="mi-zone-tabshade" d="${tab(0)}" transform="translate(1.5 3)"/>
+            <path class="mi-zone-tab" d="${tab(0)}"/>
+            <path class="mi-zone-tabrule" d="${tab(3.5)}"/>
+            <text class="mi-zone-name" x="${pick.cx.toFixed(1)}" y="${(pick.cy + FS * 0.36).toFixed(1)}"
+                  text-anchor="middle">${escapeHtml(txt)}</text></g>`);
+        }
+      }
       parts.push(`<g class="mi-zone mi-zone--${hz.kind}" data-hz="${hz.id}">
         <path class="mi-zone-hatch" d="${deck}"
               fill="url(#${hz.kind === 'boon' ? 'mm-hatch-boon' : 'mm-hatch-bane'})"/>
@@ -1165,6 +1255,8 @@ export class MapScene extends Scene {
     parts.push('<g class="mi-shades">' + shades.join('') + '</g>');
     parts.push('<g class="mi-ghosts">' + ghosts.join('') + '</g>');
     parts.push('<g class="mi-edges">'  + lines.join('')  + '</g>');
+    // the regions' names, over the route: lettered on clean paper
+    parts.push('<g class="mi-zone-names">' + zoneNames.join('') + '</g>');
 
     const sx = map.startIds.map(i => m.byId.get(i)).filter(Boolean);
     if (sx.length) {
@@ -1473,6 +1565,17 @@ export class MapScene extends Scene {
     // what the drawing prints in its margins: the way to drive it up the right
     // side, the compass rose at the plan's top right, the scale bar under it
     blocks.push({ left: this.SW - 74, right: this.SW - 42, top: WIN.y, bottom: WIN.y + WIN.h });
+    // round 38: the help line under the plan's right half, and the regions'
+    // lettered names (_buildInk)
+    blocks.push({ left: WIN.x + WIN.w * 0.42, right: WIN.x + WIN.w, top: WIN.y + WIN.h + 2, bottom: WIN.y + WIN.h + 32 });
+    for (const q of this._zoneTags || []) blocks.push(q);
+    /* ...and the boss's plate keeps off the regions altogether (survey 5: at
+       1280 "the RECEIVING CHAMBER boss plate lies over the blue region and
+       its nodes"): it names the end of the wing, not a condition in it */
+    const zoneBlocks = (m.map.hazards || []).map((hz) => ({
+      left: hz.rect.x0 * this.SW - 12, right: hz.rect.x1 * this.SW + 12,
+      top: hz.rect.y0 * this.SH - 12, bottom: hz.rect.y1 * this.SH + 12,
+    }));
     blocks.push({ left: WIN.x + WIN.w - 140, right: WIN.x + WIN.w - 28, top: WIN.y + 32, bottom: WIN.y + 144 });
     blocks.push({ left: WIN.x - 6, right: WIN.x + 200, top: WIN.y + WIN.h + 4, bottom: WIN.y + WIN.h + 30 });
     // the gilt rail's corner scrolls lie over the paper's four corners
@@ -1570,7 +1673,7 @@ export class MapScene extends Scene {
           const sx = w / 2 + Math.sqrt(r * r - dy * dy);
           bad.push([D.cx - sx, D.cx + sx]);
         }
-        for (const q of blocks) {
+        for (const q of (boss ? blocks.concat(zoneBlocks) : blocks)) {
           if (q.top < bottom && q.bottom > top) bad.push([q.left - w / 2, q.right + w / 2]);
         }
         bad.sort((p, q) => p[0] - q[0]);
@@ -1723,12 +1826,19 @@ export class MapScene extends Scene {
     // the dim off it left every icon at full strength and the three live rings
     // competing with thirty dead ones.  Reachability only picks which shade of
     // dim: still ahead of you, or cut off for good.
+    /* ROUND 38: how many rows ahead of the party each room is, so the
+       stamps can be weighted by distance (map.css): the next row lit, the
+       two after it firm inked stamps, the far rows fading to a pencilled
+       ghost -- "all room stamps are one sepia tone and one size" (survey 5). */
+    const atRow = m.currentId ? (m.byId.get(m.currentId)?.row ?? -1) : -1;
     for (const [id, el] of this._nodeEls) {
       const isVisited = m.visited.has(id);
       const isCurrent = id === m.currentId;
       const isLegal = legal.has(id);
       const isOther = !isLegal && !isCurrent && !isVisited;
       const isReach = reach.has(id);
+      const nrow = m.byId.get(id)?.row ?? 0;
+      el.dataset.ahead = String(Math.max(0, Math.min(9, nrow - atRow)));
       el.classList.toggle('is-visited', isVisited);
       el.classList.toggle('is-current', isCurrent);
       el.classList.toggle('is-legal', isLegal);
