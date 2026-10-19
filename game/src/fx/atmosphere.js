@@ -1021,6 +1021,13 @@ export const REGIONS = {
                               /* (and a third crate of lamps on the near floor, in the
                   pool the hanging lanterns lay there -- nearFloor.pool2) */
                { shape: 34, ahead: 3.5, across: -2.4, tone: 0.97, keep: true, hand: true, seed: 45.0, wM: 2.30 },
+               /* (round 39 graft, J1-J3: "the lampworks room's bare left near
+                  floor dressed (a second bench, a stool, a lamp crate)" -- a
+                  second bench brought out at the near left, its lamps lit,
+                  and a crate of lamps by it; in a fight the Kid stands
+                  there, so both lie under the hand -- _handCull) */
+               { shape: 34, ahead: 5.3, across: 2.7, tone: 0.97, keep: true, hand: true, seed: 6.0 },
+               { shape: 34, ahead: 3.6, across: 1.5, tone: 0.97, keep: true, hand: true, seed: 47.0, wM: 2.30 },
                { shape: 34, edge: 0.80, z: -0.8, tone: 0.95 },
                { shape: 34, edge: 0.22, z: -4.6, tone: 0.92 },
                { shape: 33, x: -6.0, z: -3.0, y: 3.2, tone: 0.95 },
@@ -1039,7 +1046,10 @@ export const REGIONS = {
        smear at the foot of the frame) and the canvas tooth down, as the
        Kitchens' */
     nearFloor: { fall: 0.95, calm: 0.92, clean: 1,
-                 pool: { ahead: 6.4, across: 2.8, abs: true, rAlong: 2.8, rAcross: 2.6, k: 1.35, color: '#f0a65a' },
+                 /* (round 39 graft, all three: CHALCEDONY's bench "its lamplight
+                    on the floor" -- the forward bench's lamps laid on the flags
+                    under it twice as strong, and a little longer) */
+                 pool: { ahead: 6.4, across: 2.8, abs: true, rAlong: 3.4, rAcross: 2.8, k: 2.70, color: '#f0a65a' },
                  pool2: { ahead: 4.2, across: -1.0, abs: true, rAlong: 2.4, rAcross: 3.4, k: 1.30, color: '#e8a45c' } },
     cineFloor: 0.35, grain: 0.012, tooth: 0.045,
     exposure: 1.42, vignette: 1.06, contrast: 1.41,
@@ -2691,7 +2701,15 @@ export const ROOM_KINDS = {
                   candles with a lantern burning by them, and a rack brought
                   forward at the right) */
                { shape: 34, ahead: 3.6, across: -2.4, tone: 0.97, keep: true, hand: true, seed: 44.0, wM: 2.30 },
-               { shape: 43, ahead: 4.2, across: 2.9, tone: 0.97, keep: true, hand: true }],
+               /* (round 39 graft, J1 and J2: PERIDOT's tall candle-drying rack
+                  stood in the near floor, whole in the frame, in the vat's
+                  light -- not cropped at the frame's edge) */
+               { shape: 43, ahead: 5.2, across: 1.7, tone: 0.98, keep: true, scale: 1.10 }],
+        /* (round 39 graft, J1: the wax room's light pool feathered, not a
+           stamped disc -- the vat's glow laid long and soft over the flags,
+           and a second, fainter, carrying it to the near floor) */
+        nearFloor: { pool: { ahead: 5.6, across: 0.4, rAlong: 4.2, rAcross: 3.8, k: 1.1, color: '#f09a50' },
+                     pool2: { ahead: 3.4, across: -0.6, rAlong: 3.0, rAcross: 3.6, k: 0.55, color: '#e8a060' } },
         ceil: 6, ceilGain: 1.9,
         vantage: { at: 'among', low: 0.72, fwd: 4.2, pitch: 3.0, off: 0.14, yaw: 12, wide: 4 } },
       /* THE REFLECTOR GALLERY -- round 14, one judge, VERMEIL's: "a receding
@@ -2713,6 +2731,11 @@ export const ROOM_KINDS = {
            to a blown silver from the far side. Brought into the room, over
            the walk) */
         lamps: [{ i: 0, x: -5.0, z: 0.30, k: 0.50 }, { i: 2, x: 6.0, z: 0.34, k: 0.50 }, { i: 3, x: -2.0, z: 0.42, k: 0.60 }],
+        /* (round 39 graft, J1: "the boiler house's near band given a bench or
+           crate pile" -- crates of lamps stacked on the boiler floor under the
+           catwalk, either side of the walk) */
+        nearPlus: [{ shape: 34, ahead: 6.6, across: 2.0, tone: 0.97, keep: true, seed: 46.0, wM: 2.30 },
+                   { shape: 34, ahead: 7.2, across: -1.8, tone: 0.96, keep: true, seed: 48.0, wM: 2.30 }],
         vantage: { at: 'above', rise: 2.4, drop: 0.2, fwd: 2.4, ahead: 5.0 } },
     ],
     names: [
@@ -3902,6 +3925,9 @@ export class Atmosphere {
         }
       }
       if (kind.near) pal.props.near = kind.near;
+      /* (round 39 graft: or a few pieces of its own ADDED to the wing's set --
+         the boiler walk's crate piles on its near band) */
+      if (kind.nearPlus) pal.props.near = (pal.props.near || []).concat(kind.nearPlus);
       /* (round 31: a room may dress its near floor its own way -- the
          wing's nearFloor with this kind's keys over it) */
       if (kind.nearFloor) pal.nearFloor = Object.assign({}, pal.nearFloor || {}, kind.nearFloor);

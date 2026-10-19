@@ -20892,6 +20892,34 @@ float wgBnReel(vec2 q){ return min(length(q - vec2(0.32, 0.335)) - 0.105, mmBox(
    upper one packed in straw with the chimneys and globes standing up out of
    it, a storm lantern burning on the flags beside them, an oil can and a
    coil of wick. q in metres, foot at 0. */
+/* (round 39 graft, J1: "the crate stencils inked as letters, not black
+   blobs") THE WORKS' STENCIL: LAMPS in square stencil capitals, each letter
+   W x H metres, its strokes r thick. p from the word's lower left. */
+float wgStencil(vec2 p, float W, float H, float r){
+  float G = W*1.30;
+  float i = clamp(floor(p.x/G), 0.0, 4.0);
+  vec2 l = vec2(p.x - i*G, p.y);
+  float d = 1e3;
+  if (i < 0.5) {            // L
+    d = min(wgSeg(l, vec2(0.0, 0.0), vec2(0.0, H), r), wgSeg(l, vec2(0.0, 0.0), vec2(W, 0.0), r));
+  } else if (i < 1.5) {     // A
+    d = min(min(wgSeg(l, vec2(0.0, 0.0), vec2(W*0.5, H), r), wgSeg(l, vec2(W*0.5, H), vec2(W, 0.0), r)),
+            wgSeg(l, vec2(W*0.24, H*0.40), vec2(W*0.76, H*0.40), r));
+  } else if (i < 2.5) {     // M
+    d = min(min(wgSeg(l, vec2(0.0, 0.0), vec2(0.0, H), r), wgSeg(l, vec2(0.0, H), vec2(W*0.5, H*0.42), r)),
+            min(wgSeg(l, vec2(W*0.5, H*0.42), vec2(W, H), r), wgSeg(l, vec2(W, H), vec2(W, 0.0), r)));
+  } else if (i < 3.5) {     // P
+    d = min(min(wgSeg(l, vec2(0.0, 0.0), vec2(0.0, H), r), wgSeg(l, vec2(0.0, H), vec2(W, H), r)),
+            min(wgSeg(l, vec2(W, H), vec2(W, H*0.50), r), wgSeg(l, vec2(W, H*0.50), vec2(0.0, H*0.50), r)));
+  } else {                  // S
+    d = min(min(wgSeg(l, vec2(W, H), vec2(0.0, H), r), wgSeg(l, vec2(0.0, H), vec2(0.0, H*0.5), r)),
+            min(min(wgSeg(l, vec2(0.0, H*0.5), vec2(W, H*0.5), r), wgSeg(l, vec2(W, H*0.5), vec2(W, 0.0), r)),
+                wgSeg(l, vec2(W, 0.0), vec2(0.0, 0.0), r)));
+  }
+  /* the stencil's bridges: each stroke broken where the plate held it */
+  d = max(d, -(abs(l.y - H*0.70) - r*0.55));
+  return d;
+}
 float wgLcSD(vec2 q, float seed){
   float d = mmBox(q - vec2(-0.36, 0.24), vec2(0.42, 0.24), 0.008);
   d = min(d, mmBox(q - vec2(-0.44, 0.65), vec2(0.30, 0.17), 0.008));
@@ -20940,7 +20968,9 @@ float wgBnSD(vec2 q, float seed){
   for (int i = 0; i < 5; i++){
     float fi = float(i);
     float g;
-    d = min(d, wgBnThing(q - vec2((fi - 1.6)*0.42, TOP), wgBnKind(seed, fi), g));
+    /* (round 39 graft, CHALCEDONY's: the lamps and glass on the top a size
+       up, 1.15 -- to the shelf's foot and no further) */
+    d = min(d, wgBnThing((q - vec2((fi - 1.6)*0.42, TOP))/1.15, wgBnKind(seed, fi), g)*1.15);
   }
   /* the shelf's glass: globes and chimneys in a row */
   float rx = q.x + 1.0, ri = floor(rx/0.19);
@@ -21536,8 +21566,19 @@ vec3 wgPaint(vec2 m, vec2 msz, float shape, float seed, float px, float lum,
     col = mix(col, pine*0.70, clamp(post, 0.0, 1.0));
     ink = max(ink, mmInkP(cA, qpx, 1.1)*0.85);
     ink = max(ink, mmInkP(cB, qpx, 1.1)*0.85);
-    float sten = step(abs(q.x + 0.36), 0.16)*step(abs(q.y - 0.24), 0.05)*step(0.5, mmNoise(q*vec2(60.0, 30.0) + seed));
-    col = mix(col, vec3(0.10, 0.06, 0.04)*E, sten*0.8);
+    /* (round 39 graft: the works' name stencilled on the lower crate in
+       square capitals, and its lamp-in-a-diamond on the upper -- crisp,
+       a little worn, not a noise blot) */
+    float sten = 0.0;
+    if (abs(q.x + 0.36) < 0.22 && abs(q.y - 0.24) < 0.08) {
+      float sd = wgStencil(q - vec2(-0.36 - 0.155, 0.24 - 0.040), 0.050, 0.080, 0.0085);
+      sten = clamp(0.5 - sd/max(qpx, 1e-5), 0.0, 1.0)*(0.70 + 0.30*step(0.30, mmNoise(q*vec2(70.0, 40.0) + seed)));
+    }
+    vec2 dq = vec2(q.x + 0.44, q.y - 0.65);
+    float dia = abs(abs(dq.x) + abs(dq.y)*0.95 - 0.085) - 0.009;
+    float lampM = min(length(vec2(dq.x, dq.y + 0.008)*vec2(1.0, 0.8)) - 0.024, mmBox(dq - vec2(0.0, 0.036), vec2(0.008, 0.016), 0.003));
+    sten = max(sten, clamp(0.5 - min(dia, lampM)/max(qpx, 1e-5), 0.0, 1.0)*0.85);
+    col = mix(col, vec3(0.10, 0.05, 0.03)*E, sten*0.85*onC);
     float straw = step(abs(q.x + 0.44), 0.30)*step(0.79, q.y)*step(q.y, 0.835 + 0.010*sin(q.x*95.0 + seed));
     col = mix(col, vec3(0.80, 0.66, 0.32)*E*1.5*(0.75 + 0.5*mmNoise(q*130.0)), straw);
     for (int i = 0; i < 4; i++){
@@ -21702,20 +21743,26 @@ vec3 wgPaint(vec2 m, vec2 msz, float shape, float seed, float px, float lum,
     col = mix(col, vec3(0.11, 0.12, 0.13)*E*1.3, step(vc, 0.0));
     ink = max(ink, mmInkP(vc, qpx, 0.9)*0.7);
     /* the things on the top */
-    if (q.y > TOP - 0.03 && q.y < TOP + 0.47) {
+    if (q.y > TOP - 0.03 && q.y < TOP + 0.54) {
       for (int i = 0; i < 5; i++){
         float fi = float(i);
         float kk = wgBnKind(seed, fi);
-        vec2 o = q - vec2((fi - 1.6)*0.42, TOP);
+        /* (round 39 graft: a size up, as wgBnSD; o stays in the thing's own
+           frame and the distances come back in the bench's) */
+        vec2 o = (q - vec2((fi - 1.6)*0.42, TOP))/1.15;
         float gl;
-        float td = wgBnThing(o, kk, gl);
+        float td = wgBnThing(o, kk, gl)*1.15;
+        gl *= 1.15;
         if (td < 0.02) {
           float on = clamp(0.5 - td/max(qpx, 1e-4), 0.0, 1.0);
           float ong = clamp(0.5 - gl/max(qpx, 1e-4), 0.0, 1.0);
           vec3 brass = vec3(0.80, 0.58, 0.25)*E*1.35*(0.55 + 0.70*wgRound(clamp(o.x/0.09, -1.0, 1.0)))
                      * (1.0 + 0.30*kq*clamp(o.x/0.09, -1.0, 1.0));
-          /* glass against the dark board: its body dark and clear, its edge lit */
-          vec3 glass = vec3(0.30, 0.38, 0.44)*E*0.85;
+          /* glass against the dark board: ROUND, not flat (round 39 graft,
+             CHALCEDONY's) -- dark and clear through its body, lit toward its
+             rim, and a point of the shop's light in it on the key's side */
+          vec3 glass = vec3(0.32, 0.40, 0.46)*E*(0.50 + 1.05*smoothstep(-0.035, 0.0, gl));
+          emit += vec3(1.00, 0.88, 0.66)*0.40*clamp(0.5 - (length(o - vec2(-kq*0.020, 0.080)) - 0.008)*1.15/max(qpx, 1e-4), 0.0, 1.0)*ong;
           vec3 c = mix(brass, glass, ong);
           if (kk > 1.5 && kk < 2.5) c = mix(vec3(0.58, 0.12, 0.08)*E*1.2, glass, ong);
           col = mix(col, c, on);
@@ -21728,7 +21775,7 @@ vec3 wgPaint(vec2 m, vec2 msz, float shape, float seed, float px, float lum,
             float fl = length((o - vec2(0.0, 0.262))/vec2(0.018, 0.034)) - 1.0;
             float gw = exp(-length(o - vec2(0.0, 0.27))/0.05);
             emit += vec3(1.00, 0.66, 0.30)*ong*(0.35 + 1.1*gw);
-            emit += vec3(1.00, 0.92, 0.70)*1.6*clamp(0.5 - fl*0.018/max(qpx, 1e-4), 0.0, 1.0);
+            emit += vec3(1.00, 0.92, 0.70)*1.6*clamp(0.5 - fl*0.018*1.15/max(qpx, 1e-4), 0.0, 1.0);
             /* and lights the board behind it */
             emit += vec3(1.00, 0.62, 0.30)*board*(1.0 - on)*exp(-length((o - vec2(0.0, 0.27))*vec2(1.0, 0.8))/0.16)*0.12;
           }
@@ -21743,8 +21790,16 @@ vec3 wgPaint(vec2 m, vec2 msz, float shape, float seed, float px, float lum,
       float rg = rk < 0.45 ? length(ro - vec2(0.0, 0.058)) - 0.056
                : (rk < 0.80 ? min(wgEll(ro - vec2(0.0, 0.045), vec2(0.040, 0.045)), mmBox(ro - vec2(0.0, 0.110), vec2(0.020, 0.050), 0.006)) : 1e3);
       float onR = step(rg, 0.0)*step(0.0, rx)*step(rx, 2.0);
-      col = mix(col, vec3(0.50, 0.62, 0.70)*E*(0.55 + 0.5*smoothstep(0.02, -0.04, kq*ro.x)), onR);
-      ink = max(ink, mmInkP(rg, qpx, 1.0)*step(0.0, rx)*step(rx, 2.0)*0.6);
+      /* (round 39 graft, CHALCEDONY's: each piece round and its own glass --
+         a bottle green, an amber, the clear -- dark through its middle, lit at
+         its rim on the key side, a point of the lamp in it) */
+      vec3 gtint = rk < 0.20 ? vec3(0.40, 0.62, 0.48) : (rk < 0.32 ? vec3(0.66, 0.40, 0.30) : vec3(0.56, 0.66, 0.74));
+      float gR = clamp(abs(ro.x)/0.058, 0.0, 1.0);
+      vec3 gcol = gtint*E*(0.35 + 0.95*gR*gR)*(0.75 + 0.45*smoothstep(0.02, -0.04, kq*ro.x));
+      float spk = clamp(0.5 - (length(ro - vec2(-kq*0.022, 0.080)) - 0.009)/max(qpx, 1e-4), 0.0, 1.0);
+      col = mix(col, gcol, onR);
+      emit += vec3(1.00, 0.86, 0.62)*spk*onR*0.55;
+      ink = max(ink, mmInkP(rg, qpx, 1.0)*step(0.0, rx)*step(rx, 2.0)*0.7);
       emit += vec3(0.62, 0.72, 0.84)*onR*mmInkP(rg + 0.008, qpx, 1.0)*0.12;
     }
     moon = top*0.6 + sh*0.5;
