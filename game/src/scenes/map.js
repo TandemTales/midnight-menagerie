@@ -880,7 +880,8 @@ export class MapScene extends Scene {
       // round 30 graft: the record's cells in the brighter gilt -- the last
       // two sit in the sheet's burnt corner, under the shade's darkest
       g.fillStyle = hexA(GILT_HI, i >= 3 ? 1 : 0.94);
-      g.font = '700 18px Cinzel, Georgia, serif'; spaced('2.5px');
+      // round 38 graft: 20 px -- 11.4 at the Deck's 0.572x (18 was 10.3)
+      g.font = '700 20px Cinzel, Georgia, serif'; spaced('2.3px');
       g.fillText(head, cx, ty + 33);
       g.fillStyle = hexA(GILT_HI, 1);
       g.font = '700 26px Cinzel, Georgia, serif'; spaced('1.5px');
@@ -938,13 +939,14 @@ export class MapScene extends Scene {
     g.lineWidth = 1.2;
     spike(N, rr - 12, 9, true); spike(N + Math.PI, rr - 12, 9, false);
     spike(N + Math.PI / 2, rr - 20, 7, false); spike(N - Math.PI / 2, rr - 20, 7, false);
-    g.fillStyle = hexA(ink, 0.85); g.font = '600 15px Cinzel, Georgia, serif';
+    // round 38 graft: 20 px, 11.4 at the Deck's 0.572x (15 was 8.6)
+    g.fillStyle = hexA(ink, 0.9); g.font = '700 20px Cinzel, Georgia, serif';
     g.textAlign = 'center';
     g.fillText('N', Math.sin(N) * (rr + 14), -Math.cos(N) * (rr + 13));
     if (turned) {
-      g.font = '400 10px Grenze, Georgia, serif';
-      g.fillStyle = hexA(ink, 0.6);
-      g.fillText('PLAN TURNED 90°', 0, rr + 16);
+      g.font = '600 20px Grenze, Georgia, serif';
+      g.fillStyle = hexA(ink, 0.85);
+      g.fillText('PLAN TURNED 90°', 0, rr + 24);
     }
     g.restore(); g.textAlign = 'left';
 
@@ -956,11 +958,12 @@ export class MapScene extends Scene {
     for (let i = 0; i < 4; i++) if (i % 2 === 0) g.fillRect(bx + i * 45, by, 45, 10);
     // round 30 graft: the scale's figures readable at the Deck's 0.57x --
     // set either side of the bar in the title block's gilt, not 11 px under it
-    g.font = '700 15px Cinzel, Georgia, serif'; g.textBaseline = 'middle';
+    // round 38 graft: 20 px, 11.4 at the Deck's 0.572x (15 was 8.6)
+    g.font = '700 20px Cinzel, Georgia, serif'; g.textBaseline = 'middle';
     g.shadowColor = hexA(GALL, 0.95); g.shadowOffsetY = 1.2; g.shadowBlur = 1.5;
     g.fillStyle = hexA(GILT_HI, 0.98);
     g.textAlign = 'right'; g.fillText('0', bx - 7, by + 6);
-    g.textAlign = 'left'; spaced('1.5px'); g.fillText('40 FT', bx + 190, by + 6); spaced('0px');
+    g.textAlign = 'left'; spaced('1.5px'); g.fillText('40 FT', bx + 192, by + 6); spaced('0px');
     g.shadowColor = 'transparent'; g.shadowBlur = 0; g.shadowOffsetY = 0;
     g.restore();
   }
@@ -1605,7 +1608,7 @@ export class MapScene extends Scene {
       top: hz.rect.y0 * this.SH - 12, bottom: hz.rect.y1 * this.SH + 12,
     }));
     blocks.push({ left: WIN.x + WIN.w - 140, right: WIN.x + WIN.w - 28, top: WIN.y + 32, bottom: WIN.y + 144 });
-    blocks.push({ left: WIN.x - 6, right: WIN.x + 200, top: WIN.y + WIN.h + 4, bottom: WIN.y + WIN.h + 30 });
+    blocks.push({ left: WIN.x - 30, right: WIN.x + 280, top: WIN.y + WIN.h + 2, bottom: WIN.y + WIN.h + 32 });
     // the gilt rail's corner scrolls lie over the paper's four corners
     const cz = 64 / (this._fitZoom || this.view.z || 1);
     blocks.push({ left: 0, right: cz, top: 0, bottom: cz }, { left: this.SW - cz, right: this.SW, top: 0, bottom: cz },
