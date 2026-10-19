@@ -1600,6 +1600,11 @@ export const REGIONS = {
        under the portraits is carved wainscot; and the near frame stands down,
        so the floor runs lit to the bottom of the frame -- CAPUT's) */
     props: { shapes: [31, 6, 4, 0, 5], count: 24, height: 2.6, layout: 'colonnade',
+             /* (round 37: the statues on a quad their plinth fills -- 0.78 of
+                their height was 2.5x the figure's width, and a prop quad costs
+                its whole area on the Deck: what this buys back pays for the
+                near floor's candelabra) */
+             shapeW: { 31: 0.46 },
              /* ROUND 37: THE NEAR FLOOR (survey 5: "the near floor is an
                 empty dark expanse"; "the lower 45% of the frame is a soft
                 repeated-plank floor falling into black"). A pair of standing
@@ -1608,13 +1613,13 @@ export const REGIONS = {
                 pool and pool2, below) -- the ceremony's candles, set on the
                 floor of the hall the way a chapel sets its altar lights.
                 `still`, so the colonnade behind them is dealt as it was. */
-             near: [{ shape: 85, ahead: 8.0, across: -3.3, tone: 0.97, hM: 2.05, keep: true, still: true, seed: 1.3 },
-                    { shape: 85, ahead: 8.0, across: 3.3, tone: 0.97, hM: 2.05, keep: true, still: true, seed: 6.7 },
+             near: [{ shape: 85, ahead: 10.6, across: -4.15, tone: 0.97, hM: 1.80, keep: true, still: true, seed: 1.3 },
+                    { shape: 85, ahead: 10.6, across: 4.15, tone: 0.97, hM: 1.80, keep: true, still: true, seed: 6.7 },
                     /* ...and nearer, a knot of pillar candles stood on the
                        boards either side of the runner's foot (85 with a
                        seed past 20: true metres, hM and wM) */
-                    { shape: 85, ahead: 5.4, across: -1.9, tone: 0.97, keep: true, still: true, seed: 21.3, hM: 0.58, wM: 0.98 },
-                    { shape: 85, ahead: 5.0, across: 2.1, tone: 0.97, keep: true, still: true, seed: 24.9, hM: 0.52, wM: 0.98 }] },
+                    { shape: 85, ahead: 5.4, across: -1.9, tone: 0.97, keep: true, still: true, seed: 21.3, hM: 0.54, wM: 0.80 },
+                    { shape: 85, ahead: 5.0, across: 2.1, tone: 0.97, keep: true, still: true, seed: 24.9, hM: 0.50, wM: 0.80 }] },
     wainscot: true, nearFrame: false,
     /* (round 37: the marble modelled -- uStatueMod) */
     statueModel: 1,

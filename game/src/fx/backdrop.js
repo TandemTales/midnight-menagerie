@@ -1440,7 +1440,12 @@ export class Backdrop {
       const spread = 1 + v * (r * r * 2.6 - 0.9);
       const h = (SHAPE_M[shape] ?? 1.2) * nudge * sc * spread;
       const jit = 0.78 + rand() * 0.24;
-      return { h, w: h * (SHAPE_W[shape] ?? 1) * (FIXW[shape] ? 1 : jit) };
+      /* (round 37: a wing may draw a shape on a narrower quad than the
+         house's -- props.shapeW -- where its drawing is narrower than the
+         quad: the Heart's statues stood in quads 2.5x their plinth, and a
+         prop quad costs its whole area on the Deck whatever is drawn in it) */
+      const Wd = (P.shapeW && P.shapeW[shape]) ?? SHAPE_W[shape] ?? 1;
+      return { h, w: h * Wd * (FIXW[shape] ? 1 : jit) };
     };
     /* Keep props inside the lens. A prop at x = +-halfW in a 34 m ballroom is
        simply off-screen, which is how round 1 ended up with a props crop that

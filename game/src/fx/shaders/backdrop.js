@@ -19261,6 +19261,11 @@ float gkDraw(vec2 m, vec2 msz, float shape, float seed, float px, bool paint){
        in true metres (the near item gives the quad its hM and wM). */
     vec2 cm = m;
     cm.x *= mir;
+    /* (performance: a pixel well above the tallest flame, or out past the
+       last candle's pool, is night: the knot's own envelope stands in for
+       its distance, and the seven candles are not walked) */
+    float envK = max(abs(cm.x) - 0.46, cm.y - 0.62);
+    if (envK > 0.04) { d = envK/sc; return d*sc; }
     float dm = 1e3, flAll = 1e3, glow = 0.0, waxAll = 1e3;
     vec3 wcol = vec3(0.62, 0.52, 0.34)*(0.88 + 0.16*mv);
     for (int i = 0; i < 7; i++){
@@ -19269,9 +19274,12 @@ float gkDraw(vec2 m, vec2 msz, float shape, float seed, float px, bool paint){
       float x0 = back > 0.5 ? (fi - 1.0)*0.17 + 0.03 : (fi - 4.5)*0.135;
       x0 += 0.022*(mmHash11(fi*3.3 + seed) - 0.5);
       float r = (back > 0.5 ? 0.046 : 0.038) + 0.018*mmHash11(fi*5.1 + seed);
-      float hh = back > 0.5 ? 0.30 + 0.20*mmHash11(fi*7.7 + seed*1.3)
+      float hh = back > 0.5 ? 0.27 + 0.15*mmHash11(fi*7.7 + seed*1.3)
                             : 0.08 + 0.17*mmHash11(fi*7.7 + seed*1.3);
       float y0 = back*0.020;
+      /* (performance: a candle more than its own pool's width off this
+         pixel is not walked -- its glow there is nothing) */
+      if (abs(cm.x - x0) > r*2.1 + 0.05) continue;
       float c = mmBox(cm - vec2(x0, y0 + hh*0.5), vec2(r, hh*0.5), r*0.30);
       /* the tears run down one side */
       c = min(c, mmBox(cm - vec2(x0 + r*0.80*sign(sin(fi*2.3 + seed)), y0 + hh*0.64), vec2(r*0.28, hh*0.30), r*0.25));
@@ -19311,6 +19319,14 @@ float gkDraw(vec2 m, vec2 msz, float shape, float seed, float px, bool paint){
        candle burning. The cue that says candelabrum is the arms' CURVE
        (shape 1's own note); the cue that says this hall is the gilt. */
     float ax = abs(q.x);
+    /* (performance: most of this quad is the air between the arms and
+       either side of the stem -- there the stem's own distance stands in,
+       and the twenty members are not walked) */
+    if ((q.y > 0.40 && q.y < 1.16 && ax > 0.14) || q.y > 1.98) {
+      d = max(ax - 0.11, q.y - 1.98);
+      if (q.y > 1.98) d = q.y - 1.90;
+      return d*sc;
+    }
     /* the feet: two raked legs and the front one, on ball toes */
     float legs = min(wfSegT(vec2(ax, q.y), vec2(0.0, 0.30), vec2(0.25, 0.05), 0.030, 0.020),
                      mmBox(q - vec2(0.0, 0.10), vec2(0.034, 0.10), 0.012));
@@ -19354,7 +19370,9 @@ float gkDraw(vec2 m, vec2 msz, float shape, float seed, float px, bool paint){
       glow = max(glow, exp(-length(f)/0.07));
     }
     d = min(min(brass, wax), fl);
-    if (!paint) return d*sc;
+    /* (performance: a pixel more than a few pixels clear of every member is
+       not painted -- most of this quad is the air between the arms) */
+    if (!paint || d > 3.0*qpx) return d*sc;
     /* GILT BRASS: a dark old gold, round on every turned member, the side
        toward the key lit, a bright line on each crown, ink at every join */
     vec3 gold = vec3(0.60, 0.43, 0.19)*(0.86 + 0.20*mv);
@@ -19406,7 +19424,7 @@ float gkDraw(vec2 m, vec2 msz, float shape, float seed, float px, bool paint){
       loose = min(loose, wfSegT(q, c - vec2(cos(an), sin(an)*0.25)*L, c + vec2(cos(an), sin(an)*0.25)*L, 0.0045, 0.003));
     }
     d = min(min(body, tuft), loose);
-    if (!paint) return d*sc;
+    if (!paint || d > 3.0*qpx) return d*sc;
     vec3 straw = vec3(0.80, 0.63, 0.30)*(0.85 + 0.22*mv);
     /* a baled side is FLAKES -- slices of pressed straw a hand wide, each
        its own value, a dark seam between -- and in each the stalks lie
