@@ -14590,7 +14590,10 @@ void main(){
        tables. The Kitchens' floor program only (MM_FLAGK, Backdrop). */
     {
       vec2 kc = vec2(0.56, 0.42);
-      vec2 kw = w + vec2(mmNoise(w*0.9 + 3.1) - 0.5, mmNoise(w*0.9 + 9.7) - 0.5)*0.08;
+      /* (round 39 graft, CHALCEDONY's flags -- all three judges: each stone
+         its OWN value, the joint a wide dark line wandering round spalls and
+         knocked corners, the courses a little out of true) */
+      vec2 kw = w + vec2(mmNoise(w*0.9 + 3.1) - 0.5, mmNoise(w*0.9 + 9.7) - 0.5)*0.16;
       float krow = floor(kw.y/kc.y);
       float kox = mmHash21(vec2(krow*1.37, uSeed*0.61 + 2.9))*kc.x;
       vec2 kg = vec2(fract((kw.x + kox)/kc.x), fract(kw.y/kc.y));
@@ -14601,19 +14604,20 @@ void main(){
       float jA = max(mp*1.15, 0.004);
       /* the chips: where a slow field along the stone runs high, the arris is
          bitten out -- the joint's own dark opened a few centimetres */
-      float bite = smoothstep(0.58, 0.86, mmNoise(lp*13.0 + kid*7.31))*0.034;
-      float corner = 1.0 - smoothstep(0.0, 0.07, length(vec2(kdx, kdy)));
-      float jd = min(kdx, kdy) - bite*mmLod(0.10, mp) - corner*0.025;
-      float jl = 1.0 - smoothstep(0.010, 0.010 + jA, jd);
+      float bite = smoothstep(0.55, 0.85, mmNoise(lp*13.0 + kid*7.31))*0.040;
+      float corner = 1.0 - smoothstep(0.0, 0.05 + 0.06*mmHash21(kid*1.7 + floor(kg*2.0)*5.3), kdx + kdy);
+      float jd = min(kdx, kdy) - bite*mmLod(0.10, mp) - corner*0.030;
+      float jl = 1.0 - smoothstep(0.015, 0.015 + jA, jd);
       float worn = smoothstep(0.0, 0.12, min(kdx, kdy));
-      float arF = (1.0 - smoothstep(0.0, jA*1.6, abs(jd - 0.016)))*step(0.5, kg.y);
+      float arF = (1.0 - smoothstep(0.0, jA*1.6, abs(jd - 0.022)))*step(0.5, kg.y);
+      float arN = (1.0 - smoothstep(0.0, jA*2.0, abs(jd - 0.026)))*step(kg.y, 0.5);
       /* one stone in eight cracked across */
       vec2 cn = normalize(vec2(mmHash11(kh*91.0) - 0.5, 0.35));
       float crk = (1.0 - smoothstep(0.003, 0.003 + jA, abs(dot(lp - kc*0.5, vec2(-cn.y, cn.x)) + 0.02*sin(lp.x*30.0 + kh*9.0))))
-                * step(0.875, kh)*worn;
-      pat = (0.46 + 0.34*kh) + 0.07*worn + 0.05*smoothstep(1.6, 0.2, abs(w.x)) - jl*0.92 + 0.10*arF*(1.0 - jl)
-          - crk*0.45 + (mmNoise(w*2.2 + kh*7.0) - 0.5)*0.06;
-      cellv = 0.30 + 0.45*kh;
+                * step(0.93, kh)*worn;
+      pat = (0.40 + 0.52*kh) + 0.09*worn + 0.05*smoothstep(1.6, 0.2, abs(w.x)) - jl*0.95 + 0.13*arF*(1.0 - jl) - 0.10*arN*(1.0 - jl)
+          - crk*0.28 + (mmNoise(w*2.2 + kh*7.0) - 0.5)*0.05;
+      cellv = 0.26 + 0.52*kh;
       r39Flour = jl*smoothstep(0.55, 0.80, mmNoise(w*0.45 + 5.0));
     }
 #endif
@@ -15197,6 +15201,12 @@ void main(){
      most of the difference between a floor and a fill. */
   alb *= 0.74 + 0.52*cellv;
   alb = mix(alb, alb.zyx, (cellv - 0.5) * 0.16 + 0.08);
+#if MM_FLAGK == 1
+  /* (round 39 graft, PERIDOT's: York stone is a grey-buff, not the range's
+     red -- the flags' own colour a step toward stone, so the fire lies ON
+     them and their shadow side is shadow: the Kitchens' floor only) */
+  alb = mix(alb, vec3(mmLum(alb))*vec3(1.06, 0.98, 0.88), 0.32*(1.0 - uIsCeiling));
+#endif
   /* GRASS IS GREEN AND EARTH IS BROWN -- material facts, like the foliage
      props' green, laid over the region's own ground colour and not in place
      of it: at night under a moon both go most of the way to its grey. */
@@ -20204,33 +20214,60 @@ float gkDraw(vec2 m, vec2 msz, float shape, float seed, float px, bool paint){
       float spill = wfEll(cm - vec2(-0.02, 0.008), vec2(0.62, 0.022));
       dm = min(min(min(s1, roll), min(flour, scoop)), min(min(s2, neck), min(min(tuft, tie), spill)));
       if (paint) {
-        vec3 burl = vec3(0.50, 0.36, 0.20)*(0.86 + 0.20*mv);
-        /* the weave, too fine to draw as threads past a few pixels: its own
-           mean tone there (mmLod) */
-        float wv = 0.5 + 0.25*(sin(cm.x*260.0) + sin(cm.y*260.0));
-        float wl = mmLod(0.025, px);
+        /* ROUND 39 GRAFT (all three judges: "the sacks given lit volume, a
+           burlap weave, a tie and crisp seams -- not flat screen-toned
+           cut-outs"). Each sack a ROUND form: lit full on the key's side, a
+           core shadow turning away, a reflected light on its shadow edge off
+           the lit flags, the belly dark where it sits on them and the
+           shoulders catching the lamp. The weave is THREADS -- a warp and a
+           weft crossing, each its own pale line -- faded to the cloth's mean
+           where a thread is under three pixels (the dot screen it was is
+           gone). A sewn seam down each sack's side, stitched, and the maker's
+           stripes printed crisp across the cloth. */
+        vec3 burl = vec3(0.58, 0.42, 0.24)*(0.90 + 0.18*mv);
+        float wl = mmLod(0.014, px);
+        float thX = 1.0 - smoothstep(0.0018, 0.0018 + px, abs(fract(cm.x/0.014) - 0.5)*0.014);
+        float thY = 1.0 - smoothstep(0.0018, 0.0018 + px, abs(fract(cm.y/0.014 + 0.5*step(0.5, fract(cm.x/0.028))) - 0.5)*0.014);
+        float weave = mix(0.0, 0.10*thX - 0.08*thY, wl);
         float u1 = clamp((cm.x + 0.27)/w1, -1.0, 1.0), u2 = clamp((cm.x - 0.24)/w2, -1.0, 1.0);
-        wfLay(col, ink, spill, vec3(0.80, 0.78, 0.70), px, 0.35);
-        vec3 c2 = burl*(0.38 + 0.58*wfRound(u2))*(1.0 + 0.30*kq*u2)*(0.80 + 0.20*mix(0.5, wv, wl))
-                *(0.62 + 0.50*smoothstep(0.0, 0.40, cm.y));
-        /* a stencilled band and a mark on the tied sack */
-        float band2 = step(abs(cm.y - 0.24), 0.035)*step(abs(cm.x - 0.24), 0.17)*step(0.45, mmNoise(cm*vec2(40.0, 18.0)));
-        c2 = mix(c2, vec3(0.20, 0.16, 0.30), band2*0.75);
-        wfLay(col, ink, s2, c2, px, 0.9);
-        wfLay(col, ink, neck, burl*0.70, px, 0.8);
-        wfLay(col, ink, tuft, burl*0.90, px, 0.8);
-        wfLay(col, ink, tie, vec3(0.30, 0.22, 0.14), px, 0.8);
-        vec3 c1 = burl*(0.40 + 0.58*wfRound(u1))*(1.0 + 0.30*kq*u1)*(0.80 + 0.20*mix(0.5, wv, wl))
-                *(0.62 + 0.50*smoothstep(0.0, 0.55, cm.y));
-        /* its folds where the sack has settled */
-        c1 *= 1.0 - 0.18*smoothstep(0.3, 1.0, sin(cm.x*38.0 + cm.y*6.0))*smoothstep(0.65, 0.2, cm.y);
-        float band1 = step(abs(cm.y - 0.36), 0.030)*step(abs(cm.x + 0.27), 0.16)*step(0.45, mmNoise(cm*vec2(40.0, 18.0) + 3.0));
-        c1 = mix(c1, vec3(0.36, 0.10, 0.08), band1*0.75);
-        wfLay(col, ink, s1, c1, px, 0.9);
-        wfLay(col, ink, roll, burl*(0.70 + 0.35*smoothstep(0.65, 0.73, cm.y)), px, 0.9);
-        wfLay(col, ink, flour, vec3(0.86, 0.84, 0.76)*(0.82 + 0.20*smoothstep(0.70, 0.78, cm.y)), px, 0.6);
-        wfLay(col, ink, scoop, vec3(0.62, 0.46, 0.26), px, 0.8);
-        moon += 0.55*wfIn(flour, px) + 0.25*wfIn(roll, px);
+        wfLay(col, ink, spill, vec3(0.86, 0.84, 0.76), px, 0.35);
+        /* the light on a round form: key side, core shadow, reflected light */
+        float l2 = 0.24 + 0.92*wfRound(u2)*(0.5 + 0.5*smoothstep(-0.9, 0.7, kq*u2))
+                 + 0.16*smoothstep(0.55, 0.95, -kq*u2);
+        vec3 c2 = burl*l2*(0.48 + 0.70*smoothstep(0.0, 0.40, cm.y))*(1.0 + weave);
+        /* the printed stripes: two blue bands round the tied sack */
+        float st2 = (step(abs(cm.y - 0.21), 0.018) + step(abs(cm.y - 0.27), 0.010))*step(0.0, -s2);
+        c2 = mix(c2, vec3(0.16, 0.22, 0.42)*l2*(0.6 + 0.6*smoothstep(0.0, 0.40, cm.y)), clamp(st2, 0.0, 1.0)*0.85);
+        wfLay(col, ink, s2, c2, px, 1.0);
+        /* its side seam, sewn: a line down the form and the stitches over it */
+        float sx2 = cm.x - (0.25 + 0.55*w2*kq);
+        float seam2 = wfIn(s2, px)*step(cm.y, 0.50);
+        ink = max(ink, mmInkP(sx2, px, 1.0)*seam2*0.55);
+        ink = max(ink, mmInkP(abs(sx2) - 0.010, px, 0.9)*step(0.5, fract(cm.y/0.030))*seam2*0.45);
+        wfLay(col, ink, neck, burl*0.62*(0.8 + 0.4*smoothstep(-0.05, 0.05, kq*(cm.x - 0.205))), px, 0.9);
+        wfLay(col, ink, tuft, burl*(0.85 + 0.35*smoothstep(0.62, 0.67, cm.y)), px, 0.9);
+        /* the tie: a twine cord wound twice round the neck, its knot */
+        wfLay(col, ink, tie, vec3(0.62, 0.50, 0.30)*(0.75 + 0.45*smoothstep(0.535, 0.552, cm.y)), px, 0.9);
+        ink = max(ink, mmInkP(cm.y - 0.545, px, 0.8)*wfIn(tie, px)*0.6);
+        float l1 = 0.24 + 0.92*wfRound(u1)*(0.5 + 0.5*smoothstep(-0.9, 0.7, kq*u1))
+                 + 0.16*smoothstep(0.55, 0.95, -kq*u1);
+        vec3 c1 = burl*1.04*l1*(0.48 + 0.70*smoothstep(0.0, 0.55, cm.y))*(1.0 + weave);
+        /* its folds where the sack has settled, each lit on its upper lip */
+        float fo = sin(cm.x*38.0 + cm.y*6.0);
+        c1 *= (1.0 - 0.22*smoothstep(0.3, 1.0, fo)*smoothstep(0.65, 0.2, cm.y))
+            * (1.0 + 0.12*smoothstep(0.3, 1.0, -fo)*smoothstep(0.65, 0.2, cm.y));
+        float st1 = step(abs(cm.y - 0.36), 0.020) + step(abs(cm.y - 0.42), 0.010);
+        c1 = mix(c1, vec3(0.44, 0.10, 0.08)*l1*(0.6 + 0.6*smoothstep(0.0, 0.55, cm.y)), clamp(st1, 0.0, 1.0)*0.85*step(0.0, -s1));
+        wfLay(col, ink, s1, c1, px, 1.0);
+        float sx1 = cm.x - (-0.27 + 0.55*w1*kq);
+        float seam1 = wfIn(s1, px)*step(cm.y, 0.62);
+        ink = max(ink, mmInkP(sx1, px, 1.0)*seam1*0.55);
+        ink = max(ink, mmInkP(abs(sx1) - 0.010, px, 0.9)*step(0.5, fract(cm.y/0.030))*seam1*0.45);
+        wfLay(col, ink, roll, burl*(0.70 + 0.45*smoothstep(0.65, 0.73, cm.y))*(0.85 + 0.25*kq*u1), px, 1.0);
+        ink = max(ink, mmInkP(cm.y - 0.69, px, 0.8)*wfIn(roll, px)*0.5);
+        wfLay(col, ink, flour, vec3(0.90, 0.88, 0.80)*(0.82 + 0.22*smoothstep(0.70, 0.78, cm.y)), px, 0.6);
+        wfLay(col, ink, scoop, vec3(0.70, 0.52, 0.28)*(0.8 + 0.4*smoothstep(0.75, 0.93, cm.y)), px, 0.85);
+        moon += 0.55*wfIn(flour, px) + 0.30*wfIn(roll, px) + 0.20*wfIn(min(s1, s2), px)*smoothstep(0.30, 0.60, cm.y);
       }
     } else {
       /* the block, its staves glued end-grain up, scored on its top and

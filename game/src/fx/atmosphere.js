@@ -509,7 +509,11 @@ export const REGIONS = {
                        basket with seed > 40 / > 60: gkDraw) */
                     { shape: 82, ahead: 3.7, across: -1.7, tone: 0.95, keep: true, hand: true, seed: 45.0, hM: 0.95, wM: 1.45 },
                     { shape: 82, ahead: 3.9, across: 1.8, tone: 0.95, keep: true, hand: true, seed: 65.0, hM: 1.08, wM: 0.95 },
-                    { shape: 82, ahead: 3.1, across: 0.2, tone: 0.96, keep: true, hand: true, seed: 9.5 }] },
+                    /* (round 39 graft, J1: "a chopping block and basket forward
+                       at left, sacks at right, the centre kept open for the
+                       fight" -- CHALCEDONY's composition: the day's basket
+                       set down by the block, not in the middle) */
+                    { shape: 82, ahead: 3.0, across: 1.30, tone: 0.97, keep: true, hand: true, seed: 9.5 }] },
     /* ROUND 31: THE NEAR FLOOR -- the flags run on lit toward the hand (to
        nine-tenths, not two-fifths), the range's warmth laid on them in front
        of the eye, and a rag hearth rug on the flags before the fire */
@@ -2612,13 +2616,16 @@ export const ROOM_KINDS = {
        shallower and the eye two nearer; and its lamps where the room has
        them: the fire in the range, the scullery's chandeliers over its two
        sinks and its copper's fire at a third of the range's) */
+    /* (round 39 graft, J2 and J3: PERIDOT's patterned rug enlarged and
+       brought to the mid-floor, in both rooms -- the wing's own room, the
+       fight's, keeps its rug upstage of the nameplates) */
     kinds: [{ subject: 'range', room: { d: 0.68 }, cam: { z: -2.6, look: 0.05 }, count: 0,
-              rug: { ahead: 6.9, hw: 1.45, hd: 0.85 },
+              rug: { ahead: 4.9, hw: 1.85, hd: 1.10 },
               lamps: [{ i: 2, x: 0.0, z: 0.94 }, { i: 3, x: -4.4, z: 0.78, y: 3.0, k: 0.55 }] },   // (round 39: the moon a step down -- its blue on the warm flags was the violet slab)   // (round 28: the moon under its left window; graft: a step into the room, its pool on the flags)
             /* (round 31: its tables placed, as the kitchen's -- one each side
                of the sinks, a bench along each; no table dealt) */
             { subject: 'scullery', room: { d: 0.66, w: 0.86 }, cam: { z: -2.0, look: 0.30 },
-              count: 0, rug: { ahead: 6.6, hw: 1.30, hd: 0.80 },
+              count: 0, rug: { ahead: 4.7, hw: 1.70, hd: 1.02 },
               near: [{ shape: 29, x: -3.6, z: -3.6, tone: 0.94, free: true, seed: 3.3 },
                      { shape: 29, x: 3.6, z: -3.6, tone: 0.94, free: true, seed: 8.1 },
                      { shape: 29, x: -3.5, z: -2.55, tone: 0.96, free: true, seed: 22.0 },
@@ -2630,7 +2637,9 @@ export const ROOM_KINDS = {
                      /* (round 39: the scullery's near floor -- a sack and a
                         block, as the kitchen's) */
                      { shape: 82, ahead: 3.7, across: 1.7, tone: 0.95, keep: true, hand: true, seed: 47.0, hM: 0.95, wM: 1.45 },
-                     { shape: 82, ahead: 3.9, across: -1.8, tone: 0.95, keep: true, hand: true, seed: 66.0, hM: 1.08, wM: 0.95 }],
+                     { shape: 82, ahead: 3.9, across: -1.8, tone: 0.95, keep: true, hand: true, seed: 66.0, hM: 1.08, wM: 0.95 },
+                     /* (round 39 graft: and a basket by the block, as the kitchen's) */
+                     { shape: 82, ahead: 3.0, across: -1.30, tone: 0.97, keep: true, hand: true, seed: 11.8 }],
               /* (round 31 graft, judges 2 and 3: "light the scullery's near-left
                  corner" -- the copper's spill as a second pool there) */
               nearFloor: { pool: { ahead: 3.4, across: 0.0, rAlong: 2.8, rAcross: 3.2, k: 1.4, color: '#e8a060' },
