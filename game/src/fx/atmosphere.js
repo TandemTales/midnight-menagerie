@@ -500,7 +500,15 @@ export const REGIONS = {
                        their wicker baskets on the flags in front of the
                        tables -- gkDraw 82) */
                     { shape: 82, edge: 0.30, z: -0.4, tone: 0.94, keep: true, fore: 1 },
-                    { shape: 82, edge: 0.72, z: -1.4, tone: 0.92, keep: true, fore: 1, seed: 5.5 }] },
+                    { shape: 82, edge: 0.72, z: -1.4, tone: 0.92, keep: true, fore: 1, seed: 5.5 },
+                    /* ROUND 39 (RHODONITE), both survey-6 judges: "the
+                       bottom 55% is an empty flagstone floor ... nothing on
+                       it". The near floor's things, in eye metres: the flour
+                       sacks at the left, one open with its scoop, and the
+                       butcher's block at the right with its cleaver (a
+                       basket with seed > 40 / > 60: gkDraw) */
+                    { shape: 82, ahead: 4.6, across: -2.5, tone: 0.95, keep: true, seed: 45.0, hM: 0.95, wM: 1.45 },
+                    { shape: 82, ahead: 5.0, across: 2.6, tone: 0.95, keep: true, seed: 65.0, hM: 1.08, wM: 0.95 }] },
     /* ROUND 31: THE NEAR FLOOR -- the flags run on lit toward the hand (to
        nine-tenths, not two-fifths), the range's warmth laid on them in front
        of the eye, and a rag hearth rug on the flags before the fire */
@@ -510,9 +518,14 @@ export const REGIONS = {
        ran behind the KITCHEN IMP's nameplate -- and a second warm pool laid
        through the lower third, judges 1 and 2: "carry the floor lighting
        down through the lower 35% of the frame") */
+    /* (round 39, both survey-6 judges: "blown orange by the range, with a
+       purple/orange colour split" -- the near pools at two-thirds and in a
+       paler lamplight, not the fire's orange; and the flags SMALL and
+       worn, MM_FLAGK) */
     nearFloor: { fall: 0.90, dye: 1, calm: 0.95, rug: { ahead: 6.9, hw: 1.45, hd: 0.85 },
-                 pool: { ahead: 3.6, across: 0.0, rAlong: 3.0, rAcross: 3.4, k: 1.1, color: '#ff9a50' },
-                 pool2: { ahead: 2.6, across: 0.0, rAlong: 2.0, rAcross: 4.0, k: 0.9, color: '#ffa860' } },
+                 pool: { ahead: 3.8, across: 0.0, rAlong: 3.0, rAcross: 3.6, k: 0.72, color: '#eeae70' },
+                 pool2: { ahead: 2.6, across: 0.0, rAlong: 2.0, rAcross: 4.0, k: 0.50, color: '#e6b47e' } },
+    flagK: 1,
     particles: { mix: [[PTYPE.EMBER, 0.46], [PTYPE.DUST, 0.40], [PTYPE.PLASTER, 0.14]],
                  tint: '#ffcf9a', wispTint: '#8fd9a8', emberTint: '#ff7a28',
                  speed: 1.2, scale: 1.05, wind: 1.3, density: 0.95 },
@@ -527,7 +540,10 @@ export const REGIONS = {
     /* (round 31: and 1.4 from 2.2 -- with the near flags lit it laid a
        lilac slab across the left foreground, the palest dark in the room;
        the window's moon keeps the second, cold value on the range) */
-    fill: { glow: 0, kind: 'cold', x: 5.0, y: 2.2, z: 1.2, color: '#3d5a8c', intensity: 1.4, radius: 7.0, flicker: false },
+    /* (round 39: and its colour a cold slate, not a violet -- the "purple"
+       half of the split was this fill and the moon below on warm stone;
+       a LIGHT's colour, said here because the darks were too coloured) */
+    fill: { glow: 0, kind: 'cold', x: 5.0, y: 2.2, z: 1.2, color: '#3b4b63', intensity: 1.15, radius: 7.0, flicker: false },
     lights: [
       /* (graft, VANDYKE's, two judges: the kitchen's lamps are BRASS
          CHANDELIERS hung over its range and its tables -- at 2.9 m in a 4.4 m
@@ -538,7 +554,7 @@ export const REGIONS = {
       /* ...and the FIRE in the range (the kind stands it there), its glow
          pooling out of the arch across the flags as the room's focal light;
          its fitting is the range itself */
-      { kind: 'warm', x: 0.0, y: 0.70, z: -7.2, color: '#ffa24c', intensity: 3.0, radius: 6.0, fit: 'none' },
+      { kind: 'warm', x: 0.0, y: 0.70, z: -7.2, color: '#ffa24c', intensity: 2.45, radius: 6.0, fit: 'none' },   // (round 39: 2.45 from 3.0, "the range's orange glare tamed")
       /* (round 28: THE SECOND, COLD LIGHT -- the moon through the night
          panes over the left-hand dresser, where it lays a blue edge on
          the near table, its crocks and the left of the range: "a single
@@ -548,7 +564,7 @@ export const REGIONS = {
       /* (round 28 graft, TERREVERTE's: lower and further into the room, so
          its cold pool lies on the flags in front of the range's fire -- "the
          cold moonlit window and its blue pool on the floor") */
-      { kind: 'cold', x: -4.6, y: 3.00, z: -7.6, color: '#5b75b0', intensity: 2.5, radius: 6.8, fit: 'none' },
+      { kind: 'cold', x: -4.6, y: 3.00, z: -7.6, color: '#566f98', intensity: 2.1, radius: 6.8, fit: 'none' },   // (round 39: a moon blue, not a violet)
     ],
     /* (no shafts: a kitchen has no window for one to come through) */
     shafts: { count: 2, spread: 11, y: 5.0, z: -8.0, angle: 0.18, width: 2.4, intensity: 0.0, pool: 1.6 },
@@ -985,6 +1001,17 @@ export const REGIONS = {
                 hung nearest the eye, over the fight, at the height of the
                 creatures' heads and above */
              near: [
+               /* ROUND 39 (RHODONITE), both survey-6 judges: "the
+                  workbenches are thin sparse frames" with "the bottom half
+                  an empty dark flagstone field". One bench is brought
+                  FORWARD onto the near floor at the right, in the pool of
+                  its own working lamp (nearFloor.pool), and the bench
+                  itself is joinery now -- wgBnSD. */
+               { shape: 34, edge: 0.70, z: 3.4, tone: 0.97, scale: 1.10, free: true, keep: true, seed: 2.0 },
+               /* ...and crates of lamps, a lantern burning on the flags, an
+                  oil can and a coil of wick at the near left (a bench with
+                  seed > 40: wgLcSD) */
+               { shape: 34, edge: 0.27, z: 3.0, tone: 0.97, free: true, keep: true, seed: 41.0, wM: 2.30 },
                { shape: 34, edge: 0.80, z: -0.8, tone: 0.95 },
                { shape: 34, edge: 0.22, z: -4.6, tone: 0.92 },
                { shape: 33, x: -6.0, z: -3.0, y: 3.2, tone: 0.95 },
@@ -997,6 +1024,15 @@ export const REGIONS = {
     particles: { mix: [[PTYPE.EMBER, 0.42], [PTYPE.WISP, 0.30], [PTYPE.DUST, 0.28]],
                  tint: '#cfe8ff', wispTint: '#6fd9ec', emberTint: '#ff9e3c',
                  speed: 1.1, scale: 1.1, wind: 1.0, density: 1.0 },
+    /* ROUND 39: THE NEAR FLOOR -- the flags calm and clean, the forward
+       bench's lamplight pooled on them at the right and the windows' cold
+       light at the left; the cinematic key off the floor (it laid the warm
+       smear at the foot of the frame) and the canvas tooth down, as the
+       Kitchens' */
+    nearFloor: { fall: 0.86, calm: 0.92, clean: 1,
+                 pool: { ahead: 6.4, across: 2.8, abs: true, rAlong: 2.8, rAcross: 2.6, k: 1.15, color: '#f0a65a' },
+                 pool2: { ahead: 4.4, across: -2.8, abs: true, rAlong: 2.6, rAcross: 2.2, k: 0.55, color: '#86bad8' } },
+    cineFloor: 0.35, grain: 0.012, tooth: 0.045,
     exposure: 1.42, vignette: 1.06, contrast: 1.41,
     key:  { glow: 0, kind: 'warm', x: -4.2, y: 3.2, z: 2.2, color: '#df9f63', intensity: 4.51, radius: 7.74 },
     fill: { glow: 0, kind: 'cold', x: 6.2, y: 3.2, z: 1.4, color: '#86bad8', intensity: 2.1, radius: 9.5, flicker: false },
@@ -1388,7 +1424,17 @@ export const REGIONS = {
                 them") -- set by hand at the frame's edges, where the fight
                 leaves room, and a palm with the near one */
              near: [
+               /* ROUND 39 (RHODONITE), both survey-6 judges: "every tub is a
+                  tiny prop stranded against the back wall". The baths come
+                  FORWARD: a big roll-top on the near floor at the right,
+                  where the fight leaves the frame open above the hand, a
+                  second behind it, and one on the near left beside the Kid;
+                  the towel horse with its stool and pail (a bath dealt with seed > 40) between them
+                  on the wet tiles. */
+               { shape: 32, edge: 0.78, z: 1.7, tone: 0.97, scale: 1.15, free: true, keep: true, seed: 3.0 },
+               { shape: 32, edge: 0.60, z: -0.6, tone: 0.96, keep: true, free: true, seed: 41.0, hM: 1.25, wM: 1.90 },
                { shape: 32, edge: 0.80, z: -0.9, tone: 0.95 },
+               { shape: 32, edge: 0.15, z: 1.0, tone: 0.95, scale: 1.08, free: true, keep: true, seed: 7.0 },
                { shape: 32, edge: 0.88, z: -3.8, tone: 0.93 },
                { shape: 2, edge: 0.95, z: -2.4, tone: 0.92 },
                /* and two more down the hall, on the left and the middle,
@@ -1396,6 +1442,18 @@ export const REGIONS = {
                { shape: 32, x: -3.4, z: -7.4, tone: 0.92, free: true },
                { shape: 32, x: 1.8, z: -10.2, tone: 0.90, free: true },
              ] },
+    /* ROUND 39: THE NEAR FLOOR, wet. Its tiles calm and clean (no milky
+       mottle), falling to a deep wet dark toward the hand, the warm lamp's
+       pool laid in front of the near bath and the windows' cold light in a
+       second on the left; the cinematic key's tan wash off the floor
+       (cineFloor) -- it was the "hazy grey-blue empty plane". */
+    nearFloor: { fall: 0.94, calm: 0.92, clean: 1, rug: { ahead: 3.9, hw: 1.05, hd: 0.52, dx: -0.4 },
+                 pool: { ahead: 4.2, across: 0.3, abs: true, rAlong: 2.2, rAcross: 3.0, k: 2.2, color: '#e8b070' },
+                 pool2: { ahead: 5.6, across: -3.4, abs: true, rAlong: 2.6, rAcross: 2.2, k: 1.5, color: '#7fb4dc' } },
+    cineFloor: 0.12,
+    /* (round 39: and the post grade's canvas tooth at under half the house's
+       -- on a broad lit floor its blotches were the "mottled tile field") */
+    grain: 0.012, tooth: 0.042,
     particles: { mix: [[PTYPE.RAIN, 0.58], [PTYPE.DUST, 0.26], [PTYPE.WISP, 0.16]],
                  tint: '#bfe8f5', wispTint: '#6fd9ec', emberTint: '#ffb64a',
                  speed: 1.0, scale: 1.0, wind: 1.2, density: 1.0 },
@@ -2522,7 +2580,11 @@ export const ROOM_KINDS = {
                      { shape: 8, edge: 0.965, z: 0.6, tone: 0.95, scale: 1.10, fore: 1 },
                      { shape: 8, x: -5.6, z: -5.0, tone: 0.90, free: true },
                      { shape: 8, x: 5.8, z: -4.8, tone: 0.90, free: true },
-                     { shape: 82, edge: 0.26, z: -0.2, tone: 0.94, keep: true, fore: 1, seed: 2.5 }],
+                     { shape: 82, edge: 0.26, z: -0.2, tone: 0.94, keep: true, fore: 1, seed: 2.5 },
+                     /* (round 39: the scullery's near floor -- a sack and a
+                        block, as the kitchen's) */
+                     { shape: 82, ahead: 4.4, across: 2.4, tone: 0.95, keep: true, seed: 47.0, hM: 0.95, wM: 1.45 },
+                     { shape: 82, ahead: 4.8, across: -2.6, tone: 0.95, keep: true, seed: 66.0, hM: 1.08, wM: 0.95 }],
               /* (round 31 graft, judges 2 and 3: "light the scullery's near-left
                  corner" -- the copper's spill as a second pool there) */
               nearFloor: { pool: { ahead: 3.4, across: 0.0, rAlong: 2.8, rAcross: 3.2, k: 1.4, color: '#e8a060' },

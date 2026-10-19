@@ -927,7 +927,7 @@ export class Backdrop {
     this.floorMat = new THREE.ShaderMaterial({
       uniforms: surfaceUniforms(),
       /* the room-kind floors are a variant of their own: _setSurfaceProgram */
-      defines: { MM_FLOORX: 0, MM_R25W: 0, MM_PAT: 0, MM_CEIL: 0, MM_RUGO: 0 },
+      defines: { MM_FLOORX: 0, MM_R25W: 0, MM_PAT: 0, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0 },
       vertexShader: FLOOR_VERT, fragmentShader: FLOOR_FRAG,
       depthWrite: true, fog: false,
     });
@@ -2888,8 +2888,9 @@ export class Backdrop {
        water as a mirror; the pond out of doors keeps variant 1) */
     const fx = (p.pool && !p.pool.open) ? 2 : (((p.floorPattern ?? 0) > 9.5 || !!p.pool) ? 1 : 0);
     this._setSurfaceProgram(this.floorMat, fx, (R25_FLOORS[p.r25w] || []).includes(fx) ? p.r25w : 0,
-      /* (round 37 graft: a braided oval rug, the wardrobe's -- MM_RUGO) */
-      p.rug && p.rug.oval ? { MM_RUGO: 1 } : { MM_RUGO: 0 });
+      /* (round 37 graft: a braided oval rug, the wardrobe's -- MM_RUGO;
+         round 39: and the Kitchens' small worn flags -- MM_FLAGK, pal.flagK) */
+      { MM_RUGO: p.rug && p.rug.oval ? 1 : 0, MM_FLAGK: p.flagK ?? 0 });
     f.uRunner.value = p.runner ?? 0;
     /* the runner leads to the door, wherever the subject took it */
     f.uRunX.value = p.runX ?? (p.subjX ?? 0);
@@ -2901,6 +2902,14 @@ export class Backdrop {
       f.uMirror.value.set(-(p.room?.d ?? 17), 3.32, ceil - 0.34, 6.4);
     } else {
       f.uWater.value.set(0, 0, 0, 0);
+      /* (round 39: the bath hall's standing water holds its end wall's three
+         windows -- the end wall's z and the bay its windows are set on, as
+         bathWallH sets them out; w = 1 lays them. FLOOR_FRAG, puddle.) */
+      if (p.subject === 'baths') {
+        f.uMirror.value.set(-(p.room?.d ?? 17), Math.min(5.8, this.wallMat.uniforms.uSize.value.x * 0.28), ceil, 1);
+      } else {
+        f.uMirror.value.set(0, 0, 0, 0);
+      }
     }
     f.uGloss.value = p.gloss ?? 0.5;
     f.uStraw.value = p.straw ?? 0;
