@@ -1456,3 +1456,6 @@
   text-shadow: 0 0 2px rgb(16 8 2), 0 0 4px rgb(16 8 2 / .95), 0 1px 1px rgb(0 0 0), 0 0 8px rgb(16 8 2 / .7);
 }
 .at-name__n::before, .at-name__n::after { opacity: .9; }
+/* the key's swatch in the wash a surveyed wing actually wears now (between
+   the earned wing's deeper gilt and the house's vellum) */
+.at-key__sw--seen { background: rgb(218 178 112); }
