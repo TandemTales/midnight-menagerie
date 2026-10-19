@@ -2226,6 +2226,10 @@ export class Backdrop {
          bones on the Crypt's flags is wide and low, and no ratio of its
          height says so. Read only where written.) */
       if (it.wM !== undefined && out.length > n0) out[out.length - 1].w = it.wM;
+      /* (round 39: a piece set on the near floor where, in a fight, the HAND
+         lies over it -- `hand` -- dresses the empty room and is not drawn
+         under the cards: _handCull. Read only where written.) */
+      if (it.hand && out.length > n0) out[out.length - 1].hand = 1;
       if (!it.keep && yields(it, out[out.length - 1])) out.pop();
     }
     return out.slice(0, MAX_PROPS);
@@ -2475,7 +2479,17 @@ export class Backdrop {
     this._castSig = NaN;              // the throws are laid at the next syncLights
     this._shdCast.needsUpdate = true;
     this.shadowGeo.instanceCount = shadowN;
+    /* (round 39: the pieces a fight's hand covers, and their shadows) */
+    this._hand = [];
+    for (let k = 0; k < placed.length; k++) {
+      if (!placed[k].hand) continue;
+      const si = castOf.indexOf(placed[k]);
+      this._hand.push({ k, w: sc[k * 2], h: sc[k * 2 + 1], si,
+                        sw: si >= 0 ? ss2[si * 2] : 0, sh: si >= 0 ? ss2[si * 2 + 1] : 0 });
+    }
+    this._handCulled = false;
     if (this._actors?.length) this.setActorShadows(this._actors);
+    this._handCull(!!(this._fightOn));
 
     /* ---- shafts: extend each beam until it reaches the floor, and record the
        elliptical pool where it lands so the floor shader can paint it. ------- */
@@ -3427,7 +3441,28 @@ export class Backdrop {
    * combatant's feet on the floor in WORLD metres, its footprint radius and
    * the strength of its shadow. Anything past the list is cleared.
    */
+  /** ROUND 39: THE NEAR FLOOR UNDER THE HAND. A piece set by hand on the near
+   *  floor with `hand` dresses the EMPTY room -- the contact sheets, a room
+   *  as the player first sees it -- and in a fight lies under the cards,
+   *  where it is never seen and its quad still costs the frame (the bath
+   *  hall's near baths measured ~0.4 ms of props under the hand). While a
+   *  fight stands on the floor (setActors) those quads and their contact
+   *  shadows are collapsed to nothing, and put back when it leaves. */
+  _handCull(on) {
+    const H = this._hand || [];
+    if (!H.length || on === this._handCulled) { this._handCulled = on; return; }
+    const sc = this._propScale.array, ss2 = this._shdScale.array;
+    for (const e of H) {
+      sc[e.k * 2] = on ? 0 : e.w; sc[e.k * 2 + 1] = on ? 0 : e.h;
+      if (e.si >= 0) { ss2[e.si * 2] = on ? 0 : e.sw; ss2[e.si * 2 + 1] = on ? 0 : e.sh; }
+    }
+    this._propScale.needsUpdate = this._shdScale.needsUpdate = true;
+    this._handCulled = on;
+  }
+
   setActors(list = []) {
+    this._fightOn = (list || []).some((it) => !!it);
+    this._handCull(this._fightOn);
     const u = this.floorMat.uniforms;
     const a = u.uActor.value, k = u.uActorK.value, key = u.uKeyF.value;
     let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;

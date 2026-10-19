@@ -15179,7 +15179,14 @@ void main(){
   /* (graft: the passages' boards are not a cloud -- the fbm drift under
      their pools is what made the pools "soft smears"; uCrisp is 0 in every
      other room) */
+#if MM_PAT == 1 && MM_R25W == 0
+  /* (round 39: the bath hall's tiles are laid in their own glazes below --
+     puddle -- and their calm near floor took a twelfth of this cloud; its
+     three taps were the floor's work thrown away) */
+  vec3 alb = mix(uDeep, uMid, 0.24 + 0.78*0.46);
+#else
   vec3 alb = mix(uDeep, uMid, 0.24 + 0.78*mix(mmFbm3(w*0.42 + uSeed), 0.46, max(uCrisp*0.70, uNearCalm)));
+#endif
   /* PER STONE. Value, and then hue: in selectKid's floor no two flags are the
      same colour either, some pulling warm and some plum, and that alone is
      most of the difference between a floor and a fill. */
@@ -15697,13 +15704,15 @@ void main(){
     tile = mix(tile, vec3(0.020, 0.024, 0.028), gro*0.85);
     alb = tile*Lf*4.2;
     /* standing water: a slow field thresholded with a one-pixel edge */
-    float pf = mmNoise(w*0.34 + 7.1)*0.62 + mmNoise(w*0.90 + 2.3)*0.38;
-    puddle = mmCover(pf - 0.56)*smoothstep(1.0, 3.0, vDepth)*(1.0 - clamp(water + coping, 0.0, 1.0));
+    float pf = mmNoise(w*0.34 + 7.1)*0.75 + 0.25*sin(w.x*1.7 + w.y*1.1 + 2.0)*0.5 + 0.125;
+    puddle = mmCover(pf - 0.60)*smoothstep(1.0, 3.0, vDepth)*(1.0 - clamp(water + coping, 0.0, 1.0));
     /* THE NEAR FLOOR'S OWN THINGS (where the near floor lays its rug,
        uRug -- nearFloor.rug, undyed here): a teak DUCKBOARD on the wet
        tiles, its slats across the way with the dark water showing between
        them, and beside it a round brass DRAIN in its own pool */
-    if (uRug.z > 0.01) {
+    /* (only near it: the frame budget) */
+    vec2 rpB = abs(vWorld.xz - uRug.xy) - uRug.zw - vec2(2.6, 1.0);
+    if (uRug.z > 0.01 && max(rpB.x, rpB.y) < 0.0) {
       vec2 rp = vWorld.xz - uRug.xy;
       vec2 ed = uRug.zw - abs(rp);
       float on = clamp(ed.x/mp + 0.5, 0.0, 1.0)*clamp(ed.y/mp + 0.5, 0.0, 1.0);
@@ -15745,7 +15754,7 @@ void main(){
       vec3 rd = normalize(vWorld - uCamera);
       rd.y = -rd.y;
       float tW = (uMirror.x - vWorld.z)/min(rd.z, -1e-3);
-      float wn = mmNoise(vec2(w.x*2.0, w.y*6.0));
+      float wn = 0.5 + 0.5*sin(w.x*2.3 + w.y*5.1);
       vec2 R = vec2(vWorld.x + rd.x*tW, rd.y*tW) + vec2(0.10*(wn - 0.5), 0.0);
       float sp = uMirror.y;
       float wi = clamp(floor(R.x/sp + 0.5), -1.0, 1.0);
@@ -15766,7 +15775,7 @@ void main(){
             + vec3(1.00, 0.76, 0.44)*globes*1.3) * fres * puddle;
       /* the pool's edge: a hairline of light on its far lip, as standing
          water holds one */
-      pudR += vec3(0.30, 0.42, 0.55)*mmInk(pf - 0.56, 1.0)*0.05*smoothstep(1.0, 3.0, vDepth);
+      pudR += vec3(0.30, 0.42, 0.55)*mmInk(pf - 0.60, 1.0)*0.05*smoothstep(1.0, 3.0, vDepth);
     }
 #endif
   }
@@ -20797,7 +20806,15 @@ float wgLcSD(vec2 q, float seed){
   return d;
 }
 float wgBnSD(vec2 q, float seed){
-  if (seed > 40.0) return wgLcSD(q, seed);
+  /* (round 39, the frame budget: a pixel well outside the drawing's own
+     box is answered by the box -- the bench's quad is wide and near) */
+  if (seed > 40.0) {
+    float env = mmBox(q - vec2(0.0, 0.51), vec2(1.04, 0.51), 0.0);
+    if (env > 0.06) return env;
+    return wgLcSD(q, seed);
+  }
+  float envB = mmBox(q - vec2(0.0, 0.79), vec2(1.30, 0.79), 0.0);
+  if (envB > 0.06) return envB;
   float hw = 1.18, TOP = 0.90;
   float d = mmBox(q - vec2(0.0, TOP - 0.040), vec2(hw, 0.040), 0.006);
   d = min(d, mmBox(q - vec2(0.0, TOP - 0.162), vec2(hw - 0.06, 0.084), 0.004));
@@ -21436,36 +21453,38 @@ vec3 wgPaint(vec2 m, vec2 msz, float shape, float seed, float px, float lum,
     float board = step(bx, hw - 0.07)*step(TOP, q.y)*step(q.y, 1.365);
     vec3 deal = vec3(0.24, 0.16, 0.10)*E*1.05*(0.78 + 0.32*grV);
     col = mix(col, deal, board);
-    float bj = abs(mod(q.x + 0.06, 0.24) - 0.12);
-    ink = max(ink, mmInkP(bj - 0.119, qpx, 0.8)*board*0.40);
-    float t0;
-    float pl = min(wgSegT(q, vec2(-0.62, 1.17), vec2(-0.665, 0.985), 0.013, 0.010, t0),
-                   wgSegT(q, vec2(-0.62, 1.17), vec2(-0.575, 0.985), 0.013, 0.010, t0));
-    pl = min(pl, wgSegT(q, vec2(-0.62, 1.17), vec2(-0.612, 1.285), 0.016, 0.006, t0));
-    float sn = min(wgSegT(q, vec2(-0.32, 1.13), vec2(-0.385, 0.975), 0.014, 0.011, t0),
-                   wgSegT(q, vec2(-0.32, 1.13), vec2(-0.255, 0.975), 0.014, 0.011, t0));
-    sn = min(sn, wgEll(q - vec2(-0.32, 1.215), vec2(0.024, 0.085)));
-    float hmS0 = wgSeg(q, vec2(0.06, 0.975), vec2(0.06, 1.215), 0.012);
-    float hm = min(hmS0, mmBox(q - vec2(0.06, 1.245), vec2(0.075, 0.024), 0.008));
-    float fl2 = min(wgSeg(q, vec2(0.30, 0.985), vec2(0.30, 1.285), 0.009), wgSeg(q, vec2(0.37, 1.005), vec2(0.37, 1.27), 0.008));
-    float wire = abs(length(q - vec2(0.76, 1.15)) - 0.085) - 0.014;
-    float tools = min(min(pl, sn), min(hm, fl2));
-    /* (the shadow: the same drawing, a little down and away from the key) */
-    vec2 so = vec2(-kq*0.018, 0.018);
-    float plS = min(wgSegT(q + so, vec2(-0.62, 1.17), vec2(-0.665, 0.985), 0.013, 0.010, t0),
-                    wgSegT(q + so, vec2(-0.62, 1.17), vec2(-0.575, 0.985), 0.013, 0.010, t0));
-    float hmS = min(wgSeg(q + so, vec2(0.06, 0.975), vec2(0.06, 1.215), 0.012), mmBox(q + so - vec2(0.06, 1.245), vec2(0.075, 0.024), 0.008));
-    float snS = wgEll(q + so - vec2(-0.32, 1.215), vec2(0.024, 0.085));
-    col *= 1.0 - 0.45*board*clamp(0.5 - min(min(plS, hmS), snS)/max(qpx, 1e-5), 0.0, 1.0);
-    float onTl = board*clamp(0.5 - tools/max(qpx, 1e-5), 0.0, 1.0);
-    vec3 iron = vec3(0.16, 0.16, 0.17)*E*1.6;
-    col = mix(col, iron*(0.75 + 0.5*smoothstep(-0.02, 0.02, kq*(q.x - 0.06))), onTl);
-    col = mix(col, oak*1.25, board*clamp(0.5 - hmS0/max(qpx, 1e-5), 0.0, 1.0));   // the hammer's ash shaft
-    float onWi = board*clamp(0.5 - wire/max(qpx, 1e-5), 0.0, 1.0);
-    col = mix(col, vec3(0.84, 0.60, 0.26)*E*1.7, onWi);
-    ink = max(ink, mmInkP(tools, qpx, 0.9)*board*0.85);
-    ink = max(ink, mmInkP(wire, qpx, 0.8)*board*0.6);
-    emit += vec3(1.0, 0.80, 0.50)*onWi*0.05;
+    if (board > 0.5) {
+      float bj = abs(mod(q.x + 0.06, 0.24) - 0.12);
+      ink = max(ink, mmInkP(bj - 0.119, qpx, 0.8)*board*0.40);
+      float t0;
+      float pl = min(wgSegT(q, vec2(-0.62, 1.17), vec2(-0.665, 0.985), 0.013, 0.010, t0),
+                     wgSegT(q, vec2(-0.62, 1.17), vec2(-0.575, 0.985), 0.013, 0.010, t0));
+      pl = min(pl, wgSegT(q, vec2(-0.62, 1.17), vec2(-0.612, 1.285), 0.016, 0.006, t0));
+      float sn = min(wgSegT(q, vec2(-0.32, 1.13), vec2(-0.385, 0.975), 0.014, 0.011, t0),
+                     wgSegT(q, vec2(-0.32, 1.13), vec2(-0.255, 0.975), 0.014, 0.011, t0));
+      sn = min(sn, wgEll(q - vec2(-0.32, 1.215), vec2(0.024, 0.085)));
+      float hmS0 = wgSeg(q, vec2(0.06, 0.975), vec2(0.06, 1.215), 0.012);
+      float hm = min(hmS0, mmBox(q - vec2(0.06, 1.245), vec2(0.075, 0.024), 0.008));
+      float fl2 = min(wgSeg(q, vec2(0.30, 0.985), vec2(0.30, 1.285), 0.009), wgSeg(q, vec2(0.37, 1.005), vec2(0.37, 1.27), 0.008));
+      float wire = abs(length(q - vec2(0.76, 1.15)) - 0.085) - 0.014;
+      float tools = min(min(pl, sn), min(hm, fl2));
+      /* (the shadow: the same drawing, a little down and away from the key) */
+      vec2 so = vec2(-kq*0.018, 0.018);
+      float plS = min(wgSegT(q + so, vec2(-0.62, 1.17), vec2(-0.665, 0.985), 0.013, 0.010, t0),
+                      wgSegT(q + so, vec2(-0.62, 1.17), vec2(-0.575, 0.985), 0.013, 0.010, t0));
+      float hmS = min(wgSeg(q + so, vec2(0.06, 0.975), vec2(0.06, 1.215), 0.012), mmBox(q + so - vec2(0.06, 1.245), vec2(0.075, 0.024), 0.008));
+      float snS = wgEll(q + so - vec2(-0.32, 1.215), vec2(0.024, 0.085));
+      col *= 1.0 - 0.45*board*clamp(0.5 - min(min(plS, hmS), snS)/max(qpx, 1e-5), 0.0, 1.0);
+      float onTl = board*clamp(0.5 - tools/max(qpx, 1e-5), 0.0, 1.0);
+      vec3 iron = vec3(0.16, 0.16, 0.17)*E*1.6;
+      col = mix(col, iron*(0.75 + 0.5*smoothstep(-0.02, 0.02, kq*(q.x - 0.06))), onTl);
+      col = mix(col, oak*1.25, board*clamp(0.5 - hmS0/max(qpx, 1e-5), 0.0, 1.0));   // the hammer's ash shaft
+      float onWi = board*clamp(0.5 - wire/max(qpx, 1e-5), 0.0, 1.0);
+      col = mix(col, vec3(0.84, 0.60, 0.26)*E*1.7, onWi);
+      ink = max(ink, mmInkP(tools, qpx, 0.9)*board*0.85);
+      ink = max(ink, mmInkP(wire, qpx, 0.8)*board*0.6);
+      emit += vec3(1.0, 0.80, 0.50)*onWi*0.05;
+    }
     /* the shelf along the board's head, its front edge in light */
     float sh = step(abs(q.y - 1.375), 0.020)*step(bx, hw - 0.02);
     col = mix(col, oak*(1.05 + 0.35*smoothstep(1.36, 1.393, q.y)), sh);
@@ -21478,61 +21497,67 @@ vec3 wgPaint(vec2 m, vec2 msz, float shape, float seed, float px, float lum,
        brass cup pull, the rail in the top's shade */
     float rail = step(abs(q.y - (TOP - 0.162)), 0.084)*step(bx, hw - 0.06);
     col = mix(col, oak*0.80*(0.85 + 0.25*gr), rail);
-    float dxi = clamp(floor(q.x/0.746 + 0.5), -1.0, 1.0);
-    vec2 dq = vec2(q.x - dxi*0.746, q.y - (TOP - 0.162));
-    float dfr = mmBox(dq, vec2(0.335, 0.060), 0.006);
-    col = mix(col, oak*1.02*(0.86 + 0.22*gr), rail*step(dfr, 0.0));
-    ink = max(ink, mmInkP(dfr, qpx, 1.0)*rail*0.80);
-    float pull = wgEll(dq - vec2(0.0, -0.004), vec2(0.040, 0.014));
-    float onPu = rail*clamp(0.5 - pull/max(qpx, 1e-5), 0.0, 1.0);
-    col = mix(col, vec3(0.86, 0.62, 0.27)*E*2.0, onPu);
-    emit += vec3(1.0, 0.82, 0.52)*onPu*smoothstep(0.0, 0.010, dq.y + 0.004)*0.10;
-    ink = max(ink, mmInkP(pull, qpx, 0.8)*rail*0.6);
+    if (rail > 0.5) {
+      float dxi = clamp(floor(q.x/0.746 + 0.5), -1.0, 1.0);
+      vec2 dq = vec2(q.x - dxi*0.746, q.y - (TOP - 0.162));
+      float dfr = mmBox(dq, vec2(0.335, 0.060), 0.006);
+      col = mix(col, oak*1.02*(0.86 + 0.22*gr), rail*step(dfr, 0.0));
+      ink = max(ink, mmInkP(dfr, qpx, 1.0)*rail*0.80);
+      float pull = wgEll(dq - vec2(0.0, -0.004), vec2(0.040, 0.014));
+      float onPu = rail*clamp(0.5 - pull/max(qpx, 1e-5), 0.0, 1.0);
+      col = mix(col, vec3(0.86, 0.62, 0.27)*E*2.0, onPu);
+      emit += vec3(1.0, 0.82, 0.52)*onPu*smoothstep(0.0, 0.010, dq.y + 0.004)*0.10;
+      ink = max(ink, mmInkP(pull, qpx, 0.8)*rail*0.6);
+    }
     col *= 1.0 - 0.30*rail*smoothstep(TOP - 0.10, TOP - 0.08, q.y);    // under the top's lip
     /* THE PEDESTALS: a panelled cupboard at each end on its plinth, the
        side away from the key in shade */
-    float ped = step(abs(bx - 0.86), 0.26)*step(0.070, q.y)*step(q.y, 0.670);
-    float pv = (bx - 0.86)/0.26*sign(q.x);
-    col = mix(col, oak*0.92*(0.82 + 0.26*grV)*(0.92 + 0.14*kq*pv), ped);
-    vec2 pq = vec2(bx - 0.86, q.y - 0.37);
-    float pan = mmBox(pq, vec2(0.185, 0.225), 0.012);
-    col = mix(col, oak*0.72*(0.85 + 0.25*grV), ped*step(pan, 0.0));
-    ink = max(ink, mmInkP(pan, qpx, 1.0)*ped*0.80);
-    ink = max(ink, mmInkP(pan + 0.030, qpx, 0.8)*ped*0.45);
-    ink = max(ink, mmInkP(abs(bx - 0.86) - 0.26, qpx, 1.1)*step(0.07, q.y)*step(q.y, 0.67)*0.85);
-    float knob = length(vec2(bx - 0.66, q.y - 0.40)) - 0.018;
-    float onK = ped*clamp(0.5 - knob/max(qpx, 1e-5), 0.0, 1.0);
-    col = mix(col, vec3(0.86, 0.62, 0.27)*E*2.0, onK);
-    float plin = step(abs(bx - 0.86), 0.28)*step(q.y, 0.070);
-    col = mix(col, oak*0.42, plin);
-    ink = max(ink, mmInkP(q.y - 0.070, qpx, 1.0)*step(abs(bx - 0.86), 0.28)*0.8);
+    if (q.y < 0.69 && bx > 0.56) {
+      float ped = step(abs(bx - 0.86), 0.26)*step(0.070, q.y)*step(q.y, 0.670);
+      float pv = (bx - 0.86)/0.26*sign(q.x);
+      col = mix(col, oak*0.92*(0.82 + 0.26*grV)*(0.92 + 0.14*kq*pv), ped);
+      vec2 pq = vec2(bx - 0.86, q.y - 0.37);
+      float pan = mmBox(pq, vec2(0.185, 0.225), 0.012);
+      col = mix(col, oak*0.72*(0.85 + 0.25*grV), ped*step(pan, 0.0));
+      ink = max(ink, mmInkP(pan, qpx, 1.0)*ped*0.80);
+      ink = max(ink, mmInkP(pan + 0.030, qpx, 0.8)*ped*0.45);
+      ink = max(ink, mmInkP(abs(bx - 0.86) - 0.26, qpx, 1.1)*step(0.07, q.y)*step(q.y, 0.67)*0.85);
+      float knob = length(vec2(bx - 0.66, q.y - 0.40)) - 0.018;
+      float onK = ped*clamp(0.5 - knob/max(qpx, 1e-5), 0.0, 1.0);
+      col = mix(col, vec3(0.86, 0.62, 0.27)*E*2.0, onK);
+      float plin = step(abs(bx - 0.86), 0.28)*step(q.y, 0.070);
+      col = mix(col, oak*0.42, plin);
+      ink = max(ink, mmInkP(q.y - 0.070, qpx, 1.0)*step(abs(bx - 0.86), 0.28)*0.8);
+    }
     /* THE BAY: its shelf, a crate of chimneys packed in straw, a reel of wick */
-    float shf = step(abs(q.y - 0.215), 0.020)*step(bx, 0.62);
-    col = mix(col, oak*1.05*(0.85 + 0.2*gr), shf);
-    ink = max(ink, mmInkP(abs(q.y - 0.215) - 0.020, qpx, 1.0)*step(bx, 0.62)*0.8);
-    float cr = wgBnCrate(q);
-    float onCr = clamp(0.5 - cr/max(qpx, 1e-5), 0.0, 1.0);
-    vec3 pine = vec3(0.62, 0.47, 0.28)*E*1.40;
-    float slat = abs(mod(q.y - 0.230, 0.062) - 0.031);
-    col = mix(col, pine*(0.80 + 0.25*gr)*(0.70 + 0.30*smoothstep(0.004, 0.012, slat)), onCr);
-    ink = max(ink, mmInkP(slat - 0.030, qpx, 0.8)*onCr*0.65);
-    ink = max(ink, mmInkP(cr, qpx, 1.1)*0.85);
-    float straw = step(abs(q.x + 0.22), 0.27)*step(0.452, q.y)*step(q.y, 0.495 + 0.012*sin(q.x*90.0 + seed));
-    col = mix(col, vec3(0.80, 0.66, 0.32)*E*1.6*(0.75 + 0.5*mmNoise(q*120.0)), straw);
-    float cx4 = q.x + 0.22, ci = clamp(floor(cx4/0.105 + 0.5), -2.0, 2.0);
-    float chm = wgEll(vec2(cx4 - ci*0.105, q.y - 0.50), vec2(0.036, 0.045));
-    float onCh = clamp(0.5 - chm/max(qpx, 1e-5), 0.0, 1.0)*step(0.47, q.y);
-    col = mix(col, vec3(0.42, 0.52, 0.58)*E*0.9, onCh);
-    emit += vec3(0.62, 0.74, 0.86)*mmInkP(chm + 0.007, qpx, 1.0)*step(0.0, kq*(cx4 - ci*0.105))*step(0.47, q.y)*0.12;
-    ink = max(ink, mmInkP(chm, qpx, 0.9)*step(0.47, q.y)*0.6);
-    float rl = wgBnReel(q);
-    float onRl = clamp(0.5 - rl/max(qpx, 1e-5), 0.0, 1.0);
-    float rr = length(q - vec2(0.32, 0.335));
-    vec3 cotton = vec3(0.84, 0.80, 0.66)*E*1.6*(0.70 + 0.40*smoothstep(0.10, 0.0, rr));
-    float wound = step(rr, 0.085);
-    col = mix(col, mix(pine*0.85, cotton*(0.82 + 0.18*sin(rr*260.0)), wound), onRl);
-    ink = max(ink, mmInkP(rl, qpx, 1.0)*0.8);
-    ink = max(ink, mmInkP(rr - 0.085, qpx, 0.8)*onRl*0.6);
+    if (q.y < 0.56 && bx < 0.66) {
+      float shf = step(abs(q.y - 0.215), 0.020)*step(bx, 0.62);
+      col = mix(col, oak*1.05*(0.85 + 0.2*gr), shf);
+      ink = max(ink, mmInkP(abs(q.y - 0.215) - 0.020, qpx, 1.0)*step(bx, 0.62)*0.8);
+      float cr = wgBnCrate(q);
+      float onCr = clamp(0.5 - cr/max(qpx, 1e-5), 0.0, 1.0);
+      vec3 pine = vec3(0.62, 0.47, 0.28)*E*1.40;
+      float slat = abs(mod(q.y - 0.230, 0.062) - 0.031);
+      col = mix(col, pine*(0.80 + 0.25*gr)*(0.70 + 0.30*smoothstep(0.004, 0.012, slat)), onCr);
+      ink = max(ink, mmInkP(slat - 0.030, qpx, 0.8)*onCr*0.65);
+      ink = max(ink, mmInkP(cr, qpx, 1.1)*0.85);
+      float straw = step(abs(q.x + 0.22), 0.27)*step(0.452, q.y)*step(q.y, 0.495 + 0.012*sin(q.x*90.0 + seed));
+      col = mix(col, vec3(0.80, 0.66, 0.32)*E*1.6*(0.75 + 0.5*mmNoise(q*120.0)), straw);
+      float cx4 = q.x + 0.22, ci = clamp(floor(cx4/0.105 + 0.5), -2.0, 2.0);
+      float chm = wgEll(vec2(cx4 - ci*0.105, q.y - 0.50), vec2(0.036, 0.045));
+      float onCh = clamp(0.5 - chm/max(qpx, 1e-5), 0.0, 1.0)*step(0.47, q.y);
+      col = mix(col, vec3(0.42, 0.52, 0.58)*E*0.9, onCh);
+      emit += vec3(0.62, 0.74, 0.86)*mmInkP(chm + 0.007, qpx, 1.0)*step(0.0, kq*(cx4 - ci*0.105))*step(0.47, q.y)*0.12;
+      ink = max(ink, mmInkP(chm, qpx, 0.9)*step(0.47, q.y)*0.6);
+      float rl = wgBnReel(q);
+      float onRl = clamp(0.5 - rl/max(qpx, 1e-5), 0.0, 1.0);
+      float rr = length(q - vec2(0.32, 0.335));
+      vec3 cotton = vec3(0.84, 0.80, 0.66)*E*1.6*(0.70 + 0.40*smoothstep(0.10, 0.0, rr));
+      float wound = step(rr, 0.085);
+      col = mix(col, mix(pine*0.85, cotton*(0.82 + 0.18*sin(rr*260.0)), wound), onRl);
+      ink = max(ink, mmInkP(rl, qpx, 1.0)*0.8);
+      ink = max(ink, mmInkP(rr - 0.085, qpx, 0.8)*onRl*0.6);
+    }
     /* the vice: black iron */
     float vc = min(mmBox(q - vec2(-hw + 0.13, TOP + 0.055), vec2(0.075, 0.055), 0.008),
                    min(mmBox(q - vec2(-hw + 0.02, TOP + 0.040), vec2(0.075, 0.011), 0.004),
@@ -21540,47 +21565,51 @@ vec3 wgPaint(vec2 m, vec2 msz, float shape, float seed, float px, float lum,
     col = mix(col, vec3(0.11, 0.12, 0.13)*E*1.3, step(vc, 0.0));
     ink = max(ink, mmInkP(vc, qpx, 0.9)*0.7);
     /* the things on the top */
-    for (int i = 0; i < 5; i++){
-      float fi = float(i);
-      float kk = wgBnKind(seed, fi);
-      vec2 o = q - vec2((fi - 1.6)*0.42, TOP);
-      float gl;
-      float td = wgBnThing(o, kk, gl);
-      if (td < 0.02) {
-        float on = clamp(0.5 - td/max(qpx, 1e-4), 0.0, 1.0);
-        float ong = clamp(0.5 - gl/max(qpx, 1e-4), 0.0, 1.0);
-        vec3 brass = vec3(0.80, 0.58, 0.25)*E*1.35*(0.55 + 0.70*wgRound(clamp(o.x/0.09, -1.0, 1.0)))
-                   * (1.0 + 0.30*kq*clamp(o.x/0.09, -1.0, 1.0));
-        /* glass against the dark board: its body dark and clear, its edge lit */
-        vec3 glass = vec3(0.30, 0.38, 0.44)*E*0.85;
-        vec3 c = mix(brass, glass, ong);
-        if (kk > 1.5 && kk < 2.5) c = mix(vec3(0.58, 0.12, 0.08)*E*1.2, glass, ong);
-        col = mix(col, c, on);
-        float edge = mmInkP(gl + 0.006, qpx, 1.2)*step(0.0, kq*o.x);
-        emit += vec3(0.62, 0.72, 0.84)*edge*0.18;
-        ink = max(ink, mmInkP(td, qpx, 1.0)*0.9);
-        ink = max(ink, mmInkP(gl, qpx, 1.0)*0.5);
-        /* the lamp it works by is burning */
-        if (kk < 0.5 && (abs(fi - 1.0) < 0.5 || mmHash11(seed*9.1 + fi) < 0.35)) {
-          float fl = length((o - vec2(0.0, 0.262))/vec2(0.018, 0.034)) - 1.0;
-          float gw = exp(-length(o - vec2(0.0, 0.27))/0.05);
-          emit += vec3(1.00, 0.66, 0.30)*ong*(0.35 + 1.1*gw);
-          emit += vec3(1.00, 0.92, 0.70)*1.6*clamp(0.5 - fl*0.018/max(qpx, 1e-4), 0.0, 1.0);
-          /* and lights the board behind it */
-          emit += vec3(1.00, 0.62, 0.30)*board*(1.0 - on)*exp(-length((o - vec2(0.0, 0.27))*vec2(1.0, 0.8))/0.16)*0.12;
+    if (q.y > TOP - 0.03 && q.y < TOP + 0.47) {
+      for (int i = 0; i < 5; i++){
+        float fi = float(i);
+        float kk = wgBnKind(seed, fi);
+        vec2 o = q - vec2((fi - 1.6)*0.42, TOP);
+        float gl;
+        float td = wgBnThing(o, kk, gl);
+        if (td < 0.02) {
+          float on = clamp(0.5 - td/max(qpx, 1e-4), 0.0, 1.0);
+          float ong = clamp(0.5 - gl/max(qpx, 1e-4), 0.0, 1.0);
+          vec3 brass = vec3(0.80, 0.58, 0.25)*E*1.35*(0.55 + 0.70*wgRound(clamp(o.x/0.09, -1.0, 1.0)))
+                     * (1.0 + 0.30*kq*clamp(o.x/0.09, -1.0, 1.0));
+          /* glass against the dark board: its body dark and clear, its edge lit */
+          vec3 glass = vec3(0.30, 0.38, 0.44)*E*0.85;
+          vec3 c = mix(brass, glass, ong);
+          if (kk > 1.5 && kk < 2.5) c = mix(vec3(0.58, 0.12, 0.08)*E*1.2, glass, ong);
+          col = mix(col, c, on);
+          float edge = mmInkP(gl + 0.006, qpx, 1.2)*step(0.0, kq*o.x);
+          emit += vec3(0.62, 0.72, 0.84)*edge*0.18;
+          ink = max(ink, mmInkP(td, qpx, 1.0)*0.9);
+          ink = max(ink, mmInkP(gl, qpx, 1.0)*0.5);
+          /* the lamp it works by is burning */
+          if (kk < 0.5 && (abs(fi - 1.0) < 0.5 || mmHash11(seed*9.1 + fi) < 0.35)) {
+            float fl = length((o - vec2(0.0, 0.262))/vec2(0.018, 0.034)) - 1.0;
+            float gw = exp(-length(o - vec2(0.0, 0.27))/0.05);
+            emit += vec3(1.00, 0.66, 0.30)*ong*(0.35 + 1.1*gw);
+            emit += vec3(1.00, 0.92, 0.70)*1.6*clamp(0.5 - fl*0.018/max(qpx, 1e-4), 0.0, 1.0);
+            /* and lights the board behind it */
+            emit += vec3(1.00, 0.62, 0.30)*board*(1.0 - on)*exp(-length((o - vec2(0.0, 0.27))*vec2(1.0, 0.8))/0.16)*0.12;
+          }
         }
       }
     }
     /* the shelf's glass */
-    float rx = q.x + 1.0, ri = floor(rx/0.19);
-    float rk = mmHash11(ri*3.1 + seed*1.7);
-    vec2 ro = vec2(rx - (ri + 0.5)*0.19, q.y - 1.395);
-    float rg = rk < 0.45 ? length(ro - vec2(0.0, 0.058)) - 0.056
-             : (rk < 0.80 ? min(wgEll(ro - vec2(0.0, 0.045), vec2(0.040, 0.045)), mmBox(ro - vec2(0.0, 0.110), vec2(0.020, 0.050), 0.006)) : 1e3);
-    float onR = step(rg, 0.0)*step(0.0, rx)*step(rx, 2.0);
-    col = mix(col, vec3(0.50, 0.62, 0.70)*E*(0.55 + 0.5*smoothstep(0.02, -0.04, kq*ro.x)), onR);
-    ink = max(ink, mmInkP(rg, qpx, 1.0)*step(0.0, rx)*step(rx, 2.0)*0.6);
-    emit += vec3(0.62, 0.72, 0.84)*onR*mmInkP(rg + 0.008, qpx, 1.0)*0.12;
+    if (q.y > 1.36) {
+      float rx = q.x + 1.0, ri = floor(rx/0.19);
+      float rk = mmHash11(ri*3.1 + seed*1.7);
+      vec2 ro = vec2(rx - (ri + 0.5)*0.19, q.y - 1.395);
+      float rg = rk < 0.45 ? length(ro - vec2(0.0, 0.058)) - 0.056
+               : (rk < 0.80 ? min(wgEll(ro - vec2(0.0, 0.045), vec2(0.040, 0.045)), mmBox(ro - vec2(0.0, 0.110), vec2(0.020, 0.050), 0.006)) : 1e3);
+      float onR = step(rg, 0.0)*step(0.0, rx)*step(rx, 2.0);
+      col = mix(col, vec3(0.50, 0.62, 0.70)*E*(0.55 + 0.5*smoothstep(0.02, -0.04, kq*ro.x)), onR);
+      ink = max(ink, mmInkP(rg, qpx, 1.0)*step(0.0, rx)*step(rx, 2.0)*0.6);
+      emit += vec3(0.62, 0.72, 0.84)*onR*mmInkP(rg + 0.008, qpx, 1.0)*0.12;
+    }
     moon = top*0.6 + sh*0.5;
     return col;
   }
