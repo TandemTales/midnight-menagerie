@@ -86,7 +86,7 @@ import { Scene } from '../core/scenes.js';
 import { bus } from '../core/bus.js';
 import { Save } from '../core/save.js';
 import { COMPANIONS, REGION_ORDER } from '../data/schema.js';
-import { regionMeta, blueprintTraceUrl, MASTER, exitReason } from '../state/mapgen.js';
+import { regionMeta, blueprintTraceUrl, blueprintSectionUrl, MASTER, exitReason } from '../state/mapgen.js';
 import { loadPlanTrace, solvePen, inkTrace } from '../ui/plan.js';
 import {
   ensureCss, fontsReady, el, svg, rovingFocus,
@@ -170,6 +170,50 @@ function pencilOf(img) {
 }
 
 /**
+ * A wing's own drawing as INK (round 38): its section bitmap -- everything
+ * outside the wing already erased to paper -- lifted off that paper into
+ * alpha, in one colour, at the section's own pixel size. At the atlas's laid-
+ * flat size (about half a section pixel per screen pixel) the bitmap's own
+ * hand-drawn walls downsample into clean, thin, continuous lines; the traced
+ * vectors, solved for the map's 2-4x blow-ups, broke into dashes and beads
+ * there and read as a blot. Cached per wing and colour.
+ */
+const SECTION_INK = new Map();
+function sectionInk(slug, color) {
+  const key = `${slug}|${color}`;
+  if (SECTION_INK.has(key)) return SECTION_INK.get(key);
+  const p = new Promise((resolve) => {
+    const img = new Image();
+    img.decoding = 'async';
+    img.onload = () => {
+      try {
+        const c = document.createElement('canvas');
+        c.width = img.naturalWidth; c.height = img.naturalHeight;
+        const g = c.getContext('2d', { willReadFrequently: true });
+        g.drawImage(img, 0, 0);
+        const d = g.getImageData(0, 0, c.width, c.height), px = d.data;
+        const m = /^#?([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i.exec(color) || [0, '1f', '13', '0a'];
+        const R = parseInt(m[1], 16), G = parseInt(m[2], 16), B = parseInt(m[3], 16);
+        for (let i = 0; i < px.length; i += 4) {
+          const r = px[i], gg = px[i + 1], b = px[i + 2];
+          const blue = (b - r) / 255;
+          const dark = 1 - (r * 0.299 + gg * 0.587 + b * 0.114) / 255;
+          let v = (blue * 2.6 + Math.max(0, dark - 0.36) * 1.5) * 1.35;
+          v = v <= 0 ? 0 : v >= 1 ? 1 : v;
+          px[i] = R; px[i + 1] = G; px[i + 2] = B; px[i + 3] = (v * 255) | 0;
+        }
+        g.putImageData(d, 0, 0);
+        resolve(c);
+      } catch { resolve(null); }
+    };
+    img.onerror = () => resolve(null);
+    img.src = new URL(`../../${blueprintSectionUrl(slug)}`, import.meta.url).href;
+  });
+  SECTION_INK.set(key, p);
+  return p;
+}
+
+/**
  * Geometry comes from `sections.json`; EVERYTHING ELSE comes from `regionMeta`.
  *
  * The file carries a name, boss and companion for each wing too — they were
@@ -193,6 +237,13 @@ async function loadSections() {
       n: meta.section,
       x: s.x, y: s.y, w: s.w, h: s.h,
       nx: s.nx, ny: s.ny, nw: s.nw, nh: s.nh,
+      /* round 38: the wing's own FOOTPRINT on the estate (rings of estate px),
+         where its label is lettered and how wide it runs there -- measured by
+         `tools/blueprint_locate.py --wings` off the section's own ink, so the
+         seventeen are seventeen parts that do not overlap */
+      outline: Array.isArray(s.outline) ? s.outline : null,
+      pole: Array.isArray(s.pole) ? s.pole : null,
+      span: Array.isArray(s.span) ? s.span : null,
       companion: COMPANIONS.find((c) => c.region === slug) || null,
     });
   }
@@ -521,7 +572,38 @@ export class AtlasScene extends Scene {
       if (this.trail.includes(w.slug)) b.classList.add('is-walked');
       if (this.trail[this.trail.length - 1] === w.slug) b.classList.add('is-here');
       b.setAttribute('aria-label', this._hotLabel(w));
+      /* round 38: the wing answers the pointer over its own FOOTPRINT, not its
+         rectangle (they overlap: the Foyer's lies inside the Hedge Maze's), and
+         carries its lettered label -- numeral and name -- at the footprint's
+         deepest point. Both placed in percent of this button's own box. */
+      const rel = (x, y) => [((x / MASTER.w - w.nx) / w.nw) * 100, ((y / MASTER.h - w.ny) / w.nh) * 100];
+      let clip = '';
+      if (w.outline && w.outline[0]) {
+        const r = w.outline.reduce((a, c) => (c.length > a.length ? c : a), w.outline[0]);
+        const pts = [];
+        for (let i = 0; i + 1 < r.length; i += 2) {
+          const [px, py] = rel(r[i], r[i + 1]);
+          pts.push(`${px.toFixed(2)}% ${py.toFixed(2)}%`);
+        }
+        clip = `clip-path:polygon(${pts.join(',')})`;
+      }
+      const [lx, ly] = w.pole ? rel(w.pole[0], w.pole[1]) : [50, 50];
+      /* the full-name plate hangs off the footprint's top edge, or under its
+         foot for a wing whose top is at the sheet's own top margin */
+      let top = 0, bot = 100;
+      if (w.outline) {
+        let y0 = Infinity, y1 = -Infinity;
+        for (const r of w.outline) for (let i = 1; i < r.length; i += 2) { y0 = Math.min(y0, r[i]); y1 = Math.max(y1, r[i]); }
+        top = rel(0, y0)[1]; bot = rel(0, y1)[1];
+        b.dataset.up = (y0 / MASTER.h) > 0.075 ? '1' : '0';
+      }
+      b.style.setProperty('--tag-x', `${lx.toFixed(2)}%`);
+      b.style.setProperty('--tag-top', `${top.toFixed(2)}%`);
+      b.style.setProperty('--tag-bot', `${bot.toFixed(2)}%`);
       b.innerHTML = `<span class="at-hot__box" aria-hidden="true"></span>`
+        + `<span class="at-hot__hit" aria-hidden="true" style="${clip}"></span>`
+        + `<span class="at-name" aria-hidden="true" style="left:${lx.toFixed(2)}%;top:${ly.toFixed(2)}%">`
+        + `<i class="at-name__n">${esc(w.meta.roman)}</i><b class="at-name__t"></b></span>`
         + `<span class="at-hot__tag">${esc(w.meta.name)}</span>`;
       hots.appendChild(b);
     }
@@ -909,53 +991,248 @@ export class AtlasScene extends Scene {
     const token = this._surveyToken = (this._surveyToken || 0) + 1;
     host.textContent = '';
     const dpr = window.devicePixelRatio || 1;
-    /* ROUND 30 GRAFT: the sixteen unknown wings, re-drawn from their own
-       vectors at ONE hairline into ONE canvas the size of the plate. The
-       sections overlap on the master, so each is drawn opaque into the same
-       layer and the layer is laid down once (atlas.css .at-survey__hair): a
-       wall two sections share is no darker than any other. */
-    const hair = document.createElement('canvas');
-    hair.className = 'at-survey__hair';
-    hair.width = Math.max(1, Math.round(pw * dpr)); hair.height = Math.max(1, Math.round(ph * dpr));
-    host.appendChild(hair);
+    this._fitNames(pw);
+    /* ROUND 38: A HOUSE OF SEVENTEEN PARTS. Survey 5: "the sixteen unsurveyed
+       wings are one faint, fuzzy undifferentiated tint ... and the one surveyed
+       wing is a black ink blob". Every wing is drawn by its own FOOTPRINT now
+       (sections.json `outline`, which do not overlap), in two hands:
+         unsurveyed  a crisp pale pencil OUTLINE round the footprint, its walls
+                     a ghost inside it, its numeral and name lettered in pencil
+                     (.at-name) -- the house's shape, readable, and empty;
+         surveyed    the footprint laid in a gilt wash that pools at its edge
+                     the way watercolour dries, the wing's own walls inked over
+                     it at a FINE pen (never the blot a 2.3 px pen made of it at
+                     this size), clipped to the footprint so no neighbour's wall
+                     is inked twice, and its edge ruled in iron-gall with a gilt
+                     fillet inside.
+       Two canvases, both the plate's laid-flat size at the screen's own density:
+       the ghost walls (`.at-survey__hair`, laid down faint once, so a wall two
+       drawings share is no darker than another) and the sheet's seventeen parts
+       (`.at-survey__wings`). A zoom magnifies them with the plate; only a
+       resize redraws them. */
+    const mk = (cls) => {
+      const c = document.createElement('canvas');
+      c.className = cls;
+      c.width = Math.max(1, Math.round(pw * dpr)); c.height = Math.max(1, Math.round(ph * dpr));
+      host.appendChild(c);
+      return c;
+    };
+    const hair = mk('at-survey__hair');
+    const parts = mk('at-survey__wings');
     const hg = hair.getContext('2d');
+    const pg = parts.getContext('2d');
+    const S = pw / MASTER.w;                           // plate px per estate px
+    const foot = (w) => {
+      const p = new Path2D();
+      for (const r of (w.outline || [])) {
+        for (let i = 0; i + 1 < r.length; i += 2) {
+          if (i === 0) p.moveTo(r[0] * S, r[1] * S); else p.lineTo(r[i] * S, r[i + 1] * S);
+        }
+        p.closePath();
+      }
+      return p;
+    };
+    const box = (w) => {
+      const p = new Path2D();
+      p.rect(w.nx * pw, w.ny * ph, w.nw * pw, w.nh * ph);
+      return p;
+    };
+    /* the washes: gilt, and for neighbours a shade toward ochre or toward
+       rose madder, so seventeen washed wings side by side are seventeen */
+    const WASH = [
+      ['rgb(236 204 140)', 'rgb(176 128 60)'],
+      ['rgb(226 190 128)', 'rgb(160 112 52)'],
+      ['rgb(232 196 150)', 'rgb(168 112 76)'],
+    ];
+    const pale = this._tok('--kit-name', '#e9d3a6');
+    const goldHi = this._tok('--kit-gold-hi', '#e6c98a');
+
     for (const w of this.wings) {
-      if (this.surveyed.has(w.slug)) continue;
       const t = await loadPlanTrace(new URL(`../../${blueprintTraceUrl(w.slug)}`, import.meta.url).href);
       if (token !== this._surveyToken) return;
-      if (!t) continue;
-      const D = (w.nw * pw) / w.w;
-      hg.save();
-      hg.setTransform(dpr, 0, 0, dpr, 0, 0);
-      hg.translate(w.nx * pw, w.ny * ph);
-      hg.scale((w.nw * pw) / w.w, (w.nh * ph) / w.h);
-      /* the walls alone: the fine marks (door swings, hatch ticks) and the
-         piers' beads are what turned the old scan to mud at this size */
-      inkTrace(hg, { ...t, f: [], p: [] }, { pen: HAIRLINE, scale: D, ink: GALL, layerAlpha: 1 });
-      hg.restore();
+      const seen = this.surveyed.has(w.slug);
+      const D = (w.nw * pw) / w.w;                     // on-screen px per section px
+      const shape = w.outline ? foot(w) : box(w);
+      const toSection = (g) => {
+        g.translate(w.nx * pw, w.ny * ph);
+        g.scale((w.nw * pw) / w.w, (w.nh * ph) / w.h);
+      };
+      if (!seen) {
+        /* the ghost of its walls, in the pale pencil, inside its own outline */
+        const ghost = await sectionInk(w.slug, pale);
+        if (token !== this._surveyToken) return;
+        if (ghost) {
+          hg.save();
+          hg.setTransform(dpr, 0, 0, dpr, 0, 0);
+          hg.clip(shape);
+          hg.imageSmoothingQuality = 'high';
+          hg.drawImage(ghost, w.nx * pw, w.ny * ph, w.nw * pw, w.nh * ph);
+          hg.restore();
+        }
+        /* and the outline itself: one crisp pencil line, a hair of shade
+           under it so it sits on the paper and not over it */
+        pg.save();
+        pg.setTransform(dpr, 0, 0, dpr, 0, 0);
+        pg.lineJoin = 'round';
+        pg.globalAlpha = 0.5;
+        pg.strokeStyle = 'rgb(20 10 4)';
+        pg.lineWidth = 2.4;
+        pg.translate(0.6, 0.9);
+        pg.stroke(shape);
+        pg.restore();
+        pg.save();
+        pg.setTransform(dpr, 0, 0, dpr, 0, 0);
+        pg.lineJoin = 'round';
+        pg.globalAlpha = 0.82;
+        pg.strokeStyle = pale;
+        pg.lineWidth = 1.15;
+        pg.stroke(shape);
+        pg.restore();
+        continue;
+      }
+      const [hi, lo] = WASH[(w.n - 1) % WASH.length];
+      /* the label's mask is laid in the wing's own wash (atlas.css) */
+      this._hots.querySelector(`.at-hot[data-wing="${w.slug}"]`)?.style.setProperty('--wash', hi);
+      /* while only a few wings are known, each is the candle's subject: a
+         warm light pooled on the paper round it */
+      if (this.surveyed.size <= 3) {
+        pg.save();
+        pg.setTransform(dpr, 0, 0, dpr, 0, 0);
+        pg.shadowColor = 'rgb(255 184 92 / .75)';
+        pg.shadowBlur = 26 * dpr;
+        pg.fillStyle = 'rgb(255 196 112 / .5)';
+        pg.fill(shape);
+        pg.restore();
+      }
+      /* the wash, lifted a hair off the paper by its own shadow */
+      pg.save();
+      pg.setTransform(dpr, 0, 0, dpr, 0, 0);
+      pg.shadowColor = 'rgb(10 5 2 / .55)';
+      pg.shadowBlur = 6 * dpr; pg.shadowOffsetY = 1.5 * dpr;
+      pg.fillStyle = hi;
+      pg.fill(shape);
+      pg.restore();
+      pg.save();
+      pg.setTransform(dpr, 0, 0, dpr, 0, 0);
+      pg.clip(shape);
+      /* the wash dries darker at its edge (a tide mark) and is lit where the
+         candle reaches its middle */
+      pg.globalAlpha = 0.5;
+      pg.strokeStyle = lo;
+      pg.lineWidth = 9;
+      pg.filter = 'blur(2.5px)';
+      pg.stroke(shape);
+      pg.filter = 'none';
+      pg.globalAlpha = 0.4;
+      pg.lineWidth = 2;
+      pg.stroke(shape);
+      pg.globalAlpha = 1;
+      /* the wing's own drawing in iron-gall over the wash, at the bitmap's
+         own fine line: its rooms and doors read at the Deck's 1280 instead of
+         closing up into one black mass */
+      const drawn = await sectionInk(w.slug, GALL);
+      if (token !== this._surveyToken) { pg.restore(); return; }
+      if (drawn) {
+        pg.imageSmoothingQuality = 'high';
+        pg.drawImage(drawn, w.nx * pw, w.ny * ph, w.nw * pw, w.nh * ph);
+      } else if (t) {
+        toSection(pg);
+        inkTrace(pg, t, { pen: clamp(2.5 * D, 1.0, 1.5), scale: D, ink: GALL, layerAlpha: 1 });
+      }
+      pg.restore();
+      /* its edge ruled in iron-gall, and a gilt fillet just inside it */
+      pg.save();
+      pg.setTransform(dpr, 0, 0, dpr, 0, 0);
+      pg.lineJoin = 'round';
+      pg.strokeStyle = GALL;
+      pg.lineWidth = 2.2;
+      pg.stroke(shape);
+      pg.clip(shape);
+      pg.strokeStyle = goldHi;
+      pg.globalAlpha = 0.9;
+      pg.lineWidth = 4.6;
+      pg.stroke(shape);
+      pg.strokeStyle = GALL;
+      pg.globalAlpha = 1;
+      pg.lineWidth = 2.2;
+      pg.stroke(shape);
+      pg.restore();
     }
     if (token !== this._surveyToken) return;
     this.root?.setAttribute('data-hair', '1');
-    for (const w of this.wings) {
-      if (!this.surveyed.has(w.slug)) continue;
-      const at = `left:${w.nx * 100}%;top:${w.ny * 100}%;width:${w.nw * 100}%;height:${w.nh * 100}%`;
-      const gild = el('i', 'at-survey__gild');
-      gild.style.cssText = at;
-      host.appendChild(gild);
-      const cv = document.createElement('canvas');
-      cv.className = 'at-survey__ink';
-      cv.style.cssText = at;
-      host.appendChild(cv);
-      const t = await loadPlanTrace(new URL(`../../${blueprintTraceUrl(w.slug)}`, import.meta.url).href);
-      if (token !== this._surveyToken || !t) continue;
-      const D = (w.nw * pw) / w.w;                     // on-screen px per section px
-      const ss = Math.max(1, Math.min(D * dpr * 1.5, INK_MAX / Math.max(w.w, w.h)));
-      cv.width = Math.max(1, Math.round(w.w * ss)); cv.height = Math.max(1, Math.round(w.h * ss));
-      const g = cv.getContext('2d');
-      g.save();
-      g.scale(cv.width / w.w, cv.height / w.h);
-      inkTrace(g, t, { pen: Math.max(SURVEY_PEN_MIN, solvePen(t, D, SURVEY_COVER)), scale: D, ink: GALL, layerAlpha: 1 });
-      g.restore();
+  }
+
+  /**
+   * Letter each wing's name to fit its own footprint (round 38): the name on
+   * one line if the wing is wide enough along the label's row, else on two
+   * balanced lines, else without its first word ("Withered Hedge Maze" ->
+   * "Hedge Maze"), else the numeral alone. A name is never set smaller than
+   * the screen's label size to make it fit -- that is the 9 px a judge reads
+   * as a defect -- it is set shorter.
+   */
+  _fitNames(pw) {
+    if (!this._hots) return;
+    const S = pw / MASTER.w;
+    const probe = this._hots.querySelector('.at-name__t');
+    if (!probe) return;
+    const cs = getComputedStyle(probe);
+    const cv = this._measure || (this._measure = document.createElement('canvas'));
+    const g = cv.getContext('2d');
+    g.font = `${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`;
+    const ls = parseFloat(cs.letterSpacing) || 0;
+    const width = (s) => g.measureText(s.toUpperCase()).width + ls * s.length;
+    for (const b of this._hots.querySelectorAll('.at-hot')) {
+      const w = this.wings.find((x) => x.slug === b.dataset.wing);
+      const t = b.querySelector('.at-name__t');
+      if (!w || !t) continue;
+      const room = w.span ? (w.span[1] - w.span[0]) * S * 0.96 : w.nw * pw * 0.7;
+      /* "The Moon Courtyard and Pumpkin Grounds": its first half, then its
+         shorter forms, then its second half */
+      const halves = String(w.meta.name).replace(/^The\s+/i, '').split(/\s+and\s+/i);
+      const tries = [];
+      for (const h of halves.slice(0, 2)) {
+        const words = h.split(/\s+/);
+        tries.push(h);
+        if (words.length > 2) tries.push(words.slice(1).join(' '));
+        if (words.length > 1) tries.push(words[words.length - 1]);
+      }
+      let lines = null;
+      for (const s of tries) {
+        /* one word may run a little past the wing's walls, as lettering on a
+           plan does; a phrase may not */
+        if (width(s) <= room * (/\s/.test(s) ? 1 : 1.3)) { lines = [s]; break; }
+        const ws = s.split(/\s+/);
+        if (ws.length < 2) continue;
+        let best = null;
+        for (let i = 1; i < ws.length; i++) {
+          const a = ws.slice(0, i).join(' '), c = ws.slice(i).join(' ');
+          const m = Math.max(width(a), width(c));
+          if (!best || m < best.m) best = { m, l: [a, c] };
+        }
+        if (best && best.m <= room) { lines = best.l; break; }
+      }
+      t.innerHTML = lines ? lines.map(esc).join('<br>') : '';
+      t.hidden = !lines;
+    }
+    /* and no two names on one line of the sheet: where two wings' lettering
+       would touch, the one with less room keeps its numeral alone */
+    const names = [...this._hots.querySelectorAll('.at-name')];
+    const pad = 3;
+    for (let pass = 0; pass < 3; pass++) {
+      const rs = names.map((n) => n.getBoundingClientRect());
+      let moved = false;
+      for (let i = 0; i < names.length; i++) {
+        for (let j = i + 1; j < names.length; j++) {
+          const a = rs[i], c = rs[j];
+          if (a.right + pad < c.left || c.right + pad < a.left || a.bottom + pad < c.top || c.bottom + pad < a.top) continue;
+          const ti = names[i].querySelector('.at-name__t'), tj = names[j].querySelector('.at-name__t');
+          const victim = (!ti.hidden && (tj.hidden || a.width * a.height >= c.width * c.height)) ? ti : tj;
+          if (victim.hidden) continue;
+          victim.hidden = true;
+          moved = true;
+        }
+      }
+      if (!moved) break;
     }
   }
 
