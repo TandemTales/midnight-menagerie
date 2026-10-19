@@ -1577,3 +1577,5 @@
   .map-screen .lg-ico svg { width: 16px; height: 16px; }
   .map-screen .map-legend { column-gap: 8px; padding-right: calc(var(--plate-h) * .5); }
 }
+/* the bane's line in a madder that holds on the dark sheet */
+.map-screen .mi-stains .mi-zone:not(.mi-zone--boon) .mi-zone-edge { stroke: color-mix(in srgb, var(--kit-madder-ink) 55%, var(--kit-madder)); }

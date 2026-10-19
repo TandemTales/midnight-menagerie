@@ -645,7 +645,7 @@ export class MapScene extends Scene {
         const x = 60 + fx.next() * (w - 120);
         const y = 60 + Math.pow(fx.next(), 0.7) * (h - 120);
         const r = 3 + Math.pow(fx.next(), 2.4) * 22;
-        const a = 0.08 + fx.next() * 0.16;
+        const a = 0.13 + fx.next() * 0.2;
         const gr = g.createRadialGradient(x, y, 0, x, y, r);
         gr.addColorStop(0, hexA('#6a3a14', a)); gr.addColorStop(0.55, hexA('#7a4618', a * 0.6)); gr.addColorStop(1, hexA('#7a4618', 0));
         g.fillStyle = gr;
@@ -981,7 +981,7 @@ export class MapScene extends Scene {
       <!-- round 38: a bane is HATCHED, a boon is STIPPLED -- two hands of the
            same pen, drawn on the paper rather than tinted over it -->
       <pattern id="mm-hatch-bane" width="13" height="13" patternUnits="userSpaceOnUse" patternTransform="rotate(38)">
-        <line x1="2" y1="0" x2="2" y2="13" stroke="#5e1810" stroke-width="1.5"/>
+        <line x1="2" y1="0" x2="2" y2="13" stroke="#8a2a1b" stroke-width="1.5"/>
       </pattern>
       <pattern id="mm-hatch-boon" width="34" height="34" patternUnits="userSpaceOnUse">
         <g fill="#123a52">
