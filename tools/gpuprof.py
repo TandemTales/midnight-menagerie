@@ -26,43 +26,49 @@ PROBE = r"""
   if (!ext) return {err:'no timer ext'};
 
   MM.clock.stop();
+  const probeT0 = +performance.now().toFixed(0);
   await new Promise(r=>setTimeout(r,150));
 
   const raf = () => new Promise(r=>requestAnimationFrame(r));
 
-  async function gpuMs(fn, frames){
+  /* WHY a timing came back null (round 39's graft): the merge's A/B got
+     T_full None on 3 of 3 Bathhouse pages and nothing said whether the
+     render threw, every frame was disjoint, or no query ever finished.
+     `why` names it, per null timing, in call order. */
+  const why = [];
+  async function gpuMs(fn, frames, label){
     frames = frames || 34;
-    try { fn(); } catch(e){ return null; }
+    const st = {label: label || null, threw: null, frames, avail: 0, disjoint: 0, left: 0,
+                ctxLost: false, t0: +performance.now().toFixed(0)};
+    try { fn(); } catch(e){ st.threw = String(e && e.message || e).slice(0, 200);
+                            st.ctxLost = gl.isContextLost(); why.push(st); return null; }
     const res = [], pend = [];
+    const poll = () => {
+      for (let j=pend.length-1;j>=0;j--){
+        const p = pend[j];
+        if (gl.getQueryParameter(p, gl.QUERY_RESULT_AVAILABLE)){
+          st.avail++;
+          if (!gl.getParameter(ext.GPU_DISJOINT_EXT))
+            res.push(gl.getQueryParameter(p, gl.QUERY_RESULT)/1e6);
+          else st.disjoint++;
+          gl.deleteQuery(p); pend.splice(j,1);
+        }
+      }
+    };
     for (let i=0;i<frames;i++){
       await raf();
       const q = gl.createQuery();
       gl.beginQuery(ext.TIME_ELAPSED_EXT, q);
-      try { fn(); } catch(e){}
+      try { fn(); } catch(e){ if (!st.threw) st.threw = 'in loop: ' + String(e && e.message || e).slice(0, 200); }
       gl.endQuery(ext.TIME_ELAPSED_EXT);
       pend.push(q);
-      for (let j=pend.length-1;j>=0;j--){
-        const p = pend[j];
-        if (gl.getQueryParameter(p, gl.QUERY_RESULT_AVAILABLE)){
-          if (!gl.getParameter(ext.GPU_DISJOINT_EXT))
-            res.push(gl.getQueryParameter(p, gl.QUERY_RESULT)/1e6);
-          gl.deleteQuery(p); pend.splice(j,1);
-        }
-      }
+      poll();
     }
-    for (let k=0;k<12 && pend.length;k++){
-      await raf();
-      for (let j=pend.length-1;j>=0;j--){
-        const p = pend[j];
-        if (gl.getQueryParameter(p, gl.QUERY_RESULT_AVAILABLE)){
-          if (!gl.getParameter(ext.GPU_DISJOINT_EXT))
-            res.push(gl.getQueryParameter(p, gl.QUERY_RESULT)/1e6);
-          gl.deleteQuery(p); pend.splice(j,1);
-        }
-      }
-    }
+    for (let k=0;k<12 && pend.length;k++){ await raf(); poll(); }
+    st.left = pend.length;
     pend.forEach(p=>gl.deleteQuery(p));
-    if (!res.length) return null;
+    if (!res.length) { st.ctxLost = gl.isContextLost();
+                       st.ms = +(performance.now() - st.t0).toFixed(0); why.push(st); return null; }
     res.sort((a,b)=>a-b);
     return +res[Math.floor(res.length/2)].toFixed(3);   // median
   }
@@ -94,14 +100,16 @@ PROBE = r"""
     while (performance.now() - t0 < SETTLE*1000) { await raf(); try { full(); } catch(e){} }
   }
   out.settle = SETTLE;
-  out.T_full = await gpuMs(full);
+  const tFullAt = [+performance.now().toFixed(0)];
+  out.T_full = await gpuMs(full, 34, 'T_full');
+  tFullAt.push(+performance.now().toFixed(0));
   sceneOnly();
   out.draws = {calls: stage.renderer.info.render.calls,
                tris: stage.renderer.info.render.triangles};
   out.T_sceneOnly_toScreen = await gpuMs(sceneOnly);
 
-  b.enabled=false; g.enabled=true;  out.T_noBloom = await gpuMs(full);
-  b.enabled=true;  g.enabled=false; out.T_noGrade = await gpuMs(full);
+  b.enabled=false; g.enabled=true;  out.T_noBloom = await gpuMs(full, 34, 'T_noBloom');
+  b.enabled=true;  g.enabled=false; out.T_noGrade = await gpuMs(full, 34, 'T_noGrade');
   b.enabled=false; g.enabled=false; out.T_renderOutputOnly = await gpuMs(full);
   b.enabled=bOn;   g.enabled=gOn;
 
@@ -138,6 +146,28 @@ PROBE = r"""
     out.piece_ms.ALL_BACKDROP = t==null?null:+(baseScene - t).toFixed(3);
     bd.group.visible = w; }
   b.enabled=bOn; g.enabled=gOn;
+
+  if (why.length) out.why = why;
+  /* A GOOD LINK CAN BE AN EMPTY PROGRAM here (round 39: FXC aborted the
+     velvet suite's wall while ANGLE reported LINK_STATUS true). Every
+     program the page holds, with any info log it carries, read AFTER the
+     frames above were drawn (ANGLE compiles some D3D executables at draw). */
+  out.proglog = [];
+  for (const pr of (stage.renderer.info.programs || [])) {
+    const p = pr.program; if (!p) continue;
+    let log = gl.getProgramInfoLog(p) || '';
+    for (const s of (gl.getAttachedShaders(p) || [])) log += gl.getShaderInfoLog(s) || '';
+    log = log.trim();
+    if (log) out.proglog.push({name: pr.name, key: String(pr.cacheKey || '').slice(0, 160),
+                               link: gl.getProgramParameter(p, gl.LINK_STATUS), log: log.slice(0, 400)});
+  }
+  out.programs = (stage.renderer.info.programs || []).length;
+  /* ...and what the background link queue (Backdrop.precompileRooms) was
+     linking, and when, against when the timers ran: a long link holds the
+     GPU process, and a timer query issued behind it never comes back. */
+  out.probeWin = [probeT0, +performance.now().toFixed(0)];
+  out.tFullAt = tFullAt;
+  out.preLog = (bd._preLog || []).map((r) => [r.mat + ' ' + Object.values(r.defines || {}).join(','), r.t0, r.t1 ?? null]);
 
   MM.clock.start();
   return out;
