@@ -981,7 +981,7 @@ export class MapScene extends Scene {
       <!-- round 38: a bane is HATCHED, a boon is STIPPLED -- two hands of the
            same pen, drawn on the paper rather than tinted over it -->
       <pattern id="mm-hatch-bane" width="13" height="13" patternUnits="userSpaceOnUse" patternTransform="rotate(38)">
-        <line x1="2" y1="0" x2="2" y2="13" stroke="#8a2a1b" stroke-width="1.5"/>
+        <line x1="2" y1="0" x2="2" y2="13" stroke="#93301f" stroke-width="1.7"/>
       </pattern>
       <pattern id="mm-hatch-boon" width="34" height="34" patternUnits="userSpaceOnUse">
         <g fill="#123a52">
