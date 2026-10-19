@@ -113,8 +113,12 @@ study and carved statues; measured on a QUIET machine every fight is under
 Heart fight is +1.15 ms over BASE (13.80) -- under budget, left as is.
 `tools/shapeprof.py` now exists. **Josh uses this machine for Unreal: check
 tasklist before perf; he said 10-18 GPU work alongside Unreal is fine.**
-**NEXT: round 38** (`BRIEF-r38.md`, `round-38.args.json`): the map's stamps
-and regions and the atlas -- the last item of survey 5's list; then SURVEY 6. **Josh asked 10-18 for a
+**ROUND 38 IS RUNNING (2026-10-19)** (`BRIEF-r38.md`, `round-38.args.json`,
+base `4f844251`): the map's stamps and regions and the atlas (map, atlas,
+atlas-house = `#all=1`, both sizes) -- the last item of survey 5's list;
+SARD / MORION / HELIOTROPE in `C:/UILOOP/r38/wt/r38-parchment-{a,b,c}`
+(ports 9291-9293), VOILE baselines in `C:/UILOOP/r38/judging/r38/parchment/
+VOILE/` (6 of 6, looked at). Then SURVEY 6. **Josh asked 10-18 for a
 3-hour pause in which nothing may launch a program -- respect such asks.**
 
 **ROUND 33 AND ITS GRAFT ARE MERGED, VERIFIED AND PUSHED (2026-10-16):**
