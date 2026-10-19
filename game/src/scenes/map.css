@@ -1581,3 +1581,58 @@
 .map-screen .mi-stains .mi-zone:not(.mi-zone--boon) .mi-zone-edge { stroke: color-mix(in srgb, var(--kit-madder-ink) 55%, var(--kit-madder)); }
 .map-screen .mi-stains .mi-zone:not(.mi-zone--boon) .mi-zone-edge { stroke: color-mix(in srgb, var(--kit-madder) 72%, var(--kit-madder-ink)); stroke-width: 3.2; }
 .map-screen .mi-zones .mi-zone:not(.mi-zone--boon) .mi-zone-hatch { opacity: .78; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ROUND 38 GRAFT 1 — THE STAMPS BY ROW (HELIOTROPE's and SARD's hierarchy)
+   Both judges: "every stamp is the same dark disc, with no next-row focus".
+   Only the row the party chooses from keeps metal: the lit enamel medallion
+   in its gilt rim. Behind it the struck umber stamp is kept for the row being
+   planned (data-ahead 2) and lightens row by row; from the middle of the wing
+   on, and for any room no route reaches any more, a room is a GHOST -- a thin
+   ink ring, a pale fill, its mark in faded ink -- so the eye goes to the next
+   choice first at both sizes. Only how a room is drawn reads data-ahead;
+   which rooms are reachable is mapgen's (map.js _syncStates).
+   ═══════════════════════════════════════════════════════════════════════════ */
+/* MORION's row fade on the whole mark is replaced by a fade on the stamp's
+   ink alone, so a ghost's thin ring and faded mark stay crisp */
+.map-screen .map-node.is-dim:not(.map-node--boss)[data-ahead] .mn-in { opacity: 1; }
+.map-screen .map-node.is-dim:not(.map-node--boss)[data-ahead="3"] .mn-pool { opacity: .8; }
+.map-screen .map-node.is-dim:not(.map-node--boss)[data-ahead="3"] .mn-art  { opacity: .92; }
+/* the middle distance: a fainter impression of the same stamp */
+.map-screen .map-node.is-dim:not(.map-node--boss):is([data-ahead="4"], [data-ahead="5"]) .mn-pool {
+  opacity: .66;
+  box-shadow:
+    0 0 0 1.2px rgb(226 192 132 / .4),
+    0 0 0 2.6px rgb(28 17 8 / .7);
+}
+.map-screen .map-node.is-dim:not(.map-node--boss):is([data-ahead="4"], [data-ahead="5"]) .mn-art { opacity: .8; }
+/* the far rows, and every room cut off: a ghost of a station */
+.map-screen .map-node.is-dim:not(.map-node--boss):is([data-ahead="6"], [data-ahead="7"], [data-ahead="8"], [data-ahead="9"]),
+.map-screen .map-node.is-cold:not(.map-node--boss) {
+  color: color-mix(in srgb, var(--kit-gall) 64%, transparent);
+}
+.map-screen .map-node.is-dim:not(.map-node--boss):is([data-ahead="6"], [data-ahead="7"], [data-ahead="8"], [data-ahead="9"]) .mn-pool,
+.map-screen .map-node.is-cold:not(.map-node--boss) .mn-pool {
+  opacity: 1;
+  background: radial-gradient(circle closest-side,
+    rgb(196 160 104 / .62) 0%, rgb(186 150 96 / .56) 82%, rgb(186 150 96 / .3) 100%);
+  box-shadow: 0 0 0 1.4px rgb(28 17 8 / .5);
+}
+.map-screen .map-node.is-dim:not(.map-node--boss):is([data-ahead="6"], [data-ahead="7"], [data-ahead="8"], [data-ahead="9"]) .mn-art .pl,
+.map-screen .map-node.is-dim:not(.map-node--boss):is([data-ahead="6"], [data-ahead="7"], [data-ahead="8"], [data-ahead="9"]) .mn-art .pw,
+.map-screen .map-node.is-cold:not(.map-node--boss) .mn-art .pl,
+.map-screen .map-node.is-cold:not(.map-node--boss) .mn-art .pw { fill: rgb(200 166 110 / .7); }
+.map-screen .map-node.is-dim:not(.map-node--boss):is([data-ahead="6"], [data-ahead="7"], [data-ahead="8"], [data-ahead="9"]) .mn-art,
+.map-screen .map-node.is-cold:not(.map-node--boss) .mn-art { opacity: 1; }
+.map-screen .map-node.is-dim:not(.map-node--boss):is([data-ahead="6"], [data-ahead="7"], [data-ahead="8"], [data-ahead="9"]) .mn-art .w3,
+.map-screen .map-node.is-cold:not(.map-node--boss) .mn-art .w3 { stroke-width: 4.2; }
+.map-screen .map-node.is-cold:not(.map-node--boss) .mn-in { opacity: .8; }
+@media (max-width: 1500px) {
+  /* the ghost's mark a step more ink at the Deck's 0.57x, still a ghost */
+  .map-screen .map-node.is-dim:not(.map-node--boss):is([data-ahead="6"], [data-ahead="7"], [data-ahead="8"], [data-ahead="9"]),
+  .map-screen .map-node.is-cold:not(.map-node--boss) {
+    color: color-mix(in srgb, var(--kit-gall) 74%, transparent);
+  }
+  .map-screen .map-node.is-dim:not(.map-node--boss):is([data-ahead="6"], [data-ahead="7"], [data-ahead="8"], [data-ahead="9"]) .mn-pool,
+  .map-screen .map-node.is-cold:not(.map-node--boss) .mn-pool { box-shadow: 0 0 0 1.6px rgb(28 17 8 / .58); }
+}
