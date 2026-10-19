@@ -214,6 +214,70 @@ function sectionInk(slug, color) {
 }
 
 /**
+ * The paper's tooth (round 38 graft 5): a small tile of dark and pale specks,
+ * the same on every load (a fixed LCG), laid over the vellum washes.
+ */
+let TOOTH = null;
+function toothTile() {
+  if (TOOTH) return TOOTH;
+  const c = document.createElement('canvas');
+  c.width = c.height = 96;
+  const g = c.getContext('2d');
+  const d = g.createImageData(96, 96), px = d.data;
+  let r = 0x2f6b3c1d;
+  const rnd = () => ((r = (Math.imul(r, 1664525) + 1013904223) >>> 0) / 4294967296);
+  for (let i = 0; i < px.length; i += 4) {
+    const v = rnd();
+    if (v < 0.22) { px[i] = 70; px[i + 1] = 40; px[i + 2] = 14; px[i + 3] = (rnd() * 40) | 0; }
+    else if (v > 0.9) { px[i] = 255; px[i + 1] = 236; px[i + 2] = 200; px[i + 3] = (rnd() * 34) | 0; }
+  }
+  g.putImageData(d, 0, 0);
+  return (TOOTH = c);
+}
+
+/** Round 38 graft 4: the earned wing's wash while only a few are known. */
+const FOCUS_WASH = ['rgb(210 162 92)', 'rgb(118 72 26)'];
+/** The median wing's ink inside its footprint (measured 10-19 off the
+ *  seventeen section bitmaps: 0.18-0.24, the Lampworks 0.33, the Greenhouse
+ *  0.32, the Crypt 0.27). A wing denser than this is laid thinner. */
+const INK_TARGET = 0.235;
+const INK_DENSITY = new Map();
+/**
+ * How much of a surveyed wing's ink to lay down (round 38 graft 4): its ink's
+ * mean alpha inside its own footprint, measured once per wing off the ink
+ * canvas `sectionInk` made, against INK_TARGET. 1 for most wings.
+ */
+function inkThin(w, ink) {
+  let d = INK_DENSITY.get(w.slug);
+  if (d === undefined) {
+    d = null;
+    try {
+      const W = ink.width, H = ink.height;
+      const m = document.createElement('canvas');
+      m.width = W; m.height = H;
+      const g = m.getContext('2d', { willReadFrequently: true });
+      g.beginPath();
+      for (const r of (w.outline || [])) {
+        for (let i = 0; i + 1 < r.length; i += 2) {
+          const x = (r[i] - w.x) * W / w.w, y = (r[i + 1] - w.y) * H / w.h;
+          if (i === 0) g.moveTo(x, y); else g.lineTo(x, y);
+        }
+        g.closePath();
+      }
+      g.fill();
+      const mk = g.getImageData(0, 0, W, H).data;
+      const px = ink.getContext('2d').getImageData(0, 0, W, H).data;
+      let sum = 0, n = 0;
+      for (let i = 3; i < mk.length; i += 4) if (mk[i] > 127) { sum += px[i]; n++; }
+      d = n ? sum / n / 255 : null;
+    } catch { d = null; }
+    INK_DENSITY.set(w.slug, d);
+  }
+  if (!d || d <= INK_TARGET) return 1;
+  return clamp(Math.pow(INK_TARGET / d, 1.6), 0.55, 1);
+}
+
+/**
  * Geometry comes from `sections.json`; EVERYTHING ELSE comes from `regionMeta`.
  *
  * The file carries a name, boss and companion for each wing too — they were
@@ -597,17 +661,30 @@ export class AtlasScene extends Scene {
       const [lx, ly] = w.pole ? rel(w.pole[0], w.pole[1]) : [50, 50];
       /* the full-name plate hangs off the footprint's top edge, or under its
          foot for a wing whose top is at the sheet's own top margin */
-      let top = 0, bot = 100;
+      let top = 0, bot = 100, fl = 0, fr = 100;
       if (w.outline) {
-        let y0 = Infinity, y1 = -Infinity;
-        for (const r of w.outline) for (let i = 1; i < r.length; i += 2) { y0 = Math.min(y0, r[i]); y1 = Math.max(y1, r[i]); }
+        let y0 = Infinity, y1 = -Infinity, x0 = Infinity, x1 = -Infinity;
+        for (const r of w.outline) {
+          for (let i = 0; i + 1 < r.length; i += 2) {
+            x0 = Math.min(x0, r[i]); x1 = Math.max(x1, r[i]);
+            y0 = Math.min(y0, r[i + 1]); y1 = Math.max(y1, r[i + 1]);
+          }
+        }
         top = rel(0, y0)[1]; bot = rel(0, y1)[1];
+        fl = rel(x0, 0)[0]; fr = rel(x1, 0)[0];
         b.dataset.up = (y0 / MASTER.h) > 0.075 ? '1' : '0';
       }
       b.style.setProperty('--tag-x', `${lx.toFixed(2)}%`);
       b.style.setProperty('--tag-top', `${top.toFixed(2)}%`);
       b.style.setProperty('--tag-bot', `${bot.toFixed(2)}%`);
+      /* round 38 graft 4: the footprint's own box, which SARD's gold corner
+         brackets close round while a few wings are known (atlas.css) */
+      b.style.setProperty('--fr-l', `${fl.toFixed(2)}%`);
+      b.style.setProperty('--fr-r', `${(100 - fr).toFixed(2)}%`);
+      b.style.setProperty('--fr-t', `${top.toFixed(2)}%`);
+      b.style.setProperty('--fr-b', `${(100 - bot).toFixed(2)}%`);
       b.innerHTML = `<span class="at-hot__box" aria-hidden="true"></span>`
+        + `<span class="at-hot__frame" aria-hidden="true"></span>`
         + `<span class="at-hot__hit" aria-hidden="true" style="${clip}"></span>`
         + `<span class="at-name" aria-hidden="true" style="left:${lx.toFixed(2)}%;top:${ly.toFixed(2)}%">`
         + `<i class="at-name__n">${esc(w.meta.roman)}</i><b class="at-name__t"></b></span>`
@@ -1071,10 +1148,14 @@ export class AtlasScene extends Scene {
     };
     /* the washes: gilt, and for neighbours a shade toward ochre or toward
        rose madder, so seventeen washed wings side by side are seventeen */
+    /* round 38 graft 5 (J2): not seventeen flat bright cream plates -- a
+       warm AGED VELLUM, a step down from the paper's palest cream, so the
+       sheet keeps its tone with every wing surveyed (its tooth and the
+       candle's falloff are laid over all of them below) */
     const WASH = [
-      ['rgb(236 204 140)', 'rgb(176 128 60)'],
-      ['rgb(226 190 128)', 'rgb(160 112 52)'],
-      ['rgb(232 196 150)', 'rgb(168 112 76)'],
+      ['rgb(224 192 132)', 'rgb(150 104 48)'],
+      ['rgb(214 180 120)', 'rgb(140 96 42)'],
+      ['rgb(220 184 136)', 'rgb(148 96 62)'],
     ];
     const pale = this._tok('--kit-name', '#e9d3a6');
     const goldHi = this._tok('--kit-gold-hi', '#e6c98a');
@@ -1112,6 +1193,18 @@ export class AtlasScene extends Scene {
         pg.translate(0.6, 0.9);
         pg.stroke(shape);
         pg.restore();
+        /* round 38 graft 5 (J2): a darker pencil edge just INSIDE the line,
+           so two neighbours' shared wall reads as two edges, dark either side
+           of the pale line, and the wings separate */
+        pg.save();
+        pg.setTransform(dpr, 0, 0, dpr, 0, 0);
+        pg.clip(shape);
+        pg.lineJoin = 'round';
+        pg.globalAlpha = 0.62;
+        pg.strokeStyle = 'rgb(24 12 4)';
+        pg.lineWidth = 4.2;
+        pg.stroke(shape);
+        pg.restore();
         pg.save();
         pg.setTransform(dpr, 0, 0, dpr, 0, 0);
         pg.lineJoin = 'round';
@@ -1122,7 +1215,10 @@ export class AtlasScene extends Scene {
         pg.restore();
         continue;
       }
-      const [hi, lo] = WASH[(w.n - 1) % WASH.length];
+      /* round 38 graft 4: while only a few wings are known, the earned one
+         is the focal point -- its wash a step deeper and warmer than the
+         paper's palest cream, so it reads as a lit plan and not a hole */
+      const [hi, lo] = few ? FOCUS_WASH : WASH[(w.n - 1) % WASH.length];
       /* the label's mask is laid in the wing's own wash (atlas.css) */
       this._hots.querySelector(`.at-hot[data-wing="${w.slug}"]`)?.style.setProperty('--wash', hi);
       /* while only a few wings are known, each is the candle's subject: a
@@ -1180,7 +1276,19 @@ export class AtlasScene extends Scene {
       if (token !== this._surveyToken) { pg.restore(); return; }
       if (drawn) {
         pg.imageSmoothingQuality = 'high';
+        /* round 38 graft 4: the densest wings (the Lampworks' and the
+           Greenhouse's planting, the Crypt's niches) carry half again the ink
+           of the rest inside their footprints, and with every wing surveyed
+           they read as dark tangles: their ink is laid thinner, in proportion */
+        pg.globalAlpha = few ? 1 : inkThin(w, drawn);
         pg.drawImage(drawn, w.nx * pw, w.ny * ph, w.nw * pw, w.nh * ph);
+        /* ...and the one earned wing is inked again, a step darker, so its
+           walls are crisp ink on the lit wash */
+        if (few) {
+          pg.globalAlpha = 0.45;
+          pg.drawImage(drawn, w.nx * pw, w.ny * ph, w.nw * pw, w.nh * ph);
+        }
+        pg.globalAlpha = 1;
       } else if (t) {
         toSection(pg);
         inkTrace(pg, t, { pen: clamp(2.5 * D, 1.0, 1.5), scale: D, ink: GALL, layerAlpha: 1 });
@@ -1218,6 +1326,23 @@ export class AtlasScene extends Scene {
       pg.restore();
     }
     if (token !== this._surveyToken) return;
+    /* round 38 graft 5 (J2): with many wings surveyed, their vellum takes the
+       paper's TOOTH and the candles' FALLOFF -- lit toward the sheet's middle,
+       browning toward its edges -- laid only where a wash is (source-atop) */
+    if (!few && this.surveyed.size) {
+      pg.save();
+      pg.setTransform(dpr, 0, 0, dpr, 0, 0);
+      pg.globalCompositeOperation = 'source-atop';
+      const tooth = pg.createPattern(toothTile(), 'repeat');
+      if (tooth) { pg.fillStyle = tooth; pg.fillRect(0, 0, pw, ph); }
+      const fall = pg.createRadialGradient(pw * 0.5, ph * 0.46, Math.min(pw, ph) * 0.18, pw * 0.5, ph * 0.5, Math.hypot(pw, ph) * 0.56);
+      fall.addColorStop(0, 'rgb(255 214 150 / .12)');
+      fall.addColorStop(0.5, 'rgb(90 52 20 / 0)');
+      fall.addColorStop(1, 'rgb(46 24 8 / .46)');
+      pg.fillStyle = fall;
+      pg.fillRect(0, 0, pw, ph);
+      pg.restore();
+    }
     this._drawRose(pg, dpr, S, pale);
     this.root?.setAttribute('data-hair', '1');
   }
