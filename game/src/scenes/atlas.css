@@ -1154,3 +1154,228 @@
   outline: 1px solid color-mix(in srgb, var(--kit-gall) 62%, transparent);
   outline-offset: 5px;
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ROUND 38 — A HOUSE OF SEVENTEEN PARTS
+   Survey 5: "the sixteen unsurveyed wings are one faint, fuzzy
+   undifferentiated tint across the parchment, and the one surveyed wing ... is
+   a black ink blob". Every wing is its own FOOTPRINT now (sections.json
+   `outline`, tools/blueprint_locate.py --wings), drawn by atlas.js
+   _paintSurvey: unsurveyed, a crisp pale pencil outline with its walls a ghost
+   inside; surveyed, a gilt wash with its own walls inked over at a fine pen and
+   its edge ruled. Each is lettered at its deepest point with its numeral and
+   its name (.at-name), and answers the pointer over its footprint, not its
+   rectangle (.at-hot__hit) -- the rectangles overlap.
+   ═══════════════════════════════════════════════════════════════════════════ */
+.at-survey__wings {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  display: block;
+}
+.at-survey__hair { opacity: .3; }
+.at-root[data-hair="1"] .at-pencil { opacity: .12; }
+.at-root[data-hair="1"][data-zoom="1"] .at-pencil { opacity: .1; }
+
+/* the pointer answers the footprint */
+.at-root .at-hots .at-hot { pointer-events: none; }
+.at-hot__hit {
+  position: absolute; inset: 0;
+  pointer-events: auto;
+  cursor: pointer;
+  background: transparent;
+  transition: background-color var(--t-quick) var(--ease-out);
+}
+.at-root .at-hots .at-hot:hover .at-hot__hit,
+.at-root .at-hots .at-hot.is-hover .at-hot__hit { background: rgb(255 214 150 / .1); }
+.at-root .at-hots .at-hot:focus-visible .at-hot__hit { background: rgb(255 214 150 / .2); }
+.at-root .at-hots .at-hot.is-surveyed:hover .at-hot__hit,
+.at-root .at-hots .at-hot.is-surveyed.is-hover .at-hot__hit { background: rgb(255 236 200 / .12); }
+.at-root[data-zoom="1"] .at-hots .at-hot:not(.is-sel) .at-hot__hit { pointer-events: none; }
+.at-root[data-choose="1"] .at-hots .at-hot.is-shut .at-hot__hit { cursor: default; }
+.at-root[data-enter="1"] .at-hots .at-hot.is-shut .at-hot__hit { cursor: default; }
+
+/* the rectangle is the zoom's detail box and nothing else: no lit tile, no
+   ticked corners round a rectangle that is not the wing */
+.at-root .at-hots .at-hot .at-hot__box { border-color: transparent; background: transparent; outline: none; }
+.at-root .at-hots .at-hot .at-hot__box::before { opacity: 0; }
+.at-root[data-zoom="1"] .at-hots .at-hot.is-sel .at-hot__box { border-color: var(--mark); }
+.at-root[data-zoom="1"] .at-hots .at-hot.is-sel .at-hot__box::before { opacity: 1; }
+
+/* the full name, on its dark nameplate, hangs off the wing's top edge (or its
+   foot, for a wing at the sheet's top margin) while it is the one being read */
+.at-root .at-hots .at-hot .at-hot__tag {
+  left: var(--tag-x, 50%); top: var(--tag-top, 0%);
+  transform: translate(-50%, calc(-100% - 4px)) scale(calc(1 / var(--k, 1)));
+  transform-origin: 50% 100%;
+  opacity: 0;
+  z-index: 3;
+}
+.at-root .at-hots .at-hot[data-up="0"] .at-hot__tag {
+  top: var(--tag-bot, 100%);
+  transform: translate(-50%, 4px) scale(calc(1 / var(--k, 1)));
+  transform-origin: 50% 0;
+}
+.at-root .at-hots .at-hot:hover .at-hot__tag,
+.at-root .at-hots .at-hot.is-hover .at-hot__tag,
+.at-root .at-hots .at-hot:focus-visible .at-hot__tag,
+.at-root .at-hots .at-hot.is-here .at-hot__tag,
+.at-root[data-choose="1"]:not([data-many="1"]) .at-hots .at-hot.is-open .at-hot__tag { opacity: 1; }
+.at-root .at-hots .at-hot:hover, .at-root .at-hots .at-hot.is-hover { z-index: 2; }
+
+/* the lettering: numeral over name, at the footprint's deepest point. It
+   undoes the zoom as the nameplates do: an annotation, not architecture. */
+.at-name {
+  position: absolute;
+  transform: translate(-50%, -50%) scale(calc(1 / var(--k, 1)));
+  display: flex; flex-direction: column; align-items: center;
+  gap: 1px;
+  pointer-events: none;
+  text-align: center;
+  white-space: nowrap;
+  font-family: var(--font-display); font-weight: 700;
+  text-transform: uppercase;
+  color: var(--kit-name);
+  text-shadow: 0 0 3px rgb(22 12 4), 0 0 6px rgb(22 12 4 / .8), 0 1px 1px rgb(0 0 0);
+  transition: opacity var(--t-quick) var(--ease-out);
+}
+.at-name__n {
+  font-style: normal;
+  font-family: var(--font-num, var(--font-display));
+  font-size: clamp(11px, .78vw, 12.5px);
+  letter-spacing: .1em;
+  line-height: 1;
+  display: inline-flex; align-items: center; gap: .45em;
+  opacity: .92;
+}
+.at-name__n::before, .at-name__n::after {
+  content: ''; width: 4px; height: 4px; transform: rotate(45deg);
+  background: currentColor; opacity: .7;
+}
+.at-name__t {
+  font-size: clamp(11.5px, .8vw, 13px);
+  letter-spacing: .07em;
+  line-height: 1.12;
+}
+.at-name__t[hidden] { display: none; }
+/* a surveyed wing is lettered in its own iron-gall on its wash */
+.at-hot.is-surveyed .at-name {
+  color: var(--kit-gall);
+  text-shadow: 0 0 2px rgb(246 226 182), 0 0 5px rgb(246 226 182 / .9), 0 0 9px rgb(246 226 182 / .6);
+}
+.at-hot.is-surveyed .at-name__n { color: color-mix(in srgb, var(--kit-ink-oxblood) 80%, var(--kit-gall)); opacity: 1; }
+/* the wing being read wears its nameplate; its lettering steps back */
+.at-root .at-hots .at-hot.is-hover:not(.is-surveyed) .at-name { opacity: .35; }
+.at-root[data-zoom="1"] .at-hots .at-hot .at-name { opacity: 0; }
+/* a surveyed wing being read is named by its nameplate: its lettering goes,
+   so the plan under it is the thing to look at */
+.at-root .at-hots .at-hot.is-surveyed.is-hover .at-name { opacity: 0; }
+/* on a washed wing the lettering is masked out of the plan under it, the way
+   a draughtsman leaves the walls off where a name is written */
+.at-hot.is-surveyed .at-name::before {
+  content: ''; position: absolute; z-index: -1;
+  inset: -5px -9px;
+  background: radial-gradient(closest-side, rgb(240 214 160 / .96) 58%, rgb(240 214 160 / .7) 78%, transparent 100%);
+  border-radius: 50%;
+}
+.at-hot.is-surveyed .at-name { isolation: isolate; }
+.at-hot.is-surveyed .at-name::before {
+  inset: -2px -5px;
+  opacity: .92;
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--wash, rgb(236 204 140)) 86%, rgb(150 104 50)) 70%, color-mix(in srgb, var(--wash, rgb(236 204 140)) 50%, transparent) 88%, transparent 100%);
+}
+
+/* ── the frieze behind the plaque: the house's damask, candlelit ──
+   room.webp paints a band of fan damask under its cornice (10.5-17.2% down
+   the picture, which is cover-fitted from its foot); at a screen's size it is
+   a soft, mechanically repeating smear behind the plaque. Over exactly that
+   band: the samples' own scrollwork (damask.webp) at its true size, violet
+   on the wall's dark, brought up where the two corner candles and the
+   plaque's own light reach it and lost in the dark between. */
+.at-frieze {
+  --pic-h: max(56.25vw, 100vh);
+  position: absolute; left: 0; right: 0; z-index: 1; pointer-events: none;
+  top: calc(100vh - var(--pic-h) * .896);
+  height: calc(var(--pic-h) * .068);
+  background:
+    linear-gradient(180deg, rgb(8 5 11 / .7), transparent 22%, transparent 78%, rgb(8 5 11 / .75)),
+    #120a18;
+  box-shadow: inset 0 1px 0 rgb(214 170 104 / .22), inset 0 -1px 0 rgb(214 170 104 / .16);
+  overflow: hidden;
+}
+.at-frieze::before {
+  content: ''; position: absolute; inset: -40% 0;
+  background: url("../../assets/ui/kit/damask.webp") 50% 50% / auto 100% repeat-x;
+  opacity: .5;
+  -webkit-mask-image:
+    radial-gradient(30% 300% at 9% 0%, #000 0%, rgb(0 0 0 / .6) 50%, rgb(0 0 0 / .14) 100%),
+    radial-gradient(30% 300% at 91% 0%, #000 0%, rgb(0 0 0 / .6) 50%, rgb(0 0 0 / .14) 100%),
+    radial-gradient(24% 260% at 50% 0%, rgb(0 0 0 / .8) 0%, transparent 100%),
+    linear-gradient(rgb(0 0 0 / .16), rgb(0 0 0 / .16));
+          mask-image:
+    radial-gradient(30% 300% at 9% 0%, #000 0%, rgb(0 0 0 / .6) 50%, rgb(0 0 0 / .14) 100%),
+    radial-gradient(30% 300% at 91% 0%, #000 0%, rgb(0 0 0 / .6) 50%, rgb(0 0 0 / .14) 100%),
+    radial-gradient(24% 260% at 50% 0%, rgb(0 0 0 / .8) 0%, transparent 100%),
+    linear-gradient(rgb(0 0 0 / .16), rgb(0 0 0 / .16));
+  filter: saturate(.8) brightness(.62);
+}
+.at-frieze::after {
+  content: ''; position: absolute; inset: 0;
+  background:
+    radial-gradient(26% 240% at 9% 0%, rgb(255 184 104 / .3), transparent 70%),
+    radial-gradient(26% 240% at 91% 0%, rgb(255 184 104 / .3), transparent 70%);
+  mix-blend-mode: soft-light;
+}
+.kit-board.has-backdrop .at-frieze { display: none; }
+
+/* ── the still life's ledge ── */
+.at-floor::before { content: none; }
+.at-floor__ledge {
+  position: absolute; z-index: 0;
+  left: -3%; right: -3%;
+  --ledge-h: clamp(30px, 4.4vh, 40px);
+  /* the props' feet are a few px below the floor's own edge (.at-floor__*
+     bottoms): the ledge's top is there, less its walnut top's depth */
+  top: calc(100% + clamp(10px, 1.7vh, 15px) - var(--ledge-h) * .22);
+  filter: drop-shadow(0 8px 10px rgb(0 0 0 / .7));
+}
+@container (max-height: 44px) { .at-floor__ledge { display: none; } }
+
+/* ── the sheet's key (atlas.js), bottom right of the plan ── */
+.at-key {
+  position: absolute; right: 2.2%; bottom: 3.2%;
+  display: grid; gap: 4px;
+  padding: 6px 10px 6px 8px;
+  transform: scale(calc(1 / var(--k, 1)));
+  transform-origin: 100% 100%;
+  pointer-events: none;
+  font-family: var(--font-display); font-weight: 700;
+  font-size: clamp(11px, .76vw, 12.5px);
+  letter-spacing: .08em; text-transform: uppercase;
+  color: var(--kit-name);
+  text-shadow: 0 0 3px rgb(22 12 4), 0 1px 1px rgb(0 0 0);
+  /* ruled round in the pencil, as a drawing's key is */
+  box-shadow: inset 0 0 0 1px rgb(233 211 166 / .55), inset 0 0 0 3px transparent, inset 0 0 0 4px rgb(233 211 166 / .25);
+  background: rgb(26 15 7 / .32);
+  transition: opacity var(--t-quick) var(--ease-out);
+}
+.at-key__i { display: flex; align-items: center; gap: 7px; white-space: nowrap; }
+.at-key__sw {
+  width: 15px; height: 11px; flex: none;
+  border: 1px solid rgb(233 211 166 / .85);
+  border-radius: 2px 4px 2px 3px;
+}
+.at-key__sw--seen {
+  border: 1.5px solid var(--kit-gall);
+  background: rgb(236 204 140);
+  box-shadow: inset 0 0 0 1.5px var(--kit-gold-hi), 0 0 0 1px rgb(236 204 140 / .5);
+}
+.at-root[data-zoom="1"] .at-key { opacity: 0; }
+
+/* the plan is lifted off the paper under a washed wing's name in the canvas
+   itself now (atlas.js _paintSurvey), in exactly its wash: no mask here */
+.at-hot.is-surveyed .at-name::before { content: none; }
+/* a few wings known: each wears its nameplate for good, over its top edge,
+   and is not lettered across its plan; many: each is lettered, hovered or not */
+.at-root[data-few="1"] .at-hots .at-hot.is-surveyed .at-hot__tag { opacity: 1; }
+.at-root[data-few="1"] .at-hots .at-hot.is-surveyed .at-name { opacity: 0; }
+.at-root[data-few="0"] .at-hots .at-hot.is-surveyed.is-hover .at-name { opacity: 1; }
+.at-root[data-zoom="1"] .at-hots .at-hot.is-surveyed .at-name { opacity: 0; }
