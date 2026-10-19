@@ -126,13 +126,18 @@ survey 5 vs survey 6 captures was run (`C:/UILOOP/pairs56/`): survey 6 won
 untouched screens and rooms; gameover is the one pair both call worse (the
 10-16 painting fit hung its pictures short). **Survey scores compare within a
 survey only -- measure progress between surveys PAIRED.** **ROUND 39 IS
-RUNNING (2026-10-19)** (`BRIEF-r39.md`, `round-39.args.json`, base
-`8b813845`): the Bathhouse, the Lampworks, the Kitchens, the Ballroom;
-CHALCEDONY / PERIDOT / RHODONITE in `C:/UILOOP/r39/wt/r39-rooms-{a,b,c}`
-(ports 9301-9303), ORGANDY baselines in `C:/UILOOP/r39/judging/r39/rooms/
-ORGANDY/` (6 of 6, looked at). Then round 40, the boards (a 12 px floor at
-1280, the map's regions as drawn irregular shapes, the hand's spread,
-gameover's cords). **Josh asked 10-18 for a
+MERGED, VERIFIED AND PUSHED (2026-10-19); ITS GRAFT IS IN FLIGHT:**
+RHODONITE +1.91, 2 of 3 (`ffacfa10`, 6.59 vs ORGANDY 4.67; CHALCEDONY 6.49,
+PERIDOT 6.46). **The velvet suite drew NO walls from `af440e48` (10-16) until
+this merge: FXC aborted its wall program (MM_SUBJ folded to 21) while ANGLE
+reported LINK_STATUS true -- a good link can be an empty program; read
+getProgramInfoLog after any fx/ change.** A gate for it is proposed as its
+own session. Battery 106 green but the sprites halo; the other 13 wings
+identical. The Bathhouse fight's BASE timed nothing (T_full None 3/3, quiet
+machine): the graft finds out why. Graft (`GRAFT-r39.md`) building in
+`C:/UILOOP/r39/wt/r39-graft` (port 9304, BASE 9404 from `C:/UILOOP/r39/base`).
+Then round 40, the boards (a 12 px floor at 1280, the map's regions as drawn
+irregular shapes, the hand's spread, gameover's cords). **Josh asked 10-18 for a
 3-hour pause in which nothing may launch a program -- respect such asks.**
 
 **ROUND 33 AND ITS GRAFT ARE MERGED, VERIFIED AND PUSHED (2026-10-16):**
