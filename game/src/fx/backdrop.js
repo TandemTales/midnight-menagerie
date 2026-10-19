@@ -215,10 +215,11 @@ const SHAPE_M = [1.20, 2.00, 1.30, 1.00, 2.00, 2.00, 3.32, 2.60, 1.17, 1.33,
                     Greenhouse's near floor */
                  1.15,
                  /* round 37 (MM_WINGS 1, gkDraw): 85 a standing candelabrum
-                    of gilt brass, its five candles burning (the Heart's near
-                    floor); 86 a straw bale and the straw fallen from it (the
-                    Pumpkin Grounds') */
-                 1.80, 0.62,
+                    of old brass, eight candles burning on its dish and crown
+                    (the Heart's near floor; the graft: TOURMALINE's
+                    hcCandles, 1.95 m); 86 a straw bale and the straw fallen
+                    from it (the Pumpkin Grounds') */
+                 1.95, 0.62,
                  /* round 37 (MM_WINGS 3, wfDraw): 87 the nursery's alphabet
                     blocks and a ball on the rug; 88 books piled on the
                     study's floor and one lying open */
@@ -253,7 +254,7 @@ const SHAPE_W = [1.15, 0.55, 1.00, 0.95, 0.72, 0.80, 0.47, 0.85, 0.90, 1.35,
                  0.42,
                  0.45, 1.20, 2.05,
                  2.05,
-                 0.47, 2.30,
+                 0.42, 2.30,
                  2.10, 3.82
 ];
 /* HOW MUCH ONE OF THESE VARIES FROM THE NEXT, as a +-fraction of SHAPE_M.
@@ -499,7 +500,7 @@ export const PROP_SHAPES = {
      bring it in themselves, so the wing's fight keeps its program: with
      the bench compiled in, the Greenhouse prop link went 9.6 -> 12-14 s) */
   greenhouse: [6, 23, 25, 74, 75, 76, 77, 80],
-  heart: [0, 4, 5, 6, 22, 23, 31, 85],
+  heart: [0, 4, 5, 6, 22, 23, 31, 81, 83, 85],   // (round 37 graft: CARNELIAN's urn and seat, 81 and 83)
   hedge: [23, 25, 28, 30, 31, 81, 83],
   kennels: [16.25, 22, 23, 39, 40, 41, 42],
   kitchens: [8, 22, 29, 82],
@@ -605,7 +606,7 @@ export const ROOM_VARIANTS = [
   { mat: 'prop', defines: { MM_STONES: 1, MM_BUST: 0, MM_WINGS: 6, MM_SHM0: 41943104, MM_SHM1: 0, MM_SHM2: 1294336 }, wings: ['greenhouse'] },
   /* (round 34 graft: and the Greenhouse rooms with the potting bench, 84) */
   { mat: 'prop', defines: { MM_STONES: 1, MM_BUST: 0, MM_WINGS: 6, MM_SHM0: 41943104, MM_SHM1: 0, MM_SHM2: 18071552 }, wings: ['greenhouse'] },
-  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 1, MM_SHM0: 12583025, MM_SHM1: 2, MM_SHM2: 33554432 }, wings: ['heart'] },
+  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 1, MM_SHM0: 12583025, MM_SHM1: 2, MM_SHM2: 44040192 }, wings: ['heart'] },
   { mat: 'prop', defines: { MM_STONES: 1, MM_BUST: 0, MM_WINGS: 1, MM_SHM0: 310378496, MM_SHM1: 3, MM_SHM2: 10485760 }, wings: ['hedge'] },
   { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 2, MM_SHM0: 12648448, MM_SHM1: 7680, MM_SHM2: 0 }, wings: ['kennels'] },
   { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 1, MM_SHM0: 541065472, MM_SHM1: 0, MM_SHM2: 4194304 }, wings: ['kitchens'] },

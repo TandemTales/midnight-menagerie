@@ -1613,20 +1613,37 @@ export const REGIONS = {
                 pool and pool2, below) -- the ceremony's candles, set on the
                 floor of the hall the way a chapel sets its altar lights.
                 `still`, so the colonnade behind them is dealt as it was. */
-             near: [{ shape: 85, ahead: 10.6, across: -4.15, tone: 0.97, hM: 1.80, keep: true, still: true, seed: 1.3 },
-                    { shape: 85, ahead: 10.6, across: 4.15, tone: 0.97, hM: 1.80, keep: true, still: true, seed: 6.7 },
+             /* (graft: TOURMALINE's tall tiered candelabra, all three judges
+                -- "its tall tiered candelabras on the near floor each casting
+                a warm pool" -- brought in to 3.6 m either side of the runner,
+                so at the Deck's 1280x800 both stand inside the frame and
+                clear of the Kid's panel and the discard pile in the fight) */
+             near: [{ shape: 85, ahead: 9.6, across: -3.6, tone: 0.97, hM: 1.95, keep: true, still: true, seed: 1.3 },
+                    { shape: 85, ahead: 9.6, across: 3.6, tone: 0.97, hM: 1.95, keep: true, still: true, seed: 6.7 },
                     /* ...and nearer, a knot of pillar candles stood on the
                        boards either side of the runner's foot (85 with a
                        seed past 20: true metres, hM and wM) */
-                    { shape: 85, ahead: 5.4, across: -1.9, tone: 0.97, keep: true, still: true, seed: 21.3, hM: 0.54, wM: 0.80 },
-                    { shape: 85, ahead: 5.0, across: 2.1, tone: 0.97, keep: true, still: true, seed: 24.9, hM: 0.50, wM: 0.80 }] },
+                    /* (graft: a stride nearer, 4.2-4.5 m -- at 5 m they stood
+                       in the fight between the Kid's panel and the hand and
+                       behind the discard pile, in pieces; here the hand
+                       covers them in the fight and the empty room still has
+                       them at its foot) */
+                    { shape: 85, ahead: 4.5, across: -1.9, tone: 0.97, keep: true, still: true, seed: 21.3, hM: 0.54, wM: 0.80 },
+                    { shape: 85, ahead: 4.2, across: 2.1, tone: 0.97, keep: true, still: true, seed: 24.9, hM: 0.50, wM: 0.80 }] },
     wainscot: true, nearFrame: false,
-    /* (round 37: the marble modelled -- uStatueMod) */
-    statueModel: 1,
+    /* (round 37: the marble modelled -- uStatueMod; the graft: a quarter
+       of it, since CARNELIAN's carving -- its core shadow and fold troughs
+       laid on the lit colour, MM_SH85 in the shader -- does that work now,
+       and the two together took the figures to black) */
+    statueModel: 0.25,
     crispFloor: true,
+    /* (graft: the candelabra's light laid on the boards in a band along
+       their line -- both their feet and the runner between them in it,
+       TOURMALINE's pools -- and BERYL's pool before the pillar candles kept,
+       so the runner and the boards are lit to the frame's foot) */
     nearFloor: { fall: 0.92, dye: 1, calm: 0.85, clean: 1,
-                 pool: { ahead: 5.2, across: 0.0, rAlong: 2.2, rAcross: 3.4, k: 2.6, color: '#f0a65a' },
-                 pool2: { ahead: 8.0, across: 0.0, rAlong: 2.6, rAcross: 4.6, k: 2.2, color: '#eaa45e' } },
+                 pool: { ahead: 4.6, across: 0.0, rAlong: 2.6, rAcross: 3.6, k: 3.0, color: '#f0a65a' },
+                 pool2: { ahead: 9.2, across: 0.0, rAlong: 2.2, rAcross: 5.2, k: 4.0, color: '#f0a65a' } },
     /* (round 29 graft, judge 1: "give the lower half of the hall drawn
        content -- a long rug" -- the hall's Turkey runner, its medallions and
        guard stripes, laid from the foot of the frame to the door) */
@@ -2694,13 +2711,29 @@ export const ROOM_KINDS = {
       { subject: 'hearth' },
       /* its galleries of the house's own: an arcade, seen from one end */
       { subject: 'arcade',
-        vantage: { at: 'along', off: 0.26, wall: 2.4, fwd: 1.2, yaw: 24, wide: 4 } },
+        vantage: { at: 'along', off: 0.26, wall: 2.4, fwd: 1.2, yaw: 24, wide: 4 },
+        /* (round 37 graft: the gallery's near floor -- a candelabrum burning
+           at your left over its pool, a stone urn on its pedestal at your
+           right, CARNELIAN's, and a knot of pillar candles between them) */
+        near: [{ shape: 85, ahead: 7.4, across: -2.7, tone: 0.97, hM: 1.95, keep: true, still: true, seed: 2.2 },
+               { shape: 81, ahead: 7.8, across: 3.0, tone: 0.95, hM: 1.40, keep: true, still: true, seed: 1.1 },
+               { shape: 85, ahead: 4.6, across: 1.4, tone: 0.97, keep: true, still: true, seed: 22.7, hM: 0.52, wM: 0.80 }],
+        nearFloor: { pool: { ahead: 7.2, across: -1.6, rAlong: 3.0, rAcross: 3.6, k: 4.6, color: '#f0a65a' },
+                     pool2: { ahead: 5.6, across: 2.2, rAlong: 3.0, rAcross: 3.0, k: 3.4, color: '#eaa45e' } } },
       /* its inner stair, from low beside it */
       { subject: 'stair', subj: { wall: 'far', at: 0.55, mode: 1, dir: 1 },
         vantage: { at: 'among', low: 0.66, fwd: 3.0, pitch: 2.0, off: 0.04, yaw: 30, wide: 4 } },
       /* a memory room: shelves of kept things, from a corner */
       { subject: 'bookcase',
-        vantage: { at: 'corner', off: 0.12, fwd: 2.4, yaw: 28, wide: 3 } },
+        vantage: { at: 'corner', off: 0.12, fwd: 2.4, yaw: 28, wide: 3 },
+        /* (round 37 graft: and the memory room's -- a carved stone bench at
+           your left, CARNELIAN's, a candelabrum burning at your right over
+           its pool, an urn on its pedestal beyond the bench) */
+        near: [{ shape: 83, ahead: 5.6, across: -2.1, tone: 0.95, hM: 0.95, keep: true, still: true, seed: 2.0 },
+               { shape: 85, ahead: 7.6, across: 2.9, tone: 0.97, hM: 1.95, keep: true, still: true, seed: 6.7 },
+               { shape: 81, ahead: 9.8, across: -4.4, tone: 0.95, hM: 1.40, keep: true, still: true, seed: 2.6 }],
+        nearFloor: { pool: { ahead: 7.4, across: 2.7, rAlong: 3.2, rAcross: 2.4, k: 5.0, color: '#f0a65a' },
+                     pool2: { ahead: 5.4, across: -1.8, rAlong: 2.2, rAcross: 2.6, k: 2.6, color: '#eaa45e' } } },
     ],
     names: [
       [/gallery|hall of|collars|names/i, 1],
