@@ -782,7 +782,10 @@ export const REGIONS = {
     deep: '#1c1319', mid: '#3a2824', hi: '#614534', accent: '#5d849d',
     shaft: '#d9bd92', floorDeep: '#151014', floorMid: '#31211c', ambient: '#1a1217',
     propAlb: '#3f2b23', propHi: '#735336', rimCol: '#d8b279',
-    gloss: 0.58, grime: 0.55, open: '#527f8f', openGlow: 0.45,
+    /* (round 37 graft, CARNELIAN's: the boards' sheen and the canvas tooth
+       down -- judge 2's "near-black plank field under a smeared vignette"
+       was the moon's wet smear and the grade's mottle on the near boards) */
+    gloss: 0.42, grime: 0.55, open: '#527f8f', openGlow: 0.45, tooth: 0.055,
     /* (graft, the judges: "on fight-study, keep the left bookcase clear of
        the sconce overlay" -- the cases dealt round the frame's edges stood
        under the chrome's candles; the walls ARE the bookcases) */
@@ -794,23 +797,42 @@ export const REGIONS = {
                 nearFloor's -- the books taken
                 down and piled on the carpet beside it (88); the globe stays
                 by the far cases. Placed in eye metres, as the pools are. */
-             near: [{ shape: 53, ahead: 4.9, across: 2.35, tone: 0.98, keep: true, still: true, seed: 3.3 },
+             /* (round 37 graft: CARNELIAN's composition, all three judges'
+                choice -- the desk and the globe back by the cases where the
+                room had them, a wing chair drawn up at your left on the
+                carpet's corner, scaled and set in so it does not crowd the
+                frame's edge (judge 3), and the books taken down and piled by
+                it (BERYL's 88); the carpet centred between) */
+             near: [{ shape: 53, edge: 0.70, z: -1.6, tone: 0.97 },
+                    { shape: 54, edge: 0.33, z: -4.4, tone: 0.95 },
                     { shape: 56, edge: 0.85, z: -4.6, tone: 0.94 },
-                    { shape: 88, ahead: 3.5, across: -1.1, tone: 0.98, keep: true, still: true, seed: 2.6, hM: 0.36 },
-                    { shape: 54, ahead: 4.9, across: -2.4, tone: 0.97, keep: true, still: true, seed: 5.2 }] },
+                    { shape: 56, ahead: 5.2, across: -2.15, tone: 0.97, scale: 0.86, keep: true, still: true, seed: 4.4 },
+                    { shape: 88, ahead: 3.9, across: -1.35, tone: 0.98, keep: true, still: true, seed: 2.6, hM: 0.36 }] },
     crispFloor: true, grain: 0.012,
-    nearFloor: { fall: 0.88, dye: 1, calm: 0.90, clean: 1, rug: { ahead: 4.0, hw: 1.6, hd: 1.0 }, rugGain: 0.62, rugGul: 0.85,
-                 pool: { ahead: 4.8, across: 2.0, rAlong: 2.2, rAcross: 2.2, k: 3.6, color: '#f2c070' },
-                 pool2: { ahead: 3.2, across: -0.6, rAlong: 1.8, rAcross: 2.8, k: 1.4, color: '#eaa860' } },
-    cineFloor: 0.5,
+    /* (graft: CARNELIAN's even warm floor -- the near floor at 0.95, the
+       carpet centred and the lamps' light lying over the whole of it and
+       the boards to the frame's foot -- with BERYL's lattice carpet on it) */
+    nearFloor: { fall: 0.95, dye: 1, calm: 0.92, clean: 1, rug: { ahead: 4.6, hw: 1.9, hd: 1.15 }, rugGain: 0.70, rugGul: 0.85,
+                 pool: { ahead: 5.0, across: -1.4, rAlong: 2.8, rAcross: 2.6, k: 2.2, color: '#eab26a' },
+                 /* (and the green lamp's warmth on the boards round the desk
+                    and between the cases and the carpet -- the stripe the
+                    judges named, and the cold wash behind the desk) */
+                 pool2: { ahead: 7.4, across: 2.0, rAlong: 2.6, rAcross: 3.4, k: 2.6, color: '#eab26a' } },
+    /* (graft: the cinematic pair's whole light on the boards again -- at
+       half, the boards between the cases and the carpet were the black
+       stripe all three judges named) */
+    cineFloor: 1.0,
     particles: { mix: [[PTYPE.DUST, 0.92], [PTYPE.EMBER, 0.08]],
                  tint: '#ffe6bc', wispTint: '#8fd9ec', emberTint: '#ffb64a',
                  speed: 0.6, scale: 0.95, wind: 0.4, density: 0.45 },
-    exposure: 2.6, vignette: 1.22, contrast: 1.67,
+    /* (graft: CARNELIAN's vignette, 1.22 -> 1.12) */
+    exposure: 2.6, vignette: 1.12, contrast: 1.67,
     key:  { glow: 0, kind: 'warm', x: -3.8, y: 3.2, z: 2.2, color: '#e2b271', intensity: 1.63, radius: 7.31 },
     /* (graft: the moon's pool on the boards a stop down -- the judges saw
-       the floor's grain dither in it) */
-    fill: { glow: 0, kind: 'cold', x: 5.0, y: 3.4, z: 1.2, color: '#769fba', intensity: 2.90, radius: 8.0, flicker: false },
+       the floor's grain dither in it; round 37 graft: and 2.90 -> 2.30,
+       after TOURMALINE's -- its pool behind the desk was the cold blue-grey
+       wash all three judges asked warmed; the green lamp's pool takes it) */
+    fill: { glow: 0, kind: 'cold', x: 5.0, y: 3.4, z: 1.2, color: '#769fba', intensity: 2.30, radius: 8.0, flicker: false },
     lights: [
       /* (round 37, survey-5 judge 1: "the chandeliers are blown white
          blobs" -- each candle's halo two-thirds the size and half the
@@ -818,7 +840,9 @@ export const REGIONS = {
       { kind: 'warm', x: -3.2, y: 3.00, z: -4.6, color: '#e0b266', intensity: 1.50, radius: 5.6, glow: 0.32, glowSize: 0.55 },
       { kind: 'warm', x: 3.6, y: 3.20, z: -7.0, color: '#dca254', intensity: 1.30, radius: 6.0, glow: 0.32, glowSize: 0.55 },
       { kind: 'warm', x: -4.0, y: 3.40, z: -7.6, color: '#ce9953', intensity: 0.90, radius: 5.5, glow: 0.32, glowSize: 0.55 },
-      { kind: 'cold', x: 0.6, y: 5.00, z: -8.0, color: '#769fba', intensity: 1.40, radius: 7.0 },
+      /* (graft: the gallery window's moon at half, TOURMALINE's -- it laid
+         the lilac-grey on the boards behind the desk) */
+      { kind: 'cold', x: 0.6, y: 5.00, z: -8.0, color: '#769fba', intensity: 0.70, radius: 7.0 },
     ],
     shafts: { count: 1, spread: 6, y: 8.0, z: -8.0, angle: 0.22, width: 2.4, intensity: 0.14, pool: 1.5 },
     /* (round 37: halation 0.68 -> 0.42 -- the chandeliers' "blown white
@@ -2306,11 +2330,18 @@ export const ROOM_KINDS = {
                { shape: 54, x: -4.2, z: -3.2, tone: 0.95, free: true },
                /* (round 37: the near floor -- books piled on the hearth
                   rug in the fire's light, a chair turned to the fire) */
-               { shape: 88, ahead: 3.6, across: 1.2, tone: 0.98, keep: true, still: true, seed: 7.1, hM: 0.36 },
-               { shape: 56, ahead: 4.4, across: -2.3, tone: 0.97, keep: true, still: true, seed: 4.4 }],
+               /* (round 37 graft: CARNELIAN's -- a wing chair drawn up on the
+                  hearth rug at your left, scaled and set in from the frame's
+                  edge, and the books piled at the rug's other corner) */
+               { shape: 56, ahead: 4.6, across: -2.0, tone: 0.97, scale: 0.84, keep: true, still: true, seed: 4.4 },
+               { shape: 88, ahead: 3.6, across: 1.7, tone: 0.98, keep: true, still: true, seed: 7.1, hM: 0.36 }],
+        /* (graft: the fire's own light lying out across the rug toward you,
+           CARNELIAN's, and the boards round it warm) */
         nearFloor: { rug: { ahead: 4.6, hw: 1.8, hd: 1.1 },
-                     pool: { ahead: 5.2, across: 0.0, rAlong: 3.0, rAcross: 2.6, k: 3.2, color: '#ff9a50' },
-                     pool2: { ahead: 3.4, across: 0.0, rAlong: 2.0, rAcross: 3.0, k: 1.2, color: '#f0a060' } },
+                     pool: { ahead: 4.6, across: 0.0, rAlong: 3.6, rAcross: 2.8, k: 2.8, color: '#f0904a' },
+                     /* (and the green lamp's warmth on the boards round the
+                        desk, where the cold wash lay) */
+                     pool2: { ahead: 6.4, across: 2.4, rAlong: 2.4, rAcross: 3.0, k: 2.2, color: '#eab26a' } },
         cam: { z: -1.0, look: 0.1 } },
     ],
     names: [
