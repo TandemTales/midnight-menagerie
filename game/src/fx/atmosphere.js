@@ -523,9 +523,10 @@ export const REGIONS = {
        paler lamplight, not the fire's orange; and the flags SMALL and
        worn, MM_FLAGK) */
     nearFloor: { fall: 0.90, dye: 1, calm: 0.95, rug: { ahead: 6.9, hw: 1.45, hd: 0.85 },
-                 pool: { ahead: 3.8, across: 0.0, rAlong: 3.0, rAcross: 3.6, k: 0.72, color: '#eeae70' },
-                 pool2: { ahead: 2.6, across: 0.0, rAlong: 2.0, rAcross: 4.0, k: 0.50, color: '#e6b47e' } },
+                 pool: { ahead: 3.8, across: 0.0, rAlong: 3.0, rAcross: 3.6, k: 0.48, color: '#eeb27a' },
+                 pool2: { ahead: 2.6, across: 0.0, rAlong: 2.0, rAcross: 4.0, k: 0.34, color: '#e6b47e' } },
     flagK: 1,
+    cineFloor: 0.40,   // (round 39: the cold fill's violet slab off the near-left flags)
     particles: { mix: [[PTYPE.EMBER, 0.46], [PTYPE.DUST, 0.40], [PTYPE.PLASTER, 0.14]],
                  tint: '#ffcf9a', wispTint: '#8fd9a8', emberTint: '#ff7a28',
                  speed: 1.2, scale: 1.05, wind: 1.3, density: 0.95 },
@@ -1012,6 +1013,7 @@ export const REGIONS = {
                   oil can and a coil of wick at the near left (a bench with
                   seed > 40: wgLcSD) */
                { shape: 34, edge: 0.27, z: 3.0, tone: 0.97, free: true, keep: true, seed: 41.0, wM: 2.30 },
+               { shape: 34, ahead: 6.0, across: -0.9, tone: 0.97, keep: true, seed: 43.0, wM: 2.30 },
                { shape: 34, edge: 0.80, z: -0.8, tone: 0.95 },
                { shape: 34, edge: 0.22, z: -4.6, tone: 0.92 },
                { shape: 33, x: -6.0, z: -3.0, y: 3.2, tone: 0.95 },
@@ -1030,8 +1032,8 @@ export const REGIONS = {
        smear at the foot of the frame) and the canvas tooth down, as the
        Kitchens' */
     nearFloor: { fall: 0.86, calm: 0.92, clean: 1,
-                 pool: { ahead: 6.4, across: 2.8, abs: true, rAlong: 2.8, rAcross: 2.6, k: 1.15, color: '#f0a65a' },
-                 pool2: { ahead: 4.4, across: -2.8, abs: true, rAlong: 2.6, rAcross: 2.2, k: 0.55, color: '#86bad8' } },
+                 pool: { ahead: 6.4, across: 2.8, abs: true, rAlong: 2.8, rAcross: 2.6, k: 1.35, color: '#f0a65a' },
+                 pool2: { ahead: 4.8, across: 0.4, abs: true, rAlong: 2.4, rAcross: 3.2, k: 1.00, color: '#e8a45c' } },
     cineFloor: 0.35, grain: 0.012, tooth: 0.045,
     exposure: 1.42, vignette: 1.06, contrast: 1.41,
     key:  { glow: 0, kind: 'warm', x: -4.2, y: 3.2, z: 2.2, color: '#df9f63', intensity: 4.51, radius: 7.74 },
@@ -1086,19 +1088,41 @@ export const REGIONS = {
                 reflection, a dropped fan, a chair), not a bare magenta
                 field" -- a fan and a rose left where the fight leaves room,
                 and a chair pulled out onto the floor) */
-             near: [{ shape: 79, edge: 0.78, z: 4.2, tone: 0.96, scale: 1.3 },
-                    { shape: 72, edge: 0.95, z: -1.0, tone: 0.94 }] },
+             /* (round 39: the fan that lay at the frame's foot, cut by it,
+                is now laid fully in frame among the petals, below) */
+             near: [{ shape: 72, edge: 0.95, z: -1.0, tone: 0.94 },
+                    /* ROUND 39 (RHODONITE), both survey-6 judges: "the
+                       checker floor is an empty plane across the lower 55%".
+                       What a ball leaves: gilt chairs pulled out onto the
+                       floor where the dancers sat out, a fan dropped in the
+                       light, a candelabrum stood down on the boards -- and
+                       the petals (nearFloor.rug, FLOOR_FRAG) */
+                    { shape: 72, ahead: 6.2, across: -3.6, tone: 0.96, keep: true, seed: 3.0 },
+                    { shape: 72, ahead: 7.4, across: -2.5, tone: 0.95, keep: true, seed: 8.0 },
+                    { shape: 72, ahead: 5.8, across: 3.9, tone: 0.96, keep: true, seed: 5.0 },
+                    { shape: 79, ahead: 6.6, across: 0.9, tone: 0.97, keep: true, scale: 1.6, seed: 2.0 },
+                    { shape: 65, ahead: 8.2, across: 4.6, tone: 0.95, keep: true }] },
+    /* ROUND 39: THE NEAR FLOOR -- the chandelier's light laid on the marble
+       in front of you, the petals where the fan fell, and the cold violet
+       fill OFF the floor (cineFloor: "the purple haze off the floor") */
+    nearFloor: { fall: 0.92, calm: 0.70, rug: { ahead: 5.4, hw: 2.2, hd: 1.4 },
+                 pool: { ahead: 5.6, across: 0.4, rAlong: 3.4, rAcross: 3.6, k: 1.10, color: '#e9c88c' },
+                 pool2: { ahead: 8.6, across: -3.0, rAlong: 2.6, rAcross: 2.4, k: 0.60, color: '#e2bd7a' } },
+    cineFloor: 0.30,
     particles: { mix: [[PTYPE.DUST, 0.58], [PTYPE.EMBER, 0.26], [PTYPE.WISP, 0.16]],
                  tint: '#ffe8c0', wispTint: '#d8a8ff', emberTint: '#ffc95a',
                  speed: 0.9, scale: 1.1, wind: 0.8, density: 1.0 },
     exposure: 3.55, contrast: 1.61,
     key:  { glow: 0, kind: 'warm', x: -5.2, y: 4.0, z: 2.8, color: '#e5c07e', intensity: 1.98, radius: 9.46 },
-    fill: { glow: 0, kind: 'cold', x: 7.2, y: 3.0, z: 1.6, color: '#a984cd', intensity: 3.2, radius: 10.0, flicker: false },
+    /* (round 39, both survey-6 judges: "under a purple haze" -- the cold
+       pair a moonlit blue-violet, not a lilac, and a step down; LIGHT
+       colours, said here because the darks they laid were too pale) */
+    fill: { glow: 0, kind: 'cold', x: 7.2, y: 3.0, z: 1.6, color: '#8a86c0', intensity: 1.7, radius: 10.0, flicker: false },
     lights: [
       { kind: 'warm', x: -6.5, y: 5.40, z: -11.0, color: '#e1bd6e', intensity: 1.35, radius: 8.6 },
       { kind: 'warm', x: 6.5, y: 5.40, z: -11.5, color: '#deae5f', intensity: 1.19, radius: 8.6 },
       { kind: 'warm', x: 0.0, y: 6.20, z: -15.0, color: '#e9cd92', intensity: 0.88, radius: 9.46 },
-      { kind: 'cold', x: -10.0, y: 2.00, z: -7.5, color: '#a984cd', intensity: 1.32, radius: 8.0 },
+      { kind: 'cold', x: -10.0, y: 2.00, z: -7.5, color: '#767fc0', intensity: 0.85, radius: 8.0 },
     ],
     /* (round 25: the moon a third as strong -- at 0.37 its beams lay white
        wedges of haze over the tall glasses and down the columns, the milk
@@ -1432,9 +1456,16 @@ export const REGIONS = {
                   the towel horse with its stool and pail (a bath dealt with seed > 40) between them
                   on the wet tiles. */
                { shape: 32, edge: 0.78, z: 1.7, tone: 0.97, scale: 1.15, free: true, keep: true, seed: 3.0 },
-               { shape: 32, edge: 0.60, z: -0.6, tone: 0.96, keep: true, free: true, seed: 41.0, hM: 1.25, wM: 1.90 },
+               { shape: 32, edge: 0.47, z: -3.4, tone: 0.95, keep: true, free: true, seed: 41.0, hM: 1.25, wM: 1.90 },
                { shape: 32, edge: 0.80, z: -0.9, tone: 0.95 },
                { shape: 32, edge: 0.15, z: 1.0, tone: 0.95, scale: 1.08, free: true, keep: true, seed: 7.0 },
+               /* and on the near floor itself, in eye metres (across: + is
+                  the frame's left from this lens): a third bath cropped by
+                  the frame's left edge, and a second towel horse with its
+                  stool at the right, both in the band the hand covers in a
+                  fight -- the empty room's foreground, not the fight's */
+               { shape: 32, ahead: 3.3, across: 3.5, tone: 0.97, scale: 1.20, keep: true, seed: 11.0 },
+               { shape: 32, ahead: 3.8, across: -3.0, tone: 0.97, keep: true, seed: 42.0, hM: 1.25, wM: 1.90 },
                { shape: 32, edge: 0.88, z: -3.8, tone: 0.93 },
                { shape: 2, edge: 0.95, z: -2.4, tone: 0.92 },
                /* and two more down the hall, on the left and the middle,
@@ -2140,7 +2171,7 @@ export const ROOM_KINDS = {
       /* ...the piano stands ON the stage, a little off its axis, and the
          room is seen from its door: a suite's state room is entered through
          a doorcase off the ballroom (FRAME_FRAG mode 3, door kind 1). */
-      { subject: 'dais', doorX: -1, lamps: [{ i: 2, x: 0.0, z: 0.76 }],
+      { subject: 'dais', doorX: -1, lamps: [{ i: 2, x: 0.0, z: 0.76 }, { i: 3, k: 0.45 }],   // (round 39: its cold lamp a step down -- the violet haze on the wall beside the stage)
         layout: 'nook', swap: [[6, 72], [68, 65], [78, 72]], solo: [],
         room: { w: 0.90, d: 0.80 }, ceilGain: 0.45, door: 'case',
         /* (1.00 from 1.35, round 18: the piano's quad is wider by its pianist
@@ -2568,7 +2599,7 @@ export const ROOM_KINDS = {
        sinks and its copper's fire at a third of the range's) */
     kinds: [{ subject: 'range', room: { d: 0.68 }, cam: { z: -2.6, look: 0.05 }, count: 0,
               rug: { ahead: 6.9, hw: 1.45, hd: 0.85 },
-              lamps: [{ i: 2, x: 0.0, z: 0.94 }, { i: 3, x: -4.4, z: 0.78, y: 3.0 }] },   // (round 28: the moon under its left window; graft: a step into the room, its pool on the flags)
+              lamps: [{ i: 2, x: 0.0, z: 0.94 }, { i: 3, x: -4.4, z: 0.78, y: 3.0, k: 0.55 }] },   // (round 39: the moon a step down -- its blue on the warm flags was the violet slab)   // (round 28: the moon under its left window; graft: a step into the room, its pool on the flags)
             /* (round 31: its tables placed, as the kitchen's -- one each side
                of the sinks, a bench along each; no table dealt) */
             { subject: 'scullery', room: { d: 0.66, w: 0.86 }, cam: { z: -2.0, look: 0.30 },
@@ -2631,7 +2662,12 @@ export const ROOM_KINDS = {
          hung with their tapers, 43, where the gas standard was, and two
          set by hand where the eye is) */
       { subject: 'wax', layout: 'wings', swap: [[18, 43]], room: { w: 0.80, d: 0.56 },
-        near: [{ shape: 43, edge: 0.78, z: -1.6, tone: 0.95 }, { shape: 43, edge: 0.24, z: -2.8, tone: 0.92 }],
+        near: [{ shape: 43, edge: 0.78, z: -1.6, tone: 0.95 }, { shape: 43, edge: 0.24, z: -2.8, tone: 0.92 },
+               /* (round 39: and on its near floor, crates of the dipped
+                  candles with a lantern burning by them, and a rack brought
+                  forward at the right) */
+               { shape: 34, ahead: 3.6, across: -2.4, tone: 0.97, keep: true, seed: 44.0, wM: 2.30 },
+               { shape: 43, ahead: 4.2, across: 2.9, tone: 0.97, keep: true }],
         ceil: 6, ceilGain: 1.9,
         vantage: { at: 'among', low: 0.72, fwd: 4.2, pitch: 3.0, off: 0.14, yaw: 12, wide: 4 } },
       /* THE REFLECTOR GALLERY -- round 14, one judge, VERMEIL's: "a receding
@@ -2648,6 +2684,11 @@ export const ROOM_KINDS = {
          rail across the foot of the view, the boilers below */
       { subject: 'boiler', layout: 'aisle', swap: [[1, 8], [5, 8], [6, 18]], rail: 'iron', room: { d: 0.60 },
         ceilGain: 1.9,
+        /* (round 39: the wing's two cold lamps hang 12-13 m back, and in a
+           room 0.60 as deep that is BEHIND the boilers' wall -- which they lit
+           to a blown silver from the far side. Brought into the room, over
+           the walk) */
+        lamps: [{ i: 0, x: -5.0, z: 0.30, k: 0.50 }, { i: 2, x: 6.0, z: 0.34, k: 0.50 }],
         vantage: { at: 'above', rise: 2.4, drop: 0.2, fwd: 2.4, ahead: 5.0 } },
     ],
     names: [
