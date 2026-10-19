@@ -360,8 +360,10 @@ export const REGIONS = {
                     { shape: 87, ahead: 3.2, across: 0.75, tone: 0.98, keep: true, still: true, seed: 1.4, hM: 0.50 },
                     { shape: 87, ahead: 3.7, across: -1.05, tone: 0.97, keep: true, still: true, seed: 3.7, hM: 0.38 },
                     /* (graft, judge 1: "one more toy in the bottom quarter" --
-                       blocks and a ball strayed off the rug toward you) */
-                    { shape: 87, ahead: 2.05, across: -0.55, tone: 0.98, keep: true, still: true, seed: 5.9, hM: 0.40 }] },
+                       blocks and a ball strayed off the rug toward you; small,
+                       for the frame budget: near the eye a quad costs its
+                       whole area, and in the fight this one is under the hand) */
+                    { shape: 87, ahead: 2.25, across: -0.55, tone: 0.98, keep: true, still: true, seed: 5.9, hM: 0.32 }] },
     crispFloor: true, grain: 0.012,
     nearFloor: { fall: 0.80, dye: 1, calm: 0.92, clean: 1, rug: { ahead: 3.6, hw: 1.65, hd: 1.05 }, rugGain: 0.70, rugGul: 0.85,
                  pool: { ahead: 4.0, across: 0.0, rAlong: 2.6, rAcross: 3.4, k: 2.5, color: '#ff9a50' },
