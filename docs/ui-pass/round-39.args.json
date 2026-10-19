@@ -1,0 +1,70 @@
+{
+  "round": "r39",
+  "maxBuilders": 3,
+  "briefs": [
+    "docs/ui-pass/BRIEF-r0.md",
+    "docs/ui-pass/BRIEF-r1.md",
+    "docs/ui-pass/BRIEF-r11.md",
+    "docs/ui-pass/BRIEF-r16.md",
+    "docs/ui-pass/BRIEF-r21.md",
+    "docs/ui-pass/BRIEF-r22.md",
+    "docs/ui-pass/BRIEF-r23.md",
+    "docs/ui-pass/BRIEF-r24.md",
+    "docs/ui-pass/BRIEF-r25.md",
+    "docs/ui-pass/BRIEF-r28.md",
+    "docs/ui-pass/BRIEF-r29.md",
+    "docs/ui-pass/BRIEF-r31.md",
+    "docs/ui-pass/BRIEF-r34.md",
+    "docs/ui-pass/BRIEF-r35.md",
+    "docs/ui-pass/BRIEF-r37.md",
+    "docs/ui-pass/BRIEF-r39.md"
+  ],
+  "rubrics": [
+    "docs/ui-pass/RUBRIC.md",
+    "docs/ui-pass/RUBRIC-r39.md"
+  ],
+  "samples": [
+    "UI/title.png",
+    "UI/mainMenu.png",
+    "UI/selectCompanion.png",
+    "UI/selectKid.png"
+  ],
+  "tracks": [
+    {
+      "key": "rooms",
+      "name": "ROOMS",
+      "rule": "refine",
+      "screens": [
+        "sheet-bathhouse",
+        "sheet-lampworks",
+        "sheet-kitchens",
+        "sheet-ballroom",
+        "fight-bathhouse"
+      ],
+      "smallScreens": [
+        "fight-bathhouse"
+      ],
+      "baseline": "ORGANDY",
+      "builders": [
+        {
+          "slot": "a",
+          "code": "CHALCEDONY",
+          "port": 9301,
+          "angle": "LITERAL -- work BRIEF-r39's fix list 1 to 3 in order and exactly as written, one wing at a time, the Bathhouse FIRST (the round's fight and the lowest of the four, 4 from judge 2). Keep every change inside your four wings."
+        },
+        {
+          "slot": "b",
+          "code": "PERIDOT",
+          "port": 9302,
+          "angle": "THE NEAR FLOOR FIRST -- the angle that won rounds 31, 35 and 37. Carry the nearFloor rule as rounds 34-37 extended it into all four wings -- a dressed, lit near floor with a light pool from a source the room has and objects standing IN it above the hand's edge -- prove it there, then each wing's own defect in that light."
+        },
+        {
+          "slot": "c",
+          "code": "RHODONITE",
+          "port": 9303,
+          "angle": "THE OBJECT DRAWN, NOT A PRIMITIVE. Each wing's subject is a weak object: the Bathhouse's tiny tubs, the Lampworks' stick benches, the Kitchens' blank polygon flags, the Ballroom's rectangle-grid wall. Draw each as a real object with an inked, broken silhouette and mass first -- clawfoot tubs with rims and water, benches loaded with glass and tools, worn chipped flags, carved damask panels -- then bring it forward into the light."
+        }
+      ]
+    }
+  ]
+}

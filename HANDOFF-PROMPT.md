@@ -119,8 +119,17 @@ Graft `74867d96`: HELIOTROPE's map stamps (only the next row keeps metal),
 surveyor's regions and compact boss plate; SARD's brackets and tags on the
 atlas; the map's canvas lettering 11.4 px+ at 1280. Map, steam-deck, gamepad,
 platform, chrome green on dev. **SURVEY 5'S LIST IS DONE (rounds 34-38 +
-grafts). SURVEY 6 IS RUNNING** (`survey-2026-10-19.sh` into
-`C:/UILOOP/survey6/NOW/`, judges per `SURVEY6-judge-prompt.md`). **Josh asked 10-18 for a
+grafts). SURVEY 6 IS DONE (2026-10-19)** (`SURVEY-2026-10-19.md`): its
+independent scores came out FLAT vs survey 5, so a PAIRED blind A/B of
+survey 5 vs survey 6 captures was run (`C:/UILOOP/pairs56/`): survey 6 won
+24 and 23 of 32 pairs (net +46/+40); the 'equal' pairs were exactly the
+untouched screens and rooms; gameover is the one pair both call worse (the
+10-16 painting fit hung its pictures short). **Survey scores compare within a
+survey only -- measure progress between surveys PAIRED.** **NEXT: ROUND 39**
+(`BRIEF-r39.md`, `round-39.args.json`): the Bathhouse, the Lampworks, the
+Kitchens, the Ballroom -- the four rooms no round has touched since 31; then
+round 40, the boards (a 12 px floor at 1280, the map's regions as drawn
+irregular shapes, the hand's spread, gameover's cords). **Josh asked 10-18 for a
 3-hour pause in which nothing may launch a program -- respect such asks.**
 
 **ROUND 33 AND ITS GRAFT ARE MERGED, VERIFIED AND PUSHED (2026-10-16):**
