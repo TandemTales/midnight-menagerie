@@ -11722,7 +11722,12 @@ float wallH(vec2 q, out float occ){
        scale), where it can be seen. The whorl scallop now goes to nothing on
        the leader as well as at the tips: on the centre line it stacked into a
        knob and the tall ones read as chess pawns. */
-#if MM_R25W == 4
+#if MM_R25W == 4 || MM_ROOMS == 11
+    /* (round 37 graft, the frame budget: these culls -- the wood's, and the
+       house elevation's onBody ones below -- are the Pumpkin Grounds' too,
+       MM_ROOMS 11: its house is the same house and its wood the same wood,
+       and with the painted house loaded every term they skip was zero there
+       as well. Exact, as they are in the churchyard.) */
     /* (performance pass, 2026-10-02: the wood is drawn only where it can
        show. On the house's own columns every term it adds is multiplied by
        (1 - onHouse2), and above 16.5 m no crown of either band reaches --
@@ -12008,7 +12013,7 @@ float wallH(vec2 q, out float occ){
        -- and the moon's disc is bright enough that 5% of it came through a
        fir in front of it as a whole moon. A tree is opaque; the house's
        silhouette stands at 1.4 for the same reason.) */
-#if MM_R25W == 4
+#if MM_R25W == 4 || MM_ROOMS == 11
     }
 #endif
     h += max(nearM, farM) * (1.0 - onHouse2) * noSub * 1.10;
@@ -12038,7 +12043,7 @@ float wallH(vec2 q, out float occ){
        moonlit edge along its top and its moon-side whorls (nearRim, lit and
        out from under the moon cut), and the branch across each gap darker
        than the crown round it.) */
-#if MM_R25W == 4
+#if MM_R25W == 4 || MM_ROOMS == 11
     /* (and with no tree here, every term below is zero or is read only
        where a tree is -- gTreeRim and gTreeTex, under wCov in main()) */
     if (nearM > 0.0 || farM > 0.0) {
@@ -12059,7 +12064,7 @@ float wallH(vec2 q, out float occ){
     gTreeFU = clamp(farM*(1.0 - nearM), 0.0, 1.0)*noSub;
     gTreeRim = clamp(nearRim, 0.0, 1.0);
     gTreeTex = clamp((clA - clB)*3.2 + 0.5 + tex*0.6, 0.0, 1.0)*(1.0 - 0.8*nearBr);
-#if MM_R25W == 4
+#if MM_R25W == 4 || MM_ROOMS == 11
     }
 #endif
     /* A STRING COURSE and QUOINS on the wings. The house is a black silhouette
@@ -12079,25 +12084,25 @@ float wallH(vec2 q, out float occ){
     /* A STRING COURSE AT EACH FLOOR LINE, and a cap on the plinth -- so the
        lines across the elevation say where the floors are instead of landing at
        4.32 and 6.20, which belonged to no storey at all. */
-#if MM_R25W == 4
+#if MM_R25W == 4 || MM_ROOMS == 11
     /* (performance pass: the elevation's courses, quoins, ashlar, window
        surrounds and ivy are each multiplied by onBody, so off the house's
        walls they are skipped -- the churchyard's variant only) */
     if (onBody > 0.0) {
 #endif
     h += onBody * mmBandA(wy, 0.0, 0.16, hpx) * 0.45;
-#if MM_R25W == 4
+#if MM_R25W == 4 || MM_ROOMS == 11
     }
 #endif
     h += mmBandA(hq.y, PLINTH - 0.14, PLINTH, hpx) * 0.55 * step(0.5, onA + onB);
-#if MM_R25W == 4
+#if MM_R25W == 4 || MM_ROOMS == 11
     if (onBody > 0.0) {
 #endif
     float quoin = max(max(1.0 - smoothstep(0.26, 0.52, abs(abs(cx + 2.6) - 6.20)),
                           1.0 - smoothstep(0.26, 0.52, abs(abs(cx - 3.4) - 9.60))),
                       (1.0 - smoothstep(0.20, 0.44, abs(gax - BAYHW)))*onA*step(hq.y, BAYE));
     h += onBody * quoin * (1.0 - smoothstep(0.014, 0.014 + hpx*1.5, mmRowX(hq.y, 0.48))) * 0.45;
-#if MM_R25W == 4
+#if MM_R25W == 4 || MM_ROOMS == 11
     }
 #endif
     /* THE BAY'S PROJECTION, AS VALUE. Relief alone cannot say that 0.85 m of
@@ -12138,7 +12143,7 @@ float wallH(vec2 q, out float occ){
        and that every block carries its own value -- stone is quarried, and a
        wall of it is never one tone. That per-stone jitter is what makes the
        bond legible as blocks. (REALGAR's finding, grafted.) */
-#if MM_R25W == 4
+#if MM_R25W == 4 || MM_ROOMS == 11
     if (onBody > 0.0) {
 #endif
     float crow = floor(hq.y/0.48);
@@ -12199,7 +12204,7 @@ float wallH(vec2 q, out float occ){
     /* AND THE BLIND BAY'S PANEL, which is a shallow recess with a chamfer and
        no glass -- the thing a chimney breast leaves on an elevation. */
     h += onBody * wBlind * (1.0 - smoothstep(0.030, 0.030 + hpx*1.6, abs(pa2 + 0.06))) * 0.30;
-#if MM_R25W == 4
+#if MM_R25W == 4 || MM_ROOMS == 11
     }
 #endif
     /* THE OCULUS in the gable's tympanum: a circular light with a moulded rim
@@ -12219,12 +12224,12 @@ float wallH(vec2 q, out float occ){
     /* Stretched along Y, not X: at 1.15 across and 0.60 up the mass came out in
        horizontal streaks and the front of the house read as SCAFFOLDING. Ivy
        climbs. */
-#if MM_R25W == 4
+#if MM_R25W == 4 || MM_ROOMS == 11
     if (onBody > 0.0) {
 #endif
     float ivy = mmFbm3(vec2((hq.x + uSize.x*0.5)*0.62, hq.y*1.75) + uSeed*3.0);
     h += onBody * smoothstep(0.56, 0.90, ivy) * smoothstep(8.5, 1.8, hq.y) * 0.58;
-#if MM_R25W == 4
+#if MM_R25W == 4 || MM_ROOMS == 11
     }
 #endif
     /* ROUND 18, THE BASELINE'S OWN LEAK: "stray horizontal black lines running
