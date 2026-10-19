@@ -113,16 +113,14 @@ study and carved statues; measured on a QUIET machine every fight is under
 Heart fight is +1.15 ms over BASE (13.80) -- under budget, left as is.
 `tools/shapeprof.py` now exists. **Josh uses this machine for Unreal: check
 tasklist before perf; he said 10-18 GPU work alongside Unreal is fine.**
-**ROUND 38 IS MERGED, VERIFIED AND PUSHED (2026-10-19); ITS GRAFT IS IN
-FLIGHT:** MORION +3.58, 2 of 2 (`fe57233e`, 6.92 vs VOILE 3.33): every atlas
-wing drawn by its own footprint (`tools/blueprint_locate.py --wings` into
-`sections.json`), legible with one wing and with all seventeen surveyed.
-Battery 106 green but the sprites halo. Graft (`GRAFT-r38.md`) building in
-`C:/UILOOP/r38/wt/r38-graft` (port 9294), notes into `C:/UILOOP/r38/graft/`:
-HELIOTROPE's map stamps and surveyor's regions, SARD's brackets and tags.
-**Survey 5's list is done after this graft -> NEXT: SURVEY 6**
-(`survey-2026-10-19.sh`, `SURVEY6-judge-prompt.md`: the lobby password typed
-in, the atlas also with every wing surveyed). **Josh asked 10-18 for a
+**ROUND 38 AND ITS GRAFT ARE MERGED, VERIFIED AND PUSHED (2026-10-19):**
+MORION +3.58, 2 of 2 (`fe57233e`): every atlas wing by its own footprint.
+Graft `74867d96`: HELIOTROPE's map stamps (only the next row keeps metal),
+surveyor's regions and compact boss plate; SARD's brackets and tags on the
+atlas; the map's canvas lettering 11.4 px+ at 1280. Map, steam-deck, gamepad,
+platform, chrome green on dev. **SURVEY 5'S LIST IS DONE (rounds 34-38 +
+grafts). SURVEY 6 IS RUNNING** (`survey-2026-10-19.sh` into
+`C:/UILOOP/survey6/NOW/`, judges per `SURVEY6-judge-prompt.md`). **Josh asked 10-18 for a
 3-hour pause in which nothing may launch a program -- respect such asks.**
 
 **ROUND 33 AND ITS GRAFT ARE MERGED, VERIFIED AND PUSHED (2026-10-16):**
