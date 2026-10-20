@@ -1467,6 +1467,9 @@ export const REGIONS = {
     /* (round 31 graft: and the passage's tooth at three-fifths -- the "milky,
        blotchy grain on the lit planks", all three judges) */
     vignette: 1.36, bloom: 0.80, grain: 0.011, tooth: 0.060,
+    /* (round 41: the violet fill's lilac slab off the near boards -- "dark,
+       not milky"; the lanterns and the sconces light the floor) */
+    cineFloor: 0.50,
   },
 
   /* ── 14. The Bathhouse and Rain Wing ───────────────────────────────────────
@@ -1685,7 +1688,7 @@ export const REGIONS = {
     /* (round 34: no beam drawn, as the Greenhouse -- at 1.2 m and 0.26 they
        crossed the stall range as thin bright lines, the "laser" shafts the
        survey named in the Crypt; their cold pools on the flags stay) */
-    shafts: { count: 3, spread: 14, y: 4.0, z: -8.4, angle: 0.34, width: 1.9, intensity: 0.12, pool: 2.4, beams: false },
+    shafts: { count: 3, spread: 14, y: 4.0, z: -8.4, angle: 0.34, width: 1.9, intensity: 0.12, pool: 1.5, beams: false },   // (round 41: pool 2.4 -> 1.5, the milky blue corner of the near flags)
     warmTone: 0.05,
   },
 
@@ -2919,7 +2922,10 @@ export const ROOM_KINDS = {
                /* (round 34 graft, all three judges: "a prop in each near
                   corner" -- a ball-tree in its box on the near-left lawn,
                   across from the seat) */
-               { shape: 30, edge: 0.17, z: 3.6, tone: 0.95, seed: 5.0, fore: 1, keep: true }],
+               /* (round 41: a ball-tree in its Versailles box, seed 7 -- the
+                  tiered stand of discs it drew read as "stacked discs",
+                  survey 5) */
+               { shape: 30, edge: 0.21, z: 2.6, tone: 0.95, seed: 7.0, fore: 1, keep: true }],
         /* (round 34 graft, VIVIANITE's: the lanterns' spill carried down the
            walk to your feet, and the moon on the near-left lawn -- at the
            wing's strengths, which the dark turf needs) */
@@ -2963,7 +2969,12 @@ export const ROOM_KINDS = {
       /* behind the library: the backs of its cases line the passage */
       /* (round 22: the BACKS -- boards, uprights, the library's light
          between them -- where it drew the Study's own shelves of spines) */
+      /* (round 41, AMETHYST: its own near floor -- the books come off the
+         backs of the cases stacked on the boards, a candle burning on one
+         pile, wfBookPile) */
       { subject: 'backcase', floorK: 4, runner: 0,
+        nearPlus: [{ shape: 66, edge: 0.34, z: 1.8, tone: 0.96, fore: 1, keep: true, seed: 62.0, hM: 1.25, wM: 1.45 },
+                   { shape: 66, edge: 0.66, z: 0.6, tone: 0.96, fore: 1, keep: true, seed: 64.0, hM: 1.25, wM: 1.45 }],
         vantage: { at: 'along', off: 0.12, wall: 1.6, fwd: 0.8, yaw: 8, wide: 2 } },
       /* a false closet, a portrait cavity: seen from its hidden door */
       /* (round 22: a CLOSET, 8 m of it and not the passage's 20: its pegs

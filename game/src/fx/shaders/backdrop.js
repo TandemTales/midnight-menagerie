@@ -15637,10 +15637,10 @@ void main(){
       float pd = mmBox(d, hs, 0.004);
       float pA = max(length(vec2(dFdx(pd), dFdy(pd))), 1e-4);
       float onP = clamp(0.5 - pd/pA, 0.0, 1.0)*(1.0 - path*0.8);
-      float lines = (1.0 - smoothstep(0.0, pA*1.2 + 0.002, abs(fract(d.y/0.022) - 0.5)*0.022))
+      float lines = (1.0 - smoothstep(0.0025, 0.0025 + pA*1.2, abs(fract(d.y/0.024) - 0.5)*0.024))
                   * step(abs(d.x), hs.x - 0.018)*step(abs(d.y), hs.y - 0.020)*mmLod(0.022, mp);
       vec3 paper = vec3(0.62, 0.57, 0.46)*(0.90 + 0.20*mmNoise(d*30.0));
-      paper = mix(paper, vec3(0.22, 0.19, 0.17), lines*0.55);
+      paper = mix(paper, vec3(0.16, 0.13, 0.12), lines*0.85);
       alb = mix(alb, paper*max(Ld, 0.02)*3.6, onP);
       /* its shadow on the boards under its lifted edge */
       alb *= 1.0 - 0.35*(1.0 - smoothstep(0.0, pA*2.5 + 0.006, pd))*step(0.0, pd)*(1.0 - path*0.8);
@@ -15656,9 +15656,27 @@ void main(){
      No straw: a wash house is swilled down. */
   if (uIsCeiling < 0.5) {
     float Lw = mmLum(alb);
+    /* the wash house is floored in QUARRY TILES, not the range's flags: a
+       red-brown nine-inch square laid to fall to the gutter, each tile its
+       own firing, the grout a pen line -- dissolved to its own tone where a
+       tile is under a few pixels */
+    {
+      vec2 tq = vWorld.xz/0.23;
+      vec2 ti = floor(tq);
+      float tv = mmHash21(ti + 5.1);
+      vec2 tf = abs(fract(tq) - 0.5)*0.23;
+      float gA = max(mp*1.2, 0.003);
+      float gro = (1.0 - smoothstep(0.006, 0.006 + gA, min(0.115 - tf.x, 0.115 - tf.y)))*mmLod(0.23, mp);
+      vec3 quarry = vec3(0.44, 0.19, 0.12)*(0.72 + 0.42*tv);
+      quarry = mix(quarry, vec3(0.30, 0.25, 0.22), step(0.86, tv)*0.6);   // (a replaced one, grey)
+      quarry = mix(vec3(0.38, 0.18, 0.12), quarry, mmLod(0.23, mp));
+      quarry = mix(quarry, vec3(0.10, 0.08, 0.07), gro*0.85);
+      alb = quarry*(Lw/0.22)*1.05;
+      Lw = mmLum(alb);
+    }
     float pf = mmNoise(w*0.42 + 3.1)*0.78 + 0.22*mmNoise(w*1.6 + 8.0);
-    float wet = mmCover(pf - 0.64);
-    float men = 1.0 - smoothstep(0.0, 1.5, abs(pf - 0.64)/max(length(vec2(dFdx(pf), dFdy(pf))), 1e-5));
+    float wet = mmCover(pf - 0.68);
+    float men = 1.0 - smoothstep(0.0, 1.5, abs(pf - 0.68)/max(length(vec2(dFdx(pf), dFdy(pf))), 1e-5));
     alb = mix(alb, alb*vec3(0.26, 0.31, 0.38), wet*0.90);
     r41Wet = wet;
     alb = mix(alb, alb*1.8 + vec3(0.004, 0.005, 0.006), men*0.55);
@@ -15894,8 +15912,8 @@ void main(){
       float dpt = mmBox(dq, vec2(0.13, 0.11), 0.015);
       float dpA = max(length(vec2(dFdx(dpt), dFdy(dpt))), 1e-4);
       float onDp = clamp(0.5 - dpt/dpA, 0.0, 1.0)*step(abs(rxD), uRunner - 0.20);
-      dr = mix(dr, vec3(0.20, 0.26, 0.17), onDp*0.85);
-      dr *= 1.0 - 0.45*(1.0 - smoothstep(0.0, dpA*1.6, abs(dpt)))*step(abs(rxD), uRunner - 0.20);
+      dr = mix(dr, vec3(0.27, 0.32, 0.22), onDp*0.85);
+      dr *= 1.0 - 0.22*(1.0 - smoothstep(0.0, dpA*1.6, abs(dpt)))*step(abs(rxD), uRunner - 0.20);
       /* the felt's own ribs across it, where a rib is two pixels and more */
       float rib = abs(fract(w.y/0.016) - 0.5)*2.0;
       dr *= 1.0 + (rib - 0.5)*0.14*mmLod(0.016, mpp.y);
@@ -16173,8 +16191,9 @@ void main(){
       cC = mix(cC, leafG*1.05, (1.0 - smoothstep(0.0, pxm*2.0 + 0.012, abs(sin(atan(sp.y, sp.x)*3.0)*sr*0.6)))*step(sr, 0.36)*(1.0 - bigR));
       cC = mix(cC, rose*1.05, bigR);
       cC = mix(cC, roseD, max(bigH, bigRing*0.8)*bigR);
-      fC = mix(fC, cC, inC);
-      fC = mix(fC, creamC, coL*0.90);
+      /* (no cartouche: seen from the bed's foot its dark oval read as a
+         hole in the carpet -- the trellis runs on, a bigger spray at its heart) */
+      fC = mix(fC, cC, inC*bigR);
       /* the border: rose ground, a vine running through it, flowering */
       float bIn = smoothstep(0.07 - ePx, 0.07 + ePx, eIn)*(1.0 - smoothstep(0.40 - ePx, 0.40 + ePx, eIn));
       float alg = (ed.x < ed.y) ? rp.y : rp.x;
@@ -17540,6 +17559,68 @@ float wfTorchere(vec2 q, float px, float seed, float kq, bool paint){
    undertier shelf between them; on it the things a hall keeps -- a
    blue-and-white vase of dried hydrangea, a silver salver of calling
    cards, and a brass chamberstick with its candle burning. */
+/* ── ROUND 41 (AMETHYST): THE LIBRARY PASSAGE'S BOOKS (66, seed > 60) ──────
+   Behind the library the passage holds what has come off the backs of its
+   cases: books stacked on the bare boards in two leaning piles, calf and
+   cloth each its own colour and thickness, a candle stub burning on the
+   taller pile in its saucer, and one lying open on the boards beside them.
+   Nominal metres in the hall table's frame (the quad sized by hM / wM). */
+float wfBookPile(vec2 q, float px, float seed, float kq, bool paint){
+  float d = 1e3;
+  vec3 col = vec3(0.1);
+  float ink = 0.0;
+  vec3 emit = vec3(0.0);
+  float topY = 0.0;
+  for (int pile = 0; pile < 2; pile++){
+    float x0 = pile == 0 ? -0.30 : 0.20;
+    float y = 0.0;
+    int nb = pile == 0 ? 7 : 5;
+    for (int i = 0; i < 7; i++){
+      if (i >= nb) break;
+      float fi = float(i) + float(pile)*9.0;
+      float th = 0.045 + 0.035*mmHash11(fi*3.1 + seed);
+      float hw = 0.15 + 0.06*mmHash11(fi*5.7 + seed) - 0.010*float(i);
+      float ox = x0 + 0.05*(mmHash11(fi*7.3 + seed) - 0.5) + 0.012*float(i)*(pile == 0 ? 1.0 : -1.0);
+      vec2 c = vec2(ox, y + th*0.5);
+      float b = mmBox(q - c, vec2(hw, th*0.5), 0.006);
+      d = min(d, b);
+      if (paint) {
+        float k = mmHash11(fi*9.1 + seed);
+        vec3 lea = k < 0.25 ? vec3(0.42, 0.12, 0.08) : (k < 0.50 ? vec3(0.13, 0.25, 0.16) : (k < 0.75 ? vec3(0.15, 0.17, 0.30) : vec3(0.44, 0.29, 0.14)));
+        float u = (q.x - ox)/hw;
+        float spine = step(0.5, mmHash11(fi*2.3 + seed*1.7));
+        vec3 pg = vec3(0.70, 0.64, 0.50)*(0.82 + 0.18*sin((q.y - y)*700.0));
+        float board = smoothstep(0.30, 0.0, abs(q.y - c.y) - th*0.5 + 0.008);
+        vec3 bc = mix(mix(pg, lea, board), lea*(1.0 + 0.45*smoothstep(0.005, 0.0, abs(abs(u) - 0.72))), spine);
+        bc = mix(bc, vec3(0.78, 0.60, 0.26), spine*smoothstep(0.007, 0.0, abs(abs(u) - 0.72))*0.8);
+        bc *= 0.70 + 0.35*smoothstep(-1.0, 1.0, kq*u) + 0.25*smoothstep(th*0.25, th*0.5, q.y - c.y);
+        wfLay(col, ink, b, bc, px, 0.95);
+      }
+      y += th;
+    }
+    if (pile == 0) topY = y;
+  }
+  /* the candle on the taller pile, in its saucer */
+  vec2 cq = q - vec2(-0.30, topY);
+  float sau = max(wfEll(cq - vec2(0.0, 0.008), vec2(0.060, 0.012)), -cq.y);
+  d = min(d, min(sau, mmBox(cq - vec2(0.0, 0.05), vec2(0.016, 0.042), 0.004)));
+  /* the open one on the boards */
+  vec2 oq = q - vec2(0.47, 0.0);
+  float leafL = max(abs(oq.x + 0.10) - 0.10, max(-oq.y, oq.y - (0.030 + 0.016*sin((oq.x + 0.20)*15.7))));
+  float leafR = max(abs(oq.x - 0.10) - 0.10, max(-oq.y, oq.y - (0.030 + 0.016*sin(oq.x*15.7 + 3.14))));
+  float open = min(leafL, leafR);
+  d = min(d, open);
+  if (!paint) return d;
+  wfLay(col, ink, sau, vec3(0.70, 0.68, 0.62)*(0.6 + 0.5*smoothstep(0.0, 0.02, cq.y)), px, 0.85);
+  wfCandle(cq - vec2(0.0, 0.010), 0.085, 0.016, px, col, ink, emit);
+  wfLay(col, ink, open, vec3(0.74, 0.68, 0.54)*(0.75 + 0.35*smoothstep(0.0, 0.04, oq.y)), px, 0.85);
+  ink = max(ink, mmInkP(abs(oq.x) - 0.002, px, 0.8)*wfIn(open, px)*0.7);
+  ink = max(ink, mmInkP(abs(fract(oq.x/0.018) - 0.5)*0.018 - 0.008, px, 0.6)*wfIn(open, px)*0.25*step(0.012, abs(oq.x)));
+  col *= 1.0 - 0.30*smoothstep(0.025, 0.0, q.y);
+  gWfEmit = emit;
+  gWfCol = col; gWfInk = ink; gWfGloss = 0.25; gWfMoon = 0.0;
+  return d;
+}
 /* ── ROUND 41 (AMETHYST): THE PASSAGE'S OWN TABLE (66, seed > 40) ──────────
    Survey-7 judge 1 on the passages: "the vases' flowers on the side tables
    are stair-stepped" -- and they were the Foyer's hall table, its marble,
@@ -17631,6 +17712,7 @@ float wfServTable(vec2 q, float px, float seed, float kq, bool paint){
   return d;
 }
 float wfHallTable(vec2 q, float px, float seed, float kq, bool paint){
+  if (seed > 60.0) return wfBookPile(q, px, seed, kq, paint);    // (round 41: the library passage's books)
   if (seed > 40.0) return wfServTable(q, px, seed, kq, paint);   // (round 41: the passages' own)
   const float TOP = 0.80;
   float ax = abs(q.x);
