@@ -165,6 +165,15 @@ both) but still LOST combat-crowd (both: survey 6's fan has gaps, a tilt and
 splayed stacks) and made three-line plates (gameover-1280's rides over its
 frame). Tests green on dev. **NOW: REPAIR PART 2** (`REPAIR-r40b.md`, worktree
 C:/UILOOP/r40/repair2/wt, fix/r40-repair2), then round 41.
+**PART 2 MERGED (`6e8ee827`)** after a paired test (beat part 1 5-2 / 4-1,
+the fight 2-0; vs survey 6 the fight now 1-1). **ROUND 41 IS MERGED
+(2026-10-20, `eb3c95b5`):** AMETHYST +1.59, 2 of 3 (5.51 vs POPLIN 3.93):
+each room of the Hedge, Kennels, Sleeping Quarters and Passages its own
+floor (`MM_RUGK`) and things. Battery 106 gates, only the sprites halo red;
+the other 13 wings identical (seeded sweep vs `1271452b`). **NOW: its graft**
+(`GRAFT-r41.md`, worktree C:/UILOOP/r41/wt/r41-graft): the Hedge path's
+laid flags, the hedge root line, the dormitory runner, inked straw clumps,
+the Passages' bays, LABRADORITE's pen as a #define.
 
 **ROUND 33 AND ITS GRAFT ARE MERGED, VERIFIED AND PUSHED (2026-10-16):**
 graft `9d008119`. COBALT +1.59 (`531126e4`): no running line under 11 px at
