@@ -737,6 +737,78 @@ def rail_pieces():
     hw_rail(); hw_rail_vine(); hw_rail_stud(); hw_rail_well(); hw_tray()
 
 
+# ── round 42: the last web controls ─────────────────────────────────────────
+def _cart_body(W, H, inset=0.0, scoop=17.0, nose=1.2):
+    """The house's cartouche outline at W x H: each end's corners scooped out
+    in a concave quarter round and a point at mid-height, the way the
+    boards' enamel cartouches (cartouche.webp) and the Companion tiles'
+    nameplates end. `inset` draws the same outline that much inside."""
+    i = inset
+    r = scoop - i * .4
+    # the top edge, the right end, the bottom, the left end
+    out = []
+    out += [(i + 4 + r, i + 1)]
+    out += [(W - i - 4 - r, i + 1)]
+    for a in np.linspace(180, 90, 10):                    # top-right scoop
+        t = math.radians(a)
+        out.append((W - i - 4 + r * math.cos(t), i + 1 + r * math.sin(t)))
+    out += [(W - i - 4, i + 1 + r), (W - i - nose + .5, H / 2), (W - i - 4, H - i - 1 - r)]
+    for a in np.linspace(270, 180, 10):                   # bottom-right scoop
+        t = math.radians(a)
+        out.append((W - i - 4 + r * math.cos(t), H - i - 1 + r * math.sin(t)))
+    out += [(i + 4 + r, H - i - 1)]
+    for a in np.linspace(-90, 0, 10):                     # bottom-left scoop
+        t = math.radians(a)
+        out.append((i + 4 + r * math.cos(t), H - i - 1 + r * math.sin(t)))
+    out += [(i + 4, H - i - 1 - r), (i + nose - .5, H / 2), (i + 4, i + 1 + r)]
+    for a in np.linspace(90, 0, 10):                      # top-left scoop
+        t = math.radians(a)
+        out.append((i + 4 + r * math.cos(t), i + 1 + r * math.sin(t)))
+    return out
+
+
+def hw_slot():
+    """ROUND 42 (survey 7, both judges): the piles' search and the settings'
+    seed fields still read as "a plain dark rounded web input". Where you
+    write in this house is a SLOT: a brass cartouche with the boards' scooped
+    and pointed ends (the 5 TRICKS plate's outline), near-black enamel in its
+    rim with a gilt hairline engraved round it, and a channel sunk the length
+    of it behind a brass bead -- the words are written into the channel. A
+    3-slice (36 px ends, the channel uniform along x so it stretches clean).
+      hw-slot.webp        a cast brass boss with a cabochon at each end
+      hw-slot-plain.webp  the same with the left end left bare, for the
+                          enamel button (the search's glass) seated over it"""
+    W, H = 320, 64
+    p = Pic(seed=4242, n=W, h=H)
+    body = P(_cart_body(W, H))
+    p.part(body, "brass", bevel=3.4, shadow=0)
+    p.part(P(_cart_body(W, H, inset=3.2)), PLATE, prof="round", bevel=2.2, gloss=.1, shadow=.55)
+    # the gilt hairline engraved round the enamel
+    p.ink(_cart_body(W, H, inset=6.4), w=.7, color="#b08a4a", alpha=.42, closed=True)
+    # the channel: a brass bead, and the hollow sunk inside it
+    x0, x1, y0, y1 = 31, W - 31, 14.5, H - 14.5
+    p.part(R(x0 - 2.4, y0 - 2.4, x1 + 2.4, y1 + 2.4, 5.5), "brass", bevel=1.9, shadow=.5)
+    p.part(R(x0, y0, x1, y1, 3.6), ("#010002", "#0b0611", "#2a1d35"), prof="recess", bevel=5.5, gloss=.1, shadow=0)
+    # the candle along the channel's lower lip, the moon on its floor
+    p.paint(R(x0 + 4, y1 - 1.6, x1 - 4, y1 - .6), "#6a5076", .5, blur=.45)
+    p.paint(R(x0 + 2, y0 + 4, x1 - 2, y1 - 3), "#1d1428", .35, blur=2.5)
+    plain = p.result()
+    # (the bare left end keeps the right boss: the glass covers only one end)
+    q = Pic(seed=4243, n=W, h=H)
+    q.col, q.a = p.col.copy(), p.a.copy()
+    for x in (17.5, W - 17.5):
+        p.part(E(x, H / 2, 6.2), "brass", bevel=2.6, shadow=.45)
+        p.part(E(x, H / 2, 2.9), ("#140a22", "#4b2f78", "#b393ea"), prof="sphere", gloss=.8, power=40, shadow=.3)
+    q.part(E(W - 17.5, H / 2, 6.2), "brass", bevel=2.6, shadow=.45)
+    q.part(E(W - 17.5, H / 2, 2.9), ("#140a22", "#4b2f78", "#b393ea"), prof="sphere", gloss=.8, power=40, shadow=.3)
+    _save_pic(q, "hw-slot-plain.webp")
+    return _save_pic(p, "hw-slot.webp")
+
+
+def r42_pieces():
+    hw_slot()
+
+
 # materials (dark, body, light), all in the samples' low key
 PLATE = ("#07050a", "#1a1222", "#3d2d4c")      # the nameplates' near-black enamel
 PAPER = ("#5d5140", "#c9b48c", "#f4e6c2")
@@ -803,7 +875,7 @@ def sheet(objs, path):
     print("  sheet ->", path)
 
 
-GROUPS = {"objects": objects, "hardware": hardware, "rail": rail_pieces}
+GROUPS = {"objects": objects, "hardware": hardware, "rail": rail_pieces, "r42": r42_pieces}
 
 
 def main():

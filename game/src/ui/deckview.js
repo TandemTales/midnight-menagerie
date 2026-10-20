@@ -144,7 +144,7 @@ export class DeckView {
     /* ROUND 36: a dark enamel well sunk in brass, as the filter rail beside it
        is brass (ui/kit.css .kit-hw-inlay) -- it was a pale torn slip, "the
        brightest object on the dialog" and "a web input" (survey 5) */
-    input.className = 'kit-hw-inlay';
+    input.className = 'mm-deck__seek';
     input.addEventListener('input', () => { this.filters.q = input.value.trim().toLowerCase(); this._apply(); });
     search.appendChild(input);
 
