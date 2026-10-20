@@ -1,0 +1,59 @@
+{
+  "round": "r40",
+  "maxBuilders": 3,
+  "briefs": [
+    "docs/ui-pass/BRIEF-r0.md",
+    "docs/ui-pass/BRIEF-r1.md",
+    "docs/ui-pass/BRIEF-r32.md",
+    "docs/ui-pass/BRIEF-r33.md",
+    "docs/ui-pass/BRIEF-r36.md",
+    "docs/ui-pass/BRIEF-r38.md",
+    "docs/ui-pass/BRIEF-r40.md"
+  ],
+  "rubrics": [
+    "docs/ui-pass/RUBRIC.md",
+    "docs/ui-pass/RUBRIC-r40.md"
+  ],
+  "samples": [
+    "UI/title.png",
+    "UI/mainMenu.png",
+    "UI/selectCompanion.png",
+    "UI/selectKid.png"
+  ],
+  "tracks": [
+    {
+      "key": "boards",
+      "name": "BOARDS",
+      "rule": "refine",
+      "screens": [
+        "shop",
+        "combat-crowd",
+        "gameover",
+        "hud-late",
+        "map",
+        "reward"
+      ],
+      "baseline": "BATISTE",
+      "builders": [
+        {
+          "slot": "a",
+          "code": "SPINEL",
+          "port": 9311,
+          "angle": "LITERAL -- work BRIEF-r40's fix list 1 to 5 in order and exactly as written, the 12 px floor at 1280 FIRST (both judges' system defect across five screens), proven with a small-text probe on all six screens."
+        },
+        {
+          "slot": "b",
+          "code": "IOLITE",
+          "port": 9312,
+          "angle": "THE PAINTINGS AND THE HAND FIRST -- the two defects judges see before they read anything: every painting's plate on its own brass plate under the frame and each painting on a wall of its own (reward at 1280, gameover's cords undone, event and rest checked), and the nine-card fan narrow and low under the fighters. Then the type floor, the map's regions, the strip and the shop."
+        },
+        {
+          "slot": "c",
+          "code": "AVENTURINE",
+          "port": 9313,
+          "angle": "LESS ON EACH BOARD, LARGER. The dense boards fail at 1280 because they show too much too small: say each thing once and big enough -- the shop's shelves as names and tags with descriptions on focus, gameover's centre as one shrine, the strip's objects as a few large distinct marks with a count, the map's regions as one drawn shape each -- so a 12 px floor fits without crowding."
+        }
+      ]
+    }
+  ]
+}

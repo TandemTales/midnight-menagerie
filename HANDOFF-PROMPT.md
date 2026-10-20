@@ -126,18 +126,19 @@ survey 5 vs survey 6 captures was run (`C:/UILOOP/pairs56/`): survey 6 won
 untouched screens and rooms; gameover is the one pair both call worse (the
 10-16 painting fit hung its pictures short). **Survey scores compare within a
 survey only -- measure progress between surveys PAIRED.** **ROUND 39 IS
-MERGED, VERIFIED AND PUSHED (2026-10-19); ITS GRAFT IS IN FLIGHT:**
-RHODONITE +1.91, 2 of 3 (`ffacfa10`, 6.59 vs ORGANDY 4.67; CHALCEDONY 6.49,
-PERIDOT 6.46). **The velvet suite drew NO walls from `af440e48` (10-16) until
-this merge: FXC aborted its wall program (MM_SUBJ folded to 21) while ANGLE
-reported LINK_STATUS true -- a good link can be an empty program; read
-getProgramInfoLog after any fx/ change.** A gate for it is proposed as its
-own session. Battery 106 green but the sprites halo; the other 13 wings
-identical. The Bathhouse fight's BASE timed nothing (T_full None 3/3, quiet
-machine): the graft finds out why. Graft (`GRAFT-r39.md`) building in
-`C:/UILOOP/r39/wt/r39-graft` (port 9304, BASE 9404 from `C:/UILOOP/r39/base`).
-Then round 40, the boards (a 12 px floor at 1280, the map's regions as drawn
-irregular shapes, the hand's spread, gameover's cords). **Josh asked 10-18 for a
+MERGED, VERIFIED AND PUSHED, AND ITS GRAFT (2026-10-19/20):**
+RHODONITE +1.91, 2 of 3 (`ffacfa10`); graft `cfb67ed9`: PERIDOT's wet tile,
+CHALCEDONY's flags and bench, the Ballroom's near floor; every fight under
+15.5 on a quiet machine (Ballroom 15.16 -- 0.34 ms of room). **The velvet
+suite drew NO walls from `af440e48` (10-16) until this round: FXC aborted its
+wall program while ANGLE reported LINK_STATUS true -- a good link can be an
+empty program; read getProgramInfoLog after any fx/ change** (a gate for it
+is proposed as its own session; gpuprof now reads every program's log and
+says why a timing is null). The other 13 wings identical; tests green on dev.
+**NEXT: ROUND 40** (`BRIEF-r40.md`, `round-40.args.json`): the boards -- a
+12 px floor at 1280, the hand's spread, the paintings' plates under their
+frames and gameover's cords, the map's regions as drawn shapes, the run
+strip's objects, the shop's shelves. **Josh asked 10-18 for a
 3-hour pause in which nothing may launch a program -- respect such asks.**
 
 **ROUND 33 AND ITS GRAFT ARE MERGED, VERIFIED AND PUSHED (2026-10-16):**
