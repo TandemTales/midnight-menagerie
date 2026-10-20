@@ -774,7 +774,7 @@ export class RewardScene extends RoomScene {
     // than a fifth on a small frame (a Big Scare's three stand smaller), where
     // a bigger lift would push the words off the face.
     for (const { slot, view } of this._slots || []) {
-      fitCardToSlot(view, slot, { legibleAt: Math.min(224, (slot.clientWidth || 224) * 1.2) });
+      fitCardToSlot(view, slot, { legibleAt: Math.min(224, (slot.clientWidth || 224) * 1.2), rulesPx: [13, 18] });
     }
     this._fillRules();
     this._pointLights();

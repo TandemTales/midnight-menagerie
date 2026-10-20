@@ -311,7 +311,7 @@
   background: linear-gradient(135deg, var(--kit-gold-hi), var(--kit-gold) 50%, var(--kit-gold-lo));
   box-shadow: 0 0 0 1px rgba(0, 0, 0, .75);
 }
-.go-sh { margin: 0 0 clamp(7px, 1.1vh, 11px); font-size: max(11.5px, var(--fs-xs)); letter-spacing: .2em; }
+.go-sh { margin: 0 0 clamp(7px, 1.1vh, 11px); font-size: max(12px, var(--fs-xs)); letter-spacing: .2em; }
 .go-stanza ul { list-style: none; margin: 0; padding: 0 0 0 4px; display: grid; gap: clamp(3px, .6vh, 6px); }
 .go-stanza li {
   position: relative; padding-left: 16px;
@@ -368,7 +368,7 @@
 
 .go-lbl {
   font-family: var(--font-display); font-weight: 700;
-  font-size: max(11.5px, var(--fs-xs)); letter-spacing: .18em; text-transform: uppercase;
+  font-size: max(12px, var(--fs-xs)); letter-spacing: .18em; text-transform: uppercase;
   color: var(--kit-text-lo);
   text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
 }
@@ -412,7 +412,7 @@
   --plate-h: 26px;
   min-width: 58px;
   padding-inline: 12px;
-  font-family: var(--font-display); font-weight: 700; font-size: 11.5px;
+  font-family: var(--font-display); font-weight: 700; font-size: 12px;
   letter-spacing: .12em; text-transform: uppercase;
   color: var(--kit-text-mid);
   cursor: pointer;
@@ -490,7 +490,7 @@
 .go-bp__label { min-width: 0; }
 .go-bp__count { flex: none; margin-left: auto; white-space: nowrap; }
 .go-bp__label, .go-bp__count {
-  font-family: var(--font-display); font-weight: 700; font-size: 11.5px;
+  font-family: var(--font-display); font-weight: 700; font-size: 12px;
   letter-spacing: .04em; text-transform: uppercase; color: var(--kit-text-mid);
   text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
 }
@@ -547,14 +547,14 @@
 }
 .go-stats .kit-stats__label {
   white-space: nowrap; text-wrap: nowrap;
-  font-size: max(11px, calc(var(--fs-xs) * 1.02)); letter-spacing: .12em;
+  font-size: max(12px, calc(var(--fs-xs) * 1.02)); letter-spacing: .12em;
   color: var(--kit-text-mid);
 }
 .go-stats .kit-stats__value { font-size: clamp(18px, 1.3vw, 21px); line-height: 1.05; }
 
 /* --- blocks and their headings --------------------------------------------- */
 .go-block { display: grid; gap: clamp(4px, .7vh, 8px); min-width: 0; align-content: start; }
-.go-h { margin: 0; font-size: max(11.5px, var(--fs-xs)); }
+.go-h { margin: 0; font-size: max(12px, var(--fs-xs)); }
 .go-h .go-h__n { letter-spacing: .02em; font-size: max(12.5px, var(--fs-xs)); }
 .go-block--deck { grid-area: deck; }
 .go-block--keep { grid-area: keep; position: relative; }
@@ -727,7 +727,7 @@
 .go-tri[hidden] { display: none; }
 .go-tri__h, .go-reach__unit, .go-reach__wing {
   font-family: var(--font-display); font-weight: 700;
-  font-size: max(11.5px, var(--fs-xs)); letter-spacing: .16em; text-transform: uppercase;
+  font-size: max(12px, var(--fs-xs)); letter-spacing: .16em; text-transform: uppercase;
   color: var(--kit-gold-hi);
   text-shadow: 0 -1px 0 rgba(0, 0, 0, .9), 0 1px 0 color-mix(in srgb, var(--kit-gold-lo) 70%, transparent);
   line-height: 1.15;
@@ -870,13 +870,13 @@
 }
 .go-mvp__h .kit-plate__epithet {
   font-family: var(--font-body); font-style: italic; font-weight: 400;
-  font-size: max(11px, calc(var(--plate-h) * .26)); white-space: nowrap;
+  font-size: max(12px, calc(var(--plate-h) * .26)); white-space: nowrap;
   color: color-mix(in oklab, var(--kit-name) 70%, var(--kit-text-mid));
 }
 .go-mvp__h .kit-plate__epithet:empty { display: none; }
 
 /* the card is read here: its VANISH / KEEP badge never letters under 11px */
-.go-mvp__slot .mm-card__badges { font-size: max(11px, calc(9 * var(--u))); }
+.go-mvp__slot .mm-card__badges { font-size: max(12px, calc(9 * var(--u))); }
 
 /* --- keepsakes: ledger rows ------------------------------------------------ */
 .go-keeps { display: grid; grid-template-columns: minmax(0, 1fr); column-gap: clamp(12px, 1.2vw, 20px); }
@@ -1018,16 +1018,16 @@
   .go-mvp__note { font-size: 12.5px; line-height: 1.3; }
   .go-stat { column-gap: 6px; }
   .go-stat__ico { width: 26px; }
-  .go-stats .kit-stats__label { font-size: 11px; letter-spacing: .05em; }
+  .go-stats .kit-stats__label { font-size: 12px; letter-spacing: .05em; }
   .go-trick__name { font-size: 12.5px; }
   .go-trick { --coin: 20px; }
   .go-keep { column-gap: 8px; }
-  .go-seed__hint { font-size: 11.5px; }
+  .go-seed__hint { font-size: 12px; }
   /* the three ways out: each hint under its words, so the row fits the board */
   .go-foot .go-btn { --plate-h: 48px; font-size: var(--fs-sm); }
   .go-foot .go-btn.kit-btn--quiet { --plate-h: 46px; }
   .go-acts { gap: 46px; }
-  .go-bp__label, .go-bp__count { font-size: 11px; letter-spacing: .02em; }
+  .go-bp__label, .go-bp__count { font-size: 12px; letter-spacing: .02em; }
 }
 
 /* ── the Steam Deck and every short laptop panel ──────────────────────────── */
@@ -1038,7 +1038,7 @@
   /* the Heart's three sentences still need their taller plaque on a short
      panel: the compact height above would hang them across the ribbon */
   .go-head.kit-titleblock--compact.is-long { --cart-h: 142px; }
-  .go-head.is-long .go-lede { font-size: 11.5px; line-height: 1.2; }
+  .go-head.is-long .go-lede { font-size: 12px; line-height: 1.2; }
   .go-board:has(.go-head.is-long) { --go-mvp-s: .62; }
   .go-board:has(.go-head.is-long) .go-stage { --go-pic-w: 104px; }
   .go-head .kit-cartouche__title { font-size: 25px; }

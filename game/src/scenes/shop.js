@@ -623,7 +623,7 @@ export class ShopScene extends RoomScene {
     // The shelf is read, not glanced at: rules type never prints smaller than
     // the pre-kit shop printed it at 1280x800, on a 228 px card (_cardfit.js).
     for (const { slot, view } of this._cardSlots || []) {
-      fitCardToSlot(view, slot.querySelector('.sh-card__face'), { legibleAt: 232 });
+      fitCardToSlot(view, slot.querySelector('.sh-card__face'), { legibleAt: 232, rulesPx: [12.5, 15] });
     }
     // The Forgetting card is drawn, not a CardView: its rules take the same lift.
     const svc = this.root?.querySelector('.sh-service__card');

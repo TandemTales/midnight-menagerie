@@ -292,7 +292,7 @@
   white-space: nowrap; color: var(--kit-name);
 }
 .sh-moth__name .kit-plate__epithet {
-  font-size: max(11px, calc(var(--plate-h) * .27)); white-space: nowrap;
+  font-size: max(12px, calc(var(--plate-h) * .27)); white-space: nowrap;
   color: color-mix(in oklab, var(--kit-name) 72%, var(--kit-text-mid));
 }
 /* ── the shelf's two ends ───────────────────────────────────────────────────
@@ -502,7 +502,7 @@
   margin: 0;
   text-align: center; text-wrap: balance;
   font-family: var(--font-body);
-  font-size: max(11.5px, calc(13.5 * var(--u) * var(--rules-k, 1))); line-height: 1.2;
+  font-size: max(12px, calc(13.5 * var(--u) * var(--rules-k, 1))); line-height: 1.2;
   color: var(--kit-text);
   text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
 }
@@ -680,7 +680,7 @@
   text-shadow: 0 1px 0 rgba(0, 0, 0, .9), 0 0 18px color-mix(in srgb, var(--kit-violet) 45%, transparent);
 }
 /* signed: MR. MOTH on the boards' engraved rule under the plate */
-.sh-moth__by.kit-heading { font-size: max(11.5px, var(--fs-xs)); letter-spacing: .3em; }
+.sh-moth__by.kit-heading { font-size: max(12px, var(--fs-xs)); letter-spacing: .26em; }
 /* What you carry: each count struck into one of the Kid board's filigree
    settings (socket-filigree.webp) — the gilt ring round a hollow of violet
    enamel — its name engraved under it; four settings in a row along the
@@ -745,7 +745,7 @@
 }
 .sh-moth__you dt {
   grid-row: 2;
-  font-family: var(--font-display); font-weight: 700; font-size: max(11.5px, calc(var(--fs-xs) * .96));
+  font-family: var(--font-display); font-weight: 700; font-size: max(12px, calc(var(--fs-xs) * .96));
   letter-spacing: .08em; text-transform: uppercase; color: var(--kit-text-mid);
   text-shadow: 0 -1px 0 rgba(0, 0, 0, .9);
   white-space: nowrap;
@@ -784,7 +784,7 @@
 
 @media (max-width: 1400px) {
   .sh-floor { grid-template-columns: minmax(0, 1.12fr) minmax(0, .92fr) minmax(0, 1.12fr); column-gap: 18px; }
-  .sh-moth__you dt { letter-spacing: 0; font-size: 11px; }
+  .sh-moth__you dt { letter-spacing: 0; font-size: 12px; }
   .sh-moth__line { font-size: 16.5px; }
 }
 
@@ -802,7 +802,7 @@
   .scene--shop .rm-head { padding-top: 2px; }
   .scene--shop .kit-titleblock--compact { --cart-h: 80px; }
   .scene--shop .kit-titleblock--compact .kit-cartouche__title { font-size: 23px; }
-  .scene--shop .kit-titleblock__note { margin-top: -2px; font-size: 11.5px; }
+  .scene--shop .kit-titleblock__note { margin-top: -2px; font-size: 12px; }
   .scene--shop .kit-titleblock > .kit-ribbon { margin-top: calc(var(--cart-h) * -.22); }
   .scene--shop .rm-body { padding-top: 2px; }
   /* the cabinet's rail ribbon keeps clear of the plaque's note above it, and
@@ -929,11 +929,11 @@
    is meant to read stands at 12.5px or more now; the card face's own type
    line (ui/card.*, round 27's) is not this sheet's. */
 .scene--shop .sh-h.kit-heading--ribbon.kit-heading--inline > em { font-size: max(12.5px, calc(var(--rib-h) * .5)); }
-.sh-service .sh-service__h > em { font-size: max(11.5px, calc(11 * var(--u))); }
+.sh-service .sh-service__h > em { font-size: max(12px, calc(11 * var(--u))); }
 .sh-moth__name .kit-plate__epithet { font-size: max(12px, calc(var(--plate-h) * .28)); }
 .sh-card__own { font-size: 13px; }
 .scene--shop .kit-titleblock--compact .kit-cartouche__sub { font-size: max(13px, var(--fs-sm)); }
-@media (max-width: 1400px) { .sh-moth__you dt { font-size: 11.5px; } }
+@media (max-width: 1400px) { .sh-moth__you dt { font-size: 12px; } }
 
 /* ROUND 33 GRAFT -- the market's two small lines, UPRIGHT (all three judges:
    "about 9px italic"): Grenze's italic reads a size under its em, so the

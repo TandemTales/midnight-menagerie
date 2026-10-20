@@ -952,7 +952,7 @@
   transform: translate(-50%, -100%);
   display: inline-flex; gap: 3px;
   padding: 2px 6px 3px; border-radius: 2px;
-  font-family: var(--font-display); font-size: 11px; letter-spacing: .12em;
+  font-family: var(--font-display); font-size: 12px; letter-spacing: .12em;
   color: var(--text-ink);
   background: linear-gradient(168deg,
     color-mix(in srgb, var(--parchment) 97%, #fff), var(--parchment) 70%);
@@ -1033,7 +1033,7 @@
 .tip-hz svg .s { fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; }
 .tip-hz svg .f { fill: currentColor; }
 .tip-foot {
-  margin: 9px 0 0; padding-top: 8px; font-size: 11.5px; letter-spacing: .04em;
+  margin: 9px 0 0; padding-top: 8px; font-size: 12px; letter-spacing: .04em;
   background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--kit-gold-lo) 90%, transparent) 20%, color-mix(in srgb, var(--kit-gold-lo) 90%, transparent) 80%, transparent) 0 0 / 100% 1px no-repeat;
   color: var(--kit-text-lo);
 }
@@ -1160,11 +1160,11 @@
   .lg-ico { width: 21px; height: 21px; }
   .lg-ico svg { width: 13px; height: 13px; }
   .map-legend { column-gap: 7px; --plate-h: 54px; }
-  .lg-h { letter-spacing: .12em; font-size: 11.5px; }
+  .lg-h { letter-spacing: .12em; font-size: 12px; }
   .map-bar { gap: 8px; --bar-h: 54px; }
   .note { gap: 5px; --plate-h: 42px; }
-  .note b { font-size: 11.5px; letter-spacing: .05em; }
-  .map-atlas { --plate-h: 44px; font-size: 11.5px; letter-spacing: .08em; }
+  .note b { font-size: 12px; letter-spacing: .05em; }
+  .map-atlas { --plate-h: 44px; font-size: 12px; letter-spacing: .08em; }
 }
 /* a wing with three conditions: the conditions give up their icons' air */
 .map-bar:has(.note ~ .note ~ .note) .note b { letter-spacing: .02em; }
@@ -1560,7 +1560,7 @@
   border: 0 solid transparent;
   border-image: url("../../assets/ui/kit/cartouche-dark.webp") 18 34 18 34 fill /
     calc(var(--h) * 18 / 64) calc(var(--h) * 34 / 64) stretch;
-  font-size: 11.5px; letter-spacing: .3em; text-indent: .3em;
+  font-size: 12px; letter-spacing: .3em; text-indent: .3em;
   filter: drop-shadow(0 2px 3px rgba(0, 0, 0, .8));
 }
 .map-screen .map-legend .lg-h::before, .map-screen .map-legend .lg-h::after {
@@ -1692,7 +1692,7 @@
 }
 .map-screen .map-node--boss .mn-boss-tag {
   top: calc(100% + 3px + 55px + var(--mn-dy, 0px));
-  font-size: 13.5px; letter-spacing: .3em; text-indent: .3em;
+  font-size: 14.5px; letter-spacing: .3em; text-indent: .3em;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════

@@ -871,7 +871,7 @@ export class MapScene extends Scene {
     g.font = '700 32px Cinzel, Georgia, serif'; spaced('2px');
     g.fillText(meta.name.toUpperCase(), tx + 22, ty + 42);
     g.fillStyle = hexA(ink, 0.88);
-    g.font = 'italic 600 21px Grenze, Georgia, serif'; spaced('0px');
+    g.font = 'italic 600 22px Grenze, Georgia, serif'; spaced('0px');
     g.fillText(meta.form, tx + 23, ty + 70);
     const cell = (i, head, val) => {
       const x0 = tx + tw * cells[i - 1], x1 = i < cells.length ? tx + tw * cells[i] : tx + tw;
@@ -881,7 +881,7 @@ export class MapScene extends Scene {
       // two sit in the sheet's burnt corner, under the shade's darkest
       g.fillStyle = hexA(GILT_HI, i >= 3 ? 1 : 0.94);
       // round 38 graft: 20 px -- 11.4 at the Deck's 0.572x (18 was 10.3)
-      g.font = '700 20px Cinzel, Georgia, serif'; spaced('2.3px');
+      g.font = '700 22px Cinzel, Georgia, serif'; spaced('2.1px');
       g.fillText(head, cx, ty + 33);
       g.fillStyle = hexA(GILT_HI, 1);
       g.font = '700 26px Cinzel, Georgia, serif'; spaced('1.5px');
@@ -904,7 +904,7 @@ export class MapScene extends Scene {
     g.textAlign = 'right'; g.textBaseline = 'middle';
     g.shadowColor = hexA(GALL, 0.95); g.shadowOffsetY = 1.2; g.shadowBlur = 1.5;
     g.fillStyle = hexA(GILT_HI, 0.96);
-    g.font = '700 21px Cinzel, Georgia, serif'; spaced('2px');
+    g.font = '700 22px Cinzel, Georgia, serif'; spaced('1.8px');
     g.fillText('DRAG TO PAN  \u00b7  SCROLL TO ZOOM  \u00b7  ARROWS CHOOSE  \u00b7  ENTER GOES', WIN.x + WIN.w - 4, WIN.y + WIN.h + 16);
     spaced('0px');
     g.restore();
@@ -940,11 +940,11 @@ export class MapScene extends Scene {
     spike(N, rr - 12, 9, true); spike(N + Math.PI, rr - 12, 9, false);
     spike(N + Math.PI / 2, rr - 20, 7, false); spike(N - Math.PI / 2, rr - 20, 7, false);
     // round 38 graft: 20 px, 11.4 at the Deck's 0.572x (15 was 8.6)
-    g.fillStyle = hexA(ink, 0.9); g.font = '700 20px Cinzel, Georgia, serif';
+    g.fillStyle = hexA(ink, 0.9); g.font = '700 22px Cinzel, Georgia, serif';
     g.textAlign = 'center';
     g.fillText('N', Math.sin(N) * (rr + 14), -Math.cos(N) * (rr + 13));
     if (turned) {
-      g.font = '600 20px Grenze, Georgia, serif';
+      g.font = '600 22px Grenze, Georgia, serif';
       g.fillStyle = hexA(ink, 0.85);
       g.fillText('PLAN TURNED 90°', 0, rr + 24);
     }
@@ -959,7 +959,7 @@ export class MapScene extends Scene {
     // round 30 graft: the scale's figures readable at the Deck's 0.57x --
     // set either side of the bar in the title block's gilt, not 11 px under it
     // round 38 graft: 20 px, 11.4 at the Deck's 0.572x (15 was 8.6)
-    g.font = '700 20px Cinzel, Georgia, serif'; g.textBaseline = 'middle';
+    g.font = '700 22px Cinzel, Georgia, serif'; g.textBaseline = 'middle';
     g.shadowColor = hexA(GALL, 0.95); g.shadowOffsetY = 1.2; g.shadowBlur = 1.5;
     g.fillStyle = hexA(GILT_HI, 0.98);
     g.textAlign = 'right'; g.fillText('0', bx - 7, by + 6);

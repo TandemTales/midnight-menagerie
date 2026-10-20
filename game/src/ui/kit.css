@@ -4626,3 +4626,45 @@ button.kit-hw-enamel:focus-visible {
   font-family: var(--font-body); font-weight: 400; font-style: italic;
   letter-spacing: .02em; color: #b9aacb;
 }
+
+/* ===========================================================================
+   ROUND 40 — appended; nothing above is changed.
+
+   THE 12 PX FLOOR AT THE DECK'S 1280 (survey 6, both judges: "text falls to
+   about 9-11 px at 1280 on every dense board ... one shared type floor would
+   fix all five"). Every line a player reads -- a label, a keycap's word, a
+   card's type line and its rules on a board -- sets at 12 px or more on
+   screen, fitted by reflowing, never by shrinking a neighbour.
+     --kit-type-floor   the floor, in px (tokens.css)
+   =========================================================================== */
+/* the keycap's word on a plate (was 11px) */
+.kit-btn kbd { font-size: max(var(--kit-type-floor, 12px), 12px); }
+/* a card's type line holds the floor in SCREEN px through --cpx (the line it
+   held before, 11.5 px, set "POWER · SELF" at 10.9 on a shop shelf) */
+.kit-cards .mm-card[data-rarity][data-type] { --type-u: max(12.5, 12.6 / var(--cpx, 1)); }
+/* A BOARD'S CARD FITS ITS RULES TO THE PANEL in screen px, the way the hand's
+   do (CardView#fitRules; scenes/_cardfit.js `rulesPx`): as large as the
+   panel's box takes up to the board's cap, never under the floor. */
+.kit-cards .mm-card[data-rarity][data-type][data-uid].is-fitted.is-board-fit .mm-card__rules {
+  font-size: calc(var(--rules-fit) * var(--u)); line-height: var(--rules-lh, 1.1);
+}
+.kit-cards .mm-card[data-rarity][data-type][data-uid].is-fitted.is-board-fit .mm-card__rules .mm-card__num { line-height: 0; }
+.kit-cards .mm-card[data-rarity][data-type][data-uid].is-board-fit .mm-card__rules > div { text-wrap: balance; }
+
+/* the fight's small plates, a size up to the floor: the counters' words, the
+   piles' and the dial's nameplates, the Companion's epithet, END TURN's key */
+html .cb-count i, html .cb-count u, html .cb-count--mine em { font-size: 12px; }
+html .cb-count--mine i, html .cb-count--mine em { letter-spacing: .07em; }
+html .cb-count--mine { padding-inline: 11px; }
+html .cb-nerve__lbl, html .cb-pile__lbl { font-size: 12px; letter-spacing: .12em; }
+html .cb-player__title { font-size: clamp(12px, .8vw, 12.5px); }
+html .cb-endturn__hint { font-size: 12px; }
+/* where the room is, under a board's plaque (was 11.5 px at 1280) */
+.kit-titleblock__note { font-size: max(var(--kit-type-floor, 12px), var(--fs-xs)); letter-spacing: .18em; }
+.kit-enamel__label { font-size: max(var(--kit-type-floor, 12px), calc(var(--h) * .3)); }
+/* ...and a long type line ("POWER · SELF") never closes its size under the
+   floor: the tab has 196u to spread into, and the old 159u allowance left it
+   short of it */
+.kit-cards .mm-card[data-rarity][data-type][data-uid] .mm-card__type {
+  font-size: calc(max(12.2 / var(--cpx, 1), min(var(--type-u), 176 / (var(--type-em, 6) + 1.9))) * var(--u));
+}

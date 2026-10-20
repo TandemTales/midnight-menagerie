@@ -815,7 +815,7 @@ export class GameOverScene extends Scene {
       // smaller than a full-size card prints them. Re-fitted whenever the slot
       // changes size, since a stylesheet landing late restyles the board.
       const slot = this._mvpSlot;
-      const fit = () => fitCardToSlot(view, slot, { legibleAt: 224 });
+      const fit = () => fitCardToSlot(view, slot, { legibleAt: 224, rulesPx: [12.5, 15] });
       fit();
       if (typeof ResizeObserver === 'function') {
         const ro = new ResizeObserver(() => { if (!this._dead) fit(); });

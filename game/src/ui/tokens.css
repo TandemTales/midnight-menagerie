@@ -387,3 +387,9 @@
   --kit-madder-ink:  #6e1e15;   /* a bane wing, ruled and hatched */
   --kit-indigo-ink:  #163d57;   /* a boon wing, ruled and hatched */
 }
+
+/* Round 40: the smallest a line a player reads may set on screen, at the
+   Deck's 1280x800 or anywhere (ui/kit.css, the boards). */
+:root {
+  --kit-type-floor: 12px;
+}
