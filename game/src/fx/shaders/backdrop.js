@@ -19377,6 +19377,12 @@ const MM_SH_BITS = Array.from({ length: 90 },
   (_, k) => '#define MM_SH' + k + ' ((MM_SHM' + Math.floor(k / 30) + ' >> ' + (k % 30) + ') & 1)').join('\n');
 
 export const PROP_FRAG = /* glsl */`
+/* (round 41 graft: THE PEN, LABRADORITE's -- a room choice, so a #define:
+   MM_PEN 1 in the Hedge, the Kennels, the Sleeping Quarters and the
+   Passages, 0 in every other wing, whose programs compile what they did) */
+#ifndef MM_PEN
+#define MM_PEN 0
+#endif
 precision highp float;
 ${GLSL_LIB}
 ${LIGHT_LIB}
@@ -29475,6 +29481,25 @@ void main(){
     float want = satK + span * over / (over + span);
     col = mix(vec3(Lc), col, want / max(sat, 1e-4));
   }
+#if MM_PEN > 0
+  /* ROUND 41 GRAFT: THE PEN -- LABRADORITE's, lightly (J1, J3). Survey 7's
+     family defect, both judges: the props have "soft edges and no line, so
+     they read as a render, not the samples' inked painting". The outline
+     above is a soft 2.7-pixel darkening -- a shadow round a form, not a
+     line. Here the silhouette gets a LOADED STROKE: a solid dark line a
+     pixel and a half to two and a half wide inside the outline, its weight
+     breaking along the form as a nib's does (one slow tap in metres, taken
+     only near the edge), on the LIT colour so no ceiling can eat it. Not on
+     a fitting (its brass edge is drawn already). */
+  if (fpx < 4.0 && isFit < 0.5) {
+    /* (lightly: a pixel to a pixel and a half, at half strength -- at
+       LABRADORITE's 1.5-2.5 px it took the whole of a thin member, an iron
+       bed's rods and a lamp post, to a dark line) */
+    float nib = 0.95 + 0.55*mmNoise(vUv*vSize*vec2(5.0, 3.0) + vSeed*2.7);
+    float pen = clamp(nib + 0.5 - fpx, 0.0, 1.0);
+    col *= 1.0 - pen*0.50;
+  }
+#endif
   /* the candle in a carved pumpkin (round 22), over both ceilings: a flame
      is the one thing on a prop allowed to be the brightest in its frame */
   col += pkEmit * uPropMax * 2.8;

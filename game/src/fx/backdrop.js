@@ -551,6 +551,10 @@ export const PROP_SHAPES = {
  * `wings` measured 2026-10-15 by that census (all 340 authored rooms, the
  * names twelve generated maps per wing give them, and each wing unseeded).
  */
+/* (round 41 graft: the wings whose props are drawn with LABRADORITE's pen
+   line -- PROP_FRAG's MM_PEN; ROOM_VARIANTS' prop rows carry it) */
+export const PEN_WINGS = ['hedge', 'kennels', 'sleeping', 'passages'];
+
 export const ROOM_VARIANTS = [
   { mat: 'wall', defines: { MM_ROOMS: 14, MM_R25W: 0, MM_ARCH: 4, MM_SUBJ: 40 }, wings: ['attic'] },
   { mat: 'wall', defines: { MM_ROOMS: 14, MM_R25W: 0, MM_ARCH: 4, MM_SUBJ: 41 }, wings: ['attic'] },
@@ -597,24 +601,24 @@ export const ROOM_VARIANTS = [
   { mat: 'wall', defines: { MM_ROOMS: 18, MM_R25W: 0, MM_ARCH: 0, MM_SUBJ: 47 }, wings: ['sleeping'] },
   { mat: 'wall', defines: { MM_ROOMS: 19, MM_R25W: 0, MM_ARCH: 0, MM_SUBJ: 48 }, wings: ['study'] },
   { mat: 'wall', defines: { MM_ROOMS: 19, MM_R25W: 0, MM_ARCH: 0, MM_SUBJ: 49 }, wings: ['study'] },
-  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 2, MM_SHM0: 8667424, MM_SHM1: 16864, MM_SHM2: 0 }, wings: ['attic'] },
-  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 4, MM_SHM0: 4194384, MM_SHM1: 0, MM_SHM2: 790560 }, wings: ['ballroom'] },
-  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 2, MM_SHM0: 8388932, MM_SHM1: 4, MM_SHM2: 0 }, wings: ['bathhouse'] },
-  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 3, MM_SHM0: 32832, MM_SHM1: 939524096, MM_SHM2: 0 }, wings: ['crypt'] },
-  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 1, MM_WINGS: 4, MM_SHM0: 79691856, MM_SHM1: 0, MM_SHM2: 508 }, wings: ['foyer'] },
-  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 5, MM_SHM0: 8388608, MM_SHM1: 0, MM_SHM2: 11776 }, wings: ['graveyard'] },
-  { mat: 'prop', defines: { MM_STONES: 1, MM_BUST: 0, MM_WINGS: 6, MM_SHM0: 41943104, MM_SHM1: 0, MM_SHM2: 1294336 }, wings: ['greenhouse'] },
-  { mat: 'prop', defines: { MM_STONES: 1, MM_BUST: 0, MM_WINGS: 6, MM_SHM0: 41943104, MM_SHM1: 0, MM_SHM2: 18071552 }, wings: ['greenhouse'] },
-  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 1, MM_SHM0: 12583025, MM_SHM1: 2, MM_SHM2: 44040192 }, wings: ['heart'] },
-  { mat: 'prop', defines: { MM_STONES: 1, MM_BUST: 0, MM_WINGS: 1, MM_SHM0: 310378496, MM_SHM1: 3, MM_SHM2: 10485760 }, wings: ['hedge'] },
-  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 2, MM_SHM0: 12648448, MM_SHM1: 7680, MM_SHM2: 0 }, wings: ['kennels'] },
-  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 1, MM_SHM0: 541065472, MM_SHM1: 0, MM_SHM2: 4194304 }, wings: ['kitchens'] },
-  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 2, MM_SHM0: 12845056, MM_SHM1: 8216, MM_SHM2: 0 }, wings: ['lampworks'] },
-  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 3, MM_SHM0: 4194304, MM_SHM1: 1015808, MM_SHM2: 134217730 }, wings: ['nursery'] },
-  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 4, MM_SHM0: 8388864, MM_SHM1: 0, MM_SHM2: 64 }, wings: ['passages'] },
-  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 1, MM_SHM0: 142606336, MM_SHM1: 0, MM_SHM2: 67108864 }, wings: ['pumpkin'] },
-  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 3, MM_SHM0: 4210689, MM_SHM1: 74448896, MM_SHM2: 1 }, wings: ['sleeping'] },
-  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 3, MM_SHM0: 4194304, MM_SHM1: 125829120, MM_SHM2: 268435456 }, wings: ['study'] },
+  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 2, MM_SHM0: 8667424, MM_SHM1: 16864, MM_SHM2: 0, MM_PEN: 0 }, wings: ['attic'] },
+  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 4, MM_SHM0: 4194384, MM_SHM1: 0, MM_SHM2: 790560, MM_PEN: 0 }, wings: ['ballroom'] },
+  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 2, MM_SHM0: 8388932, MM_SHM1: 4, MM_SHM2: 0, MM_PEN: 0 }, wings: ['bathhouse'] },
+  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 3, MM_SHM0: 32832, MM_SHM1: 939524096, MM_SHM2: 0, MM_PEN: 0 }, wings: ['crypt'] },
+  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 1, MM_WINGS: 4, MM_SHM0: 79691856, MM_SHM1: 0, MM_SHM2: 508, MM_PEN: 0 }, wings: ['foyer'] },
+  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 5, MM_SHM0: 8388608, MM_SHM1: 0, MM_SHM2: 11776, MM_PEN: 0 }, wings: ['graveyard'] },
+  { mat: 'prop', defines: { MM_STONES: 1, MM_BUST: 0, MM_WINGS: 6, MM_SHM0: 41943104, MM_SHM1: 0, MM_SHM2: 1294336, MM_PEN: 0 }, wings: ['greenhouse'] },
+  { mat: 'prop', defines: { MM_STONES: 1, MM_BUST: 0, MM_WINGS: 6, MM_SHM0: 41943104, MM_SHM1: 0, MM_SHM2: 18071552, MM_PEN: 0 }, wings: ['greenhouse'] },
+  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 1, MM_SHM0: 12583025, MM_SHM1: 2, MM_SHM2: 44040192, MM_PEN: 0 }, wings: ['heart'] },
+  { mat: 'prop', defines: { MM_STONES: 1, MM_BUST: 0, MM_WINGS: 1, MM_SHM0: 310378496, MM_SHM1: 3, MM_SHM2: 10485760, MM_PEN: 1 }, wings: ['hedge'] },
+  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 2, MM_SHM0: 12648448, MM_SHM1: 7680, MM_SHM2: 0, MM_PEN: 1 }, wings: ['kennels'] },
+  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 1, MM_SHM0: 541065472, MM_SHM1: 0, MM_SHM2: 4194304, MM_PEN: 0 }, wings: ['kitchens'] },
+  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 2, MM_SHM0: 12845056, MM_SHM1: 8216, MM_SHM2: 0, MM_PEN: 0 }, wings: ['lampworks'] },
+  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 3, MM_SHM0: 4194304, MM_SHM1: 1015808, MM_SHM2: 134217730, MM_PEN: 0 }, wings: ['nursery'] },
+  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 4, MM_SHM0: 8388864, MM_SHM1: 0, MM_SHM2: 64, MM_PEN: 1 }, wings: ['passages'] },
+  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 1, MM_SHM0: 142606336, MM_SHM1: 0, MM_SHM2: 67108864, MM_PEN: 0 }, wings: ['pumpkin'] },
+  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 3, MM_SHM0: 4210689, MM_SHM1: 74448896, MM_SHM2: 1, MM_PEN: 1 }, wings: ['sleeping'] },
+  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 3, MM_SHM0: 4194304, MM_SHM1: 125829120, MM_SHM2: 268435456, MM_PEN: 0 }, wings: ['study'] },
   { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 0, MM_PAT: 0, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0, MM_RUGK: 0 }, wings: ['attic', 'heart', 'nursery', 'study'] },
   { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 2, MM_PAT: 1, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0, MM_RUGK: 0 }, wings: ['ballroom'] },
   { mat: 'floor', defines: { MM_FLOORX: 1, MM_R25W: 0, MM_PAT: 10, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0, MM_RUGK: 0 }, wings: ['ballroom'] },
@@ -1049,7 +1053,7 @@ export class Backdrop {
         uYaw: { value: new THREE.Vector2(1, 0) },
       },
       /* the grounds' carved stone, and the gallery's bust: _setPropProgram */
-      defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 0, MM_SHM0: 0, MM_SHM1: 0, MM_SHM2: 0 },
+      defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 0, MM_SHM0: 0, MM_SHM1: 0, MM_SHM2: 0, MM_PEN: 0 },
       vertexShader: PROP_VERT, fragmentShader: PROP_FRAG,
       transparent: true, depthWrite: false, side: THREE.DoubleSide, fog: false,
     });
@@ -3214,11 +3218,14 @@ export class Backdrop {
       if (k >= 0 && k < 90) m[Math.floor(k / 30)] |= 1 << (k % 30);
       else { m[0] = m[1] = m[2] = -1; break; }
     }
+    /* (round 41 graft: the pen -- LABRADORITE's prop outline, a room choice
+       compiled in: PEN_WINGS) */
+    const pen = PEN_WINGS.includes(wing) ? 1 : 0;
     const d = this.propMat.defines || {};
     if (d.MM_STONES === stones && d.MM_BUST === bust && d.MM_WINGS === wings
-        && d.MM_SHM0 === m[0] && d.MM_SHM1 === m[1] && d.MM_SHM2 === m[2]) return;
+        && d.MM_SHM0 === m[0] && d.MM_SHM1 === m[1] && d.MM_SHM2 === m[2] && d.MM_PEN === pen) return;
     this.propMat.defines = Object.assign({}, d, { MM_STONES: stones, MM_BUST: bust, MM_WINGS: wings,
-      MM_SHM0: m[0], MM_SHM1: m[1], MM_SHM2: m[2] });
+      MM_SHM0: m[0], MM_SHM1: m[1], MM_SHM2: m[2], MM_PEN: pen });
     this.propMat.needsUpdate = true;
   }
 
