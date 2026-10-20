@@ -1367,6 +1367,10 @@ export const REGIONS = {
     /* (round 41, AMETHYST: its own floor -- the passage's coir matting,
        MM_RUGK 3; the library passage and the closet lay theirs) */
     floorK: 3,
+    /* (round 41: and no damask -- arch 2 printed "what is left of the paper"
+       over the oak, a lattice of pale ogees across every panel and stile:
+       the long X both survey-7 judges read as one stretched wood grain) */
+    damask: 0,
     /* (round 22 graft: its hidden doors, one on each wall standing open in
        relief with its wedge of light on the boards -- Backdrop._placeAjar) */
     ajarDoors: true,
@@ -1620,7 +1624,7 @@ export const REGIONS = {
                   range is fed from, the kennel man's corner -- the feed bin
                   with its lid propped on the meal, a sack slumped against it,
                   a dropped lead (the basket's quad, seed > 40: wgFeedSD) */
-               { shape: 40, edge: 0.84, z: 1.5, tone: 0.95, fore: 1, keep: true, seed: 45.0, hM: 0.82, wM: 1.30 },
+               { shape: 40, edge: 0.72, z: 1.3, tone: 0.95, fore: 1, keep: true, seed: 45.0, hM: 0.82, wM: 1.30 },
                /* (second pass: the kennel at your right shoulder is gone
                   again -- a frame-tall quad of the prop program, and the
                   kennels fight measured +2.3 ms over BASE with it) */
@@ -1646,7 +1650,13 @@ export const REGIONS = {
        hand, the lantern's pool laid on them in front of you, and the straw
        heaped where the dogs drag it (FLOOR_FRAG, uStraw's heaps) */
     nearFloor: { fall: 0.86, calm: 0.5,
-                 pool: { ahead: 3.4, across: -0.6, rAlong: 2.8, rAcross: 3.0, k: 1.1, color: '#e2a862' } },
+                 /* (round 41: the lantern's pool a stop up and wider, so the
+                    near flags and the straw on them are lit, not an empty
+                    dim mottle -- survey-7 judge 2) */
+                 pool: { ahead: 3.6, across: -0.8, rAlong: 3.2, rAcross: 3.6, k: 2.4, color: '#e2a862' },
+                 /* (round 41: and the feeding lantern's on the corner by the
+                    door at your right -- the feed bin and its sack in it) */
+                 pool2: { ahead: 3.8, across: 2.4, abs: true, rAlong: 2.4, rAcross: 2.2, k: 3.2, color: '#e6b070' } },
     /* (round 23: dust in the lamplight, not a field of sparks -- at 0.95 with
        embers in it the motes were the "speckle" over the stalls) */
     particles: { mix: [[PTYPE.DUST, 0.82], [PTYPE.ASH, 0.18]],
@@ -2631,10 +2641,11 @@ export const ROOM_KINDS = {
                      { shape: 52, edge: 0.30, z: 1.5, tone: 0.97, fore: 1, keep: true, seed: 45.0, hM: 0.56, wM: 0.88 },
                      { shape: 52, edge: 0.70, z: 1.0, tone: 0.96, fore: 1, keep: true, seed: 85.0, hM: 1.00, wM: 0.95 }],
               /* (round 41, AMETHYST: survey-7 judge 1, "the right third of the
-                 floor falls to black" -- the moon from the tall right-hand
-                 window laid on the near boards there, set where it falls
-                 (abs), and the washstand candle's warm pool kept on the left) */
-              nearFloor: { pool: { ahead: 4.6, across: 2.0, abs: true, rAlong: 3.2, rAcross: 2.2, k: 1.9, color: '#aab0c6' } },
+                 floor falls to black" -- the near washstand's candle laid on
+                 the boards at the right, set where it falls (abs: across +
+                 is the frame's right), as the wing's own candle pool is on
+                 the left; the moon keeps its shafts) */
+              nearFloor: { pool: { ahead: 4.2, across: 2.2, abs: true, rAlong: 3.0, rAcross: 2.2, k: 5.0, color: '#f0a65a' } },
               cam: { z: -1.6, look: 0.10 } },
             { subject: 'bedchamber', layout: 'wings', count: 0,
               room: { d: 1.053, w: 1.72 }, runner: 0,
@@ -2649,7 +2660,7 @@ export const ROOM_KINDS = {
                            /* (round 41: the fire's light carried onto the
                               near boards at the right, where the floor fell to
                               black under the wing chair -- abs, where it falls) */
-                           pool2: { ahead: 3.9, across: 1.9, abs: true, rAlong: 2.8, rAcross: 2.2, k: 2.4, color: '#f0a65a' } },
+                           pool2: { ahead: 3.9, across: 2.0, abs: true, rAlong: 2.8, rAcross: 2.4, k: 5.0, color: '#f0a65a' } },
               lamps: [{ i: 0, x: 0.0, z: 0.95, y: 0.45, fit: 'none', color: '#ff9848', radius: 4.2, k: 1.10 },
                       { i: 3, x: 3.4, z: 0.42 },
                       { i: 2, x: 4.0, z: 0.38, y: 1.25, color: '#eab070', k: 1.5, radius: 4.0, fit: 'none' }],

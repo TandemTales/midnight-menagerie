@@ -5709,7 +5709,13 @@ float passWallH(vec2 q, float qpx, out float occ){
       pcen = vec2(bx, q.y - (HR1 + FR1)*0.5); phs = vec2(BW*0.5 - 0.10, max((FR1 - HR1)*0.5 - 0.07, 0.05)); pt = 0.030; pbv = 0.045;
     }
     float onRow = max(inD, max(inT, inF));
-    float pv = sPanel(pcen, phs, pt, pbv)*onRow;
+    /* (round 41: the field's relief only where the wall is drawn over pixels
+       ACROSS it: down a passage a pixel is a hand of panelling, sPanel's
+       edges smooth over the whole field, and its relief came back a pyramid
+       whose creases the pen inked as a long X on every panel -- "one
+       stretched wood grain". The pens draw the mouldings there.) */
+    float pvRes = 1.0 - smoothstep(0.030, 0.080, gAAx);
+    float pv = sPanel(pcen, phs, pt, pbv)*onRow*pvRes;
     h += pv*0.55;
     /* THIS panel's board: its own figure, pitch, phase and colour */
     float pid = bi*7.0 + (inD > 0.5 ? 1.0 : (inT > 0.5 ? 2.0 : 3.0)) + pidx*13.0;
@@ -5756,7 +5762,11 @@ float passWallH(vec2 q, float qpx, out float occ){
       vec2 fh = phs - vec2(pt);
       float fD = mmBox(pcen, fh, 0.018);
       float tD = mmBox(pcen, fh - vec2(pbv), 0.012);
-      float inBev = mmCover(-fD) * (1.0 - mmCover(-tD)) * onRow;
+      /* (and only where the bevel is drawn over pixels: past a few
+         centimetres of wall to the pixel its two edges fall in one pixel and
+         the facets' partition is all that is left -- the X) */
+      float resB = 1.0 - smoothstep(0.010, 0.030, length(vec2(dFdx(tD), dFdy(tD))));
+      float inBev = mmCover(-fD) * (1.0 - mmCover(-tD)) * onRow * resB;
       float eY = abs(pcen.y) - fh.y, eX = abs(pcen.x) - fh.x;
       float topF = inBev * step(eX, eY) * step(0.0, pcen.y);
       float botF = inBev * step(eX, eY) * step(pcen.y, 0.0);
@@ -14394,16 +14404,16 @@ void main(){
             float wf = 1.0 - smoothstep(0.10, 1.20, footD);
             float dr = smoothstep(0.50, 0.78, mmNoise(w*vec2(0.28, 0.40) + 4.4));
             float dens = clamp(max(dr*0.55, max(kb*0.65, wf*0.85)), 0.0, 0.92)*step(uRunner + 0.10, pxdL);
-            float lRes = smoothstep(0.034, 0.011, mp);
+            float lRes = smoothstep(0.060, 0.016, mp);
             if (lRes*dens > 0.001) {
-              const float LC = 0.19;
+              const float LC = 0.24;
               vec2 lci = floor(w/LC);
               vec2 lh = mmHash22(lci + 41.7);
               vec2 lp = w - (lci + 0.2 + 0.6*lh)*LC;
               float la = mmHash21(lci + 9.1)*6.2832;
               vec2 lr = vec2(cos(la)*lp.x + sin(la)*lp.y, -sin(la)*lp.x + cos(la)*lp.y);
-              float lw = 0.026*(1.0 - pow(abs(lr.x)/0.062, 2.0));
-              float leaf = (1.0 - smoothstep(lw, lw + mp*1.1, abs(lr.y))) * step(abs(lr.x), 0.062)
+              float lw = 0.034*(1.0 - pow(abs(lr.x)/0.085, 2.0));
+              float leaf = (1.0 - smoothstep(lw, lw + mp*1.1, abs(lr.y))) * step(abs(lr.x), 0.085)
                          * step(mmHash21(lci + 3.3), dens) * lRes;
               float lit = smoothstep(-0.01, 0.02, lr.y)*leaf;
               r41Leaf = leaf*(0.55 + 0.45*lh.x) + 0.0*lit;
@@ -15467,10 +15477,10 @@ void main(){
     /* its edge broken at a stalk's scale, never a ruled outline */
     float frz = (mmNoise(w*13.0 + 2.1) - 0.5)*0.070*smoothstep(0.06, 0.012, mp);
     float mE = m + frz;
-    float body = smoothstep(0.575, 0.600, mE)*uStraw;
-    float rim  = smoothstep(0.50, 0.575, mE)*(1.0 - body)*uStraw;
+    float body = smoothstep(0.530, 0.555, mE)*uStraw;
+    float rim  = smoothstep(0.47, 0.530, mE)*(1.0 - body)*uStraw;
     if (body + rim > 0.001) {
-      float ht = smoothstep(0.60, 0.86, m);               // how high the drift stands
+      float ht = smoothstep(0.55, 0.80, m);               // how high the drift stands
       /* its slope toward the lamps over the stalls: one tap further back */
       float mB = mmNoise((dw + vec2(0.0, 0.16))*0.70 + 5.3)*0.80 + 0.10 + 0.34*smoothstep(2.6, 0.4, backD - 0.16);
       float lit = clamp(0.55 + (mB - m)*7.0, 0.0, 1.0);
@@ -15497,10 +15507,10 @@ void main(){
       }
       float Lm = mmLum(uMid);
       /* old straw: a dull gold going to dun, not a lemon yellow */
-      vec3 hay = vec3(Lm)*vec3(2.35, 1.80, 1.02)*uStraw;
+      vec3 hay = vec3(Lm)*vec3(3.30, 2.60, 1.55)*uStraw;
       vec3 hayD = hay*0.58*vec3(0.95, 0.88, 0.80);
       /* lit on its crown, its flank in its own shade only at the very edge */
-      float flank = smoothstep(0.585, 0.640, mE);
+      float flank = smoothstep(0.540, 0.600, mE);
       vec3 mass = mix(hayD, hay*(0.62 + 0.55*lit)*(0.88 + 0.24*ht), flank);
       /* (the gaps between the stalks are the straw's own deeper gold, not
          the floor: a mass, not a scatter) */
@@ -15511,7 +15521,7 @@ void main(){
       alb *= 1.0 - 0.40*rim*(1.0 - stk*0.6);
       alb = mix(alb, hay*(0.70 + 0.40*stT), rim*stk*0.80);
       /* (the ink's line round a drift's foot -- its contact with the flags) */
-      float foot = (1.0 - smoothstep(0.0, 0.020, abs(mE - 0.580)))*sRes;
+      float foot = (1.0 - smoothstep(0.0, 0.020, abs(mE - 0.535)))*sRes;
       alb *= 1.0 - 0.30*foot*(1.0 - stk);
     } else if (sRes > 0.001) {
       /* the swept floor: a stalk dropped here and there, one in thirty cells */
@@ -15649,7 +15659,7 @@ void main(){
     float pf = mmNoise(w*0.42 + 3.1)*0.78 + 0.22*mmNoise(w*1.6 + 8.0);
     float wet = mmCover(pf - 0.64);
     float men = 1.0 - smoothstep(0.0, 1.5, abs(pf - 0.64)/max(length(vec2(dFdx(pf), dFdy(pf))), 1e-5));
-    alb = mix(alb, alb*vec3(0.42, 0.48, 0.56), wet*0.85);
+    alb = mix(alb, alb*vec3(0.26, 0.31, 0.38), wet*0.90);
     r41Wet = wet;
     alb = mix(alb, alb*1.8 + vec3(0.004, 0.005, 0.006), men*0.55);
     /* the gutter: a dished channel 0.24 m wide, its two lips inked, its
@@ -15868,7 +15878,7 @@ void main(){
     {
       float rxD = abs(w.x - uRunX), insD = uRunner - rxD;
       float aaD = max(mpp.x*1.1, 0.004);
-      vec3 dr = vec3(0.235, 0.275, 0.215);
+      vec3 dr = vec3(0.300, 0.335, 0.265);
       float trk = (1.0 - smoothstep(0.06, uRunner*0.70, rxD + 0.07*sin(w.y*0.85 + uSeed*2.0)))
                 * (0.50 + 0.50*mmNoise(vec2(w.x*2.2, w.y*0.45) + uSeed));
       dr = mix(dr, vec3(0.360, 0.350, 0.280), trk*0.60);
@@ -16143,7 +16153,7 @@ void main(){
       float leafD = (length(lfq/vec2(0.050, 0.022)) - 1.0)*0.022;
       float onLeaf = (1.0 - smoothstep(-pxm, pxm, leafD))*(1.0 - onRose);
       vec3 fC = fieldG*(0.85 + 0.30*mmNoise(rp*2.3 + 1.0));
-      fC = mix(fC, goldL*0.85, latt*0.85);
+      fC = mix(fC, goldL, latt*0.95);
       fC = mix(fC, leafG, onLeaf);
       fC = mix(fC, rose*(0.80 + 0.30*smoothstep(0.065, 0.0, nr)), onRose);
       fC = mix(fC, roseD, max(heart, ring*0.7)*onRose);
@@ -16159,7 +16169,7 @@ void main(){
       float bigR = 1.0 - smoothstep(sPet - pxm, sPet + pxm, sr);
       float bigH = 1.0 - smoothstep(0.055 - pxm, 0.055 + pxm, sr);
       float bigRing = 1.0 - smoothstep(0.0, pxm*1.4 + 0.006, abs(sr - 0.10));
-      vec3 cC = fieldG*0.90;
+      vec3 cC = creamC*0.50*(0.90 + 0.20*mmNoise(rp*3.0));
       cC = mix(cC, leafG*1.05, (1.0 - smoothstep(0.0, pxm*2.0 + 0.012, abs(sin(atan(sp.y, sp.x)*3.0)*sr*0.6)))*step(sr, 0.36)*(1.0 - bigR));
       cC = mix(cC, rose*1.05, bigR);
       cC = mix(cC, roseD, max(bigH, bigRing*0.8)*bigR);
