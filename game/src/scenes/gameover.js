@@ -43,7 +43,7 @@ import {
 import { kitDressMarkup } from '../ui/kitboard.js';
 import { nodeSymbol } from '../ui/mapnode.js';
 import { paintBackdrop } from '../ui/backdrop.js';
-import { gallery, houseGallery } from '../ui/hang.js';
+import { gallery, houseGallery, settlePlate } from '../ui/hang.js';
 import { pauseStageFor } from './_stage.js';
 import { fitCardToSlot } from './_cardfit.js';
 import { plural, word } from '../util/plural.js';
@@ -657,7 +657,13 @@ export class GameOverScene extends Scene {
     // graft: both hang from the cornice -- the shelf the two who went in
     // stand on -- clear of their plaques, at one height, or neither does
     // (_hangPictures).
-    reach.insertAdjacentHTML('beforeend', gallery(['house'], ['go-hang go-hang--l']));
+    /* ROUND 40 (AVENTURINE): the centre is ONE shrine -- the card on its
+       pedestal in the middle of a framed niche, the line that says why under
+       its plate, HOW FAR engraved along the niche's foot -- and the two
+       pictures hang in the niche's own flanks beside the card, each on its
+       cord from the niche's head, whole, its plate under its frame
+       (_hangPictures). Two of the family, so the flanks match. */
+    void gallery;
 
     const mvp = el('div', 'go-block go-block--mvp');
     // A museum piece: the card in its frame on its gilt pedestal, its label on
@@ -670,8 +676,7 @@ export class GameOverScene extends Scene {
     mvp.hidden = true;
     altar.appendChild(mvp);
 
-    const said = el('div', 'go-said go-tri', `<i class="go-said__mark" aria-hidden="true"></i><p class="go-mvp__note"></p><i class="go-tri__rule" aria-hidden="true"></i>`
-      + houseGallery('family', ['go-hang go-hang--r']));   // the house hangs left
+    const said = el('div', 'go-said go-tri', `<i class="go-said__mark" aria-hidden="true"></i><p class="go-mvp__note"></p><i class="go-tri__rule" aria-hidden="true"></i>`);
     said.hidden = true;
     this._mvpNote = said.querySelector('.go-mvp__note');
     this._mvpSaid = said;
@@ -680,6 +685,8 @@ export class GameOverScene extends Scene {
     const shelf = el('i', 'go-altar__shelf kit-ledge');
     shelf.setAttribute('aria-hidden', 'true');
     altar.appendChild(shelf);
+    altar.classList.add('go-shrine');
+    altar.insertAdjacentHTML('beforeend', houseGallery('family', ['go-hang go-hang--l', 'go-hang go-hang--r']));
 
     out.appendChild(led);
     out.appendChild(altar);
@@ -938,66 +945,63 @@ export class GameOverScene extends Scene {
   _hangPictures() {
     const b = this._board;
     if (!b || this._dead) return;
-    const figs = [...b.querySelectorAll('.go-hang')];
+    const altar = b.querySelector('.go-altar');
+    const figs = altar ? [...altar.querySelectorAll(':scope > .go-hang')] : [];
     if (!figs.length) return;
-    const y = (e) => { let t = 0; for (let n = e; n && n !== b; n = n.offsetParent) t += n.offsetTop; return t; };
-    const stage = b.querySelector('.go-stage');
-    const reach = b.querySelector('.go-reach');
+    const mvp = this._mvpBlock;
     const said = this._mvpSaid;
     const show = (on) => { for (const f of figs) f.hidden = !on; };
-    if (!stage || !reach || !said || said.hidden || !reach.offsetWidth) { show(false); return; }
-    const cornice = y(stage) + stage.offsetHeight + 2;
-    const foot = Math.min(y(reach), y(said)) - 9;       // the gap over the higher plaque
-    const triW = Math.min(reach.offsetWidth, said.offsetWidth);
-    // each frame's height per px of its width: the picture, and its moulding
+    if (!mvp || mvp.hidden || !altar.offsetWidth) { show(false); return; }
+    /* ROUND 40: each picture hangs in its own flank of the shrine, beside
+       the card: as wide as the flank lets it and as tall as the flank is
+       deep, its cord from the shrine's head, its plate UNDER its frame and
+       clear of the line that says why. Measured in the shrine's own box. */
+    const pad = parseFloat(getComputedStyle(altar).getPropertyValue('--shrine-in')) || 22;
+    const head = pad + 20;
+    const floor = (said && !said.hidden ? said.offsetTop : mvp.offsetTop + mvp.offsetHeight) - 10;
+    const bays = [
+      [pad, mvp.offsetLeft - 8],
+      [mvp.offsetLeft + mvp.offsetWidth + 8, altar.clientWidth - pad],
+    ];
     const kOf = (f) => {
       const img = f.querySelector('.kit-hang__pic');
       const ar = String(getComputedStyle(img).aspectRatio || '').split('/').map(Number);
-      const a = ar.length === 2 && ar[0] && ar[1] ? ar[1] / ar[0] : (f.classList.contains('kit-hang--wide') ? 384 / 714 : .62);
-      const rim = f.classList.contains('kit-hang--wide') ? .05 : .06;
-      return { a, rim, k: a + 2 * rim };
+      const a = ar.length === 2 && ar[0] && ar[1] ? ar[1] / ar[0] : 1.25;
+      return { a, rim: .085, k: a + 2 * .085 };
     };
-    const ks = figs.map(kOf);
-    /* each frame as tall as the bay lets it (survey 5: the one height the
-       wide house allowed left the Dowager "a tiny dark rectangle"), its foot
-       ABOVE its nameplate: the plate hangs below the frame, and at one shared
-       height the Dowager's plate stood on the epitaph (both judges) */
     show(true);
-    for (const f of figs) f.style.setProperty('--go-plate-w', `${(triW * 1.12).toFixed(1)}px`);
-    /* round 40: the plate hangs BELOW the frame on its pins (ui/kit.css),
-       its moulding's depth and 7 px under the picture */
+    // graft: the plate hangs BELOW the frame on its pins (ui/kit.css), the
+    // moulding's depth and 7 px under the picture, one or two lines
+    // (ui/hang.js settlePlate)
     const plateOf = (f) => {
+      settlePlate(f);
       const p = f.querySelector('.kit-hang__plate');
       return p && p.offsetHeight ? p.offsetHeight + 7 + f.offsetWidth * .085 : 0;
     };
-    /* round 40: each picture in ITS OWN bay -- from the cornice down to the
-       plaque it hangs over (the house over HOW FAR, the portrait over the
-       line that says why) -- with its own plate under it: one shared foot
-       at the higher plaque left the Dowager short of the room her bay had */
-    const feet = figs.map((f) => { const t = f.closest('.go-tri'); return (t ? y(t) : foot + 9) - 9; });
-    const size = (plates) => ks.map((k, i) => Math.min(feet[i] - plates[i] - cornice - 12, k.k * triW * .98));
-    // a narrower frame wraps its plate onto more lines: settle each one
-    let plates = figs.map(() => 0), Fs = size(plates);
-    for (let pass = 0; pass < 4; pass++) {
-      if (Math.min(...Fs) < 56) { show(false); return; }
-      figs.forEach((f, i) => f.style.setProperty('--hang-w', `${(Fs[i] / ks[i].k).toFixed(1)}px`));
-      const ps = figs.map(plateOf);
-      if (ps.every((p, i) => p <= plates[i])) break;
-      plates = ps.map((p, i) => Math.max(p, plates[i]));
-      Fs = size(plates);
-    }
-    if (Math.min(...Fs) < 56) { show(false); return; }
-    figs.forEach((f, i) => {
-      const { rim, k } = ks[i];
-      const F = Fs[i];
-      const w = F / k;
-      const host = f.offsetParent || f.parentElement;
-      const picTop = feet[i] - plates[i] - F + w * rim;
-      f.style.setProperty('--hang-w', `${w.toFixed(1)}px`);
-      f.style.top = `${(picTop - y(host)).toFixed(1)}px`;
-      f.style.bottom = 'auto';
-      f.style.setProperty('--go-cord', `${Math.max(12, picTop - w * rim * .3 - cornice).toFixed(1)}px`);
+    const CORD = 18;
+    const ws = figs.map((f, i) => {
+      const [l, r] = bays[i % 2];
+      const bayW = Math.max(0, r - l);
+      const { k, rim } = kOf(f);
+      f.style.setProperty('--go-plate-w', `${Math.max(60, bayW + 14).toFixed(1)}px`);
+      let w = Math.min(bayW / (1 + 2 * rim) - 6, 240);
+      for (let pass = 0; pass < 3; pass++) {
+        f.style.setProperty('--hang-w', `${w.toFixed(1)}px`);
+        const room = floor - head - CORD - plateOf(f) - 10;
+        const wh = room / k;
+        if (wh >= w - .5) break;
+        w = wh;
+      }
+      return { f, w, l, r, rim };
     });
+    if (Math.min(...ws.map(x => x.w)) < 60) { show(false); return; }
+    for (const { f, w, l, r, rim } of ws) {
+      f.style.setProperty('--hang-w', `${w.toFixed(1)}px`);
+      f.style.left = `${((l + r) / 2).toFixed(1)}px`;
+      f.style.top = `${(head + CORD + w * rim).toFixed(1)}px`;
+      f.style.bottom = 'auto';
+      f.style.setProperty('--go-cord', `${(CORD + w * rim * .7).toFixed(1)}px`);
+    }
   }
 
   /**
