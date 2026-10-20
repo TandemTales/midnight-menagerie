@@ -225,8 +225,12 @@
   --stage-half: calc(var(--stage-w) / 2);
   --frame-pad: clamp(16px, 1.5vw, 24px);
   --fan-gap: calc(var(--frame-pad) * 2 + clamp(18px, 2vw, 34px));
-  /* either flank of the stage: a portrait over a candle */
-  --flank-w: clamp(136px, 10.6vw, 190px);
+  /* either flank of the stage: a portrait over a candle. Round 40 (survey
+     6, both judges: "at 1280 the two hung paintings are squeezed into the
+     15 px gutter between the board frame and the card trays"): each flank is
+     a WALL of its own -- the three frames give it a little of their width
+     (their rules still print at 15 px and more at the Deck's 1280) */
+  --flank-w: clamp(176px, 12.4vw, 206px);
   /* The three frames: as wide as the stage between its flanks allows, as tall
      as the board under the top rule allows (the fixed rows above and below
      them are the clamp), whichever is smaller. With CHOOSE ONE TRICK on the

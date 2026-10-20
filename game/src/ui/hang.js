@@ -134,7 +134,8 @@ export function paintingHtml(id, cls = '') {
   const p = ART[id];
   if (!p) return '';
   const plate = `<span class="kit-hang__plate"><b>${p.name}</b>${p.title ? `<em>${p.title}</em>` : ''}</span>`;
-  return `<figure class="kit-hang kit-hang--named kit-hang--painting${cls ? ' ' + cls : ''}" data-art="art-${id}" aria-hidden="true">`
+  const long = p.name.length > 24 ? ' kit-hang--longname' : '';
+  return `<figure class="kit-hang kit-hang--named kit-hang--painting${long}${cls ? ' ' + cls : ''}" data-art="art-${id}" aria-hidden="true">`
     + '<i class="kit-hang__cord"></i>'
     + `<span class="kit-hang__frame"><img class="kit-hang__pic" src="${KIT}hang-art-${p.file}.webp" alt="" decoding="async" draggable="false" style="--pic-ar:${p.ar}"></span>`
     + plate

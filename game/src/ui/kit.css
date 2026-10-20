@@ -3983,8 +3983,12 @@ button.kit-hw-enamel:focus-visible {
 /* the painting only: the tile's own painted plate falls below the cut */
 .kit-hang__pic[style] { aspect-ratio: var(--pic-ar); object-position: 50% 0; }
 .kit-hang__plate {
+  /* ROUND 40 (survey 6, both judges: "the hung paintings on reward, event,
+     rest and gameover all wear their nameplates over the bottom of the
+     canvas"): the plate hangs BELOW the frame, clear of its moulding, on two
+     short brass pins -- never over the picture */
   position: absolute; z-index: 3; left: 50%; top: 100%;
-  translate: -50% calc(var(--hang-rim) * -.35);
+  translate: -50% calc(var(--hang-rim) + 7px);
   display: flex; flex-direction: column; align-items: center; gap: 1px;
   box-sizing: border-box;
   width: max-content; min-width: 78%;
@@ -4549,6 +4553,23 @@ button.kit-hw-enamel:focus-visible {
   white-space: normal; text-wrap: balance;
   max-width: calc(100% + 2 * var(--hang-rim) + 8px);
 }
+/* round 40: one or two lines, sized to read -- the plate may run a little
+   wider than a narrow frame so "The Lady of the House" takes two lines, not
+   four; the date line goes before the name ever takes a third */
+.kit-hang--painting > .kit-hang__plate { max-width: max(calc(100% + 2 * var(--hang-rim) + 26px), 150px); }
+/* a long name ("Still Life with a Keepsake Box") sets closer, to stay on two lines */
+.kit-hang--longname > .kit-hang__plate > b { letter-spacing: 0; font-size: 12.5px; }
+@container (max-width: 139px) { .kit-hang--painting > .kit-hang__plate > em { display: none; } }
+/* the two pins the plate hangs from, up to the frame's foot */
+.kit-hang__plate::before, .kit-hang__plate::after {
+  content: ''; position: absolute; z-index: -1; pointer-events: none;
+  bottom: calc(100% - 3px); width: 3px; height: calc(var(--hang-rim) + 10px);
+  border-radius: 1.5px;
+  background: linear-gradient(90deg, var(--kit-gold-lo), var(--kit-gold-hi) 50%, var(--kit-gold-lo));
+  box-shadow: 0 0 0 1px rgba(20, 10, 3, .7);
+}
+.kit-hang__plate::before { left: 24%; }
+.kit-hang__plate::after { right: 24%; }
 
 /* ── an inlaid well to write in ──────────────────────────────────────────
    ROUND 36 (survey 5, both judges): the settings' seed fields, the piles'

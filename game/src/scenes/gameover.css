@@ -1211,3 +1211,29 @@
 @media (max-width: 1400px) {
   .go-courage__note, .go-seed__hint { font-size: 13.5px; }
 }
+
+/* ── ROUND 40: the pictures whole, on their cords, over plaques cut to fit ──
+   Survey 6 found game over the one board WORSE than survey 5: its pictures
+   hung "hooked short and the Dowager's label floats beside her frame", and at
+   the Deck's 1280 neither hung at all -- the bay between the cornice and the
+   taller plaque was under the 56 px a picture needs. The two plaques now
+   stand only as tall as their words (both still one height, the card the
+   tallest thing on the shelf), so each bay above them is tall enough for a
+   picture to hang WHOLE on its cord, its plate under its frame (ui/kit.css
+   .kit-hang__plate, gameover.js _hangPictures). */
+.go-tri { min-height: clamp(150px, 18vh, 172px); }
+.go-said .go-mvp__note { font-size: 13px; line-height: 1.24; }
+/* the line that says why runs the plaque's width, not a 70 px column */
+.go-said.go-tri { padding-inline: calc(var(--carve) * .5 + 3px); }
+@media (max-height: 860px) {
+  .go-tri { min-height: 0; padding-block: calc(var(--carve) + 3px) calc(var(--carve) + 4px); }
+  .go-said .go-mvp__note { font-size: 12px; line-height: 1.2; }
+  .go-reach__unit { letter-spacing: .04em; white-space: nowrap; }
+  .go-tri__h { letter-spacing: .08em; }
+  .go-said .go-said__mark { width: 11px; height: 11px; margin-bottom: 2px; }
+  .go-said .go-tri__rule { margin: 3px 0 0; }
+  .go-reach__n { font-size: 40px; }
+  /* the two who went in stand a little smaller on the cornice, so the bays
+     under it are tall enough for a portrait to hang whole */
+  .go-stage { --go-pic-w: 120px; --go-plate-h: 34px; }
+}
