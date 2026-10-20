@@ -135,16 +135,16 @@ wall program while ANGLE reported LINK_STATUS true -- a good link can be an
 empty program; read getProgramInfoLog after any fx/ change** (a gate for it
 is proposed as its own session; gpuprof now reads every program's log and
 says why a timing is null). The other 13 wings identical; tests green on dev.
-**ROUND 40 IS MERGED, VERIFIED AND PUSHED (2026-10-20); ITS GRAFT IS IN
-FLIGHT:** SPINEL +1.14, 2 of 3 (`c6d36e48`, 7.31 vs BATISTE 6.16; the three
-builds within 0.07): the boards' 12 px floor at 1280 by its probe, a low
-narrow hand, shelves of objects, labelled strip groups, regions as shapes.
-Battery 106 green but the sprites halo. Graft (`GRAFT-r40.md`) building in
-`C:/UILOOP/r40/wt/r40-graft` (port 9314): IOLITE's paintings on the upper
-wall and the boss's medallions by his nameplate, AVENTURINE's gameover cords
-and map shapes, the hand's longest cards to 12 px RENDERED (the probe passed,
-three judges read 9-10), the strip's counts. Next: a survey-7 paired test
-against survey 6, then what it finds. **Josh asked 10-18 for a
+**ROUND 40 AND ITS GRAFT ARE MERGED, VERIFIED AND PUSHED (2026-10-20):**
+SPINEL +1.14, 2 of 3 (`c6d36e48`): the boards' 12 px floor at 1280. Graft
+`45e984c5`: reward's paintings on the upper wall, the boss's medallions on his
+nameplate, the two long hand cards at 13.75 / 14.04 px (the judges' '9-10'
+was Grenze's short capitals at the 12.2 floor), gameover's shrine, convex map
+regions, KEEPSAKES / GEAR counts, the shop's plinths. Interaction tests green
+on dev. **Known: at 1280 event and rest swap most of Josh's paintings for
+three family portraits** (few fit beside the windows and sconces; nothing
+overlaps). **NEXT: survey 7 as a PAIRED test against survey 6** (rounds
+39-40), then brief from what it finds. **Josh asked 10-18 for a
 3-hour pause in which nothing may launch a program -- respect such asks.**
 
 **ROUND 33 AND ITS GRAFT ARE MERGED, VERIFIED AND PUSHED (2026-10-16):**
