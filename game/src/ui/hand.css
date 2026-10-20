@@ -366,7 +366,7 @@
     0 0 0 calc(6 * var(--u)) #1a0f12;
   filter: drop-shadow(0 calc(3 * var(--u)) calc(4 * var(--u)) rgba(0,0,0,.85)) drop-shadow(0 0 calc(5 * var(--u)) color-mix(in srgb, var(--kit-gold) 35%, transparent));
 }
-.mm-hand .mm-card > .mm-hand__stack i { color: var(--kit-gold-hi); font-size: .74em; }
+.mm-hand .mm-card > .mm-hand__stack i { color: var(--kit-gold-hi); font-size: .86em; }
 
 /* ROUND 40 -- THE STACKED HAND'S SMALLER CARD (ui/hand.js TUNE.stackFit).
    A hand of nine whose copies stack deals three-quarter cards so the fan
