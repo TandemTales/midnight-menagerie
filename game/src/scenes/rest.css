@@ -610,3 +610,12 @@
    their bosses still clear of it -- and the cosy pool's taller canvases keep
    their places over the first panel */
 .rs-hang { top: calc(var(--hud-h) + clamp(20px, 2.9vh, 27px)); }
+
+/* THE ROUND 40 REPAIR, PART 2: each picture a little further out along the
+   wall, toward its corner candle (the candle's light on it), so its plate
+   stands clear of the fort frame's moon medallion and of the REST panel's
+   (paired test vs survey 6, J1: "The / Gardener ... crowd the fort frame's
+   moon medallion") -- ui/hang.js fitHung counts a panel's medallion now */
+.rs-hang { --rs-out: clamp(30px, 2.8vw, 44px); }
+.rs-hang--l { left: calc(var(--kit-edge) + var(--corner-w) + 6px - var(--rs-out)); }
+.rs-hang--r { right: calc(var(--kit-edge) + var(--corner-w) + 6px - var(--rs-out)); }

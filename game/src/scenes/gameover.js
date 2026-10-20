@@ -43,7 +43,7 @@ import {
 import { kitDressMarkup } from '../ui/kitboard.js';
 import { nodeSymbol } from '../ui/mapnode.js';
 import { paintBackdrop } from '../ui/backdrop.js';
-import { gallery, houseGallery, settlePlate } from '../ui/hang.js';
+import { gallery, houseGallery, settlePlate, widenPlate, plateLines, paintingHtml, PICTURE_POOLS } from '../ui/hang.js';
 import { pauseStageFor } from './_stage.js';
 import { fitCardToSlot } from './_cardfit.js';
 import { plural, word } from '../util/plural.js';
@@ -973,26 +973,63 @@ export class GameOverScene extends Scene {
     // graft: the plate hangs BELOW the frame on its pins (ui/kit.css), the
     // moulding's depth and 7 px under the picture, one or two lines
     // (ui/hang.js settlePlate)
-    const plateOf = (f) => {
+    /* round 40 repair 2: NEVER THREE LINES -- a plate that needs a third at
+       its frame's width runs up to 1.25x the frame, inside its flank (ui/hang.js
+       widenPlate); the bay's width is the plate's own cap (--go-plate-w) */
+    const plateOf = (f, cap) => {
       settlePlate(f);
+      widenPlate(f, { maxPx: cap });
       const p = f.querySelector('.kit-hang__plate');
       return p && p.offsetHeight ? p.offsetHeight + 7 + f.offsetWidth * .085 : 0;
     };
     const CORD = 18;
-    const ws = figs.map((f, i) => {
+    const niche = mvp.querySelector('.go-mvp');
+    const inset = niche && niche.offsetWidth ? Math.max(0, (mvp.offsetWidth - niche.offsetWidth) / 2) : 0;
+    const lims = [
+      [pad - 6, mvp.offsetLeft + inset - 6],
+      [mvp.offsetLeft + mvp.offsetWidth - inset + 6, altar.clientWidth - pad + 6],
+    ];
+    const size = (f, i) => {
       const [l, r] = bays[i % 2];
       const bayW = Math.max(0, r - l);
       const { k, rim } = kOf(f);
       f.style.setProperty('--go-plate-w', `${Math.max(60, bayW + 14).toFixed(1)}px`);
+      // a widened plate stays in its flank, centred under its picture: clear of
+      // the shrine's moulding and of the card's niche by 6 px
+      const [L0, R0] = lims[i % 2];
+      const cap = Math.max(60, 2 * Math.min((l + r) / 2 - L0, R0 - (l + r) / 2));
       let w = Math.min(bayW / (1 + 2 * rim) - 6, 240);
       for (let pass = 0; pass < 3; pass++) {
         f.style.setProperty('--hang-w', `${w.toFixed(1)}px`);
-        const room = floor - head - CORD - plateOf(f) - 10;
+        const room = floor - head - CORD - plateOf(f, cap) - 10;
         const wh = room / k;
         if (wh >= w - .5) break;
         w = wh;
       }
+      f.style.setProperty('--hang-w', `${w.toFixed(1)}px`);
+      plateOf(f, cap);
       return { f, w, l, r, rim };
+    };
+    const ws = figs.map((f, i) => {
+      const x = size(f, i);
+      if (plateLines(f) <= 2 || !f.classList.contains('kit-hang--painting')) return x;
+      // a name that still takes three lines gives its place to one of the
+      // family whose name keeps to two (the pool read on from it)
+      const pool = PICTURE_POOLS.family;
+      const taken = new Set(figs.map(g => g.dataset.art));
+      const at = pool.indexOf(String(f.dataset.art).slice(4)) + 1;
+      const cls = [...f.classList].filter(c => !c.startsWith('kit-hang')).join(' ');
+      for (const id of [...pool.slice(at), ...pool.slice(0, at)]) {
+        if (taken.has(`art-${id}`)) continue;
+        const t = document.createElement('div');
+        t.innerHTML = paintingHtml(id, cls);
+        const n = t.firstElementChild;
+        f.replaceWith(n);
+        const y = size(n, i);
+        if (plateLines(n) <= 2) { figs[i] = n; return y; }
+        n.replaceWith(f);
+      }
+      return size(f, i);
     });
     if (Math.min(...ws.map(x => x.w)) < 60) { show(false); return; }
     for (const { f, w, l, r, rim } of ws) {

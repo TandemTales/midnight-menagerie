@@ -4751,3 +4751,11 @@ html .cb-endturn__hint { font-size: 12px; }
 /* (the round 40 repair seats no boss on the rail -- ui/enemy.js _seatStatuses
    -- so nothing sets the row's balance any more: it is none) */
 .cb-enemy__name > .cb-enemy__statuses.is-on-rail { --rail-bal: 0; }
+
+/* ── THE ROUND 40 REPAIR, PART 2: never three lines ──
+   ui/hang.js widenPlate: a painting's plate that would take a third line at
+   its frame's width runs up to 1.25x the frame, centred under it
+   (.kit-hang--wideplate, its max-width set on the plate), and keeps air
+   between its lettering and the cartouche's curled ends (both judges, survey
+   6's paired test: "type touching or nearly touching their rims"). */
+.kit-hang.kit-hang--painting.kit-hang--wideplate > .kit-hang__plate { padding-inline: 12px; }

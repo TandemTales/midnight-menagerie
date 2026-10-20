@@ -198,8 +198,10 @@ export function settlePlate(f) {
   f.classList.remove('kit-hang--terse', 'kit-hang--tight');
   const b = p.querySelector('b');
   if (!b) return p.offsetHeight;
-  const lines = () => b.offsetHeight / (parseFloat(getComputedStyle(b).lineHeight) || 14);
-  if (p.querySelector('em') && lines() > 1.5) f.classList.add('kit-hang--terse');
+  const lines = () => b.offsetHeight / lineH(b);
+  // (round 40 repair 2: the date line goes too when name and date together
+  // would make three -- "The Children / and the nursery rabbit, 1838")
+  if (p.querySelector('em') && (lines() > 1.5 || plateLines(f) > 2)) f.classList.add('kit-hang--terse');
   // (round 40 repair: a plate is no wider than its frame, so a long single
   // word -- CONSERVATORY -- that will not fit the plate's width sets closer too)
   const over = () => b.scrollWidth > b.clientWidth + 1 || b.getBoundingClientRect().width > p.clientWidth + 1;
@@ -207,12 +209,91 @@ export function settlePlate(f) {
   return p.offsetHeight;
 }
 
+const lineH = (el) => parseFloat(getComputedStyle(el).lineHeight) || 14;
+
+/** How many lines a hung picture's plate sets: the name's and, when it shows,
+ *  the date line's (round 40 repair 2). */
+export function plateLines(f) {
+  const p = f?.querySelector('.kit-hang__plate');
+  if (!p) return 0;
+  const b = p.querySelector('b');
+  const em = p.querySelector('em');
+  const n = (el) => (el && el.getClientRects().length ? Math.round(el.offsetHeight / lineH(el)) : 0);
+  return n(b) + n(em);
+}
+
+/**
+ * NEVER THREE LINES (round 40 repair 2; the paired test against survey 6, both
+ * judges: "The / Lady of / the House" on three lines "stands taller than its
+ * partner", "The / Nursery / Shelf" crammed into three). A plate that needs a
+ * third line at its frame's width may run up to `k` (1.25) times the frame's
+ * width, moulding and all, centred under it -- the narrowest that takes the
+ * name in two lines, and no wider than `maxPx` or than `ok` allows (the wall's
+ * neighbours). Returns true when the plate sets one or two lines; otherwise
+ * the plate is left at its frame's width.
+ */
+export function widenPlate(f, { k = 1.25, maxPx = Infinity, ok = () => true } = {}) {
+  const p = f?.querySelector('.kit-hang__plate');
+  if (!p) return true;
+  p.style.removeProperty('max-width');
+  f.classList.remove('kit-hang--wideplate');
+  settlePlate(f);
+  if (plateLines(f) <= 2) return ok(f);
+  const a = f.querySelector('.kit-hang__frame')?.getBoundingClientRect();
+  if (!a || !a.width) return false;
+  const FW = a.width * (1 + 2 * .085);
+  for (let i = 1; i <= 5; i++) {
+    const w = Math.min(FW * (1 + (k - 1) * i / 5), maxPx);
+    if (w <= FW) break;
+    p.style.maxWidth = `${w.toFixed(1)}px`;
+    f.classList.add('kit-hang--wideplate');
+    settlePlate(f);
+    // (the narrowest that takes two lines: a wider one is never clearer)
+    if (plateLines(f) <= 2) {
+      if (!ok(f)) break;
+      // and a little air between the lettering and the cartouche's ends,
+      // where the wall has it
+      const air = Math.min(w + 8, FW * k, maxPx);
+      if (air > w + 1) {
+        p.style.maxWidth = `${air.toFixed(1)}px`;
+        settlePlate(f);
+        if (plateLines(f) > 2 || !ok(f)) { p.style.maxWidth = `${w.toFixed(1)}px`; settlePlate(f); }
+      }
+      return true;
+    }
+    if (w >= maxPx) break;
+  }
+  p.style.removeProperty('max-width');
+  f.classList.remove('kit-hang--wideplate');
+  settlePlate(f);
+  return false;
+}
+
+/* a panel's medallion stands up out of its top rail (.kit-panel[data-medal]
+   ::before, kit.css) -- above the panel's own box, where a plate over it
+   "crowds the fort frame's moon medallion" (round 40 repair 2, J1): its box */
+function medalBox(o) {
+  if (!o.matches?.('.kit-panel[data-medal]')) return null;
+  const cs = getComputedStyle(o, '::before');
+  if (!cs || cs.content === 'none' || cs.display === 'none') return null;
+  const w = parseFloat(cs.width), h = parseFloat(cs.height);
+  if (!w || !h) return null;
+  const r = o.getBoundingClientRect();
+  let tx = 0, ty = 0;
+  try { const m = new DOMMatrixReadOnly(cs.transform === 'none' ? undefined : cs.transform); tx = m.m41; ty = m.m42; } catch { /* no transform */ }
+  const left = r.left + o.clientLeft + (parseFloat(cs.left) || 0) + tx;
+  const top = r.top + o.clientTop + (parseFloat(cs.top) || 0) + ty;
+  return { left, top, right: left + w, bottom: top + h, width: w, height: h };
+}
+
 export function fitHung(figs, obstacles, { gap = 8, min = 72, pool = null, near = [], nearGap = 6 } = {}) {
   // `near`: obstacles a picture may stand closer to (`nearGap`), e.g. the
   // candle on the rail under it (round 40 repair)
-  const boxOf = (list, g) => list.filter(o => o && !o.hidden && o.getClientRects().length)
+  const live = (list) => list.filter(o => o && !o.hidden && o.getClientRects().length);
+  const boxOf = (list, g) => live(list)
     .map(o => o.getBoundingClientRect()).filter(r => r.width && r.height).map(r => ({ r, g }));
-  const boxes = [...boxOf(obstacles, gap), ...boxOf(near, nearGap)];
+  const boxes = [...boxOf(obstacles, gap), ...boxOf(near, nearGap),
+    ...live(obstacles).map(medalBox).filter(Boolean).map(r => ({ r, g: gap }))];
   const hit = (a, { r: b, g }) => a.left < b.right + g && a.right > b.left - g
     && a.top < b.bottom + g && a.bottom > b.top - g;
   const clear = (f) => {
@@ -228,25 +309,58 @@ export function fitHung(figs, obstacles, { gap = 8, min = 72, pool = null, near 
     }
     return !boxes.some(b => hit(u, b));
   };
-  // the widest width up to the board's own at which `f` clears, set on it; false if none
-  const fit = (f) => {
+  const set = (f, w) => f.style.setProperty('--hang-w', `${w.toFixed(1)}px`);
+  /* the widest width up to the board's own at which `f` clears, set on it;
+     false if none. `strict` (round 40 repair 2): and its plate on one or two
+     lines -- a plate that needs three first takes a wider frame where the
+     wall has room for one (up to 1.25x the board's), then a plate up to 1.25x
+     its frame's width (widenPlate); false if neither does it */
+  const fit = (f, strict) => {
     f.style.removeProperty('--hang-w');
+    f.querySelector('.kit-hang__plate')?.style.removeProperty('max-width');
+    f.classList.remove('kit-hang--wideplate');
     f.hidden = false;
     const W0 = f.offsetWidth;
-    if (!W0 || clear(f)) return true;
-    const set = (w) => f.style.setProperty('--hang-w', `${w.toFixed(1)}px`);
-    let lo = min, hi = W0;
-    set(lo);
-    if (!clear(f)) { f.style.removeProperty('--hang-w'); return false; }
-    for (let i = 0; i < 8; i++) { const m = (lo + hi) / 2; set(m); if (clear(f)) lo = m; else hi = m; }
-    set(lo);
-    return true;
+    if (!W0) return true;
+    let w = W0;
+    if (!clear(f)) {
+      let lo = min, hi = W0;
+      set(f, lo);
+      if (!clear(f)) { f.style.removeProperty('--hang-w'); return false; }
+      for (let i = 0; i < 8; i++) { const m = (lo + hi) / 2; set(f, m); if (clear(f)) lo = m; else hi = m; }
+      set(f, lo);
+      w = lo;
+    }
+    if (!strict || plateLines(f) <= 2) return true;
+    if (w >= W0) {
+      for (let i = 1; i <= 5; i++) {
+        set(f, W0 * (1 + .05 * i));
+        if (clear(f) && plateLines(f) <= 2) return true;
+      }
+      f.style.removeProperty('--hang-w');
+    }
+    /* the widest frame, from the board's own down to `min`, at which a plate
+       of up to 1.25x takes the name in two lines and the whole clears: a
+       two-line plate is a line shorter, so its frame may stand taller than a
+       three-line one's could, and a narrower frame moves its plate's middle
+       in from the wall's neighbour */
+    const step = Math.max(2, W0 * .03);
+    for (let x = W0; x > min - step; x -= step) {
+      set(f, Math.max(x, min));
+      if (widenPlate(f, { ok: clear })) return true;
+    }
+    if (w >= W0) f.style.removeProperty('--hang-w'); else set(f, w);
+    settlePlate(f);
+    return false;
   };
   const spares = (Array.isArray(pool) ? pool : PICTURE_POOLS[pool] || []).filter(id => ART[id]);
   const hung = figs.filter(Boolean);
   return hung.map((f, i) => {
-    if (fit(f)) return f;
-    if (f.classList.contains('kit-hang--painting')) {
+    // first a painting whose plate keeps to two lines; then, when the pool has
+    // none that does, any that clears, as before
+    for (const strict of [true, false]) {
+      if (fit(f, strict)) return f;
+      if (!f.classList.contains('kit-hang--painting')) continue;
       const cls = [...f.classList].filter(c => !c.startsWith('kit-hang')).join(' ');
       const taken = new Set(hung.map(g => g.dataset.art));
       // the pool read on from the painting it stands in for, so the stand-ins vary
@@ -257,7 +371,7 @@ export function fitHung(figs, obstacles, { gap = 8, min = 72, pool = null, near 
         t.innerHTML = paintingHtml(id, cls);
         const n = t.firstElementChild;
         f.replaceWith(n);
-        if (fit(n)) { hung[i] = n; return n; }
+        if (fit(n, strict)) { hung[i] = n; return n; }
         n.replaceWith(f);
       }
     }
