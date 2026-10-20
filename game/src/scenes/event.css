@@ -821,3 +821,11 @@
    (ui/kit.css) and the webs strung from them step aside; the sconces and the
    props on the floor stay, lit as before. */
 .kit-board.has-backdrop .ev-hall__web { display: none; }
+
+/* THE ROUND 40 REPAIR: each plate is capped at its frame's width now and
+   wraps to two lines inside it (survey 7's paired test: survey 6's plates
+   "wrap to sit within each frame's width"), so a plate stands a line taller
+   than round 40's one-line plate. The pictures hang that much higher on the
+   wall instead of narrowing over the sconce (the sconces stay where they
+   are): at the Deck's 1280 the Dowager and her like hang again. */
+.ev-hall__pic { top: calc(var(--pic-top) - clamp(20px, 3.6vh, 32px)); }

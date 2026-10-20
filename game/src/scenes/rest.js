@@ -466,7 +466,7 @@ export class RestScene extends RoomScene {
     this._bindKeys();
     // a tall painting's plate fell onto the fort's medallion or behind the
     // REST panel (survey 5, both judges): narrow it until it clears them
-    this._fitPictures('.rs-hang', '.rs-art, .rs-door, .kit-titleblock', { gap: 10, pool: 'cosy' });
+    this._fitPictures('.rs-hang', '.rs-art, .rs-door, .kit-titleblock', { gap: 8, pool: 'cosy' });
     bus.emit('rest:ready', {});
   }
 
