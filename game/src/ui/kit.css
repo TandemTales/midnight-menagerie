@@ -4747,3 +4747,7 @@ html .cb-endturn__hint { font-size: 12px; }
 .kit-hang--painting > .kit-hang__plate > b { letter-spacing: .02em; }
 .kit-hang--painting.kit-hang--tight > .kit-hang__plate { padding-inline: 10px; border-image-width: 8px 12px; }
 .kit-hang--painting.kit-hang--tight > .kit-hang__plate > b { letter-spacing: 0; }
+
+/* (the round 40 repair seats no boss on the rail -- ui/enemy.js _seatStatuses
+   -- so nothing sets the row's balance any more: it is none) */
+.cb-enemy__name > .cb-enemy__statuses.is-on-rail { --rail-bal: 0; }
