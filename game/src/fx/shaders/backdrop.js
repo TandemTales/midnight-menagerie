@@ -15803,7 +15803,9 @@ void main(){
       float spx = clamp(length(fwidth(S)), 0.004, 0.5);
       float k = fres*film;
       float pane = 0.0, moonR = 0.0, globes = 0.0, hiR = 0.0;
-      if (k > 0.004) {
+      /* (the frame budget: where the film holds next to nothing -- the near
+         floor seen steeply, under the hand in a fight -- nothing is traced) */
+      if (k > 0.035) {
         /* the end wall: three windows on uMirror.y centres */
         const float HW = 1.45, SILL = 2.30;
         float spr = min(5.00, uMirror.z - 0.74 - HW);
@@ -15833,7 +15835,7 @@ void main(){
         globes = (clamp(0.5 + (0.105 - gd)/rpx, 0.0, 1.0) + 0.30*exp(-gd*7.0))*step(abs(pX), sp*0.9);
         /* the side walls: a window in every 4.2 m bay (bathWallH's sides),
            the image going out in the tiles' unevenness as the ray runs long */
-        if (tS > 0.0 && tS < 30.0 && abs(rd.x) > 0.04) {
+        if (tS > 0.0 && tS < 16.0 && abs(rd.x) > 0.05) {
           float u = rd.x < 0.0 ? (uMirror2.y - S.x) : (S.x - uMirror2.z);
           float bx = u - (floor(u/4.2) + 0.5)*4.2;
           const float HS = 1.05, SS = 2.55;
@@ -15847,7 +15849,7 @@ void main(){
                         max(clamp(0.5 + (ir*0.8 - abs(abs(bx) - HS/3.0))/spx, 0.0, 1.0)*(1.0 - headS),
                         max(clamp(0.5 + (ir*0.6 - abs((abs(fract((S.y - SS)*2.0 + 0.5) - 0.5)*0.50)))/spx, 0.0, 1.0)*(1.0 - headS),
                             clamp(0.5 + (ir - abs(S.y - ps))/spx, 0.0, 1.0))));
-          pane += inS*(1.0 - 0.90*ironS)*0.70*mix(0.45, 1.0, puddle)*(1.0 - smoothstep(9.0, 30.0, tS));
+          pane += inS*(1.0 - 0.90*ironS)*0.70*mix(0.45, 1.0, puddle)*(1.0 - smoothstep(7.0, 16.0, tS));
         }
       }
       vec3 nightW = mix(uAccent, vec3(0.50, 0.62, 0.95), 0.60);
