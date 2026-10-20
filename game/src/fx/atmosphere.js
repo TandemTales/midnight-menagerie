@@ -1514,9 +1514,11 @@ export const REGIONS = {
                  pool: { ahead: 4.2, across: 0.3, abs: true, rAlong: 2.2, rAcross: 3.0, k: 2.2, color: '#e8b070' },
                  pool2: { ahead: 5.6, across: -3.4, abs: true, rAlong: 2.6, rAcross: 2.2, k: 1.5, color: '#7fb4dc' } },
     cineFloor: 0.12,
-    /* (round 39 graft, PERIDOT's: the fight's own warm pool half the wing's,
-       so the wet tiles round it stay dark and take the windows as a mirror) */
-    stagePool: { k: 0.50 },
+    /* (round 39 graft, item 5: PERIDOT halved the fight's own warm pool on
+       its pale cream tiles; on these dark glazes it is the light the fight's
+       checker is read by, so it stays whole -- and wider and nearer, so the
+       wet tiles under the fight take it as PERIDOT's did) */
+    stagePool: { k: 1.0, x: 1.2, y: 0.8, near: 0.6 },
     /* (round 39: and the post grade's canvas tooth at under half the house's
        -- on a broad lit floor its blotches were the "mottled tile field") */
     grain: 0.012, tooth: 0.042,

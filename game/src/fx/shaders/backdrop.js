@@ -15710,7 +15710,11 @@ void main(){
     vec2 fwB = max(mpp*1.2, vec2(1e-4))/0.78;
     vec2 ibB = 2.0*(abs(fract((tq - 0.5*fwB)*0.5) - 0.5) - abs(fract((tq + 0.5*fwB)*0.5) - 0.5))/fwB;
     float chkB = 0.5 - 0.5*ibB.x*ibB.y;
-    vec3 green = vec3(0.10, 0.20, 0.19)*(0.80 + 0.40*glz);
+    /* (round 39 graft, item 5 -- PERIDOT's wet-tile light, which won the
+       fight 3 of 3: its checker READ, a pale tile against a dark one. The
+       pale glaze a half again lighter; the dark one, and the grout, as
+       RHODONITE laid them -- J3's "finer, darker tile tooth") */
+    vec3 green = vec3(0.15, 0.27, 0.25)*(0.80 + 0.40*glz);
     vec3 dark  = vec3(0.045, 0.060, 0.075)*(0.85 + 0.30*glz);
     vec3 tile = mix(dark, green, chkB);
     /* the glaze's own sheen: a little lighter toward each tile's middle */
