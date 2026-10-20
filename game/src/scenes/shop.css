@@ -1372,3 +1372,47 @@
     -webkit-line-clamp: unset; line-clamp: none; overflow: visible;
   }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   THE ROUND 40 REPAIR — EVERY RULE WHOLE, GOODS THAT FILL THEIR DOMES
+   Both survey 7 judges: at the Deck's 1280 the Coatcheck Ticket's rule was
+   clamped with an ellipsis ("the one function the shop exists for ... fails
+   on the Deck"), and the goods under the glass were 20-30 px icons too small
+   for their domes. No rule is clamped now, at any size: the shelf's columns
+   share its width by how much each ware has to say (shop.js), and the rule
+   sets at 12 px+ with tighter leading. Each bell and jar stands a size up and
+   its ware fills it, about 50 px of painted object under the glass.
+   ═══════════════════════════════════════════════════════════════════════════ */
+.sh-side .sh-list { --ware-min: 112px; column-gap: clamp(8px, .8vw, 12px); }
+.sh-side .sh-row.sh-pressable { --vw: clamp(62px, 4.9vw, 78px); }
+/* (each painting carries a seventh of air either side of its object: at
+   the bell's whole width the object stands as wide as the glass inside it) */
+.sh-side .sh-row .sh-vessel > .kit-obj { width: 100%; bottom: calc(var(--vw) * .08); }
+.sh-side .sh-row .sh-vessel--jar > .kit-obj { width: 100%; bottom: calc(var(--vw) * .11); }
+.sh-side .sh-row.sh-pressable .sh-row__txt em,
+.sh-side .sh-row.sh-pressable:is(.is-in-hand, :hover, :focus-within) .sh-row__txt em {
+  display: block; -webkit-line-clamp: unset; line-clamp: none; overflow: visible;
+  margin-top: 4px;
+}
+/* the bell's crown rises a little into the air under the shelf's ribbon --
+   not into the panel's medallion over the middle one -- and the plinth, the
+   plate and the rule close up, so a size up costs the shelf no height */
+.sh-side .sh-row .sh-row__sig.sh-vessel { margin-top: -5px; }
+.sh-side .sh-row.sh-pressable { --plinth-h: calc(var(--lip-h) * 2.3); }
+.sh-side .sh-row.sh-pressable .sh-row__txt b { line-height: 1; }
+.sh-side .sh-row.sh-pressable > .sh-buy { margin-top: 6px; }
+.sh-side .sh-row.sh-pressable .sh-row__txt em,
+.sh-side .sh-row.sh-pressable:is(.is-in-hand, :hover, :focus-within) .sh-row__txt em { margin-top: 3px; line-height: 1.1; }
+@media (max-width: 1400px) {
+  /* a short rule's column gives the long one its width: the bells and the
+     plates still stand whole in the narrow ones */
+  .sh-side .sh-list { --ware-min: 96px; column-gap: 7px; }
+  .scene--shop .sh-side > .sh-counter.kit-panel:is(.sh-counter--keeps, .sh-counter--snacks) { padding-inline: 9px; }
+  .scene--shop .sh-side .sh-row.sh-pressable .sh-row__txt b { font-size: 12px; letter-spacing: .02em; }
+  .sh-side .sh-row.sh-pressable .sh-row__txt em,
+  .sh-side .sh-row.sh-pressable:is(.is-in-hand, :hover, :focus-within) .sh-row__txt em { font-size: 12px; line-height: 1.05; }
+}
+@media (max-height: 860px) {
+  .sh-side .sh-row.sh-pressable { --vw: 64px; }
+  .scene--shop .sh-side .sh-row.sh-pressable .sh-row__txt em { font-size: 12px; line-height: 1.05; }
+}

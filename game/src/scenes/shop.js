@@ -393,6 +393,19 @@ export class ShopScene extends RoomScene {
       this._pressable(row);
     }
 
+    // THE ROUND 40 REPAIR: every Keepsake's and Snack's rule whole, never cut
+    // with an ellipsis (both survey 7 judges at 1280: the Coatcheck Ticket's).
+    // The three on a shelf share its width by how much each has to say -- a
+    // long rule takes a wider column, a short one gives it (never under the
+    // width its bell and plate need) -- so the longest rule in the shop sets
+    // in five lines at 12 px on the Deck, not six.
+    for (const list of [this.$keeps, this.$snacks]) {
+      const ems = [...list.querySelectorAll(':scope > .sh-row .sh-row__txt em')];
+      if (ems.length < 2) continue;
+      const w = ems.map(e => Math.max(60, Math.min(110, e.textContent.trim().length)));
+      list.style.gridTemplateColumns = w.map(x => `minmax(var(--ware-min, 96px), ${x}fr)`).join(' ');
+    }
+
     // You are buying Tricks. You can see the deck you are buying them for.
     this._on(wrap.querySelector('.sh-deck'), 'click', () => this.hud?.openDeck());
 
