@@ -508,7 +508,7 @@ export const PROP_SHAPES = {
   nursery: [22, 45, 46, 47, 48, 49, 61, 87],
   passages: [8, 23, 66],
   pumpkin: [23, 27, 86],
-  sleeping: [0, 14, 22, 46, 47, 50, 51, 52, 56, 60],
+  sleeping: [0, 14, 22, 50, 51, 52, 56, 60],   // (round 41: not the Nursery's horse and chest, 46 and 47)
   study: [22, 53, 54, 55, 56, 88],
 };
 
@@ -930,7 +930,7 @@ export class Backdrop {
     this.floorMat = new THREE.ShaderMaterial({
       uniforms: surfaceUniforms(),
       /* the room-kind floors are a variant of their own: _setSurfaceProgram */
-      defines: { MM_FLOORX: 0, MM_R25W: 0, MM_PAT: 0, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0 },
+      defines: { MM_FLOORX: 0, MM_R25W: 0, MM_PAT: 0, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0, MM_RUGK: 0 },
       vertexShader: FLOOR_VERT, fragmentShader: FLOOR_FRAG,
       depthWrite: true, fog: false,
     });
@@ -2599,7 +2599,10 @@ export class Backdrop {
       if (SC && room.h > 0 && pal.subject !== 'closet') {
         u.uSconce.value.set(room.w / 2 - (SC.inset ?? 0.40), SC.z0, SC.pitch, SC.k ?? 0.9);
       } else {
-        u.uSconce.value.set(0, 0, 1, 0);
+        /* (round 41: the Hedge Maze's floor reads its alley's half-width
+           here -- x, with no sconce (w 0) -- to lay the hedges' root shade
+           and their leaf drifts along their foot; FLOOR_FRAG, MM_PAT 13) */
+        u.uSconce.value.set(pal.regionKey === 'hedge' ? room.w / 2 : 0, 0, 1, 0);
       }
       u.uSconceEnd.value = this._wallZ;
     }
@@ -2907,7 +2910,13 @@ export class Backdrop {
     this._setSurfaceProgram(this.floorMat, fx, (R25_FLOORS[p.r25w] || []).includes(fx) ? p.r25w : 0,
       /* (round 37 graft: a braided oval rug, the wardrobe's -- MM_RUGO;
          round 39: and the Kitchens' small worn flags -- MM_FLAGK, pal.flagK) */
-      { MM_RUGO: p.rug && p.rug.oval ? 1 : 0, MM_FLAGK: p.flagK ?? 0 });
+      /* (round 41, AMETHYST: and a wing's own floor covering -- MM_RUGK,
+         pal.floorK: 1 the Sleeping Quarters' drugget and the bedroom's
+         needlework carpet, 3-5 the Passages' coir matting, the library
+         passage's dusty boards and the closet's rag runner, 6 the kennel
+         range's straw in drifts, 7 the wash house's wet floor; 0 every
+         other room, which compiles exactly what it did) */
+      { MM_RUGO: p.rug && p.rug.oval ? 1 : 0, MM_FLAGK: p.flagK ?? 0, MM_RUGK: p.floorK ?? 0 });
     f.uRunner.value = p.runner ?? 0;
     /* the runner leads to the door, wherever the subject took it */
     f.uRunX.value = p.runX ?? (p.subjX ?? 0);

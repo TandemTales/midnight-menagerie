@@ -410,6 +410,10 @@ export const REGIONS = {
        #262238, hi #46446e -> #3a3352) and the moon's fill weaker: the
        electric blue was the cold light on a pale wall. */
     arch: 0, floorPattern: 0, subject: 'dormroom', damask: 0,
+    /* (round 41, AMETHYST: its OWN floor covering -- a drugget down the
+       dormitory's aisle and a needlework carpet before the bedroom's fire,
+       MM_RUGK 1 -- not the Foyer's Turkey runner, both survey-7 judges) */
+    floorK: 1,
     /* (round 29: the wing's own shell IS the dormitory now, 8 x 8.4 m --
        the fight is played in it, and a room kind's `room` never reaches
        the wing's main room; the bedroom scales up from it to what it was) */
@@ -1275,6 +1279,10 @@ export const REGIONS = {
        moon and the stars keep their own light) */
     skyGlow: 0.95,
     grain: 0.010, propShadow: 1.5,     // (round 31 graft: 0.010 from 0.014 -- ink, not grain)
+    /* (round 41: the post grade's canvas tooth at under half the house's --
+       on the walk its blotches were the "milky grey slab" and hid the
+       gravel's stones) */
+    tooth: 0.045,
     /* A HEADSTONE IN A HEDGE MAZE (BRIEF-r9 fix 4) was the second set I would
        question: defensible in a haunted house, but a formal maze's set piece
        is a GARDEN STATUE on a plinth at the turn of a walk, and shape 15 now
@@ -1356,6 +1364,9 @@ export const REGIONS = {
     label: 'The Secret Passages',
     propMat: 'wood', propCeil: 0.165,
     arch: 2, floorPattern: 0, subject: 'timber',
+    /* (round 41, AMETHYST: its own floor -- the passage's coir matting,
+       MM_RUGK 3; the library passage and the closet lay theirs) */
+    floorK: 3,
     /* (round 22 graft: its hidden doors, one on each wall standing open in
        relief with its wedge of light on the boards -- Backdrop._placeAjar) */
     ajarDoors: true,
@@ -1407,8 +1418,12 @@ export const REGIONS = {
                        chest) on each side of the near floor" -- an old pier
                        table pushed back here out of the hall, each side, in
                        the near lamps' pools) */
-                    { shape: 66, edge: 0.15, z: 3.4, tone: 0.94, fore: 1, keep: true, seed: 1.4 },
-                    { shape: 66, edge: 0.85, z: 2.8, tone: 0.94, fore: 1, keep: true, seed: 3.9 }] },
+                    /* (round 41, AMETHYST: and each is the PASSAGE's -- a
+                       scrubbed deal table with a pierced-tin lantern, the
+                       ledgers, a candle stub and the keys; not the Foyer's
+                       marble pier table and its vase: wfServTable) */
+                    { shape: 66, edge: 0.15, z: 3.4, tone: 0.94, fore: 1, keep: true, seed: 41.4 },
+                    { shape: 66, edge: 0.85, z: 2.8, tone: 0.94, fore: 1, keep: true, seed: 43.9 }] },
     particles: { mix: [[PTYPE.DUST, 0.78], [PTYPE.PLASTER, 0.16], [PTYPE.WISP, 0.06]],
                  /* (round 28: 0.45, from 1.0 -- a thousand lit motes against
                     the dark end of the passage were "a starfield indoors") */
@@ -1545,6 +1560,9 @@ export const REGIONS = {
     /* (round 23: no wallpaper -- a kennel range is boarded stalls under
        limewashed brick, drawn whole by program 15) */
     arch: 0, floorPattern: 2, subject: 'kennel', damask: 0,
+    /* (round 41, AMETHYST: the range's straw banked and drifted, MM_RUGK 6;
+       the wash house's wet floor and its gutter, 7) */
+    floorK: 6,
     /* (round 23: 9 m deep, from 11 -- the range of stalls IS the room, and
        16 m from the lens it was a strip along the top of the frame) */
     /* (round 28: "the ceiling is a milky grey band" -- a BEAMED ceiling,
@@ -1598,6 +1616,11 @@ export const REGIONS = {
                   and its bowls in the near straw at the left, and a kennel
                   at your right shoulder, its lit door on the flags */
                { shape: 40, edge: 0.16, z: 2.2, tone: 0.95, fore: 1, keep: true, scale: 1.1 },
+               /* ROUND 41 (AMETHYST): and at your right, by the door the
+                  range is fed from, the kennel man's corner -- the feed bin
+                  with its lid propped on the meal, a sack slumped against it,
+                  a dropped lead (the basket's quad, seed > 40: wgFeedSD) */
+               { shape: 40, edge: 0.84, z: 1.5, tone: 0.95, fore: 1, keep: true, seed: 45.0, hM: 0.82, wM: 1.30 },
                /* (second pass: the kennel at your right shoulder is gone
                   again -- a frame-tall quad of the prop program, and the
                   kennels fight measured +2.3 ms over BASE with it) */
@@ -1616,6 +1639,9 @@ export const REGIONS = {
        half; and the grade's saturation 0.89 -> 0.95, so the doghouses keep
        their paint) */
     wallFog: 0.03, bloom: 0.50, halation: 0.15, grain: 0.011, saturate: 0.95,
+    /* (round 41: the cold fill's grey-blue wash off the near flags, as the
+       Kitchens' -- the near floor's "empty mottle", survey-7 judge 2) */
+    cineFloor: 0.45,
     /* ...and THE NEAR FLOOR (round 31's rule): the flags run on toward the
        hand, the lantern's pool laid on them in front of you, and the straw
        heaped where the dogs drag it (FLOOR_FRAG, uStraw's heaps) */
@@ -2593,8 +2619,22 @@ export const ROOM_KINDS = {
                         up and the bear sat against it, and across the
                         runner a rocking horse left where it was ridden;
                         `fore`, in the candle's and the moon's pools */
-                     { shape: 47, edge: 0.27, z: 1.6, tone: 0.97, scale: 1.0, fore: 1, keep: true, seed: 1.0 },
-                     { shape: 46, edge: 0.73, z: 0.9, tone: 0.95, scale: 1.0, fore: 1, keep: true, seed: 2.0 }],
+                     /* ROUND 41 (AMETHYST), both survey-7 judges: "the
+                        nursery's rocking horse and toy chest are reused and
+                        cropped at both frame edges". The dormitory's OWN
+                        things, wholly in frame: a child's school trunk at the
+                        near bed's foot with her blanket folded on it, and
+                        across the drugget a ladder-back chair with a
+                        nightgown thrown over it, its slippers kicked off and
+                        the chamber pot by its leg (the washstand's quad, 52,
+                        seed > 40: slDrawM) */
+                     { shape: 52, edge: 0.30, z: 1.5, tone: 0.97, fore: 1, keep: true, seed: 45.0, hM: 0.56, wM: 0.88 },
+                     { shape: 52, edge: 0.70, z: 1.0, tone: 0.96, fore: 1, keep: true, seed: 85.0, hM: 1.00, wM: 0.95 }],
+              /* (round 41, AMETHYST: survey-7 judge 1, "the right third of the
+                 floor falls to black" -- the moon from the tall right-hand
+                 window laid on the near boards there, set where it falls
+                 (abs), and the washstand candle's warm pool kept on the left) */
+              nearFloor: { pool: { ahead: 4.6, across: 2.0, abs: true, rAlong: 3.2, rAcross: 2.2, k: 1.9, color: '#aab0c6' } },
               cam: { z: -1.6, look: 0.10 } },
             { subject: 'bedchamber', layout: 'wings', count: 0,
               room: { d: 1.053, w: 1.72 }, runner: 0,
@@ -2606,7 +2646,10 @@ export const ROOM_KINDS = {
                  goes) */
               rug: { ahead: 5.9, hw: 2.3, hd: 1.7 },
               nearFloor: { pool: { ahead: 5.2, across: -1.4, rAlong: 2.8, rAcross: 2.2, k: 1.3, color: '#9cb2e8' },
-                           pool2: { ahead: 5.0, across: 2.3, rAlong: 2.2, rAcross: 1.8, k: 1.7, color: '#f0a65a' } },
+                           /* (round 41: the fire's light carried onto the
+                              near boards at the right, where the floor fell to
+                              black under the wing chair -- abs, where it falls) */
+                           pool2: { ahead: 3.9, across: 1.9, abs: true, rAlong: 2.8, rAcross: 2.2, k: 2.4, color: '#f0a65a' } },
               lamps: [{ i: 0, x: 0.0, z: 0.95, y: 0.45, fit: 'none', color: '#ff9848', radius: 4.2, k: 1.10 },
                       { i: 3, x: 3.4, z: 0.42 },
                       { i: 2, x: 4.0, z: 0.38, y: 1.25, color: '#eab070', k: 1.5, radius: 4.0, fit: 'none' }],
@@ -2621,7 +2664,11 @@ export const ROOM_KINDS = {
                      { shape: 56, edge: 0.72, z: 0.4, tone: 0.97, scale: 1.0, fore: 1, keep: true, seed: 3.0 },
                      /* (round 35 graft, both judges, SCHEELITE's: the toy chest
                         and its bear at the four-poster's foot) */
-                     { shape: 47, x: -1.30, z: 0.2, tone: 0.95, free: true, keep: true, still: true }],
+                     /* (round 41, AMETHYST: and the bedroom's own -- a
+                        carved oak coffer at the four-poster's foot with a
+                        rose quilt folded on it, where the Nursery's toy chest
+                        and bear stood) */
+                     { shape: 52, x: -1.30, z: 0.2, tone: 0.95, free: true, keep: true, still: true, seed: 65.0, hM: 0.64, wM: 1.14 }],
               cam: { z: -1.4, look: 0.10 } }],
     names: [
       [/bedroom|moon window|dreaming/i, 1],
@@ -2905,7 +2952,7 @@ export const ROOM_KINDS = {
       /* behind the library: the backs of its cases line the passage */
       /* (round 22: the BACKS -- boards, uprights, the library's light
          between them -- where it drew the Study's own shelves of spines) */
-      { subject: 'backcase',
+      { subject: 'backcase', floorK: 4, runner: 0,
         vantage: { at: 'along', off: 0.12, wall: 1.6, fwd: 0.8, yaw: 8, wide: 2 } },
       /* a false closet, a portrait cavity: seen from its hidden door */
       /* (round 22: a CLOSET, 8 m of it and not the passage's 20: its pegs
@@ -2914,7 +2961,7 @@ export const ROOM_KINDS = {
          passage -- a narrow closet with hanging coats and shelving close in
          -- rather than the passage re-lit with wardrobe shapes": 0.56 of the
          passage's width, so its pegs and shelves stand at arm's length) */
-      { subject: 'closet', door: 'case', room: { d: 0.42, w: 0.56 }, countScale: 0.35,
+      { subject: 'closet', door: 'case', room: { d: 0.42, w: 0.56 }, countScale: 0.35, floorK: 5, runner: 0.55,
         vantage: { at: 'threshold', back: 2.0, lens: 0.90, dip: 0.12 } },
       /* a crawlspace or an underfloor run: crouched, well in */
       { subject: 'timber',
@@ -3003,7 +3050,7 @@ export const ROOM_KINDS = {
     kinds: [{ subject: 'kennel', swap: [[41, 40]] },
             /* (graft, ULTRAMARINE's: a zinc tub on its trestle and the
                grooming table set by hand where the eye is) */
-            { subject: 'washroom', swap: [[39, 42], [40, 42]], countScale: 0.75, shaftK: 0.45,
+            { subject: 'washroom', swap: [[39, 42], [40, 42]], countScale: 0.75, shaftK: 0.45, floorK: 7, straw: 0,
               near: [{ shape: 42, edge: 0.80, z: -1.0, tone: 0.95 }, { shape: 41, edge: 0.22, z: -3.4, tone: 0.92 },
                      { shape: 42, edge: 0.30, z: -1.6, tone: 0.94 },
                      /* (round 34: the near floor -- a dog's bed waiting by
@@ -3837,6 +3884,9 @@ export class Atmosphere {
          already draws: a gallery paved in marble flags, a hall with a fire under
          a beamed ceiling. */
       if (kind.floor !== undefined) pal.floorPattern = kind.floor;
+      /* (round 41, AMETHYST: and its own floor covering -- MM_RUGK, Backdrop) */
+      if (kind.floorK !== undefined) pal.floorK = kind.floorK;
+      if (kind.straw !== undefined) pal.straw = kind.straw;
       /* (round 25 graft: a carpet laid where the lens finds the floor --
          placed from the final rig in setMood, after stageRig) */
       /* (never the wing's main room: the fight's hall is dressed by its
