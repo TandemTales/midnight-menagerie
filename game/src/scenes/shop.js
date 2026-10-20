@@ -317,19 +317,23 @@ export class ShopScene extends RoomScene {
     // the crescent medallion lit in its art window, FORGETTING on the Tricks'
     // own dark nameplate, "a service" as its type line, what it does as its
     // rules — and its price hung on the ledge beneath it like everything else.
-    const service = el('div', 'sh-service');
-    service.setAttribute('role', 'listitem');
+    /* ROUND 40: FIVE TRICKS ON THE SHELF, FORGETTING ON HIS COUNTER (survey
+       6, J2: "the six cards touch edge to edge under the curtain" and their
+       rules ran 9-10 px at 1280). The service is no Trick, so it leaves the
+       row of cards: it is offered on Mr. Moth's own counter plaque, under
+       what he says -- the crescent medallion, FORGETTING, what it does, and
+       its price on a hung tag -- and the five Tricks take the shelf with air
+       between them and a size more for their rules. */
+    const service = el('div', 'sh-service sh-service--plaque');
     service.setAttribute('aria-label', 'Removal service');
     service.innerHTML = `
-      <div class="sh-service__face">
-        <div class="sh-service__card">
-          <span class="sh-service__art" aria-hidden="true"><span class="sh-service__medal"></span></span>
-          <h3 class="sh-h sh-service__h">Forgetting <em>a service</em></h3>
-          <div class="sh-service__rules"></div>
-        </div>
+      <span class="sh-service__medal" aria-hidden="true"></span>
+      <div class="sh-service__body">
+        <h3 class="sh-h sh-service__h">Forgetting <em>a service</em></h3>
+        <div class="sh-service__rules"></div>
       </div>
       <div class="sh-remove"></div>`;
-    this.$cards.appendChild(service);
+    wrap.querySelector('.sh-moth__you').before(service);
     this.$remove = service.querySelector('.sh-remove');
     this.$removeText = service.querySelector('.sh-service__rules');
     this._pressable(service);
@@ -623,7 +627,7 @@ export class ShopScene extends RoomScene {
     // The shelf is read, not glanced at: rules type never prints smaller than
     // the pre-kit shop printed it at 1280x800, on a 228 px card (_cardfit.js).
     for (const { slot, view } of this._cardSlots || []) {
-      fitCardToSlot(view, slot.querySelector('.sh-card__face'), { legibleAt: 232 });
+      fitCardToSlot(view, slot.querySelector('.sh-card__face'), { legibleAt: 232, rulesPx: [12.5, 15] });
     }
     // The Forgetting card is drawn, not a CardView: its rules take the same lift.
     const svc = this.root?.querySelector('.sh-service__card');

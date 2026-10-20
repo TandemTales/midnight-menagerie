@@ -615,7 +615,7 @@ export class RewardScene extends RoomScene {
       ['rw-hang rw-hang--l', 'rw-hang rw-hang--r']));
     // at the Deck's 1280 a painting stood behind the outer cards (survey 5):
     // each is narrowed until it clears the slots and their rings
-    this._fitPictures('.rw-hang', '.rw-slot, .rm-where', { gap: 14, pool: 'grand' });
+    this._fitPictures('.rw-hang', '.rw-slot, .rm-where, .rw-candle', { gap: 20, pool: 'grand' });
     // Round 26 graft (VERMEILLE's, both judges): the moonlit gothic lancets
     // back, cold against the candles' warm. They hang OUTSIDE the flanks the
     // portraits fill -- high on the wall at the board's outer edges, in the
@@ -774,7 +774,7 @@ export class RewardScene extends RoomScene {
     // than a fifth on a small frame (a Big Scare's three stand smaller), where
     // a bigger lift would push the words off the face.
     for (const { slot, view } of this._slots || []) {
-      fitCardToSlot(view, slot, { legibleAt: Math.min(224, (slot.clientWidth || 224) * 1.2) });
+      fitCardToSlot(view, slot, { legibleAt: Math.min(224, (slot.clientWidth || 224) * 1.2), rulesPx: [13, 18] });
     }
     this._fillRules();
     this._pointLights();

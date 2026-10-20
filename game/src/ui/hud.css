@@ -441,8 +441,8 @@
 .mm-hud__relicn {
   position: absolute; right: -4px; bottom: -4px; z-index: 2;
   display: grid; place-items: center;
-  min-width: 15px; height: 15px; padding: 0 3px; box-sizing: border-box;
-  font-family: var(--font-num); font-size: 11px; font-weight: 700; line-height: 1;
+  min-width: 16px; height: 16px; padding: 0 3px; box-sizing: border-box;
+  font-family: var(--font-num); font-size: 12px; font-weight: 700; line-height: 1;
   font-variant-numeric: lining-nums tabular-nums;
   color: #1d1208;
   text-shadow: 0 1px 0 color-mix(in srgb, var(--kit-gold-hi) 55%, white);
@@ -739,7 +739,7 @@
 .mm-hud__where .mm-hud__s::before { content: none; }
 .mm-hud__where .mm-hud__s {
   font-family: var(--font-display); font-weight: 700; text-transform: uppercase;
-  font-size: max(11.5px, .78em); letter-spacing: .08em; padding-left: .2em;
+  font-size: max(12px, .78em); letter-spacing: .08em; padding-left: .2em;
   color: var(--kit-gold);
 }
 .mm-hud__clue .mm-hud__t { color: color-mix(in srgb, var(--kit-moon) 70%, var(--kit-name)); }
@@ -1066,4 +1066,77 @@
   .mm-hud__seed .mm-hud__t { letter-spacing: 0; }
   .mm-hud__haunt .mm-hud__w { padding-right: .1em; }
   .mm-hud__seed .mm-hud__w { padding-right: .22em; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ROUND 40 — THE STRIP'S FIGURES LABELLED, ITS OBJECTS TOLD APART
+   Survey 6, both judges, hud-late at 1280: "the bare numbers 137, 2 and +1
+   on the left have no labels" (J1); "KEEPSAKES 10 and GEAR 8 each show only
+   three sepia chips about 22 px across, grey on grey with no rim colour"
+   (J2). So:
+   - Buttons, Clues and Luck letter their WORD before the figure, the way
+     Haunt and the seed do ("BUTTONS 137"); at the Deck's width the word
+     stands in for the icon, as Haunt's and the seed's already do there;
+   - every object sits in a socket rimmed in its own enamel (ui/hud.js
+     tintBelt), and the wash over the art is lighter: the object's own colour
+     reads through, toned toward the house's light rather than greyed out;
+   - a pouched group strikes what it still holds, "+7", on its last object.
+   ═══════════════════════════════════════════════════════════════════════════ */
+.mm-hud__where { max-width: 32ch; }
+.mm-hud :is(.mm-hud__gold, .mm-hud__clue, .mm-hud__luck) > :is(.mm-hud__u, .mm-hud__sr) {
+  position: static !important; width: auto; height: auto; overflow: visible; clip-path: none;
+  order: -1; margin: 0 .3em 0 0; padding: 0;
+  font-family: var(--font-display); font-weight: 700; font-style: normal;
+  text-transform: uppercase; font-size: max(12px, .8em); letter-spacing: .06em;
+  color: var(--kit-text-mid); white-space: nowrap;
+}
+.mm-hud :is(.mm-hud__gold, .mm-hud__clue, .mm-hud__luck) > .mm-icon { order: -2; }
+/* the word stands in for the icon at every width, as Haunt's and the seed's
+   do at the Deck's: a pictogram and its word side by side spent the room
+   the belt's objects need */
+.mm-hud .mm-hud__chip:is(.mm-hud__gold, .mm-hud__clue, .mm-hud__luck) > .mm-icon { display: none; }
+/* ...and on a late strip (a pouched belt) Haunt and the seed stand as words at 1600 too */
+.mm-hud[data-belt="pouch"] .mm-hud__chip:is(.mm-hud__seed, .mm-hud__haunt) > .mm-icon { display: none; }
+@media (max-width: 1400px) {
+  .mm-hud :is(.mm-hud__gold, .mm-hud__clue, .mm-hud__luck) > :is(.mm-hud__u, .mm-hud__sr) { letter-spacing: .03em; margin-right: .25em; }
+}
+/* the rim: the object's own enamel, a fine gilt line inside it */
+.mm-hud .mm-hud__relic::after,
+.mm-hud .mm-hud__gearchip::after {
+  inset: 6%;
+  box-shadow:
+    inset 0 0 0 2.5px var(--tint, var(--kit-gold)),
+    inset 0 0 0 3.5px rgba(16, 8, 4, .8),
+    inset 0 0 7px 1px rgba(12, 6, 16, .55),
+    0 0 0 .5px color-mix(in srgb, var(--kit-gold) 40%, transparent);
+}
+.mm-hud .mm-hud__relic::before,
+.mm-hud .mm-hud__gearchip::before {
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--tint, var(--kit-candle)) 34%, transparent), color-mix(in srgb, var(--tint, var(--kit-candle)) 8%, transparent) 72%, transparent);
+}
+.mm-hud .mm-hud__relicobj, .mm-hud .mm-hud__gearobj {
+  filter: sepia(.16) saturate(.95) brightness(1.12) contrast(1.08) drop-shadow(0 1.5px 1px rgba(0, 0, 0, .9));
+}
+/* "+7": what the pouch still holds, struck on a coin at the last object's foot */
+.mm-hud__peekmore {
+  position: absolute; right: -7px; bottom: -5px; z-index: 3;
+  display: grid; place-items: center;
+  min-width: 21px; height: 17px; padding: 0 4px; box-sizing: border-box;
+  border-radius: 9px;
+  font-family: var(--font-num); font-weight: 700; font-style: normal; font-size: 12px; line-height: 1;
+  font-variant-numeric: lining-nums tabular-nums;
+  color: #fff3d6;
+  background: radial-gradient(120% 120% at 40% 25%, #6f45a8, #2a1640 75%);
+  box-shadow: 0 0 0 1px #1a0f06, 0 0 0 2px var(--kit-gold), 0 2px 3px rgba(0, 0, 0, .8);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .95);
+  pointer-events: none;
+}
+.mm-hud .kit-beltpouch--cart.is-peeking .kit-beltpouch__n { display: none; }
+@media (max-width: 1400px) {
+  .mm-hud .kit-beltpouch--cart > .kit-beltpouch__txt { padding-left: calc(var(--cart-h) * .3); padding-right: calc(var(--cart-h) * .28); }
+  .mm-hud .kit-beltpouch--cart .kit-beltpouch__label { letter-spacing: .03em; }
+  .mm-hud :is(.mm-hud__gold, .mm-hud__clue, .mm-hud__luck) > :is(.mm-hud__u, .mm-hud__sr) { letter-spacing: .01em; margin-right: .22em; }
+  .mm-hud__bar { width: calc(var(--bar-h) * 2.7); }
+  .mm-hud__where .mm-hud__t { letter-spacing: 0; }
+  .mm-hud__group--vitals > .mm-hud__snacks { padding: 0 1px; }
 }

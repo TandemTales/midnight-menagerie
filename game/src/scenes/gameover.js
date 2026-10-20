@@ -815,7 +815,7 @@ export class GameOverScene extends Scene {
       // smaller than a full-size card prints them. Re-fitted whenever the slot
       // changes size, since a stylesheet landing late restyles the board.
       const slot = this._mvpSlot;
-      const fit = () => fitCardToSlot(view, slot, { legibleAt: 224 });
+      const fit = () => fitCardToSlot(view, slot, { legibleAt: 224, rulesPx: [12.5, 15] });
       fit();
       if (typeof ResizeObserver === 'function') {
         const ro = new ResizeObserver(() => { if (!this._dead) fit(); });
@@ -947,7 +947,7 @@ export class GameOverScene extends Scene {
     const show = (on) => { for (const f of figs) f.hidden = !on; };
     if (!stage || !reach || !said || said.hidden || !reach.offsetWidth) { show(false); return; }
     const cornice = y(stage) + stage.offsetHeight + 2;
-    const foot = Math.min(y(reach), y(said)) - 14;      // the gap over the higher plaque
+    const foot = Math.min(y(reach), y(said)) - 9;       // the gap over the higher plaque
     const triW = Math.min(reach.offsetWidth, said.offsetWidth);
     // each frame's height per px of its width: the picture, and its moulding
     const kOf = (f) => {
@@ -963,30 +963,36 @@ export class GameOverScene extends Scene {
        ABOVE its nameplate: the plate hangs below the frame, and at one shared
        height the Dowager's plate stood on the epitaph (both judges) */
     show(true);
-    for (const f of figs) f.style.setProperty('--go-plate-w', `${(triW * .96).toFixed(1)}px`);
-    const plateOf = (f) => f.querySelector('.kit-hang__plate')?.offsetHeight || 0;
-    const size = (plate) => {
-      const room = foot - plate - cornice - 18;
-      return ks.map(k => Math.min(room, k.k * triW * .98));
+    for (const f of figs) f.style.setProperty('--go-plate-w', `${(triW * 1.12).toFixed(1)}px`);
+    /* round 40: the plate hangs BELOW the frame on its pins (ui/kit.css),
+       its moulding's depth and 7 px under the picture */
+    const plateOf = (f) => {
+      const p = f.querySelector('.kit-hang__plate');
+      return p && p.offsetHeight ? p.offsetHeight + 7 + f.offsetWidth * .085 : 0;
     };
-    // a narrower frame wraps its plate onto more lines: settle the two together
-    let plate = 0, Fs = size(0);
+    /* round 40: each picture in ITS OWN bay -- from the cornice down to the
+       plaque it hangs over (the house over HOW FAR, the portrait over the
+       line that says why) -- with its own plate under it: one shared foot
+       at the higher plaque left the Dowager short of the room her bay had */
+    const feet = figs.map((f) => { const t = f.closest('.go-tri'); return (t ? y(t) : foot + 9) - 9; });
+    const size = (plates) => ks.map((k, i) => Math.min(feet[i] - plates[i] - cornice - 12, k.k * triW * .98));
+    // a narrower frame wraps its plate onto more lines: settle each one
+    let plates = figs.map(() => 0), Fs = size(plates);
     for (let pass = 0; pass < 4; pass++) {
       if (Math.min(...Fs) < 56) { show(false); return; }
       figs.forEach((f, i) => f.style.setProperty('--hang-w', `${(Fs[i] / ks[i].k).toFixed(1)}px`));
-      const p = Math.max(0, ...figs.map(plateOf));
-      if (p <= plate) break;
-      plate = p;
-      Fs = size(plate);
+      const ps = figs.map(plateOf);
+      if (ps.every((p, i) => p <= plates[i])) break;
+      plates = ps.map((p, i) => Math.max(p, plates[i]));
+      Fs = size(plates);
     }
     if (Math.min(...Fs) < 56) { show(false); return; }
-    const footP = foot - plate;
     figs.forEach((f, i) => {
       const { rim, k } = ks[i];
       const F = Fs[i];
       const w = F / k;
       const host = f.offsetParent || f.parentElement;
-      const picTop = footP - F + w * rim;
+      const picTop = feet[i] - plates[i] - F + w * rim;
       f.style.setProperty('--hang-w', `${w.toFixed(1)}px`);
       f.style.top = `${(picTop - y(host)).toFixed(1)}px`;
       f.style.bottom = 'auto';

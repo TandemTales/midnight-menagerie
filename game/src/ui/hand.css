@@ -366,4 +366,26 @@
     0 0 0 calc(6 * var(--u)) #1a0f12;
   filter: drop-shadow(0 calc(3 * var(--u)) calc(4 * var(--u)) rgba(0,0,0,.85)) drop-shadow(0 0 calc(5 * var(--u)) color-mix(in srgb, var(--kit-gold) 35%, transparent));
 }
-.mm-hand .mm-card > .mm-hand__stack i { color: var(--kit-gold-hi); font-size: .74em; }
+.mm-hand .mm-card > .mm-hand__stack i { color: var(--kit-gold-hi); font-size: .86em; }
+
+/* ROUND 40 -- THE STACKED HAND'S SMALLER CARD (ui/hand.js TUNE.stackFit).
+   A hand of nine whose copies stack deals three-quarter cards so the fan
+   stays narrow and low under the fighters; its words keep the 12 px floor:
+   a rule that needs the room climbs its own art (--card-rise, Hand#_layout),
+   as a crowded strip's does, and the type tab at rest carries its word only
+   (its target, "· SELF", rides it again when the card is raised and whole). */
+.cb-handhost.kit-cards .mm-hand.is-stackfit .mm-card[data-rarity][data-type][data-uid] { --rise: var(--card-rise, 0); }
+.cb-handhost.kit-cards .mm-hand.is-stackfit .mm-card[data-rarity][data-type][data-uid] .mm-card__art { height: calc((126 - var(--rise)) * var(--u)); background-position: 50% 38%; }
+.cb-handhost.kit-cards .mm-hand.is-stackfit .mm-card[data-rarity][data-type][data-uid] .mm-card__banner { bottom: calc((159 + var(--rise)) * var(--u)); }
+.cb-handhost.kit-cards .mm-hand.is-stackfit .mm-card[data-rarity][data-type][data-uid] .mm-card__name { font-size: calc(var(--name-fit, var(--name-u)) * var(--u)); }
+.cb-handhost.kit-cards .mm-hand.is-stackfit .mm-card[data-rarity][data-type][data-uid] .mm-card__type { top: calc((144 - var(--rise)) * var(--u)); }
+.cb-handhost.kit-cards .mm-hand.is-stackfit .mm-card[data-rarity][data-type][data-uid] .mm-card__face::after { top: calc((149 - var(--rise)) * var(--u)); }
+.cb-handhost.kit-cards .mm-hand.is-stackfit .mm-card[data-rarity][data-type][data-uid] .mm-card__face::before { top: calc((153.5 - var(--rise)) * var(--u)); }
+.cb-handhost.kit-cards .mm-hand.is-stackfit .mm-card[data-rarity][data-type][data-uid] .mm-card__rules { top: calc((168 - var(--rise)) * var(--u)); }
+.cb-handhost.kit-cards .mm-hand.is-stackfit .mm-card[data-rarity][data-type][data-uid]:not(.is-hover):not(.is-selected):not(.is-dragging):not(.is-aiming):not(.is-hero) :is(.mm-card__typesub, .mm-card__typeicon) { display: none; }
+/* raised, it is a quarter larger on screen: its whole type line fits the tab */
+.cb-handhost.kit-cards .mm-hand.is-stackfit .mm-card[data-rarity][data-type][data-uid]:is(.is-hover, .is-selected, .is-dragging, .is-aiming, .is-hero) .mm-card__type {
+  font-size: calc(max(9.8 / var(--cpx, 1), min(var(--type-u), 176 / (var(--type-em, 6) + 1.9))) * var(--u));
+}
+/* the cost coin stands over a long name's plate, never under it */
+.cb-handhost.kit-cards .mm-hand.is-stackfit .mm-card[data-rarity][data-type][data-uid] .mm-card__cost { z-index: 3; }

@@ -177,7 +177,7 @@ export const TUNE = {
      CAN sit on one line in the strip it may be dealt keeps it on one line
      ("Sit Pretty", "Shake, Boy!"), and only a name that wraps even on an open
      card ("Put Yourself Back Together") takes two. */
-  oneLineFloorPx: 10.5,
+  oneLineFloorPx: 12,   // round 40: the 12 px floor (was 10.5)
   crowdCardPx: 110,     // round 32: band per card under which a hand of 8+ ...
   crowdFit: 0.875,      // ...takes seven-eighths cards (Hand#_fit; a rehearsed scale)
   /* ROUND 32 GRAFT: THE LONG NAME ON ONE LINE TOO. "Put Yourself Back
@@ -208,10 +208,21 @@ export const TUNE = {
      hand of four. Copies stand side by side below this (gathered next to each
      other, Hand#_regroup, so the step to a stack never reshuffles them). */
   stackFrom: 7,
-  stackDy: 11,           // px each copy behind the top stands higher, at fit 1
+  stackDy: 6,            // px each copy behind the top stands higher, at fit 1 (round 40: 11)
   stackDx: 7,           // ...and to the left
   stackRot: 3.4,        // ...and tilted further left, degrees
   stackMax: 3,          // copies deeper than this tuck exactly behind the third
+  /* ROUND 40: A STACKED HAND STAYS ON ITS SHELF. Survey 6, both judges: at
+     nine Tricks with three Sit Pretty and three Bites stacked, the fan ran
+     from x=260 to x=1060 at the Deck's 1280 and climbed to y=560, over the
+     whole floor in front of the fighters. A hand whose copies stack (so it
+     deals fewer places than it holds cards) takes a three-quarter card --
+     its names, type line and rules still held to the 12 px floor in SCREEN
+     px (`readPx`, `floorPx` ...), a raised card a size up -- and its places
+     stand shoulder to shoulder, no air between them: the fan is narrower and
+     lower, and every card in it still shows whole. */
+  stackFit: 0.75,
+  stackBottomPad: 6,
   /* ROUND 36: A LOWER ARC. The arc's dip is what RAISES the middle of the fan
      (baseY = bottom - dip: the outer cards sit at the bottom, the middle a dip
      above them), and a crowded fan's middle is where the boss's bars stand
@@ -242,13 +253,15 @@ export const TUNE = {
      never over its cost coin (`_stripFit`); a card whose rule already fits
      keeps its whole picture. Only past that does a rule close up, and never
      under `floorPx`. */
-  readPx: 11,           // the rules' size a crowded hand keeps, in screen px
-  nameReadPx: 11,       // …and an open hand's long name (--name-read-u)
-  nameFloorPx: 9,       // the smallest a name that cannot keep that may go
-  floorPx: 10,          // the smallest a rule that still cannot fit may go
+  /* ROUND 40: THE 12 PX FLOOR at the Deck's 1280 (survey 6, both judges:
+     "the card bodies in the stacked hand drop to ~9-10 px"). */
+  readPx: 12,           // the rules' size a crowded hand keeps, in screen px
+  nameReadPx: 12,       // …and an open hand's long name (--name-read-u)
+  nameFloorPx: 12,      // the smallest a name that cannot keep that may go
+  floorPx: 12,          // the smallest a rule that still cannot fit may go
   capPx: 13,            // …and the largest a short one may: the row reads as one size
   openCapPx: 14,        // round 27: an open hand's cap (a hand of eight or fewer)
-  coverCapPx: 12,       // round 27: a crowded row's cap: a point less buys a strip's
+  coverCapPx: 12.5,     // round 27: a crowded row's cap: a point less buys a strip's
                         // rules a word more a line ("Gain 5 Guard. / Gain 3 more")
   riseMax: 44,          // design units a covered card's panel may climb its art
   /* ROUND 20 GRAFT: the row's names read as ONE size. The fit above set a
@@ -261,7 +274,7 @@ export const TUNE = {
      wider one, taken from the cards whose words keep them in less ("Bite",
      "Deal 6 damage."), never under `stripGive` of the common strip. */
   nameCapPx: 12.5,
-  typePx: 10.5,         // round 27: a covered card's type tab keeps this (kit.css --type-u)
+  typePx: 12.2,         // round 27 (round 40: 10.5 -> the floor): a covered card's type tab keeps this (kit.css --type-u)
   stripGive: 0.8,
   stripTake: 1.6,
 
@@ -653,6 +666,9 @@ export class Hand {
          makes the fan taller than the crowded hand it replaced. */
       const many = Math.max(n, total);
       if (this._bounded() && many >= 8 && band / many < TUNE.crowdCardPx) s = Math.min(s, TUNE.crowdFit);
+      // round 40: a crowded hand whose copies stack sits a size lower (TUNE.stackFit)
+      // (a band with the room for whole cards -- 1600 -- takes the crowded seven-eighths)
+      if (this._bounded() && many >= 8 && total > n) s = Math.min(s, band / many < TUNE.crowdCardPx ? TUNE.stackFit : TUNE.crowdFit);
     }
     // QUANTISED, and this matters more than it looks. The compositor rasters a
     // card at its current transform scale; a scale it has not seen before is a
@@ -1201,6 +1217,9 @@ export class Hand {
        full arc and take the widest step the band allows: that is round 3's
        behaviour exactly, which is why nothing at n >= 8 moves. */
     let th = this._fanTh(n);
+    // round 40: a stacked hand of eight or more bends as little as the crowded
+    // hand it stands in for -- its words are read off it, not tilted away
+    if (this._bounded() && total > n && total >= 8) th = Math.min(th, TUNE.crowdFanDeg * Math.PI / 180);
     const roomFor = (t) => (band - 2 * this._overhangAt(t, cw, ch)) / (n - 1);
     if (n > 1 && n <= T.spreadMax
         && roomFor(th) < this._clearStep(cw, th)
@@ -1215,7 +1234,8 @@ export class Hand {
     f.rotPer = c ? th * 180 / Math.PI / c : 0;
     f.overhang = this._overhangAt(th, cw, ch);
     if (n > 1) {
-      const want = this._clearStep(cw, th) + (n <= T.spreadMax ? cw * T.spreadAir : 0);
+      // round 40: a hand that stacks its copies takes no air between its places
+      const want = this._clearStep(cw, th) + (n <= T.spreadMax && total <= n ? cw * T.spreadAir : 0);
       f.step = Math.max(8, Math.min(Math.max(want, cw * T.stepRatio), roomFor(th)));
     } else f.step = 0;
 
@@ -1229,7 +1249,9 @@ export class Hand {
     f.sag = Math.abs(Math.sin(th)) * cw / 2;
     f.drop = this._anyUnplayable ? T.unplayableDrop * fit : 0;
     // a table with its own furniture seats the fan a little lower, on its front rail
-    f.baseY = this.h - (this._bounded() ? T.boundBottomPad : T.bottomPad) - f.dip - f.sag - f.drop;
+    // round 40: a stacked hand's smaller cards sit lower still, down on the rail
+    const stackLow = this._bounded() && total > n && Math.max(n, total) >= 8;
+    f.baseY = this.h - (this._bounded() ? (stackLow ? T.stackBottomPad : T.boundBottomPad) : T.bottomPad) - f.dip - f.sag - f.drop;
     // the middle of the free band: the viewport's, unless a scene measured one
     f.cx = this._bounded() ? (bandL + bandR) / 2 : this.w / 2;
     f.crowded = n > 1 && f.step < cw * T.crowdAt;
@@ -1243,6 +1265,8 @@ export class Hand {
     // the card grows equally in both directions.
     f.grow = ch * (f.hscale - 1) / 2;
     f.nudge = T.hoverNudge * fit;
+    // round 40: the stacked hand's smaller card (TUNE.stackFit)
+    f.stackFit = this._bounded() && total > n && Math.max(n, total) >= 8 && fit <= T.crowdFit + 1e-6;
     this.fit = fit;
     this._fanKey = key;
     return f;
@@ -1545,11 +1569,41 @@ export class Hand {
          floor and cap as a crowded hand's. Round 27 opened its cap a point
          (`openCapPx`): a whole panel has the room, and the Deck is where a
          rule is read from furthest away. */
+      /* ROUND 40: a stacked hand's three-quarter cards (TUNE.stackFit) keep
+         the floor by RISING, as a crowded strip does: a rule that does not
+         fit its panel at `floorPx` climbs over its own art by what it needs
+         (up to `riseMax`, ui/hand.css .is-stackfit), never shrinks under it */
+      const lift = !!F.stackFit;
       for (const s of this.slots) {
         s.view.el.style.removeProperty('--fan-vis');
         s.view.el.classList.remove('is-name-squeezed');
-        s.view.fitRules?.(176, 116, { lo: T.floorPx / uPx, hi: Math.min(15.5, Math.max(T.openCapPx, 18.5 * uPx)) / uPx });
+        let rise = 0;
+        if (lift && s.view.rulesNeed) {
+          const need = s.view.rulesNeed(176 * 0.95, T.floorPx / uPx, 1.1);
+          if (need > 0) rise = Math.ceil(clamp(need / 0.97 - 116, 0, T.riseMax) / 2) * 2;
+          /* ...and the name on its plate keeps to the card: the plate stands
+             on 139u - rise and grows up a line at a time, so a long name
+             ("Put Yourself Back Together", four lines) is set the largest it
+             can be down to the floor, and the panel rises no further than
+             the plate leaves room for */
+          const ladder = s.view.nameLadder?.(208, { hi: Math.max(15.5, 13 / uPx), floor: T.nameFloorPx / uPx, maxLines: 4 }) || [];
+          const plateOf = (o) => o.n * o.f * 1.04 + 12.5;
+          let pick = null;
+          for (const o of ladder) if (plateOf(o) <= 109 - rise && (!pick || o.f > pick.f)) pick = o;
+          if (!pick && ladder.length) {
+            pick = ladder.reduce((a, o) => (plateOf(o) < plateOf(a) ? o : a));
+            rise = Math.max(0, Math.min(rise, Math.floor(109 - plateOf(pick))));
+          }
+          if (pick) s.view.setNameFit?.(pick.f, pick.n);
+        }
+        if (rise) s.view.el.style.setProperty('--card-rise', String(rise));
+        else s.view.el.style.removeProperty('--card-rise');
+        s.view.fitRules?.(176, 116 + rise, { lo: T.floorPx / uPx, hi: Math.min(15.5, Math.max(T.openCapPx, 18.5 * uPx)) / uPx });
       }
+    }
+    if (this._stackFitOn !== !!(F.stackFit && !F.crowded)) {
+      this._stackFitOn = !!(F.stackFit && !F.crowded);
+      this.el.classList.toggle('is-stackfit', this._stackFitOn);
     }
     if (!off) { this._deal = null; this._dealKey = null; }
     // the size, in design units, a name must keep to read at `nameReadPx`:

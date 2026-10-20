@@ -30,7 +30,7 @@ import { CARD_SS } from '../ui/card.js';
  * `--rules-k` (ui/kit.css .kit-cards), up to 1.4x, instead of shrinking it:
  * the Steam Deck size used to set a shop Trick's rules at under 11 px.
  */
-export function fitCardToSlot(view, slot, { legibleAt = 0 } = {}) {
+export function fitCardToSlot(view, slot, { legibleAt = 0, rulesPx = null } = {}) {
   const w = slot?.clientWidth || 0;
   const h = slot?.clientHeight || 0;
   if (!w || !h) return false;
@@ -44,6 +44,17 @@ export function fitCardToSlot(view, slot, { legibleAt = 0 } = {}) {
   if (legibleAt && view.el?.style) {
     const k = Math.max(1, Math.min(1.4, legibleAt / w));
     view.el.style.setProperty('--rules-k', k.toFixed(3));
+  }
+  /* ROUND 40 -- `rulesPx: [floor, cap]`, in SCREEN px: the rules are fitted
+     to the panel's box (176u x 116u, the hand's own, CardView#fitRules) as
+     large as they fit up to `cap`, never under `floor`. Survey 6, both
+     judges: a shop shelf's and the game-over card's rules read 9-10 px at
+     the Deck's 1280 under a --rules-k capped at 1.4. */
+  if (rulesPx && view.fitRules && view.el) {
+    const cpx = w / 224;
+    const [lo, hi] = rulesPx;
+    view.el.classList.add('is-board-fit');
+    view.fitRules(176, 116, { lo: lo / cpx, hi: Math.max(lo, hi) / cpx });
   }
   return true;
 }
