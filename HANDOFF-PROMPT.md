@@ -146,6 +146,19 @@ three family portraits** (few fit beside the windows and sconces; nothing
 overlaps). **NEXT: survey 7 as a PAIRED test against survey 6** (rounds
 39-40), then brief from what it finds. **Josh asked 10-18 for a
 3-hour pause in which nothing may launch a program -- respect such asks.**
+**SURVEY 7 IS DONE (2026-10-20)** (`SURVEY-2026-10-20.md`): PAIRED vs survey
+6, survey 7 better on 10 and 8 of 33 pairs, worse on 3 and 4, the rest equal
+(untouched). Round 39's four rooms better by 2 from both judges; the map,
+hud-late, shop and gameover better; but **round 40 made reward, combat-crowd
+and event WORSE** (both judges): reward's paintings pushed into the top
+corners and its rules text smaller at 1600; the hand smaller and the Butler's
+intents moved onto his nameplate; event's plates wider than their frames.
+Plus the shop's Coatcheck Ticket clipped with an ellipsis at 1280 (all four).
+**NOW: THE REPAIR** (`REPAIR-r40.md`, worktree C:/UILOOP/r40/repair/wt,
+branch fix/r40-repair) -- verify it PAIRED against survey 6 for those four
+screens, merge, then **ROUND 41** (`BRIEF-r41.md`: the Hedge, Kennels,
+Sleeping Quarters, Passages -- inked objects, each room its own floor;
+baseline POPLIN from the post-repair tip, since the fight shows the hand).
 
 **ROUND 33 AND ITS GRAFT ARE MERGED, VERIFIED AND PUSHED (2026-10-16):**
 graft `9d008119`. COBALT +1.59 (`531126e4`): no running line under 11 px at
