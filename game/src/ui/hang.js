@@ -195,7 +195,7 @@ export function houseGallery(pool, classes, { seed = null } = {}) {
 export function settlePlate(f) {
   const p = f?.querySelector('.kit-hang__plate');
   if (!p) return 0;
-  f.classList.remove('kit-hang--terse', 'kit-hang--tight');
+  f.classList.remove('kit-hang--terse', 'kit-hang--tight', 'kit-hang--snug');
   const b = p.querySelector('b');
   if (!b) return p.offsetHeight;
   const lines = () => b.offsetHeight / lineH(b);
@@ -206,9 +206,14 @@ export function settlePlate(f) {
   // word -- CONSERVATORY -- that will not fit the plate's width sets closer too)
   const over = () => b.scrollWidth > b.clientWidth + 1 || b.getBoundingClientRect().width > p.clientWidth + 1;
   if (lines() > 2.5 || over()) f.classList.add('kit-hang--tight');
+  // (round 40 repair 2: a painting's lettering keeps clear of the cartouche's
+  // curled ends, kit.css -- unless only the old, snug measure keeps the name
+  // to two lines; fitHung tries a wider plate first)
+  if (f.classList.contains('kit-hang--painting') && (lines() > 2.5 || over())) f.classList.add('kit-hang--snug');
   return p.offsetHeight;
 }
 
+const isSnug = (f) => f.classList.contains('kit-hang--snug');
 const lineH = (el) => parseFloat(getComputedStyle(el).lineHeight) || 14;
 
 /** How many lines a hung picture's plate sets: the name's and, when it shows,
@@ -238,7 +243,7 @@ export function widenPlate(f, { k = 1.25, maxPx = Infinity, ok = () => true } = 
   p.style.removeProperty('max-width');
   f.classList.remove('kit-hang--wideplate');
   settlePlate(f);
-  if (plateLines(f) <= 2) return ok(f);
+  if (plateLines(f) <= 2 && !isSnug(f)) return ok(f);
   const a = f.querySelector('.kit-hang__frame')?.getBoundingClientRect();
   if (!a || !a.width) return false;
   const FW = a.width * (1 + 2 * .085);
@@ -331,11 +336,12 @@ export function fitHung(figs, obstacles, { gap = 8, min = 72, pool = null, near 
       set(f, lo);
       w = lo;
     }
-    if (!strict || plateLines(f) <= 2) return true;
+    const good = () => plateLines(f) <= 2 && !isSnug(f);
+    if (!strict || good()) return true;
     if (w >= W0) {
       for (let i = 1; i <= 5; i++) {
         set(f, W0 * (1 + .05 * i));
-        if (clear(f) && plateLines(f) <= 2) return true;
+        if (clear(f) && good()) return true;
       }
       f.style.removeProperty('--hang-w');
     }
@@ -349,9 +355,11 @@ export function fitHung(figs, obstacles, { gap = 8, min = 72, pool = null, near 
       set(f, Math.max(x, min));
       if (widenPlate(f, { ok: clear })) return true;
     }
+    // none: the plate at its frame's width on the snug measure, if that keeps
+    // it to two lines, rather than another painting
     if (w >= W0) f.style.removeProperty('--hang-w'); else set(f, w);
     settlePlate(f);
-    return false;
+    return plateLines(f) <= 2;
   };
   const spares = (Array.isArray(pool) ? pool : PICTURE_POOLS[pool] || []).filter(id => ART[id]);
   const hung = figs.filter(Boolean);
