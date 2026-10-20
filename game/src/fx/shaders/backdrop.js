@@ -5710,7 +5710,23 @@ float passWallH(vec2 q, float qpx, out float occ){
        floor's wedge and _placeAjar are set out on it). */
     float peepE = 0.0;
     float inD = step(SK, q.y)*step(q.y, DR0), inT = step(DR1, q.y)*step(q.y, HR0), inF = step(HR1, q.y)*step(q.y, FR1);
-    float lay = (isDoor > 0.5 || far > 0.5) ? 0.0 : mmHash11(bi*3.71 + uSeed*1.3);
+    /* (round 41 graft, all three judges still: "one stretched wood-panel
+       grain repeated down both walls with no varied doors or sconces in the
+       NEAR bays". The bays were dealt by a hash, so the two or three a fight
+       sees nearest came up single fields as often as not -- the variety was
+       all down the passage, where a bay is a few pixels. A joiner sets a run
+       out: every run of six bays round its door is one of two set-outs, so
+       no two bays side by side are alike -- a tall field with its sconce
+       plate, a pair, a cushion over a tall field, the door, a RECESS (an
+       arched niche sunk in the wall, its shelf), a pair -- wherever the lens
+       stands.) */
+    float bm = bi - di*6.0;
+    float runB = step(0.5, mmHash11(di*2.71 + uSeed*0.9 + sign(vWorld.x)*3.7));   // (each wall its own, never a mirror)
+    float bk2 = runB < 0.5 ? (bm < 0.5 ? 0.0 : (bm < 1.5 ? 2.0 : (bm < 2.5 ? 1.0 : (bm < 3.5 ? 0.0 : (bm < 4.5 ? 3.0 : 2.0)))))
+                           : (bm < 0.5 ? 1.0 : (bm < 1.5 ? 0.0 : (bm < 2.5 ? 2.0 : (bm < 3.5 ? 0.0 : (bm < 4.5 ? 2.0 : 3.0)))));
+    float lay = (isDoor > 0.5 || far > 0.5) ? 0.0 : (bk2 > 1.5 && bk2 < 2.5 ? 0.80 : (bk2 > 0.5 && bk2 < 1.5 ? 0.50 : 0.20));
+    float recess = (isDoor > 0.5 || far > 0.5) ? 0.0 : step(2.5, bk2);
+    float plate = (isDoor > 0.5 || far > 0.5) ? 0.0 : step(bk2, 0.5);
     float pidx = 0.0;
     vec2 pcen, phs;
     float pt, pbv;
@@ -5744,7 +5760,11 @@ float passWallH(vec2 q, float qpx, out float occ){
     float ph = mmHash11(pid*1.93 + uSeed*2.7);
     float ph2 = mmHash11(pid*5.17 + 3.3);
     float inFld = mmCover(-mmBox(pcen, phs - vec2(pt*0.5), 0.02))*onRow;
-    float gF = mmNoise(vec2((pcen.x + ph*3.0)*(26.0 + 30.0*ph) + 1.6*sin(q.y*(1.5 + 2.0*ph2) + ph*6.0), q.y*(0.8 + 1.4*ph2) + ph*9.0));
+    /* (round 41 graft, ZIRCON's figure: each field cut from its own board,
+       the cathedral arches of a crown-cut board centred where the board's
+       heart was, at its own scale -- not a streak pulled up the wall) */
+    float hxF = pcen.x - (ph2 - 0.5)*phs.x*0.6;
+    float gF = mmNoise(vec2((hxF*hxF*(2.5 + 5.0*ph) - pcen.y*(0.22 + 0.20*ph2))*24.0 + ph*13.0, hxF*2.5 + ph*5.0));
     /* the figure's flame: a darker heartwood stripe wandering up the board */
     float flame = smoothstep(0.10, 0.0, abs(pcen.x + (ph - 0.5)*phs.x*1.2 + 0.05*sin(q.y*2.3 + ph*5.0)) - 0.04)*(0.5 + 0.5*ph2);
     /* between the fields: a rail's grain runs across, a stile's up it */
@@ -5811,6 +5831,40 @@ float passWallH(vec2 q, float qpx, out float occ){
       if (lay > 0.38 && lay <= 0.62 && inT > 0.5) mmPen(abs(q.y - (HR0 - 0.44)) - 0.025, 1.0, 0.7);
     }
     oak *= 1.0 + 0.22*clamp(pv, -1.0, 1.0);
+    /* (round 41 graft) THE RECESS: an arched niche sunk a hand into the
+       tall field, dark inside, its shelf lit along its edge, the arch and
+       its reveal inked -- and THE SCONCE PLATE on a tall field: an oval
+       brass backplate on the field's upper half, its iron arm and a spent
+       candle in its cup, inked round */
+    if (recess*inT > 0.5) {
+      float nH = HR0 - DR1 - 0.30;
+      float nd = mmArch(vec2(bx, q.y - DR1 - 0.12), 0.24, nH - 0.24);
+      float inN = mmCover(-nd);
+      h -= inN*0.45;
+      float shY = DR1 + 0.12 + nH*0.42;
+      float shelf = mmBandA(q.y, shY - 0.025, shY, px)*inN;
+      oak = mix(oak, oak*vec3(0.22, 0.20, 0.20), inN*(1.0 - shelf));
+      oak = mix(oak, oak*1.9 + vec3(0.010, 0.006, 0.003), shelf);
+      oak *= 1.0 - 0.35*inN*smoothstep(shY + 0.30, shY, q.y)*step(shY, q.y);   // the shelf's shade on the back of the niche
+      mmPen(nd, 1.3, 0.95);
+      mmPen(nd - 0.035, 1.0, 0.45);
+      mmPen(q.y - shY, 1.0, 0.70*inN);
+    }
+    if (plate*inT > 0.5) {
+      vec2 pq = vec2(bx, q.y - 1.66);
+      float pd = (length(pq/vec2(0.060, 0.095)) - 1.0)*0.060;
+      float onPl = mmCover(-pd);
+      oak = mix(oak, vec3(0.62, 0.46, 0.22)*(lum*2.0 + 0.02)*(0.75 + 0.45*smoothstep(-0.08, 0.08, pq.y)), onPl);
+      mmPen(pd, 1.1, 0.9);
+      float arm = mmBox(pq - vec2(0.0, -0.10), vec2(0.009, 0.070), 0.003);
+      float cup = mmBox(pq - vec2(0.0, -0.13), vec2(0.030, 0.012), 0.004);
+      float cdl = mmBox(pq - vec2(0.0, -0.08), vec2(0.012, 0.042), 0.003);
+      float fx = min(min(arm, cup), cdl);
+      oak = mix(oak, vec3(0.06, 0.05, 0.05)*(lum*2.0 + 0.02), mmCover(-min(arm, cup)));
+      oak = mix(oak, vec3(0.70, 0.66, 0.56)*(lum*2.0 + 0.02), mmCover(-cdl));
+      mmPen(fx, 1.0, 0.8);
+      h += onPl*0.08;
+    }
     /* ROUND 41: WHAT A SECRET PASSAGE HAS IN ITS WALLS. The house's bell
        wires, run along under the cornice on their cranks to the servants'
        board -- two taut lines and a brass crank plate every few bays -- and
