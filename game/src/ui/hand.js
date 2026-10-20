@@ -1217,6 +1217,9 @@ export class Hand {
        full arc and take the widest step the band allows: that is round 3's
        behaviour exactly, which is why nothing at n >= 8 moves. */
     let th = this._fanTh(n);
+    // round 40: a stacked hand of eight or more bends as little as the crowded
+    // hand it stands in for -- its words are read off it, not tilted away
+    if (this._bounded() && total > n && total >= 8) th = Math.min(th, TUNE.crowdFanDeg * Math.PI / 180);
     const roomFor = (t) => (band - 2 * this._overhangAt(t, cw, ch)) / (n - 1);
     if (n > 1 && n <= T.spreadMax
         && roomFor(th) < this._clearStep(cw, th)
