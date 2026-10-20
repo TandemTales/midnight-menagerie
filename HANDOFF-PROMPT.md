@@ -135,14 +135,16 @@ wall program while ANGLE reported LINK_STATUS true -- a good link can be an
 empty program; read getProgramInfoLog after any fx/ change** (a gate for it
 is proposed as its own session; gpuprof now reads every program's log and
 says why a timing is null). The other 13 wings identical; tests green on dev.
-**ROUND 40 IS RUNNING (2026-10-20)** (`BRIEF-r40.md`, `round-40.args.json`,
-base `06d2a982`): the boards -- a 12 px floor at 1280, the hand's spread, the
-paintings' plates under their frames and gameover's cords, the map's regions
-as drawn shapes, the run strip's objects, the shop's shelves; shop,
-combat-crowd, gameover, hud-late, map, reward at both sizes; SPINEL / IOLITE /
-AVENTURINE in `C:/UILOOP/r40/wt/r40-boards-{a,b,c}` (ports 9311-9313),
-BATISTE baselines in `C:/UILOOP/r40/judging/r40/boards/BATISTE/` (12 of 12,
-looked at). **Josh asked 10-18 for a
+**ROUND 40 IS MERGED, VERIFIED AND PUSHED (2026-10-20); ITS GRAFT IS IN
+FLIGHT:** SPINEL +1.14, 2 of 3 (`c6d36e48`, 7.31 vs BATISTE 6.16; the three
+builds within 0.07): the boards' 12 px floor at 1280 by its probe, a low
+narrow hand, shelves of objects, labelled strip groups, regions as shapes.
+Battery 106 green but the sprites halo. Graft (`GRAFT-r40.md`) building in
+`C:/UILOOP/r40/wt/r40-graft` (port 9314): IOLITE's paintings on the upper
+wall and the boss's medallions by his nameplate, AVENTURINE's gameover cords
+and map shapes, the hand's longest cards to 12 px RENDERED (the probe passed,
+three judges read 9-10), the strip's counts. Next: a survey-7 paired test
+against survey 6, then what it finds. **Josh asked 10-18 for a
 3-hour pause in which nothing may launch a program -- respect such asks.**
 
 **ROUND 33 AND ITS GRAFT ARE MERGED, VERIFIED AND PUSHED (2026-10-16):**
