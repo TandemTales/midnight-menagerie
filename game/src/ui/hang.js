@@ -185,12 +185,32 @@ export function houseGallery(pool, classes, { seed = null } = {}) {
  * stand-in does not hang. Measured on screen, so call it once the board has
  * laid out, and again on resize. Returns the pictures as hung.
  */
+/**
+ * One or two lines on a plate, never three (round 40 graft, IOLITE's
+ * `settlePlate`): a name that has to wrap at the plate's width keeps the
+ * plate to itself and drops its epithet ("and her cat, 1826"); a name that
+ * still runs to three lines sets a point closer. Call it whenever the
+ * frame's width changes; fitHung does. Returns the plate's height.
+ */
+export function settlePlate(f) {
+  const p = f?.querySelector('.kit-hang__plate');
+  if (!p) return 0;
+  f.classList.remove('kit-hang--terse', 'kit-hang--tight');
+  const b = p.querySelector('b');
+  if (!b) return p.offsetHeight;
+  const lines = () => b.offsetHeight / (parseFloat(getComputedStyle(b).lineHeight) || 14);
+  if (p.querySelector('em') && lines() > 1.5) f.classList.add('kit-hang--terse');
+  if (lines() > 2.5) f.classList.add('kit-hang--tight');
+  return p.offsetHeight;
+}
+
 export function fitHung(figs, obstacles, { gap = 8, min = 72, pool = null } = {}) {
   const boxes = obstacles.filter(o => o && !o.hidden && o.getClientRects().length)
     .map(o => o.getBoundingClientRect()).filter(r => r.width && r.height);
   const hit = (a, b) => a.left < b.right + gap && a.right > b.left - gap
     && a.top < b.bottom + gap && a.bottom > b.top - gap;
   const clear = (f) => {
+    settlePlate(f);
     const a = f.querySelector('.kit-hang__frame')?.getBoundingClientRect();
     if (!a) return true;
     const rim = a.width * .085;

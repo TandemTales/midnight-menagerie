@@ -1140,3 +1140,21 @@
   .mm-hud__where .mm-hud__t { letter-spacing: 0; }
   .mm-hud__group--vitals > .mm-hud__snacks { padding: 0 1px; }
 }
+
+/* ── ROUND 40 GRAFT: the run strip's counts (all three judges) ──
+   The cartouche says the whole group, "KEEPSAKES 10" / "GEAR 8", and what
+   the pouch still holds, "+7", is struck on the last object's upper
+   shoulder, inside the strip's rail -- not on a badge hanging under it
+   (ui/hud.js layPouch). */
+.mm-hud .kit-beltpouch--cart.is-peeking .kit-beltpouch__n { display: revert; }
+.mm-hud .mm-hud__peekmore { bottom: auto; top: -5px; right: -4px; }
+/* ...and at the Deck's width the count costs the cartouche ~20 px a group:
+   the Gear stand a hair closer to the Keepsakes so each group still keeps
+   its three objects beside it (HUD#_fitPouch: 3 + 3 at 1280) */
+@media (max-width: 1400px) {
+  .mm-hud[data-belt="pouch"] .mm-hud__gear { margin-left: calc(var(--hud-rule-w) + 1px); }
+  .mm-hud[data-belt="pouch"] .mm-hud__where .mm-hud__s { letter-spacing: .03em; }
+  .mm-hud[data-belt="pouch"] :is(.mm-hud__gold, .mm-hud__clue, .mm-hud__luck) > :is(.mm-hud__u, .mm-hud__sr) { letter-spacing: 0; margin-right: .2em; }
+  .mm-hud[data-belt="pouch"] .mm-hud__chip:is(.mm-hud__seed, .mm-hud__haunt) .mm-hud__w { letter-spacing: .04em; }
+  .mm-hud[data-belt="pouch"] .kit-beltpouch--cart > .kit-beltpouch__txt { padding-right: calc(var(--cart-h) * .22); }
+}

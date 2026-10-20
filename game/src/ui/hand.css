@@ -381,7 +381,11 @@
 .cb-handhost.kit-cards .mm-hand.is-stackfit .mm-card[data-rarity][data-type][data-uid] .mm-card__type { top: calc((144 - var(--rise)) * var(--u)); }
 .cb-handhost.kit-cards .mm-hand.is-stackfit .mm-card[data-rarity][data-type][data-uid] .mm-card__face::after { top: calc((149 - var(--rise)) * var(--u)); }
 .cb-handhost.kit-cards .mm-hand.is-stackfit .mm-card[data-rarity][data-type][data-uid] .mm-card__face::before { top: calc((153.5 - var(--rise)) * var(--u)); }
-.cb-handhost.kit-cards .mm-hand.is-stackfit .mm-card[data-rarity][data-type][data-uid] .mm-card__rules { top: calc((168 - var(--rise)) * var(--u)); }
+/* round 40 graft: the type tab holds 12 px on screen, so on the stacked
+   card it stands taller than its 24u and its foot reached into the panel
+   over the first line ("Reattach"): the rules stand 5u lower (ui/hand.js
+   TUNE.stackTabClear, which fits them to the shorter box) */
+.cb-handhost.kit-cards .mm-hand.is-stackfit .mm-card[data-rarity][data-type][data-uid] .mm-card__rules { top: calc((168 + 5 - var(--rise)) * var(--u)); }
 .cb-handhost.kit-cards .mm-hand.is-stackfit .mm-card[data-rarity][data-type][data-uid]:not(.is-hover):not(.is-selected):not(.is-dragging):not(.is-aiming):not(.is-hero) :is(.mm-card__typesub, .mm-card__typeicon) { display: none; }
 /* raised, it is a quarter larger on screen: its whole type line fits the tab */
 .cb-handhost.kit-cards .mm-hand.is-stackfit .mm-card[data-rarity][data-type][data-uid]:is(.is-hover, .is-selected, .is-dragging, .is-aiming, .is-hero) .mm-card__type {

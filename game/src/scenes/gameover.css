@@ -1237,3 +1237,126 @@
      under it are tall enough for a portrait to hang whole */
   .go-stage { --go-pic-w: 120px; --go-plate-h: 34px; }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ROUND 40 GRAFT (AVENTURINE's, J1 and J3) — THE CENTRE AS ONE SHRINE
+   Survey 6: gameover was the one screen a paired test found WORSE -- "the
+   paintings hang hooked short and the Dowager's label floats beside her
+   frame" -- and its centre was three plaques, a card and two pictures each
+   at its own height. It is one thing now: a framed niche under the shelf the
+   two of them stand on, the card on its pedestal in its middle, a picture of
+   the family on its cord in each flank beside it (whole, its plate UNDER its
+   frame: gameover.js _hangPictures), the line that says why under the card's
+   plate, and HOW FAR engraved once along the niche's foot.
+   ═══════════════════════════════════════════════════════════════════════════ */
+.go-wrap .go-altar.go-shrine {
+  --shrine-in: clamp(18px, 1.6vw, 26px);
+  position: relative; isolation: isolate;
+  align-self: stretch;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr) auto auto;
+  grid-template-areas: ". mvp ." "said said said" "reach reach reach";
+  justify-items: center; align-items: end;
+  row-gap: clamp(4px, .8vh, 8px);
+  gap: clamp(4px, .8vh, 8px) 0;
+  margin: clamp(8px, 1.2vh, 14px) 0 clamp(8px, 1.2vh, 14px);
+  padding: var(--shrine-in) var(--shrine-in) calc(var(--shrine-in) - 6px);
+}
+/* the niche: the Kid board's carved gilt frame round a deep velvet ground,
+   the candle's light pooled on it behind the card and falling off to its
+   corners (the frame drawn here, on the shrine's own layer) */
+.go-wrap .go-altar.go-shrine::after {
+  content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  border: 10px solid transparent;
+  border-image: url("../../assets/ui/kit/frame.webp") 52 / 30px stretch;
+  background:
+    radial-gradient(46% 52% at 50% 44%, color-mix(in srgb, var(--kit-candle) 22%, transparent), transparent 74%),
+    radial-gradient(120% 100% at 50% 40%, transparent 48%, rgb(4 2 6 / .72) 100%),
+    url("../../assets/ui/kit/flock.webp") 50% 0 / 233px 265px,
+    #140b1b;
+  background-blend-mode: normal, normal, overlay, normal;
+  background-clip: padding-box;
+  box-shadow: 0 22px 40px -18px rgba(0, 0, 0, .95);
+}
+.go-wrap .go-altar.go-shrine::before { z-index: -2; }
+.go-shrine > .go-altar__shelf { display: none; }
+.go-shrine > .go-block--mvp { grid-area: mvp; align-self: center; }
+.go-shrine .go-mvp__slot { margin-block: 14px calc(16px + var(--plinth-h) * .96); }
+/* the line that says why: lettered on the niche itself, no plaque */
+.go-shrine > .go-tri {
+  min-height: 0; margin: 0; padding: 0;
+  border: 0; border-image: none; background: none; filter: none;
+  flex: none; width: 100%;
+}
+.go-shrine > .go-said { grid-area: said; padding: 0 clamp(6px, .8vw, 14px); }
+.go-shrine > .go-said > .go-said__mark, .go-shrine > .go-said > .go-tri__rule { display: none; }
+.go-shrine .go-mvp__note { font-size: clamp(13.5px, .95vw, 15px); line-height: 1.32; max-width: 46ch; justify-self: center; }
+/* HOW FAR, once, along the foot of the niche, under a fleuron rule */
+.go-shrine > .go-reach {
+  grid-area: reach;
+  display: flex; flex-wrap: wrap; align-items: baseline; justify-content: center;
+  column-gap: .55em; row-gap: 0;
+  padding-top: clamp(8px, 1.1vh, 12px);
+  position: relative;
+}
+.go-shrine > .go-reach::before {
+  content: ''; position: absolute; left: 14%; right: 14%; top: 0; height: 9px;
+  background:
+    url("../../assets/ui/kit/star4.svg") 50% 50% / 8px 8px no-repeat,
+    linear-gradient(90deg, transparent 0%, color-mix(in srgb, var(--kit-gold) 72%, transparent) 26%, color-mix(in srgb, var(--kit-gold) 72%, transparent) 46%, transparent 47.5%, transparent 52.5%, color-mix(in srgb, var(--kit-gold) 72%, transparent) 54%, color-mix(in srgb, var(--kit-gold) 72%, transparent) 74%, transparent 100%) 0 4px / 100% 1px no-repeat;
+}
+.go-shrine > .go-reach > .go-tri__rule { display: none; }
+.go-shrine .go-reach__n { font-size: clamp(30px, 2.5vw, 40px); margin: 0 .04em; line-height: 1; }
+.go-shrine :is(.go-tri__h, .go-reach__unit, .go-reach__wing) { font-size: clamp(12.5px, .86vw, 14px); }
+.go-shrine .go-reach__where { font-size: clamp(14px, 1vw, 16px); }
+.go-shrine .go-reach__wing::before { content: '\00b7\2002'; color: var(--kit-gold); letter-spacing: 0; }
+/* the pictures in the flanks: each its own plate under its frame, one or two lines */
+.go-shrine > .go-hang { z-index: 1; }
+.go-shrine > .go-hang.kit-hang--painting > .kit-hang__plate { max-width: var(--go-plate-w, 150px); }
+.go-shrine > .go-hang .kit-hang__cord::after { width: calc(var(--hang-w) * .16); }
+/* the niche's frame under the card's pedestal and frame, the light under both */
+.go-wrap .go-altar.go-shrine::after { z-index: -3; }
+.go-wrap .go-altar.go-shrine::before { z-index: -4; }
+/* the shrine takes a little more of the board's width, for its flanks */
+.go-wrap:has(.go-shrine) { grid-template-columns: minmax(0, .76fr) minmax(0, 1.2fr) minmax(0, 1fr); }
+.go-board:has(.go-shrine) { --go-mvp-s: .84; }
+.go-shrine .go-mvp__slot { margin-top: 6px; }
+.go-shrine > .go-hang .kit-hang__plate { padding: 4px 12px 5px; }
+.go-shrine > .go-hang .kit-hang__plate > b { font-size: 12.5px; letter-spacing: .015em; line-height: 1.12; }
+@media (max-height: 860px) {
+  .go-board:has(.go-shrine) { --go-mvp-s: .82; }
+  .go-wrap .go-altar.go-shrine { margin-block: 6px; }
+}
+
+/* HOW FAR rides the niche's head rule on its own dark cartouche, so the niche
+   gives its whole height to the card (round 40) */
+.go-wrap .go-altar.go-shrine {
+  grid-template-rows: minmax(0, 1fr) auto;
+  grid-template-areas: ". mvp ." "said said said";
+  padding-top: calc(var(--shrine-in) + 14px);
+}
+.go-shrine > .go-reach {
+  --plate-h: clamp(36px, 4.4vh, 42px);
+  position: absolute; left: 50%; top: 0; z-index: 3;
+  translate: -50% -42%;
+  width: max-content; max-width: calc(100% - 40px);
+  flex-wrap: nowrap; white-space: nowrap;
+  padding: 0 calc(var(--plate-h) * .62) 1px;
+  min-height: var(--plate-h);
+  align-items: center;
+  border: 0 solid transparent;
+  border-image: url("../../assets/ui/kit/cartouche-dark.webp") 18 34 18 34 fill / calc(var(--plate-h) * 18 / 64) calc(var(--plate-h) * 34 / 64) stretch;
+  filter: drop-shadow(0 4px 5px rgba(0, 0, 0, .85));
+}
+.go-shrine > .go-reach::before { content: none; }
+.go-shrine .go-reach__n { font-size: clamp(24px, 2vw, 32px); }
+.go-shrine :is(.go-tri__h, .go-reach__unit, .go-reach__wing) { font-size: 12.5px; letter-spacing: .1em; }
+.go-shrine .go-reach__where { font-size: 14px; }
+.go-board:has(.go-shrine) { --go-mvp-s: .94; }
+@media (max-height: 860px) { .go-board:has(.go-shrine) { --go-mvp-s: .92; } }
+.go-board:has(.go-shrine) { --go-mvp-s: .86; }
+@media (max-height: 860px) { .go-board:has(.go-shrine) { --go-mvp-s: .92; } }
+.go-shrine > .go-hang .kit-hang__plate { padding: 4px 10px 5px; }
+.go-board .go-courage > :last-child { white-space: nowrap; }
+.go-board .go-courage__n { white-space: nowrap; }

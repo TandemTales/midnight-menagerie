@@ -225,12 +225,11 @@
   --stage-half: calc(var(--stage-w) / 2);
   --frame-pad: clamp(16px, 1.5vw, 24px);
   --fan-gap: calc(var(--frame-pad) * 2 + clamp(18px, 2vw, 34px));
-  /* either flank of the stage: a portrait over a candle. Round 40 (survey
-     6, both judges: "at 1280 the two hung paintings are squeezed into the
-     15 px gutter between the board frame and the card trays"): each flank is
-     a WALL of its own -- the three frames give it a little of their width
-     (their rules still print at 15 px and more at the Deck's 1280) */
-  --flank-w: clamp(176px, 12.4vw, 206px);
+  /* either flank of the stage: a moonlit lancet over a candle. Round 40
+     graft (IOLITE's, all three judges): the paintings hang on the upper wall
+     now, so the flanks give the three frames back the width SPINEL took for
+     the pictures' wall */
+  --flank-w: clamp(136px, 10.6vw, 190px);
   /* The three frames: as wide as the stage between its flanks allows, as tall
      as the board under the top rule allows (the fixed rows above and below
      them are the clamp), whichever is smaller. With CHOOSE ONE TRICK on the
@@ -480,35 +479,38 @@
   background: radial-gradient(closest-side, color-mix(in srgb, var(--kit-candle) 24%, transparent), color-mix(in srgb, var(--kit-candle) 8%, transparent) 52%, transparent);
   mix-blend-mode: screen;
 }
-/* the flanks: the house's gallery (round 26). On each wall one of the
-   menagerie's portraits (.kit-hang, ui/hang.js), hung by its cord at the
-   height of the frames' paintings, and under it on the rail's end a candle on
-   a book lighting it from below. */
+/* ROUND 40 (survey 6, both judges): the paintings have a wall of their own.
+   They hung in the stage's flanks, "squeezed into the 15 px gutter between
+   the board frame and the card trays" at the Deck's 1280, so each now hangs
+   HIGH on the upper wall, in the bay between its corner candle and the plaque
+   (the lancets' bay since the round 26 graft), on its cord from the picture
+   rail, its brass plate screwed to the wall under the frame. reward.js
+   (_pointLights) measures the bay: --rw-pic-x / --rw-pic-x2 (its middle),
+   --rw-pic-t (the frame's top) and --rw-pic-w; ui/hang.js fitHung narrows a
+   tall canvas until it and its plate clear the plaque and the stage. */
+.rw-hall { position: absolute; inset: 0; z-index: 2; pointer-events: none; }
 .rw-hang {
-  --hang-w: min(calc(var(--flank-w) * .86), calc(var(--slot-h) * .5));
-  --hang-lit: .95;
-  /* its middle level with the middle of the frames' paintings */
-  top: calc(var(--frame-pad) + var(--slot-h) * .2);
-  z-index: -1;
+  --hang-w: var(--rw-pic-w, 120px);
+  --hang-lit: .97;
+  top: var(--rw-pic-t, 90px);
   translate: -50% 0;
 }
-.rw-hang--l { left: calc(var(--flank-w) / 2 + 6px); }
-.rw-hang--r { left: calc(100% - var(--flank-w) / 2 - 6px); }
-/* ...and the lancets back (round 26 graft; VERMEILLE's, both judges): cold
-   against warm, as the samples paint it. The flanks below are the
-   portraits'; the lancets stand OUTSIDE them, high on the wall at the board's
-   outer edges, each in the bay between the corner candle and the plaque, so
-   a window and a picture never share a stretch of wall. From there the
-   moon's light falls down the outer wall onto the portrait under it.
-   reward.js (_pointLights) measures the bay and places each one: --win-x
-   (its middle), --win-t (its top) and --win-w. */
-.rw-hall { position: absolute; inset: 0; z-index: 2; pointer-events: none; }
+.rw-hang--l { left: var(--rw-pic-x, -999px); }
+.rw-hang--r { left: var(--rw-pic-x2, -999px); }
+/* ...and the lancets back down in the alcove's flanks (rounds 6-25's place):
+   a tall moonlit window either side of the three, its sill a hand above the
+   candle on the rail's end under it, cold against the candles' warm as the
+   samples paint it. */
 .rw-window {
-  left: calc(var(--win-x, -999px) - var(--win-w) / 2);
-  top: var(--win-t, 0px);
-  filter: drop-shadow(0 12px 16px rgba(0, 0, 0, .7)) brightness(1.12) saturate(1.08);
+  --win-w: min(calc(var(--flank-w) * .64), calc(var(--slot-h) * .33));
+  left: calc(var(--flank-w) / 2 + 6px);
+  /* its sill a hand above the candle on the rail's end */
+  bottom: calc(var(--stand) + clamp(40px, 3.4vw, 58px) * 1.62 + 10px);
+  translate: -50% 0;
+  z-index: -1;
+  filter: drop-shadow(0 12px 16px rgba(0, 0, 0, .7)) brightness(1.1) saturate(1.06);
 }
-.rw-window--r { left: calc(var(--win-x2, -999px) - var(--win-w) / 2); }
+.rw-window--r { left: calc(100% - var(--flank-w) / 2 - 6px); }
 /* the moonlight standing off the glass, and the cold wash it lays on the
    damask round it */
 .rw-window::before {
@@ -518,23 +520,23 @@
     color-mix(in srgb, var(--kit-moon) 10%, transparent) 46%,
     color-mix(in srgb, var(--kit-moon) 3%, transparent) 74%, transparent);
 }
-/* and the shaft, standing in the air under the glass, leaning OUT and down
-   toward the portrait below it */
+/* and the shaft, falling from the glass across the alcove floor toward the
+   three */
 .rw-window::after {
   content: ''; position: absolute; z-index: -1; pointer-events: none;
-  left: 50%; top: 30%;
-  width: 120%; height: var(--shaft-h, 60vh);
+  left: 50%; top: 40%;
+  width: 130%; height: calc(var(--slot-h) * .75);
   transform-origin: 50% 0;
   background: linear-gradient(90deg, transparent 0%,
-    color-mix(in srgb, var(--kit-moon) 20%, transparent) 28%,
-    color-mix(in srgb, var(--kit-moon) 28%, transparent) 52%,
-    color-mix(in srgb, var(--kit-moon) 12%, transparent) 78%, transparent 100%);
-  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 12%, rgba(0, 0, 0, .6) 50%, transparent 100%);
-          mask-image: linear-gradient(to bottom, transparent 0%, #000 12%, rgba(0, 0, 0, .6) 50%, transparent 100%);
+    color-mix(in srgb, var(--kit-moon) 18%, transparent) 28%,
+    color-mix(in srgb, var(--kit-moon) 24%, transparent) 52%,
+    color-mix(in srgb, var(--kit-moon) 10%, transparent) 78%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 12%, rgba(0, 0, 0, .55) 50%, transparent 100%);
+          mask-image: linear-gradient(to bottom, transparent 0%, #000 12%, rgba(0, 0, 0, .55) 50%, transparent 100%);
   mix-blend-mode: screen;
 }
-.rw-window--l::after { transform: translateX(-50%) skewX(var(--shaft-skew, 20deg)); }
-.rw-window--r::after { transform: translateX(-50%) skewX(calc(var(--shaft-skew, 20deg) * -1)); }
+.rw-window--l::after { transform: translateX(-50%) skewX(-24deg); }
+.rw-window--r::after { transform: translateX(-50%) skewX(24deg); }
 .rw-candle {
   bottom: calc(var(--stand) - var(--rw-rail-h) * .02);
   width: clamp(40px, 3.4vw, 58px);

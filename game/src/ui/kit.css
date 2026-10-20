@@ -4689,3 +4689,44 @@ html .cb-endturn__hint { font-size: 12px; }
 .kit-cards .mm-card[data-rarity][data-type][data-uid] .mm-card__type {
   font-size: calc(max(12.2 / var(--cpx, 1), min(var(--type-u), 176 / (var(--type-em, 6) + 1.9))) * var(--u));
 }
+
+/* ── ROUND 40 GRAFT: a plate keeps to one or two lines (IOLITE's) ──
+   ui/hang.js settlePlate: a name that wraps at its plate's width drops the
+   epithet (.kit-hang--terse); one that still runs to three lines sets a
+   point closer (.kit-hang--tight) -- never under the 12 px floor. */
+.kit-hang--terse .kit-hang__plate > em { display: none; }
+.kit-hang--tight .kit-hang__plate > b { font-size: 12px; letter-spacing: 0; }
+.kit-hang--tight .kit-hang__plate { padding-inline: 14px; }
+
+/* ── ROUND 40 GRAFT: a lone boss's conditions on his plate (IOLITE's) ──
+     .cb-enemy__statuses.is-on-rail   a lone boss's conditions seated on his
+                      regalia plate's top rail, either side of its crescent
+                      crest (ui/enemy.js _seatStatuses), instead of a tray
+                      hung off his gauge (survey 6, J1: "a detached strip";
+                      the graft, J2 and J3: "by him, where the hand can never
+                      cover them"). The row stands on the rail between his
+                      shoes and his name; the first half left of the crest,
+                      the rest right of it (`order`), the crest's width kept
+                      clear between them (::before). */
+.cb-enemy__name > .cb-enemy__statuses.is-on-rail {
+  --roundel: clamp(38px, 2.9vw, 46px);
+  position: absolute; z-index: 2;
+  left: 50%; bottom: calc(100% - var(--bp-h, 50px) * 30 / 156 + 3px);
+  transform: translateX(-50%);
+  display: flex; flex-wrap: nowrap; align-items: flex-end; justify-content: center;
+  gap: 0 6px; margin: 0;
+  padding: 0 calc(var(--rail-bal, 0) * (var(--roundel) + 6px)) 0 0;
+  max-width: none; width: max-content;
+  letter-spacing: normal; white-space: nowrap; text-transform: none;
+  border: 0; border-image: none; background: none; filter: none;
+}
+.cb-enemy__name > .cb-enemy__statuses.is-on-rail::before {
+  content: ''; order: 1; flex: none;
+  width: calc(var(--bp-h, 50px) * 1.12 + 10px); height: 1px;
+}
+.cb-enemy__name > .cb-enemy__statuses.is-on-rail::after { content: none; }
+.cb-enemy__name > .cb-enemy__statuses.is-on-rail:empty { display: none; }
+.cb-enemy__name > .cb-enemy__statuses.is-on-rail > .cb-status {
+  --roundel: inherit;
+  filter: drop-shadow(0 3px 3px rgba(0, 0, 0, .85));
+}

@@ -1334,3 +1334,41 @@
 @media (max-height: 860px) {
   .sh-counter--moth.kit-panel { padding-top: 22px; padding-bottom: 12px; }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ROUND 40 GRAFT — EACH WARE ON A RAISED PLINTH (AVENTURINE's, J1)
+   The one walnut shelf SPINEL ran under all three wares is broken into a
+   raised walnut plinth under each bell and each jar, a finger narrower than
+   its column, so the three stand as objects on stands, not a bar: the ware
+   stands on the plinth's lit top, its name on the dark plate set into the
+   plinth's front, its price on the brass tag hung below the plinth on its
+   twine, and what it does lettered under its own tag (J2). At the Deck's
+   1280 a long rule (the Coatcheck Ticket's five lines) is set three lines at
+   rest and opens whole when the ware is in hand (pointed at, focused); its
+   tooltip says it whole too (J1).
+   ═══════════════════════════════════════════════════════════════════════════ */
+.sh-side .sh-row.sh-pressable { --plinth-h: calc(var(--lip-h) * 2.7); }
+.sh-side .sh-row.sh-pressable::before,
+.sh-side .sh-row.sh-pressable:first-child::before,
+.sh-side .sh-row.sh-pressable:last-child::before {
+  align-self: center; width: 92%; height: var(--plinth-h);
+  margin: -3px 0 0;
+  border-radius: 4px 4px 2px 2px;
+  box-shadow: 0 6px 7px -2px rgb(0 0 0 / .8), inset 0 -2px 0 rgb(0 0 0 / .45),
+    inset 1px 0 0 rgb(255 210 150 / .08), inset -1px 0 0 rgb(0 0 0 / .4);
+}
+/* the name plate set into the plinth's front */
+.sh-side .sh-row.sh-pressable .sh-row__txt b {
+  margin-top: calc(var(--plinth-h) * -.56);
+}
+/* the tag hangs below the plinth */
+.sh-side .sh-row.sh-pressable > .sh-buy { margin-top: 9px; }
+@media (max-width: 1400px) {
+  .sh-side .sh-row.sh-pressable .sh-row__txt em {
+    display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; line-clamp: 3;
+    overflow: hidden;
+  }
+  .sh-side .sh-row.sh-pressable:is(.is-in-hand, :hover, :focus-within) .sh-row__txt em {
+    -webkit-line-clamp: unset; line-clamp: none; overflow: visible;
+  }
+}

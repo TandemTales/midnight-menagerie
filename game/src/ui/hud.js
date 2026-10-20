@@ -688,7 +688,20 @@ export class HUD {
         lv = { ...lv, pouch: { ...p } };
         this._applyFold(lv);
       }
-      return Math.min(p.k ? p.vk : 99, p.g ? p.vg : 99);
+      /* round 40 graft: the peeks came down two at a time (the larger first),
+         so the rail can be left with an object's room to spare: give one
+         back to whichever group it fits (the cartouche's count, "KEEPSAKES
+         10", costs each group a little of what it had) */
+      for (const [on, key] of [[p.k, 'vk'], [p.g, 'vg']]) {
+        const cap = key === 'vk' ? Math.min(nK, POUCH_PEEK) : Math.min(nG, POUCH_PEEK);
+        if (!on || p[key] >= cap || p[key] < 1) continue;
+        p[key] += 1;
+        lv = { ...lv, pouch: { ...p } };
+        this._applyFold(lv);
+        if (this._tight()) { p[key] -= 1; lv = { ...lv, pouch: { ...p } }; this._applyFold(lv); }
+      }
+      const lo = Math.min(p.k ? p.vk : 99, p.g ? p.vg : 99);
+      return lo + ((p.k ? p.vk : 0) + (p.g ? p.vg : 0)) / 100;
     };
     let best = top, bestN = -1;
     for (let sock = top; sock >= SOCK_FLOOR; sock--) {
@@ -954,12 +967,14 @@ function layPouch(list, chips, pouched, peek, kind) {
       });
     }
   }
-  /* round 40: what the pouch still holds, struck as "+7" on the last object
-     shown -- the group reads as ten, not as three (survey 6, J2) */
+  /* round 40: what the pouch still holds, struck as "+7" -- the group reads
+     as ten, not as three (survey 6, J2). ROUND 40 GRAFT (all three judges):
+     the cartouche keeps its count ("KEEPSAKES 10"), and the "+7" is struck
+     on the last object's shoulder INSIDE the strip (hud.css), not on a
+     badge hanging under the rail: it costs the belt no width, so the group
+     keeps its three objects beside the count. */
   for (const c of chips) c.querySelector(':scope > .mm-hud__peekmore')?.remove();
-  /* ...and then the cartouche says only what the group IS: its count is the
-     objects shown and the "+7" (its aria-label still says all ten) */
-  btn.classList.toggle('is-peeking', !!(rest.length && shown.length));
+  btn.classList.remove('is-peeking');
   if (rest.length && shown.length) {
     const more = document.createElement('b');
     more.className = 'mm-hud__peekmore';
