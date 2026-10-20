@@ -135,10 +135,14 @@ wall program while ANGLE reported LINK_STATUS true -- a good link can be an
 empty program; read getProgramInfoLog after any fx/ change** (a gate for it
 is proposed as its own session; gpuprof now reads every program's log and
 says why a timing is null). The other 13 wings identical; tests green on dev.
-**NEXT: ROUND 40** (`BRIEF-r40.md`, `round-40.args.json`): the boards -- a
-12 px floor at 1280, the hand's spread, the paintings' plates under their
-frames and gameover's cords, the map's regions as drawn shapes, the run
-strip's objects, the shop's shelves. **Josh asked 10-18 for a
+**ROUND 40 IS RUNNING (2026-10-20)** (`BRIEF-r40.md`, `round-40.args.json`,
+base `06d2a982`): the boards -- a 12 px floor at 1280, the hand's spread, the
+paintings' plates under their frames and gameover's cords, the map's regions
+as drawn shapes, the run strip's objects, the shop's shelves; shop,
+combat-crowd, gameover, hud-late, map, reward at both sizes; SPINEL / IOLITE /
+AVENTURINE in `C:/UILOOP/r40/wt/r40-boards-{a,b,c}` (ports 9311-9313),
+BATISTE baselines in `C:/UILOOP/r40/judging/r40/boards/BATISTE/` (12 of 12,
+looked at). **Josh asked 10-18 for a
 3-hour pause in which nothing may launch a program -- respect such asks.**
 
 **ROUND 33 AND ITS GRAFT ARE MERGED, VERIFIED AND PUSHED (2026-10-16):**
