@@ -1670,7 +1670,9 @@ export const REGIONS = {
     key:  { glow: 0, kind: 'warm', x: -3.4, y: 2.6, z: 2.0, color: '#e5b57e', intensity: 1.67, radius: 6.45 },
     /* (round 28: the cold fill 7.45 -> 4.4 -- at 7.45 it was what lifted
        the wash room's right-hand flags to a milky blue-grey) */
-    fill: { glow: 0, kind: 'cold', x: 5.0, y: 2.2, z: 1.2, color: '#7f9fb8', intensity: 4.4, radius: 7.5, flicker: false },
+    /* (round 41 graft, ZIRCON's: and 4.4 -> 3.3 -- J3 on the wash house:
+       "the right half cold milky blue"; "dark, not milky") */
+    fill: { glow: 0, kind: 'cold', x: 5.0, y: 2.2, z: 1.2, color: '#7f9fb8', intensity: 3.3, radius: 7.5, flicker: false },
     lights: [
       /* (round 23: the range's lanterns light its stalls -- they were 0.78
          and 0.75 against a cold 3.23, and the cold one alone lit the back
@@ -2641,7 +2643,7 @@ export const ROOM_KINDS = {
                         nightgown thrown over it, its slippers kicked off and
                         the chamber pot by its leg (the washstand's quad, 52,
                         seed > 40: slDrawM) */
-                     { shape: 52, edge: 0.30, z: 1.5, tone: 0.97, fore: 1, keep: true, seed: 45.0, hM: 0.56, wM: 0.88 },
+                     { shape: 52, edge: 0.30, z: 1.5, tone: 0.97, fore: 1, keep: true, seed: 45.0, hM: 0.64, wM: 1.04 },   // (round 41 graft: LABRADORITE's chest, its quad)
                      { shape: 52, edge: 0.70, z: 1.0, tone: 0.96, fore: 1, keep: true, seed: 85.0, hM: 1.00, wM: 0.95 }],
               /* (round 41, AMETHYST: survey-7 judge 1, "the right third of the
                  floor falls to black" -- the near washstand's candle laid on
@@ -2658,7 +2660,10 @@ export const ROOM_KINDS = {
                  floor, which this room never had -- a stride nearer and
                  larger, so it is the near floor and the runner under it
                  goes) */
-              rug: { ahead: 5.9, hw: 2.3, hd: 1.7 },
+              /* (round 41 graft: a stride nearer, LABRADORITE's -- so the
+                 carpet's border lies on the near planks and they are not a
+                 dark field under the fight) */
+              rug: { ahead: 5.0, hw: 2.4, hd: 2.1 },
               nearFloor: { pool: { ahead: 5.2, across: -1.4, rAlong: 2.8, rAcross: 2.2, k: 1.3, color: '#9cb2e8' },
                            /* (round 41: the fire's light carried onto the
                               near boards at the right, where the floor fell to
@@ -2925,7 +2930,9 @@ export const ROOM_KINDS = {
                /* (round 41: a ball-tree in its Versailles box, seed 7 -- the
                   tiered stand of discs it drew read as "stacked discs",
                   survey 5) */
-               { shape: 30, edge: 0.21, z: 2.6, tone: 0.95, seed: 7.0, fore: 1, keep: true }],
+               /* (round 41 graft, J2: ZIRCON's SPIRAL, seed 4.5, where it
+                  stood -- the court's nearest topiary a clipped corkscrew) */
+               { shape: 30, edge: 0.17, z: 3.6, tone: 0.95, seed: 4.5, fore: 1, keep: true }],
         /* (round 34 graft, VIVIANITE's: the lanterns' spill carried down the
            walk to your feet, and the moon on the near-left lawn -- at the
            wing's strengths, which the dark turf needs) */
@@ -3078,7 +3085,13 @@ export const ROOM_KINDS = {
                      /* (round 34: the near floor -- a dog's bed waiting by
                         the door at the left, the grooming table at your
                         right, in the straw) */
-                     { shape: 40, edge: 0.14, z: 2.2, tone: 0.95, fore: 1, keep: true, scale: 1.1 }] }],
+                     /* (round 41 graft, ZIRCON's: in from the frame's edge,
+                        0.14 -> 0.32 -- cut by it the bed read as a fragment) */
+                     { shape: 40, edge: 0.32, z: 2.2, tone: 0.95, fore: 1, keep: true, scale: 1.1 }],
+              /* (round 41 graft, J3: the wash house's "near-left corner pure
+                 black" -- the range lantern's pool carried to the near left,
+                 where the dog's bed waits by the door) */
+              nearFloor: { pool: { ahead: 3.2, across: -2.0, abs: true, rAlong: 3.0, rAcross: 2.6, k: 4.0, color: '#e2a862' } } }],
                      /* (round 34 graft, J2: the grooming table at your right
                         is gone -- cut by the frame it read as an easel) */
     names: [
