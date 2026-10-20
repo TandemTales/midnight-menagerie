@@ -1196,3 +1196,141 @@
   box-shadow: 1px 0 0 rgba(0, 0, 0, .45);
 }
 .sh-row .sh-buy.kit-price::after { top: calc(50% - var(--tag) * .72); height: calc(var(--tag) * .44); }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ROUND 40 — FIVE TRICKS WITH AIR, AND THE COUNTER'S WARES ON A SHELF
+   Survey 6: the Keepsake and Snack rows "read as a progress bar on a web
+   list" (J1); "the six cards touch edge to edge under the curtain" and
+   their rules ran 9-10 px at 1280 (J2). So:
+   - Forgetting leaves the row (shop.js) for Mr. Moth's counter plaque: the
+     five Tricks take the shelf with air between them, their rules fitted to
+     12.5-15 px on screen (_cardfit.js rulesPx);
+   - each Keepsake stands under its bell, each Snack in its jar, three to a
+     shelf -- on ONE walnut shelf that runs the panel's width -- with its name
+     on a small dark nameplate on the shelf's front beneath it, its price on
+     a brass tag hung from that plate on its twine, and what it does lettered
+     under the tag. No full-width gold bars.
+   ═══════════════════════════════════════════════════════════════════════════ */
+.scene--shop .sh-cards {
+  --face-h: min(100cqh - var(--frame-pad) - (var(--tag-h) - var(--tag-lift)) - var(--frame-pad) - 6px,
+                (100cqw - 4 * var(--gap) - 2 * var(--frame-pad)) / 5 / var(--card-aspect));
+}
+
+/* ── Forgetting, on the counter plaque ── */
+.sh-counter--moth .sh-service--plaque {
+  position: relative; z-index: 2;
+  display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center;
+  column-gap: clamp(8px, .8vw, 12px);
+  width: 100%; box-sizing: border-box;
+  padding: clamp(5px, .8vh, 8px) clamp(16px, 1.4vw, 22px) clamp(5px, .8vh, 8px) clamp(10px, .9vw, 14px);
+  border: 0 solid transparent;
+  border-image: url("../../assets/ui/kit/cartouche-dark.webp") 18 34 18 34 fill / 12px 22px stretch;
+  filter: drop-shadow(0 4px 5px rgba(0, 0, 0, .8));
+}
+.sh-counter--moth .sh-service--plaque:has(.sh-buy.is-poor) .sh-service__medal { filter: grayscale(.8) brightness(.7); }
+.sh-counter--moth .sh-service--plaque .sh-service__medal {
+  position: relative; left: auto; top: auto; translate: none;
+  width: clamp(46px, 3.8vw, 58px); aspect-ratio: 156 / 98;
+}
+.sh-counter--moth .sh-service__body { display: grid; gap: 2px; min-width: 0; }
+.sh-counter--moth .sh-service--plaque .sh-service__h {
+  position: static; height: auto; display: flex; align-items: baseline; gap: .55em;
+  padding: 0; border: 0; border-image: none; filter: none;
+  font-size: clamp(14px, 1.05vw, 16px); letter-spacing: .06em; text-transform: uppercase;
+}
+.sh-counter--moth .sh-service--plaque .sh-service__h > em {
+  position: static; transform: none; width: auto; padding: 0;
+  border: 0; border-image: none; -webkit-mask-box-image: none; background: none;
+  font-family: var(--font-body); font-style: italic; font-weight: 500; text-transform: none;
+  letter-spacing: .01em; font-size: max(12.5px, var(--fs-xs)); color: var(--kit-text-mid);
+}
+.sh-counter--moth .sh-service--plaque .sh-service__rules { position: static; display: block; }
+.sh-counter--moth .sh-service--plaque .sh-service__rules::before { content: none; }
+.sh-counter--moth .sh-remove__blurb {
+  text-align: left; text-wrap: pretty;
+  font-size: clamp(12.5px, .86vw, 14px); line-height: 1.18;
+}
+.sh-counter--moth .sh-remove__blurb b { display: inline; margin: 0 0 0 .25em; }
+.sh-counter--moth .sh-service--plaque .sh-remove > .sh-buy { margin: 0; --price-h: var(--shelf-price-h, 30px); }
+.sh-counter--moth .sh-service--plaque .sh-buy.kit-price::after { display: none; }
+
+/* ── the wares, three to a shelf ── */
+.sh-side .sh-list {
+  position: relative;
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: start;
+  column-gap: clamp(8px, .8vw, 14px); row-gap: 10px;
+  padding-top: clamp(16px, 2.2vh, 22px);
+}
+.sh-side .sh-row.sh-pressable {
+  --vw: clamp(48px, 3.6vw, 60px);
+  --lip-h: clamp(13px, 1.6vh, 16px);
+  display: flex; flex-direction: column; align-items: center;
+  gap: 0; padding: 0; min-width: 0;
+  text-align: center;
+}
+.sh-side .sh-row.sh-pressable > .sh-row__txt { display: contents; }
+/* the vessel stands on the shelf */
+.sh-side .sh-row .sh-row__sig.sh-vessel { order: 1; margin: 0; align-self: center; }
+/* the shelf: a walnut board under all three, its lit top face and gilt bead
+   along its front (each ware draws its own length, running into the gap so
+   the three join into one board) */
+.sh-side .sh-row.sh-pressable::before {
+  order: 2; position: relative; display: block; flex: none;
+  grid-area: auto;
+  align-self: stretch; height: var(--lip-h);
+  margin: -3px calc(clamp(8px, .8vw, 14px) * -.5 - 1px) 0;
+  border-radius: 1px;
+}
+.sh-side .sh-row.sh-pressable:first-child::before { margin-left: -8px; border-radius: 3px 1px 1px 3px; }
+.sh-side .sh-row.sh-pressable:last-child::before { margin-right: -8px; border-radius: 1px 3px 3px 1px; }
+/* its name on a small dark plate screwed to the shelf's front */
+.sh-side .sh-row.sh-pressable .sh-row__txt b {
+  order: 3; position: relative; z-index: 2;
+  max-width: 100%; margin-top: -4px;
+  padding: 4px 12px 5px;
+  overflow: visible; text-overflow: clip; white-space: normal; text-wrap: balance;
+  border: 0 solid transparent;
+  border-image: url("../../assets/ui/kit/cartouche-dark.webp") 18 34 18 34 fill / 7px 12px stretch;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, .85));
+  font-size: clamp(12.5px, .86vw, 14px); line-height: 1.08; letter-spacing: .04em;
+}
+/* its price on a brass tag, hung from the plate on its twine */
+.sh-side .sh-row.sh-pressable > .sh-buy {
+  order: 4; align-self: center; justify-self: auto;
+  margin: 9px 0 0; translate: none;
+}
+.sh-side .sh-row .sh-buy.kit-price::after {
+  left: 50%; top: auto; bottom: 100%; height: 10px; width: 1.6px; rotate: 0deg; translate: -50% 0;
+}
+/* what it does, lettered on the velvet under the tag */
+.sh-side .sh-row.sh-pressable .sh-row__txt em {
+  order: 5; display: block;
+  margin: 6px 0 0; padding: 0 1px;
+  font-size: clamp(12.5px, .84vw, 14px); line-height: 1.17;
+  text-wrap: balance;
+}
+.sh-side .sh-row.sh-pressable.is-in-hand { filter: brightness(1.12) drop-shadow(0 0 8px color-mix(in srgb, var(--kit-candle) 30%, transparent)); }
+@media (max-height: 860px) {
+  .sh-side .sh-list { padding-top: 12px; row-gap: 6px; }
+  .sh-side .sh-row.sh-pressable { --vw: 46px; }
+  .scene--shop .sh-side .sh-row__txt b { font-size: 12.5px; }
+  .scene--shop .sh-side .sh-row__txt em { font-size: 12.5px; line-height: 1.15; }
+  .sh-counter--moth .sh-moth__line { font-size: 14.5px; line-height: 1.2; }
+  .sh-counter--moth .sh-moth__you { --ring: 38px; }
+  .sh-counter--moth .sh-moth__plaque { --carve: 13px; padding-block: 2px; }
+}
+/* the counter plaque takes a little of the side shelves' width (they hold
+   three wares each in columns now, not a ruled list), so Forgetting's name
+   and its "a service" stand on one line beside the medallion */
+.sh-floor { grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr) minmax(0, 1.05fr); }
+@media (max-width: 1400px) {
+  .sh-floor { grid-template-columns: minmax(0, 1.04fr) minmax(0, 1fr) minmax(0, 1.04fr); }
+  .sh-moth__you { padding-inline: 2px; }
+  .sh-moth__you dt { letter-spacing: -.02em; }
+}
+/* the signature under his line stands down: the plaque is signed by the
+   medallion over the panel, and the room goes to Forgetting */
+.sh-counter--moth .sh-moth__by { display: none; }
+@media (max-height: 860px) {
+  .sh-counter--moth.kit-panel { padding-top: 22px; padding-bottom: 12px; }
+}
