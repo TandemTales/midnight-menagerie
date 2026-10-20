@@ -359,6 +359,50 @@ const PLATE_LIFT_MAX = 92;
  *  keep its plate, hung from its feet, clear of the hand. */
 const BOSS_RISE_MAX = 140;
 
+/* ROUND 40 -- A LONE BOSS'S CONDITIONS SEATED UNDER HIS NAMEPLATE. Survey 6,
+   J1: "the Butler's three effect medallions are bolted onto the right end of
+   his HP bar ... a detached strip". A boss alone in his arena now carries
+   them in a tray slung centred under his gauge and nameplate, the same
+   scroll-ended dark cartouche the Kid's conditions stand in under her own
+   Courage gauge, hung from the gauge on two short brass hangers. The tray is
+   placed out of the plate's flow (absolute), so it reserves nothing and the
+   boss's ground line and size are unchanged (EnemyView#setPlateLimit); the
+   hand stands lower than it reaches (ui/hand.js TUNE.stackFit). Only the
+   PLACEMENT is this file's: the medallions themselves are combat.css's. */
+const SEAT_CSS = `
+.cb-enemy__plate > .cb-enemy__statuses.is-seated {
+  --roundel: 38px;
+  position: absolute; left: 50%; top: calc(100% + 4px);
+  transform: translateX(-50%);
+  display: flex; flex-wrap: nowrap; justify-content: center; align-items: center;
+  gap: 6px 10px;
+  width: max-content; max-width: none;
+  margin: 0; padding: 4px 22px 9px 20px;
+  border: 0 solid transparent;
+  border-image: url("assets/ui/kit/cartouche-dark.webp") 18 34 18 34 fill / 12px 23px stretch;
+  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .85));
+}
+.cb-enemy__plate > .cb-enemy__statuses.is-seated:empty { display: none; }
+.cb-enemy__plate > .cb-enemy__statuses.is-seated > .cb-status { --roundel: inherit; }
+.cb-enemy__plate > .cb-enemy__statuses.is-seated::before,
+.cb-enemy__plate > .cb-enemy__statuses.is-seated::after {
+  content: ''; position: absolute; z-index: -1; pointer-events: none;
+  bottom: calc(100% - 4px); width: 4px; height: 11px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--kit-gold-lo), var(--kit-gold-hi) 45%, var(--kit-gold) 70%, var(--kit-gold-lo));
+  box-shadow: 0 0 0 1px rgba(26, 14, 4, .75), 0 2px 3px rgba(0, 0, 0, .8);
+}
+.cb-enemy__plate > .cb-enemy__statuses.is-seated::before { left: 30px; }
+.cb-enemy__plate > .cb-enemy__statuses.is-seated::after { right: 30px; }
+`;
+function ensureSeatCss() {
+  if (typeof document === 'undefined' || document.getElementById('mm-enemy-seat-css')) return;
+  const st = document.createElement('style');
+  st.id = 'mm-enemy-seat-css';
+  st.textContent = SEAT_CSS;
+  document.head.appendChild(st);
+}
+
 /* ── silhouette props ──────────────────────────────────────────────────────── */
 /**
  * Each returns { back, front, faceY, faceScale, override } in body space
@@ -1159,6 +1203,7 @@ export class EnemyView {
        creature's ground line rises by the overlap and its stage gives up the
        same height from the top: the feet, the plate and the hand all stay
        where they can be seen, and he stands a little smaller. */
+    this._seatStatuses();
     if (this._risesForPlate()) {
       if (this._rise) this.el.style.setProperty('--e-rise', '0px');
       /* A row of conditions is RESERVED under the gauge while it has none, so
@@ -1189,6 +1234,22 @@ export class EnemyView {
     this._plift = lift;
     this.$plate.style.setProperty('--e-plift', lift + 'px');
     return lift;
+  }
+
+  /** Round 40: a boss alone in his arena carries his conditions in a tray
+   *  under his gauge (SEAT_CSS); anyone else keeps them on the gauge's end. */
+  _seatStatuses() {
+    const st = this.$statuses, vit = this.$plate?.querySelector('.cb-enemy__vitals');
+    if (!st || !vit) return;
+    const alone = this._risesForPlate() && !!this.el.closest('.cb-enemies[data-n="1"]');
+    if (alone && st.parentElement === vit) {
+      ensureSeatCss();
+      vit.after(st);
+      st.classList.add('is-seated');
+    } else if (!alone && st.parentElement !== vit) {
+      vit.appendChild(st);
+      st.classList.remove('is-seated');
+    }
   }
 
   /** A boss in its own arena (not a part of one): its plate hangs from its feet. */
