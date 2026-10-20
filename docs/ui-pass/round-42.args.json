@@ -1,0 +1,71 @@
+{
+  "round": "r42",
+  "maxBuilders": 3,
+  "briefs": [
+    "docs/ui-pass/BRIEF-r0.md",
+    "docs/ui-pass/BRIEF-r1.md",
+    "docs/ui-pass/BRIEF-r33.md",
+    "docs/ui-pass/BRIEF-r36.md",
+    "docs/ui-pass/BRIEF-r38.md",
+    "docs/ui-pass/BRIEF-r40.md",
+    "docs/ui-pass/BRIEF-r42.md"
+  ],
+  "rubrics": [
+    "docs/ui-pass/RUBRIC.md",
+    "docs/ui-pass/RUBRIC-r42.md"
+  ],
+  "samples": [
+    "UI/title.png",
+    "UI/mainMenu.png",
+    "UI/selectCompanion.png",
+    "UI/selectKid.png"
+  ],
+  "tracks": [
+    {
+      "key": "boards",
+      "name": "BOARDS",
+      "rule": "refine",
+      "screens": [
+        "map",
+        "hud-late",
+        "atlas",
+        "atlas-house",
+        "clubhouse",
+        "event",
+        "piles",
+        "settings"
+      ],
+      "baseline": "SERGE",
+      "builders": [
+        {
+          "slot": "a",
+          "code": "ZOISITE",
+          "port": 9301,
+          "angle": "LITERAL -- work BRIEF-r42's fix list 1 to 4 in order and exactly as written, the parchment family first (one darker paper across map, hud-late, atlas, atlas-house, event and the clubhouse cork), then the ink, then each web control."
+        },
+        {
+          "slot": "b",
+          "code": "PREHNITE",
+          "port": 9302,
+          "angle": "THE CONTROLS FIRST -- every last web control (the piles search, the settings seed fields and palette, the atlas legend, the clubhouse tabs, the event's double control) redrawn in the house's brass and enamel and proven by mouse, keys and pad; then the paper's darks and the ink, in that light."
+        },
+        {
+          "slot": "c",
+          "code": "LAPIS",
+          "port": 9303,
+          "angle": "ONE LIT THING PER BOARD -- each of these boards loses its focus to an even pale field. Darken and age every sheet, then give each board ONE lit subject (the reachable nodes, the surveyed wing, the selected wing, the clubhouse lamp's pool on the photos, the event's ledger), everything else falling into the house's darks, inked."
+        }
+      ],
+      "smallScreens": [
+        "map",
+        "hud-late",
+        "atlas",
+        "atlas-house",
+        "clubhouse",
+        "event",
+        "piles",
+        "settings"
+      ]
+    }
+  ]
+}
