@@ -15455,8 +15455,13 @@ void main(){
         vec2 pc0 = vWorld.xz/0.17;
         vec2 pci = floor(pc0);
         float best = 1e3, bh = 0.0;
-        for (int j = 0; j < 9; j++){
-          vec2 o = vec2(mod(float(j), 3.0), floor(float(j)/3.0)) - 1.0;
+        /* (round 39 graft, the frame budget: a petal reaches 0.06 m from its
+           centre and its centre lies in its own 0.17 m cell, so only this
+           cell and the three toward the pixel's own quarter can touch it --
+           four cells searched, not nine; the same petals) */
+        vec2 qs = sign(fract(pc0) - 0.5);
+        for (int j = 0; j < 4; j++){
+          vec2 o = vec2(mod(float(j), 2.0), floor(float(j)/2.0))*qs;
           vec2 cid = pci + o;
           float h = mmHash21(cid*1.7 + 3.3);
           if (h > dens*0.48) continue;   // (round 39 graft: a few, round the fans -- PERIDOT's)
