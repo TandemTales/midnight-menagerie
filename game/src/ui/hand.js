@@ -212,6 +212,14 @@ export const TUNE = {
   stackDx: 7,           // ...and to the left
   stackRot: 3.4,        // ...and tilted further left, degrees
   stackMax: 3,          // copies deeper than this tuck exactly behind the third
+  /* ROUND 40 GRAFT (IOLITE's): on the stacked shelf (TUNE.stackFit) the
+     places stand shoulder to shoulder, so a copy leaning LEFT reached over
+     the card before its stack and covered the end of that card's name ("Put
+     Yourself Back Togeth", "Put Yoursel"). There the copies rise straight
+     up behind the top and lean RIGHT, into the place the next card covers. */
+  shelfStackDy: 8,
+  shelfStackDx: -3,
+  shelfStackRot: -2.6,
   /* ROUND 40: A STACKED HAND STAYS ON ITS SHELF. Survey 6, both judges: at
      nine Tricks with three Sit Pretty and three Bites stacked, the fan ran
      from x=260 to x=1060 at the Deck's 1280 and climbed to y=560, over the
@@ -221,8 +229,25 @@ export const TUNE = {
      px (`readPx`, `floorPx` ...), a raised card a size up -- and its places
      stand shoulder to shoulder, no air between them: the fan is narrower and
      lower, and every card in it still shows whole. */
-  stackFit: 0.75,
+  /* ROUND 40 GRAFT (all three judges): "Put Yourself Back Together" and
+     "Go Get It!" at three quarters printed their rules at the floor exactly
+     (12.2 and 13.2 px of Grenze, whose capitals stand 0.61 em: a 7.4 px
+     capital, read as "9-10 px" off the Deck's capture) while every other
+     card printed 14. The stacked card is a sixteenth larger (13/16, its own
+     rehearsed raster scale, Hand#_fitScales), a long name may condense to
+     the plate's fewest lines down to the floor, and the panel RISES for the
+     size the row reads at (`openCapPx`), not just for the floor: the two
+     long cards print 13.6+ and 14 px. */
+  stackFit: 0.8125,
   stackBottomPad: 6,
+  stackPlateU: 188,     // graft: the name plate's measure for nameLadder (see Hand#_layout)
+  stackTabClear: 5,     // graft: u the rules stand below the type tab (hand.css)
+  /* graft: the measure the stacked card's rules are fitted to. The panel's
+     rules box is 192u inside its 3u pads (kit.css .mm-card__rules: 13u in
+     from either edge) and the page wraps them there, but they were fitted
+     to 176u (less fitRules' 5 %): a long rule was set for a line more than
+     the page then broke it into. 184 still keeps a hair over 8 % in hand. */
+  stackRulesU: 184,
   /* ROUND 36: A LOWER ARC. The arc's dip is what RAISES the middle of the fan
      (baseY = bottom - dip: the outer cards sit at the bottom, the middle a dip
      above them), and a crowded fan's middle is where the boss's bars stand
@@ -641,6 +666,7 @@ export class Hand {
   _fit(n, total = n) {
     const ch = this.chh, cw = this.cw;
     let s = Math.min(1, (this.h * TUNE.maxCardHFrac) / (ch || 1));
+    let stackCap = 0;
     if (n > 1) {
       const [bl, br] = this._band(n, s);
       const band = Math.max(cw * 0.8, br - bl);
@@ -668,7 +694,12 @@ export class Hand {
       if (this._bounded() && many >= 8 && band / many < TUNE.crowdCardPx) s = Math.min(s, TUNE.crowdFit);
       // round 40: a crowded hand whose copies stack sits a size lower (TUNE.stackFit)
       // (a band with the room for whole cards -- 1600 -- takes the crowded seven-eighths)
-      if (this._bounded() && many >= 8 && total > n) s = Math.min(s, band / many < TUNE.crowdCardPx ? TUNE.stackFit : TUNE.crowdFit);
+      // graft: the stacked size is applied AFTER the eighths below (it is a
+      // sixteenth, rehearsed with them, Hand#_fitScales)
+      if (this._bounded() && many >= 8 && total > n) {
+        if (band / many < TUNE.crowdCardPx) stackCap = TUNE.stackFit;
+        else s = Math.min(s, TUNE.crowdFit);
+      }
     }
     // QUANTISED, and this matters more than it looks. The compositor rasters a
     // card at its current transform scale; a scale it has not seen before is a
@@ -679,6 +710,7 @@ export class Hand {
     // all four of which `warmRaster()` rehearses on scene entry. Measured:
     // 45.9 fps -> 60.3 fps on the same action.
     s = Math.floor(clamp(s, TUNE.minFit, 1) * TUNE.fitSteps) / TUNE.fitSteps;
+    if (stackCap) s = Math.min(s, stackCap);
     return clamp(s, TUNE.minFit, 1);
   }
 
@@ -686,6 +718,8 @@ export class Hand {
   _fitScales() {
     const out = [];
     for (let q = TUNE.fitSteps; q >= Math.round(TUNE.minFit * TUNE.fitSteps); q--) out.push(q / TUNE.fitSteps);
+    // round 40 graft: the stacked hand's own size, between two eighths
+    if (!out.includes(TUNE.stackFit)) { out.push(TUNE.stackFit); out.sort((a, b) => b - a); }
     return out;
   }
 
@@ -1574,21 +1608,41 @@ export class Hand {
          fit its panel at `floorPx` climbs over its own art by what it needs
          (up to `riseMax`, ui/hand.css .is-stackfit), never shrinks under it */
       const lift = !!F.stackFit;
+      const hiU = Math.min(15.5, Math.max(T.openCapPx, 18.5 * uPx)) / uPx;
       for (const s of this.slots) {
         s.view.el.style.removeProperty('--fan-vis');
         s.view.el.classList.remove('is-name-squeezed');
         let rise = 0;
         if (lift && s.view.rulesNeed) {
-          const need = s.view.rulesNeed(176 * 0.95, T.floorPx / uPx, 1.1);
-          if (need > 0) rise = Math.ceil(clamp(need / 0.97 - 116, 0, T.riseMax) / 2) * 2;
           /* ...and the name on its plate keeps to the card: the plate stands
              on 139u - rise and grows up a line at a time, so a long name
-             ("Put Yourself Back Together", four lines) is set the largest it
-             can be down to the floor, and the panel rises no further than
-             the plate leaves room for */
-          const ladder = s.view.nameLadder?.(208, { hi: Math.max(15.5, 13 / uPx), floor: T.nameFloorPx / uPx, maxLines: 4 }) || [];
+             ("Put Yourself Back Together") is set the largest it can be down
+             to the floor, and the panel rises no further than the plate
+             leaves room for. ROUND 40 GRAFT: the panel rises for the size
+             the row reads at (`hiU`, an open hand's cap), not only for the
+             floor -- the largest rules size, a quarter-unit at a time, whose
+             rise the plate (on as few lines as it needs) and `riseMax` allow;
+             at that size, the largest name that still fits over it. */
+          // graft: the plate the stacked card sets is 198u with 17u ends (kit.css
+          // .mm-card__banner, .mm-card__name): 164u of measure, which
+          // nameLadder's 12u ends make 188. At 208 it promised "Put Yourself
+          // Back Together" three lines the plate then set in four.
+          const ladder = s.view.nameLadder?.(T.stackPlateU, { hi: Math.max(15.5, 13 / uPx), floor: T.nameFloorPx / uPx, maxLines: 4 }) || [];
           const plateOf = (o) => o.n * o.f * 1.04 + 12.5;
+          // (rulesNeed takes the panel's 176u and keeps fitRules' own 5 %
+          // slack; SPINEL's 176 * 0.95 took it twice and so rose for a line
+          // the panel never sets: "Put Yourself Back Together" in six)
+          const riseFor = (f) => {
+            const need = s.view.rulesNeed(T.stackRulesU, f, 1.1);
+            return need > 0 ? Math.ceil(clamp(need / 0.97 - 116 + T.stackTabClear, 0, 1e3) / 2) * 2 : 0;
+          };
+          const roomy = ladder.length ? Math.min(...ladder.map(plateOf)) : 0;
           let pick = null;
+          for (let f = hiU; f >= T.floorPx / uPx - 1e-6; f -= 0.25) {
+            const r = riseFor(f);
+            if (r <= T.riseMax && (!ladder.length || roomy <= 109 - r)) { rise = r; break; }
+            rise = Math.min(r, T.riseMax);
+          }
           for (const o of ladder) if (plateOf(o) <= 109 - rise && (!pick || o.f > pick.f)) pick = o;
           if (!pick && ladder.length) {
             pick = ladder.reduce((a, o) => (plateOf(o) < plateOf(a) ? o : a));
@@ -1598,7 +1652,7 @@ export class Hand {
         }
         if (rise) s.view.el.style.setProperty('--card-rise', String(rise));
         else s.view.el.style.removeProperty('--card-rise');
-        s.view.fitRules?.(176, 116 + rise, { lo: T.floorPx / uPx, hi: Math.min(15.5, Math.max(T.openCapPx, 18.5 * uPx)) / uPx });
+        s.view.fitRules?.(lift ? T.stackRulesU : 176, 116 + rise - (lift ? T.stackTabClear : 0), { lo: T.floorPx / uPx, hi: hiU });
       }
     }
     if (this._stackFitOn !== !!(F.stackFit && !F.crowded)) {
@@ -1820,11 +1874,16 @@ export class Hand {
     const g = this._geoTmp || (this._geoTmp = {});
     const deal = this._deal;
     const unplayable = this.slots[i].playable === false;
-    g.x = F.cx + (deal && deal.n === nu ? deal.x[a.j] : d * F.step) - a.depth * T.stackDx * F.fit;
+    // round 40 graft (IOLITE's): on the stacked shelf a copy leans RIGHT,
+    // into the place the next card covers anyway (TUNE.shelfStack*)
+    const shelf = !!F.stackFit;
+    const sDx = shelf ? T.shelfStackDx : T.stackDx, sDy = shelf ? T.shelfStackDy : T.stackDy;
+    const sRot = shelf ? T.shelfStackRot : T.stackRot;
+    g.x = F.cx + (deal && deal.n === nu ? deal.x[a.j] : d * F.step) - a.depth * sDx * F.fit;
     g.y = F.baseY + Math.pow(norm, 1.85) * F.dip
         + (unplayable ? T.unplayableDrop * F.fit : 0)
-        - a.depth * T.stackDy * F.fit;
-    g.rot = d * F.rotPer - a.depth * T.stackRot;
+        - a.depth * sDy * F.fit;
+    g.rot = d * F.rotPer - a.depth * sRot;
     g.scale = F.fit * (unplayable ? T.unplayableScale : 1);
     return g;
   }
