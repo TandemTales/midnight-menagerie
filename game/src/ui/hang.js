@@ -200,15 +200,21 @@ export function settlePlate(f) {
   if (!b) return p.offsetHeight;
   const lines = () => b.offsetHeight / (parseFloat(getComputedStyle(b).lineHeight) || 14);
   if (p.querySelector('em') && lines() > 1.5) f.classList.add('kit-hang--terse');
-  if (lines() > 2.5) f.classList.add('kit-hang--tight');
+  // (round 40 repair: a plate is no wider than its frame, so a long single
+  // word -- CONSERVATORY -- that will not fit the plate's width sets closer too)
+  const over = () => b.scrollWidth > b.clientWidth + 1 || b.getBoundingClientRect().width > p.clientWidth + 1;
+  if (lines() > 2.5 || over()) f.classList.add('kit-hang--tight');
   return p.offsetHeight;
 }
 
-export function fitHung(figs, obstacles, { gap = 8, min = 72, pool = null } = {}) {
-  const boxes = obstacles.filter(o => o && !o.hidden && o.getClientRects().length)
-    .map(o => o.getBoundingClientRect()).filter(r => r.width && r.height);
-  const hit = (a, b) => a.left < b.right + gap && a.right > b.left - gap
-    && a.top < b.bottom + gap && a.bottom > b.top - gap;
+export function fitHung(figs, obstacles, { gap = 8, min = 72, pool = null, near = [], nearGap = 6 } = {}) {
+  // `near`: obstacles a picture may stand closer to (`nearGap`), e.g. the
+  // candle on the rail under it (round 40 repair)
+  const boxOf = (list, g) => list.filter(o => o && !o.hidden && o.getClientRects().length)
+    .map(o => o.getBoundingClientRect()).filter(r => r.width && r.height).map(r => ({ r, g }));
+  const boxes = [...boxOf(obstacles, gap), ...boxOf(near, nearGap)];
+  const hit = (a, { r: b, g }) => a.left < b.right + g && a.right > b.left - g
+    && a.top < b.bottom + g && a.bottom > b.top - g;
   const clear = (f) => {
     settlePlate(f);
     const a = f.querySelector('.kit-hang__frame')?.getBoundingClientRect();
