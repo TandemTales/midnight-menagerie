@@ -1,0 +1,71 @@
+{
+  "round": "r41",
+  "maxBuilders": 3,
+  "briefs": [
+    "docs/ui-pass/BRIEF-r0.md",
+    "docs/ui-pass/BRIEF-r1.md",
+    "docs/ui-pass/BRIEF-r11.md",
+    "docs/ui-pass/BRIEF-r16.md",
+    "docs/ui-pass/BRIEF-r21.md",
+    "docs/ui-pass/BRIEF-r22.md",
+    "docs/ui-pass/BRIEF-r23.md",
+    "docs/ui-pass/BRIEF-r24.md",
+    "docs/ui-pass/BRIEF-r25.md",
+    "docs/ui-pass/BRIEF-r28.md",
+    "docs/ui-pass/BRIEF-r29.md",
+    "docs/ui-pass/BRIEF-r31.md",
+    "docs/ui-pass/BRIEF-r34.md",
+    "docs/ui-pass/BRIEF-r35.md",
+    "docs/ui-pass/BRIEF-r37.md",
+    "docs/ui-pass/BRIEF-r39.md",
+    "docs/ui-pass/BRIEF-r41.md"
+  ],
+  "rubrics": [
+    "docs/ui-pass/RUBRIC.md",
+    "docs/ui-pass/RUBRIC-r41.md"
+  ],
+  "samples": [
+    "UI/title.png",
+    "UI/mainMenu.png",
+    "UI/selectCompanion.png",
+    "UI/selectKid.png"
+  ],
+  "tracks": [
+    {
+      "key": "rooms",
+      "name": "ROOMS",
+      "rule": "refine",
+      "screens": [
+        "sheet-hedge",
+        "sheet-kennels",
+        "sheet-sleeping",
+        "sheet-passages",
+        "fight-hedge"
+      ],
+      "smallScreens": [
+        "fight-hedge"
+      ],
+      "baseline": "POPLIN",
+      "builders": [
+        {
+          "slot": "a",
+          "code": "ZIRCON",
+          "port": 9301,
+          "angle": "LITERAL -- work BRIEF-r41's fix list 1 to 4 in order and exactly as written, one wing at a time, the Hedge FIRST (the round's fight, the bottom of both judges' lists twice running). Keep every change inside your four wings."
+        },
+        {
+          "slot": "b",
+          "code": "LABRADORITE",
+          "port": 9302,
+          "angle": "THE PEN FIRST -- the defect both judges call the family one is un-inked, soft-edged CG props. Prove an inked, broken silhouette with material and a contact shadow on ONE object per wing (a clipped yew wall, a doghouse, an iron bed, a panelled door), then carry that treatment to every object that matters in the four wings, then the floors."
+        },
+        {
+          "slot": "c",
+          "code": "AMETHYST",
+          "port": 9303,
+          "angle": "EACH ROOM ITS OWN THINGS -- the judges read this house as 'one set re-dressed': the Foyer's runner in four wings, the Nursery's toys in the Sleeping Quarters, one wood grain down both Passages walls, three primary-colour toy boxes. Give each room objects, floor and wall that belong to THAT room only, drawn and lit, its near floor dressed with them."
+        }
+      ]
+    }
+  ]
+}
