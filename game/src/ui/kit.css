@@ -4730,3 +4730,24 @@ html .cb-endturn__hint { font-size: 12px; }
   --roundel: inherit;
   filter: drop-shadow(0 3px 3px rgba(0, 0, 0, .85));
 }
+
+/* ── THE ROUND 40 REPAIR: a plate no wider than its frame ──
+   Survey 7's paired test (both judges): survey 6's "nameplates under the two
+   hung paintings wrap to sit within each frame's width, where B's single-line
+   plates overhang the paintings". Every hung painting's plate is capped at
+   the frame's own width, moulding and all, and wraps to two lines inside it
+   (ui/hang.js settlePlate drops the date line before a name takes a third,
+   and sets a three-line name a point closer). Its lettering sits a little
+   nearer the cartouche's ends to keep the name to two lines. */
+.kit-hang--painting > .kit-hang__plate {
+  max-width: calc(100% + 2 * var(--hang-rim));
+  min-width: calc(100% + 2 * var(--hang-rim) - 12px);
+  padding-inline: 13px;
+}
+.kit-hang--painting > .kit-hang__plate > b { letter-spacing: .02em; }
+.kit-hang--painting.kit-hang--tight > .kit-hang__plate { padding-inline: 10px; border-image-width: 8px 12px; }
+.kit-hang--painting.kit-hang--tight > .kit-hang__plate > b { letter-spacing: 0; }
+
+/* (the round 40 repair seats no boss on the rail -- ui/enemy.js _seatStatuses
+   -- so nothing sets the row's balance any more: it is none) */
+.cb-enemy__name > .cb-enemy__statuses.is-on-rail { --rail-bal: 0; }

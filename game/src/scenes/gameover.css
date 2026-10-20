@@ -1360,3 +1360,10 @@
 .go-shrine > .go-hang .kit-hang__plate { padding: 4px 10px 5px; }
 .go-board .go-courage > :last-child { white-space: nowrap; }
 .go-board .go-courage__n { white-space: nowrap; }
+
+/* THE ROUND 40 REPAIR (survey 7's paired test, both judges on event: plates
+   "wrap to sit within each frame's width"): every hung painting's plate is
+   capped at its frame's width, moulding and all -- here too, where it ran as
+   wide as the bay */
+.go-shrine > .go-hang.kit-hang--painting > .kit-hang__plate,
+.go-hang.kit-hang--painting > .kit-hang__plate { max-width: calc(100% + 2 * var(--hang-rim)); }

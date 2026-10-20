@@ -1205,21 +1205,20 @@ export class EnemyView {
    */
   _seatStatuses() {
     if (!this.$statuses || !this.$name) return;
-    const row = this.el.closest('.cb-enemies');
-    const rail = this._risesForPlate() && row?.dataset.n === '1'
-      && !this.$counters?.childElementCount;
+    /* THE ROUND 40 REPAIR: off the plate again. Survey 7's paired test
+       preferred survey 6's "framed gold bracket beside the Courage bar" /
+       "cartouche hooked onto his health bar" (both judges), and both survey 7
+       judges found the coins crowding THE BUTLER plate's top rule. So a lone
+       boss's conditions stand in his gauge's own tray once more, hung on the
+       gilt rod out of its end knob (scenes/combat.css); nothing seats them on
+       the rail (.is-on-rail, ui/kit.css) now. */
     const vitals = this.el.querySelector('.cb-enemy__vitals');
-    if (rail) {
-      if (this.$statuses.parentElement !== this.$name) this.$name.appendChild(this.$statuses);
-      this.$statuses.classList.add('is-on-rail');
-      // the first half stands left of the crest, the rest right of it
-      const kids = [...this.$statuses.children];
-      const half = Math.ceil(kids.length / 2);
-      kids.forEach((k, i) => { k.style.order = i < half ? '0' : '2'; });
-      // an odd one out is balanced by an empty place on the right, so the
-      // crest stays at the row's middle
-      this.$statuses.style.setProperty('--rail-bal', String(half - (kids.length - half)));
-    } else if (vitals && this.$statuses.parentElement !== vitals) {
+    if (this.$statuses.classList.contains('is-on-rail')) {
+      this.$statuses.classList.remove('is-on-rail');
+      this.$statuses.style.removeProperty('--rail-bal');
+      for (const k of this.$statuses.children) k.style.removeProperty('order');
+    }
+    if (vitals && this.$statuses.parentElement !== vitals) {
       vitals.appendChild(this.$statuses);
       this.$statuses.classList.remove('is-on-rail');
       for (const k of this.$statuses.children) k.style.removeProperty('order');

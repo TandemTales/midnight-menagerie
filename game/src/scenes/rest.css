@@ -603,3 +603,10 @@
 }
 .rs-hang--l { left: calc(var(--kit-edge) + var(--corner-w) + 6px); }
 .rs-hang--r { right: calc(var(--kit-edge) + var(--corner-w) + 6px); }
+
+/* THE ROUND 40 REPAIR: each plate is capped at its frame's width and wraps
+   inside it (survey 7's paired test), a line taller than round 40's wide
+   one-line plates, so the pictures hang a little higher under the strip --
+   their bosses still clear of it -- and the cosy pool's taller canvases keep
+   their places over the first panel */
+.rs-hang { top: calc(var(--hud-h) + clamp(20px, 2.9vh, 27px)); }
