@@ -238,7 +238,13 @@ export const TUNE = {
      the plate's fewest lines down to the floor, and the panel RISES for the
      size the row reads at (`openCapPx`), not just for the floor: the two
      long cards print 13.6+ and 14 px. */
-  stackFit: 0.8125,
+  /* THE ROUND 40 REPAIR: survey 7's paired test (both judges) preferred
+     survey 6's "larger fanned hand whose rules text reads clearly" to the
+     three-quarter cards that "squeeze the cards smaller". The stacked hand
+     deals whole cards (survey 6's 1600 size, and larger than its 1280
+     seven-eighths); it stays NARROW (places shoulder to shoulder, copies
+     stacked) and LOW (stackBottomPad) as round 40 asked. */
+  stackFit: 1,
   stackBottomPad: 6,
   stackPlateU: 188,     // graft: the name plate's measure for nameLadder (see Hand#_layout)
   stackTabClear: 5,     // graft: u the rules stand below the type tab (hand.css)
@@ -691,15 +697,14 @@ export class Hand {
          stack into seven places keep the seven-eighths card, so a stack never
          makes the fan taller than the crowded hand it replaced. */
       const many = Math.max(n, total);
-      if (this._bounded() && many >= 8 && band / many < TUNE.crowdCardPx) s = Math.min(s, TUNE.crowdFit);
-      // round 40: a crowded hand whose copies stack sits a size lower (TUNE.stackFit)
-      // (a band with the room for whole cards -- 1600 -- takes the crowded seven-eighths)
-      // graft: the stacked size is applied AFTER the eighths below (it is a
-      // sixteenth, rehearsed with them, Hand#_fitScales)
-      if (this._bounded() && many >= 8 && total > n) {
-        if (band / many < TUNE.crowdCardPx) stackCap = TUNE.stackFit;
-        else s = Math.min(s, TUNE.crowdFit);
-      }
+      // THE ROUND 40 REPAIR: a hand whose copies stack deals its places
+      // whole-size (TUNE.stackFit), not round 40's three-quarters: survey 7's
+      // paired test preferred survey 6's larger cards, and its places stand
+      // shoulder to shoulder on the shelf, so the fan is narrower than
+      // survey 6's all the same
+      const stacked = this._bounded() && many >= 8 && total > n;
+      if (this._bounded() && many >= 8 && band / many < TUNE.crowdCardPx && !stacked) s = Math.min(s, TUNE.crowdFit);
+      if (stacked) stackCap = TUNE.stackFit;
     }
     // QUANTISED, and this matters more than it looks. The compositor rasters a
     // card at its current transform scale; a scale it has not seen before is a
@@ -1300,7 +1305,7 @@ export class Hand {
     f.grow = ch * (f.hscale - 1) / 2;
     f.nudge = T.hoverNudge * fit;
     // round 40: the stacked hand's smaller card (TUNE.stackFit)
-    f.stackFit = this._bounded() && total > n && Math.max(n, total) >= 8 && fit <= T.crowdFit + 1e-6;
+    f.stackFit = this._bounded() && total > n && Math.max(n, total) >= 8;
     this.fit = fit;
     this._fanKey = key;
     return f;

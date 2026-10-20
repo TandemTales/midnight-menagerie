@@ -393,3 +393,14 @@
 }
 /* the cost coin stands over a long name's plate, never under it */
 .cb-handhost.kit-cards .mm-hand.is-stackfit .mm-card[data-rarity][data-type][data-uid] .mm-card__cost { z-index: 3; }
+
+/* THE ROUND 40 REPAIR: the stack's count INSIDE its own card. Survey 7, both
+   judges at the Deck's 1280: "the x3 stack medallions on Sit Pretty and Bite
+   sit on top of the next card's cost and title". On the stacked shelf the
+   medallion is set into the top card's own top-right corner, under its top
+   rule and inside what its neighbour leaves in view (--stack-vis), never over
+   the next card or above its own. */
+.cb-handhost.kit-cards .mm-hand.is-stackfit .mm-card > .mm-hand__stack {
+  top: calc(12 * var(--u));
+  left: min(calc(var(--stack-vis, 1) * 100% - 66 * var(--u)), calc(100% - 66 * var(--u)));
+}
