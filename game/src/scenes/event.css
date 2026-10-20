@@ -829,3 +829,7 @@
    wall instead of narrowing over the sconce (the sconces stay where they
    are): at the Deck's 1280 the Dowager and her like hang again. */
 .ev-hall__pic { top: calc(var(--pic-top) - clamp(20px, 3.6vh, 32px)); }
+
+/* ...and the RISK / GAIN / COSTS / ALWAYS words on each choice's tags read at
+   the 12 px floor too (SPINEL's small-text probe found them at 11.5) */
+.ev-opt .kit-tag > i { font-size: 12px; }
