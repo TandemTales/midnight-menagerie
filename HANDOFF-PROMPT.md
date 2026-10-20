@@ -159,6 +159,12 @@ branch fix/r40-repair) -- verify it PAIRED against survey 6 for those four
 screens, merge, then **ROUND 41** (`BRIEF-r41.md`: the Hedge, Kennels,
 Sleeping Quarters, Passages -- inked objects, each room its own floor;
 baseline POPLIN from the post-repair tip, since the fight shows the hand).
+**THE REPAIR IS MERGED (2026-10-20, `f360fa4e`):** paired vs survey 7 it won
+3-2 and 4-1 (`C:/UILOOP/pairsR7/`); vs survey 6 it won the shop (by 2,
+both) but still LOST combat-crowd (both: survey 6's fan has gaps, a tilt and
+splayed stacks) and made three-line plates (gameover-1280's rides over its
+frame). Tests green on dev. **NOW: REPAIR PART 2** (`REPAIR-r40b.md`, worktree
+C:/UILOOP/r40/repair2/wt, fix/r40-repair2), then round 41.
 
 **ROUND 33 AND ITS GRAFT ARE MERGED, VERIFIED AND PUSHED (2026-10-16):**
 graft `9d008119`. COBALT +1.59 (`531126e4`): no running line under 11 px at
