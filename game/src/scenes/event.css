@@ -833,3 +833,127 @@
 /* ...and the RISK / GAIN / COSTS / ALWAYS words on each choice's tags read at
    the 12 px floor too (SPINEL's small-text probe found them at 11.5) */
 .ev-opt .kit-tag > i { font-size: 12px; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ROUND 42 — ONE CONTROL PER CHOICE; THE LEDGER ON DARKER PAPER, AT A LECTERN
+   Survey 7: "each of its three choices is drawn twice (a roman-numeral
+   medallion on the left, an arrow button on the right)" and "a broad pale
+   even cream that dominates the dark board" (J1); the wainscot "a dark,
+   almost empty plane" (J2).
+   - ONE CONTROL: the arrow at the end of each line is gone. The entry IS the
+     button: its numeral struck on the enamel medallion in the margin, a gilt
+     rod pinning the medallion to its line, the clerk's dotted leader ending
+     in an inked star. Point at it, or reach it by key or pad, and the lamp
+     comes to the whole line and the medallion brightens with it.
+   - THE PAPER a step down in value: aged, foxed with the house's old paper
+     (oldpaper-plate.webp laid over in soft light), browned toward every edge
+     and scorched at the rim, the lectern's lamp lighting the top of the leaf
+     where the story is read. The inks a step darker with it, so every line
+     still holds its contrast on the darker leaf (red and green included).
+   - THE LECTERN the leaf lies on (event.js _buildLectern): a walnut desk lip
+     under the page, its turned column going down to the floor, a candle's
+     pool of light round its foot.
+   ═══════════════════════════════════════════════════════════════════════════ */
+.ev-page.ev-register {
+  --ink: #24170e;
+  --ink-mid: #3a2716;
+  --rule-ink: color-mix(in srgb, #4a2a10 46%, transparent);
+  --ev-red: #571309;
+  --ev-green: #12391a;
+  background:
+    radial-gradient(118% 104% at 50% 40%, transparent 38%, rgb(38 18 5 / .7) 100%),
+    radial-gradient(64% 36% at 50% 2%, rgb(255 210 146 / .34), transparent 74%),
+    radial-gradient(40% 30% at 50% 100%, rgb(255 190 120 / .1), transparent 70%),
+    url("../../assets/ui/kit/oldpaper-plate.webp") 50% 50% / 100% 100% no-repeat,
+    url("../../assets/ui/kit/parchment-age.webp") 50% 50% / cover no-repeat,
+    url("../../assets/ui/kit/paper.webp") 0 0 / 220px 220px,
+    linear-gradient(180deg, #c7ab7d 0%, #b8996a 48%, #9c7b4e 100%);
+  background-blend-mode: multiply, screen, screen, soft-light, multiply, overlay, normal;
+  background-clip: padding-box;
+  box-shadow:
+    0 24px 54px -18px rgba(0, 0, 0, .95),
+    inset 0 0 0 2px rgb(40 18 4 / .55),
+    inset 0 0 26px 4px rgb(46 22 6 / .62),
+    inset 0 0 70px rgb(58 30 10 / .35);
+}
+.ev-register .ev-leadin { color: #2f1a44; text-shadow: 0 1px 0 rgb(255 236 200 / .28); }
+.ev-register .ev-prose p { text-shadow: 0 1px 0 rgb(255 236 200 / .26); }
+.ev-register .ev-tag--risk { color: var(--ev-red); }
+.ev-register .ev-tag--gain { color: var(--ev-green); }
+.ev-register .ev-opt__gate { color: var(--ev-red); }
+.ev-register .ev-opt .kit-tag { font-size: 13.5px; font-weight: 700; text-shadow: 0 1px 0 rgb(255 236 200 / .3); }
+.ev-register .ev-opt .kit-tag > i { font-size: 12.5px; letter-spacing: .12em; color: #2c1c10; text-shadow: none; }
+.ev-register .ev-opt:hover:not(:disabled) .ev-opt__label,
+.ev-register .ev-opt:focus-visible .ev-opt__label,
+.ev-register .ev-opt.is-chosen .ev-opt__label { color: var(--ev-red); }
+
+/* the entry, one control: no button at the end of its line */
+.ev-register .ev-opt {
+  padding-right: 18px;
+  cursor: pointer;
+}
+.ev-register .ev-opt::after {
+  /* the gilt rod pinning the margin's medallion to its line, a cast boss
+     where it enters the page */
+  content: ''; position: absolute; pointer-events: none;
+  left: -21px; right: auto; top: 50%; translate: 0 -50%; transform: none;
+  width: 22px; height: 12px;
+  background:
+    url("../../assets/ui/kit/boss-rosette.webp") 100% 50% / 11px 11px no-repeat,
+    linear-gradient(180deg, var(--kit-gold-hi), var(--kit-gold) 50%, var(--kit-gold-lo)) 0 50% / calc(100% - 5px) 3px no-repeat;
+  filter: drop-shadow(0 1px 1px rgb(40 20 6 / .7));
+}
+/* the clerk's leader runs to the end of the line and stops on an inked star */
+.ev-register .ev-opt__meta::after {
+  min-width: 30px;
+  height: 9px;
+  background:
+    url("../../assets/ui/kit/star4.svg") 100% 50% / 9px 9px no-repeat,
+    repeating-linear-gradient(90deg, color-mix(in srgb, #4a2a10 60%, transparent) 0 2px, transparent 2px 6px) 0 4px / calc(100% - 13px) 1px no-repeat;
+  filter: sepia(1) saturate(1.6) brightness(.42);
+}
+/* the line under the pointer, the keyboard or the pad: the lamp brought to
+   all of it, the medallion lit with it -- that pair is the one control */
+.ev-register .ev-opt:hover:not(:disabled),
+.ev-register .ev-opt:focus-visible {
+  background: linear-gradient(90deg, rgb(255 204 128 / .48), rgb(255 204 128 / .2) 64%, rgb(255 204 128 / .06));
+}
+.ev-register .ev-opt:hover:not(:disabled)::before,
+.ev-register .ev-opt:focus-visible::before {
+  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .8)) drop-shadow(0 0 9px color-mix(in srgb, var(--kit-candle) 70%, transparent)) brightness(1.22);
+}
+.ev-register .ev-opt:hover:not(:disabled)::after,
+.ev-register .ev-opt:focus-visible::after { filter: drop-shadow(0 1px 1px rgb(40 20 6 / .7)) brightness(1.25); }
+
+/* ── the lectern ── */
+.ev-lectern {
+  position: absolute; z-index: 1; pointer-events: none;
+  left: 50%; translate: -50% 0;
+  top: var(--lec-top, 760px);
+  width: var(--lec-w, 780px);
+  height: calc(100vh - var(--lec-top, 760px));
+}
+/* the desk's lip the leaf rests against: a walnut moulding, the brass
+   egg-and-dart band of the boards' ledge on its face */
+.ev-lectern__lip {
+  position: absolute; left: 4%; right: 4%; top: -5px; height: 26px;
+  background: url("../../assets/ui/kit/pedestal.webp") 50% 0 / 100% 100% no-repeat;
+  filter: drop-shadow(0 10px 10px rgba(0, 0, 0, .85)) brightness(.95);
+}
+/* the column, turned, down to the floor */
+.ev-lectern__post {
+  position: absolute; left: 50%; translate: -50% 0;
+  top: 8px; bottom: 0;
+  width: 340px;
+  background: url("../../assets/ui/kit/lectern-post.webp") 50% 0 / auto 100% no-repeat;
+  filter: drop-shadow(0 8px 14px rgba(0, 0, 0, .8));
+}
+/* the candle on the floor beside it throws a pool round its foot */
+.ev-lectern__pool {
+  position: absolute; left: 50%; bottom: -4vh; translate: -50% 0;
+  width: 70%; height: 16vh;
+  background: radial-gradient(closest-side, rgb(255 178 92 / .2), rgb(255 150 70 / .07) 60%, transparent);
+  mix-blend-mode: screen;
+}
+.kit-board.has-backdrop .ev-lectern { display: none; }
+.rm--event.is-rescue .ev-lectern { display: none; }

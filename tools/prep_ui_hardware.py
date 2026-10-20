@@ -805,8 +805,37 @@ def hw_slot():
     return _save_pic(p, "hw-slot.webp")
 
 
+def lectern_post():
+    """ROUND 42 (survey 7, J2: under the House Register "the wainscot a dark,
+    almost empty plane"): the lectern the register lies on, seen under its
+    desk -- a moulded walnut capital with a brass band, a turned neck, a bulb,
+    a brass collar, a tapered shaft and a stepped foot on the flags. In the
+    room's dark walnut, lit from the top left like everything else."""
+    W, H = 160, 140
+    p = Pic(seed=4244, n=W, h=H)
+    wood = ("#0e0703", "#35210f", "#6c4a2b")
+    rg = np.random.default_rng(4245)
+    ph = rg.uniform(0, 6.3, 8)
+
+    def grain(xx, yy, c):
+        # the walnut's figure: fine streaks running down the turning, wavering
+        g = sum(np.sin(xx * (1.1 + k * .37) + 2.2 * np.sin(yy * (.05 + k * .013) + ph[k]) + ph[k]) for k in range(5)) / 5
+        g2 = np.sin(xx * 4.3 + 1.4 * np.sin(yy * .21 + ph[6]))
+        return c * (1 + .22 * g[..., None] + .07 * g2[..., None])
+    p.part(R(30, 122, 130, 139, 2), wood, bevel=3, shadow=0, tex=grain)
+    p.part(R(42, 109, 118, 123, 2), wood, bevel=3, shadow=.5, tex=grain)
+    p.part(P([(61, 78), (99, 78), (93, 110), (67, 110)]), wood, bevel=6, shadow=.5, tex=grain)
+    p.part(R(56, 73, 104, 80, 2), "brass", bevel=2.2, shadow=.5)
+    p.part(E(80, 52, 31, 22), wood, prof="sphere", shadow=.5, tex=grain)
+    p.part(R(55, 19, 105, 32, 3), wood, bevel=5, shadow=.5, tex=grain)
+    p.part(R(16, 13, 144, 20, 1), "brass", bevel=2, shadow=.5)
+    p.part(R(8, 0, 152, 14, 2), wood, bevel=3.5, shadow=.6, tex=grain)
+    return _save_pic(p, "lectern-post.webp")
+
+
 def r42_pieces():
     hw_slot()
+    lectern_post()
 
 
 # materials (dark, body, light), all in the samples' low key
