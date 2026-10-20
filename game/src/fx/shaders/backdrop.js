@@ -15295,7 +15295,7 @@ void main(){
        painted on the boards. */
     float fr = (1.0 - smoothstep(0.0, max(aaY*1.6, 0.20), abs(w.y - farEnd + 0.13)))
              * (0.30 + 0.70*step(0.45, fract(w.x*12.0)));
-#if MM_RUGK != 0 && MM_RUGK != 5
+#if MM_RUGK != 0 && MM_RUGK != 5 && MM_RUGK != 1
     fr = 0.0;   // (round 41: the drugget and the matting are bound, not fringed)
 #endif
     rpat = mix(rpat, 1.10, fr*0.75);
@@ -15945,39 +15945,37 @@ void main(){
     float Lf = mmLum(mix(uDeep, uMid, 0.55));
     vec3 rug = vec3(0.42, 0.07, 0.055);
 #if MM_RUGK == 1
-    /* ROUND 41 (AMETHYST): THE DORMITORY'S DRUGGET. Both survey-7 judges:
-       "the same red medallion runner in foyer, sleeping, passages and heart".
-       A dormitory of iron beds is not carpeted in a Turkey runner: down the
-       aisle between the files lies a DRUGGET -- a plain felted wool in a
-       bottle green gone grey, two oxblood stripes and a cream line inside
-       each selvedge, its edge bound in a dark tape, worn pale down the
-       middle where the children's feet go and darned in a patch or two.
-       Every line runs ALONG the strip, so it holds at any depth. */
+    /* ROUND 41 GRAFT: THE DORMITORY'S RAG RUNNER -- LABRADORITE's, all three
+       judges (AMETHYST's drugget was "a flat olive smear with two thin red
+       borders, a soft, patternless strip"). A school's or an orphanage's:
+       strips of old clothes woven HIT-AND-MISS on a cotton warp -- bands
+       across the runner a hand to a forearm wide, each its own faded rag
+       (indigo, madder, oatmeal, a soldier's grey, a rose), flecked where the
+       strips twist, between a plain dark border at each edge, the warp
+       knotted into a fringe at its end. Bands vary ALONG it, so they shorten
+       with the floor -- and where a band is under a few pixels deep it is
+       the runner's mean, never a moire. */
     {
-      float rxD = abs(w.x - uRunX), insD = uRunner - rxD;
-      float aaD = max(mpp.x*1.1, 0.004);
-      vec3 dr = vec3(0.300, 0.335, 0.265);
-      float trk = (1.0 - smoothstep(0.06, uRunner*0.70, rxD + 0.07*sin(w.y*0.85 + uSeed*2.0)))
-                * (0.50 + 0.50*mmNoise(vec2(w.x*2.2, w.y*0.45) + uSeed));
-      dr = mix(dr, vec3(0.360, 0.350, 0.280), trk*0.60);
-      float s1 = smoothstep(0.075 - aaD, 0.075 + aaD, insD)*(1.0 - smoothstep(0.115 - aaD, 0.115 + aaD, insD));
-      float s2 = smoothstep(0.150 - aaD, 0.150 + aaD, insD)*(1.0 - smoothstep(0.172 - aaD, 0.172 + aaD, insD));
-      float cl = smoothstep(0.040 - aaD, 0.040 + aaD, insD)*(1.0 - smoothstep(0.054 - aaD, 0.054 + aaD, insD));
-      dr = mix(dr, vec3(0.440, 0.130, 0.095), max(s1, s2)*0.92);
-      dr = mix(dr, vec3(0.660, 0.600, 0.470), cl*0.85);
-      float tape = 1.0 - smoothstep(0.024 - aaD, 0.024 + aaD, insD);
-      dr = mix(dr, vec3(0.070, 0.055, 0.048), tape);
-      /* a darned patch: a square of a greener wool, its stitching dark */
-      vec2 dq = vec2(w.x - uRunX - 0.12, mod(w.y + uSeed*3.0, 4.6) - 2.3);
-      float dpt = mmBox(dq, vec2(0.13, 0.11), 0.015);
-      float dpA = max(length(vec2(dFdx(dpt), dFdy(dpt))), 1e-4);
-      float onDp = clamp(0.5 - dpt/dpA, 0.0, 1.0)*step(abs(rxD), uRunner - 0.20);
-      dr = mix(dr, vec3(0.27, 0.32, 0.22), onDp*0.85);
-      dr *= 1.0 - 0.22*(1.0 - smoothstep(0.0, dpA*1.6, abs(dpt)))*step(abs(rxD), uRunner - 0.20);
-      /* the felt's own ribs across it, where a rib is two pixels and more */
-      float rib = abs(fract(w.y/0.016) - 0.5)*2.0;
-      dr *= 1.0 + (rib - 0.5)*0.14*mmLod(0.016, mpp.y);
-      rug = dr;
+      float rxK = w.x - uRunX;
+      float insK = uRunner - abs(rxK);
+      float pxK = max(mpp.x, 0.002);
+      float bv = w.y/0.13 + 0.35*sin(w.y*0.8 + uSeed);
+      float bi = floor(bv), bfr = fract(bv);
+      float hb = mmHash11(bi*3.71 + floor(uSeed*7.0));
+      vec3 rag = hb < 0.22 ? vec3(0.20, 0.24, 0.40) : (hb < 0.40 ? vec3(0.50, 0.20, 0.16)
+               : (hb < 0.62 ? vec3(0.56, 0.50, 0.40) : (hb < 0.80 ? vec3(0.34, 0.34, 0.34) : vec3(0.56, 0.34, 0.32))));
+      float fl = mmNoise(vec2(rxK*26.0, w.y*9.0) + bi);
+      rag *= 0.74 + 0.40*fl;
+      float res = smoothstep(0.10, 0.035, mpp.y);
+      float seamB = 1.0 - smoothstep(0.0, 0.10 + mpp.y/0.13, min(bfr, 1.0 - bfr));
+      rag *= 1.0 - 0.30*seamB*res;
+      rag = mix(vec3(0.42, 0.33, 0.30), rag, smoothstep(1.5*mpp.y, 4.0*mpp.y, 0.13));
+      float bordK = 1.0 - smoothstep(0.10 - pxK, 0.10 + pxK, insK);
+      rag = mix(rag, vec3(0.12, 0.09, 0.10), bordK);
+      float warp = 1.0 - smoothstep(0.0, 0.7*pxK + 0.003, abs(insK - 0.115));
+      rag = mix(rag, vec3(0.62, 0.56, 0.44), warp*0.60);
+      rag = mix(rag, vec3(0.70, 0.64, 0.52), rFr*0.85);   // its knotted warp at the end
+      rug = rag;
     }
 #elif MM_RUGK == 3
     /* ROUND 41 (AMETHYST): THE PASSAGE'S COIR MATTING. A passage behind the
@@ -25216,56 +25214,88 @@ float wfMirror(float s, float seed, vec2 m){
    washstand's quad (52, the wing's own shape, so no other wing's program
    moves) with hM / wM giving its size in metres; drawn in METRES from the
    foot of its axis, every member inked over its own pixel. */
+/* ── ROUND 41 GRAFT: LABRADORITE'S BLANKET CHEST, the dormitory's trunk (52,
+   seed 40-60, slDrawM) ─────────────────────────────────────────────────────
+   Survey 7, both judges on the Sleeping Quarters: "the nursery's rocking
+   horse and toy chest are reused"; the brief: "its OWN props -- iron beds, a
+   trunk at a bed's foot". The chest at the foot of a dormitory bed is a
+   servant's or a schoolchild's: a plain elm box on a plinth, its lid SHUT
+   under a domed top, two iron strap hinges running down over the lid's lip,
+   a hasp and lock plate in the middle, iron corners, rope handles at the
+   ends, and a folded blanket left lying on it. Its boards' grain in long
+   streaks, the key's side lit, every edge inked. Drawn in metres. */
+float wfTrunk(vec2 q, float px, float seed, float kq, bool paint){
+  float HW = 0.42, TOP = 0.46;
+  vec2 c = q - vec2(-0.06, 0.0);
+  float plinth = mmBox(c - vec2(0.0, 0.035), vec2(HW + 0.015, 0.035), 0.006);
+  float box = mmBox(c - vec2(0.0, 0.25), vec2(HW, 0.19), 0.008);
+  float lip = mmBox(c - vec2(0.0, TOP - 0.010), vec2(HW + 0.014, 0.020), 0.004);
+  float dome = max(wfEll(c - vec2(0.0, TOP), vec2(HW + 0.004, 0.085)), -(c.y - TOP + 0.005));
+  float blk = mmBox(c - vec2(0.05, TOP + 0.105), vec2(0.27, 0.040), 0.030);
+  float hand = min(wfEll(vec2(abs(c.x) - HW - 0.020, c.y - 0.30), vec2(0.022, 0.050)), 1e3);
+  float d = min(min(min(plinth, box), min(lip, dome)), min(blk, hand));
+  if (!paint) return d;
+  vec3 col = vec3(0.1);
+  float ink = 0.0;
+  float gr = mmNoise(vec2(c.x*3.0, c.y*38.0) + seed) + 0.5*mmNoise(vec2(c.x*9.0, c.y*90.0) + seed*1.7);
+  vec3 elm = vec3(0.56, 0.37, 0.21)*(0.58 + 0.38*gr);
+  float side = 0.78 + 0.34*smoothstep(-HW, HW, kq*c.x);
+  vec3 iron = vec3(0.10, 0.10, 0.11);
+  wfLay(col, ink, plinth, elm*0.55*side, px, 0.95);
+  /* the front: two boards, a joint between them, the grain along them */
+  vec3 fr = elm*side*(0.80 + 0.25*smoothstep(0.06, 0.44, c.y));
+  /* its two boards, each its own value, and a fielded panel each side of
+     the hasp, the panel's bevel catching the light along its top */
+  fr *= c.y > 0.25 ? 1.04 : 0.92;
+  float tpan = mmBox(vec2(abs(c.x) - 0.215, c.y - 0.245), vec2(0.150, 0.125), 0.012);
+  fr *= 1.0 - 0.18*wfIn(tpan, px);
+  ink = max(ink, mmInkP(tpan, px, 1.0)*0.55*wfIn(box, px));
+  fr = mix(fr, fr*1.45, mmInkP(tpan - 0.012, px, 1.0)*step(0.245 + 0.10, c.y)*wfIn(box, px));
+  wfLay(col, ink, box, fr, px, 1.0);
+  ink = max(ink, mmInkP(c.y - 0.25, px, 1.0)*wfIn(box, px)*0.55);
+  /* the domed lid, its crown lit by the room's light from above */
+  vec2 dq = c - vec2(0.0, TOP);
+  vec3 lidC = elm*(0.75 + 0.55*smoothstep(0.0, 0.08, dq.y))*side;
+  wfLay(col, ink, dome, lidC, px, 1.0);
+  wfLay(col, ink, lip, elm*1.10*side, px, 0.95);
+  /* iron: the corners, the two strap hinges, the hasp and its plate */
+  float corner = max(box, -(max(abs(c.x) - HW + 0.055, abs(c.y - 0.25) - 0.19 + 0.055)));
+  col = mix(col, iron*(0.9 + 0.5*smoothstep(0.0, 0.4, c.y)), wfIn(corner, px)*wfIn(box, px));
+  float strap = mmBox(vec2(abs(c.x) - 0.24, c.y - 0.42), vec2(0.022, 0.09), 0.004);
+  strap = max(strap, -(c.y - 0.32));
+  float hasp = min(mmBox(c - vec2(0.0, 0.36), vec2(0.040, 0.048), 0.006), mmBox(c - vec2(0.0, 0.45), vec2(0.016, 0.040), 0.004));
+  wfLay(col, ink, strap, iron*1.4, px, 0.8);
+  wfLay(col, ink, hasp, iron*1.6, px, 0.8);
+  col = mix(col, vec3(0.02), wfIn(wfEll(c - vec2(0.0, 0.355), vec2(0.007, 0.013)), px));
+  /* nail heads down each strap */
+  float nails = length(vec2(abs(c.x) - 0.24, mod(c.y - 0.34 + 0.025, 0.05) - 0.025)) - 0.006;
+  col = mix(col, vec3(0.55, 0.52, 0.46), wfIn(nails, px)*wfIn(strap, px)*0.8);
+  /* the rope handles at its ends */
+  wfLay(col, ink, hand, vec3(0.56, 0.46, 0.30)*(0.7 + 0.4*mmNoise(c*80.0)), px, 0.8);
+  /* the folded blanket: grey army wool with a red stripe at its fold, the
+     fold rounded and lit, lying a little off square */
+  vec2 bq = c - vec2(0.05, TOP + 0.105);
+  float fv = clamp(bq.y/0.040, -1.0, 1.0);
+  vec3 wool = (mmHash11(seed*1.3) < 0.5 ? vec3(0.42, 0.40, 0.38) : vec3(0.30, 0.36, 0.50))
+            *(0.60 + 0.45*sqrt(max(1.0 - fv*fv, 0.0)))*(0.85 + 0.25*smoothstep(-0.27, 0.27, kq*bq.x));
+  wool = mix(wool, vec3(0.56, 0.12, 0.10)*(0.7 + 0.4*sqrt(max(1.0 - fv*fv, 0.0))), step(abs(bq.x + 0.17), 0.020));
+  wfLay(col, ink, blk, wool, px, 0.9);
+  ink = max(ink, mmInkP(bq.y + 0.004, px, 0.8)*wfIn(blk, px)*0.35);
+  col *= 1.0 - 0.30*smoothstep(0.03, 0.0, q.y);
+  gWfGloss = 0.15 + 0.35*wfIn(min(strap, hasp), px);
+  gWfMoon = 0.30*wfIn(min(dome, blk), px);
+  gWfCol = col; gWfInk = ink;
+  return d;
+}
 float slDrawM(vec2 q, float px, float seed, float kq, bool paint){
+  /* (round 41 graft, all three judges: LABRADORITE's "inked trunk with a
+     bedroll" -- its strapped elm chest, a folded blanket on the lid, in
+     place of AMETHYST's school trunk; centred in the quad) */
+  if (seed < 60.0) return wfTrunk(q - vec2(0.06, 0.0), px, seed, kq, paint);
   float d = 1e3;
   vec3 col = vec3(0.1);
   float ink = 0.0;
-  if (seed < 60.0) {
-    /* ---- THE TRUNK ---- */
-    float body = mmBox(q - vec2(0.0, 0.215), vec2(0.40, 0.200), 0.010);
-    float lidB = mmBox(q - vec2(0.0, 0.440), vec2(0.412, 0.032), 0.010);
-    float bl = mmBox(q - vec2(-0.03, 0.495), vec2(0.30, 0.024), 0.012);
-    float blF = mmBox(q - vec2(-0.03 + 0.10, 0.415), vec2(0.20, 0.085), 0.010);   // the fold over the front
-    float blank = min(bl, blF);
-    d = min(min(body, lidB), blank);
-    if (!paint) return d;
-    vec3 deal = vec3(0.19, 0.16, 0.13);
-    vec3 oakB = vec3(0.46, 0.33, 0.19);
-    vec3 brass = vec3(0.82, 0.60, 0.27);
-    float side = 0.80 + 0.30*smoothstep(-0.40, 0.40, kq*q.x);
-    vec3 bc = deal*side*(0.85 + 0.25*mmNoise(vec2(q.x*30.0, q.y*4.0) + seed));
-    /* the battens: two up the front, one along the foot */
-    float bat = max(1.0 - smoothstep(0.022 - px, 0.022 + px, abs(abs(q.x) - 0.20)),
-                    (1.0 - smoothstep(0.020 - px, 0.020 + px, abs(q.y - 0.045))));
-    bc = mix(bc, oakB*side*(0.80 + 0.20*mmNoise(vec2(q.x*4.0, q.y*40.0))), bat);
-    /* the initials, stencilled in a chalk white */
-    vec2 g = (q - vec2(0.0, 0.24))/0.055;
-    float L1 = min(wfSeg(g - vec2(-0.9, 0.0), vec2(0.0, 0.8), vec2(0.0, -0.6), 0.16), wfSeg(g - vec2(-0.9, 0.0), vec2(0.0, -0.6), vec2(-0.45, -0.85), 0.16));
-    float L2 = min(min(wfSeg(g - vec2(0.9, 0.0), vec2(-0.5, -0.8), vec2(-0.5, 0.8), 0.15), wfSeg(g - vec2(0.9, 0.0), vec2(-0.5, 0.8), vec2(0.0, 0.0), 0.15)),
-                   min(wfSeg(g - vec2(0.9, 0.0), vec2(0.0, 0.0), vec2(0.5, 0.8), 0.15), wfSeg(g - vec2(0.9, 0.0), vec2(0.5, 0.8), vec2(0.5, -0.8), 0.15)));
-    float lt = min(L1, L2)*0.055;
-    bc = mix(bc, vec3(0.62, 0.60, 0.54), wfIn(lt, px)*0.85);
-    wfLay(col, ink, body, bc, px, 1.0);
-    ink = max(ink, mmInkP(abs(abs(q.x) - 0.20) - 0.022, px, 0.8)*0.55*wfIn(body, px));
-    /* the lid band, its brass corners and the hasp */
-    vec3 lc = deal*1.15*(0.85 + 0.30*smoothstep(0.42, 0.47, q.y));
-    wfLay(col, ink, lidB, lc, px, 0.95);
-    float corn = min(mmBox(vec2(abs(q.x) - 0.375, q.y - 0.440), vec2(0.040, 0.034), 0.006),
-                     mmBox(vec2(abs(q.x) - 0.375, q.y - 0.040), vec2(0.040, 0.038), 0.006));
-    wfLay(col, ink, corn, brass*(0.60 + 0.60*smoothstep(-0.03, 0.03, kq*q.x)), px, 0.8);
-    float hasp = mmBox(q - vec2(0.0, 0.385), vec2(0.030, 0.050), 0.008);
-    wfLay(col, ink, hasp, brass*0.95, px, 0.9);
-    /* the blanket: grey wool, folded, its red stripe on the hanging fold */
-    vec3 wool = vec3(0.40, 0.40, 0.38)*(0.85 + 0.20*mmNoise(q*40.0));
-    wfLay(col, ink, bl, wool*(0.90 + 0.25*smoothstep(0.48, 0.52, q.y)), px, 0.85);
-    vec3 wf = wool*0.80;
-    wf = mix(wf, vec3(0.42, 0.10, 0.08), (1.0 - smoothstep(0.012, 0.012 + px, abs(q.y - 0.380)))*0.9);
-    wf *= 0.85 + 0.25*cos((q.x - 0.07)*38.0);   // its folds
-    wfLay(col, ink, blF, wf, px, 0.85);
-    col *= 1.0 - 0.35*smoothstep(0.035, 0.0, q.y);
-    gWfGloss = 0.20 + 0.5*wfIn(min(corn, hasp), px);
-    gWfMoon = 0.45*wfIn(bl, px);
-  } else if (seed < 80.0) {
+  if (seed < 80.0) {
     /* ---- THE OAK COFFER ---- */
     float carc = mmBox(q - vec2(0.0, 0.300), vec2(0.52, 0.205), 0.006);
     float feet = mmBox(vec2(abs(q.x) - 0.47, q.y - 0.050), vec2(0.050, 0.050), 0.004);

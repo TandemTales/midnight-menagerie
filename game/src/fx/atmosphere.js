@@ -2641,7 +2641,7 @@ export const ROOM_KINDS = {
                         nightgown thrown over it, its slippers kicked off and
                         the chamber pot by its leg (the washstand's quad, 52,
                         seed > 40: slDrawM) */
-                     { shape: 52, edge: 0.30, z: 1.5, tone: 0.97, fore: 1, keep: true, seed: 45.0, hM: 0.56, wM: 0.88 },
+                     { shape: 52, edge: 0.30, z: 1.5, tone: 0.97, fore: 1, keep: true, seed: 45.0, hM: 0.64, wM: 1.04 },   // (round 41 graft: LABRADORITE's chest, its quad)
                      { shape: 52, edge: 0.70, z: 1.0, tone: 0.96, fore: 1, keep: true, seed: 85.0, hM: 1.00, wM: 0.95 }],
               /* (round 41, AMETHYST: survey-7 judge 1, "the right third of the
                  floor falls to black" -- the near washstand's candle laid on
@@ -2658,7 +2658,10 @@ export const ROOM_KINDS = {
                  floor, which this room never had -- a stride nearer and
                  larger, so it is the near floor and the runner under it
                  goes) */
-              rug: { ahead: 5.9, hw: 2.3, hd: 1.7 },
+              /* (round 41 graft: a stride nearer, LABRADORITE's -- so the
+                 carpet's border lies on the near planks and they are not a
+                 dark field under the fight) */
+              rug: { ahead: 5.0, hw: 2.4, hd: 2.1 },
               nearFloor: { pool: { ahead: 5.2, across: -1.4, rAlong: 2.8, rAcross: 2.2, k: 1.3, color: '#9cb2e8' },
                            /* (round 41: the fire's light carried onto the
                               near boards at the right, where the floor fell to
