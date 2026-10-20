@@ -1093,7 +1093,7 @@ export class MapScene extends Scene {
       this._seals.push({ left: best.px, top: best.py, right: best.px + KEY, bottom: best.py + KEY });
       // a short leader from the roundel back to the nearest point on the boundary
       const ax = best.px + KEY / 2, ay = best.py + KEY / 2;
-      const bx = clampN(ax, x, x + w), by = clampN(ay, y, y + h);
+      let bx = clampN(ax, x, x + w), by = clampN(ay, y, y + h);
       /* Round 5: a WATERCOLOUR STAIN that registers (CEDAR's, round 4), not a
          pale rounded rectangle. The wing's pigment laid into its footprint by
          a loaded brush — pools run together, pooled dark where the water
@@ -1114,8 +1114,14 @@ export class MapScene extends Scene {
          under it (in place of round 38's bright ribbon tabs). The wax seal on
          its corner still keys it to the plate of the same colour below. */
       void deckledRect; void STAIN;
+      /* round 40: the rooms the condition marks, and ONE hand-drawn line
+         round them (regionOutline) in place of the surveyor's rectangle */
+      const rooms = map.nodes.filter((n) => n.hazard === hz.id).map((n) => [n.x * this.SW, n.y * this.SH]);
+      const shape = regionOutline(s ^ 0x51ed, rooms.length ? rooms
+        : [[x, y], [x + w, y], [x, y + h], [x + w, y + h]], 74);
       const pad = 12;
-      const bx0 = x - pad, by0 = y - pad, bw = w + pad * 2, bh = h + pad * 2;
+      const bx0 = shape ? shape.box.x : x - pad, by0 = shape ? shape.box.y : y - pad;
+      const bw = shape ? shape.box.w : w + pad * 2, bh = shape ? shape.box.h : h + pad * 2;
       const rz = wobbler(s ^ 0x3c6e);
       const clip = `mm-zclip-${String(hz.id).replace(/[^a-z0-9-]/gi, '')}`;
       let tex = '';
@@ -1135,15 +1141,16 @@ export class MapScene extends Scene {
       }
       const C = [[bx0, by0], [bx0 + bw, by0], [bx0 + bw, by0 + bh], [bx0, by0 + bh]];
       let chain = '';
-      for (let i = 0; i < 4; i++) {
-        const [ax0, ay0] = C[i], [ax1, ay1] = C[(i + 1) % 4];
-        chain += inkLine(s + i * 97, ax0, ay0, ax1, ay1, 1.1, 7);
+      if (shape) chain = shape.d;
+      else {
+        for (let i = 0; i < 4; i++) {
+          const [ax0, ay0] = C[i], [ax1, ay1] = C[(i + 1) % 4];
+          chain += inkLine(s + i * 97, ax0, ay0, ax1, ay1, 1.1, 7);
+        }
       }
-      let stn = '';
-      for (const [cx0, cy0] of C) {
-        stn += `M${cx0 + 7} ${cy0}a7 7 0 1 0 -14 0a7 7 0 1 0 14 0`
-             + `M${cx0 - 12} ${cy0}L${cx0 + 12} ${cy0}M${cx0} ${cy0 - 12}L${cx0} ${cy0 + 12}`;
-      }
+      // (round 40: no surveyor's stations -- a ringed cross at each corner
+      // is the selection box's handle the judges read)
+      const stn = '';
       // the name, at whichever corner of the line has the clearest paper
       {
         const txt = String(hz.name).toUpperCase();
@@ -1182,9 +1189,18 @@ export class MapScene extends Scene {
           <text class="mi-zone-name" x="${pick.tx.toFixed(1)}" y="${pick.ty.toFixed(1)}"
                 text-anchor="${pick.anchor}">${escapeHtml(txt)}</text></g>`);
       }
-      parts.push(`<g class="mi-zone mi-zone--${hz.kind}" data-hz="${hz.id}">
-        <clipPath id="${clip}"><rect x="${bx0.toFixed(1)}" y="${by0.toFixed(1)}" width="${bw.toFixed(1)}" height="${bh.toFixed(1)}"/></clipPath>
+      if (shape) {
+        // the seal's leader runs to the nearest point of the drawn line
+        let bd = Infinity;
+        for (const [px, py] of shape.pts) {
+          const dd = (px - ax) ** 2 + (py - ay) ** 2;
+          if (dd < bd) { bd = dd; bx = px; by = py; }
+        }
+      }
+      parts.push(`<g class="mi-zone mi-zone--${hz.kind}${shape ? ' mi-zone--drawn' : ''}" data-hz="${hz.id}">
+        <clipPath id="${clip}">${shape ? `<path d="${shape.d}"/>` : `<rect x="${bx0.toFixed(1)}" y="${by0.toFixed(1)}" width="${bw.toFixed(1)}" height="${bh.toFixed(1)}"/>`}</clipPath>
         <path class="mi-zone-tex mi-zone-tex--${hz.kind === 'boon' ? 'stipple' : 'hatch'}" d="${tex}" clip-path="url(#${clip})"/>
+        ${shape ? `<path class="mi-zone-retrace" d="${chain}" transform="translate(1.6 -1.2)"/>` : ''}
         <path class="mi-zone-line" d="${chain}"/>
         <path class="mi-zone-stn" d="${stn}"/>
         <g class="mi-zone-key">
@@ -2738,4 +2754,110 @@ function roundedWobbleRect(seed, x, y, w, h, r) {
           L${P(x + w, y + h - r)} Q${P(x + w, y + h)} ${P(x + w - r, y + h)}
           L${P(x + r, y + h)} Q${P(x, y + h)} ${P(x, y + h - r)}
           L${P(x, y + r)} Q${P(x, y)} ${P(x + r, y)} Z`;
+}
+
+/* ROUND 40 -- A REGION IS A DRAWN SHAPE, NOT A BOX (survey 6, both judges:
+   "dashed CAD marquees with corner handle dots, like a selection box in an
+   editor" -- a rectangle with a dashed line and corner marks reads as a
+   selection marquee whatever its fill). The surveyor walks the rooms the
+   condition marks and draws ONE line round them by hand: the outline of a
+   soft field laid over those rooms (each room a pool of radius ~R, pools
+   that touch run together), traced by marching squares, eased, and given the
+   slow wobble of a pen pulled freehand. Returns the closed path, its points
+   (for the seal's leader to meet it) and its box. `pts` are the rooms'
+   centres in sheet px. */
+function regionOutline(seed, pts, R) {
+  if (!pts.length) return null;
+  const sig = R * 0.92, thr = Math.exp(-((R / sig) ** 2));
+  const x0 = Math.min(...pts.map(p => p[0])) - R * 1.6, x1 = Math.max(...pts.map(p => p[0])) + R * 1.6;
+  const y0 = Math.min(...pts.map(p => p[1])) - R * 1.6, y1 = Math.max(...pts.map(p => p[1])) + R * 1.6;
+  const C = 7, nx = Math.ceil((x1 - x0) / C) + 1, ny = Math.ceil((y1 - y0) / C) + 1;
+  const f = new Float32Array(nx * ny);
+  for (let j = 0; j < ny; j++) for (let i = 0; i < nx; i++) {
+    const X = x0 + i * C, Y = y0 + j * C;
+    let v = 0;
+    for (const [px, py] of pts) {
+      const d2 = (X - px) ** 2 + (Y - py) ** 2;
+      if (d2 < 9 * sig * sig) v += Math.exp(-d2 / (sig * sig));
+    }
+    f[j * nx + i] = v - thr;
+  }
+  // marching squares: a segment per crossed cell, its ends keyed by grid edge
+  const at = (i, j) => f[j * nx + i];
+  const ep = {};
+  const pt = (i, j, h) => {
+    const k = (h ? 'h' : 'v') + i + ',' + j;   // h: (i,j)-(i+1,j)  v: (i,j)-(i,j+1)
+    if (!ep[k]) {
+      const a = at(i, j), b = h ? at(i + 1, j) : at(i, j + 1);
+      const t = a / (a - b);
+      ep[k] = h ? [x0 + (i + t) * C, y0 + j * C] : [x0 + i * C, y0 + (j + t) * C];
+    }
+    return k;
+  };
+  const next = {};
+  const link = (a, b) => { (next[a] = next[a] || []).push(b); (next[b] = next[b] || []).push(a); };
+  for (let j = 0; j < ny - 1; j++) for (let i = 0; i < nx - 1; i++) {
+    const c = (at(i, j) > 0 ? 8 : 0) | (at(i + 1, j) > 0 ? 4 : 0) | (at(i + 1, j + 1) > 0 ? 2 : 0) | (at(i, j + 1) > 0 ? 1 : 0);
+    if (c === 0 || c === 15) continue;
+    const T = () => pt(i, j, true), B = () => pt(i, j + 1, true);
+    const L = () => pt(i, j, false), Rr = () => pt(i + 1, j, false);
+    switch (c) {
+      case 1: case 14: link(L(), B()); break;
+      case 2: case 13: link(B(), Rr()); break;
+      case 3: case 12: link(L(), Rr()); break;
+      case 4: case 11: link(T(), Rr()); break;
+      case 6: case 9: link(T(), B()); break;
+      case 7: case 8: link(L(), T()); break;
+      case 5: link(L(), T()); link(B(), Rr()); break;
+      case 10: link(T(), Rr()); link(L(), B()); break;
+      default: break;
+    }
+  }
+  // chain the segments into closed loops
+  const seen = new Set(), loops = [];
+  for (const k0 of Object.keys(next)) {
+    if (seen.has(k0)) continue;
+    const loop = [k0]; seen.add(k0);
+    let prev = null, cur = k0;
+    for (;;) {
+      const nb = (next[cur] || []).find(n => n !== prev && !seen.has(n));
+      if (!nb) break;
+      seen.add(nb); loop.push(nb); prev = cur; cur = nb;
+    }
+    if (loop.length > 6) loops.push(loop.map(k => ep[k]));
+  }
+  if (!loops.length) return null;
+  const w = wobbler(seed);
+  let d = '';
+  const all = [];
+  for (const L0 of loops) {
+    // resampled every ~16 px, then the pen wanders a little off the line
+    const per = [];
+    let acc = 0;
+    for (let i = 0; i < L0.length; i++) {
+      const a = L0[i], b = L0[(i + 1) % L0.length];
+      acc += Math.hypot(b[0] - a[0], b[1] - a[1]);
+      if (acc >= 16 || i === 0) { per.push(a); acc = 0; }
+    }
+    if (per.length < 3) continue;
+    let drift = 0;
+    const P = per.map((p, i) => {
+      const a = per[(i - 1 + per.length) % per.length], b = per[(i + 1) % per.length];
+      const tx = b[0] - a[0], ty = b[1] - a[1], tl = Math.hypot(tx, ty) || 1;
+      drift = drift * 0.8 + w() * 2.6;
+      const o = drift + w() * 1.2;
+      return [p[0] - ty / tl * o, p[1] + tx / tl * o];
+    });
+    all.push(...P);
+    d += `M${((P[0][0] + P[1][0]) / 2).toFixed(1)} ${((P[0][1] + P[1][1]) / 2).toFixed(1)}`;
+    for (let i = 1; i <= P.length; i++) {
+      const q = P[i % P.length], r = P[(i + 1) % P.length];
+      d += `Q${q[0].toFixed(1)} ${q[1].toFixed(1)} ${((q[0] + r[0]) / 2).toFixed(1)} ${((q[1] + r[1]) / 2).toFixed(1)}`;
+    }
+    d += 'Z';
+  }
+  if (!all.length) return null;
+  const xs = all.map(p => p[0]), ys = all.map(p => p[1]);
+  const bx = Math.min(...xs), by = Math.min(...ys);
+  return { d, pts: all, box: { x: bx, y: by, w: Math.max(...xs) - bx, h: Math.max(...ys) - by } };
 }
