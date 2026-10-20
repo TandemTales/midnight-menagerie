@@ -4751,3 +4751,19 @@ html .cb-endturn__hint { font-size: 12px; }
 /* (the round 40 repair seats no boss on the rail -- ui/enemy.js _seatStatuses
    -- so nothing sets the row's balance any more: it is none) */
 .cb-enemy__name > .cb-enemy__statuses.is-on-rail { --rail-bal: 0; }
+
+/* ── THE ROUND 40 REPAIR, PART 2: never three lines ──
+   ui/hang.js widenPlate: a painting's plate that would take a third line at
+   its frame's width runs up to 1.25x the frame, centred under it
+   (.kit-hang--wideplate, its max-width set on the plate), and keeps air
+   between its lettering and the cartouche's curled ends (both judges, survey
+   6's paired test: "type touching or nearly touching their rims"). */
+/* ...and every painting's plate keeps its lettering a little clear of the
+   cartouche's curled ends (the cartouche's ends are 15 px wide, 12 on a
+   tight or widened plate: the lettering stood 2-5 px INTO them -- "THE
+   DOWAGER", gameover's "THE GARDENER" at 1600) */
+.kit-hang.kit-hang--painting.kit-hang--named > .kit-hang__plate { padding-inline: 17px; }
+.kit-hang.kit-hang--painting.kit-hang--named.kit-hang--tight > .kit-hang__plate,
+.kit-hang.kit-hang--painting.kit-hang--named.kit-hang--wideplate > .kit-hang__plate { padding-inline: 14px; border-image-width: 8px 12px; }
+/* (only where nothing else keeps a name to two lines: the old, snug measure) */
+.kit-hang.kit-hang--painting.kit-hang--named.kit-hang--snug > .kit-hang__plate { padding-inline: 10px; }
