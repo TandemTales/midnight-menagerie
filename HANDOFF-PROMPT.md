@@ -174,6 +174,15 @@ the other 13 wings identical (seeded sweep vs `1271452b`). **NOW: its graft**
 (`GRAFT-r41.md`, worktree C:/UILOOP/r41/wt/r41-graft): the Hedge path's
 laid flags, the hedge root line, the dormitory runner, inked straw clumps,
 the Passages' bays, LABRADORITE's pen as a #define.
+**ROUND 41'S GRAFT IS MERGED, VERIFIED AND PUSHED (`5674f6f7`):** all six
+items; every program log of the four wings read, none empty; the other 13
+wings pixel-identical; every fight under 15.5 on a quiet machine (Hedge
+14.42, +0.40 -- most of it already in AMETHYST's merge); region gates,
+chrome, steam-deck, link-queue, seam green on dev. Known: the Hedge prop
+program links in 12.9 s (12.9 at BASE too). **NEXT: ROUND 42** -- survey
+7's board items 8-9: the parchment family's darks (map, hud-late, atlas,
+atlas-house, event, clubhouse) and the last web controls (piles search,
+settings seed fields, event's arrow circles).
 
 **ROUND 33 AND ITS GRAFT ARE MERGED, VERIFIED AND PUSHED (2026-10-16):**
 graft `9d008119`. COBALT +1.59 (`531126e4`): no running line under 11 px at
