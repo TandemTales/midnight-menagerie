@@ -1159,31 +1159,52 @@ export class MapScene extends Scene {
           left: n.x * this.SW - 70, right: n.x * this.SW + 340, top: n.y * this.SH - 60, bottom: n.y * this.SH + 110 }));
         const sb = this._seals[this._seals.length - 1];
         let pick = null;
-        // [corner, which edge it rides, the text's anchor]
+        // the cost of the name at (tx, ty) with `anchor`, `base` its own preference
+        const score = (tx, ty, anchor, base) => {
+          const left = anchor === 'start' ? tx : anchor === 'end' ? tx - tw : tx - tw / 2, right = left + tw;
+          const box = { left: left - 6, right: right + 6, top: ty - 15, bottom: ty + 15 };
+          let c = base;
+          if (box.left < WIN.x + 8 || box.right > WIN.x + WIN.w - 8 || box.top < WIN.y + 8 || box.bottom > WIN.y + WIN.h - 8) c += 1e7;
+          for (const mk of marks) c += rectOverlap(box, mk);
+          for (const pl of plates) c += rectOverlap(box, pl) * 2;
+          if (sb) c += rectOverlap(box, sb) * 4;
+          for (const q of this._zoneTags) c += rectOverlap(box, q) * 4;
+          for (const [px, py] of routePts) {
+            if (px > box.left - 3 && px < box.right + 3 && py > box.top - 3 && py < box.bottom + 3) c += 400;
+          }
+          // round 40 graft: the label OFF the outline -- no point of the drawn
+          // line under the words (J1: the name sat on the line)
+          if (shape) for (const [px, py] of shape.pts) {
+            if (px > box.left && px < box.right && py > box.top + 2 && py < box.bottom - 2) c += 450;
+          }
+          if (!pick || c < pick.c) pick = { c, tx, ty, anchor, box };
+        };
+        // [corner, which edge it rides, the text's anchor]: along the top or
+        // the foot of the district, outside it or just inside it
         const corners = [[0, 'top', 'start'], [1, 'top', 'end'], [3, 'foot', 'start'], [2, 'foot', 'end']];
         corners.forEach(([ci, edgeOf, anchor], order) => {
           const [cx0, cy0] = C[ci];
-          // on the line (its dark stroke breaks the line under it), just
-          // outside it, or just inside it
-          const offs = edgeOf === 'top' ? [[0, 0], [-21, 6], [23, 10]] : [[0, 0], [21, 6], [-23, 10]];
+          const offs = edgeOf === 'top' ? [[-21, 0], [-36, 6], [27, 10], [42, 14]] : [[23, 0], [38, 6], [-27, 10], [-42, 14]];
           for (const [dy, pen] of offs) {
             for (const shift of [22, 52, 90, 140]) {
-              const tx = anchor === 'start' ? cx0 + shift : cx0 - shift;
-              const ty = cy0 + dy;
-              const left = anchor === 'start' ? tx : tx - tw, right = left + tw;
-              const box = { left: left - 6, right: right + 6, top: ty - 15, bottom: ty + 15 };
-              let c = pen + order * 8 + shift * 0.12;
-              if (box.left < WIN.x + 8 || box.right > WIN.x + WIN.w - 8 || box.top < WIN.y + 8 || box.bottom > WIN.y + WIN.h - 8) c += 1e7;
-              for (const mk of marks) c += rectOverlap(box, mk);
-              for (const pl of plates) c += rectOverlap(box, pl) * 2;
-              if (sb) c += rectOverlap(box, sb) * 4;
-              for (const [px, py] of routePts) {
-                if (px > box.left - 3 && px < box.right + 3 && py > box.top - 3 && py < box.bottom + 3) c += 400;
-              }
-              if (!pick || c < pick.c) pick = { c, tx, ty, anchor, box };
+              score(anchor === 'start' ? cx0 + shift : cx0 - shift, cy0 + dy, anchor, pen + order * 8 + shift * 0.12);
             }
           }
         });
+        // ...or centred over its top or under its foot, or beside its widest
+        // point (graft, IOLITE's: a drawn shape offers more than four corners)
+        if (shape) {
+          const top = shape.pts.reduce((q, p) => (p[1] < q[1] ? p : q), shape.pts[0]);
+          const foot = shape.pts.reduce((q, p) => (p[1] > q[1] ? p : q), shape.pts[0]);
+          const lft = shape.pts.reduce((q, p) => (p[0] < q[0] ? p : q), shape.pts[0]);
+          const rgt = shape.pts.reduce((q, p) => (p[0] > q[0] ? p : q), shape.pts[0]);
+          for (const dy of [-20, -34]) score(top[0], top[1] + dy, 'middle', 6);
+          for (const dy of [26, 40]) score(foot[0], foot[1] + dy, 'middle', 6);
+          for (const dy of [0, -24, 24]) {
+            score(lft[0] - 12, lft[1] + dy, 'end', 10);
+            score(rgt[0] + 12, rgt[1] + dy, 'start', 10);
+          }
+        }
         this._zoneTags.push(pick.box);
         zoneNames.push(`<g class="mi-zone mi-zone--${hz.kind}" data-hz="${hz.id}">
           <text class="mi-zone-name" x="${pick.tx.toFixed(1)}" y="${pick.ty.toFixed(1)}"
@@ -1197,8 +1218,22 @@ export class MapScene extends Scene {
           if (dd < bd) { bd = dd; bx = px; by = py; }
         }
       }
-      parts.push(`<g class="mi-zone mi-zone--${hz.kind}${shape ? ' mi-zone--drawn' : ''}" data-hz="${hz.id}">
-        <clipPath id="${clip}">${shape ? `<path d="${shape.d}"/>` : `<rect x="${bx0.toFixed(1)}" y="${by0.toFixed(1)}" width="${bw.toFixed(1)}" height="${bh.toFixed(1)}"/>`}</clipPath>
+      // (a room the condition does not mark that stands inside the district
+      // is counted, for the map's tests and probes: data-covers)
+      // ...and such a room is left OUT of it: an island of bare paper round
+      // it, ringed by the same pen, so the district never claims a room the
+      // condition does not mark (the hull stays one convex shape outside)
+      const outs = shape ? map.nodes.filter((n) => n.hazard !== hz.id && shape.inside(n.x * this.SW, n.y * this.SH)) : [];
+      const covers = outs.length;
+      let isle = '';
+      for (const n of outs) {
+        const ox = n.x * this.SW, oy = n.y * this.SH, r = 40;
+        isle += `M${(ox + r).toFixed(1)} ${oy.toFixed(1)}a${r} ${r} 0 1 0 ${-2 * r} 0a${r} ${r} 0 1 0 ${2 * r} 0Z`;
+      }
+      if (isle) chain += isle;
+      parts.push(`<g class="mi-zone mi-zone--${hz.kind}${shape ? ' mi-zone--drawn' : ''}" data-hz="${hz.id}" data-covers="${covers}">
+        <clipPath id="${clip}">${shape ? `<path d="${shape.d}${isle}" clip-rule="evenodd"/>` : `<rect x="${bx0.toFixed(1)}" y="${by0.toFixed(1)}" width="${bw.toFixed(1)}" height="${bh.toFixed(1)}"/>`}</clipPath>
+        ${shape ? `<path class="mi-zone-wash" d="${shape.d}${isle}" fill-rule="evenodd"/>` : ''}
         <path class="mi-zone-tex mi-zone-tex--${hz.kind === 'boon' ? 'stipple' : 'hatch'}" d="${tex}" clip-path="url(#${clip})"/>
         ${shape ? `<path class="mi-zone-retrace" d="${chain}" transform="translate(1.6 -1.2)"/>` : ''}
         <path class="mi-zone-line" d="${chain}"/>
@@ -2759,105 +2794,80 @@ function roundedWobbleRect(seed, x, y, w, h, r) {
 /* ROUND 40 -- A REGION IS A DRAWN SHAPE, NOT A BOX (survey 6, both judges:
    "dashed CAD marquees with corner handle dots, like a selection box in an
    editor" -- a rectangle with a dashed line and corner marks reads as a
-   selection marquee whatever its fill). The surveyor walks the rooms the
-   condition marks and draws ONE line round them by hand: the outline of a
-   soft field laid over those rooms (each room a pool of radius ~R, pools
-   that touch run together), traced by marching squares, eased, and given the
-   slow wobble of a pen pulled freehand. Returns the closed path, its points
-   (for the seal's leader to meet it) and its box. `pts` are the rooms'
-   centres in sheet px. */
+   selection marquee whatever its fill). ROUND 40 GRAFT (AVENTURINE's tight
+   shape, J1; IOLITE's tint, J3): ONE CONVEX DISTRICT hugging the rooms the
+   condition marks -- SPINEL's traced field left a U-shaped notch or a tongue
+   between two rooms, which J1 read as two shapes. The surveyor's line is the
+   hull of a pool of radius R round each room (so it runs a room's breadth
+   clear of every member and never dips between them), read off at N even
+   bearings from the rooms' middle, given the slow wobble of a pen pulled
+   freehand (a few px: it stays convex to the eye), and closed as a smooth
+   curve. Returns the closed path, its points (the seal's leader and the
+   name's clearance test meet it) and its box. `pts` are the rooms' centres in
+   sheet px. */
 function regionOutline(seed, pts, R) {
   if (!pts.length) return null;
-  const sig = R * 0.92, thr = Math.exp(-((R / sig) ** 2));
-  const x0 = Math.min(...pts.map(p => p[0])) - R * 1.6, x1 = Math.max(...pts.map(p => p[0])) + R * 1.6;
-  const y0 = Math.min(...pts.map(p => p[1])) - R * 1.6, y1 = Math.max(...pts.map(p => p[1])) + R * 1.6;
-  const C = 7, nx = Math.ceil((x1 - x0) / C) + 1, ny = Math.ceil((y1 - y0) / C) + 1;
-  const f = new Float32Array(nx * ny);
-  for (let j = 0; j < ny; j++) for (let i = 0; i < nx; i++) {
-    const X = x0 + i * C, Y = y0 + j * C;
-    let v = 0;
-    for (const [px, py] of pts) {
-      const d2 = (X - px) ** 2 + (Y - py) ** 2;
-      if (d2 < 9 * sig * sig) v += Math.exp(-d2 / (sig * sig));
+  // every room's pool as a ring of points, and their convex hull
+  const ring = [];
+  for (const [px, py] of pts) {
+    for (let k = 0; k < 28; k++) {
+      const t = (k / 28) * Math.PI * 2;
+      ring.push([px + Math.cos(t) * R, py + Math.sin(t) * R]);
     }
-    f[j * nx + i] = v - thr;
   }
-  // marching squares: a segment per crossed cell, its ends keyed by grid edge
-  const at = (i, j) => f[j * nx + i];
-  const ep = {};
-  const pt = (i, j, h) => {
-    const k = (h ? 'h' : 'v') + i + ',' + j;   // h: (i,j)-(i+1,j)  v: (i,j)-(i,j+1)
-    if (!ep[k]) {
-      const a = at(i, j), b = h ? at(i + 1, j) : at(i, j + 1);
-      const t = a / (a - b);
-      ep[k] = h ? [x0 + (i + t) * C, y0 + j * C] : [x0 + i * C, y0 + (j + t) * C];
+  ring.sort((p, q) => p[0] - q[0] || p[1] - q[1]);
+  const cross = (o, a, b) => (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0]);
+  const lo = [], hi = [];
+  for (const p of ring) {
+    while (lo.length >= 2 && cross(lo[lo.length - 2], lo[lo.length - 1], p) <= 0) lo.pop();
+    lo.push(p);
+  }
+  for (let i = ring.length - 1; i >= 0; i--) {
+    const p = ring[i];
+    while (hi.length >= 2 && cross(hi[hi.length - 2], hi[hi.length - 1], p) <= 0) hi.pop();
+    hi.push(p);
+  }
+  const hull = lo.slice(0, -1).concat(hi.slice(0, -1));
+  if (hull.length < 3) return null;
+  let cx = 0, cy = 0;
+  for (const [x, y] of pts) { cx += x; cy += y; }
+  cx /= pts.length; cy /= pts.length;
+  // the hull read off along N bearings from the rooms' middle (inside it)
+  const N = 120;
+  const rOf = (ux, uy) => {
+    let best = Infinity;
+    for (let i = 0; i < hull.length; i++) {
+      const a = hull[i], b = hull[(i + 1) % hull.length];
+      const ex = b[0] - a[0], ey = b[1] - a[1];
+      const den = ux * ey - uy * ex;
+      if (Math.abs(den) < 1e-9) continue;
+      const ax = a[0] - cx, ay = a[1] - cy;
+      const t = (ax * ey - ay * ex) / den, u = (ax * uy - ay * ux) / den;
+      if (t > 0 && u >= -1e-6 && u <= 1 + 1e-6) best = Math.min(best, t);
     }
-    return k;
+    return Number.isFinite(best) ? best : R;
   };
-  const next = {};
-  const link = (a, b) => { (next[a] = next[a] || []).push(b); (next[b] = next[b] || []).push(a); };
-  for (let j = 0; j < ny - 1; j++) for (let i = 0; i < nx - 1; i++) {
-    const c = (at(i, j) > 0 ? 8 : 0) | (at(i + 1, j) > 0 ? 4 : 0) | (at(i + 1, j + 1) > 0 ? 2 : 0) | (at(i, j + 1) > 0 ? 1 : 0);
-    if (c === 0 || c === 15) continue;
-    const T = () => pt(i, j, true), B = () => pt(i, j + 1, true);
-    const L = () => pt(i, j, false), Rr = () => pt(i + 1, j, false);
-    switch (c) {
-      case 1: case 14: link(L(), B()); break;
-      case 2: case 13: link(B(), Rr()); break;
-      case 3: case 12: link(L(), Rr()); break;
-      case 4: case 11: link(T(), Rr()); break;
-      case 6: case 9: link(T(), B()); break;
-      case 7: case 8: link(L(), T()); break;
-      case 5: link(L(), T()); link(B(), Rr()); break;
-      case 10: link(T(), Rr()); link(L(), B()); break;
-      default: break;
-    }
-  }
-  // chain the segments into closed loops
-  const seen = new Set(), loops = [];
-  for (const k0 of Object.keys(next)) {
-    if (seen.has(k0)) continue;
-    const loop = [k0]; seen.add(k0);
-    let prev = null, cur = k0;
-    for (;;) {
-      const nb = (next[cur] || []).find(n => n !== prev && !seen.has(n));
-      if (!nb) break;
-      seen.add(nb); loop.push(nb); prev = cur; cur = nb;
-    }
-    if (loop.length > 6) loops.push(loop.map(k => ep[k]));
-  }
-  if (!loops.length) return null;
   const w = wobbler(seed);
-  let d = '';
-  const all = [];
-  for (const L0 of loops) {
-    // resampled every ~16 px, then the pen wanders a little off the line
-    const per = [];
-    let acc = 0;
-    for (let i = 0; i < L0.length; i++) {
-      const a = L0[i], b = L0[(i + 1) % L0.length];
-      acc += Math.hypot(b[0] - a[0], b[1] - a[1]);
-      if (acc >= 16 || i === 0) { per.push(a); acc = 0; }
-    }
-    if (per.length < 3) continue;
-    let drift = 0;
-    const P = per.map((p, i) => {
-      const a = per[(i - 1 + per.length) % per.length], b = per[(i + 1) % per.length];
-      const tx = b[0] - a[0], ty = b[1] - a[1], tl = Math.hypot(tx, ty) || 1;
-      drift = drift * 0.8 + w() * 2.6;
-      const o = drift + w() * 1.2;
-      return [p[0] - ty / tl * o, p[1] + tx / tl * o];
-    });
-    all.push(...P);
-    d += `M${((P[0][0] + P[1][0]) / 2).toFixed(1)} ${((P[0][1] + P[1][1]) / 2).toFixed(1)}`;
-    for (let i = 1; i <= P.length; i++) {
-      const q = P[i % P.length], r = P[(i + 1) % P.length];
-      d += `Q${q[0].toFixed(1)} ${q[1].toFixed(1)} ${((q[0] + r[0]) / 2).toFixed(1)} ${((q[1] + r[1]) / 2).toFixed(1)}`;
-    }
-    d += 'Z';
+  const ph = [w() * 6, w() * 6, w() * 6];
+  const P = [];
+  for (let i = 0; i < N; i++) {
+    const t = (i / N) * Math.PI * 2, ux = Math.cos(t), uy = Math.sin(t);
+    const r = rOf(ux, uy) + Math.sin(t * 3 + ph[0]) * 2.6 + Math.sin(t * 7 + ph[1]) * 1.4 + Math.sin(t * 13 + ph[2]) * 0.7;
+    P.push([cx + ux * r, cy + uy * r]);
   }
-  if (!all.length) return null;
-  const xs = all.map(p => p[0]), ys = all.map(p => p[1]);
+  const q = (k) => P[((k % N) + N) % N];
+  let d = `M${P[0][0].toFixed(1)} ${P[0][1].toFixed(1)}`;
+  for (let i = 0; i < N; i++) {
+    const p0 = q(i - 1), p1 = q(i), p2 = q(i + 1), p3 = q(i + 2);
+    d += `C${(p1[0] + (p2[0] - p0[0]) / 6).toFixed(1)} ${(p1[1] + (p2[1] - p0[1]) / 6).toFixed(1)}`
+       + ` ${(p2[0] - (p3[0] - p1[0]) / 6).toFixed(1)} ${(p2[1] - (p3[1] - p1[1]) / 6).toFixed(1)}`
+       + ` ${p2[0].toFixed(1)} ${p2[1].toFixed(1)}`;
+  }
+  d += 'Z';
+  const xs = P.map(p => p[0]), ys = P.map(p => p[1]);
   const bx = Math.min(...xs), by = Math.min(...ys);
-  return { d, pts: all, box: { x: bx, y: by, w: Math.max(...xs) - bx, h: Math.max(...ys) - by } };
+  // the hull itself, for asking whether a room the condition does NOT mark
+  // stands inside the district (MapScene keeps that room out of the shape)
+  const inside = (x, y) => hull.every((a, i) => cross(a, hull[(i + 1) % hull.length], [x, y]) >= 0);
+  return { d, pts: P, box: { x: bx, y: by, w: Math.max(...xs) - bx, h: Math.max(...ys) - by }, inside };
 }

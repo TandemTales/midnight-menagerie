@@ -1753,3 +1753,12 @@
   .mi-zone--drawn .mi-zone-line { stroke-width: 4.2; }
   .mi-zone-retrace { stroke-width: 2; }
 }
+
+/* ── ROUND 40 GRAFT: a district's tint (IOLITE's, J3) ──
+   map.js regionOutline draws each condition as one convex district round
+   its rooms; a soft wash of its pigment lies across the whole shape under
+   the hatch (a bane) or the stipple (a boon), both carried edge to edge. */
+.mi-zone-wash { fill: var(--kit-madder); opacity: .11; stroke: none; }
+.mi-zone--boon .mi-zone-wash { fill: var(--kit-indigo); opacity: .12; }
+.mi-zone--drawn .mi-zone-tex--hatch { opacity: .5; }
+.mi-zone--drawn .mi-zone-tex--stipple { opacity: .8; }
