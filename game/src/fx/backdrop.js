@@ -508,7 +508,7 @@ export const PROP_SHAPES = {
   nursery: [22, 45, 46, 47, 48, 49, 61, 87],
   passages: [8, 23, 66],
   pumpkin: [23, 27, 86],
-  sleeping: [0, 14, 22, 46, 47, 50, 51, 52, 56, 60],
+  sleeping: [0, 14, 22, 50, 51, 52, 56, 60],   // (round 41: not the Nursery's horse and chest, 46 and 47)
   study: [22, 53, 54, 55, 56, 88],
 };
 
@@ -604,7 +604,6 @@ export const ROOM_VARIANTS = [
   { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 1, MM_WINGS: 4, MM_SHM0: 79691856, MM_SHM1: 0, MM_SHM2: 508 }, wings: ['foyer'] },
   { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 5, MM_SHM0: 8388608, MM_SHM1: 0, MM_SHM2: 11776 }, wings: ['graveyard'] },
   { mat: 'prop', defines: { MM_STONES: 1, MM_BUST: 0, MM_WINGS: 6, MM_SHM0: 41943104, MM_SHM1: 0, MM_SHM2: 1294336 }, wings: ['greenhouse'] },
-  /* (round 34 graft: and the Greenhouse rooms with the potting bench, 84) */
   { mat: 'prop', defines: { MM_STONES: 1, MM_BUST: 0, MM_WINGS: 6, MM_SHM0: 41943104, MM_SHM1: 0, MM_SHM2: 18071552 }, wings: ['greenhouse'] },
   { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 1, MM_SHM0: 12583025, MM_SHM1: 2, MM_SHM2: 44040192 }, wings: ['heart'] },
   { mat: 'prop', defines: { MM_STONES: 1, MM_BUST: 0, MM_WINGS: 1, MM_SHM0: 310378496, MM_SHM1: 3, MM_SHM2: 10485760 }, wings: ['hedge'] },
@@ -614,32 +613,35 @@ export const ROOM_VARIANTS = [
   { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 3, MM_SHM0: 4194304, MM_SHM1: 1015808, MM_SHM2: 134217730 }, wings: ['nursery'] },
   { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 4, MM_SHM0: 8388864, MM_SHM1: 0, MM_SHM2: 64 }, wings: ['passages'] },
   { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 1, MM_SHM0: 142606336, MM_SHM1: 0, MM_SHM2: 67108864 }, wings: ['pumpkin'] },
-  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 3, MM_SHM0: 4210689, MM_SHM1: 74645504, MM_SHM2: 1 }, wings: ['sleeping'] },
+  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 3, MM_SHM0: 4210689, MM_SHM1: 74448896, MM_SHM2: 1 }, wings: ['sleeping'] },
   { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 3, MM_SHM0: 4194304, MM_SHM1: 125829120, MM_SHM2: 268435456 }, wings: ['study'] },
-  { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 0, MM_PAT: 0, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0 }, wings: ['attic', 'heart', 'nursery', 'passages', 'sleeping', 'study'] },
-  /* (round 37 graft: the Nursery's wardrobe and its braided oval rug, MM_RUGO) */
-  { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 0, MM_PAT: 0, MM_CEIL: 0, MM_RUGO: 1, MM_FLAGK: 0 }, wings: ['nursery'] },
-  { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 2, MM_PAT: 1, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0 }, wings: ['ballroom'] },
-  { mat: 'floor', defines: { MM_FLOORX: 1, MM_R25W: 0, MM_PAT: 10, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0 }, wings: ['ballroom'] },
-  { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 0, MM_PAT: 1, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0 }, wings: ['bathhouse'] },
-  { mat: 'floor', defines: { MM_FLOORX: 2, MM_R25W: 0, MM_PAT: 1, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0 }, wings: ['bathhouse'] },
-  { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 0, MM_PAT: 2, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0 }, wings: ['crypt', 'kennels', 'lampworks', 'pumpkin'] },
-  /* (round 39: the Kitchens' small worn flags, MM_FLAGK) */
-  { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 0, MM_PAT: 2, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 1 }, wings: ['kitchens'] },
-  { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 1, MM_PAT: 0, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0 }, wings: ['foyer'] },
-  { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 1, MM_PAT: 2, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0 }, wings: ['foyer'] },
-  { mat: 'floor', defines: { MM_FLOORX: 1, MM_R25W: 4, MM_PAT: 11, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0 }, wings: ['graveyard'] },
-  { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 3, MM_PAT: 2, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0 }, wings: ['greenhouse'] },
-  { mat: 'floor', defines: { MM_FLOORX: 1, MM_R25W: 0, MM_PAT: 13, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0 }, wings: ['hedge'] },
-  { mat: 'floor', defines: { MM_FLOORX: 1, MM_R25W: 0, MM_PAT: 2, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0 }, wings: ['pumpkin'] },
-  { mat: 'floor', defines: { MM_FLOORX: 1, MM_R25W: 0, MM_PAT: 14, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0 }, wings: ['pumpkin'] },
+  { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 0, MM_PAT: 0, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0, MM_RUGK: 0 }, wings: ['attic', 'heart', 'nursery', 'study'] },
+  { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 2, MM_PAT: 1, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0, MM_RUGK: 0 }, wings: ['ballroom'] },
+  { mat: 'floor', defines: { MM_FLOORX: 1, MM_R25W: 0, MM_PAT: 10, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0, MM_RUGK: 0 }, wings: ['ballroom'] },
+  { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 0, MM_PAT: 1, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0, MM_RUGK: 0 }, wings: ['bathhouse'] },
+  { mat: 'floor', defines: { MM_FLOORX: 2, MM_R25W: 0, MM_PAT: 1, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0, MM_RUGK: 0 }, wings: ['bathhouse'] },
+  { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 0, MM_PAT: 2, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0, MM_RUGK: 0 }, wings: ['crypt', 'lampworks', 'pumpkin'] },
+  { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 1, MM_PAT: 0, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0, MM_RUGK: 0 }, wings: ['foyer'] },
+  { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 1, MM_PAT: 2, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0, MM_RUGK: 0 }, wings: ['foyer'] },
+  { mat: 'floor', defines: { MM_FLOORX: 1, MM_R25W: 4, MM_PAT: 11, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0, MM_RUGK: 0 }, wings: ['graveyard'] },
+  { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 3, MM_PAT: 2, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0, MM_RUGK: 0 }, wings: ['greenhouse'] },
+  { mat: 'floor', defines: { MM_FLOORX: 1, MM_R25W: 0, MM_PAT: 13, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0, MM_RUGK: 0 }, wings: ['hedge'] },
+  { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 0, MM_PAT: 2, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0, MM_RUGK: 6 }, wings: ['kennels'] },
+  { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 0, MM_PAT: 2, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0, MM_RUGK: 7 }, wings: ['kennels'] },
+  { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 0, MM_PAT: 2, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 1, MM_RUGK: 0 }, wings: ['kitchens'] },
+  { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 0, MM_PAT: 0, MM_CEIL: 0, MM_RUGO: 1, MM_FLAGK: 0, MM_RUGK: 0 }, wings: ['nursery'] },
+  { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 0, MM_PAT: 0, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0, MM_RUGK: 3 }, wings: ['passages'] },
+  { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 0, MM_PAT: 0, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0, MM_RUGK: 4 }, wings: ['passages'] },
+  { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 0, MM_PAT: 0, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0, MM_RUGK: 5 }, wings: ['passages'] },
+  { mat: 'floor', defines: { MM_FLOORX: 1, MM_R25W: 0, MM_PAT: 2, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0, MM_RUGK: 0 }, wings: ['pumpkin'] },
+  { mat: 'floor', defines: { MM_FLOORX: 1, MM_R25W: 0, MM_PAT: 14, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0, MM_RUGK: 0 }, wings: ['pumpkin'] },
+  { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 0, MM_PAT: 0, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0, MM_RUGK: 1 }, wings: ['sleeping'] },
   { mat: 'ceil', defines: { MM_FLOORX: 2, MM_PAT: 15, MM_CEIL: 1 }, wings: ['attic'] },
   { mat: 'ceil', defines: { MM_FLOORX: 0, MM_PAT: 4, MM_CEIL: 1 }, wings: ['ballroom', 'bathhouse', 'foyer', 'heart'] },
-  /* (round 35 graft: the Crypt's rib vault, its own pattern -- SCHEELITE's) */
-  { mat: 'ceil', defines: { MM_FLOORX: 1, MM_PAT: 17, MM_CEIL: 1 }, wings: ['crypt'] },
   { mat: 'ceil', defines: { MM_FLOORX: 0, MM_PAT: 7, MM_CEIL: 1 }, wings: ['ballroom', 'foyer'] },
   { mat: 'ceil', defines: { MM_FLOORX: 0, MM_PAT: 3, MM_CEIL: 1 }, wings: ['bathhouse', 'foyer', 'nursery', 'sleeping', 'study'] },
   { mat: 'ceil', defines: { MM_FLOORX: 0, MM_PAT: 5, MM_CEIL: 1 }, wings: ['bathhouse'] },
+  { mat: 'ceil', defines: { MM_FLOORX: 1, MM_PAT: 17, MM_CEIL: 1 }, wings: ['crypt'] },
   { mat: 'ceil', defines: { MM_FLOORX: 0, MM_PAT: 9, MM_CEIL: 1 }, wings: ['greenhouse'] },
   { mat: 'ceil', defines: { MM_FLOORX: 1, MM_PAT: 12, MM_CEIL: 1 }, wings: ['greenhouse'] },
   { mat: 'ceil', defines: { MM_FLOORX: 0, MM_PAT: 6, MM_CEIL: 1 }, wings: ['kennels', 'kitchens', 'lampworks'] },
@@ -930,7 +932,7 @@ export class Backdrop {
     this.floorMat = new THREE.ShaderMaterial({
       uniforms: surfaceUniforms(),
       /* the room-kind floors are a variant of their own: _setSurfaceProgram */
-      defines: { MM_FLOORX: 0, MM_R25W: 0, MM_PAT: 0, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0 },
+      defines: { MM_FLOORX: 0, MM_R25W: 0, MM_PAT: 0, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0, MM_RUGK: 0 },
       vertexShader: FLOOR_VERT, fragmentShader: FLOOR_FRAG,
       depthWrite: true, fog: false,
     });
@@ -2599,7 +2601,10 @@ export class Backdrop {
       if (SC && room.h > 0 && pal.subject !== 'closet') {
         u.uSconce.value.set(room.w / 2 - (SC.inset ?? 0.40), SC.z0, SC.pitch, SC.k ?? 0.9);
       } else {
-        u.uSconce.value.set(0, 0, 1, 0);
+        /* (round 41: the Hedge Maze's floor reads its alley's half-width
+           here -- x, with no sconce (w 0) -- to lay the hedges' root shade
+           and their leaf drifts along their foot; FLOOR_FRAG, MM_PAT 13) */
+        u.uSconce.value.set(pal.regionKey === 'hedge' ? room.w / 2 : 0, 0, 1, 0);
       }
       u.uSconceEnd.value = this._wallZ;
     }
@@ -2907,7 +2912,13 @@ export class Backdrop {
     this._setSurfaceProgram(this.floorMat, fx, (R25_FLOORS[p.r25w] || []).includes(fx) ? p.r25w : 0,
       /* (round 37 graft: a braided oval rug, the wardrobe's -- MM_RUGO;
          round 39: and the Kitchens' small worn flags -- MM_FLAGK, pal.flagK) */
-      { MM_RUGO: p.rug && p.rug.oval ? 1 : 0, MM_FLAGK: p.flagK ?? 0 });
+      /* (round 41, AMETHYST: and a wing's own floor covering -- MM_RUGK,
+         pal.floorK: 1 the Sleeping Quarters' drugget and the bedroom's
+         needlework carpet, 3-5 the Passages' coir matting, the library
+         passage's dusty boards and the closet's rag runner, 6 the kennel
+         range's straw in drifts, 7 the wash house's wet floor; 0 every
+         other room, which compiles exactly what it did) */
+      { MM_RUGO: p.rug && p.rug.oval ? 1 : 0, MM_FLAGK: p.flagK ?? 0, MM_RUGK: p.floorK ?? 0 });
     f.uRunner.value = p.runner ?? 0;
     /* the runner leads to the door, wherever the subject took it */
     f.uRunX.value = p.runX ?? (p.subjX ?? 0);
