@@ -29495,7 +29495,10 @@ void main(){
     /* (lightly: a pixel to a pixel and a half, at half strength -- at
        LABRADORITE's 1.5-2.5 px it took the whole of a thin member, an iron
        bed's rods and a lamp post, to a dark line) */
-    float nib = 0.95 + 0.55*mmNoise(vUv*vSize*vec2(5.0, 3.0) + vSeed*2.7);
+    /* (a slow wave, not a noise tap: the tap cost the Hedge's prop program
+       4.4 s of its link, 9.1 -> 13.5 s alone, on this machine) */
+    vec2 nq = vUv*vSize;
+    float nib = 0.95 + 0.55*(0.5 + 0.5*sin(nq.x*5.3 + nq.y*3.1 + vSeed*2.7)*sin(nq.y*4.1 - nq.x*2.3 + vSeed));
     float pen = clamp(nib + 0.5 - fpx, 0.0, 1.0);
     col *= 1.0 - pen*0.50;
   }
