@@ -4999,15 +4999,26 @@ float yewClipF(vec2 p, float px, float sd, out float tone, out float lit, out fl
   float a = 0.3;
   if (l1 > 0.001) {
     vec2 pr = vec2(pw.x*0.91 - pw.y*0.41, pw.x*0.41 + pw.y*0.91);
+    /* (round 41 graft, ZIRCON's -- both survey-7 judges: "lumpy smeared
+       blobs". The sprays were one even cell with a dark seam all round, a
+       cobbled wall: a spray is ragged at its margin, so the cell's edge is
+       thrown a few centimetres by a fine tap) */
+    pr += (mmNoise(pw*21.0 + sd*1.9) - 0.5)*vec2(0.055, 0.040)*l1;
     a = wLobes(pr/vec2(0.095, 0.068), 0.92, sd, i1, o1);
   }
-  float s1 = smoothstep(-0.10, 0.30, a)*(0.80 + 0.40*i1)*(0.90 + 0.18*clamp(o1.y*2.0 + 0.5, 0.0, 1.0));
+  /* (...and each spray LIT from above: its upper leaves take the sky, its
+     underside in the shade of the spray over it -- leaf hanging in tiers) */
+  float s1 = smoothstep(-0.10, 0.30, a)*(0.80 + 0.40*i1)*(0.74 + 0.46*clamp(o1.y*2.6 + 0.45, 0.0, 1.0));
   float s2 = 1.0, b = 0.0;
   if (l2 > 0.001) {
     b = wLobes(vec2(pw.x*0.80 + pw.y*0.60, -pw.x*0.60 + pw.y*0.80)/0.032, 0.95, sd + 7.3, i2, o2);
     s2 = smoothstep(-0.10, 0.28, b)*(0.82 + 0.36*i2);
   }
-  tone = massT * mix(0.84, 0.52 + 0.52*s1, l1) * mix(1.0, 0.70 + 0.38*s2, l2);
+  /* (round 41 graft, J2 on the Deck's fight: "the hedges go grey-milky" at
+     1280. Where the shoots are under a few pixels this was their tone's
+     fallback, 0.84 x 1.0 -- a stop over the drawn shoots' own mean -- so
+     the smaller the frame, the paler the yew. The fallback is their mean) */
+  tone = massT * mix(0.74, 0.52 + 0.52*s1, l1) * mix(0.92, 0.70 + 0.38*s2, l2);
   lit = clamp(0.30 + 4.0*rise0, 0.0, 1.0) * mix(0.8, 0.55 + 0.55*s1, l1);
   /* ROUND 34: THE LEAF MASS (both survey-5 judges: "flat noise-textured
      slabs"). Under the shoots a grown-out yew is clumps a stride across,
@@ -5426,7 +5437,13 @@ float hedgeWallH(vec2 q, float qpx, out float occ){
   /* the ink: the crown against the sky, the finials, the jambs of a way */
   /* (round 31 graft, SAFFLOWER's: firmer -- "hedge tops inked crisp" --
      and the two jambs of a way cut through inked down their height) */
-  mmPen(top - q.y, 1.2, 0.85*(1.0 - inGap));
+  /* (round 41 graft, LABRADORITE's -- J1, J2: "the hard clipped top" and
+     "an inked silhouette". The sheared top one LOADED stroke, its weight
+     breaking a little along the run as a pen's does) */
+  float penW = 1.45 + 0.55*sin(u*2.3 + sd)*sin(u*0.61 + sd*1.9);
+  mmPen(top - q.y, penW, 1.0*(1.0 - inGap));
+  /* (...and ZIRCON's root line: where the yew meets the turf, drawn) */
+  mmPen(q.y - 0.035, 1.4, 0.85*(1.0 - inGap)*(1.0 - corr));
   mmPen(fin, 1.0, 0.70*finOn);
   mmPen(abs(gx) - gw, 1.1, 0.70*step(0.01, gw)*mmCover(top - q.y)*(1.0 - court));
   /* the colour: dark yew, withered brown in patches, the foot darker */
@@ -5451,11 +5468,14 @@ float hedgeWallH(vec2 q, float qpx, out float occ){
   gapY *= hedge*(1.0 - corr);
   yew *= mix(0.24 + 1.25*tone, 1.0, gapY);
   yew *= mix(1.0, 0.30, foot);
+  yew *= mix(0.18, 1.0, smoothstep(0.02, 0.16, q.y));   // (round 41 graft, ZIRCON's: the contact shadow, the turf's edge in the yew's shade)
   yew = mix(yew, mix(vec3(0.008, 0.008, 0.007), vec3(0.045, 0.036, 0.026)*(lum*2.6 + 0.020)*2.2, stem), hemB*(1.0 - inGap));
   /* (round 31 graft, SAFFLOWER's: a sheared hedge under the sky -- its upper
      face takes the night, its lower falls into its own shade toward the
      foot: a FORM lit from above, not an even field of tufts) */
-  yew *= mix(0.62, 1.12, smoothstep(0.30, HH - 0.30, q.y));
+  /* (round 41 graft, LABRADORITE's: the face darkening toward the ground --
+     the mass lit from above, a stop more) */
+  yew *= mix(0.46, 1.18, smoothstep(0.30, HH - 0.30, q.y));
   yew *= mix(1.0, 0.50, corr*ret);
   yew = mix(yew, yew*0.12, niche*(1.0 - stone));
   /* (round 29 graft: the court figures in pale stone, carved in their own
@@ -5475,8 +5495,10 @@ float hedgeWallH(vec2 q, float qpx, out float occ){
      rounding over onto the top is the one line that says SHEARED) */
   /* (round 41: and CLIPPED -- the line runs the length of the run, the
      leaf's tips only breaking it a little) */
-  gHedgeEdge = hedge*(1.0 - inGap)*smoothstep(top - 0.14, top - 0.035, q.y)*(0.78 + 0.22*lit)*(1.0 - gapY);
-  gWLit += gHedgeEdge*1.1;
+  /* (round 41 graft, LABRADORITE's SHOULDER: the clipped top rounding over
+     takes the moon a hand and more deep, under the pen line of its top) */
+  gHedgeEdge = hedge*(1.0 - inGap)*smoothstep(top - 0.26, top - 0.04, q.y)*(0.70 + 0.30*lit)*(1.0 - gapY);
+  gWLit += gHedgeEdge*1.3;
   gCol = yew;
   gColAmt = solidM;
   gHedgeLeaf = mix(1.0, (0.20 + 1.30*tone)*(1.0 - niche*0.8), hedge*(1.0 - stone));
@@ -14163,7 +14185,9 @@ void main(){
   float r29Edge = 0.0;      // (round 29 graft: the maze walk's dressed edging, for its stone below)
   float r35Edge = 0.0;      // (round 35 graft: the churchyard's lit turf edge along its walk, for its light below)
 #if MM_PAT == 13
-  float r41Gravel = 0.0, r41Leaf = 0.0, r41Root = 1.0;   // (round 41: the maze's gravel, its leaves and the hedges' root shade)
+  float r41Gravel = 0.0, r41Leaf = 0.0, r41Root = 1.0;   // (round 41: the maze's walk, its leaves and the hedges' root shade)
+  float r41Joint = 0.0;     // (round 41 graft: the maze walk's open joints, for their dark below)
+  float r41LeafInk = 0.0;   // (round 41 graft: the pen round each fallen leaf)
 #endif
 #if MM_FLOORX >= 1
   /* (round 22: 13, the maze's lawn, and 14, the pumpkin patch, are the
@@ -14402,8 +14426,10 @@ void main(){
             float pxdL = abs(w.x - uRunX);
             float kb = 1.0 - smoothstep(0.0, 0.55, pxdL - uRunner - 0.12);
             float wf = 1.0 - smoothstep(0.10, 1.20, footD);
-            float dr = smoothstep(0.50, 0.78, mmNoise(w*vec2(0.28, 0.40) + 4.4));
-            float dens = clamp(max(dr*0.55, max(kb*0.65, wf*0.85)), 0.0, 0.92)*step(uRunner + 0.10, pxdL);
+            /* (round 41 graft: in CLUMPS -- thick where the wind laid them and
+               bare turf between, never an even scatter) */
+            float dr = smoothstep(0.58, 0.70, mmNoise(w*vec2(0.28, 0.40) + 4.4));
+            float dens = clamp(max(dr*0.80, max(kb*0.65, wf*0.85)), 0.0, 0.92)*step(uRunner + 0.10, pxdL);
             float lRes = smoothstep(0.060, 0.016, mp);
             if (lRes*dens > 0.001) {
               const float LC = 0.24;
@@ -14413,10 +14439,15 @@ void main(){
               float la = mmHash21(lci + 9.1)*6.2832;
               vec2 lr = vec2(cos(la)*lp.x + sin(la)*lp.y, -sin(la)*lp.x + cos(la)*lp.y);
               float lw = 0.034*(1.0 - pow(abs(lr.x)/0.085, 2.0));
+              float has = step(mmHash21(lci + 3.3), dens);
               float leaf = (1.0 - smoothstep(lw, lw + mp*1.1, abs(lr.y))) * step(abs(lr.x), 0.085)
-                         * step(mmHash21(lci + 3.3), dens) * lRes;
+                         * has * lRes;
               float lit = smoothstep(-0.01, 0.02, lr.y)*leaf;
               r41Leaf = leaf*(0.55 + 0.45*lh.x) + 0.0*lit;
+              /* (round 41 graft, J2: "the lawn's leaf litter in inked clumps,
+                 dark" -- each leaf drawn round in the pen, so a drift reads as
+                 leaves laid on the turf and not as lit confetti) */
+              r41LeafInk = mmInkP(abs(lr.y) - max(lw, 0.0), mp, 1.1)*step(abs(lr.x), 0.080)*has*lRes;
               earth = max(earth, leaf*0.95);
               turf = min(turf, 1.0 - leaf*0.90);
               pat += leaf*(0.12 + 0.12*lh.y) + lit*0.08;
@@ -14516,7 +14547,14 @@ void main(){
            three pixels a stone, the gravel tone it was. */
         if (pxd < uRunner + 0.40) {
 #endif
+#if MM_PAT == 13
+          /* (round 41 graft, ZIRCON's: the maze's flags drawn a step further
+             down the walk, so its joints run on toward the fountain closing
+             up as they go, not dissolving to a slab half way) */
+          float sRes = smoothstep(0.085, 0.030, mpp.x) * smoothstep(0.50, 0.18, mpp.y);
+#else
           float sRes = smoothstep(0.060, 0.022, mpp.x) * smoothstep(0.40, 0.14, mpp.y);
+#endif
           vec2 sw = vec2(w.x - uRunX, w.y);
           /* (laid by hand: each course a little off the line, from its own
              hash -- two noise taps a pixel here cost the churchyard fight's
@@ -14533,7 +14571,16 @@ void main(){
           float jAA = mpp.x*1.2;
           float sett = 1.0 - smoothstep(-jAA, jAA, sd);
           float dome = clamp(-sd/0.08, 0.0, 1.0);
+#if MM_PAT == 13
+          /* (round 41 graft, all three judges on AMETHYST's walk: "a smooth
+             tarmac strip with no flags". ZIRCON's: the maze's flags each their
+             own DARK stone, worn and domed, the joints between them open and
+             the darkest thing on the ground, so the walk reads as laid stone
+             at every depth it is drawn) */
+          float sPat = (0.26 + 0.42*sh + 0.26*dome + 0.08*sg.y) * sett + 0.02*(1.0 - sett);
+#else
           float sPat = (0.40 + 0.30*sh + 0.22*dome + 0.10*sg.y) * sett + 0.04*(1.0 - sett);
+#endif
           pat = mix(pat, mix(pat, sPat, sRes), walk);
           cellv = mix(cellv, mix(cellv, 0.30 + 0.45*sh, sRes*sett), walk);
           r25Walk = walk*mix(1.0, sett, sRes);
@@ -14558,24 +14605,25 @@ void main(){
              scuffed across them where feet have gone -- drawn while a stone
              is a pixel and more, its own dark tone past that. The edging
              stays, the walk's one pale line either side. */
+          /* ROUND 41 GRAFT: ...AND LAID FLAGS AGAIN. All three judges on
+             AMETHYST's raked gravel: "a smooth tarmac strip with no flags, and
+             two bright white kerb lines run the length of it like road
+             markings". The walk is the laid flags above (ZIRCON's dark stones,
+             LABRADORITE's warm umber below), the joints between them inked --
+             a dark line round every stone that closes up toward the fountain
+             as the stones do -- and the edging a dressed STONE kerb: its top a
+             step over the flags and no more, each kerb stone its own value,
+             its joints and both its arrises drawn, never a painted line. */
           {
-            float gRes = smoothstep(0.034, 0.010, mp);
-            vec2 gc = w/0.045;
-            vec2 gi = floor(gc);
-            vec2 gh = mmHash22(gi + 3.1);
-            vec2 gp = fract(gc) - 0.5 - (gh - 0.5)*0.40;
-            float peb = smoothstep(0.44, 0.22, length(gp*vec2(1.0, 1.25)));
-            float pebT = smoothstep(0.10, -0.25, gp.y)*peb;
-            float rake = 0.5 + 0.5*sin((w.x - uRunX)*69.8 + 0.8*sin(w.y*0.6 + uSeed));
-            float scuff = smoothstep(0.55, 0.80, mmNoise(w*vec2(1.6, 0.5) + uSeed*2.0));
-            float gpat = 0.34 + 0.14*(mmNoise(w*1.3 + 7.0) - 0.5)
-                       + (peb*(0.18 + 0.50*gh.x) + pebT*0.22 - 0.22)*gRes
-                       + (rake - 0.5)*0.12*mmLod(0.09, mpp.x)*(1.0 - scuff);
             float onG = walk*(1.0 - edge);
-            pat = mix(pat, gpat, onG);
-            cellv = mix(cellv, 0.42 + 0.20*gh.y*gRes, onG);
-            r25Walk = edge;
             r41Gravel = onG;
+            r41Joint = walk*(1.0 - sett)*sRes*(1.0 - edge);
+            float kI = floor(w.y/0.75 + 0.5*step(uRunX, w.x));
+            float kv = mmHash11(kI*4.3 + step(uRunX, w.x)*7.1);
+            pat = mix(pat, 0.56 + 0.10*eTop + 0.14*kv - ejt*0.40, edge);
+            float kInk = max(mmInk(pxd - uRunner, 1.2), mmInk(pxd - uRunner - 0.12, 1.1));
+            pat -= kInk*0.30*step(pxd, uRunner + 0.20);
+            r25Walk = edge;
           }
 #endif
 #if MM_R25W == 4
@@ -15417,13 +15465,25 @@ void main(){
   /* (round 41: the gravel a warm dark grey-brown under the lawn's green, a
      touch under the old flags' value; the leaves their own russets; the
      hedges' foot in their shade) */
-  alb = mix(alb, vec3(mmLum(alb))*vec3(1.06, 0.98, 0.86)*0.80, r41Gravel*0.85);
-  alb = mix(alb, vec3(mmLum(alb))*vec3(1.55, 0.95, 0.42)*1.25, r41Leaf*0.80);
+  /* (round 41 graft: the flags old York stone gone dark with moss and wet,
+     a warm umber-grey under the lamps -- LABRADORITE's -- not a pale neutral
+     the moon turns to milk; the JOINTS the darkest line on the ground, moss
+     and soil in them -- ZIRCON's) */
+  alb = mix(alb, vec3(mmLum(alb))*vec3(1.04, 0.95, 0.82)*0.80, r41Gravel*0.85);
+  alb *= 1.0 - 0.62*r41Joint;
+  alb = mix(alb, alb*vec3(0.80, 1.06, 0.70), r41Joint*0.6);
+  alb = mix(alb, vec3(mmLum(alb))*vec3(1.45, 0.92, 0.46)*0.95, r41Leaf*0.80);   // (round 41 graft: an old russet, dark -- 1.25 lit them as confetti)
+  alb *= 1.0 - 0.70*r41LeafInk;
   alb *= r41Root;
-#endif
+  /* (round 41 graft, all three judges: "two bright white kerb lines ...
+     like road markings" -- the edging a weathered STONE, a step over the
+     flags, its warm grey their own) */
+  alb = mix(alb, vec3(mmLum(alb))*vec3(1.00, 0.96, 0.88)*1.55, r29Edge*0.85);
+#else
   /* ...and its dressed edging the one pale line either side, a kerb of
      stone standing proud of the turf, as mainMenu.png's path has */
   alb = mix(alb, vec3(mmLum(alb))*vec3(0.98, 0.98, 1.02)*2.1, r29Edge*0.85);
+#endif
 #endif
   /* (round 22: the maze's lawn is a kept lawn, greener than a churchyard's
      turf; the same value, its hue taken toward the grass) */
@@ -19772,15 +19832,26 @@ float yewFaceP(vec2 p, float px, float sd, out float tone, out float lit){
   float a = 0.3;
   if (l1 > 0.001) {
     vec2 pr = vec2(pw.x*0.91 - pw.y*0.41, pw.x*0.41 + pw.y*0.91);
+    /* (round 41 graft, ZIRCON's -- both survey-7 judges: "lumpy smeared
+       blobs". The sprays were one even cell with a dark seam all round, a
+       cobbled wall: a spray is ragged at its margin, so the cell's edge is
+       thrown a few centimetres by a fine tap) */
+    pr += (mmNoise(pw*21.0 + sd*1.9) - 0.5)*vec2(0.055, 0.040)*l1;
     a = yLobes(pr/vec2(0.095, 0.068), 0.92, sd, i1, o1);
   }
-  float s1 = smoothstep(-0.10, 0.30, a)*(0.80 + 0.40*i1)*(0.90 + 0.18*clamp(o1.y*2.0 + 0.5, 0.0, 1.0));
+  /* (...and each spray LIT from above: its upper leaves take the sky, its
+     underside in the shade of the spray over it -- leaf hanging in tiers) */
+  float s1 = smoothstep(-0.10, 0.30, a)*(0.80 + 0.40*i1)*(0.74 + 0.46*clamp(o1.y*2.6 + 0.45, 0.0, 1.0));
   float s2 = 1.0, b = 0.0;
   if (l2 > 0.001) {
     b = yLobes(vec2(pw.x*0.80 + pw.y*0.60, -pw.x*0.60 + pw.y*0.80)/0.032, 0.95, sd + 7.3, i2, o2);
     s2 = smoothstep(-0.10, 0.28, b)*(0.82 + 0.36*i2);
   }
-  tone = massT * mix(0.84, 0.52 + 0.52*s1, l1) * mix(1.0, 0.70 + 0.38*s2, l2);
+  /* (round 41 graft, J2 on the Deck's fight: "the hedges go grey-milky" at
+     1280. Where the shoots are under a few pixels this was their tone's
+     fallback, 0.84 x 1.0 -- a stop over the drawn shoots' own mean -- so
+     the smaller the frame, the paler the yew. The fallback is their mean) */
+  tone = massT * mix(0.74, 0.52 + 0.52*s1, l1) * mix(0.92, 0.70 + 0.38*s2, l2);
   lit = clamp(0.30 + 4.0*rise0, 0.0, 1.0) * mix(0.8, 0.55 + 0.55*s1, l1);
   /* ROUND 34: THE LEAF MASS (both survey-5 judges: "flat noise-textured
      slabs"). Under the shoots a grown-out yew is clumps a stride across,

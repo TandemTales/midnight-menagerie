@@ -2925,7 +2925,9 @@ export const ROOM_KINDS = {
                /* (round 41: a ball-tree in its Versailles box, seed 7 -- the
                   tiered stand of discs it drew read as "stacked discs",
                   survey 5) */
-               { shape: 30, edge: 0.21, z: 2.6, tone: 0.95, seed: 7.0, fore: 1, keep: true }],
+               /* (round 41 graft, J2: ZIRCON's SPIRAL, seed 4.5, where it
+                  stood -- the court's nearest topiary a clipped corkscrew) */
+               { shape: 30, edge: 0.17, z: 3.6, tone: 0.95, seed: 4.5, fore: 1, keep: true }],
         /* (round 34 graft, VIVIANITE's: the lanterns' spill carried down the
            walk to your feet, and the moon on the near-left lawn -- at the
            wing's strengths, which the dark turf needs) */
