@@ -198,7 +198,7 @@ const SOCK_MAX = 33;
  *  the rail holds at 32-34 px (never under SOCK_FLOOR), a gap between each. */
 const POUCH_AT = 6;
 const POUCH_PEEK = 6;
-const SOCK_FLOOR = 30;
+const SOCK_FLOOR = 28;   // round 40: 30 -> 28, the third object a group before the 2 px
 /** Round 33 graft: the objects a pouched group shows beside its cartouche
  *  before the socket starts giving up pixels (all three judges: three). */
 const PEEK_WANT = 3;
@@ -756,6 +756,7 @@ export class HUD {
     this.$relics.textContent = '';
     this.$relics.dataset.folded = '0';
     this._keepChips = relics.map(keepsakeChip);
+    tintBelt(this._keepChips);
     this._keepKeys = relics.map((k) => keepsakeKey(k.id));
     /* ROUND 20 GRAFT: laid straight on the rail, the Keepsakes lead with
        their count and noun ("6 Keepsakes") exactly as their folded plate
@@ -781,6 +782,7 @@ export class HUD {
     this.$gear.dataset.folded = '0';
     this.$gear.hidden = !gear.length;
     this._gearChips = gear.map(gearChip);
+    tintBelt(this._gearChips);
     this._gearKeys = gear.map((g) => gearKey(String(g.icon || g.id || '').replace(/^gear\//, '')));
     this._gearLbl = null;
     this._arrange();
@@ -890,7 +892,7 @@ const POUCH_WORD = { keepsakes: ['Keepsake', 'Keepsakes'], gear: ['Gear', 'Gear'
  * still its own chip with its own tooltip, and the same node either way.
  */
 function layPouch(list, chips, pouched, peek, kind) {
-  if (!pouched) { layBelt(list, chips); return; }
+  if (!pouched) { for (const c of chips) c.querySelector(':scope > .mm-hud__peekmore')?.remove(); layBelt(list, chips); return; }
   const n = chips.length;
   const shown = chips.slice(0, peek), rest = chips.slice(peek);
   const [one, many] = POUCH_WORD[kind];
@@ -951,6 +953,19 @@ function layPouch(list, chips, pouched, peek, kind) {
         list.addEventListener('mouseleave', lift);
       });
     }
+  }
+  /* round 40: what the pouch still holds, struck as "+7" on the last object
+     shown -- the group reads as ten, not as three (survey 6, J2) */
+  for (const c of chips) c.querySelector(':scope > .mm-hud__peekmore')?.remove();
+  /* ...and then the cartouche says only what the group IS: its count is the
+     objects shown and the "+7" (its aria-label still says all ten) */
+  btn.classList.toggle('is-peeking', !!(rest.length && shown.length));
+  if (rest.length && shown.length) {
+    const more = document.createElement('b');
+    more.className = 'mm-hud__peekmore';
+    more.setAttribute('aria-hidden', 'true');
+    more.textContent = `+${rest.length}`;
+    shown[shown.length - 1].appendChild(more);
   }
   for (const c of shown) list.appendChild(c);
   list.setAttribute('role', 'list');
@@ -1087,10 +1102,34 @@ function isGear(k) {
 }
 
 /** One Keepsake: a warm, rarity-bordered square holding the relic's own sigil. */
+/* ROUND 40 -- EACH OBJECT ITS OWN RIM (survey 6, J2: "three sepia chips
+   about 22 px across at 1280, grey on grey with no rim colour, so the ten
+   Keepsakes cannot be told apart"). Every Keepsake and every piece of Gear
+   on the strip is set in a socket rimmed in one of the house's enamels --
+   gilt, verdigris, madder, indigo, violet, bone -- chosen by the object
+   itself, so two neighbours never wear one colour and each reads as its own
+   thing at a glance (ui/hud.css --tint). */
+const RIM_TINTS = ['#c99a4e', '#4f9a82', '#b4524a', '#4f7fb4', '#8a62c4', '#d8c8a2'];
+function rimTint(id, i) {
+  let h = 7;
+  for (const ch of String(id || '')) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
+  return RIM_TINTS[(h + i) % RIM_TINTS.length];
+}
+function tintBelt(chips) {
+  let prev = null;
+  chips.forEach((c, i) => {
+    let t = rimTint(c.dataset.tint || c.getAttribute('aria-label'), 0);
+    for (let k = 1; t === prev && k < RIM_TINTS.length; k++) t = rimTint(c.dataset.tint || c.getAttribute('aria-label'), k);
+    c.style.setProperty('--tint', t);
+    prev = t;
+  });
+}
+
 function keepsakeChip(k) {
   const chip = document.createElement('button');
   chip.type = 'button';
   chip.className = 'mm-hud__relic kit-beltsock';
+  chip.dataset.tint = k.id || k.name || '';
   chip.setAttribute('role', 'listitem');
   chip.dataset.rarity = k.rarity || 'common';
   chip.appendChild(keepsakePicture(k.id));
@@ -1153,6 +1192,7 @@ function gearChip(g) {
   chip.type = 'button';
   chip.className = 'mm-hud__gearchip kit-beltsock kit-beltsock--moon';
   chip.setAttribute('role', 'listitem');
+  chip.dataset.tint = 'gear/' + (g.id || g.icon || '');
   const icon = String(g.icon || g.id || '').replace(/^gear\//, '');
   chip.dataset.gear = icon;
   /* round 19: the item itself, painted (ui/objects.js), in the house's round
