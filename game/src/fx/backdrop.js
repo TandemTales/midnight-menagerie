@@ -870,6 +870,7 @@ export class Backdrop {
       /* the swimming bath's end wall, for its reflection (round 23, FLOOR_FRAG
          variant 2): the wall's z, the glazed screen's foot, head, half-width */
       uMirror: { value: new THREE.Vector4(0, 0, 0, 0) },
+      uMirror2: { value: new THREE.Vector4(0, 0, 0, 0) },   // (round 39 graft: the bath hall's side walls, FLOOR_FRAG)
       uSpan: { value: new THREE.Vector2(30, 34) },
       uDeep: { value: new THREE.Color(0x090711) },
       uMid: { value: new THREE.Color(0x1c1622) },
@@ -2923,6 +2924,10 @@ export class Backdrop {
          bathWallH sets them out; w = 1 lays them. FLOOR_FRAG, puddle.) */
       if (p.subject === 'baths') {
         f.uMirror.value.set(-(p.room?.d ?? 17), Math.min(5.8, this.wallMat.uniforms.uSize.value.x * 0.28), ceil, 1);
+        /* (round 39 graft, PERIDOT's wet tiles: and its side walls' bays --
+           their x and their front and back ends, as syncLights reads them) */
+        const sl = this._sideLen ?? (p.room?.d ?? 17), scz = this._sideCz ?? -(p.room?.d ?? 17) * 0.5;
+        f.uMirror2.value.set(this._sideX ?? (p.room?.w ?? 21) / 2, scz + sl / 2, scz - sl / 2, 0);
       } else {
         f.uMirror.value.set(0, 0, 0, 0);
       }
