@@ -4689,3 +4689,11 @@ html .cb-endturn__hint { font-size: 12px; }
 .kit-cards .mm-card[data-rarity][data-type][data-uid] .mm-card__type {
   font-size: calc(max(12.2 / var(--cpx, 1), min(var(--type-u), 176 / (var(--type-em, 6) + 1.9))) * var(--u));
 }
+
+/* ── ROUND 40 GRAFT: a plate keeps to one or two lines (IOLITE's) ──
+   ui/hang.js settlePlate: a name that wraps at its plate's width drops the
+   epithet (.kit-hang--terse); one that still runs to three lines sets a
+   point closer (.kit-hang--tight) -- never under the 12 px floor. */
+.kit-hang--terse .kit-hang__plate > em { display: none; }
+.kit-hang--tight .kit-hang__plate > b { font-size: 12px; letter-spacing: 0; }
+.kit-hang--tight .kit-hang__plate { padding-inline: 14px; }
