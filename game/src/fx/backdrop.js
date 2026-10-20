@@ -918,6 +918,10 @@ export class Backdrop {
       uCrisp: { value: 0 },
       /* straw on the kennels' flags (round 28 graft, NAPLES's): pal.straw */
       uStraw: { value: 0 },
+      /* (round 41 graft: the kennel range's doghouses -- floor-local x and y
+         of each one's foot, its half-width, 1 where it is -- for the straw
+         heaped against their footings; read by MM_RUGK 6 only) */
+      uKnFoot: { value: v4arr(6) },
       /* the passage's sconce pools (round 28 graft): see FLOOR_FRAG and build */
       uSconce: { value: new THREE.Vector4(0, 0, 0, 0) }, uSconceEnd: { value: -20 },
       /* the moon on the Pumpkin Grounds' flags and in its pond (graft) */
@@ -2620,6 +2624,20 @@ export class Backdrop {
     }
     this.pools.sort((a, b) => b.i - a.i);
     this._writePools();
+    /* (round 41 graft, all three judges: the straw "in crisp inked clumps
+       against the doghouse footings with bare flags between" -- the nearest
+       six doghouses' feet, in the floor's own metres, for FLOOR_FRAG's
+       MM_RUGK 6; every other floor's program does not declare it) */
+    {
+      const kf = this.floorMat.uniforms.uKnFoot.value;
+      const dh = (pal.floorK === 6 && this.placed)
+        ? this.placed.filter((p) => p.shape === 39 && !p.hang).sort((a, b) => b.z - a.z) : [];
+      for (let i = 0; i < kf.length; i++) {
+        const p = dh[i];
+        if (!p) { kf[i].set(0, 0, 0, 0); continue; }
+        kf[i].set(p.x, -(p.z - this._floorCz), p.w * 0.33, 1);
+      }
+    }
 
     this.wallMat.uniforms.uSeed.value = 1 + rand() * 9;
     this.floorMat.uniforms.uSeed.value = 1 + rand() * 9;

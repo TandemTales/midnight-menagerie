@@ -1670,7 +1670,9 @@ export const REGIONS = {
     key:  { glow: 0, kind: 'warm', x: -3.4, y: 2.6, z: 2.0, color: '#e5b57e', intensity: 1.67, radius: 6.45 },
     /* (round 28: the cold fill 7.45 -> 4.4 -- at 7.45 it was what lifted
        the wash room's right-hand flags to a milky blue-grey) */
-    fill: { glow: 0, kind: 'cold', x: 5.0, y: 2.2, z: 1.2, color: '#7f9fb8', intensity: 4.4, radius: 7.5, flicker: false },
+    /* (round 41 graft, ZIRCON's: and 4.4 -> 3.3 -- J3 on the wash house:
+       "the right half cold milky blue"; "dark, not milky") */
+    fill: { glow: 0, kind: 'cold', x: 5.0, y: 2.2, z: 1.2, color: '#7f9fb8', intensity: 3.3, radius: 7.5, flicker: false },
     lights: [
       /* (round 23: the range's lanterns light its stalls -- they were 0.78
          and 0.75 against a cold 3.23, and the cold one alone lit the back
@@ -3083,7 +3085,13 @@ export const ROOM_KINDS = {
                      /* (round 34: the near floor -- a dog's bed waiting by
                         the door at the left, the grooming table at your
                         right, in the straw) */
-                     { shape: 40, edge: 0.14, z: 2.2, tone: 0.95, fore: 1, keep: true, scale: 1.1 }] }],
+                     /* (round 41 graft, ZIRCON's: in from the frame's edge,
+                        0.14 -> 0.32 -- cut by it the bed read as a fragment) */
+                     { shape: 40, edge: 0.32, z: 2.2, tone: 0.95, fore: 1, keep: true, scale: 1.1 }],
+              /* (round 41 graft, J3: the wash house's "near-left corner pure
+                 black" -- the range lantern's pool carried to the near left,
+                 where the dog's bed waits by the door) */
+              nearFloor: { pool: { ahead: 3.2, across: -2.0, abs: true, rAlong: 3.0, rAcross: 2.6, k: 4.0, color: '#e2a862' } } }],
                      /* (round 34 graft, J2: the grooming table at your right
                         is gone -- cut by the frame it read as an easel) */
     names: [

@@ -14097,6 +14097,9 @@ uniform float uNearClean;
    long bones and fallen rubble. Zero in every other room. */
 uniform vec4  uLitter;
 uniform float uLitterK;
+#if MM_RUGK == 6
+uniform vec4  uKnFoot[6];      // (round 41 graft: the doghouses' feet -- floor-local x, y, half-width, on)
+#endif
 /* THE PASSAGES' OPEN DOORS (round 22 graft): each slit's world xz and the
    unit direction into the room (uWedge), how strong its wedge of lamplight
    is (uWedgeK, 0 = none); and uCrisp, the passages' boards drawn crisp
@@ -15532,18 +15535,37 @@ void main(){
     float bank = smoothstep(2.6, 0.4, backD);
     /* the drifts: long, dragged out across the range, a slow field */
     vec2 dw = vec2(w.x*0.62 + 0.25*w.y, w.y*1.05);
-    float m = mmNoise(dw*0.70 + 5.3)*0.80 + 0.10;
-    m += 0.30*bank - 0.06*(1.0 - bank)*smoothstep(2.5, 5.5, backD);
+    /* (round 41 graft, all three judges: "straw in crisp inked clumps
+       against the doghouse footings with bare flags between (ZIRCON's
+       scale, not a scribble texture)". The bank along the stall fronts
+       stays, broken; the dragged drifts across the open floor go -- it is
+       swept -- and each doghouse has its straw pulled out over its sill and
+       heaped against its footing, a clump a stride across) */
+    float nS = mmNoise(dw*0.70 + 5.3);
+    float m = 0.20 + 0.30*nS + 0.34*bank;
+    float kh = -1.0, kY = 0.0;
+    for (int i = 0; i < 6; i++){
+      vec4 K = uKnFoot[i];
+      vec2 dk = vec2(w.x - K.x, w.y - K.y + 0.38)/vec2(K.z + 0.10, 0.42);
+      float e = (1.0 - length(dk))*K.w - (1.0 - K.w);
+      if (e > kh) { kh = e; kY = dk.y; }
+    }
+    /* (lumped: its outline broken at a stride's scale, never an oval mat) */
+    float nL = mmNoise(w*2.6 + 1.3);
+    m = max(m, 0.44 + 0.40*kh + 0.20*(nL - 0.5));
     /* its edge broken at a stalk's scale, never a ruled outline */
     float frz = (mmNoise(w*13.0 + 2.1) - 0.5)*0.070*smoothstep(0.06, 0.012, mp);
     float mE = m + frz;
     float body = smoothstep(0.530, 0.555, mE)*uStraw;
     float rim  = smoothstep(0.47, 0.530, mE)*(1.0 - body)*uStraw;
+    float footInk = mmInk(mE - 0.535, 1.3);              // (round 41 graft: its pen line, taken where every quad is)
     if (body + rim > 0.001) {
       float ht = smoothstep(0.55, 0.80, m);               // how high the drift stands
-      /* its slope toward the lamps over the stalls: one tap further back */
-      float mB = mmNoise((dw + vec2(0.0, 0.16))*0.70 + 5.3)*0.80 + 0.10 + 0.34*smoothstep(2.6, 0.4, backD - 0.16);
-      float lit = clamp(0.55 + (mB - m)*7.0, 0.0, 1.0);
+      /* (round 41 graft: a heap is a MOUND -- its crown takes the lamps,
+         its foot lies in its own shade; no second tap) */
+      /* (...the lamps are over the stalls behind it: its back slope and
+         crown lit, the slope toward you in its own shade) */
+      float lit = clamp(0.25 + (m - 0.53)*2.6 + 0.35*clamp(kY, -1.0, 1.0)*step(0.0, kh), 0.0, 1.0);
       /* the stalks matted in it, packed every way, two layers */
       float stk = 0.0, stT = 0.0;
       if (sRes > 0.001) {
@@ -15567,22 +15589,22 @@ void main(){
       }
       float Lm = mmLum(uMid);
       /* old straw: a dull gold going to dun, not a lemon yellow */
-      vec3 hay = vec3(Lm)*vec3(3.30, 2.60, 1.55)*uStraw;
+      vec3 hay = vec3(Lm)*vec3(3.30, 2.60, 1.55)*uStraw*1.55;   // (round 41 graft: a heap a stop over the flags it lies on)
       vec3 hayD = hay*0.58*vec3(0.95, 0.88, 0.80);
       /* lit on its crown, its flank in its own shade only at the very edge */
       float flank = smoothstep(0.540, 0.600, mE);
-      vec3 mass = mix(hayD, hay*(0.62 + 0.55*lit)*(0.88 + 0.24*ht), flank);
+      vec3 mass = mix(hayD, hay*(0.55 + 0.80*lit)*(0.88 + 0.24*ht), flank);
       /* (the gaps between the stalks are the straw's own deeper gold, not
          the floor: a mass, not a scatter) */
-      mass *= 0.84 + 0.36*stk*(0.6 + 0.4*stT) - 0.10*(1.0 - stk)*sRes;
+      mass *= 0.90 + 0.18*stk*(0.6 + 0.4*stT) - 0.06*(1.0 - stk)*sRes;   // (round 41 graft: the stalks a texture of the mass, not a scribble)
       mass = mix(mass, mass*vec3(1.10, 1.02, 0.86), 0.5*stT*stk);
       alb = mix(alb, mass, body*0.96);
       /* the rim: loose stalks lying out from it on the stone, and its shade */
       alb *= 1.0 - 0.40*rim*(1.0 - stk*0.6);
-      alb = mix(alb, hay*(0.70 + 0.40*stT), rim*stk*0.80);
-      /* (the ink's line round a drift's foot -- its contact with the flags) */
-      float foot = (1.0 - smoothstep(0.0, 0.020, abs(mE - 0.535)))*sRes;
-      alb *= 1.0 - 0.30*foot*(1.0 - stk);
+      alb = mix(alb, hay*(0.70 + 0.40*stT), rim*stk*0.45);
+      /* (the ink's line round a drift's foot -- its contact with the flags;
+         round 41 graft: a pen line, crisp, a pixel and more) */
+      alb *= 1.0 - 0.65*footInk*(1.0 - 0.5*stk);
     } else if (sRes > 0.001) {
       /* the swept floor: a stalk dropped here and there, one in thirty cells */
       vec2 cs = w/0.34;
@@ -15727,19 +15749,30 @@ void main(){
       vec2 tf = abs(fract(tq) - 0.5)*0.23;
       float gA = max(mp*1.2, 0.003);
       float gro = (1.0 - smoothstep(0.006, 0.006 + gA, min(0.115 - tf.x, 0.115 - tf.y)))*mmLod(0.23, mp);
-      vec3 quarry = vec3(0.44, 0.19, 0.12)*(0.72 + 0.42*tv);
-      quarry = mix(quarry, vec3(0.30, 0.25, 0.22), step(0.86, tv)*0.6);   // (a replaced one, grey)
-      quarry = mix(vec3(0.38, 0.18, 0.12), quarry, mmLod(0.23, mp));
-      quarry = mix(quarry, vec3(0.10, 0.08, 0.07), gro*0.85);
-      alb = quarry*(Lw/0.22)*1.05;
+      /* (round 41 graft, all three judges: "a hard regular grid that goes
+         orange and stair-steps". The tile MUTED and wet-dark -- an old
+         quarry's brown-red gone to the floor's own dun -- and the grout WORN:
+         scrubbed out to a pale line in places, filled dark with the yard's
+         dirt in others, never one ruled grid) */
+      vec3 quarry = vec3(0.33, 0.20, 0.15)*(0.72 + 0.34*tv);
+      quarry = mix(quarry, vec3(0.27, 0.24, 0.21), step(0.86, tv)*0.6);   // (a replaced one, grey)
+      quarry = mix(vec3(0.30, 0.20, 0.16), quarry, mmLod(0.23, mp));
+      float gw2 = mmNoise(vWorld.xz*1.7 + 4.4);
+      quarry = mix(quarry, mix(vec3(0.07, 0.06, 0.05), vec3(0.26, 0.23, 0.20), smoothstep(0.62, 0.80, gw2)), gro*mix(0.85, 0.45, smoothstep(0.30, 0.10, gw2)));
+      alb = quarry*(Lw/0.22)*0.92;
       Lw = mmLum(alb);
     }
     float pf = mmNoise(w*0.42 + 3.1)*0.78 + 0.22*mmNoise(w*1.6 + 8.0);
     float wet = mmCover(pf - 0.68);
     float men = 1.0 - smoothstep(0.0, 1.5, abs(pf - 0.68)/max(length(vec2(dFdx(pf), dFdy(pf))), 1e-5));
-    alb = mix(alb, alb*vec3(0.26, 0.31, 0.38), wet*0.90);
+    /* (round 41 graft, J1: "big soft black blotches". Standing water is the
+       tile darkened, not a hole: a stop under it, the tiles' joints still
+       showing through, its edge drawn -- a dark pen line where it meets
+       the dry tile, the meniscus lit just inside it) */
+    alb = mix(alb, alb*vec3(0.56, 0.58, 0.62), wet*0.85);
     r41Wet = wet;
-    alb = mix(alb, alb*1.8 + vec3(0.004, 0.005, 0.006), men*0.55);
+    alb *= 1.0 - 0.55*mmInk(pf - 0.675, 1.2);
+    alb = mix(alb, alb*1.6 + vec3(0.003, 0.004, 0.005), men*wet*0.50);
     /* the gutter: a dished channel 0.24 m wide, its two lips inked, its
        floor wet and dark with a streak of the lamps down it */
     float gz = vWorld.z - 0.9 - 0.12*sin(vWorld.x*0.25);
@@ -21902,6 +21935,20 @@ float wgKnSideD(vec2 k){
 float wgKnRoofS(vec2 k){
   return wgQuad(k, vec2(0.76, 0.81), vec2(1.04, 0.908), vec2(0.28, 1.408), vec2(0.0, 1.31));
 }
+/* (round 41 graft, all three judges: "straw in crisp inked clumps against
+   the doghouse footings with bare flags between". The bedding dragged out
+   over the sill and HEAPED against the kennel's foot: a lumped mound wider
+   than the door, its top tufted, standing on the flags in front of the
+   skid -- part of the kennel's own drawing, so it has its silhouette and
+   its pen line where a straw decal on the floor read as a mat) */
+float wgKnStraw(vec2 k){
+  float x = k.x - 0.04;
+  float top = 0.10 + 0.11*exp(-x*x/0.07) + 0.06*exp(-(x + 0.40)*(x + 0.40)/0.02)
+            + 0.024*sin(x*23.0 + 1.7) + 0.014*sin(x*61.0 + 0.4);
+  float hw = 0.64;
+  float e = clamp(abs(x)/hw, 0.0, 1.0);
+  return max(max(k.y - top*sqrt(1.0 - e*e), abs(x) - hw), -k.y);
+}
 float wgKnSD(vec2 q){
   vec2 k = q - vec2(-0.16, 0.0);
   float body = mmBox(k - vec2(0.0, 0.470), vec2(0.600, 0.385), 0.008);
@@ -21909,7 +21956,7 @@ float wgKnSD(vec2 q){
   float roof = wgTri(k - vec2(0.0, 0.810), 0.760, 0.500);
   float bowl = min(wgEll(q - vec2(0.78, 0.075), vec2(0.150, 0.045)),
                    mmBox(q - vec2(0.78, 0.040), vec2(0.128, 0.040), 0.012));
-  return min(min(min(body, skid), min(roof, bowl)), min(wgKnSideD(k), wgKnRoofS(k)));
+  return min(min(min(min(body, skid), min(roof, bowl)), min(wgKnSideD(k), wgKnRoofS(k))), wgKnStraw(k));
 }
 
 /* ── ROUND 41 (AMETHYST): THE KENNEL MAN'S CORNER (the basket's quad, 40,
@@ -22868,6 +22915,20 @@ vec3 wgPaint(vec2 m, vec2 msz, float shape, float seed, float px, float lum,
     vec3 straw = vec3(0.80, 0.64, 0.30)*E*1.45*(0.65 + 0.45*smoothstep(0.5, 0.1, strand));
     col = mix(col, straw, onS);
     ink = max(ink, onS*smoothstep(0.30, 0.48, strand)*0.35);
+    /* (round 41 graft: ...and HEAPED against the foot, wgKnStraw: an old
+       straw's dull gold, its crown lit by the lamps over the run and its
+       foot in its own shade, its stalks a texture of the mass, inked round) */
+    {
+      float smD = wgKnStraw(k);
+      float onM = clamp(0.5 - smD/qpx, 0.0, 1.0);
+      float sx2 = k.x*42.0;
+      float strand2 = abs(fract(sx2 + 0.5*sin(k.y*70.0 + floor(sx2)*1.7)) - 0.5);
+      float hN = clamp(k.y/0.20, 0.0, 1.0);
+      vec3 sc = vec3(0.80, 0.63, 0.30)*E*1.65*(0.42 + 0.90*hN)*(0.78 + 0.30*smoothstep(0.5, 0.1, strand2));
+      col = mix(col, sc, onM);
+      ink = max(ink, mmInkP(smD, qpx, 1.3)*0.95);
+      ink = max(ink, onM*smoothstep(0.32, 0.48, strand2)*0.28*mmLod(1.0/42.0, qpx));
+    }
     /* ...and whose kennel it is: its dog, asleep on its paws in the door */
     float dg = mmHash11(seed*4.9 + 1.7);
     if (dg < 0.55) {
