@@ -217,9 +217,9 @@ export const TUNE = {
      the card before its stack and covered the end of that card's name ("Put
      Yourself Back Togeth", "Put Yoursel"). There the copies rise straight
      up behind the top and lean RIGHT, into the place the next card covers. */
-  shelfStackDy: 8,
-  shelfStackDx: -3,
-  shelfStackRot: -2.6,
+  shelfStackDy: 6,
+  shelfStackDx: -4,
+  shelfStackRot: -4.4,
   /* ROUND 40: A STACKED HAND STAYS ON ITS SHELF. Survey 6, both judges: at
      nine Tricks with three Sit Pretty and three Bites stacked, the fan ran
      from x=260 to x=1060 at the Deck's 1280 and climbed to y=560, over the
@@ -245,6 +245,11 @@ export const TUNE = {
      seven-eighths); it stays NARROW (places shoulder to shoulder, copies
      stacked) and LOW (stackBottomPad) as round 40 asked. */
   stackFit: 1,
+  /* THE ROUND 40 REPAIR, PART 2: the places stand APART again (survey 6's
+     "real gaps and a tilt"; `spreadAir`, Hand#_fan). Where the band cannot
+     hold that gap at a whole card (the Deck's 1280), the card gives up at
+     most 6 % (this, its own rehearsed raster scale) before the gap closes. */
+  stackFitTight: 0.94,
   stackBottomPad: 6,
   stackPlateU: 188,     // graft: the name plate's measure for nameLadder (see Hand#_layout)
   stackTabClear: 5,     // graft: u the rules stand below the type tab (hand.css)
@@ -715,8 +720,21 @@ export class Hand {
     // all four of which `warmRaster()` rehearses on scene entry. Measured:
     // 45.9 fps -> 60.3 fps on the same action.
     s = Math.floor(clamp(s, TUNE.minFit, 1) * TUNE.fitSteps) / TUNE.fitSteps;
-    if (stackCap) s = Math.min(s, stackCap);
+    if (stackCap) {
+      s = Math.min(s, stackCap);
+      if (n <= TUNE.spreadMax && s >= stackCap && !this._shelfAirs(n, s)) s = TUNE.stackFitTight;
+    }
     return clamp(s, TUNE.minFit, 1);
+  }
+
+  /** Part 2 of the round 40 repair: does the band hold `n` stacked places at
+   *  scale `s` with an open hand's air between them (`spreadAir`), at the
+   *  fan's own bend? */
+  _shelfAirs(n, s) {
+    const th = this._fanTh(n), cw = this.cw * s, ch = this.chh * s;
+    const [bl, br] = this._band(n, s);
+    return (br - bl) - 2 * this._overhangAt(th, cw, ch) + 0.5
+      >= (n - 1) * (this._clearStep(cw, th) + cw * TUNE.spreadAir);
   }
 
   /** Every fit scale this hand can produce at the current viewport. */
@@ -724,7 +742,8 @@ export class Hand {
     const out = [];
     for (let q = TUNE.fitSteps; q >= Math.round(TUNE.minFit * TUNE.fitSteps); q--) out.push(q / TUNE.fitSteps);
     // round 40 graft: the stacked hand's own size, between two eighths
-    if (!out.includes(TUNE.stackFit)) { out.push(TUNE.stackFit); out.sort((a, b) => b - a); }
+    for (const k of [TUNE.stackFit, TUNE.stackFitTight]) if (!out.includes(k)) out.push(k);
+    out.sort((a, b) => b - a);
     return out;
   }
 
@@ -1257,8 +1276,13 @@ export class Hand {
        behaviour exactly, which is why nothing at n >= 8 moves. */
     let th = this._fanTh(n);
     // round 40: a stacked hand of eight or more bends as little as the crowded
-    // hand it stands in for -- its words are read off it, not tilted away
-    if (this._bounded() && total > n && total >= 8) th = Math.min(th, TUNE.crowdFanDeg * Math.PI / 180);
+    // hand it stands in for -- its words are read off it, not tilted away.
+    // THE ROUND 40 REPAIR, PART 2 (survey 6's paired test, both judges: its
+    // hand "fans the cards apart with real gaps and a tilt ... so the hand
+    // reads as cards held in a hand", where the shelf's "butt edge to edge in
+    // a flat row"): only a stack whose PLACES crowd (past `spreadMax`) bends
+    // that little; five or six places fan at survey 6's bend
+    if (this._bounded() && total > n && total >= 8 && n > T.spreadMax) th = Math.min(th, TUNE.crowdFanDeg * Math.PI / 180);
     const roomFor = (t) => (band - 2 * this._overhangAt(t, cw, ch)) / (n - 1);
     if (n > 1 && n <= T.spreadMax
         && roomFor(th) < this._clearStep(cw, th)
@@ -1273,8 +1297,10 @@ export class Hand {
     f.rotPer = c ? th * 180 / Math.PI / c : 0;
     f.overhang = this._overhangAt(th, cw, ch);
     if (n > 1) {
-      // round 40: a hand that stacks its copies takes no air between its places
-      const want = this._clearStep(cw, th) + (n <= T.spreadMax && total <= n ? cw * T.spreadAir : 0);
+      // round 40 took the air from a hand that stacks its copies; the repair's
+      // part 2 gives it back (survey 6's "real gaps"): its places stand apart
+      // as an open hand's do, the band allowing
+      const want = this._clearStep(cw, th) + (n <= T.spreadMax ? cw * T.spreadAir : 0);
       f.step = Math.max(8, Math.min(Math.max(want, cw * T.stepRatio), roomFor(th)));
     } else f.step = 0;
 
@@ -1648,7 +1674,12 @@ export class Hand {
             if (r <= T.riseMax && (!ladder.length || roomy <= 109 - r)) { rise = r; break; }
             rise = Math.min(r, T.riseMax);
           }
-          for (const o of ladder) if (plateOf(o) <= 109 - rise && (!pick || o.f > pick.f)) pick = o;
+          // (part 2 of the repair: a name on two lines before a larger one on
+          // three -- "Put Yourself Back Together" keeps its art's window at
+          // the 1280 shelf's 94 % card)
+          const fits = ladder.filter(o => plateOf(o) <= 109 - rise);
+          const two = fits.filter(o => o.n <= 2);
+          for (const o of (two.length ? two : fits)) if (!pick || o.f > pick.f) pick = o;
           if (!pick && ladder.length) {
             pick = ladder.reduce((a, o) => (plateOf(o) < plateOf(a) ? o : a));
             rise = Math.max(0, Math.min(rise, Math.floor(109 - plateOf(pick))));
