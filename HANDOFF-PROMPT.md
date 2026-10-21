@@ -210,6 +210,11 @@ dimmed or muted surface -- brief removals as RICHER replacements.** NOW:
 **THE REPAIR** (`REPAIR-r41.md`, worktree C:/UILOOP/r41/repair/wt,
 fix/r41-repair) -- verify it PAIRED vs survey 7, merge, then ROUND 43 (the
 Hedge's walls and lawn, Attic, Crypt, Bathhouse, the reused diamond rug).
+**THE REPAIR IS MERGED, VERIFIED AND PUSHED (2026-10-21, `ca732d7d`):** paired
+20 of 20 contested pairs vs surveys 7 and 8; map, steam-deck, gamepad, chrome,
+the three region gates, link-queue, seam green on dev. **NOW: ROUND 43.**
+(Two idle devservers on :9211 / :9212 date from 10-15 -- not started by this
+session's work today; left running.)
 
 **ROUND 33 AND ITS GRAFT ARE MERGED, VERIFIED AND PUSHED (2026-10-16):**
 graft `9d008119`. COBALT +1.59 (`531126e4`): no running line under 11 px at
