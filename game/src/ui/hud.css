@@ -1158,3 +1158,44 @@
   .mm-hud[data-belt="pouch"] .mm-hud__chip:is(.mm-hud__seed, .mm-hud__haunt) .mm-hud__w { letter-spacing: .04em; }
   .mm-hud[data-belt="pouch"] .kit-beltpouch--cart > .kit-beltpouch__txt { padding-right: calc(var(--cart-h) * .22); }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ROUND 42 — THE "+N" A STUB OF ITS OWN; THE COUNT CLEAR OF ITS CAP
+   Survey 7 (hud-late at 1280): "the +8 / +5 badges sit on top of the last
+   icon and cover it" (J1); "show two tokens and let the +N be its own
+   engraved stub" (J2); "KEEPSAKES 10" touched its cartouche's end cap.
+   The "+N" is a short plate sunk in the rail after the objects shown (the
+   rail's own engraved well, hw-rail-well.webp), lettered in gilt; the
+   cartouche's count stands clear of its scrolled end.
+   ═══════════════════════════════════════════════════════════════════════════ */
+.mm-hud .mm-hud__peekmore.mm-hud__peekmore--stub {
+  position: relative; inset: auto; right: auto; top: auto; bottom: auto; z-index: 1;
+  flex: none; align-self: center;
+  display: inline-grid; place-items: center;
+  min-width: 0; height: calc(var(--sock, 32px) * .74);
+  margin: 0 2px 0 1px; padding: 1px 6px 0;
+  border-radius: 0;
+  border: 0 solid transparent;
+  border-image: url("../../assets/ui/kit/hw-rail-well.webp") 14 fill / 7px stretch;
+  background: none; box-shadow: none;
+  font-family: var(--font-num); font-weight: 700; font-size: 13px; letter-spacing: .02em;
+  color: var(--kit-gold-hi);
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, .9), 0 1px 0 rgba(230, 200, 140, .18);
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, .7));
+}
+.mm-hud .kit-beltpouch--cart > .kit-beltpouch__txt { padding-right: calc(var(--cart-h) * .4); }
+@media (max-width: 1400px) {
+  .mm-hud[data-belt="pouch"] .kit-beltpouch--cart > .kit-beltpouch__txt { padding-right: calc(var(--cart-h) * .3); }
+  .mm-hud .mm-hud__peekmore.mm-hud__peekmore--stub { padding-inline: 4px 3px; margin-inline: -1px 0; font-size: 12.5px; letter-spacing: 0; }
+}
+/* the count clear of the cartouche's scrolled ends: the ends drawn a little
+   slimmer and the lettering held inside them (the curl reached 13 px into a
+   7 px padding, under the K and the 10) */
+.mm-hud .kit-beltpouch--cart > .kit-beltpouch__txt { border-image-width: 6px 10.5px; padding-inline: 11px 11px; }
+@media (min-width: 1401px) { .mm-hud .kit-beltpouch--cart > .kit-beltpouch__txt { border-image-width: 7px 12px; padding-inline: 13px 13px; } }
+@media (max-width: 1400px) {
+  .mm-hud .kit-beltpouch--cart > .kit-beltpouch__txt { padding-inline: 10px 10px; }
+  .mm-hud[data-belt="pouch"] .kit-beltpouch--cart .kit-beltpouch__label { letter-spacing: 0; }
+  .mm-hud[data-belt="pouch"] .kit-beltpouch--cart .kit-beltpouch__n { margin-left: .28em; }
+  .mm-hud .mm-hud__peekmore.mm-hud__peekmore--stub { padding-inline: 3px 2px; }
+}
