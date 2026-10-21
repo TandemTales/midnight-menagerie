@@ -14095,14 +14095,14 @@ void main(){
       float vu = clamp(abs(vwx)/max(uVault.y, 0.5), 0.0, 1.0);
       float vy = uCeil + uVault.x*sqrt(max(1.0 - vu*vu, 0.0));
       float inL = step(abs(vwx), uVault.y)*step(uCeil - 0.10, q.y);
-      crush = mix(crush, mix(0.95, 0.42, smoothstep(uCeil, uCeil + uVault.x, q.y)), inL);
+      crush = mix(crush, mix(0.95, 0.66, smoothstep(uCeil, uCeil + uVault.x, q.y)), inL);   // (round 43 graft: 0.42 -> 0.66, the lunette under the crown not a black lid)
       float dv = (vy - q.y)*(0.35 + 0.65*sqrt(max(1.0 - vu*vu, 0.0)));
       vRib = inL*(1.0 - smoothstep(0.30, 0.30 + vpx*1.5, dv))*step(-0.05, dv);
       float vs = fract(atan(q.y - uCeil, vwx/max(uVault.y, 0.5)*uVault.x)/3.14159*14.0);
       float vJ = 1.0 - smoothstep(0.0, vpx*1.4/0.30, min(vs, 1.0 - vs)*0.30);
       /* the candles below reach it: the lunette's stone warm at its foot,
          going into the dark toward the crown */
-      col += alb*vec3(1.00, 0.68, 0.40)*uGain*0.16*inL*(1.0 - 0.75*smoothstep(uCeil, uCeil + uVault.x, q.y))*(1.0 + 0.8*vRib);
+      col += alb*vec3(1.00, 0.68, 0.40)*uGain*0.34*inL*(1.0 - 0.60*smoothstep(uCeil, uCeil + uVault.x, q.y))*(1.0 + 0.8*vRib);
       col = mix(col, col*1.0 + vec3(0.020, 0.018, 0.015)*uGain, vRib);
       col *= 1.0 - 0.55*vRib*vJ;
       col *= 1.0 - 0.70*inL*(1.0 - smoothstep(0.0, vpx*1.6, abs(dv - 0.30)));
@@ -14371,7 +14371,7 @@ varying vec3  vWorld;
    with links and runs exactly what it did. */
 float mmRowX(float x, float period){ return abs(mod(x, period) - period*0.5); }
 #endif
-#if MM_FLAGK == 2
+#if MM_FLAGK == 2 || MM_FLAGK == 3
 /* ROUND 43 (CUPRITE): THE CRYPT'S OPEN GRAVES. Both survey-8 judges: "the
    two skeletons mid-floor are cardboard half-dome cutouts"; "redraw the
    skeleton niches as sunken graves with stone kerbs and depth". A grave is
@@ -14387,7 +14387,7 @@ float mmRowX(float x, float period){ return abs(mod(x, period) - period*0.5); }
    extents across the room (x) and along it (z); none where z is 0. The
    wing's floor alone (pal.flagK 2) carries it. */
 uniform vec4 uGrave[2];
-float gGrv = 0.0;        // how much of this pixel is the inside of a grave
+float gGrvCov = 0.0;     // how much of this pixel is a grave's kerb, its cist or a slab (round 43 graft)
 float gGrvK = 1.0;       // and how much of the room's light reaches it there
 float gGrvGlow = 0.0;    // and the candles at its head, on the flags round it
 float grvSeg(vec2 p, vec2 a, vec2 b, float r){
@@ -14440,21 +14440,109 @@ float grvSkel(vec2 b, float sd, float px, out float hole){
   return s;
 }
 /* the grave at one pixel of the floor: the kerb's and the cist's albedo laid
-   over alb, gGrv and gGrvK set for the light below */
+   over alb, gGrvCov and gGrvK set for the light below.
+   ROUND 43 GRAFT. Three judges on CUPRITE's sheet: the kerbs "glow an even
+   cream like lightboxes" / "a flat emissive yellow strip". So the kerb is
+   BUILT, a hand proud of the flags (ZINCITE's and BENITOITE's traced kerbs):
+   the eye's ray through this pixel crosses the kerb's top at Qxz before it
+   reaches the floor at P, so a pixel is the kerb's lit TOP where Q is over
+   it, its outer FACE toward you where Q is short of it and P inside it, the
+   far kerb's dark INNER face where Q is over the mouth and P past it, and
+   the cist where both are in the mouth -- dressed stone a step over the
+   flags, lit by the candles at the head, never a light of its own. The
+   graves lie ALONG the room now, head to the far end (ZINCITE's and
+   BENITOITE's), so a standing eye sees down into them and the stones at
+   their heads stand clear of the fight's lane. MM_FLAGK 3 (the ossuary)
+   fills its pits with bones instead of laying one dead in each. And
+   uGrvSlab, BENITOITE's: a grave's ledger slid off and lying askew on the
+   flags beside it, a cross cut in it -- its world x and z, its turn, 1
+   where there is one (a position, like uGrave's). */
+uniform vec4 uGrvSlab;
+float grvHeap(vec2 h, float px, out float shade){
+  /* the ossuary's pits: bones heaped to a hand under the kerb -- skulls and
+     long bones every way, each round in its own light, the dark between
+     them; two by two cells so a bone may cross its cell's edge */
+  const float C = 0.17;
+  float d = 1e3;
+  shade = 0.0;
+  vec2 g = h/C - 0.5;
+  vec2 b0 = floor(g);
+  for (int j = 0; j < 4; j++){
+    vec2 c = b0 + vec2(mod(float(j), 2.0), floor(float(j)*0.5));
+    vec2 rh = mmHash22(c + 3.1);
+    vec2 o = (c + 0.5 + (rh - 0.5)*0.55)*C;
+    vec2 p = h - o;
+    float k;
+    if (rh.x < 0.50) {
+      /* a skull, face up or turned, its two sockets */
+      k = length(p/vec2(1.0, 0.86)) - 0.062;
+      float sk = min(length(p - vec2(-0.022, 0.012)), length(p - vec2(0.022, 0.012))) - 0.014;
+      shade = max(shade, clamp(0.5 - sk/max(px, 1e-4), 0.0, 1.0)*step(k, 0.0));
+    } else {
+      float an = rh.y*6.2832;
+      vec2 dr = vec2(cos(an), sin(an))*0.13;
+      k = grvBone(p, -dr, dr, 0.020);
+    }
+    d = min(d, k);
+  }
+  return d;
+}
 vec3 grvFloor(vec3 alb, vec3 P, float mp){
   float aa = max(mp, 0.004);
   float Lst = mmLum(alb) + 0.02;
   const float KB = 0.15;             // the kerb's width
-  const float D = 0.21;              // the cist's walls, to the earth that has sunk in it
+  const float KH = 0.075;            // and its height over the flags
+#if MM_FLAGK == 3
+  const float D = 0.13;              // (the ossuary's pits heaped nearly to the kerb)
+#else
+  const float D = 0.19;              // the cist's walls, to the earth that has sunk in it
+#endif
+  float camH = max(uCamera.y, 0.5);
   /* the candles stood at each one's head (wfBones) light the flags round it,
      the kerb and the far wall of the cist: a pool a stride and a half wide,
-     its heart on the ledger's foot */
+     its heart on the stone's foot */
   vec2 l0 = P.xz - uGrave[0].xy, l1 = P.xz - uGrave[1].xy;
-  vec2 c0 = (l0 - vec2(0.0, -uGrave[0].w - 0.30))/vec2(1.55, 1.10);
-  vec2 c1 = (l1 - vec2(0.0, -uGrave[1].w - 0.30))/vec2(1.55, 1.10);
+  vec2 c0 = (l0 - vec2(0.0, -uGrave[0].w - 0.30))/vec2(1.40, 1.10);
+  vec2 c1 = (l1 - vec2(0.0, -uGrave[1].w - 0.30))/vec2(1.40, 1.10);
   float r0 = dot(c0, c0), r1 = dot(c1, c1);
   gGrvGlow = (exp(-r0*1.8)*0.85 + exp(-r0*0.45)*0.30)*step(0.001, uGrave[0].w)
            + (exp(-r1*1.8)*0.85 + exp(-r1*0.45)*0.30)*step(0.001, uGrave[1].w);
+  /* THE SLAB slid off beside a grave (BENITOITE's): 6 cm of stone on the
+     flags, turned a little -- its top where the ray crosses 6 cm up over it,
+     its edge toward you where the ray reaches the floor under it first */
+  /* (the frame budget: only round the slab's own ground -- a metre and a
+     half of it, its top thrown a hand past its footprint at most) */
+  if (uGrvSlab.w > 0.5 && dot(P.xz - uGrvSlab.xy, P.xz - uGrvSlab.xy) < 1.6) {
+    const float SHt = 0.06;
+    vec2 Qs = mix(uCamera.xz, P.xz, (camH - SHt)/camH);
+    float ca = cos(uGrvSlab.z), sa = sin(uGrvSlab.z);
+    vec2 sp = P.xz - uGrvSlab.xy, sq = Qs - uGrvSlab.xy;
+    sp = vec2(ca*sp.x + sa*sp.y, -sa*sp.x + ca*sp.y);
+    sq = vec2(ca*sq.x + sa*sq.y, -sa*sq.x + ca*sq.y);
+    const vec2 SE = vec2(0.40, 0.90);
+    vec2 eq = abs(sq) - SE, ep = abs(sp) - SE;
+    float dQs = max(eq.x, eq.y), dPs = max(ep.x, ep.y);
+    float top = 1.0 - smoothstep(-aa, aa, dQs);
+    float side = (1.0 - top)*(1.0 - smoothstep(-aa, aa, dPs));
+    /* its contact shade on the flags round it */
+    alb *= 1.0 - 0.55*(1.0 - smoothstep(0.0, 0.09, dPs))*step(0.0, dPs)*(1.0 - top);
+    if (top + side > 0.001) {
+      vec3 sl = vec3(Lst)*vec3(1.04, 1.00, 0.92)*1.30*(0.88 + 0.20*mmNoise(sq*9.0 + 3.0))*(0.92 + 0.14*mmNoise(sq*31.0));
+      /* a cross cut in its top, and its edges worn */
+      float cr = min(max(abs(sq.x) - 0.045, abs(sq.y + 0.05) - 0.58),
+                     max(abs(sq.y + 0.28) - 0.045, abs(sq.x) - 0.22));
+      float cut = 1.0 - smoothstep(-aa, aa, cr);
+      vec3 tc = sl*(1.0 - 0.60*cut);
+      tc *= 1.0 - 0.70*(1.0 - smoothstep(0.0, aa*1.5, abs(cr)));          // the cut's edge inked
+      tc *= 1.0 + 0.30*(1.0 - smoothstep(0.0, aa*2.0 + 0.015, -dQs));     // its arris catches the light
+      tc *= 1.0 - 0.75*(1.0 - smoothstep(0.0, aa*1.4, abs(dQs)));          // and is inked
+      vec3 fc = sl*0.55*(1.0 - 0.75*(1.0 - smoothstep(0.0, aa*1.4, abs(dPs))));
+      alb = mix(alb, tc, top);
+      alb = mix(alb, fc, side);
+      gGrvCov = max(gGrvCov, top + side);
+      gGrvK = mix(gGrvK, 0.95, top + side);
+    }
+  }
   /* ...and the grave this pixel is at, if any: ONE drawn, not a loop over
      both (the frame budget -- the compiler flattens a loop's branches) */
   vec2 h0 = abs(l0) - uGrave[0].zw, h1 = abs(l1) - uGrave[1].zw;
@@ -14462,29 +14550,51 @@ vec3 grvFloor(vec3 alb, vec3 P, float mp){
   float o1 = uGrave[1].w > 0.0 ? max(h1.x, h1.y) : 1e3;
   float i = o0 < o1 ? 0.0 : 1.0;
   float dOpen = min(o0, o1);
-  if (dOpen > KB + 0.10) return alb;
+  float reach = KH*length(P.xz - uCamera.xz)/camH;     // how far past its footprint the kerb's top is thrown
+  if (dOpen > KB + 0.10 + reach) return alb;
   {
     vec4 g = i < 0.5 ? uGrave[0] : uGrave[1];
     vec2 l = i < 0.5 ? l0 : l1;
-    vec2 hq = i < 0.5 ? h0 : h1;
+    vec2 Q = mix(uCamera.xz, P.xz, (camH - KH)/camH) - g.xy;
+    vec2 hQ = abs(Q) - g.zw;
+    float dQ = max(hQ.x, hQ.y);
     vec3 dir = normalize(P - uCamera);
-    float dOut = dOpen - KB;
-    float open = 1.0 - smoothstep(-aa, aa, dOpen);
-    float kerb = (1.0 - smoothstep(-aa, aa, dOut))*(1.0 - open);
     float sd = (mod(i, 2.0) < 0.5) ? 1.0 : -1.0;
-    /* THE KERB: dressed stone, paler than the flags, laid in lengths, its
-       outer arris lit, its inner one inked, and a hand of shadow round its
-       foot on the flags */
-    float along = hq.x > hq.y ? l.y : l.x;
-    float kj = 1.0 - smoothstep(0.006, 0.006 + aa*1.3, abs(fract(along/0.62 + 0.5) - 0.5)*0.62);
-    float kId = mmHash11(floor(along/0.62 + 0.5)*3.7 + i*5.1);
-    vec3 kc = vec3(Lst)*vec3(1.04, 1.00, 0.92)*(1.55 + 0.45*kId)*(0.90 + 0.18*mmNoise(l*9.0));
-    kc *= 1.0 - 0.55*kj;
-    kc *= 1.0 + 0.45*(1.0 - smoothstep(0.0, aa*2.0 + 0.012, abs(dOut + 0.022)));
-    kc *= 1.0 - 0.75*(1.0 - smoothstep(0.0, aa*1.6 + 0.004, abs(dOut)));
-    alb = mix(alb, kc, kerb);
-    alb *= 1.0 - 0.55*(1.0 - smoothstep(0.0, 0.07 + aa, dOut))*step(0.0, dOut);
-    if (open <= 0.0) return alb;
+    /* the four parts of it, each a pixel's edge */
+    float qIn = 1.0 - smoothstep(-aa, aa, dQ);                 // Q over the mouth
+    float qOut = smoothstep(KB - aa, KB + aa, dQ);              // Q short of the kerb
+    float pIn = 1.0 - smoothstep(-aa, aa, dOpen);               // P in the mouth
+    float pOut = smoothstep(KB - aa, KB + aa, dOpen);           // P off the kerb
+    float wTop = (1.0 - qIn)*(1.0 - qOut);
+    float wFace = qOut*(1.0 - pOut);
+    float wInner = qIn*(1.0 - pIn);
+    float wCist = qIn*pIn;
+    /* dressed stone, a step over the flags, laid in lengths */
+    vec2 kq2 = hQ.x > hQ.y ? vec2(Q.y, 1.0) : vec2(Q.x, 3.0);
+    float kj = 1.0 - smoothstep(0.006, 0.006 + aa*1.3, abs(fract(kq2.x/0.62 + 0.5) - 0.5)*0.62);
+    float kId = mmHash11(floor(kq2.x/0.62 + 0.5)*3.7 + kq2.y + i*5.1);
+    vec3 ks = vec3(Lst)*vec3(1.04, 1.00, 0.92)*(1.10 + 0.30*kId)*(0.88 + 0.22*mmNoise(Q*9.0));
+    /* THE TOP: lit, its outer arris catching the light, the inner one going
+       over into the cut inked, the joints in ink, lichen in the damp */
+    vec3 kt = ks*(1.0 - 0.55*kj);
+    kt *= 1.0 + 0.35*(1.0 - smoothstep(0.0, aa*2.0 + 0.018, KB - dQ));
+    kt *= 1.0 - 0.70*(1.0 - smoothstep(0.0, aa*1.5, abs(dQ - KB)));
+    kt *= 1.0 - 0.80*(1.0 - smoothstep(0.0, aa*1.5, abs(dQ)));
+    kt = mix(kt, kt*vec3(0.74, 0.92, 0.60), 0.40*smoothstep(0.58, 0.86, mmNoise(Q*3.0 + i*2.0)));
+    /* THE OUTER FACE toward you: the candles are at the head, so it is in
+       its own shade, darker to its foot where it meets the flags */
+    float hF = clamp((KB - dOpen)/max(dQ - dOpen, 1e-3), 0.0, 1.0);   // how far up the face
+    vec3 kf = ks*0.62*(0.55 + 0.45*hF)*(1.0 - 0.45*kj);
+    /* THE INNER FACE of the far kerb, toward you and away from the candles:
+       dark stone */
+    vec3 ki = ks*0.40*(1.0 - 0.45*kj);
+    vec3 ka = kt*wTop + kf*wFace + ki*wInner;
+    /* and a hand of shadow round its foot on the flags */
+    alb *= 1.0 - 0.55*(1.0 - smoothstep(0.0, 0.07 + aa, dOpen - KB))*step(KB, dOpen)*(1.0 - wTop);
+    alb = mix(alb, ka/max(wTop + wFace + wInner, 1e-3), clamp(wTop + wFace + wInner, 0.0, 1.0));
+    gGrvCov = max(gGrvCov, clamp(wTop + wFace + wInner, 0.0, 1.0));
+    gGrvK = mix(gGrvK, 1.0, clamp(wTop + wFace + wInner, 0.0, 1.0));
+    if (wCist <= 0.0) return alb;
     /* THE CIST: the eye's ray on down through the mouth, to its floor or a
        wall -- whichever it meets first */
     float dy = max(-dir.y, 1e-3);
@@ -14493,30 +14603,43 @@ vec3 grvFloor(vec3 alb, vec3 P, float mp){
     float tz = abs(dir.z) > 1e-4 ? (sign(dir.z)*g.w - l.y)/dir.z : 1e3;
     float t = min(tb, min(tx, tz));
     vec2 H = l + dir.xz*t;
-    float hy = dy*t;                 // how far under the kerb
+    float hy = dy*t;                 // how far under the flags
     vec3 pc;
     float k;
     if (t >= tb - 1e-4) {
-      /* its floor: earth gone dark with the damp, and the bones on it */
-      vec2 bq = vec2(H.x, H.y + g.w*0.40);   // (laid toward the far wall: under the near kerb the eye cannot see the floor of it)
-      float hole;
       float pxB = aa*1.4;
-      float sk = grvSkel(bq*vec2(1.0, 1.0)/max(g.z/0.98, 0.6), sd, pxB, hole);
+      vec3 earth = vec3(0.24, 0.18, 0.13)*Lst*3.2*(0.75 + 0.45*mmNoise(H*7.0 + i*3.0));
+      vec3 bone = vec3(0.60, 0.59, 0.55)*Lst*6.0*(0.85 + 0.25*mmNoise(H*31.0));
+#if MM_FLAGK == 3
+      /* the ossuary's pit, heaped with bones */
+      float hole;
+      float sk = grvHeap(H, pxB, hole);
+      float sk2 = grvHeap(H + vec2(0.0, -0.030), pxB, hole);
+#else
+      /* its floor: earth gone dark with the damp, and the one who lay there
+         on it, head to the far end (the skull at the ledger's foot) */
+      float sc = max(g.w/0.98, 0.6);
+      vec2 bq = vec2(-H.y - 0.05, H.x)/sc;
+      float hole, holeB;
+      float sk = grvSkel(bq, 1.0, pxB/sc, hole)*sc;
+      /* (one sample toward the candles at its head: each bone lit on the
+         side toward them and throwing its shadow on the earth away from
+         them -- the bones with VOLUME, J3: "flat sticker outlines") */
+      float sk2 = grvSkel(bq + vec2(0.030, 0.012)/sc, 1.0, pxB/sc, holeB)*sc;
+#endif
       float onB = clamp(0.5 - sk/pxB, 0.0, 1.0);
-      vec3 earth = vec3(0.24, 0.18, 0.13)*Lst*2.4*(0.75 + 0.45*mmNoise(H*7.0 + i*3.0));
-      vec3 bone = vec3(0.60, 0.59, 0.55)*Lst*5.4*(0.85 + 0.25*mmNoise(H*31.0));
-      bone *= 0.50 + 0.50*clamp(-sk/0.022, 0.0, 1.0);                  // round, not a cut-out: lit along its crown
+      float litB = clamp(0.5 + (sk2 - sk)/0.020, 0.0, 1.0);
+      bone *= (0.45 + 0.55*clamp(-sk/0.020, 0.0, 1.0))*(0.62 + 0.70*litB);   // round, lit toward the head
       bone *= 1.0 - 0.75*hole;
-      bone *= 1.0 - 0.55*(1.0 - smoothstep(0.0, pxB*1.6, abs(sk)));   // inked
+      bone *= 1.0 - 0.60*(1.0 - smoothstep(0.0, pxB*1.6, abs(sk)));   // inked
+      earth *= 1.0 - 0.55*(1.0 - smoothstep(-0.004, 0.012, sk2))*(1.0 - onB);   // each bone's shadow on the earth
       pc = mix(earth, bone, onB);
-      pc *= 1.0 - 0.45*(1.0 - smoothstep(0.0, pxB*2.0, sk))*(1.0 - onB);   // each bone's own shadow on the earth
-      /* the walls' shadow on it, deepest along the far wall's foot */
+      /* the walls' shadow on it, deepest along their feet */
       float edge = min(g.z - abs(H.x), g.w - abs(H.y));
-      pc *= 0.55 + 0.45*smoothstep(0.0, 0.18, edge);
-      /* and the near kerb's shadow across it: the candles are at the head,
-         so the floor of the cist nearest the eye lies in the near wall's lee */
-      pc *= 0.45 + 0.55*smoothstep(g.w*0.05, g.w*0.55, -H.y + g.w*0.30);
-      k = 0.80;
+      pc *= 0.62 + 0.38*smoothstep(0.0, 0.16, edge);
+      /* and the near kerb's lee across the end of it nearest the eye */
+      pc *= 0.62 + 0.38*smoothstep(-g.w*0.95, -g.w*0.35, -H.y);
+      k = 0.95;
     } else {
       /* a wall: coursed rubble stone, the courses a hand high, lit under the
          kerb and going dark toward the earth */
@@ -14527,21 +14650,21 @@ vec3 grvFloor(vec3 alb, vec3 P, float mp){
       float fu = fract(u/0.26 + 0.5*mod(row, 2.0));
       float vj = 1.0 - smoothstep(0.003, 0.003 + aa*1.4, min(fu, 1.0 - fu)*0.26);
       float sid = mmHash21(vec2(floor(u/0.26 + 0.5*mod(row, 2.0)), row) + i*7.0);
-      pc = vec3(Lst)*vec3(1.0, 0.94, 0.84)*(1.90 + 0.70*sid);
+      pc = vec3(Lst)*vec3(1.0, 0.94, 0.84)*(1.30 + 0.50*sid);
       pc *= 1.0 - 0.60*max(cj, vj);
-      /* the far wall faces the eye and the candles; the ends are turned away */
-      float facing = (t >= tz - 1e-4 && dir.z < 0.0) ? 1.0 : 0.62;
-      pc *= facing*mix(1.0, 0.30, smoothstep(0.0, D, hy));
-      /* the arris where wall meets wall, inked */
+      /* the far wall faces the eye and the candles' spill; the sides are
+         turned away */
+      float facing = (t >= tz - 1e-4 && dir.z < 0.0) ? 0.85 : 0.55;
+      pc *= facing*mix(1.0, 0.35, smoothstep(0.0, D, hy));
       float corner = min(g.z - abs(H.x), g.w - abs(H.y));
       pc *= 1.0 - 0.6*(1.0 - smoothstep(0.0, aa*1.5 + 0.003, corner));
-      k = 0.90;
+      k = 0.92;
     }
     /* the mouth's own edge, a line of the deepest dark under the kerb */
-    pc *= 1.0 - 0.7*(1.0 - smoothstep(0.0, aa*1.5, -dOpen));
-    alb = mix(alb, pc, open);
-    gGrv = max(gGrv, open);
-    gGrvK = mix(gGrvK, k, open);
+    pc *= 1.0 - 0.7*(1.0 - smoothstep(0.0, aa*1.5, -dQ));
+    alb = mix(alb, pc, wCist);
+    gGrvCov = max(gGrvCov, wCist);
+    gGrvK = mix(gGrvK, k, wCist);
   }
   return alb;
 }
@@ -15547,8 +15670,12 @@ void main(){
     float web = (1.0 - rib)*(1.0 - onBoss);
     float shd = smoothstep(0.45, 0.0, dRib)*web;       // the web in each rib's lee
     float spring = smoothstep(0.25, 0.95, ax/hwV);
-    pat = 0.09 + 0.12*spring - 0.16*jt - 0.20*shd + 0.06*mmFbm3(w*1.3 + uSeed);
-    pat = mix(pat, 0.22 + 0.85*roll*roll, rib);
+    /* (round 43 graft, J1 on CUPRITE's catacomb: "the vault's crown black" --
+       the crown's webs and ribs lifted a step, so the ribs read over it to
+       the ridge and the barrel is not a black lid over the end wall) */
+    float crownL = 1.0 - spring;
+    pat = 0.09 + 0.12*spring + 0.07*crownL - 0.16*jt - 0.20*shd + 0.06*mmFbm3(w*1.3 + uSeed);
+    pat = mix(pat, (0.22 + 0.85*roll*roll)*(1.0 + 0.35*crownL), rib);
     pat = mix(pat, 0.70 - 0.40*bossR, onBoss);
     pat -= 0.45*arris*(1.0 - onBoss);
     cellv = mmHash11(row*3.1 + floor((by + 7.0)/0.48)*7.7 + uSeed);
@@ -17021,7 +17148,7 @@ void main(){
     /* its edge stands a centimetre proud: a hairline of shadow round it */
     alb *= 1.0 - (1.0 - smoothstep(0.0, max(ePx*2.0, 0.02), abs(eIn)))*0.30*step(eIn, 0.0)*(1.0 - frg);
   }
-#if MM_FLAGK == 2
+#if MM_FLAGK == 2 || MM_FLAGK == 3
   /* (round 43: the Crypt's open graves -- grvFloor, above) */
   if (uIsCeiling < 0.5) alb = grvFloor(alb, vWorld, mp);
 #endif
@@ -17267,8 +17394,8 @@ void main(){
      for floor pattern 9; that ground was not grafted, so only the runner's
      term is here, and wetK is exactly 1.0 on every floor but the Foyer's.) */
   float wetK = (1.0 - runner*0.86) * (1.0 - turf*0.85);   // nor does grass
-#if MM_FLAGK == 2
-  wetK *= 1.0 - gGrv;                   // (round 43: nor does the inside of a grave)
+#if MM_FLAGK == 2 || MM_FLAGK == 3
+  wetK *= 1.0 - gGrvCov;                // (round 43: nor does a grave's dry stone or its inside)
 #endif
   wetK *= 1.0 - rugCov*0.92;            // (nor does the carpet: round 25 graft)
   /* ...and WATER mirrors a lamp far harder than a wet tile, the image broken
@@ -17786,18 +17913,18 @@ void main(){
      with the floor now in shot behind the fight, the boards behind the Kid
      came back as a woven dot-screen. It keeps the flags' and kerbs' edges.) */
   vec2 drawn = mmDrawn(pat, 0.020, 0.30) * drawable;
-#if MM_FLAGK == 2
-  drawn *= 1.0 - gGrv;               // (round 43: the flags' joints do not run on over a grave's mouth)
+#if MM_FLAGK == 2 || MM_FLAGK == 3
+  drawn *= 1.0 - gGrvCov;            // (round 43: the flags' joints do not run on over a grave's kerb or mouth)
 #endif
   col *= 1.0 - drawn.x * uInk * 0.40;
   col += col * drawn.y * uLip * 0.40;
 
-#if MM_FLAGK == 2
-  col += alb * vec3(1.00, 0.60, 0.28) * gGrvGlow * 2.8;   // (round 43: the graves' candles on the flags)
+#if MM_FLAGK == 2 || MM_FLAGK == 3
+  col += alb * vec3(1.00, 0.60, 0.28) * gGrvGlow * 2.0;   // (round 43: the graves' candles on the flags -- graft: 2.8 -> 2.0, the kerbs lit stone, not lightboxes)
 #endif
   col *= uGain;
-#if MM_FLAGK == 2
-  col *= mix(1.0, gGrvK, gGrv);      // (round 43: the cist's own shade)
+#if MM_FLAGK == 2 || MM_FLAGK == 3
+  col *= mix(1.0, gGrvK, gGrvCov);   // (round 43: the cist's own shade)
 #endif
 #if MM_R25W == 3
   /* ROUND 34, both survey-5 judges: "a blown-out white smear sits on the
@@ -17834,7 +17961,7 @@ void main(){
   /* (round 43: the Crypt's barrel vault springs from the walls a stride over
      the candles, and its ribs are what the candles find -- it falls toward
      the eye a little, never to the lath-and-plaster near-black) */
-  ceilDim = mix(0.42, 0.80, smoothstep(1.0, 14.0, vDepth));
+  ceilDim = mix(0.50, 0.84, smoothstep(1.0, 14.0, vDepth));   // (round 43 graft: 0.42 / 0.80 -> 0.50 / 0.84, the crown lifted)
 #endif
   col *= mix(1.0, ceilDim, uIsCeiling);
   /* THE NIGHT IS ON THE OTHER SIDE OF IT. Glass is not a surface: the panes
@@ -25916,115 +26043,150 @@ float wfCandles(vec2 q, float px, float seed, float kq, bool paint){
   return d;
 }
 
-/* ── 59.25 THE LEDGER LIFTED FROM AN OPEN GRAVE (round 43) ────────────────
-   ROUND 43 (CUPRITE). Both survey-8 judges called round 35's skeleton
-   mounds "cardboard half-dome cutouts": a heap of bones stood upright on a
-   quad is a picture of a heap, not a heap. The grave is cut in the FLOOR
-   now (FLOOR_FRAG, MM_FLAGK 2: its kerb, its depth, the bones lying in it),
-   and what stands here, at its head, is its LEDGER, the carved lid, broken
-   in two where it was dropped: the head half hauled up on end and leaned
-   on the far kerb, a cross fleury carved on it and a line of lettering worn
-   nearly away; the foot half lying where it fell, seen along its broken
-   edge, a skull set on it; chips of stone about them. Grey sandstone a hand
-   thick, the arrises lit, grimed and mossed toward the floor. Drawn in
-   metres (wfNom 0.70; the quad's width is the near item's wM). */
+/* ── 59.25 THE HEADSTONE AT AN OPEN GRAVE'S HEAD (round 43 graft) ─────────
+   ROUND 43 (CUPRITE) cut the graves in the FLOOR (FLOOR_FRAG, MM_FLAGK 2/3:
+   the kerb, the depth, what lies in it) and stood a broken ledger at each
+   one's head; two survey-8 judges read that ledger as "flat tilted
+   tablets". THE GRAFT, all three judges: ZINCITE's UPRIGHT HEADSTONE -- a
+   dressed slab on its own BASE, a raised border, a cross in relief in its
+   upper half, three lines of a worn inscription under it, a crack across it
+   and its upper corner broken away, moss up its foot -- with a skull fallen
+   out of the cut lying at the kerb beside it and a thighbone; and beside it,
+   on the side away from the room's middle (wfMirror: +x is outward, so the
+   enemies' lane stays clear), CUPRITE's broken ledge: the foot half of the
+   ledger lying where it fell, a skull set on it and the candles someone left
+   burning there, two stubs on it and a taller one on the flags. Drawn in
+   metres (wfNom 1.0; the quad's width is the near item's wM). */
 float wfBones(vec2 q, float px, float seed, float kq, bool paint){
-  float sg = mmHash11(seed*2.3) < 0.5 ? -1.0 : 1.0;
-  vec2 p = vec2(q.x*sg, q.y);
-  /* the head half, leaned: 0.92 m wide, 0.80 tall, tipped back off true */
-  float an = 0.13;
-  vec2 a = p - vec2(-0.46, 0.0);
-  a = vec2(a.x*cos(an) + a.y*sin(an), -a.x*sin(an) + a.y*cos(an));
-  float headH = mmBox(a - vec2(0.0, 0.40), vec2(0.46, 0.39), 0.014);
-  /* its broken edge, jagged, on the side toward the foot half */
-  float jag = a.x - 0.40 - 0.035*sin(a.y*23.0 + seed) - 0.020*sin(a.y*57.0);
-  headH = max(headH, jag);
-  /* the foot half, lying: its broken end and its long edge toward us */
-  vec2 b = p - vec2(0.50, 0.0);
-  float footH = mmBox(b - vec2(0.0, 0.085), vec2(0.42, 0.080), 0.012);
-  float jag2 = -(b.x + 0.36 + 0.030*sin(b.y*41.0 + seed*2.0));
-  footH = max(footH, jag2);
-  /* chips of stone */
-  float chips = min(mmBox(p - vec2(0.02, 0.025), vec2(0.045, 0.025), 0.010),
-                    mmBox(p - vec2(-1.00, 0.020), vec2(0.035, 0.020), 0.008));
-  /* the skull on the foot half */
-  vec2 sk = p - vec2(0.62, 0.245);
-  float cran = wfEll(sk - vec2(0.0, 0.015), vec2(0.088, 0.076));
-  float jaw = mmBox(sk - vec2(0.0, -0.055), vec2(0.046, 0.026), 0.018);
+  /* (the frame budget: the quad is centred between the stone and its ledge,
+     not on the stone -- the stone stands 0.32 m inward of the quad's axis,
+     backdrop.js's grave[2] -- so the quad is 2.16 m wide, not 2.9) */
+  q.x += 0.32;
+  /* the base: a plinth of the same stone, a hand high, its top chamfered */
+  float base = mmBox(q - vec2(0.0, 0.065), vec2(0.38, 0.065), 0.010);
+  base = min(base, mmBox(q - vec2(0.0, 0.140), vec2(0.34, 0.016), 0.006));
+  /* the slab, leaning a little: its face sheared to one side as it goes up */
+  const float SW = 0.30, SH = 0.80, SB = 0.155;
+  float lean = 0.04*(mmHash11(seed*3.1) > 0.5 ? 1.0 : -1.0);
+  vec2 sq = vec2(q.x - lean*(q.y - SB)/SH, q.y - SB);
+  float slab = mmBox(sq - vec2(0.0, SH*0.5), vec2(SW, SH*0.5), 0.012);
+  /* the corner broken away, a ragged diagonal */
+  vec2 bc = sq - vec2(SW, SH);
+  float brk = (bc.x*0.62 - bc.y*0.78) - (-0.15 + 0.018*sin(bc.y*61.0 + seed) + 0.012*sin(bc.x*97.0));
+  slab = max(slab, -brk);
+  /* the skull fallen out of the cut, on its side at the kerb, and a
+     thighbone across it -- on the inner side, a hand off the base */
+  vec2 sk = q - vec2(-0.50, 0.078);
+  float cran = wfEll(sk - vec2(0.0, 0.01), vec2(0.088, 0.074));
+  float jaw = mmBox(sk - vec2(0.048, -0.046), vec2(0.038, 0.024), 0.016);
   float skull = min(cran, jaw);
-  /* and the candles someone left burning there: two stubs on the foot
-     half, one taller on the flags beside the head half, each guttered */
+  float t0;
+  vec2 fa = vec2(-0.40, 0.022), fb = vec2(-0.72, 0.040);
+  float femur = wfSegT(q, fa, fb, 0.016, 0.014, t0);
+  vec2 fn = vec2(0.03, 0.5)*0.03;
+  femur = min(femur, min(min(length(q - fa - fn) - 0.024, length(q - fa + fn) - 0.024),
+                         min(length(q - fb - fn) - 0.022, length(q - fb + fn) - 0.022)));
+  /* THE LEDGE (CUPRITE's): the foot half of the ledger lying outward, its
+     broken end toward the stone, a skull and two candle stubs on it, a
+     taller candle on the flags past it */
+  vec2 b = q - vec2(0.86, 0.0);
+  float ledge = mmBox(b - vec2(0.0, 0.080), vec2(0.36, 0.078), 0.012);
+  ledge = max(ledge, -(b.x + 0.30 + 0.030*sin(b.y*41.0 + seed*2.0)));
+  vec2 sk2 = q - vec2(1.00, 0.238);
+  float skull2 = min(wfEll(sk2 - vec2(0.0, 0.015), vec2(0.086, 0.074)), mmBox(sk2 - vec2(0.0, -0.054), vec2(0.044, 0.025), 0.017));
   float cdl = 1e3, fla = 1e3, glow = 0.0;
   for (int i = 0; i < 3; i++){
-    float cxp = i == 0 ? 0.26 : (i == 1 ? 0.37 : -1.03);
-    float cb = i < 2 ? 0.163 : 0.0;
+    float cxp = i == 0 ? 0.66 : (i == 1 ? 0.77 : 1.33);
+    float cb = i < 2 ? 0.156 : 0.0;
     float ch = i == 0 ? 0.13 : (i == 1 ? 0.08 : 0.22);
-    float c = mmBox(p - vec2(cxp, cb + ch*0.5), vec2(0.022, ch*0.5), 0.004);
-    c = min(c, mmBox(p - vec2(cxp + 0.020, cb + ch*0.32), vec2(0.008, ch*0.30), 0.004));
-    c = min(c, wfEll(p - vec2(cxp, cb + 0.008), vec2(0.040, 0.012)));   // its wax run out round its foot
+    float c = mmBox(q - vec2(cxp, cb + ch*0.5), vec2(0.022, ch*0.5), 0.004);
+    c = min(c, mmBox(q - vec2(cxp + 0.020, cb + ch*0.32), vec2(0.008, ch*0.30), 0.004));
+    c = min(c, wfEll(q - vec2(cxp, cb + 0.008), vec2(0.040, 0.012)));   // its wax run out round its foot
     cdl = min(cdl, c);
-    vec2 fp = p - vec2(cxp, cb + ch + 0.034);
+    vec2 fp = q - vec2(cxp, cb + ch + 0.034);
     fla = min(fla, length(fp/vec2(0.50, 1.0)) - 0.020);
     glow = max(glow, exp(-length(fp)/0.06));
   }
-  float d = min(min(min(headH, footH), min(chips, skull)), min(cdl, fla));
+  float under = max(abs(q.x - 0.25) - 1.15, max(-q.y, q.y - 0.022));
+  float d = min(min(min(slab, base), min(skull, femur)), min(min(ledge, skull2), min(min(cdl, fla), under)));
   if (!paint) return d;
   vec3 col = vec3(0.1);
   float ink = 0.0;
-  float ks = kq*sg;
+  col = mix(col, vec3(0.008, 0.008, 0.010), wfIn(under, px));
   float gr = mmNoise(q*vec2(6.0, 9.0) + seed*3.0);
-  vec3 sand = vec3(0.37, 0.33, 0.27);
-  /* THE HEAD HALF: its face, paler toward the candles above, the moulded
-     border sunk 6 cm in, the cross on it, the lettering under the cross */
-  vec3 stn = sand*(0.76 + 0.30*gr)*(0.55 + 0.55*smoothstep(0.0, 0.70, a.y));
-  stn *= 0.90 + 0.20*smoothstep(-0.46, 0.46, ks*a.x);
-  vec2 bq = abs(a - vec2(0.0, 0.40)) - vec2(0.46 - 0.065, 0.39 - 0.065);
-  float bd = max(bq.x, bq.y);
-  float chan = 1.0 - smoothstep(0.0, px*1.4 + 0.004, abs(bd + 0.014) - 0.012);
-  stn *= 1.0 - 0.40*chan;
-  vec2 cq = a - vec2(-0.02, 0.44);
-  float shaft = mmBox(cq - vec2(0.0, -0.06), vec2(0.020, 0.25), 0.005);
-  float bar = mmBox(cq - vec2(0.0, 0.08), vec2(0.15, 0.020), 0.005);
-  float fl = min(min(length(cq - vec2(0.0, 0.215)), length(cq - vec2(0.17, 0.08))), length(cq - vec2(-0.17, 0.08))) - 0.036;
-  float crs = min(min(shaft, bar), fl);
-  stn = mix(stn, stn*0.50, wfIn(crs, px));
-  stn *= 1.0 + 0.45*(1.0 - smoothstep(0.0, px*1.6, abs(crs + 0.005)))*step(0.0, -cq.x*ks);
-  vec2 lq = vec2(a.x + 0.02, a.y - 0.115);
-  float lt = step(abs(lq.y), 0.020)*step(abs(lq.x), 0.30)*step(0.35, fract(lq.x/0.042))*step(0.30, mmHash11(floor(lq.x/0.042) + seed));
-  stn = mix(stn, stn*0.58, lt*0.85*mmLod(0.042, px));
-  float moss = smoothstep(0.16, 0.0, a.y + 0.05*mmNoise(q*14.0 + seed))*smoothstep(0.35, 0.65, mmNoise(q*9.0));
-  stn = mix(stn, vec3(0.12, 0.16, 0.09)*(0.7 + 0.5*gr), moss*0.80);
-  wfLay(col, ink, headH, stn, px, 0.95);
-  ink = max(ink, mmInkP(bd + 0.026, px, 1.0)*0.55*wfIn(headH, px));
-  ink = max(ink, mmInkP(crs, px, 1.0)*0.75*wfIn(headH, px));
+  /* THE HEADSTONE's face: dressed stone lit from the key's side, darker to
+     its foot, grimed in streaks from the top; a raised border band, the
+     cross in relief, the inscription */
+  vec2 f = sq - vec2(0.0, SH*0.5);
+  float bIn = min(SW - abs(f.x), SH*0.5 - abs(f.y));
+  float bord = 1.0 - smoothstep(0.050, 0.050 + px*1.2, bIn);
+  vec2 cr = f - vec2(0.0, 0.14);
+  float crs = min(mmBox(cr, vec2(0.030, 0.17), 0.006), mmBox(cr - vec2(0.0, 0.055), vec2(0.11, 0.030), 0.006));
+  float crossIn = wfIn(crs, px);
+  float crossLit = wfIn(crs + 0.010, px);
+  float ins = 0.0;
+  for (int i = 0; i < 3; i++){
+    float fi = float(i);
+    float ly = -0.12 - fi*0.080;
+    float wdt = 0.20 - fi*0.035;
+    float onL = step(abs(f.y - ly), 0.017)*step(abs(f.x), wdt);
+    float ch = abs(fract(f.x/0.034 + fi*0.37) - 0.5);
+    float word = step(0.22, mmHash11(floor(f.x/0.11 + fi*3.0) + seed));
+    ins = max(ins, onL*smoothstep(0.34, 0.22, ch)*word*(0.55 + 0.45*mmNoise(f*40.0 + fi)));
+  }
+  float shade = (0.72 + 0.40*smoothstep(-SW, SW, kq*f.x))*(0.62 + 0.45*smoothstep(-0.40, 0.42, f.y));
+  vec3 stone = vec3(0.300, 0.272, 0.232)*(0.80 + 0.30*mmNoise(q*16.0 + seed))*shade;
+  stone *= 0.82 + 0.22*smoothstep(0.25, 0.75, mmNoise(vec2(q.x*14.0, q.y*2.2) + seed*3.0));
+  float moss = smoothstep(0.20, 0.02, sq.y + 0.05*mmNoise(q*9.0 + seed))*(0.6 + 0.4*mmNoise(q*30.0));
+  stone = mix(stone, vec3(0.13, 0.17, 0.10)*shade, moss*0.75);
+  vec3 face = stone*(1.0 + 0.12*bord);
+  face = mix(face, stone*0.55, (1.0 - crossLit)*crossIn);      // the cross's shadowed flank
+  face = mix(face, stone*1.25, crossLit);                       // its lit face, proud of the slab
+  face = mix(face, stone*0.36, ins);
+  float crk = abs(f.y - (0.05 - 0.45*f.x + 0.025*sin(f.x*31.0 + seed*2.0)));
+  face = mix(face, stone*0.30, mmInkP(crk, px, 1.0)*step(abs(f.x), SW - 0.02)*0.9);
+  wfLay(col, ink, slab, face, px, 1.0);
+  ink = max(ink, mmInkP(bIn - 0.050, px, 1.0)*wfIn(slab, px)*0.55);
+  ink = max(ink, mmInkP(crs, px, 1.0)*0.75*wfIn(slab, px));
+  col = mix(col, stone*1.25, (1.0 - smoothstep(0.0, 0.025, brk))*wfIn(slab, px)*0.7);   // the broken corner's raw stone
   /* its top arris catches the light */
-  col *= 1.0 + 0.55*(1.0 - smoothstep(0.0, px*2.0 + 0.010, abs(a.y - 0.775)))*wfIn(headH, px);
-  /* THE FOOT HALF: the slab's edge toward us, a hand thick, its lit top
-     face a sliver over it, the broken end rough */
+  col *= 1.0 + 0.45*(1.0 - smoothstep(0.0, px*2.0 + 0.010, abs(sq.y - SH + 0.010)))*wfIn(slab, px);
+  /* the base: its chamfered top lit, its face a step down, moss at its foot */
+  vec3 bs = vec3(0.300, 0.272, 0.232)*(0.78 + 0.30*gr)*(0.55 + 0.45*smoothstep(0.0, 0.13, q.y));
+  bs = mix(bs, bs*1.45, smoothstep(0.124, 0.140, q.y));
+  bs = mix(bs, vec3(0.12, 0.16, 0.09)*(0.7 + 0.5*gr), smoothstep(0.05, 0.0, q.y)*0.6);
+  wfLay(col, ink, base, bs, px, 0.95);
+  ink = max(ink, mmInkP(q.y - 0.124, px, 1.0)*0.55*wfIn(base, px));
+  /* THE LEDGE: the slab's edge toward us, a hand thick, its lit top face a
+     sliver over it, the broken end rough */
+  vec3 sand = vec3(0.37, 0.33, 0.27);
   vec3 ed = sand*(0.62 + 0.30*gr)*(0.65 + 0.45*smoothstep(0.0, 0.16, b.y));
-  ed = mix(ed, sand*1.25*(0.9 + 0.2*gr), smoothstep(0.135, 0.155, b.y));
-  ed = mix(ed, ed*0.70, smoothstep(-0.30, -0.36, b.x));
-  wfLay(col, ink, footH, ed, px, 0.95);
-  ink = max(ink, mmInkP(b.y - 0.140, px, 1.0)*0.60*wfIn(footH, px));
-  wfLay(col, ink, chips, sand*0.70*(0.8 + 0.3*gr), px, 0.85);
-  /* the skull */
-  float sr = clamp(sk.y/0.076, -1.0, 1.0);
+  ed = mix(ed, sand*1.25*(0.9 + 0.2*gr), smoothstep(0.130, 0.150, b.y));
+  ed = mix(ed, ed*0.70, smoothstep(-0.24, -0.30, b.x));
+  wfLay(col, ink, ledge, ed, px, 0.95);
+  ink = max(ink, mmInkP(b.y - 0.136, px, 1.0)*0.60*wfIn(ledge, px));
+  /* the skulls and the bone: bone gone brown with the damp, each round in
+     its own light, its sockets dark */
   vec3 bone = vec3(0.62, 0.56, 0.42)*(0.82 + 0.25*mmNoise(q*30.0 + seed*2.0));
-  vec3 skC = bone*(0.55 + 0.55*smoothstep(-0.7, 0.9, sr))*(0.90 + 0.25*smoothstep(-0.06, 0.06, ks*sk.x));
-  wfLay(col, ink, skull, skC, px, 0.95);
-  float eyes = min(length(sk - vec2(-0.028, -0.004)), length(sk - vec2(0.028, -0.004))) - 0.019;
-  float nose = length((sk - vec2(0.0, -0.034))/vec2(0.7, 1.0)) - 0.010;
-  col = mix(col, vec3(0.025, 0.02, 0.018), wfIn(min(eyes, nose), px)*wfIn(skull, px));
-  ink = max(ink, mmInkP(sk.y + 0.048, px, 0.9)*wfIn(jaw, px)*0.7);
+  wfLay(col, ink, femur, bone*(0.70 + 0.40*smoothstep(0.0, 0.06, q.y)), px, 0.95);
+  float sr = clamp(sk.y/0.074, -1.0, 1.0);
+  wfLay(col, ink, skull, bone*(0.55 + 0.55*smoothstep(-0.7, 0.9, sr))*(0.90 + 0.25*smoothstep(-0.06, 0.06, kq*sk.x)), px, 0.95);
+  float eyes = min(length(sk - vec2(0.040, -0.004)) - 0.021, length(sk - vec2(-0.012, -0.010)) - 0.020);
+  col = mix(col, vec3(0.025, 0.02, 0.018), wfIn(min(eyes, length((sk - vec2(0.018, -0.040))/vec2(0.7, 1.0)) - 0.010), px)*wfIn(skull, px));
+  float sr2 = clamp(sk2.y/0.074, -1.0, 1.0);
+  wfLay(col, ink, skull2, bone*(0.55 + 0.55*smoothstep(-0.7, 0.9, sr2))*(0.90 + 0.25*smoothstep(-0.06, 0.06, kq*sk2.x)), px, 0.95);
+  float eyes2 = min(length(sk2 - vec2(-0.028, -0.004)), length(sk2 - vec2(0.028, -0.004))) - 0.019;
+  col = mix(col, vec3(0.025, 0.02, 0.018), wfIn(min(eyes2, length((sk2 - vec2(0.0, -0.034))/vec2(0.7, 1.0)) - 0.010), px)*wfIn(skull2, px));
+  ink = max(ink, mmInkP(sk2.y + 0.048, px, 0.9)*wfIn(skull2, px)*0.6);
   /* the candles: tallow gone yellow, their flames, the light they throw on
      the stone round them */
-  wfLay(col, ink, cdl, vec3(0.90, 0.84, 0.66)*(0.70 + 0.40*smoothstep(-0.02, 0.02, ks*p.x)), px, 0.7);
+  wfLay(col, ink, cdl, vec3(0.90, 0.84, 0.66)*(0.70 + 0.40*smoothstep(-0.02, 0.02, kq*q.x)), px, 0.7);
   float flame = wfIn(fla, px);
   col = mix(col, vec3(1.0, 0.9, 0.6), flame);
   col *= 1.0 + 1.6*glow*(1.0 - flame);
   gWfEmit = vec3(1.00, 0.84, 0.50)*1.7*flame + vec3(1.0, 0.62, 0.26)*0.30*glow*(1.0 - flame)*wfIn(cdl, px);
   gWfGloss = 0.10;
-  gWfMoon = 0.30*wfIn(skull, px)*smoothstep(0.0, 0.07, sk.y) + 0.20*wfIn(headH, px)*smoothstep(0.55, 0.78, a.y);
+  gWfMoon = 0.25*wfIn(slab, px)*smoothstep(0.55, 0.95, q.y) + 0.25*wfIn(min(skull, skull2), px);
   gWfCol = col; gWfInk = ink;
   return d;
 }
@@ -26272,7 +26434,7 @@ float wfNom(float s){
   if (s < 56.5) return 1.20;
   if (s < 57.5) return 1.22;
   if (s < 58.5) return 1.55;
-  if (s < 59.5) return s > 59.1 ? 0.82 : 1.35;   // (round 43: 59.25 the lifted ledger)
+  if (s < 59.5) return s > 59.1 ? 1.0 : 1.35;    // (round 43 graft: 59.25 the headstone on its base, 1 m)
   if (s < 60.5) return 2.30;
   return 1.55;
 }
@@ -26280,6 +26442,9 @@ float wfNom(float s){
    BED has its head to the nearer side wall */
 float wfMirror(float s, float seed, vec2 m){
   if (s > 49.5 && s < 51.5) return wfCentreX(m) < 0.0 ? 1.0 : -1.0;
+  /* (round 43 graft: a grave's headstone has its ledge and candles on the
+     side away from the room's middle, so the enemies' lane stays clear) */
+  if (s > 59.1 && s < 59.5) return wfCentreX(m) < 0.0 ? -1.0 : 1.0;
   return mmHash11(seed*3.71 + s*0.13) < 0.5 ? -1.0 : 1.0;
 }
 #if MM_SH52

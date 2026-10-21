@@ -184,10 +184,32 @@ const D = {
    metres, drawn by the wing's own floor (flagK 2) with its kerb, its depth
    and its bones lying in it -- and 59.25 is the ledger hauled off it and
    leaned on end at its head.) */
+/* (round 43 GRAFT, all three judges: ZINCITE's graves -- each laid ALONG
+   the room, head to the far end, an upright inscribed headstone on its base
+   at its head with a skull at the kerb (59.25, wfBones), and CUPRITE's ledge
+   with its skull and candles beside it on the outer side; the graves moved
+   out from the middle, 1.9 / -0.6 -> 2.4 / -1.15, and the pricket stand
+   with them, so the stones stand out of the fight's lane (fight-crypt at
+   1280, J1 and J3: "crowd the Loose Tibia's lane and nameplate"); and in the
+   catacomb BENITOITE's slab slid off the nearer one, a cross cut in it.
+   Each room its own layout: the family vault's sarcophagi forward, the
+   ossuary's pits heaped with bones -- FAMILY_NEAR, OSSUARY_NEAR.) */
 const CRYPT_NEAR = [
-  { shape: 59.25, x: 1.9, z: 0.4, tone: 0.95, hM: 0.64, wM: 1.60, seed: 2.7, free: true, keep: true, still: true, grave: [0.88, 0.60] },
-  { shape: 59.25, x: -0.6, z: 1.6, tone: 0.95, hM: 0.64, wM: 1.60, seed: 6.1, free: true, keep: true, still: true, grave: [0.88, 0.60] },
-  { shape: 58, x: -1.9, z: 1.6, tone: 0.96, free: true, keep: true, still: true },
+  { shape: 59.25, x: 2.72, z: 0.2, tone: 0.95, hM: 1.0, wM: 2.16, seed: 2.7, free: true, keep: true, still: true, grave: [0.42, 0.95, 0.32] },
+  { shape: 59.25, x: -1.47, z: 1.3, tone: 0.95, hM: 1.0, wM: 2.16, seed: 6.1, free: true, keep: true, still: true, grave: [0.40, 0.92, 0.32], slab: 1 },
+  { shape: 58, x: -3.0, z: 2.0, tone: 0.96, free: true, keep: true, still: true },
+];
+const FAMILY_NEAR = [
+  { shape: 59.25, x: 2.72, z: 0.2, tone: 0.95, hM: 1.0, wM: 2.16, seed: 2.7, free: true, keep: true, still: true, grave: [0.42, 0.95, 0.32] },
+  /* the family's own dead in their box tombs, brought forward onto the
+     near flags where the second grave was */
+  { shape: 57, x: -1.9, z: 0.9, tone: 0.97, free: true, keep: true, still: true },
+  { shape: 58, x: -3.4, z: 2.4, tone: 0.96, free: true, keep: true, still: true },
+];
+const OSSUARY_NEAR = [
+  { shape: 59.25, x: 2.72, z: 0.2, tone: 0.95, hM: 1.0, wM: 2.16, seed: 2.7, free: true, keep: true, still: true, grave: [0.42, 0.95, 0.32] },
+  { shape: 59.25, x: -1.47, z: 1.3, tone: 0.95, hM: 1.0, wM: 2.16, seed: 6.1, free: true, keep: true, still: true, grave: [0.40, 0.92, 0.32] },
+  { shape: 58, x: -3.0, z: 2.0, tone: 0.96, free: true, keep: true, still: true },
 ];
 
 export const REGIONS = {
@@ -3199,15 +3221,19 @@ export const ROOM_KINDS = {
       { subject: 'catacombs', count: 4, swap: [[57, 59], [6, 58]] },
       { subject: 'cryptchapel', swap: [[6, 58]], count: 3, room: { d: 0.80 }, cam: { z: -1.0, look: 0.15 },
         lamps: [{ i: 1, x: 0.0, z: 0.86, y: 1.6, color: '#e2a660', k: 0.85, fit: 'none' }],
-        near: [{ shape: 57, edge: 0.74, z: -3.0, tone: 0.96 },
+        /* (round 43 graft: its sarcophagi forward -- the chapel's tomb a
+           stride and a half nearer, -3.0 -> -1.2, and a second on the near
+           flags, FAMILY_NEAR) */
+        near: [{ shape: 57, edge: 0.74, z: -1.2, tone: 0.96 },
                { shape: 58, x: -2.4, z: -6.0, tone: 0.95, free: true },
                { shape: 58, x: 2.4, z: -9.6, tone: 0.92, free: true },
-               ...CRYPT_NEAR] },
-      { subject: 'charnel', swap: [[57, 59], [15, 59]], count: 3, cam: { y: -0.20, z: -0.4, fov: 3 },
+               ...FAMILY_NEAR] },
+      /* (round 43 graft: its graves bone-filled pits -- MM_FLAGK 3) */
+      { subject: 'charnel', swap: [[57, 59], [15, 59]], count: 3, cam: { y: -0.20, z: -0.4, fov: 3 }, flagK: 3,
         near: [{ shape: 58, x: -2.6, z: -4.3, tone: 0.95, free: true },
                { shape: 59, edge: 0.78, z: -3.2, tone: 0.96 },
                { shape: 58, x: 2.8, z: -9.5, tone: 0.92, free: true },
-               ...CRYPT_NEAR] },
+               ...OSSUARY_NEAR] },
     ],
     names: [
       [/ossuar|bone|skull/i, 2],
@@ -4010,6 +4036,9 @@ export class Atmosphere {
       if (kind.floor !== undefined) pal.floorPattern = kind.floor;
       /* (round 41, AMETHYST: and its own floor covering -- MM_RUGK, Backdrop) */
       if (kind.floorK !== undefined) pal.floorK = kind.floorK;
+      /* (round 43 graft: and its own flags -- MM_FLAGK: the ossuary's pits
+         heaped with bones, 3) */
+      if (kind.flagK !== undefined) pal.flagK = kind.flagK;
       /* (round 43: and the moon through its own window, laid on its floor --
          pal.win, FLOOR_FRAG's winLit) */
       if (kind.win !== undefined) pal.win = kind.win;
