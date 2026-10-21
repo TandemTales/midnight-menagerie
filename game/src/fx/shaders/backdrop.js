@@ -14580,7 +14580,7 @@ vec3 grvFloor(vec3 alb, vec3 P, float mp){
     kt *= 1.0 + 0.35*(1.0 - smoothstep(0.0, aa*2.0 + 0.018, KB - dQ));
     kt *= 1.0 - 0.70*(1.0 - smoothstep(0.0, aa*1.5, abs(dQ - KB)));
     kt *= 1.0 - 0.80*(1.0 - smoothstep(0.0, aa*1.5, abs(dQ)));
-    kt = mix(kt, kt*vec3(0.74, 0.92, 0.60), 0.40*smoothstep(0.58, 0.86, mmNoise(Q*3.0 + i*2.0)));
+    kt = mix(kt, kt*vec3(0.74, 0.92, 0.60), 0.40*step(0.72, kId));   // (lichen on one stone in four)
     /* THE OUTER FACE toward you: the candles are at the head, so it is in
        its own shade, darker to its foot where it meets the flags */
     float hF = clamp((KB - dOpen)/max(dQ - dOpen, 1e-3), 0.0, 1.0);   // how far up the face
@@ -14614,7 +14614,9 @@ vec3 grvFloor(vec3 alb, vec3 P, float mp){
       /* the ossuary's pit, heaped with bones */
       float hole;
       float sk = grvHeap(H, pxB, hole);
-      float sk2 = grvHeap(H + vec2(0.0, -0.030), pxB, hole);
+      float sk2 = sk;
+      float hole2;
+      if (sk < 0.035) sk2 = grvHeap(H + vec2(0.0, -0.030), pxB, hole2);
 #else
       /* its floor: earth gone dark with the damp, and the one who lay there
          on it, head to the far end (the skull at the ledger's foot) */
@@ -14625,7 +14627,8 @@ vec3 grvFloor(vec3 alb, vec3 P, float mp){
       /* (one sample toward the candles at its head: each bone lit on the
          side toward them and throwing its shadow on the earth away from
          them -- the bones with VOLUME, J3: "flat sticker outlines") */
-      float sk2 = grvSkel(bq + vec2(0.030, 0.012)/sc, 1.0, pxB/sc, holeB)*sc;
+      float sk2 = sk;
+      if (sk < 0.035) sk2 = grvSkel(bq + vec2(0.030, 0.012)/sc, 1.0, pxB/sc, holeB)*sc;   // (only by a bone: the frame budget)
 #endif
       float onB = clamp(0.5 - sk/pxB, 0.0, 1.0);
       float litB = clamp(0.5 + (sk2 - sk)/0.020, 0.0, 1.0);
@@ -15686,8 +15689,8 @@ void main(){
        the crown's webs and ribs lifted a step, so the ribs read over it to
        the ridge and the barrel is not a black lid over the end wall) */
     float crownL = 1.0 - spring;
-    pat = 0.09 + 0.12*spring + 0.07*crownL - 0.16*jt - 0.20*shd + 0.06*mmFbm3(w*1.3 + uSeed);
-    pat = mix(pat, (0.22 + 0.85*roll*roll)*(1.0 + 0.35*crownL), rib);
+    pat = 0.09 + 0.12*spring + 0.045*crownL - 0.16*jt - 0.20*shd + 0.06*mmFbm3(w*1.3 + uSeed);
+    pat = mix(pat, (0.22 + 0.85*roll*roll)*(1.0 + 0.22*crownL), rib);
     pat = mix(pat, 0.70 - 0.40*bossR, onBoss);
     pat -= 0.45*arris*(1.0 - onBoss);
     cellv = mmHash11(row*3.1 + floor((by + 7.0)/0.48)*7.7 + uSeed);
@@ -20714,28 +20717,26 @@ float yewRagP(float u, float sd, float amp){
   r = max(r, step(0.86, h3)*sqrt(tip)*(0.035 + 0.050*fract(h3*13.7)));
   /* (round 43 GRAFT: and a run across the way withers with the walls --
      all three survey-8 judges on CUPRITE's sheet: "the back wall still
-     ruler-straight". yewRagW's crown, BENITOITE's undulating leafy line and
-     ZINCITE's notches, at a run's own scale: the sprays a hand proud, a long
-     soft dip every few strides, dead sprigs standing up out of the line, and
-     a ragged notch where the yew has died back. The dip, the notch and the
-     sprig are handed on for the paint: gYewDead.) */
+     ruler-straight". BENITOITE's undulating leafy line, at a run's own
+     scale: the sprays a hand proud, a long soft dip every few strides, dead
+     sprigs standing up out of the line. The dip and the sprig are handed on
+     for the paint: gYewDead.) */
   r *= 2.1;
   float qd = u/3.9 + sd*0.71;
   float di = floor(qd), df = fract(qd);
-  float dc = 0.25 + 0.5*mmHash11(di*5.17 + sd);
-  float dwid = 0.12 + 0.16*mmHash11(di*2.31 + sd);
+  float dh = mmHash11(di*3.91 + sd);   // (one hash for the dip, its place, width and depth: the frame budget)
+  float dc = 0.25 + 0.5*fract(dh*7.31);
+  float dwid = 0.12 + 0.16*fract(dh*13.7);
   float dt = clamp(abs(df - dc)/dwid, 0.0, 1.0);
-  float dip = step(0.36, mmHash11(di*3.91 + sd))*(0.5 + 0.5*cos(dt*3.1416))*(0.20 + 0.30*mmHash11(di*8.71 + sd));
+  float dip = step(0.36, dh)*(0.5 + 0.5*cos(dt*3.1416))*(0.20 + 0.30*fract(dh*5.77));
   float qs = u/0.11 + sd*4.3;
   float fs = fract(qs), hs = mmHash11(floor(qs)*6.71 + sd);
   float sprig = step(0.80 - 0.45*smoothstep(0.02, 0.12, dip), hs)*max(1.0 - abs(fs - 0.5 - (fract(hs*7.3) - 0.5)*0.5)/0.22, 0.0)*(0.08 + 0.22*fract(hs*17.1))*min(amp, 1.0);
-  float gv = u/3.9 + sd*0.53 + 0.31;
-  float hg = mmHash11(floor(gv)*4.37 + sd*1.3);
-  float gt = (fract(gv) - 0.24 - 0.52*fract(hg*7.31))/((0.34 + 0.40*fract(hg*13.7))/3.9);
-  float bell = max(1.0 - gt*gt, 0.0)*step(0.40, hg);
-  float notch = (0.26 + 0.36*fract(hg*3.9))*bell*(0.72 + 0.28*(0.5 + 0.5*sin(u*13.0 + sd*3.0)*sin(u*5.3 + sd)))*smoothstep(0.0, 0.35, bell);
-  gRagDipP = dip; gRagGkP = bell; gRagSprP = sprig;
-  return lvl + sag + r*mix(1.0, amp, 0.6) - min(dip + notch, 0.80) + sprig - 0.020;
+  /* (ZINCITE's notches and their twigs are the walls' -- yewRagW, yewTwigW;
+     the prop program is the maze fight's dearest, so a run withers by its
+     dips and its sprigs) */
+  gRagDipP = dip; gRagGkP = 0.0; gRagSprP = sprig;
+  return lvl + sag + r*mix(1.0, amp, 0.6) - dip + sprig - 0.020;
 }
 /* (the tallest clump a run's quad has room for over its set top) */
 /* (round 34 graft: the crown's scale, 1.3 as the far wall's, held so its
@@ -26268,79 +26269,85 @@ float wfBones(vec2 q, float px, float seed, float kq, bool paint){
   float ink = 0.0;
   col = mix(col, vec3(0.008, 0.008, 0.010), wfIn(under, px));
   float gr = mmNoise(q*vec2(6.0, 9.0) + seed*3.0);
-  /* THE HEADSTONE's face: dressed stone lit from the key's side, darker to
-     its foot, grimed in streaks from the top; a raised border band, the
-     cross in relief, the inscription */
-  vec2 f = sq - vec2(0.0, SH*0.5);
-  float bIn = min(SW - abs(f.x), SH*0.5 - abs(f.y));
-  float bord = 1.0 - smoothstep(0.050, 0.050 + px*1.2, bIn);
-  vec2 cr = f - vec2(0.0, 0.14);
-  float crs = min(mmBox(cr, vec2(0.030, 0.17), 0.006), mmBox(cr - vec2(0.0, 0.055), vec2(0.11, 0.030), 0.006));
-  float crossIn = wfIn(crs, px);
-  float crossLit = wfIn(crs + 0.010, px);
-  float ins = 0.0;
-  for (int i = 0; i < 3; i++){
-    float fi = float(i);
-    float ly = -0.12 - fi*0.080;
-    float wdt = 0.20 - fi*0.035;
-    float onL = step(abs(f.y - ly), 0.017)*step(abs(f.x), wdt);
-    float ch = abs(fract(f.x/0.034 + fi*0.37) - 0.5);
-    float word = step(0.22, mmHash11(floor(f.x/0.11 + fi*3.0) + seed));
-    ins = max(ins, onL*smoothstep(0.34, 0.22, ch)*word*(0.55 + 0.45*mmNoise(f*40.0 + fi)));
+  vec3 bone = vec3(0.62, 0.56, 0.42)*(0.82 + 0.25*gr);
+  float onSlab = 0.0;
+  if (H) {
+    /* THE HEADSTONE's face: dressed stone lit from the key's side, darker to
+       its foot, grimed in streaks from the top; a raised border band, the
+       cross in relief, the inscription */
+    vec2 f = sq - vec2(0.0, SH*0.5);
+    float bIn = min(SW - abs(f.x), SH*0.5 - abs(f.y));
+    float bord = 1.0 - smoothstep(0.050, 0.050 + px*1.2, bIn);
+    vec2 cr = f - vec2(0.0, 0.14);
+    float crs = min(mmBox(cr, vec2(0.030, 0.17), 0.006), mmBox(cr - vec2(0.0, 0.055), vec2(0.11, 0.030), 0.006));
+    float crossIn = wfIn(crs, px);
+    float crossLit = wfIn(crs + 0.010, px);
+    float ins = 0.0;
+    if (abs(f.x) < 0.21 && f.y < -0.09 && f.y > -0.31) for (int i = 0; i < 3; i++){
+      float fi = float(i);
+      float ly = -0.12 - fi*0.080;
+      float wdt = 0.20 - fi*0.035;
+      float onL = step(abs(f.y - ly), 0.017)*step(abs(f.x), wdt);
+      float ch = abs(fract(f.x/0.034 + fi*0.37) - 0.5);
+      float word = step(0.22, mmHash11(floor(f.x/0.11 + fi*3.0) + seed));
+      ins = max(ins, onL*smoothstep(0.34, 0.22, ch)*word*(0.70 + 0.30*fract(f.x*29.0 + fi)));
+    }
+    float shade = (0.72 + 0.40*smoothstep(-SW, SW, kq*f.x))*(0.62 + 0.45*smoothstep(-0.40, 0.42, f.y));
+    vec3 stone = vec3(0.300, 0.272, 0.232)*(0.80 + 0.30*mmNoise(q*16.0 + seed))*shade;
+    stone *= 0.82 + 0.22*smoothstep(0.25, 0.75, mmNoise(vec2(q.x*14.0, q.y*2.2) + seed*3.0));
+    float moss = smoothstep(0.20, 0.02, sq.y + 0.05*gr)*(0.6 + 0.4*gr);
+    stone = mix(stone, vec3(0.13, 0.17, 0.10)*shade, moss*0.75);
+    vec3 face = stone*(1.0 + 0.12*bord);
+    face = mix(face, stone*0.55, (1.0 - crossLit)*crossIn);      // the cross's shadowed flank
+    face = mix(face, stone*1.25, crossLit);                       // its lit face, proud of the slab
+    face = mix(face, stone*0.36, ins);
+    float crk = abs(f.y - (0.05 - 0.45*f.x + 0.025*sin(f.x*31.0 + seed*2.0)));
+    face = mix(face, stone*0.30, mmInkP(crk, px, 1.0)*step(abs(f.x), SW - 0.02)*0.9);
+    wfLay(col, ink, slab, face, px, 1.0);
+    onSlab = wfIn(slab, px);
+    ink = max(ink, mmInkP(bIn - 0.050, px, 1.0)*onSlab*0.55);
+    ink = max(ink, mmInkP(crs, px, 1.0)*0.75*onSlab);
+    col = mix(col, stone*1.25, (1.0 - smoothstep(0.0, 0.025, brk))*onSlab*0.7);   // the broken corner's raw stone
+    /* its top arris catches the light */
+    col *= 1.0 + 0.45*(1.0 - smoothstep(0.0, px*2.0 + 0.010, abs(sq.y - SH + 0.010)))*onSlab;
+    /* the base: its chamfered top lit, its face a step down, moss at its foot */
+    vec3 bs = vec3(0.300, 0.272, 0.232)*(0.78 + 0.30*gr)*(0.55 + 0.45*smoothstep(0.0, 0.13, q.y));
+    bs = mix(bs, bs*1.45, smoothstep(0.124, 0.140, q.y));
+    bs = mix(bs, vec3(0.12, 0.16, 0.09)*(0.7 + 0.5*gr), smoothstep(0.05, 0.0, q.y)*0.6);
+    wfLay(col, ink, base, bs, px, 0.95);
+    ink = max(ink, mmInkP(q.y - 0.124, px, 1.0)*0.55*wfIn(base, px));
+    /* the skull and the bone at the kerb: bone gone brown with the damp,
+       round in its own light, its sockets dark */
+    wfLay(col, ink, femur, bone*(0.70 + 0.40*smoothstep(0.0, 0.06, q.y)), px, 0.95);
+    float sr = clamp(sk.y/0.074, -1.0, 1.0);
+    wfLay(col, ink, skull, bone*(0.55 + 0.55*smoothstep(-0.7, 0.9, sr))*(0.90 + 0.25*smoothstep(-0.06, 0.06, kq*sk.x)), px, 0.95);
+    float eyes = min(length(sk - vec2(0.040, -0.004)) - 0.021, length(sk - vec2(-0.012, -0.010)) - 0.020);
+    col = mix(col, vec3(0.025, 0.02, 0.018), wfIn(min(eyes, length((sk - vec2(0.018, -0.040))/vec2(0.7, 1.0)) - 0.010), px)*wfIn(skull, px));
   }
-  float shade = (0.72 + 0.40*smoothstep(-SW, SW, kq*f.x))*(0.62 + 0.45*smoothstep(-0.40, 0.42, f.y));
-  vec3 stone = vec3(0.300, 0.272, 0.232)*(0.80 + 0.30*mmNoise(q*16.0 + seed))*shade;
-  stone *= 0.82 + 0.22*smoothstep(0.25, 0.75, mmNoise(vec2(q.x*14.0, q.y*2.2) + seed*3.0));
-  float moss = smoothstep(0.20, 0.02, sq.y + 0.05*mmNoise(q*9.0 + seed))*(0.6 + 0.4*mmNoise(q*30.0));
-  stone = mix(stone, vec3(0.13, 0.17, 0.10)*shade, moss*0.75);
-  vec3 face = stone*(1.0 + 0.12*bord);
-  face = mix(face, stone*0.55, (1.0 - crossLit)*crossIn);      // the cross's shadowed flank
-  face = mix(face, stone*1.25, crossLit);                       // its lit face, proud of the slab
-  face = mix(face, stone*0.36, ins);
-  float crk = abs(f.y - (0.05 - 0.45*f.x + 0.025*sin(f.x*31.0 + seed*2.0)));
-  face = mix(face, stone*0.30, mmInkP(crk, px, 1.0)*step(abs(f.x), SW - 0.02)*0.9);
-  wfLay(col, ink, slab, face, px, 1.0);
-  ink = max(ink, mmInkP(bIn - 0.050, px, 1.0)*wfIn(slab, px)*0.55);
-  ink = max(ink, mmInkP(crs, px, 1.0)*0.75*wfIn(slab, px));
-  col = mix(col, stone*1.25, (1.0 - smoothstep(0.0, 0.025, brk))*wfIn(slab, px)*0.7);   // the broken corner's raw stone
-  /* its top arris catches the light */
-  col *= 1.0 + 0.45*(1.0 - smoothstep(0.0, px*2.0 + 0.010, abs(sq.y - SH + 0.010)))*wfIn(slab, px);
-  /* the base: its chamfered top lit, its face a step down, moss at its foot */
-  vec3 bs = vec3(0.300, 0.272, 0.232)*(0.78 + 0.30*gr)*(0.55 + 0.45*smoothstep(0.0, 0.13, q.y));
-  bs = mix(bs, bs*1.45, smoothstep(0.124, 0.140, q.y));
-  bs = mix(bs, vec3(0.12, 0.16, 0.09)*(0.7 + 0.5*gr), smoothstep(0.05, 0.0, q.y)*0.6);
-  wfLay(col, ink, base, bs, px, 0.95);
-  ink = max(ink, mmInkP(q.y - 0.124, px, 1.0)*0.55*wfIn(base, px));
-  /* THE LEDGE: the slab's edge toward us, a hand thick, its lit top face a
-     sliver over it, the broken end rough */
-  vec3 sand = vec3(0.37, 0.33, 0.27);
-  vec3 ed = sand*(0.62 + 0.30*gr)*(0.65 + 0.45*smoothstep(0.0, 0.16, b.y));
-  ed = mix(ed, sand*1.25*(0.9 + 0.2*gr), smoothstep(0.130, 0.150, b.y));
-  ed = mix(ed, ed*0.70, smoothstep(-0.24, -0.30, b.x));
-  wfLay(col, ink, ledge, ed, px, 0.95);
-  ink = max(ink, mmInkP(b.y - 0.136, px, 1.0)*0.60*wfIn(ledge, px));
-  /* the skulls and the bone: bone gone brown with the damp, each round in
-     its own light, its sockets dark */
-  vec3 bone = vec3(0.62, 0.56, 0.42)*(0.82 + 0.25*mmNoise(q*30.0 + seed*2.0));
-  wfLay(col, ink, femur, bone*(0.70 + 0.40*smoothstep(0.0, 0.06, q.y)), px, 0.95);
-  float sr = clamp(sk.y/0.074, -1.0, 1.0);
-  wfLay(col, ink, skull, bone*(0.55 + 0.55*smoothstep(-0.7, 0.9, sr))*(0.90 + 0.25*smoothstep(-0.06, 0.06, kq*sk.x)), px, 0.95);
-  float eyes = min(length(sk - vec2(0.040, -0.004)) - 0.021, length(sk - vec2(-0.012, -0.010)) - 0.020);
-  col = mix(col, vec3(0.025, 0.02, 0.018), wfIn(min(eyes, length((sk - vec2(0.018, -0.040))/vec2(0.7, 1.0)) - 0.010), px)*wfIn(skull, px));
-  float sr2 = clamp(sk2.y/0.074, -1.0, 1.0);
-  wfLay(col, ink, skull2, bone*(0.55 + 0.55*smoothstep(-0.7, 0.9, sr2))*(0.90 + 0.25*smoothstep(-0.06, 0.06, kq*sk2.x)), px, 0.95);
-  float eyes2 = min(length(sk2 - vec2(-0.028, -0.004)), length(sk2 - vec2(0.028, -0.004))) - 0.019;
-  col = mix(col, vec3(0.025, 0.02, 0.018), wfIn(min(eyes2, length((sk2 - vec2(0.0, -0.034))/vec2(0.7, 1.0)) - 0.010), px)*wfIn(skull2, px));
-  ink = max(ink, mmInkP(sk2.y + 0.048, px, 0.9)*wfIn(skull2, px)*0.6);
-  /* the candles: tallow gone yellow, their flames, the light they throw on
-     the stone round them */
-  wfLay(col, ink, cdl, vec3(0.90, 0.84, 0.66)*(0.70 + 0.40*smoothstep(-0.02, 0.02, kq*q.x)), px, 0.7);
-  float flame = wfIn(fla, px);
-  col = mix(col, vec3(1.0, 0.9, 0.6), flame);
-  col *= 1.0 + 1.6*glow*(1.0 - flame);
-  gWfEmit = vec3(1.00, 0.84, 0.50)*1.7*flame + vec3(1.0, 0.62, 0.26)*0.30*glow*(1.0 - flame)*wfIn(cdl, px);
+  if (Lg) {
+    /* THE LEDGE: the slab's edge toward us, a hand thick, its lit top face
+       a sliver over it, the broken end rough */
+    vec3 sand = vec3(0.37, 0.33, 0.27);
+    vec3 ed = sand*(0.62 + 0.30*gr)*(0.65 + 0.45*smoothstep(0.0, 0.16, b.y));
+    ed = mix(ed, sand*1.25*(0.9 + 0.2*gr), smoothstep(0.130, 0.150, b.y));
+    ed = mix(ed, ed*0.70, smoothstep(-0.24, -0.30, b.x));
+    wfLay(col, ink, ledge, ed, px, 0.95);
+    ink = max(ink, mmInkP(b.y - 0.136, px, 1.0)*0.60*wfIn(ledge, px));
+    float sr2 = clamp(sk2.y/0.074, -1.0, 1.0);
+    wfLay(col, ink, skull2, bone*(0.55 + 0.55*smoothstep(-0.7, 0.9, sr2))*(0.90 + 0.25*smoothstep(-0.06, 0.06, kq*sk2.x)), px, 0.95);
+    float eyes2 = min(length(sk2 - vec2(-0.028, -0.004)), length(sk2 - vec2(0.028, -0.004))) - 0.019;
+    col = mix(col, vec3(0.025, 0.02, 0.018), wfIn(min(eyes2, length((sk2 - vec2(0.0, -0.034))/vec2(0.7, 1.0)) - 0.010), px)*wfIn(skull2, px));
+    ink = max(ink, mmInkP(sk2.y + 0.048, px, 0.9)*wfIn(skull2, px)*0.6);
+    /* the candles: tallow gone yellow, their flames, the light they throw
+       on the stone round them */
+    wfLay(col, ink, cdl, vec3(0.90, 0.84, 0.66)*(0.70 + 0.40*smoothstep(-0.02, 0.02, kq*q.x)), px, 0.7);
+    float flame = wfIn(fla, px);
+    col = mix(col, vec3(1.0, 0.9, 0.6), flame);
+    col *= 1.0 + 1.6*glow*(1.0 - flame);
+    gWfEmit = vec3(1.00, 0.84, 0.50)*1.7*flame + vec3(1.0, 0.62, 0.26)*0.30*glow*(1.0 - flame)*wfIn(cdl, px);
+  }
   gWfGloss = 0.10;
-  gWfMoon = 0.25*wfIn(slab, px)*smoothstep(0.55, 0.95, q.y) + 0.25*wfIn(min(skull, skull2), px);
+  gWfMoon = 0.25*onSlab*smoothstep(0.55, 0.95, q.y) + 0.25*wfIn(min(skull, skull2), px);
   gWfCol = col; gWfInk = ink;
   return d;
 }
