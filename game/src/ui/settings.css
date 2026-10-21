@@ -966,3 +966,44 @@
   .mm-set__row:has(> .mm-set__text.mm-set__well) > .mm-set__label > span:first-child { white-space: normal; max-width: 8.6em; }
   .mm-set__seed.mm-set__well, .mm-set__text.mm-set__well { width: 146px; }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ROUND 42 GRAFT 8 — THE SEEDS ON SWALLOW-TAILED PLATES; THE PANELS CLEAR
+   OF THE BAR AT 1280
+   VERDICTS-r42 graft 8: each seed's slot struck on the enamel cartouche the
+   sliders' readings wear, its scrolled, swallow-tailed ends (ZOISITE's; J3),
+   the channel sunk the length of it between them; and at the Deck's 1280 the
+   Reading and Expedition panels stand clear of the Restore Defaults / Done
+   bar (J3) -- the columns' gaps, the panels' feet and the palette grid a
+   little closer, so nothing scrolls and the panels end above the bar.
+   ═══════════════════════════════════════════════════════════════════════════ */
+.mm-set__well {
+  border-width: 0 calc(var(--well-h) * 34 / 64);
+  border-image: url("../../assets/ui/kit/cartouche.webp") 18 34 18 34 /
+    calc(var(--well-h) * 18 / 64) calc(var(--well-h) * 34 / 64) stretch;
+  background:
+    /* the channel: sunk, its walls in shadow, a gilt hairline at its lip */
+    linear-gradient(180deg, rgb(0 0 0 / .6), transparent 45%) 50% 50% / 100% 60% no-repeat,
+    linear-gradient(180deg, #07040a, #120a19 60%, #1a1024) 50% 50% / 100% 60% no-repeat,
+    linear-gradient(180deg, color-mix(in srgb, var(--kit-gold-lo) 90%, transparent), color-mix(in srgb, var(--kit-gold-lo) 90%, transparent)) 50% 50% / 100% calc(60% + 3px) no-repeat,
+    /* the cartouche's own enamel between its ends */
+    linear-gradient(180deg, #2a1a38, #1a1024 55%, #140c1c) 50% 50% / 100% calc(100% - var(--well-h) * 18 / 64 * .7) no-repeat;
+  background-clip: padding-box;
+}
+.mm-set__text.mm-set__well:focus,
+.mm-set__text.mm-set__well:focus-visible {
+  background:
+    radial-gradient(60% 50% at 50% 50%, rgb(255 178 92 / .3), transparent 80%) 50% 50% / 100% 56% no-repeat,
+    linear-gradient(180deg, rgb(0 0 0 / .6), transparent 45%) 50% 50% / 100% 60% no-repeat,
+    linear-gradient(180deg, #07040a, #120a19 60%, #1a1024) 50% 50% / 100% 60% no-repeat,
+    linear-gradient(180deg, var(--kit-gold-hi), var(--kit-gold-hi)) 50% 50% / 100% calc(60% + 3px) no-repeat,
+    linear-gradient(180deg, #2a1a38, #1a1024 55%, #140c1c) 50% 50% / 100% calc(100% - var(--well-h) * 18 / 64 * .7) no-repeat;
+  background-clip: padding-box;
+}
+@media (max-width: 1400px) and (max-height: 860px) {
+  .mm-set__col { row-gap: 16px; }
+  .mm-set__group { padding-bottom: 10px; }
+  .mm-set__group > .mm-set__row { padding-block: 2px; }
+  .mm-set__choices:has(> .mm-set__choice--swatch) { gap: 5px 14px; padding: 3px 0 1px 2px; }
+  .mm-set__choice--swatch.kit-hw-swatch { --disc: 32px; --plate-h: 28px; }
+}
