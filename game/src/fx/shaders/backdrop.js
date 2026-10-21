@@ -5181,7 +5181,37 @@ float yewRagW(float u, float sd, float amp){
   float f3 = fract(q3), h3 = mmHash11(floor(q3)*5.93 + sd);
   float tip = max(1.0 - abs(f3 - 0.5 - (h3 - 0.5)*0.3)/0.40, 0.0);
   r = max(r, step(0.86, h3)*sqrt(tip)*(0.035 + 0.050*fract(h3*13.7)));
-  return lvl + sag + r*mix(1.0, amp, 0.6) - 0.020;
+  /* ROUND 43 (CUPRITE): GROWN OUT, AND WITHERED. Both survey-8 judges: "the
+     hedge walls are flat noise-textured boxes with ruler-straight tops";
+     "give the hedges ragged leafy tops and withered gaps with a drawn edge".
+     Round 41 clipped the crown to the gardener's line, and both judges read
+     the line as a ruler. This is a maze no one has sheared since the house
+     went quiet: the clipped mass breaking up into CLUMPS of leaf a stride
+     or two wide, each its own hand proud of the old cut; and here and there
+     a stretch of it DEAD -- sunk a forearm into the hedge, brown, the bare
+     sprigs of it standing up out of the hollow against the sky. */
+  float q4 = u/0.47 + sd*0.91;
+  float f4 = fract(q4), h4 = mmHash11(floor(q4)*3.31 + sd);
+  float lobe = sqrt(max(1.0 - 4.0*(f4 - 0.5)*(f4 - 0.5), 0.0))*(0.025 + 0.085*h4);
+  float q5 = u/1.9 + sd*0.53;
+  float h5 = mmHash11(floor(q5)*7.17 + sd);
+  float gw5 = 0.34 + 0.28*fract(h5*9.3);
+  float g5 = step(0.70, h5)*(1.0 - smoothstep(gw5*0.55, gw5, abs(fract(q5) - 0.5)*2.0));
+  float sink = g5*(0.20 + 0.22*fract(h5*5.7));
+  float q6 = u/0.075 + sd*4.1;
+  float f6 = fract(q6), h6 = mmHash11(floor(q6)*2.91 + sd);
+  float twg = pow(max(1.0 - abs(f6 - 0.5)/0.16, 0.0), 0.5);
+  float sprig = g5*step(0.50, h6)*twg*sink*(0.55 + 0.45*fract(h6*7.1));
+  r += lobe;
+  return lvl + sag + r*mix(1.0, amp, 0.6) - sink + sprig - 0.020;
+}
+/* (round 43: how much of the crown over u is a withered stretch -- the same
+   cells yewRagW sinks -- for its colour) */
+float yewDeadW(float u, float sd){
+  float q5 = u/1.9 + sd*0.53;
+  float h5 = mmHash11(floor(q5)*7.17 + sd);
+  float gw5 = 0.34 + 0.28*fract(h5*9.3);
+  return step(0.70, h5)*(1.0 - smoothstep(gw5*0.75, gw5*1.15, abs(fract(q5) - 0.5)*2.0));
 }
 /* THE HEDGE MAZE'S WALLS. Clipped yew 3.2 m high -- the yew runs' (shape
    28) own height, so a run across the way and the walls either side are one
@@ -5479,6 +5509,11 @@ float hedgeWallH(vec2 q, float qpx, out float occ){
   /* (round 41 graft, LABRADORITE's: the face darkening toward the ground --
      the mass lit from above, a stop more) */
   yew *= mix(0.46, 1.18, smoothstep(0.30, HH - 0.30, q.y));
+  /* (round 43: the withered stretches of the crown brown and dry, going
+     down into the hedge a metre under the sunk top, and the clumps either
+     side of them green) */
+  float dead = yewDeadW(u, sd)*smoothstep(top - 1.10, top - 0.15, q.y)*hedge;
+  yew = mix(yew, vec3(mmLum(yew))*vec3(1.55, 1.00, 0.52)*0.85, dead*0.85);
   yew *= mix(1.0, 0.50, corr*ret);
   yew = mix(yew, yew*0.12, niche*(1.0 - stone));
   /* (round 29 graft: the court figures in pale stone, carved in their own
@@ -14524,6 +14559,7 @@ void main(){
   float r41Gravel = 0.0, r41Leaf = 0.0, r41Root = 1.0;   // (round 41: the maze's walk, its leaves and the hedges' root shade)
   float r41Joint = 0.0;     // (round 41 graft: the maze walk's open joints, for their dark below)
   float r41LeafInk = 0.0;   // (round 41 graft: the pen round each fallen leaf)
+  float r43Rt = 0.0, r43RtI = 0.0;   // (round 43: the yews' roots out across the lawn, and their pen line)
 #endif
 #if MM_FLOORX >= 1
   /* (round 22: 13, the maze's lawn, and 14, the pumpkin patch, are the
@@ -14730,6 +14766,41 @@ void main(){
            under the house's tooth the mown stripes had gone, and the near
            lawn was a flat dark) */
         pat = 0.50 + (tuft*0.20 + blade*0.20)*(1.0 - earth) - earth*0.14 + (st - 0.5)*0.30;
+        /* ROUND 43 (CUPRITE): THE LAWN IS GRASS (both survey-8 judges: "a
+           milky grey"; "a rich deep green"). The churchyard's clumps (round
+           25, PAYNE's), sown here closer: every 0.30 m a dark root and two
+           blades fanning up the plane, their tips catching the light, the
+           ground between them a shade darker -- drawn while a blade is a
+           pixel across, the mown lawn past that */
+        {
+          float gRes = smoothstep(0.040, 0.016, mpp.x) * smoothstep(0.24, 0.09, mpp.y);
+          if (gRes > 0.001) {
+            const float GC = 0.36;
+            float bladeC = 0.0, tipC = 0.0, rootC = 0.0;
+            vec2 gci = floor(w/GC);
+            vec2 gh2 = mmHash22(gci + 17.3);
+            vec2 base = (gci + vec2(0.25 + gh2.x*0.50, 0.08 + gh2.y*0.20))*GC;
+            float has = step(0.15, mmHash21(gci + 2.9)) * (1.0 - earth);
+            float gL = GC*(0.55 + 0.35*gh2.y);
+            rootC = (1.0 - smoothstep(0.0, 0.15, length((w - base)*vec2(1.0, 0.7))))*has;
+            for (int k = 0; k < 2; k++){
+              if (has < 0.5) break;
+              float fk = float(k)*2.0;
+              float ang = (fk - 1.0)*0.42 + (gh2.x - 0.5)*0.30 + (fract(gh2.y*7.3 + fk*0.37) - 0.5)*0.22;
+              vec2 dir = vec2(sin(ang), cos(ang));
+              float L = gL*(0.65 + 0.35*fract(gh2.x*13.1 + fk*0.61))*(1.0 - 0.25*abs(fk - 1.0));
+              vec2 v = w - base;
+              float t = clamp(dot(v, dir)/L, 0.0, 1.0);
+              vec2 axis = dir*t*L + vec2(dir.y, -dir.x)*sign(ang + 1e-3)*0.06*L*t*t;
+              float wd = mix(0.030, 0.002, t*t) + mpp.x*0.45;
+              float dd = length(v - axis);
+              float on = (1.0 - smoothstep(wd, wd + mpp.x*1.1, dd)) * step(-0.01, dot(v, dir)) * has;
+              bladeC = max(bladeC, on);
+              tipC = max(tipC, on*smoothstep(0.45, 0.95, t));
+            }
+            pat += ((bladeC*0.40 + tipC*0.50) - rootC*0.30 - (1.0 - bladeC)*0.10) * gRes;
+          }
+        }
 #else
         pat = 0.50 + (tuft*0.20 + blade*0.20)*(1.0 - earth) - earth*0.14 + (st - 0.5)*0.20;
 #endif
@@ -14759,6 +14830,28 @@ void main(){
             float hwH = max(uSconce.x, 1.0);
             float footD = min(hwH - abs(vWorld.x), vWorld.z - uSconceEnd);
             r41Root = mix(0.28, 1.0, smoothstep(0.04, 0.70, footD));
+            /* ROUND 43 (CUPRITE): ROOTS ON THE LAWN (survey-8 judge 2: "darken
+               the lawn to a rich deep green with leaves and roots on it"). An
+               old yew heaves its roots up through the turf at its foot: one
+               every stride or so, out of the root line and across the grass
+               for a forearm or a stride, wandering, thick at the hedge and
+               thinning to nothing -- each lit along its back and inked */
+            {
+              float sideD = hwH - abs(vWorld.x), farD = vWorld.z - uSconceEnd;
+              float alongR = sideD < farD ? w.y : w.x;
+              float rD = max(footD, 0.0);
+              if (rD < 1.25 && mp < 0.06) {
+                float rq = alongR/0.85 + 0.12*sin(rD*6.0 + alongR*1.7) + 0.05*sin(rD*17.0);
+                float ri = floor(rq);
+                float rLen = 0.45 + 0.75*mmHash11(ri*5.1 + 2.0);
+                float rt = clamp(rD/rLen, 0.0, 1.0);
+                float rwR = mix(0.050, 0.006, rt);
+                float rf = abs(fract(rq) - 0.5)*0.85;
+                float hasR = step(0.35, mmHash11(ri*3.7 + 1.0))*step(rD, rLen);
+                r43Rt = (1.0 - smoothstep(rwR, rwR + mp*1.1, rf))*hasR*smoothstep(0.12, 0.03, mp);
+                r43RtI = mmInkP(rf - rwR, mp, 1.1)*hasR*smoothstep(0.12, 0.03, mp)*step(0.02, rwR);
+              }
+            }
             float pxdL = abs(w.x - uRunX);
             float kb = 1.0 - smoothstep(0.0, 0.55, pxdL - uRunner - 0.12);
             float wf = 1.0 - smoothstep(0.10, 1.20, footD);
@@ -15818,6 +15911,9 @@ void main(){
   alb = mix(alb, alb*vec3(0.80, 1.06, 0.70), r41Joint*0.6);
   alb = mix(alb, vec3(mmLum(alb))*vec3(1.45, 0.92, 0.46)*0.95, r41Leaf*0.80);   // (round 41 graft: an old russet, dark -- 1.25 lit them as confetti)
   alb *= 1.0 - 0.70*r41LeafInk;
+  /* (round 43: the roots, old bark gone dark, lit along their backs) */
+  alb = mix(alb, vec3(mmLum(alb) + 0.004)*vec3(1.30, 0.92, 0.62)*1.15, r43Rt*0.92);
+  alb *= 1.0 - 0.65*r43RtI;
   alb *= r41Root;
   /* (round 41 graft, all three judges: "two bright white kerb lines ...
      like road markings" -- the edging a weathered STONE, a step over the
@@ -15831,7 +15927,16 @@ void main(){
 #endif
   /* (round 22: the maze's lawn is a kept lawn, greener than a churchyard's
      turf; the same value, its hue taken toward the grass) */
+#if MM_PAT == 13
+  /* (round 43, CUPRITE: both survey-8 judges -- "the lawn either side of the
+     path is a milky grey"; "darken the lawn to a rich deep green". A yew
+     maze's turf is GRASS in its own deep green: the hue most of the way to
+     a moss green, so the moon on it reads green-blue and a lamp green-gold,
+     never grey) */
+  alb = mix(alb, vec3(mmLum(alb))*vec3(0.36, 1.30, 0.34)*1.05, 0.90*turf);
+#else
   alb = mix(alb, vec3(mmLum(alb))*vec3(0.66, 1.14, 0.58), 0.55*turf*step(12.5, uPattern)*step(uPattern, 13.5));
+#endif
   /* (round 28 graft: and the pumpkin patch's turf a DARK green, a step
      under the maze's kept lawn) */
   alb = mix(alb, vec3(mmLum(alb))*vec3(0.62, 1.10, 0.56)*0.85, 0.50*turf*step(13.5, uPattern)*step(uPattern, 14.5));
@@ -20376,7 +20481,29 @@ float yewRagP(float u, float sd, float amp){
   float f3 = fract(q3), h3 = mmHash11(floor(q3)*5.93 + sd);
   float tip = max(1.0 - abs(f3 - 0.5 - (h3 - 0.5)*0.3)/0.40, 0.0);
   r = max(r, step(0.86, h3)*sqrt(tip)*(0.035 + 0.050*fract(h3*13.7)));
-  return lvl + sag + r*mix(1.0, amp, 0.6) - 0.020;
+  /* ROUND 43 (CUPRITE): GROWN OUT, AND WITHERED. Both survey-8 judges: "the
+     hedge walls are flat noise-textured boxes with ruler-straight tops";
+     "give the hedges ragged leafy tops and withered gaps with a drawn edge".
+     Round 41 clipped the crown to the gardener's line, and both judges read
+     the line as a ruler. This is a maze no one has sheared since the house
+     went quiet: the clipped mass breaking up into CLUMPS of leaf a stride
+     or two wide, each its own hand proud of the old cut; and here and there
+     a stretch of it DEAD -- sunk a forearm into the hedge, brown, the bare
+     sprigs of it standing up out of the hollow against the sky. */
+  float q4 = u/0.47 + sd*0.91;
+  float f4 = fract(q4), h4 = mmHash11(floor(q4)*3.31 + sd);
+  float lobe = sqrt(max(1.0 - 4.0*(f4 - 0.5)*(f4 - 0.5), 0.0))*(0.025 + 0.085*h4);
+  float q5 = u/1.9 + sd*0.53;
+  float h5 = mmHash11(floor(q5)*7.17 + sd);
+  float gw5 = 0.34 + 0.28*fract(h5*9.3);
+  float g5 = step(0.70, h5)*(1.0 - smoothstep(gw5*0.55, gw5, abs(fract(q5) - 0.5)*2.0));
+  float sink = g5*(0.20 + 0.22*fract(h5*5.7));
+  float q6 = u/0.075 + sd*4.1;
+  float f6 = fract(q6), h6 = mmHash11(floor(q6)*2.91 + sd);
+  float twg = pow(max(1.0 - abs(f6 - 0.5)/0.16, 0.0), 0.5);
+  float sprig = g5*step(0.50, h6)*twg*sink*(0.55 + 0.45*fract(h6*7.1));
+  r += lobe;
+  return lvl + sag + r*mix(1.0, amp, 0.6) - sink + sprig - 0.020;
 }
 /* (the tallest clump a run's quad has room for over its set top) */
 /* (round 34 graft: the crown's scale, 1.3 as the far wall's, held so its

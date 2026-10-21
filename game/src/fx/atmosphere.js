@@ -1375,7 +1375,9 @@ export const REGIONS = {
        hedges a step down, BOLUS's -- the darks down, the lit tops kept) */
     /* (round 34 graft, VIVIANITE's: the vignette 1.52 -> 1.40, the near
        corners of the lawn out of black -- all three judges) */
-    exposure: 1.72, vignette: 1.32, contrast: 1.28,
+    /* (round 43: the vignette 1.32 -> 1.16 -- the near lawn's two corners
+       went to black under it; the lanterns' pool and the moon's light them) */
+    exposure: 1.72, vignette: 1.16, contrast: 1.28,
     key:  { glow: 0, kind: 'cold', x: -4.2, y: 5.6, z: 3.0, color: '#b6c0da', intensity: 2.30, radius: 15.0, flicker: false },
     fill: { glow: 0, kind: 'warm', x: 5.0, y: 1.6, z: 1.6, color: '#dda358', intensity: 1.01, radius: 5.59 },
     lights: [
