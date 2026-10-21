@@ -185,8 +185,8 @@ const D = {
    and its bones lying in it -- and 59.25 is the ledger hauled off it and
    leaned on end at its head.) */
 const CRYPT_NEAR = [
-  { shape: 59.25, x: 2.4, z: 0.4, tone: 0.95, hM: 0.64, wM: 1.75, seed: 2.7, free: true, keep: true, still: true, grave: [0.95, 0.62] },
-  { shape: 59.25, x: -0.6, z: 1.6, tone: 0.95, hM: 0.64, wM: 1.75, seed: 6.1, free: true, keep: true, still: true, grave: [0.95, 0.62] },
+  { shape: 59.25, x: 1.9, z: 0.4, tone: 0.95, hM: 0.64, wM: 1.75, seed: 2.7, free: true, keep: true, still: true, grave: [0.88, 0.60] },
+  { shape: 59.25, x: -0.6, z: 1.6, tone: 0.95, hM: 0.64, wM: 1.75, seed: 6.1, free: true, keep: true, still: true, grave: [0.88, 0.60] },
   { shape: 58, x: -1.9, z: 1.6, tone: 0.96, free: true, keep: true, still: true },
 ];
 
@@ -917,7 +917,7 @@ export const REGIONS = {
        frame is black". The gable's oculus is the room's moon: its light
        comes through it low and long, the window's ring and spokes thrown
        down the boards from the telescope's feet to yours (pal.win) */
-    win: { at: 'oculus', dir: [-0.02, -0.21, 1.0], k: 7.0, color: '#c2c8dc', bar: 0.075 },
+    win: { at: 'oculus', dir: [-0.02, -0.21, 1.0], k: 6.0, color: '#c6cad6', bar: 0.075 },
     room: { w: 13, d: 16, h: 2.4, side: 0.0, ceilPattern: 15, wallPad: 6.2 },
     cam: { y: 1.95, z: 8.6, look: 2.6, fov: 45 },
     deep: '#17152c', mid: '#2a2746', hi: '#433e69', accent: '#8592cd',
@@ -1578,7 +1578,9 @@ export const REGIONS = {
        second on the left; the cinematic key's tan wash off the floor
        (cineFloor) -- it was the "hazy grey-blue empty plane". */
     nearFloor: { fall: 0.94, calm: 0.92, clean: 1, rug: { ahead: 3.9, hw: 1.05, hd: 0.52, dx: -0.4 },
-                 pool: { ahead: 4.2, across: 0.3, abs: true, rAlong: 2.2, rAcross: 3.0, k: 2.2, color: '#e8b070' },
+                 /* (round 43: the lamp's pool a stride nearer and a third stronger,
+                    4.2 / 2.2 -> 3.5 / 3.0, so the wet tiles at your feet are lit) */
+                 pool: { ahead: 3.5, across: 0.3, abs: true, rAlong: 2.6, rAcross: 3.4, k: 3.0, color: '#e8b070' },
                  pool2: { ahead: 5.6, across: -3.4, abs: true, rAlong: 2.6, rAcross: 2.2, k: 1.5, color: '#7fb4dc' } },
     cineFloor: 0.12,
     /* (round 39 graft, item 5: PERIDOT halved the fight's own warm pool on
@@ -2814,13 +2816,15 @@ export const ROOM_KINDS = {
                         and the form someone left among them, at your feet,
                         `fore`) */
                      { shape: 36, edge: 0.28, z: 3.0, tone: 0.97, scale: 1.20, fore: 1, keep: true, seed: 3.5 },
-                     { shape: 37, edge: 0.80, z: 3.2, tone: 0.95, scale: 1.0, fore: 1, keep: true, seed: 0.5 }],
+                     /* (round 43: a wing chair under its sheet, seed 0.5 -> 0.6 -- the
+                        sideboard with its covered clock read as a grey box) */
+                     { shape: 37, edge: 0.80, z: 3.2, tone: 0.95, scale: 1.0, fore: 1, keep: true, seed: 0.6 }],
               rug: { ahead: 7.4, hw: 1.6, hd: 1.0 },
               /* (round 43: the archive's moon comes through the skylight in
                  the roof's slope, its frame and its cross thrown on the
                  boards in front of the reading table) */
               win: { at: 'skylight', x: 2.6, z: -8.6, y: 5.6, hw: 1.0, hl: 0.75, mx: 1.0, my: 0.75, bar: 0.035,
-                     dir: [-0.43, -0.43, 0.89], k: 9.0, color: '#b4c0e2' },
+                     dir: [-0.43, -0.43, 0.89], k: 8.0, color: '#c6cad6' },
               vantage: { at: 'along', off: 0.12, wall: 2.0, fwd: 1.4, yaw: 10, wide: 3 } }],
     names: [
       [/library|chart|archive|watcher/i, 1],

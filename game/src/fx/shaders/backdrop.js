@@ -5196,7 +5196,7 @@ float yewRagW(float u, float sd, float amp){
   float q5 = u/1.9 + sd*0.53;
   float h5 = mmHash11(floor(q5)*7.17 + sd);
   float gw5 = 0.34 + 0.28*fract(h5*9.3);
-  float g5 = step(0.70, h5)*(1.0 - smoothstep(gw5*0.55, gw5, abs(fract(q5) - 0.5)*2.0));
+  float g5 = step(0.70, h5)*(1.0 - smoothstep(gw5*0.20, gw5*1.05, abs(fract(q5) - 0.5)*2.0));
   float sink = g5*(0.20 + 0.22*fract(h5*5.7));
   float q6 = u/0.075 + sd*4.1;
   float f6 = fract(q6), h6 = mmHash11(floor(q6)*2.91 + sd);
@@ -14361,7 +14361,7 @@ vec3 grvFloor(vec3 alb, vec3 P, float mp){
     float along = hq.x > hq.y ? l.y : l.x;
     float kj = 1.0 - smoothstep(0.006, 0.006 + aa*1.3, abs(fract(along/0.62 + 0.5) - 0.5)*0.62);
     float kId = mmHash11(floor(along/0.62 + 0.5)*3.7 + float(i)*5.1);
-    vec3 kc = vec3(Lst)*vec3(1.10, 1.02, 0.90)*(2.05 + 0.50*kId)*(0.90 + 0.18*mmNoise(l*9.0));
+    vec3 kc = vec3(Lst)*vec3(1.04, 1.00, 0.92)*(1.55 + 0.45*kId)*(0.90 + 0.18*mmNoise(l*9.0));
     kc *= 1.0 - 0.55*kj;
     kc *= 1.0 + 0.45*(1.0 - smoothstep(0.0, aa*2.0 + 0.012, abs(dOut + 0.022)));
     kc *= 1.0 - 0.75*(1.0 - smoothstep(0.0, aa*1.6 + 0.004, abs(dOut)));
@@ -14387,7 +14387,7 @@ vec3 grvFloor(vec3 alb, vec3 P, float mp){
       float sk = grvSkel(bq*vec2(1.0, 1.0)/max(g.z/0.98, 0.6), sd, pxB, hole);
       float onB = clamp(0.5 - sk/pxB, 0.0, 1.0);
       vec3 earth = vec3(0.24, 0.18, 0.13)*Lst*2.4*(0.75 + 0.45*mmNoise(H*7.0 + float(i)*3.0));
-      vec3 bone = vec3(0.64, 0.61, 0.53)*Lst*7.5*(0.85 + 0.25*mmNoise(H*31.0));
+      vec3 bone = vec3(0.60, 0.59, 0.55)*Lst*5.4*(0.85 + 0.25*mmNoise(H*31.0));
       bone *= 0.50 + 0.50*clamp(-sk/0.022, 0.0, 1.0);                  // round, not a cut-out: lit along its crown
       bone *= 1.0 - 0.75*hole;
       bone *= 1.0 - 0.55*(1.0 - smoothstep(0.0, pxB*1.6, abs(sk)));   // inked
@@ -20496,7 +20496,7 @@ float yewRagP(float u, float sd, float amp){
   float q5 = u/1.9 + sd*0.53;
   float h5 = mmHash11(floor(q5)*7.17 + sd);
   float gw5 = 0.34 + 0.28*fract(h5*9.3);
-  float g5 = step(0.70, h5)*(1.0 - smoothstep(gw5*0.55, gw5, abs(fract(q5) - 0.5)*2.0));
+  float g5 = step(0.70, h5)*(1.0 - smoothstep(gw5*0.20, gw5*1.05, abs(fract(q5) - 0.5)*2.0));
   float sink = g5*(0.20 + 0.22*fract(h5*5.7));
   float q6 = u/0.075 + sd*4.1;
   float f6 = fract(q6), h6 = mmHash11(floor(q6)*2.91 + sd);
