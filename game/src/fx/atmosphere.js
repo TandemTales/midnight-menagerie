@@ -2674,7 +2674,11 @@ export const ROOM_KINDS = {
        treadle machine and the dressmaker's dummy in the sewing room) */
     /* (graft: nothing dealt in the night nursery -- its things are set by
        hand, and a dealt cot stood at the Kid's shoulder) */
-    kinds: [{ subject: 'nurseryroom', count: 0 },
+    /* (round 44, PYRITE: the night nursery lays a rug of its own -- a hooked
+       nursery rug, its animals, its moon and its alphabet border, MM_RUGK 9
+       -- not the Study's and the Kitchens' Turkey carpet, both survey-8
+       judges' SYSTEM; the wardrobe room keeps its braided oval) */
+    kinds: [{ subject: 'nurseryroom', count: 0, floorK: 9 },
             /* (graft: the dress forms stood out where their silhouettes
                read against the shelves, a machine at the work; no toy
                chest in the sewing room) */
