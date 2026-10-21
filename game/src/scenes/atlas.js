@@ -237,6 +237,64 @@ function toothTile() {
 
 /** Round 38 graft 4: the earned wing's wash while only a few are known. */
 const FOCUS_WASH = ['rgb(210 162 92)', 'rgb(118 72 26)'];
+/**
+ * ROUND 42 GRAFT 2: a footprint's edge as a dip pen draws a broken line --
+ * not a dashed vector. Each ring (flat [x, y, ...] in estate px, S plate px
+ * per estate px) is walked in 3 px steps; the line wanders a fraction of a
+ * pixel off the true edge (two slow waves), and is laid down as dashes of
+ * uneven length and weight, each lighter where the nib ran dry. Deterministic
+ * per wing (`seed`), so a redraw is the same drawing.
+ */
+function penRing(g, rings, S, seed, ink) {
+  let s = (seed >>> 0) || 1;
+  const rnd = () => ((s = (Math.imul(s, 1664525) + 1013904223) >>> 0) / 4294967296);
+  g.strokeStyle = ink;
+  g.lineCap = 'round'; g.lineJoin = 'round';
+  for (const r of rings) {
+    const n = Math.floor(r.length / 2);
+    if (n < 2) continue;
+    const pts = [];
+    for (let i = 0; i < n; i++) {
+      const j = (i + 1) % n;
+      const x0 = r[2 * i] * S, y0 = r[2 * i + 1] * S, x1 = r[2 * j] * S, y1 = r[2 * j + 1] * S;
+      const L = Math.hypot(x1 - x0, y1 - y0);
+      if (L < 0.01) continue;
+      const m = Math.max(1, Math.ceil(L / 3));
+      const nx = (y1 - y0) / L, ny = -(x1 - x0) / L;
+      for (let k = 0; k < m; k++) pts.push([x0 + (x1 - x0) * k / m, y0 + (y1 - y0) * k / m, nx, ny, L / m]);
+    }
+    if (pts.length < 3) continue;
+    pts.push(pts[0]);
+    const p1 = rnd() * 6.283, p2 = rnd() * 6.283;
+    let d = 0, on = true, left = 5 + rnd() * 6;
+    let path = [], wgt = 1;
+    const flush = () => {
+      if (path.length > 1) {
+        g.globalAlpha = 0.78 + rnd() * 0.18;
+        g.lineWidth = 1.25 + wgt * 0.95;
+        g.beginPath();
+        g.moveTo(path[0][0], path[0][1]);
+        for (let q = 1; q < path.length; q++) g.lineTo(path[q][0], path[q][1]);
+        g.stroke();
+      }
+      path = [];
+    };
+    for (const [x, y, nx, ny, step] of pts) {
+      const off = Math.sin(d / 23 + p1) * 0.55 + Math.sin(d / 8.5 + p2) * 0.3;
+      if (on) path.push([x + nx * off, y + ny * off]);
+      d += step; left -= step;
+      if (left <= 0) {
+        if (on) { path.push([x + nx * off, y + ny * off]); flush(); }
+        on = !on;
+        left = on ? 5 + rnd() * 7 : 2.6 + rnd() * 2.4;
+        if (on) wgt = rnd();
+      }
+    }
+    flush();
+  }
+  g.globalAlpha = 1;
+}
+
 /* ROUND 42: an unsurveyed wing's ghost walls, in a dark sepia (they were the
    pale pencil, lighter than the paper: "one beige smear") */
 const GHOST = 'rgb(44 28 14)';
@@ -594,6 +652,23 @@ export class AtlasScene extends Scene {
     const survey = this._survey = el('div', 'at-survey');
     survey.setAttribute('aria-hidden', 'true');
     plate.appendChild(survey);
+    /* ROUND 42 GRAFT 2-3 (LAPIS's rim): the wing the dossier is reading,
+       rimmed in gilt on its own footprint -- the atlas's earned wing lit, and
+       on the whole house the selected one ("nothing marks the selected
+       Foyer"). One path per wing in the master's own pixels; _show lights one.
+       Drawn, not painted, so a hover costs no canvas. */
+    {
+      const paths = this.wings.map((w) => {
+        let d = '';
+        for (const r of (w.outline || [])) {
+          for (let i = 0; i + 1 < r.length; i += 2) d += `${i ? 'L' : 'M'}${r[i]} ${r[i + 1]}`;
+          d += 'Z';
+        }
+        return d ? `<path class="at-rim" data-wing="${w.slug}" d="${d}"/>` : '';
+      }).join('');
+      this._rims = svg(`<svg class="at-rims" viewBox="0 0 ${MASTER.w} ${MASTER.h}" preserveAspectRatio="none" aria-hidden="true">${paths}</svg>`);
+      plate.appendChild(this._rims);
+    }
 
     // the re-inked wing, laid back on the rectangle it was cut from
     const ink = this._ink = document.createElement('canvas');
@@ -1160,13 +1235,17 @@ export class AtlasScene extends Scene {
        and its own low-chroma tint -- ochre, sage, rose, slate, umber, olive --
        so seventeen washed wings read as seventeen pieces of one aged sheet,
        none of them the palest thing on the board */
+    /* round 42 graft 3 (J1, J3: "the pastel wing washes knocked down toward
+       aged paper tints ... every wing darker than the paper"): the six tints
+       taken a further step down and greyed toward the sheet's own umber, so
+       none is a pastel and none is paler than the paper round it */
     const WASH = [
-      ['rgb(184 146 92)', 'rgb(112 76 36)'],
-      ['rgb(160 146 102)', 'rgb(90 78 44)'],
-      ['rgb(174 134 100)', 'rgb(108 68 44)'],
-      ['rgb(152 136 110)', 'rgb(84 72 56)'],
-      ['rgb(170 126 84)', 'rgb(104 66 34)'],
-      ['rgb(158 142 96)', 'rgb(94 80 42)'],
+      ['rgb(140 110 70)', 'rgb(80 54 24)'],
+      ['rgb(126 114 82)', 'rgb(68 58 32)'],
+      ['rgb(136 106 82)', 'rgb(80 50 34)'],
+      ['rgb(118 108 90)', 'rgb(62 54 42)'],
+      ['rgb(136 100 68)', 'rgb(78 50 24)'],
+      ['rgb(128 114 78)', 'rgb(70 60 32)'],
     ];
     const pale = this._tok('--kit-name', '#e9d3a6');
     const goldHi = this._tok('--kit-gold-hi', '#e6c98a');
@@ -1190,7 +1269,9 @@ export class AtlasScene extends Scene {
            drawn, and darker than the paper rather than paler */
         pg.save();
         pg.setTransform(dpr, 0, 0, dpr, 0, 0);
-        pg.fillStyle = 'rgb(46 30 16 / .34)';
+        /* round 42 graft 2: dark enough that the tan cartouche on it is a
+           pale plate on a dark ground, not tan on tan */
+        pg.fillStyle = 'rgb(40 25 12 / .5)';
         pg.fill(shape);
         pg.clip(shape);
         pg.globalAlpha = 0.5;
@@ -1222,14 +1303,12 @@ export class AtlasScene extends Scene {
         pg.lineWidth = 4.4;
         pg.stroke(shape);
         pg.restore();
+        /* round 42 graft 2 (J1, J2: "hand-inked, not crisp dashed vectors"):
+           the surveyor's broken line drawn by a dip pen -- each dash its own
+           length and weight, the line wandering a hair off the true edge */
         pg.save();
         pg.setTransform(dpr, 0, 0, dpr, 0, 0);
-        pg.lineJoin = 'round'; pg.lineCap = 'round';
-        pg.globalAlpha = 0.92;
-        pg.strokeStyle = GALL;
-        pg.lineWidth = 1.6;
-        pg.setLineDash([7, 4.5]);
-        pg.stroke(shape);
+        penRing(pg, w.outline || [], S, w.n * 7919 + 17, GALL);
         pg.restore();
         continue;
       }
@@ -1515,6 +1594,7 @@ export class AtlasScene extends Scene {
     for (const b of this._hots.querySelectorAll('.at-hot')) {
       b.classList.toggle('is-hover', b.dataset.wing === slug);
     }
+    for (const r of this._rims?.querySelectorAll('.at-rim') || []) r.classList.toggle('is-shown', r.dataset.wing === slug);
 
     const seen = this.surveyed.has(slug);
     /* A wing on offer at a fork is decision content whether or not anybody
