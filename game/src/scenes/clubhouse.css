@@ -1053,4 +1053,5 @@
 .cl-cutting__sub { font-size: max(12px, calc(var(--cut-w) * .093)); }
 .cl-snap__cap em { font-size: max(12px, .8vw); }
 .scene--clubhouse .cl-tally .kit-enamel__label, .scene--clubhouse .kit-enamel__label { font-size: max(12px, calc(var(--h) * .3)); }
-.scene--clubhouse .haunt__pip { font-size: max(12px, 1em); }
+.scene--clubhouse .kit-ladder--candles > .kit-ladder__rung.haunt__pip,
+.scene--clubhouse .kit-ladder--candles > .kit-ladder__rung.haunt__pip[aria-checked="true"] { font-size: max(12.5px, calc(var(--md) * .34)); }
