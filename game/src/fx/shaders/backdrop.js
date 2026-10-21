@@ -18345,7 +18345,7 @@ void main(){
     albY = mix(albY, earthC*mmLum(alb)*7.5, trod*(0.60 + 0.40*bare));
     float lipI = mmInkP(pd, pxY, 1.2)*onLawn*pRes;
     /* the leaf drifts */
-    float drift = smoothstep(0.56, 0.78, mmNoise(w*vec2(0.22, 0.30) + 11.0) + 0.08*sin(w.x*2.3 + w.y*1.7));
+    float drift = smoothstep(0.50, 0.72, mmNoise(w*vec2(0.22, 0.30) + 11.0) + 0.08*sin(w.x*2.3 + w.y*1.7));
     const float DC = 0.17;
     vec2 dci = floor(w/DC);
     vec2 dh = mmHash22(dci + 5.7);
@@ -18359,10 +18359,10 @@ void main(){
     vec3 leafY = mix(vec3(0.27, 0.12, 0.050), vec3(0.33, 0.25, 0.10), mmHash21(dci + 1.9))*(0.70 + 0.40*dh.x);
     albY = mix(albY, leafY*mmLum(alb)*8.0, clamp(lfK, 0.0, 1.0)*0.92);
     /* the rank grass: long tussocks, dark at their roots, lit at their tips */
-    float rank = smoothstep(0.50, 0.72, mmNoise(w*vec2(0.30, 0.45) + 23.0))*onLawn*(1.0 - trod);
+    float rank = smoothstep(0.44, 0.64, mmNoise(w*vec2(0.30, 0.45) + 23.0))*onLawn*(1.0 - trod);
     float tg = mmNoise(vec2(w.x*11.0 + 1.6*sin(w.y*0.9 + w.x*0.4), w.y*1.6) + 4.0);
     float tip = smoothstep(0.50, 0.85, tg)*smoothstep(0.060, 0.015, pxY);
-    vec3 rankC = mix(vec3(0.022, 0.032, 0.018), vec3(0.120, 0.140, 0.070), tip);
+    vec3 rankC = mix(vec3(0.020, 0.030, 0.016), vec3(0.150, 0.170, 0.085), tip);
     albY = mix(albY, rankC*mmLum(alb)*12.0, rank*0.85);
     col = mix(col, albY*litY, max(max(trod, rank), clamp(lfK, 0.0, 1.0)));
     col *= 1.0 - 0.50*lipI;
@@ -18403,10 +18403,10 @@ void main(){
     float reach = smoothstep(2.5, 7.0, vDepth);
     col += alb * moonG * 2.2 * pane * cloud * (1.0 - 0.88*barS) * reach;
     /* the puddles */
-    float pn = 0.80*mmNoise(gq*0.80 + 3.0) + 0.20*mmNoise(gq*2.3 + 1.0) + 0.06;
+    float pn = 0.78*mmNoise(gq*1.15 + 3.0) + 0.22*mmNoise(gq*3.1 + 1.0);
     float pnPx = max(length(vec2(dFdx(pn), dFdy(pn))), 1e-4);
-    float pud = clamp((pn - 0.75)/pnPx + 0.5, 0.0, 1.0);
-    float wet = smoothstep(0.64, 0.75, pn);
+    float pud = clamp((pn - 0.80)/pnPx + 0.5, 0.0, 1.0);
+    float wet = smoothstep(0.70, 0.80, pn);
     col *= 1.0 - 0.38*wet*(1.0 - pud);
     if (pud > 0.0) {
       /* the glass overhead mirrored: its bars as dark lines, the panes
@@ -18417,11 +18417,13 @@ void main(){
       vec3 sky = vec3(0.030, 0.060, 0.070)*(0.70 + 0.60*mmHash21(floor(rp) + 3.0));
       float gl = mmNoise(vec2(gq.x*2.2, gq.y*0.35) + 9.0);
       gl = smoothstep(0.62, 0.92, gl);
-      vec3 refl = sky*(1.0 - 0.80*rbar) + vec3(0.42, 0.58, 0.68)*gl*0.55*(1.0 - rbar);
+      vec3 refl = sky*0.6*(1.0 - 0.80*rbar) + vec3(0.46, 0.62, 0.72)*gl*0.85*(1.0 - rbar);
       /* its rim: the water's edge, a thin bright meniscus toward the moon */
-      float rim = (1.0 - smoothstep(0.0, pnPx*1.6, pn - 0.75))*pud;
+      float rim = (1.0 - smoothstep(0.0, pnPx*1.6, pn - 0.80))*pud;
       refl += vec3(0.20, 0.28, 0.32)*rim*0.6;
-      col = mix(col, refl*uGain*0.70 + col*0.30, pud*0.90);
+      /* standing water is DARK: the flags under it a stop and a half
+         down, the night in it, the moon's glint the one bright thing */
+      col = mix(col, col*0.22 + refl*uGain*0.40, pud*0.92);
     }
   }
 #endif
@@ -19501,7 +19503,10 @@ float gyTufts(vec2 q, float hw, float seed){
   float x = q.x/0.030;
   float i = floor(x);
   float f = fract(x) - 0.5;
-  float hgt = 0.04 + 0.07*mmHash11(i*1.7 + seed*3.1);
+  /* (round 44: the long grass grown up round the stone, both survey-8
+     judges -- "long grass at the edges and round the stones": a hand to a
+     hand and a half, from 4-11 cm, rankest at the stone's two corners) */
+  float hgt = 0.06 + 0.11*mmHash11(i*1.7 + seed*3.1) + 0.05*smoothstep(0.4, 1.0, abs(q.x)/max(hw, 0.05));
   float lean = (mmHash11(i*2.9 + seed) - 0.5)*0.6;
   float bl = abs(f - lean*q.y/0.10) - 0.22*(1.0 - q.y/max(hgt, 1e-3));
   float d = max(bl*0.030, max(q.y - hgt, -q.y));
@@ -19585,7 +19590,7 @@ float wfHeadstone(vec2 q, float px, float seed, float kq, bool paint){
   vec2 offR = vec2(sgnR*(0.050 + 0.015*W), 0.022);
   float fR, txR, tyR, kR;
   float dRet = wfHsForm(p - offR, k, H, W, seed, fR, txR, tyR, kR);
-  float tuft = gyTufts(q, W*1.25, seed);
+  float tuft = gyTufts(q, W*1.30, seed);
   float dAll = min(min(d, dRet), tuft);
   if (!paint) return dAll;
 
