@@ -2492,7 +2492,12 @@ export class Backdrop {
         if (p.shape === 28) {
           ss2[i * 2 + 0] = p.w * 1.08; ss2[i * 2 + 1] = 1.5; st2[i] = 0.95;
         } else if (p.shape === 27) {
-          ss2[i * 2 + 0] = p.w * 1.35; ss2[i * 2 + 1] = p.w * 0.62; st2[i] = 1.05;
+          /* (round 44, PYRITE: tight under the fruit -- 1.35 x 0.62 of its
+             width at full strength, a crop planted shoulder to shoulder laid
+             its pools edge to edge into the black band across the court both
+             survey-8 judges named; the foot stays black, the lantern-lit
+             flags show between the pumpkins) */
+          ss2[i * 2 + 0] = p.w * 1.12; ss2[i * 2 + 1] = p.w * 0.40; st2[i] = 0.90;
         } else if (p.shape === 25 && pal.regionKey === 'hedge') {
           /* (round 29 graft, both judges: the maze court's fountain "a dark
              contact shadow on the lawn" -- the round basin's own pool, its

@@ -14003,6 +14003,18 @@ void main(){
 #endif
         col = mix(col, mmGradeInv(txc, uHouseTexG) * uHouseTexK, hA);
       }
+      /* ROUND 44 (PYRITE): THE HOUSE INKED. Survey 8, judge 2 on the Pumpkin
+         Grounds: "the mansion behind the wall is a pasted backdrop with soft
+         edges". The painting's own silhouette -- every spire, finial, gable
+         and chimney against the sky -- drawn with the pen: a dark line a
+         pixel and a half wide along the alpha's half-way contour, so the
+         house is cut out of the night the way mainMenu.png's is, not laid on
+         it. Only where the painting is visible (vis), never over the wall. */
+      {
+        float aI = tx.a * inR;
+        float penH = mmInk(aI - 0.5, 1.5) * vis * step(0.02, aI) * step(aI, 0.98 + 0.02*step(0.5, aI));
+        col = mix(col, vec3(0.010, 0.012, 0.026), penH * 0.85);
+      }
       /* ...and the drawn house's LINES go with it: its roofline pen, its
          courses and its relief's ink are laid after this (the drawn line,
          below), and over the painting or the sky between its spires they
@@ -18079,7 +18091,69 @@ void main(){
     float vig = max(smoothstep(-0.24, -0.92, ndc.y), 0.75*smoothstep(0.62, 1.0, abs(ndc.x)));
     col *= 1.0 - uNearDark * vig * (1.0 - uIsCeiling);
   }
+#if MM_FLAGK == 4
+  /* ROUND 44 (PYRITE): THE COURT LAID AND LIT TO ITS WALL. Both survey-8
+     judges: "a black void band runs across the middle between the wall and
+     the lit flagstones, exactly where fighters stand"; "the pumpkins float --
+     draw the ground continuous from wall to front (grass, path, flagstones)
+     with the pumpkins on it". The Pumpkin Grounds' floor programs only
+     (pal.flagK 4). Along the wall's foot the bed the pumpkins are grown in:
+     a verge of rough turf with a ragged, inked front edge over the flags,
+     dead leaves on it; and over the whole court the light of the lanterns
+     and the jack-o'-lanterns burning along that bed, laid on the floor's own
+     albedo so every flag and joint runs on through it, falling off toward
+     you where the near floor's own lanterns take over. */
+  float fwPk = vWorld.z - uMoonW.z;              // metres out from the wall's foot
+  if (uIsCeiling < 0.5) {
+    vec3 litPk = col / max(alb, vec3(0.003));
+    float pxPk = max(mp, 1e-4);
+    float dryPk = 1.0 - water;
+    vec3 albPk = alb;
+#if MM_PAT == 2
+    float eN = 0.55*mmNoise(vec2(w.x*0.45, 1.7)) + 0.30*mmNoise(vec2(w.x*1.9, 5.3)) + 0.15*mmNoise(vec2(w.x*6.0, 9.1));
+    float vD = fwPk - (5.6 + 4.4*eN);
+    float verge = (1.0 - smoothstep(-pxPk*1.2, pxPk*1.2, vD)) * dryPk;
+    if (verge > 0.0 || vD < 0.6) {
+      /* the turf: blades combed toward you, tussocks, the wall's damp foot */
+      float blade = mmNoise(vec2(w.x*9.0 + 2.0*mmNoise(vec2(w.x*1.7, fwPk*0.8)), fwPk*2.6));
+      float tus = smoothstep(0.40, 0.85, mmNoise(vec2(w.x*1.2, fwPk*1.4) + 4.0));
+      vec3 grassC = mix(vec3(0.020, 0.032, 0.020), vec3(0.052, 0.070, 0.034), blade) * (0.70 + 0.55*tus);
+      grassC *= 0.72 + 0.28*smoothstep(0.0, 3.0, fwPk);
+      /* the leaves blown in under the wall: rust and old gold */
+      vec2 lq = w*2.6;
+      vec2 li = floor(lq);
+      vec2 lf = fract(lq) - 0.5 - (mmHash22(li) - 0.5)*0.45;
+      float lr = length(lf*vec2(1.0, 1.7));
+      float leafPk = (1.0 - smoothstep(0.13, 0.13 + pxPk*2.6*1.5, lr)) * step(0.58, mmHash21(li + 3.3)) * mmLod(0.38, pxPk);
+      vec3 leafC = mix(vec3(0.22, 0.085, 0.030), vec3(0.30, 0.18, 0.050), mmHash21(li + 1.1));
+      grassC = mix(grassC, leafC, leafPk*0.92);
+      albPk = mix(alb, grassC, verge);
+      col = mix(col, grassC*litPk, verge);
+      /* the turf's front edge drawn: a dark line where it overhangs the flags,
+         its own shadow a hand's breadth onto them */
+      float edgeInk = mmInkP(vD, pxPk, 1.3) * dryPk * mmLod(0.6, pxPk);
+      float lip = (1.0 - smoothstep(0.0, 0.22, vD)) * step(0.0, vD) * dryPk;
+      col *= (1.0 - 0.55*edgeInk) * (1.0 - 0.40*lip);
+    }
+    /* ...and a little moss and a blade or two in the joints near the bed */
+    col = mix(col, vec3(0.06, 0.085, 0.035)*litPk, r25Joint*(1.0 - smoothstep(8.0, 18.0, fwPk))*0.55*(1.0 - verge)*dryPk);
+#endif
+    /* THE LIGHT OF THE BED: a broad warm band, strongest a few metres out
+       from the bed where the carved lanterns stand among the crop, breaking
+       across the court as the lanterns are spaced, under the cold of the
+       moon; its spill reaches the stage */
+    float tB = (fwPk - 14.0)/8.0;
+    float bandPk = exp(-tB*tB) + 0.30*exp(-max(fwPk - 13.0, 0.0)/6.0);
+    float brk = 0.72 + 0.28*mmNoise(vec2(w.x*0.32, 1.3)) + 0.12*(smear - 0.55);
+    col += albPk * vec3(1.00, 0.52, 0.20) * 8.5 * bandPk * brk * dryPk;
+    /* the moon on the far court, so the flags under the bed read cold */
+    col += albPk * vec3(0.42, 0.52, 0.72) * 2.2 * (1.0 - smoothstep(10.0, 24.0, fwPk)) * dryPk;
+  }
+#endif
   float cFog = smoothstep(uFogNear, uFogFar, vDepth);
+#if MM_FLAGK == 4
+  cFog *= 0.55;
+#endif
   col = mix(col, uFog, cFog);
   /* THE SKY THROUGH THE GLASS, after the fog and not under it (round 18).
      FOLIUM's pitched palmhouse lost its whole centre bay to a starry black

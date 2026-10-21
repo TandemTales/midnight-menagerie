@@ -1845,7 +1845,7 @@ export const REGIONS = {
                   millisecond of a fight's frame under the hand) */
                { shape: 27, ahead: 3.25, across: 1.85, tone: 0.97, hM: 0.58, keep: true, still: true, seed: 4.5 },
              ] },
-    crispFloor: true,
+    crispFloor: true, flagK: 4,
     nearFloor: { fall: 0.92, calm: 0.85, clean: 1,
                  pool: { ahead: 4.0, across: 2.6, rAlong: 2.2, rAcross: 2.0, k: 16.0, color: '#ffa848' },
                  /* (graft, judge 2: the near-left flags kept deep blue-black --
