@@ -177,9 +177,16 @@ const D = {
    (59.25, wfBones: wide and low, so its width is given), and a pricket stand
    burning on the near left, its pool laid on the flags by the wing's
    nearFloor (both mirror with the room, so the pool stays under it) */
+/* (round 43, CUPRITE: both survey-8 judges -- "the two skeletons mid-floor
+   are cardboard half-dome cutouts"; "redraw the skeleton niches as sunken
+   graves with stone kerbs and depth". Each is an OPEN GRAVE now, cut in the
+   flags in front of where it stood -- `grave`, its mouth's half extents in
+   metres, drawn by the wing's own floor (flagK 2) with its kerb, its depth
+   and its bones lying in it -- and 59.25 is the ledger hauled off it and
+   leaned on end at its head.) */
 const CRYPT_NEAR = [
-  { shape: 59.25, x: 2.4, z: 0.4, tone: 0.95, hM: 0.45, wM: 1.7, seed: 2.7, free: true, keep: true, still: true },
-  { shape: 59.25, x: -0.6, z: 1.6, tone: 0.95, hM: 0.45, wM: 1.7, seed: 6.1, free: true, keep: true, still: true },
+  { shape: 59.25, x: 1.9, z: 0.4, tone: 0.95, hM: 0.64, wM: 1.60, seed: 2.7, free: true, keep: true, still: true, grave: [0.88, 0.60] },
+  { shape: 59.25, x: -0.6, z: 1.6, tone: 0.95, hM: 0.64, wM: 1.60, seed: 6.1, free: true, keep: true, still: true, grave: [0.88, 0.60] },
   { shape: 58, x: -1.9, z: 1.6, tone: 0.96, free: true, keep: true, still: true },
 ];
 
@@ -890,7 +897,9 @@ export const REGIONS = {
      Steeply raked walls (big side toe-in), the mass of the room hanging overhead. */
   attic: {
     label: 'The Moonlit Attic and Observatory',
-    propMat: 'wood', propCeil: 0.264,
+    /* (round 43: the props' ceiling 0.264 -> 0.34 -- under it the trunk and
+       its case were "soft, flat-shaded blocks", J1: held to one dull value) */
+    propMat: 'wood', propCeil: 0.34,
     /* ROUND 23: AN ATTIC IS UNDER A ROOF. It was a 24 x 7.2 m box with its
        side walls toed in and "diagonal lines scrawled over a blue cloud
        texture" for rafters. It is 13 m across now, its knee walls 2.4 m,
@@ -898,6 +907,17 @@ export const REGIONS = {
        the ridge, the gable at the end drawn by program 14 round its window
        on the moon, and the telescope stood in front of that. */
     arch: 4, floorPattern: 0, subject: 'observatory', ceilGain: 3.2,
+    /* ROUND 43 (CUPRITE): ITS OWN RUG -- both survey-8 judges: "the rug is
+       the shared diamond rug". The astronomer's hooked rug, MM_RUGK 8: a
+       compass star in the ring of the hours on midnight wool, crescent
+       moons in its corners, the moon's phases round its border. */
+    floorK: 8,
+    /* ...AND THE MOON ON ITS BOARDS. J1: "the plaid trunk and strapped box
+       ... melt into the black bottom third"; J2: "the lower quarter of the
+       frame is black". The gable's oculus is the room's moon: its light
+       comes through it low and long, the window's ring and spokes thrown
+       down the boards from the telescope's feet to yours (pal.win) */
+    win: { at: 'oculus', dir: [-0.02, -0.21, 1.0], k: 6.0, color: '#c6cad6', bar: 0.075 },
     room: { w: 13, d: 16, h: 2.4, side: 0.0, ceilPattern: 15, wallPad: 6.2 },
     cam: { y: 1.95, z: 8.6, look: 2.6, fov: 45 },
     deep: '#17152c', mid: '#2a2746', hi: '#433e69', accent: '#8592cd',
@@ -934,7 +954,11 @@ export const REGIONS = {
                     /* (round 35 graft, J1: "a strapped trunk ... in the bottom
                        fifth" -- the trunk a stride nearer, z 4.5 -> 5.6, so it
                        stands in the near boards and not at the rug's side) */
-                    { shape: 36, edge: 0.24, z: 5.6, tone: 0.97, scale: 1.30, fore: 1, keep: true, seed: 1.5 },
+                    /* (round 43: and in from the frame's edge and back to the
+                       fighters' depth, 0.24 / 5.6 -> 0.21 / 3.2, so the trunk
+                       and the case on it stand whole on the lit boards --
+                       J2: "blurry blobs cropped by the frame") */
+                    { shape: 36, edge: 0.21, z: 3.2, tone: 0.97, scale: 1.18, fore: 1, keep: true, seed: 1.5 },
                     { shape: 37, edge: 0.80, z: 3.6, tone: 0.95, scale: 1.05, fore: 1, keep: true, seed: 0.3 },
                     { shape: 37, edge: 0.93, z: 1.0, tone: 0.93, scale: 1.0, fore: 1, keep: true, seed: 0.7 }],
              trusses: { shape: 38, every: 3.4, first: 2.2 } },
@@ -947,7 +971,10 @@ export const REGIONS = {
                     boards by the trunk, ahead 9.6 -> 6.0, and a little more
                     of it, so the floor in front of you is lit by a lamp and
                     not by the key's wash -- and not black) */
-                 pool: { ahead: 6.0, across: -1.2, rAlong: 3.6, rAcross: 3.2, k: 3.4, color: '#f0a65a' },
+                 /* (round 43: the lamp's pool nearer, 6.0 -> 4.6, and wider, so
+                    the boards at the frame's foot are lit wood and not a black
+                    quarter, the trunk standing in it) */
+                 pool: { ahead: 4.6, across: -1.6, rAlong: 4.2, rAcross: 3.6, k: 3.6, color: '#f0a65a' },
                  /* (round 35 graft, both judges: "the blue / purple / orange
                     wash lying across the near boards" -- ONE warm candle pool
                     on them, the lamp's; the cold pool across the middle of
@@ -956,7 +983,9 @@ export const REGIONS = {
     particles: { mix: [[PTYPE.DUST, 0.62], [PTYPE.WISP, 0.26], [PTYPE.ASH, 0.12]],
                  tint: '#d8dcf5', wispTint: '#b0b8ff', emberTint: '#ffcf7a',
                  speed: 0.6, scale: 1.0, wind: 0.4, density: 0.60 },
-    exposure: 1.54, vignette: 1.32, contrast: 1.65,
+    /* (round 43: the vignette 1.32 -> 1.12: it took the near boards' two
+       corners to black under the lamp's pool and the moon's) */
+    exposure: 1.54, vignette: 1.12, contrast: 1.65,
     /* (round 35 graft, both judges: the wash on the near boards was the key
        from behind the eye, 6.78, laying itself over every board in front of
        you, and the cold fill, 1.78, over the other half -- SODALITE's
@@ -1184,6 +1213,8 @@ export const REGIONS = {
        (59). 16 m deep, from 25: the end wall is a feature, not a speck. The
        shafts are a breath of moonlight, warmer, wide and faint. */
     arch: 2, floorPattern: 2, subject: 'catacombs', damask: 0,
+    /* (round 43: its own floor program -- MM_FLAGK 2, the open graves) */
+    flagK: 2,
     /* (round 35 graft, SCHEELITE's, both judges' first graft: the vault is
        RIBBED, bay by bay, its own pattern (17) and its own program, and lit:
        the candles below find its ribs and bosses, ceilGain) */
@@ -1216,8 +1247,13 @@ export const REGIONS = {
       { kind: 'cold', x: -3.6, y: 1.80, z: -13.0, color: '#6c94ac', intensity: 1.40, radius: 7.0 },
       { kind: 'warm', x: 2.8, y: 1.50, z: -9.5, color: '#e0a35a', intensity: 2.10, radius: 6.0, fit: 'none' },
     ],
-    shafts: { count: 1, spread: 4, y: 5.0, z: -9.0, angle: 0.10, width: 4.2, intensity: 0.0, pool: 1.2 },
-    vignette: 1.28, bloom: 0.90,
+    /* (round 43: count 1 -> 0 -- at intensity 0 the beam drew nothing and
+       still cost the fight's frame, as the Hedge's did; the frame budget) */
+    shafts: { count: 0, spread: 4, y: 5.0, z: -9.0, angle: 0.10, width: 4.2, intensity: 0.0, pool: 1.2 },
+    /* (round 43: 1.28 -> 1.10 -- the near floor's two corners went to black
+       under it, both survey-8 judges' "black void" at the frame's foot; the
+       candle pools are what light them now) */
+    vignette: 1.10, bloom: 0.90,
     /* ROUND 35: THE NEAR FLOOR (survey-5 judge 2: "the ceiling and the
        centre of the floor are black void and the floor flags are soft").
        The flags each their own stone with a pen-weight joint (calm); a
@@ -1234,7 +1270,11 @@ export const REGIONS = {
        falling a little further, and the key from behind the eye a step
        down, 1.61 -> 1.20: it laid the warm wash across the whole near floor) */
     nearFloor: { fall: 0.84, calm: 0.90, clean: 1,
-                 pool: { ahead: 4.8, across: -1.9, rAlong: 2.6, rAcross: 2.2, k: 1.6, color: '#f0a55a' } },
+                 pool: { ahead: 4.8, across: -1.9, rAlong: 2.6, rAcross: 2.2, k: 1.6, color: '#f0a55a' },
+                 /* (round 43: and the graves' candles' spill on the near flags
+                    across from the stand, so the corner it never reached is
+                    lit stone and not a black quarter) */
+                 pool2: { ahead: 3.6, across: 2.3, rAlong: 2.8, rAcross: 2.4, k: 1.8, color: '#f0a55a' } },
     grain: 0.012,
     ceilGain: 2.3,
   },
@@ -1337,7 +1377,9 @@ export const REGIONS = {
        hedges a step down, BOLUS's -- the darks down, the lit tops kept) */
     /* (round 34 graft, VIVIANITE's: the vignette 1.52 -> 1.40, the near
        corners of the lawn out of black -- all three judges) */
-    exposure: 1.72, vignette: 1.32, contrast: 1.28,
+    /* (round 43: the vignette 1.32 -> 1.16 -- the near lawn's two corners
+       went to black under it; the lanterns' pool and the moon's light them) */
+    exposure: 1.72, vignette: 1.16, contrast: 1.28,
     key:  { glow: 0, kind: 'cold', x: -4.2, y: 5.6, z: 3.0, color: '#b6c0da', intensity: 2.30, radius: 15.0, flicker: false },
     fill: { glow: 0, kind: 'warm', x: 5.0, y: 1.6, z: 1.6, color: '#dda358', intensity: 1.01, radius: 5.59 },
     lights: [
@@ -1505,10 +1547,15 @@ export const REGIONS = {
                   second behind it, and one on the near left beside the Kid;
                   the towel horse with its stool and pail (a bath dealt with seed > 40) between them
                   on the wet tiles. */
-               { shape: 32, edge: 0.78, z: 1.7, tone: 0.97, scale: 1.06, free: true, keep: true, seed: 3.0 },
+               /* (round 43, CUPRITE: and each its own bath -- wgBtKind by seed: the
+                  big one at the right COPPER, a white one OVERTURNED on its rim
+                  behind it, the one by the Kid DRAPED under a sheet, a small
+                  ZINC hip bath and a second copper down the hall; both
+                  survey-8 judges: "a dozen identical cloned clawfoot tubs") */
+               { shape: 32, edge: 0.78, z: 1.7, tone: 0.97, scale: 1.06, free: true, keep: true, seed: 17.3 },
                { shape: 32, edge: 0.47, z: -3.4, tone: 0.95, keep: true, free: true, seed: 41.0, hM: 1.25, wM: 1.90 },
-               { shape: 32, edge: 0.80, z: -0.9, tone: 0.95 },
-               { shape: 32, edge: 0.15, z: 1.0, tone: 0.95, scale: 1.08, free: true, keep: true, seed: 7.0 },
+               { shape: 32, edge: 0.66, z: -2.9, tone: 0.95, keep: true, seed: 15.4, scale: 0.94 },
+               { shape: 32, edge: 0.15, z: 1.0, tone: 0.95, scale: 1.08, free: true, keep: true, seed: 16.3 },
                /* and on the near floor itself, in eye metres (across: + is
                   the frame's left from this lens): a third bath cropped by
                   the frame's left edge, and a second towel horse with its
@@ -1521,10 +1568,10 @@ export const REGIONS = {
                   a bath dealt with seed 20-40 is the towel bench, wgTwSD) at
                   the head of the duckboard, under the hand in a fight */
                { shape: 32, ahead: 4.75, across: 0.35, tone: 0.97, keep: true, hand: true, seed: 24.0, hM: 1.00, wM: 1.50 },
-               { shape: 32, edge: 0.88, z: -3.8, tone: 0.93 },
+               { shape: 32, edge: 0.88, z: -3.8, tone: 0.93, seed: 18.4, scale: 0.80 },
                /* and two more down the hall, on the left and the middle,
                   where the files have room for them */
-               { shape: 32, x: -3.4, z: -7.4, tone: 0.92, free: true },
+               { shape: 32, x: -3.4, z: -7.4, tone: 0.92, free: true, seed: 17.8, scale: 0.90 },
                { shape: 32, x: 1.8, z: -10.2, tone: 0.90, free: true },
              ] },
     /* ROUND 39: THE NEAR FLOOR, wet. Its tiles calm and clean (no milky
@@ -1533,7 +1580,9 @@ export const REGIONS = {
        second on the left; the cinematic key's tan wash off the floor
        (cineFloor) -- it was the "hazy grey-blue empty plane". */
     nearFloor: { fall: 0.94, calm: 0.92, clean: 1, rug: { ahead: 3.9, hw: 1.05, hd: 0.52, dx: -0.4 },
-                 pool: { ahead: 4.2, across: 0.3, abs: true, rAlong: 2.2, rAcross: 3.0, k: 2.2, color: '#e8b070' },
+                 /* (round 43: the lamp's pool a stride nearer and a third stronger,
+                    4.2 / 2.2 -> 3.5 / 3.0, so the wet tiles at your feet are lit) */
+                 pool: { ahead: 3.5, across: 0.3, abs: true, rAlong: 2.6, rAcross: 3.4, k: 3.0, color: '#e8b070' },
                  pool2: { ahead: 5.6, across: -3.4, abs: true, rAlong: 2.6, rAcross: 2.2, k: 1.5, color: '#7fb4dc' } },
     cineFloor: 0.12,
     /* (round 39 graft, item 5: PERIDOT halved the fight's own warm pool on
@@ -1555,7 +1604,9 @@ export const REGIONS = {
       { kind: 'warm', x: 3.6, y: 1.20, z: -5.4, color: '#e2b271', intensity: 4.91, radius: 4.47 },
       { kind: 'cold', x: 6.6, y: 3.20, z: -9.6, color: '#92c5e4', intensity: 1.55, radius: 8.0 },
     ],
-    shafts: { count: 4, spread: 16, y: 7.8, z: -11.0, angle: 0.24, width: 2.6, intensity: 0.43, pool: 1.8 },
+    /* (round 43: pool 1.8 -> 0 -- the shafts' pools were the "round spotlight
+       discs" on the tiles; the moon lies on them as the windows now, pal.win) */
+    shafts: { count: 4, spread: 16, y: 7.8, z: -11.0, angle: 0.24, width: 2.6, intensity: 0.43, pool: 0 },
     bloom: 0.95,
   },
 
@@ -2767,8 +2818,15 @@ export const ROOM_KINDS = {
                         and the form someone left among them, at your feet,
                         `fore`) */
                      { shape: 36, edge: 0.28, z: 3.0, tone: 0.97, scale: 1.20, fore: 1, keep: true, seed: 3.5 },
-                     { shape: 37, edge: 0.80, z: 3.2, tone: 0.95, scale: 1.0, fore: 1, keep: true, seed: 0.5 }],
+                     /* (round 43: a wing chair under its sheet, seed 0.5 -> 0.6 -- the
+                        sideboard with its covered clock read as a grey box) */
+                     { shape: 37, edge: 0.80, z: 3.2, tone: 0.95, scale: 1.0, fore: 1, keep: true, seed: 0.6 }],
               rug: { ahead: 7.4, hw: 1.6, hd: 1.0 },
+              /* (round 43: the archive's moon comes through the skylight in
+                 the roof's slope, its frame and its cross thrown on the
+                 boards in front of the reading table) */
+              win: { at: 'skylight', x: 2.6, z: -8.6, y: 5.6, hw: 1.0, hl: 0.75, mx: 1.0, my: 0.75, bar: 0.035,
+                     dir: [-0.43, -0.43, 0.89], k: 8.0, color: '#c6cad6' },
               vantage: { at: 'along', off: 0.12, wall: 2.0, fwd: 1.4, yaw: 10, wide: 3 } }],
     names: [
       [/library|chart|archive|watcher/i, 1],
@@ -2845,7 +2903,13 @@ export const ROOM_KINDS = {
       /* (graft: the files of baths start a bay further in, so none stands
          behind the Kid -- "move the dark green tub and the palm out from
          behind the Kid at left") */
-      { subject: 'baths', layout: 'colonnade', file: 32, fileX: 0.60, fileZ0: -4.6 },
+      /* (round 43, CUPRITE: both survey-8 judges -- "the window light landing
+         as round spotlight discs". The moon comes in through the hall's three
+         great windows low and long, and lies on the wet tiles as the
+         WINDOWS -- their round heads, mullions and glazing bars -- in three
+         long streaks from the end wall to your feet: pal.win) */
+      { subject: 'baths', layout: 'colonnade', file: 32, fileX: 0.60, fileZ0: -4.6,
+        win: { at: 'bathhall', dir: [0.22, -0.30, 1.0], k: 9.0, color: '#a8c4e0' } },
       /* THE STEAM ROOM -- small, low and hot, tiled to its vault, an arcade of
          niches with their basins and taps over two stepped benches, and full
          of steam; seen from the lowest bench. Round 14, both judges: the loose
@@ -2865,12 +2929,17 @@ export const ROOM_KINDS = {
                   duckboard, cropped by the frame, and the towel horse with
                   its stool and pail between them) */
                { shape: 32, ahead: 3.4, across: 3.3, tone: 0.97, scale: 1.12, keep: true, hand: true, seed: 13.0 },
-               { shape: 32, ahead: 3.9, across: -3.4, tone: 0.97, scale: 1.08, keep: true, hand: true, seed: 14.0 },
+               { shape: 32, ahead: 3.9, across: -3.4, tone: 0.97, scale: 1.08, keep: true, hand: true, seed: 17.5 },
                { shape: 32, ahead: 5.4, across: 1.4, tone: 0.96, keep: true, seed: 43.0, hM: 1.25, wM: 1.90 },
                /* (round 39 graft: and the towel bench with its pail across
                   from the horse, under the hand in a fight) */
                { shape: 32, ahead: 4.6, across: -1.7, tone: 0.97, keep: true, hand: true, seed: 26.0, hM: 1.00, wM: 1.50 }],
         lampsView: [{ i: 1, x: 0.0, z: 0.86, y: 0.55, color: '#ff7a36', k: 0.50, radius: 3.6 }],
+        /* (round 43: and the stove's red glow carried down the wet tiles to
+           your feet -- the long streak a fire throws along a wet floor toward
+           the eye -- so the near tiles are lit glaze and not a black field) */
+        nearFloor: { pool: { ahead: 3.4, across: 0.0, rAlong: 4.2, rAcross: 1.4, k: 4.5, color: '#ec8a52' },
+                     pool2: { ahead: 2.0, across: 0.0, rAlong: 1.8, rAcross: 3.6, k: 1.6, color: '#7fb4dc' } },
         vantage: { at: 'among', low: 0.66, fwd: 1.4, pitch: 3.0, off: 0.06, wide: 3, frame: 'steam' } },
       /* THE INDOOR POOL -- round 14, both judges' first instruction: "a sunk
          rectangular basin with a proud stone coping, a clear step down to the
@@ -2882,7 +2951,7 @@ export const ROOM_KINDS = {
          near end, high enough to look down INTO it. */
       /* (graft: and a bath at the pool's corner, ULTRAMARINE's) */
       { subject: 'pool', layout: 'colonnade', file: 6, fileX: 0.74, swap: [[32, 2]],
-        near: [{ shape: 32, x: 7.4, z: -2.6, tone: 0.95, free: true },
+        near: [{ shape: 32, x: 7.4, z: -2.6, tone: 0.95, free: true, seed: 16.6 },
                /* (round 39: the towel horse on the coping at the near
                   right, and a bath on the near left) */
                { shape: 32, ahead: 6.3, across: -4.5, tone: 0.97, keep: true, seed: 44.0, hM: 1.25, wM: 1.90 },
@@ -2901,6 +2970,9 @@ export const ROOM_KINDS = {
            glass (fittingFor), and without it the fountain niche and the clock
            at the end of a 21 m hall were past the reach of every lamp in it */
         lamps: [{ i: 2, x: 0.0, z: 0.86 }],
+        /* (round 43: and the moon through the glazed screen over the gallery,
+           its panes laid long on the apron and the water) */
+        win: { at: 'poolscreen', dir: [-0.12, -0.40, 1.0], k: 5.0, color: '#a8c4e0' },
         vantage: { at: 'above', lift: 0.68, rise: 2.8, drop: 1.05, fwd: 0.2, ahead: 7.0 } },
       /* THE PIPE GALLERY -- a long, low service passage: the mains at two
          heights down both tiled walls with their valves and gauges, the
@@ -3938,6 +4010,9 @@ export class Atmosphere {
       if (kind.floor !== undefined) pal.floorPattern = kind.floor;
       /* (round 41, AMETHYST: and its own floor covering -- MM_RUGK, Backdrop) */
       if (kind.floorK !== undefined) pal.floorK = kind.floorK;
+      /* (round 43: and the moon through its own window, laid on its floor --
+         pal.win, FLOOR_FRAG's winLit) */
+      if (kind.win !== undefined) pal.win = kind.win;
       if (kind.straw !== undefined) pal.straw = kind.straw;
       /* (round 25 graft: a carpet laid where the lens finds the floor --
          placed from the final rig in setMood, after stageRig) */

@@ -553,7 +553,10 @@ export const PROP_SHAPES = {
  */
 /* (round 41 graft: the wings whose props are drawn with LABRADORITE's pen
    line -- PROP_FRAG's MM_PEN; ROOM_VARIANTS' prop rows carry it) */
-export const PEN_WINGS = ['hedge', 'kennels', 'sleeping', 'passages'];
+/* (round 43: and the Attic and the Bathhouse -- "ink, not grain"; not the
+   Crypt, whose fight is the round's frame: the pen cost its charnel stacks a
+   third of their time, and its objects are inked in their own drawings) */
+export const PEN_WINGS = ['hedge', 'kennels', 'sleeping', 'passages', 'attic', 'bathhouse'];
 
 export const ROOM_VARIANTS = [
   { mat: 'wall', defines: { MM_ROOMS: 14, MM_R25W: 0, MM_ARCH: 4, MM_SUBJ: 40 }, wings: ['attic'] },
@@ -601,9 +604,9 @@ export const ROOM_VARIANTS = [
   { mat: 'wall', defines: { MM_ROOMS: 18, MM_R25W: 0, MM_ARCH: 0, MM_SUBJ: 47 }, wings: ['sleeping'] },
   { mat: 'wall', defines: { MM_ROOMS: 19, MM_R25W: 0, MM_ARCH: 0, MM_SUBJ: 48 }, wings: ['study'] },
   { mat: 'wall', defines: { MM_ROOMS: 19, MM_R25W: 0, MM_ARCH: 0, MM_SUBJ: 49 }, wings: ['study'] },
-  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 2, MM_SHM0: 8667424, MM_SHM1: 16864, MM_SHM2: 0, MM_PEN: 0 }, wings: ['attic'] },
+  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 2, MM_SHM0: 8667424, MM_SHM1: 16864, MM_SHM2: 0, MM_PEN: 1 }, wings: ['attic'] },
   { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 4, MM_SHM0: 4194384, MM_SHM1: 0, MM_SHM2: 790560, MM_PEN: 0 }, wings: ['ballroom'] },
-  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 2, MM_SHM0: 8388932, MM_SHM1: 4, MM_SHM2: 0, MM_PEN: 0 }, wings: ['bathhouse'] },
+  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 2, MM_SHM0: 8388932, MM_SHM1: 4, MM_SHM2: 0, MM_PEN: 1 }, wings: ['bathhouse'] },
   { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 3, MM_SHM0: 32832, MM_SHM1: 939524096, MM_SHM2: 0, MM_PEN: 0 }, wings: ['crypt'] },
   { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 1, MM_WINGS: 4, MM_SHM0: 79691856, MM_SHM1: 0, MM_SHM2: 508, MM_PEN: 0 }, wings: ['foyer'] },
   { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 5, MM_SHM0: 8388608, MM_SHM1: 0, MM_SHM2: 11776, MM_PEN: 0 }, wings: ['graveyard'] },
@@ -619,20 +622,22 @@ export const ROOM_VARIANTS = [
   { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 1, MM_SHM0: 142606336, MM_SHM1: 0, MM_SHM2: 67108864, MM_PEN: 0 }, wings: ['pumpkin'] },
   { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 3, MM_SHM0: 4210689, MM_SHM1: 74645504, MM_SHM2: 1, MM_PEN: 1 }, wings: ['sleeping'] },
   { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 3, MM_SHM0: 4194304, MM_SHM1: 125829120, MM_SHM2: 268435456, MM_PEN: 0 }, wings: ['study'] },
-  { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 0, MM_PAT: 0, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0, MM_RUGK: 0 }, wings: ['attic', 'heart', 'nursery', 'study'] },
+  { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 0, MM_PAT: 0, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0, MM_RUGK: 8 }, wings: ['attic'] },
   { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 2, MM_PAT: 1, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0, MM_RUGK: 0 }, wings: ['ballroom'] },
   { mat: 'floor', defines: { MM_FLOORX: 1, MM_R25W: 0, MM_PAT: 10, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0, MM_RUGK: 0 }, wings: ['ballroom'] },
   { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 0, MM_PAT: 1, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0, MM_RUGK: 0 }, wings: ['bathhouse'] },
   { mat: 'floor', defines: { MM_FLOORX: 2, MM_R25W: 0, MM_PAT: 1, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0, MM_RUGK: 0 }, wings: ['bathhouse'] },
-  { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 0, MM_PAT: 2, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0, MM_RUGK: 0 }, wings: ['crypt', 'lampworks', 'pumpkin'] },
+  { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 0, MM_PAT: 2, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 2, MM_RUGK: 0 }, wings: ['crypt'] },
   { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 1, MM_PAT: 0, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0, MM_RUGK: 0 }, wings: ['foyer'] },
   { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 1, MM_PAT: 2, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0, MM_RUGK: 0 }, wings: ['foyer'] },
   { mat: 'floor', defines: { MM_FLOORX: 1, MM_R25W: 4, MM_PAT: 11, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0, MM_RUGK: 0 }, wings: ['graveyard'] },
   { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 3, MM_PAT: 2, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0, MM_RUGK: 0 }, wings: ['greenhouse'] },
+  { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 0, MM_PAT: 0, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0, MM_RUGK: 0 }, wings: ['heart', 'nursery', 'study'] },
   { mat: 'floor', defines: { MM_FLOORX: 1, MM_R25W: 0, MM_PAT: 13, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0, MM_RUGK: 0 }, wings: ['hedge'] },
   { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 0, MM_PAT: 2, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0, MM_RUGK: 6 }, wings: ['kennels'] },
   { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 0, MM_PAT: 2, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0, MM_RUGK: 7 }, wings: ['kennels'] },
   { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 0, MM_PAT: 2, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 1, MM_RUGK: 0 }, wings: ['kitchens'] },
+  { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 0, MM_PAT: 2, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0, MM_RUGK: 0 }, wings: ['lampworks', 'pumpkin'] },
   { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 0, MM_PAT: 0, MM_CEIL: 0, MM_RUGO: 1, MM_FLAGK: 0, MM_RUGK: 0 }, wings: ['nursery'] },
   { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 0, MM_PAT: 0, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0, MM_RUGK: 3 }, wings: ['passages'] },
   { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 0, MM_PAT: 0, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0, MM_RUGK: 4 }, wings: ['passages'] },
@@ -760,6 +765,7 @@ export class Backdrop {
            (ceilPattern 9, 12), else 0: its end walls then run on up into a
            glazed gable, and the gable's own feature is sized to it (round 18) */
         uGable: { value: 0 },
+        uVault: { value: new THREE.Vector2(0, 0) },   // (round 43: the Crypt's barrel vault; MM_ROOMS 20 reads it)
         uGain: { value: 3.4 }, uGloss: { value: 0.3 }, uAlbLift: { value: 0.012 },
         /* The drawn line — see mmDrawn in shaders/backdrop.js. Ink is how dark
            a relief hollow goes, lip how hard its crest catches the light.
@@ -926,6 +932,9 @@ export class Backdrop {
          of each one's foot, its half-width, 1 where it is -- for the straw
          heaped against their footings; read by MM_RUGK 6 only) */
       uKnFoot: { value: v4arr(6) },
+      /* (round 43: the Crypt's open graves -- each mouth's world x and z,
+         its half extents across and along; read by MM_FLAGK 2 only) */
+      uGrave: { value: v4arr(2) },
       /* the passage's sconce pools (round 28 graft): see FLOOR_FRAG and build */
       uSconce: { value: new THREE.Vector4(0, 0, 0, 0) }, uSconceEnd: { value: -20 },
       /* the moon on the Pumpkin Grounds' flags and in its pond (graft) */
@@ -935,6 +944,13 @@ export class Backdrop {
          variant reads it): world x and z of its centre, its half-width and
          half-depth in metres; z = 0, none */
       uRug: { value: new THREE.Vector4(0, 0, 0, 0) },
+      /* (round 43: the moon through a window, laid on the floor as the
+         window's own shape -- pal.win; read by the Attic's and the
+         Bathhouse's floors only. uWinL.w 0 = none) */
+      uWinA: { value: new THREE.Vector4(0, 0, 1, -10) }, uWinB: { value: new THREE.Vector4(1, 2, 0.8, 1) },
+      uWinL: { value: new THREE.Vector4(0, -1, 0, 0) }, uWinM: { value: new THREE.Vector4(0, 0, 0, 0) },
+      uWinC: { value: new THREE.Color(0, 0, 0) },
+      uWinO: { value: new THREE.Vector2(0, 0) },
     });
 
     this.floorMat = new THREE.ShaderMaterial({
@@ -1373,10 +1389,26 @@ export class Backdrop {
       const rise = (cp === 9 || cp === 12)
         ? Math.max(0, Math.min(room.w * 0.16, (room.wallPad ?? 5) - 0.4))
         : cp === 15 ? Math.max(0, Math.min(room.w * 0.42, (room.wallPad ?? 5) - 0.4)) : 0;
-      const cg = new THREE.PlaneGeometry(room.w, spanZ, rise > 0 ? 2 : 1, 1);
+      /* (round 43, CUPRITE: and the Crypt's rib vault (17) is a VAULT --
+         both survey-8 judges: "the ceiling is a flat grey plane with white
+         rib lines"; "give the vault ribs real volume". It is built as a
+         segmental barrel springing from the tops of the side walls, a
+         quarter of the span high at the crown, in sixteen facets, so the
+         ribs drawn on it in plan curve up over the room as ribs do, and the
+         candles below find the springing and lose the crown.) */
+      const vault = cp === 17 ? Math.max(0, Math.min(room.w * 0.25, (room.wallPad ?? 5) - 0.4)) : 0;
+      const cg = new THREE.PlaneGeometry(room.w, spanZ, rise > 0 ? 2 : (vault > 0 ? 16 : 1), 1);
       if (rise > 0) {
         const pos = cg.attributes.position;
         for (let i = 0; i < pos.count; i++) if (Math.abs(pos.getX(i)) < 1e-4) pos.setZ(i, -rise);
+        pos.needsUpdate = true;
+        cg.computeVertexNormals();
+      } else if (vault > 0) {
+        const pos = cg.attributes.position;
+        for (let i = 0; i < pos.count; i++) {
+          const u = Math.min(Math.abs(pos.getX(i)) / (room.w / 2), 1);
+          pos.setZ(i, -vault * Math.sqrt(1 - u * u));
+        }
         pos.needsUpdate = true;
         cg.computeVertexNormals();
       }
@@ -2241,6 +2273,10 @@ export class Backdrop {
          lies over it -- `hand` -- dresses the empty room and is not drawn
          under the cards: _handCull. Read only where written.) */
       if (it.hand && out.length > n0) out[out.length - 1].hand = 1;
+      /* (round 43: a piece that stands at the head of an open grave -- `grave`,
+         [half-length across, half-width along, ...] in metres -- names the
+         cist FLOOR_FRAG cuts in the flags in front of it: MM_FLAGK 2) */
+      if (it.grave && out.length > n0) out[out.length - 1].grave = it.grave;
       if (!it.keep && yields(it, out[out.length - 1])) out.pop();
     }
     return out.slice(0, MAX_PROPS);
@@ -2464,6 +2500,11 @@ export class Backdrop {
              the rows sit on the floor" -- a BED stands on its long side to
              us, 0.9 m deep: a dense band the length of it, GRISAILLE's) */
           ss2[i * 2 + 0] = p.w * 1.08; ss2[i * 2 + 1] = 1.25; st2[i] = 1.10;
+        } else if (p.grave) {
+          /* (round 43: the ledger leaned at an open grave's head stands on
+             the far kerb, and its pool must not lie over the grave's mouth in
+             front of it: a narrow band along its foot) */
+          ss2[i * 2 + 0] = p.w * 1.04; ss2[i * 2 + 1] = 0.30; st2[i] = 0.85;
         } else if (p.shape === 52 || p.shape === 60) {
           /* (round 29 graft, judge 2: "give the bed, wardrobe and washstand
              contact shadows" -- a washstand's and a wardrobe's pool, dense) */
@@ -2640,6 +2681,19 @@ export class Backdrop {
         const p = dh[i];
         if (!p) { kf[i].set(0, 0, 0, 0); continue; }
         kf[i].set(p.x, -(p.z - this._floorCz), p.w * 0.33, 1);
+      }
+    }
+    /* (round 43: the Crypt's open graves, each in front of the stone that
+       stands at its head -- the mouth's world centre and half extents, for
+       FLOOR_FRAG's MM_FLAGK 2; every other floor's program does not declare
+       it) */
+    {
+      const gv = this.floorMat.uniforms.uGrave.value;
+      const gs = (pal.flagK === 2 && this.placed) ? this.placed.filter((p) => p.grave) : [];
+      for (let i = 0; i < gv.length; i++) {
+        const p = gs[i];
+        if (!p) { gv[i].set(0, 0, 0, 0); continue; }
+        gv[i].set(p.x + (p.grave[2] ?? 0), p.z + p.grave[1] + 0.20, p.grave[0], p.grave[1]);
       }
     }
 
@@ -2900,6 +2954,10 @@ export class Backdrop {
     /* A region with room.h = 0 is OPEN TO THE SKY, and uCeil cannot say so: the
        fallback hands it 6.4 m, so the Hedge Maze was crushed to a tenth above
        6.4 m and painted no sky at all -- 71.5% of its upper third pure black. */
+    /* (round 43: and the Crypt's barrel vault -- the same number _room
+       builds it with -- so the end wall runs up into its lunette) */
+    if (w.uVault) w.uVault.value.set((p.room?.h ?? 0) > 0.01 && cpat === 17
+      ? Math.max(0, Math.min((p.room.w ?? 30) * 0.25, (p.room.wallPad ?? 5) - 0.4)) : 0, (p.room?.w ?? 30) / 2);
     const noCeil = (p.room?.h ?? 0) <= 0.01 ? 1 : 0;
     w.uOpenSky.value = noCeil;
     /* HOW BRIGHT THE NIGHT IS, and it is a POST-EXPOSURE quantity, so it is
@@ -3003,6 +3061,57 @@ export class Backdrop {
         f.uNearPool2C.value.set(q.color ?? '#ffb36a').multiplyScalar(q.k ?? 0.6);
       } else {
         f.uNearPool2C.value.setRGB(0, 0, 0);
+      }
+    }
+    /* (round 43, CUPRITE: the moon through a window, laid on the floor as the
+       window's own shape, its glazing bars across it -- pal.win, FLOOR_FRAG's
+       winLit: `at` 'oculus' the Attic's gable light, sized as the wall
+       program sizes it; 'skylight' a light in the roof; else a run of
+       windows in the far wall) */
+    {
+      const W = p.win;
+      if (W && (W.k ?? 0) > 0) {
+        const room = p.room || {};
+        const dv = W.dir || [0.2, -0.3, 1];
+        const L = new THREE.Vector3(dv[0], dv[1], dv[2]).normalize();
+        f.uWinL.value.set(L.x, L.y, L.z, W.k);
+        f.uWinC.value.set(W.color || '#9fb4e8');
+        f.uWinO.value.set(W.ox ?? 0, W.oy ?? 0);
+        if (W.at === 'bathhall') {
+          /* the bath hall's three round-headed windows, set out as its wall
+             program sets them out (MM_ROOMS 12, subject 38): their pitch,
+             sill, springing and half width, two mullions and a glazing bar
+             every half metre */
+          const sp = Math.min(5.8, (this._wallW ?? room.w ?? 21) * 0.28), hw = 1.45;
+          const spr = Math.min(5.0, (room.h ?? 7) - 0.34 - 0.40 - hw);
+          f.uWinA.value.set(-sp, sp, 3, -(room.d ?? 17));
+          f.uWinB.value.set(2.30, spr - 2.30, hw, 1);
+          f.uWinM.value.set(hw * 2 / 3, 0.50, W.bar ?? 0.035, 0);
+          f.uWinO.value.set(hw / 3, 0);
+        } else if (W.at === 'poolscreen') {
+          /* the pool hall's glazed screen over its gallery (subject 32): its
+             panes 0.84 across and 0.92 up, either side of the clock */
+          const co = (room.h ?? 7) - 0.34;
+          f.uWinA.value.set(0, 0, 1, -(room.d ?? 17));
+          f.uWinB.value.set(3.32, co - 3.32, 6.4, 0);
+          f.uWinM.value.set(0.84, 0.92, W.bar ?? 0.035, 0);
+          f.uWinO.value.set(0, 0.58);
+        } else if (W.at === 'oculus') {
+          const gab = Math.max(0, Math.min((room.w ?? 13) * 0.42, (room.wallPad ?? 5) - 0.4));
+          f.uWinA.value.set(W.x ?? 0, 0, 1, -(room.d ?? 16));
+          f.uWinB.value.set((room.h ?? 2.4) + gab * 0.24 + 0.10, 0, Math.min(gab * 0.30, 1.55), 2);
+          f.uWinM.value.set(0, 0, W.bar ?? 0.05, 0);
+        } else if (W.at === 'skylight') {
+          f.uWinA.value.set(W.x ?? 0, W.z ?? -8, 0, W.y ?? 5);
+          f.uWinB.value.set(0, 0, W.hw ?? 1, W.hl ?? 0.75);
+          f.uWinM.value.set(W.mx ?? 0, W.my ?? 0, W.bar ?? 0.04, 1);
+        } else {
+          f.uWinA.value.set(W.x0 ?? 0, W.pitch ?? 0, W.n ?? 1, W.z ?? -(room.d ?? 16));
+          f.uWinB.value.set(W.sill ?? 1, W.h ?? 2, W.hw ?? 0.8, W.head ?? 1);
+          f.uWinM.value.set(W.mx ?? 0, W.my ?? 0, W.bar ?? 0.04, 0);
+        }
+      } else {
+        f.uWinL.value.set(0, -1, 0, 0);
       }
     }
     /* the moon on the court's flags and in its pond (round 22 graft) */
