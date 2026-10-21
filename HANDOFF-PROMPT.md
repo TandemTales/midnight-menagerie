@@ -201,6 +201,15 @@ flake -- if it reds again, read its failing line. Known: piles at 1280 has
 heart, crypt, foyer, nursery, attic, graveyard, greenhouse, study) and the
 family props (inked, contact shadows). NEXT: SURVEY 8, PAIRED vs survey 7**
 (rounds 41-42 + the repair), then brief from it.
+**SURVEY 8 IS DONE (2026-10-20)** (`SURVEY-2026-10-20b.md`): paired vs survey
+7, 10 and 11 better, 5 and 5 WORSE -- the map and hud-late (round 42 dimmed
+the far rooms into 'muddy brown fog'), the Kennels, Passages and Sleeping
+Quarters (round 41 muted and removed objects survey 7's judges disliked, and
+what replaced them was emptier). **Rule: a drawn object beats an empty,
+dimmed or muted surface -- brief removals as RICHER replacements.** NOW:
+**THE REPAIR** (`REPAIR-r41.md`, worktree C:/UILOOP/r41/repair/wt,
+fix/r41-repair) -- verify it PAIRED vs survey 7, merge, then ROUND 43 (the
+Hedge's walls and lawn, Attic, Crypt, Bathhouse, the reused diamond rug).
 
 **ROUND 33 AND ITS GRAFT ARE MERGED, VERIFIED AND PUSHED (2026-10-16):**
 graft `9d008119`. COBALT +1.59 (`531126e4`): no running line under 11 px at
