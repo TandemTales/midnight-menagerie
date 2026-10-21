@@ -1,0 +1,73 @@
+{
+  "round": "r43",
+  "maxBuilders": 3,
+  "briefs": [
+    "docs/ui-pass/BRIEF-r0.md",
+    "docs/ui-pass/BRIEF-r1.md",
+    "docs/ui-pass/BRIEF-r11.md",
+    "docs/ui-pass/BRIEF-r16.md",
+    "docs/ui-pass/BRIEF-r21.md",
+    "docs/ui-pass/BRIEF-r22.md",
+    "docs/ui-pass/BRIEF-r23.md",
+    "docs/ui-pass/BRIEF-r24.md",
+    "docs/ui-pass/BRIEF-r25.md",
+    "docs/ui-pass/BRIEF-r28.md",
+    "docs/ui-pass/BRIEF-r29.md",
+    "docs/ui-pass/BRIEF-r31.md",
+    "docs/ui-pass/BRIEF-r34.md",
+    "docs/ui-pass/BRIEF-r35.md",
+    "docs/ui-pass/BRIEF-r37.md",
+    "docs/ui-pass/BRIEF-r39.md",
+    "docs/ui-pass/BRIEF-r41.md",
+    "docs/ui-pass/REPAIR-r41.md",
+    "docs/ui-pass/BRIEF-r43.md"
+  ],
+  "rubrics": [
+    "docs/ui-pass/RUBRIC.md",
+    "docs/ui-pass/RUBRIC-r43.md"
+  ],
+  "samples": [
+    "UI/title.png",
+    "UI/mainMenu.png",
+    "UI/selectCompanion.png",
+    "UI/selectKid.png"
+  ],
+  "tracks": [
+    {
+      "key": "rooms",
+      "name": "ROOMS",
+      "rule": "refine",
+      "screens": [
+        "sheet-hedge",
+        "sheet-attic",
+        "sheet-crypt",
+        "sheet-bathhouse",
+        "fight-crypt"
+      ],
+      "smallScreens": [
+        "fight-crypt"
+      ],
+      "baseline": "TARLATAN",
+      "builders": [
+        {
+          "slot": "a",
+          "code": "ZINCITE",
+          "port": 9301,
+          "angle": "LITERAL -- work BRIEF-r43's fix list 1 to 4 in order and exactly as written, one wing at a time, the Crypt FIRST (the round's fight). Never fewer objects; keep every change inside your four wings."
+        },
+        {
+          "slot": "b",
+          "code": "BENITOITE",
+          "port": 9302,
+          "angle": "THE OBJECT DRAWN -- each wing's weak subject is a primitive: the Hedge's noise box, the Attic's soft trunk, the Crypt's cardboard half-domes, the Bathhouse's cloned tub. Draw each as a real object with an inked, broken silhouette, mass and a contact shadow first, then light the near floor round it."
+        },
+        {
+          "slot": "c",
+          "code": "CUPRITE",
+          "port": 9303,
+          "angle": "LIGHT THE FLOOR, THEN FILL IT -- the near floor falls to black or milk in all four wings. Give each a lit near floor from a source the room has (a lantern, moon shafts, candles in the crypt), then stand that wing's own objects in the light, richer than before -- never fewer."
+        }
+      ]
+    }
+  ]
+}
