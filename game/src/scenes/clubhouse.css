@@ -928,13 +928,8 @@
    Survey 7, both judges: "web tab pills"; "a pale even cork"; the eight pet
    polaroids "soft, blurred photos -- the board's focal objects are its
    blurriest"; the clue notes ~9-10 px at 1280.
-   - THE TABS are the file's own index tabs: four pressboard folders filed
-     behind the board, each in its archive colour (oxblood, bottle green,
-     ink blue, aubergine) with a brass-bound top edge and its name stamped
-     in gilt. The open one stands proud of the others, taller, in front and
-     lit, its stamp bright; the rest are filed back, a step
-     darker. The row stands on the carved frame's top rail, the tabs' feet
-     tucked behind it.
+   - THE TABS: see ROUND 42 GRAFT 1 at the end of this file (the archive-
+     coloured pressboard folders were replaced by LAPIS's tabs).
    - THE CORK a step down in value: the hanging lamp's pool is the one lit
      thing on it, the cork falling away to a deep brown at the frame.
    - THE PRINTS crisp (ui/petart.js printFinish: clarity at the display
@@ -945,69 +940,6 @@
    - THE THREAD a twisted wool with a shadow under it on the cork.
    - THE SMALL PRINT at 12 px or more at 1280 (the clue notes at 13).
    ═══════════════════════════════════════════════════════════════════════════ */
-.cl-tabs { gap: 3px; align-items: flex-end; }
-.cl-tab.kit-tab {
-  --tab-h: clamp(36px, 4.6vh, 42px);
-  --tab-c: #4a1a1f;                     /* the pressboard's colour, per folder */
-  position: relative; isolation: isolate;
-  min-height: var(--tab-h);
-  padding: 4px calc(var(--tab-h) * .78) 0;
-  border: 0; border-image: none; background: none;
-  font-size: clamp(12.5px, .86vw, 13.5px); letter-spacing: .16em;
-  color: color-mix(in oklab, #e3c27e 80%, var(--tab-c));
-  text-shadow: 0 -1px 0 rgba(0, 0, 0, .85), 0 1px 0 rgba(255, 226, 160, .14);
-  filter: drop-shadow(0 -2px 3px rgba(0, 0, 0, .55)) brightness(.8) saturate(.8);
-  translate: 0 4px;
-  transition: translate var(--t-quick) var(--ease-out), filter var(--t-quick) var(--ease-out), color var(--t-quick) var(--ease-out);
-}
-.cl-tab.kit-tab:nth-child(1) { --tab-c: #5a1b20; }
-.cl-tab.kit-tab:nth-child(2) { --tab-c: #1b3a2b; }
-.cl-tab.kit-tab:nth-child(3) { --tab-c: #1b2a4a; }
-.cl-tab.kit-tab:nth-child(4) { --tab-c: #3b1f52; }
-/* the tab: a pressboard trapezoid, its top edge bound in brass, the board's
-   grain in it and the lamp on its upper half */
-.cl-tab.kit-tab::before {
-  content: ''; position: absolute; z-index: -1; pointer-events: none;
-  inset: 0 0 -6px; left: 0; top: 0; width: auto; aspect-ratio: auto;
-  translate: none;
-  clip-path: polygon(12px 0, calc(100% - 12px) 0, 100% 100%, 0 100%);
-  background:
-    linear-gradient(180deg, #f0d79a 0, #b08a4a 2px, #6b4c24 4px, transparent 5px),
-    linear-gradient(90deg, rgba(0, 0, 0, .55) 0, transparent 14px, transparent calc(100% - 14px), rgba(0, 0, 0, .55) 100%),
-    linear-gradient(180deg, rgba(255, 220, 160, .16), transparent 55%, rgba(0, 0, 0, .35)),
-    url("../../assets/ui/kit/grain.webp") 0 0 / 160px 160px,
-    var(--tab-c);
-  background-blend-mode: normal, normal, normal, overlay, normal;
-  filter: none;
-}
-/* the gilt stamp's hairline frame round the name */
-.cl-tab.kit-tab::after {
-  content: ''; position: absolute; pointer-events: none;
-  left: calc(var(--tab-h) * .5); right: calc(var(--tab-h) * .5); top: 9px; bottom: 5px;
-  border: 1px solid color-mix(in srgb, #d9b870 34%, transparent);
-  border-radius: 1px;
-}
-.cl-tab.kit-tab:hover { filter: drop-shadow(0 -2px 3px rgba(0, 0, 0, .55)) brightness(.98) saturate(.95); translate: 0 1px; }
-.cl-tab.kit-tab[aria-selected="true"] {
-  z-index: 2;
-  color: #ffe6a8;
-  text-shadow: 0 -1px 0 rgba(0, 0, 0, .9), 0 0 10px color-mix(in srgb, var(--kit-candle) 45%, transparent);
-  filter: drop-shadow(0 -3px 5px rgba(0, 0, 0, .65)) drop-shadow(0 0 9px color-mix(in srgb, var(--kit-candle) 24%, transparent)) brightness(1.12);
-  translate: 0 -2px;
-}
-.cl-tab.kit-tab[aria-selected="true"]::after {
-  border-color: color-mix(in srgb, #e6c98a 60%, transparent);
-}
-/* the open folder stands taller, its stamp's frame lit */
-.cl-tab.kit-tab[aria-selected="true"] { min-height: calc(var(--tab-h) + 4px); }
-.cl-tab.kit-tab:focus-visible {
-  outline: none;
-  color: #fff1d2;
-  filter: drop-shadow(0 -3px 5px rgba(0, 0, 0, .65)) drop-shadow(0 0 1.5px var(--kit-gold-hi)) drop-shadow(0 0 12px color-mix(in srgb, var(--kit-candle) 70%, transparent)) brightness(1.15);
-}
-/* the row stands ON the frame's top rail, the tabs' feet behind its moulding */
-.cl-tabs { top: calc(var(--cl-carve) * -1 + 7px); translate: -50% -100%; z-index: 5; }
-
 /* the cork, a step down: the lamp's pool the one lit thing on it */
 .cork {
   background:
@@ -1055,3 +987,35 @@
 .scene--clubhouse .cl-tally .kit-enamel__label, .scene--clubhouse .kit-enamel__label { font-size: max(12px, calc(var(--h) * .3)); }
 .scene--clubhouse .kit-ladder--candles > .kit-ladder__rung.haunt__pip,
 .scene--clubhouse .kit-ladder--candles > .kit-ladder__rung.haunt__pip[aria-checked="true"] { font-size: max(12.5px, calc(var(--md) * .34)); }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ROUND 42 GRAFT 1 — LAPIS'S TABS, CLEAR OF THE LAMP
+   VERDICTS-r42 graft 1 (J1, J3): the four pressboard folders in archive
+   colours were off-palette and their row stood up over the hanging lamp's
+   shade. The sections are LAPIS's aged folder tabs now -- dark walnut paper
+   ruled in brass, the chosen one a lit brass plate with the star medallion on
+   it -- standing on the frame's top rail, under the lamp, never over it.
+   ═══════════════════════════════════════════════════════════════════════════ */
+/* ── the tabs: folder tabs, the chosen one a lit brass plate ── */
+.cl-tab.kit-tab {
+  --plate-h: clamp(34px, 4.4vh, 40px);
+  height: var(--plate-h); min-height: 0;
+  padding: 3px calc(var(--plate-h) * .62) 0;
+  border-image-source: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 40'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%233a2616'/%3E%3Cstop offset='1' stop-color='%23180e07'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M12.5 1H51.5L63 40H1Z' fill='url(%23g)' stroke='%23a47e44' stroke-width='1.3'/%3E%3Cpath d='M14.6 4.2H49.4L58.6 36' fill='none' stroke='%23e6c98a' stroke-opacity='.28' stroke-width='.8'/%3E%3C/svg%3E");
+  border-image-slice: 0 16 0 16 fill;
+  border-image-width: 0 calc(var(--plate-h) * 16 / 40);
+  color: #d8c29a;
+  filter: drop-shadow(0 -2px 3px rgba(0, 0, 0, .6)) brightness(.9);
+}
+.cl-tab.kit-tab:hover { color: #f2e2c0; filter: drop-shadow(0 -2px 3px rgba(0, 0, 0, .6)) brightness(1.05); }
+.cl-tab.kit-tab[aria-selected="true"] {
+  border-image-source: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 40'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%23f3dca4'/%3E%3Cstop offset='.45' stop-color='%23c9a35e'/%3E%3Cstop offset='1' stop-color='%23805c2a'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M12.5 1H51.5L63 40H1Z' fill='url(%23g)' stroke='%233a240e' stroke-width='1.4'/%3E%3Cpath d='M14.6 4.2H49.4L58.2 36.2H5.8Z' fill='none' stroke='%23fff2cc' stroke-opacity='.45' stroke-width='.8'/%3E%3C/svg%3E");
+  color: #2a1808;
+  text-shadow: 0 1px 0 rgb(255 240 200 / .55);
+  filter: drop-shadow(0 -2px 4px rgba(0, 0, 0, .55)) drop-shadow(0 0 10px color-mix(in srgb, var(--kit-candle) 34%, transparent));
+}
+.cl-tab.kit-tab:focus-visible {
+  filter: drop-shadow(0 0 1.5px var(--kit-gold-hi)) drop-shadow(0 0 1.5px var(--kit-gold-hi)) drop-shadow(0 0 12px color-mix(in srgb, var(--kit-candle) 70%, transparent));
+}
+.cl-tabs { gap: 2px; translate: -50% -62%; }
+.cl-tab.kit-tab[aria-selected="true"]::before { translate: -50% -72%; }
