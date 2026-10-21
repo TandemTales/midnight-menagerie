@@ -1,0 +1,74 @@
+{
+  "round": "r44",
+  "maxBuilders": 3,
+  "briefs": [
+    "docs/ui-pass/BRIEF-r0.md",
+    "docs/ui-pass/BRIEF-r1.md",
+    "docs/ui-pass/BRIEF-r11.md",
+    "docs/ui-pass/BRIEF-r16.md",
+    "docs/ui-pass/BRIEF-r21.md",
+    "docs/ui-pass/BRIEF-r22.md",
+    "docs/ui-pass/BRIEF-r23.md",
+    "docs/ui-pass/BRIEF-r24.md",
+    "docs/ui-pass/BRIEF-r25.md",
+    "docs/ui-pass/BRIEF-r28.md",
+    "docs/ui-pass/BRIEF-r29.md",
+    "docs/ui-pass/BRIEF-r31.md",
+    "docs/ui-pass/BRIEF-r34.md",
+    "docs/ui-pass/BRIEF-r35.md",
+    "docs/ui-pass/BRIEF-r37.md",
+    "docs/ui-pass/BRIEF-r39.md",
+    "docs/ui-pass/BRIEF-r41.md",
+    "docs/ui-pass/REPAIR-r41.md",
+    "docs/ui-pass/BRIEF-r43.md",
+    "docs/ui-pass/BRIEF-r44.md"
+  ],
+  "rubrics": [
+    "docs/ui-pass/RUBRIC.md",
+    "docs/ui-pass/RUBRIC-r44.md"
+  ],
+  "samples": [
+    "UI/title.png",
+    "UI/mainMenu.png",
+    "UI/selectCompanion.png",
+    "UI/selectKid.png"
+  ],
+  "tracks": [
+    {
+      "key": "rooms",
+      "name": "ROOMS",
+      "rule": "refine",
+      "screens": [
+        "sheet-pumpkin",
+        "sheet-greenhouse",
+        "sheet-graveyard",
+        "sheet-nursery",
+        "fight-pumpkin"
+      ],
+      "smallScreens": [
+        "fight-pumpkin"
+      ],
+      "baseline": "ORGANZA",
+      "builders": [
+        {
+          "slot": "a",
+          "code": "SPHENE",
+          "port": 9301,
+          "angle": "LITERAL -- work BRIEF-r44's fix list 1 to 4 in order and exactly as written, one wing at a time, the Pumpkin Grounds FIRST (the round's fight). Never fewer objects, never a smoother surface; keep every change inside your four wings."
+        },
+        {
+          "slot": "b",
+          "code": "EUCLASE",
+          "port": 9302,
+          "angle": "THE GROUND FIRST -- two wings have a black void band and the Graveyard a flat lawn plane. Make each wing's ground one continuous, lit, dressed surface from the back wall to the front (turf, paths, tiles, leaves, puddles, light pools from sources the room has), then stand each wing's subject on it, richer than before."
+        },
+        {
+          "slot": "c",
+          "code": "PYRITE",
+          "port": 9303,
+          "angle": "THE OBJECT DRAWN -- each wing's subject is a primitive: the Greenhouse's green tubes, the Graveyard's few stones, the Pumpkin Grounds' floating pumpkins and pasted mansion, the Nursery's cutout horse and cubes. Draw each as a real, inked object with material, wear and a contact shadow -- more of them, never fewer -- then light the floor round them."
+        }
+      ]
+    }
+  ]
+}
