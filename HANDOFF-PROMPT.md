@@ -231,6 +231,13 @@ paired against the graft's parent before merging; then SURVEY 9 or round 44
 (survey 8's next: the reused diamond rug in Study/Nursery/Kitchens, the
 Greenhouse, the Graveyard, the Pumpkin Grounds' black band, the boards' web
 list rows on rest/event/gameover/shop).
+**THE TOUCH-UP IS DONE (2026-10-21, `6d90a3ec`):** paired, its Bathhouse half
+won 4 of 4 (claw feet back, soft hem) and is merged; its Hedge half lost 4 of
+4 -- the judges preferred the graft's torn withered crowns, streaks and all --
+and was left out (branch fix/r43-touchup keeps it). **C: WAS FULL** (0.4 GB
+free; C:/UILOOP 165 GB): r0-r40 are being MOVED to D:/UILOOP (robocopy /MOVE,
+nothing deleted; `git worktree repair` after). Cut new worktrees on D:/UILOOP.
+**NEXT: round 44.**
 
 **ROUND 33 AND ITS GRAFT ARE MERGED, VERIFIED AND PUSHED (2026-10-16):**
 graft `9d008119`. COBALT +1.59 (`531126e4`): no running line under 11 px at
