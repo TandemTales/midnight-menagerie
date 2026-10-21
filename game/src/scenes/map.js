@@ -617,6 +617,31 @@ export class MapScene extends Scene {
     crease(true, h * 0.71, 24);
     g.restore();
 
+    // 2b. ROUND 42 GRAFT 4 (ZOISITE's sheet; J1, J3): A STEP DOWN IN VALUE.
+    //     The sheet is multiplied down toward its corners -- a vignette of age
+    //     and smoke, browned hardest where hands held it -- its lit centre
+    //     over the entry column, where the party stands to choose; only the
+    //     candle pools below lift it back to a lit tan, so the lit thing on
+    //     the sheet reads as lit. (It replaces PREHNITE's even 3c browning.)
+    {
+      g.save();
+      g.globalCompositeOperation = 'multiply';
+      const R = Math.hypot(w, h) * 0.62;
+      const vg = g.createRadialGradient(w * 0.22, h * 0.46, 0, w * 0.22, h * 0.46, R);
+      vg.addColorStop(0, '#d8c8b2'); vg.addColorStop(0.36, '#bba58c');
+      vg.addColorStop(0.7, '#8a745e'); vg.addColorStop(1, '#4a3626');
+      g.fillStyle = vg; g.fillRect(0, 0, w, h);
+      // the burnt margin: a band all round the sheet, a shade deeper again
+      for (const [x0, y0, x1, y1, ww, hh, xx, yy] of [
+        [0, 0, 0, 70, w, 70, 0, 0], [0, h, 0, h - 70, w, 70, 0, h - 70],
+        [0, 0, 70, 0, 70, h, 0, 0], [w, 0, w - 70, 0, 70, h, w - 70, 0]]) {
+        const lg = g.createLinearGradient(x0, y0, x1, y1);
+        lg.addColorStop(0, '#5a4230'); lg.addColorStop(1, '#ffffff');
+        g.fillStyle = lg; g.fillRect(xx, yy, ww, hh);
+      }
+      g.restore();
+    }
+
     // 3. the room's light on it (fix 10, round 4): the two candles standing
     //    over the rail's top corners and the one on the desk at its front
     //    right corner each throw a warm pool onto the paper; the dark paper
@@ -669,18 +694,6 @@ export class MapScene extends Scene {
         g.lineWidth = 12;
         g.beginPath(); g.ellipse(x, y, r - 7, r * 0.9 - 7, 0, 0, 6.2832); g.stroke();
       }
-      g.restore();
-    }
-    /* 3c. ROUND 42: the sheet browned toward every edge and darker at its
-       far end, under the plan, so the paper keeps the house's darks */
-    {
-      g.save();
-      g.globalCompositeOperation = 'multiply';
-      const vg = g.createRadialGradient(w * .36, h * .46, Math.min(w, h) * .22, w * .5, h * .5, Math.hypot(w, h) * .62);
-      vg.addColorStop(0, 'rgb(238 226 208)');
-      vg.addColorStop(.55, 'rgb(196 176 150)');
-      vg.addColorStop(1, 'rgb(110 86 62)');
-      g.fillStyle = vg; g.fillRect(0, 0, w, h);
       g.restore();
     }
     void shade; void rng;
@@ -2016,6 +2029,9 @@ export class MapScene extends Scene {
       p.classList.toggle('is-dead', dead);
       p.classList.toggle('is-cold', cold);
       p.setAttribute('marker-end', open ? 'url(#mm-arrow)' : '');
+      /* round 42 graft 4: how far ahead the route runs, so its ink can fade
+         with distance as the stamps do (map.css) */
+      p.dataset.ahead = String(Math.max(0, Math.min(9, (m.byId.get(t)?.row ?? 0) - atRow)));
       for (const q of this._legs.get(f + '>' + t) || []) {
         q.classList.toggle('is-walked', walked);
         q.classList.toggle('is-open', open);
@@ -2276,7 +2292,7 @@ export class MapScene extends Scene {
       el.screen.classList.add('is-grabbing');
     });
     on(window, 'pointermove', (e) => {
-      this.lamp.tx = e.clientX; this.lamp.ty = e.clientY;
+      this.lamp.tx = e.clientX; this.lamp.ty = e.clientY; this._lampHeld = true;
       if (!this._drag) return;
       const dx = e.clientX - this._drag.x, dy = e.clientY - this._drag.y;
       if (!this._movedFar && Math.hypot(dx, dy) > 5) {
@@ -2725,6 +2741,18 @@ export class MapScene extends Scene {
     // lamp follows the cursor with a little lag, and breathes like a real flame
     if (!this.el?.lamp) return;
     const l = this.lamp;
+    // ROUND 42 GRAFT 4 (ZOISITE's): until a pointer takes it, the lamp stands
+    // over the rooms you may enter next, so on the darker sheet the lit thing
+    // is the choice
+    if (!this._lampHeld && (this._lampAim = (this._lampAim || 0) + dt) > 0.4) {
+      this._lampAim = 0;
+      const ls = this.el.nodes?.querySelectorAll('.map-node.is-legal');
+      if (ls && ls.length) {
+        let sx = 0, sy = 0;
+        for (const n of ls) { const r = n.getBoundingClientRect(); sx += r.left + r.width / 2; sy += r.top + r.height / 2; }
+        l.tx = sx / ls.length; l.ty = sy / ls.length;
+      }
+    }
     const k = this.still ? 1 : 1 - Math.pow(0.001, dt);
     l.x += (l.tx - l.x) * k; l.y += (l.ty - l.y) * k;
     const flick = this.still ? 1 : 1 + Math.sin(t * 7.3) * 0.018 + Math.sin(t * 17.1) * 0.011;

@@ -1856,3 +1856,84 @@
 @media (max-width: 1500px) {
   .map-screen .map-node--boss .mn-label { padding-inline: calc(var(--plate-h) * .42); font-size: 16px; }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ROUND 42 GRAFT 4 — THE MAP: ZOISITE'S SHEET, A CLEAR SECOND STATE, INKED
+   ROUTES, DARK DISTRICT PLATES
+   VERDICTS-r42 graft 4:
+   - the sheet ZOISITE's darker vignette, lit over the entry column, the lamp
+     aimed at the rooms you may enter (map.js 2b and update());
+   - the rooms you cannot reach yet DIMMED but a clear second state (J1, J2):
+     from the fourth row on a room is a firm iron-gall mark in a ruled ring on
+     the paper -- smaller and quieter than a stamp, never a near-invisible
+     ghost; a room cut off for good a step fainter again;
+   - routes between rooms you can still reach are CONTINUOUS inked strokes
+     (J2, J3), fading with distance; dashes only for a route that is cut off;
+   - districts in uneven hand-inked strokes -- the nib's swell retraced in
+     broken lengths over the bled line -- and their names on DARK ENAMEL
+     cartouches ruled in gilt, like the boss's plate (J3).
+   ═══════════════════════════════════════════════════════════════════════════ */
+/* the second state: ink on the paper, readable */
+.map-screen .map-node.is-dim:not(.map-node--boss):is([data-ahead="4"], [data-ahead="5"], [data-ahead="6"], [data-ahead="7"], [data-ahead="8"], [data-ahead="9"]) {
+  color: color-mix(in srgb, #1f130a 94%, transparent);
+}
+.map-screen .map-node.is-dim:not(.map-node--boss):is([data-ahead="4"], [data-ahead="5"], [data-ahead="6"], [data-ahead="7"], [data-ahead="8"], [data-ahead="9"]) .mn-pool {
+  background: radial-gradient(circle closest-side, rgb(206 172 118 / .5), rgb(206 172 118 / .26) 78%, rgb(206 172 118 / .08) 100%);
+  box-shadow: 0 0 0 1.5px rgb(31 19 10 / .8), 0 0 0 3px rgb(222 190 136 / .22);
+}
+.map-screen .map-node.is-dim:not(.map-node--boss):is([data-ahead="4"], [data-ahead="5"]) .mn-in { opacity: 1; }
+.map-screen .map-node.is-dim:not(.map-node--boss):is([data-ahead="6"], [data-ahead="7"]) .mn-in { opacity: .96; }
+.map-screen .map-node.is-dim:not(.map-node--boss):is([data-ahead="8"], [data-ahead="9"]) .mn-in { opacity: .9; }
+.map-screen .map-node.is-cold:not(.map-node--boss) .mn-in { opacity: .62; }
+.map-screen .map-node.is-cold:not(.map-node--boss) .mn-pool { box-shadow: 0 0 0 1.2px rgb(31 19 10 / .5); }
+
+/* routes: continuous ink between rooms still reachable, fading with distance */
+.map-screen .mi-edges .mi-edge.is-dead:not(.is-cold):not(.mi-edge--entry) {
+  stroke-dasharray: none; stroke-linecap: round;
+  stroke-width: 3.6; opacity: .74;
+}
+.map-screen .mi-edges .mi-edge.is-dead:not(.is-cold):not(.mi-edge--entry):is([data-ahead="4"], [data-ahead="5"]) { opacity: .6; stroke-width: 3.2; }
+.map-screen .mi-edges .mi-edge.is-dead:not(.is-cold):not(.mi-edge--entry):is([data-ahead="6"], [data-ahead="7"], [data-ahead="8"], [data-ahead="9"]) { opacity: .48; stroke-width: 3; }
+/* ...and only a route cut off is dashed */
+.map-screen .mi-edges .mi-edge.is-cold:not(.mi-edge--entry) { stroke-dasharray: 10 8; stroke-linecap: butt; opacity: .34; }
+
+/* districts: the nib's swell, retraced in broken lengths over the line */
+.map-screen .mi-zones .mi-zone--drawn .mi-zone-retrace {
+  stroke: currentColor; stroke-width: 2.6; opacity: .62;
+  stroke-dasharray: 38 11 17 7 56 13 23 9;
+  stroke-linecap: round;
+}
+.map-screen .mi-zones .mi-zone--drawn .mi-zone-line { stroke-width: 3.2; }
+@media (max-width: 1500px) {
+  .map-screen .mi-zones .mi-zone--drawn .mi-zone-line { stroke-width: 4; }
+  .map-screen .mi-zones .mi-zone--drawn .mi-zone-retrace { stroke-width: 3.2; }
+}
+/* the district's name on a dark enamel cartouche ruled in gilt */
+.map-screen .mi-zone-names .mi-zone-plate {
+  fill: #1c1108; stroke: var(--kit-gold-hi); stroke-width: 2;
+  filter: drop-shadow(1px 2px 2px rgb(8 4 2 / .65));
+}
+.map-screen .mi-zone-names .mi-zone-plate-rule { fill: none; stroke: currentColor; stroke-width: 1.5; opacity: 1; }
+.map-screen .mi-zone-names .mi-zone { color: #c0503f; }
+.map-screen .mi-zone-names .mi-zone--boon { color: #5a9cc0; }
+.map-screen .mi-zone-names .mi-zone-name,
+.map-screen .mi-zone-names .mi-zone--boon .mi-zone-name { fill: #f0d9b2; stroke: none; }
+/* the district inks a step richer, so on the darker sheet the line still
+   reads as ink and the hatch as the line's own pen (not a ghost of it) */
+.map-screen .mi-zones .mi-zone { color: #93291a; }
+.map-screen .mi-zones .mi-zone--boon { color: #23537e; }
+.map-screen .mi-zones .mi-zone--drawn .mi-zone-line,
+.map-screen .mi-zones .mi-zone--boon.mi-zone--drawn .mi-zone-line { stroke: currentColor; opacity: .95; }
+.map-screen .mi-zones .mi-zone-wash,
+.map-screen .mi-zones .mi-zone--boon .mi-zone-wash { fill: currentColor; opacity: .16; mix-blend-mode: multiply; }
+.map-screen .mi-zones .mi-zone--drawn .mi-zone-tex--hatch { stroke: currentColor; opacity: .72; }
+.map-screen .mi-zones .mi-zone--drawn .mi-zone-tex--stipple { fill: currentColor; opacity: .85; }
+/* at the Deck's 1280 the room tags a size up (J2, J3: the entry column's
+   tags read ~9-10 px): the plan is drawn at ~0.75x there, so the tag's own
+   18 px is ~13.4 px on screen, the Grenze's small x-height at a readable size
+   (its plate no taller: the padding gives back what the letters take);
+   the placement pass measures the plate, so it makes room for it */
+@media (max-width: 1500px) {
+  .map-screen .map-node:not(.map-node--boss) .mn-label { font-size: 18px; --tag-h: 28px; line-height: 1.05; }
+  .map-screen .map-legend .lg-h { font-size: 13px; }
+}
