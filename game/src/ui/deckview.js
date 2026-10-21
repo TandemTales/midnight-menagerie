@@ -141,9 +141,10 @@ export class DeckView {
     search.prepend(glassCap);
     const input = document.createElement('input');
     input.type = 'search'; input.placeholder = 'Seek a Trick by name…'; input.autocomplete = 'off';
-    /* ROUND 36: a dark enamel well sunk in brass, as the filter rail beside it
-       is brass (ui/kit.css .kit-hw-inlay) -- it was a pale torn slip, "the
-       brightest object on the dialog" and "a web input" (survey 5) */
+    /* ROUND 42: the words are written into the channel of a slotted brass
+       cartouche (deckview.css .mm-deck__seek on the label's hw-slot plate) --
+       round 36's enamel well still read as "a plain dark rounded web input"
+       to both survey 7 judges */
     input.className = 'mm-deck__seek';
     input.addEventListener('input', () => { this.filters.q = input.value.trim().toLowerCase(); this._apply(); });
     search.appendChild(input);
