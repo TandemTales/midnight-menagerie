@@ -183,6 +183,13 @@ program links in 12.9 s (12.9 at BASE too). **NEXT: ROUND 42** -- survey
 7's board items 8-9: the parchment family's darks (map, hud-late, atlas,
 atlas-house, event, clubhouse) and the last web controls (piles search,
 settings seed fields, event's arrow circles).
+**ROUND 42 IS MERGED (2026-10-20, `e83f075b`):** PREHNITE +1.25, 2 of 3
+(6.96 vs SERGE 5.71, the three within 0.15): the last web controls in brass
+and enamel, one control per event choice, the map's unreachable rooms
+dimmed, crisp pet prints. Battery 106 gates, only the sprites halo red.
+**NOW: its graft** (`GRAFT-r42.md`, worktree C:/UILOOP/r42/wt/r42-graft):
+LAPIS's clubhouse tabs and atlas cartouches, ZOISITE's atlas sheet,
+legend and +N tab, the 1280 small text (room tags, KEY) at 12 px.
 
 **ROUND 33 AND ITS GRAFT ARE MERGED, VERIFIED AND PUSHED (2026-10-16):**
 graft `9d008119`. COBALT +1.59 (`531126e4`): no running line under 11 px at
