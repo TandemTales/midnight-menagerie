@@ -4497,6 +4497,22 @@ float subjectH(vec2 q, float far, out float occ){
         gTint += onW*((bv - 0.5)*0.22*lodC + 0.16*smoothstep(0.035, 0.0, cHi - cfr)*lodC
                       - 0.10*smoothstep(0.04, 0.0, cfr - cLo)*lodC);
         gInk = max(gInk, max(bed*(0.40 + 0.25*bv), per*0.45)*onW*0.80);
+        /* ROUND 44 (PYRITE): both survey-8 judges -- "draw the chapel's
+           stones and tracery in ink". The rubble's joints a full pen line
+           now, the bed heavier than the perpend; and the lit windows LEADED
+           -- diamond quarries in their cames across every light, the
+           tracery's own bars inked both sides, so the glass reads as glazing
+           a lamp is behind and not a lit panel */
+        gInk = max(gInk, max(bed*(0.62 + 0.30*bv), per*0.62)*onW);
+        {
+          float qd = 0.23;
+          float l1 = abs(fract((gx + q.y*0.62)/qd) - 0.5)*qd, l2 = abs(fract((gx - q.y*0.62)/qd) - 0.5)*qd;
+          float came = mmInkP(min(l1, l2), px, 1.0)*mmLod(qd, px);
+          float inGlass = mmSolid(win)*(1.0 - trac)*front + swin;
+          gInk = max(gInk, came*inGlass*0.75);
+          gInk = max(gInk, trac*mmSolid(win)*front*0.0 + mmInk(win, 1.4)*front*0.85);
+          gInk = max(gInk, mmInk(abs(gx) - 0.045, 1.0)*mmSolid(win)*front*step(q.y, 5.30)*0.8);
+        }
         gTint -= front*(1.0 - door)*0.58 + side*0.16;
         /* the stone itself a dark weathered grey -- a stop under the house's
            dressed stone -- darkest at its foot and streaked under the sills,
@@ -18227,9 +18243,14 @@ void main(){
     float dryPk = 1.0 - water;
     vec3 albPk = alb;
 #if MM_PAT == 2
-    float eN = 0.55*mmNoise(vec2(w.x*0.45, 1.7)) + 0.30*mmNoise(vec2(w.x*1.9, 5.3)) + 0.15*mmNoise(vec2(w.x*6.0, 9.1));
+    /* (the frame budget: the bed's whole drawing only within its reach of
+       the wall -- the court beyond it is laid and lit, below, and nothing
+       else; a noise tap a pixel across the open flags was a fight's cost) */
+    float verge = 0.0;
+    if (fwPk < 10.8) {
+    float eN = 0.62*mmNoise(vec2(w.x*0.45, 1.7)) + 0.38*mmNoise(vec2(w.x*1.9, 5.3));
     float vD = fwPk - (5.6 + 4.4*eN);
-    float verge = (1.0 - smoothstep(-pxPk*1.2, pxPk*1.2, vD)) * dryPk;
+    verge = (1.0 - smoothstep(-pxPk*1.2, pxPk*1.2, vD)) * dryPk;
     if (verge > 0.0 || vD < 0.6) {
       /* the turf: blades combed toward you, tussocks, the wall's damp foot */
       float blade = mmNoise(vec2(w.x*9.0 + 2.0*mmNoise(vec2(w.x*1.7, fwPk*0.8)), fwPk*2.6));
@@ -18244,16 +18265,37 @@ void main(){
       float leafPk = (1.0 - smoothstep(0.13, 0.13 + pxPk*2.6*1.5, lr)) * step(0.58, mmHash21(li + 3.3)) * mmLod(0.38, pxPk);
       vec3 leafC = mix(vec3(0.22, 0.085, 0.030), vec3(0.30, 0.18, 0.050), mmHash21(li + 1.1));
       grassC = mix(grassC, leafC, leafPk*0.92);
+      /* the pumpkin vine running along the bed: a stem wandering the length
+         of the wall, and its broad lobed leaves lying on the turf, each a
+         dark green with a paler vein, every edge inked */
+      float vy = 2.6 + 1.4*sin(w.x*0.55 + 1.3*sin(w.x*0.21)) ;
+      float stemV = mmInkP(fwPk - vy, pxPk, 1.6)*mmLod(0.5, pxPk);
+      vec2 vq = vec2(w.x, fwPk)/0.62;
+      vec2 vi = floor(vq);
+      vec2 vf = (fract(vq) - 0.5)*0.62 - (mmHash22(vi + 4.4) - 0.5)*0.26;
+      float vr = length(vf), va = atan(vf.y, vf.x);
+      float lobe = 0.20 + 0.035*cos(va*5.0 + mmHash21(vi)*6.0);
+      float vLeafD = vr - lobe;
+      float hasL = step(0.40, mmHash21(vi + 7.7))*smoothstep(1.8, 0.4, abs(fwPk - vy));
+      float vLeaf = (1.0 - smoothstep(-pxPk, pxPk, vLeafD))*hasL;
+      float vein = (1.0 - smoothstep(0.0, pxPk*1.4, abs(sin(va*2.5)*vr)))*vLeaf*step(vr, lobe*0.85);
+      vec3 vineC = vec3(0.030, 0.060, 0.026)*(0.85 + 0.30*mmHash21(vi + 2.1));
+      grassC = mix(grassC, vineC, vLeaf);
+      grassC = mix(grassC, vec3(0.070, 0.100, 0.050), vein*0.7);
+      grassC = mix(grassC, vec3(0.040, 0.060, 0.025), stemV*0.9);
+      float vInk = mmInkP(vLeafD, pxPk, 1.0)*hasL*mmLod(0.4, pxPk);
       albPk = mix(alb, grassC, verge);
       col = mix(col, grassC*litPk, verge);
       /* the turf's front edge drawn: a dark line where it overhangs the flags,
          its own shadow a hand's breadth onto them */
       float edgeInk = mmInkP(vD, pxPk, 1.3) * dryPk * mmLod(0.6, pxPk);
       float lip = (1.0 - smoothstep(0.0, 0.22, vD)) * step(0.0, vD) * dryPk;
-      col *= (1.0 - 0.55*edgeInk) * (1.0 - 0.40*lip);
+      col *= (1.0 - 0.55*edgeInk) * (1.0 - 0.40*lip) * (1.0 - 0.60*vInk*verge);
+    }
     }
     /* ...and a little moss and a blade or two in the joints near the bed */
-    col = mix(col, vec3(0.06, 0.085, 0.035)*litPk, r25Joint*(1.0 - smoothstep(8.0, 18.0, fwPk))*0.55*(1.0 - verge)*dryPk);
+    if (fwPk < 18.0)
+      col = mix(col, vec3(0.06, 0.085, 0.035)*litPk, r25Joint*(1.0 - smoothstep(8.0, 18.0, fwPk))*0.55*(1.0 - verge)*dryPk);
 #endif
     /* THE LIGHT OF THE BED: a broad warm band, strongest a few metres out
        from the bed where the carved lanterns stand among the crop, breaking
@@ -18261,7 +18303,7 @@ void main(){
        moon; its spill reaches the stage */
     float tB = (fwPk - 14.0)/8.0;
     float bandPk = exp(-tB*tB) + 0.30*exp(-max(fwPk - 13.0, 0.0)/6.0);
-    float brk = 0.72 + 0.28*mmNoise(vec2(w.x*0.32, 1.3)) + 0.12*(smear - 0.55);
+    float brk = 0.86 + 0.14*sin(w.x*0.41 + 1.7*sin(w.x*0.13)) + 0.12*(smear - 0.55);
     col += albPk * vec3(1.00, 0.52, 0.20) * 8.5 * bandPk * brk * dryPk;
     /* the moon on the far court, so the flags under the bed read cold */
     col += albPk * vec3(0.42, 0.52, 0.72) * 2.2 * (1.0 - smoothstep(10.0, 24.0, fwPk)) * dryPk;
@@ -18290,7 +18332,7 @@ void main(){
     /* the trodden paths: two worn lines wandering between the rows */
     float pA = abs(w.x - (uRunX + 4.6 + 2.2*sin(w.y*0.11 + 0.7) + 0.9*sin(w.y*0.37)));
     float pB = abs(w.x - (uRunX - 6.4 - 1.8*sin(w.y*0.09 + 2.1) - 0.7*sin(w.y*0.31 + 1.0)));
-    float pw = 0.34 + 0.10*mmNoise(w*vec2(0.8, 0.4));
+    float pw = 0.34 + 0.06*sin(w.y*0.9 + w.x*0.3);
     float pd = min(pA, pB) - pw;
     float pRes = mmLod(0.6, pxY);
     float trod = (1.0 - smoothstep(-pxY*1.2, pxY*1.2, pd))*onLawn;
@@ -18303,7 +18345,7 @@ void main(){
     albY = mix(albY, earthC*mmLum(alb)*7.5, trod*(0.60 + 0.40*bare));
     float lipI = mmInkP(pd, pxY, 1.2)*onLawn*pRes;
     /* the leaf drifts */
-    float drift = smoothstep(0.56, 0.78, mmNoise(w*vec2(0.22, 0.30) + 11.0) + 0.15*mmNoise(w*0.9));
+    float drift = smoothstep(0.56, 0.78, mmNoise(w*vec2(0.22, 0.30) + 11.0) + 0.08*sin(w.x*2.3 + w.y*1.7));
     const float DC = 0.17;
     vec2 dci = floor(w/DC);
     vec2 dh = mmHash22(dci + 5.7);
@@ -18318,7 +18360,7 @@ void main(){
     albY = mix(albY, leafY*mmLum(alb)*8.0, clamp(lfK, 0.0, 1.0)*0.92);
     /* the rank grass: long tussocks, dark at their roots, lit at their tips */
     float rank = smoothstep(0.50, 0.72, mmNoise(w*vec2(0.30, 0.45) + 23.0))*onLawn*(1.0 - trod);
-    float tg = mmNoise(vec2(w.x*11.0 + 2.0*mmNoise(w*0.7), w.y*1.6) + 4.0);
+    float tg = mmNoise(vec2(w.x*11.0 + 1.6*sin(w.y*0.9 + w.x*0.4), w.y*1.6) + 4.0);
     float tip = smoothstep(0.50, 0.85, tg)*smoothstep(0.060, 0.015, pxY);
     vec3 rankC = mix(vec3(0.022, 0.032, 0.018), vec3(0.120, 0.140, 0.070), tip);
     albY = mix(albY, rankC*mmLum(alb)*12.0, rank*0.85);
@@ -18326,13 +18368,14 @@ void main(){
     col *= 1.0 - 0.50*lipI;
     col *= 1.0 - 0.25*rank*(1.0 - tip);
     /* the ground mist, far off over the turf, in the hollows */
-    float mistN = mmNoise(vec2(w.x*0.10 + uTime*0.010, w.y*0.30)) * mmNoise(w*vec2(0.05, 0.12) + 7.0);
-    float mist = smoothstep(0.18, 0.46, mistN)*smoothstep(9.0, 20.0, vDepth)*(1.0 - smoothstep(30.0, 44.0, vDepth));
+    float mistF = smoothstep(9.0, 20.0, vDepth)*(1.0 - smoothstep(30.0, 44.0, vDepth));
+    float mist = 0.0;
+    if (mistF > 0.0) mist = smoothstep(0.30, 0.62, mmNoise(vec2(w.x*0.10 + uTime*0.010, w.y*0.30))*(0.75 + 0.25*sin(w.x*0.07 + w.y*0.11)))*mistF;
     col += vec3(0.060, 0.075, 0.095)*mist*0.55;
     /* the far turf toward the railing takes the sky: the moon behind the
        yard rakes the grass from beyond it, so the lawn under the fence is a
        lit, cold band the stones stand up against, not a black strip */
-    col += max(albY, vec3(0.004)) * vec3(0.48, 0.60, 0.80) * 3.2 * smoothstep(13.0, 24.0, vDepth) * (0.70 + 0.30*mmNoise(w*0.35));
+    col += max(albY, vec3(0.004)) * vec3(0.48, 0.60, 0.80) * 3.2 * smoothstep(13.0, 24.0, vDepth) * (0.85 + 0.15*sin(w.x*0.5 + w.y*0.3));
   }
 #endif
 #if MM_R25W == 3 && MM_PAT == 2
@@ -18355,12 +18398,12 @@ void main(){
                      1.0 - smoothstep(0.045, 0.045 + pxG*1.4, gf.y));
     barS *= mmLod(0.66, pxG);
     float pane = 0.45 + 0.55*mmHash21(floor(gp) + 7.0);
-    float cloud = 0.55 + 0.45*mmNoise(gq*0.16 + 2.0);
+    float cloud = 0.70 + 0.30*sin(gq.x*0.21 + 0.7*sin(gq.y*0.17));
     vec3 moonG = vec3(0.30, 0.46, 0.58);
     float reach = smoothstep(2.5, 7.0, vDepth);
     col += alb * moonG * 2.2 * pane * cloud * (1.0 - 0.88*barS) * reach;
     /* the puddles */
-    float pn = mmFbm3(gq*0.80 + 3.0) + 0.14*mmNoise(gq*3.1);
+    float pn = 0.80*mmNoise(gq*0.80 + 3.0) + 0.20*mmNoise(gq*2.3 + 1.0) + 0.06;
     float pnPx = max(length(vec2(dFdx(pn), dFdy(pn))), 1e-4);
     float pud = clamp((pn - 0.75)/pnPx + 0.5, 0.0, 1.0);
     float wet = smoothstep(0.64, 0.75, pn);

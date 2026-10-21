@@ -2458,6 +2458,15 @@ export const ROOM_KINDS = {
           /* (...and VIVIANITE's, J2 and J3: the gardener's potting table, its
              pots and a watering can, on the flags under the gallery) */
           { shape: 84, edge: 0.66, z: -3.4, tone: 0.95, centre: 1, still: true, scale: 1.2 },
+          /* ROUND 44 (PYRITE): the lower floor between the staging and the
+             gallery rail DRESSED, judge 2's "pots and a watering can" -- a
+             fern grown big in its pot by the left urn, a stand of pots and
+             two small pots set down on the flags in the moon, a palm in its
+             tub by the bench: more planting on the floor, never less */
+          { shape: 74, edge: 0.36, z: -1.6, tone: 0.92, centre: 1, still: true, seed: 6.05, hM: 1.10 },
+          { shape: 76, edge: 0.47, z: -2.6, tone: 0.92, centre: 1, still: true },
+          { shape: 74, edge: 0.55, z: -1.2, tone: 0.92, centre: 1, still: true, seed: 2.25, hM: 0.62 },
+          { shape: 74, edge: 0.80, z: -1.8, tone: 0.92, centre: 1, still: true, seed: 4.15, hM: 1.60 },
         ],
         /* (round 34: 1.0 of the wing's 36 -- the 0.82 of 44 it was judged with) */
         /* (round 34 graft, GLAUCONITE's: from the gallery's near end and not
@@ -2525,7 +2534,9 @@ export const ROOM_KINDS = {
            pool painted red) */
         /* (round 34 graft, J2 and VIVIANITE's: and the lantern's warm on the
            near-left flags where the bench stands -- + across, as the moon's) */
-        nearFloor: { pool: { ahead: 5.0, across: 2.4, rAlong: 3.4, rAcross: 3.0, k: 4.2, color: '#e0b266' },
+        /* (round 44: the lantern's pool a little wider, toward the middle of
+           the walk -- its centre was the darkest flag in the room) */
+        nearFloor: { pool: { ahead: 5.0, across: 1.6, rAlong: 3.6, rAcross: 3.8, k: 4.2, color: '#e0b266' },
                      pool2: { ahead: 5.4, across: 2.9, rAlong: 3.4, rAcross: 2.4, k: 3.6, color: '#7fa6c8' } } },
       /* and a vinery's floor is bedded out in rows under the rods; it is a
          lean-to against the garden wall, so it is shallower than the great
