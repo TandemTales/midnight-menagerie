@@ -737,6 +737,144 @@ def rail_pieces():
     hw_rail(); hw_rail_vine(); hw_rail_stud(); hw_rail_well(); hw_tray()
 
 
+# ── round 42: the last web controls ─────────────────────────────────────────
+def _cart_body(W, H, inset=0.0, scoop=17.0, nose=1.2):
+    """The house's cartouche outline at W x H: each end's corners scooped out
+    in a concave quarter round and a point at mid-height, the way the
+    boards' enamel cartouches (cartouche.webp) and the Companion tiles'
+    nameplates end. `inset` draws the same outline that much inside."""
+    i = inset
+    r = scoop - i * .4
+    # the top edge, the right end, the bottom, the left end
+    out = []
+    out += [(i + 4 + r, i + 1)]
+    out += [(W - i - 4 - r, i + 1)]
+    for a in np.linspace(180, 90, 10):                    # top-right scoop
+        t = math.radians(a)
+        out.append((W - i - 4 + r * math.cos(t), i + 1 + r * math.sin(t)))
+    out += [(W - i - 4, i + 1 + r), (W - i - nose + .5, H / 2), (W - i - 4, H - i - 1 - r)]
+    for a in np.linspace(270, 180, 10):                   # bottom-right scoop
+        t = math.radians(a)
+        out.append((W - i - 4 + r * math.cos(t), H - i - 1 + r * math.sin(t)))
+    out += [(i + 4 + r, H - i - 1)]
+    for a in np.linspace(-90, 0, 10):                     # bottom-left scoop
+        t = math.radians(a)
+        out.append((i + 4 + r * math.cos(t), H - i - 1 + r * math.sin(t)))
+    out += [(i + 4, H - i - 1 - r), (i + nose - .5, H / 2), (i + 4, i + 1 + r)]
+    for a in np.linspace(90, 0, 10):                      # top-left scoop
+        t = math.radians(a)
+        out.append((i + 4 + r * math.cos(t), i + 1 + r * math.sin(t)))
+    return out
+
+
+def hw_slot():
+    """ROUND 42 (survey 7, both judges): the piles' search and the settings'
+    seed fields still read as "a plain dark rounded web input". Where you
+    write in this house is a SLOT: a brass cartouche with the boards' scooped
+    and pointed ends (the 5 TRICKS plate's outline), near-black enamel in its
+    rim with a gilt hairline engraved round it, and a channel sunk the length
+    of it behind a brass bead -- the words are written into the channel. A
+    3-slice (36 px ends, the channel uniform along x so it stretches clean).
+      hw-slot.webp        a cast brass boss with a cabochon at each end
+      hw-slot-plain.webp  the same with the left end left bare, for the
+                          enamel button (the search's glass) seated over it"""
+    W, H = 320, 64
+    p = Pic(seed=4242, n=W, h=H)
+    body = P(_cart_body(W, H))
+    p.part(body, "brass", bevel=3.4, shadow=0)
+    p.part(P(_cart_body(W, H, inset=3.2)), PLATE, prof="round", bevel=2.2, gloss=.1, shadow=.55)
+    # the gilt hairline engraved round the enamel
+    p.ink(_cart_body(W, H, inset=6.4), w=.7, color="#b08a4a", alpha=.42, closed=True)
+    # the channel: a brass bead, and the hollow sunk inside it
+    x0, x1, y0, y1 = 31, W - 31, 14.5, H - 14.5
+    p.part(R(x0 - 2.4, y0 - 2.4, x1 + 2.4, y1 + 2.4, 5.5), "brass", bevel=1.9, shadow=.5)
+    p.part(R(x0, y0, x1, y1, 3.6), ("#010002", "#0b0611", "#2a1d35"), prof="recess", bevel=5.5, gloss=.1, shadow=0)
+    # the candle along the channel's lower lip, the moon on its floor
+    p.paint(R(x0 + 4, y1 - 1.6, x1 - 4, y1 - .6), "#6a5076", .5, blur=.45)
+    p.paint(R(x0 + 2, y0 + 4, x1 - 2, y1 - 3), "#1d1428", .35, blur=2.5)
+    plain = p.result()
+    # (the bare left end keeps the right boss: the glass covers only one end)
+    q = Pic(seed=4243, n=W, h=H)
+    q.col, q.a = p.col.copy(), p.a.copy()
+    for x in (17.5, W - 17.5):
+        p.part(E(x, H / 2, 6.2), "brass", bevel=2.6, shadow=.45)
+        p.part(E(x, H / 2, 2.9), ("#140a22", "#4b2f78", "#b393ea"), prof="sphere", gloss=.8, power=40, shadow=.3)
+    q.part(E(W - 17.5, H / 2, 6.2), "brass", bevel=2.6, shadow=.45)
+    q.part(E(W - 17.5, H / 2, 2.9), ("#140a22", "#4b2f78", "#b393ea"), prof="sphere", gloss=.8, power=40, shadow=.3)
+    _save_pic(q, "hw-slot-plain.webp")
+    return _save_pic(p, "hw-slot.webp")
+
+
+def lectern_post():
+    """ROUND 42 (survey 7, J2: under the House Register "the wainscot a dark,
+    almost empty plane"): the lectern the register lies on, seen under its
+    desk -- a moulded walnut capital with a brass band, a turned neck, a bulb,
+    a brass collar, a tapered shaft and a stepped foot on the flags. In the
+    room's dark walnut, lit from the top left like everything else."""
+    W, H = 160, 140
+    p = Pic(seed=4244, n=W, h=H)
+    wood = ("#0e0703", "#35210f", "#6c4a2b")
+    rg = np.random.default_rng(4245)
+    ph = rg.uniform(0, 6.3, 8)
+
+    def grain(xx, yy, c):
+        # the walnut's figure: fine streaks running down the turning, wavering
+        g = sum(np.sin(xx * (1.1 + k * .37) + 2.2 * np.sin(yy * (.05 + k * .013) + ph[k]) + ph[k]) for k in range(5)) / 5
+        g2 = np.sin(xx * 4.3 + 1.4 * np.sin(yy * .21 + ph[6]))
+        return c * (1 + .22 * g[..., None] + .07 * g2[..., None])
+    p.part(R(30, 122, 130, 139, 2), wood, bevel=3, shadow=0, tex=grain)
+    p.part(R(42, 109, 118, 123, 2), wood, bevel=3, shadow=.5, tex=grain)
+    p.part(P([(61, 78), (99, 78), (93, 110), (67, 110)]), wood, bevel=6, shadow=.5, tex=grain)
+    p.part(R(56, 73, 104, 80, 2), "brass", bevel=2.2, shadow=.5)
+    p.part(E(80, 52, 31, 22), wood, prof="sphere", shadow=.5, tex=grain)
+    p.part(R(55, 19, 105, 32, 3), wood, bevel=5, shadow=.5, tex=grain)
+    p.part(R(16, 13, 144, 20, 1), "brass", bevel=2, shadow=.5)
+    p.part(R(8, 0, 152, 14, 2), wood, bevel=3.5, shadow=.6, tex=grain)
+    return _save_pic(p, "lectern-post.webp")
+
+
+def ledge_corbel():
+    """ROUND 42 (survey 7, J2 on the atlas: the prop shelf "stops dead at the
+    right edge ... reads as a pasted band"): the carved console a ledge's end
+    stands on, seen from the front -- a moulded walnut cap with a brass
+    fillet, a body tapering down to a scrolled volute, a leaf carved down its
+    face. Walnut in the room's dark, lit from the top left."""
+    W, H = 64, 112
+    p = Pic(seed=4246, n=W, h=H)
+    wood = ("#0e0703", "#35210f", "#6c4a2b")
+    rg = np.random.default_rng(4247)
+    ph = rg.uniform(0, 6.3, 6)
+
+    def grain(xx, yy, c):
+        g = sum(np.sin(xx * (1.3 + k * .41) + 2.0 * np.sin(yy * (.06 + k * .017) + ph[k]) + ph[k]) for k in range(4)) / 4
+        return c * (1 + .2 * g[..., None])
+    # the body, tapering to the volute
+    p.part(P([(10, 14), (54, 14), (46, 80), (18, 80)]), wood, bevel=6, shadow=0, tex=grain)
+    p.part(E(32, 90, 17, 17), wood, prof="sphere", shadow=.5, tex=grain)
+    # the volute's spiral, cut into it
+    pts = []
+    for i in range(80):
+        t = i / 79
+        a = t * 2.6 * math.pi
+        r = 13.5 * (1 - .82 * t)
+        pts.append((32 + r * math.cos(a + 1.2), 90 + r * math.sin(a + 1.2)))
+    p.ink(pts, w=1.5, alpha=.85)
+    # a leaf carved down its face
+    p.ink([(32, 20), (30, 34), (32, 48), (34, 62), (32, 74)], w=1.1, alpha=.7)
+    for y, dx in ((30, -8), (42, 8), (54, -7), (64, 6)):
+        p.ink([(32, y), (32 + dx * .6, y + 2), (32 + dx, y + 6)], w=.9, alpha=.6)
+    # the cap and its brass fillet
+    p.part(R(4, 9, 60, 15, 1), "brass", bevel=1.8, shadow=.5)
+    p.part(R(1, 0, 63, 10, 2), wood, bevel=3, shadow=.6, tex=grain)
+    return _save_pic(p, "ledge-corbel.webp")
+
+
+def r42_pieces():
+    hw_slot()
+    lectern_post()
+    ledge_corbel()
+
+
 # materials (dark, body, light), all in the samples' low key
 PLATE = ("#07050a", "#1a1222", "#3d2d4c")      # the nameplates' near-black enamel
 PAPER = ("#5d5140", "#c9b48c", "#f4e6c2")
@@ -803,7 +941,7 @@ def sheet(objs, path):
     print("  sheet ->", path)
 
 
-GROUPS = {"objects": objects, "hardware": hardware, "rail": rail_pieces}
+GROUPS = {"objects": objects, "hardware": hardware, "rail": rail_pieces, "r42": r42_pieces}
 
 
 def main():

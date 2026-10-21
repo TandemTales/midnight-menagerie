@@ -1762,3 +1762,97 @@
 .mi-zone--boon .mi-zone-wash { fill: var(--kit-indigo); opacity: .12; }
 .mi-zone--drawn .mi-zone-tex--hatch { opacity: .5; }
 .mi-zone--drawn .mi-zone-tex--stipple { opacity: .8; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ROUND 42 — THE SHEET'S DARKS, ITS DISTRICTS IN INK, ITS STAMPS BY DISTANCE
+   Survey 7: "about forty identical tan node discs at one size ... nothing
+   separates where you can go from where you cannot"; the conditions "read as
+   a highlighter pen, not ink" (J1); "flat vector fills with crisp digital
+   outlines on a painted map", at 1280 the coins in columns 5-7 crowd and the
+   first column's room tags are ~9 px (J2).
+   - THE PAPER (map.js _paintPaper 3c): a step down, browned to every edge.
+   - THE DISTRICTS: the drawn line and its wash bled into the paper's fibre
+     (map.js #mm-ink-bleed), the line in the condition's dark ink rather than
+     a bright red or blue, the wash a multiplied stain; the name lettered in
+     that ink on a small clipped-corner cartouche of paper (map.js).
+   - THE STAMPS by distance: the row you choose from is the one metal on the
+     sheet (the enamel medallion in its gilt rim, candlelit); the next rows
+     are struck umber stamps; from the fourth row on a room is only INKED on
+     the paper -- its mark in faded iron-gall inside a thin pencil ring, no
+     disc -- and smaller, so no two rims touch at the Deck's 1280; the far
+     end fades into the sheet. Routes not yet open are dashed.
+   - THE ROOM TAGS a size up: 14 px at 1280.
+   ═══════════════════════════════════════════════════════════════════════════ */
+/* the districts */
+.map-screen .mi-zones .mi-zone--drawn { filter: url(#mm-ink-bleed); }
+.map-screen .mi-zones .mi-zone { color: #6a1c12; }
+.map-screen .mi-zones .mi-zone--boon { color: #1c3554; }
+.map-screen .mi-zones .mi-zone--drawn .mi-zone-line { stroke: #6a1c12; stroke-width: 3; opacity: .9; }
+.map-screen .mi-zones .mi-zone--boon.mi-zone--drawn .mi-zone-line { stroke: #1c3554; }
+.map-screen .mi-zones .mi-zone-retrace { stroke-width: 1.4; opacity: .5; }
+.map-screen .mi-zones .mi-zone-wash { fill: #7a2a18; opacity: .07; mix-blend-mode: multiply; }
+.map-screen .mi-zones .mi-zone--boon .mi-zone-wash { fill: #23406a; opacity: .08; }
+.map-screen .mi-zones .mi-zone--drawn .mi-zone-tex--hatch { opacity: .58; stroke-width: 1.8; }
+.map-screen .mi-zones .mi-zone--drawn .mi-zone-tex--stipple { opacity: .72; }
+.map-screen .mi-zones .mi-zone-lead { stroke: currentColor; opacity: .8; }
+@media (max-width: 1500px) {
+  .map-screen .mi-zones .mi-zone--drawn .mi-zone-line { stroke-width: 3.8; }
+  .map-screen .mi-zones .mi-zone--drawn .mi-zone-tex--hatch { stroke-width: 2.2; }
+}
+/* the district's name on its cartouche, in its own ink */
+.map-screen .mi-zone-names .mi-zone-plate {
+  fill: #c2a272; stroke: #2a170a; stroke-width: 2.2;
+  filter: drop-shadow(1px 2px 1.5px rgb(30 16 6 / .55));
+}
+.map-screen .mi-zone-names .mi-zone-plate-rule { fill: none; stroke: currentColor; stroke-width: 1.2; opacity: .7; }
+.map-screen .mi-zone-names .mi-zone { color: #6a1c12; }
+.map-screen .mi-zone-names .mi-zone--boon { color: #1c3554; }
+.map-screen .mi-zone-names .mi-zone-name,
+.map-screen .mi-zone-names .mi-zone--boon .mi-zone-name {
+  fill: currentColor; stroke: none;
+  font-size: 21px; letter-spacing: 2.6px;
+}
+
+/* the stamps, by distance: the fourth row on is ink on the paper */
+.map-screen .map-node.is-dim:not(.map-node--boss):is([data-ahead="4"], [data-ahead="5"], [data-ahead="6"], [data-ahead="7"], [data-ahead="8"], [data-ahead="9"]),
+.map-screen .map-node.is-cold:not(.map-node--boss) {
+  color: color-mix(in srgb, #1f130a 78%, transparent);
+}
+.map-screen .map-node.is-dim:not(.map-node--boss):is([data-ahead="4"], [data-ahead="5"], [data-ahead="6"], [data-ahead="7"], [data-ahead="8"], [data-ahead="9"]) .mn-pool,
+.map-screen .map-node.is-cold:not(.map-node--boss) .mn-pool {
+  inset: 17%;
+  opacity: 1;
+  background: radial-gradient(circle closest-side, rgb(214 182 130 / .34), rgb(214 182 130 / .14) 80%, transparent 100%);
+  box-shadow: 0 0 0 1.2px rgb(31 19 10 / .55);
+}
+.map-screen .map-node.is-dim:not(.map-node--boss):is([data-ahead="4"], [data-ahead="5"], [data-ahead="6"], [data-ahead="7"], [data-ahead="8"], [data-ahead="9"]) .mn-art .pl,
+.map-screen .map-node.is-dim:not(.map-node--boss):is([data-ahead="4"], [data-ahead="5"], [data-ahead="6"], [data-ahead="7"], [data-ahead="8"], [data-ahead="9"]) .mn-art .pw,
+.map-screen .map-node.is-cold:not(.map-node--boss) .mn-art .pl,
+.map-screen .map-node.is-cold:not(.map-node--boss) .mn-art .pw { fill: rgb(196 164 112 / .5); }
+.map-screen .map-node.is-dim:not(.map-node--boss):is([data-ahead="4"], [data-ahead="5"], [data-ahead="6"], [data-ahead="7"], [data-ahead="8"], [data-ahead="9"]) .mn-art .w3 { stroke-width: 4.4; }
+/* smaller with distance, so the far columns' rims stand apart */
+.map-screen .map-node.is-dim:not(.map-node--boss)[data-ahead="3"] .mn-in { transform: scale(calc(var(--mn-k, 1) * .94)); }
+.map-screen .map-node.is-dim:not(.map-node--boss):is([data-ahead="4"], [data-ahead="5"]) .mn-in { transform: scale(calc(var(--mn-k, 1) * .86)); opacity: .9; }
+.map-screen .map-node.is-dim:not(.map-node--boss):is([data-ahead="6"], [data-ahead="7"]) .mn-in { transform: scale(calc(var(--mn-k, 1) * .82)); opacity: .84; }
+.map-screen .map-node.is-dim:not(.map-node--boss):is([data-ahead="8"], [data-ahead="9"]) .mn-in { transform: scale(calc(var(--mn-k, 1) * .8)); opacity: .74; }
+.map-screen .map-node.is-cold:not(.map-node--boss) .mn-in { transform: scale(calc(var(--mn-k, 1) * .8)); opacity: .5; }
+/* the next rows' stamps a firmer umber, so the step to the ink is clear */
+.map-screen .map-node.is-dim:not(.map-node--boss):is([data-ahead="2"], [data-ahead="3"]) .mn-pool {
+  box-shadow: 0 0 0 1.4px rgb(226 192 132 / .55), 0 0 0 3.4px #1c1108, 1px 2.5px 3px 1px rgb(10 5 2 / .55);
+}
+/* the row you choose from: the candle brought closer */
+.map-node.is-legal {
+  filter: drop-shadow(0 0 16px color-mix(in srgb, var(--flame-glow) 46%, transparent))
+          drop-shadow(0 0 38px color-mix(in srgb, var(--flame-500) 30%, transparent));
+}
+/* a route not yet open: dashed, the architect's "proposed" */
+.map-screen .mi-edges .mi-edge:not(.is-open):not(.is-walked):not(.mi-edge--entry) { stroke-dasharray: 11 7; stroke-linecap: round; }
+.map-screen .mi-ghosts .mi-ghost:not(.is-open) { opacity: 0; }
+
+/* the room tags a size up: 14 px on screen at the Deck's 1280 */
+.mn-label { letter-spacing: .02em; }
+/* the boss's plate a little narrower at the Deck's width, so it fits the
+   paper beside its seal (map.js _placeTags tries that paper first) */
+@media (max-width: 1500px) {
+  .map-screen .map-node--boss .mn-label { padding-inline: calc(var(--plate-h) * .42); font-size: 16px; }
+}

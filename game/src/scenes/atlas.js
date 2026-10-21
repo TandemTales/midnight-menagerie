@@ -237,6 +237,9 @@ function toothTile() {
 
 /** Round 38 graft 4: the earned wing's wash while only a few are known. */
 const FOCUS_WASH = ['rgb(210 162 92)', 'rgb(118 72 26)'];
+/* ROUND 42: an unsurveyed wing's ghost walls, in a dark sepia (they were the
+   pale pencil, lighter than the paper: "one beige smear") */
+const GHOST = 'rgb(44 28 14)';
 /** The median wing's ink inside its footprint (measured 10-19 off the
  *  seventeen section bitmaps: 0.18-0.24, the Lampworks 0.33, the Greenhouse
  *  0.32, the Crypt 0.27). A wing denser than this is laid thinner. */
@@ -1152,10 +1155,18 @@ export class AtlasScene extends Scene {
        warm AGED VELLUM, a step down from the paper's palest cream, so the
        sheet keeps its tone with every wing surveyed (its tooth and the
        candle's falloff are laid over all of them below) */
+    /* ROUND 42 (survey 7, J1: "all seventeen surveyed wings are filled with
+       the same pale cream cut-paper"): each wing's paper a step DOWN in value
+       and its own low-chroma tint -- ochre, sage, rose, slate, umber, olive --
+       so seventeen washed wings read as seventeen pieces of one aged sheet,
+       none of them the palest thing on the board */
     const WASH = [
-      ['rgb(224 192 132)', 'rgb(150 104 48)'],
-      ['rgb(214 180 120)', 'rgb(140 96 42)'],
-      ['rgb(220 184 136)', 'rgb(148 96 62)'],
+      ['rgb(184 146 92)', 'rgb(112 76 36)'],
+      ['rgb(160 146 102)', 'rgb(90 78 44)'],
+      ['rgb(174 134 100)', 'rgb(108 68 44)'],
+      ['rgb(152 136 110)', 'rgb(84 72 56)'],
+      ['rgb(170 126 84)', 'rgb(104 66 34)'],
+      ['rgb(158 142 96)', 'rgb(94 80 42)'],
     ];
     const pale = this._tok('--kit-name', '#e9d3a6');
     const goldHi = this._tok('--kit-gold-hi', '#e6c98a');
@@ -1171,8 +1182,25 @@ export class AtlasScene extends Scene {
         g.scale((w.nw * pw) / w.w, (w.nh * ph) / w.h);
       };
       if (!seen) {
-        /* the ghost of its walls, in the pale pencil, inside its own outline */
-        const ghost = await sectionInk(w.slug, pale);
+        /* ROUND 42 (survey 7: "faint hair-line outlines on a mid-tan
+           parchment ... one beige smear with words on it" (J1); "draw
+           unsurveyed wings as a darker sepia ghost" (J2)): the footprint laid
+           in a grey-brown wash, its walls a dark sepia ghost inside it, its
+           edge a DASHED surveyor's line in iron-gall -- a wing not yet walked,
+           drawn, and darker than the paper rather than paler */
+        pg.save();
+        pg.setTransform(dpr, 0, 0, dpr, 0, 0);
+        pg.fillStyle = 'rgb(46 30 16 / .34)';
+        pg.fill(shape);
+        pg.clip(shape);
+        pg.globalAlpha = 0.5;
+        pg.strokeStyle = 'rgb(30 18 8)';
+        pg.lineWidth = 7;
+        pg.filter = 'blur(3px)';
+        pg.stroke(shape);
+        pg.filter = 'none';
+        pg.restore();
+        const ghost = await sectionInk(w.slug, GHOST);
         if (token !== this._surveyToken) return;
         if (ghost) {
           hg.save();
@@ -1182,35 +1210,25 @@ export class AtlasScene extends Scene {
           hg.drawImage(ghost, w.nx * pw, w.ny * ph, w.nw * pw, w.nh * ph);
           hg.restore();
         }
-        /* and the outline itself: one crisp pencil line, a hair of shade
-           under it so it sits on the paper and not over it */
-        pg.save();
-        pg.setTransform(dpr, 0, 0, dpr, 0, 0);
-        pg.lineJoin = 'round';
-        pg.globalAlpha = 0.5;
-        pg.strokeStyle = 'rgb(20 10 4)';
-        pg.lineWidth = 2.4;
-        pg.translate(0.6, 0.9);
-        pg.stroke(shape);
-        pg.restore();
-        /* round 38 graft 5 (J2): a darker pencil edge just INSIDE the line,
-           so two neighbours' shared wall reads as two edges, dark either side
-           of the pale line, and the wings separate */
+        /* the surveyor's dashed line round it, in iron-gall, with a pale
+           lip of paper along its inside so two neighbours' shared wall reads
+           as two edges */
         pg.save();
         pg.setTransform(dpr, 0, 0, dpr, 0, 0);
         pg.clip(shape);
         pg.lineJoin = 'round';
-        pg.globalAlpha = 0.62;
-        pg.strokeStyle = 'rgb(24 12 4)';
-        pg.lineWidth = 4.2;
+        pg.globalAlpha = 0.3;
+        pg.strokeStyle = 'rgb(214 180 128)';
+        pg.lineWidth = 4.4;
         pg.stroke(shape);
         pg.restore();
         pg.save();
         pg.setTransform(dpr, 0, 0, dpr, 0, 0);
-        pg.lineJoin = 'round';
-        pg.globalAlpha = 0.82;
-        pg.strokeStyle = pale;
-        pg.lineWidth = 1.15;
+        pg.lineJoin = 'round'; pg.lineCap = 'round';
+        pg.globalAlpha = 0.92;
+        pg.strokeStyle = GALL;
+        pg.lineWidth = 1.6;
+        pg.setLineDash([7, 4.5]);
         pg.stroke(shape);
         pg.restore();
         continue;

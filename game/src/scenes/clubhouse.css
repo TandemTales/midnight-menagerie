@@ -922,3 +922,136 @@
   .packcols { grid-template-columns: 1fr; }
   .scrapgrid { --cols: 4; }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ROUND 42 — FOLDER TABS, A DARKER CORK, CRISP PRINTS, THE COIN BESIDE
+   Survey 7, both judges: "web tab pills"; "a pale even cork"; the eight pet
+   polaroids "soft, blurred photos -- the board's focal objects are its
+   blurriest"; the clue notes ~9-10 px at 1280.
+   - THE TABS are the file's own index tabs: four pressboard folders filed
+     behind the board, each in its archive colour (oxblood, bottle green,
+     ink blue, aubergine) with a brass-bound top edge and its name stamped
+     in gilt. The open one stands proud of the others, taller, in front and
+     lit, its stamp bright; the rest are filed back, a step
+     darker. The row stands on the carved frame's top rail, the tabs' feet
+     tucked behind it.
+   - THE CORK a step down in value: the hanging lamp's pool is the one lit
+     thing on it, the cork falling away to a deep brown at the frame.
+   - THE PRINTS crisp (ui/petart.js printFinish: clarity at the display
+     pixel's size, a print's contrast, a grain one display pixel across, the
+     emulsion's hard edge) and the unsharp kernel at display a notch firmer.
+   - EACH KID'S COIN pinned BESIDE the photograph, on the polaroid's white
+     band beside the pet's name -- never over the picture.
+   - THE THREAD a twisted wool with a shadow under it on the cork.
+   - THE SMALL PRINT at 12 px or more at 1280 (the clue notes at 13).
+   ═══════════════════════════════════════════════════════════════════════════ */
+.cl-tabs { gap: 3px; align-items: flex-end; }
+.cl-tab.kit-tab {
+  --tab-h: clamp(36px, 4.6vh, 42px);
+  --tab-c: #4a1a1f;                     /* the pressboard's colour, per folder */
+  position: relative; isolation: isolate;
+  min-height: var(--tab-h);
+  padding: 4px calc(var(--tab-h) * .78) 0;
+  border: 0; border-image: none; background: none;
+  font-size: clamp(12.5px, .86vw, 13.5px); letter-spacing: .16em;
+  color: color-mix(in oklab, #e3c27e 80%, var(--tab-c));
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, .85), 0 1px 0 rgba(255, 226, 160, .14);
+  filter: drop-shadow(0 -2px 3px rgba(0, 0, 0, .55)) brightness(.8) saturate(.8);
+  translate: 0 4px;
+  transition: translate var(--t-quick) var(--ease-out), filter var(--t-quick) var(--ease-out), color var(--t-quick) var(--ease-out);
+}
+.cl-tab.kit-tab:nth-child(1) { --tab-c: #5a1b20; }
+.cl-tab.kit-tab:nth-child(2) { --tab-c: #1b3a2b; }
+.cl-tab.kit-tab:nth-child(3) { --tab-c: #1b2a4a; }
+.cl-tab.kit-tab:nth-child(4) { --tab-c: #3b1f52; }
+/* the tab: a pressboard trapezoid, its top edge bound in brass, the board's
+   grain in it and the lamp on its upper half */
+.cl-tab.kit-tab::before {
+  content: ''; position: absolute; z-index: -1; pointer-events: none;
+  inset: 0 0 -6px; left: 0; top: 0; width: auto; aspect-ratio: auto;
+  translate: none;
+  clip-path: polygon(12px 0, calc(100% - 12px) 0, 100% 100%, 0 100%);
+  background:
+    linear-gradient(180deg, #f0d79a 0, #b08a4a 2px, #6b4c24 4px, transparent 5px),
+    linear-gradient(90deg, rgba(0, 0, 0, .55) 0, transparent 14px, transparent calc(100% - 14px), rgba(0, 0, 0, .55) 100%),
+    linear-gradient(180deg, rgba(255, 220, 160, .16), transparent 55%, rgba(0, 0, 0, .35)),
+    url("../../assets/ui/kit/grain.webp") 0 0 / 160px 160px,
+    var(--tab-c);
+  background-blend-mode: normal, normal, normal, overlay, normal;
+  filter: none;
+}
+/* the gilt stamp's hairline frame round the name */
+.cl-tab.kit-tab::after {
+  content: ''; position: absolute; pointer-events: none;
+  left: calc(var(--tab-h) * .5); right: calc(var(--tab-h) * .5); top: 9px; bottom: 5px;
+  border: 1px solid color-mix(in srgb, #d9b870 34%, transparent);
+  border-radius: 1px;
+}
+.cl-tab.kit-tab:hover { filter: drop-shadow(0 -2px 3px rgba(0, 0, 0, .55)) brightness(.98) saturate(.95); translate: 0 1px; }
+.cl-tab.kit-tab[aria-selected="true"] {
+  z-index: 2;
+  color: #ffe6a8;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, .9), 0 0 10px color-mix(in srgb, var(--kit-candle) 45%, transparent);
+  filter: drop-shadow(0 -3px 5px rgba(0, 0, 0, .65)) drop-shadow(0 0 9px color-mix(in srgb, var(--kit-candle) 24%, transparent)) brightness(1.12);
+  translate: 0 -2px;
+}
+.cl-tab.kit-tab[aria-selected="true"]::after {
+  border-color: color-mix(in srgb, #e6c98a 60%, transparent);
+}
+/* the open folder stands taller, its stamp's frame lit */
+.cl-tab.kit-tab[aria-selected="true"] { min-height: calc(var(--tab-h) + 4px); }
+.cl-tab.kit-tab:focus-visible {
+  outline: none;
+  color: #fff1d2;
+  filter: drop-shadow(0 -3px 5px rgba(0, 0, 0, .65)) drop-shadow(0 0 1.5px var(--kit-gold-hi)) drop-shadow(0 0 12px color-mix(in srgb, var(--kit-candle) 70%, transparent)) brightness(1.15);
+}
+/* the row stands ON the frame's top rail, the tabs' feet behind its moulding */
+.cl-tabs { top: calc(var(--cl-carve) * -1 + 7px); translate: -50% -100%; z-index: 5; }
+
+/* the cork, a step down: the lamp's pool the one lit thing on it */
+.cork {
+  background:
+    radial-gradient(36% 50% at 34% 0%, rgba(255, 222, 164, .46), rgba(255, 196, 128, .16) 52%, transparent 82%),
+    radial-gradient(62% 74% at 33% 8%, rgba(255, 186, 112, .2), transparent 74%),
+    radial-gradient(120% 108% at 40% 30%, transparent 34%, rgba(26, 12, 3, .62) 80%, rgba(12, 5, 1, .86) 100%),
+    linear-gradient(rgba(58, 36, 16, .52), rgba(58, 36, 16, .52)),
+    url("../../assets/ui/kit/cork.webp") 0 0 / 200px 200px,
+    #6a4626;
+  background-blend-mode: screen, screen, normal, multiply, normal, normal;
+}
+
+/* the prints, a notch firmer at display */
+.polaroid .polaroid__photo .petpic { image-rendering: auto; }
+
+/* each Kid's coin pinned beside the photograph, on the white band by the name */
+.polaroid {
+  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-areas: "photo photo" "who cap" "who sub";
+  column-gap: 6px; row-gap: 0;
+  align-items: center;
+  padding-bottom: 7px;
+}
+.polaroid > .polaroid__photo { grid-area: photo; margin-bottom: 4px; }
+.polaroid > .polaroid__who {
+  grid-area: who;
+  position: relative; left: auto; top: auto;
+  width: clamp(28px, 2.3vw, 36px); margin-left: 1px;
+  box-shadow: 0 0 0 1.5px #b08a4a, 0 0 0 2.5px rgba(40, 24, 12, .55), 0 2px 3px rgba(0, 0, 0, .45);
+}
+.polaroid > .polaroid__cap { grid-area: cap; margin-top: 0; text-align: left; align-self: end; }
+.polaroid > .polaroid__sub { grid-area: sub; text-align: left; align-self: start; font-size: 12px; letter-spacing: .08em; }
+
+/* the wool's twist and its shadow on the cork */
+.cork__thread { stroke-width: 2.6; filter: drop-shadow(0 3px 1.2px rgba(20, 6, 2, .7)) drop-shadow(0 1px 0 rgba(255, 170, 150, .18)); }
+
+/* the small print, 12 px and up at the Deck's 1280 */
+.ch-note p { font-size: clamp(13px, .9vw, 14.5px); line-height: 1.28; }
+.ch-note { width: clamp(140px, 11.6vw, 190px); }
+.ch-note__no { font-size: 12px; top: 5px; letter-spacing: .06em; }
+.ch-note b { padding-right: 18px; }
+.cl-quote__k { font-size: 12px; letter-spacing: .2em; }
+.cl-cutting__sub { font-size: max(12px, calc(var(--cut-w) * .093)); }
+.cl-snap__cap em { font-size: max(12px, .8vw); }
+.scene--clubhouse .cl-tally .kit-enamel__label, .scene--clubhouse .kit-enamel__label { font-size: max(12px, calc(var(--h) * .3)); }
+.scene--clubhouse .kit-ladder--candles > .kit-ladder__rung.haunt__pip,
+.scene--clubhouse .kit-ladder--candles > .kit-ladder__rung.haunt__pip[aria-checked="true"] { font-size: max(12.5px, calc(var(--md) * .34)); }

@@ -271,7 +271,8 @@ export class EventScene extends RoomScene {
       <i class="kit-sconce ev-hall__lamp ev-hall__lamp--r" hidden></i>
       <i class="kit-prop kit-prop--skull ev-hall__skull"></i>
       <i class="kit-prop kit-prop--candle ev-hall__candle ev-hall__candle--l"></i>
-      <i class="kit-prop kit-prop--candle ev-hall__candle ev-hall__candle--r"></i>`;
+      <i class="kit-prop kit-prop--candle ev-hall__candle ev-hall__candle--r"></i>
+      <i class="ev-lectern"><i class="ev-lectern__pool"></i><i class="ev-lectern__post"></i><i class="ev-lectern__lip"></i></i>`;
     board.insertBefore(hall, board.querySelector('.rm-hudhost'));
     /* a tall painting's plate fell behind the sconce under it ("THE D_WAGER";
        survey 5, both judges): each is narrowed until it clears the sconces,
@@ -287,6 +288,9 @@ export class EventScene extends RoomScene {
       if (!page || !page.width) return;
       board.style.setProperty('--page-l', `${page.left.toFixed(1)}px`);
       board.style.setProperty('--page-t', `${page.top.toFixed(1)}px`);
+      /* round 42: the lectern stands under the leaf (event.css .ev-lectern) */
+      board.style.setProperty('--lec-top', `${page.bottom.toFixed(1)}px`);
+      board.style.setProperty('--lec-w', `${page.width.toFixed(1)}px`);
       const band = head ? page.top - head.bottom : 0;
       const lamps = hall.querySelectorAll('.ev-hall__lamp');
       const ok = band >= 44 && !board.classList.contains('is-rescue');

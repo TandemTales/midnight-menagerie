@@ -222,15 +222,15 @@ export async function openSettings(ctx = {}) {
   // Same notation as Select, the HUD and Game Over — see formatSeed() in ui/portrait.js.
   const rawSeed = ctx.run ? ctx.run.seed : (Save?.data?.nextSeed ?? null);
   const curSeed = (rawSeed === undefined || rawSeed === null) ? 'none yet' : formatSeed(rawSeed);
-  /* ROUND 36: the seed ENGRAVED on the house's brass-rimmed plate (ui/kit.css
-     .kit-hw-inlay--plate), its two bosses on; with none, the plate says so in
-     the house's italic. It was a khaki key tag with a dash on it, "a disabled
-     web text input" (survey 5, both judges). */
+  /* ROUND 36: the seed ENGRAVED on the house's brass-rimmed plate; with none,
+     the plate says so in the house's italic. ROUND 42: the same slotted brass
+     cartouche the next seed is written into (.mm-set__well), the seed
+     engraved in its channel. */
   cur.innerHTML =
     `<div class="mm-set__label"><span>Current expedition</span>` +
     `<span class="mm-set__hint">The same seed deals the same rooms, rewards and shop.</span></div>` +
     `<i class="kit-leader mm-set__lead" aria-hidden="true"></i>` +
-    `<output class="mm-set__seed kit-hw-inlay kit-hw-inlay--plate${rawSeed == null ? ' is-empty is-blank' : ''}"><b class="kit-enamel__value">${escape_(curSeed)}</b></output>`;
+    `<output class="mm-set__seed mm-set__well${rawSeed == null ? ' is-empty is-blank' : ''}"><b class="kit-enamel__value">${escape_(curSeed)}</b></output>`;
   seedFs.appendChild(cur);
 
   const entry = document.createElement('div');
@@ -244,7 +244,11 @@ export async function openSettings(ctx = {}) {
   /* somewhere to write: ROUND 36, a dark enamel well sunk in the brass plate
      (ui/kit.css .kit-hw-inlay), the words cut in gilt caps; it was a pale
      cream slip, "a default text input" (survey 5) */
-  seedIn.className = 'mm-set__text kit-hw-inlay';
+  /* ROUND 42: a SLOT -- a brass cartouche with the boards' scooped ends, a
+     channel sunk the length of it, the words written into the channel
+     (settings.css .mm-set__well; hw-slot.webp) -- the well still read as "a
+     web text input" to both survey 7 judges */
+  seedIn.className = 'mm-set__text mm-set__well';
   seedIn.placeholder = 'left to chance';
   seedIn.maxLength = 24;
   seedIn.value = Save?.data?.nextSeed ?? '';
