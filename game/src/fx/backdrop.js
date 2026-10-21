@@ -553,8 +553,10 @@ export const PROP_SHAPES = {
  */
 /* (round 41 graft: the wings whose props are drawn with LABRADORITE's pen
    line -- PROP_FRAG's MM_PEN; ROOM_VARIANTS' prop rows carry it) */
-/* (round 43: and the Attic, the Crypt and the Bathhouse -- "ink, not grain") */
-export const PEN_WINGS = ['hedge', 'kennels', 'sleeping', 'passages', 'attic', 'crypt', 'bathhouse'];
+/* (round 43: and the Attic and the Bathhouse -- "ink, not grain"; not the
+   Crypt, whose fight is the round's frame: the pen cost its charnel stacks a
+   third of their time, and its objects are inked in their own drawings) */
+export const PEN_WINGS = ['hedge', 'kennels', 'sleeping', 'passages', 'attic', 'bathhouse'];
 
 export const ROOM_VARIANTS = [
   { mat: 'wall', defines: { MM_ROOMS: 14, MM_R25W: 0, MM_ARCH: 4, MM_SUBJ: 40 }, wings: ['attic'] },
@@ -605,7 +607,7 @@ export const ROOM_VARIANTS = [
   { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 2, MM_SHM0: 8667424, MM_SHM1: 16864, MM_SHM2: 0, MM_PEN: 1 }, wings: ['attic'] },
   { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 4, MM_SHM0: 4194384, MM_SHM1: 0, MM_SHM2: 790560, MM_PEN: 0 }, wings: ['ballroom'] },
   { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 2, MM_SHM0: 8388932, MM_SHM1: 4, MM_SHM2: 0, MM_PEN: 1 }, wings: ['bathhouse'] },
-  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 3, MM_SHM0: 32832, MM_SHM1: 939524096, MM_SHM2: 0, MM_PEN: 1 }, wings: ['crypt'] },
+  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 3, MM_SHM0: 32832, MM_SHM1: 939524096, MM_SHM2: 0, MM_PEN: 0 }, wings: ['crypt'] },
   { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 1, MM_WINGS: 4, MM_SHM0: 79691856, MM_SHM1: 0, MM_SHM2: 508, MM_PEN: 0 }, wings: ['foyer'] },
   { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 5, MM_SHM0: 8388608, MM_SHM1: 0, MM_SHM2: 11776, MM_PEN: 0 }, wings: ['graveyard'] },
   { mat: 'prop', defines: { MM_STONES: 1, MM_BUST: 0, MM_WINGS: 6, MM_SHM0: 41943104, MM_SHM1: 0, MM_SHM2: 1294336, MM_PEN: 0 }, wings: ['greenhouse'] },

@@ -185,8 +185,8 @@ const D = {
    and its bones lying in it -- and 59.25 is the ledger hauled off it and
    leaned on end at its head.) */
 const CRYPT_NEAR = [
-  { shape: 59.25, x: 1.9, z: 0.4, tone: 0.95, hM: 0.64, wM: 1.75, seed: 2.7, free: true, keep: true, still: true, grave: [0.88, 0.60] },
-  { shape: 59.25, x: -0.6, z: 1.6, tone: 0.95, hM: 0.64, wM: 1.75, seed: 6.1, free: true, keep: true, still: true, grave: [0.88, 0.60] },
+  { shape: 59.25, x: 1.9, z: 0.4, tone: 0.95, hM: 0.64, wM: 1.60, seed: 2.7, free: true, keep: true, still: true, grave: [0.88, 0.60] },
+  { shape: 59.25, x: -0.6, z: 1.6, tone: 0.95, hM: 0.64, wM: 1.60, seed: 6.1, free: true, keep: true, still: true, grave: [0.88, 0.60] },
   { shape: 58, x: -1.9, z: 1.6, tone: 0.96, free: true, keep: true, still: true },
 ];
 
@@ -1247,7 +1247,9 @@ export const REGIONS = {
       { kind: 'cold', x: -3.6, y: 1.80, z: -13.0, color: '#6c94ac', intensity: 1.40, radius: 7.0 },
       { kind: 'warm', x: 2.8, y: 1.50, z: -9.5, color: '#e0a35a', intensity: 2.10, radius: 6.0, fit: 'none' },
     ],
-    shafts: { count: 1, spread: 4, y: 5.0, z: -9.0, angle: 0.10, width: 4.2, intensity: 0.0, pool: 1.2 },
+    /* (round 43: count 1 -> 0 -- at intensity 0 the beam drew nothing and
+       still cost the fight's frame, as the Hedge's did; the frame budget) */
+    shafts: { count: 0, spread: 4, y: 5.0, z: -9.0, angle: 0.10, width: 4.2, intensity: 0.0, pool: 1.2 },
     /* (round 43: 1.28 -> 1.10 -- the near floor's two corners went to black
        under it, both survey-8 judges' "black void" at the frame's foot; the
        candle pools are what light them now) */

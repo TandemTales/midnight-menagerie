@@ -13980,7 +13980,7 @@ void main(){
        from below and inked at both arrises. */
     float vRib = 0.0;
     float vpx = max(max(abs(dFdx(q.x)), abs(dFdy(q.y))), 1e-4);
-    if (uFar > 0.5 && uVault.x > 0.01) {
+    if (uFar > 0.5 && uVault.x > 0.01 && q.y > uCeil - 0.12) {   // (only over the cornice: the frame budget)
       float vwx = q.x - uSize.x*0.5;
       float vu = clamp(abs(vwx)/max(uVault.y, 0.5), 0.0, 1.0);
       float vy = uCeil + uVault.x*sqrt(max(1.0 - vu*vu, 0.0));
@@ -14333,41 +14333,48 @@ float grvSkel(vec2 b, float sd, float px, out float hole){
    over alb, gGrv and gGrvK set for the light below */
 vec3 grvFloor(vec3 alb, vec3 P, float mp){
   float aa = max(mp, 0.004);
-  vec3 C = uCamera;
-  vec3 dir = normalize(P - C);
   float Lst = mmLum(alb) + 0.02;
-  for (int i = 0; i < 2; i++){
-    vec4 g = uGrave[i];
-    if (g.w <= 0.0) continue;
-    vec2 l = P.xz - g.xy;
-    const float KB = 0.15;           // the kerb's width
-    const float D = 0.21;            // the cist's walls, to the earth that has sunk in it
-    vec2 hq = abs(l) - g.zw;
-    float dOpen = max(hq.x, hq.y);
-    /* the candles stood at its head (wfBones) light the flags round it, the
-       kerb and the far wall of the cist: a pool a stride and a half wide,
-       its heart on the ledger's foot */
-    vec2 cq = (l - vec2(0.0, -g.w - 0.30))/vec2(1.55, 1.10);
-    float cr = dot(cq, cq);
-    gGrvGlow += exp(-cr*1.8)*0.85 + exp(-sqrt(cr)*1.6)*0.30;
-    if (dOpen > KB + 0.10) continue;
+  const float KB = 0.15;             // the kerb's width
+  const float D = 0.21;              // the cist's walls, to the earth that has sunk in it
+  /* the candles stood at each one's head (wfBones) light the flags round it,
+     the kerb and the far wall of the cist: a pool a stride and a half wide,
+     its heart on the ledger's foot */
+  vec2 l0 = P.xz - uGrave[0].xy, l1 = P.xz - uGrave[1].xy;
+  vec2 c0 = (l0 - vec2(0.0, -uGrave[0].w - 0.30))/vec2(1.55, 1.10);
+  vec2 c1 = (l1 - vec2(0.0, -uGrave[1].w - 0.30))/vec2(1.55, 1.10);
+  float r0 = dot(c0, c0), r1 = dot(c1, c1);
+  gGrvGlow = (exp(-r0*1.8)*0.85 + exp(-r0*0.45)*0.30)*step(0.001, uGrave[0].w)
+           + (exp(-r1*1.8)*0.85 + exp(-r1*0.45)*0.30)*step(0.001, uGrave[1].w);
+  /* ...and the grave this pixel is at, if any: ONE drawn, not a loop over
+     both (the frame budget -- the compiler flattens a loop's branches) */
+  vec2 h0 = abs(l0) - uGrave[0].zw, h1 = abs(l1) - uGrave[1].zw;
+  float o0 = uGrave[0].w > 0.0 ? max(h0.x, h0.y) : 1e3;
+  float o1 = uGrave[1].w > 0.0 ? max(h1.x, h1.y) : 1e3;
+  float i = o0 < o1 ? 0.0 : 1.0;
+  float dOpen = min(o0, o1);
+  if (dOpen > KB + 0.10) return alb;
+  {
+    vec4 g = i < 0.5 ? uGrave[0] : uGrave[1];
+    vec2 l = i < 0.5 ? l0 : l1;
+    vec2 hq = i < 0.5 ? h0 : h1;
+    vec3 dir = normalize(P - uCamera);
     float dOut = dOpen - KB;
     float open = 1.0 - smoothstep(-aa, aa, dOpen);
     float kerb = (1.0 - smoothstep(-aa, aa, dOut))*(1.0 - open);
-    float sd = (mod(float(i), 2.0) < 0.5) ? 1.0 : -1.0;
+    float sd = (mod(i, 2.0) < 0.5) ? 1.0 : -1.0;
     /* THE KERB: dressed stone, paler than the flags, laid in lengths, its
        outer arris lit, its inner one inked, and a hand of shadow round its
        foot on the flags */
     float along = hq.x > hq.y ? l.y : l.x;
     float kj = 1.0 - smoothstep(0.006, 0.006 + aa*1.3, abs(fract(along/0.62 + 0.5) - 0.5)*0.62);
-    float kId = mmHash11(floor(along/0.62 + 0.5)*3.7 + float(i)*5.1);
+    float kId = mmHash11(floor(along/0.62 + 0.5)*3.7 + i*5.1);
     vec3 kc = vec3(Lst)*vec3(1.04, 1.00, 0.92)*(1.55 + 0.45*kId)*(0.90 + 0.18*mmNoise(l*9.0));
     kc *= 1.0 - 0.55*kj;
     kc *= 1.0 + 0.45*(1.0 - smoothstep(0.0, aa*2.0 + 0.012, abs(dOut + 0.022)));
     kc *= 1.0 - 0.75*(1.0 - smoothstep(0.0, aa*1.6 + 0.004, abs(dOut)));
     alb = mix(alb, kc, kerb);
     alb *= 1.0 - 0.55*(1.0 - smoothstep(0.0, 0.07 + aa, dOut))*step(0.0, dOut);
-    if (open <= 0.0) continue;
+    if (open <= 0.0) return alb;
     /* THE CIST: the eye's ray on down through the mouth, to its floor or a
        wall -- whichever it meets first */
     float dy = max(-dir.y, 1e-3);
@@ -14386,7 +14393,7 @@ vec3 grvFloor(vec3 alb, vec3 P, float mp){
       float pxB = aa*1.4;
       float sk = grvSkel(bq*vec2(1.0, 1.0)/max(g.z/0.98, 0.6), sd, pxB, hole);
       float onB = clamp(0.5 - sk/pxB, 0.0, 1.0);
-      vec3 earth = vec3(0.24, 0.18, 0.13)*Lst*2.4*(0.75 + 0.45*mmNoise(H*7.0 + float(i)*3.0));
+      vec3 earth = vec3(0.24, 0.18, 0.13)*Lst*2.4*(0.75 + 0.45*mmNoise(H*7.0 + i*3.0));
       vec3 bone = vec3(0.60, 0.59, 0.55)*Lst*5.4*(0.85 + 0.25*mmNoise(H*31.0));
       bone *= 0.50 + 0.50*clamp(-sk/0.022, 0.0, 1.0);                  // round, not a cut-out: lit along its crown
       bone *= 1.0 - 0.75*hole;
@@ -14409,7 +14416,7 @@ vec3 grvFloor(vec3 alb, vec3 P, float mp){
       float cj = 1.0 - smoothstep(0.003, 0.003 + aa*1.4, min(fr, 1.0 - fr)*0.075);
       float fu = fract(u/0.26 + 0.5*mod(row, 2.0));
       float vj = 1.0 - smoothstep(0.003, 0.003 + aa*1.4, min(fu, 1.0 - fu)*0.26);
-      float sid = mmHash21(vec2(floor(u/0.26 + 0.5*mod(row, 2.0)), row) + float(i)*7.0);
+      float sid = mmHash21(vec2(floor(u/0.26 + 0.5*mod(row, 2.0)), row) + i*7.0);
       pc = vec3(Lst)*vec3(1.0, 0.94, 0.84)*(1.90 + 0.70*sid);
       pc *= 1.0 - 0.60*max(cj, vj);
       /* the far wall faces the eye and the candles; the ends are turned away */
