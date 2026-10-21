@@ -617,30 +617,13 @@ export class MapScene extends Scene {
     crease(true, h * 0.71, 24);
     g.restore();
 
-    // 2b. ROUND 42 GRAFT 4 (ZOISITE's sheet; J1, J3): A STEP DOWN IN VALUE.
-    //     The sheet is multiplied down toward its corners -- a vignette of age
-    //     and smoke, browned hardest where hands held it -- its lit centre
-    //     over the entry column, where the party stands to choose; only the
-    //     candle pools below lift it back to a lit tan, so the lit thing on
-    //     the sheet reads as lit. (It replaces PREHNITE's even 3c browning.)
-    {
-      g.save();
-      g.globalCompositeOperation = 'multiply';
-      const R = Math.hypot(w, h) * 0.62;
-      const vg = g.createRadialGradient(w * 0.22, h * 0.46, 0, w * 0.22, h * 0.46, R);
-      vg.addColorStop(0, '#d8c8b2'); vg.addColorStop(0.36, '#bba58c');
-      vg.addColorStop(0.7, '#8a745e'); vg.addColorStop(1, '#4a3626');
-      g.fillStyle = vg; g.fillRect(0, 0, w, h);
-      // the burnt margin: a band all round the sheet, a shade deeper again
-      for (const [x0, y0, x1, y1, ww, hh, xx, yy] of [
-        [0, 0, 0, 70, w, 70, 0, 0], [0, h, 0, h - 70, w, 70, 0, h - 70],
-        [0, 0, 70, 0, 70, h, 0, 0], [w, 0, w - 70, 0, 70, h, w - 70, 0]]) {
-        const lg = g.createLinearGradient(x0, y0, x1, y1);
-        lg.addColorStop(0, '#5a4230'); lg.addColorStop(1, '#ffffff');
-        g.fillStyle = lg; g.fillRect(xx, yy, ww, hh);
-      }
-      g.restore();
-    }
+    // 2b. REPAIR r41 (survey 8's paired test, both judges: "fades most of the
+    //     map into a muddy brown fog"; survey 7 "inks every node ... on lit
+    //     parchment, so the whole wing reads"): round 42's multiplied
+    //     vignette and burnt band are gone -- the sheet is lit to its far
+    //     reaches again, and where you can go is marked by ADDING light and
+    //     rim to those rooms (map.css, the lamp in update()), not by taking
+    //     it from the others.
 
     // 3. the room's light on it (fix 10, round 4): the two candles standing
     //    over the rail's top corners and the one on the desk at its front
@@ -649,11 +632,9 @@ export class MapScene extends Scene {
     //    read -- is the best lit. The fall to the edges is in the paper itself.
     g.save();
     g.globalCompositeOperation = 'soft-light';
-    /* ROUND 42 (survey 7, J1: the parchment family "is the one place the
-       house loses its darks"): the corner candles' amber a step quieter and
-       the middle's general wash gone -- the lit thing on the sheet is the
-       row you choose from (the stamps' own candlelight), not the paper */
-    for (const [cx, cy, r, a] of [[w * .1, -h * .06, 760, .36], [w * .9, -h * .06, 760, .36], [w * .97, h * 1.02, 600, .3], [w * .3, h * .45, 700, .14]]) {
+    /* (REPAIR r41: survey 7's candles and middle wash back -- round 42 had
+       quietened them and a paired test found the sheet muddier for it) */
+    for (const [cx, cy, r, a] of [[w * .1, -h * .06, 820, .5], [w * .9, -h * .06, 820, .5], [w * .97, h * 1.02, 640, .4], [w * .5, h * .46, 900, .2]]) {
       const gr = g.createRadialGradient(cx, cy, 0, cx, cy, r);
       gr.addColorStop(0, hexA('#ffc27a', a)); gr.addColorStop(.5, hexA('#ffb35c', a * .38)); gr.addColorStop(1, hexA('#ffb35c', 0));
       g.fillStyle = gr; g.fillRect(0, 0, w, h);
@@ -1245,16 +1226,29 @@ export class MapScene extends Scene {
             score(rgt[0] + 12, rgt[1] + dy, 'start', 10);
           }
         }
-        this._zoneTags.push(pick.box);
-        /* ROUND 42: the name on a small clipped-corner cartouche of paper,
-           ruled round in the condition's own ink (survey 7) */
-        const pb = pick.box, ck = 7;
-        const L = pb.left - 6, R = pb.right + 6, T = pb.top - 2, B = pb.bottom + 2;
-        const plate = `M${(L + ck).toFixed(1)} ${T.toFixed(1)}H${(R - ck).toFixed(1)}L${R.toFixed(1)} ${(T + ck).toFixed(1)}V${(B - ck).toFixed(1)}`
-          + `L${(R - ck).toFixed(1)} ${B.toFixed(1)}H${(L + ck).toFixed(1)}L${L.toFixed(1)} ${(B - ck).toFixed(1)}V${(T + ck).toFixed(1)}Z`;
+        /* (the cartouche's points reach past the words: the box the other
+           plates keep off is the drawn one, REPAIR r41) */
+        { const ex = Math.min(17, (pick.box.bottom - pick.box.top + 4) * 0.62) + 8;
+          this._zoneTags.push({ left: pick.box.left - ex, right: pick.box.right + ex, top: pick.box.top, bottom: pick.box.bottom }); }
+        /* ROUND 42: the name on a small cartouche, ruled round in the
+           condition's own ink (survey 7). REPAIR r41 (survey 8, J1: the
+           boxed labels "read as web chips"): not a clipped box but the kit's
+           cartouche -- the body's ends drawn out into swallow points with
+           concave shoulders, as the room tags and the boss's plate are, a
+           gilt rule inside and a gilt bead at each point */
+        const pb = pick.box, f = (v) => v.toFixed(1);
+        const L = pb.left - 4, R = pb.right + 4, T = pb.top - 2, B = pb.bottom + 2, M = (T + B) / 2;
+        const tip = Math.min(17, (B - T) * 0.62);
+        const cart = (l, r, t, b, pt) => `M${f(l)} ${f(t)}H${f(r)}Q${f(r + pt * .18)} ${f(M)} ${f(r + pt)} ${f(M)}`
+          + `Q${f(r + pt * .18)} ${f(M)} ${f(r)} ${f(b)}H${f(l)}Q${f(l - pt * .18)} ${f(M)} ${f(l - pt)} ${f(M)}`
+          + `Q${f(l - pt * .18)} ${f(M)} ${f(l)} ${f(t)}Z`;
+        const plate = cart(L, R, T, B, tip);
+        const rule = cart(L + 1, R - 1, T + 3.5, B - 3.5, tip - 4.5);
+        const bead = (x) => `M${f(x)} ${f(M - 2.6)}L${f(x + 2.6)} ${f(M)}L${f(x)} ${f(M + 2.6)}L${f(x - 2.6)} ${f(M)}Z`;
         zoneNames.push(`<g class="mi-zone mi-zone--${hz.kind}" data-hz="${hz.id}">
           <path class="mi-zone-plate" d="${plate}"/>
-          <path class="mi-zone-plate-rule" d="${plate}" transform="translate(${((L + R) / 2).toFixed(1)} ${((T + B) / 2).toFixed(1)}) scale(${(1 - 8 / (R - L)).toFixed(4)} ${(1 - 8 / (B - T)).toFixed(4)}) translate(${(-(L + R) / 2).toFixed(1)} ${(-(T + B) / 2).toFixed(1)})"/>
+          <path class="mi-zone-plate-rule" d="${rule}"/>
+          <path class="mi-zone-plate-bead" d="${bead(L - tip + 1.5)}${bead(R + tip - 1.5)}"/>
           <text class="mi-zone-name" x="${pick.tx.toFixed(1)}" y="${pick.ty.toFixed(1)}"
                 text-anchor="${pick.anchor}">${escapeHtml(txt)}</text></g>`);
       }

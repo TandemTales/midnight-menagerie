@@ -1511,6 +1511,42 @@ export class AtlasScene extends Scene {
        shorter forms, then its second half ("The Bathhouse and Rain Wing" ->
        "Rain Wing"). A single word may run a little past the wing's walls, as
        lettering on a plan does; a phrase may not. */
+    /* REPAIR r41 (survey 8, both judges: wing X "BALLROOM" at 1600 but
+       "VELVET SUITES" at 1280, "MOON COURTYARD" becoming "COURTYARD"): each
+       wing keeps ONE name at every size. The name is chosen once, against a
+       fixed reference sheet -- the Deck's 1280 plate (REF_PW laid-flat px, the
+       label's 12 px) -- so a wider screen never picks a different one; at the
+       screen's own size that one name is only ever set on one, two or three
+       lines, and a crowded name wraps, it never changes or goes. A line that
+       is one word may run a little past the wing's walls, as lettering on a
+       plan does (x1.42); a phrase may not. */
+    const REF_PW = 694, REF_FS = 12;
+    const fs = parseFloat(cs.fontSize) || REF_FS;
+    const refK = Math.min(1, REF_PW / pw);               // the reference room, never a wider one
+    const fitsIn = (lines, room, wd, run = 1.42) => lines.every((l) => wd(l) <= room * (/\s/.test(l) ? 1 : run));
+    const formsOf = (s) => {
+      const ws = s.split(/\s+/);
+      const forms = [[s]];
+      let best = null;
+      for (let i = 1; i < ws.length; i++) {
+        const a = ws.slice(0, i).join(' '), c = ws.slice(i).join(' ');
+        const m = Math.max(width(a), width(c));
+        if (!best || m < best.m) best = { m, lines: [a, c] };
+      }
+      if (best) forms.push(best.lines);
+      if (ws.length > 2) {
+        let b3 = null;
+        for (let i = 1; i < ws.length - 1; i++) {
+          for (let j = i + 1; j < ws.length; j++) {
+            const ls3 = [ws.slice(0, i), ws.slice(i, j), ws.slice(j)].map((x) => x.join(' '));
+            const m = Math.max(...ls3.map(width));
+            if (!b3 || m < b3.m) b3 = { m, lines: ls3 };
+          }
+        }
+        if (b3) forms.push(b3.lines);
+      }
+      return forms;
+    };
     const optionsFor = (w) => {
       const room = w.span ? (w.span[1] - w.span[0]) * S * 0.96 : w.nw * pw * 0.7;
       const halves = String(w.meta.name).replace(/^The\s+/i, '').split(/\s+and\s+/i);
@@ -1521,19 +1557,20 @@ export class AtlasScene extends Scene {
         if (words.length > 2) tries.push(words.slice(1).join(' '));
         if (words.length > 1) tries.push(words[words.length - 1]);
       }
-      const out = [];
-      for (const s of tries) {
-        const ws = s.split(/\s+/);
-        if (width(s) <= room * (ws.length > 1 ? 1 : 1.42)) out.push({ lines: [s], m: width(s) });
-        if (ws.length < 2) continue;
-        let best = null;
-        for (let i = 1; i < ws.length; i++) {
-          const a = ws.slice(0, i).join(' '), c = ws.slice(i).join(' ');
-          const m = Math.max(width(a), width(c));
-          if (!best || m < best.m) best = { m, lines: [a, c] };
-        }
-        if (best && best.m <= room) out.push(best);
-      }
+      /* the ONE name: the first that fits the reference sheet on any number
+         of lines (else the wing's first name, wrapped) */
+      const refRoom = room * refK, refW = (l) => width(l) * REF_FS / fs;
+      /* (chosen strictly -- no word running past the walls -- so a name that
+         only fits by spilling onto its neighbour's is passed over for the
+         wing's other name, which then holds at every size) */
+      const name = tries.find((s) => formsOf(s).some((f) => fitsIn(f, refRoom, refW, 1.12)))
+        || tries.find((s) => formsOf(s).some((f) => fitsIn(f, refRoom, refW))) || tries[0];
+      /* ...and its settings at this size, widest first: those that fit, then
+         the narrowest one whether or not it does (a name never goes) */
+      const forms = formsOf(name).map((lines) => ({ lines, m: Math.max(...lines.map(width)) }));
+      const out = forms.filter((f) => fitsIn(f.lines, room, width));
+      const narrow = forms.reduce((a, b) => (b.m < a.m ? b : a));
+      if (!out.includes(narrow)) out.push(narrow);
       return out;
     };
     const set = (t, o) => {
@@ -1562,7 +1599,9 @@ export class AtlasScene extends Scene {
           const a = rs[i], c = rs[j];
           if (a.right + pad < c.left || c.right + pad < a.left || a.bottom + pad < c.top || c.bottom + pad < a.top) continue;
           const A = items[i], C = items[j];
-          const can = (it) => !it.t.hidden;
+          /* a name with no narrower setting left stays as it is: it wraps,
+             it never changes or goes (REPAIR r41) */
+          const can = (it) => !it.t.hidden && it.i < it.opts.length - 1;
           let v = null;
           if (can(A) && can(C)) v = a.width * a.height >= c.width * c.height ? A : C;
           else v = can(A) ? A : can(C) ? C : null;
@@ -1570,8 +1609,9 @@ export class AtlasScene extends Scene {
           const cur = v.opts[v.i];
           let k = v.i + 1;
           while (k < v.opts.length && cur && v.opts[k].m >= cur.m && v.opts[k].lines.length >= cur.lines.length) k++;
+          if (k >= v.opts.length) { v.i = v.opts.length - 1; continue; }   // nothing narrower: it stays
           v.i = k;
-          set(v.t, v.opts[k] || null);
+          set(v.t, v.opts[k]);
           moved = true;
         }
       }
