@@ -579,3 +579,51 @@
       calc((100cqw - 10 * var(--slot-pad) - 34px) / 5));
   }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ROUND 42 GRAFT 7 — ZOISITE'S ARROW-ENDED PLATE ROUND THE SEARCH; CLOSE
+   UNDER THE CASE AT 1280, A GUTTER AT ITS ENDS
+   VERDICTS-r42 graft 7: the search on the SAME scrolled, arrow-ended enamel
+   cartouche as 5 TRICKS beside it (J1; ZOISITE), the words written in a
+   recessed slot sunk the length of it; at the Deck's 1280 CLOSE stands under
+   the case's bottom rail, not over the frame, and the end Tricks keep a
+   gutter from the case's sides (J3).
+   ═══════════════════════════════════════════════════════════════════════════ */
+.mm-deck__search {
+  border-image: url("../../assets/ui/kit/cartouche.webp") 18 34 18 34 fill /
+    calc(var(--field-h) * 18 / 64) calc(var(--field-h) * 34 / 64) stretch;
+}
+.mm-deck__search .mm-deck__seek {
+  left: calc(var(--field-h) * .66); right: calc(var(--field-h) * .5);
+  top: calc(var(--field-h) * .2); bottom: calc(var(--field-h) * .2);
+  border-radius: 2px;
+  background:
+    linear-gradient(180deg, rgb(0 0 0 / .55), transparent 40%),
+    linear-gradient(180deg, #07040a, #120a19 60%, #1a1024);
+  box-shadow:
+    inset 0 2px 4px rgb(0 0 0 / .95),
+    inset 0 -1px 0 rgb(230 200 140 / .12),
+    0 0 0 1px rgb(10 5 2 / .95),
+    0 0 0 2px color-mix(in srgb, var(--kit-gold-lo) 90%, transparent),
+    0 1.5px 0 2px rgb(255 226 170 / .22);
+}
+.mm-deck__search .mm-deck__seek:focus,
+.mm-deck__search .mm-deck__seek:focus-visible {
+  box-shadow:
+    inset 0 2px 4px rgb(0 0 0 / .95),
+    inset 0 0 12px rgb(255 178 92 / .2),
+    0 0 0 1px rgb(10 5 2 / .9),
+    0 0 0 2px var(--kit-gold-hi),
+    0 0 10px 2px rgb(255 190 110 / .35);
+}
+@media (max-width: 1400px) {
+  /* CLOSE under the case's bottom rail, on the dialog's floor */
+  .mm-modal--kit[data-size="wide"]:has(.mm-deck) .mm-modal__foot { margin-top: 2px; }
+  .mm-deck__table.kit-stage { padding-bottom: calc(var(--liner-w) + 6px); }
+  /* the end Tricks a gutter clear of the case's sides, the row a little smaller */
+  .mm-deck__grid {
+    --deck-cw: min(
+      clamp(140px, calc(29vh - 34px), 248px),
+      calc((100cqw - 10 * var(--slot-pad) - 64px) / 5));
+  }
+}
