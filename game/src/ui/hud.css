@@ -1199,3 +1199,59 @@
   .mm-hud[data-belt="pouch"] .kit-beltpouch--cart .kit-beltpouch__n { margin-left: .28em; }
   .mm-hud .mm-hud__peekmore.mm-hud__peekmore--stub { padding-inline: 3px 2px; }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ROUND 42 GRAFT 5 — ZOISITE'S ARROW-ENDED BRASS "+N" TAB
+   VERDICTS-r42 graft 5 (J1, J2): the "+N" after the objects shown is a small
+   tongue of dark enamel edged in brass, cut square where it meets the last
+   socket and drawn to a point at its free end, its figures engraved in gilt
+   at 12 px and up. (J3's three objects a group at 1280 does not fit: with
+   26 px sockets the rail is ~55 px short, and the only room is a readout's
+   word or the cartouche's clearance of its end cap -- both judged defects;
+   it stays two a group, see the graft's NOTES.)
+   ═══════════════════════════════════════════════════════════════════════════ */
+.mm-hud .mm-hud__peekmore.mm-hud__peekmore--stub {
+  height: 22px; margin: 0 2px 0 1px;
+  padding: 0 11px 0 6px;
+  border: 0; border-image: none; border-radius: 0;
+  font-family: var(--font-display); font-size: 13px; font-weight: 700; letter-spacing: .02em;
+  color: var(--kit-gold-hi);
+  background:
+    linear-gradient(180deg, rgb(255 255 255 / .07), transparent 46%, rgb(0 0 0 / .3)),
+    var(--kit-enamel);
+  clip-path: polygon(0 0, calc(100% - 9px) 0, 100% 50%, calc(100% - 9px) 100%, 0 100%);
+  box-shadow: none;
+  filter: drop-shadow(0 1px 1px rgb(0 0 0 / .8));
+  text-shadow: 0 1px 0 rgb(0 0 0 / .95), 0 -1px 0 rgb(255 230 180 / .12);
+}
+/* its brass edge, drawn inside the clip so the point keeps it */
+.mm-hud .mm-hud__peekmore.mm-hud__peekmore--stub::before {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(180deg, var(--kit-gold-hi), var(--kit-gold) 50%, var(--kit-gold-lo));
+  clip-path: polygon(0 0, calc(100% - 9px) 0, 100% 50%, calc(100% - 9px) 100%, 0 100%,
+    0 calc(100% - 1.5px), calc(100% - 9.6px) calc(100% - 1.5px), calc(100% - 1.8px) 50%, calc(100% - 9.6px) 1.5px, 0 1.5px);
+}
+@media (max-width: 1400px) {
+  .mm-hud .mm-hud__peekmore.mm-hud__peekmore--stub { height: 20px; padding: 0 9px 0 4px; margin: 0 0 0 -1px; font-size: 12.5px; letter-spacing: 0; }
+}
+/* at 1280 the stub's arrow a little shorter, so it costs the rail no more
+   than the badge it replaces */
+@media (max-width: 1400px) {
+  .mm-hud .mm-hud__peekmore.mm-hud__peekmore--stub {
+    padding: 0 7px 0 3px;
+    clip-path: polygon(0 0, calc(100% - 6px) 0, 100% 50%, calc(100% - 6px) 100%, 0 100%);
+  }
+  .mm-hud .mm-hud__peekmore.mm-hud__peekmore--stub::before {
+    clip-path: polygon(0 0, calc(100% - 6px) 0, 100% 50%, calc(100% - 6px) 100%, 0 100%,
+      0 calc(100% - 1.5px), calc(100% - 6.6px) calc(100% - 1.5px), calc(100% - 1.8px) 50%, calc(100% - 6.6px) 1.5px, 0 1.5px);
+  }
+  /* ...and the room the stub's point takes, given back by the rail's words
+     set without tracking and its engraved rules a hair narrower */
+  .mm-hud[data-belt="pouch"] { --hud-rule-w: 8px; }
+  .mm-hud[data-belt="pouch"] .mm-hud__peekmore.mm-hud__peekmore--stub { padding: 0 6px 0 2px; }
+  .mm-hud[data-belt="pouch"] .mm-hud__where .mm-hud__t,
+  .mm-hud[data-belt="pouch"] .mm-hud__where .mm-hud__s { letter-spacing: 0; }
+  .mm-hud[data-belt="pouch"] :is(.mm-hud__gold, .mm-hud__clue, .mm-hud__luck) > :is(.mm-hud__u, .mm-hud__sr) { letter-spacing: 0; margin-right: .15em; }
+  .mm-hud[data-belt="pouch"] .mm-hud__chip:is(.mm-hud__seed, .mm-hud__haunt) .mm-hud__w { letter-spacing: 0; }
+}
+}

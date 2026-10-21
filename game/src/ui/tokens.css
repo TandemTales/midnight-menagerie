@@ -393,3 +393,13 @@
 :root {
   --kit-type-floor: 12px;
 }
+
+/* Round 42 graft (LAPIS's): the clipped-corner tag cartouche, 9-sliced from
+   one small vector drawing per hand -- a slip of aged vellum ruled in
+   iron-gall, and a plate of gall ruled in gilt (the atlas's wing names, on
+   the whole house). Its colours are spelled in the drawing (an image cannot
+   read a custom property). */
+:root {
+  --kit-tagplate-paper: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M8 .7H24L31.3 8V24L24 31.3H8L.7 24V8Z' fill='%23927350' stroke='%23170d05' stroke-width='1.4'/%3E%3Cpath d='M9.3 3.8H22.7L28.2 9.3V22.7L22.7 28.2H9.3L3.8 22.7V9.3Z' fill='none' stroke='%23170d05' stroke-opacity='.55' stroke-width='.8'/%3E%3C/svg%3E");
+  --kit-tagplate-dark: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%232c1c10'/%3E%3Cstop offset='1' stop-color='%23180e07'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M8 .7H24L31.3 8V24L24 31.3H8L.7 24V8Z' fill='url(%23g)' stroke='%230a0603' stroke-width='1.4'/%3E%3Cpath d='M9.3 3.8H22.7L28.2 9.3V22.7L22.7 28.2H9.3L3.8 22.7V9.3Z' fill='none' stroke='%23c9a35e' stroke-opacity='.85' stroke-width='.9'/%3E%3C/svg%3E");
+}
