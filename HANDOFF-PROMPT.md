@@ -190,6 +190,17 @@ dimmed, crisp pet prints. Battery 106 gates, only the sprites halo red.
 **NOW: its graft** (`GRAFT-r42.md`, worktree C:/UILOOP/r42/wt/r42-graft):
 LAPIS's clubhouse tabs and atlas cartouches, ZOISITE's atlas sheet,
 legend and +N tab, the 1280 small text (room tags, KEY) at 12 px.
+**ROUND 42'S GRAFT IS MERGED, VERIFIED AND PUSHED (`f62bc8a9`):** all eight
+items but hud-late's 3+3 tokens at 1280 (does not fit beside HAUNT/SEED);
+controls 48/0 by mouse, keys and pad; chrome, gamepad, map, backpack,
+piles-reachable, events, scene-css and steam-deck (twice, idle) green on
+dev. `tests/settings-play` went 18/1 ONCE then 19/0 four times: a timing
+flake -- if it reds again, read its failing line. Known: piles at 1280 has
+7 sub-12 px runs in the FIGHT behind its scrim (enemy HP max, nameplates).
+**SURVEY 7'S LIST IS DONE but the rooms not yet rebuilt since it (pumpkin,
+heart, crypt, foyer, nursery, attic, graveyard, greenhouse, study) and the
+family props (inked, contact shadows). NEXT: SURVEY 8, PAIRED vs survey 7**
+(rounds 41-42 + the repair), then brief from it.
 
 **ROUND 33 AND ITS GRAFT ARE MERGED, VERIFIED AND PUSHED (2026-10-16):**
 graft `9d008119`. COBALT +1.59 (`531126e4`): no running line under 11 px at
