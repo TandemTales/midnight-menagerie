@@ -624,7 +624,11 @@ export class MapScene extends Scene {
     //    read -- is the best lit. The fall to the edges is in the paper itself.
     g.save();
     g.globalCompositeOperation = 'soft-light';
-    for (const [cx, cy, r, a] of [[w * .1, -h * .06, 820, .5], [w * .9, -h * .06, 820, .5], [w * .97, h * 1.02, 640, .4], [w * .5, h * .46, 900, .2]]) {
+    /* ROUND 42 (survey 7, J1: the parchment family "is the one place the
+       house loses its darks"): the corner candles' amber a step quieter and
+       the middle's general wash gone -- the lit thing on the sheet is the
+       row you choose from (the stamps' own candlelight), not the paper */
+    for (const [cx, cy, r, a] of [[w * .1, -h * .06, 760, .36], [w * .9, -h * .06, 760, .36], [w * .97, h * 1.02, 600, .3], [w * .3, h * .45, 700, .14]]) {
       const gr = g.createRadialGradient(cx, cy, 0, cx, cy, r);
       gr.addColorStop(0, hexA('#ffc27a', a)); gr.addColorStop(.5, hexA('#ffb35c', a * .38)); gr.addColorStop(1, hexA('#ffb35c', 0));
       g.fillStyle = gr; g.fillRect(0, 0, w, h);
@@ -665,6 +669,18 @@ export class MapScene extends Scene {
         g.lineWidth = 12;
         g.beginPath(); g.ellipse(x, y, r - 7, r * 0.9 - 7, 0, 0, 6.2832); g.stroke();
       }
+      g.restore();
+    }
+    /* 3c. ROUND 42: the sheet browned toward every edge and darker at its
+       far end, under the plan, so the paper keeps the house's darks */
+    {
+      g.save();
+      g.globalCompositeOperation = 'multiply';
+      const vg = g.createRadialGradient(w * .36, h * .46, Math.min(w, h) * .22, w * .5, h * .5, Math.hypot(w, h) * .62);
+      vg.addColorStop(0, 'rgb(238 226 208)');
+      vg.addColorStop(.55, 'rgb(196 176 150)');
+      vg.addColorStop(1, 'rgb(110 86 62)');
+      g.fillStyle = vg; g.fillRect(0, 0, w, h);
       g.restore();
     }
     void shade; void rng;
@@ -1073,6 +1089,14 @@ export class MapScene extends Scene {
         if (n) leg(WIN.x + 16, n.y * this.SH + 14, n.x * this.SW, n.y * this.SH);
       }
     }
+    /* ROUND 42: the pen's line bleeds into the paper's fibre (survey 7, J2:
+       "flat vector fills with crisp digital outlines") -- a fine turbulence
+       displacing the drawn line and its wash, and a hair of feathering */
+    parts.push(`<defs><filter id="mm-ink-bleed" x="-4%" y="-4%" width="108%" height="108%" color-interpolation-filters="sRGB">
+      <feTurbulence type="fractalNoise" baseFrequency="0.09" numOctaves="2" seed="${seedOf(map.regionId) % 97}" result="n"/>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="3.4" xChannelSelector="R" yChannelSelector="G" result="d"/>
+      <feGaussianBlur in="d" stdDeviation="0.45"/>
+    </filter></defs>`);
     parts.push('<g class="mi-zones">');
     for (const hz of map.hazards) {
       const x = hz.rect.x0 * this.SW, y = hz.rect.y0 * this.SH;
@@ -1119,6 +1143,9 @@ export class MapScene extends Scene {
       const rooms = map.nodes.filter((n) => n.hazard === hz.id).map((n) => [n.x * this.SW, n.y * this.SH]);
       const shape = regionOutline(s ^ 0x51ed, rooms.length ? rooms
         : [[x, y], [x + w, y], [x, y + h], [x + w, y + h]], 74);
+      /* round 42: the district's drawn extent, for the boss's plate to keep
+         off (it used the hazard's old rectangle, far wider than the drawing) */
+      if (shape) (this._zoneBoxes || (this._zoneBoxes = new Map())).set(hz.id, shape.box);
       const pad = 12;
       const bx0 = shape ? shape.box.x : x - pad, by0 = shape ? shape.box.y : y - pad;
       const bw = shape ? shape.box.w : w + pad * 2, bh = shape ? shape.box.h : h + pad * 2;
@@ -1206,7 +1233,15 @@ export class MapScene extends Scene {
           }
         }
         this._zoneTags.push(pick.box);
+        /* ROUND 42: the name on a small clipped-corner cartouche of paper,
+           ruled round in the condition's own ink (survey 7) */
+        const pb = pick.box, ck = 7;
+        const L = pb.left - 6, R = pb.right + 6, T = pb.top - 2, B = pb.bottom + 2;
+        const plate = `M${(L + ck).toFixed(1)} ${T.toFixed(1)}H${(R - ck).toFixed(1)}L${R.toFixed(1)} ${(T + ck).toFixed(1)}V${(B - ck).toFixed(1)}`
+          + `L${(R - ck).toFixed(1)} ${B.toFixed(1)}H${(L + ck).toFixed(1)}L${L.toFixed(1)} ${(B - ck).toFixed(1)}V${(T + ck).toFixed(1)}Z`;
         zoneNames.push(`<g class="mi-zone mi-zone--${hz.kind}" data-hz="${hz.id}">
+          <path class="mi-zone-plate" d="${plate}"/>
+          <path class="mi-zone-plate-rule" d="${plate}" transform="translate(${((L + R) / 2).toFixed(1)} ${((T + B) / 2).toFixed(1)}) scale(${(1 - 8 / (R - L)).toFixed(4)} ${(1 - 8 / (B - T)).toFixed(4)}) translate(${(-(L + R) / 2).toFixed(1)} ${(-(T + B) / 2).toFixed(1)})"/>
           <text class="mi-zone-name" x="${pick.tx.toFixed(1)}" y="${pick.ty.toFixed(1)}"
                 text-anchor="${pick.anchor}">${escapeHtml(txt)}</text></g>`);
       }
@@ -1654,10 +1689,13 @@ export class MapScene extends Scene {
     /* ...and the boss's plate keeps off the regions altogether (survey 5: at
        1280 "the RECEIVING CHAMBER boss plate lies over the blue region and
        its nodes"): it names the end of the wing, not a condition in it */
-    const zoneBlocks = (m.map.hazards || []).map((hz) => ({
-      left: hz.rect.x0 * this.SW - 12, right: hz.rect.x1 * this.SW + 12,
-      top: hz.rect.y0 * this.SH - 12, bottom: hz.rect.y1 * this.SH + 12,
-    }));
+    const zoneBlocks = (m.map.hazards || []).map((hz) => {
+      const zb = this._zoneBoxes && this._zoneBoxes.get(hz.id);
+      return zb ? { left: zb.x - 12, right: zb.x + zb.w + 12, top: zb.y - 12, bottom: zb.y + zb.h + 12 } : {
+        left: hz.rect.x0 * this.SW - 12, right: hz.rect.x1 * this.SW + 12,
+        top: hz.rect.y0 * this.SH - 12, bottom: hz.rect.y1 * this.SH + 12,
+      };
+    });
     blocks.push({ left: WIN.x + WIN.w - 140, right: WIN.x + WIN.w - 28, top: WIN.y + 32, bottom: WIN.y + 144 });
     blocks.push({ left: WIN.x - 30, right: WIN.x + 280, top: WIN.y + WIN.h + 2, bottom: WIN.y + WIN.h + 32 });
     // the gilt rail's corner scrolls lie over the paper's four corners
@@ -1740,7 +1778,10 @@ export class MapScene extends Scene {
         // over its room or to its left pays for breaking the rhythm
         return {
           b, ux,
-          score: cross * 300 + lead * 2 + stray / k * 10 + under(b) * 3
+          /* ROUND 42 (survey 7: "the boss plate next to its crown"): the
+             boss's plate pays far more for every unit of leader, so it
+             tucks in beside its seal wherever the paper allows */
+          score: cross * 300 + lead * (boss ? 9 : 2) + stray / k * 10 + under(b) * 3
             + (uy - cy < -h ? 18 : 0) + (!boss && b.left < cx ? 20 : 0),
         };
       };
@@ -1789,7 +1830,37 @@ export class MapScene extends Scene {
       const AIR = 30 * k;
       const gap = (b, p) => Math.max(p.left - b.right, b.left - p.right, p.top - b.bottom, b.top - p.bottom);
       let pick = null, best = Infinity;
-      for (const c of cands) {
+      /* ROUND 42 (survey 7: "the boss plate next to its crown"): the boss's
+         plate first tries the paper touching its seal -- under it, beside it
+         on either hand, over it -- and takes the first that is clear of every
+         room's drawing, every block and every plate (a route may run under
+         it: the name of the wing's end is worth more than a stretch of line) */
+      if (L.n.type === NodeType.BOSS) {
+        const r0 = ownR * .62, gapB = 6 * k;
+        const slots = [];
+        for (const dn of [0, 14, 28, 44, 60, 76]) {
+          for (const f of [0, -.2, -.4, .2, -.6]) slots.push({ left: cx - w / 2 + f * w, top: cy + r0 + gapB + dn * k });
+        }
+        slots.push({ left: cx - r0 - gapB - w, top: cy - h / 2 }, { left: cx + r0 + gapB, top: cy - h / 2 });
+        for (const f of [0, -.2, -.4, .2, -.6]) slots.push({ left: cx - w / 2 + f * w, top: cy - r0 - gapB - h });
+        for (const sl of slots) {
+          const b = { left: sl.left, right: sl.left + w, top: sl.top, bottom: sl.top + h };
+          if (b.left < edge.left || b.right > edge.right || b.top < edge.top || b.bottom > edge.bottom) continue;
+          let ok = true;
+          for (const D of marks) {
+            if (D.L === L) continue;
+            if (near(b, D.cx, D.cy) < D.r + BREATH) { ok = false; break; }
+          }
+          if (ok) for (const q of blocks.concat(zoneBlocks)) {
+            if (q.left < b.right && q.right > b.left && q.top < b.bottom && q.bottom > b.top) { ok = false; break; }
+          }
+          if (ok) for (const pq of placed) {
+            if (Math.max(pq.left - b.right, b.left - pq.right, pq.top - b.bottom, b.top - pq.bottom) < APART) { ok = false; break; }
+          }
+          if (ok) { pick = { ux: (b.left + b.right) / 2, b }; best = -Infinity; break; }
+        }
+      }
+      for (const c of (pick ? [] : cands)) {
         if (c.score >= best) break;                          // sorted: nothing later can win
         let s = c.score, ok = true;
         for (const p of placed) {
