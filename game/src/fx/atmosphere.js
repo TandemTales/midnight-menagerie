@@ -1622,7 +1622,10 @@ export const REGIONS = {
                   doghouses (the lower 55%) is empty dim brown"): a dog's bed
                   and its bowls in the near straw at the left, and a kennel
                   at your right shoulder, its lit door on the flags */
-               { shape: 40, edge: 0.16, z: 2.2, tone: 0.95, fore: 1, keep: true, scale: 1.1 },
+               /* (REPAIR r41: in from the frame's edge, 0.16 -> 0.23, so the
+                  bed reads whole with its bowl beside it -- "the near floor
+                  dressed (bowls, a dog bed, straw)") */
+               { shape: 40, edge: 0.23, z: 2.2, tone: 0.95, fore: 1, keep: true, scale: 1.1 },
                /* ROUND 41 (AMETHYST): and at your right, by the door the
                   range is fed from, the kennel man's corner -- the feed bin
                   with its lid propped on the meal, a sack slumped against it,

@@ -15660,21 +15660,32 @@ void main(){
          round 41 graft: a pen line, crisp, a pixel and more) */
       alb *= 1.0 - 0.65*footInk*(1.0 - 0.5*stk);
     } else if (sRes > 0.001) {
-      /* the swept floor: a stalk dropped here and there, one in thirty cells */
-      vec2 cs = w/0.34;
-      vec2 ci = floor(cs);
-      vec2 hh = mmHash22(ci + 7.1);
-      if (mmHash21(ci + 1.3) < 0.035) {
-        vec2 c0 = (ci + 0.20 + 0.60*hh)*0.34;
+      /* REPAIR r41 (survey 8's paired test, both judges: survey 7's "straw
+         scattered over the flagstones" beat "an empty brown field"): the
+         floor between the heaps STREWN again -- survey 7's loose stalks
+         (round 28's), each a short pale stroke turned its own way, lying in
+         DRIFTS where the dogs drag it (the slow field's crests, and round
+         each heap), thinner across the open flags but never swept bare */
+      float drift = 0.22 + 0.70*smoothstep(0.28, 0.68, mmNoise(w*0.42 + 3.7))
+                  + 0.40*smoothstep(0.25, 0.47, mE);
+      float strw = 0.0, strT = 0.0;
+      for (int k = 0; k < 2; k++){
+        vec2 cs = w/0.20 + float(k)*0.5;
+        vec2 ci = floor(cs);
+        vec2 hh = mmHash22(ci + float(k)*7.1);
+        if (mmHash21(ci + 1.3) > drift*0.95) continue;
+        vec2 c0 = (ci + 0.20 + 0.60*hh - float(k)*0.5)*0.20;
         float an = hh.x*6.2832;
         vec2 dir = vec2(cos(an), sin(an));
         vec2 v = w - c0;
-        float L = 0.05 + 0.04*hh.y;
+        float L = 0.05 + 0.05*hh.y;
         float t = clamp(dot(v, dir), -L, L);
         float d = length(v - dir*t);
-        float on = (1.0 - smoothstep(0.0034, 0.0034 + mp*1.1, d))*sRes;
-        alb = mix(alb, vec3(mmLum(uMid))*vec3(2.2, 1.7, 0.95)*(0.8 + 0.4*hh.y)*uStraw, on*0.60);
+        float on = (1.0 - smoothstep(0.0035, 0.0035 + mp*1.1, d))*sRes;
+        if (on > strw) { strw = on; strT = hh.y; }
       }
+      /* (the stroke old gold, not a lemon line) */
+      alb = mix(alb, vec3(mmLum(uMid))*vec3(2.5, 1.85, 0.85)*(1.0 + 0.6*strT)*uStraw, strw*0.70);
     }
   }
 #else
@@ -22879,14 +22890,22 @@ vec3 wgPaint(vec2 m, vec2 msz, float shape, float seed, float px, float lum,
        red, a lichen green, a slate blue-grey, or no paint at all -- the
        creosoted timber -- each chalked and faded toward the grey of the
        wood, under a trim gone to bone */
-    vec3 paint = pk < 0.27 ? vec3(0.40, 0.17, 0.12) : (pk < 0.52 ? vec3(0.23, 0.28, 0.18)
-               : (pk < 0.77 ? vec3(0.21, 0.25, 0.30) : vec3(0.28, 0.20, 0.13)));
-    vec3 trim  = vec3(0.66, 0.62, 0.53);
+    /* REPAIR r41 (survey 8's paired test, both judges, Kennels by 1 and 2:
+       survey 7's "doghouses painted green, red and blue ... that read
+       instantly as separate kennels" beat the "washed-out grey" houses).
+       The paints back at a real chroma -- a red, a bottle green, a blue,
+       one each, never the creosote that read as grey -- and the weather
+       kept in them as WEAR, not as a wash: the streaks down each board, the
+       grime at the foot, the timber showing through where a dog rubs, the
+       pen round the front and the eaves; the trim a cream again */
+    vec3 paint = pk < 0.36 ? vec3(0.58, 0.12, 0.07) : (pk < 0.68 ? vec3(0.10, 0.37, 0.14)
+               : vec3(0.12, 0.24, 0.54));
+    vec3 trim  = vec3(0.78, 0.74, 0.62);
     float wear = mmNoise(vec2(k.x*9.0, k.y*2.2) + seed*7.0);
     vec3 board = paint*E*1.35*(0.80 + 0.30*wear);
     /* the run of the weather down each board from the eaves: a darker
        streak under every nail head and joint, the paint lifted in between */
-    board *= 0.86 + 0.20*mmNoise(vec2(k.x*30.0, k.y*3.0) + seed*2.3);
+    board *= 0.90 + 0.14*mmNoise(vec2(k.x*30.0, k.y*3.0) + seed*2.3);
     /* (round 28: WEATHERED -- each board its own value, and the paint worn
        through to grey timber at the foot and along the board edges where
        a dog has rubbed it: "the doghouses are flat-coloured boxes") */
@@ -22897,9 +22916,9 @@ vec3 wgPaint(vec2 m, vec2 msz, float shape, float seed, float px, float lum,
                  + 0.25*mmNoise(vec2(k.x*40.0, k.y*6.0) + seed));
       /* (round 34 graft: worn through less -- at 0.75 the grey timber took
          most of a small kennel's paint at the Deck's distance) */
-      board = mix(board, vec3(0.30, 0.27, 0.23)*E*1.25*(0.8 + 0.3*wear), bare*0.72);
+      board = mix(board, vec3(0.30, 0.27, 0.23)*E*1.25*(0.8 + 0.3*wear), bare*0.55);
       /* (round 41: and the grime of the yard up the foot of every board) */
-      board *= 1.0 - 0.32*smoothstep(0.22, 0.0, k.y);
+      board *= 1.0 - 0.22*smoothstep(0.22, 0.0, k.y);
     }
     col = board;
     float body = mmBox(k - vec2(0.0, 0.470), vec2(0.600, 0.385), 0.008);
