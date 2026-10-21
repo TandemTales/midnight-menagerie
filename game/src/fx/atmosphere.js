@@ -1608,7 +1608,11 @@ export const REGIONS = {
                { shape: 32, x: -3.4, z: -7.4, tone: 0.92, free: true, seed: 17.8, scale: 0.90 },
                /* (round 43 graft: BENITOITE's tipped WHITE bath down the hall,
                   overturned on its rim -- seeds 15.5-16) */
-               { shape: 32, x: 1.8, z: -10.2, tone: 0.90, free: true, seed: 15.7 },
+               /* (round 43 touch-up, a paired judge: "a hazy half-drawn far
+                  tub" -- ten metres off it was a lozenge 75 px wide; it
+                  stands nearer, at the shaft's edge, where its belly, rim and
+                  feet are big enough to be drawn) */
+               { shape: 32, x: 1.4, z: -8.4, tone: 0.92, free: true, seed: 15.7 },
              ] },
     /* ROUND 39: THE NEAR FLOOR, wet. Its tiles calm and clean (no milky
        mottle), falling to a deep wet dark toward the hand, the warm lamp's

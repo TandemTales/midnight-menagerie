@@ -14757,12 +14757,15 @@ float winLit(vec3 P){
          spokes from the springing, the transom across the springing line,
          and a ring of tracery round the fan's eye, thrown down the tiles as
          the window throws them) */
+      /* (round 43 touch-up, both paired judges: "the smeared radiating
+         shadow streaks" -- the fan's spokes, run out across the tiles a
+         room long, smeared into rays; "its crisp window-pane light" was the
+         parent's. The head keeps its squared panes, and the transom and the
+         eye's ring are drawn over them: tracery, never rays) */
       if (uWinB.w > 0.5 && uWinB.w < 1.5 && bq.y > uWinB.y - 0.05) {
         vec2 hq = bq - vec2(0.0, uWinB.y);
-        float r = length(hq);
-        float sp = abs(fract(atan(hq.y, hq.x)/0.3927 + 0.5) - 0.5)*0.3927*r + step(r, hw*0.22)*1e3;
-        float ring = abs(r - hw*0.22);
-        m = min(min(sp, ring), abs(hq.y));
+        float ring = abs(length(hq) - hw*0.22);
+        m = min(m, min(ring, abs(hq.y)));
       }
     }
     lit *= 1.0 - 0.92*(1.0 - smoothstep(bw - pen*0.7, bw + pen*0.7, m));
@@ -23182,23 +23185,34 @@ float wgBtBody(vec2 q){
   float xs = abs(q.x) - 0.11*clamp((q.y - 0.17)/0.55, 0.0, 1.0);
   return mmBox(vec2(xs, q.y - 0.450), vec2(0.790, 0.280), 0.20);
 }
-/* (round 43 GRAFT, BENITOITE's: the copper bath stands on a mahogany
-   plinth, not on claw feet; and the dust sheet thrown over a roll-top lies
+/* (round 43 GRAFT, BENITOITE's: the dust sheet thrown over a roll-top lies
    over its roll -- its line still under the cloth -- and falls in folds to
    a hem a hand off the tiles, lifted at the plain end so the claw feet show
    under it) */
-float wgBtPlinth(vec2 q){
-  return min(mmBox(q - vec2(0.0, 0.105), vec2(0.66, 0.095), 0.020),
-             mmBox(q - vec2(0.0, 0.026), vec2(0.73, 0.026), 0.008));
-}
+/* (round 43 TOUCH-UP, both paired judges: "A's tub stands on drawn claw
+   feet ... B's tub sits on a flat dark plinth" -- BENITOITE's mahogany
+   plinth is gone; the copper bath stands on its claw feet again, its
+   hammered metal, rivets and tinned inside kept. And "its drape ends in a
+   hard vertical cut that looks clipped": the sheet was 0.96-0.995 wide on
+   a quad 0.97 wide -- the QUAD cut it. Now it is cloth: rounded over the
+   roll's ends, falling a little wider toward a soft, gently scalloped hem,
+   every corner rounded, and inside the quad with room for its pen line) */
 float wgBtDrapeTop(float xs){ return 0.90 + 0.10*smoothstep(0.50, 0.82, xs) - 0.035*cos(xs*3.4); }
 float wgBtDrapeHem(float x, float xs, float seed){
-  return 0.10 + 0.045*sin(x*11.0 + seed*2.0) + 0.030*sin(x*27.0 + seed) + 0.17*smoothstep(-0.05, -0.75, xs);
+  return 0.10 + 0.022*sin(x*7.0 + seed*2.0) + 0.010*sin(x*16.0 + seed) + 0.17*smoothstep(-0.05, -0.75, xs);
+}
+/* a rounded intersection: the corner where two edges meet turned on r */
+float wgBtRInt(float a, float b, float r){
+  vec2 u = max(vec2(r + a, r + b), vec2(0.0));
+  return min(-r, max(a, b)) + length(u);
 }
 float wgBtDrapeSheet(vec2 q, float seed){
   float xs = q.x*wgBtSide(seed);
-  float hw = 0.96 + 0.035*sin(q.y*9.0 + seed);
-  return max(max(abs(q.x) - hw, wgBtDrapeHem(q.x, xs, seed) - q.y), q.y - wgBtDrapeTop(xs));
+  float top = wgBtDrapeTop(xs);
+  float fall = clamp((top - q.y)/0.80, 0.0, 1.0);
+  float hw = 0.79 + 0.10*fall + 0.012*sin(q.y*9.0 + seed);
+  float d = wgBtRInt(abs(q.x) - hw, q.y - top, 0.22);
+  return wgBtRInt(d, wgBtDrapeHem(q.x, xs, seed) - q.y, 0.07);
 }
 float wgBtSteams(float seed){ return step(mmHash11(seed*9.37 + 0.4), 0.60); }
 /* the steam off a hot bath: a column that widens and sways as it rises */
@@ -23337,10 +23351,9 @@ float wgBtSD(vec2 q, float seed){
   if (wgBtHasRack(seed) > 0.5) d = min(d, wgBtRack(q, seed));
   d = min(d, mmBox(q - vec2(0.0, 0.720), vec2(0.905, 0.036), 0.034));
   /* the claw feet: the near pair and, higher and smaller, the far pair --
-     or a copper bath's plinth (round 43 graft) */
+     a copper bath's too (round 43 touch-up: no plinth) */
   float t0;
-  if (bk > 1.5 && bk < 2.5) d = min(d, wgBtPlinth(q));
-  else for (int i = 0; i < 2; i++){
+  for (int i = 0; i < 2; i++){
     float sx = float(i)*2.0 - 1.0;
     d = min(d, wgBtFoot(q, sx));
     d = min(d, wgSegT(q, vec2(sx*0.52, 0.28), vec2(sx*0.55, 0.12), 0.050, 0.036, t0));
@@ -24428,9 +24441,14 @@ vec3 wgPaint(vec2 m, vec2 msz, float shape, float seed, float px, float lum,
         float rimO = wgEll(f - vec2(0.0, 0.755), vec2(0.930, 0.135));
         float xnO = clamp(q.x/0.90, -1.0, 1.0);
         /* (round 43 graft: and BENITOITE's tipped WHITE one, seeds 15.5-16) */
-        vec3 ovC = seed > 15.5 ? vec3(0.80, 0.78, 0.70) : painted;
-        col = ovC*E*1.55*(0.50 + 0.60*wgRound(xnO))*(0.80 + 0.35*smoothstep(-0.5, 0.8, kq*xnO));
-        col *= 0.55 + 0.60*smoothstep(0.10, 0.72, q.y);
+        /* (round 43 TOUCH-UP, a paired judge: "a hazy half-drawn far tub" --
+           the white one DRAWN: its belly rounded in a stronger light and
+           shade, the rim in the dark at the tiles, its pen lines heavier,
+           and none of the moon's milky wash over it) */
+        float ovW = step(15.5, seed);
+        vec3 ovC = ovW > 0.5 ? vec3(0.74, 0.72, 0.66) : painted;
+        col = ovC*E*1.55*(mix(0.50, 0.30, ovW) + mix(0.60, 0.85, ovW)*wgRound(xnO))*(0.80 + 0.35*smoothstep(-0.5, 0.8, kq*xnO));
+        col *= mix(0.55, 0.32, ovW) + mix(0.60, 0.88, ovW)*smoothstep(0.10, 0.72, q.y);
         float onRim = step(rimO, 0.0)*step(0.0, bodyO);
         col = mix(col, enamel*E*1.7*(0.55 + 0.45*smoothstep(0.0, 0.15, q.y)), onRim);
         float drain = length(q - vec2(0.30*wgBtSide(seed), 0.66)) - 0.040;
@@ -24443,11 +24461,11 @@ vec3 wgPaint(vec2 m, vec2 msz, float shape, float seed, float px, float lum,
         }
         float onFO = step(feetO, 0.0)*step(0.0, bodyO);
         col = mix(col, feetC*(0.7 + 0.5*smoothstep(0.60, 0.90, q.y)), onFO);
-        ink = max(ink, mmInkP(bodyO, qpx, 1.2)*0.9);
-        ink = max(ink, mmInkP(rimO, qpx, 1.2)*step(q.y, 0.30)*0.9);
-        ink = max(ink, mmInkP(feetO, qpx, 1.1)*0.85);
+        ink = max(ink, mmInkP(bodyO, qpx, mix(1.2, 1.7, ovW))*mix(0.9, 1.0, ovW));
+        ink = max(ink, mmInkP(rimO, qpx, mix(1.2, 1.6, ovW))*step(q.y, 0.30)*mix(0.9, 1.0, ovW));
+        ink = max(ink, mmInkP(feetO, qpx, mix(1.1, 1.5, ovW))*mix(0.85, 1.0, ovW));
         ink = max(ink, mmInkP(drain, qpx, 1.0)*0.8);
-        moon = step(bodyO, 0.0)*smoothstep(0.45, 0.75, q.y)*0.8;
+        moon = step(bodyO, 0.0)*smoothstep(0.45, 0.75, q.y)*mix(0.8, 0.35, ovW);
         return col;
       }
       /* UNDER A SHEET (round 43 GRAFT, all three judges on CUPRITE's: "the
@@ -24475,6 +24493,9 @@ vec3 wgPaint(vec2 m, vec2 msz, float shape, float seed, float px, float lum,
       vec3 sc = lin*(0.38 + 0.62*mix(0.80, fold, smoothstep(0.05, 0.45, fy)))
               *(0.62 + 0.48*smoothstep(0.15, top, q.y))*(0.86 + 0.24*kq*xnD);
       sc *= 1.0 - 0.30*smoothstep(0.035, 0.0, abs(q.y - (top - 0.16)))*step(abs(q.x), 0.85);
+      /* (round 43 touch-up: the hem turned, its fold catching the light a
+         finger over the edge -- a soft hem that reads, not a cut) */
+      sc *= 1.0 + 0.45*smoothstep(0.030, 0.0, abs(q.y - hem - 0.035));
       col = mix(col, sc, onSh);
       ink = max(ink, mmInkP(sheet, qpx, 1.3)*0.92);
       ink = max(ink, mmInkP(abs(fract(fph/6.2832 + 0.5) - 0.5) - 0.47, qpx*(9.0 + 5.0*fy)/6.2832, 0.9)*onSh*smoothstep(0.15, 0.6, fy)*0.60);
@@ -24554,18 +24575,6 @@ vec3 wgPaint(vec2 m, vec2 msz, float shape, float seed, float px, float lum,
     }
     float onF = step(feet, 0.0)*(1.0 - onBody);
     col = mix(col, gilt*E*1.4*(0.6 + 0.5*smoothstep(0.0, 0.2, q.y)), onF);
-    if (bk > 1.5 && bk < 2.5) {
-      /* (round 43 graft: the copper's plinth -- mahogany, its moulded top
-         lit, its foot in shadow, BENITOITE's -- where the feet were) */
-      float pl = wgBtPlinth(q);
-      float onPl = clamp(0.5 - pl/max(qpx, 1e-5), 0.0, 1.0)*(1.0 - onBody);
-      vec3 mah = vec3(0.34, 0.15, 0.08)*E*1.5*(0.55 + 0.55*smoothstep(0.02, 0.20, q.y))*(0.85 + 0.25*mmNoise(vec2(q.x*4.0, q.y*40.0) + seed));
-      mah = mix(mah, mah*1.7, smoothstep(0.012, 0.0, abs(q.y - 0.188))*step(abs(q.x), 0.66));
-      col = mix(col, mah, onPl);
-      ink = max(ink, mmInkP(pl, qpx, 1.2)*(1.0 - onBody)*0.90);
-      ink = max(ink, mmInkP(q.y - 0.188, qpx, 1.0)*onPl*0.6);
-      feet = 1e3;
-    }
     /* toes on the ball */
     float toe = mmInkP(abs(fract((abs(q.x) - 0.70)/0.035 + 0.5) - 0.5)*0.035, qpx, 1.0)*step(q.y, 0.06)*step(abs(abs(q.x) - 0.70), 0.06);
     ink = max(ink, (toe*0.7 + mmInkP(feet, qpx, 1.0)*0.8)*(1.0 - onBody));
