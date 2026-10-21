@@ -833,9 +833,46 @@ def lectern_post():
     return _save_pic(p, "lectern-post.webp")
 
 
+def ledge_corbel():
+    """ROUND 42 (survey 7, J2 on the atlas: the prop shelf "stops dead at the
+    right edge ... reads as a pasted band"): the carved console a ledge's end
+    stands on, seen from the front -- a moulded walnut cap with a brass
+    fillet, a body tapering down to a scrolled volute, a leaf carved down its
+    face. Walnut in the room's dark, lit from the top left."""
+    W, H = 64, 112
+    p = Pic(seed=4246, n=W, h=H)
+    wood = ("#0e0703", "#35210f", "#6c4a2b")
+    rg = np.random.default_rng(4247)
+    ph = rg.uniform(0, 6.3, 6)
+
+    def grain(xx, yy, c):
+        g = sum(np.sin(xx * (1.3 + k * .41) + 2.0 * np.sin(yy * (.06 + k * .017) + ph[k]) + ph[k]) for k in range(4)) / 4
+        return c * (1 + .2 * g[..., None])
+    # the body, tapering to the volute
+    p.part(P([(10, 14), (54, 14), (46, 80), (18, 80)]), wood, bevel=6, shadow=0, tex=grain)
+    p.part(E(32, 90, 17, 17), wood, prof="sphere", shadow=.5, tex=grain)
+    # the volute's spiral, cut into it
+    pts = []
+    for i in range(80):
+        t = i / 79
+        a = t * 2.6 * math.pi
+        r = 13.5 * (1 - .82 * t)
+        pts.append((32 + r * math.cos(a + 1.2), 90 + r * math.sin(a + 1.2)))
+    p.ink(pts, w=1.5, alpha=.85)
+    # a leaf carved down its face
+    p.ink([(32, 20), (30, 34), (32, 48), (34, 62), (32, 74)], w=1.1, alpha=.7)
+    for y, dx in ((30, -8), (42, 8), (54, -7), (64, 6)):
+        p.ink([(32, y), (32 + dx * .6, y + 2), (32 + dx, y + 6)], w=.9, alpha=.6)
+    # the cap and its brass fillet
+    p.part(R(4, 9, 60, 15, 1), "brass", bevel=1.8, shadow=.5)
+    p.part(R(1, 0, 63, 10, 2), wood, bevel=3, shadow=.6, tex=grain)
+    return _save_pic(p, "ledge-corbel.webp")
+
+
 def r42_pieces():
     hw_slot()
     lectern_post()
+    ledge_corbel()
 
 
 # materials (dark, body, light), all in the samples' low key
