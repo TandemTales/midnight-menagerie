@@ -1606,7 +1606,9 @@ export const REGIONS = {
                /* and two more down the hall, on the left and the middle,
                   where the files have room for them */
                { shape: 32, x: -3.4, z: -7.4, tone: 0.92, free: true, seed: 17.8, scale: 0.90 },
-               { shape: 32, x: 1.8, z: -10.2, tone: 0.90, free: true },
+               /* (round 43 graft: BENITOITE's tipped WHITE bath down the hall,
+                  overturned on its rim -- seeds 15.5-16) */
+               { shape: 32, x: 1.8, z: -10.2, tone: 0.90, free: true, seed: 15.7 },
              ] },
     /* ROUND 39: THE NEAR FLOOR, wet. Its tiles calm and clean (no milky
        mottle), falling to a deep wet dark toward the hand, the warm lamp's
@@ -2997,10 +2999,19 @@ export const ROOM_KINDS = {
                /* (round 39 graft, PERIDOT's: a towel bench on the near
                   apron across from the horse, in the warm lamplight laid
                   there -- nearFloor below) */
-               { shape: 32, ahead: 6.5, across: 4.3, tone: 0.97, keep: true, seed: 25.0, hM: 1.00, wM: 1.50 }],
+               { shape: 32, ahead: 6.5, across: 4.3, tone: 0.97, keep: true, seed: 25.0, hM: 1.00, wM: 1.50 },
+               /* (round 43 GRAFT, all three judges: "the pool's near floor and
+                  left edge fall to black" -- the near apron DRESSED: a second
+                  bath, hammered copper on its plinth, by the bench, and a
+                  second towel horse with its stool and pail at the left
+                  edge, in the lamp's light laid wider over them) */
+               { shape: 32, ahead: 7.1, across: 1.5, tone: 0.97, keep: true, seed: 17.6, scale: 0.82 },
+               { shape: 32, ahead: 7.6, across: 5.5, tone: 0.97, keep: true, seed: 43.5, hM: 1.25, wM: 1.90 }],
         /* (round 39 graft, PERIDOT's pool: the near apron warm-lit across the
            frame, the bench in it, the cold light on the far side) */
-        nearFloor: { pool: { ahead: 6.2, across: 3.4, rAlong: 2.6, rAcross: 3.0, k: 2.4, color: '#e8b070' },
+        /* (round 43 graft: the warm pool nearer, wider and a step up, over
+           the left edge too) */
+        nearFloor: { pool: { ahead: 5.6, across: 3.9, rAlong: 3.0, rAcross: 3.9, k: 2.9, color: '#e8b070' },
                      pool2: { ahead: 6.0, across: -3.8, rAlong: 2.4, rAcross: 2.6, k: 1.6, color: '#7fb4dc' } },
         room: { w: 1.10, d: 1.24 }, rail: 'iron', ceil: 4, ceilGain: 2.4,
         pool: { hw: 5.6, z0: -1.4, back: 3.4 },
