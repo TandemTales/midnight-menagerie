@@ -624,7 +624,7 @@ export const ROOM_VARIANTS = [
   { mat: 'floor', defines: { MM_FLOORX: 1, MM_R25W: 0, MM_PAT: 10, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0, MM_RUGK: 0 }, wings: ['ballroom'] },
   { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 0, MM_PAT: 1, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0, MM_RUGK: 0 }, wings: ['bathhouse'] },
   { mat: 'floor', defines: { MM_FLOORX: 2, MM_R25W: 0, MM_PAT: 1, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0, MM_RUGK: 0 }, wings: ['bathhouse'] },
-  { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 0, MM_PAT: 2, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0, MM_RUGK: 0 }, wings: ['crypt', 'lampworks', 'pumpkin'] },
+  { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 0, MM_PAT: 2, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 2, MM_RUGK: 0 }, wings: ['crypt'] },
   { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 1, MM_PAT: 0, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0, MM_RUGK: 0 }, wings: ['foyer'] },
   { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 1, MM_PAT: 2, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0, MM_RUGK: 0 }, wings: ['foyer'] },
   { mat: 'floor', defines: { MM_FLOORX: 1, MM_R25W: 4, MM_PAT: 11, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0, MM_RUGK: 0 }, wings: ['graveyard'] },
@@ -633,6 +633,7 @@ export const ROOM_VARIANTS = [
   { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 0, MM_PAT: 2, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0, MM_RUGK: 6 }, wings: ['kennels'] },
   { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 0, MM_PAT: 2, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0, MM_RUGK: 7 }, wings: ['kennels'] },
   { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 0, MM_PAT: 2, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 1, MM_RUGK: 0 }, wings: ['kitchens'] },
+  { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 0, MM_PAT: 2, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0, MM_RUGK: 0 }, wings: ['lampworks', 'pumpkin'] },
   { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 0, MM_PAT: 0, MM_CEIL: 0, MM_RUGO: 1, MM_FLAGK: 0, MM_RUGK: 0 }, wings: ['nursery'] },
   { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 0, MM_PAT: 0, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0, MM_RUGK: 3 }, wings: ['passages'] },
   { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 0, MM_PAT: 0, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0, MM_RUGK: 4 }, wings: ['passages'] },
@@ -760,6 +761,7 @@ export class Backdrop {
            (ceilPattern 9, 12), else 0: its end walls then run on up into a
            glazed gable, and the gable's own feature is sized to it (round 18) */
         uGable: { value: 0 },
+        uVault: { value: new THREE.Vector2(0, 0) },   // (round 43: the Crypt's barrel vault; MM_ROOMS 20 reads it)
         uGain: { value: 3.4 }, uGloss: { value: 0.3 }, uAlbLift: { value: 0.012 },
         /* The drawn line — see mmDrawn in shaders/backdrop.js. Ink is how dark
            a relief hollow goes, lip how hard its crest catches the light.
@@ -926,6 +928,9 @@ export class Backdrop {
          of each one's foot, its half-width, 1 where it is -- for the straw
          heaped against their footings; read by MM_RUGK 6 only) */
       uKnFoot: { value: v4arr(6) },
+      /* (round 43: the Crypt's open graves -- each mouth's world x and z,
+         its half extents across and along; read by MM_FLAGK 2 only) */
+      uGrave: { value: v4arr(2) },
       /* the passage's sconce pools (round 28 graft): see FLOOR_FRAG and build */
       uSconce: { value: new THREE.Vector4(0, 0, 0, 0) }, uSconceEnd: { value: -20 },
       /* the moon on the Pumpkin Grounds' flags and in its pond (graft) */
@@ -1373,10 +1378,26 @@ export class Backdrop {
       const rise = (cp === 9 || cp === 12)
         ? Math.max(0, Math.min(room.w * 0.16, (room.wallPad ?? 5) - 0.4))
         : cp === 15 ? Math.max(0, Math.min(room.w * 0.42, (room.wallPad ?? 5) - 0.4)) : 0;
-      const cg = new THREE.PlaneGeometry(room.w, spanZ, rise > 0 ? 2 : 1, 1);
+      /* (round 43, CUPRITE: and the Crypt's rib vault (17) is a VAULT --
+         both survey-8 judges: "the ceiling is a flat grey plane with white
+         rib lines"; "give the vault ribs real volume". It is built as a
+         segmental barrel springing from the tops of the side walls, a
+         quarter of the span high at the crown, in sixteen facets, so the
+         ribs drawn on it in plan curve up over the room as ribs do, and the
+         candles below find the springing and lose the crown.) */
+      const vault = cp === 17 ? Math.max(0, Math.min(room.w * 0.25, (room.wallPad ?? 5) - 0.4)) : 0;
+      const cg = new THREE.PlaneGeometry(room.w, spanZ, rise > 0 ? 2 : (vault > 0 ? 16 : 1), 1);
       if (rise > 0) {
         const pos = cg.attributes.position;
         for (let i = 0; i < pos.count; i++) if (Math.abs(pos.getX(i)) < 1e-4) pos.setZ(i, -rise);
+        pos.needsUpdate = true;
+        cg.computeVertexNormals();
+      } else if (vault > 0) {
+        const pos = cg.attributes.position;
+        for (let i = 0; i < pos.count; i++) {
+          const u = Math.min(Math.abs(pos.getX(i)) / (room.w / 2), 1);
+          pos.setZ(i, -vault * Math.sqrt(1 - u * u));
+        }
         pos.needsUpdate = true;
         cg.computeVertexNormals();
       }
@@ -2241,6 +2262,10 @@ export class Backdrop {
          lies over it -- `hand` -- dresses the empty room and is not drawn
          under the cards: _handCull. Read only where written.) */
       if (it.hand && out.length > n0) out[out.length - 1].hand = 1;
+      /* (round 43: a piece that stands at the head of an open grave -- `grave`,
+         [half-length across, half-width along, ...] in metres -- names the
+         cist FLOOR_FRAG cuts in the flags in front of it: MM_FLAGK 2) */
+      if (it.grave && out.length > n0) out[out.length - 1].grave = it.grave;
       if (!it.keep && yields(it, out[out.length - 1])) out.pop();
     }
     return out.slice(0, MAX_PROPS);
@@ -2464,6 +2489,11 @@ export class Backdrop {
              the rows sit on the floor" -- a BED stands on its long side to
              us, 0.9 m deep: a dense band the length of it, GRISAILLE's) */
           ss2[i * 2 + 0] = p.w * 1.08; ss2[i * 2 + 1] = 1.25; st2[i] = 1.10;
+        } else if (p.grave) {
+          /* (round 43: the ledger leaned at an open grave's head stands on
+             the far kerb, and its pool must not lie over the grave's mouth in
+             front of it: a narrow band along its foot) */
+          ss2[i * 2 + 0] = p.w * 1.04; ss2[i * 2 + 1] = 0.30; st2[i] = 0.85;
         } else if (p.shape === 52 || p.shape === 60) {
           /* (round 29 graft, judge 2: "give the bed, wardrobe and washstand
              contact shadows" -- a washstand's and a wardrobe's pool, dense) */
@@ -2640,6 +2670,19 @@ export class Backdrop {
         const p = dh[i];
         if (!p) { kf[i].set(0, 0, 0, 0); continue; }
         kf[i].set(p.x, -(p.z - this._floorCz), p.w * 0.33, 1);
+      }
+    }
+    /* (round 43: the Crypt's open graves, each in front of the stone that
+       stands at its head -- the mouth's world centre and half extents, for
+       FLOOR_FRAG's MM_FLAGK 2; every other floor's program does not declare
+       it) */
+    {
+      const gv = this.floorMat.uniforms.uGrave.value;
+      const gs = (pal.flagK === 2 && this.placed) ? this.placed.filter((p) => p.grave) : [];
+      for (let i = 0; i < gv.length; i++) {
+        const p = gs[i];
+        if (!p) { gv[i].set(0, 0, 0, 0); continue; }
+        gv[i].set(p.x + (p.grave[2] ?? 0), p.z + p.grave[1] + 0.20, p.grave[0], p.grave[1]);
       }
     }
 
@@ -2900,6 +2943,10 @@ export class Backdrop {
     /* A region with room.h = 0 is OPEN TO THE SKY, and uCeil cannot say so: the
        fallback hands it 6.4 m, so the Hedge Maze was crushed to a tenth above
        6.4 m and painted no sky at all -- 71.5% of its upper third pure black. */
+    /* (round 43: and the Crypt's barrel vault -- the same number _room
+       builds it with -- so the end wall runs up into its lunette) */
+    if (w.uVault) w.uVault.value.set((p.room?.h ?? 0) > 0.01 && cpat === 17
+      ? Math.max(0, Math.min((p.room.w ?? 30) * 0.25, (p.room.wallPad ?? 5) - 0.4)) : 0, (p.room?.w ?? 30) / 2);
     const noCeil = (p.room?.h ?? 0) <= 0.01 ? 1 : 0;
     w.uOpenSky.value = noCeil;
     /* HOW BRIGHT THE NIGHT IS, and it is a POST-EXPOSURE quantity, so it is

@@ -177,9 +177,16 @@ const D = {
    (59.25, wfBones: wide and low, so its width is given), and a pricket stand
    burning on the near left, its pool laid on the flags by the wing's
    nearFloor (both mirror with the room, so the pool stays under it) */
+/* (round 43, CUPRITE: both survey-8 judges -- "the two skeletons mid-floor
+   are cardboard half-dome cutouts"; "redraw the skeleton niches as sunken
+   graves with stone kerbs and depth". Each is an OPEN GRAVE now, cut in the
+   flags in front of where it stood -- `grave`, its mouth's half extents in
+   metres, drawn by the wing's own floor (flagK 2) with its kerb, its depth
+   and its bones lying in it -- and 59.25 is the ledger hauled off it and
+   leaned on end at its head.) */
 const CRYPT_NEAR = [
-  { shape: 59.25, x: 2.4, z: 0.4, tone: 0.95, hM: 0.45, wM: 1.7, seed: 2.7, free: true, keep: true, still: true },
-  { shape: 59.25, x: -0.6, z: 1.6, tone: 0.95, hM: 0.45, wM: 1.7, seed: 6.1, free: true, keep: true, still: true },
+  { shape: 59.25, x: 2.4, z: 0.4, tone: 0.95, hM: 0.64, wM: 1.75, seed: 2.7, free: true, keep: true, still: true, grave: [0.95, 0.62] },
+  { shape: 59.25, x: -0.6, z: 1.6, tone: 0.95, hM: 0.64, wM: 1.75, seed: 6.1, free: true, keep: true, still: true, grave: [0.95, 0.62] },
   { shape: 58, x: -1.9, z: 1.6, tone: 0.96, free: true, keep: true, still: true },
 ];
 
@@ -1184,6 +1191,8 @@ export const REGIONS = {
        (59). 16 m deep, from 25: the end wall is a feature, not a speck. The
        shafts are a breath of moonlight, warmer, wide and faint. */
     arch: 2, floorPattern: 2, subject: 'catacombs', damask: 0,
+    /* (round 43: its own floor program -- MM_FLAGK 2, the open graves) */
+    flagK: 2,
     /* (round 35 graft, SCHEELITE's, both judges' first graft: the vault is
        RIBBED, bay by bay, its own pattern (17) and its own program, and lit:
        the candles below find its ribs and bosses, ceilGain) */
@@ -1217,7 +1226,10 @@ export const REGIONS = {
       { kind: 'warm', x: 2.8, y: 1.50, z: -9.5, color: '#e0a35a', intensity: 2.10, radius: 6.0, fit: 'none' },
     ],
     shafts: { count: 1, spread: 4, y: 5.0, z: -9.0, angle: 0.10, width: 4.2, intensity: 0.0, pool: 1.2 },
-    vignette: 1.28, bloom: 0.90,
+    /* (round 43: 1.28 -> 1.10 -- the near floor's two corners went to black
+       under it, both survey-8 judges' "black void" at the frame's foot; the
+       candle pools are what light them now) */
+    vignette: 1.10, bloom: 0.90,
     /* ROUND 35: THE NEAR FLOOR (survey-5 judge 2: "the ceiling and the
        centre of the floor are black void and the floor flags are soft").
        The flags each their own stone with a pen-weight joint (calm); a
@@ -1234,7 +1246,11 @@ export const REGIONS = {
        falling a little further, and the key from behind the eye a step
        down, 1.61 -> 1.20: it laid the warm wash across the whole near floor) */
     nearFloor: { fall: 0.84, calm: 0.90, clean: 1,
-                 pool: { ahead: 4.8, across: -1.9, rAlong: 2.6, rAcross: 2.2, k: 1.6, color: '#f0a55a' } },
+                 pool: { ahead: 4.8, across: -1.9, rAlong: 2.6, rAcross: 2.2, k: 1.6, color: '#f0a55a' },
+                 /* (round 43: and the graves' candles' spill on the near flags
+                    across from the stand, so the corner it never reached is
+                    lit stone and not a black quarter) */
+                 pool2: { ahead: 3.6, across: 2.3, rAlong: 2.8, rAcross: 2.4, k: 1.8, color: '#f0a55a' } },
     grain: 0.012,
     ceilGain: 2.3,
   },
