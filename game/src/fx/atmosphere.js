@@ -184,10 +184,32 @@ const D = {
    metres, drawn by the wing's own floor (flagK 2) with its kerb, its depth
    and its bones lying in it -- and 59.25 is the ledger hauled off it and
    leaned on end at its head.) */
+/* (round 43 GRAFT, all three judges: ZINCITE's graves -- each laid ALONG
+   the room, head to the far end, an upright inscribed headstone on its base
+   at its head with a skull at the kerb (59.25, wfBones), and CUPRITE's ledge
+   with its skull and candles beside it on the outer side; the graves moved
+   out from the middle, 1.9 / -0.6 -> 2.4 / -1.15, and the pricket stand
+   with them, so the stones stand out of the fight's lane (fight-crypt at
+   1280, J1 and J3: "crowd the Loose Tibia's lane and nameplate"); and in the
+   catacomb BENITOITE's slab slid off the nearer one, a cross cut in it.
+   Each room its own layout: the family vault's sarcophagi forward, the
+   ossuary's pits heaped with bones -- FAMILY_NEAR, OSSUARY_NEAR.) */
 const CRYPT_NEAR = [
-  { shape: 59.25, x: 1.9, z: 0.4, tone: 0.95, hM: 0.64, wM: 1.60, seed: 2.7, free: true, keep: true, still: true, grave: [0.88, 0.60] },
-  { shape: 59.25, x: -0.6, z: 1.6, tone: 0.95, hM: 0.64, wM: 1.60, seed: 6.1, free: true, keep: true, still: true, grave: [0.88, 0.60] },
-  { shape: 58, x: -1.9, z: 1.6, tone: 0.96, free: true, keep: true, still: true },
+  { shape: 59.25, x: 2.72, z: 0.2, tone: 0.95, hM: 1.0, wM: 2.16, seed: 2.7, free: true, keep: true, still: true, grave: [0.42, 0.95, 0.32] },
+  { shape: 59.25, x: -1.47, z: 1.3, tone: 0.95, hM: 1.0, wM: 2.16, seed: 6.1, free: true, keep: true, still: true, grave: [0.40, 0.92, 0.32], slab: 1 },
+  { shape: 58, x: -3.0, z: 2.0, tone: 0.96, free: true, keep: true, still: true },
+];
+const FAMILY_NEAR = [
+  { shape: 59.25, x: 2.72, z: 0.2, tone: 0.95, hM: 1.0, wM: 2.16, seed: 2.7, free: true, keep: true, still: true, grave: [0.42, 0.95, 0.32] },
+  /* the family's own dead in their box tombs, brought forward onto the
+     near flags where the second grave was */
+  { shape: 57, x: -1.9, z: 0.9, tone: 0.97, free: true, keep: true, still: true },
+  { shape: 58, x: -3.4, z: 2.4, tone: 0.96, free: true, keep: true, still: true },
+];
+const OSSUARY_NEAR = [
+  { shape: 59.25, x: 2.72, z: 0.2, tone: 0.95, hM: 1.0, wM: 2.16, seed: 2.7, free: true, keep: true, still: true, grave: [0.42, 0.95, 0.32] },
+  { shape: 59.25, x: -1.47, z: 1.3, tone: 0.95, hM: 1.0, wM: 2.16, seed: 6.1, free: true, keep: true, still: true, grave: [0.40, 0.92, 0.32] },
+  { shape: 58, x: -3.0, z: 2.0, tone: 0.96, free: true, keep: true, still: true },
 ];
 
 export const REGIONS = {
@@ -958,7 +980,14 @@ export const REGIONS = {
                        fighters' depth, 0.24 / 5.6 -> 0.21 / 3.2, so the trunk
                        and the case on it stand whole on the lit boards --
                        J2: "blurry blobs cropped by the frame") */
-                    { shape: 36, edge: 0.21, z: 3.2, tone: 0.97, scale: 1.18, fore: 1, keep: true, seed: 1.5 },
+                    /* (round 43 GRAFT, J1 and J3: "the main trunk too small for
+                       the moonlit boards" -- it a third larger, 1.18 -> 1.40; and
+                       the trunks at more than one depth, whole: BENITOITE's
+                       teal strapped trunk nearer at the left, ZINCITE's
+                       blue-strapped one on the near boards at the right) */
+                    { shape: 36, edge: 0.24, z: 3.2, tone: 0.97, scale: 1.40, fore: 1, keep: true, seed: 1.5 },
+                    { shape: 36, edge: 0.19, z: 5.4, tone: 0.98, scale: 0.86, fore: 1, keep: true, seed: 6.5 },
+                    { shape: 36, edge: 0.72, z: 4.9, tone: 0.98, scale: 1.02, fore: 1, keep: true, seed: 4.5 },
                     { shape: 37, edge: 0.80, z: 3.6, tone: 0.95, scale: 1.05, fore: 1, keep: true, seed: 0.3 },
                     { shape: 37, edge: 0.93, z: 1.0, tone: 0.93, scale: 1.0, fore: 1, keep: true, seed: 0.7 }],
              trusses: { shape: 38, every: 3.4, first: 2.2 } },
@@ -979,7 +1008,12 @@ export const REGIONS = {
                     wash lying across the near boards" -- ONE warm candle pool
                     on them, the lamp's; the cold pool across the middle of
                     the boards gone, k 2.6 -> 0) */
-                 pool2: { ahead: 4.2, across: -0.4, rAlong: 2.4, rAcross: 3.8, k: 0, color: '#9fb0e6' } },
+                 /* (round 43 GRAFT, J1 and J3: "the moon shadow goes flat
+                    lavender and milky at the far left" -- the stairhead lamp's
+                    warm pool laid across the near boards at the LEFT, breaking
+                    the moon's shadow with lamplight, ZINCITE's and
+                    BENITOITE's) */
+                 pool2: { ahead: 3.6, across: 2.0, rAlong: 3.2, rAcross: 2.4, k: 3.4, color: '#eea458' } },
     particles: { mix: [[PTYPE.DUST, 0.62], [PTYPE.WISP, 0.26], [PTYPE.ASH, 0.12]],
                  tint: '#d8dcf5', wispTint: '#b0b8ff', emberTint: '#ffcf7a',
                  speed: 0.6, scale: 1.0, wind: 0.4, density: 0.60 },
@@ -1572,7 +1606,9 @@ export const REGIONS = {
                /* and two more down the hall, on the left and the middle,
                   where the files have room for them */
                { shape: 32, x: -3.4, z: -7.4, tone: 0.92, free: true, seed: 17.8, scale: 0.90 },
-               { shape: 32, x: 1.8, z: -10.2, tone: 0.90, free: true },
+               /* (round 43 graft: BENITOITE's tipped WHITE bath down the hall,
+                  overturned on its rim -- seeds 15.5-16) */
+               { shape: 32, x: 1.8, z: -10.2, tone: 0.90, free: true, seed: 15.7 },
              ] },
     /* ROUND 39: THE NEAR FLOOR, wet. Its tiles calm and clean (no milky
        mottle), falling to a deep wet dark toward the hand, the warm lamp's
@@ -2820,8 +2856,13 @@ export const ROOM_KINDS = {
                      { shape: 36, edge: 0.28, z: 3.0, tone: 0.97, scale: 1.20, fore: 1, keep: true, seed: 3.5 },
                      /* (round 43: a wing chair under its sheet, seed 0.5 -> 0.6 -- the
                         sideboard with its covered clock read as a grey box) */
-                     { shape: 37, edge: 0.80, z: 3.2, tone: 0.95, scale: 1.0, fore: 1, keep: true, seed: 0.6 }],
-              rug: { ahead: 7.4, hw: 1.6, hd: 1.0 },
+                     { shape: 37, edge: 0.80, z: 3.2, tone: 0.95, scale: 1.0, fore: 1, keep: true, seed: 0.6 },
+                     /* (round 43 graft, J3: "an object on the near-right floor" --
+                        ZINCITE's blue-strapped trunk there, whole) */
+                     { shape: 36, edge: 0.66, z: 4.1, tone: 0.98, scale: 0.92, fore: 1, keep: true, seed: 4.5 }],
+              /* (round 43 graft: BENITOITE's -- the moon rug larger and nearer,
+                 on the near boards, 7.4 / 1.6 x 1.0 -> 6.0 / 1.75 x 1.15) */
+              rug: { ahead: 6.0, hw: 1.75, hd: 1.15 },
               /* (round 43: the archive's moon comes through the skylight in
                  the roof's slope, its frame and its cross thrown on the
                  boards in front of the reading table) */
@@ -2958,10 +2999,19 @@ export const ROOM_KINDS = {
                /* (round 39 graft, PERIDOT's: a towel bench on the near
                   apron across from the horse, in the warm lamplight laid
                   there -- nearFloor below) */
-               { shape: 32, ahead: 6.5, across: 4.3, tone: 0.97, keep: true, seed: 25.0, hM: 1.00, wM: 1.50 }],
+               { shape: 32, ahead: 6.5, across: 4.3, tone: 0.97, keep: true, seed: 25.0, hM: 1.00, wM: 1.50 },
+               /* (round 43 GRAFT, all three judges: "the pool's near floor and
+                  left edge fall to black" -- the near apron DRESSED: a second
+                  bath, hammered copper on its plinth, by the bench, and a
+                  second towel horse with its stool and pail at the left
+                  edge, in the lamp's light laid wider over them) */
+               { shape: 32, ahead: 7.1, across: 1.5, tone: 0.97, keep: true, seed: 17.6, scale: 0.82 },
+               { shape: 32, ahead: 7.6, across: 5.5, tone: 0.97, keep: true, seed: 43.5, hM: 1.25, wM: 1.90 }],
         /* (round 39 graft, PERIDOT's pool: the near apron warm-lit across the
            frame, the bench in it, the cold light on the far side) */
-        nearFloor: { pool: { ahead: 6.2, across: 3.4, rAlong: 2.6, rAcross: 3.0, k: 2.4, color: '#e8b070' },
+        /* (round 43 graft: the warm pool nearer, wider and a step up, over
+           the left edge too) */
+        nearFloor: { pool: { ahead: 5.6, across: 3.9, rAlong: 3.0, rAcross: 3.9, k: 2.9, color: '#e8b070' },
                      pool2: { ahead: 6.0, across: -3.8, rAlong: 2.4, rAcross: 2.6, k: 1.6, color: '#7fb4dc' } },
         room: { w: 1.10, d: 1.24 }, rail: 'iron', ceil: 4, ceilGain: 2.4,
         pool: { hw: 5.6, z0: -1.4, back: 3.4 },
@@ -3199,15 +3249,19 @@ export const ROOM_KINDS = {
       { subject: 'catacombs', count: 4, swap: [[57, 59], [6, 58]] },
       { subject: 'cryptchapel', swap: [[6, 58]], count: 3, room: { d: 0.80 }, cam: { z: -1.0, look: 0.15 },
         lamps: [{ i: 1, x: 0.0, z: 0.86, y: 1.6, color: '#e2a660', k: 0.85, fit: 'none' }],
-        near: [{ shape: 57, edge: 0.74, z: -3.0, tone: 0.96 },
+        /* (round 43 graft: its sarcophagi forward -- the chapel's tomb a
+           stride and a half nearer, -3.0 -> -1.2, and a second on the near
+           flags, FAMILY_NEAR) */
+        near: [{ shape: 57, edge: 0.74, z: -1.2, tone: 0.96 },
                { shape: 58, x: -2.4, z: -6.0, tone: 0.95, free: true },
                { shape: 58, x: 2.4, z: -9.6, tone: 0.92, free: true },
-               ...CRYPT_NEAR] },
-      { subject: 'charnel', swap: [[57, 59], [15, 59]], count: 3, cam: { y: -0.20, z: -0.4, fov: 3 },
+               ...FAMILY_NEAR] },
+      /* (round 43 graft: its graves bone-filled pits -- MM_FLAGK 3) */
+      { subject: 'charnel', swap: [[57, 59], [15, 59]], count: 3, cam: { y: -0.20, z: -0.4, fov: 3 }, flagK: 3,
         near: [{ shape: 58, x: -2.6, z: -4.3, tone: 0.95, free: true },
                { shape: 59, edge: 0.78, z: -3.2, tone: 0.96 },
                { shape: 58, x: 2.8, z: -9.5, tone: 0.92, free: true },
-               ...CRYPT_NEAR] },
+               ...OSSUARY_NEAR] },
     ],
     names: [
       [/ossuar|bone|skull/i, 2],
@@ -4010,6 +4064,9 @@ export class Atmosphere {
       if (kind.floor !== undefined) pal.floorPattern = kind.floor;
       /* (round 41, AMETHYST: and its own floor covering -- MM_RUGK, Backdrop) */
       if (kind.floorK !== undefined) pal.floorK = kind.floorK;
+      /* (round 43 graft: and its own flags -- MM_FLAGK: the ossuary's pits
+         heaped with bones, 3) */
+      if (kind.flagK !== undefined) pal.flagK = kind.flagK;
       /* (round 43: and the moon through its own window, laid on its floor --
          pal.win, FLOOR_FRAG's winLit) */
       if (kind.win !== undefined) pal.win = kind.win;

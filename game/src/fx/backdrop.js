@@ -628,6 +628,7 @@ export const ROOM_VARIANTS = [
   { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 0, MM_PAT: 1, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0, MM_RUGK: 0 }, wings: ['bathhouse'] },
   { mat: 'floor', defines: { MM_FLOORX: 2, MM_R25W: 0, MM_PAT: 1, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0, MM_RUGK: 0 }, wings: ['bathhouse'] },
   { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 0, MM_PAT: 2, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 2, MM_RUGK: 0 }, wings: ['crypt'] },
+  { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 0, MM_PAT: 2, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 3, MM_RUGK: 0 }, wings: ['crypt'] },
   { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 1, MM_PAT: 0, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0, MM_RUGK: 0 }, wings: ['foyer'] },
   { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 1, MM_PAT: 2, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0, MM_RUGK: 0 }, wings: ['foyer'] },
   { mat: 'floor', defines: { MM_FLOORX: 1, MM_R25W: 4, MM_PAT: 11, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0, MM_RUGK: 0 }, wings: ['graveyard'] },
@@ -935,6 +936,10 @@ export class Backdrop {
       /* (round 43: the Crypt's open graves -- each mouth's world x and z,
          its half extents across and along; read by MM_FLAGK 2 only) */
       uGrave: { value: v4arr(2) },
+      /* (round 43 graft: a grave's ledger slid off and lying on the flags
+         beside it, BENITOITE's -- its world x and z, its turn, 1 where there
+         is one; read by MM_FLAGK 2 and 3 only) */
+      uGrvSlab: { value: new THREE.Vector4(0, 0, 0, 0) },
       /* the passage's sconce pools (round 28 graft): see FLOOR_FRAG and build */
       uSconce: { value: new THREE.Vector4(0, 0, 0, 0) }, uSconceEnd: { value: -20 },
       /* the moon on the Pumpkin Grounds' flags and in its pond (graft) */
@@ -2277,6 +2282,9 @@ export class Backdrop {
          [half-length across, half-width along, ...] in metres -- names the
          cist FLOOR_FRAG cuts in the flags in front of it: MM_FLAGK 2) */
       if (it.grave && out.length > n0) out[out.length - 1].grave = it.grave;
+      /* (round 43 graft: and one whose ledger lies slid off beside it, on the
+         side away from the room's middle -- `slab`) */
+      if (it.slab && out.length > n0) out[out.length - 1].slab = 1;
       if (!it.keep && yields(it, out[out.length - 1])) out.pop();
     }
     return out.slice(0, MAX_PROPS);
@@ -2505,6 +2513,12 @@ export class Backdrop {
              the far kerb, and its pool must not lie over the grave's mouth in
              front of it: a narrow band along its foot) */
           ss2[i * 2 + 0] = p.w * 1.04; ss2[i * 2 + 1] = 0.30; st2[i] = 0.85;
+        } else if ((p.shape === 36 || p.shape === 37) && pal.regionKey === 'attic') {
+          /* (round 43 graft, J1 and J3: the draped chair and the trunks "given
+             a contact shadow" -- a dense pool a little forward of the foot,
+             as a chair's) */
+          so2[i * 3 + 2] = p.z + p.w * 0.16;
+          ss2[i * 2 + 0] = p.w * 1.30; ss2[i * 2 + 1] = p.w * 0.70; st2[i] = 1.15;
         } else if (p.shape === 52 || p.shape === 60) {
           /* (round 29 graft, judge 2: "give the bed, wardrobe and washstand
              contact shadows" -- a washstand's and a wardrobe's pool, dense) */
@@ -2689,12 +2703,24 @@ export class Backdrop {
        it) */
     {
       const gv = this.floorMat.uniforms.uGrave.value;
-      const gs = (pal.flagK === 2 && this.placed) ? this.placed.filter((p) => p.grave) : [];
+      const gs = ((pal.flagK === 2 || pal.flagK === 3) && this.placed) ? this.placed.filter((p) => p.grave) : [];
       for (let i = 0; i < gv.length; i++) {
         const p = gs[i];
         if (!p) { gv[i].set(0, 0, 0, 0); continue; }
-        gv[i].set(p.x + (p.grave[2] ?? 0), p.z + p.grave[1] + 0.20, p.grave[0], p.grave[1]);
+        /* (round 43 graft: grave[2], how far INWARD of the stone's quad the
+           grave lies -- the quad is centred between the headstone and the
+           ledge beside it, wfBones) */
+        gv[i].set(p.x - Math.sign(p.x || 1) * (p.grave[2] ?? 0), p.z + p.grave[1] + 0.20, p.grave[0], p.grave[1]);
       }
+      /* (round 43 graft: the slab slid off one of them, beside it on its
+         outer side and turned a little off its line -- uGrvSlab) */
+      const sl = this.floorMat.uniforms.uGrvSlab.value;
+      const ps = gs.slice(0, gv.length).find((p) => p.slab);
+      if (ps) {
+        const out = ps.x < 0 ? -1 : 1;
+        sl.set(ps.x - out * (ps.grave[2] ?? 0) + out * (ps.grave[0] + 0.15 + 0.12 + 0.42),
+               ps.z + ps.grave[1] + 0.30, 0.17 * out, 1);
+      } else sl.set(0, 0, 0, 0);
     }
 
     this.wallMat.uniforms.uSeed.value = 1 + rand() * 9;
