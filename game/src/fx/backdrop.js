@@ -948,6 +948,7 @@ export class Backdrop {
       uWinA: { value: new THREE.Vector4(0, 0, 1, -10) }, uWinB: { value: new THREE.Vector4(1, 2, 0.8, 1) },
       uWinL: { value: new THREE.Vector4(0, -1, 0, 0) }, uWinM: { value: new THREE.Vector4(0, 0, 0, 0) },
       uWinC: { value: new THREE.Color(0, 0, 0) },
+      uWinO: { value: new THREE.Vector2(0, 0) },
     });
 
     this.floorMat = new THREE.ShaderMaterial({
@@ -3073,7 +3074,27 @@ export class Backdrop {
         const L = new THREE.Vector3(dv[0], dv[1], dv[2]).normalize();
         f.uWinL.value.set(L.x, L.y, L.z, W.k);
         f.uWinC.value.set(W.color || '#9fb4e8');
-        if (W.at === 'oculus') {
+        f.uWinO.value.set(W.ox ?? 0, W.oy ?? 0);
+        if (W.at === 'bathhall') {
+          /* the bath hall's three round-headed windows, set out as its wall
+             program sets them out (MM_ROOMS 12, subject 38): their pitch,
+             sill, springing and half width, two mullions and a glazing bar
+             every half metre */
+          const sp = Math.min(5.8, (this._wallW ?? room.w ?? 21) * 0.28), hw = 1.45;
+          const spr = Math.min(5.0, (room.h ?? 7) - 0.34 - 0.40 - hw);
+          f.uWinA.value.set(-sp, sp, 3, -(room.d ?? 17));
+          f.uWinB.value.set(2.30, spr - 2.30, hw, 1);
+          f.uWinM.value.set(hw * 2 / 3, 0.50, W.bar ?? 0.035, 0);
+          f.uWinO.value.set(hw / 3, 0);
+        } else if (W.at === 'poolscreen') {
+          /* the pool hall's glazed screen over its gallery (subject 32): its
+             panes 0.84 across and 0.92 up, either side of the clock */
+          const co = (room.h ?? 7) - 0.34;
+          f.uWinA.value.set(0, 0, 1, -(room.d ?? 17));
+          f.uWinB.value.set(3.32, co - 3.32, 6.4, 0);
+          f.uWinM.value.set(0.84, 0.92, W.bar ?? 0.035, 0);
+          f.uWinO.value.set(0, 0.58);
+        } else if (W.at === 'oculus') {
           const gab = Math.max(0, Math.min((room.w ?? 13) * 0.42, (room.wallPad ?? 5) - 0.4));
           f.uWinA.value.set(W.x ?? 0, 0, 1, -(room.d ?? 16));
           f.uWinB.value.set((room.h ?? 2.4) + gab * 0.24 + 0.10, 0, Math.min(gab * 0.30, 1.55), 2);

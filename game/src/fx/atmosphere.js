@@ -1543,10 +1543,15 @@ export const REGIONS = {
                   second behind it, and one on the near left beside the Kid;
                   the towel horse with its stool and pail (a bath dealt with seed > 40) between them
                   on the wet tiles. */
-               { shape: 32, edge: 0.78, z: 1.7, tone: 0.97, scale: 1.06, free: true, keep: true, seed: 3.0 },
+               /* (round 43, CUPRITE: and each its own bath -- wgBtKind by seed: the
+                  big one at the right COPPER, a white one OVERTURNED on its rim
+                  behind it, the one by the Kid DRAPED under a sheet, a small
+                  ZINC hip bath and a second copper down the hall; both
+                  survey-8 judges: "a dozen identical cloned clawfoot tubs") */
+               { shape: 32, edge: 0.78, z: 1.7, tone: 0.97, scale: 1.06, free: true, keep: true, seed: 17.3 },
                { shape: 32, edge: 0.47, z: -3.4, tone: 0.95, keep: true, free: true, seed: 41.0, hM: 1.25, wM: 1.90 },
-               { shape: 32, edge: 0.80, z: -0.9, tone: 0.95 },
-               { shape: 32, edge: 0.15, z: 1.0, tone: 0.95, scale: 1.08, free: true, keep: true, seed: 7.0 },
+               { shape: 32, edge: 0.66, z: -2.9, tone: 0.95, keep: true, seed: 15.4, scale: 0.94 },
+               { shape: 32, edge: 0.15, z: 1.0, tone: 0.95, scale: 1.08, free: true, keep: true, seed: 16.3 },
                /* and on the near floor itself, in eye metres (across: + is
                   the frame's left from this lens): a third bath cropped by
                   the frame's left edge, and a second towel horse with its
@@ -1559,10 +1564,10 @@ export const REGIONS = {
                   a bath dealt with seed 20-40 is the towel bench, wgTwSD) at
                   the head of the duckboard, under the hand in a fight */
                { shape: 32, ahead: 4.75, across: 0.35, tone: 0.97, keep: true, hand: true, seed: 24.0, hM: 1.00, wM: 1.50 },
-               { shape: 32, edge: 0.88, z: -3.8, tone: 0.93 },
+               { shape: 32, edge: 0.88, z: -3.8, tone: 0.93, seed: 18.4, scale: 0.80 },
                /* and two more down the hall, on the left and the middle,
                   where the files have room for them */
-               { shape: 32, x: -3.4, z: -7.4, tone: 0.92, free: true },
+               { shape: 32, x: -3.4, z: -7.4, tone: 0.92, free: true, seed: 17.8, scale: 0.90 },
                { shape: 32, x: 1.8, z: -10.2, tone: 0.90, free: true },
              ] },
     /* ROUND 39: THE NEAR FLOOR, wet. Its tiles calm and clean (no milky
@@ -1593,7 +1598,9 @@ export const REGIONS = {
       { kind: 'warm', x: 3.6, y: 1.20, z: -5.4, color: '#e2b271', intensity: 4.91, radius: 4.47 },
       { kind: 'cold', x: 6.6, y: 3.20, z: -9.6, color: '#92c5e4', intensity: 1.55, radius: 8.0 },
     ],
-    shafts: { count: 4, spread: 16, y: 7.8, z: -11.0, angle: 0.24, width: 2.6, intensity: 0.43, pool: 1.8 },
+    /* (round 43: pool 1.8 -> 0 -- the shafts' pools were the "round spotlight
+       discs" on the tiles; the moon lies on them as the windows now, pal.win) */
+    shafts: { count: 4, spread: 16, y: 7.8, z: -11.0, angle: 0.24, width: 2.6, intensity: 0.43, pool: 0 },
     bloom: 0.95,
   },
 
@@ -2888,7 +2895,13 @@ export const ROOM_KINDS = {
       /* (graft: the files of baths start a bay further in, so none stands
          behind the Kid -- "move the dark green tub and the palm out from
          behind the Kid at left") */
-      { subject: 'baths', layout: 'colonnade', file: 32, fileX: 0.60, fileZ0: -4.6 },
+      /* (round 43, CUPRITE: both survey-8 judges -- "the window light landing
+         as round spotlight discs". The moon comes in through the hall's three
+         great windows low and long, and lies on the wet tiles as the
+         WINDOWS -- their round heads, mullions and glazing bars -- in three
+         long streaks from the end wall to your feet: pal.win) */
+      { subject: 'baths', layout: 'colonnade', file: 32, fileX: 0.60, fileZ0: -4.6,
+        win: { at: 'bathhall', dir: [0.22, -0.30, 1.0], k: 9.0, color: '#a8c4e0' } },
       /* THE STEAM ROOM -- small, low and hot, tiled to its vault, an arcade of
          niches with their basins and taps over two stepped benches, and full
          of steam; seen from the lowest bench. Round 14, both judges: the loose
@@ -2908,12 +2921,17 @@ export const ROOM_KINDS = {
                   duckboard, cropped by the frame, and the towel horse with
                   its stool and pail between them) */
                { shape: 32, ahead: 3.4, across: 3.3, tone: 0.97, scale: 1.12, keep: true, hand: true, seed: 13.0 },
-               { shape: 32, ahead: 3.9, across: -3.4, tone: 0.97, scale: 1.08, keep: true, hand: true, seed: 14.0 },
+               { shape: 32, ahead: 3.9, across: -3.4, tone: 0.97, scale: 1.08, keep: true, hand: true, seed: 17.5 },
                { shape: 32, ahead: 5.4, across: 1.4, tone: 0.96, keep: true, seed: 43.0, hM: 1.25, wM: 1.90 },
                /* (round 39 graft: and the towel bench with its pail across
                   from the horse, under the hand in a fight) */
                { shape: 32, ahead: 4.6, across: -1.7, tone: 0.97, keep: true, hand: true, seed: 26.0, hM: 1.00, wM: 1.50 }],
         lampsView: [{ i: 1, x: 0.0, z: 0.86, y: 0.55, color: '#ff7a36', k: 0.50, radius: 3.6 }],
+        /* (round 43: and the stove's red glow carried down the wet tiles to
+           your feet -- the long streak a fire throws along a wet floor toward
+           the eye -- so the near tiles are lit glaze and not a black field) */
+        nearFloor: { pool: { ahead: 3.4, across: 0.0, rAlong: 4.2, rAcross: 1.4, k: 4.5, color: '#ec8a52' },
+                     pool2: { ahead: 2.0, across: 0.0, rAlong: 1.8, rAcross: 3.6, k: 1.6, color: '#7fb4dc' } },
         vantage: { at: 'among', low: 0.66, fwd: 1.4, pitch: 3.0, off: 0.06, wide: 3, frame: 'steam' } },
       /* THE INDOOR POOL -- round 14, both judges' first instruction: "a sunk
          rectangular basin with a proud stone coping, a clear step down to the
@@ -2925,7 +2943,7 @@ export const ROOM_KINDS = {
          near end, high enough to look down INTO it. */
       /* (graft: and a bath at the pool's corner, ULTRAMARINE's) */
       { subject: 'pool', layout: 'colonnade', file: 6, fileX: 0.74, swap: [[32, 2]],
-        near: [{ shape: 32, x: 7.4, z: -2.6, tone: 0.95, free: true },
+        near: [{ shape: 32, x: 7.4, z: -2.6, tone: 0.95, free: true, seed: 16.6 },
                /* (round 39: the towel horse on the coping at the near
                   right, and a bath on the near left) */
                { shape: 32, ahead: 6.3, across: -4.5, tone: 0.97, keep: true, seed: 44.0, hM: 1.25, wM: 1.90 },
@@ -2944,6 +2962,9 @@ export const ROOM_KINDS = {
            glass (fittingFor), and without it the fountain niche and the clock
            at the end of a 21 m hall were past the reach of every lamp in it */
         lamps: [{ i: 2, x: 0.0, z: 0.86 }],
+        /* (round 43: and the moon through the glazed screen over the gallery,
+           its panes laid long on the apron and the water) */
+        win: { at: 'poolscreen', dir: [-0.12, -0.40, 1.0], k: 5.0, color: '#a8c4e0' },
         vantage: { at: 'above', lift: 0.68, rise: 2.8, drop: 1.05, fwd: 0.2, ahead: 7.0 } },
       /* THE PIPE GALLERY -- a long, low service passage: the mains at two
          heights down both tiled walls with their valves and gauges, the

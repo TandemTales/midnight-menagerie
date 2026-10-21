@@ -14420,6 +14420,7 @@ vec3 grvFloor(vec3 alb, vec3 P, float mp){
    The wing's floor alone carries it. */
 uniform vec4 uWinA, uWinB, uWinL, uWinM;
 uniform vec3 uWinC;
+uniform vec2 uWinO;     // the bars' set-out: where across and up the window the first bar of each pitch falls
 float winLit(vec3 P){
   vec3 L = uWinL.xyz;
   if (uWinL.w <= 0.0 || L.y > -0.01) return 0.0;
@@ -14462,8 +14463,8 @@ float winLit(vec3 P){
       float sp = abs(fract(an/0.7854 + 0.5) - 0.5)*0.7854*r + step(r, hw*0.30)*1e3;
       m = min(sp, min(abs(r - hw*0.30), abs(r - hw*0.68)));
     } else {
-      float bx = uWinM.x > 0.0 ? abs(fract(bq.x/uWinM.x + 0.5) - 0.5)*uWinM.x : 1e3;
-      float by = uWinM.y > 0.0 ? abs(fract(bq.y/uWinM.y + 0.5) - 0.5)*uWinM.y : 1e3;
+      float bx = uWinM.x > 0.0 ? abs(fract((bq.x - uWinO.x)/uWinM.x + 0.5) - 0.5)*uWinM.x : 1e3;
+      float by = uWinM.y > 0.0 ? abs(fract((bq.y - uWinO.y)/uWinM.y + 0.5) - 0.5)*uWinM.y : 1e3;
       m = min(bx, by);
     }
     lit *= 1.0 - 0.92*(1.0 - smoothstep(bw - pen*0.7, bw + pen*0.7, m));
@@ -16889,6 +16890,23 @@ void main(){
     float gro = 1.0 - smoothstep(0.009, 0.009 + gpx*1.2, min(abs(fract(tq.x + 0.5) - 0.5), abs(fract(tq.y + 0.5) - 0.5))*0.78);
     gro *= mmLod(0.78, gpx);
     tile = mix(tile, vec3(0.020, 0.024, 0.028), gro*0.85);
+    /* ROUND 43 (CUPRITE): THE TILES SHARPENED (survey-8 judge 2: "sharpen
+       the floor tiles"). Each square of the checker is laid in nine small
+       tiles, as a bath hall's floor is -- each its own glaze a shade off its
+       neighbours, a little domed so its middle holds more of the light, the
+       grout between them a crisp pen line -- going to the square's mean
+       where a tile packs under a few pixels */
+    {
+      vec2 tq3 = w/0.26;
+      vec2 ti3 = floor(tq3);
+      float lod3 = mmLod(0.26, gpx);
+      float g3 = mmHash21(ti3 + 9.1);
+      vec2 tf3 = abs(fract(tq3) - 0.5);
+      tile *= mix(1.0, (0.86 + 0.24*g3)*(0.92 + 0.14*smoothstep(0.50, 0.15, max(tf3.x, tf3.y))), lod3);
+      float gro3 = 1.0 - smoothstep(0.005, 0.005 + gpx*1.1, min(0.5 - tf3.x, 0.5 - tf3.y)*0.26);
+      tile = mix(tile, vec3(0.018, 0.022, 0.026), gro3*0.72*lod3);
+      gro = max(gro, gro3*lod3*0.8);
+    }
     alb = tile*Lf*4.2;
     /* standing water: a slow field thresholded with a one-pixel edge */
     float pf = mmNoise(w*0.34 + 7.1)*0.75 + 0.25*sin(w.x*1.7 + w.y*1.1 + 2.0)*0.5 + 0.125;
@@ -16989,10 +17007,15 @@ void main(){
                        max(clamp(0.5 + (ir - abs(R.y - spr))/rpx, 0.0, 1.0),
                            clamp(0.5 + (ir*0.7 - abs(fract(atan(R.y - spr, wx)/0.3927 + 0.5) - 0.5)*0.3927*r)/rpx, 0.0, 1.0)*head*step(0.22, r)))));
           pane = inW*(1.0 - 0.90*iron)*(0.62 + 0.38*smoothstep(SILL, spr + HW, R.y));
+          /* (round 43: the end wall's three a step fainter in the film --
+             seen only by their round heads, both survey-8 judges took them
+             for "round spotlight discs"; the moon itself lies on the tiles
+             through them now, winLit) */
+          pane *= 0.45;
           hiR = inW;
           /* the moon behind the middle one, where the wall hangs it */
           float mr = length(vec2(R.x + 0.55, (R.y - spr - HW*0.20)*0.9));
-          moonR = (clamp(0.5 + (0.19 - mr)/rpx, 0.0, 1.0) + 0.40*exp(-mr*2.8))*inW*step(abs(wi), 0.5);
+          moonR = (clamp(0.5 + (0.19 - mr)/rpx, 0.0, 1.0) + 0.40*exp(-mr*2.8))*inW*step(abs(wi), 0.5)*0.55;
         }
         /* the gas globes on the piers between, each a lit ball */
         float pX = (floor(R.x/sp) + 0.5)*sp;
@@ -17696,7 +17719,11 @@ void main(){
      (0.575 of the frame, ndc -0.15), so nobody's floor is taken. */
 #if MM_RUGK == 8 || (MM_PAT == 1 && MM_R25W == 0)
   /* (round 43: the moon through the window, laid on the floor -- winLit) */
-  if (uIsCeiling < 0.5 && uWinL.w > 0.0) col += alb * uWinC * uWinL.w * winLit(vWorld);
+  /* (on the black tiles as on the cream: the moon lies in the wet film on
+     a black glaze as much as it lights a pale one, so the window is drawn
+     whole across the checker and not only in its pale squares) */
+  if (uIsCeiling < 0.5 && uWinL.w > 0.0)
+    col += max(alb, vec3(mmLum(alb))*0.55 + vec3(0.010, 0.012, 0.016)) * uWinC * uWinL.w * winLit(vWorld);
 #endif
   if (uNearDark > 0.0) {
     vec2 ndc = vClip.xy / max(vClip.z, 1e-4);
@@ -22651,6 +22678,38 @@ float wgGtSD(vec2 q){
 
 /* ── 39 THE ROLL-TOP BATH, 40 THE ZINC TUB ───────────────────────────── */
 float wgBtSide(float seed){ return mmHash11(seed*6.37 + 0.5) < 0.5 ? -1.0 : 1.0; }
+/* ROUND 43 (CUPRITE): THE BATHS ARE NOT ONE BATH. Both survey-8 judges: "a
+   dozen identical cloned clawfoot tubs, flat cream"; "vary the tubs (sizes,
+   some draped, one overturned), draw their claw feet crisply". What a bath
+   is, by its seed: 0 a white enamel roll-top, 1 a roll-top painted outside
+   (bottle green, oxblood, black), 2 a COPPER bath, hammered and gone dark
+   with use, 5 a galvanised ZINC hip bath on iron feet, 3 a bath OVERTURNED
+   on its rim to drain, its belly and its feet in the air, 4 a bath DRAPED
+   under a canvas sheet, only its feet showing. One placed by hand names
+   its kind by its seed (15-16 overturned, 16-17 draped, 17-18 copper, 18-19.5
+   zinc); one dealt is a roll-top, painted or copper by its hash. */
+float wgBtKind(float seed){
+  if (seed >= 15.0 && seed < 16.0) return 3.0;
+  if (seed >= 16.0 && seed < 17.0) return 4.0;
+  if (seed >= 17.0 && seed < 18.0) return 2.0;
+  if (seed >= 18.0 && seed < 19.5) return 5.0;
+  float h = mmHash11(seed*7.3 + 0.2);
+  return h < 0.36 ? 0.0 : (h < 0.66 ? 1.0 : 2.0);
+}
+/* a claw foot: the leg swept out from under the belly to a ball gripped in
+   three toes -- crisp, every part its own small form */
+float wgBtFoot(vec2 q, float sx){
+  float t0;
+  float leg = wgSegT(q, vec2(sx*0.62, 0.23), vec2(sx*0.70, 0.085), 0.058, 0.044, t0);
+  float ball = length(q - vec2(sx*0.705, 0.042)) - 0.044;
+  float toes = 1e3;
+  for (int k = 0; k < 3; k++){
+    float a = (float(k) - 1.0)*0.80;
+    vec2 c = vec2(sx*0.705, 0.050) + vec2(sin(a), cos(a)*0.6)*0.046;
+    toes = min(toes, length((q - c)/vec2(1.0, 1.4)) - 0.020);
+  }
+  return min(min(leg, ball), toes);
+}
 float wgBtBody(vec2 q){
   float xs = abs(q.x) - 0.11*clamp((q.y - 0.17)/0.55, 0.0, 1.0);
   return mmBox(vec2(xs, q.y - 0.450), vec2(0.790, 0.280), 0.20);
@@ -22761,6 +22820,33 @@ float wgTwSD(vec2 m, float seed){
   return min(min(min(seat, legs), min(rail, stack)), min(hang, min(pail, hnd)));
 }
 float wgBtSD(vec2 q, float seed){
+  float bk = wgBtKind(seed);
+  if (bk > 2.5 && bk < 4.5) {
+    float t0;
+    if (bk < 3.5) {
+      /* overturned on its rim: the roll at the floor, the belly up, the
+         feet in the air */
+      vec2 f = vec2(q.x, 0.90 - q.y);
+      float d = min(wgBtBody(f), wgEll(f - vec2(0.0, 0.755), vec2(0.930, 0.135)));
+      for (int i = 0; i < 2; i++){
+        float sx = float(i)*2.0 - 1.0;
+        d = min(d, wgBtFoot(f, sx));
+        d = min(d, wgSegT(f, vec2(sx*0.52, 0.28), vec2(sx*0.55, 0.12), 0.050, 0.036, t0));
+      }
+      return d;
+    }
+    /* under a sheet: the cloth over the whole bath, falling to a hem a hand
+       over the tiles, the claw feet under it */
+    float hemD = 0.12 + 0.03*sin(q.x*11.0 + seed*3.0) + 0.015*sin(q.x*29.0 + seed);
+    float shp = mmSmin(wgBtBody(q) - 0.05, wgEll(q - vec2(0.0, 0.765), vec2(0.985, 0.165)), 0.08);
+    float skirt = max(abs(q.x) - 0.92 - 0.035*sin(q.y*21.0 + q.x*4.0 + seed), max(hemD - q.y, q.y - 0.50));
+    float d = min(shp, skirt);
+    for (int i = 0; i < 2; i++){
+      float sx = float(i)*2.0 - 1.0;
+      d = min(d, max(wgBtFoot(q, sx), q.y - 0.16));
+    }
+    return d;
+  }
   float d = wgBtBody(q);
   d = min(d, wgEll(q - vec2(0.0, 0.755), vec2(0.930, 0.135)));
   if (wgBtSteams(seed) > 0.5) d = min(d, wgBtSteam(q, seed));
@@ -22770,8 +22856,7 @@ float wgBtSD(vec2 q, float seed){
   float t0;
   for (int i = 0; i < 2; i++){
     float sx = float(i)*2.0 - 1.0;
-    d = min(d, wgSegT(q, vec2(sx*0.63, 0.24), vec2(sx*0.69, 0.055), 0.070, 0.046, t0));
-    d = min(d, wgEll(q - vec2(sx*0.70, 0.040), vec2(0.070, 0.040)));
+    d = min(d, wgBtFoot(q, sx));
     d = min(d, wgSegT(q, vec2(sx*0.52, 0.28), vec2(sx*0.55, 0.12), 0.050, 0.036, t0));
   }
   /* its taps: two pillars and a spout at the plain end */
@@ -23822,10 +23907,88 @@ vec3 wgPaint(vec2 m, vec2 msz, float shape, float seed, float px, float lum,
   if (shape < 39.5) {
     /* ---- THE BATH ---- */
     float pk = mmHash11(seed*7.3 + 0.2);
-    vec3 outside = pk < 0.50 ? vec3(0.80, 0.78, 0.70) : (pk < 0.70 ? vec3(0.14, 0.26, 0.20)
-                 : (pk < 0.86 ? vec3(0.42, 0.12, 0.14) : vec3(0.08, 0.08, 0.09)));
+    float bk = wgBtKind(seed);
+    float ph = mmHash11(seed*3.17 + 0.6);
+    /* (round 43: its kind -- wgBtKind -- says its metal and its paint) */
+    vec3 painted = ph < 0.40 ? vec3(0.14, 0.26, 0.20) : (ph < 0.75 ? vec3(0.42, 0.12, 0.14) : vec3(0.08, 0.08, 0.09));
+    vec3 outside = bk < 0.5 ? vec3(0.80, 0.78, 0.70) : painted;
     vec3 enamel = vec3(0.92, 0.92, 0.88);
-    vec3 gilt = pk < 0.86 ? vec3(0.84, 0.62, 0.27) : vec3(0.12, 0.11, 0.11);
+    vec3 gilt = (bk > 0.5 && bk < 1.5 && ph > 0.75) ? vec3(0.12, 0.11, 0.11) : vec3(0.84, 0.62, 0.27);
+    float hammer = 0.0;
+    if (bk > 1.5 && bk < 2.5) {
+      /* COPPER, hammered: the dimples of the planishing hammer catching the
+         light, gone dark in the hollows, a brighter sheen on the swell */
+      vec2 hq = q*vec2(14.0, 16.0);
+      vec2 hi = floor(hq), hf = fract(hq) - 0.5 - (mmHash22(hi + seed) - 0.5)*0.5;
+      hammer = (0.5 - length(hf))*mmLod(0.07, qpx);
+      outside = vec3(0.44, 0.20, 0.10)*(0.90 + 0.40*hammer) + vec3(0.07, 0.035, 0.015)*mmNoise(q*5.0 + seed);
+      enamel = vec3(0.66, 0.38, 0.22);
+      gilt = vec3(0.84, 0.62, 0.30);
+    } else if (bk > 4.5) {
+      /* ZINC, galvanised: grey spangle, a dark seam, plain black iron feet */
+      float spg = mmHash21(floor(q*vec2(22.0, 26.0)) + seed);
+      outside = vec3(0.44, 0.46, 0.46)*(0.86 + 0.22*spg*mmLod(0.05, qpx));
+      enamel = vec3(0.56, 0.58, 0.57);
+      gilt = vec3(0.10, 0.10, 0.11);
+    }
+    if (bk > 2.5 && bk < 4.5) {
+      float t0;
+      vec3 feetC = gilt*E*1.4;
+      if (bk < 3.5) {
+        /* OVERTURNED ON ITS RIM: its painted belly up and lit from above,
+           the white roll at the tiles, the drain's hole, the feet in the air */
+        vec2 f = vec2(q.x, 0.90 - q.y);
+        float bodyO = wgBtBody(f);
+        float rimO = wgEll(f - vec2(0.0, 0.755), vec2(0.930, 0.135));
+        float xnO = clamp(q.x/0.90, -1.0, 1.0);
+        col = painted*E*1.55*(0.50 + 0.60*wgRound(xnO))*(0.80 + 0.35*smoothstep(-0.5, 0.8, kq*xnO));
+        col *= 0.55 + 0.60*smoothstep(0.10, 0.72, q.y);
+        float onRim = step(rimO, 0.0)*step(0.0, bodyO);
+        col = mix(col, enamel*E*1.7*(0.55 + 0.45*smoothstep(0.0, 0.15, q.y)), onRim);
+        float drain = length(q - vec2(0.30*wgBtSide(seed), 0.66)) - 0.040;
+        col = mix(col, vec3(0.02), step(drain, 0.0)*step(bodyO, 0.0));
+        float feetO = 1e3;
+        for (int i = 0; i < 2; i++){
+          float sx = float(i)*2.0 - 1.0;
+          feetO = min(feetO, wgBtFoot(f, sx));
+          feetO = min(feetO, wgSegT(f, vec2(sx*0.52, 0.28), vec2(sx*0.55, 0.12), 0.050, 0.036, t0));
+        }
+        float onFO = step(feetO, 0.0)*step(0.0, bodyO);
+        col = mix(col, feetC*(0.7 + 0.5*smoothstep(0.60, 0.90, q.y)), onFO);
+        ink = max(ink, mmInkP(bodyO, qpx, 1.2)*0.9);
+        ink = max(ink, mmInkP(rimO, qpx, 1.2)*step(q.y, 0.30)*0.9);
+        ink = max(ink, mmInkP(feetO, qpx, 1.1)*0.85);
+        ink = max(ink, mmInkP(drain, qpx, 1.0)*0.8);
+        moon = step(bodyO, 0.0)*smoothstep(0.45, 0.75, q.y)*0.8;
+        return col;
+      }
+      /* UNDER A SHEET: canvas thrown over the whole of it -- the roll and
+         the belly still its shape under the cloth -- falling in folds to a
+         hem a hand over the tiles, the claw feet standing out under it */
+      float hemD = 0.12 + 0.03*sin(q.x*11.0 + seed*3.0) + 0.015*sin(q.x*29.0 + seed);
+      float shp = mmSmin(wgBtBody(q) - 0.05, wgEll(q - vec2(0.0, 0.765), vec2(0.985, 0.165)), 0.08);
+      float skirt = max(abs(q.x) - 0.92 - 0.035*sin(q.y*21.0 + q.x*4.0 + seed), max(hemD - q.y, q.y - 0.50));
+      float sheet = min(shp, skirt);
+      float fold = 0.5 + 0.5*cos(q.x*15.0 + 1.8*sin(q.y*4.0 + seed) + seed);
+      float drape = smoothstep(0.72, 0.20, q.y);
+      float xnD = clamp(q.x/0.98, -1.0, 1.0);
+      vec3 canv = vec3(0.52, 0.50, 0.45)*E*1.7*(0.50 + 0.50*mix(0.75, fold, drape))
+                * (0.45 + 0.65*wgRound(xnD))*(0.66 + 0.44*smoothstep(0.10, 0.90, q.y))
+                * (0.85 + 0.25*smoothstep(-0.8, 0.8, kq*q.x));
+      float onSh = step(sheet, 0.0);
+      float feetD = 1e3;
+      for (int i = 0; i < 2; i++){
+        float sx = float(i)*2.0 - 1.0;
+        feetD = min(feetD, max(wgBtFoot(q, sx), q.y - 0.16));
+      }
+      col = mix(vec3(0.0), feetC*(0.6 + 0.5*smoothstep(0.0, 0.14, q.y)), step(feetD, 0.0));
+      col = mix(col, canv, onSh);
+      ink = max(ink, mmInkP(sheet, qpx, 1.3)*0.95);
+      ink = max(ink, mmInkP(feetD, qpx, 1.1)*0.85*(1.0 - onSh));
+      ink = max(ink, mmInkP(abs(fract((q.x*15.0 + 1.8*sin(q.y*4.0 + seed) + seed)/6.2832) - 0.5) - 0.47, qpx*3.0, 0.8)*onSh*drape*0.55);
+      moon = onSh*smoothstep(0.70, 0.95, q.y)*0.9;
+      return col;
+    }
     float body = wgBtBody(q);
     float onBody = step(body, 0.0);
     /* the outside: round in section, lit on the key's side, its belly in
@@ -23833,6 +23996,17 @@ vec3 wgPaint(vec2 m, vec2 msz, float shape, float seed, float px, float lum,
     float xn = clamp(q.x/0.90, -1.0, 1.0);
     col = outside*E*1.55*(0.50 + 0.60*wgRound(xn))*(0.80 + 0.35*smoothstep(-0.5, 0.8, kq*xn));
     col *= 0.62 + 0.48*smoothstep(0.18, 0.66, q.y);
+    if (bk > 1.5 && bk < 2.5) {
+      /* (round 43) copper is a METAL: a dark core where the belly turns away,
+         a hot streak down the swell toward the key, the hammer's dimples
+         each catching it, verdigris where the bath meets its own wet foot */
+      float rr = wgRound(xn);
+      col = outside*E*1.55*(0.22 + 0.80*rr*rr)*(0.70 + 0.30*smoothstep(-0.6, 0.6, kq*xn));
+      float streak = pow(wgRound(clamp(xn - 0.38*kq, -1.0, 1.0)), 10.0);
+      col += vec3(1.00, 0.72, 0.44)*E*2.6*streak*(0.6 + 0.6*hammer);
+      col *= 0.60 + 0.50*smoothstep(0.18, 0.66, q.y);
+      col = mix(col, vec3(0.20, 0.36, 0.30)*E*1.3, smoothstep(0.30, 0.18, q.y)*smoothstep(0.45, 0.75, mmNoise(q*vec2(7.0, 18.0) + seed))*0.7);
+    }
     /* the roll top seen from above: a white rim round the opening */
     float rimE = wgEll(q - vec2(0.0, 0.755), vec2(0.930, 0.135));
     float inner = wgEll(q - vec2(0.0, 0.762), vec2(0.850, 0.098));
@@ -23873,15 +24047,14 @@ vec3 wgPaint(vec2 m, vec2 msz, float shape, float seed, float px, float lum,
     float feet = 1e3, t0;
     for (int i = 0; i < 2; i++){
       float sx = float(i)*2.0 - 1.0;
-      feet = min(feet, wgSegT(q, vec2(sx*0.63, 0.24), vec2(sx*0.69, 0.055), 0.070, 0.046, t0));
-      feet = min(feet, wgEll(q - vec2(sx*0.70, 0.040), vec2(0.070, 0.040)));
+      feet = min(feet, wgBtFoot(q, sx));
       feet = min(feet, wgSegT(q, vec2(sx*0.52, 0.28), vec2(sx*0.55, 0.12), 0.050, 0.036, t0));
     }
     float onF = step(feet, 0.0)*(1.0 - onBody);
     col = mix(col, gilt*E*1.4*(0.6 + 0.5*smoothstep(0.0, 0.2, q.y)), onF);
     /* toes on the ball */
     float toe = mmInkP(abs(fract((abs(q.x) - 0.70)/0.035 + 0.5) - 0.5)*0.035, qpx, 1.0)*step(q.y, 0.06)*step(abs(abs(q.x) - 0.70), 0.06);
-    ink = max(ink, toe*0.7 + mmInkP(feet, qpx, 1.0)*0.8);
+    ink = max(ink, (toe*0.7 + mmInkP(feet, qpx, 1.0)*0.8)*(1.0 - onBody));
     float sd = wgBtSide(seed);
     vec2 tq = vec2(q.x*sd - 0.80, q.y);
     float taps = min(min(mmBox(tq - vec2(0.0, 0.845), vec2(0.020, 0.090), 0.006), mmBox(tq - vec2(-0.10, 0.845), vec2(0.020, 0.090), 0.006)),
