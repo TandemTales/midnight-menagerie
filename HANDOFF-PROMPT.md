@@ -221,6 +221,16 @@ window light, sunken graves in the Crypt. Battery 106 gates, only the sprites
 halo red; the other 13 wings pixel-identical. **NOW: its graft** (`GRAFT-r43.md`,
 worktree C:/UILOOP/r43/wt/r43-graft), then a PAIRED check of the four wings
 vs survey 8 before calling it done.
+**ROUND 43'S GRAFT IS MERGED (`86948bbd`):** paired 7 of 8 rooms better than
+survey 8 (Hedge split 1-1), 7-3 against CUPRITE alone. Region gates,
+link-queue, seam, chrome green on dev. Two regressions both G0 judges named:
+the Bathhouse's front tub lost its claw feet to a flat plinth (+ a clipped
+drape, shadow streaks), the Hedge's new crowns streak and notch like seams.
+**NOW: a touch-up** (worktree C:/UILOOP/r43/touchup/wt, fix/r43-touchup),
+paired against the graft's parent before merging; then SURVEY 9 or round 44
+(survey 8's next: the reused diamond rug in Study/Nursery/Kitchens, the
+Greenhouse, the Graveyard, the Pumpkin Grounds' black band, the boards' web
+list rows on rest/event/gameover/shop).
 
 **ROUND 33 AND ITS GRAFT ARE MERGED, VERIFIED AND PUSHED (2026-10-16):**
 graft `9d008119`. COBALT +1.59 (`531126e4`): no running line under 11 px at
