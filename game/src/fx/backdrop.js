@@ -553,7 +553,8 @@ export const PROP_SHAPES = {
  */
 /* (round 41 graft: the wings whose props are drawn with LABRADORITE's pen
    line -- PROP_FRAG's MM_PEN; ROOM_VARIANTS' prop rows carry it) */
-export const PEN_WINGS = ['hedge', 'kennels', 'sleeping', 'passages'];
+/* (round 43: and the Attic, the Crypt and the Bathhouse -- "ink, not grain") */
+export const PEN_WINGS = ['hedge', 'kennels', 'sleeping', 'passages', 'attic', 'crypt', 'bathhouse'];
 
 export const ROOM_VARIANTS = [
   { mat: 'wall', defines: { MM_ROOMS: 14, MM_R25W: 0, MM_ARCH: 4, MM_SUBJ: 40 }, wings: ['attic'] },
@@ -601,10 +602,10 @@ export const ROOM_VARIANTS = [
   { mat: 'wall', defines: { MM_ROOMS: 18, MM_R25W: 0, MM_ARCH: 0, MM_SUBJ: 47 }, wings: ['sleeping'] },
   { mat: 'wall', defines: { MM_ROOMS: 19, MM_R25W: 0, MM_ARCH: 0, MM_SUBJ: 48 }, wings: ['study'] },
   { mat: 'wall', defines: { MM_ROOMS: 19, MM_R25W: 0, MM_ARCH: 0, MM_SUBJ: 49 }, wings: ['study'] },
-  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 2, MM_SHM0: 8667424, MM_SHM1: 16864, MM_SHM2: 0, MM_PEN: 0 }, wings: ['attic'] },
+  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 2, MM_SHM0: 8667424, MM_SHM1: 16864, MM_SHM2: 0, MM_PEN: 1 }, wings: ['attic'] },
   { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 4, MM_SHM0: 4194384, MM_SHM1: 0, MM_SHM2: 790560, MM_PEN: 0 }, wings: ['ballroom'] },
-  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 2, MM_SHM0: 8388932, MM_SHM1: 4, MM_SHM2: 0, MM_PEN: 0 }, wings: ['bathhouse'] },
-  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 3, MM_SHM0: 32832, MM_SHM1: 939524096, MM_SHM2: 0, MM_PEN: 0 }, wings: ['crypt'] },
+  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 2, MM_SHM0: 8388932, MM_SHM1: 4, MM_SHM2: 0, MM_PEN: 1 }, wings: ['bathhouse'] },
+  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 3, MM_SHM0: 32832, MM_SHM1: 939524096, MM_SHM2: 0, MM_PEN: 1 }, wings: ['crypt'] },
   { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 1, MM_WINGS: 4, MM_SHM0: 79691856, MM_SHM1: 0, MM_SHM2: 508, MM_PEN: 0 }, wings: ['foyer'] },
   { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 5, MM_SHM0: 8388608, MM_SHM1: 0, MM_SHM2: 11776, MM_PEN: 0 }, wings: ['graveyard'] },
   { mat: 'prop', defines: { MM_STONES: 1, MM_BUST: 0, MM_WINGS: 6, MM_SHM0: 41943104, MM_SHM1: 0, MM_SHM2: 1294336, MM_PEN: 0 }, wings: ['greenhouse'] },
@@ -619,7 +620,7 @@ export const ROOM_VARIANTS = [
   { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 1, MM_SHM0: 142606336, MM_SHM1: 0, MM_SHM2: 67108864, MM_PEN: 0 }, wings: ['pumpkin'] },
   { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 3, MM_SHM0: 4210689, MM_SHM1: 74645504, MM_SHM2: 1, MM_PEN: 1 }, wings: ['sleeping'] },
   { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 3, MM_SHM0: 4194304, MM_SHM1: 125829120, MM_SHM2: 268435456, MM_PEN: 0 }, wings: ['study'] },
-  { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 0, MM_PAT: 0, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0, MM_RUGK: 0 }, wings: ['attic', 'heart', 'nursery', 'study'] },
+  { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 0, MM_PAT: 0, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0, MM_RUGK: 8 }, wings: ['attic'] },
   { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 2, MM_PAT: 1, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0, MM_RUGK: 0 }, wings: ['ballroom'] },
   { mat: 'floor', defines: { MM_FLOORX: 1, MM_R25W: 0, MM_PAT: 10, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0, MM_RUGK: 0 }, wings: ['ballroom'] },
   { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 0, MM_PAT: 1, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0, MM_RUGK: 0 }, wings: ['bathhouse'] },
@@ -629,6 +630,7 @@ export const ROOM_VARIANTS = [
   { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 1, MM_PAT: 2, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0, MM_RUGK: 0 }, wings: ['foyer'] },
   { mat: 'floor', defines: { MM_FLOORX: 1, MM_R25W: 4, MM_PAT: 11, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0, MM_RUGK: 0 }, wings: ['graveyard'] },
   { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 3, MM_PAT: 2, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0, MM_RUGK: 0 }, wings: ['greenhouse'] },
+  { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 0, MM_PAT: 0, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0, MM_RUGK: 0 }, wings: ['heart', 'nursery', 'study'] },
   { mat: 'floor', defines: { MM_FLOORX: 1, MM_R25W: 0, MM_PAT: 13, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0, MM_RUGK: 0 }, wings: ['hedge'] },
   { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 0, MM_PAT: 2, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0, MM_RUGK: 6 }, wings: ['kennels'] },
   { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 0, MM_PAT: 2, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0, MM_RUGK: 7 }, wings: ['kennels'] },
@@ -940,6 +942,12 @@ export class Backdrop {
          variant reads it): world x and z of its centre, its half-width and
          half-depth in metres; z = 0, none */
       uRug: { value: new THREE.Vector4(0, 0, 0, 0) },
+      /* (round 43: the moon through a window, laid on the floor as the
+         window's own shape -- pal.win; read by the Attic's and the
+         Bathhouse's floors only. uWinL.w 0 = none) */
+      uWinA: { value: new THREE.Vector4(0, 0, 1, -10) }, uWinB: { value: new THREE.Vector4(1, 2, 0.8, 1) },
+      uWinL: { value: new THREE.Vector4(0, -1, 0, 0) }, uWinM: { value: new THREE.Vector4(0, 0, 0, 0) },
+      uWinC: { value: new THREE.Color(0, 0, 0) },
     });
 
     this.floorMat = new THREE.ShaderMaterial({
@@ -3050,6 +3058,37 @@ export class Backdrop {
         f.uNearPool2C.value.set(q.color ?? '#ffb36a').multiplyScalar(q.k ?? 0.6);
       } else {
         f.uNearPool2C.value.setRGB(0, 0, 0);
+      }
+    }
+    /* (round 43, CUPRITE: the moon through a window, laid on the floor as the
+       window's own shape, its glazing bars across it -- pal.win, FLOOR_FRAG's
+       winLit: `at` 'oculus' the Attic's gable light, sized as the wall
+       program sizes it; 'skylight' a light in the roof; else a run of
+       windows in the far wall) */
+    {
+      const W = p.win;
+      if (W && (W.k ?? 0) > 0) {
+        const room = p.room || {};
+        const dv = W.dir || [0.2, -0.3, 1];
+        const L = new THREE.Vector3(dv[0], dv[1], dv[2]).normalize();
+        f.uWinL.value.set(L.x, L.y, L.z, W.k);
+        f.uWinC.value.set(W.color || '#9fb4e8');
+        if (W.at === 'oculus') {
+          const gab = Math.max(0, Math.min((room.w ?? 13) * 0.42, (room.wallPad ?? 5) - 0.4));
+          f.uWinA.value.set(W.x ?? 0, 0, 1, -(room.d ?? 16));
+          f.uWinB.value.set((room.h ?? 2.4) + gab * 0.24 + 0.10, 0, Math.min(gab * 0.30, 1.55), 2);
+          f.uWinM.value.set(0, 0, W.bar ?? 0.05, 0);
+        } else if (W.at === 'skylight') {
+          f.uWinA.value.set(W.x ?? 0, W.z ?? -8, 0, W.y ?? 5);
+          f.uWinB.value.set(0, 0, W.hw ?? 1, W.hl ?? 0.75);
+          f.uWinM.value.set(W.mx ?? 0, W.my ?? 0, W.bar ?? 0.04, 1);
+        } else {
+          f.uWinA.value.set(W.x0 ?? 0, W.pitch ?? 0, W.n ?? 1, W.z ?? -(room.d ?? 16));
+          f.uWinB.value.set(W.sill ?? 1, W.h ?? 2, W.hw ?? 0.8, W.head ?? 1);
+          f.uWinM.value.set(W.mx ?? 0, W.my ?? 0, W.bar ?? 0.04, 0);
+        }
+      } else {
+        f.uWinL.value.set(0, -1, 0, 0);
       }
     }
     /* the moon on the court's flags and in its pond (round 22 graft) */

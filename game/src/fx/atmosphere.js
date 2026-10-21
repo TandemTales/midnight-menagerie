@@ -897,7 +897,9 @@ export const REGIONS = {
      Steeply raked walls (big side toe-in), the mass of the room hanging overhead. */
   attic: {
     label: 'The Moonlit Attic and Observatory',
-    propMat: 'wood', propCeil: 0.264,
+    /* (round 43: the props' ceiling 0.264 -> 0.34 -- under it the trunk and
+       its case were "soft, flat-shaded blocks", J1: held to one dull value) */
+    propMat: 'wood', propCeil: 0.34,
     /* ROUND 23: AN ATTIC IS UNDER A ROOF. It was a 24 x 7.2 m box with its
        side walls toed in and "diagonal lines scrawled over a blue cloud
        texture" for rafters. It is 13 m across now, its knee walls 2.4 m,
@@ -905,6 +907,17 @@ export const REGIONS = {
        the ridge, the gable at the end drawn by program 14 round its window
        on the moon, and the telescope stood in front of that. */
     arch: 4, floorPattern: 0, subject: 'observatory', ceilGain: 3.2,
+    /* ROUND 43 (CUPRITE): ITS OWN RUG -- both survey-8 judges: "the rug is
+       the shared diamond rug". The astronomer's hooked rug, MM_RUGK 8: a
+       compass star in the ring of the hours on midnight wool, crescent
+       moons in its corners, the moon's phases round its border. */
+    floorK: 8,
+    /* ...AND THE MOON ON ITS BOARDS. J1: "the plaid trunk and strapped box
+       ... melt into the black bottom third"; J2: "the lower quarter of the
+       frame is black". The gable's oculus is the room's moon: its light
+       comes through it low and long, the window's ring and spokes thrown
+       down the boards from the telescope's feet to yours (pal.win) */
+    win: { at: 'oculus', dir: [-0.02, -0.21, 1.0], k: 7.0, color: '#c2c8dc', bar: 0.075 },
     room: { w: 13, d: 16, h: 2.4, side: 0.0, ceilPattern: 15, wallPad: 6.2 },
     cam: { y: 1.95, z: 8.6, look: 2.6, fov: 45 },
     deep: '#17152c', mid: '#2a2746', hi: '#433e69', accent: '#8592cd',
@@ -941,7 +954,11 @@ export const REGIONS = {
                     /* (round 35 graft, J1: "a strapped trunk ... in the bottom
                        fifth" -- the trunk a stride nearer, z 4.5 -> 5.6, so it
                        stands in the near boards and not at the rug's side) */
-                    { shape: 36, edge: 0.24, z: 5.6, tone: 0.97, scale: 1.30, fore: 1, keep: true, seed: 1.5 },
+                    /* (round 43: and in from the frame's edge and back to the
+                       fighters' depth, 0.24 / 5.6 -> 0.21 / 3.2, so the trunk
+                       and the case on it stand whole on the lit boards --
+                       J2: "blurry blobs cropped by the frame") */
+                    { shape: 36, edge: 0.21, z: 3.2, tone: 0.97, scale: 1.18, fore: 1, keep: true, seed: 1.5 },
                     { shape: 37, edge: 0.80, z: 3.6, tone: 0.95, scale: 1.05, fore: 1, keep: true, seed: 0.3 },
                     { shape: 37, edge: 0.93, z: 1.0, tone: 0.93, scale: 1.0, fore: 1, keep: true, seed: 0.7 }],
              trusses: { shape: 38, every: 3.4, first: 2.2 } },
@@ -954,7 +971,10 @@ export const REGIONS = {
                     boards by the trunk, ahead 9.6 -> 6.0, and a little more
                     of it, so the floor in front of you is lit by a lamp and
                     not by the key's wash -- and not black) */
-                 pool: { ahead: 6.0, across: -1.2, rAlong: 3.6, rAcross: 3.2, k: 3.4, color: '#f0a65a' },
+                 /* (round 43: the lamp's pool nearer, 6.0 -> 4.6, and wider, so
+                    the boards at the frame's foot are lit wood and not a black
+                    quarter, the trunk standing in it) */
+                 pool: { ahead: 4.6, across: -1.6, rAlong: 4.2, rAcross: 3.6, k: 3.6, color: '#f0a65a' },
                  /* (round 35 graft, both judges: "the blue / purple / orange
                     wash lying across the near boards" -- ONE warm candle pool
                     on them, the lamp's; the cold pool across the middle of
@@ -963,7 +983,9 @@ export const REGIONS = {
     particles: { mix: [[PTYPE.DUST, 0.62], [PTYPE.WISP, 0.26], [PTYPE.ASH, 0.12]],
                  tint: '#d8dcf5', wispTint: '#b0b8ff', emberTint: '#ffcf7a',
                  speed: 0.6, scale: 1.0, wind: 0.4, density: 0.60 },
-    exposure: 1.54, vignette: 1.32, contrast: 1.65,
+    /* (round 43: the vignette 1.32 -> 1.12: it took the near boards' two
+       corners to black under the lamp's pool and the moon's) */
+    exposure: 1.54, vignette: 1.12, contrast: 1.65,
     /* (round 35 graft, both judges: the wash on the near boards was the key
        from behind the eye, 6.78, laying itself over every board in front of
        you, and the cold fill, 1.78, over the other half -- SODALITE's
@@ -2785,6 +2807,11 @@ export const ROOM_KINDS = {
                      { shape: 36, edge: 0.28, z: 3.0, tone: 0.97, scale: 1.20, fore: 1, keep: true, seed: 3.5 },
                      { shape: 37, edge: 0.80, z: 3.2, tone: 0.95, scale: 1.0, fore: 1, keep: true, seed: 0.5 }],
               rug: { ahead: 7.4, hw: 1.6, hd: 1.0 },
+              /* (round 43: the archive's moon comes through the skylight in
+                 the roof's slope, its frame and its cross thrown on the
+                 boards in front of the reading table) */
+              win: { at: 'skylight', x: 2.6, z: -8.6, y: 5.6, hw: 1.0, hl: 0.75, mx: 1.0, my: 0.75, bar: 0.035,
+                     dir: [-0.43, -0.43, 0.89], k: 9.0, color: '#b4c0e2' },
               vantage: { at: 'along', off: 0.12, wall: 2.0, fwd: 1.4, yaw: 10, wide: 3 } }],
     names: [
       [/library|chart|archive|watcher/i, 1],
@@ -3954,6 +3981,9 @@ export class Atmosphere {
       if (kind.floor !== undefined) pal.floorPattern = kind.floor;
       /* (round 41, AMETHYST: and its own floor covering -- MM_RUGK, Backdrop) */
       if (kind.floorK !== undefined) pal.floorK = kind.floorK;
+      /* (round 43: and the moon through its own window, laid on its floor --
+         pal.win, FLOOR_FRAG's winLit) */
+      if (kind.win !== undefined) pal.win = kind.win;
       if (kind.straw !== undefined) pal.straw = kind.straw;
       /* (round 25 graft: a carpet laid where the lens finds the floor --
          placed from the final rig in setMood, after stageRig) */

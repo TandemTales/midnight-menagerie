@@ -14395,6 +14395,85 @@ vec3 grvFloor(vec3 alb, vec3 P, float mp){
 }
 #endif
 
+#if MM_RUGK == 8 || (MM_PAT == 1 && MM_R25W == 0)
+/* ROUND 43 (CUPRITE): THE MOON THROUGH THE WINDOW, LAID ON THE FLOOR.
+   Both survey-8 judges on the Bathhouse: "the window light landing as round
+   spotlight discs"; on the Attic, "the lower quarter of the frame is
+   black". Moonlight through a window does not land as a disc: it lands as
+   the WINDOW -- its shape thrown long across the floor at the moon's low
+   angle, every glazing bar a dark line across it, its edges sharp where
+   the floor is near the glass and softening with distance. So each pixel
+   of the floor follows the moonlight back to the window's plane and asks
+   whether it came through glass, a bar or the wall:
+     uWinA  a wall: the first window's x, the x pitch between windows, how
+            many, the wall's z.  A skylight (uWinM.w 1): its centre x and z,
+            -, its height
+     uWinB  the sill's height, the height to the springing, the half width,
+            the head: 0 square, 1 round-headed, 2 a round window (centre
+            at the sill + height, radius the half width).  A skylight: -, -,
+            its half width across, its half length along
+     uWinL  the direction the light travels (unit, y < 0) and its strength,
+            0 = none
+     uWinM  the glazing bars: their pitch across and up (0 = none), their
+            half width, and the plane (0 a wall, 1 a skylight)
+     uWinC  its colour
+   The wing's floor alone carries it. */
+uniform vec4 uWinA, uWinB, uWinL, uWinM;
+uniform vec3 uWinC;
+float winLit(vec3 P){
+  vec3 L = uWinL.xyz;
+  if (uWinL.w <= 0.0 || L.y > -0.01) return 0.0;
+  vec2 wp;          // where the light came through the window's plane, in the window's metres
+  float t;
+  if (uWinM.w < 0.5) {
+    if (L.z < 0.01) return 0.0;
+    t = (P.z - uWinA.w)/L.z;
+    if (t <= 0.0) return 0.0;
+    float wx = P.x - L.x*t, wy = P.y - L.y*t;
+    float k = clamp(floor((wx - uWinA.x)/max(uWinA.y, 1e-3) + 0.5), 0.0, max(uWinA.z - 1.0, 0.0));
+    wp = vec2(wx - (uWinA.x + k*uWinA.y), wy - uWinB.x);
+  } else {
+    t = (uWinA.w - P.y)/(-L.y);
+    wp = vec2(P.x - L.x*t - uWinA.x, P.z - L.z*t - uWinA.y);
+  }
+  /* the penumbra: a window's edge is sharp on the floor under it and soft
+     a room away */
+  float pen = 0.010 + 0.005*t;
+  float hw = uWinB.z;
+  float d;
+  vec2 bq = wp;
+  if (uWinM.w > 0.5) {
+    d = max(abs(wp.x) - uWinB.z, abs(wp.y) - uWinB.w);
+  } else if (uWinB.w > 1.5) {
+    bq = wp - vec2(0.0, uWinB.y);
+    d = length(bq) - hw;
+  } else {
+    float body = max(abs(wp.x) - hw, max(-wp.y, wp.y - uWinB.y));
+    float head = uWinB.w > 0.5 ? max(length(wp - vec2(0.0, uWinB.y)) - hw, uWinB.y - wp.y) : 1e3;
+    d = min(body, head);
+  }
+  float lit = 1.0 - smoothstep(-pen, pen, d);
+  /* the glazing bars -- in a round window its two rings and eight spokes */
+  if (uWinM.z > 0.0) {
+    float bw = uWinM.z;
+    float m;
+    if (uWinM.w < 0.5 && uWinB.w > 1.5) {
+      float r = length(bq), an = atan(bq.y, bq.x);
+      float sp = abs(fract(an/0.7854 + 0.5) - 0.5)*0.7854*r + step(r, hw*0.30)*1e3;
+      m = min(sp, min(abs(r - hw*0.30), abs(r - hw*0.68)));
+    } else {
+      float bx = uWinM.x > 0.0 ? abs(fract(bq.x/uWinM.x + 0.5) - 0.5)*uWinM.x : 1e3;
+      float by = uWinM.y > 0.0 ? abs(fract(bq.y/uWinM.y + 0.5) - 0.5)*uWinM.y : 1e3;
+      m = min(bx, by);
+    }
+    lit *= 1.0 - 0.92*(1.0 - smoothstep(bw - pen*0.7, bw + pen*0.7, m));
+  }
+  /* the frame's own reveal darkens its rim */
+  lit *= 1.0 - 0.35*(1.0 - smoothstep(0.0, 0.10 + pen, -d));
+  return lit;
+}
+#endif
+
 void main(){
   mmQuadInit();
   vec2 w = (vUv - 0.5) * uSpan;
@@ -16656,6 +16735,86 @@ void main(){
       frg = 0.0;
     }
 #endif
+#if MM_RUGK == 8
+    {
+      /* ROUND 43 (CUPRITE): THE ATTIC'S OWN RUG. Both survey-8 judges: "the
+         rug is the shared diamond rug" -- the Study's, the Nursery's and the
+         Kitchens' too. An observatory under a roof keeps the rug its
+         astronomer had hooked for it: a HOOKED RUG of midnight-blue wool,
+         an eight-pointed compass star in old gold and cream at its heart in
+         a ring of the twelve hours, crescent moons in the four corners of
+         its field, small stars scattered over it, and a border of the
+         moon's phases -- new to full and back -- in cream on a dark plum
+         ground between two gold guards. Faded where it has been walked, a
+         moth hole in one corner through to the boards, bound, not fringed;
+         every mark over its own pixel. */
+      float pxm = max(rpx.x, rpx.y);
+      vec3 night = vec3(0.045, 0.065, 0.165), plum = vec3(0.17, 0.07, 0.13);
+      vec3 gold = vec3(0.62, 0.46, 0.20), cream = vec3(0.74, 0.68, 0.52);
+      /* the hooked pile: rows of loops, a fine mottle in the wool */
+      float loops = 0.88 + 0.16*mmNoise(rp*vec2(38.0, 31.0) + 4.0)*mmLod(0.03, pxm) + 0.10*mmNoise(rp*3.1 + 9.0);
+      vec3 fC = night*loops;
+      /* small stars over the field, four-pointed, on a jittered grid */
+      vec2 sg = rp/0.34, si = floor(sg);
+      vec2 sf = fract(sg) - 0.5 - (mmHash22(si + 2.7) - 0.5)*0.55;
+      float sr = (0.035 + 0.025*mmHash21(si + 5.1))/0.34;
+      float st4 = min(abs(sf.x)*0.34 + abs(sf.y)*0.34*0.30, abs(sf.y)*0.34 + abs(sf.x)*0.34*0.30);
+      float sOn = (1.0 - smoothstep(sr*0.34*0.30 - pxm, sr*0.34*0.30 + pxm, st4))*step(0.45, mmHash21(si + 1.3));
+      fC = mix(fC, mix(cream, gold, step(0.7, mmHash21(si + 8.8))), sOn*0.90*mmLod(0.10, pxm));
+      /* the compass star at its heart, in the ring of the hours */
+      vec2 cq = rp;
+      float cR = min(uRug.z, uRug.w)*0.52;
+      float cr = length(cq), can = atan(cq.y, cq.x);
+      float a8 = can/0.7854, k8 = floor(a8 + 0.5);
+      float off8 = abs(a8 - k8);                                  // 0 along a point, 0.5 between two
+      float diag = mod(k8 + 8.0, 2.0);                            // the four diagonal points the shorter
+      float tipR = mix(cR*0.98, cR*0.62, diag);
+      float starR = mix(tipR, cR*0.17, clamp(off8*2.0, 0.0, 1.0));
+      float onSt = 1.0 - smoothstep(starR - pxm, starR + pxm, cr);
+      float half_ = step(a8, k8);                                 // each point's two faces, lit and shaded
+      vec3 starC = mix(gold*1.10, gold*0.62, half_);
+      starC = mix(starC, mix(cream, cream*0.70, half_), diag);
+      float ringO = 1.0 - smoothstep(0.0, pxm*1.4 + 0.010, abs(cr - cR*1.06));
+      float ringI = 1.0 - smoothstep(0.0, pxm*1.2 + 0.006, abs(cr - cR*0.86));
+      float hrs = (1.0 - smoothstep(0.020 - pxm, 0.020 + pxm, length(vec2((fract(can/0.5236 + 0.5) - 0.5)*0.5236*cR*0.96, cr - cR*0.96))));
+      vec3 cC = fC;
+      cC = mix(cC, gold, ringO);
+      cC = mix(cC, cream*0.85, ringI*0.9);
+      cC = mix(cC, cream, hrs*step(cR*0.88, cr)*step(cr, cR*1.04));
+      cC = mix(cC, starC, onSt);
+      cC = mix(cC, night*0.5, (1.0 - smoothstep(0.0, pxm*1.3, abs(starR - cr)))*onSt*0.7);   // the star inked
+      fC = cC;
+      /* crescent moons in the field's four corners */
+      vec2 mq = abs(rp) - (uRug.zw - vec2(0.62, 0.58));
+      float mo = length(mq) - 0.14, mi = length(mq - vec2(0.06, 0.05)) - 0.12;
+      float onM = (1.0 - smoothstep(-pxm, pxm, mo))*smoothstep(-pxm, pxm, mi);
+      fC = mix(fC, cream*0.95, onM);
+      /* the border: the moon's phases on dark plum, between two gold guards */
+      float bIn = smoothstep(0.07 - ePx, 0.07 + ePx, eIn)*(1.0 - smoothstep(0.38 - ePx, 0.38 + ePx, eIn));
+      float alg = (ed.x < ed.y) ? rp.y : rp.x;
+      float ph = fract(alg/0.30 + 0.5) - 0.5;
+      vec2 pq = vec2(ph*0.30, eIn - 0.225);
+      float disc = 1.0 - smoothstep(0.085 - pxm, 0.085 + pxm, length(pq));
+      float phase = sin(floor(alg/0.30 + 0.5)*0.785)*0.17;
+      float shade = 1.0 - smoothstep(0.085 - pxm, 0.085 + pxm, length(pq - vec2(phase, 0.0)));
+      vec3 bC = plum*(0.85 + 0.25*mmNoise(rp*2.0 + 5.0));
+      bC = mix(bC, cream*0.92, disc*(1.0 - shade*0.88));
+      bC = mix(bC, plum*0.55, disc*shade*0.6);
+      float gd = max(1.0 - smoothstep(0.012, 0.012 + ePx*1.2, abs(eIn - 0.055)),
+                     1.0 - smoothstep(0.012, 0.012 + ePx*1.2, abs(eIn - 0.395)));
+      rugCol = mix(fC, bC, bIn);
+      rugCol = mix(rugCol, gold, gd);
+      rugCol = mix(rugCol, vec3(0.04, 0.035, 0.05), 1.0 - smoothstep(0.022 - ePx, 0.022 + ePx, eIn));   // the binding
+      /* faded where it is walked, and the moth hole in one corner */
+      float trod = smoothstep(0.9, 0.0, length(rp/max(uRug.zw, vec2(0.3))));
+      rugCol = mix(rugCol, vec3(mmLum(rugCol))*vec3(1.10, 1.0, 0.92), 0.18 + 0.22*trod);
+      vec2 hq = rp - (uRug.zw*vec2(0.72, -0.62));
+      float hole = length(hq*vec2(1.0, 1.3)) - 0.11 - 0.03*sin(atan(hq.y, hq.x)*5.0);
+      rugCov *= smoothstep(-pxm, pxm, hole);
+      rugCol *= 1.0 - 0.5*(1.0 - smoothstep(0.0, pxm*2.0 + 0.02, hole));
+      frg = 0.0;
+    }
+#endif
     rugCol = mix(rugCol, ivory*0.85, frg*(1.0 - rugCov));
     rugCov = max(rugCov, frg*0.85);
     /* (laid in the runner's own value: the hall's lit board tone, as the
@@ -17535,6 +17694,10 @@ void main(){
      is vignetted into its own dark (round 21 graft). A multiply, so the
      checker's own contrast runs on into it; it starts below the Kid's feet
      (0.575 of the frame, ndc -0.15), so nobody's floor is taken. */
+#if MM_RUGK == 8 || (MM_PAT == 1 && MM_R25W == 0)
+  /* (round 43: the moon through the window, laid on the floor -- winLit) */
+  if (uIsCeiling < 0.5 && uWinL.w > 0.0) col += alb * uWinC * uWinL.w * winLit(vWorld);
+#endif
   if (uNearDark > 0.0) {
     vec2 ndc = vClip.xy / max(vClip.z, 1e-4);
     float vig = max(smoothstep(-0.24, -0.92, ndc.y), 0.75*smoothstep(0.62, 1.0, abs(ndc.x)));
