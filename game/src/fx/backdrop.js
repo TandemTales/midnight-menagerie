@@ -508,7 +508,7 @@ export const PROP_SHAPES = {
   nursery: [22, 45, 46, 47, 48, 49, 61, 87],
   passages: [8, 23, 66],
   pumpkin: [23, 27, 86],
-  sleeping: [0, 14, 22, 50, 51, 52, 56, 60],   // (round 41: not the Nursery's horse and chest, 46 and 47)
+  sleeping: [0, 14, 22, 46, 47, 50, 51, 52, 56, 60],   // (round 41: not the Nursery's horse and chest; REPAIR r41: the dormitory's OWN horse and chest, 46 and 47 at seed > 40)
   study: [22, 53, 54, 55, 56, 88],
 };
 
@@ -617,7 +617,7 @@ export const ROOM_VARIANTS = [
   { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 3, MM_SHM0: 4194304, MM_SHM1: 1015808, MM_SHM2: 134217730, MM_PEN: 0 }, wings: ['nursery'] },
   { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 4, MM_SHM0: 8388864, MM_SHM1: 0, MM_SHM2: 64, MM_PEN: 1 }, wings: ['passages'] },
   { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 1, MM_SHM0: 142606336, MM_SHM1: 0, MM_SHM2: 67108864, MM_PEN: 0 }, wings: ['pumpkin'] },
-  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 3, MM_SHM0: 4210689, MM_SHM1: 74448896, MM_SHM2: 1, MM_PEN: 1 }, wings: ['sleeping'] },
+  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 3, MM_SHM0: 4210689, MM_SHM1: 74645504, MM_SHM2: 1, MM_PEN: 1 }, wings: ['sleeping'] },
   { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 3, MM_SHM0: 4194304, MM_SHM1: 125829120, MM_SHM2: 268435456, MM_PEN: 0 }, wings: ['study'] },
   { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 0, MM_PAT: 0, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0, MM_RUGK: 0 }, wings: ['attic', 'heart', 'nursery', 'study'] },
   { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 2, MM_PAT: 1, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0, MM_RUGK: 0 }, wings: ['ballroom'] },

@@ -2646,8 +2646,22 @@ export const ROOM_KINDS = {
                         nightgown thrown over it, its slippers kicked off and
                         the chamber pot by its leg (the washstand's quad, 52,
                         seed > 40: slDrawM) */
-                     { shape: 52, edge: 0.30, z: 1.5, tone: 0.97, fore: 1, keep: true, seed: 45.0, hM: 0.64, wM: 1.04 },   // (round 41 graft: LABRADORITE's chest, its quad)
-                     { shape: 52, edge: 0.70, z: 1.0, tone: 0.96, fore: 1, keep: true, seed: 85.0, hM: 1.00, wM: 0.95 }],
+                     /* REPAIR r41 (survey 8's paired test, both judges:
+                        survey 7's "rocking horse, a moon-and-stars toy
+                        chest, a teddy and a medallion-patterned runner" beat
+                        round 41's "bare striped rag runner, a plain trunk
+                        and a towel rack"): the aisle furnished at survey 7's
+                        density again, with the dormitory's OWN things (seed >
+                        40: wfHorse's bay on green rockers, wfChest's
+                        night-blue chest with its moon and stars and the bear
+                        against it), each wholly in frame -- the chest and
+                        its bear at the near left bed's foot, the horse
+                        across the runner at the right, and round 41's
+                        strapped trunk kept, a stride back at the right
+                        bed's foot; the towel rack and chair go */
+                     { shape: 47, edge: 0.28, z: 1.5, tone: 0.97, scale: 1.0, fore: 1, keep: true, seed: 41.0 },
+                     { shape: 46, edge: 0.64, z: 0.9, tone: 0.95, scale: 1.0, fore: 1, keep: true, seed: 42.0 },
+                     { shape: 52, edge: 0.84, z: -0.3, tone: 0.96, fore: 1, keep: true, seed: 45.0, hM: 0.64, wM: 1.04 }],   // (round 41 graft: LABRADORITE's chest, its quad)
               /* (round 41, AMETHYST: survey-7 judge 1, "the right third of the
                  floor falls to black" -- the near washstand's candle laid on
                  the boards at the right, set where it falls (abs: across +

@@ -16043,37 +16043,76 @@ void main(){
     float Lf = mmLum(mix(uDeep, uMid, 0.55));
     vec3 rug = vec3(0.42, 0.07, 0.055);
 #if MM_RUGK == 1
-    /* ROUND 41 GRAFT: THE DORMITORY'S RAG RUNNER -- LABRADORITE's, all three
-       judges (AMETHYST's drugget was "a flat olive smear with two thin red
-       borders, a soft, patternless strip"). A school's or an orphanage's:
-       strips of old clothes woven HIT-AND-MISS on a cotton warp -- bands
-       across the runner a hand to a forearm wide, each its own faded rag
-       (indigo, madder, oatmeal, a soldier's grey, a rose), flecked where the
-       strips twist, between a plain dark border at each edge, the warp
-       knotted into a fringe at its end. Bands vary ALONG it, so they shorten
-       with the floor -- and where a band is under a few pixels deep it is
-       the runner's mean, never a moire. */
+    /* REPAIR r41: THE DORMITORY'S OWN RUNNER. Survey 8's paired test (both
+       judges, Sleeping Quarters by 1 and 2): survey 7's "medallion-patterned
+       runner" beat round 41's "bare striped rag runner" -- and survey 7's was
+       the Foyer's. The dormitory's is its own: a NIGHT-SKY runner such as a
+       children's ward is given, an ingrain carpet of indigo wool down the
+       aisle under the beds' feet -- a cream eight-pointed star on the centre
+       line every metre, a gold crescent moon between each pair, each in a
+       night-blue roundel ringed in cream on a dusk-plum field, small
+       four-point twinkles staggered either side; a night-blue border
+       between cream guards with a cream wave running down it; its fringe.
+       Worn toward the wool and trodden down the middle. Every line a pen
+       width over its own pixel, its mean colour where a repeat is under a few
+       pixels. */
     {
-      float rxK = w.x - uRunX;
-      float insK = uRunner - abs(rxK);
-      float pxK = max(mpp.x, 0.002);
-      float bv = w.y/0.13 + 0.35*sin(w.y*0.8 + uSeed);
-      float bi = floor(bv), bfr = fract(bv);
-      float hb = mmHash11(bi*3.71 + floor(uSeed*7.0));
-      vec3 rag = hb < 0.22 ? vec3(0.20, 0.24, 0.40) : (hb < 0.40 ? vec3(0.50, 0.20, 0.16)
-               : (hb < 0.62 ? vec3(0.56, 0.50, 0.40) : (hb < 0.80 ? vec3(0.34, 0.34, 0.34) : vec3(0.56, 0.34, 0.32))));
-      float fl = mmNoise(vec2(rxK*26.0, w.y*9.0) + bi);
-      rag *= 0.74 + 0.40*fl;
-      float res = smoothstep(0.10, 0.035, mpp.y);
-      float seamB = 1.0 - smoothstep(0.0, 0.10 + mpp.y/0.13, min(bfr, 1.0 - bfr));
-      rag *= 1.0 - 0.30*seamB*res;
-      rag = mix(vec3(0.42, 0.33, 0.30), rag, smoothstep(1.5*mpp.y, 4.0*mpp.y, 0.13));
-      float bordK = 1.0 - smoothstep(0.10 - pxK, 0.10 + pxK, insK);
-      rag = mix(rag, vec3(0.12, 0.09, 0.10), bordK);
-      float warp = 1.0 - smoothstep(0.0, 0.7*pxK + 0.003, abs(insK - 0.115));
-      rag = mix(rag, vec3(0.62, 0.56, 0.44), warp*0.60);
-      rag = mix(rag, vec3(0.70, 0.64, 0.52), rFr*0.85);   // its knotted warp at the end
-      rug = rag;
+      float rxK = w.x - uRunX, axK = abs(rxK), insK = uRunner - axK;
+      float pxX = max(mpp.x, 0.002), pxD = max(max(mpp.x, mpp.y), 0.002);
+      const float BW = 0.14, P = 0.50;
+      /* (the field a dusk PLUM: under the ward's candles a navy field went
+         to black and a lighter blue to an olive smear; the night's blue is
+         in the roundels and the border, where it reads as the dark) */
+      vec3 navy = vec3(0.38, 0.12, 0.24);
+      vec3 crm  = vec3(0.86, 0.78, 0.56);
+      vec3 gold = vec3(0.80, 0.58, 0.22);
+      vec3 mad  = vec3(0.10, 0.12, 0.30);   // the border's night blue
+      vec3 carp = navy;
+      float rpL = mmLod(P, mpp.y);
+      /* the centre line: a star, a moon, a star ... */
+      float yk = floor(w.y/P + 0.5);
+      vec2 c0 = vec2(rxK, w.y - yk*P);
+      float isMoon = mod(yk, 2.0);
+      vec2 ca = abs(c0);
+      float st8 = min(max(ca.x, ca.y) - 0.092, (max(abs(c0.x + c0.y), abs(c0.x - c0.y)))*0.7071 - 0.092);
+      float moon = max(length(c0) - 0.110, -(length(c0 - vec2(0.052, 0.034)) - 0.096));
+      float mot = isMoon > 0.5 ? moon : st8;
+      /* each in its roundel: a night-blue disc ringed in cream, a medallion */
+      float rnd = length(c0) - 0.175;
+      carp = mix(carp, vec3(0.10, 0.12, 0.32), (1.0 - smoothstep(0.0, pxD*1.2, rnd))*rpL);
+      carp = mix(carp, crm, (1.0 - smoothstep(0.008, 0.008 + pxD*1.2, abs(rnd)))*0.90*rpL);
+      carp = mix(carp, gold, (1.0 - smoothstep(0.004, 0.004 + pxD*1.1, abs(rnd + 0.026)))*0.70*rpL*mmLod(0.05, pxD));
+      float onM = (1.0 - smoothstep(0.0, pxD*1.2, mot))*rpL;
+      carp = mix(carp, isMoon > 0.5 ? gold : crm, onM*0.95);
+      carp = mix(carp, vec3(0.05, 0.05, 0.10), (1.0 - smoothstep(0.004, 0.004 + pxD*1.1, abs(mot + 0.004)))*0.7*rpL);
+      /* (the star's eye: a navy dot) */
+      carp = mix(carp, navy*0.8, (1.0 - smoothstep(0.016, 0.016 + pxD*1.2, length(c0)))*(1.0 - isMoon)*rpL);
+      /* the twinkles either side, half a period on */
+      float fh = max(uRunner - BW, 0.2);
+      vec2 c1 = vec2(axK - fh*0.55, w.y - (floor(w.y/P) + 0.5)*P);
+      vec2 c1a = abs(c1);
+      float tw = min(max(c1a.x*0.30, c1a.y) - 0.016, max(c1a.x, c1a.y*0.30) - 0.016);
+      tw = min(tw, length(c1) - 0.022);
+      carp = mix(carp, crm*0.95, (1.0 - smoothstep(0.0, pxD*1.2, tw))*mmLod(P*0.5, mpp.y));
+      /* where the repeat is under a few pixels: its mean */
+      carp = mix(mix(navy, crm, 0.10), carp, rpL);
+      /* the border: night blue between cream guards, a cream wave down it */
+      float onB = 1.0 - smoothstep(BW - pxX, BW + pxX, insK);
+      vec3 bc = mad;
+      float wv = abs(insK - (0.070 + 0.026*sin(w.y*39.27)));
+      float wvL = mmLod(0.16, mpp.y);
+      bc = mix(bc, crm, (1.0 - smoothstep(0.009, 0.009 + pxD*1.2, wv))*0.90*wvL);
+      bc = mix(bc, mix(mad, crm, 0.22), 1.0 - wvL);
+      float g1 = 1.0 - smoothstep(0.010, 0.010 + pxX*1.1, abs(insK - 0.026));
+      float g2 = 1.0 - smoothstep(0.010, 0.010 + pxX*1.1, abs(insK - (BW - 0.012)));
+      bc = mix(bc, crm, max(g1, g2)*0.95);
+      carp = mix(carp, bc, onB);
+      carp = mix(carp, vec3(0.05, 0.04, 0.05), 1.0 - smoothstep(0.012 - pxX, 0.012 + pxX, insK));
+      /* worn: toward the wool, trodden down the middle */
+      carp = mix(carp, vec3(mmLum(carp))*vec3(1.20, 1.00, 0.80), 0.14);
+      carp *= 1.0 - 0.16*(1.0 - smoothstep(0.05, uRunner*0.6, axK))*(0.6 + 0.4*mmNoise(vec2(w.x*3.0, w.y*0.5) + uSeed));
+      carp = mix(carp, vec3(0.70, 0.64, 0.52), rFr*0.85);   // its fringe at the end
+      rug = carp;
     }
 #elif MM_RUGK == 3
     /* REPAIR r41: THE PASSAGE'S OWN RUNNER. Survey 8's paired test (both
@@ -23869,10 +23908,20 @@ float wfHorse(vec2 q, float px, float seed, float kq, bool paint){
   float ink = 0.0;
   vec3 red = vec3(0.62, 0.12, 0.08);
   vec3 gilt = vec3(0.92, 0.68, 0.30);
+  /* REPAIR r41: THE DORMITORY'S OWN HORSE (seed > 40, dealt only by hand in
+     the Sleeping Quarters; the Nursery's seeds are under 10 and draw the
+     dapple grey exactly as before). Survey 8's paired test, both judges:
+     survey 7's "large, cleanly drawn rocking horse" beat the dormitory
+     without one -- so it has its own, not the Nursery's: an old BAY, its
+     coat a worn chestnut-brown with black points (mane, tail, the legs below
+     the knee), a madder cloth under a black saddle, on bottle-green rockers
+     with their gilt line */
+  bool own = seed > 40.0;
+  vec3 rockC = own ? vec3(0.13, 0.27, 0.17) : red;
   /* the rockers and the platform */
-  wfLay(col, ink, rock, red*(0.62 + 0.55*smoothstep(-0.04, 0.03, 2.56 - rr)), px, 0.95);
+  wfLay(col, ink, rock, rockC*(0.62 + 0.55*smoothstep(-0.04, 0.03, 2.56 - rr)), px, 0.95);
   col = mix(col, gilt*1.1, mmInkP(rr - 2.560, px, 1.3)*wfIn(rock, px)*0.9);
-  wfLay(col, ink, plat, red*0.8, px, 0.9);
+  wfLay(col, ink, plat, rockC*0.8, px, 0.9);
   /* dapple grey: pale, with darker rings round paler dapples, darker on
      the legs and under the belly, lit on its back */
   vec2 dg = q/0.075;
@@ -23881,14 +23930,16 @@ float wfHorse(vec2 q, float px, float seed, float kq, bool paint){
   float dp = length(df);
   float dap = smoothstep(0.42, 0.30, dp)*(1.0 - smoothstep(0.22, 0.10, dp));
   vec3 grey = vec3(0.82, 0.80, 0.76)*(1.0 - 0.32*dap);
+  if (own) grey = vec3(0.46, 0.20, 0.09)*(0.88 + 0.22*mmNoise(q*9.0 + seed));
   grey *= 0.62 + 0.48*smoothstep(0.58, 0.82, q.y);
   /* the far pair a shade back, then the near pair: plain grey, darker to
      the fetlock, round, lit on the key's side */
   vec3 legG = vec3(0.70, 0.68, 0.64)*(0.55 + 0.35*smoothstep(0.15, 0.55, q.y));
+  if (own) legG = mix(vec3(0.07, 0.05, 0.05), vec3(0.50, 0.27, 0.14), smoothstep(0.30, 0.46, q.y))*(0.65 + 0.35*smoothstep(0.15, 0.55, q.y));
   wfLay(col, ink, min(lF2, lH2), legG*0.55, px, 0.6);
   wfLay(col, ink, min(lF, lH), legG, px, 0.85);
   wfLay(col, ink, hoof, vec3(0.16, 0.14, 0.13), px, 0.9);
-  wfLay(col, ink, tail, vec3(0.30, 0.27, 0.25)*(0.7 + 0.5*abs(sin(q.x*120.0 + q.y*40.0))), px, 0.7);
+  wfLay(col, ink, tail, (own ? vec3(0.09, 0.07, 0.06) : vec3(0.30, 0.27, 0.25))*(0.7 + 0.5*abs(sin(q.x*120.0 + q.y*40.0))), px, 0.7);
   wfLay(col, ink, horse, grey, px, 0.95);
   /* the eye, the nostril, the mouth */
   float eye = length(q - vec2(0.465, 1.015)) - 0.013;
@@ -23897,16 +23948,19 @@ float wfHorse(vec2 q, float px, float seed, float kq, bool paint){
   ink = max(ink, mmInkP(length(q - vec2(0.585, 0.905)) - 0.010, px, 1.0)*0.8*wfIn(horse, px));
   /* the mane: strands */
   float str = 0.5 + 0.5*sin(dot(q, vec2(70.0, 45.0)) + 3.0*mmNoise(q*20.0));
-  wfLay(col, ink, mane, vec3(0.20, 0.18, 0.17)*(0.6 + 0.8*str), px, 0.8);
+  wfLay(col, ink, mane, (own ? vec3(0.08, 0.06, 0.05) : vec3(0.20, 0.18, 0.17))*(0.6 + 0.8*str), px, 0.8);
+  /* (the bay's white blaze down its face) */
+  if (own) col = mix(col, vec3(0.86, 0.82, 0.74), wfIn(wfSeg(q, vec2(0.47, 1.05), vec2(0.62, 0.92), 0.014), px)*wfIn(horse, px));
   /* the bridle and reins: red leather */
   float brid = min(min(wfSeg(q, vec2(0.43, 1.06), vec2(0.52, 0.93), 0.007), wfSeg(q, vec2(0.46, 0.95), vec2(0.58, 0.92), 0.007)),
                    wfSeg(q, vec2(0.56, 0.93), vec2(0.18, 0.86), 0.006));
-  wfLay(col, ink, brid, red*1.1, px, 0.6);
+  vec3 sadC = own ? vec3(0.13, 0.08, 0.06) : red;
+  wfLay(col, ink, brid, sadC*1.1, px, 0.6);
   /* the saddle cloth, the saddle, its leather and stirrup */
   vec2 cl = q - vec2(0.02, 0.78);
-  wfLay(col, ink, cloth, vec3(0.20, 0.24, 0.50), px, 0.8);
+  wfLay(col, ink, cloth, own ? vec3(0.54, 0.12, 0.10) : vec3(0.20, 0.24, 0.50), px, 0.8);
   col = mix(col, gilt, mmInkP(wfEll(cl, vec2(0.17, 0.12)) + 0.015, px, 2.0)*wfIn(cloth, px)*step(0.705, q.y));
-  wfLay(col, ink, saddle, red*(0.70 + 0.5*smoothstep(0.82, 0.90, q.y)), px, 0.9);
+  wfLay(col, ink, saddle, sadC*(0.70 + 0.5*smoothstep(0.82, 0.90, q.y)), px, 0.9);
   wfLay(col, ink, leath, vec3(0.30, 0.10, 0.06), px, 0.5);
   wfLay(col, ink, stir, vec3(0.70, 0.70, 0.72), px, 0.8);
   gWfGloss = 0.35 + 0.5*wfIn(min(saddle, stir), px);
@@ -24070,6 +24124,10 @@ float wfChest(vec2 q, float px, float seed, float kq, bool paint){
   float ink = 0.0;
   float kc = mmHash11(seed*3.3);
   vec3 paintC = kc < 0.5 ? vec3(0.20, 0.34, 0.30) : vec3(0.46, 0.14, 0.12);
+  /* REPAIR r41: the dormitory's own chest (seed > 40, dealt only by hand
+     in the Sleeping Quarters): its moon and stars on a NIGHT-BLUE ground,
+     the ward's own colours, where the Nursery's is green or red */
+  if (seed > 40.0) paintC = vec3(0.13, 0.18, 0.38);
   vec3 gilt = vec3(0.90, 0.66, 0.30);
   /* the lid's inside, lined with a printed paper */
   vec2 lp = c - vec2(0.0, 0.66);
