@@ -5203,10 +5203,11 @@ float yewRagW(float u, float sd, float amp){
   r *= 2.1;
   float qd = u/3.9 + sd*0.71;
   float di = floor(qd), df = fract(qd);
-  float dc = 0.25 + 0.5*mmHash11(di*5.17 + sd);
-  float dwid = 0.12 + 0.16*mmHash11(di*2.31 + sd);
+  float dh = mmHash11(di*3.91 + sd);   // (one hash for the dip, its place, width and depth: the frame budget)
+  float dc = 0.25 + 0.5*fract(dh*7.31);
+  float dwid = 0.12 + 0.16*fract(dh*13.7);
   float dt = clamp(abs(df - dc)/dwid, 0.0, 1.0);
-  float dip = step(0.36, mmHash11(di*3.91 + sd))*(0.5 + 0.5*cos(dt*3.1416))*(0.22 + 0.34*mmHash11(di*8.71 + sd));
+  float dip = step(0.36, dh)*(0.5 + 0.5*cos(dt*3.1416))*(0.22 + 0.34*fract(dh*5.77));
   dip *= 0.80 + 0.40*(0.5 + 0.5*sin(u*8.0 + sd*3.0)*sin(u*3.3 + sd));   // (a sine, not BENITOITE's noise tap: the frame budget)
   float qs = u/0.11 + sd*4.3;
   float fs = fract(qs), hs = mmHash11(floor(qs)*6.71 + sd);
@@ -5401,7 +5402,7 @@ float hedgeWallH(vec2 q, float qpx, out float occ){
   /* (the frame budget: a twig's tip is never more than a metre over a
      notch's floor nor a sprig's half a metre over the line -- the side
      walls' sky over that returns at once, as it did) */
-  if (q.y > top - 0.02 && q.y < min(HH + 0.60, top + (ragGk > 0.001 ? 1.0 : 0.45)) && keepF < 0.5) deadW = yewTwigW(u, q.y, top, sd, qpx);
+  if (q.y > top - 0.02 && q.y < (ragGk > 0.001 ? HH + 0.30 : min(HH + 0.60, top + 0.42)) && keepF < 0.5) deadW = yewTwigW(u, q.y, top, sd, qpx);
   float hedge = max(cov, deadW) * (1.0 - inGap);
   /* above the hedge a SIDE wall is not there: skip the leaf entirely (it
      is a third of the side walls' pixels and all of the sky over them) */
@@ -26217,50 +26218,55 @@ float wfBones(vec2 q, float px, float seed, float kq, bool paint){
      not on the stone -- the stone stands 0.32 m inward of the quad's axis,
      backdrop.js's grave[2] -- so the quad is 2.16 m wide, not 2.9) */
   q.x += 0.32;
-  /* the base: a plinth of the same stone, a hand high, its top chamfered */
-  float base = mmBox(q - vec2(0.0, 0.065), vec2(0.38, 0.065), 0.010);
-  base = min(base, mmBox(q - vec2(0.0, 0.140), vec2(0.34, 0.016), 0.006));
-  /* the slab, leaning a little: its face sheared to one side as it goes up */
+  /* (the frame budget: the stone's half and the ledge's half of the quad
+     each drawn only where it is -- they meet at 0.45 m) */
+  bool H = q.x < 0.47, Lg = q.x > 0.43;
   const float SW = 0.30, SH = 0.80, SB = 0.155;
-  float lean = 0.04*(mmHash11(seed*3.1) > 0.5 ? 1.0 : -1.0);
-  vec2 sq = vec2(q.x - lean*(q.y - SB)/SH, q.y - SB);
-  float slab = mmBox(sq - vec2(0.0, SH*0.5), vec2(SW, SH*0.5), 0.012);
-  /* the corner broken away, a ragged diagonal */
-  vec2 bc = sq - vec2(SW, SH);
-  float brk = (bc.x*0.62 - bc.y*0.78) - (-0.15 + 0.018*sin(bc.y*61.0 + seed) + 0.012*sin(bc.x*97.0));
-  slab = max(slab, -brk);
-  /* the skull fallen out of the cut, on its side at the kerb, and a
-     thighbone across it -- on the inner side, a hand off the base */
-  vec2 sk = q - vec2(-0.50, 0.078);
-  float cran = wfEll(sk - vec2(0.0, 0.01), vec2(0.088, 0.074));
-  float jaw = mmBox(sk - vec2(0.048, -0.046), vec2(0.038, 0.024), 0.016);
-  float skull = min(cran, jaw);
+  float base = 1e3, slab = 1e3, skull = 1e3, femur = 1e3, brk = 1.0;
+  vec2 sq = q, sk = q, fa = vec2(-0.40, 0.022), fb = vec2(-0.72, 0.040);
   float t0;
-  vec2 fa = vec2(-0.40, 0.022), fb = vec2(-0.72, 0.040);
-  float femur = wfSegT(q, fa, fb, 0.016, 0.014, t0);
-  vec2 fn = vec2(0.03, 0.5)*0.03;
-  femur = min(femur, min(min(length(q - fa - fn) - 0.024, length(q - fa + fn) - 0.024),
-                         min(length(q - fb - fn) - 0.022, length(q - fb + fn) - 0.022)));
+  if (H) {
+    /* the base: a plinth of the same stone, a hand high, its top chamfered */
+    base = mmBox(q - vec2(0.0, 0.065), vec2(0.38, 0.065), 0.010);
+    base = min(base, mmBox(q - vec2(0.0, 0.140), vec2(0.34, 0.016), 0.006));
+    /* the slab, leaning a little: its face sheared to one side as it goes up */
+    float lean = 0.04*(mmHash11(seed*3.1) > 0.5 ? 1.0 : -1.0);
+    sq = vec2(q.x - lean*(q.y - SB)/SH, q.y - SB);
+    slab = mmBox(sq - vec2(0.0, SH*0.5), vec2(SW, SH*0.5), 0.012);
+    /* the corner broken away, a ragged diagonal */
+    vec2 bc = sq - vec2(SW, SH);
+    brk = (bc.x*0.62 - bc.y*0.78) - (-0.15 + 0.018*sin(bc.y*61.0 + seed) + 0.012*sin(bc.x*97.0));
+    slab = max(slab, -brk);
+    /* the skull fallen out of the cut, on its side at the kerb, and a
+       thighbone across it -- on the inner side, a hand off the base */
+    sk = q - vec2(-0.50, 0.078);
+    skull = min(wfEll(sk - vec2(0.0, 0.01), vec2(0.088, 0.074)), mmBox(sk - vec2(0.048, -0.046), vec2(0.038, 0.024), 0.016));
+    femur = wfSegT(q, fa, fb, 0.016, 0.014, t0);
+    vec2 fn = vec2(0.03, 0.5)*0.03;
+    femur = min(femur, min(min(length(q - fa - fn) - 0.024, length(q - fa + fn) - 0.024),
+                           min(length(q - fb - fn) - 0.022, length(q - fb + fn) - 0.022)));
+  }
   /* THE LEDGE (CUPRITE's): the foot half of the ledger lying outward, its
      broken end toward the stone, a skull and two candle stubs on it, a
      taller candle on the flags past it */
-  vec2 b = q - vec2(0.86, 0.0);
-  float ledge = mmBox(b - vec2(0.0, 0.080), vec2(0.36, 0.078), 0.012);
-  ledge = max(ledge, -(b.x + 0.30 + 0.030*sin(b.y*41.0 + seed*2.0)));
-  vec2 sk2 = q - vec2(1.00, 0.238);
-  float skull2 = min(wfEll(sk2 - vec2(0.0, 0.015), vec2(0.086, 0.074)), mmBox(sk2 - vec2(0.0, -0.054), vec2(0.044, 0.025), 0.017));
-  float cdl = 1e3, fla = 1e3, glow = 0.0;
-  for (int i = 0; i < 3; i++){
-    float cxp = i == 0 ? 0.66 : (i == 1 ? 0.77 : 1.33);
-    float cb = i < 2 ? 0.156 : 0.0;
-    float ch = i == 0 ? 0.13 : (i == 1 ? 0.08 : 0.22);
-    float c = mmBox(q - vec2(cxp, cb + ch*0.5), vec2(0.022, ch*0.5), 0.004);
-    c = min(c, mmBox(q - vec2(cxp + 0.020, cb + ch*0.32), vec2(0.008, ch*0.30), 0.004));
-    c = min(c, wfEll(q - vec2(cxp, cb + 0.008), vec2(0.040, 0.012)));   // its wax run out round its foot
-    cdl = min(cdl, c);
-    vec2 fp = q - vec2(cxp, cb + ch + 0.034);
-    fla = min(fla, length(fp/vec2(0.50, 1.0)) - 0.020);
-    glow = max(glow, exp(-length(fp)/0.06));
+  vec2 b = q - vec2(0.86, 0.0), sk2 = q - vec2(1.00, 0.238);
+  float ledge = 1e3, skull2 = 1e3, cdl = 1e3, fla = 1e3, glow = 0.0;
+  if (Lg) {
+    ledge = mmBox(b - vec2(0.0, 0.080), vec2(0.36, 0.078), 0.012);
+    ledge = max(ledge, -(b.x + 0.30 + 0.030*sin(b.y*41.0 + seed*2.0)));
+    skull2 = min(wfEll(sk2 - vec2(0.0, 0.015), vec2(0.086, 0.074)), mmBox(sk2 - vec2(0.0, -0.054), vec2(0.044, 0.025), 0.017));
+    for (int i = 0; i < 3; i++){
+      float cxp = i == 0 ? 0.66 : (i == 1 ? 0.77 : 1.33);
+      float cb = i < 2 ? 0.156 : 0.0;
+      float ch = i == 0 ? 0.13 : (i == 1 ? 0.08 : 0.22);
+      float c = mmBox(q - vec2(cxp, cb + ch*0.5), vec2(0.022, ch*0.5), 0.004);
+      c = min(c, mmBox(q - vec2(cxp + 0.020, cb + ch*0.32), vec2(0.008, ch*0.30), 0.004));
+      c = min(c, wfEll(q - vec2(cxp, cb + 0.008), vec2(0.040, 0.012)));   // its wax run out round its foot
+      cdl = min(cdl, c);
+      vec2 fp = q - vec2(cxp, cb + ch + 0.034);
+      fla = min(fla, length(fp/vec2(0.50, 1.0)) - 0.020);
+      glow = max(glow, exp(-length(fp)/0.06));
+    }
   }
   float under = max(abs(q.x - 0.25) - 1.15, max(-q.y, q.y - 0.022));
   float d = min(min(min(slab, base), min(skull, femur)), min(min(ledge, skull2), min(min(cdl, fla), under)));
