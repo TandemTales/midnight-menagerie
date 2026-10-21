@@ -215,6 +215,12 @@ Hedge's walls and lawn, Attic, Crypt, Bathhouse, the reused diamond rug).
 the three region gates, link-queue, seam green on dev. **NOW: ROUND 43.**
 (Two idle devservers on :9211 / :9212 date from 10-15 -- not started by this
 session's work today; left running.)
+**ROUND 43 IS MERGED (2026-10-21, `869eb2f1`):** CUPRITE +1.63, 2 of 3
+(6.29 vs TARLATAN 4.66): the Attic's moonlight and own rug, varied tubs under
+window light, sunken graves in the Crypt. Battery 106 gates, only the sprites
+halo red; the other 13 wings pixel-identical. **NOW: its graft** (`GRAFT-r43.md`,
+worktree C:/UILOOP/r43/wt/r43-graft), then a PAIRED check of the four wings
+vs survey 8 before calling it done.
 
 **ROUND 33 AND ITS GRAFT ARE MERGED, VERIFIED AND PUSHED (2026-10-16):**
 graft `9d008119`. COBALT +1.59 (`531126e4`): no running line under 11 px at
