@@ -2513,6 +2513,12 @@ export class Backdrop {
              the far kerb, and its pool must not lie over the grave's mouth in
              front of it: a narrow band along its foot) */
           ss2[i * 2 + 0] = p.w * 1.04; ss2[i * 2 + 1] = 0.30; st2[i] = 0.85;
+        } else if ((p.shape === 36 || p.shape === 37) && pal.regionKey === 'attic') {
+          /* (round 43 graft, J1 and J3: the draped chair and the trunks "given
+             a contact shadow" -- a dense pool a little forward of the foot,
+             as a chair's) */
+          so2[i * 3 + 2] = p.z + p.w * 0.16;
+          ss2[i * 2 + 0] = p.w * 1.30; ss2[i * 2 + 1] = p.w * 0.70; st2[i] = 1.15;
         } else if (p.shape === 52 || p.shape === 60) {
           /* (round 29 graft, judge 2: "give the bed, wardrobe and washstand
              contact shadows" -- a washstand's and a wardrobe's pool, dense) */

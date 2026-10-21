@@ -980,7 +980,14 @@ export const REGIONS = {
                        fighters' depth, 0.24 / 5.6 -> 0.21 / 3.2, so the trunk
                        and the case on it stand whole on the lit boards --
                        J2: "blurry blobs cropped by the frame") */
-                    { shape: 36, edge: 0.21, z: 3.2, tone: 0.97, scale: 1.18, fore: 1, keep: true, seed: 1.5 },
+                    /* (round 43 GRAFT, J1 and J3: "the main trunk too small for
+                       the moonlit boards" -- it a third larger, 1.18 -> 1.40; and
+                       the trunks at more than one depth, whole: BENITOITE's
+                       teal strapped trunk nearer at the left, ZINCITE's
+                       blue-strapped one on the near boards at the right) */
+                    { shape: 36, edge: 0.24, z: 3.2, tone: 0.97, scale: 1.40, fore: 1, keep: true, seed: 1.5 },
+                    { shape: 36, edge: 0.19, z: 5.4, tone: 0.98, scale: 0.86, fore: 1, keep: true, seed: 6.5 },
+                    { shape: 36, edge: 0.72, z: 4.9, tone: 0.98, scale: 1.02, fore: 1, keep: true, seed: 4.5 },
                     { shape: 37, edge: 0.80, z: 3.6, tone: 0.95, scale: 1.05, fore: 1, keep: true, seed: 0.3 },
                     { shape: 37, edge: 0.93, z: 1.0, tone: 0.93, scale: 1.0, fore: 1, keep: true, seed: 0.7 }],
              trusses: { shape: 38, every: 3.4, first: 2.2 } },
@@ -1001,7 +1008,12 @@ export const REGIONS = {
                     wash lying across the near boards" -- ONE warm candle pool
                     on them, the lamp's; the cold pool across the middle of
                     the boards gone, k 2.6 -> 0) */
-                 pool2: { ahead: 4.2, across: -0.4, rAlong: 2.4, rAcross: 3.8, k: 0, color: '#9fb0e6' } },
+                 /* (round 43 GRAFT, J1 and J3: "the moon shadow goes flat
+                    lavender and milky at the far left" -- the stairhead lamp's
+                    warm pool laid across the near boards at the LEFT, breaking
+                    the moon's shadow with lamplight, ZINCITE's and
+                    BENITOITE's) */
+                 pool2: { ahead: 3.6, across: 2.0, rAlong: 3.2, rAcross: 2.4, k: 3.4, color: '#eea458' } },
     particles: { mix: [[PTYPE.DUST, 0.62], [PTYPE.WISP, 0.26], [PTYPE.ASH, 0.12]],
                  tint: '#d8dcf5', wispTint: '#b0b8ff', emberTint: '#ffcf7a',
                  speed: 0.6, scale: 1.0, wind: 0.4, density: 0.60 },
@@ -2842,8 +2854,13 @@ export const ROOM_KINDS = {
                      { shape: 36, edge: 0.28, z: 3.0, tone: 0.97, scale: 1.20, fore: 1, keep: true, seed: 3.5 },
                      /* (round 43: a wing chair under its sheet, seed 0.5 -> 0.6 -- the
                         sideboard with its covered clock read as a grey box) */
-                     { shape: 37, edge: 0.80, z: 3.2, tone: 0.95, scale: 1.0, fore: 1, keep: true, seed: 0.6 }],
-              rug: { ahead: 7.4, hw: 1.6, hd: 1.0 },
+                     { shape: 37, edge: 0.80, z: 3.2, tone: 0.95, scale: 1.0, fore: 1, keep: true, seed: 0.6 },
+                     /* (round 43 graft, J3: "an object on the near-right floor" --
+                        ZINCITE's blue-strapped trunk there, whole) */
+                     { shape: 36, edge: 0.66, z: 4.1, tone: 0.98, scale: 0.92, fore: 1, keep: true, seed: 4.5 }],
+              /* (round 43 graft: BENITOITE's -- the moon rug larger and nearer,
+                 on the near boards, 7.4 / 1.6 x 1.0 -> 6.0 / 1.75 x 1.15) */
+              rug: { ahead: 6.0, hw: 1.75, hd: 1.15 },
               /* (round 43: the archive's moon comes through the skylight in
                  the roof's slope, its frame and its cross thrown on the
                  boards in front of the reading table) */
