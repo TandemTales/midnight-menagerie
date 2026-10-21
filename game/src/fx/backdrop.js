@@ -2513,6 +2513,16 @@ export class Backdrop {
              the rows sit on the floor" -- a BED stands on its long side to
              us, 0.9 m deep: a dense band the length of it, GRISAILLE's) */
           ss2[i * 2 + 0] = p.w * 1.08; ss2[i * 2 + 1] = 1.25; st2[i] = 1.10;
+        } else if (pal.regionKey === 'graveyard' && (p.shape === 69 || p.shape === 70 || p.shape === 73)) {
+          /* (round 44, PYRITE: a churchyard's stone sits in a tight pool at
+             its own foot -- at 1.6 x 1.0 of its width the rows' pools ran
+             together along the far railing into the black strip both
+             survey-8 judges saw under the fence, with the lawn in it gone.
+             Narrower and shallower, as dense at the foot, so each stone is
+             seated and the turf shows between them) */
+          const tomb = p.shape === 70;
+          ss2[i * 2 + 0] = p.w * (tomb ? 1.18 : 1.30); ss2[i * 2 + 1] = p.w * (tomb ? 0.62 : 0.46);
+          st2[i] = 0.92;
         } else if (p.grave) {
           /* (round 43: the ledger leaned at an open grave's head stands on
              the far kerb, and its pool must not lie over the grave's mouth in

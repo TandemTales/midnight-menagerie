@@ -18150,9 +18150,129 @@ void main(){
     col += albPk * vec3(0.42, 0.52, 0.72) * 2.2 * (1.0 - smoothstep(10.0, 24.0, fwPk)) * dryPk;
   }
 #endif
+#if MM_R25W == 4 && MM_PAT == 11
+  /* ROUND 44 (PYRITE): THE CHURCHYARD'S LAWN BROKEN UP. Both survey-8
+     judges: "the lawn is a featureless green-brown plane over half the
+     frame"; "break up the lawn with paths, roots, dead leaves and long grass
+     at the edges, and mist low on it". The blades, tufts and single leaves
+     drawn before this are a hand's scale -- right at your feet, nothing from
+     the gate. These are the yard's own large marks, readable at any
+     distance: the trodden paths between the graves worn to bare earth with
+     the turf's ragged lip drawn either side; the leaves blown into DRIFTS
+     (against a stone, in a hollow) in rust and old gold, dense where they
+     pile; the rank grass grown up in long dark tussocks where no scythe
+     goes, their blade tips catching the moon; and, far off over the turf, a
+     ground mist lying in the hollows, cold, never over the near lawn. All
+     laid on the light this pixel already has, so the moon and the lanterns
+     run on through them. */
+  if (uIsCeiling < 0.5 && turf > 0.05) {
+    vec3 litY = col / max(alb, vec3(0.003));
+    float pxY = max(mp, 1e-4);
+    float onLawn = clamp(turf, 0.0, 1.0)*(1.0 - r25Walk);
+    vec3 albY = alb;
+    /* the trodden paths: two worn lines wandering between the rows */
+    float pA = abs(w.x - (uRunX + 4.6 + 2.2*sin(w.y*0.11 + 0.7) + 0.9*sin(w.y*0.37)));
+    float pB = abs(w.x - (uRunX - 6.4 - 1.8*sin(w.y*0.09 + 2.1) - 0.7*sin(w.y*0.31 + 1.0)));
+    float pw = 0.34 + 0.10*mmNoise(w*vec2(0.8, 0.4));
+    float pd = min(pA, pB) - pw;
+    float pRes = mmLod(0.6, pxY);
+    float trod = (1.0 - smoothstep(-pxY*1.2, pxY*1.2, pd))*onLawn;
+    float bare = smoothstep(0.30, 0.62, mmNoise(w*1.7 + 3.0));
+    vec3 earthC = mix(vec3(0.060, 0.054, 0.046), vec3(0.090, 0.078, 0.062), bare);
+    earthC *= 0.80 + 0.40*mmHash21(floor(w*9.0));
+    /* the two ruts down it, a stop darker */
+    float rutY = 1.0 - smoothstep(0.0, 0.10 + pxY, abs(abs(min(pA, pB)) - pw*0.45));
+    earthC *= 1.0 - 0.30*rutY*pRes;
+    albY = mix(albY, earthC*mmLum(alb)*7.5, trod*(0.60 + 0.40*bare));
+    float lipI = mmInkP(pd, pxY, 1.2)*onLawn*pRes;
+    /* the leaf drifts */
+    float drift = smoothstep(0.56, 0.78, mmNoise(w*vec2(0.22, 0.30) + 11.0) + 0.15*mmNoise(w*0.9));
+    const float DC = 0.17;
+    vec2 dci = floor(w/DC);
+    vec2 dh = mmHash22(dci + 5.7);
+    vec2 dp = w - (dci + 0.2 + 0.6*dh)*DC;
+    float da = mmHash21(dci + 2.3)*6.2832;
+    vec2 dr = vec2(cos(da)*dp.x + sin(da)*dp.y, -sin(da)*dp.x + cos(da)*dp.y);
+    float dw = 0.022*(1.0 - (dr.x/0.050)*(dr.x/0.050));
+    float lf = (1.0 - smoothstep(dw, dw + pxY*1.1, abs(dr.y)))*step(abs(dr.x), 0.050)*step(mmHash21(dci + 8.1), 0.30 + 0.62*drift);
+    float lfRes = smoothstep(0.040, 0.012, pxY);
+    float lfK = mix(drift*0.70, 1.0, lfRes)*mix(1.0, lf, lfRes)*onLawn*smoothstep(0.08, 0.40, drift + 0.25*lfRes*lf);
+    vec3 leafY = mix(vec3(0.27, 0.12, 0.050), vec3(0.33, 0.25, 0.10), mmHash21(dci + 1.9))*(0.70 + 0.40*dh.x);
+    albY = mix(albY, leafY*mmLum(alb)*8.0, clamp(lfK, 0.0, 1.0)*0.92);
+    /* the rank grass: long tussocks, dark at their roots, lit at their tips */
+    float rank = smoothstep(0.50, 0.72, mmNoise(w*vec2(0.30, 0.45) + 23.0))*onLawn*(1.0 - trod);
+    float tg = mmNoise(vec2(w.x*11.0 + 2.0*mmNoise(w*0.7), w.y*1.6) + 4.0);
+    float tip = smoothstep(0.50, 0.85, tg)*smoothstep(0.060, 0.015, pxY);
+    vec3 rankC = mix(vec3(0.022, 0.032, 0.018), vec3(0.120, 0.140, 0.070), tip);
+    albY = mix(albY, rankC*mmLum(alb)*12.0, rank*0.85);
+    col = mix(col, albY*litY, max(max(trod, rank), clamp(lfK, 0.0, 1.0)));
+    col *= 1.0 - 0.50*lipI;
+    col *= 1.0 - 0.25*rank*(1.0 - tip);
+    /* the ground mist, far off over the turf, in the hollows */
+    float mistN = mmNoise(vec2(w.x*0.10 + uTime*0.010, w.y*0.30)) * mmNoise(w*vec2(0.05, 0.12) + 7.0);
+    float mist = smoothstep(0.18, 0.46, mistN)*smoothstep(9.0, 20.0, vDepth)*(1.0 - smoothstep(30.0, 44.0, vDepth));
+    col += vec3(0.060, 0.075, 0.095)*mist*0.55;
+    /* the far turf toward the railing takes the sky: the moon behind the
+       yard rakes the grass from beyond it, so the lawn under the fence is a
+       lit, cold band the stones stand up against, not a black strip */
+    col += max(albY, vec3(0.004)) * vec3(0.48, 0.60, 0.80) * 3.2 * smoothstep(13.0, 24.0, vDepth) * (0.70 + 0.30*mmNoise(w*0.35));
+  }
+#endif
+#if MM_R25W == 3 && MM_PAT == 2
+  /* ROUND 44 (PYRITE): THE GLASSHOUSE FLOOR UNDER ITS GLASS. Survey 8,
+     judge 2: "a black void band of floor runs between the upper planter
+     terrace and the front railing -- light the lower floor (tiles with moss,
+     a puddle catching the moon)". The house is glass overhead: the moon
+     comes down through it onto the York stone in panes -- each its own
+     brightness, the dirty and the whitewashed ones dim -- with the shadow of
+     every glazing bar and purlin drawn across the flags, a pixel and a half
+     at least; and where the hoses have been, standing water: each puddle
+     the flags gone dark and wet round it, the night glass and the moon's
+     glint lying in it. The Greenhouse's floor program only (R25W 3). */
+  if (uIsCeiling < 0.5) {
+    vec2 gq = vWorld.xz;
+    float pxG = max(mp, 1e-4);
+    vec2 gp = vec2(gq.x/0.66 + 0.18*gq.y, gq.y/1.60);
+    vec2 gf = abs(fract(gp) - 0.5)*vec2(0.66, 1.60);
+    float barS = max(1.0 - smoothstep(0.030, 0.030 + pxG*1.4, gf.x),
+                     1.0 - smoothstep(0.045, 0.045 + pxG*1.4, gf.y));
+    barS *= mmLod(0.66, pxG);
+    float pane = 0.45 + 0.55*mmHash21(floor(gp) + 7.0);
+    float cloud = 0.55 + 0.45*mmNoise(gq*0.16 + 2.0);
+    vec3 moonG = vec3(0.30, 0.46, 0.58);
+    float reach = smoothstep(2.5, 7.0, vDepth);
+    col += alb * moonG * 2.2 * pane * cloud * (1.0 - 0.88*barS) * reach;
+    /* the puddles */
+    float pn = mmFbm3(gq*0.80 + 3.0) + 0.14*mmNoise(gq*3.1);
+    float pnPx = max(length(vec2(dFdx(pn), dFdy(pn))), 1e-4);
+    float pud = clamp((pn - 0.75)/pnPx + 0.5, 0.0, 1.0);
+    float wet = smoothstep(0.64, 0.75, pn);
+    col *= 1.0 - 0.38*wet*(1.0 - pud);
+    if (pud > 0.0) {
+      /* the glass overhead mirrored: its bars as dark lines, the panes
+         the night's dark blue-green, a long glint of the moon in it */
+      vec2 rp = vec2(gq.x/0.66, gq.y/0.90);
+      vec2 rf = abs(fract(rp) - 0.5)*vec2(0.66, 0.90);
+      float rbar = max(1.0 - smoothstep(0.020, 0.020 + pxG*1.2, rf.x), 1.0 - smoothstep(0.030, 0.030 + pxG*1.2, rf.y))*mmLod(0.66, pxG);
+      vec3 sky = vec3(0.030, 0.060, 0.070)*(0.70 + 0.60*mmHash21(floor(rp) + 3.0));
+      float gl = mmNoise(vec2(gq.x*2.2, gq.y*0.35) + 9.0);
+      gl = smoothstep(0.62, 0.92, gl);
+      vec3 refl = sky*(1.0 - 0.80*rbar) + vec3(0.42, 0.58, 0.68)*gl*0.55*(1.0 - rbar);
+      /* its rim: the water's edge, a thin bright meniscus toward the moon */
+      float rim = (1.0 - smoothstep(0.0, pnPx*1.6, pn - 0.75))*pud;
+      refl += vec3(0.20, 0.28, 0.32)*rim*0.6;
+      col = mix(col, refl*uGain*0.70 + col*0.30, pud*0.90);
+    }
+  }
+#endif
   float cFog = smoothstep(uFogNear, uFogFar, vDepth);
 #if MM_FLAGK == 4
   cFog *= 0.55;
+#endif
+#if MM_R25W == 4 && MM_PAT == 11
+  /* (round 44: the far lawn under the railing kept, not fogged to a black
+     strip between the stones and the fence) */
+  cFog *= 0.25;
 #endif
   col = mix(col, uFog, cFog);
   /* THE SKY THROUGH THE GLASS, after the fog and not under it (round 18).
@@ -27432,6 +27552,21 @@ float shapeField(vec2 uv, vec2 msz, float shape, float seed){
     d = min(d, mmBox(p - vec2(0.0, 0.898), vec2(0.124 + 0.085*ey*ey, 0.030), 0.014));
     d = min(d, mmBox(p - vec2(0.0, 0.952), vec2(0.222, 0.026), 0.008));   // abacus
     d = min(d, mmBox(p - vec2(0.0, 0.982), vec2(0.236, 0.012), 0.006));   // its fillet
+#if MM_WINGS == 6
+    /* (round 44, PYRITE: in the glasshouse the column is CAST IRON -- three
+       collars bolted round the drum, and its capital a bell of leaves
+       curling out under the abacus with a volute at each corner) */
+    for (int k = 0; k < 3; k++) {
+      float cy = k == 0 ? 0.305 : (k == 1 ? 0.575 : 0.828);
+      float tc = clamp((cy - 0.14)/0.72, 0.0, 1.0);
+      float rc = 0.132*(1.0 + 0.085*sin(tc*2.6) - 0.20*tc*tc);
+      d = min(d, mmBox(p - vec2(0.0, cy), vec2(rc + 0.014, 0.016), 0.006));
+    }
+    float lfY = clamp((p.y - 0.866)/0.066, 0.0, 1.0);
+    float lfE = 0.016*abs(sin(p.x*48.0 + 0.6))*lfY;
+    d = min(d, mmBox(p - vec2(0.0, 0.898), vec2(0.126 + 0.098*lfY*lfY + lfE, 0.031), 0.010));
+    d = min(d, length(vec2(abs(p.x) - 0.214, p.y - 0.918)) - 0.030);
+#endif
 #endif
 #if MM_SH7
   } else if (shape < 7.5) {               // 7 — drape on a rail
@@ -29913,6 +30048,74 @@ void main(){
   }
 #endif
 
+  /* ROUND 44 (PYRITE): A GLASSHOUSE COLUMN IS CAST IRON GONE TO VERDIGRIS.
+     Both survey-8 judges on the Greenhouse: "the two columns framing the room
+     are saturated flat-green cylinders with no patina -- verdigris iron
+     columns with rivets, rust and highlights". In the Greenhouse's program
+     only (MM_WINGS 6), so every other wing's column is the stone it was:
+     black-leaded iron under a blue-green bloom that runs DOWN the drum in
+     streaks from every moulding the rain sits on, gathering in the flutes;
+     rust bleeding out of the joints and the foot; and three collars bolted
+     round the shaft, each a band with its rivet heads, lit on the key's
+     side. Off the prop's own luminance, so it keeps the room's light. */
+#if MM_WINGS == 6 && MM_SH6
+  if (vShape > 5.5 && vShape < 6.5) {
+    float lum = max(mmLum(albedo), 0.02);
+    float lv  = lum*2.1 + 0.030;
+    float u   = clamp((vUv.x - 0.5)/0.135, -1.0, 1.0);
+    float y   = vUv.y;
+    vec3 iron = vec3(0.060, 0.068, 0.074);
+    vec3 verd = vec3(0.150, 0.270, 0.255);
+    vec3 verdP = vec3(0.330, 0.440, 0.420);
+    vec3 rust = vec3(0.400, 0.190, 0.075);
+    /* the bloom: streaks run down from each moulding, thick under it */
+    float sources = max(max(smoothstep(0.30, 0.0, 0.840 - y)*step(y, 0.842),
+                            smoothstep(0.20, 0.0, abs(y - 0.120))),
+                        0.55*smoothstep(0.10, 0.0, abs(y - 0.31)) + 0.55*smoothstep(0.10, 0.0, abs(y - 0.58)));
+    float strk = mmFbm3(vec2(u*7.0 + vSeed*3.1, y*1.6));
+    float streak = smoothstep(0.50, 0.74, strk + 0.26*sources);
+    float bloom = smoothstep(0.35, 0.80, mmFbm3(vec2(u*3.0, y*9.0) + vSeed*5.3));
+    float patina = clamp(streak*0.90 + bloom*0.20 + 0.55*(1.0 - colSh)*bloom, 0.0, 1.0);
+    /* the capital's leaves hold the most of it, their tips rubbed bright */
+    float capM = smoothstep(0.850, 0.870, y);
+    patina = max(patina, capM*(0.55 + 0.45*bloom));
+    vec3 c = mix(iron, mix(verd, verdP, max(bloom*streak, capM*0.6*(0.5 + 0.5*sin(vUv.x*180.0)))), patina);
+    /* rust: out of the plinth and the collars' joints, running down */
+    float rS = smoothstep(0.10, 0.0, y)*0.9
+             + smoothstep(0.08, 0.0, abs(y - 0.29))*step(y, 0.30)
+             + smoothstep(0.08, 0.0, abs(y - 0.56))*step(y, 0.57);
+    float rN = smoothstep(0.50, 0.78, mmFbm3(vec2(u*11.0 + vSeed, y*3.0) + 7.7));
+    c = mix(c, rust, clamp(rS*rN*1.3, 0.0, 0.85));
+    /* the collars: a band round the drum with rivet heads along it */
+    float colr = 0.0, rivet = 0.0;
+    for (int k = 0; k < 3; k++) {
+      float cy = k == 0 ? 0.305 : (k == 1 ? 0.575 : 0.828);
+      float bd = abs(y - cy);
+      float onB = 1.0 - smoothstep(0.015, 0.019, bd);
+      colr = max(colr, onB);
+      float bend = asin(clamp(u, -0.999, 0.999))/1.5708;
+      float rp = fract(bend*4.0 + 0.5) - 0.5;
+      float rr = length(vec2(rp*0.135*3.1416*0.5*vSize.x/max(vSize.y, 0.01), (y - cy)*1.0));
+      rivet = max(rivet, (1.0 - smoothstep(0.0040, 0.0062, rr))*onB*step(abs(u), 0.92));
+    }
+    c = mix(c, iron*0.9, colr*0.92);
+    c = mix(c, verdP*0.8, colr*0.30*bloom);
+    /* each collar's upper edge catches the light, its lower edge is a dark
+       seam with the rust coming out of it */
+    for (int k = 0; k < 3; k++) {
+      float cy = k == 0 ? 0.305 : (k == 1 ? 0.575 : 0.828);
+      c *= 1.0 + 1.10*(1.0 - smoothstep(0.0, 0.004, abs(y - cy - 0.016)));
+      c *= 1.0 - 0.70*(1.0 - smoothstep(0.0, 0.004, abs(y - cy + 0.017)));
+    }
+    float kx = sign(uKeyDir.x + 0.001);
+    c = mix(c, verdP*1.4, rivet*(0.4 + 0.6*clamp(u*kx + 0.4, 0.0, 1.0)));
+    /* the drum lit on the key's side, a hard line of light down it */
+    float litE = smoothstep(0.30, 0.62, u*kx) * (1.0 - smoothstep(0.70, 0.95, u*kx));
+    c *= 0.78 + 0.50*litE*colSh;
+    albedo = mix(albedo, c*lv*3.0, 0.97);
+  }
+#endif
+
   /* A PACKING CASE IS DEAL (round 28, the shared finish's material half):
      sawn white pine gone honey with age, each board its own value -- off
      the prop's own luminance like the pot's clay, so it keeps its room's
@@ -30854,6 +31057,10 @@ void main(){
   /* (round 37: a fitting set down -- uFitK -- keeps its brass a metal's
      colour, not the grey the wood's chroma cap left it) */
   if (isFit > 0.5 && uFitK < 0.99) { satK = max(satK, 0.42); satM = max(satM, 0.60); }
+#if MM_WINGS == 6
+  /* (round 44: the verdigris on the glasshouse's iron is a material fact) */
+  if (vShape > 5.5 && vShape < 6.5) { satK = min(uPropSat, 0.22); satM = min(uPropSatMax, 0.34); }
+#endif
 #if MM_WINGS == 2
   if (vShape > 31.5 && (vShape < 37.5 || vShape > 38.5)) { satK = max(uPropSat, 0.40); satM = max(uPropSatMax, 0.58); }
 #if MM_SH39

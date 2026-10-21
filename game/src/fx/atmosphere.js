@@ -2201,6 +2201,14 @@ const GRAVE_NEAR_PLOTS = [
   /* (round 31 graft, judges 2 and 3: the plots' bottom band "a dark band with
      nothing in it" -- a low stone in the near turf, in the lantern's spill) */
   { shape: 69, edge: 0.36, z: 3.4, tone: 0.95, scale: 0.90, seed: 4.0, keep: true },
+  /* ROUND 44 (PYRITE): MORE STONES, CLUSTERED -- both survey-8 judges:
+     "sparse headstones that sit on it without shadow". A family's row of
+     small old stones leaning together in the mid lawn at your left, and a
+     child's stone and a broken one by the kerbed plot */
+  { shape: 69, x: -3.9, z: -3.6, tone: 0.80, scale: 0.72, seed: 5.3 },
+  { shape: 69, x: -3.1, z: -3.9, tone: 0.78, scale: 0.66, seed: 2.7 },
+  { shape: 69, x: -2.3, z: -3.5, tone: 0.82, scale: 0.78, seed: 4.1 },
+  { shape: 69, x: 3.2, z: 0.2, tone: 0.84, scale: 0.58, seed: 6.6 },
 ];
 /* ...and just inside the GATE, the first graves either side of the walk --
    seen from the gateway, the churchyard begins at your feet, not twenty
@@ -2222,6 +2230,13 @@ const GRAVE_NEAR_GATE = [
   { shape: 69, edge: 0.875, z: 9.0, tone: 0.92, scale: 1.20, seed: 3.0 },
   /* (round 31: and a large one in the near turf right of the walk) */
   { shape: 69, edge: 0.72, z: 8.8, tone: 0.95, scale: 1.40, seed: 1.25 },
+  /* (round 44: a cluster of old stones in the turf at your left, leaning
+     together, and a pair beyond the right-hand stone) */
+  { shape: 69, x: -7.4, z: 1.6, tone: 0.82, scale: 0.80, seed: 5.3 },
+  { shape: 69, x: -6.5, z: 1.2, tone: 0.80, scale: 0.70, seed: 2.7 },
+  { shape: 69, x: -8.2, z: 0.9, tone: 0.80, scale: 0.66, seed: 4.1 },
+  { shape: 69, x: 6.8, z: 1.0, tone: 0.82, scale: 0.72, seed: 6.6 },
+  { shape: 69, x: 7.6, z: 0.6, tone: 0.80, scale: 0.64, seed: 3.4 },
 ];
 /* ...and in the yard, seen down its row from beside the walk (round 25):
    the stones begin at your feet there too, not at the first rank 2 m
@@ -2244,6 +2259,13 @@ const GRAVE_NEAR_YARD = [
   { shape: 70, edge: 0.30, z: 3.2, tone: 0.55, scale: 1.10, seed: 4.5 },
   { shape: 70, edge: 0.03, z: -5.0, tone: 0.88 },
   { shape: 73, x:  2.80, z: -4.40, tone: 0.86, free: true },
+  /* (round 44: a family's small stones leaning together in the empty lawn
+     right of the worn path, and two more by the far tomb) */
+  { shape: 69, x: -3.4, z: -1.6, tone: 0.84, scale: 0.74, seed: 5.3, free: true },
+  { shape: 69, x: -4.1, z: -1.9, tone: 0.80, scale: 0.66, seed: 2.7, free: true },
+  { shape: 69, x: -2.7, z: -2.3, tone: 0.82, scale: 0.70, seed: 4.1, free: true },
+  { shape: 69, x: 4.6, z: -6.2, tone: 0.82, scale: 0.70, seed: 6.6, free: true },
+  { shape: 69, x: -6.2, z: -7.0, tone: 0.80, scale: 0.68, seed: 3.4, free: true },
 ];
 export const ROOM_KINDS = {
   foyer: {
