@@ -1813,29 +1813,11 @@
   font-size: 21px; letter-spacing: 2.6px;
 }
 
-/* the stamps, by distance: the fourth row on is ink on the paper */
-.map-screen .map-node.is-dim:not(.map-node--boss):is([data-ahead="4"], [data-ahead="5"], [data-ahead="6"], [data-ahead="7"], [data-ahead="8"], [data-ahead="9"]),
-.map-screen .map-node.is-cold:not(.map-node--boss) {
-  color: color-mix(in srgb, #1f130a 78%, transparent);
-}
-.map-screen .map-node.is-dim:not(.map-node--boss):is([data-ahead="4"], [data-ahead="5"], [data-ahead="6"], [data-ahead="7"], [data-ahead="8"], [data-ahead="9"]) .mn-pool,
-.map-screen .map-node.is-cold:not(.map-node--boss) .mn-pool {
-  inset: 17%;
-  opacity: 1;
-  background: radial-gradient(circle closest-side, rgb(214 182 130 / .34), rgb(214 182 130 / .14) 80%, transparent 100%);
-  box-shadow: 0 0 0 1.2px rgb(31 19 10 / .55);
-}
-.map-screen .map-node.is-dim:not(.map-node--boss):is([data-ahead="4"], [data-ahead="5"], [data-ahead="6"], [data-ahead="7"], [data-ahead="8"], [data-ahead="9"]) .mn-art .pl,
-.map-screen .map-node.is-dim:not(.map-node--boss):is([data-ahead="4"], [data-ahead="5"], [data-ahead="6"], [data-ahead="7"], [data-ahead="8"], [data-ahead="9"]) .mn-art .pw,
-.map-screen .map-node.is-cold:not(.map-node--boss) .mn-art .pl,
-.map-screen .map-node.is-cold:not(.map-node--boss) .mn-art .pw { fill: rgb(196 164 112 / .5); }
-.map-screen .map-node.is-dim:not(.map-node--boss):is([data-ahead="4"], [data-ahead="5"], [data-ahead="6"], [data-ahead="7"], [data-ahead="8"], [data-ahead="9"]) .mn-art .w3 { stroke-width: 4.4; }
-/* smaller with distance, so the far columns' rims stand apart */
-.map-screen .map-node.is-dim:not(.map-node--boss)[data-ahead="3"] .mn-in { transform: scale(calc(var(--mn-k, 1) * .94)); }
-.map-screen .map-node.is-dim:not(.map-node--boss):is([data-ahead="4"], [data-ahead="5"]) .mn-in { transform: scale(calc(var(--mn-k, 1) * .86)); opacity: .9; }
-.map-screen .map-node.is-dim:not(.map-node--boss):is([data-ahead="6"], [data-ahead="7"]) .mn-in { transform: scale(calc(var(--mn-k, 1) * .82)); opacity: .84; }
-.map-screen .map-node.is-dim:not(.map-node--boss):is([data-ahead="8"], [data-ahead="9"]) .mn-in { transform: scale(calc(var(--mn-k, 1) * .8)); opacity: .74; }
-.map-screen .map-node.is-cold:not(.map-node--boss) .mn-in { transform: scale(calc(var(--mn-k, 1) * .8)); opacity: .5; }
+/* the stamps, by distance (REPAIR r41): round 42 turned every room from the
+   fourth row on into faded ink in a pencil ring, smaller and fainter -- the
+   "muddy brown fog" survey 8's paired judges found worse than survey 7's
+   "gilt medallion" at every node. Gone: every room is its stamp to the far
+   edge (round 38's, above), with only round 38's gentle row-by-row fall. */
 /* the next rows' stamps a firmer umber, so the step to the ink is clear */
 .map-screen .map-node.is-dim:not(.map-node--boss):is([data-ahead="2"], [data-ahead="3"]) .mn-pool {
   box-shadow: 0 0 0 1.4px rgb(226 192 132 / .55), 0 0 0 3.4px #1c1108, 1px 2.5px 3px 1px rgb(10 5 2 / .55);
@@ -1873,27 +1855,11 @@
      broken lengths over the bled line -- and their names on DARK ENAMEL
      cartouches ruled in gilt, like the boss's plate (J3).
    ═══════════════════════════════════════════════════════════════════════════ */
-/* the second state: ink on the paper, readable */
-.map-screen .map-node.is-dim:not(.map-node--boss):is([data-ahead="4"], [data-ahead="5"], [data-ahead="6"], [data-ahead="7"], [data-ahead="8"], [data-ahead="9"]) {
-  color: color-mix(in srgb, #1f130a 94%, transparent);
-}
-.map-screen .map-node.is-dim:not(.map-node--boss):is([data-ahead="4"], [data-ahead="5"], [data-ahead="6"], [data-ahead="7"], [data-ahead="8"], [data-ahead="9"]) .mn-pool {
-  background: radial-gradient(circle closest-side, rgb(206 172 118 / .5), rgb(206 172 118 / .26) 78%, rgb(206 172 118 / .08) 100%);
-  box-shadow: 0 0 0 1.5px rgb(31 19 10 / .8), 0 0 0 3px rgb(222 190 136 / .22);
-}
-.map-screen .map-node.is-dim:not(.map-node--boss):is([data-ahead="4"], [data-ahead="5"]) .mn-in { opacity: 1; }
-.map-screen .map-node.is-dim:not(.map-node--boss):is([data-ahead="6"], [data-ahead="7"]) .mn-in { opacity: .96; }
-.map-screen .map-node.is-dim:not(.map-node--boss):is([data-ahead="8"], [data-ahead="9"]) .mn-in { opacity: .9; }
-.map-screen .map-node.is-cold:not(.map-node--boss) .mn-in { opacity: .62; }
-.map-screen .map-node.is-cold:not(.map-node--boss) .mn-pool { box-shadow: 0 0 0 1.2px rgb(31 19 10 / .5); }
-
 /* routes: continuous ink between rooms still reachable, fading with distance */
 .map-screen .mi-edges .mi-edge.is-dead:not(.is-cold):not(.mi-edge--entry) {
   stroke-dasharray: none; stroke-linecap: round;
   stroke-width: 3.6; opacity: .74;
 }
-.map-screen .mi-edges .mi-edge.is-dead:not(.is-cold):not(.mi-edge--entry):is([data-ahead="4"], [data-ahead="5"]) { opacity: .6; stroke-width: 3.2; }
-.map-screen .mi-edges .mi-edge.is-dead:not(.is-cold):not(.mi-edge--entry):is([data-ahead="6"], [data-ahead="7"], [data-ahead="8"], [data-ahead="9"]) { opacity: .48; stroke-width: 3; }
 /* ...and only a route cut off is dashed */
 .map-screen .mi-edges .mi-edge.is-cold:not(.mi-edge--entry) { stroke-dasharray: 10 8; stroke-linecap: butt; opacity: .34; }
 
@@ -1937,3 +1903,47 @@
   .map-screen .map-node:not(.map-node--boss) .mn-label { font-size: 18px; --tag-h: 28px; line-height: 1.05; }
   .map-screen .map-legend .lg-h { font-size: 13px; }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   REPAIR r41 — THE WHOLE WING LEGIBLE AGAIN
+   Survey 8's paired test (both judges, map by 1 and 2, hud-late by 1 and 2):
+   round 42 "fades most of the map into a muddy brown fog with faint routes";
+   survey 7 "inks every node as a gilt medallion and every route as a dark
+   line on lit parchment, so the whole wing reads". Kept from round 42: the
+   reachable rooms lit, rimmed and enamel; the districts in ink on dark
+   plates; the inked routes; the 12 px+ tags at 1280. Undone: the sheet's
+   vignette (map.js 2b), the fourth-row-on ink ghosts (above). Where you can
+   go is marked by ADDING light and rim to those rooms:
+   - every route between rooms still reachable a dark inked line to the far
+     edge, a step darker than survey 7's (the plan's own lines stay under it);
+   - every stamp held to the far edge: round 38's row-by-row fall lifted, so
+     the last column is a firm medallion, not a ghost;
+   - at the Deck's 1280 the far columns a touch smaller, so no two rims touch
+     (survey 7, J2) without fading them;
+   - the rooms you may enter: a gilt rim of light round the medallion and the
+     candle brought closer.
+   ═══════════════════════════════════════════════════════════════════════════ */
+.map-screen .mi-edges .mi-edge.is-dead:not(.is-cold):not(.mi-edge--entry) { opacity: .86; stroke-width: 3.8; }
+.map-screen .mi-edges .mi-edge.is-cold:not(.mi-edge--entry) { opacity: .42; }
+.map-screen .map-node.is-dim:not(.map-node--boss):is([data-ahead="4"], [data-ahead="5"]) .mn-in { opacity: 1; }
+.map-screen .map-node.is-dim:not(.map-node--boss):is([data-ahead="6"], [data-ahead="7"]) .mn-in { opacity: .96; }
+.map-screen .map-node.is-dim:not(.map-node--boss):is([data-ahead="8"], [data-ahead="9"]) .mn-in { opacity: .92; }
+.map-screen .map-node.is-cold:not(.map-node--boss) .mn-in { opacity: .7; }
+@media (max-width: 1500px) {
+  .map-screen .map-node.is-dim:not(.map-node--boss):is([data-ahead="4"], [data-ahead="5"], [data-ahead="6"], [data-ahead="7"], [data-ahead="8"], [data-ahead="9"]) .mn-in,
+  .map-screen .map-node.is-cold:not(.map-node--boss) .mn-in { transform: scale(calc(var(--mn-k, 1) * .92)); }
+}
+/* the rooms you may enter: light and rim ADDED */
+.map-screen .map-node.is-legal .mn-pool {
+  box-shadow:
+    0 0 0 1.5px color-mix(in srgb, var(--kit-gold-hi) 85%, white),
+    0 0 0 3.5px color-mix(in srgb, var(--kit-gall) 85%, transparent),
+    0 0 0 5.2px color-mix(in srgb, var(--kit-gold-hi) 70%, transparent),
+    0 4px 8px 1px rgb(8 4 2 / .62),
+    0 0 34px 12px color-mix(in srgb, var(--kit-candle) 52%, transparent);
+}
+/* the district's name on the kit's cartouche (map.js): dark enamel, a gilt
+   edge, the condition's own ink as the inner rule, a gilt bead at each point */
+.map-screen .mi-zone-names .mi-zone-plate { stroke-linejoin: round; }
+.map-screen .mi-zone-names .mi-zone-plate-rule { stroke-width: 1.3; stroke-linejoin: round; }
+.map-screen .mi-zone-names .mi-zone-plate-bead { fill: var(--kit-gold-hi); stroke: none; }
