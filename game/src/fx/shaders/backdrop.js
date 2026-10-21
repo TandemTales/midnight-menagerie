@@ -5150,6 +5150,9 @@ float mmSeg2V(vec2 p, vec2 a, vec2 b, float r){
    the hedge has settled. Metres above or below the run's set height; amp
    is the tallest clump. Continuous in u (every dome falls to nothing at its
    cell's edge), so its coverage and its pen line are smooth. */
+/* (round 43 graft: the crown's dip, its withered notch, how far into the
+   notch, and its sprig at this u -- set by yewRagW, read by hedgeWallH) */
+float gRagDip = 0.0, gRagGap = 0.0, gRagGk = 0.0, gRagSpr = 0.0;
 float yewRagW(float u, float sd, float amp){
   /* ROUND 41 (AMETHYST): THE CROWN CLIPPED. Both survey-7 judges: "the
      hedge walls are lumpy smeared blobs with no clipped top line"; "paint
@@ -5190,28 +5193,103 @@ float yewRagW(float u, float sd, float amp){
      or two wide, each its own hand proud of the old cut; and here and there
      a stretch of it DEAD -- sunk a forearm into the hedge, brown, the bare
      sprigs of it standing up out of the hollow against the sky. */
-  float q4 = u/0.47 + sd*0.91;
-  float f4 = fract(q4), h4 = mmHash11(floor(q4)*3.31 + sd);
-  float lobe = sqrt(max(1.0 - 4.0*(f4 - 0.5)*(f4 - 0.5), 0.0))*(0.025 + 0.085*h4);
-  float q5 = u/1.9 + sd*0.53;
-  float h5 = mmHash11(floor(q5)*7.17 + sd);
-  float gw5 = 0.34 + 0.28*fract(h5*9.3);
-  float g5 = step(0.70, h5)*(1.0 - smoothstep(gw5*0.20, gw5*1.05, abs(fract(q5) - 0.5)*2.0));
-  float sink = g5*(0.20 + 0.22*fract(h5*5.7));
-  float q6 = u/0.075 + sd*4.1;
-  float f6 = fract(q6), h6 = mmHash11(floor(q6)*2.91 + sd);
-  float twg = pow(max(1.0 - abs(f6 - 0.5)/0.16, 0.0), 0.5);
-  float sprig = g5*step(0.50, h6)*twg*sink*(0.55 + 0.45*fract(h6*7.1));
-  r += lobe;
-  return lvl + sag + r*mix(1.0, amp, 0.6) - sink + sprig - 0.020;
+  /* (round 43 GRAFT: CUPRITE's clumps and sunk stretches gave way to the two
+     the judges named -- all three on survey 8's sheets: BENITOITE's LEAFY,
+     UNDULATING crown along every wall, back walls and the court's included,
+     and ZINCITE's WITHERED NOTCHES with their bare dead twigs.)
+     BENITOITE's: the sprays along the line a hand proud and broken (r at
+     2.1), the crown sagging every few strides into a long soft dip, and bare
+     dead sprigs standing up out of the line, thickest in a dip. */
+  r *= 2.1;
+  float qd = u/3.9 + sd*0.71;
+  float di = floor(qd), df = fract(qd);
+  float dc = 0.25 + 0.5*mmHash11(di*5.17 + sd);
+  float dwid = 0.12 + 0.16*mmHash11(di*2.31 + sd);
+  float dt = clamp(abs(df - dc)/dwid, 0.0, 1.0);
+  float dip = step(0.36, mmHash11(di*3.91 + sd))*(0.5 + 0.5*cos(dt*3.1416))*(0.22 + 0.34*mmHash11(di*8.71 + sd));
+  dip *= 0.80 + 0.40*(0.5 + 0.5*sin(u*8.0 + sd*3.0)*sin(u*3.3 + sd));   // (a sine, not BENITOITE's noise tap: the frame budget)
+  float qs = u/0.11 + sd*4.3;
+  float fs = fract(qs), hs = mmHash11(floor(qs)*6.71 + sd);
+  float cs = 0.5 + (fract(hs*7.3) - 0.5)*0.5;
+  float sprig = step(0.80 - 0.45*smoothstep(0.02, 0.12, dip), hs)*max(1.0 - abs(fs - cs)/0.22, 0.0)*(0.08 + 0.24*fract(hs*17.1));
+  /* ZINCITE's: every few strides the yew has died back from the top -- the
+     line drops into a ragged hollow a hand to two feet deep and a pace or two
+     wide, the leaf breaking down into it in clumps (yewTwigW draws the dead
+     wood left standing in it). Continuous in u. */
+  const float GL = 5.6;
+  float gv = u/GL + sd*0.53 + 0.31;
+  float gi = floor(gv), gf = fract(gv);
+  float hg = mmHash11(gi*4.37 + sd*1.3);
+  float gon = step(0.40, hg);
+  float gc0 = 0.24 + 0.52*fract(hg*7.31);
+  float ghw = (0.38 + 0.46*fract(hg*13.7))/GL;
+  float gt = (gf - gc0)/ghw;
+  float bell = max(1.0 - gt*gt, 0.0);
+  float rag = 0.5 + 0.5*sin(u*13.0 + sd*3.0)*sin(u*5.3 + sd);
+  float notch = (0.28 + 0.40*fract(hg*3.9))*gon*bell*(0.72 + 0.28*rag)*smoothstep(0.0, 0.35, bell);
+  /* (together never deeper than the crown's metre the caller reads) */
+  float sinkT = min(dip + notch, 0.86);
+  gRagDip = dip; gRagGap = notch; gRagGk = bell*gon; gRagSpr = sprig;
+  return lvl + sag + r*mix(1.0, amp, 0.6) - sinkT + sprig - 0.020;
 }
-/* (round 43: how much of the crown over u is a withered stretch -- the same
-   cells yewRagW sinks -- for its colour) */
-float yewDeadW(float u, float sd){
-  float q5 = u/1.9 + sd*0.53;
-  float h5 = mmHash11(floor(q5)*7.17 + sd);
-  float gw5 = 0.34 + 0.28*fract(h5*9.3);
-  return step(0.70, h5)*(1.0 - smoothstep(gw5*0.75, gw5*1.15, abs(fract(q5) - 0.5)*2.0));
+/* (round 43 GRAFT, ZINCITE's) THE DEAD WOOD: the bare stems the wither left
+   standing, forked, up out of each notch, and here and there a dead sprig up
+   out of the clipped line itself -- drawn over its own pixel, only against
+   the sky (the caller asks only there). How much of this pixel is dead stem;
+   top is the crown here, u and y in metres. */
+float yewTwigW(float u, float y, float top, float sd, float px){
+  float tw = 0.0;
+  const float GL = 5.6;
+  float gv = u/GL + sd*0.53 + 0.31;
+  float gi = floor(gv);
+  float hg = mmHash11(gi*4.37 + sd*1.3);
+  if (hg >= 0.40) {
+    float c0 = (gi + 0.24 + 0.52*fract(hg*7.31) - sd*0.53 - 0.31)*GL;
+    float hwm = 0.38 + 0.46*fract(hg*13.7);
+    float dep = 0.28 + 0.40*fract(hg*3.9);
+    /* (the frame budget: only in its notch's own column) */
+    if (abs(u - c0) < hwm + 0.45 && y < 3.30 + 0.6*dep) for (int k = 0; k < 4; k++){
+      float fk = float(k);
+      float hk = mmHash11(fk*5.3 + gi*1.7 + sd);
+      /* (its foot down in the leaf, so a dip under the notch does not leave
+         it standing in the air: only the part over the leaf is drawn) */
+      vec2 b = vec2(c0 + (fk - 1.5)*hwm*0.42 + (hk - 0.5)*0.18, 3.20 - dep - 0.30);
+      float an = (hk - 0.5)*0.75 + (fk - 1.5)*0.12;
+      float L = dep*(0.85 + 0.55*fract(hk*9.1)) + 0.30;
+      vec2 dir = vec2(sin(an), cos(an));
+      vec2 pa = vec2(u, y) - b;
+      float tt = clamp(dot(pa, dir)/L, 0.0, 1.0);
+      float d = length(pa - dir*L*tt) - mix(0.016, 0.006, tt);
+      vec2 fb = b + dir*L*0.62;
+      float an2 = an + (fract(hk*17.3) > 0.5 ? 0.55 : -0.55);
+      vec2 dir2 = vec2(sin(an2), cos(an2));
+      vec2 pb = vec2(u, y) - fb;
+      float t2 = clamp(dot(pb, dir2)/(L*0.40), 0.0, 1.0);
+      d = min(d, length(pb - dir2*L*0.40*t2) - 0.006);
+      tw = max(tw, clamp(0.5 + (max(0.0, 0.75*px) - d)/max(px, 1e-5), 0.0, 1.0));
+    }
+  }
+  /* a dead sprig up out of the clipped line, one stride in three */
+  float sv = u/2.3 + sd*0.71;
+  float si = floor(sv);
+  float hs = mmHash11(si*3.91 + sd*2.2);
+  if (hs > 0.62) {
+    float x0 = (si + 0.2 + 0.6*fract(hs*5.7) - sd*0.71)*2.3;
+    float L = 0.18 + 0.32*fract(hs*11.3);
+    float an = (fract(hs*23.1) - 0.5)*0.9;
+    vec2 dir = vec2(sin(an), cos(an));
+    vec2 b = vec2(x0, top - 0.10);
+    vec2 pa = vec2(u, y) - b;
+    float tt = clamp(dot(pa, dir)/L, 0.0, 1.0);
+    float d = length(pa - dir*L*tt) - mix(0.010, 0.004, tt);
+    float an2 = an + 0.6;
+    vec2 d2 = vec2(sin(an2), cos(an2));
+    vec2 pb = vec2(u, y) - (b + dir*L*0.5);
+    float t2 = clamp(dot(pb, d2)/(L*0.4), 0.0, 1.0);
+    d = min(d, length(pb - d2*L*0.4*t2) - 0.004);
+    tw = max(tw, clamp(0.5 + (max(0.0, 0.75*px) - d)/max(px, 1e-5), 0.0, 1.0));
+  }
+  return tw;
 }
 /* THE HEDGE MAZE'S WALLS. Clipped yew 3.2 m high -- the yew runs' (shape
    28) own height, so a run across the way and the walls either side are one
@@ -5253,7 +5331,17 @@ float hedgeWallH(vec2 q, float qpx, out float occ){
      0.58 m at the court's 1.5 -- every pixel up there returns or is dropped
      below before anything reads it -- save in a finial's column, where a
      ball stands up to 1.8 m over the cut on the crown it sits on) */
+  gRagDip = 0.0; gRagGap = 0.0; gRagGk = 0.0; gRagSpr = 0.0;
   float top = HH + (q.y > HH - 0.95 && (q.y < HH + 1.0 || (far > 0.5 && abs(fxl) < 1.5)) ? yewRagW(u, sd, ragA) : 0.0);
+  /* (round 43 graft: a finial stands on a KEPT stretch of the crown -- no dip
+     or notch under it, or the ball floats -- and the fountain court, the
+     kept heart of the maze, has its notches half as deep, ZINCITE's) */
+  float keepF = far*step(0.35, fk)*(1.0 - smoothstep(0.60, 1.30, abs(fxl)));
+  float ragDip = gRagDip*(1.0 - keepF), ragSpr = gRagSpr*(1.0 - keepF);
+  float ragGap = gRagGap*(1.0 - keepF)*mix(1.0, 0.45, court), ragGk = gRagGk*(1.0 - keepF);
+  /* (...nor a sprig: its sides inked down through the ball read as stripes) */
+  top += min(gRagDip + gRagGap, 0.86) - min(ragDip + ragGap, 0.86) - gRagSpr*keepF;
+  float topB = top - ragSpr;   // (BENITOITE's: the line under the sprigs -- the light along the cut follows it, not them)
   /* (computed on every far-wall pixel and switched off after: a finial's
      distance set to a constant where there is none made mmCover's gradient
      a thousand across every cell boundary, and a half-covered pixel there) */
@@ -5270,7 +5358,7 @@ float hedgeWallH(vec2 q, float qpx, out float occ){
   if (far > 0.5 && q.y > HH - 0.60 && abs(fxl) > 1.5)
     fin = length(vec2(fxl, max(abs(q.y - HH - 0.80) - 0.96, 0.0))) - 0.56;
   else if (far > 0.5 && q.y > HH - 0.60) {
-    finY += max(yewRagW(u - fxl, sd, ragA), -0.10);
+    finY += max(yewRagW(u - fxl, sd, ragA) + min(gRagDip + gRagGap, 0.86) - gRagSpr, -0.10);   // (round 43 graft: on the kept crown, keepF)
     vec2 c = vec2(fxl, q.y - finY);
     float nk = mmBox(c - vec2(0.0, 0.10), vec2(0.20, 0.16), 0.06);
     float br = court > 0.5 ? 0.50 : 0.44;
@@ -5306,21 +5394,29 @@ float hedgeWallH(vec2 q, float qpx, out float occ){
     float crown = (th - q.y) - abs(tx2)*(2.4 + 0.8*mmHash11(ti*6.1))*(1.0 + 0.14*sin(q.y*6.0 + ti));
     woodC = mmCover(crown*0.4) * step(0.2, mmHash11(ti*5.3 + uSeed));
   }
-  float hedge = cov * (1.0 - inGap);
+  /* (round 43 graft, ZINCITE's: the dead wood standing in a notch and out of
+     the line -- only where it can be seen, over the leaf against the sky,
+     and not on a kept stretch under a finial) */
+  float deadW = 0.0;
+  /* (the frame budget: a twig's tip is never more than a metre over a
+     notch's floor nor a sprig's half a metre over the line -- the side
+     walls' sky over that returns at once, as it did) */
+  if (q.y > top - 0.02 && q.y < min(HH + 0.60, top + (ragGk > 0.001 ? 1.0 : 0.45)) && keepF < 0.5) deadW = yewTwigW(u, q.y, top, sd, qpx);
+  float hedge = max(cov, deadW) * (1.0 - inGap);
   /* above the hedge a SIDE wall is not there: skip the leaf entirely (it
      is a third of the side walls' pixels and all of the sky over them) */
   gWDisc = (1.0 - far) * (1.0 - hedge);
   /* (round 34: above the crown where it IS, not above a ruled line a metre
      over it -- the side walls are near and tall in the frame, and a metre
      of sky over each run through the whole face cost the maze fight ~4 ms) */
-  if (far < 0.5 && q.y > top + max(0.08, 3.0*qpx)) { gHedgeAmt = 0.0; return 0.0; }
+  if (far < 0.5 && q.y > top + max(0.08, 3.0*qpx) && deadW < 0.001) { gHedgeAmt = 0.0; return 0.0; }
   /* (fix/hedge-frame: and over the FAR hedge's crown and clear of its
      finials -- the sky, which is half the far wall in the maze fight -- none
      of the leaf below is seen: solidM is 0 there, so h, the colour, the moon
      and the edge are all multiplied out, and only the wood beyond is drawn.
      It is taken above, in the flow every pixel shares, so its edge's
      coverage reads the same derivatives it always did.) */
-  if (far > 0.5 && q.y > top + max(0.08, 3.0*qpx) && fin > max(0.06, 3.0*qpx)) { gHedgeAmt = 0.0; gWood = woodC; return 0.0; }
+  if (far > 0.5 && q.y > top + max(0.08, 3.0*qpx) && fin > max(0.06, 3.0*qpx) && deadW < 0.001) { gHedgeAmt = 0.0; gWood = woodC; return 0.0; }
   /* (fix/hedge-frame: and a SIDE hedge's way through, 3 px in from either
      jamb -- main() drops every pixel of it (gWDisc); gHzDrop says it may
      drop these before it lights them, every neighbour in their quads being
@@ -5333,7 +5429,7 @@ float hedgeWallH(vec2 q, float qpx, out float occ){
      relief now; the extra noise tap under it is the frame's) */
   float h = 1.20 + rel*3.2;
   /* the clipped shoulder: the last 0.25 m rounds over onto the top */
-  float sh = smoothstep(top - 0.30, top, q.y);
+  float sh = smoothstep(topB - 0.30, topB, q.y);
   h -= sh*sh*0.30;
   /* ROUND 34: THE FOOT IN ITS OWN SHADOW (both survey-5 judges: "dark
      shadowed undersides and bases where they meet the lawn"): the leaf's
@@ -5377,7 +5473,7 @@ float hedgeWallH(vec2 q, float qpx, out float occ){
   /* THE MOON ON THE CROWN: only the upper faces of the sprays in the top
      half-metre, and the upper face of a ball -- a broken, leafy catch of
      light, never a line; the band's own fall-off keeps it off the face */
-  float crownB = smoothstep(top - 0.55, top - 0.06, q.y);
+  float crownB = smoothstep(topB - 0.55, topB - 0.06, q.y);
   gWLit = crownB * lit * hedge * 0.85
         + finC * court * smoothstep(-0.10, 0.45, bq.y) * lit * 0.8;
   /* (round 34 graft, VIVIANITE's: and the upper face of every clump down the
@@ -5512,8 +5608,21 @@ float hedgeWallH(vec2 q, float qpx, out float occ){
   /* (round 43: the withered stretches of the crown brown and dry, going
      down into the hedge a metre under the sunk top, and the clumps either
      side of them green) */
-  float dead = yewDeadW(u, sd)*smoothstep(top - 1.10, top - 0.15, q.y)*hedge;
-  yew = mix(yew, vec3(mmLum(yew))*vec3(1.55, 1.00, 0.52)*0.85, dead*0.85);
+  /* (round 43 GRAFT: the withered crown in its colours. BENITOITE's: the
+     sprigs standing over the line bare grey-brown wood -- only IN the sprig,
+     between the line and its tip, so a finial's ball over it is never
+     striped -- and the leaf lining a dip touched with rust. ZINCITE's: the
+     leaf round a notch gone to the rust of dead yew a metre down from the
+     crown, and the dead stems in it bare wood, the moon along them.) */
+  {
+    float sprT = step(0.002, ragSpr)*smoothstep(topB - 0.004, topB + 0.015, q.y)*step(q.y, top + qpx)*(1.0 - finC);
+    float dipT = clamp(ragDip*2.4, 0.0, 1.0)*smoothstep(top - 0.45, top - 0.03, q.y)*0.55;
+    vec3 deadC = vec3(0.110, 0.092, 0.074)*(lum*2.6 + 0.020)*1.6;
+    vec3 rustL = vec3(0.180, 0.120, 0.060)*(lum*2.6 + 0.020)*1.5*(0.70 + 0.60*tone);
+    yew = mix(yew, rustL, dipT*(1.0 - corr));
+    yew *= mix(vec3(1.0), vec3(1.18, 0.80, 0.46), ragGk*smoothstep(top - 0.95, top - 0.12, q.y)*0.75*(1.0 - corr));
+    yew = mix(yew, deadC, max(sprT, deadW*(1.0 - cov))*(1.0 - corr));
+  }
   yew *= mix(1.0, 0.50, corr*ret);
   yew = mix(yew, yew*0.12, niche*(1.0 - stone));
   /* (round 29 graft: the court figures in pale stone, carved in their own
@@ -5535,7 +5644,8 @@ float hedgeWallH(vec2 q, float qpx, out float occ){
      leaf's tips only breaking it a little) */
   /* (round 41 graft, LABRADORITE's SHOULDER: the clipped top rounding over
      takes the moon a hand and more deep, under the pen line of its top) */
-  gHedgeEdge = hedge*(1.0 - inGap)*smoothstep(top - 0.26, top - 0.04, q.y)*(0.70 + 0.30*lit)*(1.0 - gapY);
+  gHedgeEdge = hedge*(1.0 - inGap)*smoothstep(topB - 0.26, topB - 0.04, q.y)*(0.70 + 0.30*lit)*(1.0 - gapY)*(1.0 - step(0.002, ragSpr)*step(topB, q.y))*(1.0 - deadW*(1.0 - cov));
+  gWLit *= 1.0 - 0.75*deadW*(1.0 - cov);    // (round 43 graft: the dead stems are wood, not a lit crown)
   gWLit += gHedgeEdge*1.3;
   gCol = yew;
   gColAmt = solidM;
@@ -20426,6 +20536,7 @@ float yewArch(vec2 m, float seed){
    the hedge has settled. Metres above or below the run's set height; amp
    is the tallest clump. Continuous in u (every dome falls to nothing at its
    cell's edge), so its coverage and its pen line are smooth. */
+float gRagDipP = 0.0, gRagGkP = 0.0, gRagSprP = 0.0;   // (round 43 graft: as the walls' -- yewRagP)
 float yewRagP(float u, float sd, float amp){
   /* ROUND 41 (AMETHYST): THE CROWN CLIPPED. Both survey-7 judges: "the
      hedge walls are lumpy smeared blobs with no clipped top line"; "paint
@@ -20457,11 +20568,30 @@ float yewRagP(float u, float sd, float amp){
   float f3 = fract(q3), h3 = mmHash11(floor(q3)*5.93 + sd);
   float tip = max(1.0 - abs(f3 - 0.5 - (h3 - 0.5)*0.3)/0.40, 0.0);
   r = max(r, step(0.86, h3)*sqrt(tip)*(0.035 + 0.050*fract(h3*13.7)));
-  /* (round 43: the maze's WALLS grow out into clumps and withered,
-     sprigged stretches -- yewRagW; a run across the way keeps its clipped
-     line: the prop program is the maze fight's dearest, and its link is at
-     the budget) */
-  return lvl + sag + r*mix(1.0, amp, 0.6) - 0.020;
+  /* (round 43 GRAFT: and a run across the way withers with the walls --
+     all three survey-8 judges on CUPRITE's sheet: "the back wall still
+     ruler-straight". yewRagW's crown, BENITOITE's undulating leafy line and
+     ZINCITE's notches, at a run's own scale: the sprays a hand proud, a long
+     soft dip every few strides, dead sprigs standing up out of the line, and
+     a ragged notch where the yew has died back. The dip, the notch and the
+     sprig are handed on for the paint: gYewDead.) */
+  r *= 2.1;
+  float qd = u/3.9 + sd*0.71;
+  float di = floor(qd), df = fract(qd);
+  float dc = 0.25 + 0.5*mmHash11(di*5.17 + sd);
+  float dwid = 0.12 + 0.16*mmHash11(di*2.31 + sd);
+  float dt = clamp(abs(df - dc)/dwid, 0.0, 1.0);
+  float dip = step(0.36, mmHash11(di*3.91 + sd))*(0.5 + 0.5*cos(dt*3.1416))*(0.20 + 0.30*mmHash11(di*8.71 + sd));
+  float qs = u/0.11 + sd*4.3;
+  float fs = fract(qs), hs = mmHash11(floor(qs)*6.71 + sd);
+  float sprig = step(0.80 - 0.45*smoothstep(0.02, 0.12, dip), hs)*max(1.0 - abs(fs - 0.5 - (fract(hs*7.3) - 0.5)*0.5)/0.22, 0.0)*(0.08 + 0.22*fract(hs*17.1))*min(amp, 1.0);
+  float gv = u/3.9 + sd*0.53 + 0.31;
+  float hg = mmHash11(floor(gv)*4.37 + sd*1.3);
+  float gt = (fract(gv) - 0.24 - 0.52*fract(hg*7.31))/((0.34 + 0.40*fract(hg*13.7))/3.9);
+  float bell = max(1.0 - gt*gt, 0.0)*step(0.40, hg);
+  float notch = (0.26 + 0.36*fract(hg*3.9))*bell*(0.72 + 0.28*(0.5 + 0.5*sin(u*13.0 + sd*3.0)*sin(u*5.3 + sd)))*smoothstep(0.0, 0.35, bell);
+  gRagDipP = dip; gRagGkP = bell; gRagSprP = sprig;
+  return lvl + sag + r*mix(1.0, amp, 0.6) - min(dip + notch, 0.80) + sprig - 0.020;
 }
 /* (the tallest clump a run's quad has room for over its set top) */
 /* (round 34 graft: the crown's scale, 1.3 as the far wall's, held so its
@@ -29050,9 +29180,14 @@ float reliefH(vec2 uv, vec2 msz, vec2 mpp, float shape, float seed, out float ti
        judges named on VANDYKE's): only the upper faces of the sprays in its
        top half-metre, so the light breaks with the leaf */
     /* (round 34: the moon follows the grown-out crown, yewRagP) */
-    if (topi < 0.5 && m.y > top - 0.95) top += yewRagP(m.x + seed*2.3, seed, yewAmp(msz, seed)) * smoothstep(msz.x*0.5 - 0.11, msz.x*0.5 - 0.56, abs(m.x));   // (graft: only in the crown's metre)
-    gYewTop  = smoothstep(top - 0.55, top - 0.05, m.y) * step(m.y, top + 0.10) * ylit;
-    gYewEdge = smoothstep(top - 0.12, top - 0.03, m.y) * step(m.y, top + 0.06) * (0.75 + 0.25*ylit) * (1.0 - topi);   // (round 41: the clipped line)
+    gRagDipP = 0.0; gRagGkP = 0.0; gRagSprP = 0.0;
+    float endP = smoothstep(msz.x*0.5 - 0.11, msz.x*0.5 - 0.56, abs(m.x));
+    if (topi < 0.5 && m.y > top - 0.95) top += yewRagP(m.x + seed*2.3, seed, yewAmp(msz, seed)) * endP;   // (graft: only in the crown's metre)
+    /* (round 43 graft: the light along the cut follows the line under the
+       sprigs, BENITOITE's, not the sprigs) */
+    float topBP = top - gRagSprP*endP;
+    gYewTop  = smoothstep(topBP - 0.55, topBP - 0.05, m.y) * step(m.y, topBP + 0.10) * ylit;
+    gYewEdge = smoothstep(topBP - 0.12, topBP - 0.03, m.y) * step(m.y, topBP + 0.06) * (0.75 + 0.25*ylit) * (1.0 - topi);   // (round 41: the clipped line)
     /* ROUND 34: THE FOOT IN ITS OWN SHADOW (both judges: "dark shadowed
        undersides and bases where they meet the lawn"): the leaf's lower
        hem hangs ragged a hand or two over the turf, and under it the old
@@ -29079,7 +29214,13 @@ float reliefH(vec2 uv, vec2 msz, vec2 mpp, float shape, float seed, out float ti
     gYewTop += 0.24*gYewDomeP*smoothstep(0.6, top - 0.4, m.y)*(1.0 - gYewFoot)*(1.0 - topi)*(0.6 + 0.4*ylit);
     float ad = yewArch(m, seed);
     gYewRev = (1.0 - smoothstep(0.02, 0.20, ad)) * step(ad, 0.20) * (1.0 - topi);
-    gYewDead = smoothstep(0.62, 0.84, mmNoise(m*0.55 + seed*4.0)) * (1.0 - topi);
+    /* (round 43 graft: the withered crown -- yewRagP's dip, notch and
+       sprigs, for the paint: over 1 a dead sprig (only in it, never above
+       its tip), under 1 the rust lining a dip and round a notch) */
+    gYewDead = (topi < 0.5 && m.y > top - 1.0)
+      ? clamp(step(0.002, gRagSprP)*smoothstep(topBP - 0.004, topBP + 0.015, m.y)*step(m.y, top + 0.01)*2.0
+              + max(clamp(gRagDipP*2.4, 0.0, 1.0)*smoothstep(top - 0.45, top - 0.03, m.y)*0.50,
+                    gRagGkP*smoothstep(top - 0.95, top - 0.12, m.y)*0.75)*endP, 0.0, 2.0) : 0.0;
     if (topi > 0.5) {
       /* a clipped form is a SOLID: in shade under its own overhang and
          toward its foot, lit across its crown */
@@ -29573,6 +29714,10 @@ void main(){
     yew = mix(yew, yew*vec3(0.34, 0.30, 0.26), gYewFoot*0.85);
     /* (round 34: under the hem, the hedge's dark inside and its stems) */
     yew = mix(yew, mix(vec3(0.010, 0.010, 0.009), vec3(0.050, 0.040, 0.030)*(lum*1.4 + 0.02)*5.0, gYewStem), gYewHem);
+    /* (round 43 graft: the withered crown -- gYewDead: under 1 the rust
+       lining a dip and a notch, over 1 a dead sprig's bare wood) */
+    yew = mix(yew, yew*vec3(1.30, 0.86, 0.50), clamp(gYewDead, 0.0, 1.0)*0.85);
+    yew = mix(yew, vec3(0.110, 0.092, 0.074)*(lum*1.05 + 0.018)*1.9, clamp(gYewDead - 1.0, 0.0, 1.0));
     albedo = yew * (1.0 - gYewRev*0.85);
   }
 #endif
