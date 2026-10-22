@@ -758,11 +758,11 @@ export const REGIONS = {
                     turf -- the band of lawn left of the walk, above the hand in a
                     fight -- not under the bottom of the frame) */
                  pool: { ahead: 10.5, across: -5.0, abs: true, rAlong: 4.2, rAcross: 3.6, k: 4.5, color: '#94aad0' } },
-    /* (round 44 graft: 37, from 34 -- SPHENE's 40 less three for the frame
-       budget, the Graveyard's fight being the closest to the line of the
-       four; "MORE headstones clustered, each with a cast shadow", both
-       judges, is mostly the near lists' clusters below, where they are seen) */
-    props: { shapes: [69, 69, 70, 71, 69], solo: [71], count: 37, height: 1.5, layout: 'rows',
+    /* (round 44 graft, SPHENE's: 40 -- "MORE headstones clustered, each with
+       a cast shadow", both judges; and the near lists' clusters below. (37
+       was tried for the frame budget: the deal moved the yard's yews over
+       its moon.)) */
+    props: { shapes: [69, 69, 70, 71, 69], solo: [71], count: 40, height: 1.5, layout: 'rows',
              near: [{ shape: 69, edge: 0.90, z: -0.8, tone: 0.90 },
                     { shape: 70, edge: 0.975, z: 1.6, tone: 0.90 },
                     { shape: 73, x: 6.8, z: -9.5, tone: 0.90 },
