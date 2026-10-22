@@ -256,6 +256,12 @@ once under load, 985/0 alone); the other 13 wings identical. **The paintings'
 names are GONE (`eaba2a4d`):** no plates, no names; stand-ins 7 -> 0. **NOW:
 round 44's graft** (`GRAFT-r44.md`, D:/UILOOP/r44/wt/r44-graft), then a paired
 check of the four wings vs survey 8.
+**ROUND 44'S GRAFT IS MERGED, VERIFIED AND PUSHED (`8b4cd981`):** paired 7 of 8
+vs survey 8, 8-2 vs PYRITE (the two losses were tidy-ups in the Nursery --
+put back). **The frame budget is tight:** pk-1 15.53 (+0.19 on a slow BASE),
+gh-1 +0.84, gy-1 +0.83, nursery-1 +1.20 ms; the Greenhouse prop program links
+in 13.1 s. NOW: a look-neutral frame-budget pass on those four fights
+(fix/r44-frame), then SURVEY 9.
 
 **ROUND 33 AND ITS GRAFT ARE MERGED, VERIFIED AND PUSHED (2026-10-16):**
 graft `9d008119`. COBALT +1.59 (`531126e4`): no running line under 11 px at
