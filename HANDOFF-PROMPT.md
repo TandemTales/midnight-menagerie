@@ -262,6 +262,14 @@ put back). **The frame budget is tight:** pk-1 15.53 (+0.19 on a slow BASE),
 gh-1 +0.84, gy-1 +0.83, nursery-1 +1.20 ms; the Greenhouse prop program links
 in 13.1 s. NOW: a look-neutral frame-budget pass on those four fights
 (fix/r44-frame), then SURVEY 9.
+**THE FRAME PASS IS MERGED:** look-neutral; nursery-1 12.80 (-0.29), the
+Greenhouse big prop link 12.4 s (12.8; BASE 11.8). On a slow machine (BASE
+pk-1 15.48 that day) the four fights read pk-1 15.51 (+0.03 on BASE), gh-1
+15.35 (+0.72), gy-1 15.41 (+0.71), nursery-1 12.80 (+0.24). What is left is
+the real cost of round 44's lawns, paths, pools and moon panes (~0.1 ms each
+on every floor pixel); cutting it changes the look. **Known over budget:** the
+Greenhouse big prop link (12.4 s) and the Hedge prop link (9-13 s). The next
+room that adds to gh-1, gy-1 or pk-1 must pay for itself. NEXT: SURVEY 9.
 
 **ROUND 33 AND ITS GRAFT ARE MERGED, VERIFIED AND PUSHED (2026-10-16):**
 graft `9d008119`. COBALT +1.59 (`531126e4`): no running line under 11 px at
