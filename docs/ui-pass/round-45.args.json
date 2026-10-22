@@ -1,0 +1,75 @@
+{
+  "round": "r45",
+  "maxBuilders": 3,
+  "briefs": [
+    "docs/ui-pass/BRIEF-r0.md",
+    "docs/ui-pass/BRIEF-r1.md",
+    "docs/ui-pass/BRIEF-r11.md",
+    "docs/ui-pass/BRIEF-r16.md",
+    "docs/ui-pass/BRIEF-r21.md",
+    "docs/ui-pass/BRIEF-r22.md",
+    "docs/ui-pass/BRIEF-r23.md",
+    "docs/ui-pass/BRIEF-r24.md",
+    "docs/ui-pass/BRIEF-r25.md",
+    "docs/ui-pass/BRIEF-r28.md",
+    "docs/ui-pass/BRIEF-r29.md",
+    "docs/ui-pass/BRIEF-r31.md",
+    "docs/ui-pass/BRIEF-r34.md",
+    "docs/ui-pass/BRIEF-r35.md",
+    "docs/ui-pass/BRIEF-r37.md",
+    "docs/ui-pass/BRIEF-r39.md",
+    "docs/ui-pass/BRIEF-r41.md",
+    "docs/ui-pass/REPAIR-r41.md",
+    "docs/ui-pass/BRIEF-r43.md",
+    "docs/ui-pass/BRIEF-r44.md",
+    "docs/ui-pass/BRIEF-r45.md"
+  ],
+  "rubrics": [
+    "docs/ui-pass/RUBRIC.md",
+    "docs/ui-pass/RUBRIC-r45.md"
+  ],
+  "samples": [
+    "UI/title.png",
+    "UI/mainMenu.png",
+    "UI/selectCompanion.png",
+    "UI/selectKid.png"
+  ],
+  "tracks": [
+    {
+      "key": "rooms",
+      "name": "ROOMS",
+      "rule": "refine",
+      "screens": [
+        "sheet-lampworks",
+        "sheet-kitchens",
+        "sheet-bathhouse",
+        "sheet-hedge",
+        "fight-lampworks"
+      ],
+      "smallScreens": [
+        "fight-lampworks"
+      ],
+      "baseline": "CREPE",
+      "builders": [
+        {
+          "slot": "a",
+          "code": "HOWLITE",
+          "port": 9301,
+          "angle": "LITERAL -- work BRIEF-r45's fix list 1 to 4 in order and exactly as written, one wing at a time, the Lampworks FIRST (the round's fight). Never fewer objects, never a smoother or tidier surface; keep every change inside your four wings."
+        },
+        {
+          "slot": "b",
+          "code": "LARIMAR",
+          "port": 9302,
+          "angle": "MATERIAL FIRST -- every pale placeholder prop in the four wings (crates, sacks, crocks, block, tubs, lantern) given a real material -- grain, weave, glaze, enamel, rust, nails, stencils -- and an inked edge in its room's light, then the contact shadows, then the floors' darks, then the Hedge's projection."
+        },
+        {
+          "slot": "c",
+          "code": "AXINITE",
+          "port": 9303,
+          "angle": "GROUND THE ROOM -- the props float and the floors go milky. Give every standing object a contact shadow sized to its foot and keep each floor's darks dark and coloured, then draw the props richer in that light; fix the Hedge's stretched side-wall texture first, since three judges have named it twice."
+        }
+      ]
+    }
+  ]
+}
