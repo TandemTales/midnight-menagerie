@@ -638,13 +638,15 @@ export const ROOM_VARIANTS = [
   { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 0, MM_PAT: 2, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0, MM_RUGK: 6 }, wings: ['kennels'] },
   { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 0, MM_PAT: 2, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0, MM_RUGK: 7 }, wings: ['kennels'] },
   { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 0, MM_PAT: 2, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 1, MM_RUGK: 0 }, wings: ['kitchens'] },
-  { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 0, MM_PAT: 2, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0, MM_RUGK: 0 }, wings: ['lampworks', 'pumpkin'] },
+  { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 0, MM_PAT: 2, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0, MM_RUGK: 0 }, wings: ['lampworks'] },
+  { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 0, MM_PAT: 0, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0, MM_RUGK: 9 }, wings: ['nursery'] },
   { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 0, MM_PAT: 0, MM_CEIL: 0, MM_RUGO: 1, MM_FLAGK: 0, MM_RUGK: 0 }, wings: ['nursery'] },
   { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 0, MM_PAT: 0, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0, MM_RUGK: 3 }, wings: ['passages'] },
   { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 0, MM_PAT: 0, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0, MM_RUGK: 4 }, wings: ['passages'] },
   { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 0, MM_PAT: 0, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0, MM_RUGK: 5 }, wings: ['passages'] },
-  { mat: 'floor', defines: { MM_FLOORX: 1, MM_R25W: 0, MM_PAT: 2, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0, MM_RUGK: 0 }, wings: ['pumpkin'] },
-  { mat: 'floor', defines: { MM_FLOORX: 1, MM_R25W: 0, MM_PAT: 14, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0, MM_RUGK: 0 }, wings: ['pumpkin'] },
+  { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 0, MM_PAT: 2, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 4, MM_RUGK: 0 }, wings: ['pumpkin'] },
+  { mat: 'floor', defines: { MM_FLOORX: 1, MM_R25W: 0, MM_PAT: 2, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 4, MM_RUGK: 0 }, wings: ['pumpkin'] },
+  { mat: 'floor', defines: { MM_FLOORX: 1, MM_R25W: 0, MM_PAT: 14, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 4, MM_RUGK: 0 }, wings: ['pumpkin'] },
   { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 0, MM_PAT: 0, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0, MM_RUGK: 1 }, wings: ['sleeping'] },
   { mat: 'ceil', defines: { MM_FLOORX: 2, MM_PAT: 15, MM_CEIL: 1 }, wings: ['attic'] },
   { mat: 'ceil', defines: { MM_FLOORX: 0, MM_PAT: 4, MM_CEIL: 1 }, wings: ['ballroom', 'bathhouse', 'foyer', 'heart'] },
@@ -2492,7 +2494,12 @@ export class Backdrop {
         if (p.shape === 28) {
           ss2[i * 2 + 0] = p.w * 1.08; ss2[i * 2 + 1] = 1.5; st2[i] = 0.95;
         } else if (p.shape === 27) {
-          ss2[i * 2 + 0] = p.w * 1.35; ss2[i * 2 + 1] = p.w * 0.62; st2[i] = 1.05;
+          /* (round 44, PYRITE: tight under the fruit -- 1.35 x 0.62 of its
+             width at full strength, a crop planted shoulder to shoulder laid
+             its pools edge to edge into the black band across the court both
+             survey-8 judges named; the foot stays black, the lantern-lit
+             flags show between the pumpkins) */
+          ss2[i * 2 + 0] = p.w * 1.12; ss2[i * 2 + 1] = p.w * 0.40; st2[i] = 0.90;
         } else if (p.shape === 25 && pal.regionKey === 'hedge') {
           /* (round 29 graft, both judges: the maze court's fountain "a dark
              contact shadow on the lawn" -- the round basin's own pool, its
@@ -2508,6 +2515,16 @@ export class Backdrop {
              the rows sit on the floor" -- a BED stands on its long side to
              us, 0.9 m deep: a dense band the length of it, GRISAILLE's) */
           ss2[i * 2 + 0] = p.w * 1.08; ss2[i * 2 + 1] = 1.25; st2[i] = 1.10;
+        } else if (pal.regionKey === 'graveyard' && (p.shape === 69 || p.shape === 70 || p.shape === 73)) {
+          /* (round 44, PYRITE: a churchyard's stone sits in a tight pool at
+             its own foot -- at 1.6 x 1.0 of its width the rows' pools ran
+             together along the far railing into the black strip both
+             survey-8 judges saw under the fence, with the lawn in it gone.
+             Narrower and shallower, as dense at the foot, so each stone is
+             seated and the turf shows between them) */
+          const tomb = p.shape === 70;
+          ss2[i * 2 + 0] = p.w * (tomb ? 1.18 : 1.30); ss2[i * 2 + 1] = p.w * (tomb ? 0.62 : 0.46);
+          st2[i] = 0.92;
         } else if (p.grave) {
           /* (round 43: the ledger leaned at an open grave's head stands on
              the far kerb, and its pool must not lie over the grave's mouth in

@@ -4497,6 +4497,22 @@ float subjectH(vec2 q, float far, out float occ){
         gTint += onW*((bv - 0.5)*0.22*lodC + 0.16*smoothstep(0.035, 0.0, cHi - cfr)*lodC
                       - 0.10*smoothstep(0.04, 0.0, cfr - cLo)*lodC);
         gInk = max(gInk, max(bed*(0.40 + 0.25*bv), per*0.45)*onW*0.80);
+        /* ROUND 44 (PYRITE): both survey-8 judges -- "draw the chapel's
+           stones and tracery in ink". The rubble's joints a full pen line
+           now, the bed heavier than the perpend; and the lit windows LEADED
+           -- diamond quarries in their cames across every light, the
+           tracery's own bars inked both sides, so the glass reads as glazing
+           a lamp is behind and not a lit panel */
+        gInk = max(gInk, max(bed*(0.62 + 0.30*bv), per*0.62)*onW);
+        {
+          float qd = 0.23;
+          float l1 = abs(fract((gx + q.y*0.62)/qd) - 0.5)*qd, l2 = abs(fract((gx - q.y*0.62)/qd) - 0.5)*qd;
+          float came = mmInkP(min(l1, l2), px, 1.0)*mmLod(qd, px);
+          float inGlass = mmSolid(win)*(1.0 - trac)*front + swin;
+          gInk = max(gInk, came*inGlass*0.75);
+          gInk = max(gInk, trac*mmSolid(win)*front*0.0 + mmInk(win, 1.4)*front*0.85);
+          gInk = max(gInk, mmInk(abs(gx) - 0.045, 1.0)*mmSolid(win)*front*step(q.y, 5.30)*0.8);
+        }
         gTint -= front*(1.0 - door)*0.58 + side*0.16;
         /* the stone itself a dark weathered grey -- a stop under the house's
            dressed stone -- darkest at its foot and streaked under the sills,
@@ -14003,6 +14019,18 @@ void main(){
 #endif
         col = mix(col, mmGradeInv(txc, uHouseTexG) * uHouseTexK, hA);
       }
+      /* ROUND 44 (PYRITE): THE HOUSE INKED. Survey 8, judge 2 on the Pumpkin
+         Grounds: "the mansion behind the wall is a pasted backdrop with soft
+         edges". The painting's own silhouette -- every spire, finial, gable
+         and chimney against the sky -- drawn with the pen: a dark line a
+         pixel and a half wide along the alpha's half-way contour, so the
+         house is cut out of the night the way mainMenu.png's is, not laid on
+         it. Only where the painting is visible (vis), never over the wall. */
+      {
+        float aI = tx.a * inR;
+        float penH = mmInk(aI - 0.5, 1.5) * vis * step(0.02, aI) * step(aI, 0.98 + 0.02*step(0.5, aI));
+        col = mix(col, vec3(0.010, 0.012, 0.026), penH * 0.85);
+      }
       /* ...and the drawn house's LINES go with it: its roofline pen, its
          courses and its relief's ink are laid after this (the drawn line,
          below), and over the painting or the sky between its spires they
@@ -14776,6 +14804,32 @@ float winLit(vec3 P){
 }
 #endif
 
+#if MM_RUGK == 9
+/* (round 44: the nursery rug's drawing helpers -- the prop program's own,
+   wfEll / wfSeg / wfStar and the blocks' letters, for this floor only) */
+float r9Ell(vec2 p, vec2 r){ return (length(p/r) - 1.0)*min(r.x, r.y); }
+float r9Seg(vec2 p, vec2 a, vec2 b, float r){
+  vec2 pa = p - a, ba = b - a;
+  float t = clamp(dot(pa, ba)/max(dot(ba, ba), 1e-6), 0.0, 1.0);
+  return length(pa - ba*t) - r;
+}
+float r9Star(vec2 p, float R){
+  float a = atan(p.x, p.y);
+  float k = 6.2832/5.0;
+  float an = mod(a + k*0.5, k) - k*0.5;
+  return (length(p) - mix(R, R*0.46, abs(an)/(k*0.5)))*0.8;
+}
+float r9Letter(vec2 g, float li){
+  float L;
+  if (li < 0.5)      L = min(min(r9Seg(g, vec2(-0.55, -0.70), vec2(0.0, 0.75), 0.16), r9Seg(g, vec2(0.55, -0.70), vec2(0.0, 0.75), 0.16)), r9Seg(g, vec2(-0.28, -0.12), vec2(0.28, -0.12), 0.14));
+  else if (li < 1.5) L = min(r9Seg(g, vec2(-0.45, -0.72), vec2(-0.45, 0.72), 0.15), min(abs(length((g - vec2(-0.05, 0.36))/vec2(1.0, 0.9)) - 0.38) - 0.13, abs(length((g - vec2(-0.02, -0.36))/vec2(1.0, 0.9)) - 0.42) - 0.13) + 1e3*step(g.x, -0.45));
+  else if (li < 2.5) L = max(abs(length(g/vec2(0.62, 0.78)) - 1.0)*0.62 - 0.13, mix(-1.0, g.x - 0.20, step(abs(g.y), 0.45)));
+  else if (li < 3.5) L = min(r9Seg(g, vec2(-0.45, -0.72), vec2(-0.45, 0.72), 0.15), abs(length((g - vec2(-0.45, 0.0))/vec2(1.0, 0.78)) - 0.78) - 0.13 + 1e3*step(g.x, -0.45));
+  else if (li < 4.5) L = min(min(r9Seg(g, vec2(-0.40, 0.72), vec2(-0.40, -0.70), 0.15), r9Seg(g, vec2(-0.40, -0.70), vec2(0.50, -0.70), 0.15)), min(r9Seg(g, vec2(-0.40, 0.70), vec2(0.50, 0.70), 0.15), r9Seg(g, vec2(-0.40, 0.0), vec2(0.30, 0.0), 0.14)));
+  else               L = min(min(r9Seg(g, vec2(-0.40, 0.72), vec2(-0.40, -0.72), 0.15), r9Seg(g, vec2(-0.40, 0.70), vec2(0.50, 0.70), 0.15)), r9Seg(g, vec2(-0.40, 0.0), vec2(0.30, 0.0), 0.14));
+  return L;
+}
+#endif
 void main(){
   mmQuadInit();
   vec2 w = (vUv - 0.5) * uSpan;
@@ -17160,6 +17214,97 @@ void main(){
       frg = 0.0;
     }
 #endif
+#if MM_RUGK == 9
+    {
+      /* ROUND 44 (PYRITE): THE NURSERY'S OWN RUG. Both survey-8 judges'
+         SYSTEM sections: "the red diamond rug" is the Study's and the
+         Kitchens' too. A night nursery has its rug made for it: a HOOKED
+         NURSERY RUG -- a field of faded duck-egg blue with the frieze's own
+         animals walking across it in rows (a yellow duck, a rose-pink
+         rabbit, a grey elephant with his trunk up), each in its own wool and
+         outlined dark; at its heart a navy roundel with the moon and three
+         stars in old gold; round it an ALPHABET border, A B C D E F in cream
+         on a deep madder band between two gold guards; worn pale where the
+         children have sat, bound, not fringed. Every mark over its own pixel. */
+      float pxm = max(rpx.x, rpx.y);
+      vec3 egg = vec3(0.40, 0.55, 0.56), cream = vec3(0.76, 0.70, 0.56);
+      vec3 madder = vec3(0.40, 0.09, 0.08), gold = vec3(0.64, 0.48, 0.20), navy = vec3(0.06, 0.08, 0.20);
+      float loops = 0.88 + 0.14*mmNoise(rp*vec2(36.0, 30.0) + 2.0)*mmLod(0.03, pxm) + 0.10*mmNoise(rp*2.7 + 6.0);
+      vec3 fC = egg*loops;
+      /* the animals: in rows across the field, each row its own beast */
+      vec2 ag = rp/vec2(0.78, 0.62) + vec2(0.5, 0.5);
+      vec2 ai = floor(ag);
+      vec2 aq = (fract(ag) - 0.5)*vec2(0.78, 0.62)*0.56;
+      float kind = mod(ai.y + 3.0, 3.0);
+      float an = 1e3, anI = 1e3;
+      vec3 anC = cream;
+      if (kind < 0.5) {
+        /* a duck: body, head, beak, a wing line */
+        an = min(r9Ell(aq - vec2(-0.01, -0.03), vec2(0.105, 0.060)), length(aq - vec2(0.075, 0.055)) - 0.042);
+        an = min(an, r9Ell(aq - vec2(0.130, 0.050), vec2(0.030, 0.012)));
+        an = min(an, r9Ell(aq - vec2(-0.105, 0.0), vec2(0.035, 0.018)));
+        anI = abs(r9Ell(aq - vec2(-0.02, -0.025), vec2(0.055, 0.030)));
+        anC = vec3(0.80, 0.64, 0.22);
+      } else if (kind < 1.5) {
+        /* a rabbit: body, head, two long ears, a scut */
+        an = min(r9Ell(aq - vec2(-0.02, -0.04), vec2(0.090, 0.060)), length(aq - vec2(0.070, 0.030)) - 0.040);
+        an = min(an, r9Ell(aq - vec2(0.060, 0.105), vec2(0.016, 0.048)));
+        an = min(an, r9Ell(aq - vec2(0.088, 0.100), vec2(0.016, 0.044)));
+        an = min(an, length(aq - vec2(-0.110, -0.020)) - 0.022);
+        anC = vec3(0.70, 0.42, 0.44);
+      } else {
+        /* an elephant: body, head, his trunk up, an ear, four legs */
+        an = min(r9Ell(aq - vec2(-0.02, 0.0), vec2(0.105, 0.065)), length(aq - vec2(0.085, 0.020)) - 0.050);
+        an = min(an, r9Seg(aq, vec2(0.125, 0.0), vec2(0.165, 0.075), 0.014));
+        for (int k = 0; k < 4; k++) {
+          float lx = -0.09 + 0.055*float(k);
+          an = min(an, mmBox(aq - vec2(lx, -0.075), vec2(0.016, 0.030), 0.004));
+        }
+        anI = abs(r9Ell(aq - vec2(0.070, 0.025), vec2(0.030, 0.036)));
+        anC = vec3(0.50, 0.52, 0.58);
+      }
+      float onA = 1.0 - smoothstep(-pxm, pxm, an);
+      fC = mix(fC, anC*loops, onA);
+      fC = mix(fC, navy*0.8, (1.0 - smoothstep(0.0, pxm*0.9, abs(an)))*0.60);
+      fC = mix(fC, anC*0.55, (1.0 - smoothstep(0.0, pxm*1.3, anI))*onA);
+      /* an eye on each */
+      vec2 eyeP = kind < 0.5 ? vec2(0.085, 0.065) : (kind < 1.5 ? vec2(0.080, 0.040) : vec2(0.098, 0.035));
+      fC = mix(fC, navy, 1.0 - smoothstep(0.008 - pxm, 0.008 + pxm, length(aq - eyeP)));
+      /* the roundel at its heart: the moon and three stars */
+      float cR = min(uRug.z, uRug.w)*0.50;
+      float cr = length(rp);
+      float inR = 1.0 - smoothstep(cR - pxm, cR + pxm, cr);
+      vec3 cC = navy*loops;
+      vec2 mq = rp - vec2(-0.08*cR, 0.0);
+      float moonO = length(mq) - 0.48*cR, moonI = length(mq - vec2(0.20*cR, 0.10*cR)) - 0.42*cR;
+      cC = mix(cC, gold*1.05, (1.0 - smoothstep(-pxm, pxm, moonO))*smoothstep(-pxm, pxm, moonI));
+      for (int k = 0; k < 3; k++) {
+        vec2 sc = vec2(0.42, 0.40 - 0.38*float(k))*cR;
+        cC = mix(cC, cream, 1.0 - smoothstep(-pxm, pxm, r9Star(rp - sc, 0.12*cR)));
+      }
+      cC = mix(cC, gold, 1.0 - smoothstep(0.0, pxm*1.4 + 0.008, abs(cr - cR*0.92)));
+      fC = mix(fC, cC, inR);
+      fC = mix(fC, cream*0.9, 1.0 - smoothstep(0.0, pxm*1.4 + 0.010, abs(cr - cR)));
+      /* the alphabet border on madder, between two gold guards */
+      float bIn = smoothstep(0.07 - ePx, 0.07 + ePx, eIn)*(1.0 - smoothstep(0.38 - ePx, 0.38 + ePx, eIn));
+      float alg = (ed.x < ed.y) ? rp.y : rp.x;
+      float slot = floor(alg/0.30 + 0.5);
+      vec2 lq = vec2((alg/0.30 - slot)*0.30, eIn - 0.225);
+      float li = mod(slot + 60.0, 6.0);
+      float Lt = r9Letter(lq/0.095, li)*0.095;
+      vec3 bC = madder*(0.85 + 0.25*mmNoise(rp*2.0 + 5.0));
+      bC = mix(bC, cream*0.95, 1.0 - smoothstep(-pxm, pxm, Lt));
+      float gd = max(1.0 - smoothstep(0.012, 0.012 + ePx*1.2, abs(eIn - 0.055)),
+                     1.0 - smoothstep(0.012, 0.012 + ePx*1.2, abs(eIn - 0.395)));
+      rugCol = mix(fC, bC, bIn);
+      rugCol = mix(rugCol, gold, gd);
+      rugCol = mix(rugCol, vec3(0.05, 0.04, 0.05), 1.0 - smoothstep(0.022 - ePx, 0.022 + ePx, eIn));
+      /* worn pale where the children have sat */
+      float trod = smoothstep(0.85, 0.0, length(rp/max(uRug.zw, vec2(0.3))));
+      rugCol = mix(rugCol, vec3(mmLum(rugCol))*vec3(1.08, 1.0, 0.94), 0.10 + 0.20*trod);
+      frg = 0.0;
+    }
+#endif
     rugCol = mix(rugCol, ivory*0.85, frg*(1.0 - rugCov));
     rugCov = max(rugCov, frg*0.85);
     /* (laid in the runner's own value: the hall's lit board tone, as the
@@ -18079,7 +18224,218 @@ void main(){
     float vig = max(smoothstep(-0.24, -0.92, ndc.y), 0.75*smoothstep(0.62, 1.0, abs(ndc.x)));
     col *= 1.0 - uNearDark * vig * (1.0 - uIsCeiling);
   }
+#if MM_FLAGK == 4
+  /* ROUND 44 (PYRITE): THE COURT LAID AND LIT TO ITS WALL. Both survey-8
+     judges: "a black void band runs across the middle between the wall and
+     the lit flagstones, exactly where fighters stand"; "the pumpkins float --
+     draw the ground continuous from wall to front (grass, path, flagstones)
+     with the pumpkins on it". The Pumpkin Grounds' floor programs only
+     (pal.flagK 4). Along the wall's foot the bed the pumpkins are grown in:
+     a verge of rough turf with a ragged, inked front edge over the flags,
+     dead leaves on it; and over the whole court the light of the lanterns
+     and the jack-o'-lanterns burning along that bed, laid on the floor's own
+     albedo so every flag and joint runs on through it, falling off toward
+     you where the near floor's own lanterns take over. */
+  float fwPk = vWorld.z - uMoonW.z;              // metres out from the wall's foot
+  if (uIsCeiling < 0.5) {
+    vec3 litPk = col / max(alb, vec3(0.003));
+    float pxPk = max(mp, 1e-4);
+    float dryPk = 1.0 - water;
+    vec3 albPk = alb;
+#if MM_PAT == 2
+    /* (the frame budget: the bed's whole drawing only within its reach of
+       the wall -- the court beyond it is laid and lit, below, and nothing
+       else; a noise tap a pixel across the open flags was a fight's cost) */
+    float verge = 0.0;
+    if (fwPk < 10.8) {
+    float eN = 0.62*mmNoise(vec2(w.x*0.45, 1.7)) + 0.38*mmNoise(vec2(w.x*1.9, 5.3));
+    float vD = fwPk - (5.6 + 4.4*eN);
+    verge = (1.0 - smoothstep(-pxPk*1.2, pxPk*1.2, vD)) * dryPk;
+    if (verge > 0.0 || vD < 0.6) {
+      /* the turf: blades combed toward you, tussocks, the wall's damp foot */
+      float blade = mmNoise(vec2(w.x*9.0 + 2.0*mmNoise(vec2(w.x*1.7, fwPk*0.8)), fwPk*2.6));
+      float tus = smoothstep(0.40, 0.85, mmNoise(vec2(w.x*1.2, fwPk*1.4) + 4.0));
+      vec3 grassC = mix(vec3(0.020, 0.032, 0.020), vec3(0.052, 0.070, 0.034), blade) * (0.70 + 0.55*tus);
+      grassC *= 0.72 + 0.28*smoothstep(0.0, 3.0, fwPk);
+      /* the leaves blown in under the wall: rust and old gold */
+      vec2 lq = w*2.6;
+      vec2 li = floor(lq);
+      vec2 lf = fract(lq) - 0.5 - (mmHash22(li) - 0.5)*0.45;
+      float lr = length(lf*vec2(1.0, 1.7));
+      float leafPk = (1.0 - smoothstep(0.13, 0.13 + pxPk*2.6*1.5, lr)) * step(0.58, mmHash21(li + 3.3)) * mmLod(0.38, pxPk);
+      vec3 leafC = mix(vec3(0.22, 0.085, 0.030), vec3(0.30, 0.18, 0.050), mmHash21(li + 1.1));
+      grassC = mix(grassC, leafC, leafPk*0.92);
+      /* the pumpkin vine running along the bed: a stem wandering the length
+         of the wall, and its broad lobed leaves lying on the turf, each a
+         dark green with a paler vein, every edge inked */
+      float vy = 2.6 + 1.4*sin(w.x*0.55 + 1.3*sin(w.x*0.21)) ;
+      float stemV = mmInkP(fwPk - vy, pxPk, 1.6)*mmLod(0.5, pxPk);
+      vec2 vq = vec2(w.x, fwPk)/0.62;
+      vec2 vi = floor(vq);
+      vec2 vf = (fract(vq) - 0.5)*0.62 - (mmHash22(vi + 4.4) - 0.5)*0.26;
+      float vr = length(vf), va = atan(vf.y, vf.x);
+      float lobe = 0.20 + 0.035*cos(va*5.0 + mmHash21(vi)*6.0);
+      float vLeafD = vr - lobe;
+      float hasL = step(0.40, mmHash21(vi + 7.7))*smoothstep(1.8, 0.4, abs(fwPk - vy));
+      float vLeaf = (1.0 - smoothstep(-pxPk, pxPk, vLeafD))*hasL;
+      float vein = (1.0 - smoothstep(0.0, pxPk*1.4, abs(sin(va*2.5)*vr)))*vLeaf*step(vr, lobe*0.85);
+      vec3 vineC = vec3(0.030, 0.060, 0.026)*(0.85 + 0.30*mmHash21(vi + 2.1));
+      grassC = mix(grassC, vineC, vLeaf);
+      grassC = mix(grassC, vec3(0.070, 0.100, 0.050), vein*0.7);
+      grassC = mix(grassC, vec3(0.040, 0.060, 0.025), stemV*0.9);
+      float vInk = mmInkP(vLeafD, pxPk, 1.0)*hasL*mmLod(0.4, pxPk);
+      albPk = mix(alb, grassC, verge);
+      col = mix(col, grassC*litPk, verge);
+      /* the turf's front edge drawn: a dark line where it overhangs the flags,
+         its own shadow a hand's breadth onto them */
+      float edgeInk = mmInkP(vD, pxPk, 1.3) * dryPk * mmLod(0.6, pxPk);
+      float lip = (1.0 - smoothstep(0.0, 0.22, vD)) * step(0.0, vD) * dryPk;
+      col *= (1.0 - 0.55*edgeInk) * (1.0 - 0.40*lip) * (1.0 - 0.60*vInk*verge);
+    }
+    }
+    /* ...and a little moss and a blade or two in the joints near the bed */
+    if (fwPk < 18.0)
+      col = mix(col, vec3(0.06, 0.085, 0.035)*litPk, r25Joint*(1.0 - smoothstep(8.0, 18.0, fwPk))*0.55*(1.0 - verge)*dryPk);
+#endif
+    /* THE LIGHT OF THE BED: a broad warm band, strongest a few metres out
+       from the bed where the carved lanterns stand among the crop, breaking
+       across the court as the lanterns are spaced, under the cold of the
+       moon; its spill reaches the stage */
+    float tB = (fwPk - 14.0)/8.0;
+    float bandPk = exp(-tB*tB) + 0.30*exp(-max(fwPk - 13.0, 0.0)/6.0);
+    float brk = 0.86 + 0.14*sin(w.x*0.41 + 1.7*sin(w.x*0.13)) + 0.12*(smear - 0.55);
+    col += albPk * vec3(1.00, 0.52, 0.20) * 8.5 * bandPk * brk * dryPk;
+    /* the moon on the far court, so the flags under the bed read cold */
+    col += albPk * vec3(0.42, 0.52, 0.72) * 2.2 * (1.0 - smoothstep(10.0, 24.0, fwPk)) * dryPk;
+  }
+#endif
+#if MM_R25W == 4 && MM_PAT == 11
+  /* ROUND 44 (PYRITE): THE CHURCHYARD'S LAWN BROKEN UP. Both survey-8
+     judges: "the lawn is a featureless green-brown plane over half the
+     frame"; "break up the lawn with paths, roots, dead leaves and long grass
+     at the edges, and mist low on it". The blades, tufts and single leaves
+     drawn before this are a hand's scale -- right at your feet, nothing from
+     the gate. These are the yard's own large marks, readable at any
+     distance: the trodden paths between the graves worn to bare earth with
+     the turf's ragged lip drawn either side; the leaves blown into DRIFTS
+     (against a stone, in a hollow) in rust and old gold, dense where they
+     pile; the rank grass grown up in long dark tussocks where no scythe
+     goes, their blade tips catching the moon; and, far off over the turf, a
+     ground mist lying in the hollows, cold, never over the near lawn. All
+     laid on the light this pixel already has, so the moon and the lanterns
+     run on through them. */
+  if (uIsCeiling < 0.5 && turf > 0.05) {
+    vec3 litY = col / max(alb, vec3(0.003));
+    float pxY = max(mp, 1e-4);
+    float onLawn = clamp(turf, 0.0, 1.0)*(1.0 - r25Walk);
+    vec3 albY = alb;
+    /* the trodden paths: two worn lines wandering between the rows */
+    float pA = abs(w.x - (uRunX + 4.6 + 2.2*sin(w.y*0.11 + 0.7) + 0.9*sin(w.y*0.37)));
+    float pB = abs(w.x - (uRunX - 6.4 - 1.8*sin(w.y*0.09 + 2.1) - 0.7*sin(w.y*0.31 + 1.0)));
+    float pw = 0.34 + 0.06*sin(w.y*0.9 + w.x*0.3);
+    float pd = min(pA, pB) - pw;
+    float pRes = mmLod(0.6, pxY);
+    float trod = (1.0 - smoothstep(-pxY*1.2, pxY*1.2, pd))*onLawn;
+    float bare = smoothstep(0.30, 0.62, mmNoise(w*1.7 + 3.0));
+    vec3 earthC = mix(vec3(0.060, 0.054, 0.046), vec3(0.090, 0.078, 0.062), bare);
+    earthC *= 0.80 + 0.40*mmHash21(floor(w*9.0));
+    /* the two ruts down it, a stop darker */
+    float rutY = 1.0 - smoothstep(0.0, 0.10 + pxY, abs(abs(min(pA, pB)) - pw*0.45));
+    earthC *= 1.0 - 0.30*rutY*pRes;
+    albY = mix(albY, earthC*mmLum(alb)*7.5, trod*(0.60 + 0.40*bare));
+    float lipI = mmInkP(pd, pxY, 1.2)*onLawn*pRes;
+    /* the leaf drifts */
+    float drift = smoothstep(0.50, 0.72, mmNoise(w*vec2(0.22, 0.30) + 11.0) + 0.08*sin(w.x*2.3 + w.y*1.7));
+    const float DC = 0.17;
+    vec2 dci = floor(w/DC);
+    vec2 dh = mmHash22(dci + 5.7);
+    vec2 dp = w - (dci + 0.2 + 0.6*dh)*DC;
+    float da = mmHash21(dci + 2.3)*6.2832;
+    vec2 dr = vec2(cos(da)*dp.x + sin(da)*dp.y, -sin(da)*dp.x + cos(da)*dp.y);
+    float dw = 0.022*(1.0 - (dr.x/0.050)*(dr.x/0.050));
+    float lf = (1.0 - smoothstep(dw, dw + pxY*1.1, abs(dr.y)))*step(abs(dr.x), 0.050)*step(mmHash21(dci + 8.1), 0.30 + 0.62*drift);
+    float lfRes = smoothstep(0.040, 0.012, pxY);
+    float lfK = mix(drift*0.70, 1.0, lfRes)*mix(1.0, lf, lfRes)*onLawn*smoothstep(0.08, 0.40, drift + 0.25*lfRes*lf);
+    vec3 leafY = mix(vec3(0.27, 0.12, 0.050), vec3(0.33, 0.25, 0.10), mmHash21(dci + 1.9))*(0.70 + 0.40*dh.x);
+    albY = mix(albY, leafY*mmLum(alb)*8.0, clamp(lfK, 0.0, 1.0)*0.92);
+    /* the rank grass: long tussocks, dark at their roots, lit at their tips */
+    float rank = smoothstep(0.44, 0.64, mmNoise(w*vec2(0.30, 0.45) + 23.0))*onLawn*(1.0 - trod);
+    float tg = mmNoise(vec2(w.x*11.0 + 1.6*sin(w.y*0.9 + w.x*0.4), w.y*1.6) + 4.0);
+    float tip = smoothstep(0.50, 0.85, tg)*smoothstep(0.060, 0.015, pxY);
+    vec3 rankC = mix(vec3(0.020, 0.030, 0.016), vec3(0.150, 0.170, 0.085), tip);
+    albY = mix(albY, rankC*mmLum(alb)*12.0, rank*0.85);
+    col = mix(col, albY*litY, max(max(trod, rank), clamp(lfK, 0.0, 1.0)));
+    col *= 1.0 - 0.50*lipI;
+    col *= 1.0 - 0.25*rank*(1.0 - tip);
+    /* the ground mist, far off over the turf, in the hollows */
+    float mistF = smoothstep(9.0, 20.0, vDepth)*(1.0 - smoothstep(30.0, 44.0, vDepth));
+    float mist = 0.0;
+    if (mistF > 0.0) mist = smoothstep(0.30, 0.62, mmNoise(vec2(w.x*0.10 + uTime*0.010, w.y*0.30))*(0.75 + 0.25*sin(w.x*0.07 + w.y*0.11)))*mistF;
+    col += vec3(0.060, 0.075, 0.095)*mist*0.55;
+    /* the far turf toward the railing takes the sky: the moon behind the
+       yard rakes the grass from beyond it, so the lawn under the fence is a
+       lit, cold band the stones stand up against, not a black strip */
+    col += max(albY, vec3(0.004)) * vec3(0.48, 0.60, 0.80) * 3.2 * smoothstep(13.0, 24.0, vDepth) * (0.85 + 0.15*sin(w.x*0.5 + w.y*0.3));
+  }
+#endif
+#if MM_R25W == 3 && MM_PAT == 2
+  /* ROUND 44 (PYRITE): THE GLASSHOUSE FLOOR UNDER ITS GLASS. Survey 8,
+     judge 2: "a black void band of floor runs between the upper planter
+     terrace and the front railing -- light the lower floor (tiles with moss,
+     a puddle catching the moon)". The house is glass overhead: the moon
+     comes down through it onto the York stone in panes -- each its own
+     brightness, the dirty and the whitewashed ones dim -- with the shadow of
+     every glazing bar and purlin drawn across the flags, a pixel and a half
+     at least; and where the hoses have been, standing water: each puddle
+     the flags gone dark and wet round it, the night glass and the moon's
+     glint lying in it. The Greenhouse's floor program only (R25W 3). */
+  if (uIsCeiling < 0.5) {
+    vec2 gq = vWorld.xz;
+    float pxG = max(mp, 1e-4);
+    vec2 gp = vec2(gq.x/0.66 + 0.18*gq.y, gq.y/1.60);
+    vec2 gf = abs(fract(gp) - 0.5)*vec2(0.66, 1.60);
+    float barS = max(1.0 - smoothstep(0.030, 0.030 + pxG*1.4, gf.x),
+                     1.0 - smoothstep(0.045, 0.045 + pxG*1.4, gf.y));
+    barS *= mmLod(0.66, pxG);
+    float pane = 0.45 + 0.55*mmHash21(floor(gp) + 7.0);
+    float cloud = 0.70 + 0.30*sin(gq.x*0.21 + 0.7*sin(gq.y*0.17));
+    vec3 moonG = vec3(0.30, 0.46, 0.58);
+    float reach = smoothstep(2.5, 7.0, vDepth);
+    col += alb * moonG * 2.2 * pane * cloud * (1.0 - 0.88*barS) * reach;
+    /* the puddles */
+    float pn = 0.78*mmNoise(gq*1.15 + 3.0) + 0.22*mmNoise(gq*3.1 + 1.0);
+    float pnPx = max(length(vec2(dFdx(pn), dFdy(pn))), 1e-4);
+    float pud = clamp((pn - 0.80)/pnPx + 0.5, 0.0, 1.0);
+    float wet = smoothstep(0.70, 0.80, pn);
+    col *= 1.0 - 0.38*wet*(1.0 - pud);
+    if (pud > 0.0) {
+      /* the glass overhead mirrored: its bars as dark lines, the panes
+         the night's dark blue-green, a long glint of the moon in it */
+      vec2 rp = vec2(gq.x/0.66, gq.y/0.90);
+      vec2 rf = abs(fract(rp) - 0.5)*vec2(0.66, 0.90);
+      float rbar = max(1.0 - smoothstep(0.020, 0.020 + pxG*1.2, rf.x), 1.0 - smoothstep(0.030, 0.030 + pxG*1.2, rf.y))*mmLod(0.66, pxG);
+      vec3 sky = vec3(0.030, 0.060, 0.070)*(0.70 + 0.60*mmHash21(floor(rp) + 3.0));
+      float gl = mmNoise(vec2(gq.x*2.2, gq.y*0.35) + 9.0);
+      gl = smoothstep(0.62, 0.92, gl);
+      vec3 refl = sky*0.6*(1.0 - 0.80*rbar) + vec3(0.46, 0.62, 0.72)*gl*0.85*(1.0 - rbar);
+      /* its rim: the water's edge, a thin bright meniscus toward the moon */
+      float rim = (1.0 - smoothstep(0.0, pnPx*1.6, pn - 0.80))*pud;
+      refl += vec3(0.20, 0.28, 0.32)*rim*0.6;
+      /* standing water is DARK: the flags under it a stop and a half
+         down, the night in it, the moon's glint the one bright thing */
+      col = mix(col, col*0.22 + refl*uGain*0.40, pud*0.92);
+    }
+  }
+#endif
   float cFog = smoothstep(uFogNear, uFogFar, vDepth);
+#if MM_FLAGK == 4
+  cFog *= 0.55;
+#endif
+#if MM_R25W == 4 && MM_PAT == 11
+  /* (round 44: the far lawn under the railing kept, not fogged to a black
+     strip between the stones and the fence) */
+  cFog *= 0.25;
+#endif
   col = mix(col, uFog, cFog);
   /* THE SKY THROUGH THE GLASS, after the fog and not under it (round 18).
      FOLIUM's pitched palmhouse lost its whole centre bay to a starry black
@@ -19147,7 +19503,10 @@ float gyTufts(vec2 q, float hw, float seed){
   float x = q.x/0.030;
   float i = floor(x);
   float f = fract(x) - 0.5;
-  float hgt = 0.04 + 0.07*mmHash11(i*1.7 + seed*3.1);
+  /* (round 44: the long grass grown up round the stone, both survey-8
+     judges -- "long grass at the edges and round the stones": a hand to a
+     hand and a half, from 4-11 cm, rankest at the stone's two corners) */
+  float hgt = 0.06 + 0.11*mmHash11(i*1.7 + seed*3.1) + 0.05*smoothstep(0.4, 1.0, abs(q.x)/max(hw, 0.05));
   float lean = (mmHash11(i*2.9 + seed) - 0.5)*0.6;
   float bl = abs(f - lean*q.y/0.10) - 0.22*(1.0 - q.y/max(hgt, 1e-3));
   float d = max(bl*0.030, max(q.y - hgt, -q.y));
@@ -19231,7 +19590,7 @@ float wfHeadstone(vec2 q, float px, float seed, float kq, bool paint){
   vec2 offR = vec2(sgnR*(0.050 + 0.015*W), 0.022);
   float fR, txR, tyR, kR;
   float dRet = wfHsForm(p - offR, k, H, W, seed, fR, txR, tyR, kR);
-  float tuft = gyTufts(q, W*1.25, seed);
+  float tuft = gyTufts(q, W*1.30, seed);
   float dAll = min(min(d, dRet), tuft);
   if (!paint) return dAll;
 
@@ -24949,12 +25308,151 @@ float wfCot(vec2 q, float px, float seed, float kq, bool paint){
   return d;
 }
 
+/* ROUND 44 (PYRITE): THE NURSERY'S OWN HORSE, PAINTED. Both survey-8
+   judges: "the rocking horse at the right is a pale flat cutout with plank
+   legs -- painted dapples, mane and lit edges". The Nursery's (seed < 40;
+   the dormitory's bay, seed > 40, is drawn below exactly as it was): a
+   dapple grey carved in the round -- chest and quarters swelling out of the
+   barrel, each leg jointed at the knee or the hock and tapering to its
+   hoof, a jaw and a muzzle, pricked ears; a real horsehair mane falling in
+   locks over the near side of the neck, a forelock, a full tail; a red
+   saddle with its pommel and cantle on a blue cloth bound in gilt, a
+   stirrup, the bridle; on red bow rockers with their gilt line. Its coat a
+   mid grey under pale dapples ringed darker, going dark to the fetlocks and
+   the muzzle, the barrel rounded into shade at its edges and lit along the
+   back, with a line of light down its key side. */
+float wfHorseN(vec2 q, float px, float seed, float kq, bool paint){
+  vec2 rc = vec2(0.0, 2.62);
+  float rr = length(q - rc);
+  float rock = max(abs(rr - 2.560) - 0.042, abs(q.x) - 0.70);
+  rock = min(rock, length(vec2(abs(q.x) - 0.70, q.y - (2.62 - sqrt(max(2.565*2.565 - 0.49, 0.0))))) - 0.034);
+  float plat = mmBox(q - vec2(0.0, 0.12), vec2(0.58, 0.016), 0.006);
+  float t0, tA, tB;
+  /* the legs, jointed: forelegs reaching out ahead, hind legs out behind */
+  float fN = mmSmin(wfSegT(q, vec2(0.24, 0.64), vec2(0.35, 0.39), 0.044, 0.026, tA), wfSegT(q, vec2(0.35, 0.39), vec2(0.50, 0.170), 0.024, 0.018, tB), 0.02);
+  float fF = mmSmin(wfSegT(q, vec2(0.17, 0.64), vec2(0.27, 0.40), 0.040, 0.024, t0), wfSegT(q, vec2(0.27, 0.40), vec2(0.40, 0.170), 0.022, 0.017, t0), 0.02);
+  float hN = mmSmin(wfSegT(q, vec2(-0.22, 0.67), vec2(-0.34, 0.42), 0.058, 0.026, t0), wfSegT(q, vec2(-0.34, 0.42), vec2(-0.50, 0.170), 0.024, 0.018, t0), 0.02);
+  float hF = mmSmin(wfSegT(q, vec2(-0.15, 0.67), vec2(-0.26, 0.42), 0.052, 0.024, t0), wfSegT(q, vec2(-0.26, 0.42), vec2(-0.40, 0.170), 0.022, 0.017, t0), 0.02);
+  float hoof = min(min(mmBox(q - vec2(0.50, 0.152), vec2(0.034, 0.024), 0.010), mmBox(q - vec2(0.40, 0.152), vec2(0.031, 0.022), 0.010)),
+                   min(mmBox(q - vec2(-0.50, 0.152), vec2(0.034, 0.024), 0.010), mmBox(q - vec2(-0.40, 0.152), vec2(0.031, 0.022), 0.010)));
+  /* the barrel, chest and quarters; the neck, the head, its jaw and muzzle */
+  float body = wfEll(q - vec2(0.0, 0.705), vec2(0.30, 0.125));
+  body = mmSmin(body, length(q - vec2(0.21, 0.715)) - 0.118, 0.06);
+  body = mmSmin(body, length(q - vec2(-0.22, 0.735)) - 0.128, 0.06);
+  float neck = wfSegT(q, vec2(0.24, 0.76), vec2(0.39, 0.99), 0.096, 0.060, t0);
+  float head = wfSegT(q, vec2(0.41, 1.045), vec2(0.62, 0.905), 0.064, 0.042, t0);
+  head = mmSmin(head, length(q - vec2(0.445, 0.985)) - 0.066, 0.03);
+  head = mmSmin(head, length(q - vec2(0.612, 0.900)) - 0.047, 0.02);
+  vec2 eq = q - vec2(0.395, 1.115);
+  float ear = max(wfEll(vec2(eq.x*0.94 + eq.y*0.34, eq.y*0.94 - eq.x*0.34), vec2(0.022, 0.050)), -q.y + 1.07);
+  float horse = mmSmin(mmSmin(body, neck, 0.05), head, 0.03);
+  horse = min(horse, ear);
+  /* the mane in locks down the near side of the neck, and the forelock */
+  float mane = 1e3, lock = 0.0;
+  for (int i = 0; i < 6; i++){
+    float f = float(i)/5.0;
+    vec2 a = mix(vec2(0.215, 0.865), vec2(0.385, 1.085), f);
+    float L = 0.13 + 0.05*mmHash11(seed*3.1 + float(i));
+    vec2 b = a + vec2(-0.045 - 0.02*f, -L);
+    float tl;
+    float dl = wfSegT(q, a, b, 0.030, 0.008, tl);
+    if (dl < mane) { mane = dl; lock = float(i); }
+  }
+  mane = min(mane, wfSegT(q, vec2(0.425, 1.105), vec2(0.505, 1.035), 0.026, 0.008, t0));
+  /* the tail: three locks falling from the croup */
+  float tail = min(min(wfSegT(q, vec2(-0.33, 0.78), vec2(-0.52, 0.42), 0.042, 0.014, t0),
+                       wfSegT(q, vec2(-0.33, 0.78), vec2(-0.46, 0.38), 0.036, 0.012, t0)),
+                   wfSegT(q, vec2(-0.34, 0.79), vec2(-0.58, 0.50), 0.030, 0.010, t0));
+  /* the saddle on its cloth, pommel and cantle; the stirrup and leather */
+  float cloth = max(wfEll(q - vec2(0.02, 0.775), vec2(0.17, 0.125)), 0.695 - q.y);
+  float saddle = max(wfEll(q - vec2(0.02, 0.835), vec2(0.13, 0.058)), 0.795 - q.y);
+  saddle = min(saddle, length(q - vec2(0.135, 0.880)) - 0.026);
+  saddle = min(saddle, length(q - vec2(-0.105, 0.872)) - 0.030);
+  float leath = max(abs(q.x - 0.03) - 0.008, max(0.56 - q.y, q.y - 0.80));
+  float stir = max(abs(wfEll(q - vec2(0.03, 0.525), vec2(0.040, 0.040))) - 0.008, -(q.y - 0.50));
+  float legs = min(min(fN, fF), min(hN, hF));
+  float d = min(min(rock, plat), min(legs, hoof));
+  d = min(d, min(horse, min(mane, tail)));
+  d = min(d, min(min(cloth, saddle), min(leath, stir)));
+  if (!paint) return d;
+
+  vec3 col = vec3(0.1);
+  float ink = 0.0;
+  vec3 red = vec3(0.60, 0.11, 0.08);
+  vec3 gilt = vec3(0.92, 0.68, 0.30);
+  wfLay(col, ink, rock, red*(0.55 + 0.60*smoothstep(-0.04, 0.03, 2.56 - rr)), px, 0.95);
+  col = mix(col, gilt*1.1, mmInkP(rr - 2.560, px, 1.3)*wfIn(rock, px)*0.9);
+  wfLay(col, ink, plat, red*0.75, px, 0.9);
+  /* the coat: mid grey, pale dapples ringed darker */
+  vec2 dg = q/0.070;
+  vec2 di = floor(dg);
+  vec2 df = fract(dg) - 0.5 - (mmHash22(di + floor(seed*5.0)) - 0.5)*0.45;
+  float dp = length(df);
+  float dapS = 1.0 - smoothstep(0.24, 0.34, dp);
+  float dapR = smoothstep(0.26, 0.34, dp)*(1.0 - smoothstep(0.38, 0.46, dp));
+  float dapK = smoothstep(0.50, 0.95, q.y)*(1.0 - smoothstep(0.98, 1.10, q.y));
+  vec3 coat = vec3(0.44, 0.44, 0.45);
+  coat = mix(coat, vec3(0.92, 0.91, 0.88), dapS*dapK*0.90);
+  coat = mix(coat, vec3(0.30, 0.30, 0.31), dapR*dapK*0.60);
+  /* rounded: into shade at its edges, lit along its back, a belly shadow */
+  float inside = clamp(-horse/0.07, 0.0, 1.0);
+  coat *= (0.58 + 0.42*sqrt(inside))*(0.70 + 0.42*smoothstep(0.60, 0.84, q.y));
+  coat *= 1.0 - 0.25*smoothstep(0.66, 0.58, q.y)*step(abs(q.x), 0.30);
+  /* dark to the muzzle */
+  coat = mix(coat, vec3(0.26, 0.25, 0.25), smoothstep(0.54, 0.64, q.x)*step(0.86, q.y)*0.8);
+  /* the legs: grey going dark to the fetlock, round, lit on the key's side */
+  vec3 legC = mix(vec3(0.18, 0.17, 0.17), vec3(0.58, 0.58, 0.56), smoothstep(0.20, 0.48, q.y));
+  wfLay(col, ink, min(fF, hF), legC*0.58, px, 0.7);
+  float legIn = clamp(-min(fN, hN)/0.03, 0.0, 1.0);
+  wfLay(col, ink, min(fN, hN), legC*(0.62 + 0.45*sqrt(legIn)), px, 0.9);
+  wfLay(col, ink, hoof, vec3(0.13, 0.11, 0.10), px, 0.9);
+  /* the tail behind: horsehair in strands */
+  float hair = 0.55 + 0.45*abs(sin(q.x*140.0 + q.y*55.0 + 3.0*mmNoise(q*24.0)));
+  wfLay(col, ink, tail, vec3(0.30, 0.28, 0.27)*hair, px, 0.8);
+  wfLay(col, ink, horse, coat, px, 0.95);
+  /* (the legs' and the tail's outlines go under the barrel: only its own
+     edge is drawn there -- and the dapples' dark rings in ink, on the lit
+     colour, where no prop ceiling can flatten them) */
+  ink *= 1.0 - wfIn(horse + px*1.6, px);
+  ink = max(ink, mmInkP(horse, px, 1.0)*0.95);
+  ink = max(ink, dapR*dapK*0.30*wfIn(horse + px*1.6, px));
+  /* the line of light down its key side and along its back */
+  float rim = (1.0 - smoothstep(0.0, max(px*2.2, 0.010), -horse))*wfIn(horse, px);
+  col = mix(col, vec3(0.97, 0.94, 0.88), rim*smoothstep(0.80, 1.05, q.y + 0.25*kq*q.x)*0.65);
+  /* the eye, the nostril, the mouth */
+  float eye = length(q - vec2(0.462, 1.020)) - 0.015;
+  col = mix(col, vec3(0.04, 0.03, 0.03), wfIn(eye, px));
+  col = mix(col, vec3(0.95), wfIn(length(q - vec2(0.466, 1.026)) - 0.005, px));
+  ink = max(ink, mmInkP(length(q - vec2(0.618, 0.912)) - 0.012, px, 1.0)*0.9*wfIn(horse, px));
+  ink = max(ink, mmInkP(wfSeg(q, vec2(0.565, 0.870), vec2(0.640, 0.878), 0.0), px, 1.0)*0.8*wfIn(horse, px));
+  /* the mane over the neck: dark locks, each lit along its crest */
+  float strM = 0.55 + 0.45*abs(sin(dot(q, vec2(80.0, 30.0)) + lock*1.7));
+  wfLay(col, ink, mane, vec3(0.20, 0.19, 0.19)*strM*(1.0 + 0.6*smoothstep(0.0, -0.015, mane + 0.018)), px, 0.85);
+  /* the bridle and reins */
+  float brid = min(min(wfSeg(q, vec2(0.43, 1.07), vec2(0.52, 0.93), 0.008), wfSeg(q, vec2(0.46, 0.95), vec2(0.60, 0.925), 0.008)),
+                   wfSeg(q, vec2(0.58, 0.93), vec2(0.17, 0.86), 0.006));
+  wfLay(col, ink, brid, red*1.05, px, 0.6);
+  col = mix(col, gilt*1.2, wfIn(length(q - vec2(0.585, 0.928)) - 0.013, px));
+  /* the cloth, the saddle, its studs, leather and stirrup */
+  vec2 cl = q - vec2(0.02, 0.775);
+  wfLay(col, ink, cloth, vec3(0.18, 0.22, 0.48)*(0.75 + 0.35*smoothstep(0.70, 0.85, q.y)), px, 0.85);
+  col = mix(col, gilt, mmInkP(wfEll(cl, vec2(0.17, 0.125)) + 0.016, px, 2.2)*wfIn(cloth, px)*step(0.70, q.y));
+  wfLay(col, ink, saddle, red*(0.62 + 0.55*smoothstep(0.82, 0.90, q.y)), px, 0.9);
+  col = mix(col, gilt*1.1, wfIn(length(vec2(fract((q.x + 0.11)/0.05) - 0.5, (q.y - 0.812)/0.05)*0.05) - 0.007, px)*wfIn(saddle, px)*step(abs(q.x - 0.02), 0.11));
+  wfLay(col, ink, leath, vec3(0.28, 0.09, 0.05), px, 0.5);
+  wfLay(col, ink, stir, vec3(0.72, 0.72, 0.74), px, 0.8);
+  gWfGloss = 0.35 + 0.6*wfIn(min(saddle, stir), px);
+  gWfMoon = 0.7*wfIn(horse, px)*smoothstep(0.76, 0.90, q.y);
+  gWfCol = col; gWfInk = ink;
+  return d;
+}
 /* ── 46 THE ROCKING HORSE ──────────────────────────────────────────────────
    A dapple grey at full stretch on its bow rockers: forelegs out ahead,
    hind legs out behind, head up, a real horsehair mane and tail, a red
    saddle on its gilt-edged cloth, a stirrup, the bridle and reins; the
    rockers red with a gilt line and the turned stretcher between them. */
 float wfHorse(vec2 q, float px, float seed, float kq, bool paint){
+  if (seed < 40.0) return wfHorseN(q, px, seed, kq, paint);   // (round 44: the Nursery's own)
   /* the rocker: an arc of a 2.6 m circle */
   vec2 rc = vec2(0.0, 2.62);
   float rr = length(q - rc);
@@ -25069,53 +25567,88 @@ float wfHorse(vec2 q, float px, float seed, float kq, bool paint){
    rolled clear -- each block painted in its own nursery colour with the
    letter on its face in a sunk panel, its top lit, every edge inked.
    Drawn in metres (wfNom 0.40). */
-float wfBlk(vec2 q, vec2 c, float s, float a){
+/* (round 44, PYRITE: the blocks are CUBES. Both survey-8 judges: "the
+   alphabet blocks on the rug are untextured cubes floating above it" -- each
+   was one flat square. Now each is drawn in the round as a toy is seen from
+   a little above: its front face with the letter in a sunk panel, its top
+   in another paint with its own letter, its side in a third and in shade,
+   every edge inked, the paint rubbed through to the beech at the corners
+   and arrises where small hands have had them, and the bottom edge sitting
+   down in its own shadow on the rug.) */
+float gWbFace = 0.0;
+vec2  gWbUV = vec2(0.0);
+float wfCube(vec2 q, vec2 c, float S, float a, float sx, out float face, out vec2 fuv){
   vec2 p = q - c;
   float cs = cos(a), sn = sin(a);
   p = vec2(cs*p.x + sn*p.y, -sn*p.x + cs*p.y);
-  return mmBox(p, vec2(s*0.5), s*0.06);
+  float h = S*0.5;
+  vec2 o = vec2(0.30*S*sx, 0.27*S);
+  float k = o.x/o.y;
+  float dF = mmBox(p, vec2(h), S*0.04);
+  vec2 pt = vec2(p.x - (p.y - h)*k, p.y);
+  float dT = mmBox(pt - vec2(0.0, h + o.y*0.5), vec2(h, o.y*0.5), S*0.02);
+  float ax = abs(o.x);
+  vec2 ps = vec2(p.x*sx, p.y - (p.x*sx - h)*(o.y/ax));
+  float dS = mmBox(ps - vec2(h + ax*0.5, 0.0), vec2(ax*0.5, h), S*0.02);
+  face = 0.0; fuv = p/h;
+  if (dT < 0.0 && dT < dF) { face = 1.0; fuv = vec2(pt.x/h, (p.y - h - o.y*0.5)/(o.y*0.5)); }
+  if (dS < 0.0 && dS < dF && dS < dT) { face = 2.0; fuv = vec2((ps.x - h - ax*0.5)/(ax*0.5), ps.y/h); }
+  return min(dF, min(dT, dS));
+}
+float wfLetter(vec2 g, float li){
+  float L;
+  if (li < 0.5)      L = min(min(wfSeg(g, vec2(-0.55, -0.70), vec2(0.0, 0.75), 0.16), wfSeg(g, vec2(0.55, -0.70), vec2(0.0, 0.75), 0.16)), wfSeg(g, vec2(-0.28, -0.12), vec2(0.28, -0.12), 0.14));
+  else if (li < 1.5) L = min(wfSeg(g, vec2(-0.45, -0.72), vec2(-0.45, 0.72), 0.15), min(abs(length((g - vec2(-0.05, 0.36))/vec2(1.0, 0.9)) - 0.38) - 0.13, abs(length((g - vec2(-0.02, -0.36))/vec2(1.0, 0.9)) - 0.42) - 0.13) + 1e3*step(g.x, -0.45));
+  else if (li < 2.5) L = max(abs(length(g/vec2(0.62, 0.78)) - 1.0)*0.62 - 0.13, mix(-1.0, g.x - 0.20, step(abs(g.y), 0.45)));
+  else if (li < 3.5) L = min(wfSeg(g, vec2(-0.50, -0.70), vec2(0.50, 0.70), 0.15), wfSeg(g, vec2(0.50, -0.70), vec2(-0.50, 0.70), 0.15));
+  else if (li < 4.5) L = min(wfSeg(g, vec2(-0.40, 0.72), vec2(-0.40, -0.70), 0.15), wfSeg(g, vec2(-0.40, -0.70), vec2(0.50, -0.70), 0.15));
+  else               L = min(wfSeg(g, vec2(-0.55, 0.70), vec2(0.55, 0.70), 0.15), wfSeg(g, vec2(0.0, 0.70), vec2(0.0, -0.72), 0.15));
+  return L;
 }
 float wfBlocks(vec2 q, float px, float seed, float kq, bool paint){
   const float S = 0.105;
   vec2 c0 = vec2(-0.06, S*0.5), c1 = vec2(-0.045, S*1.5), c2 = vec2(-0.07, S*2.5);
-  vec2 c3 = vec2(0.10, S*0.5), c4 = vec2(-0.24, S*0.5 + 0.032);
-  float a1 = 0.08, a2 = -0.10, a4 = 0.62;
-  float b0 = wfBlk(q, c0, S, 0.0), b1 = wfBlk(q, c1, S, a1), b2 = wfBlk(q, c2, S, a2);
-  float b3 = wfBlk(q, c3, S, 0.0), b4 = wfBlk(q, c4, S, a4);
+  vec2 c3 = vec2(0.10, S*0.5), c4 = vec2(-0.24, S*0.5 + 0.022);
+  float a1 = 0.08, a2 = -0.10, a4 = 0.48;
+  float sx = kq >= 0.0 ? -1.0 : 1.0;      // the side away from the key is the one in shade
+  float f0, f1, f2, f3, f4; vec2 u0, u1, u2, u3, u4;
+  float b0 = wfCube(q, c0, S, 0.0, sx, f0, u0), b1 = wfCube(q, c1, S, a1, sx, f1, u1), b2 = wfCube(q, c2, S, a2, sx, f2, u2);
+  float b3 = wfCube(q, c3, S, 0.0, sx, f3, u3), b4 = wfCube(q, c4, S, a4, sx, f4, u4);
   float ball = length(q - vec2(0.34, 0.072)) - 0.072;
   float d = min(min(min(b0, b1), min(b2, b3)), min(b4, ball));
   if (!paint) return d;
   vec3 col = vec3(0.1);
   float ink = 0.0;
   /* their paint: red, blue, mustard, green, cream -- old enamel, rubbed */
-  vec3 P0 = vec3(0.62, 0.16, 0.12), P1 = vec3(0.18, 0.28, 0.56), P2 = vec3(0.72, 0.56, 0.18);
-  vec3 P3 = vec3(0.22, 0.44, 0.24), P4 = vec3(0.80, 0.72, 0.56);
+  vec3 P[6];
+  P[0] = vec3(0.62, 0.16, 0.12); P[1] = vec3(0.18, 0.28, 0.56); P[2] = vec3(0.72, 0.56, 0.18);
+  P[3] = vec3(0.22, 0.44, 0.24); P[4] = vec3(0.80, 0.72, 0.56); P[5] = vec3(0.50, 0.24, 0.44);
+  vec3 beech = vec3(0.74, 0.60, 0.40);
+  /* back to front: the bottom pair, the tower, the tumbled one */
   for (int i = 0; i < 5; i++){
-    vec2 c = i == 0 ? c0 : (i == 1 ? c1 : (i == 2 ? c2 : (i == 3 ? c3 : c4)));
-    float a = i == 1 ? a1 : (i == 2 ? a2 : (i == 4 ? a4 : 0.0));
-    vec3 pc = i == 0 ? P0 : (i == 1 ? P1 : (i == 2 ? P2 : (i == 3 ? P3 : P4)));
-    vec2 p = q - c;
-    float cs = cos(a), sn = sin(a);
-    p = vec2(cs*p.x + sn*p.y, -sn*p.x + cs*p.y);
-    float b = mmBox(p, vec2(S*0.5), S*0.06);
-    /* the face: a sunk panel in the plain wood, the letter in paint */
-    float pan = mmBox(p, vec2(S*0.36), S*0.04);
-    float L = 1e3;
-    float li = mod(float(i) + floor(seed*3.0), 5.0);
-    vec2 g = p/(S*0.30);
-    if (li < 0.5)      L = min(min(wfSeg(g, vec2(-0.55, -0.70), vec2(0.0, 0.75), 0.16), wfSeg(g, vec2(0.55, -0.70), vec2(0.0, 0.75), 0.16)), wfSeg(g, vec2(-0.28, -0.12), vec2(0.28, -0.12), 0.14));
-    else if (li < 1.5) L = abs(length(g/vec2(0.62, 0.78)) - 1.0)*0.62 - 0.12;
-    else if (li < 2.5) L = min(wfSeg(g, vec2(-0.50, -0.70), vec2(0.50, 0.70), 0.15), wfSeg(g, vec2(0.50, -0.70), vec2(-0.50, 0.70), 0.15));
-    else if (li < 3.5) L = min(wfSeg(g, vec2(-0.40, 0.72), vec2(-0.40, -0.70), 0.15), wfSeg(g, vec2(-0.40, -0.70), vec2(0.50, -0.70), 0.15));
-    else               L = min(wfSeg(g, vec2(-0.55, 0.70), vec2(0.55, 0.70), 0.15), wfSeg(g, vec2(0.0, 0.70), vec2(0.0, -0.72), 0.15));
-    L *= S*0.30;
-    /* the side toward the key lit, the top edge catching the light */
-    float lit = 0.70 + 0.30*smoothstep(-S*0.5, S*0.5, kq*p.x) + 0.30*smoothstep(S*0.30, S*0.48, p.y);
-    vec3 wood = vec3(0.70, 0.58, 0.40)*lit;
-    vec3 fc = mix(pc*lit, wood*0.92, wfIn(pan, px));
-    fc = mix(fc, pc*lit*0.85, wfIn(L, px)*wfIn(pan, px));
-    wfLay(col, ink, b, fc, px, 0.95);
-    ink = max(ink, mmInkP(pan, px, 0.8)*0.45*wfIn(b, px));
+    float bd = i == 0 ? b0 : (i == 1 ? b1 : (i == 2 ? b2 : (i == 3 ? b3 : b4)));
+    float fc = i == 0 ? f0 : (i == 1 ? f1 : (i == 2 ? f2 : (i == 3 ? f3 : f4)));
+    vec2 fu = i == 0 ? u0 : (i == 1 ? u1 : (i == 2 ? u2 : (i == 3 ? u3 : u4)));
+    float pi = mod(float(i)*2.0 + fc + floor(seed*3.0), 6.0);
+    vec3 pc = pi < 0.5 ? P[0] : (pi < 1.5 ? P[1] : (pi < 2.5 ? P[2] : (pi < 3.5 ? P[3] : (pi < 4.5 ? P[4] : P[5]))));
+    /* the faces' light: the top lit, the front by the key, the side in shade */
+    float lit = fc > 1.5 ? 0.52 : (fc > 0.5 ? 1.22 : 0.86 + 0.12*smoothstep(-1.0, 1.0, kq*fu.x));
+    /* the sunk panel and the letter on it (each face its own letter) */
+    float pan = max(abs(fu.x), abs(fu.y)) - 0.74;
+    float li = mod(float(i)*3.0 + fc*2.0 + floor(seed*3.0), 6.0);
+    float L = wfLetter(fu/0.60, li)*0.60;
+    vec3 fcC = pc*lit;
+    fcC = mix(fcC, vec3(0.86, 0.80, 0.64)*lit, step(pan, 0.0));
+    fcC = mix(fcC, pc*lit*1.10, step(L, 0.0)*step(pan, 0.0));
+    /* rubbed through to the beech along every arris, more at the corners */
+    float edgeD = 1.0 - max(abs(fu.x), abs(fu.y));
+    float corner = 1.0 - min(abs(abs(fu.x) - 1.0) + abs(abs(fu.y) - 1.0), 1.0);
+    float rub = smoothstep(0.62, 0.0, edgeD + 0.20*mmNoise(fu*6.0 + float(i)*3.1) - 0.35*corner)*step(0.0, pan);
+    fcC = mix(fcC, beech*lit*0.9, rub*0.75);
+    wfLay(col, ink, bd, fcC, px, 0.95);
+    ink = max(ink, mmInkP(pan, px/(S*0.5), 0.9)*0.40*wfIn(bd, px));
+    /* the face's edges inked where two faces meet */
+    ink = max(ink, mmInkP(edgeD, px/(S*0.5), 1.0)*0.55*wfIn(bd, px)*step(0.5, fc));
   }
   /* the ball: quartered in red and cream, round, a sheen on its crown */
   vec2 bq = q - vec2(0.34, 0.072);
@@ -25123,10 +25656,11 @@ float wfBlocks(vec2 q, float px, float seed, float kq, bool paint){
   vec3 bc = mix(vec3(0.66, 0.14, 0.12), vec3(0.84, 0.76, 0.60), step(0.0, sin(ang*2.0 + seed)));
   float bu = clamp(length(bq)/0.072, 0.0, 1.0);
   bc *= (0.45 + 0.60*sqrt(max(1.0 - bu*bu, 0.0)))*(0.85 + 0.30*smoothstep(-0.05, 0.05, kq*bq.x + bq.y));
+  bc = mix(bc, vec3(1.0, 0.96, 0.90), (1.0 - smoothstep(0.0, 0.020, length(bq - vec2(-0.022*kq, 0.030))))*0.6);
   wfLay(col, ink, ball, bc, px, 0.95);
-  /* each sits in its own shadow on the boards */
-  col *= 1.0 - 0.35*smoothstep(0.03, 0.0, q.y);
-  gWfCol = col; gWfInk = ink; gWfGloss = 0.35; gWfMoon = 0.25*smoothstep(S*2.7, S*3.0, q.y);
+  /* each sits down in its own shadow on the rug */
+  col *= 1.0 - 0.45*smoothstep(0.035, 0.0, q.y);
+  gWfCol = col; gWfInk = ink; gWfGloss = 0.40; gWfMoon = 0.25*smoothstep(S*2.7, S*3.0, q.y);
   return d;
 }
 /* ── 88 BOOKS PILED ON THE STUDY'S FLOOR (round 37) ──────────────────────
@@ -27358,6 +27892,21 @@ float shapeField(vec2 uv, vec2 msz, float shape, float seed){
     d = min(d, mmBox(p - vec2(0.0, 0.898), vec2(0.124 + 0.085*ey*ey, 0.030), 0.014));
     d = min(d, mmBox(p - vec2(0.0, 0.952), vec2(0.222, 0.026), 0.008));   // abacus
     d = min(d, mmBox(p - vec2(0.0, 0.982), vec2(0.236, 0.012), 0.006));   // its fillet
+#if MM_WINGS == 6
+    /* (round 44, PYRITE: in the glasshouse the column is CAST IRON -- three
+       collars bolted round the drum, and its capital a bell of leaves
+       curling out under the abacus with a volute at each corner) */
+    for (int k = 0; k < 3; k++) {
+      float cy = k == 0 ? 0.305 : (k == 1 ? 0.575 : 0.828);
+      float tc = clamp((cy - 0.14)/0.72, 0.0, 1.0);
+      float rc = 0.132*(1.0 + 0.085*sin(tc*2.6) - 0.20*tc*tc);
+      d = min(d, mmBox(p - vec2(0.0, cy), vec2(rc + 0.014, 0.016), 0.006));
+    }
+    float lfY = clamp((p.y - 0.866)/0.066, 0.0, 1.0);
+    float lfE = 0.016*abs(sin(p.x*48.0 + 0.6))*lfY;
+    d = min(d, mmBox(p - vec2(0.0, 0.898), vec2(0.126 + 0.098*lfY*lfY + lfE, 0.031), 0.010));
+    d = min(d, length(vec2(abs(p.x) - 0.214, p.y - 0.918)) - 0.030);
+#endif
 #endif
 #if MM_SH7
   } else if (shape < 7.5) {               // 7 — drape on a rail
@@ -29839,6 +30388,74 @@ void main(){
   }
 #endif
 
+  /* ROUND 44 (PYRITE): A GLASSHOUSE COLUMN IS CAST IRON GONE TO VERDIGRIS.
+     Both survey-8 judges on the Greenhouse: "the two columns framing the room
+     are saturated flat-green cylinders with no patina -- verdigris iron
+     columns with rivets, rust and highlights". In the Greenhouse's program
+     only (MM_WINGS 6), so every other wing's column is the stone it was:
+     black-leaded iron under a blue-green bloom that runs DOWN the drum in
+     streaks from every moulding the rain sits on, gathering in the flutes;
+     rust bleeding out of the joints and the foot; and three collars bolted
+     round the shaft, each a band with its rivet heads, lit on the key's
+     side. Off the prop's own luminance, so it keeps the room's light. */
+#if MM_WINGS == 6 && MM_SH6
+  if (vShape > 5.5 && vShape < 6.5) {
+    float lum = max(mmLum(albedo), 0.02);
+    float lv  = lum*2.1 + 0.030;
+    float u   = clamp((vUv.x - 0.5)/0.135, -1.0, 1.0);
+    float y   = vUv.y;
+    vec3 iron = vec3(0.060, 0.068, 0.074);
+    vec3 verd = vec3(0.150, 0.270, 0.255);
+    vec3 verdP = vec3(0.330, 0.440, 0.420);
+    vec3 rust = vec3(0.400, 0.190, 0.075);
+    /* the bloom: streaks run down from each moulding, thick under it */
+    float sources = max(max(smoothstep(0.30, 0.0, 0.840 - y)*step(y, 0.842),
+                            smoothstep(0.20, 0.0, abs(y - 0.120))),
+                        0.55*smoothstep(0.10, 0.0, abs(y - 0.31)) + 0.55*smoothstep(0.10, 0.0, abs(y - 0.58)));
+    float strk = mmFbm3(vec2(u*7.0 + vSeed*3.1, y*1.6));
+    float streak = smoothstep(0.50, 0.74, strk + 0.26*sources);
+    float bloom = smoothstep(0.35, 0.80, mmFbm3(vec2(u*3.0, y*9.0) + vSeed*5.3));
+    float patina = clamp(streak*0.90 + bloom*0.20 + 0.55*(1.0 - colSh)*bloom, 0.0, 1.0);
+    /* the capital's leaves hold the most of it, their tips rubbed bright */
+    float capM = smoothstep(0.850, 0.870, y);
+    patina = max(patina, capM*(0.55 + 0.45*bloom));
+    vec3 c = mix(iron, mix(verd, verdP, max(bloom*streak, capM*0.6*(0.5 + 0.5*sin(vUv.x*180.0)))), patina);
+    /* rust: out of the plinth and the collars' joints, running down */
+    float rS = smoothstep(0.10, 0.0, y)*0.9
+             + smoothstep(0.08, 0.0, abs(y - 0.29))*step(y, 0.30)
+             + smoothstep(0.08, 0.0, abs(y - 0.56))*step(y, 0.57);
+    float rN = smoothstep(0.50, 0.78, mmFbm3(vec2(u*11.0 + vSeed, y*3.0) + 7.7));
+    c = mix(c, rust, clamp(rS*rN*1.3, 0.0, 0.85));
+    /* the collars: a band round the drum with rivet heads along it */
+    float colr = 0.0, rivet = 0.0;
+    for (int k = 0; k < 3; k++) {
+      float cy = k == 0 ? 0.305 : (k == 1 ? 0.575 : 0.828);
+      float bd = abs(y - cy);
+      float onB = 1.0 - smoothstep(0.015, 0.019, bd);
+      colr = max(colr, onB);
+      float bend = asin(clamp(u, -0.999, 0.999))/1.5708;
+      float rp = fract(bend*4.0 + 0.5) - 0.5;
+      float rr = length(vec2(rp*0.135*3.1416*0.5*vSize.x/max(vSize.y, 0.01), (y - cy)*1.0));
+      rivet = max(rivet, (1.0 - smoothstep(0.0040, 0.0062, rr))*onB*step(abs(u), 0.92));
+    }
+    c = mix(c, iron*0.9, colr*0.92);
+    c = mix(c, verdP*0.8, colr*0.30*bloom);
+    /* each collar's upper edge catches the light, its lower edge is a dark
+       seam with the rust coming out of it */
+    for (int k = 0; k < 3; k++) {
+      float cy = k == 0 ? 0.305 : (k == 1 ? 0.575 : 0.828);
+      c *= 1.0 + 1.10*(1.0 - smoothstep(0.0, 0.004, abs(y - cy - 0.016)));
+      c *= 1.0 - 0.70*(1.0 - smoothstep(0.0, 0.004, abs(y - cy + 0.017)));
+    }
+    float kx = sign(uKeyDir.x + 0.001);
+    c = mix(c, verdP*1.4, rivet*(0.4 + 0.6*clamp(u*kx + 0.4, 0.0, 1.0)));
+    /* the drum lit on the key's side, a hard line of light down it */
+    float litE = smoothstep(0.30, 0.62, u*kx) * (1.0 - smoothstep(0.70, 0.95, u*kx));
+    c *= 0.78 + 0.50*litE*colSh;
+    albedo = mix(albedo, c*lv*3.0, 0.97);
+  }
+#endif
+
   /* A PACKING CASE IS DEAL (round 28, the shared finish's material half):
      sawn white pine gone honey with age, each board its own value -- off
      the prop's own luminance like the pot's clay, so it keeps its room's
@@ -30780,6 +31397,10 @@ void main(){
   /* (round 37: a fitting set down -- uFitK -- keeps its brass a metal's
      colour, not the grey the wood's chroma cap left it) */
   if (isFit > 0.5 && uFitK < 0.99) { satK = max(satK, 0.42); satM = max(satM, 0.60); }
+#if MM_WINGS == 6
+  /* (round 44: the verdigris on the glasshouse's iron is a material fact) */
+  if (vShape > 5.5 && vShape < 6.5) { satK = min(uPropSat, 0.22); satM = min(uPropSatMax, 0.34); }
+#endif
 #if MM_WINGS == 2
   if (vShape > 31.5 && (vShape < 37.5 || vShape > 38.5)) { satK = max(uPropSat, 0.40); satM = max(uPropSatMax, 0.58); }
 #if MM_SH39

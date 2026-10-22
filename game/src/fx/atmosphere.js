@@ -1845,7 +1845,7 @@ export const REGIONS = {
                   millisecond of a fight's frame under the hand) */
                { shape: 27, ahead: 3.25, across: 1.85, tone: 0.97, hM: 0.58, keep: true, still: true, seed: 4.5 },
              ] },
-    crispFloor: true,
+    crispFloor: true, flagK: 4,
     nearFloor: { fall: 0.92, calm: 0.85, clean: 1,
                  pool: { ahead: 4.0, across: 2.6, rAlong: 2.2, rAcross: 2.0, k: 16.0, color: '#ffa848' },
                  /* (graft, judge 2: the near-left flags kept deep blue-black --
@@ -2201,6 +2201,14 @@ const GRAVE_NEAR_PLOTS = [
   /* (round 31 graft, judges 2 and 3: the plots' bottom band "a dark band with
      nothing in it" -- a low stone in the near turf, in the lantern's spill) */
   { shape: 69, edge: 0.36, z: 3.4, tone: 0.95, scale: 0.90, seed: 4.0, keep: true },
+  /* ROUND 44 (PYRITE): MORE STONES, CLUSTERED -- both survey-8 judges:
+     "sparse headstones that sit on it without shadow". A family's row of
+     small old stones leaning together in the mid lawn at your left, and a
+     child's stone and a broken one by the kerbed plot */
+  { shape: 69, x: -3.9, z: -3.6, tone: 0.80, scale: 0.72, seed: 5.3 },
+  { shape: 69, x: -3.1, z: -3.9, tone: 0.78, scale: 0.66, seed: 2.7 },
+  { shape: 69, x: -2.3, z: -3.5, tone: 0.82, scale: 0.78, seed: 4.1 },
+  { shape: 69, x: 3.2, z: 0.2, tone: 0.84, scale: 0.58, seed: 6.6 },
 ];
 /* ...and just inside the GATE, the first graves either side of the walk --
    seen from the gateway, the churchyard begins at your feet, not twenty
@@ -2222,6 +2230,13 @@ const GRAVE_NEAR_GATE = [
   { shape: 69, edge: 0.875, z: 9.0, tone: 0.92, scale: 1.20, seed: 3.0 },
   /* (round 31: and a large one in the near turf right of the walk) */
   { shape: 69, edge: 0.72, z: 8.8, tone: 0.95, scale: 1.40, seed: 1.25 },
+  /* (round 44: a cluster of old stones in the turf at your left, leaning
+     together, and a pair beyond the right-hand stone) */
+  { shape: 69, x: -7.4, z: 1.6, tone: 0.82, scale: 0.80, seed: 5.3 },
+  { shape: 69, x: -6.5, z: 1.2, tone: 0.80, scale: 0.70, seed: 2.7 },
+  { shape: 69, x: -8.2, z: 0.9, tone: 0.80, scale: 0.66, seed: 4.1 },
+  { shape: 69, x: 6.8, z: 1.0, tone: 0.82, scale: 0.72, seed: 6.6 },
+  { shape: 69, x: 7.6, z: 0.6, tone: 0.80, scale: 0.64, seed: 3.4 },
 ];
 /* ...and in the yard, seen down its row from beside the walk (round 25):
    the stones begin at your feet there too, not at the first rank 2 m
@@ -2244,6 +2259,13 @@ const GRAVE_NEAR_YARD = [
   { shape: 70, edge: 0.30, z: 3.2, tone: 0.55, scale: 1.10, seed: 4.5 },
   { shape: 70, edge: 0.03, z: -5.0, tone: 0.88 },
   { shape: 73, x:  2.80, z: -4.40, tone: 0.86, free: true },
+  /* (round 44: a family's small stones leaning together in the empty lawn
+     right of the worn path, and two more by the far tomb) */
+  { shape: 69, x: -3.4, z: -1.6, tone: 0.84, scale: 0.74, seed: 5.3, free: true },
+  { shape: 69, x: -4.1, z: -1.9, tone: 0.80, scale: 0.66, seed: 2.7, free: true },
+  { shape: 69, x: -2.7, z: -2.3, tone: 0.82, scale: 0.70, seed: 4.1, free: true },
+  { shape: 69, x: 4.6, z: -6.2, tone: 0.82, scale: 0.70, seed: 6.6, free: true },
+  { shape: 69, x: -6.2, z: -7.0, tone: 0.80, scale: 0.68, seed: 3.4, free: true },
 ];
 export const ROOM_KINDS = {
   foyer: {
@@ -2436,6 +2458,15 @@ export const ROOM_KINDS = {
           /* (...and VIVIANITE's, J2 and J3: the gardener's potting table, its
              pots and a watering can, on the flags under the gallery) */
           { shape: 84, edge: 0.66, z: -3.4, tone: 0.95, centre: 1, still: true, scale: 1.2 },
+          /* ROUND 44 (PYRITE): the lower floor between the staging and the
+             gallery rail DRESSED, judge 2's "pots and a watering can" -- a
+             fern grown big in its pot by the left urn, a stand of pots and
+             two small pots set down on the flags in the moon, a palm in its
+             tub by the bench: more planting on the floor, never less */
+          { shape: 74, edge: 0.36, z: -1.6, tone: 0.92, centre: 1, still: true, seed: 6.05, hM: 1.10 },
+          { shape: 76, edge: 0.47, z: -2.6, tone: 0.92, centre: 1, still: true },
+          { shape: 74, edge: 0.55, z: -1.2, tone: 0.92, centre: 1, still: true, seed: 2.25, hM: 0.62 },
+          { shape: 74, edge: 0.80, z: -1.8, tone: 0.92, centre: 1, still: true, seed: 4.15, hM: 1.60 },
         ],
         /* (round 34: 1.0 of the wing's 36 -- the 0.82 of 44 it was judged with) */
         /* (round 34 graft, GLAUCONITE's: from the gallery's near end and not
@@ -2503,7 +2534,9 @@ export const ROOM_KINDS = {
            pool painted red) */
         /* (round 34 graft, J2 and VIVIANITE's: and the lantern's warm on the
            near-left flags where the bench stands -- + across, as the moon's) */
-        nearFloor: { pool: { ahead: 5.0, across: 2.4, rAlong: 3.4, rAcross: 3.0, k: 4.2, color: '#e0b266' },
+        /* (round 44: the lantern's pool a little wider, toward the middle of
+           the walk -- its centre was the darkest flag in the room) */
+        nearFloor: { pool: { ahead: 5.0, across: 1.6, rAlong: 3.6, rAcross: 3.8, k: 4.2, color: '#e0b266' },
                      pool2: { ahead: 5.4, across: 2.9, rAlong: 3.4, rAcross: 2.4, k: 3.6, color: '#7fa6c8' } } },
       /* and a vinery's floor is bedded out in rows under the rods; it is a
          lean-to against the garden wall, so it is shallower than the great
@@ -2652,7 +2685,11 @@ export const ROOM_KINDS = {
        treadle machine and the dressmaker's dummy in the sewing room) */
     /* (graft: nothing dealt in the night nursery -- its things are set by
        hand, and a dealt cot stood at the Kid's shoulder) */
-    kinds: [{ subject: 'nurseryroom', count: 0 },
+    /* (round 44, PYRITE: the night nursery lays a rug of its own -- a hooked
+       nursery rug, its animals, its moon and its alphabet border, MM_RUGK 9
+       -- not the Study's and the Kitchens' Turkey carpet, both survey-8
+       judges' SYSTEM; the wardrobe room keeps its braided oval) */
+    kinds: [{ subject: 'nurseryroom', count: 0, floorK: 9 },
             /* (graft: the dress forms stood out where their silhouettes
                read against the shelves, a machine at the work; no toy
                chest in the sewing room) */
