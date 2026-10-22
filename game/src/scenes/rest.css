@@ -610,6 +610,9 @@
    their bosses still clear of it -- and the cosy pool's taller canvases keep
    their places over the first panel */
 .rs-hang { top: calc(var(--hud-h) + clamp(20px, 2.9vh, 27px)); }
+/* (2026-10-21: no painting is named and no plate hangs under a frame, so a
+   frame takes the plate's wall and the cosy pool's tall canvases hang whole --
+   none is swapped for a stand-in any more) */
 
 /* THE ROUND 40 REPAIR, PART 2: each picture a little further out along the
    wall, toward its corner candle (the candle's light on it), so its plate

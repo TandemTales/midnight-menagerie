@@ -1094,10 +1094,6 @@
   translate: -50% 0;
 }
 .go-hang[hidden] { display: none; }
-/* the plate may run as wide as the plaque under it (gameover.js sets
-   --go-plate-w), not just its narrow frame: three lines of "The Lady of the
-   House" left the bay no room for the picture (survey 5 fix) */
-.go-hang.kit-hang--painting > .kit-hang__plate { max-width: var(--go-plate-w, 150px); }
 .go-hang.kit-hang .kit-hang__cord { height: var(--go-cord, 24px); }
 .go-hang.kit-hang--tile .kit-hang__cord { width: 44%; }
 
@@ -1219,8 +1215,8 @@
    taller plaque was under the 56 px a picture needs. The two plaques now
    stand only as tall as their words (both still one height, the card the
    tallest thing on the shelf), so each bay above them is tall enough for a
-   picture to hang WHOLE on its cord, its plate under its frame (ui/kit.css
-   .kit-hang__plate, gameover.js _hangPictures). */
+   picture to hang WHOLE on its cord (gameover.js _hangPictures; no plate
+   under it since 2026-10-21: no painting is named). */
 .go-tri { min-height: clamp(150px, 18vh, 172px); }
 .go-said .go-mvp__note { font-size: 13px; line-height: 1.24; }
 /* the line that says why runs the plaque's width, not a 70 px column */
@@ -1311,9 +1307,8 @@
 .go-shrine :is(.go-tri__h, .go-reach__unit, .go-reach__wing) { font-size: clamp(12.5px, .86vw, 14px); }
 .go-shrine .go-reach__where { font-size: clamp(14px, 1vw, 16px); }
 .go-shrine .go-reach__wing::before { content: '\00b7\2002'; color: var(--kit-gold); letter-spacing: 0; }
-/* the pictures in the flanks: each its own plate under its frame, one or two lines */
+/* the pictures in the flanks, on their cords */
 .go-shrine > .go-hang { z-index: 1; }
-.go-shrine > .go-hang.kit-hang--painting > .kit-hang__plate { max-width: var(--go-plate-w, 150px); }
 .go-shrine > .go-hang .kit-hang__cord::after { width: calc(var(--hang-w) * .16); }
 /* the niche's frame under the card's pedestal and frame, the light under both */
 .go-wrap .go-altar.go-shrine::after { z-index: -3; }
@@ -1322,8 +1317,6 @@
 .go-wrap:has(.go-shrine) { grid-template-columns: minmax(0, .76fr) minmax(0, 1.2fr) minmax(0, 1fr); }
 .go-board:has(.go-shrine) { --go-mvp-s: .84; }
 .go-shrine .go-mvp__slot { margin-top: 6px; }
-.go-shrine > .go-hang .kit-hang__plate { padding: 4px 12px 5px; }
-.go-shrine > .go-hang .kit-hang__plate > b { font-size: 12.5px; letter-spacing: .015em; line-height: 1.12; }
 @media (max-height: 860px) {
   .go-board:has(.go-shrine) { --go-mvp-s: .82; }
   .go-wrap .go-altar.go-shrine { margin-block: 6px; }
@@ -1357,13 +1350,5 @@
 @media (max-height: 860px) { .go-board:has(.go-shrine) { --go-mvp-s: .92; } }
 .go-board:has(.go-shrine) { --go-mvp-s: .86; }
 @media (max-height: 860px) { .go-board:has(.go-shrine) { --go-mvp-s: .92; } }
-.go-shrine > .go-hang .kit-hang__plate { padding: 4px 10px 5px; }
 .go-board .go-courage > :last-child { white-space: nowrap; }
 .go-board .go-courage__n { white-space: nowrap; }
-
-/* THE ROUND 40 REPAIR (survey 7's paired test, both judges on event: plates
-   "wrap to sit within each frame's width"): every hung painting's plate is
-   capped at its frame's width, moulding and all -- here too, where it ran as
-   wide as the bay */
-.go-shrine > .go-hang.kit-hang--painting > .kit-hang__plate,
-.go-hang.kit-hang--painting > .kit-hang__plate { max-width: calc(100% + 2 * var(--hang-rim)); }
