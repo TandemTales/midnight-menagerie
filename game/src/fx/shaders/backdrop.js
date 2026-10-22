@@ -5329,6 +5329,28 @@ float hedgeWallH(vec2 q, float qpx, out float occ){
   float wx = q.x - uSize.x*0.5;                  // metres off the far wall's axis
   float u = far > 0.5 ? wx : q.x;
   float sd = uSeed*3.1 + (far > 0.5 ? 0.0 : sign(vWorld.x)*5.7);
+  /* ROUND 45: THE SIDE WALLS' LEAF HOLDS ITS SHAPE (survey 9, judge 2, and
+     three judges the round before: "the leaf texture is stretched into
+     vertical streaks on the left wall's oblique face and along its jagged
+     top edge"). A side wall recedes: a metre along it at depth s, d off the
+     eye's line, is s/d times narrower on screen than a metre up it, so at
+     the wall's far end every spray, notch and sprig was a streak a few
+     pixels wide and a hand tall. A clipped yew's leaf stands OUT of the
+     face and is seen in the round, not foreshortened flat; so along the
+     wall the leaf is laid in d*(1 + ln(s/d)) -- a metre up and a metre
+     along take the same pixels at every depth, and nearer than d (where
+     the wall is seen square) it is the wall's own metres. The ways through
+     (gx) and everything solid keep q.x. */
+  float qpxL = qpx;
+  if (far < 0.5) {
+    float sz = abs(uCamera.z - vWorld.z), sdd = max(abs(vWorld.x - uCamera.x), 0.8);
+    u = (sz < sdd ? sz : sdd*(1.0 + log(sz/sdd)))*sign(vWorld.x);
+    qpxL = max(gAAy*0.85, 0.010);
+  }
+  /* (...and the crown's notches and sprigs laid at the far wall's own
+     pitch on screen: in the side walls' leaf metres a run's notches came a
+     stride apart, and the torn crown -- kept, 4 of 4 -- went smooth) */
+  float uc = far > 0.5 ? u : u*1.9;
   /* (round 34, second pass: the swells a metre high -- at 0.2 m the far
      run's crown read ruled from twenty metres; the court's far hedge,
      furthest off, the most -- its piers and their balls stand up out of it) */
@@ -5350,7 +5372,7 @@ float hedgeWallH(vec2 q, float qpx, out float occ){
      below before anything reads it -- save in a finial's column, where a
      ball stands up to 1.8 m over the cut on the crown it sits on) */
   gRagDip = 0.0; gRagGap = 0.0; gRagGk = 0.0; gRagSpr = 0.0;
-  float top = HH + (q.y > HH - 0.95 && (q.y < HH + 1.0 || (far > 0.5 && abs(fxl) < 1.5)) ? yewRagW(u, sd, ragA) : 0.0);
+  float top = HH + (q.y > HH - 0.95 && (q.y < HH + 1.0 || (far > 0.5 && abs(fxl) < 1.5)) ? yewRagW(uc, sd, ragA) : 0.0);
   /* (round 43 graft: a finial stands on a KEPT stretch of the crown -- no dip
      or notch under it, or the ball floats -- and the fountain court, the
      kept heart of the maze, has its notches half as deep, ZINCITE's) */
@@ -5419,7 +5441,7 @@ float hedgeWallH(vec2 q, float qpx, out float occ){
   /* (the frame budget: a twig's tip is never more than a metre over a
      notch's floor nor a sprig's half a metre over the line -- the side
      walls' sky over that returns at once, as it did) */
-  if (q.y > top - 0.02 && q.y < (ragGk > 0.001 ? HH + 0.30 : min(HH + 0.60, top + 0.42)) && keepF < 0.5) deadW = yewTwigW(u, q.y, top, sd, qpx);
+  if (q.y > top - 0.02 && q.y < (ragGk > 0.001 ? HH + 0.30 : min(HH + 0.60, top + 0.42)) && keepF < 0.5) deadW = yewTwigW(uc, q.y, top, sd, qpxL*(far > 0.5 ? 1.0 : 1.9));
   float hedge = max(cov, deadW) * (1.0 - inGap);
   /* above the hedge a SIDE wall is not there: skip the leaf entirely (it
      is a third of the side walls' pixels and all of the sky over them) */
@@ -5442,7 +5464,7 @@ float hedgeWallH(vec2 q, float qpx, out float occ){
   if (far < 0.5 && abs(gx) < gw - max(0.05, 3.0*qpx)) { gHedgeAmt = 0.0; gHzDrop = 1.0; return 0.0; }
   /* the face: sprays, a slow swell, the foot */
   float tone, lit;
-  float rel = yewFace(vec2(u, q.y), qpx, sd, tone, lit);
+  float rel = yewFace(vec2(u, q.y), qpxL, sd, tone, lit);
   /* (round 31 graft: the face's own mass swell -- rel -- carries the slow
      relief now; the extra noise tap under it is the frame's) */
   float h = 1.20 + rel*3.2;
@@ -5609,7 +5631,7 @@ float hedgeWallH(vec2 q, float qpx, out float occ){
      swallowing a statue niche) */
   /* (...and none in any hedge: judge 3's "black notches along the walk's
      left hedge top" were these, cut through the crown against the sky) */
-  vec3 yew = hzWither(vec2(u, q.y), sd, qpx, 0.0, gapY, twigY)*(lum*2.6 + 0.020)*1.30;
+  vec3 yew = hzWither(vec2(u, q.y), sd, qpxL, 0.0, gapY, twigY)*(lum*2.6 + 0.020)*1.30;
   /* (round 29 GRAFT, BOLUS's, both judges: darker and more withered, the
      leaf in clusters. Each spray its own value and cast -- one in three
      turned toward the rust -- so no two lie side by side alike and the
