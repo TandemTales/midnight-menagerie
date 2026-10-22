@@ -100,6 +100,9 @@ function footOf(region, p) {
     return null;
   }
   if (region === 'hedge') {
+    /* (the court's fountain: its basin's round on the lawn, brought a little
+       forward of the quad so the pool shows under the rim and not behind it) */
+    if (s === 25) return { dz: 0.35, w: w * 0.86, d: w * 0.36, k: 1.30 };
     if (s === 81) return { w: w * 0.84, d: w * 0.66, k: 1.15 };
     if (s === 83) return { w: w * 0.94, d: 0.56, k: 1.05 };
     if (s === 30) return { w: w * 0.70, d: w * 0.48, k: 1.10 };

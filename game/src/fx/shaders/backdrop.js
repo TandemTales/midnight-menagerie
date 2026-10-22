@@ -2920,6 +2920,15 @@ float subjBoiler(vec2 q, float cx, float ax, float far, float dqm, out float occ
        + brickM*(1.0 - brassB)*vec3(0.105, 0.048, 0.030)
        + clamp(mainP, 0.0, 1.0)*(1.0 - brassB)*(1.0 - iron)*vec3(0.18, 0.10, 0.05);
   gColAmt = clamp(iron + brassB + brickM + step(0.02, mainP), 0.0, 1.0);
+  /* ROUND 45 (AXINITE): the end wall behind the boilers SOOTED BRICK -- it
+     came up in the wing's cold mid as a pale, hammered-looking silver sheet,
+     the palest dark in the boiler house; a boiler house's wall is black
+     with its own smoke, its courses showing in the lamps' warm */
+  {
+    float bgW = 1.0 - gColAmt;
+    gCol += bgW*vec3(0.017, 0.011, 0.009)*(1.0 - 0.45*bj);
+    gColAmt = mix(gColAmt, 0.96, bgW);
+  }
   gTint = gface*0.90 - fdoor*0.32 - set*0.06 + deck*0.20;
   occ = clamp(set + apron + shell + br + step(0.01, sv) + step(0.02, mainP)
             + walk + ladder + lever, 0.0, 1.0);
@@ -25653,7 +25662,7 @@ vec3 wgPaint(vec2 m, vec2 msz, float shape, float seed, float px, float lum,
       col = outside*E*1.55*(0.22 + 0.80*rr*rr)*(0.70 + 0.30*smoothstep(-0.6, 0.6, kq*xn));
       float streak = pow(wgRound(clamp(xn - 0.38*kq, -1.0, 1.0)), 10.0);
       col += vec3(1.00, 0.72, 0.44)*E*2.6*streak*(0.6 + 0.6*hammer);
-      emit += vec3(1.00, 0.70, 0.42)*streak*(0.5 + 0.6*hammer)*onBody*0.30;   // (round 45: over the ceiling)
+      emit += vec3(1.00, 0.70, 0.42)*streak*onBody*0.22;   // (round 45: over the ceiling)
       col *= 0.60 + 0.50*smoothstep(0.18, 0.66, q.y);
       col = mix(col, vec3(0.20, 0.36, 0.30)*E*1.3, smoothstep(0.30, 0.18, q.y)*smoothstep(0.45, 0.75, mmNoise(q*vec2(7.0, 18.0) + seed))*0.7);
       /* (round 43 GRAFT, BENITOITE's hammered copper: the windows' cold in a
@@ -25678,8 +25687,6 @@ vec3 wgPaint(vec2 m, vec2 msz, float shape, float seed, float px, float lum,
       gWgShade = mix(gWgShade, 0.82 + 0.38*smoothstep(0.70, 0.86, q.y), onRoll);
       /* the roll overhangs the body: a band of its shadow under the lip */
       gWgShade *= 1.0 - 0.50*smoothstep(0.53, 0.615, q.y)*onBody*(1.0 - onRoll)*(1.0 - inS);
-      /* the copper's planished dimples, each catching the light */
-      gWgShade *= 1.0 + 0.45*hammer*onBody*step(1.5, bk)*step(bk, 2.5);
     }
     /* (graft, judge 2: "give them enamel highlights and a dark rim line")
        the roll's crest catches the windows in one hard line of light, all
