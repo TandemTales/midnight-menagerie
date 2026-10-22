@@ -24629,15 +24629,23 @@ vec3 wgPaint(vec2 m, vec2 msz, float shape, float seed, float px, float lum,
     vec3 pine = vec3(0.57, 0.34, 0.15)*E*1.40;
     col = vec3(0.0);
     float onAny = 0.0;
-    for (int ci = 0; ci < 2; ci++){
-      float big = ci == 0 ? 1.0 : 0.0;
-      vec2 lo = ci == 0 ? LC_AL : LC_BL, hi = ci == 0 ? LC_AH : LC_BH;
-      vec2 k = lcBack(big);
-      if (q.y < lo.y - 0.02 || q.y > hi.y + k.y + 0.02 || q.x < lo.x + min(k.x, 0.0) - 0.02 || q.x > hi.x + max(k.x, 0.0) + 0.02) continue;
-      float fr, tp, sdF;
-      float dc = lcCrate(q, lo, hi, k, fr, tp, sdF);
+    {
+      /* (ONE crate per pixel -- the upper where it is drawn, else the lower --
+         painted once: painted for each in a loop, the Lampworks' prop
+         program linked in 14 s, over the 12 s budget) */
+      vec2 kB0 = lcBack(0.0);
+      float frB = 1e3, tpB = 1e3, sdB = 1e3;
+      float dB = (q.y > LC_BL.y - 0.02 && q.x > LC_BL.x + min(kB0.x, 0.0) - 0.02 && q.x < LC_BH.x + max(kB0.x, 0.0) + 0.02)
+               ? lcCrate(q, LC_BL, LC_BH, kB0, frB, tpB, sdB) : 1e3;
+      float big = dB < 0.5*qpx ? 0.0 : 1.0;
+      vec2 lo = big < 0.5 ? LC_BL : LC_AL, hi = big < 0.5 ? LC_BH : LC_AH;
+      vec2 k = big < 0.5 ? kB0 : lcBack(1.0);
+      float fr = frB, tp = tpB, sdF = sdB;
+      float dc = dB;
+      if (big > 0.5) dc = (q.y > hi.y + k.y + 0.02 || q.x < lo.x + min(k.x, 0.0) - 0.02 || q.x > hi.x + max(k.x, 0.0) + 0.02)
+                         ? 1e3 : lcCrate(q, lo, hi, k, fr, tp, sdF);
       float onC = clamp(0.5 - dc/max(qpx, 1e-5), 0.0, 1.0);
-      if (onC <= 0.0) continue;
+      if (onC > 0.0) {
       float onF = clamp(0.5 - fr/max(qpx, 1e-5), 0.0, 1.0);
       float onT = clamp(0.5 - tp/max(qpx, 1e-5), 0.0, 1.0)*(1.0 - onF);
       float onS = clamp(1.0 - onF - onT, 0.0, 1.0);
@@ -24739,6 +24747,7 @@ vec3 wgPaint(vec2 m, vec2 msz, float shape, float seed, float px, float lum,
         float lampM = min(length(vec2(dq.x, dq.y + 0.008)*vec2(1.0, 0.8)) - 0.024, mmBox(dq - vec2(0.0, 0.036), vec2(0.008, 0.016), 0.003));
         float sten = clamp(0.5 - min(dia, lampM)/max(qpx, 1e-5), 0.0, 1.0)*smoothstep(0.08, 0.32, mmNoise(q*vec2(55.0, 40.0) + seed*2.0) + 0.2*gr)*(1.0 - gap);
         col = mix(col, vec3(0.07, 0.035, 0.02)*E, sten*0.85*onF);
+      }
       }
     }
     /* the straw: dry stalks, each lit along its length */
