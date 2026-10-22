@@ -17081,10 +17081,22 @@ void main(){
   /* (round 31: in any room whose near floor is dressed -- kDye; the
      rooms that carried a carpet before round 31 drew one only in the Foyer's
      program, and they still draw what they drew) */
+#if MM_RUGK == 9
+  /* (fix/r44-frame: the rug's pixel size taken here, in the flow every
+     floor pixel shares, and not inside the rug's own branch -- a derivative
+     taken in a branch only some of a quad's pixels take; the night nursery's
+     rug program only, the same value) */
+  vec2 rpH = vWorld.xz - uRug.xy;
+  vec2 rpxH = vec2(length(vec2(dFdx(rpH.x), dFdy(rpH.x))), length(vec2(dFdx(rpH.y), dFdy(rpH.y))));
+#endif
   if (uRug.z > 0.01 && uIsCeiling < 0.5 && kDye > 0.5
       && all(lessThan(abs(vWorld.xz - uRug.xy), uRug.zw + vec2(0.25)))) {
     vec2 rp = vWorld.xz - uRug.xy;
+#if MM_RUGK == 9
+    vec2 rpx = rpxH;
+#else
     vec2 rpx = vec2(length(vec2(dFdx(rp.x), dFdy(rp.x))), length(vec2(dFdx(rp.y), dFdy(rp.y))));
+#endif
     rpx = max(rpx, vec2(1e-4));
     vec2 ed = uRug.zw - abs(rp);
     rugCov = clamp(ed.x/rpx.x + 0.5, 0.0, 1.0) * clamp(ed.y/rpx.y + 0.5, 0.0, 1.0);
@@ -17413,6 +17425,9 @@ void main(){
       float cR = min(uRug.z, uRug.w)*0.50;
       float cr = length(rp);
       float inR = 1.0 - smoothstep(cR - pxm, cR + pxm, cr);
+      /* (fix/r44-frame: the roundel drawn only where it shows -- inR is 0
+         outside it, and mixed in at 0 it changed nothing) */
+      if (inR > 0.0) {
       vec3 cC = navy*loops;
       vec2 mq = rp - vec2(-0.08*cR, 0.0);
       float moonO = length(mq) - 0.48*cR, moonI = length(mq - vec2(0.20*cR, 0.10*cR)) - 0.42*cR;
@@ -17423,9 +17438,16 @@ void main(){
       }
       cC = mix(cC, gold, 1.0 - smoothstep(0.0, pxm*1.4 + 0.008, abs(cr - cR*0.92)));
       fC = mix(fC, cC, inR);
+      }
       fC = mix(fC, cream*0.9, 1.0 - smoothstep(0.0, pxm*1.4 + 0.010, abs(cr - cR)));
       /* the alphabet border on madder, between two gold guards */
       float bIn = smoothstep(0.07 - ePx, 0.07 + ePx, eIn)*(1.0 - smoothstep(0.38 - ePx, 0.38 + ePx, eIn));
+      float gd = max(1.0 - smoothstep(0.012, 0.012 + ePx*1.2, abs(eIn - 0.055)),
+                     1.0 - smoothstep(0.012, 0.012 + ePx*1.2, abs(eIn - 0.395)));
+      /* (fix/r44-frame: the letters and their madder only on the border band,
+         bIn -- off it they were drawn and mixed in at 0) */
+      rugCol = fC;
+      if (bIn > 0.0) {
       float alg = (ed.x < ed.y) ? rp.y : rp.x;
       float slot = floor(alg/0.30 + 0.5);
       vec2 lq = vec2((alg/0.30 - slot)*0.30, eIn - 0.225);
@@ -17433,9 +17455,8 @@ void main(){
       float Lt = r9Letter(lq/0.095, li)*0.095;
       vec3 bC = madder*(0.85 + 0.25*mmNoise(rp*2.0 + 5.0));
       bC = mix(bC, cream*0.95, 1.0 - smoothstep(-pxm, pxm, Lt));
-      float gd = max(1.0 - smoothstep(0.012, 0.012 + ePx*1.2, abs(eIn - 0.055)),
-                     1.0 - smoothstep(0.012, 0.012 + ePx*1.2, abs(eIn - 0.395)));
       rugCol = mix(fC, bC, bIn);
+      }
       rugCol = mix(rugCol, gold, gd);
       rugCol = mix(rugCol, vec3(0.05, 0.04, 0.05), 1.0 - smoothstep(0.022 - ePx, 0.022 + ePx, eIn));
       /* worn pale where the children have sat */
@@ -18393,9 +18414,11 @@ void main(){
       float wx0 = (s2 == 0 ? -1.0 : 1.0)*4.9;
       vec2 wq = vec2(w.x - wx0 - backD*0.18*sign(wx0), backD - 1.7);
       float pane = (1.0 - smoothstep(0.85, 0.95, abs(wq.x)))*(1.0 - smoothstep(1.05, 1.25, abs(wq.y)));
+      if (pane > 0.0) {   // (fix/r44-frame: the glazing bars only in the pane)
       float bars = max(1.0 - smoothstep(0.03, 0.03 + mp*1.3, abs(fract(wq.x/0.57 + 0.5) - 0.5)*0.57),
                        1.0 - smoothstep(0.03, 0.03 + mp*1.3, abs(fract(wq.y/0.80 + 0.5) - 0.5)*0.80));
       col += alb*vec3(0.55, 0.66, 0.92)*pane*(1.0 - 0.75*bars)*2.6;
+      }
     }
   }
 #endif
@@ -25623,6 +25646,10 @@ float wfHorseN(vec2 q, float px, float seed, float kq, bool paint){
   d = min(d, min(horse, min(mane, tail)));
   d = min(d, min(min(cloth, saddle), min(leath, stir)));
   if (!paint) return d;
+  /* (fix/r44-frame: four pixels and the erosion's reach clear of every
+     part, the whole quad of pixels is dropped -- nothing painted here is
+     ever seen: return before the paint) */
+  if (d > 0.004 + 4.0*px) return d;
 
   vec3 col = vec3(0.1);
   float ink = 0.0;
@@ -25872,6 +25899,10 @@ float wfBlocks(vec2 q, float px, float seed, float kq, bool paint){
   float ball = length(q - vec2(0.34, 0.072)) - 0.072;
   float d = min(min(min(b0, b1), min(b2, b3)), min(b4, ball));
   if (!paint) return d;
+  /* (fix/r44-frame: four pixels and the erosion's reach clear of every
+     part, the whole quad of pixels is dropped -- nothing painted here is
+     ever seen: return before the paint) */
+  if (d > 0.004 + 4.0*px) return d;
   vec3 col = vec3(0.1);
   float ink = 0.0;
   /* their paint: red, blue, mustard, green, cream -- old enamel, rubbed */
