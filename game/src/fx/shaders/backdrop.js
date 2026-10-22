@@ -14877,6 +14877,9 @@ void main(){
   float r39Flour = 0.0;
 #endif
   float r25Walk = 0.0;      // (round 25 graft: the churchyard's laid walk, for its stone below)
+#if MM_R25W == 4
+  float r44Sw = 0.5;        // (round 44 graft: the lawn's swathe, for its leaf drifts below)
+#endif
 #if MM_R25W == 3
   float r44Pud = 0.0, r44PudR = 0.0, r44Bar = 0.0; vec2 r44PudQ = vec2(0.0);   // (round 44 graft: the glasshouse's pool, and the roof's bars in the moon)
 #endif
@@ -15048,6 +15051,7 @@ void main(){
            fbm, and the long-grass bands wander by a sine -- four noise taps on
            every pixel of the lawn were most of the yard's new cost) */
         float sw = mmNoise(w*vec2(0.10, 0.16) + uSeed*2.3);
+        r44Sw = sw;   // (round 44 graft: the leaf drifts lie in the swathes -- one tap for both)
         pat += (sw - 0.5)*0.56*(1.0 - earth*0.5);   // (round 35 graft, SODALITE's: the swathes a stop apart, 0.40 -> 0.56)
         float rowB = 0.5 + 0.5*sin(w.y*0.62 + 1.3*sin(w.x*0.23 + w.y*0.07 + uSeed));
         pat -= smoothstep(0.70, 0.98, rowB)*0.12*(1.0 - earth);   // (and the long grass darker, 0.07 -> 0.12)
@@ -15120,26 +15124,34 @@ void main(){
         pat = mix(pat, 0.40 + grit*0.30, trod*0.85);
         /* the roots: two old yews off the lawn's sides, four roots each */
         float rootM = 0.0, rootLit = 0.0, rootSh = 0.0;
+        /* (round 44 graft, the frame budget: each yew's four roots fan out a
+           third of a radian apart, so a pixel is near at most one of them --
+           that one is found by its angle and drawn, not all eight looped
+           over: the loop was half a millisecond of the Graveyard's fight) */
         for (int t = 0; t < 2; t++){
           float sd = t == 0 ? -1.0 : 1.0;
           vec2 an = vec2(sd*6.4, 6.0 + 2.0*float(t));        // (eye metres: across, ahead)
           vec2 v = vec2(cY, aY) - an;
-          if (dot(v, v) > 49.0) continue;
-          for (int k = 0; k < 4; k++){
-            float fk = float(k);
-            float ang = (fk - 1.5)*0.34 + (t == 0 ? 0.0 : 3.14159) + 0.10*sin(fk*2.3 + float(t));
-            vec2 dir = vec2(cos(ang), sin(ang));
-            float L = 3.6 + 1.6*mmHash11(fk*3.7 + float(t)*5.1);
-            float a = clamp(dot(v, dir), 0.0, L);
-            vec2 nrm = vec2(-dir.y, dir.x);
-            float wig = 0.22*sin(a*1.7 + fk*2.1) + 0.10*sin(a*4.3 + fk);
-            float off = dot(v, nrm) - wig*smoothstep(0.0, 1.0, a);
-            float wd = mix(0.30, 0.04, a/L)*(0.85 + 0.30*mmHash11(fk*1.9 + float(t)));
-            float on = (1.0 - smoothstep(wd - aaL, wd + aaL, abs(off)))*step(0.0, dot(v, dir))*step(dot(v, dir), L);
-            rootM = max(rootM, on);
-            rootLit = max(rootLit, on*smoothstep(-wd*0.2, wd*0.8, off*sign(nrm.y + 1e-3)));
-            rootSh = max(rootSh, (1.0 - smoothstep(wd, wd*2.6 + aaL, abs(off)))*(1.0 - on)*step(off*sign(nrm.y + 1e-3), 0.0)*step(0.0, dot(v, dir))*step(dot(v, dir), L));
-          }
+          if (dot(v, v) > 30.0) continue;
+          float base0 = (t == 0 ? 0.0 : 3.14159);
+          float av = atan(v.y, v.x) - base0;
+          av = av - 6.28318*floor((av + 3.14159)/6.28318);  // into -pi..pi
+          float fk = clamp(floor(av/0.34 + 1.5 + 0.5), 0.0, 3.0);
+          float ang = (fk - 1.5)*0.34 + base0 + 0.10*sin(fk*2.3 + float(t));
+          vec2 dir = vec2(cos(ang), sin(ang));
+          float L = 3.6 + 1.6*mmHash11(fk*3.7 + float(t)*5.1);
+          float al = dot(v, dir);
+          float a = clamp(al, 0.0, L);
+          vec2 nrm = vec2(-dir.y, dir.x);
+          float wig = 0.22*sin(a*1.7 + fk*2.1) + 0.10*sin(a*4.3 + fk);
+          float off = dot(v, nrm) - wig*smoothstep(0.0, 1.0, a);
+          float wd = mix(0.30, 0.04, a/L)*(0.85 + 0.30*mmHash11(fk*1.9 + float(t)));
+          float inL = step(0.0, al)*step(al, L);
+          float on = (1.0 - smoothstep(wd - aaL, wd + aaL, abs(off)))*inL;
+          float sgn = off*sign(nrm.y + 1e-3);
+          rootM = max(rootM, on);
+          rootLit = max(rootLit, on*smoothstep(-wd*0.2, wd*0.8, sgn));
+          rootSh = max(rootSh, (1.0 - smoothstep(wd, wd*2.6 + aaL, abs(off)))*(1.0 - on)*step(sgn, 0.0)*inL);
         }
         /* (neither on the walk nor its kerbs) */
         float offWalk = smoothstep(uRunner + 0.25, uRunner + 0.55, abs(rx));
@@ -18533,18 +18545,27 @@ void main(){
        eye; trod is 0 here so the drifts and the grass lie across them) */
     const float trod = 0.0;
     /* the leaf drifts */
-    float drift = smoothstep(0.50, 0.72, mmNoise(w*vec2(0.22, 0.30) + 11.0) + 0.08*sin(w.x*2.3 + w.y*1.7));
+    /* (round 44 graft, the frame budget: the drifts gather where the turf's
+       own swathes run -- the lawn pattern's tap, not a second one) */
+    float drift = smoothstep(0.62, 0.80, r44Sw + 0.14*sin(w.x*0.61 + 1.3*sin(w.y*0.47)) + 0.08*sin(w.x*2.3 + w.y*1.7));
+    /* (round 44 graft, the frame budget: the single leaves drawn only where
+       a leaf is resolvable -- past that the drift is its own tone, as it
+       was, and the cell's five hashes and its turn were thrown away) */
     const float DC = 0.17;
-    vec2 dci = floor(w/DC);
-    vec2 dh = mmHash22(dci + 5.7);
-    vec2 dp = w - (dci + 0.2 + 0.6*dh)*DC;
-    float da = mmHash21(dci + 2.3)*6.2832;
-    vec2 dr = vec2(cos(da)*dp.x + sin(da)*dp.y, -sin(da)*dp.x + cos(da)*dp.y);
-    float dw = 0.022*(1.0 - (dr.x/0.050)*(dr.x/0.050));
-    float lf = (1.0 - smoothstep(dw, dw + pxY*1.1, abs(dr.y)))*step(abs(dr.x), 0.050)*step(mmHash21(dci + 8.1), 0.30 + 0.62*drift);
     float lfRes = smoothstep(0.040, 0.012, pxY);
+    float lf = 0.0, lfH = 0.5, lfD = 0.5;
+    if (lfRes > 0.0) {
+      vec2 dci = floor(w/DC);
+      vec2 dh = mmHash22(dci + 5.7);
+      vec2 dp = w - (dci + 0.2 + 0.6*dh)*DC;
+      float da = mmHash21(dci + 2.3)*6.2832;
+      vec2 dr = vec2(cos(da)*dp.x + sin(da)*dp.y, -sin(da)*dp.x + cos(da)*dp.y);
+      float dw = 0.022*(1.0 - (dr.x/0.050)*(dr.x/0.050));
+      lf = (1.0 - smoothstep(dw, dw + pxY*1.1, abs(dr.y)))*step(abs(dr.x), 0.050)*step(mmHash21(dci + 8.1), 0.30 + 0.62*drift);
+      lfH = mmHash21(dci + 1.9); lfD = dh.x;
+    }
     float lfK = mix(drift*0.70, 1.0, lfRes)*mix(1.0, lf, lfRes)*onLawn*smoothstep(0.08, 0.40, drift + 0.25*lfRes*lf);
-    vec3 leafY = mix(vec3(0.27, 0.12, 0.050), vec3(0.33, 0.25, 0.10), mmHash21(dci + 1.9))*(0.70 + 0.40*dh.x);
+    vec3 leafY = mix(vec3(0.27, 0.12, 0.050), vec3(0.33, 0.25, 0.10), lfH)*(0.70 + 0.40*lfD);
     albY = mix(albY, leafY*mmLum(alb)*8.0, clamp(lfK, 0.0, 1.0)*0.92);
     /* the rank grass (round 44 graft: CRISP, not smeared -- both judges,
        "long soft shadow streaks that smear rather than read as inked grass
@@ -18565,7 +18586,9 @@ void main(){
     /* the ground mist, far off over the turf, in the hollows */
     float mistF = smoothstep(9.0, 20.0, vDepth)*(1.0 - smoothstep(30.0, 44.0, vDepth));
     float mist = 0.0;
-    if (mistF > 0.0) mist = smoothstep(0.30, 0.62, mmNoise(vec2(w.x*0.10 + uTime*0.010, w.y*0.30))*(0.75 + 0.25*sin(w.x*0.07 + w.y*0.11)))*mistF;
+    /* (round 44 graft, the frame budget: the wisps off three slow sines, as
+       EUCLASE drew its mist, not a noise tap over the whole middle lawn) */
+    if (mistF > 0.0) mist = smoothstep(0.30, 0.62, (0.5 + 0.30*sin(w.x*0.21 + uTime*0.06 + 1.7*sin(w.y*0.37 + 0.4)) + 0.20*sin(w.y*0.83 - w.x*0.13 + 2.1))*(0.75 + 0.25*sin(w.x*0.07 + w.y*0.11)))*mistF;
     col += vec3(0.060, 0.075, 0.095)*mist*0.55;
     /* the far turf toward the railing takes the sky: the moon behind the
        yard rakes the grass from beyond it, so the lawn under the fence is a
@@ -28133,8 +28156,10 @@ float shapeField(vec2 uv, vec2 msz, float shape, float seed){
     /* (round 44, PYRITE: in the glasshouse the column is CAST IRON -- three
        collars bolted round the drum, and its capital a bell of leaves
        curling out under the abacus with a volute at each corner) */
-    for (int k = 0; k < 3; k++) {
-      float cy = k == 0 ? 0.305 : (k == 1 ? 0.575 : 0.828);
+    /* (round 44 graft, the link budget: the collar nearest in height, not
+       a loop over all three -- they are a quarter of the drum apart) */
+    {
+      float cy = p.y < 0.44 ? 0.305 : (p.y < 0.70 ? 0.575 : 0.828);
       float tc = clamp((cy - 0.14)/0.72, 0.0, 1.0);
       float rc = 0.132*(1.0 + 0.085*sin(tc*2.6) - 0.20*tc*tc);
       d = min(d, mmBox(p - vec2(0.0, cy), vec2(rc + 0.014, 0.016), 0.006));
@@ -30427,9 +30452,6 @@ void main(){
      Greenhouse's planters and plinths and the churchyard's statues came back
      stepped at 1280 -- the same dotting CELADON found on the raking lines.) */
   float fInk = 0.0, fWall = 0.0, fLit = 0.0;   // a column's pen (round 21 graft)
-#if MM_WINGS == 6
-  float r44Rv = 0.0, r44RvL = 0.0, r44Fl = 0.0, r44FlL = 0.0, r44Rim = 0.0;   // (round 44 graft: the glasshouse's iron columns -- rivets, collars, the lit edge)
-#endif
   vec2  gr   = vec2(dFdx(f), dFdy(f));
   float glen = length(gr) + 1e-7;
   float fpx  = f / glen;
@@ -30662,8 +30684,11 @@ void main(){
     float sources = max(max(smoothstep(0.30, 0.0, 0.840 - y)*step(y, 0.842),
                             smoothstep(0.20, 0.0, abs(y - 0.120))),
                         0.55*smoothstep(0.10, 0.0, abs(y - cN)));
-    float streak = smoothstep(0.50, 0.74, mmNoise(vec2(u*7.0 + vSeed*3.1, y*1.6)) + 0.26*sources);
-    float bloom = smoothstep(0.35, 0.80, mmNoise(vec2(u*3.0, y*9.0) + vSeed*5.3));
+    /* (the link budget: ONE noise tap -- the bloom's patches -- and the
+       streaks and the rust's runs off sines down the drum broken by it) */
+    float nB = mmNoise(vec2(u*3.0, y*9.0) + vSeed*5.3);
+    float streak = smoothstep(0.50, 0.74, 0.5 + 0.30*sin(u*19.0 + vSeed*3.1 + 1.6*sin(y*3.1)) + 0.20*(nB - 0.5) + 0.26*sources);
+    float bloom = smoothstep(0.35, 0.80, nB);
     float mould = 1.0 - smoothstep(0.13, 0.19, y)*(1.0 - smoothstep(0.80, 0.86, y));
     float patina = clamp(streak*0.80 + bloom*0.62 + mould*0.45, 0.0, 1.0);
     /* the capital's leaves hold the most of it, their tips rubbed bright */
@@ -30674,7 +30699,7 @@ void main(){
        in long orange-brown runs, the iron eaten bare along them */
     float rS = max(smoothstep(0.10, 0.0, y)*0.9,
                    smoothstep(0.17, 0.0, cA - y)*(0.55 + 0.45*step(0.70, fract(u*3.7 + vSeed*1.3 + cA*1.3))));
-    float rN = smoothstep(0.42, 0.70, mmNoise(vec2(u*11.0 + vSeed, y*2.2) + 7.7));
+    float rN = smoothstep(0.42, 0.70, 0.5 + 0.35*sin(u*31.0 + vSeed*7.0 + 2.5*nB + y*1.3) + 0.15*sin(u*13.0 - vSeed));
     c = mix(c, rust, clamp(rS*rN*1.6, 0.0, 0.90));
     /* the collar: a band round the drum with rivet heads along it */
     float kx = sign(uKeyDir.x + 0.001);
@@ -30692,11 +30717,13 @@ void main(){
     /* (round 44 graft, SPHENE's: the collar's seam, its lit lip, the rivets'
        heads and the lit edge drawn on the LIT colour, in pixels -- marks in
        albedo here went under the prop's luminance knee) */
+    /* (folded into the column's own pens, fInk and fLit, which the flutes
+       below lay on the lit colour: new variables live from here to the end
+       of the program took the Greenhouse's prop links 1.5 s over BASE) */
     float ypx = max(fwidth(y), 1e-5);
-    r44Fl  = 1.0 - smoothstep(0.6, 1.8, abs(y - cN + 0.017)/ypx);
-    r44FlL = 1.0 - smoothstep(0.5, 1.5, abs(y - cN - 0.016)/ypx);
-    r44Rv  = rivet; r44RvL = rivL;
-    r44Rim = litE*(1.0 - onB);
+    fInk = max(fInk, max(1.0 - smoothstep(0.6, 1.8, abs(y - cN + 0.017)/ypx), rivet*0.62));
+    fLit = max(fLit, max((1.0 - smoothstep(0.5, 1.5, abs(y - cN - 0.016)/ypx))*1.6, rivL*2.6));
+    fLit = max(fLit, litE*(1.0 - onB)*0.70);
     albedo = mix(albedo, c*lv*3.0, 0.97);
   }
 #endif
@@ -31258,9 +31285,11 @@ void main(){
     /* laid on the LIT colour, after the prop's luminance ceiling (below):
        a near column sits on its knee, and a mark in albedo there is
        compressed to nothing -- the first cut of this drew no flute at all */
-    fInk  = arris * lod;
+    /* (max: the glasshouse's iron collars lay their pens in these first --
+       0 in every other wing, so identical there) */
+    fInk  = max(fInk, arris * lod);
     fWall = wall * lod;
-    fLit  = litE * lod * (0.45 + 0.55*toward);
+    fLit  = max(fLit, litE * lod * (0.45 + 0.55*toward));
     albedo *= 1.0 - (1.0 - mmLod(1.0, tpx)) * onShaft * 0.10;   // a packed flank's mean
     albedo *= 1.0 + onShaft * 0.10 * toward;
   }
@@ -31602,13 +31631,6 @@ void main(){
      lit wall to its shadowed one, the line of light on the lit arris, and
      the inked groove -- on the lit colour, so the ceiling cannot eat them. */
   col *= (1.0 + fWall*0.24) * (1.0 + fLit*0.55) * (1.0 - fInk*0.72);
-#if MM_WINGS == 6
-  /* (round 44 graft: the iron columns' collars, rivets and lit edge, on the
-     lit colour, as the flutes are -- SPHENE's) */
-  col *= (1.0 - 0.62*r44Fl) * (1.0 + 0.90*r44FlL) * (1.0 - 0.45*r44Rv);
-  col += col*1.6*r44RvL + vec3(0.010, 0.016, 0.016)*r44RvL;
-  col *= 1.0 + 0.40*r44Rim;
-#endif
   /* THE SHARED FINISH, ON THE LIT COLOUR (round 28): the same three marks
      again, after the ceiling -- a drawn object already carries its light in
      its own paint, and a near prop sits on the knee where a mark laid in
