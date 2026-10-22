@@ -381,11 +381,13 @@ U.onTracker(SLUG, (e, s, seat) => {
 
     if (st.marginalia && k.meta && k.meta.paperCopy && U.once(c, 'marginalia')) U.draw(c, 1);
     const id = k.def ? k.def.id : k.id;
-    /* Watermark pays ITS {p} (a literal 1 here made the Sharpened 2 pay 1),
-       and only this turn (the mark used to last the fight). Two Watermarks on
-       one Trick each pay. */
-    const wm = st.watermarks;
-    if (wm && wm.turn === U.turn(c) && wm.paper[id] && k.meta && k.meta.paperCopy) gainPaper(c, wm.paper[id]);
+    /* Watermark pays ITS {p} (a literal 1 here made the Sharpened 2 pay 1)
+       for the rest of the fight, on ONE Trick at a time: a new Watermark
+       moves the mark (Josh 2026-10-21, "use your best judgement": the
+       fight-long mark it used to have by accident is now its printed rule,
+       and the house errs toward the player). */
+    const wm = st.watermark;
+    if (wm && wm.id === id && k.meta && k.meta.paperCopy) gainPaper(c, wm.p);
     st.playedIdsThisTurn = st.playedIdsThisTurn || {};
     st.playedIdsThisTurn[id] = (st.playedIdsThisTurn[id] || 0) + 1;
   });
@@ -985,16 +987,13 @@ const uncommons = [
   {
     id: 'crinkle/watermark', name: 'Watermark', companion: SLUG, type: SKILL, rarity: UNCOMMON,
     cost: 0, target: SELF, keywords: ['trace', 'paper'],
-    text: 'Choose a Trick. Copies of it played this turn each give {p} [Paper].',
+    text: 'Choose a Trick. For the rest of the fight, Copies of it each give {p} [Paper] when played. A new Watermark moves the mark.',
     flavor: 'Hold it up to the candle and there he is.',
     nums: { p: 1 },
     effect: eff(async (c) => {
       const k = await pickHand(c, { prompt: 'Watermark which Trick?' });
       if (!k) return;
-      const s = U.mm(c);
-      if (!s.watermarks || s.watermarks.turn !== U.turn(c)) s.watermarks = { turn: U.turn(c), paper: {} };
-      const id = k.def ? k.def.id : k.id;
-      s.watermarks.paper[id] = (s.watermarks.paper[id] || 0) + N(c).p;
+      U.mm(c).watermark = { id: k.def ? k.def.id : k.id, p: N(c).p };
     }),
     upgrade: { nums: { p: 2 } },
   },

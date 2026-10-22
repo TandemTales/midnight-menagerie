@@ -1517,7 +1517,11 @@ const rares = [
     exhaust: true,
     text: 'The next {n} [Scare] clauses this turn still need their [Fright] but do not spend it. [Vanish].',
     flavor: 'Save it. Save it. Now.',
-    nums: { n: 2 },
+    /* 2 -> 3 (Sharpened 3 -> 4), Josh 2026-10-21 ("use your best judgement"):
+       the hidden Fear of the Dark it used to install is gone for good -- a
+       0-Nerve Vanish must not hand out a Rare Power -- so the printed effect
+       carries the card, and the house errs toward the player. */
+    nums: { n: 3 },
     effect: eff((c) => {
       /* It also set `fearOfDark`, which is Fear of the Dark's own flag: one
          0-Nerve Vanish quietly installed a 2-Nerve Rare Power for the rest of
@@ -1526,7 +1530,7 @@ const rares = [
       const st = U.mm(c);
       st.noScreamYet = (st.noScreamYet || 0) + N(c).n;
     }),
-    upgrade: { nums: { n: 3 } },
+    upgrade: { nums: { n: 4 } },
   },
   {
     id: 'boggle/hide-in-plain-sight', name: 'Hide in Plain Sight', companion: SLUG, type: SKILL, rarity: RARE,

@@ -457,7 +457,7 @@ Skill
 69
 Don't Scream Yet
 Skill
-0 Nerve. The next two Scare clauses you trigger this turn still require their normal Fright thresholds but do not consume Fright. Remove this Trick from combat after playing it.
+0 Nerve. The next three Scare clauses you trigger this turn still require their normal Fright thresholds but do not consume Fright. Remove this Trick from combat after playing it. (Two until 2026-10-21; raised when the hidden Fear of the Dark it used to grant was removed for good.)
 70
 Hide in Plain Sight
 Skill

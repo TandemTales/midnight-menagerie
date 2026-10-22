@@ -290,7 +290,7 @@ is deliberately two-thirds of the way to a decision the Commons cannot finish.
 | 39 | Unbound | Skill | 0 Nerve. Spend any Paper. Draw 1 Trick for every 3 spent. Vanish. |
 | 40 | Fold Along the Fold | Skill | 1 Nerve. Choose a Trick with at least 1 Crease. Fold it 1. It cannot be Refolded this turn. |
 | 41 | Index | Skill | 2 Nerve. Search your draw pile for a Trick, put it in your hand, and Fold it 1. Shuffle. |
-| 42 | Watermark | Skill | 0 Nerve. Choose a Trick in your hand. Whenever a copy of it is played this turn, gain 1 Paper. |
+| 42 | Watermark | Skill | 0 Nerve. Choose a Trick in your hand. For the rest of the fight, whenever a copy of it is played, gain 1 Paper. One Trick is marked at a time; a new Watermark moves the mark. ("This turn" until 2026-10-21.) |
 | 43 | Straighten | Skill | 0 Nerve. Move all Creases from one Trick in your hand onto another. Vanish. |
 | 44 | Foolscap | Skill | 1 Nerve. Gain moderate Guard and 2 Paper. |
 | 45 | Air Between the Pages | Skill | 1 Nerve. Gain light Guard for each Trick that Vanished this turn, plus a moderate amount. |

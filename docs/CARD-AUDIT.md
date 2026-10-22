@@ -911,7 +911,7 @@ Boggle is a predator who is also a coward, and he is dangerous precisely because
 | 11 | Don’t Check Again | 2 | skill | Choose an [Unaware] enemy. The next time it [Search]es this combat it takes 5 more [Fright] and ends Aware, not [Suspicious]. | n 5 → 8 |
 | 12 | Hiding Place Inside a Hiding Place | 1 | skill | Aware: make it [Unaware] and gain 1 [Lurk]. [Unaware]: apply 4 [Fright] and gain 1 [Lurk]. [Suspicious]: gain 10 Guard and draw 1. | n 4 → 6, b 10 → 14, c1 1 → 2 |
 | 13 | Every Creak Means Me | 2 | skill | Double the [Fright] on every enemy. No enemy gains more than 8 this way. | n 8 → 12 |
-| 14 | Don’t Scream Yet | 0 | skill | The next 2 [Scare] clauses this turn still need their [Fright] but do not spend it. [Vanish]. | n 2 → 3 |
+| 14 | Don’t Scream Yet | 0 | skill | The next 3 [Scare] clauses this turn still need their [Fright] but do not spend it. [Vanish]. | n 3 → 4 |
 | 15 | Hide in Plain Sight | 2 | skill | This turn your Attacks do not change an [Unaware] target’s [Awareness]. At end of turn each becomes Aware instead. | cost 2 → 1 |
 | 16 | The Room Is Looking Back | 2 | skill | Apply 6 [Fright] to every [Suspicious] enemy, 3 to every Aware one and 1 to every [Unaware] one. | n 1 → 2, n2 3 → 5, n3 6 → 9 |
 | 17 | Everybody Heard That | 1 | skill | Spend all [Lurk]. Apply 2 [Fright] spread over the enemies for each spent. If you spent 4 or more, make an Aware enemy [Unaware]. | n 2 → 3 |
@@ -2469,7 +2469,7 @@ Crinkle does not change the board. He changes the Tricks. He copies them, folds 
 | 19 | Unbound | 0 | skill | Spend any [Paper]. Draw 1 Trick for every 3 spent. [Vanish]. | n 3 → 2 |
 | 20 | Fold Along the Fold | 1 | skill | [Fold] an already-[Crease]d Trick 1 more. It cannot be [Refold]ed this turn. | n 1 → 2 |
 | 21 | Index | 2 | skill | Search your draw pile. Put that Trick in your hand and [Fold] it 1. | n 1 → 2 |
-| 22 | Watermark | 0 | skill | Choose a Trick. Copies of it played this turn each give 1 [Paper]. | p 1 → 2 |
+| 22 | Watermark | 0 | skill | Choose a Trick. For the rest of the fight, Copies of it each give 1 [Paper] when played. A new Watermark moves the mark. | p 1 → 2 |
 | 23 | Straighten | 0 | skill | Move every [Crease] from one Trick in your hand onto another. [Vanish]. | new text |
 | 24 | Foolscap | 1 | skill | Gain 10 Guard and 2 [Paper]. | b 10 → 14, p 2 → 3 |
 | 25 | Air Between the Pages | 1 | skill | Gain 8 Guard, and 4 more for each Trick that [Vanish]ed this turn. | b 8 → 11, m0 4 → 6 |

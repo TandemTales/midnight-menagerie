@@ -412,7 +412,7 @@ try {
       `base then upgraded ${both}, upgraded alone ${upOnly}`);
   }
 
-  // ══ Watermark pays its {p}, this turn only (tests/base-effects) ═══════════
+  // ══ Watermark pays its {p}, for the rest of the fight (10-21) ═════════════
   {
     /* The Paper a Paper Copy of Paper Cut brings in when played: its own Vanish
        pays 1 regardless, so each reading is taken against a control with no
@@ -434,9 +434,9 @@ try {
       return e.counter('paper') - p0;
     };
     const none = await run(null), base = await run(false), up = await run(true), late = await run(false, true);
-    check(base - none === 1, 'Watermark: a Paper Copy of the marked Trick played this turn gives 1 Paper', `control ${none}, marked ${base}`);
+    check(base - none === 1, 'Watermark: a Paper Copy of the marked Trick gives 1 Paper', `control ${none}, marked ${base}`);
     check(up - none === 2, 'Watermark+: gives its 2 Paper, not a literal 1', `control ${none}, marked ${up}`);
-    check(late === none, 'and the mark is gone the next turn', `control ${none}, next turn ${late}`);
+    check(late - none === 1, 'and the mark still pays the next turn (it lasts the fight)', `control ${none}, next turn ${late}`);
   }
 } catch (err) {
   fails.push('THREW: ' + (err && err.stack || err));

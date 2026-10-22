@@ -341,15 +341,16 @@ try {
   {
     /* It also set Fear of the Dark's flag, which made the first Scare on each
        enemy free every turn for the rest of the fight, without spending a
-       charge. Two charges: the third Scare spends its Fright. */
+       charge. Three charges (two until 10-21): the fourth Scare spends its
+       Fright. */
     const e = await boggle();
     const t = e.livingEnemies()[0];
     t.maxHp = 999; t.hp = 999;
     e.applyStatus(t, 'fright', 12);
     await play(e, 'boggle/dont-scream-yet', null);
     const seen = [];
-    for (let i = 0; i < 3; i++) { await play(e, 'boggle/ankle-grab', t); seen.push(stacks(e, t, 'fright')); }
-    check(seen.join(',') === '12,12,9', "Don't Scream Yet: two Scares keep their Fright, the third spends 3",
+    for (let i = 0; i < 4; i++) { await play(e, 'boggle/ankle-grab', t); seen.push(stacks(e, t, 'fright')); }
+    check(seen.join(',') === '12,12,12,9', "Don't Scream Yet: three Scares keep their Fright, the fourth spends 3",
       `fright after each: ${seen.join(',')}`);
     await e.endTurn();
     const f0 = stacks(e, t, 'fright');
