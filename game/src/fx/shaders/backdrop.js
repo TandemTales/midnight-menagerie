@@ -14028,7 +14028,12 @@ void main(){
          it. Only where the painting is visible (vis), never over the wall. */
       {
         float aI = tx.a * inR;
-        float penH = mmInk(aI - 0.5, 1.5) * vis * step(0.02, aI) * step(aI, 0.98 + 0.02*step(0.5, aI));
+        /* (round 44 graft, the frame budget: the painting's cut-out alpha is
+           a ramp three or four pixels wide at this size, so its middle third
+           IS the pen line a pixel and a half wide -- drawn off the alpha
+           itself, not off its derivative: the fwidth was 0.3 ms of the
+           Pumpkin fight's frame over the whole sky plane) */
+        float penH = (1.0 - smoothstep(0.0, 0.24, abs(aI - 0.5))) * vis;
         col = mix(col, vec3(0.010, 0.012, 0.026), penH * 0.85);
       }
       /* ...and the drawn house's LINES go with it: its roofline pen, its
