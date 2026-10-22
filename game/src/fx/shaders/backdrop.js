@@ -15075,6 +15075,81 @@ void main(){
           pat += leaf*(0.10 + 0.10*lh.x);
         }
       }
+      /* ROUND 44 GRAFT (SPHENE's, both judges): THE LAWN BROKEN UP. Both survey-8 judges: "the
+         lawn is a featureless green-brown plane over half the frame"; "break
+         up the lawn with paths, roots, dead leaves and long grass at the
+         edges". Read at the Deck's 1280 the blades and the leaves are the
+         lawn's TEXTURE; what was missing was its DRAWING -- the marks a
+         churchyard's turf carries at a stride's scale:
+         - the TRODDEN PATHS: the mourners' own ways between the graves,
+           worn off the walk to the bare earth in two wandering lines, their
+           edges ragged where the grass comes back, a little gravel kicked
+           along them;
+         - the ROOTS of the old yews at the yard's two sides heaving up
+           through the turf, each a long tapering ridge out across the lawn,
+           its back catching the moon and its far side in its own shade;
+         - and the LONG GRASS where the scythe does not go, along the lawn's
+           two sides: darker, ranker, in a ragged band.
+         Floor-local metres; the churchyard's floor only (MM_R25W 4). */
+      {
+        float aaL = max(mp*1.3, 0.012);
+        /* the paths: worn across the lawn from the near turf back among
+           the stones, wandering -- in eye metres, so every room's lawn has
+           them in its middle distance */
+        vec2 deY = vWorld.xz - uCamera.xz;
+        float aY = dot(deY, uNearFwd);
+        float cY = deY.x*(-uNearFwd.y) + deY.y*uNearFwd.x;
+        float rx = w.x - uRunX;
+        float p1 = abs(cY - (0.6 + 0.30*(aY - 6.0) + 0.55*sin(aY*0.42 + 1.1)) + 0.11*sin(w.x*1.9 + w.y*1.3) + 0.06*sin(w.x*4.1 - w.y*2.7)) - 0.34;
+        float p2 = abs(cY - (-1.2 - 0.38*(aY - 9.0) + 0.45*sin(aY*0.37 + 4.0)) + 0.11*sin(w.x*1.7 - w.y*1.5 + 2.0) + 0.06*sin(w.x*3.7 + w.y*2.9 + 1.0)) - 0.28;
+        float onP1 = step(4.5, aY)*step(aY, 24.0);
+        float onP2 = step(9.0, aY)*step(aY, 26.0);
+        float trod = max((1.0 - smoothstep(-aaL, aaL, p1))*onP1, (1.0 - smoothstep(-aaL, aaL, p2))*onP2);
+        /* (round 44 graft, the frame budget -- the Graveyard's fight was over
+           the line on PYRITE's build: the paths' wander and their breaks are
+           sines, not noise taps; the long grass's edge and blades too) */
+        trod *= smoothstep(-0.55, 0.35, sin(w.x*3.1 + 1.0)*sin(w.y*2.3 + 0.4) + 0.35*sin(w.x*7.3 + w.y*5.1) + 0.45);   // broken where the grass comes back
+        trod *= smoothstep(uRunner + 0.20, uRunner + 0.50, abs(w.x - uRunX));
+        float grit = (mmHash21(floor(w*30.0) + 3.1) - 0.5)*smoothstep(0.04, 0.012, mp);
+        earth = max(earth, trod*0.92);
+        turf = min(turf, 1.0 - trod*0.90);
+        pat = mix(pat, 0.40 + grit*0.30, trod*0.85);
+        /* the roots: two old yews off the lawn's sides, four roots each */
+        float rootM = 0.0, rootLit = 0.0, rootSh = 0.0;
+        for (int t = 0; t < 2; t++){
+          float sd = t == 0 ? -1.0 : 1.0;
+          vec2 an = vec2(sd*6.4, 6.0 + 2.0*float(t));        // (eye metres: across, ahead)
+          vec2 v = vec2(cY, aY) - an;
+          if (dot(v, v) > 49.0) continue;
+          for (int k = 0; k < 4; k++){
+            float fk = float(k);
+            float ang = (fk - 1.5)*0.34 + (t == 0 ? 0.0 : 3.14159) + 0.10*sin(fk*2.3 + float(t));
+            vec2 dir = vec2(cos(ang), sin(ang));
+            float L = 3.6 + 1.6*mmHash11(fk*3.7 + float(t)*5.1);
+            float a = clamp(dot(v, dir), 0.0, L);
+            vec2 nrm = vec2(-dir.y, dir.x);
+            float wig = 0.22*sin(a*1.7 + fk*2.1) + 0.10*sin(a*4.3 + fk);
+            float off = dot(v, nrm) - wig*smoothstep(0.0, 1.0, a);
+            float wd = mix(0.30, 0.04, a/L)*(0.85 + 0.30*mmHash11(fk*1.9 + float(t)));
+            float on = (1.0 - smoothstep(wd - aaL, wd + aaL, abs(off)))*step(0.0, dot(v, dir))*step(dot(v, dir), L);
+            rootM = max(rootM, on);
+            rootLit = max(rootLit, on*smoothstep(-wd*0.2, wd*0.8, off*sign(nrm.y + 1e-3)));
+            rootSh = max(rootSh, (1.0 - smoothstep(wd, wd*2.6 + aaL, abs(off)))*(1.0 - on)*step(off*sign(nrm.y + 1e-3), 0.0)*step(0.0, dot(v, dir))*step(dot(v, dir), L));
+          }
+        }
+        /* (neither on the walk nor its kerbs) */
+        float offWalk = smoothstep(uRunner + 0.25, uRunner + 0.55, abs(rx));
+        rootM *= offWalk; rootLit *= offWalk; rootSh *= offWalk;
+        earth = max(earth, rootM*0.85);
+        turf = min(turf, 1.0 - rootM*0.90);
+        pat = mix(pat, 0.20 + 0.62*rootLit, rootM*0.95);
+        pat -= rootSh*0.22;
+        /* the long grass along the lawn's sides */
+        float sideD = abs(cY) - (5.6 + 0.25*aY + 0.8 + 0.6*sin(aY*0.31 + 1.3) + 0.2*sin(aY*0.83));
+        float rank = smoothstep(-0.6, 0.8, sideD)*(1.0 - trod)*(1.0 - rootM);
+        float lgB = (0.5 + 0.5*sin(w.x*125.0 + 2.0*sin(w.y*3.0 + w.x*0.7)))*smoothstep(0.06, 0.02, mp);
+        pat -= rank*(0.20 - 0.34*lgB*lgB);
+      }
 #endif
       if (uPattern > 12.5 && uPattern < 13.5) {
         /* 13 THE MAZE'S LAWN (round 22): mown in stripes 1.4 m wide, the way
@@ -18373,21 +18448,11 @@ void main(){
     float pxY = max(mp, 1e-4);
     float onLawn = clamp(turf, 0.0, 1.0)*(1.0 - r25Walk);
     vec3 albY = alb;
-    /* the trodden paths: two worn lines wandering between the rows */
-    float pA = abs(w.x - (uRunX + 4.6 + 2.2*sin(w.y*0.11 + 0.7) + 0.9*sin(w.y*0.37)));
-    float pB = abs(w.x - (uRunX - 6.4 - 1.8*sin(w.y*0.09 + 2.1) - 0.7*sin(w.y*0.31 + 1.0)));
-    float pw = 0.34 + 0.06*sin(w.y*0.9 + w.x*0.3);
-    float pd = min(pA, pB) - pw;
-    float pRes = mmLod(0.6, pxY);
-    float trod = (1.0 - smoothstep(-pxY*1.2, pxY*1.2, pd))*onLawn;
-    float bare = smoothstep(0.30, 0.62, mmNoise(w*1.7 + 3.0));
-    vec3 earthC = mix(vec3(0.060, 0.054, 0.046), vec3(0.090, 0.078, 0.062), bare);
-    earthC *= 0.80 + 0.40*mmHash21(floor(w*9.0));
-    /* the two ruts down it, a stop darker */
-    float rutY = 1.0 - smoothstep(0.0, 0.10 + pxY, abs(abs(min(pA, pB)) - pw*0.45));
-    earthC *= 1.0 - 0.30*rutY*pRes;
-    albY = mix(albY, earthC*mmLum(alb)*7.5, trod*(0.60 + 0.40*bare));
-    float lipI = mmInkP(pd, pxY, 1.2)*onLawn*pRes;
+    /* (round 44 graft: the trodden paths are SPHENE's now -- winding off
+       the walk among the graves, drawn with its roots in the lawn's own
+       pattern, above -- where PYRITE's two straight lines ran away from the
+       eye; trod is 0 here so the drifts and the grass lie across them) */
+    const float trod = 0.0;
     /* the leaf drifts */
     float drift = smoothstep(0.50, 0.72, mmNoise(w*vec2(0.22, 0.30) + 11.0) + 0.08*sin(w.x*2.3 + w.y*1.7));
     const float DC = 0.17;
@@ -18402,15 +18467,22 @@ void main(){
     float lfK = mix(drift*0.70, 1.0, lfRes)*mix(1.0, lf, lfRes)*onLawn*smoothstep(0.08, 0.40, drift + 0.25*lfRes*lf);
     vec3 leafY = mix(vec3(0.27, 0.12, 0.050), vec3(0.33, 0.25, 0.10), mmHash21(dci + 1.9))*(0.70 + 0.40*dh.x);
     albY = mix(albY, leafY*mmLum(alb)*8.0, clamp(lfK, 0.0, 1.0)*0.92);
-    /* the rank grass: long tussocks, dark at their roots, lit at their tips */
-    float rank = smoothstep(0.44, 0.64, mmNoise(w*vec2(0.30, 0.45) + 23.0))*onLawn*(1.0 - trod);
-    float tg = mmNoise(vec2(w.x*11.0 + 1.6*sin(w.y*0.9 + w.x*0.4), w.y*1.6) + 4.0);
-    float tip = smoothstep(0.50, 0.85, tg)*smoothstep(0.060, 0.015, pxY);
-    vec3 rankC = mix(vec3(0.020, 0.030, 0.016), vec3(0.150, 0.170, 0.085), tip);
-    albY = mix(albY, rankC*mmLum(alb)*12.0, rank*0.85);
-    col = mix(col, albY*litY, max(max(trod, rank), clamp(lfK, 0.0, 1.0)));
-    col *= 1.0 - 0.50*lipI;
-    col *= 1.0 - 0.25*rank*(1.0 - tip);
+    /* the rank grass (round 44 graft: CRISP, not smeared -- both judges,
+       "long soft shadow streaks that smear rather than read as inked grass
+       ... crisp tree shadows". Its blades were a noise stretched seven times
+       down the lawn, which the perspective fanned into soft dark rays from
+       the eye. Now the rank grass under the yews lies in the moon-shadow of
+       their crowns: each patch a pixel-crisp edge, ragged as a yew's foliage
+       is, the turf in it a stop down and colder -- a shadow with a drawn
+       edge, as the samples lay one -- and the tufts and leaves drawn before
+       this lie on through it. One tap, as before, and the tg tap gone.) */
+    float rkF = mmNoise(w*vec2(0.30, 0.45) + 23.0);
+    rkF += 0.014*sin(w.x*13.0 + 2.0*sin(w.y*1.9)) + 0.008*sin(w.x*29.0 - w.y*11.0);
+    float rkPx = max(fwidth(rkF), 1e-4);
+    float rank = clamp((rkF - 0.57)/rkPx + 0.5, 0.0, 1.0)*onLawn;
+    col = mix(col, albY*litY, clamp(lfK, 0.0, 1.0));
+    col *= 1.0 - rank*0.48;
+    col = mix(col, col*vec3(0.80, 0.92, 1.12), rank*0.6);
     /* the ground mist, far off over the turf, in the hollows */
     float mistF = smoothstep(9.0, 20.0, vDepth)*(1.0 - smoothstep(30.0, 44.0, vDepth));
     float mist = 0.0;

@@ -2449,6 +2449,7 @@ export class Backdrop {
     const placed = fixtures
       .concat(this._layoutProps(pal, room, rand, fixtures)).slice(0, MAX_PROPS);
     this._setPropProgram(placed, pal.regionKey);
+    this._castRegion = pal.regionKey;   // (round 44 graft: the churchyard's moon throw, _castShadows)
     const off = this._propOffset.array, sc = this._propScale.array,
       sh = this._propShape.array, sd = this._propSeed.array, tn = this._propTone.array;
     const so2 = this._shdOffset.array, ss2 = this._shdScale.array, st2 = this._shdStr.array;
@@ -2840,7 +2841,18 @@ export class Backdrop {
         const w = l.base / (1 + (dx * dx + dy * dy + dz * dz) / (r * r));
         if (w > bw) { bw = w; best = l; }
       }
-      if (!best || bw < 0.06) continue;
+      if (!best || bw < 0.06) {
+        /* (round 44 graft, both judges on the Graveyard: "MORE stones ... each
+           with a cast shadow". A churchyard's stone out of every lantern's
+           reach is lit by the moon behind the yard, and throws its shadow
+           down the turf toward you, a little to the side -- the stones'
+           shadows a set, all one way, as the moon lays them) */
+        if (this._castRegion === 'graveyard' && (p.shape === 69 || p.shape === 70 || p.shape === 73)) {
+          const Lm = Math.min(1.1, 0.62 * h);
+          ca[i * 2] = 0.28 * Lm; ca[i * 2 + 1] = 0.96 * Lm;
+        }
+        continue;
+      }
       let dx = p.x - best.pos.x, dz = p.z - best.pos.z;
       const dxz = Math.hypot(dx, dz);
       if (dxz < 0.05) continue;
