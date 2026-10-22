@@ -17428,14 +17428,7 @@ void main(){
       float bIn = smoothstep(0.07 - ePx, 0.07 + ePx, eIn)*(1.0 - smoothstep(0.38 - ePx, 0.38 + ePx, eIn));
       float alg = (ed.x < ed.y) ? rp.y : rp.x;
       float slot = floor(alg/0.30 + 0.5);
-      /* (round 44 graft, judge 2: "the rug's back-edge letters upside down".
-         Each letter was set upright facing the field, so the far run stood
-         on its head and the two sides lay on their backs. Hooked for the
-         nursery as it is seen from the door, every letter now stands upright
-         facing the player -- its foot toward you, read left to right -- on
-         all four sides of the border) */
-      float alongL = (alg/0.30 - slot)*0.30, inwL = eIn - 0.225;
-      vec2 lq = (ed.x < ed.y) ? vec2(-sign(rp.x)*inwL, R9UP*alongL) : vec2(alongL, -R9UP*sign(rp.y)*inwL);
+      vec2 lq = vec2((alg/0.30 - slot)*0.30, eIn - 0.225);
       float li = mod(slot + 60.0, 6.0);
       float Lt = r9Letter(lq/0.095, li)*0.095;
       vec3 bC = madder*(0.85 + 0.25*mmNoise(rp*2.0 + 5.0));
@@ -25870,11 +25863,8 @@ float wfLetter(vec2 g, float li){
 float wfBlocks(vec2 q, float px, float seed, float kq, bool paint){
   const float S = 0.105;
   vec2 c0 = vec2(-0.06, S*0.5), c1 = vec2(-0.045, S*1.5), c2 = vec2(-0.07, S*2.5);
-  /* (round 44 graft, judge 2: "a tumbling block not set down" -- it stood
-     on one corner in the air beside the tower. It lies where it fell, flat
-     on its face on the rug, turned a little so its side shows) */
-  vec2 c3 = vec2(0.10, S*0.5), c4 = vec2(-0.235, S*0.5);
-  float a1 = 0.08, a2 = -0.10, a4 = 0.0;
+  vec2 c3 = vec2(0.10, S*0.5), c4 = vec2(-0.24, S*0.5 + 0.022);
+  float a1 = 0.08, a2 = -0.10, a4 = 0.48;
   float sx = kq >= 0.0 ? -1.0 : 1.0;      // the side away from the key is the one in shade
   float f0, f1, f2, f3, f4; vec2 u0, u1, u2, u3, u4;
   float b0 = wfCube(q, c0, S, 0.0, sx, f0, u0), b1 = wfCube(q, c1, S, a1, sx, f1, u1), b2 = wfCube(q, c2, S, a2, sx, f2, u2);
