@@ -736,7 +736,8 @@
    them), and the flanks take all of it, so a picture hangs at survey 6's size
    a hand (24 px) clear of the tray. reward.js (_pointLights) centres each in
    the wall it has -- between the stage's rule and that hand -- and ui/hang.js
-   fitHung narrows it until it and its plate clear the tray and the candle. */
+   fitHung narrows it until its frame clears the tray and the candle (no plate
+   under it since 2026-10-21: no painting is named). */
 .rm--reward {
   --stage-w: min(1440px, 100vw - 2 * var(--rm-pad) - 2 * var(--kit-vine-w) + 16px);
   --flank-w: calc(clamp(136px, 10.6vw, 190px) + 23px);

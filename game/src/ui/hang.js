@@ -7,19 +7,23 @@
  * parchment -- and both survey judges read every one of them as "grey smeared
  * noise with no drawn subject". So the room is bare now, and a board HANGS its
  * pictures here instead, where its own wall actually shows: each one the whole
- * Companion tile off UI/selectCompanion.png (its gilt edge and the painting;
- * since the round 26 graft its painted nameplate is cut off and the name and
- * epithet LETTERED on a brass plate under the frame, below) or the mansion off
- * UI/mainMenu.png, at the sample's own resolution (tools/prep_ui_kit.py --only
- * hang), in the Kid board's carved gilt frame on a cord from a cast brass boss
- * (.kit-hang, ui/kit.css). Decoration only: every picture is aria-hidden.
+ * Companion tile off UI/selectCompanion.png (its gilt edge and the painting,
+ * its painted nameplate cut off) or the mansion off UI/mainMenu.png, at the
+ * sample's own resolution (tools/prep_ui_kit.py --only hang), in the Kid
+ * board's carved gilt frame on a cord from a cast brass boss (.kit-hang,
+ * ui/kit.css). Decoration only: every picture is aria-hidden.
+ *
+ * NO PICTURE IS NAMED (Josh, 2026-10-21: "the painting lore/names will be
+ * developed later so dont name them in the game for now"). The brass plates
+ * that used to letter a name and a date under each frame are gone, and so are
+ * the names and dates themselves: an earlier pass made them up. A picture is
+ * its frame, its cord and its file.
  *
  *   hangHtml('crumbula', 'rw-hang rw-hang--l')   one picture's markup
  *   gallery(['crumbula', 'mopsy'], { skip })     the same for a list, skipping
  *                                                the Companion the run brought
  *                                                (it is standing in the room)
  */
-import { COMPANIONS } from '../data/schema.js';
 
 const KIT = new URL('../../assets/ui/kit/', import.meta.url).href;
 
@@ -33,36 +37,26 @@ export const HUNG = [
 ];
 const KNOWN = new Set(HUNG);
 
-/* THE NAMEPLATE IS LETTERED, NOT PAINTED (round 26 graft). Each tile carries
-   Josh's own nameplate at its foot -- name over epithet -- and hung at a wall
-   picture's size that epithet came out at 6-7 px at the Deck's 1280 (both
-   judges). So a picture shows the painting only, cut off just above the
-   painted plate (where it starts on each of the sheet's four rows, measured
-   off the cuts: 203/259, 192/247, 183/237, 202/256), and the name and epithet
-   are lettered on a small brass plate on the frame's foot (.kit-hang__plate)
-   at a size the Deck reads; a frame too narrow for the epithet drops it and
-   keeps the name (kit.css). */
+/* Each tile carries Josh's own painted nameplate at its foot, so a picture
+   shows the painting only, cut off just above that plate (where it starts on
+   each of the sheet's four rows, measured off the cuts: 203/259, 192/247,
+   183/237, 202/256). */
 const PLATE_TOP = [202, 191, 182, 201];
 const ROW = Object.fromEntries(HUNG.slice(0, 16).map((a, i) => [a, i >> 2]));
-const WHO = Object.fromEntries(COMPANIONS.map(c => [c.slug, c]));
 
 /** One hung picture. `art` is a Companion (its tile cut upright), the same
  *  with `-tile` (the tile whole, wider than tall), or 'house'. `cls` places
  *  it: a board lays its pictures out through its OWN classes, never by
- *  restyling .kit-hang. `plate: false` hangs a Companion with no nameplate. */
-export function hangHtml(art, cls = '', { plate = true } = {}) {
+ *  restyling .kit-hang. */
+export function hangHtml(art, cls = '') {
   const tile = art.endsWith('-tile');
   const who = tile ? art.slice(0, -5) : art;
   if (!KNOWN.has(who) || art === 'house-tile') return '';
   const shape = art === 'house' ? ' kit-hang--wide' : tile ? ' kit-hang--tile' : '';
-  const c = WHO[who];
   const ar = who in ROW ? ` style="--pic-ar:${tile ? 296 : 216} / ${PLATE_TOP[ROW[who]]}"` : '';
-  const named = c && plate
-    ? `<span class="kit-hang__plate"><b>${c.name}</b><em>${c.title}</em></span>` : '';
-  return `<figure class="kit-hang${shape}${named ? ' kit-hang--named' : ''}${cls ? ' ' + cls : ''}" data-art="${art}" aria-hidden="true">`
+  return `<figure class="kit-hang${shape}${cls ? ' ' + cls : ''}" data-art="${art}" aria-hidden="true">`
     + '<i class="kit-hang__cord"></i>'
     + `<span class="kit-hang__frame"><img class="kit-hang__pic" src="${KIT}hang-${art}.webp" alt="" decoding="async" draggable="false"${ar}></span>`
-    + named
     + '</figure>';
 }
 
@@ -72,13 +66,13 @@ export function hangHtml(art, cls = '', { plate = true } = {}) {
  * hang on the wall of a room it is standing in, so the next unused one of
  * `spares` takes its place.
  */
-export function gallery(arts, classes, { skip = '', spares = ['marmalade', 'wisp', 'pudding', 'drizzle', 'wink'], plate = true } = {}) {
+export function gallery(arts, classes, { skip = '', spares = ['marmalade', 'wisp', 'pudding', 'drizzle', 'wink'] } = {}) {
   const base = (a) => a.replace(/-tile$/, '');
   const used = new Set(arts.map(base).filter(a => a !== skip));
   const pool = spares.filter(a => a !== skip && !used.has(a));
   return arts.map((a, i) => {
     const art = base(a) === skip && pool.length ? pool.shift() + (a.endsWith('-tile') ? '-tile' : '') : a;
-    return hangHtml(art, classes[i] || '', { plate });
+    return hangHtml(art, classes[i] || '');
   }).join('');
 }
 
@@ -87,36 +81,35 @@ export function gallery(arts, classes, { skip = '', spares = ['marmalade', 'wisp
    to their role or room ... make a haunted house portrait that would fit in
    this place." So the boards that are no Companion's room -- the reward
    alcove, an event's hall, the rest fort, game over -- hang the house's own
-   paintings: the family who lived here, each with the ORDINARY pet the
-   Drawing Room's photographs keep showing (docs/design/01-mansion-structure.md),
-   and the house's own rooms and still lifes. Josh painted all twenty
-   (game/assets/portrait paintings/); `python tools/prep_ui_kit.py --only
-   paintings` sets each 600 px tall as kit/hang-art-<file>.webp. The family
-   has no name in the design, so its plates name places in the house, not a
-   surname. `ar` is each painting's own width / height. */
+   paintings. Josh painted all twenty (game/assets/portrait paintings/);
+   `python tools/prep_ui_kit.py --only paintings` sets each 600 px tall as
+   kit/hang-art-<file>.webp. They are interchangeable: any of them may hang on
+   any wall that has pictures (Josh, 2026-10-21), and none is named (above).
+   `id` is only a handle for the pools below; `ar` is each painting's own
+   width / height. */
 export const PAINTINGS = [
-  // the family
-  { id: 'lady',     file: 'ladyofthehouse',    ar: '1122 / 1402', name: 'The Lady of the House',   title: 'and her cat, 1826' },
-  { id: 'master',   file: 'masterofthehouse',  ar: '1122 / 1402', name: 'The Master of the House', title: 'and his hound, 1824' },
-  { id: 'dowager',  file: 'dowager',           ar: '1024 / 1536', name: 'The Dowager',             title: 'and her parrot, 1811' },
-  { id: 'children', file: 'children',          ar: '1122 / 1402', name: 'The Children',            title: 'and the nursery rabbit, 1838' },
-  { id: 'gardener', file: 'gardener',          ar: '1122 / 1402', name: 'The Gardener',            title: 'and the stable cat, 1833' },
-  { id: 'son',      file: 'son',               ar: '1122 / 1402', name: 'The Younger Son',         title: 'at his studies, 1849' },
-  // the house
-  { id: 'ball',       file: 'ball',        ar: '1024 / 1536', name: 'The Midwinter Ball' },
-  { id: 'dining',     file: 'diningroom',  ar: '1122 / 1402', name: 'The Dining Room' },
-  { id: 'music',      file: 'piano',       ar: '1122 / 1402', name: 'The Music Room' },
-  { id: 'fireside',   file: 'fireplace',   ar: '1024 / 1536', name: 'The Drawing Room Fire' },
-  { id: 'bedroom',    file: 'bedroom',     ar: '948 / 1659',  name: 'The Blue Bedroom' },
-  { id: 'nursery',    file: 'toys',        ar: '1024 / 1536', name: 'The Nursery Shelf' },
-  { id: 'hound',      file: 'dog',         ar: '1024 / 1536', name: 'The Hound at Rest' },
-  { id: 'fountain',   file: 'fountain',    ar: '1024 / 1536', name: 'The Fountain Court' },
-  { id: 'garden',     file: 'garden01',    ar: '1122 / 1402', name: 'The Moon Garden' },
-  { id: 'glasshouse', file: 'greenhouse',  ar: '1122 / 1402', name: 'The Conservatory' },
-  { id: 'ship',       file: 'ship',        ar: '1024 / 1536', name: 'The Homeward Ship' },
-  { id: 'crow',       file: 'crow',        ar: '1024 / 1536', name: 'Still Life with Crow' },
-  { id: 'candle',     file: 'stilllife01', ar: '1024 / 1280', name: 'Still Life with Candle' },
-  { id: 'keepsake',   file: 'stilllife02', ar: '1024 / 1280', name: 'Still Life with a Keepsake Box' },
+  // people
+  { id: 'lady',       file: 'ladyofthehouse',   ar: '1122 / 1402' },
+  { id: 'master',     file: 'masterofthehouse', ar: '1122 / 1402' },
+  { id: 'dowager',    file: 'dowager',          ar: '1024 / 1536' },
+  { id: 'children',   file: 'children',         ar: '1122 / 1402' },
+  { id: 'gardener',   file: 'gardener',         ar: '1122 / 1402' },
+  { id: 'son',        file: 'son',              ar: '1122 / 1402' },
+  // rooms, grounds and still lifes
+  { id: 'ball',       file: 'ball',             ar: '1024 / 1536' },
+  { id: 'dining',     file: 'diningroom',       ar: '1122 / 1402' },
+  { id: 'music',      file: 'piano',            ar: '1122 / 1402' },
+  { id: 'fireside',   file: 'fireplace',        ar: '1024 / 1536' },
+  { id: 'bedroom',    file: 'bedroom',          ar: '948 / 1659' },
+  { id: 'nursery',    file: 'toys',             ar: '1024 / 1536' },
+  { id: 'hound',      file: 'dog',              ar: '1024 / 1536' },
+  { id: 'fountain',   file: 'fountain',         ar: '1024 / 1536' },
+  { id: 'garden',     file: 'garden01',         ar: '1122 / 1402' },
+  { id: 'glasshouse', file: 'greenhouse',       ar: '1122 / 1402' },
+  { id: 'ship',       file: 'ship',             ar: '1024 / 1536' },
+  { id: 'crow',       file: 'crow',             ar: '1024 / 1536' },
+  { id: 'candle',     file: 'stilllife01',      ar: '1024 / 1280' },
+  { id: 'keepsake',   file: 'stilllife02',      ar: '1024 / 1280' },
 ];
 const ART = Object.fromEntries(PAINTINGS.map(p => [p.id, p]));
 
@@ -129,16 +122,13 @@ export const PICTURE_POOLS = {
   family: ['lady', 'master', 'dowager', 'son', 'children', 'gardener'],
 };
 
-/** One of the house's paintings, in the Kid board's carved frame and a brass plate. */
+/** One of the house's paintings, in the Kid board's carved frame on its cord. */
 export function paintingHtml(id, cls = '') {
   const p = ART[id];
   if (!p) return '';
-  const plate = `<span class="kit-hang__plate"><b>${p.name}</b>${p.title ? `<em>${p.title}</em>` : ''}</span>`;
-  const long = p.name.length > 24 ? ' kit-hang--longname' : '';
-  return `<figure class="kit-hang kit-hang--named kit-hang--painting${long}${cls ? ' ' + cls : ''}" data-art="art-${id}" aria-hidden="true">`
+  return `<figure class="kit-hang kit-hang--painting${cls ? ' ' + cls : ''}" data-art="art-${id}" aria-hidden="true">`
     + '<i class="kit-hang__cord"></i>'
     + `<span class="kit-hang__frame"><img class="kit-hang__pic" src="${KIT}hang-art-${p.file}.webp" alt="" decoding="async" draggable="false" style="--pic-ar:${p.ar}"></span>`
-    + plate
     + '</figure>';
 }
 
@@ -170,113 +160,9 @@ export function houseGallery(pool, classes, { seed = null } = {}) {
   }).join('');
 }
 
-/**
- * Fit each hung painting to the wall it has (survey 5, both judges: on the
- * event, rest, reward and game-over walls a sconce, a panel or a card stood
- * over a painting's nameplate). The boards were laid out for the Companions'
- * portraits, which share one shape; Josh's paintings run from 1024x1280 to
- * 948x1659, so at a board's --hang-w a tall one dropped its plate onto
- * whatever stands below it. Each picture keeps its board's width when it
- * clears and is otherwise narrowed -- never moved -- until its frame (with the
- * moulding outside it) and its plate clear every `obstacles` box by `gap` px.
- * A painting that cannot clear at `min` px wide gives its place to the first
- * painting of `pool` not already hung that can (at the Deck's 1280 the tallest
- * canvases do not fit over the event hall's sconces); a picture with no such
- * stand-in does not hang. Measured on screen, so call it once the board has
- * laid out, and again on resize. Returns the pictures as hung.
- */
-/**
- * One or two lines on a plate, never three (round 40 graft, IOLITE's
- * `settlePlate`): a name that has to wrap at the plate's width keeps the
- * plate to itself and drops its epithet ("and her cat, 1826"); a name that
- * still runs to three lines sets a point closer. Call it whenever the
- * frame's width changes; fitHung does. Returns the plate's height.
- */
-export function settlePlate(f) {
-  const p = f?.querySelector('.kit-hang__plate');
-  if (!p) return 0;
-  f.classList.remove('kit-hang--terse', 'kit-hang--tight', 'kit-hang--snug');
-  const b = p.querySelector('b');
-  if (!b) return p.offsetHeight;
-  const lines = () => b.offsetHeight / lineH(b);
-  // (round 40 repair 2: the date line goes too when name and date together
-  // would make three -- "The Children / and the nursery rabbit, 1838")
-  if (p.querySelector('em') && (lines() > 1.5 || plateLines(f) > 2)) f.classList.add('kit-hang--terse');
-  // (round 40 repair: a plate is no wider than its frame, so a long single
-  // word -- CONSERVATORY -- that will not fit the plate's width sets closer too)
-  const over = () => b.scrollWidth > b.clientWidth + 1 || b.getBoundingClientRect().width > p.clientWidth + 1;
-  if (lines() > 2.5 || over()) f.classList.add('kit-hang--tight');
-  // (round 40 repair 2: a painting's lettering keeps clear of the cartouche's
-  // curled ends, kit.css -- unless only the old, snug measure keeps the name
-  // to two lines; fitHung tries a wider plate first)
-  if (f.classList.contains('kit-hang--painting') && (lines() > 2.5 || over())) f.classList.add('kit-hang--snug');
-  return p.offsetHeight;
-}
-
-const isSnug = (f) => f.classList.contains('kit-hang--snug');
-const lineH = (el) => parseFloat(getComputedStyle(el).lineHeight) || 14;
-
-/** How many lines a hung picture's plate sets: the name's and, when it shows,
- *  the date line's (round 40 repair 2). */
-export function plateLines(f) {
-  const p = f?.querySelector('.kit-hang__plate');
-  if (!p) return 0;
-  const b = p.querySelector('b');
-  const em = p.querySelector('em');
-  const n = (el) => (el && el.getClientRects().length ? Math.round(el.offsetHeight / lineH(el)) : 0);
-  return n(b) + n(em);
-}
-
-/**
- * NEVER THREE LINES (round 40 repair 2; the paired test against survey 6, both
- * judges: "The / Lady of / the House" on three lines "stands taller than its
- * partner", "The / Nursery / Shelf" crammed into three). A plate that needs a
- * third line at its frame's width may run up to `k` (1.25) times the frame's
- * width, moulding and all, centred under it -- the narrowest that takes the
- * name in two lines, and no wider than `maxPx` or than `ok` allows (the wall's
- * neighbours). Returns true when the plate sets one or two lines; otherwise
- * the plate is left at its frame's width.
- */
-export function widenPlate(f, { k = 1.25, maxPx = Infinity, ok = () => true } = {}) {
-  const p = f?.querySelector('.kit-hang__plate');
-  if (!p) return true;
-  p.style.removeProperty('max-width');
-  f.classList.remove('kit-hang--wideplate');
-  settlePlate(f);
-  if (plateLines(f) <= 2 && !isSnug(f)) return ok(f);
-  const a = f.querySelector('.kit-hang__frame')?.getBoundingClientRect();
-  if (!a || !a.width) return false;
-  const FW = a.width * (1 + 2 * .085);
-  for (let i = 1; i <= 5; i++) {
-    const w = Math.min(FW * (1 + (k - 1) * i / 5), maxPx);
-    if (w <= FW) break;
-    p.style.maxWidth = `${w.toFixed(1)}px`;
-    f.classList.add('kit-hang--wideplate');
-    settlePlate(f);
-    // (the narrowest that takes two lines: a wider one is never clearer)
-    if (plateLines(f) <= 2) {
-      if (!ok(f)) break;
-      // and a little air between the lettering and the cartouche's ends,
-      // where the wall has it
-      const air = Math.min(w + 8, FW * k, maxPx);
-      if (air > w + 1) {
-        p.style.maxWidth = `${air.toFixed(1)}px`;
-        settlePlate(f);
-        if (plateLines(f) > 2 || !ok(f)) { p.style.maxWidth = `${w.toFixed(1)}px`; settlePlate(f); }
-      }
-      return true;
-    }
-    if (w >= maxPx) break;
-  }
-  p.style.removeProperty('max-width');
-  f.classList.remove('kit-hang--wideplate');
-  settlePlate(f);
-  return false;
-}
-
 /* a panel's medallion stands up out of its top rail (.kit-panel[data-medal]
-   ::before, kit.css) -- above the panel's own box, where a plate over it
-   "crowds the fort frame's moon medallion" (round 40 repair 2, J1): its box */
+   ::before, kit.css) -- above the panel's own box, where a frame over it
+   would crowd the fort frame's moon medallion (round 40 repair 2, J1): its box */
 function medalBox(o) {
   if (!o.matches?.('.kit-panel[data-medal]')) return null;
   const cs = getComputedStyle(o, '::before');
@@ -291,9 +177,23 @@ function medalBox(o) {
   return { left, top, right: left + w, bottom: top + h, width: w, height: h };
 }
 
+/**
+ * Fit each hung painting to the wall it has (survey 5, both judges: on the
+ * event, rest, reward and game-over walls a sconce, a panel or a card stood
+ * over a painting). The boards were laid out for the Companions' portraits,
+ * which share one shape; Josh's paintings run from 1024x1280 to 948x1659, so
+ * at a board's --hang-w a tall one fell onto whatever stands below it. Each
+ * picture keeps its board's width when it clears and is otherwise narrowed --
+ * never moved -- until its frame, with the moulding outside it, clears every
+ * `obstacles` box by `gap` px (`near` ones by `nearGap`, e.g. the candle on
+ * the rail under it). With no nameplate under it (2026-10-21) a frame needs
+ * only its own room, so a painting that used to be narrowed or swapped for its
+ * plate now hangs at the board's width. A painting that cannot clear at `min` px wide gives its place to the first
+ * painting of `pool` not already hung that can; a picture with no such
+ * stand-in does not hang. Measured on screen, so call it once the board has
+ * laid out, and again on resize. Returns the pictures as hung.
+ */
 export function fitHung(figs, obstacles, { gap = 8, min = 72, pool = null, near = [], nearGap = 6 } = {}) {
-  // `near`: obstacles a picture may stand closer to (`nearGap`), e.g. the
-  // candle on the rail under it (round 40 repair)
   const live = (list) => list.filter(o => o && !o.hidden && o.getClientRects().length);
   const boxOf = (list, g) => live(list)
     .map(o => o.getBoundingClientRect()).filter(r => r.width && r.height).map(r => ({ r, g }));
@@ -302,73 +202,32 @@ export function fitHung(figs, obstacles, { gap = 8, min = 72, pool = null, near 
   const hit = (a, { r: b, g }) => a.left < b.right + g && a.right > b.left - g
     && a.top < b.bottom + g && a.bottom > b.top - g;
   const clear = (f) => {
-    settlePlate(f);
     const a = f.querySelector('.kit-hang__frame')?.getBoundingClientRect();
     if (!a) return true;
     const rim = a.width * .085;
     const u = { left: a.left - rim, right: a.right + rim, top: a.top - rim, bottom: a.bottom + rim };
-    const p = f.querySelector('.kit-hang__plate')?.getBoundingClientRect();
-    if (p && p.width) {
-      u.left = Math.min(u.left, p.left); u.right = Math.max(u.right, p.right);
-      u.bottom = Math.max(u.bottom, p.bottom);
-    }
     return !boxes.some(b => hit(u, b));
   };
   const set = (f, w) => f.style.setProperty('--hang-w', `${w.toFixed(1)}px`);
   /* the widest width up to the board's own at which `f` clears, set on it;
-     false if none. `strict` (round 40 repair 2): and its plate on one or two
-     lines -- a plate that needs three first takes a wider frame where the
-     wall has room for one (up to 1.25x the board's), then a plate up to 1.25x
-     its frame's width (widenPlate); false if neither does it */
-  const fit = (f, strict) => {
+     false if none down to `min` */
+  const fit = (f) => {
     f.style.removeProperty('--hang-w');
-    f.querySelector('.kit-hang__plate')?.style.removeProperty('max-width');
-    f.classList.remove('kit-hang--wideplate');
     f.hidden = false;
     const W0 = f.offsetWidth;
-    if (!W0) return true;
-    let w = W0;
-    if (!clear(f)) {
-      let lo = min, hi = W0;
-      set(f, lo);
-      if (!clear(f)) { f.style.removeProperty('--hang-w'); return false; }
-      for (let i = 0; i < 8; i++) { const m = (lo + hi) / 2; set(f, m); if (clear(f)) lo = m; else hi = m; }
-      set(f, lo);
-      w = lo;
-    }
-    const good = () => plateLines(f) <= 2 && !isSnug(f);
-    if (!strict || good()) return true;
-    if (w >= W0) {
-      for (let i = 1; i <= 5; i++) {
-        set(f, W0 * (1 + .05 * i));
-        if (clear(f) && good()) return true;
-      }
-      f.style.removeProperty('--hang-w');
-    }
-    /* the widest frame, from the board's own down to `min`, at which a plate
-       of up to 1.25x takes the name in two lines and the whole clears: a
-       two-line plate is a line shorter, so its frame may stand taller than a
-       three-line one's could, and a narrower frame moves its plate's middle
-       in from the wall's neighbour */
-    const step = Math.max(2, W0 * .03);
-    for (let x = W0; x > min - step; x -= step) {
-      set(f, Math.max(x, min));
-      if (widenPlate(f, { ok: clear })) return true;
-    }
-    // none: the plate at its frame's width on the snug measure, if that keeps
-    // it to two lines, rather than another painting
-    if (w >= W0) f.style.removeProperty('--hang-w'); else set(f, w);
-    settlePlate(f);
-    return plateLines(f) <= 2;
+    if (!W0 || clear(f)) return true;
+    let lo = min, hi = W0;
+    set(f, lo);
+    if (!clear(f)) { f.style.removeProperty('--hang-w'); return false; }
+    for (let i = 0; i < 8; i++) { const m = (lo + hi) / 2; set(f, m); if (clear(f)) lo = m; else hi = m; }
+    set(f, lo);
+    return true;
   };
   const spares = (Array.isArray(pool) ? pool : PICTURE_POOLS[pool] || []).filter(id => ART[id]);
   const hung = figs.filter(Boolean);
   return hung.map((f, i) => {
-    // first a painting whose plate keeps to two lines; then, when the pool has
-    // none that does, any that clears, as before
-    for (const strict of [true, false]) {
-      if (fit(f, strict)) return f;
-      if (!f.classList.contains('kit-hang--painting')) continue;
+    if (fit(f)) return f;
+    if (f.classList.contains('kit-hang--painting')) {
       const cls = [...f.classList].filter(c => !c.startsWith('kit-hang')).join(' ');
       const taken = new Set(hung.map(g => g.dataset.art));
       // the pool read on from the painting it stands in for, so the stand-ins vary
@@ -379,7 +238,7 @@ export function fitHung(figs, obstacles, { gap = 8, min = 72, pool = null, near 
         t.innerHTML = paintingHtml(id, cls);
         const n = t.firstElementChild;
         f.replaceWith(n);
-        if (fit(n, strict)) { hung[i] = n; return n; }
+        if (fit(n)) { hung[i] = n; return n; }
         n.replaceWith(f);
       }
     }
