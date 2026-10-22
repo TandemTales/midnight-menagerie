@@ -235,8 +235,8 @@ list rows on rest/event/gameover/shop).
 won 4 of 4 (claw feet back, soft hem) and is merged; its Hedge half lost 4 of
 4 -- the judges preferred the graft's torn withered crowns, streaks and all --
 and was left out (branch fix/r43-touchup keeps it). **C: WAS FULL** (0.4 GB
-free; C:/UILOOP 165 GB): r0-r40 are being MOVED to D:/UILOOP (robocopy /MOVE,
-nothing deleted; `git worktree repair` after). Cut new worktrees on D:/UILOOP.
+free; C:/UILOOP 165 GB): r0-r40 were MOVED to D:/UILOOP (robocopy /MOVE,
+nothing deleted; 137 worktrees re-pointed with `git worktree repair`) -- C: 130 GB free on 10-22. Cut new worktrees on D:/UILOOP.
 **NEXT: round 44.**
 **JOSH'S ANSWERS (2026-10-21):** (1) Boggle's Don't Scream Yet and Crinkle's
 Watermark: "use your best judgement" -- DONE `e8e140df`: Don't Scream Yet's
