@@ -16808,14 +16808,17 @@ void main(){
        of shadow raked from back to front, drawn a pixel and more. */
     if (uIsCeiling < 0.5) {
       float mC = smoothstep(0.50, 0.78, mmNoise(w*1.9 + 6.0));
-      float cush = mC*smoothstep(0.35, 0.70, mmNoise(w*7.0 + 2.0));
+      /* (the frame budget: the cushions' grain off two sines, not a second
+         noise tap -- the Greenhouse's fight was over the line on PYRITE's
+         build, and these floors are most of its frame) */
+      float cush = mC*smoothstep(0.35, 0.70, 0.5 + 0.25*sin(w.x*7.3 + 2.0*sin(w.y*5.1)) + 0.25*sin(w.y*6.7 + 1.7*sin(w.x*4.3)));
       alb = mix(alb, vec3(0.30, 0.62, 0.22)*Lf*1.05, clamp(cush, 0.0, 1.0)*0.65);
       vec2 deP = vWorld.xz - uCamera.xz;
       float aP = dot(deP, uNearFwd);
       float cP = deP.x*(-uNearFwd.y) + deP.y*uNearFwd.x;
       vec2 pq = vec2((cP + 0.4)/1.9, (aP - 11.6)/1.00);
       /* (two lobes run together, its edge wandering round the flags) */
-      float pr = min(length(pq), length((pq - vec2(0.85, 0.35))*1.35)) + 0.30*(mmNoise(vec2(cP, aP)*2.1 + 3.0) - 0.5);
+      float pr = min(length(pq), length((pq - vec2(0.85, 0.35))*1.35)) + 0.09*sin(cP*4.3 + 1.0) + 0.06*sin(aP*5.9 + cP*2.1);
       float prPx = max(fwidth(pr), 1e-4);
       r44Pud = 1.0 - smoothstep(1.0 - prPx, 1.0 + prPx, pr);
       r44PudR = (1.0 - smoothstep(1.0, 1.0 + max(prPx*3.0, 0.10), pr))*(1.0 - r44Pud);
@@ -18616,7 +18619,7 @@ void main(){
        ink outlines that read as holes": the wet stone round each is not
        darkened to a line, and the water holds the night's glass a little
        lighter than the flags under it, its edge a bright meniscus) */
-    float pn = 0.78*mmNoise(gq*1.15 + 3.0) + 0.22*mmNoise(gq*3.1 + 1.0);
+    float pn = 0.78*mmNoise(gq*1.15 + 3.0) + 0.11 + 0.08*sin(gq.x*3.1 + 1.0)*sin(gq.y*2.9 + 2.3);   // (the frame budget: one tap, its fine edge a sine)
     float pnPx = max(length(vec2(dFdx(pn), dFdy(pn))), 1e-4);
     float pud = clamp((pn - 0.80)/pnPx + 0.5, 0.0, 1.0);
     if (pud > 0.0) {
