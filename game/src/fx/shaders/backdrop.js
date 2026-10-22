@@ -28186,8 +28186,9 @@ float shapeField(vec2 uv, vec2 msz, float shape, float seed){
        a loop over all three -- they are a quarter of the drum apart) */
     {
       float cy = p.y < 0.44 ? 0.305 : (p.y < 0.70 ? 0.575 : 0.828);
-      float tc = clamp((cy - 0.14)/0.72, 0.0, 1.0);
-      float rc = 0.132*(1.0 + 0.085*sin(tc*2.6) - 0.20*tc*tc);
+      /* (fix/r44-frame, the link budget: the drum's radius at each collar,
+         0.132*(1 + 0.085*sin(2.6t) - 0.2t^2) at its height, as numbers) */
+      float rc = p.y < 0.44 ? 0.1369102 : (p.y < 0.70 ? 0.1335835 : 0.1147484);
       d = min(d, mmBox(p - vec2(0.0, cy), vec2(rc + 0.014, 0.016), 0.006));
     }
     float lfY = clamp((p.y - 0.866)/0.066, 0.0, 1.0);
@@ -30464,6 +30465,7 @@ float reliefH(vec2 uv, vec2 msz, vec2 mpp, float shape, float seed, out float ti
 
 void main(){
   mmQuadInit();
+  float gYpxV = max(fwidth(vUv.y), 1e-5);   // (fix/r44-frame: the glasshouse collars' pen, taken in the flow every pixel shares)
   float f = shapeField(vUv, vSize, vShape, vSeed);
   /* The coverage field's own screen gradient turns it into a DISTANCE IN
      PIXELS from the silhouette, which is the only scale an edge treatment can
@@ -30686,73 +30688,6 @@ void main(){
      rust bleeding out of the joints and the foot; and three collars bolted
      round the shaft, each a band with its rivet heads, lit on the key's
      side. Off the prop's own luminance, so it keeps the room's light. */
-#if MM_WINGS == 6 && MM_SH6
-  if (vShape > 5.5 && vShape < 6.5) {
-    /* (round 44 graft: drawn without loops and on single noise taps -- the
-       Greenhouse's prop programs link at 11.6 s on BASE and PYRITE's block,
-       three fbms and two loops of three collars, took them over the 12 s
-       budget. Each pixel is near one collar and under at most one: those two
-       are found, not looped over) */
-    float lum = max(mmLum(albedo), 0.02);
-    float lv  = lum*2.1 + 0.030;
-    float u   = clamp((vUv.x - 0.5)/0.135, -1.0, 1.0);
-    float y   = vUv.y;
-    vec3 iron = vec3(0.060, 0.068, 0.074);
-    vec3 verd = vec3(0.120, 0.290, 0.270);   // (round 44 graft: bluer-green, SPHENE's)
-    vec3 verdP = vec3(0.300, 0.480, 0.440);
-    vec3 rust = vec3(0.400, 0.190, 0.075);
-    /* the collar nearest this pixel, and the one above it the rust runs from */
-    float cN = y < 0.44 ? 0.305 : (y < 0.70 ? 0.575 : 0.828);
-    float cA = y < 0.305 ? 0.305 : (y < 0.575 ? 0.575 : (y < 0.828 ? 0.828 : 9.0));
-    /* the bloom: streaks run down from each moulding, thick under it --
-       and (SPHENE's, both judges) in PATCHES over the drum as well, gathered
-       in every moulding: at a fifth of the bloom the drum read grey stone */
-    float sources = max(max(smoothstep(0.30, 0.0, 0.840 - y)*step(y, 0.842),
-                            smoothstep(0.20, 0.0, abs(y - 0.120))),
-                        0.55*smoothstep(0.10, 0.0, abs(y - cN)));
-    /* (the link budget: ONE noise tap -- the bloom's patches -- and the
-       streaks and the rust's runs off sines down the drum broken by it) */
-    float nB = mmNoise(vec2(u*3.0, y*9.0) + vSeed*5.3);
-    float streak = smoothstep(0.50, 0.74, 0.5 + 0.30*sin(u*19.0 + vSeed*3.1 + 1.6*sin(y*3.1)) + 0.20*(nB - 0.5) + 0.26*sources);
-    float bloom = smoothstep(0.35, 0.80, nB);
-    float mould = 1.0 - smoothstep(0.13, 0.19, y)*(1.0 - smoothstep(0.80, 0.86, y));
-    float patina = clamp(streak*0.80 + bloom*0.62 + mould*0.45, 0.0, 1.0);
-    /* the capital's leaves hold the most of it, their tips rubbed bright */
-    float capM = smoothstep(0.850, 0.870, y);
-    patina = max(patina, capM*(0.55 + 0.45*bloom));
-    vec3 c = mix(iron, mix(verd, verdP, max(bloom*streak, capM*0.6*(0.5 + 0.5*sin(vUv.x*180.0)))), patina);
-    /* rust: out of the plinth and RUNNING DOWN from under the collar above,
-       in long orange-brown runs, the iron eaten bare along them */
-    float rS = max(smoothstep(0.10, 0.0, y)*0.9,
-                   smoothstep(0.17, 0.0, cA - y)*(0.55 + 0.45*step(0.70, fract(u*3.7 + vSeed*1.3 + cA*1.3))));
-    float rN = smoothstep(0.42, 0.70, 0.5 + 0.35*sin(u*31.0 + vSeed*7.0 + 2.5*nB + y*1.3) + 0.15*sin(u*13.0 - vSeed));
-    c = mix(c, rust, clamp(rS*rN*1.6, 0.0, 0.90));
-    /* the collar: a band round the drum with rivet heads along it */
-    float kx = sign(uKeyDir.x + 0.001);
-    float onB = 1.0 - smoothstep(0.015, 0.019, abs(y - cN));
-    float rp = fract(asin(clamp(u, -0.999, 0.999))/1.5708*4.0 + 0.5) - 0.5;
-    vec2 rq = vec2(rp*0.135*3.1416*0.5*vSize.x/max(vSize.y, 0.01), y - cN);
-    float rivet = (1.0 - smoothstep(0.0040, 0.0062, length(rq)))*onB*step(abs(u), 0.92);
-    float rivL = (1.0 - smoothstep(0.0012, 0.0030, length(rq + vec2(kx*0.0018, -0.0018))))*onB*step(abs(u), 0.92);
-    c = mix(c, iron*0.9, onB*0.92);
-    c = mix(c, verdP*0.8, onB*0.30*bloom);
-    c = mix(c, verdP*1.4, rivet*(0.4 + 0.6*clamp(u*kx + 0.4, 0.0, 1.0)));
-    /* the drum lit on the key's side, a hard line of light down it */
-    float litE = smoothstep(0.30, 0.62, u*kx) * (1.0 - smoothstep(0.70, 0.95, u*kx));
-    c *= 0.78 + 0.50*litE*colSh;
-    /* (round 44 graft, SPHENE's: the collar's seam, its lit lip, the rivets'
-       heads and the lit edge drawn on the LIT colour, in pixels -- marks in
-       albedo here went under the prop's luminance knee) */
-    /* (folded into the column's own pens, fInk and fLit, which the flutes
-       below lay on the lit colour: new variables live from here to the end
-       of the program took the Greenhouse's prop links 1.5 s over BASE) */
-    float ypx = max(fwidth(y), 1e-5);
-    fInk = max(fInk, max(1.0 - smoothstep(0.6, 1.8, abs(y - cN + 0.017)/ypx), rivet*0.62));
-    fLit = max(fLit, max((1.0 - smoothstep(0.5, 1.5, abs(y - cN - 0.016)/ypx))*1.6, rivL*2.6));
-    fLit = max(fLit, litE*(1.0 - onB)*0.70);
-    albedo = mix(albedo, c*lv*3.0, 0.97);
-  }
-#endif
 
   /* A PACKING CASE IS DEAL (round 28, the shared finish's material half):
      sawn white pine gone honey with age, each board its own value -- off
@@ -31273,6 +31208,78 @@ void main(){
      away at the neck and the base the way a real flute stops short. */
 #if MM_SH6
   if (vShape > 5.5 && vShape < 6.5) {
+#if MM_WINGS == 6
+  /* (fix/r44-frame, the link budget: the glasshouse's verdigris drawn
+     here, at the head of the flutes' own branch -- the same pixels, the same
+     order -- and not in a branch of its own: one fewer branch in the
+     program, with its pixel size taken in main(), its collars' radii as
+     numbers, and no clamp asin's domain did not need) */
+  {
+    /* (round 44 graft: drawn without loops and on single noise taps -- the
+       Greenhouse's prop programs link at 11.6 s on BASE and PYRITE's block,
+       three fbms and two loops of three collars, took them over the 12 s
+       budget. Each pixel is near one collar and under at most one: those two
+       are found, not looped over) */
+    float lum = max(mmLum(albedo), 0.02);
+    float lv  = lum*2.1 + 0.030;
+    float u   = clamp((vUv.x - 0.5)/0.135, -1.0, 1.0);
+    float y   = vUv.y;
+    vec3 iron = vec3(0.060, 0.068, 0.074);
+    vec3 verd = vec3(0.120, 0.290, 0.270);   // (round 44 graft: bluer-green, SPHENE's)
+    vec3 verdP = vec3(0.300, 0.480, 0.440);
+    vec3 rust = vec3(0.400, 0.190, 0.075);
+    /* the collar nearest this pixel, and the one above it the rust runs from */
+    float cN = y < 0.44 ? 0.305 : (y < 0.70 ? 0.575 : 0.828);
+    float cA = y < 0.305 ? 0.305 : (y < 0.575 ? 0.575 : (y < 0.828 ? 0.828 : 9.0));
+    /* the bloom: streaks run down from each moulding, thick under it --
+       and (SPHENE's, both judges) in PATCHES over the drum as well, gathered
+       in every moulding: at a fifth of the bloom the drum read grey stone */
+    float sources = max(max(smoothstep(0.30, 0.0, 0.840 - y)*step(y, 0.842),
+                            smoothstep(0.20, 0.0, abs(y - 0.120))),
+                        0.55*smoothstep(0.10, 0.0, abs(y - cN)));
+    /* (the link budget: ONE noise tap -- the bloom's patches -- and the
+       streaks and the rust's runs off sines down the drum broken by it) */
+    float nB = mmNoise(vec2(u*3.0, y*9.0) + vSeed*5.3);
+    float streak = smoothstep(0.50, 0.74, 0.5 + 0.30*sin(u*19.0 + vSeed*3.1 + 1.6*sin(y*3.1)) + 0.20*(nB - 0.5) + 0.26*sources);
+    float bloom = smoothstep(0.35, 0.80, nB);
+    float mould = 1.0 - smoothstep(0.13, 0.19, y)*(1.0 - smoothstep(0.80, 0.86, y));
+    float patina = clamp(streak*0.80 + bloom*0.62 + mould*0.45, 0.0, 1.0);
+    /* the capital's leaves hold the most of it, their tips rubbed bright */
+    float capM = smoothstep(0.850, 0.870, y);
+    patina = max(patina, capM*(0.55 + 0.45*bloom));
+    vec3 c = mix(iron, mix(verd, verdP, max(bloom*streak, capM*0.6*(0.5 + 0.5*sin(vUv.x*180.0)))), patina);
+    /* rust: out of the plinth and RUNNING DOWN from under the collar above,
+       in long orange-brown runs, the iron eaten bare along them */
+    float rS = max(smoothstep(0.10, 0.0, y)*0.9,
+                   smoothstep(0.17, 0.0, cA - y)*(0.55 + 0.45*step(0.70, fract(u*3.7 + vSeed*1.3 + cA*1.3))));
+    float rN = smoothstep(0.42, 0.70, 0.5 + 0.35*sin(u*31.0 + vSeed*7.0 + 2.5*nB + y*1.3) + 0.15*sin(u*13.0 - vSeed));
+    c = mix(c, rust, clamp(rS*rN*1.6, 0.0, 0.90));
+    /* the collar: a band round the drum with rivet heads along it */
+    float kx = sign(uKeyDir.x + 0.001);
+    float onB = 1.0 - smoothstep(0.015, 0.019, abs(y - cN));
+    float rp = fract(asin(u)/1.5708*4.0 + 0.5) - 0.5;   // (u is in -1..1 already; past 0.92 no rivet is drawn)
+    vec2 rq = vec2(rp*0.135*3.1416*0.5*vSize.x/max(vSize.y, 0.01), y - cN);
+    float rivet = (1.0 - smoothstep(0.0040, 0.0062, length(rq)))*onB*step(abs(u), 0.92);
+    float rivL = (1.0 - smoothstep(0.0012, 0.0030, length(rq + vec2(kx*0.0018, -0.0018))))*onB*step(abs(u), 0.92);
+    c = mix(c, iron*0.9, onB*0.92);
+    c = mix(c, verdP*0.8, onB*0.30*bloom);
+    c = mix(c, verdP*1.4, rivet*(0.4 + 0.6*clamp(u*kx + 0.4, 0.0, 1.0)));
+    /* the drum lit on the key's side, a hard line of light down it */
+    float litE = smoothstep(0.30, 0.62, u*kx) * (1.0 - smoothstep(0.70, 0.95, u*kx));
+    c *= 0.78 + 0.50*litE*colSh;
+    /* (round 44 graft, SPHENE's: the collar's seam, its lit lip, the rivets'
+       heads and the lit edge drawn on the LIT colour, in pixels -- marks in
+       albedo here went under the prop's luminance knee) */
+    /* (folded into the column's own pens, fInk and fLit, which the flutes
+       below lay on the lit colour: new variables live from here to the end
+       of the program took the Greenhouse's prop links 1.5 s over BASE) */
+    float ypx = gYpxV;
+    fInk = max(fInk, max(1.0 - smoothstep(0.6, 1.8, abs(y - cN + 0.017)/ypx), rivet*0.62));
+    fLit = max(fLit, max((1.0 - smoothstep(0.5, 1.5, abs(y - cN - 0.016)/ypx))*1.6, rivL*2.6));
+    fLit = max(fLit, litE*(1.0 - onB)*0.70);
+    albedo = mix(albedo, c*lv*3.0, 0.97);
+  }
+#endif
     /* -1 TO 1 ACROSS THE SHAFT, WHICH IS NOT ACROSS THE QUAD, and that one
        line is why no column in this game has ever had a visible flute. The
        shaft's half-width in shapeField is 0.132 of the quad, so
