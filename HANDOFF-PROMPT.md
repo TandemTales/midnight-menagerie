@@ -238,6 +238,16 @@ and was left out (branch fix/r43-touchup keeps it). **C: WAS FULL** (0.4 GB
 free; C:/UILOOP 165 GB): r0-r40 are being MOVED to D:/UILOOP (robocopy /MOVE,
 nothing deleted; `git worktree repair` after). Cut new worktrees on D:/UILOOP.
 **NEXT: round 44.**
+**JOSH'S ANSWERS (2026-10-21):** (1) Boggle's Don't Scream Yet and Crinkle's
+Watermark: "use your best judgement" -- DONE `e8e140df`: Don't Scream Yet's
+hidden Fear of the Dark stays gone, its charges 2/3 -> 3/4; Watermark's mark
+lasts the fight on one Trick at a time (a new one moves it), printed so.
+(2) The 20 paintings: "the painting lore/names will be developed later so
+dont name them in the game for now" and they are "used interchangeably
+throughout any menu screens or backgrounds that already had them" -- every
+name/date in `ui/hang.js PAINTINGS` was invented by an AI pass; a builder is
+removing the nameplates and names (fix/paintings-unnamed, D:/UILOOP/paint/wt).
+(3) The Steam App ID "will be ready soon" -- still waiting.
 
 **ROUND 33 AND ITS GRAFT ARE MERGED, VERIFIED AND PUSHED (2026-10-16):**
 graft `9d008119`. COBALT +1.59 (`531126e4`): no running line under 11 px at
