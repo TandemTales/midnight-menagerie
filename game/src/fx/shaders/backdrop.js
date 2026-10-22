@@ -14869,6 +14869,9 @@ void main(){
   /* (round 25: the flags' joints, for the moss in them; the ballroom's
      filtered checker) */
   float r25Joint = 0.0, r25Chk = 0.0;
+#if MM_FLAGK == 4
+  float r44Jl = 0.0, r44Ar = 0.0, r44An = 0.0;   // (round 44 graft: the court's joints and arrises, inked on the lit colour below)
+#endif
 #if MM_FLAGK == 1
   float r39Flour = 0.0;
 #endif
@@ -15595,6 +15598,9 @@ void main(){
       pat = (0.50 + 0.40*slab) + 0.10*wear - jl*0.90 + 0.12*arF*(1.0 - jl) - 0.10*arN
           + (mmNoise(w*1.4 + slab*7.0) - 0.5)*0.07;
       cellv = 0.35 + 0.40*slab;
+#if MM_FLAGK == 4
+      r44Jl = jl; r44Ar = arF*(1.0 - jl); r44An = arN*(1.0 - jl);
+#endif
     } else {
     pat = (0.44 + 0.62*slab) - joint*0.95 + mmFbm3(w*2.6 + slab)*0.22;
     cellv = slab;
@@ -18080,6 +18086,31 @@ void main(){
 #endif
         float glit = smoothstep(0.40, 0.78, mmNoise(vec2(w.x*9.0, w.y*3.0 - uTime*0.4)));
         col += vec3(0.80, 0.86, 1.00) * col2 * (0.14 + 0.80*glit) * uMoonW.w * water;
+#if MM_FLOORX == 1 && MM_PAT == 2 && MM_FLAGK == 4
+        /* (round 44 graft, judge 2: "the pond's water a dark plane without
+           reflections" -- the moon's column was there but the moon stands off
+           to the side of the water. The carved lanterns burning on every
+           other pier of the court wall (subjCoping: a 6.4 m pitch, the odd
+           piers) lie in the pond too: each a warm column drawn out toward the
+           eye along the line to it, broken by the ripples into glints, and a
+           second, longer and fainter, the moon's own column made brighter
+           where its glints fall. The pond's program only.) */
+        {
+          float lan = 0.0;
+          float pid0 = floor((e2.x + 3.2)/6.4);
+          for (int k = -3; k <= 3; k++) {
+            float pid = pid0 + float(k);
+            if (mod(pid, 2.0) < 0.5) continue;
+            vec2 dl = normalize(vec2(pid*6.4, uMoonW.z) - e2);
+            vec2 vq = vWorld.xz - e2;
+            float axL = vq.x*dl.y - vq.y*dl.x;
+            lan += exp(-pow((axL + rip2*0.7)/0.22, 2.0))*step(0.0, dot(vq, dl));
+          }
+          float gl2 = smoothstep(0.42, 0.78, mmNoise(vec2(w.x*7.0, w.y*2.6 - uTime*0.35) + 3.0));
+          col += vec3(1.00, 0.56, 0.22) * lan * (0.08 + 0.92*gl2) * (0.35 + 0.65*farW) * water * 0.9;
+          col += vec3(0.80, 0.86, 1.00) * col2 * glit * 0.60 * uMoonW.w * water;
+        }
+#endif
       }
     }
   }
@@ -18374,7 +18405,13 @@ void main(){
       /* the turf: blades combed toward you, tussocks, the wall's damp foot */
       float blade = mmNoise(vec2(w.x*9.0 + 2.0*mmNoise(vec2(w.x*1.7, fwPk*0.8)), fwPk*2.6));
       float tus = smoothstep(0.40, 0.85, mmNoise(vec2(w.x*1.2, fwPk*1.4) + 4.0));
-      vec3 grassC = mix(vec3(0.020, 0.032, 0.020), vec3(0.052, 0.070, 0.034), blade) * (0.70 + 0.55*tus);
+      /* (round 44 graft, SPHENE's verge, both judges: a GRASS verge at the
+         wall's foot -- green turf in the court's own light, about the flags'
+         value, its blades and tussocks a stop either side of it; PYRITE's
+         was laid a stop and a half under the flags and read as more of the
+         dark it was drawn to end) */
+      float lumPk = max(mmLum(alb), 0.003);
+      vec3 grassC = lumPk*vec3(0.50, 1.24, 0.42)*(0.60 + 0.70*blade)*(0.55 + 0.95*tus);
       grassC *= 0.72 + 0.28*smoothstep(0.0, 3.0, fwPk);
       /* the leaves blown in under the wall: rust and old gold */
       vec2 lq = w*2.6;
@@ -18414,7 +18451,7 @@ void main(){
     }
     /* ...and a little moss and a blade or two in the joints near the bed */
     if (fwPk < 18.0)
-      col = mix(col, vec3(0.06, 0.085, 0.035)*litPk, r25Joint*(1.0 - smoothstep(8.0, 18.0, fwPk))*0.55*(1.0 - verge)*dryPk);
+      col = mix(col, vec3(0.06, 0.085, 0.035)*litPk, r44Jl*(1.0 - smoothstep(8.0, 18.0, fwPk))*0.55*(1.0 - verge)*dryPk);   // (round 44 graft: r44Jl -- r25Joint is never written in this wing, so PYRITE's moss was drawn nowhere)
 #endif
     /* THE LIGHT OF THE BED: a broad warm band, strongest a few metres out
        from the bed where the carved lanterns stand among the crop, breaking
@@ -18426,6 +18463,15 @@ void main(){
     col += albPk * vec3(1.00, 0.52, 0.20) * 8.5 * bandPk * brk * dryPk;
     /* the moon on the far court, so the flags under the bed read cold */
     col += albPk * vec3(0.42, 0.52, 0.72) * 2.2 * (1.0 - smoothstep(10.0, 24.0, fwPk)) * dryPk;
+    /* (round 44 graft, both judges: "the near flagstones in the lower third
+       fade to a dull grey smear -- hold the joints inked to the front". The
+       joint's dark and the arrises' light laid again on the LIT colour,
+       where the near pools and the floor's fall cannot press them back: the
+       joint a near-black pen line, the far arris a hairline of the lanterns'
+       light, the near one a shade -- strongest at your feet, where they had
+       gone, and nothing past the middle of the court, where they read) */
+    float nearJ = (1.0 - smoothstep(5.0, 13.0, vDepth))*dryPk;
+    col *= (1.0 - 0.62*r44Jl*nearJ) * (1.0 + 0.55*r44Ar*nearJ) * (1.0 - 0.28*r44An*nearJ);
   }
 #endif
 #if MM_R25W == 4 && MM_PAT == 11

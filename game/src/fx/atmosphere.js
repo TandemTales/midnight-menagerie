@@ -3222,7 +3222,17 @@ export const ROOM_KINDS = {
          pattern 11 -- where the courtyard is paved) */
       /* (round 37: 1.15, not 1.3 -- at 1.3 the patch filled MAX_PROPS and
          the near floor's lanterns were never dealt) */
+      /* (round 44 graft, SPHENE's: MORE pumpkins mid-floor in the patch, both
+         judges -- a carved one burning either side of the furrows in the
+         middle of the patch, and a pair set down in the near rows before you
+         over a lantern's warm pool, so the patch is not a dark field under
+         the hand. The patch's room only: the fight's court is as it was) */
       { subject: 'coping', layout: 'patch', countScale: 1.15, floor: 14, runner: 0,
+        nearPlus: [{ shape: 27, ahead: 9.6, across: -5.8, tone: 0.97, hM: 0.66, keep: true, still: true, seed: 0.7 },
+                   { shape: 27, ahead: 11.8, across: 6.0, tone: 0.97, hM: 0.72, keep: true, still: true, seed: 4.5 },
+                   { shape: 27, ahead: 5.2, across: -2.0, tone: 0.97, hM: 0.62, keep: true, still: true, seed: 4.1 },
+                   { shape: 27, ahead: 5.8, across: -3.0, tone: 0.95, hM: 0.48, keep: true, still: true, seed: 6.9 }],
+        nearFloor: { pool: { ahead: 5.4, across: -1.4, rAlong: 2.6, rAcross: 3.6, k: 12.0, color: '#ffa848' } },
         vantage: { at: 'among', low: 0.55, fwd: 2.6, pitch: 2.0, off: 0.05, wide: 3 } },
       /* the moon pond: water in the court, seen along its walk */
       /* (graft: the moon stands over the water and the house beside it, so
