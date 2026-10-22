@@ -14873,6 +14873,9 @@ void main(){
   float r39Flour = 0.0;
 #endif
   float r25Walk = 0.0;      // (round 25 graft: the churchyard's laid walk, for its stone below)
+#if MM_R25W == 3
+  float r44Pud = 0.0, r44PudR = 0.0, r44Bar = 0.0; vec2 r44PudQ = vec2(0.0);   // (round 44 graft: the glasshouse's pool, and the roof's bars in the moon)
+#endif
   float r29Edge = 0.0;      // (round 29 graft: the maze walk's dressed edging, for its stone below)
   float r35Edge = 0.0;      // (round 35 graft: the churchyard's lit turf edge along its walk, for its light below)
 #if MM_PAT == 13
@@ -16709,6 +16712,40 @@ void main(){
     float Lf = mmLum(alb);
     alb = mix(vec3(Lf)*vec3(1.04, 1.0, 0.92), alb, 0.30);
     alb = mix(alb, vec3(0.55, 0.95, 0.40)*Lf*1.10, clamp(r25Joint, 0.0, 1.0)*0.85);
+    /* ROUND 44 GRAFT (SPHENE's and EUCLASE's): THE LOWER FLOOR, DRESSED.
+       Survey-8 judge 2: "light the lower floor (tiles with moss, a puddle
+       catching the moon)". The moss does not stop at the joints in a house
+       watered every day: it creeps out over the flags in cushions (SPHENE's);
+       and where the floor dips under the staging the water off the benches
+       stands in a round POOL -- its outline wandering round the flags, the
+       stone round it a wet dark ring -- that the glass roof and the moon are
+       reflected in (below, after the lamps). In eye metres, as the near
+       floor's pools, so it lies in the band before the staging from every
+       vantage. And the roof's glazing (EUCLASE's): where the moon comes down
+       through the glass the bars and the ribs lie across the flags, a lattice
+       of shadow raked from back to front, drawn a pixel and more. */
+    if (uIsCeiling < 0.5) {
+      float mC = smoothstep(0.50, 0.78, mmNoise(w*1.9 + 6.0));
+      float cush = mC*smoothstep(0.35, 0.70, mmNoise(w*7.0 + 2.0));
+      alb = mix(alb, vec3(0.30, 0.62, 0.22)*Lf*1.05, clamp(cush, 0.0, 1.0)*0.65);
+      vec2 deP = vWorld.xz - uCamera.xz;
+      float aP = dot(deP, uNearFwd);
+      float cP = deP.x*(-uNearFwd.y) + deP.y*uNearFwd.x;
+      vec2 pq = vec2((cP + 0.4)/1.9, (aP - 11.6)/1.00);
+      /* (two lobes run together, its edge wandering round the flags) */
+      float pr = min(length(pq), length((pq - vec2(0.85, 0.35))*1.35)) + 0.30*(mmNoise(vec2(cP, aP)*2.1 + 3.0) - 0.5);
+      float prPx = max(fwidth(pr), 1e-4);
+      r44Pud = 1.0 - smoothstep(1.0 - prPx, 1.0 + prPx, pr);
+      r44PudR = (1.0 - smoothstep(1.0, 1.0 + max(prPx*3.0, 0.10), pr))*(1.0 - r44Pud);
+      r44PudQ = pq;
+      alb *= 1.0 - 0.45*r44PudR;
+      alb = mix(alb, alb*vec3(0.30, 0.34, 0.36), r44Pud);
+      vec2 rb = vec2(vWorld.x + vWorld.z*0.30, vWorld.z);
+      vec2 rbf = abs(fract(rb/vec2(0.92, 1.40)) - 0.5)*vec2(0.92, 1.40);
+      float rib = abs(fract(rb.x/3.68) - 0.5)*3.68;
+      r44Bar = max(1.0 - smoothstep(0.030, 0.030 + mp*1.3, min(rbf.x, rbf.y)),
+                   1.0 - smoothstep(0.075, 0.075 + mp*1.3, rib));
+    }
   }
 #endif
 #if MM_R25W == 1
@@ -17796,9 +17833,16 @@ void main(){
                   + step(6.5, uPattern)*step(uPattern, 7.5);
     float degen = ceilOnly * plaster * step(P.z, 0.001);
     /* (a shaft does not pool on WATER: the light goes into it) */
+    float r44K = 1.0;
+#if MM_R25W == 3
+    /* (round 44 graft, EUCLASE's: the moon through the glass lies on the
+       flags with the roof's bars across it -- the shafts carry the house's
+       own ironwork from the back of the floor to the front) */
+    r44K = 1.0 - 0.72*r44Bar*(1.0 - ceilOnly);
+#endif
     col += uPoolCol[i] * P.w * (core*1.15 + spill) * grain
          * (0.16 + 0.84*mmLum(alb)*3.4) * 0.50 * gate * (1.0 - water*0.90)
-         * (1.0 - degen*0.90);
+         * (1.0 - degen*0.90) * r44K;
   }
 
   /* ---- A CEILING IS LIT BY WHAT HANGS FROM IT -----------------------------
@@ -18393,37 +18437,69 @@ void main(){
     vec2 gq = vWorld.xz;
     float pxG = max(mp, 1e-4);
     vec2 gp = vec2(gq.x/0.66 + 0.18*gq.y, gq.y/1.60);
-    vec2 gf = abs(fract(gp) - 0.5)*vec2(0.66, 1.60);
-    float barS = max(1.0 - smoothstep(0.030, 0.030 + pxG*1.4, gf.x),
-                     1.0 - smoothstep(0.045, 0.045 + pxG*1.4, gf.y));
-    barS *= mmLod(0.66, pxG);
+    /* (round 44 graft: the bars' shadow is the roof's one lattice, r44Bar,
+       EUCLASE's -- the same that crosses the lamps' moon shafts -- not a
+       second grid of PYRITE's laid over it) */
+    float barS = r44Bar * mmLod(0.66, pxG);
     float pane = 0.45 + 0.55*mmHash21(floor(gp) + 7.0);
     float cloud = 0.70 + 0.30*sin(gq.x*0.21 + 0.7*sin(gq.y*0.17));
     vec3 moonG = vec3(0.30, 0.46, 0.58);
-    float reach = smoothstep(2.5, 7.0, vDepth);
+    /* (round 44 graft, judge 2: "a dark band below the planter rail" -- the
+       moon through the glass reached the flags only past 2.5-7 m, and under
+       the gallery's rail they were the darkest band in the room: it falls to
+       half there, not to nothing) */
+    float reach = 0.50 + 0.50*smoothstep(1.0, 6.0, vDepth);
     col += alb * moonG * 2.2 * pane * cloud * (1.0 - 0.88*barS) * reach;
-    /* the puddles */
+    /* (round 44 graft, EUCLASE's: and the moon pooled down through the
+       glass onto the band of floor between the staging and the rail, a long
+       cold patch across the view with the bars across it, so the lower
+       floor is lit stone with the house's ironwork on it, not a black band.
+       In eye metres, as the near floor's pools; a rational fall-off) */
+    {
+      vec2 deE = vWorld.xz - uCamera.xz;
+      float alongE = dot(deE, uNearFwd);
+      float acrossE = deE.x*(-uNearFwd.y) + deE.y*uNearFwd.x;
+      vec2 qm = vec2((alongE - 12.0)/3.0, (acrossE - 0.6)/7.5);
+      vec2 qm2 = vec2((alongE - 6.5)/2.6, (acrossE + 1.0)/4.5);
+      float m1 = 1.0/(1.0 + 1.3*dot(qm, qm)), m2 = 1.0/(1.0 + 1.3*dot(qm2, qm2));
+      col += alb*vec3(0.50, 0.70, 0.95)*(m1*m1 + 0.60*m2*m2)*(1.0 - 0.72*barS)*2.2*(0.70 + 0.30*smear);
+    }
+    /* the puddles (round 44 graft: WITHOUT the black ring -- judge 2, "black
+       ink outlines that read as holes": the wet stone round each is not
+       darkened to a line, and the water holds the night's glass a little
+       lighter than the flags under it, its edge a bright meniscus) */
     float pn = 0.78*mmNoise(gq*1.15 + 3.0) + 0.22*mmNoise(gq*3.1 + 1.0);
     float pnPx = max(length(vec2(dFdx(pn), dFdy(pn))), 1e-4);
     float pud = clamp((pn - 0.80)/pnPx + 0.5, 0.0, 1.0);
-    float wet = smoothstep(0.70, 0.80, pn);
-    col *= 1.0 - 0.38*wet*(1.0 - pud);
     if (pud > 0.0) {
       /* the glass overhead mirrored: its bars as dark lines, the panes
          the night's dark blue-green, a long glint of the moon in it */
       vec2 rp = vec2(gq.x/0.66, gq.y/0.90);
       vec2 rf = abs(fract(rp) - 0.5)*vec2(0.66, 0.90);
       float rbar = max(1.0 - smoothstep(0.020, 0.020 + pxG*1.2, rf.x), 1.0 - smoothstep(0.030, 0.030 + pxG*1.2, rf.y))*mmLod(0.66, pxG);
-      vec3 sky = vec3(0.030, 0.060, 0.070)*(0.70 + 0.60*mmHash21(floor(rp) + 3.0));
+      vec3 sky = vec3(0.035, 0.065, 0.080)*(0.70 + 0.60*mmHash21(floor(rp) + 3.0));
       float gl = mmNoise(vec2(gq.x*2.2, gq.y*0.35) + 9.0);
       gl = smoothstep(0.62, 0.92, gl);
-      vec3 refl = sky*0.6*(1.0 - 0.80*rbar) + vec3(0.46, 0.62, 0.72)*gl*0.85*(1.0 - rbar);
+      vec3 refl = sky*(1.0 - 0.70*rbar) + vec3(0.46, 0.62, 0.72)*gl*0.85*(1.0 - rbar);
       /* its rim: the water's edge, a thin bright meniscus toward the moon */
       float rim = (1.0 - smoothstep(0.0, pnPx*1.6, pn - 0.80))*pud;
-      refl += vec3(0.20, 0.28, 0.32)*rim*0.6;
-      /* standing water is DARK: the flags under it a stop and a half
-         down, the night in it, the moon's glint the one bright thing */
-      col = mix(col, col*0.22 + refl*uGain*0.40, pud*0.92);
+      refl += vec3(0.26, 0.34, 0.38)*rim;
+      col = mix(col, col*0.30 + refl*uGain*0.45, pud*0.92);
+    }
+    /* (round 44 graft, SPHENE's: the round POOL under the staging holds the
+       roof -- the glazing's bars as dark lines across a cold sheet of night
+       sky, and the moon itself, a bright broken disc) */
+    if (r44Pud > 0.0) {
+      vec2 rq = vWorld.xz/vec2(0.62, 1.10);
+      vec2 rf2 = abs(fract(rq) - 0.5)*vec2(0.62, 1.10);
+      vec2 rpx2 = max(fwidth(rq)*vec2(0.62, 1.10), vec2(1e-4));
+      float bar = max(1.0 - smoothstep(0.012, 0.012 + rpx2.x*1.2, rf2.x), 1.0 - smoothstep(0.016, 0.016 + rpx2.y*1.2, rf2.y));
+      float ripple = 0.85 + 0.15*sin(length(r44PudQ)*26.0 + mmNoise(r44PudQ*4.0)*3.0);
+      vec3 skyR = vec3(0.030, 0.060, 0.078)*(0.60 + 0.70*smoothstep(-1.0, 1.0, -r44PudQ.y))*ripple;
+      skyR *= 1.0 - 0.88*bar;
+      vec2 mq = (r44PudQ - vec2(0.28, 0.30))*vec2(1.0, 2.2);
+      float moonR = (1.0 - smoothstep(0.16, 0.22, length(mq) + 0.05*(mmNoise(r44PudQ*9.0) - 0.5)))*(1.0 - 0.6*bar);
+      col = mix(col, col*0.35 + (skyR + vec3(0.36, 0.42, 0.46)*moonR*ripple)*uGain, r44Pud);
     }
   }
 #endif
@@ -30190,6 +30266,9 @@ void main(){
      Greenhouse's planters and plinths and the churchyard's statues came back
      stepped at 1280 -- the same dotting CELADON found on the raking lines.) */
   float fInk = 0.0, fWall = 0.0, fLit = 0.0;   // a column's pen (round 21 graft)
+#if MM_WINGS == 6
+  float r44Rv = 0.0, r44RvL = 0.0, r44Fl = 0.0, r44FlL = 0.0, r44Rim = 0.0;   // (round 44 graft: the glasshouse's iron columns -- rivets, collars, the lit edge)
+#endif
   vec2  gr   = vec2(dFdx(f), dFdy(f));
   float glen = length(gr) + 1e-7;
   float fpx  = f / glen;
@@ -30405,53 +30484,53 @@ void main(){
     float u   = clamp((vUv.x - 0.5)/0.135, -1.0, 1.0);
     float y   = vUv.y;
     vec3 iron = vec3(0.060, 0.068, 0.074);
-    vec3 verd = vec3(0.150, 0.270, 0.255);
-    vec3 verdP = vec3(0.330, 0.440, 0.420);
+    vec3 verd = vec3(0.120, 0.290, 0.270);   // (round 44 graft: bluer-green, SPHENE's)
+    vec3 verdP = vec3(0.300, 0.480, 0.440);
     vec3 rust = vec3(0.400, 0.190, 0.075);
-    /* the bloom: streaks run down from each moulding, thick under it */
+    /* the collar nearest this pixel, and the one above it the rust runs from */
+    float cN = y < 0.44 ? 0.305 : (y < 0.70 ? 0.575 : 0.828);
+    float cA = y < 0.305 ? 0.305 : (y < 0.575 ? 0.575 : (y < 0.828 ? 0.828 : 9.0));
+    /* the bloom: streaks run down from each moulding, thick under it --
+       and (SPHENE's, both judges) in PATCHES over the drum as well, gathered
+       in every moulding: at a fifth of the bloom the drum read grey stone */
     float sources = max(max(smoothstep(0.30, 0.0, 0.840 - y)*step(y, 0.842),
                             smoothstep(0.20, 0.0, abs(y - 0.120))),
-                        0.55*smoothstep(0.10, 0.0, abs(y - 0.31)) + 0.55*smoothstep(0.10, 0.0, abs(y - 0.58)));
-    float strk = mmFbm3(vec2(u*7.0 + vSeed*3.1, y*1.6));
-    float streak = smoothstep(0.50, 0.74, strk + 0.26*sources);
-    float bloom = smoothstep(0.35, 0.80, mmFbm3(vec2(u*3.0, y*9.0) + vSeed*5.3));
-    float patina = clamp(streak*0.90 + bloom*0.20 + 0.55*(1.0 - colSh)*bloom, 0.0, 1.0);
+                        0.55*smoothstep(0.10, 0.0, abs(y - cN)));
+    float streak = smoothstep(0.50, 0.74, mmNoise(vec2(u*7.0 + vSeed*3.1, y*1.6)) + 0.26*sources);
+    float bloom = smoothstep(0.35, 0.80, mmNoise(vec2(u*3.0, y*9.0) + vSeed*5.3));
+    float mould = 1.0 - smoothstep(0.13, 0.19, y)*(1.0 - smoothstep(0.80, 0.86, y));
+    float patina = clamp(streak*0.80 + bloom*0.62 + mould*0.45, 0.0, 1.0);
     /* the capital's leaves hold the most of it, their tips rubbed bright */
     float capM = smoothstep(0.850, 0.870, y);
     patina = max(patina, capM*(0.55 + 0.45*bloom));
     vec3 c = mix(iron, mix(verd, verdP, max(bloom*streak, capM*0.6*(0.5 + 0.5*sin(vUv.x*180.0)))), patina);
-    /* rust: out of the plinth and the collars' joints, running down */
-    float rS = smoothstep(0.10, 0.0, y)*0.9
-             + smoothstep(0.08, 0.0, abs(y - 0.29))*step(y, 0.30)
-             + smoothstep(0.08, 0.0, abs(y - 0.56))*step(y, 0.57);
-    float rN = smoothstep(0.50, 0.78, mmFbm3(vec2(u*11.0 + vSeed, y*3.0) + 7.7));
-    c = mix(c, rust, clamp(rS*rN*1.3, 0.0, 0.85));
-    /* the collars: a band round the drum with rivet heads along it */
-    float colr = 0.0, rivet = 0.0;
-    for (int k = 0; k < 3; k++) {
-      float cy = k == 0 ? 0.305 : (k == 1 ? 0.575 : 0.828);
-      float bd = abs(y - cy);
-      float onB = 1.0 - smoothstep(0.015, 0.019, bd);
-      colr = max(colr, onB);
-      float bend = asin(clamp(u, -0.999, 0.999))/1.5708;
-      float rp = fract(bend*4.0 + 0.5) - 0.5;
-      float rr = length(vec2(rp*0.135*3.1416*0.5*vSize.x/max(vSize.y, 0.01), (y - cy)*1.0));
-      rivet = max(rivet, (1.0 - smoothstep(0.0040, 0.0062, rr))*onB*step(abs(u), 0.92));
-    }
-    c = mix(c, iron*0.9, colr*0.92);
-    c = mix(c, verdP*0.8, colr*0.30*bloom);
-    /* each collar's upper edge catches the light, its lower edge is a dark
-       seam with the rust coming out of it */
-    for (int k = 0; k < 3; k++) {
-      float cy = k == 0 ? 0.305 : (k == 1 ? 0.575 : 0.828);
-      c *= 1.0 + 1.10*(1.0 - smoothstep(0.0, 0.004, abs(y - cy - 0.016)));
-      c *= 1.0 - 0.70*(1.0 - smoothstep(0.0, 0.004, abs(y - cy + 0.017)));
-    }
+    /* rust: out of the plinth and RUNNING DOWN from under the collar above,
+       in long orange-brown runs, the iron eaten bare along them */
+    float rS = max(smoothstep(0.10, 0.0, y)*0.9,
+                   smoothstep(0.17, 0.0, cA - y)*(0.55 + 0.45*step(0.70, fract(u*3.7 + vSeed*1.3 + cA*1.3))));
+    float rN = smoothstep(0.42, 0.70, mmNoise(vec2(u*11.0 + vSeed, y*2.2) + 7.7));
+    c = mix(c, rust, clamp(rS*rN*1.6, 0.0, 0.90));
+    /* the collar: a band round the drum with rivet heads along it */
     float kx = sign(uKeyDir.x + 0.001);
+    float onB = 1.0 - smoothstep(0.015, 0.019, abs(y - cN));
+    float rp = fract(asin(clamp(u, -0.999, 0.999))/1.5708*4.0 + 0.5) - 0.5;
+    vec2 rq = vec2(rp*0.135*3.1416*0.5*vSize.x/max(vSize.y, 0.01), y - cN);
+    float rivet = (1.0 - smoothstep(0.0040, 0.0062, length(rq)))*onB*step(abs(u), 0.92);
+    float rivL = (1.0 - smoothstep(0.0012, 0.0030, length(rq + vec2(kx*0.0018, -0.0018))))*onB*step(abs(u), 0.92);
+    c = mix(c, iron*0.9, onB*0.92);
+    c = mix(c, verdP*0.8, onB*0.30*bloom);
     c = mix(c, verdP*1.4, rivet*(0.4 + 0.6*clamp(u*kx + 0.4, 0.0, 1.0)));
     /* the drum lit on the key's side, a hard line of light down it */
     float litE = smoothstep(0.30, 0.62, u*kx) * (1.0 - smoothstep(0.70, 0.95, u*kx));
     c *= 0.78 + 0.50*litE*colSh;
+    /* (round 44 graft, SPHENE's: the collar's seam, its lit lip, the rivets'
+       heads and the lit edge drawn on the LIT colour, in pixels -- marks in
+       albedo here went under the prop's luminance knee) */
+    float ypx = max(fwidth(y), 1e-5);
+    r44Fl  = 1.0 - smoothstep(0.6, 1.8, abs(y - cN + 0.017)/ypx);
+    r44FlL = 1.0 - smoothstep(0.5, 1.5, abs(y - cN - 0.016)/ypx);
+    r44Rv  = rivet; r44RvL = rivL;
+    r44Rim = litE*(1.0 - onB);
     albedo = mix(albedo, c*lv*3.0, 0.97);
   }
 #endif
@@ -31357,6 +31436,13 @@ void main(){
      lit wall to its shadowed one, the line of light on the lit arris, and
      the inked groove -- on the lit colour, so the ceiling cannot eat them. */
   col *= (1.0 + fWall*0.24) * (1.0 + fLit*0.55) * (1.0 - fInk*0.72);
+#if MM_WINGS == 6
+  /* (round 44 graft: the iron columns' collars, rivets and lit edge, on the
+     lit colour, as the flutes are -- SPHENE's) */
+  col *= (1.0 - 0.62*r44Fl) * (1.0 + 0.90*r44FlL) * (1.0 - 0.45*r44Rv);
+  col += col*1.6*r44RvL + vec3(0.010, 0.016, 0.016)*r44RvL;
+  col *= 1.0 + 0.40*r44Rim;
+#endif
   /* THE SHARED FINISH, ON THE LIT COLOUR (round 28): the same three marks
      again, after the ceiling -- a drawn object already carries its light in
      its own paint, and a near prop sits on the knee where a mark laid in
@@ -31399,7 +31485,10 @@ void main(){
   if (isFit > 0.5 && uFitK < 0.99) { satK = max(satK, 0.42); satM = max(satM, 0.60); }
 #if MM_WINGS == 6
   /* (round 44: the verdigris on the glasshouse's iron is a material fact) */
-  if (vShape > 5.5 && vShape < 6.5) { satK = min(uPropSat, 0.22); satM = min(uPropSatMax, 0.34); }
+  /* (round 44 graft: 0.40 / 0.58, from PYRITE's 0.22 / 0.34 -- at that cap
+     the blue-green went to the grey stone both judges named; the wing's
+     foliage ceiling, 0.55 / 0.80, was the flat saturated tube) */
+  if (vShape > 5.5 && vShape < 6.5) { satK = 0.40; satM = 0.58; }
 #endif
 #if MM_WINGS == 2
   if (vShape > 31.5 && (vShape < 37.5 || vShape > 38.5)) { satK = max(uPropSat, 0.40); satM = max(uPropSatMax, 0.58); }
