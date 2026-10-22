@@ -2516,6 +2516,14 @@ export class Backdrop {
              the rows sit on the floor" -- a BED stands on its long side to
              us, 0.9 m deep: a dense band the length of it, GRISAILLE's) */
           ss2[i * 2 + 0] = p.w * 1.08; ss2[i * 2 + 1] = 1.25; st2[i] = 1.10;
+        } else if (pal.regionKey === 'nursery' && (p.shape === 87 || p.shape === 46)) {
+          /* (round 44 graft, SPHENE's and EUCLASE's, both judges: the blocks
+             "floating above" the rug -- a toy set down lies in a dense,
+             shallow pool hugging its foot: the blocks' as wide as their
+             tumble and a hand deep, the horse's along its rockers) */
+          ss2[i * 2 + 0] = p.w * (p.shape === 87 ? 1.08 : 1.12);
+          ss2[i * 2 + 1] = p.w * (p.shape === 87 ? 0.38 : 0.38);
+          st2[i] = p.shape === 87 ? 1.40 : 1.30;
         } else if (pal.regionKey === 'graveyard' && (p.shape === 69 || p.shape === 70 || p.shape === 73)) {
           /* (round 44, PYRITE: a churchyard's stone sits in a tight pool at
              its own foot -- at 1.6 x 1.0 of its width the rows' pools ran

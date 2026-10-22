@@ -14805,6 +14805,7 @@ float winLit(vec3 P){
 #endif
 
 #if MM_RUGK == 9
+#define R9UP -1.0   /* (round 44 graft: the rug's +y runs TOWARD the player -- measured: at +1 the near run stood on its head) */
 /* (round 44: the nursery rug's drawing helpers -- the prop program's own,
    wfEll / wfSeg / wfStar and the blocks' letters, for this floor only) */
 float r9Ell(vec2 p, vec2 r){ return (length(p/r) - 1.0)*min(r.x, r.y); }
@@ -17407,7 +17408,14 @@ void main(){
       float bIn = smoothstep(0.07 - ePx, 0.07 + ePx, eIn)*(1.0 - smoothstep(0.38 - ePx, 0.38 + ePx, eIn));
       float alg = (ed.x < ed.y) ? rp.y : rp.x;
       float slot = floor(alg/0.30 + 0.5);
-      vec2 lq = vec2((alg/0.30 - slot)*0.30, eIn - 0.225);
+      /* (round 44 graft, judge 2: "the rug's back-edge letters upside down".
+         Each letter was set upright facing the field, so the far run stood
+         on its head and the two sides lay on their backs. Hooked for the
+         nursery as it is seen from the door, every letter now stands upright
+         facing the player -- its foot toward you, read left to right -- on
+         all four sides of the border) */
+      float alongL = (alg/0.30 - slot)*0.30, inwL = eIn - 0.225;
+      vec2 lq = (ed.x < ed.y) ? vec2(-sign(rp.x)*inwL, R9UP*alongL) : vec2(alongL, -R9UP*sign(rp.y)*inwL);
       float li = mod(slot + 60.0, 6.0);
       float Lt = r9Letter(lq/0.095, li)*0.095;
       vec3 bC = madder*(0.85 + 0.25*mmNoise(rp*2.0 + 5.0));
@@ -18356,6 +18364,28 @@ void main(){
       col += alb * uNearPool2C * pool2 * (0.62 + 0.38*smear);
     }
   }
+#if MM_RUGK == 9
+  /* ---- ROUND 44 GRAFT (EUCLASE's): THE NURSERY'S FLOOR LIT TO ITS WALL ---
+     Judge 1: "a black floor strip between the back wall and the rug". The
+     fire's light lies out across the boards from the grate -- a warm fan
+     from the hearth, long along the boards, so their grain and joints run on
+     lit into the room -- and the moon comes in at the two sash windows as
+     two cold panes laid on the boards before them, each crossed by its
+     glazing bars. The night nursery's floor program only (MM_RUGK 9). */
+  if (uIsCeiling < 0.5) {
+    float backD = uSpan.y*0.5 - w.y;
+    float fan = exp(-max(backD - 0.4, 0.0)/2.6)*exp(-w.x*w.x/(5.0 + 2.2*backD));
+    col += alb*vec3(1.00, 0.58, 0.28)*fan*6.5*(0.62 + 0.38*smear);
+    for (int s2 = 0; s2 < 2; s2++){
+      float wx0 = (s2 == 0 ? -1.0 : 1.0)*4.9;
+      vec2 wq = vec2(w.x - wx0 - backD*0.18*sign(wx0), backD - 1.7);
+      float pane = (1.0 - smoothstep(0.85, 0.95, abs(wq.x)))*(1.0 - smoothstep(1.05, 1.25, abs(wq.y)));
+      float bars = max(1.0 - smoothstep(0.03, 0.03 + mp*1.3, abs(fract(wq.x/0.57 + 0.5) - 0.5)*0.57),
+                       1.0 - smoothstep(0.03, 0.03 + mp*1.3, abs(fract(wq.y/0.80 + 0.5) - 0.5)*0.80));
+      col += alb*vec3(0.55, 0.66, 0.92)*pane*(1.0 - 0.75*bars)*2.6;
+    }
+  }
+#endif
   /* ...and in a room that asks, the floor under the hand and at the two
      edges of the frame goes down toward near-black, the way a painted room
      is vignetted into its own dark (round 21 graft). A multiply, so the
@@ -25578,16 +25608,19 @@ float wfHorseN(vec2 q, float px, float seed, float kq, bool paint){
   col = mix(col, gilt*1.1, mmInkP(rr - 2.560, px, 1.3)*wfIn(rock, px)*0.9);
   wfLay(col, ink, plat, red*0.75, px, 0.9);
   /* the coat: mid grey, pale dapples ringed darker */
-  vec2 dg = q/0.070;
+  /* (round 44 graft, EUCLASE's: the dapples DARKER and painted -- each pale
+     heart in a ring a stop and a half down, big on the quarters and the
+     shoulder and smaller toward the head and down the legs) */
+  vec2 dg = q/mix(0.062, 0.098, smoothstep(0.35, -0.10, q.x));
   vec2 di = floor(dg);
   vec2 df = fract(dg) - 0.5 - (mmHash22(di + floor(seed*5.0)) - 0.5)*0.45;
   float dp = length(df);
-  float dapS = 1.0 - smoothstep(0.24, 0.34, dp);
-  float dapR = smoothstep(0.26, 0.34, dp)*(1.0 - smoothstep(0.38, 0.46, dp));
+  float dapS = 1.0 - smoothstep(0.22, 0.32, dp);
+  float dapR = smoothstep(0.24, 0.34, dp)*(1.0 - smoothstep(0.40, 0.54, dp));
   float dapK = smoothstep(0.50, 0.95, q.y)*(1.0 - smoothstep(0.98, 1.10, q.y));
   vec3 coat = vec3(0.44, 0.44, 0.45);
   coat = mix(coat, vec3(0.92, 0.91, 0.88), dapS*dapK*0.90);
-  coat = mix(coat, vec3(0.30, 0.30, 0.31), dapR*dapK*0.60);
+  coat = mix(coat, vec3(0.20, 0.20, 0.22), dapR*dapK*0.85);
   /* rounded: into shade at its edges, lit along its back, a belly shadow */
   float inside = clamp(-horse/0.07, 0.0, 1.0);
   coat *= (0.58 + 0.42*sqrt(inside))*(0.70 + 0.42*smoothstep(0.60, 0.84, q.y));
@@ -25609,7 +25642,7 @@ float wfHorseN(vec2 q, float px, float seed, float kq, bool paint){
      colour, where no prop ceiling can flatten them) */
   ink *= 1.0 - wfIn(horse + px*1.6, px);
   ink = max(ink, mmInkP(horse, px, 1.0)*0.95);
-  ink = max(ink, dapR*dapK*0.30*wfIn(horse + px*1.6, px));
+  ink = max(ink, dapR*dapK*0.44*wfIn(horse + px*1.6, px));   // (round 44 graft: 0.30 -> 0.44, EUCLASE's darker rings)
   /* the line of light down its key side and along its back */
   float rim = (1.0 - smoothstep(0.0, max(px*2.2, 0.010), -horse))*wfIn(horse, px);
   col = mix(col, vec3(0.97, 0.94, 0.88), rim*smoothstep(0.80, 1.05, q.y + 0.25*kq*q.x)*0.65);
@@ -25620,8 +25653,12 @@ float wfHorseN(vec2 q, float px, float seed, float kq, bool paint){
   ink = max(ink, mmInkP(length(q - vec2(0.618, 0.912)) - 0.012, px, 1.0)*0.9*wfIn(horse, px));
   ink = max(ink, mmInkP(wfSeg(q, vec2(0.565, 0.870), vec2(0.640, 0.878), 0.0), px, 1.0)*0.8*wfIn(horse, px));
   /* the mane over the neck: dark locks, each lit along its crest */
+  /* (round 44 graft, EUCLASE's: the mane STRIPED -- near-black horsehair
+     combed in strands, each strand lit along its length, so the locks read
+     as hair and not a grey wedge) */
   float strM = 0.55 + 0.45*abs(sin(dot(q, vec2(80.0, 30.0)) + lock*1.7));
-  wfLay(col, ink, mane, vec3(0.20, 0.19, 0.19)*strM*(1.0 + 0.6*smoothstep(0.0, -0.015, mane + 0.018)), px, 0.85);
+  float str2 = 0.5 + 0.5*sin(dot(q, vec2(0.58, 0.81))*170.0 + 3.0*mmNoise(q*vec2(30.0, 8.0) + 2.0));
+  wfLay(col, ink, mane, vec3(0.10, 0.095, 0.10)*(0.45 + 1.15*str2)*(0.80 + 0.30*strM)*(1.0 + 0.6*smoothstep(0.0, -0.015, mane + 0.018)), px, 0.85);
   /* the bridle and reins */
   float brid = min(min(wfSeg(q, vec2(0.43, 1.07), vec2(0.52, 0.93), 0.008), wfSeg(q, vec2(0.46, 0.95), vec2(0.60, 0.925), 0.008)),
                    wfSeg(q, vec2(0.58, 0.93), vec2(0.17, 0.86), 0.006));
@@ -25802,8 +25839,11 @@ float wfLetter(vec2 g, float li){
 float wfBlocks(vec2 q, float px, float seed, float kq, bool paint){
   const float S = 0.105;
   vec2 c0 = vec2(-0.06, S*0.5), c1 = vec2(-0.045, S*1.5), c2 = vec2(-0.07, S*2.5);
-  vec2 c3 = vec2(0.10, S*0.5), c4 = vec2(-0.24, S*0.5 + 0.022);
-  float a1 = 0.08, a2 = -0.10, a4 = 0.48;
+  /* (round 44 graft, judge 2: "a tumbling block not set down" -- it stood
+     on one corner in the air beside the tower. It lies where it fell, flat
+     on its face on the rug, turned a little so its side shows) */
+  vec2 c3 = vec2(0.10, S*0.5), c4 = vec2(-0.235, S*0.5);
+  float a1 = 0.08, a2 = -0.10, a4 = 0.0;
   float sx = kq >= 0.0 ? -1.0 : 1.0;      // the side away from the key is the one in shade
   float f0, f1, f2, f3, f4; vec2 u0, u1, u2, u3, u4;
   float b0 = wfCube(q, c0, S, 0.0, sx, f0, u0), b1 = wfCube(q, c1, S, a1, sx, f1, u1), b2 = wfCube(q, c2, S, a2, sx, f2, u2);
@@ -30597,6 +30637,11 @@ void main(){
      side. Off the prop's own luminance, so it keeps the room's light. */
 #if MM_WINGS == 6 && MM_SH6
   if (vShape > 5.5 && vShape < 6.5) {
+    /* (round 44 graft: drawn without loops and on single noise taps -- the
+       Greenhouse's prop programs link at 11.6 s on BASE and PYRITE's block,
+       three fbms and two loops of three collars, took them over the 12 s
+       budget. Each pixel is near one collar and under at most one: those two
+       are found, not looped over) */
     float lum = max(mmLum(albedo), 0.02);
     float lv  = lum*2.1 + 0.030;
     float u   = clamp((vUv.x - 0.5)/0.135, -1.0, 1.0);
