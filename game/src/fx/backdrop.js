@@ -60,6 +60,9 @@ const FLOOR_FRONT = 15;      // how far the floor reaches toward/behind the came
    the sacks as gkDraw lays them in true metres. Null leaves the house's
    pool as it was, and every other wing has none. */
 const FOOT_WINGS = { lampworks: 1, kitchens: 1, bathhouse: 1, hedge: 1 };
+/* gkDraw's mirror, as the shader takes it: mmHash11(seed*3.71 + 1.3) < 0.5 */
+function mmHash11(p) { p = (p * 0.1031) % 1; if (p < 0) p += 1; p *= p + 33.33; p *= p + p; return p % 1; }
+function gkMir(seed) { return mmHash11(seed * 3.71 + 1.3) < 0.5 ? -1 : 1; }
 function footOf(region, p) {
   if (!FOOT_WINGS[region] || p.hang) return null;
   const s = p.shape, sd = p.seed || 0, w = p.w, h = p.h, q = h / 1.6;
@@ -77,6 +80,11 @@ function footOf(region, p) {
     if (s === 29) return sd > 20 ? { w: w * 0.90, d: 0.46, k: 0.95 } : { w: w * 0.92, d: 0.95, k: 0.95 };
     if (s === 8) return { w: w * 0.95, d: w * 0.62, k: 1.05 };
     if (s === 82 && sd > 60) return { w: 0.82, d: 0.56, k: 1.05 };
+    if (s === 82 && sd > 55) {          // the tipped basket, and what rolled out of it
+      const m = gkMir(sd);
+      return { dx: -0.30 * m, w: 0.46, d: 0.30, k: 1.10, extra: [{ dx: 0.24 * m, w: 0.80, d: 0.13, k: 0.85 }] };
+    }
+    if (s === 82 && sd > 50) { const m = gkMir(sd); return { dx: 0.0 * m, w: 0.72, d: 0.34, k: 1.20 }; }
     if (s === 82 && sd > 40) return { dx: 0.01, w: 1.18, d: 0.58, k: 1.20 };
     if (s === 82) return { w: w * 0.98, d: w * 0.46, k: 1.15 };
     return null;
