@@ -23797,25 +23797,34 @@ float wgLcSD(vec2 q, float seed){
   float d = lcCrate(q, LC_AL, LC_AH, lcBack(1.0), fr, tp, sd);
   d = min(d, lcCrate(q, LC_BL, LC_BH, lcBack(0.0), fr, tp, sd));
   vec2 kb = lcBack(0.0);
-  for (int i = 0; i < 4; i++){
-    float fi = float(i);
-    vec2 o = q - vec2(-0.66 + fi*0.15 + kb.x*0.55, LC_BH.y + kb.y*0.55 - 0.02);
-    float k = mmHash11(seed*3.3 + fi*1.7);
-    d = min(d, k < 0.5 ? length(o - vec2(0.0, 0.07)) - 0.065
-                       : min(wgEll(o - vec2(0.0, 0.05), vec2(0.045, 0.05)), mmBox(o - vec2(0.0, 0.12), vec2(0.022, 0.05), 0.006)));
+  /* (the frame budget: each member only in its own box -- a pixel out of
+     it is answered by the box, which is never nearer than the member) */
+  if (q.y > LC_BH.y - 0.04) {
+    for (int i = 0; i < 4; i++){
+      float fi = float(i);
+      vec2 o = q - vec2(-0.66 + fi*0.15 + kb.x*0.55, LC_BH.y + kb.y*0.55 - 0.02);
+      float k = mmHash11(seed*3.3 + fi*1.7);
+      d = min(d, k < 0.5 ? length(o - vec2(0.0, 0.07)) - 0.065
+                         : min(wgEll(o - vec2(0.0, 0.05), vec2(0.045, 0.05)), mmBox(o - vec2(0.0, 0.12), vec2(0.022, 0.05), 0.006)));
+    }
   }
   d = min(d, lcStraw(q, seed));
   float g, w;
-  d = min(d, lcLan((q - vec2(0.38, 0.0))/0.95, g, w)*0.95);
+  float lanB = mmBox(q - vec2(0.38, 0.23), vec2(0.19, 0.25), 0.0);
+  d = min(d, lanB > 0.04 ? lanB : lcLan((q - vec2(0.38, 0.0))/0.95, g, w)*0.95);
   /* the oil can: a squat body on its base ring, shoulders drawn in to a
      brass cap, the long spout, the loop of its handle behind */
   vec2 cq = q - vec2(0.80, 0.0);
-  float can = max(wgEll(cq - vec2(0.0, 0.085), vec2(0.090, 0.095)), -cq.y);
-  can = min(can, mmBox(cq - vec2(0.0, 0.012), vec2(0.088, 0.012), 0.004));
-  can = min(can, mmBox(cq - vec2(0.0, 0.188), vec2(0.022, 0.014), 0.004));
-  float sp; can = min(can, wgSegT(cq, vec2(0.040, 0.150), vec2(0.165, 0.300), 0.013, 0.005, sp));
-  can = min(can, max(abs(length((cq - vec2(-0.085, 0.110))/vec2(1.0, 1.2)) - 0.050) - 0.009, cq.x + 0.075));
-  d = min(d, can);
+  float canB = mmBox(cq - vec2(0.04, 0.16), vec2(0.15, 0.17), 0.0);
+  if (canB > 0.04) d = min(d, canB);
+  else {
+    float can = max(wgEll(cq - vec2(0.0, 0.085), vec2(0.090, 0.095)), -cq.y);
+    can = min(can, mmBox(cq - vec2(0.0, 0.012), vec2(0.088, 0.012), 0.004));
+    can = min(can, mmBox(cq - vec2(0.0, 0.188), vec2(0.022, 0.014), 0.004));
+    float sp; can = min(can, wgSegT(cq, vec2(0.040, 0.150), vec2(0.165, 0.300), 0.013, 0.005, sp));
+    can = min(can, max(abs(length((cq - vec2(-0.085, 0.110))/vec2(1.0, 1.2)) - 0.050) - 0.009, cq.x + 0.075));
+    d = min(d, can);
+  }
   d = min(d, wgEll(q - vec2(0.06, 0.035), vec2(0.15, 0.035)));
   return d;
 }
@@ -24624,6 +24633,7 @@ vec3 wgPaint(vec2 m, vec2 msz, float shape, float seed, float px, float lum,
       float big = ci == 0 ? 1.0 : 0.0;
       vec2 lo = ci == 0 ? LC_AL : LC_BL, hi = ci == 0 ? LC_AH : LC_BH;
       vec2 k = lcBack(big);
+      if (q.y < lo.y - 0.02 || q.y > hi.y + k.y + 0.02 || q.x < lo.x + min(k.x, 0.0) - 0.02 || q.x > hi.x + max(k.x, 0.0) + 0.02) continue;
       float fr, tp, sdF;
       float dc = lcCrate(q, lo, hi, k, fr, tp, sdF);
       float onC = clamp(0.5 - dc/max(qpx, 1e-5), 0.0, 1.0);
@@ -24732,7 +24742,7 @@ vec3 wgPaint(vec2 m, vec2 msz, float shape, float seed, float px, float lum,
       }
     }
     /* the straw: dry stalks, each lit along its length */
-    float st = lcStraw(q, seed);
+    float st = (q.y < 0.040 || q.y > LC_BH.y - 0.02) ? lcStraw(q, seed) : 1e3;
     float onSt = clamp(0.5 - st/max(qpx, 1e-5), 0.0, 1.0);
     col = mix(col, vec3(0.86, 0.70, 0.36)*E*1.45*(0.70 + 0.45*mmNoise(q*vec2(160.0, 40.0))), onSt);
     ink = max(ink, mmInkP(st, qpx, 0.7)*0.35*onSt);
@@ -24740,6 +24750,7 @@ vec3 wgPaint(vec2 m, vec2 msz, float shape, float seed, float px, float lum,
     /* the lamps packed in the open crate: opal globes and glass chimneys */
     vec2 kb = lcBack(0.0);
     for (int i = 0; i < 4; i++){
+      if (q.y < LC_BH.y - 0.04) break;
       float fi = float(i);
       vec2 o = q - vec2(-0.66 + fi*0.15 + kb.x*0.55, LC_BH.y + kb.y*0.55 - 0.02);
       float k = mmHash11(seed*3.3 + fi*1.7);
@@ -24759,6 +24770,7 @@ vec3 wgPaint(vec2 m, vec2 msz, float shape, float seed, float px, float lum,
        chipped to the metal, and in its guards a globe of glass that is dark
        where it is not lit -- the flame a small bright tear, its light
        falling off through the glass to an amber rim, the guards across it */
+    if (q.x > 0.17 && q.y < 0.50) {
     float g, w;
     vec2 lq = (q - vec2(0.38, 0.0))/0.95;
     float lqpx = qpx/0.95;
@@ -24815,6 +24827,7 @@ vec3 wgPaint(vec2 m, vec2 msz, float shape, float seed, float px, float lum,
     emit += vec3(0.85, 0.80, 0.70)*onCn*smoothstep(0.014, 0.0, length(cq - vec2(-0.040*kq, 0.125)))*0.30;
     ink = max(ink, mmInkP(cAll, qpx, 1.1)*0.85);
     ink = max(ink, mmInkP(ring, qpx, 0.8)*0.5*onCn);
+    }
     /* the coil of wick, its turns */
     float coil = wgEll(q - vec2(0.06, 0.035), vec2(0.15, 0.035));
     float onCo = clamp(0.5 - coil/max(qpx, 1e-5), 0.0, 1.0);
