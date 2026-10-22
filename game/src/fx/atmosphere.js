@@ -556,8 +556,8 @@ export const REGIONS = {
                        day's vegetables rolled out of it (a basket with seed
                        50-55 / 55-60: gkDraw), each in its own foot of
                        shadow; both under the hand in a fight */
-                    { shape: 82, ahead: 3.3, across: -2.45, tone: 0.96, keep: true, hand: true, seed: 52.0, hM: 0.70, wM: 1.00 },
-                    { shape: 82, ahead: 2.75, across: -0.45, tone: 0.97, keep: true, hand: true, seed: 57.0, hM: 0.38, wM: 1.34 }] },
+                    { shape: 82, ahead: 2.95, across: -0.95, tone: 0.96, keep: true, hand: true, seed: 52.0, hM: 0.70, wM: 1.00 },
+                    { shape: 82, ahead: 2.6, across: 0.15, tone: 0.97, keep: true, hand: true, seed: 57.0, hM: 0.38, wM: 1.50 }] },
     /* ROUND 31: THE NEAR FLOOR -- the flags run on lit toward the hand (to
        nine-tenths, not two-fifths), the range's warmth laid on them in front
        of the eye, and a rag hearth rug on the flags before the fire */
@@ -2915,8 +2915,8 @@ export const ROOM_KINDS = {
                      /* (round 39 graft: and a basket by the block, as the kitchen's) */
                      { shape: 82, ahead: 3.0, across: -0.85, tone: 0.97, keep: true, hand: true, seed: 11.8 },
                      /* (round 45: the crocks and the spilt basket, as the kitchen's) */
-                     { shape: 82, ahead: 3.3, across: 2.45, tone: 0.96, keep: true, hand: true, seed: 53.0, hM: 0.70, wM: 1.00 },
-                     { shape: 82, ahead: 2.75, across: 0.45, tone: 0.97, keep: true, hand: true, seed: 58.0, hM: 0.38, wM: 1.34 }],
+                     { shape: 82, ahead: 2.95, across: 0.95, tone: 0.96, keep: true, hand: true, seed: 53.0, hM: 0.70, wM: 1.00 },
+                     { shape: 82, ahead: 2.6, across: -0.15, tone: 0.97, keep: true, hand: true, seed: 58.0, hM: 0.38, wM: 1.50 }],
               /* (round 31 graft, judges 2 and 3: "light the scullery's near-left
                  corner" -- the copper's spill as a second pool there) */
               nearFloor: { pool: { ahead: 3.4, across: 0.0, rAlong: 2.8, rAcross: 3.2, k: 1.4, color: '#e8a060' },
