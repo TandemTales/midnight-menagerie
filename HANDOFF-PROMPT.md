@@ -248,6 +248,14 @@ throughout any menu screens or backgrounds that already had them" -- every
 name/date in `ui/hang.js PAINTINGS` was invented by an AI pass; a builder is
 removing the nameplates and names (fix/paintings-unnamed, D:/UILOOP/paint/wt).
 (3) The Steam App ID "will be ready soon" -- still waiting.
+**ROUND 44 IS MERGED (2026-10-21, `2a609a9a`):** PYRITE +2.10, 2 of 2 (6.10
+vs ORGANZA 4.00): the Pumpkin Grounds' ground unbroken (the black band was
+the crop's overlapping contact shadows), a drawn pond, the Nursery's own ABC
+rug and dappled horse. Battery green but the sprites halo (enemy-clips 984/1
+once under load, 985/0 alone); the other 13 wings identical. **The paintings'
+names are GONE (`eaba2a4d`):** no plates, no names; stand-ins 7 -> 0. **NOW:
+round 44's graft** (`GRAFT-r44.md`, D:/UILOOP/r44/wt/r44-graft), then a paired
+check of the four wings vs survey 8.
 
 **ROUND 33 AND ITS GRAFT ARE MERGED, VERIFIED AND PUSHED (2026-10-16):**
 graft `9d008119`. COBALT +1.59 (`531126e4`): no running line under 11 px at
