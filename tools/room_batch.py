@@ -175,7 +175,7 @@ async def _run(rooms, port, tier, flags, w, h, wait, warm_timeout, prefix, log):
                                 mood=where.get('mood'), errors=new[:5]))
                 log(f"  {'VOID ' if void else 'ok   '} {region}/{seed or '-':<12} std {std:5.1f}"
                     + (f'  -- {out[-1]["why"]}' if void else '')
-                    + (f'  ({len(new)} console error(s))' if new and not void else ''))
+                    + (f'  ({len(new)} console error(s): {new[0][:300]!r})' if new and not void else ''))
                 if void:
                     # A PAGE THAT HAS FAILED ONCE IS NOT TRUSTED AGAIN. Round 11's
                     # performance builder found rooms shot after a failed room in
