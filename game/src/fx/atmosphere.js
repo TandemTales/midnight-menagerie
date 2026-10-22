@@ -758,7 +758,11 @@ export const REGIONS = {
                     turf -- the band of lawn left of the walk, above the hand in a
                     fight -- not under the bottom of the frame) */
                  pool: { ahead: 10.5, across: -5.0, abs: true, rAlong: 4.2, rAcross: 3.6, k: 4.5, color: '#94aad0' } },
-    props: { shapes: [69, 69, 70, 71, 69], solo: [71], count: 34, height: 1.5, layout: 'rows',
+    /* (round 44 graft, SPHENE's: 40 -- "MORE headstones clustered, each with
+       a cast shadow", both judges; and the near lists' clusters below. (37
+       was tried for the frame budget: the deal moved the yard's yews over
+       its moon.)) */
+    props: { shapes: [69, 69, 70, 71, 69], solo: [71], count: 40, height: 1.5, layout: 'rows',
              near: [{ shape: 69, edge: 0.90, z: -0.8, tone: 0.90 },
                     { shape: 70, edge: 0.975, z: 1.6, tone: 0.90 },
                     { shape: 73, x: 6.8, z: -9.5, tone: 0.90 },
@@ -2209,6 +2213,11 @@ const GRAVE_NEAR_PLOTS = [
   { shape: 69, x: -3.1, z: -3.9, tone: 0.78, scale: 0.66, seed: 2.7 },
   { shape: 69, x: -2.3, z: -3.5, tone: 0.82, scale: 0.78, seed: 4.1 },
   { shape: 69, x: 3.2, z: 0.2, tone: 0.84, scale: 0.58, seed: 6.6 },
+  /* (round 44 graft, SPHENE's: clustered -- two more of the family's stones
+     at the big arched one's shoulder, and a pair beside the kerbed plot) */
+  { shape: 69, edge: 0.26, z: 2.0, tone: 0.93, scale: 0.88, seed: 5.5 },
+  { shape: 69, edge: 0.09, z: 1.6, tone: 0.92, scale: 0.80, seed: 7.25 },
+  { shape: 69, edge: 0.70, z: 1.2, tone: 0.92, scale: 0.82, seed: 3.75 },
 ];
 /* ...and just inside the GATE, the first graves either side of the walk --
    seen from the gateway, the churchyard begins at your feet, not twenty
@@ -2237,6 +2246,13 @@ const GRAVE_NEAR_GATE = [
   { shape: 69, x: -8.2, z: 0.9, tone: 0.80, scale: 0.66, seed: 4.1 },
   { shape: 69, x: 6.8, z: 1.0, tone: 0.82, scale: 0.72, seed: 6.6 },
   { shape: 69, x: 7.6, z: 0.6, tone: 0.80, scale: 0.64, seed: 3.4 },
+  /* (round 44 graft, SPHENE's: a family's stones about the big one right of
+     the walk, and a knot of three at the left beyond the cross) */
+  { shape: 69, edge: 0.80, z: 8.2, tone: 0.93, scale: 0.90, seed: 5.5 },
+  { shape: 69, edge: 0.64, z: 9.4, tone: 0.92, scale: 0.82, seed: 7.25 },
+  { shape: 69, x: -6.0, z: 1.2, tone: 0.88, scale: 0.95, seed: 3.75 },
+  { shape: 69, x: -7.1, z: 0.6, tone: 0.86, scale: 0.85, seed: 6.5 },
+  { shape: 69, x: -5.2, z: 0.2, tone: 0.86, scale: 0.80, seed: 8.25 },
 ];
 /* ...and in the yard, seen down its row from beside the walk (round 25):
    the stones begin at your feet there too, not at the first rank 2 m
@@ -2247,6 +2263,15 @@ const GRAVE_NEAR_YARD = [
      ground" -- an arched stone with its lines cut, a stride from you in the
      turf right of the walk, and a kerbed grave beside it) */
   { shape: 69, edge: 0.70, z: 3.6, tone: 0.95, scale: 1.50, seed: 1.25 },
+  /* (round 44 graft, SPHENE's: its family about it -- two smaller stones
+     clustered at its shoulders, each in its own grass and its own shadow) */
+  { shape: 69, edge: 0.60, z: 2.9, tone: 0.93, scale: 0.92, seed: 5.5 },
+  { shape: 69, edge: 0.79, z: 4.3, tone: 0.92, scale: 0.84, seed: 7.25 },
+  /* (...and MORE right of the path, both judges: a third family of three
+     in the open lawn between the walk and the lanterns, mid-distance) */
+  { shape: 69, edge: 0.52, z: -0.6, tone: 0.90, scale: 0.86, seed: 3.75 },
+  { shape: 69, edge: 0.58, z: -1.1, tone: 0.88, scale: 0.74, seed: 6.5 },
+  { shape: 73, edge: 0.46, z: -1.4, tone: 0.88, scale: 0.80 },
   { shape: 70, edge: 0.985, z: 2.6, tone: 0.93, scale: 1.20, seed: 2.5 },
   /* ...and a kerbed grave in the turf between the walk and that stone,
      low, so the chapel door behind stays clear */
@@ -2266,6 +2291,11 @@ const GRAVE_NEAR_YARD = [
   { shape: 69, x: -2.7, z: -2.3, tone: 0.82, scale: 0.70, seed: 4.1, free: true },
   { shape: 69, x: 4.6, z: -6.2, tone: 0.82, scale: 0.70, seed: 6.6, free: true },
   { shape: 69, x: -6.2, z: -7.0, tone: 0.80, scale: 0.68, seed: 3.4, free: true },
+  /* (round 44 graft, SPHENE's: and a knot of old stones out on the left of
+     the lawn, leaning together where a family was buried close) */
+  { shape: 69, edge: 0.14, z: -1.8, tone: 0.90, scale: 1.05, seed: 3.75 },
+  { shape: 69, edge: 0.21, z: -2.5, tone: 0.88, scale: 0.86, seed: 6.5 },
+  { shape: 69, edge: 0.08, z: -2.9, tone: 0.88, scale: 0.94, seed: 8.25 },
 ];
 export const ROOM_KINDS = {
   foyer: {
@@ -3194,7 +3224,17 @@ export const ROOM_KINDS = {
          pattern 11 -- where the courtyard is paved) */
       /* (round 37: 1.15, not 1.3 -- at 1.3 the patch filled MAX_PROPS and
          the near floor's lanterns were never dealt) */
+      /* (round 44 graft, SPHENE's: MORE pumpkins mid-floor in the patch, both
+         judges -- a carved one burning either side of the furrows in the
+         middle of the patch, and a pair set down in the near rows before you
+         over a lantern's warm pool, so the patch is not a dark field under
+         the hand. The patch's room only: the fight's court is as it was) */
       { subject: 'coping', layout: 'patch', countScale: 1.15, floor: 14, runner: 0,
+        nearPlus: [{ shape: 27, ahead: 9.6, across: -5.8, tone: 0.97, hM: 0.66, keep: true, still: true, seed: 0.7 },
+                   { shape: 27, ahead: 11.8, across: 6.0, tone: 0.97, hM: 0.72, keep: true, still: true, seed: 4.5 },
+                   { shape: 27, ahead: 5.2, across: -2.0, tone: 0.97, hM: 0.62, keep: true, still: true, seed: 4.1 },
+                   { shape: 27, ahead: 5.8, across: -3.0, tone: 0.95, hM: 0.48, keep: true, still: true, seed: 6.9 }],
+        nearFloor: { pool: { ahead: 5.4, across: -1.4, rAlong: 2.6, rAcross: 3.6, k: 12.0, color: '#ffa848' } },
         vantage: { at: 'among', low: 0.55, fwd: 2.6, pitch: 2.0, off: 0.05, wide: 3 } },
       /* the moon pond: water in the court, seen along its walk */
       /* (graft: the moon stands over the water and the house beside it, so

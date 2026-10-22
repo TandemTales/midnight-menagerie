@@ -2449,6 +2449,7 @@ export class Backdrop {
     const placed = fixtures
       .concat(this._layoutProps(pal, room, rand, fixtures)).slice(0, MAX_PROPS);
     this._setPropProgram(placed, pal.regionKey);
+    this._castRegion = pal.regionKey;   // (round 44 graft: the churchyard's moon throw, _castShadows)
     const off = this._propOffset.array, sc = this._propScale.array,
       sh = this._propShape.array, sd = this._propSeed.array, tn = this._propTone.array;
     const so2 = this._shdOffset.array, ss2 = this._shdScale.array, st2 = this._shdStr.array;
@@ -2515,6 +2516,14 @@ export class Backdrop {
              the rows sit on the floor" -- a BED stands on its long side to
              us, 0.9 m deep: a dense band the length of it, GRISAILLE's) */
           ss2[i * 2 + 0] = p.w * 1.08; ss2[i * 2 + 1] = 1.25; st2[i] = 1.10;
+        } else if (pal.regionKey === 'nursery' && (p.shape === 87 || p.shape === 46)) {
+          /* (round 44 graft, SPHENE's and EUCLASE's, both judges: the blocks
+             "floating above" the rug -- a toy set down lies in a dense,
+             shallow pool hugging its foot: the blocks' as wide as their
+             tumble and a hand deep, the horse's along its rockers) */
+          ss2[i * 2 + 0] = p.w * (p.shape === 87 ? 1.08 : 1.12);
+          ss2[i * 2 + 1] = p.w * (p.shape === 87 ? 0.38 : 0.38);
+          st2[i] = p.shape === 87 ? 1.40 : 1.30;
         } else if (pal.regionKey === 'graveyard' && (p.shape === 69 || p.shape === 70 || p.shape === 73)) {
           /* (round 44, PYRITE: a churchyard's stone sits in a tight pool at
              its own foot -- at 1.6 x 1.0 of its width the rows' pools ran
@@ -2840,7 +2849,18 @@ export class Backdrop {
         const w = l.base / (1 + (dx * dx + dy * dy + dz * dz) / (r * r));
         if (w > bw) { bw = w; best = l; }
       }
-      if (!best || bw < 0.06) continue;
+      if (!best || bw < 0.06) {
+        /* (round 44 graft, both judges on the Graveyard: "MORE stones ... each
+           with a cast shadow". A churchyard's stone out of every lantern's
+           reach is lit by the moon behind the yard, and throws its shadow
+           down the turf toward you, a little to the side -- the stones'
+           shadows a set, all one way, as the moon lays them) */
+        if (this._castRegion === 'graveyard' && (p.shape === 69 || p.shape === 70 || p.shape === 73)) {
+          const Lm = Math.min(1.1, 0.62 * h);
+          ca[i * 2] = 0.28 * Lm; ca[i * 2 + 1] = 0.96 * Lm;
+        }
+        continue;
+      }
       let dx = p.x - best.pos.x, dz = p.z - best.pos.z;
       const dxz = Math.hypot(dx, dz);
       if (dxz < 0.05) continue;
