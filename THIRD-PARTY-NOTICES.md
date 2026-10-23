@@ -31,6 +31,22 @@ substantial portions of the Software". Shipping `game/vendor/LICENSE` inside the
 build satisfies that; **it must be included in the Steam depot, not stripped as
 a development file.**
 
+### The desktop build only (the Steam depot, not the browser build)
+
+`tools/package_release.py` puts each of these where it says, and fails if the
+notices are missing:
+
+* **Electron** 44.5.1 — MIT. `LICENSE.electron.txt` beside the exe.
+  <https://github.com/electron/electron>
+* **Chromium, and the libraries it bundles** (V8, ffmpeg, ANGLE, ICU,
+  SwiftShader and the rest) — each under its own licence, all reproduced in
+  `LICENSES.chromium.html` beside the exe, as Electron ships it.
+* **steamworks.js** 0.4.0 — MIT, Copyright (c) 2022 Gabriel Francisco Dos
+  Santos. `resources/app/node_modules/steamworks.js/LICENSE`.
+  <https://github.com/ceifa/steamworks.js>
+* **Steamworks SDK redistributable** (`steam_api64.dll`) — Valve's, shipped
+  under the Steamworks SDK Access Agreement that the partner account accepted.
+
 ---
 
 ## Fonts
