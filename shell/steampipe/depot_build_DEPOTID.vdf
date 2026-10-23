@@ -1,0 +1,17 @@
+// SteamPipe depot build: the folder tools/package_release.py writes, as is.
+// Rename to depot_build_<depotid>.vdf and replace DEPOTID.
+// Launch option on the partner site: Executable MidnightMenagerie.exe, OS Windows, 64-bit.
+"DepotBuild"
+{
+	"DepotID" "DEPOTID"
+	"ContentRoot" "D:\UILOOP\release\MidnightMenagerie-win64\"
+	"FileMapping"
+	{
+		"LocalPath" "*"
+		"DepotPath" "."
+		"Recursive" "1"
+	}
+	// Steam supplies the App ID when it launches the game; the packager never writes this file.
+	"FileExclusion" "steam_appid.txt"
+	"FileExclusion" "*.pdb"
+}

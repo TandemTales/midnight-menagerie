@@ -1,0 +1,18 @@
+// SteamPipe app build for Midnight Menagerie. Rename to app_build_<appid>.vdf
+// and replace APPID / DEPOTID (the Windows depot is normally APPID + 1).
+// Upload (Josh, logged in to the partner account):
+//   steamcmd +login <account> +run_app_build "<repo>\shell\steampipe\app_build_APPID.vdf" +quit
+// SetLive stays empty: a build goes live from the partner site, by hand.
+"AppBuild"
+{
+	"AppID" "APPID"
+	"Desc" "Midnight Menagerie win64"
+	"Preview" "0"
+	"SetLive" ""
+	"ContentRoot" "D:\UILOOP\release\"
+	"BuildOutput" "D:\UILOOP\release\steampipe-output\"
+	"Depots"
+	{
+		"DEPOTID" "depot_build_DEPOTID.vdf"
+	}
+}
