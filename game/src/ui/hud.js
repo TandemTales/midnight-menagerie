@@ -204,11 +204,11 @@ const SOCK_FLOOR = 28;   // round 40: 30 -> 28, the third object a group before 
 const PEEK_WANT = 3;
 /** Round 46: the fan's smallest coin, and the closest two coins may stand
  *  (the step from one to the next) before the group falls back to "+N". */
-const FAN_SOCK_MIN = 24;
+const FAN_SOCK_MIN = 22;
 const FAN_PITCH_MIN = 10;
-/** ...and the height of the recessed plate the coins sit in (the stagger
- *  keeps within a few px of it). */
-const FAN_PLATE_H = 28;
+/** Round 46 graft: the least of each coin's face that stays in sight past
+ *  the coin laid over it, in the one-row fan (VERDICTS-r46: 70%). */
+const FAN_SHOW_MIN = 0.7;
 
 export class HUD {
   /**
@@ -741,42 +741,43 @@ export class HUD {
     const lists = [this.$relics, this.$gear];
     const p = { k: nK > POUCH_AT, g: nG > POUCH_AT, vk: nK, vg: nG };
     this._fan = 1;
-    this.el.dataset.fan = 'stack';
+    /* ROUND 46 GRAFT (VERDICTS-r46, all three judges on SUGILITE's two
+       staggered rows: "piled into a two-row overlapping clump ... that pokes
+       above and below the strip"; KUNZITE's ONE row won the screen): the
+       coins lie in ONE row along the rail inside its rules, each showing at
+       least FAN_SHOW_MIN of its face past the coin laid over it. The largest coin
+       that keeps every face that much in sight wins, then the widest step.
+       Only where even FAN_SOCK_MIN coins cannot keep it does the row close
+       further (never under FAN_PITCH_MIN), and only past that the "+N". */
+    this.el.dataset.fan = 'row';
     for (const l of lists) l.dataset.fan = '1';
-    let best = null;
-    /* the coins stand in two staggered rows, every other one a little up and
-       the next a little down, so each shows its whole face even where the
-       steps are short: the rise is what the plate holds either side */
     const top = window.innerWidth > 1400 ? 34 : 30;
-    const plate = window.innerWidth > 1400 ? FAN_PLATE_H + 5 : FAN_PLATE_H;
-    const dyFor = (sock) => Math.max(0, Math.min(7, (plate - sock) / 2 + 3.5));
     const tryAt = (sock, pitch) => {
       this.el.style.setProperty('--sock', `${sock}px`);
       this.el.style.setProperty('--fan-pitch', `${pitch}px`);
-      this.el.style.setProperty('--fan-dy', `${dyFor(sock)}px`);
+      this.el.style.setProperty('--fan-dy', '0px');
       return !this._tight();
     };
+    /* the widest step that still fits at this coin, from `lo` (known to fit) */
+    const widest = (sock, lo) => {
+      let up = sock + 4;
+      if (tryAt(sock, up)) return up;
+      while (up - lo > 0.5) { const mid = (lo + up) / 2; if (tryAt(sock, mid)) lo = mid; else up = mid; }
+      return Math.floor(lo * 2) / 2;
+    };
     this._applyFold({ snack: true, compact: false, over: 0, pouch: { ...p } });
+    let best = null;
     for (let sock = top; sock >= FAN_SOCK_MIN; sock--) {
-      const hi = sock + 4;
-      if (!tryAt(sock, FAN_PITCH_MIN)) continue;
-      let lo = FAN_PITCH_MIN, up = hi;
-      if (tryAt(sock, hi)) lo = hi;
-      else {
-        while (up - lo > 0.5) { const mid = (lo + up) / 2; if (tryAt(sock, mid)) lo = mid; else up = mid; }
-      }
-      const pitch = Math.floor(lo * 2) / 2;
-      /* how much of each coin's face shows: the distance to its neighbour,
-         across the stagger, against its width */
-      const d = pitch >= sock ? sock : Math.hypot(pitch, 2 * dyFor(sock));
-      const score = Math.min(d, sock) / sock * 40 + sock;
-      if (!best || score > best.score) best = { sock, pitch, score };
-      if (pitch >= sock) break;
+      const need = Math.ceil(sock * FAN_SHOW_MIN * 2) / 2;
+      if (!tryAt(sock, need)) continue;
+      best = { sock, pitch: widest(sock, need) };
+      break;
     }
+    if (!best && tryAt(FAN_SOCK_MIN, FAN_PITCH_MIN)) best = { sock: FAN_SOCK_MIN, pitch: widest(FAN_SOCK_MIN, FAN_PITCH_MIN) };
     if (!best) return false;
     tryAt(best.sock, best.pitch);
     this.el.dataset.fold = '6';
-    this.el.dataset.fan = best.pitch >= best.sock ? 'open' : 'stack';
+    this.el.dataset.fan = best.pitch >= best.sock ? 'open' : 'row';
     if (this._tight()) this.el.dataset.dense = '1';
     this.$relics.parentElement.dataset.vine = '0';
     return true;

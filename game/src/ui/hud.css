@@ -1354,3 +1354,58 @@
 /* the two-line ledger stands in the middle of the rail's channel */
 .mm-hud[data-fan] .mm-hud__group--meta { height: 32px; align-content: center; row-gap: 1px; grid-template-rows: 15px 15px; }
 .mm-hud[data-fan] .mm-hud__group--meta > :is(.mm-hud__haunt, .mm-hud__seed) { height: 15px; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ROUND 46 GRAFT — ONE ROW OF COINS; THE READOUTS' WORDS ENGRAVED OVER THEIR
+   FIGURES
+   VERDICTS-r46, all three judges on the two staggered rows: "piled into a
+   two-row overlapping clump ... that pokes above and below the strip";
+   KUNZITE's one row won hud-late. The fan (ui/hud.js _fitFan) lays every
+   coin in ONE row inside the rail's rules, each face at least 70% in sight;
+   the room it needs comes from Buttons, Clues and Luck standing as KUNZITE
+   stood them -- each word in engraved small caps cut into the strip over its
+   figure, no box round it, the cells parted by the engraved line -- while
+   the place keeps its one line ("THE FOYER · WING 1"). Every word stays
+   lettered (round 33). Only a late belt (data-fan) is laid this way; the
+   fights' rail keeps its own.
+   ═══════════════════════════════════════════════════════════════════════════ */
+.mm-hud[data-fan]:not([data-variant="combat"]) :is(.mm-hud__gold, .mm-hud__clue, .mm-hud__luck).mm-hud__chip {
+  display: inline-grid; grid-auto-flow: row; justify-items: center; align-content: center;
+  row-gap: 2px; height: var(--hud-chip-h); margin-block: 0;
+  padding: 0 .55em; line-height: 1; overflow: visible;
+}
+.mm-hud[data-fan]:not([data-variant="combat"]) :is(.mm-hud__gold, .mm-hud__clue, .mm-hud__luck).mm-hud__chip > .mm-icon { display: none !important; }
+.mm-hud[data-fan]:not([data-variant="combat"]) :is(.mm-hud__gold, .mm-hud__clue, .mm-hud__luck) > :is(.mm-hud__u, .mm-hud__sr) {
+  position: static !important; width: auto !important; height: auto !important; overflow: visible !important; clip-path: none !important;
+  grid-row: 1; order: 0; margin: 0 !important; padding: 0 !important;
+  font-family: var(--font-display); font-weight: 700; font-style: normal;
+  font-size: 12px !important; letter-spacing: .08em !important; line-height: 1;
+  text-transform: uppercase; white-space: nowrap;
+  /* cut into the brass: a dark lip over each stroke, the light under it */
+  color: color-mix(in srgb, var(--kit-gold) 78%, var(--kit-text-mid));
+  text-shadow: 0 -1px 0 rgb(8 4 12 / .9), 0 1px 0 rgb(230 201 138 / .22);
+}
+.mm-hud[data-fan]:not([data-variant="combat"]) :is(.mm-hud__gold, .mm-hud__clue, .mm-hud__luck) > .mm-hud__t {
+  grid-row: 2; font-size: 14px; line-height: 1; font-weight: 700;
+  position: static !important; width: auto !important; height: auto !important; overflow: visible !important; clip-path: none !important;
+}
+.mm-hud[data-fan]:not([data-variant="combat"]) .mm-hud__chip:is(.mm-hud__clue, .mm-hud__luck) { margin-left: 2px; padding-left: .6em; }
+/* the coins' row: no stagger, every coin on the rail's own line */
+.mm-hud[data-fan="row"] [data-fan="1"] > :is(.mm-hud__relic, .mm-hud__gearchip) { translate: none; }
+/* at the Deck's width the row's room comes out of the rail's spacing, never
+   out of a word: the readouts' cells close up and the groups stand nearer */
+@media (max-width: 1400px) {
+  .mm-hud[data-fan]:not([data-variant="combat"]) :is(.mm-hud__gold, .mm-hud__clue, .mm-hud__luck).mm-hud__chip { padding-inline: .38em; }
+  .mm-hud[data-fan]:not([data-variant="combat"]) .mm-hud__chip:is(.mm-hud__clue, .mm-hud__luck) { margin-left: 0; padding-left: .5em; }
+  .mm-hud[data-fan] .mm-hud__group--vitals { gap: 4px; }
+  .mm-hud[data-fan] .mm-hud__gear { margin-left: 4px; }
+  .mm-hud[data-fan] .mm-hud__group--keepsakes { padding-inline: 2px; }
+  .mm-hud[data-fan] [data-fan="1"] > .mm-hud__pouch + :is(.mm-hud__relic, .mm-hud__gearchip) { margin-left: 3px; }
+}
+/* (KUNZITE's) each covered coin shows its object where its neighbour leaves
+   it in sight: every object but the group's last stands a little left of its
+   socket's centre, by a third of what the next coin covers */
+.mm-hud[data-fan="row"] [data-fan="1"] > :is(.mm-hud__relic, .mm-hud__gearchip):not(:last-child) > :is(.mm-hud__relicobj, .mm-hud__gearobj) {
+  translate: calc((var(--fan-pitch, 30px) - var(--sock)) * .34) 0;
+}
+.mm-hud[data-fan="row"] [data-fan="1"] > :is(.mm-hud__relic, .mm-hud__gearchip):not(:last-child):is(:hover, :focus-visible) > :is(.mm-hud__relicobj, .mm-hud__gearobj) { translate: none; }
