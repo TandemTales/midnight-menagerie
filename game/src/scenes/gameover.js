@@ -492,7 +492,7 @@ export class GameOverScene extends Scene {
     const s = this.summary;
     const band = el('div', 'go-bp');
     let plan;
-    try { plan = blueprintPlan(s.regionId, 3.0); } catch { plan = null; }
+    try { plan = blueprintPlan(s.regionId, 3.6); } catch { plan = null; }
 
     const label = this.won
       ? `The blueprint fills in &mdash; ${esc(REGION_NAMES[s.regionId] ?? s.meta.name)}`
