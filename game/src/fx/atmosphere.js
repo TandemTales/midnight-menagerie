@@ -540,7 +540,7 @@ export const REGIONS = {
                        sacks at the left, one open with its scoop, and the
                        butcher's block at the right with its cleaver (a
                        basket with seed > 40 / > 60: gkDraw) */
-                    { shape: 82, ahead: 3.7, across: -1.7, tone: 0.95, keep: true, hand: true, seed: 45.0, hM: 0.95, wM: 1.45 },
+                    { shape: 82, ahead: 3.7, across: -1.7, tone: 0.95, keep: true, hand: true, seed: 45.0, hM: 0.95, wM: 1.75 },   // (round 45 graft: LARIMAR's sacks, their crock beside them)
                     { shape: 82, ahead: 3.9, across: 1.8, tone: 0.95, keep: true, hand: true, seed: 65.0, hM: 1.16, wM: 0.95 },
                     /* (round 39 graft, J1: "a chopping block and basket forward
                        at left, sacks at right, the centre kept open for the
@@ -557,7 +557,14 @@ export const REGIONS = {
                        50-55 / 55-60: gkDraw), each in its own foot of
                        shadow; both under the hand in a fight */
                     { shape: 82, ahead: 2.95, across: -0.95, tone: 0.96, keep: true, hand: true, seed: 52.0, hM: 0.70, wM: 1.00 },
-                    { shape: 82, ahead: 2.6, across: 0.15, tone: 0.97, keep: true, hand: true, seed: 57.0, hM: 0.38, wM: 1.50 }] },
+                    /* (round 45 GRAFT, both judges: LARIMAR's tipped basket and
+                       its potatoes and onions rolled out in a loose fan -- not
+                       a row -- (seed 80-90); a crate of apples up from the
+                       cellar at the near left (seed > 90: gkDraw), and the
+                       near-right floor dressed with a second, HOWLITE's place) */
+                    { shape: 82, ahead: 2.65, across: 0.10, tone: 0.97, keep: true, hand: true, seed: 85.0, hM: 0.42, wM: 1.72 },
+                    { shape: 82, ahead: 2.45, across: 1.25, tone: 0.97, keep: true, hand: true, seed: 92.0, hM: 0.45, wM: 1.50 },
+                    { shape: 82, ahead: 2.05, across: -1.15, tone: 0.97, keep: true, hand: true, seed: 97.0, hM: 0.45, wM: 1.50 }] },
     /* ROUND 31: THE NEAR FLOOR -- the flags run on lit toward the hand (to
        nine-tenths, not two-fifths), the range's warmth laid on them in front
        of the eye, and a rag hearth rug on the flags before the fire */
@@ -2910,13 +2917,16 @@ export const ROOM_KINDS = {
                      { shape: 82, edge: 0.26, z: -0.2, tone: 0.94, keep: true, fore: 1, seed: 2.5 },
                      /* (round 39: the scullery's near floor -- a sack and a
                         block, as the kitchen's) */
-                     { shape: 82, ahead: 3.7, across: 1.7, tone: 0.95, keep: true, hand: true, seed: 47.0, hM: 0.95, wM: 1.45 },
+                     { shape: 82, ahead: 3.7, across: 1.7, tone: 0.95, keep: true, hand: true, seed: 47.0, hM: 0.95, wM: 1.75 },   // (round 45 graft: as the kitchen's)
                      { shape: 82, ahead: 3.9, across: -1.8, tone: 0.95, keep: true, hand: true, seed: 66.0, hM: 1.16, wM: 0.95 },
                      /* (round 39 graft: and a basket by the block, as the kitchen's) */
                      { shape: 82, ahead: 3.0, across: -0.85, tone: 0.97, keep: true, hand: true, seed: 11.8 },
                      /* (round 45: the crocks and the spilt basket, as the kitchen's) */
                      { shape: 82, ahead: 2.95, across: 0.95, tone: 0.96, keep: true, hand: true, seed: 53.0, hM: 0.70, wM: 1.00 },
-                     { shape: 82, ahead: 2.6, across: -0.15, tone: 0.97, keep: true, hand: true, seed: 58.0, hM: 0.38, wM: 1.50 }],
+                     /* (round 45 graft: the spilt basket and the two crates, as the kitchen's) */
+                     { shape: 82, ahead: 2.65, across: -0.10, tone: 0.97, keep: true, hand: true, seed: 87.0, hM: 0.42, wM: 1.72 },
+                     { shape: 82, ahead: 2.45, across: -1.30, tone: 0.97, keep: true, hand: true, seed: 94.0, hM: 0.45, wM: 1.50 },
+                     { shape: 82, ahead: 2.05, across: 1.15, tone: 0.97, keep: true, hand: true, seed: 98.0, hM: 0.45, wM: 1.50 }],
               /* (round 31 graft, judges 2 and 3: "light the scullery's near-left
                  corner" -- the copper's spill as a second pool there) */
               nearFloor: { pool: { ahead: 3.4, across: 0.0, rAlong: 2.8, rAcross: 3.2, k: 1.4, color: '#e8a060' },

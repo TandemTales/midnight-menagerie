@@ -22361,6 +22361,61 @@ float gkUrnW(float y){
   float t = clamp((y - 0.90)/0.38, 0.0, 1.0);
   return 0.20 + 0.11*pow(t, 1.4);
 }
+#if MM_SH82
+/* ROUND 45 (LARIMAR): THE KITCHEN'S FLOOR THINGS IN THEIR MATERIALS.
+   gkLay lays a part OVER the parts before it -- their pen lines under it go
+   (wfLay kept them: the construction arcs of the sacks' bellies showed
+   through their cloth). gkBurlap is hessian at the size it is seen: the
+   over-and-under of a coarse weave, the slubs of its thicker threads, the
+   holes between, given up to their mean where a thread is under a few
+   pixels. */
+void gkLay(inout vec3 col, inout float ink, float d, vec3 c, float px, float k){
+  float a = wfIn(d, px);
+  col = mix(col, c, a);
+  ink = max(ink*(1.0 - a), mmInkP(d, px, 1.0)*k);
+}
+/* (round 45) one of the spilt vegetables: its distance; c its centre, k its
+   kind and radius. Odd ones lie a little further back on the flags. */
+float gkVeg(vec2 cm, float fi, float seed, out vec2 c, out vec3 k){
+  float h = mmHash11(fi*3.7 + seed);
+  float r = 0.052 + 0.024*mmHash11(fi*9.1 + seed);
+  float back = mod(fi, 2.0);
+  /* (round 45 graft, both judges: "the vegetables in a loose fan" -- each
+     rolled further from the basket's mouth than the one before, the gaps
+     opening and the far lane going back across the flags as they go) */
+  r *= 1.0 - 0.025*fi*back;
+  float x0 = -0.08 + fi*0.066 + fi*fi*0.0036 + 0.040*(mmHash11(fi*5.1 + seed) - 0.3);
+  float y0 = r*0.82 + back*(0.024 + 0.009*fi)*(0.75 + 0.5*mmHash11(fi*2.2 + seed)) + (fi < 1.5 ? 0.05 : 0.0);
+  c = vec2(x0, y0);
+  k = vec3(h, r, back);
+  vec2 vp = cm - c;
+  if (h < 0.55) {
+    float a = atan(vp.y, vp.x);
+    return wfEll(vp, vec2(r*1.25, r*0.82)) + 0.004*sin(a*3.0 + fi) + 0.003*sin(a*5.0 + h*9.0);
+  } else if (h < 0.86) {
+    return min(length(vp*vec2(1.0, 1.05)) - r, wfSeg(vp, vec2(0.0, r*0.7), vec2(0.010, r*1.45), 0.006));
+  }
+  return wfSegT(vp, vec2(-0.08, 0.0), vec2(0.10, -0.01), 0.024, 0.004);
+}
+vec3 gkBurlap(vec2 p, float px, float seed){
+  const float P = 0.017;
+  float wl = mmLod(P, px);
+  float wx = sin(p.x*6.2832/P), wy = sin(p.y*6.2832/P + 1.5708*step(0.5, fract(p.x/(2.0*P))));
+  float ov = 0.5 + 0.5*wx*wy;
+  float hole = (1.0 - smoothstep(0.0, 0.40, abs(wx)))*(1.0 - smoothstep(0.0, 0.40, abs(wy)));
+  float slub = smoothstep(0.60, 0.80, mmNoise(vec2(p.x*3.0, p.y*42.0) + seed))
+             + 0.7*smoothstep(0.64, 0.82, mmNoise(vec2(p.x*42.0, p.y*3.0) + seed + 3.0));
+  vec3 c = vec3(0.52, 0.37, 0.19)*(0.86 + 0.26*mmNoise(p*5.0 + seed));
+  c = mix(c, c*vec3(0.78, 0.70, 0.62), smoothstep(0.62, 0.80, mmNoise(p*3.0 + seed + 7.0))*0.6);   // a stain
+  c *= mix(1.0, (0.78 + 0.36*ov)*(1.0 - 0.40*hole), wl);
+  c *= 1.0 + 0.18*clamp(slub, 0.0, 1.0)*mmLod(0.025, px);
+  /* (round 45 graft, HOWLITE's: the jute's hair over the weave, and the
+     cloth darkened in patches where hands have gripped it) */
+  c *= 1.0 + (mmNoise(p*vec2(150.0, 160.0) + seed*2.0) - 0.5)*0.18*mmLod(0.006, px);
+  c *= 1.0 - 0.16*smoothstep(0.55, 0.80, mmNoise(p*7.0 + seed*3.0));
+  return c;
+}
+#endif
 float gkDraw(vec2 m, vec2 msz, float shape, float seed, float px, bool paint){
   float nom = shape > 85.5 ? 0.62 : (shape > 84.5 ? 1.80 : (shape < 81.5 ? 1.55 : (shape < 82.5 ? 0.62 : 0.95)));
   float sc = msz.y/nom;
@@ -22690,124 +22745,175 @@ float gkDraw(vec2 m, vec2 msz, float shape, float seed, float px, bool paint){
     cm.x *= mir;
     float dm = 1e3;
     if (seed < 50.0) {
-      /* the open sack: burlap slumped to its own weight, its neck rolled */
-      float t1 = clamp(cm.y/0.68, 0.0, 1.0);
-      float w1 = mix(0.27, 0.21, t1) + 0.025*sin(t1*3.1416);
-      /* (a sack settles into a pear: its belly on the flags, its shoulders
-         drawn in under the rolled neck) */
-      float b1 = wfEll(cm - vec2(-0.27, 0.25), vec2(0.285, 0.26));
-      float u1b = mmBox(cm - vec2(-0.27, 0.49), vec2(0.215, 0.20), 0.07);
+      /* the open sack, slumped to its own weight, its neck rolled down */
+      float b1 = wfEll(cm - vec2(-0.30, 0.25), vec2(0.285, 0.26));
+      float u1b = mmBox(cm - vec2(-0.30, 0.49), vec2(0.215, 0.20), 0.07);
       float hh1 = clamp(0.5 + 0.5*(u1b - b1)/0.06, 0.0, 1.0);
-      float s1 = max(mix(u1b, b1, hh1) - 0.06*hh1*(1.0 - hh1), -cm.y);
-      float roll = wfEll(cm - vec2(-0.27, 0.69), vec2(0.235, 0.050));
-      float flour = max(wfEll(cm - vec2(-0.27, 0.71), vec2(0.20, 0.075)), 0.70 - cm.y);
-      float scoop = min(wfSeg(cm, vec2(-0.20, 0.75), vec2(-0.06, 0.93), 0.016), wfEll(cm - vec2(-0.235, 0.735), vec2(0.060, 0.030)));
+      float aS1 = atan(cm.y - 0.30, cm.x + 0.30);
+      float s1 = max(mix(u1b, b1, hh1) - 0.06*hh1*(1.0 - hh1) + 0.008*sin(aS1*5.0 + seed) + 0.005*sin(aS1*11.0 + seed*2.0), -cm.y);
+      float roll = wfEll(cm - vec2(-0.30, 0.69), vec2(0.235, 0.052)) + 0.006*sin(cm.x*70.0 + seed);
+      /* the flour heaped in its mouth, the scoop's crater in it */
+      float flour = max(wfEll(cm - vec2(-0.30, 0.712), vec2(0.200, 0.080)), 0.695 - cm.y) + 0.004*sin(cm.x*90.0 + seed);
+      float scoop = min(wfSeg(cm, vec2(-0.22, 0.76), vec2(-0.07, 0.94), 0.016), wfEll(cm - vec2(-0.255, 0.745), vec2(0.060, 0.030)));
       /* the tied sack, slumped against it, its neck gathered and tied */
-      float t2 = clamp(cm.y/0.50, 0.0, 1.0);
-      float w2 = mix(0.30, 0.20, t2*t2) + 0.03*sin(t2*3.1416);
-      float b2 = wfEll(cm - vec2(0.25, 0.20), vec2(0.32, 0.21));
-      float u2b = wfEll(cm - vec2(0.215, 0.40), vec2(0.19, 0.15));
+      float b2 = wfEll(cm - vec2(0.21, 0.20), vec2(0.32, 0.21));
+      float u2b = wfEll(cm - vec2(0.175, 0.40), vec2(0.19, 0.15));
       float hh2 = clamp(0.5 + 0.5*(u2b - b2)/0.07, 0.0, 1.0);
-      float s2 = max(mix(u2b, b2, hh2) - 0.07*hh2*(1.0 - hh2), -cm.y);
-      float neck = mmBox(cm - vec2(0.205, 0.555), vec2(0.045 + 0.02*smoothstep(0.52, 0.62, cm.y), 0.060), 0.02);
-      float tuft = wfEll(cm - vec2(0.20, 0.64), vec2(0.075, 0.035));
-      float tie = mmBox(cm - vec2(0.205, 0.545), vec2(0.060, 0.012), 0.006);
-      /* (round 45: the tie's two loose ends hanging from the knot) */
-      float tieE = min(wfSeg(cm, vec2(0.250, 0.540), vec2(0.285, 0.470), 0.007), wfSeg(cm, vec2(0.255, 0.540), vec2(0.310, 0.495), 0.006));
-      float spill = wfEll(cm - vec2(-0.02, 0.008), vec2(0.62, 0.022));
-      dm = min(min(min(s1, roll), min(flour, scoop)), min(min(s2, neck), min(min(tuft, min(tie, tieE)), spill)));
+      float aS2 = atan(cm.y - 0.25, cm.x - 0.21);
+      float s2 = max(mix(u2b, b2, hh2) - 0.07*hh2*(1.0 - hh2) + 0.007*sin(aS2*6.0 + seed*1.7) + 0.004*sin(aS2*13.0 + seed), -cm.y);
+      float neck = mmBox(cm - vec2(0.165, 0.555), vec2(0.045 + 0.02*smoothstep(0.52, 0.62, cm.y), 0.060), 0.02);
+      /* its ears: the cloth above the tie flared in two tufts */
+      float tuft = min(wfEll(cm - vec2(0.125, 0.645), vec2(0.055, 0.030)), wfEll(cm - vec2(0.205, 0.652), vec2(0.050, 0.034)));
+      float tie = mmBox(cm - vec2(0.165, 0.545), vec2(0.060, 0.012), 0.006);
+      float tieEnd = wfSeg(cm, vec2(0.215, 0.540), vec2(0.250, 0.470), 0.006);
+      /* the CROCK, beside them on the flags: its body, shoulder and lip,
+         its wooden lid and the lid's knob */
+      vec2 kc = cm - vec2(0.68, 0.0);
+      float kt = clamp(kc.y/0.36, 0.0, 1.0);
+      float kw = 0.112 + 0.030*sin(kt*3.1416*0.92) - 0.026*smoothstep(0.80, 1.0, kt);
+      float crockB = max(abs(kc.x) - kw, max(-kc.y, kc.y - 0.36));
+      float crockL = mmBox(kc - vec2(0.0, 0.372), vec2(0.094, 0.014), 0.006);
+      float lid = mmBox(kc - vec2(0.0, 0.395), vec2(0.100, 0.010), 0.004);
+      float knob = wfEll(kc - vec2(0.0, 0.416), vec2(0.026, 0.016));
+      float crock = min(min(crockB, crockL), min(lid, knob));
+      /* the flour spilt on the flags: patches, not a plate */
+      float spill = wfEll(cm - vec2(-0.06, 0.008), vec2(0.62, 0.020)) + 0.012*(mmNoise(vec2(cm.x*14.0, seed)) - 0.35);
+      dm = min(min(min(s1, roll), min(flour, scoop)), min(min(s2, neck), min(min(tuft, min(tie, tieEnd)), spill)));
+      dm = min(dm, crock);
       if (paint) {
-        /* ROUND 39 GRAFT: each sack a ROUND form, lit full on the key's side,
-           a core shadow turning away, a reflected light off the flags.
-           ROUND 45 (AXINITE), both survey-9 judges: "pale grey, untextured
-           blobs". BURLAP: warm jute, its weave coarse enough to SEE -- a
-           basket of threads 2.6 cm across, over and under, each a lit
-           crown and a dark crossing, a fibre's hair over it -- the cloth
-           pulled into creases where the tie gathers it and slumped into
-           folds where it sits, darned where it has torn, and the flour it
-           holds dusted over it from the open mouth down. */
-        vec3 burl = vec3(0.68, 0.45, 0.20)*(0.88 + 0.20*mv);
-        float wl = mmLod(0.021, px);
-        vec2 wc = (cm + (vec2(mmNoise(cm*7.0 + seed), mmNoise(cm*7.0 + seed + 3.1)) - 0.5)*0.030)/0.021;
-        vec2 wf = fract(wc) - 0.5;
-        float ov = mod(floor(wc.x) + floor(wc.y), 2.0);
-        /* (each cell a thread crossing: its crown lit along the way it runs) */
-        /* (over and under: where warp and weft cross, the thread on top
-           swells into the light and the one under it goes down into the
-           shade -- a basket, never a grid) */
-        float wv = sin(wc.x*6.2832)*sin(wc.y*6.2832);
-        float weave = mix(0.0, 0.11*wv - 0.04*smoothstep(0.55, 0.95, abs(wv)*step(wv, 0.0)), wl)*(0.6 + 0.8*mmNoise(cm*9.0 + seed));
-        float hair = (mmNoise(cm*vec2(160.0, 60.0) + seed) - 0.5)*0.16*mmLod(0.008, px);
-        float u1 = clamp((cm.x + 0.27)/w1, -1.0, 1.0), u2 = clamp((cm.x - 0.24)/w2, -1.0, 1.0);
-        /* the flour spilt round them on the flags, thicker at the open mouth's side */
-        float spT = smoothstep(0.62, 0.10, abs(cm.x + 0.10))*(0.70 + 0.30*mmNoise(cm*vec2(40.0, 90.0)));
-        wfLay(col, ink, spill, vec3(0.86, 0.84, 0.76)*mix(0.55, 1.0, spT), px, 0.25);
+        gkLay(col, ink, spill, vec3(0.80, 0.78, 0.70)*(0.80 + 0.25*mmNoise(cm*30.0)), px, 0.30);
+        /* the crock: dipped in a brown slip over its shoulder, salt-glazed
+           cream below with the dip's edge running in drips; round, its glaze
+           taking the key's light in a hard window and the range on its rim */
+        {
+          float ku = clamp(kc.x/max(kw, 0.05), -1.0, 1.0);
+          float dipY = 0.235 + 0.008*sin(kc.x*30.0 + seed) - 0.035*smoothstep(0.012, 0.0, abs(fract(kc.x/0.050 + seed*0.37) - 0.5)*0.050)*step(0.45, mmHash11(floor(kc.x/0.050 + seed*0.37)));
+          vec3 cream = vec3(0.82, 0.74, 0.58)*(0.92 + 0.12*mmNoise(kc*vec2(60.0, 30.0) + seed));
+          /* salt glaze: an orange-peel of tiny pits */
+          cream *= 1.0 - 0.10*smoothstep(0.55, 0.80, mmNoise(kc*160.0 + seed))*mmLod(0.008, px);
+          vec3 slip = vec3(0.40, 0.22, 0.10);
+          vec3 kcC = mix(cream, slip, smoothstep(dipY - 0.004, dipY + 0.004, kc.y));
+          /* the cobalt flourish brushed on its belly: a leafy spray */
+          vec2 fp = kc - vec2(0.0, 0.130);
+          float spray = abs(fp.y - 0.040*sin(fp.x*28.0 + 0.6)) - 0.0055 + 0.004*abs(fp.x)/0.08;
+          spray = max(spray, abs(fp.x) - 0.075);
+          float leafD = 1e3;
+          for (int i = 0; i < 4; i++){
+            float lx = -0.06 + float(i)*0.04;
+            vec2 lp = fp - vec2(lx, 0.040*sin(lx*28.0 + 0.6) + 0.016*(mod(float(i), 2.0)*2.0 - 1.0));
+            leafD = min(leafD, wfEll(lp, vec2(0.012, 0.008)));
+          }
+          float onSpray = wfIn(min(spray, leafD), px)*step(kc.y, dipY - 0.01);
+          kcC = mix(kcC, vec3(0.16, 0.22, 0.46), onSpray*0.85);
+          float lit = 0.36 + 0.80*wfRound(ku)*(0.45 + 0.55*smoothstep(-0.9, 0.8, kq*ku)) + 0.18*smoothstep(0.60, 0.95, -kq*ku);
+          kcC *= lit*(0.62 + 0.45*smoothstep(0.0, 0.18, kc.y));
+          gkLay(col, ink, crockB, kcC, px, 1.0);
+          /* the glaze's highlight: a window of light down the key side */
+          float hl = smoothstep(0.010, 0.0, abs(ku - 0.48*kq) - 0.04)*smoothstep(0.03, 0.10, kc.y)*smoothstep(0.34, 0.26, kc.y);
+          emit += vec3(1.00, 0.86, 0.66)*0.22*hl*wfIn(crockB, px);
+          gkLay(col, ink, crockL, slip*(0.55 + 0.75*smoothstep(0.360, 0.384, kc.y))*(1.0 + 0.3*kq*kc.x/0.09), px, 1.0);
+          emit += vec3(1.00, 0.62, 0.30)*0.16*wfIn(crockL, px)*smoothstep(0.376, 0.386, kc.y);
+          vec3 oak = vec3(0.40, 0.26, 0.14)*(0.85 + 0.25*mmNoise(vec2(kc.x*40.0, kc.y*4.0)));
+          gkLay(col, ink, lid, oak*(0.75 + 0.40*smoothstep(0.388, 0.404, kc.y)), px, 0.9);
+          gkLay(col, ink, knob, oak*(0.60 + 0.55*smoothstep(0.405, 0.428, kc.y)), px, 0.9);
+          ink = max(ink, mmInkP(kc.y - dipY, px, 0.7)*wfIn(crockB, px)*0.35);
+          moon += 0.45*wfIn(min(crockL, lid), px) + 0.25*wfIn(crockB, px)*smoothstep(0.26, 0.34, kc.y);
+        }
         /* the light on a round form: key side, core shadow, reflected light */
-        float l2 = 0.22 + 0.92*wfRound(u2)*(0.5 + 0.5*smoothstep(-0.9, 0.7, kq*u2))
-                 + 0.18*smoothstep(0.55, 0.95, -kq*u2);
-        vec3 c2 = burl*0.94*l2*(0.42 + 0.76*smoothstep(0.0, 0.40, cm.y))*(1.0 + weave + hair);
-        /* the creases the tie pulls down the shoulders, fanning from the knot */
-        float ca2 = atan(cm.x - 0.205, 0.56 - cm.y);
-        float crz2 = sin(ca2*11.0 + 1.3*sin(cm.y*9.0 + seed))*smoothstep(0.08, 0.30, 0.56 - cm.y)*smoothstep(0.02, 0.22, cm.y);
-        c2 *= 1.0 - 0.26*smoothstep(0.35, 1.0, crz2) + 0.12*smoothstep(0.35, 1.0, -crz2);
-        /* the printed stripes: two blue bands round the tied sack, their print
-           broken where the cloth folds */
+        float w2 = mix(0.30, 0.20, clamp(cm.y/0.50, 0.0, 1.0));
+        float u2 = clamp((cm.x - 0.20)/w2, -1.0, 1.0);
+        float l2 = 0.24 + 0.92*wfRound(u2)*(0.5 + 0.5*smoothstep(-0.9, 0.7, kq*u2))
+                 + 0.16*smoothstep(0.55, 0.95, -kq*u2);
+        vec3 c2 = gkBurlap(cm + vec2(seed, 0.0), px, seed)*1.22*l2*(0.46 + 0.72*smoothstep(0.0, 0.40, cm.y));
+        /* its creases: drawn down from the tie, each lit on its upper lip */
+        vec2 nk = cm - vec2(0.165, 0.53);
+        float cra = atan(nk.x, -nk.y);
+        float crP = cra*7.0 + 0.8*sin(length(nk)*9.0 + seed);
+        float crease = abs(fract(crP/6.2832) - 0.5);
+        float crW = smoothstep(0.42, 0.10, length(nk))*step(0.06, length(nk));
+        c2 *= 1.0 - 0.30*(1.0 - smoothstep(0.02, 0.10, crease))*crW;
+        c2 *= 1.0 + 0.16*smoothstep(0.10, 0.20, crease)*(1.0 - smoothstep(0.20, 0.30, crease))*crW;
+        /* the printed stripes: two blue bands round the tied sack */
         float st2 = (step(abs(cm.y - 0.21), 0.018) + step(abs(cm.y - 0.27), 0.010))*step(0.0, -s2);
-        c2 = mix(c2, vec3(0.14, 0.20, 0.40)*l2*(0.6 + 0.6*smoothstep(0.0, 0.40, cm.y))*(1.0 + weave*0.6), clamp(st2, 0.0, 1.0)*0.85*(1.0 - 0.6*smoothstep(0.5, 1.0, crz2)));
-        wfLay(col, ink, s2, c2, px, 1.0);
+        c2 = mix(c2, vec3(0.14, 0.20, 0.44)*l2*(0.6 + 0.6*smoothstep(0.0, 0.40, cm.y))*(0.85 + 0.25*mmNoise(cm*vec2(80.0, 20.0))), clamp(st2, 0.0, 1.0)*0.85);
+        /* (round 45 graft, both judges: HOWLITE's miller's mark, XXX,
+           stencilled over the stripes and half worn off the weave) */
+        float xx = 1e3;
+        for (int i = 0; i < 3; i++){
+          vec2 xc = vec2(0.135 + float(i)*0.064, 0.335);
+          xx = min(xx, min(wfSeg(cm, xc - vec2(0.022, 0.028), xc + vec2(0.022, 0.028), 0.0058),
+                           wfSeg(cm, xc - vec2(0.022, -0.028), xc + vec2(0.022, -0.028), 0.0058)));
+        }
+        c2 = mix(c2, vec3(0.11, 0.07, 0.05)*l2, wfIn(xx, px)*0.82*(0.55 + 0.45*step(0.35, mmNoise(cm*vec2(80.0, 50.0) + seed))));
+        c2 *= mix(0.45, 1.0, smoothstep(0.0, 0.06, cm.y));
+        gkLay(col, ink, s2, c2, px, 1.0);
+        ink = max(ink, (1.0 - smoothstep(0.0, 0.03, crease))*crW*wfIn(s2, px)*0.30*mmLod(0.05, px));
         /* its side seam, sewn: a line down the form and the stitches over it */
-        float sx2 = cm.x - (0.25 + 0.55*w2*kq);
+        float sx2 = cm.x - (0.21 + 0.55*w2*kq);
         float seam2 = wfIn(s2, px)*step(cm.y, 0.50);
         ink = max(ink, mmInkP(sx2, px, 1.0)*seam2*0.55);
         ink = max(ink, mmInkP(abs(sx2) - 0.010, px, 0.9)*step(0.5, fract(cm.y/0.030))*seam2*0.45);
-        /* the creases inked where they are deepest */
-        ink = max(ink, smoothstep(0.80, 0.98, crz2)*wfIn(s2, px)*0.35);
-        wfLay(col, ink, neck, burl*0.62*(0.8 + 0.4*smoothstep(-0.05, 0.05, kq*(cm.x - 0.205)))*(1.0 + weave), px, 0.9);
-        wfLay(col, ink, tuft, burl*(0.85 + 0.35*smoothstep(0.62, 0.67, cm.y))*(1.0 + weave), px, 0.9);
-        /* the tie: a twine cord wound twice round the neck, its knot, its ends */
-        vec3 twine = vec3(0.66, 0.52, 0.30);
-        wfLay(col, ink, tie, twine*(0.75 + 0.45*smoothstep(0.535, 0.552, cm.y)), px, 0.9);
-        wfLay(col, ink, tieE, twine*0.80, px, 0.8);
+        vec3 nb = gkBurlap(cm*1.3, px, seed + 2.0);
+        gkLay(col, ink, neck, nb*0.62*(0.8 + 0.4*smoothstep(-0.05, 0.05, kq*(cm.x - 0.165))), px, 0.9);
+        float fray = 0.5 + 0.5*sin(cm.x*260.0 + seed);
+        gkLay(col, ink, tuft, nb*(0.80 + 0.40*smoothstep(0.62, 0.68, cm.y))*(0.85 + 0.25*fray*mmLod(0.024, px)), px, 0.9);
+        /* the tie: a twine cord wound twice round the neck, its knot and end */
+        vec3 twine = vec3(0.66, 0.54, 0.32);
+        gkLay(col, ink, tie, twine*(0.75 + 0.45*smoothstep(0.535, 0.552, cm.y)), px, 0.9);
+        gkLay(col, ink, tieEnd, twine*0.80, px, 0.7);
         ink = max(ink, mmInkP(cm.y - 0.545, px, 0.8)*wfIn(tie, px)*0.6);
-        float l1 = 0.22 + 0.92*wfRound(u1)*(0.5 + 0.5*smoothstep(-0.9, 0.7, kq*u1))
-                 + 0.18*smoothstep(0.55, 0.95, -kq*u1);
-        vec3 c1 = burl*1.04*l1*(0.42 + 0.76*smoothstep(0.0, 0.55, cm.y))*(1.0 + weave + hair);
-        /* its folds where the sack has settled, each lit on its upper lip */
-        float fo = sin(cm.x*38.0 + cm.y*6.0 + 0.8*sin(cm.y*14.0 + seed));
-        float foB = smoothstep(0.65, 0.2, cm.y);
-        c1 *= (1.0 - 0.30*smoothstep(0.3, 1.0, fo)*foB) * (1.0 + 0.16*smoothstep(0.3, 1.0, -fo)*foB);
-        float st1 = step(abs(cm.y - 0.36), 0.020) + step(abs(cm.y - 0.42), 0.010);
-        c1 = mix(c1, vec3(0.44, 0.10, 0.08)*l1*(0.6 + 0.6*smoothstep(0.0, 0.55, cm.y))*(1.0 + weave*0.6), clamp(st1, 0.0, 1.0)*0.85*step(0.0, -s1));
-        /* a darn: a darnD sewn over a tear, its own weave and its stitches */
-        vec2 pq = cm - vec2(-0.34 + 0.06*kq, 0.20);
-        float darnD = mmBox(pq, vec2(0.065, 0.055), 0.008);
-        float onP = wfIn(darnD, px)*wfIn(s1, px);
-        c1 = mix(c1, burl*0.80*l1*(1.0 + 0.6*weave)*vec3(0.92, 0.95, 1.0), onP*0.9);
-        /* the flour dusted down the open sack from its mouth, and on the
-           tied one where it leans */
-        float dust = smoothstep(0.42, 0.68, mmNoise(cm*vec2(14.0, 9.0) + seed*1.7))*(0.25 + 0.75*smoothstep(0.30, 0.66, cm.y))*0.55;
-        c1 = mix(c1, vec3(0.86, 0.84, 0.78)*(0.60 + 0.45*l1), dust*(1.0 - onP));
-        wfLay(col, ink, s1, c1, px, 1.0);
-        ink = max(ink, mmInkP(darnD, px, 0.9)*wfIn(s1, px)*0.70);
-        ink = max(ink, mmInkP(abs(darnD) - 0.008, px, 0.8)*step(0.5, fract((pq.x + pq.y)/0.018))*wfIn(s1, px)*0.45);
-        ink = max(ink, smoothstep(0.85, 1.0, fo)*foB*wfIn(s1, px)*0.30);
-        float sx1 = cm.x - (-0.27 + 0.55*w1*kq);
+        /* the open sack */
+        float w1 = mix(0.27, 0.21, clamp(cm.y/0.68, 0.0, 1.0));
+        float u1 = clamp((cm.x + 0.30)/w1, -1.0, 1.0);
+        float l1 = 0.24 + 0.92*wfRound(u1)*(0.5 + 0.5*smoothstep(-0.9, 0.7, kq*u1))
+                 + 0.16*smoothstep(0.55, 0.95, -kq*u1);
+        vec3 c1 = gkBurlap(cm, px, seed + 5.0)*1.28*l1*(0.46 + 0.72*smoothstep(0.0, 0.55, cm.y));
+        /* its folds where it has settled, each lit on its upper lip */
+        float fo = sin(cm.x*30.0 + cm.y*7.0 + 2.0*mmNoise(cm*4.0 + seed));
+        c1 *= (1.0 - 0.26*smoothstep(0.3, 1.0, fo)*smoothstep(0.62, 0.15, cm.y))
+            * (1.0 + 0.14*smoothstep(0.3, 1.0, -fo)*smoothstep(0.62, 0.15, cm.y));
+        /* the mill's brand: a printed oval, a wheatsheaf in it, two red bands */
+        float st1 = step(abs(cm.y - 0.18), 0.018) + step(abs(cm.y - 0.12), 0.010);
+        vec3 red = vec3(0.46, 0.10, 0.07)*l1*(0.6 + 0.6*smoothstep(0.0, 0.55, cm.y));
+        c1 = mix(c1, red*(0.85 + 0.25*mmNoise(cm*vec2(80.0, 20.0))), clamp(st1, 0.0, 1.0)*0.80*step(0.0, -s1));
+        vec2 bp = cm - vec2(-0.30 + 0.03*kq, 0.40);
+        float oval = abs(length(bp/vec2(0.115, 0.080)) - 1.0)*0.080 - 0.0045;
+        float sheaf = 1e3;
+        for (int i = 0; i < 3; i++){
+          float sxi = (float(i) - 1.0)*0.022;
+          sheaf = min(sheaf, wfSeg(bp, vec2(sxi*0.4, -0.050), vec2(sxi, 0.030), 0.0035));
+          sheaf = min(sheaf, wfEll(bp - vec2(sxi*1.15, 0.040), vec2(0.009, 0.020)));
+        }
+        sheaf = min(sheaf, mmBox(bp - vec2(0.0, -0.022), vec2(0.020, 0.005), 0.002));
+        float brand = wfIn(min(oval, sheaf), px)*(0.65 + 0.35*smoothstep(0.25, 0.5, mmNoise(bp*70.0 + seed)));
+        c1 = mix(c1, red*0.85, brand*0.85*step(0.0, -s1));
+        /* flour dusted down it from the mouth, and on its belly where the
+           scoop has dripped */
+        float dust = smoothstep(0.42, 0.68, cm.y)*(0.45 + 0.55*mmNoise(cm*vec2(18.0, 10.0) + seed))
+                   + smoothstep(0.12, 0.0, abs(cm.x + 0.20 - 0.03*sin(cm.y*20.0)))*smoothstep(0.70, 0.30, cm.y)*0.5;
+        c1 = mix(c1, vec3(0.80, 0.78, 0.70)*l1*0.95, clamp(dust, 0.0, 1.0)*0.38);
+        c1 *= mix(0.45, 1.0, smoothstep(0.0, 0.06, cm.y));
+        gkLay(col, ink, s1, c1, px, 1.0);
+        ink = max(ink, (1.0 - smoothstep(0.2, 1.0, fo))*smoothstep(0.62, 0.15, cm.y)*wfIn(s1, px)*0.22*mmLod(0.10, px));
+        float sx1 = cm.x - (-0.30 + 0.55*w1*kq);
         float seam1 = wfIn(s1, px)*step(cm.y, 0.62);
         ink = max(ink, mmInkP(sx1, px, 1.0)*seam1*0.55);
         ink = max(ink, mmInkP(abs(sx1) - 0.010, px, 0.9)*step(0.5, fract(cm.y/0.030))*seam1*0.45);
-        wfLay(col, ink, roll, burl*(0.70 + 0.45*smoothstep(0.65, 0.73, cm.y))*(0.85 + 0.25*kq*u1)*(1.0 + weave), px, 1.0);
-        ink = max(ink, mmInkP(cm.y - 0.69, px, 0.8)*wfIn(roll, px)*0.5);
-        /* the flour in the mouth: heaped, the scoop's hollow pressed in it */
-        float fh = smoothstep(0.70, 0.78, cm.y)*(0.85 + 0.20*mmNoise(cm*60.0));
-        wfLay(col, ink, flour, vec3(0.92, 0.90, 0.82)*(0.74 + 0.30*fh)*(1.0 - 0.25*smoothstep(0.05, 0.0, length(cm - vec2(-0.235, 0.745)) - 0.04)), px, 0.6);
-        float sv = clamp((cm.y - 0.75)/0.18, 0.0, 1.0);
-        wfLay(col, ink, scoop, mix(vec3(0.58, 0.40, 0.20), vec3(0.78, 0.60, 0.34), sv)*(0.8 + 0.4*smoothstep(0.75, 0.93, cm.y)), px, 0.85);
-        moon += 0.55*wfIn(flour, px) + 0.30*wfIn(roll, px) + 0.20*wfIn(min(s1, s2), px)*smoothstep(0.30, 0.60, cm.y);
-        /* (round 45: the creases, the folds and the weave again on the LIT
-           colour -- under the prop's ceiling the sacks' own were pressed flat) */
-        float oS1 = wfIn(s1, px)*(1.0 - wfIn(min(roll, flour), px)), oS2 = wfIn(s2, px)*(1.0 - wfIn(s1, px));
-        gWgShade = 1.0 + oS2*(-0.34*smoothstep(0.35, 1.0, crz2) + 0.16*smoothstep(0.35, 1.0, -crz2) + 0.55*weave)
-                       + oS1*(-0.34*smoothstep(0.3, 1.0, fo)*foB + 0.18*smoothstep(0.3, 1.0, -fo)*foB + 0.55*weave);
+        /* the rolled neck: its frayed edge, its fold lit */
+        vec3 rc = gkBurlap(cm*vec2(1.0, 1.6), px, seed + 9.0);
+        rc *= (0.66 + 0.50*smoothstep(0.66, 0.73, cm.y))*(0.85 + 0.25*kq*u1);
+        rc = mix(rc, vec3(0.80, 0.78, 0.70), 0.25*smoothstep(0.70, 0.74, cm.y));
+        gkLay(col, ink, roll, rc, px, 1.0);
+        ink = max(ink, mmInkP(cm.y - 0.69 - 0.004*sin(cm.x*60.0), px, 0.8)*wfIn(roll, px)*0.55);
+        /* the flour: soft, the crater the scoop has dug, lit on its crown */
+        float fx2 = (cm.x + 0.30)/0.20;
+        float crater = exp(-pow((cm.x + 0.25)/0.07, 2.0) - pow((cm.y - 0.74)/0.025, 2.0));
+        vec3 flC = vec3(0.92, 0.90, 0.82)*(0.62 + 0.35*smoothstep(0.70, 0.78, cm.y))*(0.90 + 0.15*kq*fx2)*(1.0 - 0.35*crater);
+        flC *= 0.92 + 0.10*mmNoise(cm*vec2(60.0, 40.0));
+        gkLay(col, ink, flour, flC, px, 0.55);
+        vec3 bw = vec3(0.62, 0.44, 0.22);
+        gkLay(col, ink, scoop, bw*(0.70 + 0.45*smoothstep(0.75, 0.93, cm.y))*(0.9 + 0.2*kq), px, 0.85);
+        moon += 0.35*wfIn(flour, px) + 0.25*wfIn(roll, px) + 0.15*wfIn(min(s1, s2), px)*smoothstep(0.30, 0.60, cm.y);
       }
     } else if (seed < 55.0) {
       /* ROUND 45 (AXINITE): THE CROCKS -- a salt-glazed stoneware crock
@@ -22826,7 +22932,9 @@ float gkDraw(vec2 m, vec2 msz, float shape, float seed, float px, bool paint){
       jugB = min(jugB, mmBox(b - vec2(0.0, 0.322), vec2(0.060, 0.030), 0.012));
       float hdl = max(abs(length((b - vec2(0.150, 0.215))/vec2(1.0, 1.25)) - 0.055) - 0.012, -(b.x - 0.125));
       float lipB = wfEll(b - vec2(0.0, 0.352), vec2(0.066, 0.014));
-      dm = min(min(crockA, lidA), min(min(jugB, hdl), lipB));
+      /* (round 45 graft, HOWLITE's: the jug stoppered with its cork) */
+      float corkB = mmBox(b - vec2(0.0, 0.374), vec2(0.034, 0.022), 0.006);
+      dm = min(min(crockA, lidA), min(min(jugB, hdl), min(lipB, corkB)));
       if (paint) {
         vec3 cream = vec3(0.78, 0.72, 0.58);
         vec3 brown = vec3(0.34, 0.18, 0.08);
@@ -22837,84 +22945,39 @@ float gkDraw(vec2 m, vec2 msz, float shape, float seed, float px, bool paint){
         float la = 0.25 + 0.90*wfRound(ua)*(0.5 + 0.5*smoothstep(-0.9, 0.7, kq*ua)) + 0.16*smoothstep(0.55, 0.95, -kq*ua);
         vec3 cA = mix(cream*(0.92 + 0.12*mv), brown*(0.90 + 0.25*mv), onBr)*la;
         cA *= 0.55 + 0.45*smoothstep(0.0, 0.10, a.y);
-        /* a band of blue cobalt slip round its belly, a crock's mark */
-        cA = mix(cA, vec3(0.16, 0.22, 0.46)*la, step(abs(a.y - 0.150), 0.010)*(1.0 - onBr)*0.85);
-        wfLay(col, ink, crockA, cA, px, 0.95);
-        wfLay(col, ink, lidA, brown*(0.75 + 0.45*smoothstep(0.46, 0.50, a.y))*(0.8 + 0.3*kq*ua), px, 0.95);
+        /* a band of blue cobalt slip round its foot, a crock's mark, and
+           (round 45 graft, both judges: HOWLITE's "crock with a painted
+           '3'") its gallon size brushed on its belly in the same cobalt --
+           the two bowls of a 3, reading the right way round */
+        cA = mix(cA, vec3(0.16, 0.22, 0.46)*la, step(abs(a.y - 0.070), 0.010)*(1.0 - onBr)*0.85);
+        vec2 n3 = a - vec2(0.0, 0.175);
+        n3.x *= mir;
+        float three = min(abs(length((n3 - vec2(0.0, 0.026))*vec2(1.0, 1.15)) - 0.026) - 0.0060,
+                          abs(length((n3 + vec2(0.0, 0.026))*vec2(1.0, 1.05)) - 0.029) - 0.0065);
+        three = max(three, -(n3.x + 0.010));
+        cA = mix(cA, vec3(0.13, 0.20, 0.48)*la, wfIn(three, px)*(1.0 - onBr)*0.88*(0.75 + 0.25*mmNoise(n3*90.0 + seed)));
+        gkLay(col, ink, crockA, cA, px, 0.95);
+        gkLay(col, ink, lidA, brown*(0.75 + 0.45*smoothstep(0.46, 0.50, a.y))*(0.8 + 0.3*kq*ua), px, 0.95);
         ink = max(ink, mmInkP(a.y - dipA, px, 0.8)*wfIn(crockA, px)*0.40);
         /* the glint: a hard window of light on the glaze, the key's side */
         float gA = smoothstep(0.010, 0.0, abs(a.x + 0.085*kq) - 0.005)*smoothstep(0.10, 0.18, a.y)*smoothstep(0.42, 0.34, a.y);
         emit += vec3(1.00, 0.86, 0.66)*gA*wfIn(crockA, px)*0.16;
-        /* the jug: brown all over, its lip and handle */
+        /* the jug (round 45 graft, HOWLITE's): a DARK GLAZE, green-black
+           over the brown, its unglazed foot, its lip and handle, its cork;
+           the glaze's hard glint the brightest thing on it */
         float ub = clamp(b.x/0.16, -1.0, 1.0);
         float lb2 = 0.25 + 0.90*wfRound(ub)*(0.5 + 0.5*smoothstep(-0.9, 0.7, kq*ub)) + 0.16*smoothstep(0.55, 0.95, -kq*ub);
-        vec3 cB = mix(brown*1.15, cream*0.85, step(b.y, 0.060 + 0.012*sin(b.x*50.0)))*lb2*(0.55 + 0.45*smoothstep(0.0, 0.08, b.y));
-        wfLay(col, ink, hdl, brown*0.85, px, 0.9);
-        wfLay(col, ink, jugB, cB, px, 0.95);
-        wfLay(col, ink, lipB, brown*1.35, px, 0.9);
-        float gB = smoothstep(0.009, 0.0, abs(b.x + 0.060*kq) - 0.004)*smoothstep(0.08, 0.14, b.y)*smoothstep(0.26, 0.20, b.y);
-        emit += vec3(1.00, 0.86, 0.66)*gB*wfIn(jugB, px)*0.16;
+        vec3 jgl = vec3(0.17, 0.18, 0.09)*(0.90 + 0.20*mv);
+        vec3 cB = mix(jgl, cream*0.80, step(b.y, 0.040 + 0.010*sin(b.x*50.0)))*lb2*(0.55 + 0.45*smoothstep(0.0, 0.08, b.y));
+        gkLay(col, ink, hdl, jgl*0.85, px, 0.9);
+        gkLay(col, ink, jugB, cB, px, 0.95);
+        gkLay(col, ink, lipB, jgl*1.45, px, 0.9);
+        gkLay(col, ink, corkB, vec3(0.56, 0.42, 0.26)*(0.70 + 0.45*smoothstep(0.355, 0.392, b.y))*(0.9 + 0.2*kq*ub), px, 0.85);
+        float gB = smoothstep(0.009, 0.0, abs(b.x + 0.060*kq) - 0.004)*smoothstep(0.06, 0.12, b.y)*smoothstep(0.27, 0.20, b.y);
+        emit += vec3(1.00, 0.86, 0.66)*gB*wfIn(jugB, px)*0.24;
         moon += 0.45*wfIn(min(lidA, lipB), px) + 0.15*wfIn(min(crockA, jugB), px)*smoothstep(0.20, 0.40, cm.y);
       }
-    } else if (seed < 60.0) {
-      /* ROUND 45 (AXINITE): THE DAY'S VEGETABLES SPILT -- a basket of them
-         tipped on its side on the flags and what rolled out of it: onions
-         in their papery skins, potatoes, two carrots, a turnip, each round
-         in its own light and seated in its own small dark. Drawn in true
-         metres, lying on the floor. */
-      vec2 bq = cm - vec2(-0.30, 0.0);
-      /* the basket on its side: its mouth toward the lens, an ellipse */
-      float bsk = max(wfEll(bq - vec2(0.0, 0.175), vec2(0.215, 0.175)), -bq.y);
-      float mouth = wfEll(bq - vec2(0.085, 0.175), vec2(0.150, 0.150));
-      float veg = 1e3, vid = 0.0;
-      vec2 vc = vec2(0.0); float vr = 0.05;
-      for (int i = 0; i < 7; i++){
-        float fi = float(i);
-        float hh = mmHash11(fi*3.7 + seed), hz = mmHash11(fi*5.9 + seed*1.3);
-        vec2 c = vec2(-0.08 + fi*0.118 + 0.04*(hh - 0.5), 0.0);
-        float r = (fi < 2.5 ? 0.066 + 0.012*hh : 0.054 + 0.016*hh)*(1.0 - 0.18*hz);
-        /* (rolled out along the flags, each its own size: on the floor, or
-           a raised one floats over the pool laid under them) */
-        c.y = r*0.92;
-        float e = wfEll(cm - c, vec2(r*1.12, r));
-        if (e < veg) { veg = e; vid = fi; vc = c; vr = r; }
-      }
-      float car = min(wfSegT(cm, vec2(0.36, 0.022), vec2(0.58, 0.040), 0.022, 0.004), wfSegT(cm, vec2(0.40, 0.050), vec2(0.60, 0.026), 0.020, 0.004));
-      float tops = min(wfSeg(cm, vec2(0.36, 0.022), vec2(0.30, 0.070), 0.010), wfSeg(cm, vec2(0.40, 0.050), vec2(0.35, 0.100), 0.010));
-      dm = min(min(bsk, veg), min(car, tops));
-      if (paint) {
-        vec3 wick = vec3(0.54, 0.38, 0.19)*(0.85 + 0.25*mv);
-        /* the wicker: its courses curving round the drum it lies on */
-        float ang = atan(bq.y - 0.175, bq.x);
-        float rr = length((bq - vec2(0.0, 0.175))/vec2(0.215, 0.175));
-        float crs = fract(ang*6.0/3.1416);
-        float stw = 0.5 + 0.5*cos((rr*9.0 + step(0.5, fract(ang*3.0/3.1416))*0.5)*6.2832);
-        vec3 bc = wick*(0.45 + 0.55*stw)*(0.70 + 0.40*smoothstep(0.0, 0.35, bq.y))*(1.0 + 0.2*kq*clamp(bq.x/0.2, -1.0, 1.0));
-        wfLay(col, ink, bsk, bc, px, 0.95);
-        ink = max(ink, mmInkP(abs(crs - 0.5) - 0.48, px*12.0, 0.8)*wfIn(bsk, px)*0.35*mmLod(0.03, px));
-        /* its dark mouth, with a cabbage still in it */
-        wfLay(col, ink, mouth, vec3(0.03, 0.02, 0.015), px, 0.6);
-        float cab = wfEll(bq - vec2(0.095, 0.150), vec2(0.105, 0.095));
-        float cu = clamp((bq.x - 0.095)/0.105, -1.0, 1.0);
-        float vein = smoothstep(0.014, 0.0, abs(fract(atan(bq.y - 0.150, bq.x - 0.095)*1.6) - 0.5)*0.12);
-        wfLay(col, ink, max(cab, mouth), vec3(0.30, 0.42, 0.18)*(0.45 + 0.60*wfRound(cu))*(1.0 + 0.25*kq*cu)*(1.0 - 0.30*vein), px, 0.9);
-        /* the vegetables: onions (0, 1), the rest potatoes and a turnip */
-        float vu = clamp((cm.x - vc.x)/(vr*1.12), -1.0, 1.0);
-        float vv = clamp((cm.y - vc.y)/vr, -1.0, 1.0);
-        float vl = 0.25 + 0.95*sqrt(max(1.0 - vu*vu - vv*vv*0.6, 0.0))*(0.5 + 0.5*smoothstep(-0.8, 0.7, kq*vu + 0.4*vv)) + 0.15*smoothstep(0.5, 0.95, -kq*vu);
-        vec3 vcol = vid < 1.5 ? vec3(0.60, 0.32, 0.10) : (vid > 5.5 ? vec3(0.66, 0.58, 0.50) : vec3(0.50, 0.35, 0.19));
-        /* (the onions' skins in ribs to their tip; the potatoes' eyes) */
-        float rib = vid < 1.5 ? 0.85 + 0.15*cos(vu*9.0) : 1.0 - 0.35*smoothstep(0.72, 0.80, mmNoise((cm - vc)*70.0 + vid*3.0));
-        vec3 vC = vcol*vl*rib;
-        if (vid > 5.5) vC = mix(vC, vec3(0.50, 0.20, 0.46)*vl, smoothstep(-0.1, 0.4, vv));   // the turnip's purple shoulder
-        vC *= 0.55 + 0.45*smoothstep(0.0, 0.025, cm.y - vc.y + vr);
-        wfLay(col, ink, veg, vC, px, 0.9);
-        wfLay(col, ink, tops, vec3(0.26, 0.40, 0.14)*(0.8 + 0.4*mv), px, 0.7);
-        wfLay(col, ink, car, vec3(0.82, 0.38, 0.10)*(0.65 + 0.45*smoothstep(0.0, 0.05, cm.y)), px, 0.8);
-        ink = max(ink, mmInkP(abs(fract(cm.x/0.022) - 0.5)*0.022 - 0.0015, px, 0.6)*wfIn(car, px)*0.35);
-        moon += 0.30*wfIn(veg, px)*smoothstep(-0.2, 0.6, vv) + 0.25*wfIn(bsk, px)*smoothstep(0.2, 0.34, bq.y);
-      }
-    } else {
+    } else if (seed < 80.0) {
       /* the block, its staves glued end-grain up, scored on its top and
          dished in the middle from the years of the cleaver. ROUND 45
          (AXINITE), both survey-9 judges: "a flat box". Now a BLOCK: its
@@ -22991,6 +23054,157 @@ float gkDraw(vec2 m, vec2 msz, float shape, float seed, float px, bool paint){
         col = mix(col, vec3(0.62, 0.56, 0.44), wfIn(min(length(cm - vec2(0.27, 1.052)), length(cm - vec2(0.34, 1.071))) - 0.007, px));
         emit += vec3(0.85, 0.90, 1.00)*0.10*wfIn(blade, px)*smoothstep(0.6, 1.0, bv);
         moon += 0.5*onT + 0.4*wfIn(blade, px)*smoothstep(0.0, 1.0, bv);
+      }
+    } else if (seed >= 90.0) {
+      /* ROUND 45: A CRATE OF APPLES AND TURNIPS brought up from the cellar
+         and left on the flags -- a low open crate of deal, its boards each
+         their own cut with the end cleats nailed over them, heaped with the
+         fruit, two apples rolled out of it and a turnip beside -- each apple
+         round and lit, its blush, its stalk, its window of light */
+      float cr = mmBox(cm - vec2(-0.08, 0.15), vec2(0.34, 0.15), 0.008);
+      float heap = wfEll(cm - vec2(-0.08, 0.30), vec2(0.32, 0.075));
+      float fr = 1e3;
+      for (int i = 0; i < 3; i++){
+        float fi = float(i);
+        vec2 ap = cm - vec2(0.36 + fi*0.12 + 0.03*mmHash11(fi + seed), 0.045 + 0.015*fi*(1.0 - fi*0.5));
+        fr = min(fr, length(ap*vec2(1.0, 1.08)) - (i == 2 ? 0.060 : 0.045));
+      }
+      fr = min(fr, wfSeg(cm, vec2(0.62, 0.10), vec2(0.66, 0.16), 0.008));
+      dm = min(min(cr, heap), fr);
+      if (paint) {
+        /* the heap of fruit, back row first */
+        vec3 hc = vec3(0.10, 0.05, 0.03);
+        float hk = 0.0;
+        for (int row = 0; row < 3; row++){
+          float ry = 0.355 - float(row)*0.038;
+          for (int j = 0; j < 7; j++){
+            float fj = float(j);
+            float ax = -0.36 + fj*0.093 + 0.045*mod(float(row), 2.0) + 0.012*(mmHash11(fj*3.1 + float(row)*7.0 + seed) - 0.5);
+            vec2 ap = cm - vec2(ax, ry);
+            float rr = 0.044 + 0.006*mmHash11(fj*5.7 + float(row));
+            float ad = length(ap*vec2(1.0, 1.08)) - rr;
+            if (ad < 0.0 && abs(ax + 0.08) < 0.33) {
+              float ah = mmHash11(fj*9.3 + float(row)*4.1 + seed);
+              vec3 skin = ah < 0.70 ? mix(vec3(0.62, 0.10, 0.06), vec3(0.62, 0.60, 0.18), smoothstep(0.30, 0.70, mmNoise(ap*40.0 + ah*9.0)))
+                                    : vec3(0.78, 0.70, 0.52);              // a turnip among them
+              /* (round 45 graft: the second crate, by the door, is the day's
+                 POTATOES and onions -- HOWLITE's -- not a twin of the apples) */
+              if (seed > 95.5) skin = ah < 0.62 ? vec3(0.50, 0.35, 0.19)*(0.85 + 0.30*mmNoise(ap*90.0 + fj)) : vec3(0.66, 0.38, 0.14);
+              vec2 an = ap/rr;
+              float lt = 0.42 + 0.75*clamp(0.5 + 0.5*dot(an, normalize(vec2(0.45*kq, 0.9))), 0.0, 1.0);
+              hc = skin*lt*(1.0 - 0.45*smoothstep(0.55, 1.0, length(an)));
+              hk = 1.0 - smoothstep(-0.010, 0.0, ad);
+              emit += vec3(1.00, 0.86, 0.70)*0.10*smoothstep(0.16, 0.0, length(an - vec2(0.35*kq, 0.45)));
+            }
+          }
+        }
+        gkLay(col, ink, heap, hc*1.20, px, 0.5);
+        ink = max(ink, (1.0 - hk)*wfIn(heap, px)*0.55);
+        /* the crate: boards, cleats, nails, its foot dark */
+        float sb = floor(cm.y/0.075);
+        float sy = cm.y - sb*0.075;
+        vec3 wd = mix(vec3(0.62, 0.40, 0.19), vec3(0.45, 0.36, 0.27), smoothstep(0.40, 0.95, mmHash11(sb*3.3 + seed)))*(0.82 + 0.28*mmHash11(sb*6.1 + seed));
+        wd *= 1.0 - 0.22*(1.0 - smoothstep(0.04, 0.14, abs(fract(sy/0.075*4.0 + 2.2*mmNoise(vec2(cm.x*2.6, sb*5.3 + seed))) - 0.5)))*mmLod(0.019, px);
+        wd *= 1.0 + 0.28*smoothstep(0.060, 0.071, sy) - 0.18*(1.0 - smoothstep(0.003, 0.014, sy));
+        float ce = 0.34 - 0.055 - abs(cm.x + 0.08);
+        float onCe = 1.0 - smoothstep(-0.5*px, 0.5*px, ce);
+        wd = mix(wd*(1.0 - 0.32*exp(-max(ce, 0.0)/0.016)), vec3(0.50, 0.37, 0.24)*(1.0 + 0.25*step(0.0, kq*(cm.x + 0.08))), onCe);
+        float nl = length(vec2(abs(cm.x + 0.08) - 0.3125, sy - 0.0375)) - 0.0055;
+        wd = mix(wd, vec3(0.09, 0.08, 0.08), wfIn(nl, px)*onCe);
+        wd *= mix(0.50, 1.0, smoothstep(0.0, 0.07, cm.y));
+        float gapB = 1.0 - smoothstep(0.0025, 0.0025 + px, min(sy, 0.075 - sy));
+        wd = mix(wd, vec3(0.05, 0.03, 0.02), gapB*(1.0 - onCe));
+        wd *= 0.88 + 0.22*smoothstep(-1.0, 1.0, kq*(cm.x + 0.08)/0.34);
+        gkLay(col, ink, cr, wd*vec3(1.06, 0.98, 0.86), px, 1.0);
+        ink = max(ink, mmInkP(ce, px, 0.9)*wfIn(cr, px)*0.75);
+        ink = max(ink, mmInkP(min(sy, 0.075 - sy), px, 0.7)*wfIn(cr, px)*(1.0 - onCe)*0.45);
+        /* the fruit rolled out on the flags */
+        for (int i = 0; i < 3; i++){
+          float fi = float(i);
+          vec2 ap = cm - vec2(0.36 + fi*0.12 + 0.03*mmHash11(fi + seed), 0.045 + 0.015*fi*(1.0 - fi*0.5));
+          float rr = i == 2 ? 0.060 : 0.045;
+          float ad = length(ap*vec2(1.0, 1.08)) - rr;
+          vec2 an = ap/rr;
+          vec3 skin = i == 2 ? vec3(0.80, 0.72, 0.56)*mix(vec3(1.0), vec3(1.10, 0.60, 0.95), smoothstep(-0.1, 0.6, an.y)) : vec3(0.64, 0.11, 0.06);
+          if (seed > 95.5) skin = i == 1 ? vec3(0.66, 0.38, 0.14) : vec3(0.50, 0.35, 0.19);
+          float lt = 0.40 + 0.78*clamp(0.5 + 0.5*dot(an/max(length(an), 1e-3), normalize(vec2(0.45*kq, 0.9))), 0.0, 1.0);
+          gkLay(col, ink, ad, skin*lt*1.2, px, 1.0);
+          emit += vec3(1.00, 0.86, 0.70)*0.10*wfIn(ad, px)*smoothstep(0.16, 0.0, length(an - vec2(0.35*kq, 0.45)));
+          if (i == 2) gkLay(col, ink, wfSeg(cm, vec2(0.62, 0.10), vec2(0.66, 0.16), 0.008), vec3(0.30, 0.42, 0.16), px, 0.7);
+        }
+        moon += 0.06*wfIn(cr, px);
+      }
+    } else {
+      /* ROUND 45: THE DAY'S POTATOES AND ONIONS, the basket they came in
+         tipped on its side on the flags and them rolled out across them --
+         the basket's wicker courses, its dark mouth; each potato a lumpy
+         russet with its eyes, each onion its papery skin drawn up to its
+         neck, a carrot or two; the earth they shed */
+      float bk = mmBox(cm - vec2(-0.38, 0.17), vec2(0.24, 0.165), 0.10);
+      float mouth = wfEll(cm - vec2(-0.14, 0.17), vec2(0.075, 0.175));
+      float veg = 1e3;
+      for (int i = 0; i < 10; i++){
+        vec3 vk; vec2 vc0;
+        float dv = gkVeg(cm, float(i), seed, vc0, vk);
+        veg = min(veg, dv);
+      }
+      float earth = wfEll(cm - vec2(0.08, 0.006), vec2(0.50, 0.014)) + 0.010*(mmNoise(vec2(cm.x*22.0, seed)) - 0.4);
+      dm = min(min(bk, mouth), min(veg, earth));
+      if (paint) {
+        gkLay(col, ink, earth, vec3(0.22, 0.15, 0.09)*(0.75 + 0.4*mmNoise(cm*40.0)), px, 0.25);
+        /* the basket on its side: courses of withy run round it */
+        vec3 wick = vec3(0.56, 0.40, 0.20)*(0.85 + 0.25*mv);
+        float crs = floor((cm.x + 0.62)/0.040);
+        float cyy = fract((cm.x + 0.62)/0.040);
+        float sty = cm.y + mod(crs, 2.0)*0.035;
+        float wv = 0.5 + 0.5*cos(sty/0.070*6.2832);
+        float bvv = clamp((cm.y - 0.17)/0.165, -1.0, 1.0);
+        vec3 bc = wick*(0.40 + 0.55*wfRound(bvv))*(0.70 + 0.45*wv)*(0.75 + 0.30*sin(cyy*3.1416));
+        bc *= 0.80 + 0.30*smoothstep(-0.6, 0.9, bvv);
+        gkLay(col, ink, bk, bc, px, 0.95);
+        ink = max(ink, mmInkP(abs(cyy - 0.5)*0.040 - 0.020, px, 0.8)*wfIn(bk, px)*0.45*mmLod(0.040, px));
+        /* its mouth: the rim's withy lit, the inside dark */
+        float rimD = abs(length((cm - vec2(-0.14, 0.17))/vec2(0.075, 0.175)) - 1.0)*0.075 - 0.010;
+        vec3 inside = vec3(0.07, 0.045, 0.025)*(1.0 + 1.2*smoothstep(0.0, 0.10, cm.x + 0.14));
+        gkLay(col, ink, mouth, inside, px, 0.9);
+        col = mix(col, wick*(0.70 + 0.45*smoothstep(0.0, 0.3, cm.y - 0.10)), wfIn(rimD, px)*wfIn(mouth - 0.012, px));
+        /* the vegetables, each by its own kind, the far ones laid first */
+        for (int pass = 0; pass < 2; pass++){
+          for (int i = 0; i < 10; i++){
+            float fi = float(i);
+            if (mod(fi, 2.0) != (pass == 0 ? 1.0 : 0.0)) continue;
+            vec3 vk; vec2 vc0;
+            float dv = gkVeg(cm, fi, seed, vc0, vk);
+            if (dv > 0.02) continue;
+            float vh = vk.x, vr = vk.y;
+            vec2 vp = cm - vc0;
+            vec2 vn = vp/vr;
+            float rr = clamp(length(vn*vec2(0.85, 1.15)), 0.0, 1.0);
+            float lit = 0.38 + 0.80*clamp(0.5 + 0.5*dot(vn/max(length(vn), 1e-3), normalize(vec2(0.55*kq, 0.8))), 0.0, 1.0)*(0.35 + 0.65*wfRound(rr));
+            lit *= 1.0 - 0.45*smoothstep(0.2, -0.8, vn.y);        // the underside, on the flags
+            vec3 vc;
+            if (vh < 0.55) {
+              vc = vec3(0.86, 0.50, 0.20)*(0.85 + 0.25*mmNoise(vp*90.0 + fi));
+              vc *= 1.0 - 0.18*smoothstep(0.55, 0.80, mmNoise(vp*55.0 + fi*3.0));
+              float eye = 1e3;
+              for (int j = 0; j < 3; j++) eye = min(eye, length(vp - vr*vec2(cos(float(j)*2.1 + fi), sin(float(j)*2.1 + fi)*0.6)*0.6) - 0.0045);
+              vc = mix(vc, vc*0.40, wfIn(eye, px)*mmLod(0.012, px));
+            } else if (vh < 0.86) {
+              vc = vec3(1.00, 0.52, 0.10);
+              float skin = abs(fract(atan(vp.x, vp.y + vr*0.9)*6.0/3.1416 + 0.5) - 0.5);
+              vc *= 0.80 + 0.26*smoothstep(0.05, 0.25, skin);
+              vc = mix(vc, vec3(0.95, 0.72, 0.38), smoothstep(vr*0.6, vr*1.3, vp.y)*0.6);
+              ink = max(ink, (1.0 - smoothstep(0.0, 0.05, skin))*wfIn(dv, px)*0.30*mmLod(0.03, px));
+            } else {
+              vc = vec3(0.98, 0.46, 0.12)*(0.80 + 0.30*smoothstep(-0.01, 0.02, vp.y));
+              vc *= 1.0 - 0.25*step(0.6, fract(vp.x*60.0))*mmLod(0.017, px);
+            }
+            gkLay(col, ink, dv, vc*lit*1.25, px, 1.0);
+            /* the lit flags under them throw the range's warmth back up */
+            emit += vc*vec3(1.00, 0.72, 0.46)*0.05*wfIn(dv, px)*(0.6 + 0.4*smoothstep(0.4, -0.6, vn.y));
+          }
+        }
+        moon += 0.08*wfIn(bk, px)*smoothstep(0.20, 0.32, cm.y);
       }
     }
     d = dm/sc;
@@ -31569,6 +31783,13 @@ void main(){
        forms" -- so its modelling reads and it is not the brightest thing in
        the hall) */
     if (vShape > 30.5 && vShape < 31.5) Ew *= mix(1.0, 0.72, uStatueMod);
+#if MM_SH82
+    /* (round 45 graft, LARIMAR's: the kitchen's floor things at the prop's
+       light WITHOUT the wing's material noise -- through Ew it mottled the
+       sacks grey) */
+    if (vShape > 81.5 && vShape < 82.5)
+      Ew = max(mmLum(mix(uAlbedo, uAlbedoHi, clamp(vUv.y*0.85 + 0.10, 0.0, 1.0))*(0.70 + 0.60*vTone)), 0.02)*2.2 + 0.060;
+#endif
     albedo = gWfCol*Ew;
     wgE = gWfEmit; wgInk = gWfInk; wgMoon = gWfMoon;
   }
@@ -32297,6 +32518,12 @@ void main(){
 #endif
   /* (round 31: the basket's wicker and greens, the urn's moss -- their own) */
   if (vShape > 80.5 && vShape < 83.5) { satK = max(uPropSat, 0.38); satM = max(uPropSatMax, 0.56); }
+#if MM_SH82
+  /* (round 45 graft, LARIMAR's: the kitchen's floor things -- hessian, salt
+     glaze, maple, potatoes and onions -- keep the chroma of what they are
+     made of; under the cold fill at the cap above the vegetables came back coal) */
+  if (vShape > 81.5 && vShape < 82.5) { satK = max(uPropSat, 0.46); satM = max(uPropSatMax, 0.66); }
+#endif
   /* (round 45: the kitchen floor's jute, glaze and vegetables -- warm
      material facts; at the basket's cap the sacks came back grey, "pale grey,
      untextured blobs", both survey-9 judges) */
