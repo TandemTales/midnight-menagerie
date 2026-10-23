@@ -1330,11 +1330,12 @@
   .mm-hud[data-fan] .mm-hud__group--keepsakes { padding-inline: 6px; }
 }
 @media (min-width: 1401px) {
-  .mm-hud[data-fan] .mm-hud__group--meta { grid-template-rows: 17px 17px; }
-  .mm-hud[data-fan] .mm-hud__group--meta > :is(.mm-hud__haunt, .mm-hud__seed) { height: 17px; }
+  .mm-hud[data-fan] .mm-hud__group--meta { grid-template-rows: 16px 16px; align-content: center; align-self: center; }
+  .mm-hud[data-fan] .mm-hud__group--meta > :is(.mm-hud__haunt, .mm-hud__seed) { height: 16px; }
   .mm-hud[data-fan] .mm-hud__group--meta > :is(.mm-hud__haunt, .mm-hud__seed),
-  .mm-hud[data-fan] .mm-hud__group--meta > :is(.mm-hud__haunt, .mm-hud__seed) :is(.mm-hud__w, .mm-hud__t) { font-size: 13.5px; }
+  .mm-hud[data-fan] .mm-hud__group--meta > :is(.mm-hud__haunt, .mm-hud__seed) :is(.mm-hud__w, .mm-hud__t) { font-size: 13px; line-height: 1; }
 }
+.mm-hud[data-fan] .mm-hud__group--meta { align-self: center; }
 
 /* Buttons, Clues and Luck each in a cell of its own, parted by an engraved
    line cut into the channel (survey 9: "in their own spaced cells") */
