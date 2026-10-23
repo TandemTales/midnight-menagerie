@@ -1,0 +1,73 @@
+{
+  "round": "r46",
+  "maxBuilders": 3,
+  "briefs": [
+    "docs/ui-pass/BRIEF-r0.md",
+    "docs/ui-pass/BRIEF-r1.md",
+    "docs/ui-pass/BRIEF-r33.md",
+    "docs/ui-pass/BRIEF-r36.md",
+    "docs/ui-pass/BRIEF-r38.md",
+    "docs/ui-pass/BRIEF-r40.md",
+    "docs/ui-pass/BRIEF-r42.md",
+    "docs/ui-pass/REPAIR-r40.md",
+    "docs/ui-pass/REPAIR-r40b.md",
+    "docs/ui-pass/REPAIR-r41.md",
+    "docs/ui-pass/BRIEF-r46.md"
+  ],
+  "rubrics": [
+    "docs/ui-pass/RUBRIC.md",
+    "docs/ui-pass/RUBRIC-r46.md"
+  ],
+  "samples": [
+    "UI/title.png",
+    "UI/mainMenu.png",
+    "UI/selectCompanion.png",
+    "UI/selectKid.png"
+  ],
+  "tracks": [
+    {
+      "key": "boards",
+      "name": "BOARDS",
+      "rule": "refine",
+      "screens": [
+        "hud-late",
+        "settings",
+        "piles",
+        "atlas",
+        "rest",
+        "event",
+        "gameover"
+      ],
+      "baseline": "MOIRE",
+      "builders": [
+        {
+          "slot": "a",
+          "code": "CHAROITE",
+          "port": 9301,
+          "angle": "LITERAL -- work BRIEF-r46's fix list 1 to 6 in order and exactly as written, the run strip FIRST. Never solve crowding by deleting what the player reads; replace weak things with drawn, readable ones."
+        },
+        {
+          "slot": "b",
+          "code": "SUGILITE",
+          "port": 9302,
+          "angle": "THE OBJECTS FIRST -- every flat or web-like thing on these boards becomes a drawn object of the house: the +N chips and palette pills as enamel medallions, the search field as a brass nameplate, the event choices as inked slips, the rest options with painted objects, the atlas's unsurveyed wings as ink ghosts, the blanket fort inked; then readability at 1280 in that language."
+        },
+        {
+          "slot": "c",
+          "code": "KUNZITE",
+          "port": 9303,
+          "angle": "READ IT ON THE DECK -- at 1280x800 a player must see what they own and read every line: the ten Keepsakes and eight Gear, the event's risk and gain, gameover's ledger, the atlas's labels, settings without touching rules. Make every board read at 1280 first by reflowing into the room the boards already have, then draw each element richer in that layout."
+        }
+      ],
+      "smallScreens": [
+        "hud-late",
+        "settings",
+        "piles",
+        "atlas",
+        "rest",
+        "event",
+        "gameover"
+      ]
+    }
+  ]
+}
