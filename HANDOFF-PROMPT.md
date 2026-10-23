@@ -291,6 +291,12 @@ build shows all 18 Keepsakes and Gear at 1280. Battery green but the sprites
 halo (clips.py 26/2 once under Unreal load, 28/0 alone). **NOW: its graft**
 (`GRAFT-r46.md`, D:/UILOOP/r46/wt/r46-graft; first the rest board's row-4
 collision), then a paired check, then SURVEY 10.
+**ROUND 46'S GRAFT IS MERGED, VERIFIED AND PUSHED (`e09ec808`):** paired vs
+survey 9 better on the atlas, event, rest, gameover and piles; the run strip
+showing all 18 coins LOST 0 of 2 (crowded, unreadable) and is survey 9's
+again (pixel-identical); the piles bevel dropped. **Rule refined: on the
+HUD, legibility beats count -- more objects only win where they read.**
+NEXT: SURVEY 10, paired vs survey 9.
 
 **ROUND 33 AND ITS GRAFT ARE MERGED, VERIFIED AND PUSHED (2026-10-16):**
 graft `9d008119`. COBALT +1.59 (`531126e4`): no running line under 11 px at
