@@ -622,3 +622,81 @@
 .rs-hang { --rs-out: clamp(30px, 2.8vw, 44px); }
 .rs-hang--l { left: calc(var(--kit-edge) + var(--corner-w) + 6px - var(--rs-out)); }
 .rs-hang--r { right: calc(var(--kit-edge) + var(--corner-w) + 6px - var(--rs-out)); }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ROUND 46 — THE FORT INKED AND PIECED; THE MOONLIGHT DRAWN
+   Survey 9, both judges: the fort "fuzzy, noise-textured felt with a flat
+   translucent moonbeam wedge" -- "crisp folds, a visible quilt-patch seam
+   pattern and a clear inked edge". The cloth's weave no longer pushes its
+   edges about (rest.js rsCloth), every blanket's edge is inked, the front
+   quilt is pieced in five dyes with gilt seams, and the moon comes in as a
+   crisp-edged shaft that lays the window's four panes on the floor.
+   ═══════════════════════════════════════════════════════════════════════════ */
+.rs-fort__paint .rs-ink {
+  fill: none; stroke: color-mix(in srgb, var(--kit-void) 88%, var(--kit-violet-lo));
+  stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+}
+.rs-fort__paint .rs-ink--fine { stroke-width: 1.3; }
+.rs-qp { fill-opacity: .5; }
+.rs-qp--plum   { fill: color-mix(in oklab, var(--kit-violet) 70%, var(--kit-void)); }
+.rs-qp--rose   { fill: color-mix(in oklab, var(--courage-300) 42%, var(--kit-violet-lo)); }
+.rs-qp--indigo { fill: color-mix(in oklab, var(--guard-500) 62%, var(--kit-violet-lo)); }
+.rs-qp--ochre  { fill: color-mix(in oklab, var(--kit-gold) 55%, var(--kit-violet-lo)); }
+.rs-qp--moss   { fill: color-mix(in oklab, var(--good-500) 40%, var(--kit-violet-lo)); }
+.rs-qseam {
+  fill: none; stroke: color-mix(in srgb, var(--kit-gold-hi) 62%, transparent);
+  stroke-width: .8; stroke-dasharray: 2.6 1.9; stroke-linejoin: round;
+}
+.rs-fort__paint .rs-fold { stroke-width: 4; stroke-opacity: .5; }
+.rs-fort__paint .rs-foldlit { stroke-width: 1.6; }
+.rs-shaft { opacity: .6; mix-blend-mode: screen; }
+.rs-moonbeam { opacity: .2; }
+.rs-moonbeam-edge { fill: none; stroke: color-mix(in oklab, var(--kit-moon) 70%, white); stroke-width: .7; opacity: .45; mix-blend-mode: screen; }
+.rs-moonpane { fill: color-mix(in oklab, var(--kit-moon) 76%, white); opacity: .4; mix-blend-mode: screen; }
+
+/* ── each choice its own small painted vignette ──────────────────────────────
+   Survey 9: the four options "four identical long panels" -- "a small painted
+   vignette per option (pillow, whetstone, candle, teacup)". Each choice's
+   object stands large in an arched niche cut into its panel, on a little
+   ledge, lit by its own light: the pillow by the window's moon, the whetstone
+   by the torch it is worked under, the Keepsake's candle by its own flame,
+   the teacup by the fort's lamp. The niche reaches into the panel's padding
+   (inside its inner rule), so the panels keep their height. */
+.rs-door .rs-door__niche {
+  --well: clamp(60px, 4.9vw, 92px);
+  --niche-l: var(--kit-candle);
+  width: var(--well); height: calc(var(--well) * 1.06); aspect-ratio: auto;
+  margin-block: calc(var(--well) * -.07) calc(var(--well) * -.02);
+  border-radius: 48% 48% 5px 5px / 38% 38% 5px 5px;
+  background:
+    radial-gradient(70% 46% at 50% 92%, rgb(0 0 0 / .55), transparent 70%),
+    radial-gradient(62% 56% at 50% 54%, color-mix(in srgb, var(--niche-l) 46%, transparent), transparent 72%),
+    linear-gradient(180deg, #0c0711, #1d1228 62%, #2a1a36);
+  box-shadow:
+    inset 0 6px 10px rgb(0 0 0 / .8),
+    inset 0 -1px 0 rgb(255 226 170 / .12),
+    0 0 0 1.5px #1a0f06,
+    0 0 0 3px color-mix(in srgb, var(--kit-gold) 86%, transparent),
+    0 0 0 4px #1a0f06,
+    0 4px 8px 3px rgb(0 0 0 / .55);
+  filter: none;
+  position: relative;
+}
+/* the ledge the object stands on */
+.rs-door .rs-door__niche::after {
+  content: ''; position: absolute; left: -5px; right: -5px; bottom: -5px; height: 8px; z-index: 2;
+  border-radius: 2px;
+  background: linear-gradient(180deg, var(--kit-gold-hi), var(--kit-gold) 40%, var(--kit-gold-lo));
+  box-shadow: 0 0 0 1px #1a0f06, 0 3px 4px rgb(0 0 0 / .8);
+}
+.rs-door .rs-door__niche > i {
+  position: relative; z-index: 1;
+  width: 104%; max-width: none; align-self: end; margin-bottom: 2px;
+  filter: drop-shadow(0 3px 2px rgb(0 0 0 / .85)) drop-shadow(0 0 7px color-mix(in srgb, var(--niche-l) 40%, transparent));
+}
+.rs-door[data-opt="rest"] .rs-door__niche { --niche-l: color-mix(in oklab, var(--kit-moon) 80%, white); }
+.rs-door[data-opt="upgrade"] .rs-door__niche { --niche-l: color-mix(in oklab, var(--kit-candle) 70%, var(--courage-500)); }
+.rs-door[data-opt="forge"] .rs-door__niche { --niche-l: var(--kit-candle); }
+.rs-door[data-opt="sit"] .rs-door__niche { --niche-l: color-mix(in oklab, var(--kit-candle) 80%, white); }
+.rs-door.is-done .rs-door__niche { filter: drop-shadow(0 0 10px color-mix(in srgb, var(--kit-candle) 60%, transparent)); }
+.rs-door__key.kit-num { left: calc(clamp(18px, 1.6vw, 28px) + clamp(60px, 4.9vw, 92px) / 2); }

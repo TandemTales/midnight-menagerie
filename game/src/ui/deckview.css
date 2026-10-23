@@ -627,3 +627,109 @@
       calc((100cqw - 10 * var(--slot-pad) - 64px) / 5));
   }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ROUND 46 — THE SEARCH IS AN ENGRAVED BRASS NAMEPLATE; THE CASE'S GROUND LIT
+   Survey 9, both judges: "Seek a Trick by name..." was still "a gold-outlined
+   web text input ... the most web-UI object in the dialog" -- "an engraved
+   brass nameplate ... with the magnifier as a round enamel medallion fused
+   to it"; the dialog's ground "an even plum" -- "a lit felt or damask with a
+   candle-warm falloff"; at 1280 an empty band between the tray and CLOSE.
+   - the search is a door's nameplate: a plate of antique brass, brushed,
+     bevelled (lit along its top edge, shadowed along its foot), a line
+     engraved round it a little inside its edge, a screw at its far end; the
+     words are ENGRAVED into it in the clerk's dark ink (the input is the
+     plate's face: no box, no ring); the glass's enamel medallion is set
+     into its near end on a brass collar. Focus warms the brass and cuts a
+     candle-lit line under the words, never a ring round the plate.
+   - the dialog's damask comes up out of its glaze where the candle on the
+     frame's corner reaches, and falls away to the corners.
+   ═══════════════════════════════════════════════════════════════════════════ */
+.mm-deck__search {
+  --field-h: clamp(40px, 5vh, 46px);
+  height: var(--field-h);
+  border: 0; border-image: none; border-radius: 7px;
+  padding: 0;
+  background:
+    radial-gradient(circle at calc(100% - 13px) 50%, #f3dca0 0 1.2px, #6b4c24 1.8px 3px, #3a260e 3.4px 4.6px, transparent 5px),
+    repeating-linear-gradient(90deg, rgb(255 240 200 / .045) 0 1px, transparent 1px 3px, rgb(40 24 6 / .05) 3px 4px),
+    radial-gradient(60% 120% at 42% 30%, rgb(255 226 160 / .28), transparent 70%),
+    linear-gradient(180deg, #d7b36c 0%, #b48f4e 16%, #95713b 52%, #7a5a2c 82%, #5e4220 100%);
+  box-shadow:
+    inset 0 1px 0 rgb(255 238 196 / .7),
+    inset 0 -1.5px 0 rgb(46 26 6 / .85),
+    inset 0 0 0 1px rgb(58 36 10 / .55),
+    0 0 0 1px #2a1906,
+    0 4px 6px -1px rgb(0 0 0 / .8);
+  filter: none;
+}
+/* the engraved line round the plate's face, a little inside its edge */
+.mm-deck__search::before {
+  content: ''; position: absolute; z-index: 0; pointer-events: none;
+  inset: 5px 26px 5px calc(var(--field-h) * .82);
+  border-radius: 3px;
+  border: 1px solid rgb(58 34 8 / .7);
+  box-shadow: 0 1px 0 rgb(255 232 180 / .38), inset 0 1px 0 rgb(255 232 180 / .22);
+}
+.mm-deck__search .mm-deck__seek {
+  left: calc(var(--field-h) * .9); right: 28px;
+  top: 6px; bottom: 6px;
+  padding: 1px 6px 0 4px;
+  border-radius: 2px;
+  background: none;
+  box-shadow: none;
+  font-family: var(--font-display); font-weight: 700; font-size: 15px; letter-spacing: .07em;
+  color: #2a1606; caret-color: #2a1606;
+  text-shadow: 0 1px 0 rgb(255 230 172 / .5), 0 -1px 0 rgb(30 16 2 / .25);
+}
+.mm-deck__search .mm-deck__seek::placeholder {
+  font-family: var(--font-body); font-weight: 600; font-style: italic;
+  font-size: 15px; letter-spacing: .01em;
+  color: #3b230b; opacity: 1;
+  text-shadow: 0 1px 0 rgb(255 230 172 / .45);
+}
+.mm-deck__search .mm-deck__seek::selection { background: rgb(60 30 6 / .3); color: #1a0c02; }
+.mm-deck__search:hover { filter: brightness(1.06); }
+.mm-deck__search:focus-within {
+  filter: brightness(1.1) drop-shadow(0 0 9px color-mix(in srgb, var(--kit-candle) 45%, transparent));
+}
+.mm-deck__search .mm-deck__seek:focus,
+.mm-deck__search .mm-deck__seek:focus-visible {
+  outline: none;
+  box-shadow: none;
+  background: radial-gradient(70% 90% at 30% 60%, rgb(255 200 120 / .22), transparent 75%);
+}
+/* the glass's medallion set into the plate's near end on a brass collar */
+.mm-deck__cap.kit-medallion {
+  --md: calc(var(--field-h) * 1.16);
+  left: calc(var(--field-h) * -.34);
+  box-shadow: 0 0 0 2px #b08a4a, 0 0 0 3px #2a1906;
+  border-radius: 50%;
+  filter: drop-shadow(1px 2px 2px rgb(0 0 0 / .75));
+}
+:root[data-large-text="1"] .mm-deck__search .mm-deck__seek,
+:root[data-large-text="1"] .mm-deck__search .mm-deck__seek::placeholder { font-size: 17px; }
+
+/* the dialog's ground: its damask raised where the candle reaches */
+.mm-modal--kit:has(.mm-deck) .mm-modal__dialog::before {
+  background:
+    radial-gradient(60% 72% at 94% 106%, color-mix(in srgb, var(--kit-candle) 24%, transparent), transparent 72%),
+    radial-gradient(56% 36% at 50% 2%, color-mix(in srgb, var(--kit-candle) 13%, transparent), transparent 74%),
+    radial-gradient(118% 108% at 52% 46%, transparent 38%, rgba(5, 3, 8, .7) 100%);
+}
+.mm-modal--kit:has(.mm-deck) .mm-modal__dialog.kit-panel--damask {
+  background:
+    radial-gradient(120% 110% at 50% 50%, transparent 50%, rgba(0, 0, 0, .42) 100%),
+    linear-gradient(rgba(19, 14, 24, .5), rgba(15, 11, 19, .5)),
+    url("../../assets/ui/kit/damask.webp") 50% 0 / 150px auto,
+    url("../../assets/ui/kit/grain.webp") 0 0 / 256px 256px,
+    linear-gradient(180deg, #1c1523 0%, #140f19 60%, #0f0b13 100%);
+}
+
+/* at the Deck's 1280 CLOSE stands ON the case's lower rail again, as it does
+   at 1600, so no dead band lies between the Tricks and the way out: the case
+   and its close are one object and the dialog closes on them */
+@media (max-width: 1400px) {
+  .mm-modal--kit[data-size="wide"]:has(.mm-deck) .mm-modal__foot { margin-top: calc(var(--btn-h) * -.5 - 4px); position: relative; z-index: 5; }
+  .mm-deck__table.kit-stage { padding-bottom: calc(var(--liner-w) + 14px); }
+}

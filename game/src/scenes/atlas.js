@@ -1271,12 +1271,42 @@ export class AtlasScene extends Scene {
         pg.setTransform(dpr, 0, 0, dpr, 0, 0);
         /* round 42 graft 2: dark enough that the tan cartouche on it is a
            pale plate on a dark ground, not tan on tan */
-        pg.fillStyle = 'rgb(40 25 12 / .5)';
+        /* ROUND 46 (survey 9: "flat sepia blotches with only a dashed
+           outline ... nameplates floating over nothing drawn"): not a dark
+           fill but a faint INK GHOST of the plan on the paper -- the
+           footprint only breathed on with umber, a draughtsman's pencil
+           hatching laid across it, its walls (the hair canvas, below) drawn
+           in clear sepia over the paper instead of sinking into a blot */
+        pg.fillStyle = 'rgb(70 44 20 / .13)';
         pg.fill(shape);
         pg.clip(shape);
-        pg.globalAlpha = 0.5;
-        pg.strokeStyle = 'rgb(30 18 8)';
-        pg.lineWidth = 7;
+        {
+          let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+          for (const r of (w.outline || [])) {
+            for (let i = 0; i + 1 < r.length; i += 2) {
+              x0 = Math.min(x0, r[i] * S); x1 = Math.max(x1, r[i] * S);
+              y0 = Math.min(y0, r[i + 1] * S); y1 = Math.max(y1, r[i + 1] * S);
+            }
+          }
+          if (!Number.isFinite(x0)) { x0 = w.nx * pw; y0 = w.ny * ph; x1 = x0 + w.nw * pw; y1 = y0 + w.nh * ph; }
+          /* the hatching: a soft pencil, every stroke its own weight */
+          let seed = (w.n * 2654435761) >>> 0;
+          const rnd = () => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296; };
+          pg.lineCap = 'round';
+          pg.strokeStyle = 'rgb(52 32 14)';
+          const step = 5.5, h = y1 - y0;
+          for (let x = x0 - h; x < x1; x += step) {
+            pg.globalAlpha = 0.11 + rnd() * 0.07;
+            pg.lineWidth = 0.6 + rnd() * 0.35;
+            pg.beginPath();
+            pg.moveTo(x, y1 + 2);
+            pg.lineTo(x + h + 2, y0 - 2);
+            pg.stroke();
+          }
+        }
+        pg.globalAlpha = 0.3;
+        pg.strokeStyle = 'rgb(40 24 10)';
+        pg.lineWidth = 6;
         pg.filter = 'blur(3px)';
         pg.stroke(shape);
         pg.filter = 'none';
