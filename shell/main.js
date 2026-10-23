@@ -16,6 +16,12 @@
  * The App ID comes from `steam_appid.txt` beside this file. Empty or missing
  * means no Steam: the game still runs, co-op falls back to two tabs on one
  * machine, and `Platform.steam.available` says false.
+ *
+ * Two layouts. In the REPO this file is `shell/main.js` and the game is
+ * `../game`. In the PACKAGE (`tools/package_release.py`) this file is
+ * `resources/app/main.js` with the game beside it in `resources/app/game`,
+ * and no `steam_appid.txt` ships (Steam supplies the id when it launches the
+ * depot): the id was baked into `release.json` at package time instead.
  */
 const { app, BrowserWindow, ipcMain, shell } = require('electron');
 const http = require('http');
@@ -23,7 +29,8 @@ const fs = require('fs');
 const path = require('path');
 const { SteamHost } = require('./steam');
 
-const ROOT = path.resolve(__dirname, '..');
+const PACKAGED = fs.existsSync(path.join(__dirname, 'game', 'index.html'));
+const ROOT = PACKAGED ? __dirname : path.resolve(__dirname, '..');
 const PORT = 8790;          // not 8777: the dev server and the tests own that one
 const PORTS_TO_TRY = 10;
 
@@ -39,7 +46,11 @@ const MIME = {
 
 function readAppId() {
   try {
-    const n = parseInt(fs.readFileSync(path.join(__dirname, 'steam_appid.txt'), 'utf8').trim(), 10);
+    const baked = path.join(__dirname, 'release.json');
+    const src = fs.existsSync(baked)
+      ? String(JSON.parse(fs.readFileSync(baked, 'utf8')).steamAppId || '')
+      : fs.readFileSync(path.join(__dirname, 'steam_appid.txt'), 'utf8');
+    const n = parseInt(src.trim(), 10);
     return Number.isFinite(n) && n > 0 ? n : 0;
   } catch { return 0; }
 }
