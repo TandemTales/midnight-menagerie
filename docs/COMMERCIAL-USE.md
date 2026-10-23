@@ -165,15 +165,17 @@ is only needed if you want terms Valve's does not give you.
 
 ## What the depot must and must not contain
 
-There is no packaging step yet, so this is a note for whoever writes one. Getting
-it wrong in either direction has a cost.
+**Enforced since 2026-10-23 by `tools/package_release.py`** (see
+`docs/RELEASE.md`): it ships only tracked `game/` files plus the shell, and
+fails the build if a notice below is missing or anything listed as OUT is
+present. Getting it wrong in either direction has a cost.
 
 **Must be IN.** `game/vendor/LICENSE` and `game/assets/fonts/OFL.txt`. Both
 licences require the notice to travel with the work, so dropping them as
 "development files" re-creates the breach this pass closed. They are 6.5 KB
 between them.
 
-**Must be OUT**, and none of it is currently excluded by anything:
+**Must be OUT**:
 
 | Path | Size | Why |
 |---|---|---|
@@ -196,8 +198,8 @@ would ship the unprocessed originals.
 2. **Replace the copyright holder placeholder.** `THIRD-PARTY-NOTICES.md` says
    "the Midnight Menagerie authors". That is not a rights holder. Put the legal
    name or entity there before the store page goes up.
-3. **Confirm the depot includes the notice files.** They are worthless in git if
-   packaging drops them.
+3. ~~**Confirm the depot includes the notice files.**~~ **Gated 2026-10-23:**
+   `tools/package_release.py` fails without them.
 4. **Credits.** Now names the tools, the fonts and the licences in-game. Add the
    human names when you know whose they are — the file is
    `game/src/scenes/title.js`.

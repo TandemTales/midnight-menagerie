@@ -59,5 +59,9 @@ says why on the console, and co-op falls back to tabs on one machine.
 `python tests/shell/check.py` tests the whole Steam path against a fake Steam,
 with no client and no App ID.
 
+`python tools/package_release.py` builds the Steam depot folder from this shell
+and the tracked `game/`; `steampipe/` has sample upload scripts. See
+`docs/RELEASE.md`.
+
 Nothing here publishes anything. A store page or a public build only happens
 from the Steamworks site, by the account owner.
