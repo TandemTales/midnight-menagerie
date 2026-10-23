@@ -5264,6 +5264,12 @@ float yewRagW(float u, float sd, float amp){
    out of the clipped line itself -- drawn over its own pixel, only against
    the sky (the caller asks only there). How much of this pixel is dead stem;
    top is the crown here, u and y in metres. */
+/* (round 45 graft: how many of u's units make a metre ACROSS the screen --
+   a side wall's crown is laid at 1.9 to the leaf's metre (hedgeWallH's uc),
+   and the twigs drawn in those units came out 1.9 times as thin and stood
+   bolt upright, a comb of hairs and not HOWLITE's dead wood standing up out
+   of the torn crowns; 1 on the far wall) */
+float gTwigAx = 1.0;
 float yewTwigW(float u, float y, float top, float sd, float px){
   float tw = 0.0;
   const float GL = 5.6;
@@ -5275,7 +5281,7 @@ float yewTwigW(float u, float y, float top, float sd, float px){
     float hwm = 0.38 + 0.46*fract(hg*13.7);
     float dep = 0.28 + 0.40*fract(hg*3.9);
     /* (the frame budget: only in its notch's own column) */
-    if (abs(u - c0) < hwm + 0.45 && y < 3.30 + 0.6*dep) for (int k = 0; k < 4; k++){
+    if (abs(u - c0) < hwm + 0.45*gTwigAx && y < 3.30 + 0.6*dep) for (int k = 0; k < 4; k++){
       float fk = float(k);
       float hk = mmHash11(fk*5.3 + gi*1.7 + sd);
       /* (its foot down in the leaf, so a dip under the notch does not leave
@@ -5284,13 +5290,13 @@ float yewTwigW(float u, float y, float top, float sd, float px){
       float an = (hk - 0.5)*0.75 + (fk - 1.5)*0.12;
       float L = dep*(0.85 + 0.55*fract(hk*9.1)) + 0.30;
       vec2 dir = vec2(sin(an), cos(an));
-      vec2 pa = vec2(u, y) - b;
+      vec2 pa = vec2((u - b.x)/gTwigAx, y - b.y);
       float tt = clamp(dot(pa, dir)/L, 0.0, 1.0);
       float d = length(pa - dir*L*tt) - mix(0.016, 0.006, tt);
-      vec2 fb = b + dir*L*0.62;
+      vec2 fb = b + vec2(dir.x*gTwigAx, dir.y)*L*0.62;
       float an2 = an + (fract(hk*17.3) > 0.5 ? 0.55 : -0.55);
       vec2 dir2 = vec2(sin(an2), cos(an2));
-      vec2 pb = vec2(u, y) - fb;
+      vec2 pb = vec2((u - fb.x)/gTwigAx, y - fb.y);
       float t2 = clamp(dot(pb, dir2)/(L*0.40), 0.0, 1.0);
       d = min(d, length(pb - dir2*L*0.40*t2) - 0.006);
       tw = max(tw, clamp(0.5 + (max(0.0, 0.75*px) - d)/max(px, 1e-5), 0.0, 1.0));
@@ -5306,12 +5312,12 @@ float yewTwigW(float u, float y, float top, float sd, float px){
     float an = (fract(hs*23.1) - 0.5)*0.9;
     vec2 dir = vec2(sin(an), cos(an));
     vec2 b = vec2(x0, top - 0.10);
-    vec2 pa = vec2(u, y) - b;
+    vec2 pa = vec2((u - b.x)/gTwigAx, y - b.y);
     float tt = clamp(dot(pa, dir)/L, 0.0, 1.0);
     float d = length(pa - dir*L*tt) - mix(0.010, 0.004, tt);
     float an2 = an + 0.6;
     vec2 d2 = vec2(sin(an2), cos(an2));
-    vec2 pb = vec2(u, y) - (b + dir*L*0.5);
+    vec2 pb = vec2((u - b.x)/gTwigAx - dir.x*L*0.5, y - b.y - dir.y*L*0.5);
     float t2 = clamp(dot(pb, d2)/(L*0.4), 0.0, 1.0);
     d = min(d, length(pb - d2*L*0.4*t2) - 0.004);
     tw = max(tw, clamp(0.5 + (max(0.0, 0.75*px) - d)/max(px, 1e-5), 0.0, 1.0));
@@ -5450,7 +5456,7 @@ float hedgeWallH(vec2 q, float qpx, out float occ){
   /* (the frame budget: a twig's tip is never more than a metre over a
      notch's floor nor a sprig's half a metre over the line -- the side
      walls' sky over that returns at once, as it did) */
-  if (q.y > top - 0.02 && q.y < (ragGk > 0.001 ? HH + 0.30 : min(HH + 0.60, top + 0.42)) && keepF < 0.5) deadW = yewTwigW(uc, q.y, top, sd, qpxL*(far > 0.5 ? 1.0 : 1.9));
+  if (q.y > top - 0.02 && q.y < (ragGk > 0.001 ? HH + 0.30 : min(HH + 0.60, top + 0.42)) && keepF < 0.5) { gTwigAx = far > 0.5 ? 1.0 : 1.9; deadW = yewTwigW(uc, q.y, top, sd, qpxL); gTwigAx = 1.0; }
   float hedge = max(cov, deadW) * (1.0 - inGap);
   /* above the hedge a SIDE wall is not there: skip the leaf entirely (it
      is a third of the side walls' pixels and all of the sky over them) */
@@ -13187,7 +13193,17 @@ void main(){
        was the lamp's fall-off on a face whose relief it could not see) */
     att *= gHedgeLeaf;
 #endif
+#if MM_ROOMS == 8
+    /* (round 45 GRAFT, both judges: "the lamp-lit near left wall washes to
+       yellow-olive", "a pale beige wash" -- keep its DARK GREEN. A lantern's
+       light on yew is taken up by the leaf: a green-gold on the lit sprays,
+       never a tan over the face; the leaf only (gHedgeAmt), its stone and
+       wood as they were) */
+    vec3 lcH = mix(uLightCol[i], vec3(mmLum(uLightCol[i]))*vec3(0.62, 1.00, 0.48)*0.80, 0.70*clamp(gHedgeAmt, 0.0, 1.0));
+    col += alb * lcH * att * (0.12 + 1.15*ndl);
+#else
     col += alb * uLightCol[i] * att * (0.12 + 1.15*ndl);
+#endif
     /* A CANVAS IS NOT A MIRROR, AND THIS IS WHY THE FIRST PORTRAITS GLOWED.
        Measured on the capture: the field inside a frame came back at luminance
        130 against a wall of 24, with an albedo EIGHT TIMES DARKER than the
@@ -13254,6 +13270,9 @@ void main(){
     /* (round 31 graft: a breath of the lanterns' warm, 0.35 from 0.75 -- at
        three-quarters the near hedge's leaf came back ginger, a rust rock face) */
     vec3 faceC = mix(moonH, vec3(1.00, 0.78, 0.52)*0.80, warmSide*0.35);
+    /* (round 45 graft: and the lanterns' side keeps its green -- the warm in
+       its fill a green-gold on the leaf, not the tan that washed it olive) */
+    faceC = mix(faceC, mix(moonH, vec3(0.70, 0.86, 0.50)*0.80, warmSide*0.35), clamp(gHedgeAmt, 0.0, 1.0));
     float solidH = smoothstep(0.25, 0.85, h);
     col += alb * solidH * (faceC*(0.10 + 0.42*max(nrm.y, 0.0))*mix(1.0, 0.35 + 0.95*gHedgeLeaf, gHedgeAmt)
                            + moonH*2.2*gWLit) * uGain;
