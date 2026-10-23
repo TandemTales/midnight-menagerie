@@ -991,3 +991,111 @@
   border-radius: 0 0 2px 2px;
 }
 .ev-lectern__post { top: calc(clamp(170px, 13vw, 220px) * .3 + 2px); }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ROUND 46 — EACH CHOICE AN INKED SLIP; THE STAKES IN HEAVY INK; THE LEAF
+   BURNED AT ITS EDGES; THE MOON DRAWN
+   Survey 9, both judges: the page "pale, evenly lit"; the risk and gain
+   words "about 11 px at 1280, weak contrast"; "nothing about them reads as a
+   control" -- "each choice a visible inked slip"; the window haze cones
+   "drawn moonlight: crisp-edged lit patches".
+   - every entry is a SLIP of fresher card tucked into the register over its
+     ruled line: paler than the leaf, ruled round in the clerk's brown with a
+     fine second rule inside, its corners clipped by the knife, lying a hair
+     askew and throwing its shadow on the page; the margin's enamel numeral is
+     the brass-headed pin through it. Point at one and it lifts toward the lamp.
+   - the stakes in the body face at 15 px, the risk in a heavy oxblood and the
+     gain in bottle green, the words that name them in dark engraved caps;
+   - the leaf browned and scorched toward its edges, the lamp's light kept
+     to its middle;
+   - each window's moonlight a crisp-edged shaft, the mullions' shadow
+     running down it, and the four panes laid on the flagstones where it lands.
+   ═══════════════════════════════════════════════════════════════════════════ */
+.ev-page.ev-register {
+  --ev-red: #6a1208;
+  --ev-green: #164f22;
+  box-shadow:
+    0 24px 54px -18px rgba(0, 0, 0, .95),
+    inset 0 0 0 2px rgb(30 12 2 / .7),
+    inset 0 0 14px 3px rgb(34 14 2 / .78),
+    inset 0 0 46px 12px rgb(46 22 6 / .58),
+    inset 0 0 110px 20px rgb(58 30 10 / .3);
+}
+.ev-register .ev-options { gap: 7px; padding-top: clamp(10px, 1.4vh, 14px); }
+.ev-register .ev-options::before { display: none; }
+.ev-register .ev-opt,
+.ev-register .ev-opt:first-child {
+  min-height: 50px;
+  border: 0;
+  padding: 7px 18px 8px 16px;
+  background:
+    radial-gradient(120% 140% at 20% 0%, rgb(255 248 228 / .5), transparent 60%),
+    url("../../assets/ui/kit/paper.webp") 0 0 / 200px 200px,
+    linear-gradient(180deg, #f1dfb6 0%, #e4c995 100%);
+  background-blend-mode: normal, soft-light, normal;
+  border-radius: 2px 3px 2px 4px;
+  box-shadow:
+    inset 0 0 0 1.5px rgb(74 42 16 / .7),
+    inset 0 0 0 4px rgb(238 222 188 / .55),
+    inset 0 0 0 5px rgb(74 42 16 / .32),
+    inset 0 -6px 12px rgb(120 80 40 / .18);
+  filter: drop-shadow(1px 3px 2px rgb(40 18 4 / .55));
+  transition: transform var(--t-quick) var(--ease-out), filter var(--t-quick) var(--ease-out);
+}
+.ev-register .ev-opt:nth-child(1) { rotate: -.35deg; }
+.ev-register .ev-opt:nth-child(2) { rotate: .3deg; margin-left: calc(var(--md) + 24px); }
+.ev-register .ev-opt:nth-child(3) { rotate: -.2deg; }
+.ev-register .ev-opt:hover:not(:disabled),
+.ev-register .ev-opt:focus-visible {
+  transform: translate(2px, -2px);
+  background:
+    radial-gradient(90% 160% at 30% 50%, rgb(255 206 130 / .55), transparent 70%),
+    url("../../assets/ui/kit/paper.webp") 0 0 / 200px 200px,
+    linear-gradient(180deg, #f6e6c2 0%, #ead3a4 100%);
+  background-blend-mode: normal, soft-light, normal;
+  filter: drop-shadow(2px 6px 4px rgb(40 18 4 / .6)) drop-shadow(0 0 10px rgb(255 190 110 / .3));
+  box-shadow:
+    inset 0 0 0 1.5px var(--ev-red),
+    inset 0 0 0 4px rgb(238 222 188 / .55),
+    inset 0 0 0 5px rgb(106 18 8 / .4);
+}
+.ev-register .ev-opt.is-chosen {
+  background:
+    radial-gradient(90% 160% at 30% 50%, rgb(255 206 130 / .62), transparent 70%),
+    linear-gradient(180deg, #f0dfba 0%, #e3cc9e 100%);
+}
+/* the gilt rod reads as the pin's shank, through the slip into the page */
+.ev-register .ev-opt::after { left: -23px; }
+.ev-register .ev-opt__label { font-size: 15.5px; }
+/* the stakes, heavy enough to read on the slip at the Deck's 1280 */
+.ev-register .ev-opt .kit-tag {
+  font-family: var(--font-body); font-size: 15px; font-weight: 700; letter-spacing: 0;
+  text-shadow: 0 1px 0 rgb(255 244 220 / .45);
+}
+.ev-register .ev-opt .kit-tag > i {
+  font-family: var(--font-display); font-size: 12.5px; font-weight: 700; letter-spacing: .1em;
+  color: #2a180a;
+}
+.ev-register .ev-tag--risk { color: var(--ev-red); }
+.ev-register .ev-tag--gain { color: var(--ev-green); }
+
+/* the moon, drawn: a shaft with a cut edge, the mullions' shadow down it */
+.ev-hall__beam {
+  background:
+    linear-gradient(90deg,
+      color-mix(in srgb, var(--kit-moon) 22%, transparent) 0 47%,
+      color-mix(in srgb, var(--kit-moon) 6%, transparent) 47% 53%,
+      color-mix(in srgb, var(--kit-moon) 22%, transparent) 53% 100%);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, rgb(0 0 0 / .9) 6%, rgb(0 0 0 / .6) 60%, rgb(0 0 0 / .42) 100%);
+          mask-image: linear-gradient(to bottom, transparent 0%, rgb(0 0 0 / .9) 6%, rgb(0 0 0 / .6) 60%, rgb(0 0 0 / .42) 100%);
+  box-shadow: inset 1px 0 0 color-mix(in srgb, var(--kit-moon) 50%, transparent), inset -1px 0 0 color-mix(in srgb, var(--kit-moon) 50%, transparent);
+}
+/* ...and where it lands: the window's panes laid on the stones */
+.ev-hall__beam::after {
+  content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: clamp(46px, 7vh, 64px);
+  background:
+    linear-gradient(90deg, transparent 47%, rgb(6 4 12 / .55) 47% 53%, transparent 53%),
+    linear-gradient(180deg, transparent 46%, rgb(6 4 12 / .55) 46% 54%, transparent 54%),
+    color-mix(in srgb, var(--kit-moon) 48%, transparent);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--kit-moon) 60%, transparent);
+}
