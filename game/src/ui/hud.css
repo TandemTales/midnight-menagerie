@@ -1344,3 +1344,9 @@
     linear-gradient(180deg, transparent 12%, rgb(6 3 10 / .85) 12% 88%, transparent 88%) 0 0 / 1px 100% no-repeat,
     linear-gradient(180deg, transparent 14%, rgb(230 201 138 / .34) 14% 86%, transparent 86%) 1px 0 / 1px 100% no-repeat;
 }
+/* at 1600 the fan takes the air the rail's readouts were spaced with */
+@media (min-width: 1401px) {
+  .mm-hud[data-fan] .mm-hud__snacks { margin-left: 8px; }
+  .mm-hud[data-fan] .mm-hud__gear { margin-left: 10px; }
+  .mm-hud[data-fan] .mm-hud__group { gap: 6px; }
+}

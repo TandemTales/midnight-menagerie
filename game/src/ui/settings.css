@@ -1029,7 +1029,7 @@
   gap: 0 5px; padding: 6px 0 2px; margin-bottom: 6px;
 }
 .mm-set__choice--swatch.kit-hw-swatch {
-  --disc: 50px; --plate-h: 24px;
+  --disc: 52px; --plate-h: 26px;
   flex-direction: column; align-items: center; justify-content: flex-start;
   height: auto; min-width: 0;
 }
@@ -1048,7 +1048,7 @@
     linear-gradient(180deg, rgb(255 255 255 / .06), transparent 40%, rgb(0 0 0 / .35)),
     linear-gradient(#1a1024, #1a1024) 50% 50% / calc(100% - 3px) calc(100% - 3px) no-repeat,
     linear-gradient(180deg, var(--kit-gold-hi), var(--kit-gold) 45%, var(--kit-gold-lo));
-  font-family: var(--font-body); font-weight: 600; font-size: 13px; letter-spacing: 0;
+  font-family: var(--font-body); font-weight: 600; font-size: 14px; letter-spacing: 0;
   justify-content: center; text-align: center;
   color: color-mix(in oklab, var(--kit-text-mid) 88%, var(--kit-gold));
   filter: drop-shadow(0 2px 2px rgb(0 0 0 / .8));
@@ -1091,7 +1091,7 @@
   content: ''; position: absolute; inset: 13px; z-index: -2; pointer-events: none;
   border: 0; border-image: none; outline: 0;
   background: url("../../assets/ui/kit/damask.webp") 50% 0 / 233px 265px repeat;
-  opacity: .15;
+  opacity: .19;
   -webkit-mask-image: radial-gradient(120% 100% at 50% 40%, #000 30%, rgb(0 0 0 / .45) 100%);
           mask-image: radial-gradient(120% 100% at 50% 40%, #000 30%, rgb(0 0 0 / .45) 100%);
 }

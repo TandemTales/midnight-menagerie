@@ -651,7 +651,7 @@ export class RestScene extends RoomScene {
       // The 1-4 keys choose the first four (_bindKeys): each of those wears its
       // key on a small enamel badge at the corner of its rail.
       b.innerHTML = `${i < 4 ? `<span class="rs-door__key kit-num" aria-hidden="true">${i + 1}</span>` : ''}
-        <span class="rs-door__glyph${DOOR_OBJECT[o.id] ? ' kit-hw-well' : ''}" aria-hidden="true">${DOOR_OBJECT[o.id] ? objectHtml(DOOR_OBJECT[o.id], { well: false }) : DOOR_GLYPH[o.id]}</span>
+        <span class="rs-door__glyph${DOOR_OBJECT[o.id] ? ' kit-hw-well rs-door__niche' : ''}" aria-hidden="true">${DOOR_OBJECT[o.id] ? objectHtml(DOOR_OBJECT[o.id], { well: false }) : DOOR_GLYPH[o.id]}</span>
         <span class="rs-door__txt">
           <b>${esc(o.name)}</b>
           <em>${esc(o.blurb)}</em>

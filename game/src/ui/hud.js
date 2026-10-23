@@ -748,7 +748,8 @@ export class HUD {
        the next a little down, so each shows its whole face even where the
        steps are short: the rise is what the plate holds either side */
     const top = window.innerWidth > 1400 ? 34 : 30;
-    const dyFor = (sock) => Math.max(0, Math.min(7, (FAN_PLATE_H - sock) / 2 + 3.5));
+    const plate = window.innerWidth > 1400 ? FAN_PLATE_H + 5 : FAN_PLATE_H;
+    const dyFor = (sock) => Math.max(0, Math.min(7, (plate - sock) / 2 + 3.5));
     const tryAt = (sock, pitch) => {
       this.el.style.setProperty('--sock', `${sock}px`);
       this.el.style.setProperty('--fan-pitch', `${pitch}px`);

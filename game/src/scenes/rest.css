@@ -662,7 +662,7 @@
    by the torch it is worked under, the Keepsake's candle by its own flame,
    the teacup by the fort's lamp. The niche reaches into the panel's padding
    (inside its inner rule), so the panels keep their height. */
-.rs-door__glyph.kit-hw-well {
+.rs-door .rs-door__niche {
   --well: clamp(60px, 4.9vw, 92px);
   --niche-l: var(--kit-candle);
   width: var(--well); height: calc(var(--well) * 1.06); aspect-ratio: auto;
@@ -683,20 +683,20 @@
   position: relative;
 }
 /* the ledge the object stands on */
-.rs-door__glyph.kit-hw-well::after {
+.rs-door .rs-door__niche::after {
   content: ''; position: absolute; left: -5px; right: -5px; bottom: -5px; height: 8px; z-index: 2;
   border-radius: 2px;
   background: linear-gradient(180deg, var(--kit-gold-hi), var(--kit-gold) 40%, var(--kit-gold-lo));
   box-shadow: 0 0 0 1px #1a0f06, 0 3px 4px rgb(0 0 0 / .8);
 }
-.rs-door__glyph.kit-hw-well > .kit-obj {
+.rs-door .rs-door__niche > i {
   position: relative; z-index: 1;
   width: 104%; max-width: none; align-self: end; margin-bottom: 2px;
   filter: drop-shadow(0 3px 2px rgb(0 0 0 / .85)) drop-shadow(0 0 7px color-mix(in srgb, var(--niche-l) 40%, transparent));
 }
-.rs-door[data-opt="rest"] .rs-door__glyph.kit-hw-well { --niche-l: color-mix(in oklab, var(--kit-moon) 80%, white); }
-.rs-door[data-opt="upgrade"] .rs-door__glyph.kit-hw-well { --niche-l: color-mix(in oklab, var(--kit-candle) 70%, var(--courage-500)); }
-.rs-door[data-opt="forge"] .rs-door__glyph.kit-hw-well { --niche-l: var(--kit-candle); }
-.rs-door[data-opt="sit"] .rs-door__glyph.kit-hw-well { --niche-l: color-mix(in oklab, var(--kit-candle) 80%, white); }
-.rs-door.is-done .rs-door__glyph.kit-hw-well { filter: drop-shadow(0 0 10px color-mix(in srgb, var(--kit-candle) 60%, transparent)); }
+.rs-door[data-opt="rest"] .rs-door__niche { --niche-l: color-mix(in oklab, var(--kit-moon) 80%, white); }
+.rs-door[data-opt="upgrade"] .rs-door__niche { --niche-l: color-mix(in oklab, var(--kit-candle) 70%, var(--courage-500)); }
+.rs-door[data-opt="forge"] .rs-door__niche { --niche-l: var(--kit-candle); }
+.rs-door[data-opt="sit"] .rs-door__niche { --niche-l: color-mix(in oklab, var(--kit-candle) 80%, white); }
+.rs-door.is-done .rs-door__niche { filter: drop-shadow(0 0 10px color-mix(in srgb, var(--kit-candle) 60%, transparent)); }
 .rs-door__key.kit-num { left: calc(clamp(18px, 1.6vw, 28px) + clamp(60px, 4.9vw, 92px) / 2); }
