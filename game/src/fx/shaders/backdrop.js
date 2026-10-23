@@ -23989,7 +23989,7 @@ float lcStraw(vec2 q, float seed){
      between the glass, strands hanging down over its front lip; and on the
      flags at the crates' foot low drifts of it where the lamps were lifted
      out, loose stalks round them. */
-  if (q.y > LC_BH.y - 0.12 && q.y < LC_BH.y + kb.y + 0.19 && q.x > LC_BL.x + min(kb.x, 0.0) - 0.06 && q.x < LC_BH.x + max(kb.x, 0.0) + 0.06) {
+  if (q.y > LC_BH.y - 0.02 && q.y < LC_BH.y + kb.y + 0.19 && q.x > LC_BL.x + min(kb.x, 0.0) - 0.06 && q.x < LC_BH.x + max(kb.x, 0.0) + 0.06) {
     /* the crown heaped in the mouth, over the lid's back edge */
     float mx = (LC_BL.x + LC_BH.x)*0.5 + kb.x*0.5, mw = (LC_BH.x - LC_BL.x)*0.5 - 0.012;
     float crown = LC_BH.y + kb.y + 0.045 + 0.020*sin(q.x*71.0 + seed) + 0.012*sin(q.x*187.0 + seed*2.3) + 0.006*sin(q.x*433.0 + seed*0.7);
@@ -24004,13 +24004,9 @@ float lcStraw(vec2 q, float seed){
       d = min(d, wgSeg(q, a, a + t, 0.0075));
       d = min(d, wgSeg(q, a, a + vec2(t.x*0.35 + (h1 - 0.5)*0.09, t.y*0.70), 0.0060));
     }
-    /* strands hanging over the front lip */
-    for (int i = 0; i < 6; i++){
-      float fi = float(i);
-      float h1 = mmHash11(seed*4.43 + fi*1.61), h2 = mmHash11(seed*1.29 + fi*2.83);
-      vec2 a = vec2(LC_BL.x + 0.04 + fi*0.092 + 0.03*h1, LC_BH.y + 0.004);
-      d = min(d, wgSeg(q, a, a + vec2((h2 - 0.5)*0.06, -0.040 - 0.060*h1), 0.0062));
-    }
+    /* (round 45 graft, paired 0 of 4: strands hung over the front lip and a
+       crown reaching 0.12 down the front read "as if the wood were glass" --
+       the straw stays in the mouth, above the lip) */
   }
   if (q.y < 0.070) {
     /* the drifts on the flags either side of the lower crate: each a low
@@ -25035,21 +25031,16 @@ vec3 wgPaint(vec2 m, vec2 msz, float shape, float seed, float px, float lum,
           float sdS = wgStencil(q - vec2(-0.36 - 0.155, 0.24 - 0.040), 0.050, 0.080, 0.0085);
           sten = clamp(0.5 - sdS/max(qpx, 1e-5), 0.0, 1.0)*smoothstep(0.10, 0.34, mmNoise(q*vec2(60.0, 38.0) + seed) + 0.25*gr)*(1.0 - gap);
         }
-        /* (round 45 graft, both judges: "the stencils worn" -- HOWLITE's: dry
-           brushed, broken by the grain where the brush skipped, rubbed off at
-           the handling height, faded into the deal) */
-        float wornS = smoothstep(0.22, 0.58, mmNoise(q*vec2(46.0, 30.0) + seed) + 0.30*gr)
-                    * (0.62 + 0.38*step(0.38, mmNoise(q*vec2(160.0, 22.0) + seed*1.3)));
-        col = mix(col, vec3(0.07, 0.035, 0.02)*E, sten*0.80*wornS*onF);
+        /* (round 45 graft: a dry-brushed wear here lost a paired test 0 of 4 --
+           "its LAMPS stencil is blurred" -- the stencil stays crisp) */
+        col = mix(col, vec3(0.07, 0.035, 0.02)*E, sten*0.80*onF);
       }
       if (big < 0.5 && onF > 0.0) {
         vec2 dq = vec2(q.x - (lo.x + hi.x)*0.5, q.y - 0.65);
         float dia = abs(abs(dq.x) + abs(dq.y)*0.95 - 0.085) - 0.009;
         float lampM = min(length(vec2(dq.x, dq.y + 0.008)*vec2(1.0, 0.8)) - 0.024, mmBox(dq - vec2(0.0, 0.036), vec2(0.008, 0.016), 0.003));
         float sten = clamp(0.5 - min(dia, lampM)/max(qpx, 1e-5), 0.0, 1.0)*smoothstep(0.08, 0.32, mmNoise(q*vec2(55.0, 40.0) + seed*2.0) + 0.2*gr)*(1.0 - gap);
-        float wornD = smoothstep(0.22, 0.58, mmNoise(q*vec2(46.0, 30.0) + seed*2.0) + 0.30*gr)
-                    * (0.62 + 0.38*step(0.38, mmNoise(q*vec2(160.0, 22.0) + seed*1.7)));
-        col = mix(col, vec3(0.07, 0.035, 0.02)*E, sten*0.78*wornD*onF);
+        col = mix(col, vec3(0.07, 0.035, 0.02)*E, sten*0.78*onF);
         /* (round 45 graft, both judges: HOWLITE's paper SHIPPING LABEL tacked
            on the upper crate's corner -- foxed paper, its consignee's lines in
            ink, a tack at each top corner, its edge lifting) */
@@ -25072,7 +25063,7 @@ vec3 wgPaint(vec2 m, vec2 msz, float shape, float seed, float px, float lum,
       }
     }
     /* the straw: dry stalks, each lit along its length */
-    float st = (q.y < 0.070 || q.y > LC_BH.y - 0.12) ? lcStraw(q, seed) : 1e3;
+    float st = (q.y < 0.070 || q.y > LC_BH.y - 0.02) ? lcStraw(q, seed) : 1e3;
     float onSt = clamp(0.5 - st/max(qpx, 1e-5), 0.0, 1.0);
     /* (round 45 graft, HOWLITE's: straw is STRANDS -- two crossing runs of
        them, gold on its own shade, warm on the forge's side) */
