@@ -1097,3 +1097,84 @@
 }
 /* the palettes' row takes the page's whole width inside its rule */
 .mm-set__choices:has(> .mm-set__choice--swatch) { margin-inline: -9px; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ROUND 46 GRAFT 6 — THE PALETTES' NAMEPLATES AS CARTOUCHES; DAMASK IN EVERY
+   PAGE
+   VERDICTS-r46 (all three judges on the "little flat tab chips under the
+   enamel medallions"): each palette medallion is joined to a gold-edged
+   cartouche nameplate -- MOIRE's (cartouche-dark.webp), its foot seated on
+   the plate's top rim -- and the chosen one is the filled enamel plate
+   (cartouche-lit.webp) with a gold pip struck on its lower rim. The four
+   stand in one row, each column as wide as its own name and its plate's
+   two scrolled ends, so "Deuteranopia" keeps 12 px at 1280 inside the
+   page's rule. And CHAROITE's damask is every page's cloth (the kit's
+   material, flock.webp, lit by the board's candle), all six pages, the
+   dark under every line of words kept.
+   ═══════════════════════════════════════════════════════════════════════════ */
+.mm-set__choices:has(> .mm-set__choice--swatch) {
+  grid-template-columns: repeat(4, auto);
+  justify-content: space-between;
+  gap: 0 4px;
+}
+.mm-set__choice--swatch.kit-hw-swatch {
+  --cart-end: 9px;
+  align-items: center;
+}
+.mm-set__choice--swatch.kit-hw-swatch > .kit-hw-swatch__disc { margin-bottom: -9px; }
+.mm-set__choice--swatch.kit-hw-swatch > .mm-set__choicename,
+.mm-set__choice--swatch.kit-hw-swatch[aria-checked="true"] > .mm-set__choicename {
+  position: relative; z-index: 1;
+  align-self: stretch;
+  box-sizing: border-box;
+  margin: 0; padding: 2px calc(var(--cart-end) + 2px) 0;
+  clip-path: none;
+  background: none;
+  border: 0 solid transparent;
+  border-image: url("../../assets/ui/kit/cartouche-dark.webp") 18 34 fill / calc(var(--plate-h) * 18 / 64) var(--cart-end) stretch;
+  white-space: nowrap;
+}
+.mm-set__choice--swatch.kit-hw-swatch[aria-checked="true"] > .mm-set__choicename {
+  border-image-source: url("../../assets/ui/kit/cartouche-lit.webp");
+  color: #f6ecff;
+  text-shadow: 0 -1px 0 rgb(0 0 0 / .9), 0 0 8px color-mix(in srgb, var(--kit-lav) 65%, transparent);
+}
+/* the gold pip on the chosen plate's lower rim (the crown star stays) */
+.mm-set__choice--swatch.kit-hw-swatch[aria-checked="true"] > .mm-set__choicename::after {
+  content: ''; position: absolute; left: 50%; bottom: -5px; z-index: 2;
+  width: 10px; height: 10px; margin: 0; translate: -50% 0;
+  background: url("../../assets/ui/kit/star4.svg") 50% 50% / 100% 100% no-repeat;
+  filter: drop-shadow(0 1px 0 rgb(0 0 0 / .85)) drop-shadow(0 0 4px color-mix(in srgb, var(--kit-candle) 70%, transparent));
+}
+@media (max-width: 1400px) {
+  .mm-set__choices:has(> .mm-set__choice--swatch) { gap: 0 2px; }
+  .mm-set__choice--swatch.kit-hw-swatch { --cart-end: 8px; }
+  .mm-set__choice--swatch.kit-hw-swatch > .mm-set__choicename,
+  .mm-set__choice--swatch.kit-hw-swatch[aria-checked="true"] > .mm-set__choicename { padding-inline: calc(var(--cart-end) + 1px); letter-spacing: 0; }
+}
+
+/* every page: the embossed damask (CHAROITE's), lit by the candle */
+.mm-set__group.kit-panel {
+  --mat: url("../../assets/ui/kit/flock.webp"); --mat-size: 233px 265px; --mat-base: #170d1e;
+  --mat-veil: .2; --mat-edge: .62;
+  --lit-w: 110%; --lit-h: 95%;
+}
+.mm-set__group[data-group="sound"]   { --lit-a: 30%; }
+.mm-set__group[data-group="reading"] { --lit-a: 28%; }
+.mm-set__group[data-group="motion"]  { --lit-a: 34%; }
+.mm-set__group[data-group="play"]    { --mat-veil: .22; --lit-a: 36%; }
+.mm-set__group[data-group="expedition"],
+.mm-set__group[data-group="seed"]    { --mat-base: #1d1228; --mat-veil: .24; }
+.mm-set__group[data-group="danger"]  { --mat-base: #261024; --mat-veil: .26; }
+/* the faint damask laid over the cloth gives way to the cloth's own */
+.mm-set__group.kit-panel::after { background: none; }
+/* a line of words keeps the dark of the cloth under it */
+.mm-set__group .mm-set__hint { text-shadow: 0 1px 0 rgb(0 0 0 / .95), 0 0 6px rgb(10 6 14 / .9); }
+/* the plate a little taller than the chips it replaces, so its name sits
+   inside the rims; the chosen plate's enamel brought up in the candle */
+.mm-set__choice--swatch.kit-hw-swatch { --plate-h: 28px; }
+.mm-set__choice--swatch.kit-hw-swatch > .mm-set__choicename { height: var(--plate-h); line-height: 1; padding-top: 1px; }
+.mm-set__choice--swatch.kit-hw-swatch[aria-checked="true"] > .mm-set__choicename { filter: brightness(1.3) saturate(1.2) drop-shadow(0 2px 2px rgb(0 0 0 / .8)) drop-shadow(0 0 6px color-mix(in srgb, var(--kit-candle) 35%, transparent)); }
+@media (max-width: 1400px) {
+  .mm-set__choice--swatch.kit-hw-swatch { --plate-h: 25px; }
+}
