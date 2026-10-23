@@ -700,3 +700,15 @@
 .rs-door[data-opt="sit"] .rs-door__niche { --niche-l: color-mix(in oklab, var(--kit-candle) 80%, white); }
 .rs-door.is-done .rs-door__niche { filter: drop-shadow(0 0 10px color-mix(in srgb, var(--kit-candle) 60%, transparent)); }
 .rs-door__key.kit-num { left: calc(clamp(18px, 1.6vw, 28px) + clamp(60px, 4.9vw, 92px) / 2); }
+
+/* ── ROUND 46 GRAFT, FIRST: the four choices end above the way out ─────────
+   At 1600x900 the fourth panel ran 33px under "Pack up and go on" (VERDICTS
+   -r46, J3): the niche stood 83px tall in a row the text needed 78px of, and
+   the four rows with their medallion gaps out-grew the room's row, which
+   lets its grid item overflow rather than shrink. The niche now stands proud
+   of its panel's padding (it reaches up over the inner rule instead of
+   pushing the panel taller), the column may not out-grow the room, and the
+   gap between panels is what gives first. */
+.rs-room > .rs-choices { min-height: 0; }
+.rs-choices:not(:has(> .rs-door:nth-child(5))) { gap: clamp(18px, 2.6vh, 28px); }
+.rs-choices:not(:has(> .rs-door:nth-child(5))) > .rs-door { padding-block: clamp(20px, 2.6vh, 26px) clamp(18px, 2.2vh, 22px); }
