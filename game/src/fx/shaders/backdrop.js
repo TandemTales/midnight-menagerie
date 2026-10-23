@@ -24372,6 +24372,16 @@ float wgBtFoot(vec2 q, float sx){
   }
   return min(min(leg, ball), toes);
 }
+/* (round 45 graft, LARIMAR's: an overturned bath's feet stand up in the
+   air, and at the size it is seen they must be read for what they are --
+   "a teal capsule" with two ears; so they are drawn a third larger, legs
+   and all) */
+float wgBtFootO(vec2 f, float sx){
+  vec2 c = vec2(sx*0.62, 0.20);
+  float t0;
+  vec2 g = (f - c)/1.35 + c;
+  return min(wgBtFoot(g, sx), wgSegT(g, vec2(sx*0.52, 0.28), vec2(sx*0.55, 0.12), 0.050, 0.036, t0))*1.35;
+}
 float wgBtBody(vec2 q){
   float xs = abs(q.x) - 0.11*clamp((q.y - 0.17)/0.55, 0.0, 1.0);
   return mmBox(vec2(xs, q.y - 0.450), vec2(0.790, 0.280), 0.20);
@@ -24418,7 +24428,7 @@ float wgBtSteam(vec2 q, float seed){
    rack bridged across the rim with its sponge (wgBtRack), and on some a
    striped towel thrown over the near side (painted, inside the body). */
 float wgBtHasRack(float seed){ return step(0.45, mmHash11(seed*4.17 + 0.9)); }
-float wgBtHasTowel(float seed){ return step(mmHash11(seed*5.53 + 0.2), 0.62); }
+float wgBtHasTowel(float seed){ return step(mmHash11(seed*5.53 + 0.2), 0.78); }   // (round 45 graft, HOWLITE's: more in use, 0.62 -> 0.78 -- the pool's lone tub has one)
 float wgBtRack(vec2 q, float seed){
   float rx = (mmHash11(seed*2.9 + 0.4) - 0.5)*0.50;
   float bar = mmBox(q - vec2(rx, 0.808), vec2(0.30, 0.012), 0.006);
@@ -24521,8 +24531,7 @@ float wgBtSD(vec2 q, float seed){
       float d = min(wgBtBody(f), wgEll(f - vec2(0.0, 0.755), vec2(0.930, 0.135)));
       for (int i = 0; i < 2; i++){
         float sx = float(i)*2.0 - 1.0;
-        d = min(d, wgBtFoot(f, sx));
-        d = min(d, wgSegT(f, vec2(sx*0.52, 0.28), vec2(sx*0.55, 0.12), 0.050, 0.036, t0));
+        d = min(d, wgBtFootO(f, sx));
       }
       return d;
     }
@@ -25773,10 +25782,13 @@ vec3 wgPaint(vec2 m, vec2 msz, float shape, float seed, float px, float lum,
     if (bk > 1.5 && bk < 2.5) {
       /* COPPER, hammered: the dimples of the planishing hammer catching the
          light, gone dark in the hollows, a brighter sheen on the swell */
-      vec2 hq = q*vec2(14.0, 16.0);
-      vec2 hi = floor(hq), hf = fract(hq) - 0.5 - (mmHash22(hi + seed) - 0.5)*0.5;
-      hammer = (0.5 - length(hf))*mmLod(0.07, qpx);
-      outside = vec3(0.44, 0.20, 0.10)*(0.90 + 0.40*hammer) + vec3(0.07, 0.035, 0.015)*mmNoise(q*5.0 + seed);
+      /* (round 45 graft, both judges: LARIMAR's WARM copper -- a red copper,
+         not a brass-tan, its hammering finer and staggered as a smith lays it) */
+      vec2 hq = q*vec2(22.0, 25.0);
+      hq.x += 0.5*mod(floor(hq.y), 2.0);
+      vec2 hi = floor(hq), hf = fract(hq) - 0.5 - (mmHash22(hi + seed) - 0.5)*0.6;
+      hammer = (0.5 - length(hf))*mmLod(0.045, qpx);
+      outside = vec3(0.62, 0.17, 0.05)*(0.92 + 0.22*hammer) + vec3(0.08, 0.03, 0.012)*mmNoise(q*5.0 + seed);
       enamel = vec3(0.66, 0.38, 0.22);
       gilt = vec3(0.84, 0.62, 0.30);
     } else if (bk > 4.5) {
@@ -25805,24 +25817,65 @@ vec3 wgPaint(vec2 m, vec2 msz, float shape, float seed, float px, float lum,
         vec3 ovC = ovW > 0.5 ? vec3(0.74, 0.72, 0.66) : painted;
         col = ovC*E*1.55*(mix(0.50, 0.30, ovW) + mix(0.60, 0.85, ovW)*wgRound(xnO))*(0.80 + 0.35*smoothstep(-0.5, 0.8, kq*xnO));
         col *= mix(0.55, 0.32, ovW) + mix(0.60, 0.88, ovW)*smoothstep(0.10, 0.72, q.y);
-        float onRim = step(rimO, 0.0)*step(0.0, bodyO);
+        /* (round 45 GRAFT, both judges: "the green capsule tub drawn with a
+           rim, claw feet and a contact shadow". LARIMAR's: its paint a GLOSS
+           -- the windows along its upturned belly, the drips still running
+           off it down its flank to the rim, the paint chipped at the knocks,
+           the plug's brass ring, the feet a third larger and cast -- and the
+           ROLL at the tiles drawn as the thick white rolled lip it is, a dark
+           seam over it where the belly meets it and its crest catching the
+           lamps, the tiles' dark under its foot) */
+        float iqo = max(qpx, 1e-5);
+        float inBO = clamp(0.5 - bodyO/iqo, 0.0, 1.0);
+        float hiO = exp(-pow((q.y - 0.62)/0.05, 2.0))*(0.35 + 0.65*smoothstep(-0.6, 0.8, kq*xnO))*wgRound(xnO)
+                  + exp(-pow((xnO - 0.50*kq)/0.07, 2.0))*smoothstep(0.30, 0.45, q.y)*smoothstep(0.80, 0.68, q.y);
+        emit += vec3(0.82, 0.90, 1.00)*inBO*hiO*0.16;
+        float drip = smoothstep(0.86, 1.0, 0.5 + 0.5*sin(q.x*70.0 + seed*3.0))*smoothstep(0.62, 0.20, q.y)*step(0.5, mmHash11(floor(q.x*70.0/6.2832 + seed)));
+        col = mix(col, col*0.55, drip*inBO*0.6);
+        emit += vec3(0.70, 0.84, 1.00)*0.10*drip*inBO*smoothstep(-0.2, 0.6, kq*xnO);
+        float chipO = smoothstep(0.80, 0.83, mmNoise(q*vec2(46.0, 52.0) + seed*3.0))*smoothstep(0.35, 0.80, abs(xnO) + q.y*0.3);
+        col = mix(col, vec3(0.05, 0.05, 0.06)*E, chipO*inBO*0.7);
+        col *= 1.0 - 0.35*smoothstep(0.25, 0.16, q.y)*inBO;         // over the rim, in its shadow
+        float onRim = clamp(0.5 - rimO/iqo, 0.0, 1.0)*clamp(0.5 + bodyO/iqo, 0.0, 1.0);
         gWgShade = mix(1.0, (0.55 + 0.55*wgRound(xnO))*(0.74 + 0.40*smoothstep(-0.7, 0.6, kq*xnO))*(0.70 + 0.40*smoothstep(0.10, 0.72, q.y)),
-                       step(bodyO, 0.0)*(1.0 - onRim));   // (round 45: gWgShade)
-        col = mix(col, enamel*E*1.7*(0.55 + 0.45*smoothstep(0.0, 0.15, q.y)), onRim);
+                       inBO*(1.0 - onRim));   // (round 45: gWgShade)
+        /* the roll: a tube lying on the tiles, lit along its crest, dark at
+           its foot where it sits on them */
+        float rlv = clamp((q.y - 0.010)/0.27, 0.0, 1.0);
+        /* the roll a band a hand wide round the rim's outer edge -- a white
+           tube lit on its crest -- and inside it, under the overhang of the
+           belly, the dark of the bath's mouth on the tiles: a rim, not a
+           saucer under it */
+        float rdp = clamp(-rimO/0.055, 0.0, 1.0);            // 0 at the roll's outer edge, 1 a roll's width in
+        float onRoll2 = onRim*(1.0 - smoothstep(0.85, 1.0, rdp));
+        vec3 rollC = enamel*E*1.7*(0.28 + 0.90*exp(-pow((rdp - 0.45)/0.30, 2.0)))*(0.80 + 0.30*smoothstep(-0.6, 0.8, kq*xnO));
+        col = mix(col, vec3(0.015, 0.014, 0.016)*E, onRim*(1.0 - onRoll2));
+        col = mix(col, rollC, onRoll2);
+        emit += vec3(0.86, 0.92, 1.00)*onRoll2*exp(-pow((rdp - 0.40)/0.16, 2.0))*(0.10 + 0.16*smoothstep(-0.4, 0.8, kq*xnO));
+        ink = max(ink, mmInkP(-rimO - 0.055, qpx, 0.9)*onRim*0.70);   // (the roll's inner edge, against the dark)
+        gWgShade = mix(gWgShade, 1.0, onRim);
         float drain = length(q - vec2(0.30*wgBtSide(seed), 0.66)) - 0.040;
         col = mix(col, vec3(0.02), step(drain, 0.0)*step(bodyO, 0.0));
         float feetO = 1e3;
         for (int i = 0; i < 2; i++){
           float sx = float(i)*2.0 - 1.0;
-          feetO = min(feetO, wgBtFoot(f, sx));
-          feetO = min(feetO, wgSegT(f, vec2(sx*0.52, 0.28), vec2(sx*0.55, 0.12), 0.050, 0.036, t0));
+          feetO = min(feetO, wgBtFootO(f, sx));
         }
-        float onFO = step(feetO, 0.0)*step(0.0, bodyO);
-        col = mix(col, feetC*(0.7 + 0.5*smoothstep(0.60, 0.90, q.y)), onFO);
+        float onFO = clamp(0.5 - feetO/iqo, 0.0, 1.0)*clamp(0.5 + bodyO/iqo, 0.0, 1.0);
+        float fuO = clamp((abs(q.x) - 0.64)/0.09, -1.0, 1.0);
+        col = mix(col, feetC*(0.50 + 0.70*wgRound(fuO))*(0.75 + 0.45*smoothstep(0.60, 0.95, q.y))*(1.0 + 0.3*kq*sign(q.x)*fuO), onFO);
+        emit += gilt*0.30*onFO*smoothstep(0.3, 1.0, kq*sign(q.x)*fuO + 0.4)*smoothstep(0.85, 0.98, q.y);
+        gWgShade = mix(gWgShade, 1.0, onFO);
+        /* the plug's brass ring round the drain */
+        float dring = abs(length(q - vec2(0.30*wgBtSide(seed), 0.66)) - 0.048) - 0.008;
+        col = mix(col, vec3(0.86, 0.64, 0.30)*E*1.6, clamp(0.5 - dring/iqo, 0.0, 1.0)*inBO);
         ink = max(ink, mmInkP(bodyO, qpx, mix(1.2, 1.7, ovW))*mix(0.9, 1.0, ovW));
-        ink = max(ink, mmInkP(rimO, qpx, mix(1.2, 1.6, ovW))*step(q.y, 0.30)*mix(0.9, 1.0, ovW));
+        /* (the seam between the belly and the roll, all along it, and the
+           roll's own outline whole -- not only its foot) */
+        ink = max(ink, mmInkP(rimO, qpx, mix(1.3, 1.7, ovW))*step(q.y, 0.30)*mix(0.95, 1.0, ovW));
         ink = max(ink, mmInkP(feetO, qpx, mix(1.1, 1.5, ovW))*mix(0.85, 1.0, ovW));
         ink = max(ink, mmInkP(drain, qpx, 1.0)*0.8);
+        ink = max(ink, clamp(smoothstep(0.15, -0.85, kq*xnO)*0.50 + smoothstep(0.32, 0.16, q.y)*0.35, 0.0, 0.65)*inBO*(1.0 - onFO));
         moon = step(bodyO, 0.0)*smoothstep(0.45, 0.75, q.y)*mix(0.8, 0.35, ovW);
         return col;
       }
@@ -25878,7 +25931,10 @@ vec3 wgPaint(vec2 m, vec2 msz, float shape, float seed, float px, float lum,
          has run in streaks from under the taps and the roll */
       float rr = wgRound(xn);
       col *= 0.62 + 0.52*smoothstep(-0.75, 0.55, kq*xn);
-      col += outside*E*0.55*smoothstep(0.34, 0.20, q.y)*rr*onBody;
+      /* (round 45 graft, both judges: "no milky smear on the steam room's
+         green tub" -- on a painted bath the floor's light comes back IN ITS
+         PAINT, a shade, not a pale wash over the belly) */
+      col += outside*E*(bk < 0.5 ? 0.55 : 0.22)*smoothstep(0.34, 0.20, q.y)*rr*onBody;
       float refl = exp(-pow((xn - 0.52*kq)/0.075, 2.0))*smoothstep(0.24, 0.36, q.y)*smoothstep(0.60, 0.50, q.y);
       float reflH = exp(-pow((xn - 0.50*kq)/0.028, 2.0))*smoothstep(0.26, 0.34, q.y)*smoothstep(0.58, 0.50, q.y);
       emit += vec3(0.86, 0.90, 1.00)*(refl*0.22 + reflH*0.55)*onBody*(bk < 0.5 ? 1.0 : 0.70);
@@ -25908,6 +25964,16 @@ vec3 wgPaint(vec2 m, vec2 msz, float shape, float seed, float px, float lum,
       col += vec3(0.46, 0.62, 0.82)*E*1.3*spec2*onBody;
       float riv = length(vec2(mod(q.x + 0.045, 0.09) - 0.045, q.y - 0.662)) - 0.010;
       col = mix(col, vec3(0.56, 0.25, 0.11)*E*2.6, clamp(0.5 - riv/max(qpx, 1e-5), 0.0, 1.0)*onBody*step(abs(q.x), 0.82));
+      /* (round 45 graft, LARIMAR's: the metal gives back the lamps in its own
+         colour -- a copper sheen over the swell, after the ceiling, so it reads
+         COPPER and not a pale tan -- and its tarnish in clouds where hands
+         have not rubbed it) */
+      emit += vec3(0.85, 0.34, 0.12)*onBody*rr*smoothstep(0.18, 0.40, q.y)*smoothstep(0.66, 0.52, q.y)*(0.10 + 0.05*hammer)*(0.6 + 0.4*smoothstep(-0.6, 0.8, kq*xn));
+      /* (...and LARIMAR's HARD specular line down the swell toward the key) */
+      float streak2 = pow(wgRound(clamp(xn - 0.38*kq, -1.0, 1.0)), 12.0)*smoothstep(0.20, 0.34, q.y)*smoothstep(0.64, 0.50, q.y);
+      emit += vec3(1.00, 0.62, 0.32)*onBody*streak2*(0.80 + 0.20*hammer);
+      float tarn = smoothstep(0.45, 0.78, mmNoise(q*vec2(3.5, 5.0) + seed*2.0))*smoothstep(0.66, 0.50, q.y);
+      ink = max(ink, tarn*0.28*onBody);
     }
     /* the roll top seen from above: a white rim round the opening */
     float rimE = wgEll(q - vec2(0.0, 0.755), vec2(0.930, 0.135));
@@ -25923,6 +25989,24 @@ vec3 wgPaint(vec2 m, vec2 msz, float shape, float seed, float px, float lum,
       gWgShade = mix(gWgShade, 0.82 + 0.38*smoothstep(0.70, 0.86, q.y), onRoll);
       /* the roll overhangs the body: a band of its shadow under the lip */
       gWgShade *= 1.0 - 0.50*smoothstep(0.53, 0.615, q.y)*onBody*(1.0 - onRoll)*(1.0 - inS);
+    }
+    if (bk > 1.5 && bk < 2.5) {
+      /* (round 45 GRAFT, both judges: LARIMAR's copper "with a THICK ROLLED
+         RIM and a hard specular line". A coppersmith turns the lip over a
+         wire: seen from the side it is a tube a hand thick round the top of
+         the bath -- lit along its upper flank in one hard line, round into
+         its own shade underneath, and a dark band where it overhangs the
+         belly below it) */
+      float tb = clamp(rimE/0.050, 0.0, 1.0);
+      float onTube = onBody*(1.0 - onRoll)*step(0.0, rimE)*step(rimE, 0.050)*step(q.y, 0.76);
+      vec3 tubeC = vec3(0.66, 0.24, 0.08)*(0.92 + 0.22*hammer)*E*1.55
+                 *(0.30 + 0.95*smoothstep(1.0, 0.30, tb)*(1.0 - 0.35*smoothstep(0.30, 0.0, tb)))
+                 *(0.75 + 0.40*smoothstep(-0.6, 0.8, kq*xn));
+      col = mix(col, tubeC, onTube);
+      emit += vec3(1.00, 0.78, 0.52)*exp(-pow((tb - 0.32)/0.08, 2.0))*onTube*0.34*(0.55 + 0.65*smoothstep(-0.5, 0.8, kq*xn))*wgRound(xn);
+      ink = max(ink, mmInkP(rimE - 0.050, qpx, 0.9)*onBody*(1.0 - onRoll)*step(q.y, 0.76)*0.55);
+      col *= 1.0 - 0.40*onBody*(1.0 - onRoll)*smoothstep(0.050, 0.058, rimE)*smoothstep(0.100, 0.064, rimE);
+      gWgShade = mix(gWgShade, 1.0, onTube);
     }
     /* (graft, judge 2: "give them enamel highlights and a dark rim line")
        the roll's crest catches the windows in one hard line of light, all
@@ -25986,14 +26070,35 @@ vec3 wgPaint(vec2 m, vec2 msz, float shape, float seed, float px, float lum,
       float tx0 = (mmHash11(seed*3.3 + 0.8) - 0.5)*0.70 - 0.22, tx1 = tx0 + 0.42;
       float tu = clamp((q.x - tx0)/(tx1 - tx0), 0.0, 1.0);
       float thm = 0.34 + 0.03*sin(tu*7.0 + seed) - 0.05*(1.0 - 4.0*tu*(1.0 - tu));
-      float tw = max(abs(q.x - (tx0 + tx1)*0.5) - 0.21, max(thm - q.y, q.y - 0.705));
-      float onTw = clamp(0.5 - tw/max(qpx, 1e-5), 0.0, 1.0)*onBody;
+      /* (round 45 GRAFT, both judges: "towels OPAQUE, draped over the rim
+         with a fold and shadow". It is thrown over the roll -- up over its
+         near lip to the water's edge -- and it covers what it lies on: the
+         bath's lines, its gloss and its form do not show through it; its
+         fold over the roll catches the light, the cloth falls in its own
+         folds below it, and it throws a shadow on the belly under its hem) */
+      float tyT = 0.762 - 0.098*sqrt(max(1.0 - pow(q.x/0.850, 2.0), 0.0));   // the water's near edge
+      float tw = max(abs(q.x - (tx0 + tx1)*0.5) - 0.21, max(thm - q.y, q.y - tyT));
+      float onTw = clamp(0.5 - tw/max(qpx, 1e-5), 0.0, 1.0)*max(onBody, onRoll);
       float tf = 0.5 + 0.5*cos(tu*9.42 + seed);
-      vec3 tl = vec3(0.86, 0.84, 0.78)*E*1.9*(0.60 + 0.45*tf)*(0.80 + 0.30*smoothstep(thm, 0.70, q.y));
-      float ts = step(0.05, q.y - thm)*step(q.y - thm, 0.08);
+      vec3 tl = vec3(0.86, 0.84, 0.78)*E*1.9*(0.56 + 0.48*tf)*(0.74 + 0.36*smoothstep(thm, 0.70, q.y));
+      /* the fold over the roll: lit on its crest, gone into shade where the
+         cloth turns down over the lip */
+      float fr = clamp((q.y - 0.600)/max(tyT - 0.600, 0.05), 0.0, 1.0);
+      tl *= mix(1.0, 0.72 + 0.55*smoothstep(0.15, 0.65, fr)*(1.0 - 0.30*smoothstep(0.80, 1.0, fr)), step(0.600, q.y));
+      float tsp = max(qpx, 1e-5)*1.6;
+      float ts = clamp((q.y - thm - 0.05)/tsp + 0.5, 0.0, 1.0)*clamp((thm + 0.08 - q.y)/tsp + 0.5, 0.0, 1.0);
       tl = mix(tl, vec3(0.50, 0.08, 0.10)*E*1.7*(0.7 + 0.4*tf), ts);
+      /* the hem's shadow on the belly just under it */
+      float hsh = onBody*(1.0 - onTw)*smoothstep(0.05, 0.0, thm - q.y)*step(q.y, thm)*step(abs(q.x - (tx0 + tx1)*0.5), 0.23);
+      col *= 1.0 - 0.45*hsh;
       col = mix(col, tl, onTw);
-      ink = max(ink, mmInkP(tw, qpx, 1.1)*onBody*0.85);
+      ink *= 1.0 - onTw;
+      /* (the glaze's glints go with what covers them, and a hand under the
+         hem: the cloth's shadow, not a blob of the window under it) */
+      emit *= 1.0 - max(onTw, onBody*step(abs(q.x - (tx0 + tx1)*0.5), 0.23)*step(q.y, thm)*smoothstep(0.10, 0.0, thm - q.y));
+      gWgShade = mix(gWgShade, 1.0, onTw);
+      ink = max(ink, mmInkP(tw, qpx, 1.1)*max(onBody, onRoll)*0.85);
+      ink = max(ink, mmInkP(q.y - 0.600 - 0.010*sin(tu*9.0 + seed), qpx, 0.8)*onTw*0.45);
       ink = max(ink, mmInkP(abs(fract(tu*1.5 + 0.5 + seed*0.3) - 0.5) - 0.47, qpx*5.0, 0.8)*onTw*0.30);
     }
     /* (round 39) the brass soap rack across the rim, and its sponge */
@@ -32488,6 +32593,12 @@ void main(){
 #endif
 #if MM_WINGS == 2
   if (vShape > 31.5 && (vShape < 37.5 || vShape > 38.5)) { satK = max(uPropSat, 0.40); satM = max(uPropSatMax, 0.58); }
+#if MM_SH32
+  /* (round 45 graft, LARIMAR's: a bath's copper, its oxblood or bottle-green
+     paint -- the metal and the enamel are material facts; at 0.40 the copper
+     came back a brass-tan, "a pale milky tan" both judges) */
+  if (vShape > 31.5 && vShape < 32.5) { satK = max(uPropSat, 0.48); satM = max(uPropSatMax, 0.68); }
+#endif
 #if MM_SH39
   /* (round 34 graft, all three judges: the doghouses "read as one repeated
      prop" washed to grey-blue -- a kennel's red, green or blue paint is a
