@@ -278,6 +278,12 @@ AXINITE +1.03, 2 of 2: the Lampworks crates built, the Hedge's stretched
 side-wall texture fixed (a projection fault), contact shadows. Battery green
 but the sprites halo; the other 13 wings identical. **NOW: round 45's graft**
 (`GRAFT-r45.md`, D:/UILOOP/r45/wt/r45-graft), then a paired check.
+**ROUND 45'S GRAFT IS MERGED, VERIFIED AND PUSHED (`544ef199`):** paired 7 of 8
+vs survey 9; the Lampworks straw first lost 0 of 4 (drawn over the planks),
+fixed and re-judged 4 of 4. Every fight at or under BASE (hm-1 15.42). NEXT:
+survey 9's remainder -- the Kennels' straw (both judges), the Heart, the
+Ballroom's haze, the boards' web chips (hud-late +N, settings' palette pills,
+the piles search), the atlas's unsurveyed wings; then SURVEY 10.
 
 **ROUND 33 AND ITS GRAFT ARE MERGED, VERIFIED AND PUSHED (2026-10-16):**
 graft `9d008119`. COBALT +1.59 (`531126e4`): no running line under 11 px at
