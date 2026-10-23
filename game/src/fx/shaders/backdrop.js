@@ -5281,7 +5281,10 @@ float yewTwigW(float u, float y, float top, float sd, float px){
     float hwm = 0.38 + 0.46*fract(hg*13.7);
     float dep = 0.28 + 0.40*fract(hg*3.9);
     /* (the frame budget: only in its notch's own column) */
-    if (abs(u - c0) < hwm + 0.45*gTwigAx && y < 3.30 + 0.6*dep) for (int k = 0; k < 4; k++){
+    /* (round 45 graft, the frame budget: on a side wall the column a stride
+       wider for the twigs' lean -- 0.45 + 0.30 of the crown's units, not 0.45
+       x 1.9: the maze fight is at its line) */
+    if (abs(u - c0) < hwm + 0.45 + 0.30*(gTwigAx - 1.0) && y < 3.30 + 0.6*dep) for (int k = 0; k < 4; k++){
       float fk = float(k);
       float hk = mmHash11(fk*5.3 + gi*1.7 + sd);
       /* (its foot down in the leaf, so a dip under the notch does not leave
@@ -13167,6 +13170,9 @@ void main(){
   wGl = 0.12 + 1.6*gWGloss;
 #endif
 
+#if MM_ROOMS == 8
+  vec3 lampH = vec3(0.0);   // (round 45 graft: the lamps on the maze, summed)
+#endif
 #if MM_R25W == 4
   /* (performance pass, 2026-10-02: in the churchyard everything lit here is
      replaced by the sky wherever the exterior's solidity is 0 -- mix(sky,
@@ -13194,13 +13200,7 @@ void main(){
     att *= gHedgeLeaf;
 #endif
 #if MM_ROOMS == 8
-    /* (round 45 GRAFT, both judges: "the lamp-lit near left wall washes to
-       yellow-olive", "a pale beige wash" -- keep its DARK GREEN. A lantern's
-       light on yew is taken up by the leaf: a green-gold on the lit sprays,
-       never a tan over the face; the leaf only (gHedgeAmt), its stone and
-       wood as they were) */
-    vec3 lcH = mix(uLightCol[i], vec3(mmLum(uLightCol[i]))*vec3(0.62, 1.00, 0.48)*0.80, 0.70*clamp(gHedgeAmt, 0.0, 1.0));
-    col += alb * lcH * att * (0.12 + 1.15*ndl);
+    lampH += uLightCol[i] * att * (0.12 + 1.15*ndl);   // (round 45 graft: summed, and taken up by the leaf after the loop)
 #else
     col += alb * uLightCol[i] * att * (0.12 + 1.15*ndl);
 #endif
@@ -13218,6 +13218,14 @@ void main(){
     col += mmSpec(nrm, ldir, V, uLightCol[i], att, uGloss*0.55*wGl, 22.0)
          * (1.0 - gBare*0.96);
   }
+#if MM_ROOMS == 8
+  /* (round 45 GRAFT, both judges: "the lamp-lit near left wall washes to
+     yellow-olive", "a pale beige wash" -- keep its DARK GREEN. A lantern's
+     light on yew is taken up by the leaf: a green-gold on the lit sprays,
+     never a tan over the face; the leaf only (gHedgeAmt), its stone and wood
+     as they were. Once, on the lamps' sum -- the maze fight is at its line) */
+  col += alb * mix(lampH, vec3(mmLum(lampH))*vec3(0.62, 1.00, 0.48)*0.80, 0.70*clamp(gHedgeAmt, 0.0, 1.0));
+#endif
   /* A PORTRAIT HOLDS THE LIGHT (round 18 item 2): combat's right-wall
      portraits "read as guesswork at 1280", the parlor's two over the doors
      are "dim blank fields" -- hung five and six metres up a wall no lamp in
@@ -23188,10 +23196,12 @@ float gkDraw(vec2 m, vec2 msz, float shape, float seed, float px, bool paint){
         gkLay(col, ink, mouth, inside, px, 0.9);
         col = mix(col, wick*(0.70 + 0.45*smoothstep(0.0, 0.3, cm.y - 0.10)), wfIn(rimD, px)*wfIn(mouth - 0.012, px));
         /* the vegetables, each by its own kind, the far ones laid first */
-        for (int pass = 0; pass < 2; pass++){
-          for (int i = 0; i < 10; i++){
-            float fi = float(i);
-            if (mod(fi, 2.0) != (pass == 0 ? 1.0 : 0.0)) continue;
+        /* (round 45 graft, the link budget: ONE loop, the far lane's five
+           first and then the near lane's -- two passes of ten linked the
+           Kitchens' props in 9 s) */
+        {
+          for (int j = 0; j < 10; j++){
+            float fi = j < 5 ? float(j)*2.0 + 1.0 : float(j - 5)*2.0;
             vec3 vk; vec2 vc0;
             float dv = gkVeg(cm, fi, seed, vc0, vk);
             if (dv > 0.02) continue;
