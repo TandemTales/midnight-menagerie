@@ -1254,4 +1254,93 @@
   .mm-hud[data-belt="pouch"] :is(.mm-hud__gold, .mm-hud__clue, .mm-hud__luck) > :is(.mm-hud__u, .mm-hud__sr) { letter-spacing: 0; margin-right: .15em; }
   .mm-hud[data-belt="pouch"] .mm-hud__chip:is(.mm-hud__seed, .mm-hud__haunt) .mm-hud__w { letter-spacing: 0; }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ROUND 46 — THE FAN
+   Survey 9, both judges, hud-late at 1280: "KEEPSAKES 10 shows only two
+   medallions and a +8 chip ... A late-run player cannot see what they own";
+   "overlapping like a fanned stack at smaller size, before collapsing to
+   +N". Every object of a group stands after its cartouche as a fanned stack
+   of coins (ui/hud.js _fitFan): each overlaps the one before it by what the
+   rail cannot give (--fan-pitch is the step from coin to coin), tilted a
+   little either side of the stack's middle like a hand of cards, its rim
+   in its own tint, and a shadow where it lies on its neighbour so each
+   edge reads. Pointing at or focusing a coin lifts it clear of the stack.
+   ═══════════════════════════════════════════════════════════════════════════ */
+.mm-hud[data-fan] :is(.mm-hud__relics, .mm-hud__gear)[data-fan="1"] { gap: 0; padding-right: 2px; }
+.mm-hud[data-fan] [data-fan="1"] > :is(.mm-hud__relic, .mm-hud__gearchip) {
+  margin-left: calc(var(--fan-pitch, 30px) - var(--sock));
+  z-index: calc(1 + var(--fi, 0));
+  box-shadow: -2.5px .5px 3px -.5px rgb(8 4 12 / .9);
+  transition: translate var(--t-quick, .12s) var(--ease-out, ease-out), scale var(--t-quick, .12s) var(--ease-out, ease-out);
+}
+.mm-hud[data-fan="stack"] [data-fan="1"] > :is(.mm-hud__relic, .mm-hud__gearchip) {
+  translate: 0 calc(var(--fan-dy, 0px) * -1);
+}
+.mm-hud[data-fan="stack"] [data-fan="1"] > :is(.mm-hud__relic, .mm-hud__gearchip)[data-fz="1"] {
+  translate: 0 var(--fan-dy, 0px);
+}
+.mm-hud[data-fan] [data-fan="1"] > :is(.mm-hud__relic, .mm-hud__gearchip):first-child,
+.mm-hud[data-fan] [data-fan="1"] > .mm-hud__pouch + :is(.mm-hud__relic, .mm-hud__gearchip) {
+  margin-left: 5px; box-shadow: none;
+}
+.mm-hud[data-fan="open"] [data-fan="1"] > :is(.mm-hud__relic, .mm-hud__gearchip) { box-shadow: none; }
+.mm-hud[data-fan] [data-fan="1"] > :is(.mm-hud__relic, .mm-hud__gearchip):is(:hover, :focus-visible) {
+  z-index: 40; transform: none; translate: 0 2px; scale: 1.3;
+}
+/* the cartouche of a group laid whole is a label, not a press */
+.mm-hud span.mm-hud__pouch { cursor: default; }
+.mm-hud span.kit-beltpouch:hover { filter: none; }
+
+/* the "+N" (only where even the tightest fan cannot hold the group): a round
+   enamel medallion in a gold rim, like the strip's other coins */
+.mm-hud .mm-hud__peekmore.mm-hud__peekmore--stub {
+  width: calc(var(--sock, 30px) * .92); height: calc(var(--sock, 30px) * .92);
+  padding: 0; margin: 0 2px 0 3px; clip-path: none; border-radius: 50%;
+  font-family: var(--font-num); font-size: 12.5px; letter-spacing: 0;
+  background: radial-gradient(120% 120% at 38% 28%, #7a4fb6, #2c1745 62%, #160b22);
+  box-shadow: inset 0 0 0 1px #1a0f06, inset 0 0 0 2.5px var(--kit-gold), inset 0 0 0 3.5px #1a0f06, 0 1px 2px rgb(0 0 0 / .8);
+}
+.mm-hud .mm-hud__peekmore.mm-hud__peekmore--stub::before { content: none; }
+/* the Deck's width: the room the fan takes is given back by the rail's end
+   caps standing a little closer and the groups' rules a hair narrower */
+@media (max-width: 1400px) {
+  .mm-hud[data-fan] { padding-inline: 30px; }
+  .mm-hud[data-fan] .mm-hud__snacks { margin-left: 7px; }
+  .mm-hud[data-fan] .mm-hud__gear { margin-left: 6px; }
+}
+/* ...and the room HAUNT and SEED took along the rail: at the Deck's width
+   the two readouts stand one over the other as a small engraved ledger,
+   their words kept ("the right third is mostly HAUNT and SEED") */
+.mm-hud[data-fan] .mm-hud__group--meta {
+  display: grid; grid-template-columns: auto auto auto auto; grid-template-rows: 15px 15px;
+  column-gap: 5px; row-gap: 0; align-items: center; justify-items: start;
+}
+.mm-hud[data-fan] .mm-hud__group--meta::before { grid-area: 1 / 1 / 3 / 2; align-self: stretch; height: auto; }
+.mm-hud[data-fan] .mm-hud__group--meta > .mm-hud__haunt { grid-area: 1 / 2; }
+.mm-hud[data-fan] .mm-hud__group--meta > .mm-hud__seed { grid-area: 2 / 2; margin-left: 0; }
+.mm-hud[data-fan] .mm-hud__group--meta > .mm-hud__deck { grid-area: 1 / 3 / 3 / 4; align-self: center; }
+.mm-hud[data-fan] .mm-hud__group--meta > .mm-hud__settings { grid-area: 1 / 4 / 3 / 5; align-self: center; }
+.mm-hud[data-fan] .mm-hud__group--meta > :is(.mm-hud__haunt, .mm-hud__seed) {
+  height: 15px; font-size: 12px; line-height: 1; padding: 0 2px 0 4px;
+}
+.mm-hud[data-fan] .mm-hud__group--meta > :is(.mm-hud__haunt, .mm-hud__seed) :is(.mm-hud__w, .mm-hud__t) { font-size: 12px; }
+.mm-hud[data-fan] .mm-hud__chip.mm-hud__seed::before { content: none; }
+@media (max-width: 1400px) {
+  .mm-hud[data-fan] .mm-hud__group--keepsakes { padding-inline: 6px; }
+}
+@media (min-width: 1401px) {
+  .mm-hud[data-fan] .mm-hud__group--meta { grid-template-rows: 17px 17px; }
+  .mm-hud[data-fan] .mm-hud__group--meta > :is(.mm-hud__haunt, .mm-hud__seed) { height: 17px; }
+  .mm-hud[data-fan] .mm-hud__group--meta > :is(.mm-hud__haunt, .mm-hud__seed),
+  .mm-hud[data-fan] .mm-hud__group--meta > :is(.mm-hud__haunt, .mm-hud__seed) :is(.mm-hud__w, .mm-hud__t) { font-size: 13.5px; }
+}
+
+/* Buttons, Clues and Luck each in a cell of its own, parted by an engraved
+   line cut into the channel (survey 9: "in their own spaced cells") */
+.mm-hud .mm-hud__chip:is(.mm-hud__clue, .mm-hud__luck) {
+  margin-left: 3px; padding-left: .5em;
+  background:
+    linear-gradient(180deg, transparent 12%, rgb(6 3 10 / .85) 12% 88%, transparent 88%) 0 0 / 1px 100% no-repeat,
+    linear-gradient(180deg, transparent 14%, rgb(230 201 138 / .34) 14% 86%, transparent 86%) 1px 0 / 1px 100% no-repeat;
 }
