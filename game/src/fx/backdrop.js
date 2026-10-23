@@ -67,8 +67,10 @@ function footOf(region, p) {
   if (!FOOT_WINGS[region] || p.hang) return null;
   const s = p.shape, sd = p.seed || 0, w = p.w, h = p.h, q = h / 1.6;
   if (region === 'lampworks') {
-    if (s === 34 && sd > 40) return { dx: -0.34 * q, w: 1.02 * q, d: 0.62 * q, k: 1.10,
-      extra: [{ dx: 0.38 * q, w: 0.36 * q, d: 0.24 * q, k: 1.15 },
+    /* (round 45 graft, both judges: "deeper contact shadows" under the
+       crates and the lantern -- 1.10 / 1.15 -> 1.35 / 1.30) */
+    if (s === 34 && sd > 40) return { dx: -0.34 * q, w: 1.02 * q, d: 0.62 * q, k: 1.35,
+      extra: [{ dx: 0.38 * q, w: 0.36 * q, d: 0.24 * q, k: 1.30 },
               { dx: 0.80 * q, w: 0.24 * q, d: 0.17 * q, k: 1.0 },
               { dx: 0.06 * q, w: 0.34 * q, d: 0.12 * q, k: 0.6 }] };
     if (s === 34) return { w: 2.40 * q, d: 0.85, k: 1.0 };

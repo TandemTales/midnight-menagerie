@@ -23954,19 +23954,48 @@ float lcCrate(vec2 q, vec2 lo, vec2 hi, vec2 k, out float fr, out float tp, out 
 float lcStraw(vec2 q, float seed){
   float d = 1e3;
   vec2 kb = lcBack(0.0);
-  if (q.y > LC_BH.y - 0.02 && q.y < LC_BH.y + kb.y + 0.11 && q.x > LC_BL.x - 0.05 && q.x < LC_BH.x + kb.x + 0.06 + 0.05) {
-    for (int i = 0; i < 9; i++){
+  /* ROUND 45 GRAFT (both judges: "the crates look freshly built -- no straw";
+     HOWLITE's packing). The open crate is packed to the brim and over it: a
+     ragged crown of straw heaped in its mouth, tufts standing up out of it
+     between the glass, strands hanging down over its front lip; and on the
+     flags at the crates' foot low drifts of it where the lamps were lifted
+     out, loose stalks round them. */
+  if (q.y > LC_BH.y - 0.12 && q.y < LC_BH.y + kb.y + 0.19 && q.x > LC_BL.x + min(kb.x, 0.0) - 0.06 && q.x < LC_BH.x + max(kb.x, 0.0) + 0.06) {
+    /* the crown heaped in the mouth, over the lid's back edge */
+    float mx = (LC_BL.x + LC_BH.x)*0.5 + kb.x*0.5, mw = (LC_BH.x - LC_BL.x)*0.5 - 0.012;
+    float crown = LC_BH.y + kb.y + 0.045 + 0.020*sin(q.x*71.0 + seed) + 0.012*sin(q.x*187.0 + seed*2.3) + 0.006*sin(q.x*433.0 + seed*0.7);
+    d = min(d, max(max(abs(q.x - mx) - mw, LC_BH.y + kb.y*0.4 - q.y), (q.y - crown)*0.45));
+    /* the tufts standing up out of it */
+    for (int i = 0; i < 12; i++){
       float fi = float(i);
-      float h1 = mmHash11(seed*1.37 + fi*3.11), h2 = mmHash11(seed*2.71 + fi*5.17);
-      float x0 = mix(LC_BL.x + 0.03, LC_BH.x - 0.02, (fi + 0.5*h1)/9.0) + kb.x*h2;
-      vec2 a = vec2(x0, LC_BH.y + kb.y*h2 - 0.005);
-      float ang = (h1 - 0.5)*1.9;
-      vec2 b = a + vec2(sin(ang), cos(ang))*(0.045 + 0.06*h2);
-      d = min(d, wgSeg(q, a, b, 0.0042));
+      float h1 = mmHash11(seed*1.37 + fi*2.91), h2 = mmHash11(seed*2.11 + fi*1.13);
+      float x0 = mix(LC_BL.x + 0.02, LC_BH.x - 0.02, (fi + 0.6*h1)/12.0) + kb.x*(0.3 + 0.6*h2);
+      vec2 a = vec2(x0, LC_BH.y + kb.y*(0.3 + 0.6*h2) + 0.010);
+      vec2 t = vec2((h2 - 0.5)*0.20, 0.060 + 0.100*h1);
+      d = min(d, wgSeg(q, a, a + t, 0.0075));
+      d = min(d, wgSeg(q, a, a + vec2(t.x*0.35 + (h1 - 0.5)*0.09, t.y*0.70), 0.0060));
+    }
+    /* strands hanging over the front lip */
+    for (int i = 0; i < 6; i++){
+      float fi = float(i);
+      float h1 = mmHash11(seed*4.43 + fi*1.61), h2 = mmHash11(seed*1.29 + fi*2.83);
+      vec2 a = vec2(LC_BL.x + 0.04 + fi*0.092 + 0.03*h1, LC_BH.y + 0.004);
+      d = min(d, wgSeg(q, a, a + vec2((h2 - 0.5)*0.06, -0.040 - 0.060*h1), 0.0062));
     }
   }
-  if (q.y < 0.040) {
-    /* (and out round the foot, lying where the lamps were lifted out) */
+  if (q.y < 0.070) {
+    /* the drifts on the flags either side of the lower crate: each a low
+       ragged mound, its crown wandering */
+    for (int i = 0; i < 3; i++){
+      float fi = float(i);
+      vec2 c = fi < 0.5 ? vec2(LC_AL.x - 0.03, 0.0) : (fi < 1.5 ? vec2(-0.40, 0.0) : vec2(0.12, 0.0));
+      float r = fi < 0.5 ? 0.12 : (fi < 1.5 ? 0.17 : 0.11);
+      float u = (q.x - c.x)/r;
+      float crown = (0.036 - 0.008*fi)*max(1.0 - u*u, 0.0) + 0.007*sin(q.x*157.0 + seed + fi*2.1)*max(1.0 - u*u, 0.0)
+                  + 0.004*sin(q.x*411.0 + seed*1.9);
+      d = min(d, max(max(abs(u) - 1.0, -q.y - 0.004)*r, (q.y - crown)*0.6));
+    }
+    /* (and loose stalks out round the foot, lying where they fell) */
     float cx = floor(q.x/0.045);
     for (int j = 0; j < 2; j++){
       float c = cx + float(j);
@@ -23974,7 +24003,7 @@ float lcStraw(vec2 q, float seed){
       float on = step(abs(c*0.045 + 0.02 + 0.30), 0.62 + 0.10*h2);
       vec2 a = vec2(c*0.045 + 0.045*h1, 0.004 + 0.016*h2);
       vec2 b = a + vec2(0.05 + 0.04*h2, (h1 - 0.5)*0.030);
-      d = min(d, mix(1e3, wgSeg(q, a, b, 0.0040), on));
+      d = min(d, mix(1e3, wgSeg(q, a, b, 0.0048), on));
     }
   }
   return d;
@@ -24002,6 +24031,9 @@ float lcLan(vec2 q, out float glass, out float wire){
   float wx = min(abs(abs(q.x) - (0.040 + 0.078*bow)), abs(abs(q.x) - (0.010 + 0.022*bow)));
   wire = mix(1e3, wx, wy);
   wire = min(wire, max(abs(q.y - 0.222), abs(q.x) - 0.115));
+  /* (round 45 graft, HOWLITE's cage: a hoop round the globe's shoulder and
+     one round its foot as well as its belly) */
+  wire = min(wire, max(min(abs(q.y - 0.150), abs(q.y - 0.296)), abs(q.x) - 0.100));
   /* (the outer guards stand a hair proud of the globe: in the silhouette) */
   d = min(d, mix(1e3, abs(abs(q.x) - (0.040 + 0.078*bow)) - 0.006, wy));
   return d;
@@ -24926,9 +24958,16 @@ vec3 wgPaint(vec2 m, vec2 msz, float shape, float seed, float px, float lum,
       vec3 cT = pine*1.22*(0.80 + 0.30*mmNoise(vec2(uT*40.0, vT*3.0) + big*5.0))*(0.85 + 0.25*vT);
       cT = mix(cT, vec3(0.05, 0.035, 0.02)*E, 1.0 - smoothstep(0.004 - qpx*0.6, 0.004 + qpx*0.6, lb));
       if (big < 0.5) {
-        /* (the open crate: no lid, its lamps packed in straw to the brim) */
+        /* (the open crate: no lid, its lamps packed in straw to the brim --
+           round 45 graft: in strands, HOWLITE's, and giving back the light) */
         float sn = mmNoise(vec2(q.x*90.0, q.y*30.0) + seed);
-        cT = vec3(0.68, 0.53, 0.26)*E*1.25*(0.65 + 0.55*sn);
+        float mr1 = abs(fract((q.x*0.85 + q.y)*95.0 + 2.0*mmNoise(q*vec2(9.0, 30.0) + seed)) - 0.5);
+        float mstr = smoothstep(0.30, 0.12, mr1)*mmLod(0.012, qpx);
+        float mr2 = abs(fract((q.x*0.70 - q.y)*80.0 + 2.0*mmNoise(q*vec2(11.0, 26.0) + seed*1.7)) - 0.5);
+        mstr = max(mstr, 0.8*smoothstep(0.30, 0.12, mr2)*mmLod(0.012, qpx));
+        cT = vec3(0.86, 0.60, 0.22)*E*1.35*(0.40 + 0.45*sn + 0.55*mstr);
+        emit += vec3(0.95, 0.68, 0.30)*onT*(0.060 + 0.070*mstr)*onC;
+        ink = max(ink, (1.0 - smoothstep(0.0, 0.10, min(mr1, mr2)))*0.25*onT*onC*mmLod(0.012, qpx));
       }
       /* the side: turned from the lens, a stop down unless the key is on it */
       float sideLit = step(0.0, kq*gLcVs);
@@ -24942,6 +24981,11 @@ vec3 wgPaint(vec2 m, vec2 msz, float shape, float seed, float px, float lum,
       onAny = max(onAny, onC);
       /* (the storm lantern burning beside it warms the boards nearest it) */
       emit += vec3(1.00, 0.52, 0.20)*onC*(1.0 - onT)*0.085*exp(-length((q - vec2(0.38, 0.20))*vec2(1.0, 1.5))/0.26);
+      /* (round 45 graft, both judges: "the crates lit enough to read at
+         1280" -- the crates behind Bones went to a dark. The forge and the
+         hanging lamps lay a warm on every crate's lit front and lid, its
+         boards and battens catching it, so it reads as wood at any size) */
+      emit += cc*vec3(1.00, 0.66, 0.36)*onC*(0.16*onF + 0.20*onT + 0.06*onS)*(0.75 + 0.45*smoothstep(-0.8, 0.8, kq*xn));
       /* the pen: the box's outline, the corner where the front turns, the
          lid's front edge, the gaps between the boards, the battens' edges */
       ink = max(ink, mmInkP(dc, qpx, 1.25)*0.90);
@@ -24962,23 +25006,60 @@ vec3 wgPaint(vec2 m, vec2 msz, float shape, float seed, float px, float lum,
           float sdS = wgStencil(q - vec2(-0.36 - 0.155, 0.24 - 0.040), 0.050, 0.080, 0.0085);
           sten = clamp(0.5 - sdS/max(qpx, 1e-5), 0.0, 1.0)*smoothstep(0.10, 0.34, mmNoise(q*vec2(60.0, 38.0) + seed) + 0.25*gr)*(1.0 - gap);
         }
-        col = mix(col, vec3(0.07, 0.035, 0.02)*E, sten*0.88*onF);
+        /* (round 45 graft, both judges: "the stencils worn" -- HOWLITE's: dry
+           brushed, broken by the grain where the brush skipped, rubbed off at
+           the handling height, faded into the deal) */
+        float wornS = smoothstep(0.22, 0.58, mmNoise(q*vec2(46.0, 30.0) + seed) + 0.30*gr)
+                    * (0.62 + 0.38*step(0.38, mmNoise(q*vec2(160.0, 22.0) + seed*1.3)));
+        col = mix(col, vec3(0.07, 0.035, 0.02)*E, sten*0.80*wornS*onF);
       }
       if (big < 0.5 && onF > 0.0) {
         vec2 dq = vec2(q.x - (lo.x + hi.x)*0.5, q.y - 0.65);
         float dia = abs(abs(dq.x) + abs(dq.y)*0.95 - 0.085) - 0.009;
         float lampM = min(length(vec2(dq.x, dq.y + 0.008)*vec2(1.0, 0.8)) - 0.024, mmBox(dq - vec2(0.0, 0.036), vec2(0.008, 0.016), 0.003));
         float sten = clamp(0.5 - min(dia, lampM)/max(qpx, 1e-5), 0.0, 1.0)*smoothstep(0.08, 0.32, mmNoise(q*vec2(55.0, 40.0) + seed*2.0) + 0.2*gr)*(1.0 - gap);
-        col = mix(col, vec3(0.07, 0.035, 0.02)*E, sten*0.85*onF);
+        float wornD = smoothstep(0.22, 0.58, mmNoise(q*vec2(46.0, 30.0) + seed*2.0) + 0.30*gr)
+                    * (0.62 + 0.38*step(0.38, mmNoise(q*vec2(160.0, 22.0) + seed*1.7)));
+        col = mix(col, vec3(0.07, 0.035, 0.02)*E, sten*0.78*wornD*onF);
+        /* (round 45 graft, both judges: HOWLITE's paper SHIPPING LABEL tacked
+           on the upper crate's corner -- foxed paper, its consignee's lines in
+           ink, a tack at each top corner, its edge lifting) */
+        vec2 lb = q - vec2(hi.x - 0.112, 0.700);
+        float lbd = mmBox(lb, vec2(0.058, 0.040), 0.004);
+        float onLb = clamp(0.5 - lbd/max(qpx, 1e-5), 0.0, 1.0)*onF;
+        vec3 paper = vec3(0.70, 0.60, 0.44)*E*1.05*(0.80 + 0.25*mmNoise(lb*60.0 + seed))*(0.88 + 0.22*smoothstep(-0.04, 0.04, lb.y));
+        float scr = step(abs(lb.x), 0.044)*(1.0 - smoothstep(0.0025, 0.0045, abs(mod(lb.y + 0.030, 0.019) - 0.0095)))
+                  * step(0.38, mmNoise(vec2(lb.x*90.0, floor((lb.y + 0.030)/0.019)*3.0 + seed)))*step(abs(lb.y), 0.030);
+        float tack = length(vec2(abs(lb.x) - 0.048, lb.y - 0.030)) - 0.0055;
+        vec3 lbC = mix(paper, vec3(0.10, 0.08, 0.10)*E, scr*0.75);
+        lbC = mix(lbC, vec3(0.20, 0.19, 0.18)*E, clamp(0.5 - tack/max(qpx, 1e-5), 0.0, 1.0));
+        col = mix(col, lbC, onLb);
+        /* (a hand of shadow under its lifting foot) */
+        col *= 1.0 - 0.30*onF*(1.0 - onLb)*step(abs(lb.x), 0.058)*smoothstep(-0.052, -0.041, lb.y)*step(lb.y, -0.040);
+        ink *= 1.0 - onLb;
+        ink = max(ink, mmInkP(lbd, qpx, 0.8)*onF*0.55);
+        moon += onLb*0.20;
       }
       }
     }
     /* the straw: dry stalks, each lit along its length */
-    float st = (q.y < 0.040 || q.y > LC_BH.y - 0.02) ? lcStraw(q, seed) : 1e3;
+    float st = (q.y < 0.070 || q.y > LC_BH.y - 0.12) ? lcStraw(q, seed) : 1e3;
     float onSt = clamp(0.5 - st/max(qpx, 1e-5), 0.0, 1.0);
-    col = mix(col, vec3(0.86, 0.70, 0.36)*E*1.45*(0.70 + 0.45*mmNoise(q*vec2(160.0, 40.0))), onSt);
-    ink = max(ink, mmInkP(st, qpx, 0.7)*0.35*onSt);
-    moon += onSt*0.35;
+    /* (round 45 graft, HOWLITE's: straw is STRANDS -- two crossing runs of
+       them, gold on its own shade, warm on the forge's side) */
+    float sv = mmNoise(vec2(q.x*140.0 + q.y*40.0, q.y*26.0) + seed);
+    float sr1 = abs(fract((q.x*0.85 + q.y)*95.0 + 2.0*mmNoise(q*vec2(9.0, 30.0) + seed)) - 0.5);
+    float sr2 = abs(fract((q.x*0.70 - q.y)*80.0 + 2.0*mmNoise(q*vec2(11.0, 26.0) + seed*1.7)) - 0.5);
+    float strand = max(smoothstep(0.30, 0.12, sr1), 0.8*smoothstep(0.30, 0.12, sr2))*mmLod(0.012, qpx);
+    vec3 strawC = vec3(0.90, 0.64, 0.26)*E*1.55*(0.46 + 0.38*sv + 0.50*strand);
+    strawC *= 0.72 + 0.42*smoothstep(-1.0, 1.0, kq*(q.x + 0.36)/0.6);
+    strawC *= mix(0.80, 1.0, smoothstep(0.0, 0.030, q.y));      // (the drifts' foot in their own shade)
+    col = mix(col, strawC, onSt);
+    /* (gold is the light it gives back: the strands' sheen over the ceiling,
+       so the straw reads STRAW and not an olive) */
+    emit += vec3(0.95, 0.68, 0.30)*onSt*(0.060 + 0.070*strand);
+    ink = max(ink, mmInkP(st, qpx, 0.7)*0.30*onSt);
+    moon += onSt*0.30;
     /* the lamps packed in the open crate: opal globes and glass chimneys */
     vec2 kb = lcBack(0.0);
     for (int i = 0; i < 4; i++){
@@ -25023,22 +25104,27 @@ vec3 wgPaint(vec2 m, vec2 msz, float shape, float seed, float px, float lum,
     /* the glass itself: smoke-dark amber, by albedo; its light is given off */
     lc = mix(lc, vec3(0.18, 0.09, 0.04)*E, onG);
     col = mix(col, lc, onL);
-    float onW = mmInkP(w, lqpx, 1.6)*onG;
+    float onW = mmInkP(w, lqpx, 2.0)*onG;   // (round 45 graft: the cage a pixel heavier, to read against the glow)
     float glow = 0.14 + 1.30*exp(-fd/0.042) + 0.38*rimG*smoothstep(0.02, 0.10, lq.y - 0.130);
     vec3 gc = mix(vec3(1.00, 0.46, 0.12), vec3(1.00, 0.82, 0.52), exp(-fd/0.035));
     emit += gc*glow*onG*(1.0 - onW*0.90)*1.35;
     /* the flame: a tear on the wick, near white at its heart, blue at its root */
-    float fl = length((fq - vec2(0.0, 0.010))/vec2(0.016, 0.038)) - 1.0;
-    float onFl = clamp(0.5 - fl*0.016/max(lqpx, 1e-5), 0.0, 1.0)*onG;
-    emit += mix(vec3(1.00, 0.90, 0.62), vec3(1.00, 0.98, 0.90), smoothstep(0.0, 1.0, -fl))*onFl*1.9;
-    emit += vec3(0.25, 0.40, 1.00)*onFl*smoothstep(-0.005, -0.025, fq.y)*0.5;
+    /* (round 45 graft, both judges: HOWLITE's flame -- a fuller teardrop
+       that reads at the near floor's distance, white-hot at its heart, a
+       blue foot at the wick) */
+    float fl = length((fq - vec2(0.0, 0.014))/vec2(0.023, 0.050)) - 1.0;
+    float onFl = clamp(0.5 - fl*0.023/max(lqpx, 1e-5), 0.0, 1.0)*onG;
+    float flh = clamp((fq.y + 0.036)/0.10, 0.0, 1.0);
+    emit += mix(vec3(1.00, 0.86, 0.55), vec3(1.00, 0.98, 0.92), smoothstep(0.0, 1.0, -fl))*onFl*2.1*smoothstep(0.05, 0.30, flh);
+    emit += vec3(0.30, 0.42, 1.00)*onFl*(1.0 - smoothstep(0.05, 0.30, flh))*0.9;
     /* a highlight down the globe on the key's side, the lamp behind it */
     emit += vec3(0.95, 0.85, 0.70)*onG*(1.0 - onW)*smoothstep(0.012, 0.0, abs(lq.x + 0.062*kq + 0.010*(lq.y - 0.22)))*smoothstep(0.30, 0.18, lq.y)*smoothstep(0.14, 0.20, lq.y)*0.35;
     emit += vec3(0.90, 0.55, 0.25)*underH*onL*(1.0 - onG)*0.45;
     emit += vec3(0.90, 0.40, 0.18)*0.18*exp(-max(ld, 0.0)/0.03)*(1.0 - onG)*onL;
     ink = max(ink, mmInkP(ld, qpx, 1.2)*0.90);
     ink = max(ink, mmInkP(g*0.95, qpx, 1.0)*0.75*onL);
-    ink = max(ink, onW*0.85);
+    ink = max(ink, onW*0.92);
+    emit += vec3(1.00, 0.70, 0.40)*onW*0.10*smoothstep(0.0, 0.8, kq*lq.x/0.11);   // (the wire lit by the flame on its near side)
     /* the oil can: green enamel worn to the tin, its brass cap */
     vec2 cq = q - vec2(0.80, 0.0);
     float can = max(wgEll(cq - vec2(0.0, 0.085), vec2(0.090, 0.095)), -cq.y);
@@ -32593,6 +32679,12 @@ void main(){
 #endif
 #if MM_WINGS == 2
   if (vShape > 31.5 && (vShape < 37.5 || vShape > 38.5)) { satK = max(uPropSat, 0.40); satM = max(uPropSatMax, 0.58); }
+#if MM_SH34
+  /* (round 45 graft, HOWLITE's: the Lampworks' crates of lamps are deal and
+     straw in the forge's light -- their own colour, as the bale's straw is
+     the Heart's; at 0.40 the straw came back olive) */
+  if (vShape > 33.5 && vShape < 34.5 && vSeed > 40.0) { satK = max(uPropSat, 0.50); satM = max(uPropSatMax, 0.70); }
+#endif
 #if MM_SH32
   /* (round 45 graft, LARIMAR's: a bath's copper, its oxblood or bottle-green
      paint -- the metal and the enamel are material facts; at 0.40 the copper
