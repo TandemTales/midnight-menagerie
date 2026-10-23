@@ -1351,3 +1351,6 @@
   .mm-hud[data-fan] .mm-hud__gear { margin-left: 10px; }
   .mm-hud[data-fan] .mm-hud__group { gap: 6px; }
 }
+/* the two-line ledger stands in the middle of the rail's channel */
+.mm-hud[data-fan] .mm-hud__group--meta { height: 32px; align-content: center; row-gap: 1px; grid-template-rows: 15px 15px; }
+.mm-hud[data-fan] .mm-hud__group--meta > :is(.mm-hud__haunt, .mm-hud__seed) { height: 15px; }
