@@ -62,7 +62,7 @@ depot. The packager reads `shell/steam_appid.txt` and bakes it into
 `release.json`; `steamworks.js`'s `init(id)` takes it from there. Empty
 packages and runs (no Steam, the game plays). `480` is refused.
 
-### Size (2026-10-23, commit 4a109fd6)
+### Size (2026-10-23, built from 312505bf)
 
 | | |
 |---|---|
