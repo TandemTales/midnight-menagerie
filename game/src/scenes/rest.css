@@ -712,3 +712,49 @@
 .rs-room > .rs-choices { min-height: 0; }
 .rs-choices:not(:has(> .rs-door:nth-child(5))) { gap: clamp(18px, 2.6vh, 28px); }
 .rs-choices:not(:has(> .rs-door:nth-child(5))) > .rs-door { padding-block: clamp(20px, 2.6vh, 26px) clamp(18px, 2.2vh, 22px); }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ROUND 46 GRAFT 2 — CHAROITE'S FILIGREE NICHES (rest, 2 of 3 judges)
+   Each choice's object stands in a filigree medallion frame -- the Kid
+   board's own oval (socket-filigree.webp) -- lit inside by its own light:
+   the moon over the pillow, the torch on the whetstone, the flame round the
+   candle, the lamp on the cup. The vignette stands PROUD of its row rather
+   than heightening it (margin-block below), so the four panels keep their
+   height and the way out its clear line under them at both sizes.
+   ═══════════════════════════════════════════════════════════════════════════ */
+.rs-door__glyph.rs-door__vig {
+  --vig: clamp(56px, 4.1vw, 66px);
+  width: var(--vig); height: calc(var(--vig) * 144 / 119); --well: var(--vig);
+  aspect-ratio: auto;
+  margin-block: -9px;
+  position: relative;
+  border-radius: 0;
+  background:
+    url("../../assets/ui/kit/socket-filigree.webp") 50% 50% / 100% 100% no-repeat,
+    radial-gradient(34% 30% at 50% 56%, var(--vig-lit, rgb(255 190 110 / .55)), rgb(14 8 20 / .95) 100%) 50% 50% / 100% 100% no-repeat;
+  filter: drop-shadow(0 3px 4px rgb(0 0 0 / .8));
+}
+.rs-door__vig > i {
+  position: absolute; left: 50%; top: 56%; translate: -50% -50%;
+  width: 82%; max-width: none;
+  filter: drop-shadow(0 2px 2px rgb(0 0 0 / .85)) brightness(1.08);
+}
+.rs-door[data-opt="rest"]    { --vig-lit: rgb(150 180 255 / .62); }
+.rs-door[data-opt="upgrade"] { --vig-lit: rgb(255 176 96 / .6); }
+.rs-door[data-opt="forge"]   { --vig-lit: rgb(255 140 60 / .78); }
+.rs-door[data-opt="sit"]     { --vig-lit: rgb(236 150 170 / .55); }
+.rs-door[data-opt="mend"]    { --vig-lit: rgb(236 120 120 / .55); }
+.rs-door[data-opt="clone"]   { --vig-lit: rgb(190 150 255 / .55); }
+.rs-door.is-done .rs-door__glyph.rs-door__vig { filter: drop-shadow(0 3px 4px rgb(0 0 0 / .8)) drop-shadow(0 0 10px color-mix(in srgb, var(--kit-candle) 60%, transparent)); }
+.rs-door__key.kit-num { left: calc(clamp(18px, 1.6vw, 28px) + clamp(56px, 4.1vw, 66px) / 2); }
+/* a party's night (six choices, two columns) keeps its smaller vignette */
+.rs-choices:has(> .rs-door:nth-child(5)) .rs-door__glyph.rs-door__vig { --vig: clamp(40px, 3vw, 50px); margin-block: -4px; }
+/* both blankets OPAQUE where the moonbeam crosses them (VERDICTS-r46, graft
+   2): the screened shaft laid over the picture stops at the fort's roofline
+   (55% down the drawing's 420x410 window: the drape and the throw stand from
+   there), so the quilts are never seen through; under them the painted shaft
+   runs on, and the window's four panes are laid on the rug where it lands */
+.rs-glow--moon::before {
+  -webkit-mask-image: linear-gradient(180deg, black 0%, black 52.5%, transparent 55.5%);
+          mask-image: linear-gradient(180deg, black 0%, black 52.5%, transparent 55.5%);
+}
