@@ -46,9 +46,13 @@ import { ClipPlayer } from '../ui/sprite.js';
    `unit` (ui/sprite.js) divides out whether a frame came from an atlas or a
    still, so both arrive at the height asked for either way. */
 const FORT_CAST = [
-  { who: 'kid', x: 180, y: 248, h: 56, warm: ['idle'] },
-  { who: 'pet', x: 246, y: 248, h: 26, warm: ['idle', 'affection'] },
+  { who: 'kid', x: 174, y: 250, h: 98, warm: ['idle'] },
+  { who: 'pet', x: 256, y: 250, h: 48, warm: ['idle', 'affection'] },
 ];
+/* ROUND 46 (survey 9: "Maya and Bones inside are tiny" -- "about twice the
+   size"): the fort is built a fifth larger round the floor under its way in
+   (the scaled group in FORT_PAINT) and the two of them sit in it at 1.75x and
+   1.85x of the heights above, the arch still clearing her head. */
 
 const CSS_REST = new URL('./rest.css', import.meta.url).href;
 
@@ -108,6 +112,32 @@ const GENERIC_TALK = [
  * shows it behind this panel; rest.css then lifts the painted layer away and
  * leaves the frame, the lamp and the two of them standing in front of it. */
 const KIT_ART = new URL('../../assets/ui/kit/', import.meta.url).href;
+
+/* ROUND 46 (survey 9: the fort "fuzzy, noise-textured felt" -- "crisp folds,
+   a visible quilt-patch seam pattern and a clear inked edge"): the quilt over
+   the front is pieced, patch by patch, each square cut a hair off true the
+   way a hand cuts cloth, in five of the house's dyes, every seam stitched in
+   gilt thread. Fixed, so every load draws the same quilt. */
+const QUILT = (() => {
+  const dyes = ['rs-qp--plum', 'rs-qp--rose', 'rs-qp--indigo', 'rs-qp--ochre', 'rs-qp--moss'];
+  let seed = 7;
+  const rnd = () => { seed = (seed * 1103515245 + 12345) & 0x7fffffff; return seed / 0x7fffffff; };
+  const out = [];
+  const seams = [];
+  const cw = 30, ch = 26;
+  for (let r = 0; r < 5; r++) {
+    for (let c = 0; c < 10; c++) {
+      const x = 52 + c * cw - (r % 2 ? cw / 2 : 0), y = 134 + r * ch;
+      const j = () => (rnd() - 0.5) * 2.4;
+      const q = [[x + j(), y + j()], [x + cw + j(), y + j()], [x + cw + j(), y + ch + j()], [x + j(), y + ch + j()]];
+      const d = `M${q.map((pt) => pt.map((v) => v.toFixed(1)).join(' ')).join('L')}Z`;
+      const dye = dyes[(c * 3 + r * 2 + (rnd() < 0.3 ? 1 : 0)) % dyes.length];
+      out.push(`<path class="rs-qp ${dye}" d="${d}"/>`);
+      seams.push(d);
+    }
+  }
+  return out.join('') + `<path class="rs-qseam" d="${seams.join('')}"/>`;
+})();
 
 const FORT_PAINT = `
 <svg class="rs-fort__paint" viewBox="0 -130 420 410" preserveAspectRatio="xMidYMax slice" aria-hidden="true" focusable="false">
@@ -182,10 +212,10 @@ const FORT_PAINT = `
     <!-- cloth: edges that wander the way a brush does, then a weave along the weft -->
     <filter id="rsCloth" x="-4%" y="-4%" width="108%" height="108%" color-interpolation-filters="sRGB">
       <feTurbulence type="fractalNoise" baseFrequency=".05" numOctaves="2" seed="4" result="w"/>
-      <feDisplacementMap in="SourceGraphic" in2="w" scale="3.2" xChannelSelector="R" yChannelSelector="G" result="d"/>
+      <feDisplacementMap in="SourceGraphic" in2="w" scale="0" xChannelSelector="R" yChannelSelector="G" result="d"/>
       <feTurbulence type="fractalNoise" baseFrequency="1.1 .3" numOctaves="2" seed="11" result="n"/>
       <feColorMatrix in="n" type="matrix"
-        values="0 0 0 .5 .5  0 0 0 .5 .5  0 0 0 .5 .5  0 0 0 0 1" result="g"/>
+        values="0 0 0 .18 .84  0 0 0 .18 .84  0 0 0 .18 .84  0 0 0 0 1" result="g"/>
       <feBlend in="d" in2="g" mode="multiply" result="b"/>
       <feComposite in="b" in2="d" operator="in"/>
     </filter>
@@ -193,7 +223,7 @@ const FORT_PAINT = `
          the canvas multiplied into everything -->
     <filter id="rsPaint" filterUnits="userSpaceOnUse" x="-24" y="-154" width="468" height="482" color-interpolation-filters="sRGB">
       <feTurbulence type="fractalNoise" baseFrequency=".024" numOctaves="3" seed="8" result="w"/>
-      <feDisplacementMap in="SourceGraphic" in2="w" scale="3.4" xChannelSelector="R" yChannelSelector="B" result="d"/>
+      <feDisplacementMap in="SourceGraphic" in2="w" scale="1.2" xChannelSelector="R" yChannelSelector="B" result="d"/>
       <feTurbulence type="fractalNoise" baseFrequency=".55 .75" numOctaves="3" seed="3" result="c"/>
       <feColorMatrix in="c" type="matrix"
         values="0 0 0 .34 .68  0 0 0 .34 .68  0 0 0 .34 .68  0 0 0 0 1" result="cg"/>
@@ -246,8 +276,9 @@ const FORT_PAINT = `
   <g class="rs-stars"><circle cx="365" cy="4" r=".9"/><circle cx="369" cy="26" r=".6"/><circle cx="365" cy="58" r=".9"/><circle cx="371" cy="84" r=".7"/><circle cx="395" cy="90" r=".8"/><circle cx="362" cy="98" r=".6"/><circle cx="386" cy="44" r=".6"/><circle cx="397" cy="66" r=".7"/></g>
   <path class="rs-mullion" d="M380 -18v124M357 34h46M357 72h46"/>
   <path class="rs-winsill" d="M344 108h72v7h-72Z"/>
-  <path d="M362 20 404 20 322 257 190 257Z" fill="url(#rsShaft)" filter="url(#rsBlur8)"/>
-  <path class="rs-moonbeam" d="M370 24 398 24 300 257 226 257Z" filter="url(#rsBlur4)"/>
+  <path d="M362 20 404 20 322 257 190 257Z" fill="url(#rsShaft)" class="rs-shaft"/>
+  <path class="rs-moonbeam" d="M370 24 398 24 300 257 226 257Z"/>
+  <path class="rs-moonbeam-edge" d="M370 24 226 257M398 24 300 257"/>
 
   <image href="${KIT_ART}web-l.webp" x="-2" y="-34" width="64" height="91" class="rs-web"/>
 
@@ -278,8 +309,9 @@ const FORT_PAINT = `
   </g>
   <ellipse class="rs-shadow" cx="230" cy="258" rx="178" ry="7" filter="url(#rsBlur4)"/>
   <ellipse class="rs-spill" cx="212" cy="266" rx="120" ry="15" filter="url(#rsBlur8)"/>
-  <!-- where the moonbeam lands: a cold patch on the rug's far side -->
-  <ellipse class="rs-moonpool" cx="266" cy="263" rx="62" ry="9" filter="url(#rsBlur4)"/>
+  <!-- where the moonbeam lands: the window itself laid on the floor, four
+       crisp panes of cold light with the mullions' shadow between them -->
+  <path class="rs-moonpane" d="M231 258h30l-5 9h-31ZM265 258h32l-6 9h-31ZM224 270h31l-6 10h-33ZM259 270h32l-7 10h-31Z"/>
 
   <!-- the chair the second blanket hangs off -->
   <g class="rs-chair">
@@ -303,6 +335,21 @@ const FORT_PAINT = `
     <path class="rs-bunt rs-bunt--rose"   d="M320 99h11l-5.5 12Z"/>
   </g>
 
+  <!-- the throw off the chair stays on its chair -->
+  <g filter="url(#rsCloth)">
+    <path d="M290 134c16-16 38-32 66-38 14-2 22 8 25 24 6 44 14 88 22 137-10 5-22-5-32 1s-20-4-30 0-20-4-30 0c-4-42-6-84-21-124Z" fill="url(#rsThrow)"/>
+    <g clip-path="url(#rsClipThrow)">
+      <path class="rs-fold" d="M362 104c4 52 10 104 16 154M334 112c2 48 4 96 8 146"/>
+      <path class="rs-foldlit" d="M378 110c6 50 12 98 20 148M348 108c3 50 6 100 10 150"/>
+      <path class="rs-throwstripe" d="M296 238c34-3 74-3 110 2M296 245c34-3 74-3 110 2"/>
+      <rect x="280" y="228" width="140" height="32" fill="url(#rsFoot)"/>
+    </g>
+    <path class="rs-moonrim" d="M300 128c14-14 34-28 56-32 12-2 20 8 24 22 6 44 12 88 20 136"/>
+    <path class="rs-ink" d="M290 134c16-16 38-32 66-38 14-2 22 8 25 24 6 44 14 88 22 137"/>
+
+  </g>
+  <!-- THE FORT, grown a fifth round the floor under its way in (round 46) -->
+  <g transform="translate(205 257) scale(1.22) translate(-205 -257)">
   <!-- THE FORT: the quilt over the front, the throw off the chair, the drape
        over the table top; patchwork, folds and stitching, all in one cloth -->
   <g filter="url(#rsCloth)">
@@ -312,26 +359,20 @@ const FORT_PAINT = `
       <path class="rs-patch rs-patch--ochre"  d="M78 214l34 1-1 44-38-1Z"/>
       <path class="rs-patch rs-patch--indigo" d="M280 168l30 2-1 40-30-2Z"/>
       <path class="rs-patch rs-patch--rose"   d="M284 222l34 1 4 36-36-1Z"/>
+      ${QUILT}
       <path class="rs-stitchbox" d="M108 170l30-3 3 36-32 3ZM78 214l34 1-1 44-38-1ZM280 168l30 2-1 40-30-2ZM284 222l34 1 4 36-36-1Z"/>
       <path class="rs-stitch" d="M70 196c40-8 220-10 262-4M64 236c46-6 226-8 272-2"/>
-      <path class="rs-fold" d="M118 158c-2 36-4 68-8 100M288 160c1 34 2 66 4 98M102 132c-6 44-12 86-16 126" filter="url(#rsBlur2)"/>
-      <path class="rs-foldlit" d="M128 158c-1 36-2 68-4 100M296 160c1 34 3 66 6 98M100 134c-12 42-24 82-34 122" filter="url(#rsBlur2)"/>
+      <path class="rs-fold" d="M118 158c-2 36-4 68-8 100M288 160c1 34 2 66 4 98M102 132c-6 44-12 86-16 126"/>
+      <path class="rs-foldlit" d="M128 158c-1 36-2 68-4 100M296 160c1 34 3 66 6 98M100 134c-12 42-24 82-34 122"/>
       <rect x="50" y="120" width="290" height="140" fill="url(#rsSide)"/>
       <rect x="50" y="228" width="290" height="32" fill="url(#rsFoot)"/>
     </g>
-
-    <path d="M290 134c16-16 38-32 66-38 14-2 22 8 25 24 6 44 14 88 22 137-10 5-22-5-32 1s-20-4-30 0-20-4-30 0c-4-42-6-84-21-124Z" fill="url(#rsThrow)"/>
-    <g clip-path="url(#rsClipThrow)">
-      <path class="rs-fold" d="M362 104c4 52 10 104 16 154M334 112c2 48 4 96 8 146" filter="url(#rsBlur2)"/>
-      <path class="rs-foldlit" d="M378 110c6 50 12 98 20 148M348 108c3 50 6 100 10 150" filter="url(#rsBlur2)"/>
-      <path class="rs-throwstripe" d="M296 238c34-3 74-3 110 2M296 245c34-3 74-3 110 2"/>
-      <rect x="280" y="228" width="140" height="32" fill="url(#rsFoot)"/>
-    </g>
-    <path class="rs-moonrim" d="M300 128c14-14 34-28 56-32 12-2 20 8 24 22 6 44 12 88 20 136" filter="url(#rsBlur2)"/>
+    <path class="rs-ink" d="M58 257C66 214 84 168 102 128c68-6 148-6 218-2 6 44 10 88 14 131"/>
 
     <path d="M94 132c56-14 156-16 212-4-4 10-8 22-14 30-6-10-16-10-24 2-8-12-18-12-26 0-8-12-18-12-26 0-8-12-18-12-26 0-8-12-18-12-26 0-8-12-18-12-26 0-8-12-18-12-26 0-8-12-18-12-26 2-8-8-14-16-18-26Z" fill="url(#rsDrapeG)"/>
     <path class="rs-drapehem" d="M94 132c4 10 10 18 18 26 8-14 18-14 26 2 8-12 18-12 26 0 8-12 18-12 26 0 8-12 18-12 26 0 8-12 18-12 26 0 8-12 18-12 26 0 8-12 18-12 24-2 6-8 10-20 14-30"/>
-    <path class="rs-drapelit" d="M100 130c56-12 150-14 204-4" filter="url(#rsBlur2)"/>
+    <path class="rs-drapelit" d="M100 130c56-12 150-14 204-4"/>
+    <path class="rs-ink rs-ink--fine" d="M94 132c56-14 156-16 212-4"/>
   </g>
   <g class="rs-tassel">
     <path d="M112 158v6M138 160v6M164 160v6M190 160v6M216 160v6M242 160v6M268 160v6M292 158v6"/>
@@ -355,6 +396,8 @@ const FORT_PAINT = `
   <path class="rs-flaplit" d="M172 167c-8 28-10 62 4 90"/>
   <path class="rs-tie" d="M147 213c6 4 14 4 20 0"/><circle class="rs-knot" cx="168" cy="213" r="2.4"/>
   <path class="rs-archline" d="M184 165c8-1 17-1 26-1 37 0 64 15 64 46v47"/>
+  <path class="rs-ink" d="M146 257v-47c0-31 27-46 64-46s64 15 64 46v47"/>
+  <path class="rs-ink rs-ink--fine" d="M146 257c-5-22-6-50 4-72 6-12 14-18 22-18-8 28-10 62 4 90"/>
 
   <!-- floor cushions either side of the way in -->
   <g class="rs-cushions" filter="url(#rsCloth)">
@@ -369,6 +412,7 @@ const FORT_PAINT = `
   </g>
 
   <path class="rs-bloom" d="M146 257v-47c0-31 27-46 64-46s64 15 64 46v47" filter="url(#rsBlur4)"/>
+  </g>
   </g>
 
   <!-- set dressing from the Kid board itself: the skull on its books and a
@@ -401,8 +445,8 @@ const FORT_SVG = `
   <!-- the lamp's light: filling the fort, spilling out of the way in and
        across the rug in front of it -->
   <ellipse class="rs-pool" cx="210" cy="257" rx="168" ry="26" fill="url(#rsGlow)"/>
-  <ellipse class="rs-pool rs-pool--in" cx="210" cy="232" rx="74" ry="40" fill="url(#rsGlow)"/>
-  <circle class="rs-halo" cx="210" cy="222" r="62" fill="url(#rsInside)"/>
+  <ellipse class="rs-pool rs-pool--in" cx="212" cy="226" rx="90" ry="52" fill="url(#rsGlow)"/>
+  <circle class="rs-halo" cx="212" cy="212" r="78" fill="url(#rsInside)"/>
 
   <!-- the lamp between them -->
   <path class="rs-torchbody" d="M203 238h14v3h-14ZM201 241h18v7h-18Z"/>
@@ -410,10 +454,10 @@ const FORT_SVG = `
   <path class="rs-flame" d="M210 213c6 7 5 12 3 15-3 5-9 4-10-1-1-6 3-8 7-14Z"/>
 
   <!-- two shapes sitting in the warm -->
-  <path class="rs-kid" d="M160 248c0-22 9-34 20-34s20 12 20 34Z"/>
-  <path class="rs-kid" d="M180 212a10 10 0 1 1 0-.02"/>
-  <path class="rs-pet" d="M228 248c0-13 8-22 18-22s18 9 18 22Z"/>
-  <path class="rs-petear" d="M234 230l-4-11m20 10 5-11"/>
+  <path class="rs-kid" d="M150 250c0-38 11-58 24-58s24 20 24 58Z"/>
+  <path class="rs-kid" d="M174 188a14 14 0 1 1 0-.02"/>
+  <path class="rs-pet" d="M232 250c0-24 11-38 24-38s24 14 24 38Z"/>
+  <path class="rs-petear" d="M240 218l-6-16m30 15 7-16"/>
   <!-- ...and the real pair, for a Kid and a Companion whose art is built. Same
        swap as ui/enemy.js makes over PAL_ART: each flat path above stays until a
        frame is genuinely on screen, so a missing or slow atlas leaves the drawing
