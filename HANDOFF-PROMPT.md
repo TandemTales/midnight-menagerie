@@ -284,6 +284,13 @@ fixed and re-judged 4 of 4. Every fight at or under BASE (hm-1 15.42). NEXT:
 survey 9's remainder -- the Kennels' straw (both judges), the Heart, the
 Ballroom's haze, the boards' web chips (hud-late +N, settings' palette pills,
 the piles search), the atlas's unsurveyed wings; then SURVEY 10.
+**ROUND 46 IS MERGED (2026-10-23, `7e8c9b13`):** SUGILITE +1.08 on Borda, no
+majority (each judge a different winner; CHAROITE equal on mean): brass and
+enamel controls, damask dialogs, the inked fort, the gameover ledger; every
+build shows all 18 Keepsakes and Gear at 1280. Battery green but the sprites
+halo (clips.py 26/2 once under Unreal load, 28/0 alone). **NOW: its graft**
+(`GRAFT-r46.md`, D:/UILOOP/r46/wt/r46-graft; first the rest board's row-4
+collision), then a paired check, then SURVEY 10.
 
 **ROUND 33 AND ITS GRAFT ARE MERGED, VERIFIED AND PUSHED (2026-10-16):**
 graft `9d008119`. COBALT +1.59 (`531126e4`): no running line under 11 px at
