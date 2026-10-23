@@ -202,13 +202,6 @@ const SOCK_FLOOR = 28;   // round 40: 30 -> 28, the third object a group before 
 /** Round 33 graft: the objects a pouched group shows beside its cartouche
  *  before the socket starts giving up pixels (all three judges: three). */
 const PEEK_WANT = 3;
-/** Round 46: the fan's smallest coin, and the closest two coins may stand
- *  (the step from one to the next) before the group falls back to "+N". */
-const FAN_SOCK_MIN = 22;
-const FAN_PITCH_MIN = 10;
-/** Round 46 graft: the least of each coin's face that stays in sight past
- *  the coin laid over it, in the one-row fan (VERDICTS-r46: 70%). */
-const FAN_SHOW_MIN = 0.7;
 
 export class HUD {
   /**
@@ -670,11 +663,6 @@ export class HUD {
    *  every readout's word (Haunt, the seed) and gives up PEEKS -- the objects
    *  shown beside a pouch -- before it gives up anything else. */
   _fitPouch(nK, nG) {
-    if (this._fitFan(nK, nG)) return;
-    this._fan = 0;
-    delete this.el.dataset.fan;
-    for (const l of [this.$relics, this.$gear]) { delete l.dataset.fan; }
-    this.el.style.removeProperty('--fan-pitch');
     /* round 33 graft: the socket gives up a pixel at a time (34 at 1600, 32
        under 1400, never under SOCK_FLOOR) before a group gives up its third
        object; the largest socket that keeps PEEK_WANT a group wins */
@@ -727,62 +715,6 @@ export class HUD {
     this.$relics.parentElement.dataset.vine = '0';
   }
 
-  /** ROUND 46 -- THE FAN. Survey 9, both judges, hud-late at 1280: "KEEPSAKES
-   *  10 shows only two medallions and a +8 chip ... A late-run player cannot
-   *  see what they own"; "let the groups show more medallions, overlapping
-   *  like a fanned stack at smaller size, before collapsing to +N". Every
-   *  object of a pouched group is laid after its cartouche as a fanned stack
-   *  of coins, each one overlapping the last by as little as the rail allows
-   *  (--fan-pitch, the step from one coin to the next), the largest coin
-   *  and the widest step that fit; only if even the tightest fan (FAN_PITCH
-   *  _MIN apart) over-fills the rail does the group fall back to its peeks
-   *  and the "+N". Hovering or focusing a coin lifts it clear of the stack. */
-  _fitFan(nK, nG) {
-    const lists = [this.$relics, this.$gear];
-    const p = { k: nK > POUCH_AT, g: nG > POUCH_AT, vk: nK, vg: nG };
-    this._fan = 1;
-    /* ROUND 46 GRAFT (VERDICTS-r46, all three judges on SUGILITE's two
-       staggered rows: "piled into a two-row overlapping clump ... that pokes
-       above and below the strip"; KUNZITE's ONE row won the screen): the
-       coins lie in ONE row along the rail inside its rules, each showing at
-       least FAN_SHOW_MIN of its face past the coin laid over it. The largest coin
-       that keeps every face that much in sight wins, then the widest step.
-       Only where even FAN_SOCK_MIN coins cannot keep it does the row close
-       further (never under FAN_PITCH_MIN), and only past that the "+N". */
-    this.el.dataset.fan = 'row';
-    for (const l of lists) l.dataset.fan = '1';
-    const top = window.innerWidth > 1400 ? 34 : 30;
-    const tryAt = (sock, pitch) => {
-      this.el.style.setProperty('--sock', `${sock}px`);
-      this.el.style.setProperty('--fan-pitch', `${pitch}px`);
-      this.el.style.setProperty('--fan-dy', '0px');
-      return !this._tight();
-    };
-    /* the widest step that still fits at this coin, from `lo` (known to fit) */
-    const widest = (sock, lo) => {
-      let up = sock + 4;
-      if (tryAt(sock, up)) return up;
-      while (up - lo > 0.5) { const mid = (lo + up) / 2; if (tryAt(sock, mid)) lo = mid; else up = mid; }
-      return Math.floor(lo * 2) / 2;
-    };
-    this._applyFold({ snack: true, compact: false, over: 0, pouch: { ...p } });
-    let best = null;
-    for (let sock = top; sock >= FAN_SOCK_MIN; sock--) {
-      const need = Math.ceil(sock * FAN_SHOW_MIN * 2) / 2;
-      if (!tryAt(sock, need)) continue;
-      best = { sock, pitch: widest(sock, need) };
-      break;
-    }
-    if (!best && tryAt(FAN_SOCK_MIN, FAN_PITCH_MIN)) best = { sock: FAN_SOCK_MIN, pitch: widest(FAN_SOCK_MIN, FAN_PITCH_MIN) };
-    if (!best) return false;
-    tryAt(best.sock, best.pitch);
-    this.el.dataset.fold = '6';
-    this.el.dataset.fan = best.pitch >= best.sock ? 'open' : 'row';
-    if (this._tight()) this.el.dataset.dense = '1';
-    this.$relics.parentElement.dataset.vine = '0';
-    return true;
-  }
-
   _applyFold(lv) {
     if (this._snackSpread !== lv.snack) {
       this._snackSpread = lv.snack;
@@ -803,14 +735,8 @@ export class HUD {
       this.el.dataset.belt = 'pouch';
       if (keep.length) layPouch(this.$relics, keep, f.pouch.k, f.pouch.vk, 'keepsakes');
       if (gear.length) layPouch(this.$gear, gear, f.pouch.g, f.pouch.vg, 'gear');
-      for (const [l, cs] of [[this.$relics, keep], [this.$gear, gear]]) {
-        if (l.dataset.fan === '1') cs.forEach((c, i) => { c.style.setProperty('--fi', String(i)); c.dataset.fz = String(i % 2); });
-        else cs.forEach((c) => { c.style.removeProperty('--fi'); delete c.dataset.fz; });
-      }
       return;
     }
-    delete this.el.dataset.fan;
-    for (const l of [this.$relics, this.$gear]) delete l.dataset.fan;
     const total = keep.length + gear.length;
     const over = Math.min(f.over || 0, total);
     const showN = total - over;
@@ -987,16 +913,13 @@ function layPouch(list, chips, pouched, peek, kind) {
   list.textContent = '';
   list.dataset.folded = '2';
   list.removeAttribute('data-open');
-  /* round 46: a fanned group shows every object, so its cartouche is a label,
-     not a press that opens nothing */
-  const btn = document.createElement(rest.length ? 'button' : 'span');
-  if (rest.length) btn.type = 'button';
+  const btn = document.createElement('button');
+  btn.type = 'button';
   /* round 33 graft: ONE line in a scrolled cartouche, "KEEPSAKES 10" (CADMIUM) */
   btn.className = 'mm-hud__pouch kit-beltpouch kit-beltpouch--cart';
   btn.dataset.kind = kind;
-  if (rest.length) btn.setAttribute('aria-expanded', 'false');
+  btn.setAttribute('aria-expanded', 'false');
   btn.setAttribute('aria-label', `${n} ${name}${rest.length ? `, ${rest.length} more in the pouch. Show them.` : ''}`);
-  if (!rest.length) btn.setAttribute('role', 'img');
   /* no tooltip of its own: pointing at the pouch fans the group out in the
      tooltip's place, and each object there carries its own */
   btn.innerHTML = `<i class="kit-beltpouch__medal" aria-hidden="true"><svg viewBox="0 0 24 24"><path fill-rule="evenodd" d="${POUCH_GLYPH[kind]}"/></svg></i>`
