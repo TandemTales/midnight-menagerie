@@ -1099,3 +1099,74 @@
     color-mix(in srgb, var(--kit-moon) 48%, transparent);
   box-shadow: 0 0 0 1px color-mix(in srgb, var(--kit-moon) 60%, transparent);
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ROUND 46 GRAFT 4 — TORN SLIPS WITH A SHADOW; THE STAKES A SIZE UP; THE
+   MOONLIGHT LAID AS PANES
+   VERDICTS-r46: CHAROITE's torn parchment edge and a cast shadow on each
+   choice slip, KUNZITE's larger risk/gain words and its moonlight as
+   window-pane patches on the floor (not crossed V bands).
+   - each choice is a slip of the house's torn old card (hw-slip.webp, its
+     deckled edge and inked baseline), its shadow cast on the leaf by the
+     slip's own torn outline (a drop-shadow, not a box);
+   - the stakes in the body face at 16.5 px (15.5 at the Deck), the words
+     that name them in dark engraved caps a size under;
+   - each window's light a crisp shaft, and where it lands the casement laid
+     on the flags: four panes parted by the mullions' cross, cut to the
+     window's arch.
+   ═══════════════════════════════════════════════════════════════════════════ */
+.ev-register .ev-opt,
+.ev-register .ev-opt:first-child {
+  padding: 9px 22px 10px 16px;
+  border-radius: 0;
+  background:
+    radial-gradient(130% 160% at 10% 30%, rgb(255 244 214 / .22), transparent 55%),
+    url("../../assets/ui/kit/hw-slip.webp") 50% 50% / 100% 100% no-repeat;
+  background-blend-mode: normal;
+  box-shadow: none;
+  filter: drop-shadow(1px 3px 2px rgb(40 18 4 / .62)) drop-shadow(0 1px 0 rgb(40 18 4 / .35));
+}
+.ev-register .ev-opt:hover:not(:disabled),
+.ev-register .ev-opt:focus-visible {
+  transform: translate(2px, -2px);
+  background:
+    radial-gradient(90% 160% at 22% 50%, rgb(255 206 128 / .46), transparent 70%),
+    url("../../assets/ui/kit/hw-slip.webp") 50% 50% / 100% 100% no-repeat;
+  background-blend-mode: normal;
+  box-shadow: none;
+  filter: drop-shadow(2px 6px 4px rgb(40 18 4 / .62)) drop-shadow(0 0 10px rgb(255 190 110 / .34));
+}
+/* the slip pointed at or held by the keys is ruled round in the clerk's red */
+.ev-register .ev-opt:focus-visible { filter: drop-shadow(0 0 0 #6a1208) drop-shadow(0 0 1.5px #6a1208) drop-shadow(2px 6px 4px rgb(40 18 4 / .62)) drop-shadow(0 0 10px rgb(255 190 110 / .34)); }
+.ev-register .ev-opt.is-chosen {
+  background:
+    radial-gradient(100% 160% at 20% 50%, rgb(255 206 128 / .55), transparent 72%),
+    url("../../assets/ui/kit/hw-slip.webp") 50% 50% / 100% 100% no-repeat;
+}
+.ev-register .ev-opt__label { color: #1e1209; text-shadow: 0 1px 0 rgb(255 244 214 / .45); }
+/* the stakes (KUNZITE's sizes) */
+.ev-register .ev-opt .kit-tag { font-size: 16.5px; }
+.ev-register .ev-opt .kit-tag > i { font-size: 13px; letter-spacing: .12em; }
+@media (max-width: 1400px) {
+  .ev-register .ev-opt .kit-tag { font-size: 15.5px; }
+  .ev-register .ev-opt .kit-tag > i { font-size: 12.5px; letter-spacing: .1em; }
+}
+/* the moonlight (KUNZITE's): a crisp shaft, and the casement on the floor */
+.ev-hall__beam {
+  background: linear-gradient(90deg,
+    transparent 0 10%,
+    color-mix(in srgb, var(--kit-moon) 24%, transparent) 10% 90%,
+    transparent 90% 100%);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 6%, rgba(0, 0, 0, .7) 70%, rgba(0, 0, 0, .9) 100%);
+          mask-image: linear-gradient(to bottom, transparent 0%, black 6%, rgba(0, 0, 0, .7) 70%, rgba(0, 0, 0, .9) 100%);
+  box-shadow: none;
+}
+.ev-hall__beam::after {
+  content: ''; position: absolute; left: 10%; right: 10%; bottom: 0; height: 15%;
+  background:
+    linear-gradient(90deg, transparent calc(50% - 2px), rgb(10 6 16 / .75) calc(50% - 2px) calc(50% + 2px), transparent calc(50% + 2px)),
+    linear-gradient(180deg, transparent calc(45% - 2px), rgb(10 6 16 / .75) calc(45% - 2px) calc(45% + 2px), transparent calc(45% + 2px)),
+    color-mix(in srgb, var(--kit-moon) 38%, transparent);
+  clip-path: polygon(0 18%, 50% 0, 100% 18%, 100% 100%, 0 100%);
+  box-shadow: none;
+}
