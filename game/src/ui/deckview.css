@@ -733,3 +733,75 @@
   .mm-modal--kit[data-size="wide"]:has(.mm-deck) .mm-modal__foot { margin-top: calc(var(--btn-h) * -.5 - 4px); position: relative; z-index: 5; }
   .mm-deck__table.kit-stage { padding-bottom: calc(var(--liner-w) + 14px); }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ROUND 46 GRAFT 7 — THE BRASS PLATE BEVELLED, ITS WORDS IN AN INSET SLOT;
+   THE NOTE ON ITS OWN SLIP OF DARK
+   VERDICTS-r46: "the brass search plate with an engraved bevel and an inset
+   slot for the text; the 'Sorted alphabetically' note readable at 1280".
+   - the plate's edge is cut as a chamfer: a lit facet along its top and near
+     end, a shadowed one along its foot and far end, an engraved line where
+     the chamfer meets the face;
+   - the words stand in a SLOT cut down into the brass -- darker, shadowed
+     under its upper lip, lit on its lower -- in cream, so what is typed
+     reads as written into the plate, not on a web field;
+   - the note under the moon is set on a band of the case's dark (its damask
+     is pushed back under it), in the full-weight body face.
+   ═══════════════════════════════════════════════════════════════════════════ */
+.mm-deck__search {
+  box-shadow:
+    inset 0 2px 0 rgb(255 240 200 / .75),
+    inset 2px 0 0 rgb(255 236 190 / .4),
+    inset 0 -2px 0 rgb(46 26 6 / .9),
+    inset -2px 0 0 rgb(46 26 6 / .7),
+    inset 0 0 0 3px rgb(150 112 56 / .5),
+    inset 0 0 0 4px rgb(58 36 10 / .6),
+    0 0 0 1px #2a1906,
+    0 4px 6px -1px rgb(0 0 0 / .8);
+}
+.mm-deck__search::before {
+  inset: 4px 4px 4px calc(var(--field-h) * .7);
+  border-radius: 4px;
+  border: 1px solid rgb(58 34 8 / .62);
+  box-shadow: 0 1px 0 rgb(255 232 180 / .34), inset 0 1px 0 rgb(255 232 180 / .2);
+}
+.mm-deck__search .mm-deck__seek {
+  top: 8px; bottom: 8px;
+  padding: 1px 8px 0 8px;
+  border-radius: 3px;
+  background:
+    linear-gradient(180deg, rgb(0 0 0 / .45), transparent 45%),
+    linear-gradient(180deg, #2a1a09 0%, #3a2510 55%, #48301a 100%);
+  box-shadow:
+    inset 0 2px 3px rgb(0 0 0 / .85),
+    inset 0 -1px 0 rgb(255 226 168 / .22),
+    0 1px 0 rgb(255 238 196 / .55),
+    0 -1px 0 rgb(46 26 6 / .7);
+  color: #f2dfae; caret-color: #f2dfae;
+  text-shadow: 0 1px 0 rgb(0 0 0 / .85);
+}
+.mm-deck__search .mm-deck__seek::placeholder {
+  color: #d2b77e; opacity: 1;
+  text-shadow: 0 1px 0 rgb(0 0 0 / .85);
+}
+.mm-deck__search .mm-deck__seek::selection { background: rgb(255 210 140 / .35); color: #fff4dc; }
+.mm-deck__search .mm-deck__seek:focus,
+.mm-deck__search .mm-deck__seek:focus-visible {
+  background:
+    linear-gradient(180deg, rgb(0 0 0 / .4), transparent 45%),
+    radial-gradient(70% 120% at 30% 70%, rgb(255 190 110 / .2), transparent 75%),
+    linear-gradient(180deg, #2a1a09 0%, #3a2510 55%, #48301a 100%);
+  box-shadow:
+    inset 0 2px 3px rgb(0 0 0 / .85),
+    inset 0 -1px 0 color-mix(in srgb, var(--kit-candle) 70%, transparent),
+    0 1px 0 rgb(255 238 196 / .55),
+    0 -1px 0 rgb(46 26 6 / .7);
+}
+.mm-deck__table > .mm-deck__note {
+  font-weight: 600;
+  color: #f4ead6;
+}
+.mm-deck__table > .mm-deck__note {
+  background: radial-gradient(46% 120% at 50% 50%, rgb(10 6 14 / .82), rgb(10 6 14 / .5) 70%, transparent 100%);
+  padding-block: 3px;
+}
