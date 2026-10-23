@@ -1705,3 +1705,23 @@
 .at-root .at-floor__ledge { left: 0; right: 0; }
 .at-root .at-floor__ledge::before { left: calc(var(--ledge-h) * -.12); }
 .at-root .at-floor__ledge::after { right: calc(var(--ledge-h) * -.12); }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ROUND 46 — THE UNSURVEYED WINGS AS INK GHOSTS OF THEIR PLANS
+   Survey 9, both judges: "flat sepia blotches with only a dashed outline ...
+   nameplates floating over nothing drawn" / "dark brown shapes under faded
+   tan labels". Each unsurveyed wing is now its plan breathed onto the paper
+   (atlas.js): a faint umber, pencil hatching, and its walls a clear sepia
+   ghost -- the hair canvas laid heavier now there is no blot under it --
+   lettered in iron-gall on a slip of paler paper ruled round in ink.
+   ═══════════════════════════════════════════════════════════════════════════ */
+.at-survey__hair { opacity: .66; }
+.at-hot:not(.is-surveyed) .at-name::before { background: #24140a; }
+.at-hot:not(.is-surveyed) .at-name::after {
+  background:
+    radial-gradient(120% 140% at 30% 20%, rgb(255 240 206 / .26), transparent 60%),
+    linear-gradient(180deg, #d9c394, #c4a774);
+  box-shadow: inset 0 0 0 1.5px rgb(255 244 214 / .25), inset 0 0 0 2.5px rgb(36 20 10 / .5);
+}
+.at-hot:not(.is-surveyed) .at-name__t { color: #1c0f06; text-shadow: 0 1px 0 rgb(255 240 206 / .35); }
+.at-hot:not(.is-surveyed) .at-name__n { color: #6a1c10; }
