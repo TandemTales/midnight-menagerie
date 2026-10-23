@@ -500,13 +500,14 @@ export class GameOverScene extends Scene {
 
     band.innerHTML = `
       <div class="go-bp__frame kit-frame kit-frame--over">
-        <div class="go-bp__paper">
+        <div class="go-bp__paper go-bp__paper--route">
           ${plan ? `<img class="go-bp__img" src="${esc(new URL('../../' + plan.url, import.meta.url).href)}"
                alt="" decoding="async" width="${MASTER.w}" height="${MASTER.h}"
                style="width:${(MASTER.w / plan.sw * 100).toFixed(3)}%;
                       transform:translate(${(-plan.sx / MASTER.w * 100).toFixed(3)}%,
                                           ${(-plan.sy / MASTER.h * 100).toFixed(3)}%)">` : ''}
           <span class="go-bp__wash"></span>
+          ${routeSvg(s.wingsThisRun, this.won, s.seed)}
           <span class="go-bp__mark" aria-hidden="true"></span>
         </div>
       </div>
@@ -1150,3 +1151,45 @@ export class GameOverScene extends Scene {
 }
 
 export default GameOverScene;
+
+/* ROUND 46 GRAFT 5 (KUNZITE's "As far as we got" strip, in SUGILITE's ink):
+   tonight's expedition as its six wings I-VI, each a small plan ruled in
+   iron-gall on the blueprint's vellum, the wings crossed washed in gilt, the
+   one the candle went out in ringed in red, the ones never reached a pencil
+   ghost with a query -- joined by the inked line the party walked. An
+   expedition is six wings; `reached` is the wing the run ended in (1-based). */
+const ROMAN = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X'];
+function routeSvg(reached, won, seed) {
+  const n = Math.max(6, reached || 1);
+  const W = 262, H = 72, cw = 32, ch = 36, top = 7;
+  const gap = (W - n * cw) / (n + 1);
+  let rs = hashSeed(String(seed ?? 'route')) >>> 0;
+  const rnd = () => { rs = (rs * 1664525 + 1013904223) >>> 0; return rs / 4294967296; };
+  let out = '';
+  const xs = [];
+  for (let i = 0; i < n; i++) xs.push(gap + i * (cw + gap));
+  for (let i = 0; i + 1 < n; i++) {
+    const walked = i + 1 < (won ? n : reached);
+    const x0 = xs[i] + cw, x1 = xs[i + 1], y = top + ch / 2;
+    out += `<path class="go-rt__walk${walked ? '' : ' is-ghost'}" d="M${(x0 + 1).toFixed(1)} ${y}C${(x0 + gap * .4).toFixed(1)} ${y - 3} ${(x1 - gap * .4).toFixed(1)} ${y + 3} ${(x1 - 1).toFixed(1)} ${y}"/>`;
+  }
+  for (let i = 0; i < n; i++) {
+    const x = xs[i], k = i + 1;
+    const state = won ? 'crossed' : k < reached ? 'crossed' : k === reached ? 'ended' : 'ghost';
+    const vx = [0.3 + rnd() * 0.12, 0.62 + rnd() * 0.12];
+    const hy = 0.42 + rnd() * 0.2;
+    let walls = `M${(x + cw * vx[0]).toFixed(1)} ${top}V${(top + ch).toFixed(1)}`;
+    walls += `M${(x + cw * vx[1]).toFixed(1)} ${(top + ch * hy).toFixed(1)}V${(top + ch).toFixed(1)}`;
+    walls += `M${x} ${(top + ch * hy).toFixed(1)}H${(x + cw * vx[0]).toFixed(1)}`;
+    walls += `M${(x + cw * vx[0]).toFixed(1)} ${(top + ch * (hy - .16)).toFixed(1)}H${(x + cw).toFixed(1)}`;
+    out += `<g class="go-rt__wing is-${state}">`
+      + `<rect class="go-rt__wash" x="${x}" y="${top}" width="${cw}" height="${ch}"/>`
+      + `<path class="go-rt__walls" d="${walls}"/>`
+      + `<rect class="go-rt__edge" x="${x}" y="${top}" width="${cw}" height="${ch}"/>`
+      + (state === 'ghost' ? `<text class="go-rt__q" x="${x + cw / 2}" y="${top + ch / 2 + 6}">?</text>` : '')
+      + (state === 'ended' ? `<ellipse class="go-rt__ring" cx="${x + cw / 2}" cy="${top + ch / 2}" rx="${cw * .68}" ry="${ch * .66}" transform="rotate(-8 ${x + cw / 2} ${top + ch / 2})"/>` : '')
+      + `<text class="go-rt__n" x="${x + cw / 2}" y="${H - 5}">${ROMAN[i] || k}</text>`
+      + '</g>';
+  }
+  return `<svg class="go-rt" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet" aria-hidden="true">${out}</svg>`;
+}

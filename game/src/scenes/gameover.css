@@ -1410,3 +1410,51 @@
   border: 2.5px solid #8c1a10;
   box-shadow: 0 0 0 1px rgb(255 226 190 / .3);
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ROUND 46 GRAFT 5 — THE SIX WINGS I-VI; THE LEDGER RULED, ITS ROWS ONE HEIGHT
+   VERDICTS-r46: KUNZITE's "As far as we got" strip as the six wings I-VI
+   with the reached wing ringed, drawn in SUGILITE's style; SUGILITE's
+   larger left-column lists kept; the Final Tricks ledger with ruled gutters
+   and fixed row heights (J2: "two-line names break row height"; J3: "no
+   ruled gutters").
+   - the route (gameover.js routeSvg) inked in SUGILITE's iron-gall on its
+     foxed vellum; the blueprint's own drawing stays under it, faint, as the
+     paper's watermark; the red ring moves onto the wing the candle went out
+     in, struck in SUGILITE's red;
+   - every row of the ledger is as tall as its tallest (grid rows of one
+     height), each ruled under, the two columns parted by a double gilt rule
+     down the gutter.
+   ═══════════════════════════════════════════════════════════════════════════ */
+.go-bp__paper--route .go-bp__img { opacity: .28; }
+.go-bp__paper--route .go-bp__mark { display: none; }
+.go-rt { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 1; }
+.go-rt__walk { fill: none; stroke: #24120a; stroke-width: 1.7; stroke-linecap: round; }
+.go-rt__walk.is-ghost { stroke: rgb(46 26 10 / .6); stroke-width: 1; stroke-dasharray: 2.5 2.5; }
+.go-rt__wing .go-rt__wash { fill: rgb(214 172 100 / .6); }
+.go-rt__wing.is-ended .go-rt__wash { fill: rgb(228 180 98 / .8); }
+.go-rt__wing.is-ghost .go-rt__wash { fill: rgb(255 236 200 / .1); }
+.go-rt__wing .go-rt__edge { fill: none; stroke: #1e0f06; stroke-width: 1.7; }
+.go-rt__wing .go-rt__walls { fill: none; stroke: #24120a; stroke-width: 1.1; }
+.go-rt__wing.is-ghost .go-rt__edge { stroke: rgb(46 26 10 / .62); stroke-width: 1; stroke-dasharray: 3 2; }
+.go-rt__wing.is-ghost .go-rt__walls { stroke: rgb(46 26 10 / .3); stroke-width: .8; }
+.go-rt__ring { fill: none; stroke: #8c1a10; stroke-width: 2.4; filter: drop-shadow(0 0 .6px rgb(255 226 190 / .5)); }
+.go-rt__q { font-family: var(--font-display); font-weight: 700; font-size: 17px; fill: rgb(46 26 10 / .7); text-anchor: middle; }
+.go-rt__n { font-family: var(--font-display); font-weight: 700; font-size: 14px; fill: #1e0f06; text-anchor: middle; letter-spacing: .04em; }
+.go-rt__wing.is-ghost .go-rt__n { fill: rgb(46 26 10 / .72); }
+.scene--gameover[data-result="victory"] .go-rt__wing .go-rt__wash { fill: rgb(232 188 104 / .75); }
+
+/* the ledger: rows of one height, ruled, the gutter ruled double */
+.go-ledger[data-fold] .go-tricks.go-tricks {
+  grid-auto-rows: 1fr;
+  align-content: start;
+  background:
+    linear-gradient(90deg, transparent calc(50% - 2.5px), color-mix(in srgb, var(--kit-gold-lo) 70%, transparent) calc(50% - 2.5px) calc(50% - 1.5px), transparent calc(50% - 1.5px) calc(50% + 1.5px), color-mix(in srgb, var(--kit-gold-lo) 70%, transparent) calc(50% + 1.5px) calc(50% + 2.5px), transparent calc(50% + 2.5px)) 0 0 / 100% 100% no-repeat;
+}
+.go-ledger[data-fold] .go-trick.go-trick { align-items: center; }
+.go-ledger[data-fold] .go-trick.go-trick .go-trick__name { line-height: 1.1; }
+/* the wings' numerals read on the burned vellum: heavy ink with a lip of
+   paler paper round each stroke */
+.go-rt__n, .go-rt__wing.is-ghost .go-rt__n { fill: #140904; stroke: rgb(255 236 200 / .42); stroke-width: 2.2px; paint-order: stroke fill; font-size: 15px; }
+.go-rt__wing.is-ghost .go-rt__n { fill: #2a160a; }
+.go-rt__q { stroke: rgb(255 236 200 / .3); stroke-width: 2px; paint-order: stroke fill; fill: rgb(46 26 10 / .8); }

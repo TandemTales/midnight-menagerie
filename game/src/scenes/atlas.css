@@ -1725,3 +1725,12 @@
 }
 .at-hot:not(.is-surveyed) .at-name__t { color: #1c0f06; text-shadow: 0 1px 0 rgb(255 240 206 / .35); }
 .at-hot:not(.is-surveyed) .at-name__n { color: #6a1c10; }
+
+/* ROUND 46 GRAFT (CHAROITE's): an unsurveyed wing's name a draughtsman's
+   label on the plan -- heavy iron-gall a size up on a slip of the paper's own
+   pale stock, ruled round in ink, a shadow under it so it lies ON the
+   drawing rather than floating over it */
+.at-hot:not(.is-surveyed) .at-name { padding: 2px 7px 2px; }
+.at-hot:not(.is-surveyed) .at-name::before { background: #2a170a; filter: drop-shadow(0 1px 1.5px rgb(30 16 6 / .55)); }
+.at-hot:not(.is-surveyed) .at-name__t { font-size: clamp(12.5px, .84vw, 13.5px); }
+.at-hot:not(.is-surveyed) .at-name__n { font-size: 12px; }
