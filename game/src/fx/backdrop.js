@@ -67,8 +67,10 @@ function footOf(region, p) {
   if (!FOOT_WINGS[region] || p.hang) return null;
   const s = p.shape, sd = p.seed || 0, w = p.w, h = p.h, q = h / 1.6;
   if (region === 'lampworks') {
-    if (s === 34 && sd > 40) return { dx: -0.34 * q, w: 1.02 * q, d: 0.62 * q, k: 1.10,
-      extra: [{ dx: 0.38 * q, w: 0.36 * q, d: 0.24 * q, k: 1.15 },
+    /* (round 45 graft, both judges: "deeper contact shadows" under the
+       crates and the lantern -- 1.10 / 1.15 -> 1.35 / 1.30) */
+    if (s === 34 && sd > 40) return { dx: -0.34 * q, w: 1.02 * q, d: 0.62 * q, k: 1.35,
+      extra: [{ dx: 0.38 * q, w: 0.36 * q, d: 0.24 * q, k: 1.30 },
               { dx: 0.80 * q, w: 0.24 * q, d: 0.17 * q, k: 1.0 },
               { dx: 0.06 * q, w: 0.34 * q, d: 0.12 * q, k: 0.6 }] };
     if (s === 34) return { w: 2.40 * q, d: 0.85, k: 1.0 };
@@ -79,13 +81,24 @@ function footOf(region, p) {
   if (region === 'kitchens') {
     if (s === 29) return sd > 20 ? { w: w * 0.90, d: 0.46, k: 0.95 } : { w: w * 0.92, d: 0.95, k: 0.95 };
     if (s === 8) return { w: w * 0.95, d: w * 0.62, k: 1.05 };
-    if (s === 82 && sd > 60) return { w: 0.82, d: 0.56, k: 1.05 };
-    if (s === 82 && sd > 55) {          // the tipped basket, and what rolled out of it
+    /* (round 45 graft: LARIMAR's crate of apples (seed > 90), the crate and
+       the fruit rolled out of it; LARIMAR's tipped basket (80-90), the basket
+       and the fan of vegetables out of it; the block (60-80); the crocks
+       (50-55); LARIMAR's sacks with the crock beside them (40-50)) */
+    if (s === 82 && sd >= 90) {
       const m = gkMir(sd);
-      return { dx: -0.30 * m, w: 0.46, d: 0.30, k: 1.10, extra: [{ dx: 0.24 * m, w: 0.80, d: 0.13, k: 0.85 }] };
+      return { dx: -0.08 * m, w: 0.74, d: 0.40, k: 1.15, extra: [{ dx: 0.50 * m, w: 0.36, d: 0.10, k: 0.80 }] };
     }
+    if (s === 82 && sd > 80) {
+      const m = gkMir(sd);
+      return { dx: -0.38 * m, w: 0.52, d: 0.32, k: 1.10, extra: [{ dx: 0.38 * m, w: 0.95, d: 0.15, k: 0.85 }] };
+    }
+    if (s === 82 && sd > 60) return { w: 0.82, d: 0.56, k: 1.05 };
     if (s === 82 && sd > 50) { const m = gkMir(sd); return { dx: 0.0 * m, w: 0.72, d: 0.34, k: 1.20 }; }
-    if (s === 82 && sd > 40) return { dx: 0.01, w: 1.18, d: 0.58, k: 1.20 };
+    if (s === 82 && sd > 40) {
+      const m = gkMir(sd);
+      return { dx: -0.03 * m, w: 1.18, d: 0.58, k: 1.20, extra: [{ dx: 0.68 * m, w: 0.30, d: 0.22, k: 1.10 }] };
+    }
     if (s === 82) return { w: w * 0.98, d: w * 0.46, k: 1.15 };
     return null;
   }
