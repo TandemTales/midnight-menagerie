@@ -270,6 +270,14 @@ the real cost of round 44's lawns, paths, pools and moon panes (~0.1 ms each
 on every floor pixel); cutting it changes the look. **Known over budget:** the
 Greenhouse big prop link (12.4 s) and the Hedge prop link (9-13 s). The next
 room that adds to gh-1, gy-1 or pk-1 must pay for itself. NEXT: SURVEY 9.
+**SURVEY 9 IS DONE (2026-10-22)** (`SURVEY-2026-10-22.md`): paired vs survey 8,
+13 and 13 better, 6 and 4 worse -- every room rounds 41-44 touched better;
+EVERY loss is the paintings' nameplates (Josh's no-names rule; a BLANK brass
+plate is offered to him, not done). **ROUND 45 IS MERGED (`2e141a6a`):**
+AXINITE +1.03, 2 of 2: the Lampworks crates built, the Hedge's stretched
+side-wall texture fixed (a projection fault), contact shadows. Battery green
+but the sprites halo; the other 13 wings identical. **NOW: round 45's graft**
+(`GRAFT-r45.md`, D:/UILOOP/r45/wt/r45-graft), then a paired check.
 
 **ROUND 33 AND ITS GRAFT ARE MERGED, VERIFIED AND PUSHED (2026-10-16):**
 graft `9d008119`. COBALT +1.59 (`531126e4`): no running line under 11 px at
