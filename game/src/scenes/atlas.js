@@ -297,7 +297,10 @@ function penRing(g, rings, S, seed, ink) {
 
 /* ROUND 42: an unsurveyed wing's ghost walls, in a dark sepia (they were the
    pale pencil, lighter than the paper: "one beige smear") */
-const GHOST = 'rgb(44 28 14)';
+/* round 46 graft (CHAROITE's ghost plans, all three judges on the atlas):
+   the plan laid on the SHEET in a near-black iron-gall graphite, so every
+   wall and room of an unwalked wing is drawn, darker than the paper */
+const GHOST = '#1d130a';
 /** The median wing's ink inside its footprint (measured 10-19 off the
  *  seventeen section bitmaps: 0.18-0.24, the Lampworks 0.33, the Greenhouse
  *  0.32, the Crypt 0.27). A wing denser than this is laid thinner. */
@@ -1293,11 +1296,13 @@ export class AtlasScene extends Scene {
           let seed = (w.n * 2654435761) >>> 0;
           const rnd = () => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296; };
           pg.lineCap = 'round';
-          pg.strokeStyle = 'rgb(52 32 14)';
-          const step = 5.5, h = y1 - y0;
+          pg.strokeStyle = 'rgb(44 26 10)';
+          /* round 46 graft: a FINER pencil, closer laid -- a texture of
+             strokes under the plan, never a grey */
+          const step = 4.4, h = y1 - y0;
           for (let x = x0 - h; x < x1; x += step) {
-            pg.globalAlpha = 0.11 + rnd() * 0.07;
-            pg.lineWidth = 0.6 + rnd() * 0.35;
+            pg.globalAlpha = 0.3 + rnd() * 0.1;
+            pg.lineWidth = 0.5 + rnd() * 0.25;
             pg.beginPath();
             pg.moveTo(x, y1 + 2);
             pg.lineTo(x + h + 2, y0 - 2);
@@ -1314,12 +1319,20 @@ export class AtlasScene extends Scene {
         const ghost = await sectionInk(w.slug, GHOST);
         if (token !== this._surveyToken) return;
         if (ghost) {
-          hg.save();
-          hg.setTransform(dpr, 0, 0, dpr, 0, 0);
-          hg.clip(shape);
-          hg.imageSmoothingQuality = 'high';
-          hg.drawImage(ghost, w.nx * pw, w.ny * ph, w.nw * pw, w.nh * ph);
-          hg.restore();
+          /* round 46 graft (CHAROITE): the plan in graphite on the sheet
+             itself, not the faint hair layer -- its walls a line a player
+             can follow, every room drawn through the hatching */
+          pg.save();
+          pg.setTransform(dpr, 0, 0, dpr, 0, 0);
+          pg.clip(shape);
+          pg.imageSmoothingQuality = 'high';
+          /* twice over: the second pass inks the first's soft edges, so the
+             walls read darker than the paper without growing any wider */
+          pg.globalAlpha = 0.9;
+          pg.drawImage(ghost, w.nx * pw, w.ny * ph, w.nw * pw, w.nh * ph);
+          pg.globalAlpha = 0.55;
+          pg.drawImage(ghost, w.nx * pw, w.ny * ph, w.nw * pw, w.nh * ph);
+          pg.restore();
         }
         /* the surveyor's dashed line round it, in iron-gall, with a pale
            lip of paper along its inside so two neighbours' shared wall reads
