@@ -119,6 +119,13 @@ OS Windows, 64-bit; set the build live by hand (`SetLive` is empty).
 6. **Steam Deck verification**: the Deck runs this Windows build under
    Proton. A native build needs a Linux Electron dist
    (`--platform linux64 --electron-dist ...`, written, never run).
+7. **Enemy paintings — the largest content gap (2026-10-27).** 51 of 275
+   enemies are painted. Twelve of the seventeen wings (graveyard onward) have
+   none: every fight there draws grey stand-in shapes (survey 10's kennels
+   fight: the Walking Cage, the Small Grey Dog and the Cage Latch are grey
+   blobs). `docs/art/enemy-stills-checklist.md` (regenerate with
+   `python tools/enemy_art_checklist.py`) lists every missing one with the
+   exact filename and size it wants.
 
 ## Not done (known gaps, none blocks a first upload)
 
