@@ -961,7 +961,12 @@ export const REGIONS = {
        frame is black". The gable's oculus is the room's moon: its light
        comes through it low and long, the window's ring and spokes thrown
        down the boards from the telescope's feet to yours (pal.win) */
-    win: { at: 'oculus', dir: [-0.02, -0.21, 1.0], k: 6.0, color: '#c6cad6', bar: 0.075 },
+    /* (round 47, RUTILE -- both survey-10 judges: "a purple moonlight smear
+       washes across the floor"; "one hard-edged window shaft on dark
+       boards". Steeper, so the oculus lands as ONE ring on the boards
+       between the telescope and the rug, not a lilac sheet to your feet;
+       cold, not lilac; and its edge hard, FLOOR_FRAG's winLit, RUGK 8) */
+    win: { at: 'oculus', dir: [-0.02, -0.33, 1.0], k: 5.2, color: '#a9bbdc', bar: 0.075 },
     room: { w: 13, d: 16, h: 2.4, side: 0.0, ceilPattern: 15, wallPad: 6.2 },
     cam: { y: 1.95, z: 8.6, look: 2.6, fov: 45 },
     deep: '#17152c', mid: '#2a2746', hi: '#433e69', accent: '#8592cd',
@@ -1644,8 +1649,13 @@ export const REGIONS = {
     nearFloor: { fall: 0.94, calm: 0.92, clean: 1, rug: { ahead: 3.9, hw: 1.05, hd: 0.52, dx: -0.4 },
                  /* (round 43: the lamp's pool a stride nearer and a third stronger,
                     4.2 / 2.2 -> 3.5 / 3.0, so the wet tiles at your feet are lit) */
-                 pool: { ahead: 3.5, across: 0.3, abs: true, rAlong: 2.6, rAcross: 3.4, k: 3.0, color: '#e8b070' },
-                 pool2: { ahead: 5.6, across: -3.4, abs: true, rAlong: 2.6, rAcross: 2.2, k: 1.5, color: '#7fb4dc' } },
+                 pool: { ahead: 3.5, across: 0.3, abs: true, rAlong: 2.6, rAcross: 4.2, k: 3.0, color: '#e8b070' },   // (round 47: wider, 3.4 -> 4.2, over the near left the second pool left)
+                 /* (round 47, RUTILE -- J1: "the right third and the lower
+                    foreground are black void"; "light the right side and the
+                    foreground". The near lamp's spill at the right on the wet
+                    tiles by the towel horse, warm, nearer and twice as
+                    strong -- the right third lit by a lamp the room has) */
+                 pool2: { ahead: 3.6, across: 3.8, abs: true, rAlong: 3.4, rAcross: 3.6, k: 4.4, color: '#e2aa68' } },
     cineFloor: 0.12,
     /* (round 39 graft, item 5: PERIDOT halved the fight's own warm pool on
        its pale cream tiles; on these dark glazes it is the light the fight's
@@ -1743,7 +1753,23 @@ export const REGIONS = {
                   range is fed from, the kennel man's corner -- the feed bin
                   with its lid propped on the meal, a sack slumped against it,
                   a dropped lead (the basket's quad, seed > 40: wgFeedSD) */
-               { shape: 40, edge: 0.72, z: 1.3, tone: 0.95, fore: 1, keep: true, seed: 45.0, hM: 0.82, wM: 1.30 },
+               { shape: 40, edge: 0.60, z: 1.7, tone: 0.95, fore: 1, keep: true, seed: 45.0, hM: 0.82, wM: 1.30 },   // (round 47: in from 0.72 / 1.3, clear of the kennel brought forward)
+               /* ROUND 47 (RUTILE), both survey-10 judges: "bring two kennels
+                  ... forward into the mid-floor". Two of the range's houses
+                  stood out on the flags, one each side of where the fight
+                  stands, each its own paint and its dog -- the hero object
+                  of the room met at the fighters' depth, not only along the
+                  back */
+               { shape: 39, edge: 0.31, z: 0.9, tone: 0.97, keep: true, seed: 2.2, scale: 1.05 },
+               /* (the right-hand one and the trough `hand` -- the empty
+                  room's, not the fight's: in kn-1 the right one stands under
+                  the House Rule panel and the trough behind the creatures,
+                  and the two cost the fight ~1 ms between them, measured) */
+               { shape: 39, edge: 0.79, z: 0.5, tone: 0.97, keep: true, hand: true, seed: 8.6, scale: 1.05 },
+               /* (...and the range's FEEDING TROUGH with a straw bale beside
+                  it and a bowl on the flags, between the two, a little back
+                  -- the basket's quad, seed > 50: wgTroughSD) */
+               { shape: 40, edge: 0.42, z: -0.6, tone: 0.96, keep: true, hand: true, seed: 52.0, hM: 0.70, wM: 1.90 },
                /* (second pass: the kennel at your right shoulder is gone
                   again -- a frame-tall quad of the prop program, and the
                   kennels fight measured +2.3 ms over BASE with it) */
@@ -3045,7 +3071,11 @@ export const ROOM_KINDS = {
          WINDOWS -- their round heads, mullions and glazing bars -- in three
          long streaks from the end wall to your feet: pal.win) */
       { subject: 'baths', layout: 'colonnade', file: 32, fileX: 0.60, fileZ0: -4.6,
-        win: { at: 'bathhall', dir: [0.22, -0.30, 1.0], k: 9.0, color: '#a8c4e0' } },
+        /* (round 47, RUTILE -- J2: "the blue tile floor centre-left milky".
+           The moon on the wet glaze a deeper, SATURATED moon blue, a little
+           less of it, so the window lies on the tiles as cold light on a
+           dark glaze and not as a pale wash; its panes and bars unchanged) */
+        win: { at: 'bathhall', dir: [0.22, -0.30, 1.0], k: 7.6, color: '#86a8dc' } },
       /* THE STEAM ROOM -- small, low and hot, tiled to its vault, an arcade of
          niches with their basins and taps over two stepped benches, and full
          of steam; seen from the lowest bench. Round 14, both judges: the loose
@@ -3331,7 +3361,16 @@ export const ROOM_KINDS = {
                         right, in the straw) */
                      /* (round 41 graft, ZIRCON's: in from the frame's edge,
                         0.14 -> 0.32 -- cut by it the bed read as a fragment) */
-                     { shape: 40, edge: 0.32, z: 2.2, tone: 0.95, fore: 1, keep: true, scale: 1.1 }],
+                     { shape: 40, edge: 0.32, z: 2.2, tone: 0.95, fore: 1, keep: true, scale: 1.1 },
+                     /* (round 47, RUTILE -- both survey-10 judges' system #2,
+                        "no near floor left empty": the wash house's lower
+                        half was bare wet tile. A zinc tub on its trestle
+                        brought forward at your right, in the lamp's pool,
+                        and the range's trough with its bale and bowl set
+                        down mid-floor at the left, where the dogs are fed
+                        after their wash) */
+                     { shape: 42, edge: 0.64, z: 1.9, tone: 0.96, fore: 1, keep: true, scale: 1.05 },
+                     { shape: 40, edge: 0.40, z: 0.2, tone: 0.95, keep: true, seed: 53.0, hM: 0.70, wM: 1.90 }],
               /* (round 41 graft, J3: the wash house's "near-left corner pure
                  black" -- the range lantern's pool carried to the near left,
                  where the dog's bed waits by the door) */
