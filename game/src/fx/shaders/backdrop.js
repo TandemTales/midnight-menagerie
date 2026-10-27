@@ -16534,7 +16534,7 @@ void main(){
        taken here rather than a tap of their own) */
     float nL = mmNoise(w*2.6 + 1.3);
     float m = 0.20 + 0.30*nS + 0.34*bank;
-    m = max(m, 0.20 + 0.42*smoothstep(0.50, 0.78, nL)*smoothstep(0.26, 0.58, nS));   // (round 47: drifts a stride across, in tongues where the dogs drag it)
+    m = max(m, 0.20 + 0.42*smoothstep(0.57, 0.83, nL)*smoothstep(0.26, 0.58, nS));   // (round 47: drifts a stride across, in tongues where the dogs drag it)
     float kh = -1.0, kY = 0.0;
     for (int i = 0; i < 6; i++){
       vec4 K = uKnFoot[i];
