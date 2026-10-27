@@ -1,0 +1,74 @@
+{
+  "round": "r47",
+  "maxBuilders": 3,
+  "briefs": [
+    "docs/ui-pass/BRIEF-r0.md",
+    "docs/ui-pass/BRIEF-r1.md",
+    "docs/ui-pass/BRIEF-r11.md",
+    "docs/ui-pass/BRIEF-r16.md",
+    "docs/ui-pass/BRIEF-r21.md",
+    "docs/ui-pass/BRIEF-r22.md",
+    "docs/ui-pass/BRIEF-r23.md",
+    "docs/ui-pass/BRIEF-r24.md",
+    "docs/ui-pass/BRIEF-r25.md",
+    "docs/ui-pass/BRIEF-r28.md",
+    "docs/ui-pass/BRIEF-r29.md",
+    "docs/ui-pass/BRIEF-r31.md",
+    "docs/ui-pass/BRIEF-r34.md",
+    "docs/ui-pass/BRIEF-r35.md",
+    "docs/ui-pass/BRIEF-r39.md",
+    "docs/ui-pass/BRIEF-r41.md",
+    "docs/ui-pass/REPAIR-r41.md",
+    "docs/ui-pass/BRIEF-r43.md",
+    "docs/ui-pass/BRIEF-r45.md",
+    "docs/ui-pass/BRIEF-r47.md"
+  ],
+  "rubrics": [
+    "docs/ui-pass/RUBRIC.md",
+    "docs/ui-pass/RUBRIC-r47.md"
+  ],
+  "samples": [
+    "UI/title.png",
+    "UI/mainMenu.png",
+    "UI/selectCompanion.png",
+    "UI/selectKid.png"
+  ],
+  "tracks": [
+    {
+      "key": "rooms",
+      "name": "ROOMS",
+      "rule": "refine",
+      "screens": [
+        "sheet-kennels",
+        "sheet-hedge",
+        "sheet-attic",
+        "sheet-bathhouse",
+        "fight-kennels"
+      ],
+      "smallScreens": [
+        "fight-kennels"
+      ],
+      "baseline": "CHIFFON",
+      "builders": [
+        {
+          "slot": "a",
+          "code": "SPESSARTINE",
+          "port": 9301,
+          "angle": "LITERAL -- work BRIEF-r47's fix list 1 to 3 in order and exactly as written, one wing at a time, the Kennels FIRST (the round's fight). Never fewer objects, never a smoother or tidier surface; keep every change inside your four wings."
+        },
+        {
+          "slot": "b",
+          "code": "RUTILE",
+          "port": 9302,
+          "angle": "THE HERO PROP FIRST -- in each wing find the ONE object a player's eye lands on (the Kennels' doghouses, the Hedge's yew walls, the Attic's trunks, the Bathhouse's tubs) and redraw it as an inked object with real material and a contact shadow before anything else; then dress the near floor around it; then the darks."
+        },
+        {
+          "slot": "c",
+          "code": "TANZANITE",
+          "port": 9303,
+          "angle": "FILL THE NEAR FLOOR -- both judges name empty or black near floors in these wings. Bring objects forward into a lit pool in every room (kennels and a trough, a stool and towels, leaf drifts and a fallen urn, a hatbox and a rolled rug), each with a contact shadow, then redraw the back props in that light and keep every dark dark."
+        }
+      ]
+    }
+  ]
+}
