@@ -3353,7 +3353,16 @@ export const ROOM_KINDS = {
                         right, in the straw) */
                      /* (round 41 graft, ZIRCON's: in from the frame's edge,
                         0.14 -> 0.32 -- cut by it the bed read as a fragment) */
-                     { shape: 40, edge: 0.32, z: 2.2, tone: 0.95, fore: 1, keep: true, scale: 1.1 }],
+                     { shape: 40, edge: 0.32, z: 2.2, tone: 0.95, fore: 1, keep: true, scale: 1.1 },
+                     /* (round 47, RUTILE -- both survey-10 judges' system #2,
+                        "no near floor left empty": the wash house's lower
+                        half was bare wet tile. A zinc tub on its trestle
+                        brought forward at your right, in the lamp's pool,
+                        and the range's trough with its bale and bowl set
+                        down mid-floor at the left, where the dogs are fed
+                        after their wash) */
+                     { shape: 42, edge: 0.64, z: 1.9, tone: 0.96, fore: 1, keep: true, scale: 1.05 },
+                     { shape: 40, edge: 0.40, z: 0.2, tone: 0.95, keep: true, seed: 53.0, hM: 0.70, wM: 1.90 }],
               /* (round 41 graft, J3: the wash house's "near-left corner pure
                  black" -- the range lantern's pool carried to the near left,
                  where the dog's bed waits by the door) */

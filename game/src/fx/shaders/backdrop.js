@@ -24480,7 +24480,7 @@ vec3 wgTroughPaint(vec2 m, float seed, float px, float E, float kx, inout float 
   float bl = wgTrBale(m);
   float onBl = clamp(0.5 - bl/px, 0.0, 1.0);
   float fib = 0.5 + 0.5*sin(c.y*180.0 + 6.0*mmNoise(c*vec2(6.0, 30.0) + seed) + c.x*14.0);
-  vec3 hay = vec3(0.70, 0.53, 0.25)*E*1.35*(0.78 + 0.30*fib*mmLod(0.006, px))*(0.65 + 0.45*smoothstep(0.02, 0.40, c.y));
+  vec3 hay = vec3(0.80, 0.57, 0.21)*E*1.40*(0.74 + 0.36*fib*mmLod(0.006, px))*(0.65 + 0.45*smoothstep(0.02, 0.40, c.y));
   hay *= 0.82 + 0.30*smoothstep(-0.33, 0.33, kx*c.x);
   float twine = (1.0 - smoothstep(0.012, 0.012 + px, abs(abs(c.x) - 0.15)))*step(c.y, 0.42);
   hay = mix(hay, vec3(0.20, 0.14, 0.08)*E*1.2, twine*0.85);
