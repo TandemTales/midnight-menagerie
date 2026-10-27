@@ -16456,6 +16456,19 @@ void main(){
      it, and each took a share of its green: a sap green deep enough that
      under either light the turf is GREEN, a stop under, and the darks down) */
   alb = mix(alb, vec3(mmLum(alb))*vec3(0.24, 1.36, 0.27)*0.96, 0.95*turf);
+  /* (round 47, RUTILE -- J1: "the lawn is a flat green wash". A neglected
+     lawn is never one green: rank tussocks a stride across a stop darker
+     and bluer, worn patches gone to a dry olive, and the two broken up at a
+     hand's scale so the turf has a nap) */
+  {
+    float tu1 = mmNoise(w*0.55 + 11.3), tu2 = mmNoise(w*2.3 + 5.1), tu3 = mmNoise(w*9.0 + 2.7);
+    float rank = smoothstep(0.50, 0.75, tu1*0.7 + tu2*0.3);
+    float worn = smoothstep(0.60, 0.82, (1.0 - tu1)*0.6 + tu2*0.4);
+    vec3 tA = alb*mix(1.0, 0.70, rank)*mix(vec3(1.0), vec3(0.86, 0.96, 1.10), rank);
+    tA = mix(tA, vec3(mmLum(alb))*vec3(1.05, 1.15, 0.55)*1.08, worn*0.55);
+    tA *= 0.88 + 0.24*tu3*smoothstep(0.03, 0.008, mp);
+    alb = mix(alb, tA, turf);
+  }
 #else
   alb = mix(alb, vec3(mmLum(alb))*vec3(0.66, 1.14, 0.58), 0.55*turf*step(12.5, uPattern)*step(uPattern, 13.5));
 #endif

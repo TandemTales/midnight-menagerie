@@ -3067,7 +3067,11 @@ export const ROOM_KINDS = {
          WINDOWS -- their round heads, mullions and glazing bars -- in three
          long streaks from the end wall to your feet: pal.win) */
       { subject: 'baths', layout: 'colonnade', file: 32, fileX: 0.60, fileZ0: -4.6,
-        win: { at: 'bathhall', dir: [0.22, -0.30, 1.0], k: 9.0, color: '#a8c4e0' } },
+        /* (round 47, RUTILE -- J2: "the blue tile floor centre-left milky".
+           The moon on the wet glaze a deeper, SATURATED moon blue, a little
+           less of it, so the window lies on the tiles as cold light on a
+           dark glaze and not as a pale wash; its panes and bars unchanged) */
+        win: { at: 'bathhall', dir: [0.22, -0.30, 1.0], k: 7.6, color: '#86a8dc' } },
       /* THE STEAM ROOM -- small, low and hot, tiled to its vault, an arcade of
          niches with their basins and taps over two stepped benches, and full
          of steam; seen from the lowest bench. Round 14, both judges: the loose
