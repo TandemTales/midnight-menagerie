@@ -24534,8 +24534,14 @@ vec3 wgTroughPaint(vec2 m, float seed, float px, float E, float kx, inout float 
   col *= 1.0 - 0.30*smoothstep(0.04, 0.0, m.y);
   return col;
 }
+float wgFeedSD0(vec2 m, float seed);
 float wgFeedSD(vec2 m, float seed){
-  if (seed > 50.0) return wgTroughSD(m);   // (round 47)
+  /* (round 47: the trough by its seed -- one exit, so FXC sees every path) */
+  float r;
+  if (seed > 50.0) r = wgTroughSD(m); else r = wgFeedSD0(m, seed);
+  return r;
+}
+float wgFeedSD0(vec2 m, float seed){
   vec2 b = m - vec2(-0.20, 0.0);
   float bin = mmBox(b - vec2(0.0, 0.29), vec2(0.36, 0.29), 0.008);
   /* the lid, propped open on its stay, seen edge-on above the back */
@@ -24551,8 +24557,13 @@ float wgFeedSD(vec2 m, float seed){
   lead = max(lead, -l.y);
   return min(min(min(bin, lid), scoop), min(sack, lead));
 }
+vec3 wgFeedPaint0(vec2 m, float seed, float px, float E, float kx, inout float ink);
 vec3 wgFeedPaint(vec2 m, float seed, float px, float E, float kx, inout float ink){
-  if (seed > 50.0) return wgTroughPaint(m, seed, px, E, kx, ink);   // (round 47)
+  vec3 r;
+  if (seed > 50.0) r = wgTroughPaint(m, seed, px, E, kx, ink); else r = wgFeedPaint0(m, seed, px, E, kx, ink);
+  return r;
+}
+vec3 wgFeedPaint0(vec2 m, float seed, float px, float E, float kx, inout float ink){
   vec3 col = vec3(0.3)*E;
   vec2 b = m - vec2(-0.20, 0.0);
   float bin = mmBox(b - vec2(0.0, 0.29), vec2(0.36, 0.29), 0.008);
