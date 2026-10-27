@@ -1761,11 +1761,15 @@ export const REGIONS = {
                   of the room met at the fighters' depth, not only along the
                   back */
                { shape: 39, edge: 0.31, z: 0.9, tone: 0.97, keep: true, seed: 2.2, scale: 1.05 },
-               { shape: 39, edge: 0.79, z: 0.5, tone: 0.97, keep: true, seed: 8.6, scale: 1.05 },
+               /* (the right-hand one and the trough `hand` -- the empty
+                  room's, not the fight's: in kn-1 the right one stands under
+                  the House Rule panel and the trough behind the creatures,
+                  and the two cost the fight ~1 ms between them, measured) */
+               { shape: 39, edge: 0.79, z: 0.5, tone: 0.97, keep: true, hand: true, seed: 8.6, scale: 1.05 },
                /* (...and the range's FEEDING TROUGH with a straw bale beside
                   it and a bowl on the flags, between the two, a little back
                   -- the basket's quad, seed > 50: wgTroughSD) */
-               { shape: 40, edge: 0.42, z: -0.6, tone: 0.96, keep: true, seed: 52.0, hM: 0.70, wM: 1.90 },
+               { shape: 40, edge: 0.42, z: -0.6, tone: 0.96, keep: true, hand: true, seed: 52.0, hM: 0.70, wM: 1.90 },
                /* (second pass: the kennel at your right shoulder is gone
                   again -- a frame-tall quad of the prop program, and the
                   kennels fight measured +2.3 ms over BASE with it) */

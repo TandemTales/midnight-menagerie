@@ -16530,9 +16530,11 @@ void main(){
        into MORE drifts, dragged out across the open flags in long tongues,
        each a lit mass with its own foot line; the loose stalks lie only in
        the ragged hem round a drift) */
-    float nS2 = mmNoise(dw*1.9 + vec2(2.1, 7.3));
+    /* (the frame budget: the tongues from the heaps' own lumping tap, nL,
+       taken here rather than a tap of their own) */
+    float nL = mmNoise(w*2.6 + 1.3);
     float m = 0.20 + 0.30*nS + 0.34*bank;
-    m = max(m, 0.20 + 0.42*smoothstep(0.48, 0.76, nS2)*smoothstep(0.26, 0.58, nS));   // (round 47: drifts a stride across, in tongues where the dogs drag it)
+    m = max(m, 0.20 + 0.42*smoothstep(0.50, 0.78, nL)*smoothstep(0.26, 0.58, nS));   // (round 47: drifts a stride across, in tongues where the dogs drag it)
     float kh = -1.0, kY = 0.0;
     for (int i = 0; i < 6; i++){
       vec4 K = uKnFoot[i];
@@ -16540,8 +16542,8 @@ void main(){
       float e = (1.0 - length(dk))*K.w - (1.0 - K.w);
       if (e > kh) { kh = e; kY = dk.y; }
     }
-    /* (lumped: its outline broken at a stride's scale, never an oval mat) */
-    float nL = mmNoise(w*2.6 + 1.3);
+    /* (lumped: its outline broken at a stride's scale, never an oval mat --
+       nL, above) */
     m = max(m, 0.44 + 0.40*kh + 0.20*(nL - 0.5));
     /* its edge broken at a stalk's scale, never a ruled outline */
     float frz = (mmNoise(w*13.0 + 2.1) - 0.5)*0.070*smoothstep(0.06, 0.012, mp);
@@ -25735,7 +25737,7 @@ vec3 wgPaint(vec2 m, vec2 msz, float shape, float seed, float px, float lum,
                : vec3(0.13, 0.25, 0.44));
     vec3 trim  = vec3(0.74, 0.70, 0.60);
     float wear = mmNoise(vec2(k.x*9.0, k.y*2.2) + seed*7.0);
-    float chalk = smoothstep(0.35, 0.80, mmNoise(vec2(k.x*5.0, k.y*1.6) + seed*1.9))*smoothstep(0.15, 0.70, k.y);
+    float chalk = smoothstep(0.40, 0.85, wear)*smoothstep(0.15, 0.70, k.y);   // (the frame budget: the weather's own tap)
     paint = mix(paint, vec3(mmLum(paint))*1.55 + paint*0.25, chalk*0.34);
     vec3 board = paint*E*1.35*(0.80 + 0.30*wear);
     /* the GRAIN of the deal under the paint: fine dark streaks up each
@@ -25782,7 +25784,7 @@ vec3 wgPaint(vec2 m, vec2 msz, float shape, float seed, float px, float lum,
       col *= 1.0 - 0.20*step(abs((bxN - 0.5)*0.108), 0.008)*step(k.y, 0.66)*step(0.56, k.y)*step(0.06, cbx);
       /* paint flaked off in a patch or two, the grey deal under it and the
          flake's broken edge inked */
-      float fl = mmNoise(vec2(k.x*7.0, k.y*5.0) + seed*4.3) + 0.15*mmNoise(vec2(k.x*40.0, k.y*30.0) + seed);
+      float fl = mmNoise(vec2(k.x*7.0, k.y*5.0) + seed*4.3) + 0.035*sin(k.x*170.0 + k.y*90.0);
       float flZ = step(k.y, 0.42)*step(0.06, cbx);     // (the low boards, where the dogs rub and the wet splashes)
       float flake = smoothstep(0.795, 0.805, fl)*flZ;
       col = mix(col, vec3(0.34, 0.31, 0.27)*E*1.30*(0.80 + 0.30*wear), flake);
