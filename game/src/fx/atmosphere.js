@@ -1655,7 +1655,7 @@ export const REGIONS = {
                     foreground". The near lamp's spill at the right on the wet
                     tiles by the towel horse, warm, nearer and twice as
                     strong -- the right third lit by a lamp the room has) */
-                 pool2: { ahead: 4.0, across: 5.0, abs: true, rAlong: 3.2, rAcross: 3.0, k: 4.0, color: '#e2aa68' } },
+                 pool2: { ahead: 3.6, across: 3.8, abs: true, rAlong: 3.4, rAcross: 3.6, k: 4.4, color: '#e2aa68' } },
     cineFloor: 0.12,
     /* (round 39 graft, item 5: PERIDOT halved the fight's own warm pool on
        its pale cream tiles; on these dark glazes it is the light the fight's
@@ -1762,6 +1762,10 @@ export const REGIONS = {
                   back */
                { shape: 39, edge: 0.31, z: 0.9, tone: 0.97, keep: true, seed: 2.2, scale: 1.05 },
                { shape: 39, edge: 0.79, z: 0.5, tone: 0.97, keep: true, seed: 8.6, scale: 1.05 },
+               /* (...and the range's FEEDING TROUGH with a straw bale beside
+                  it and a bowl on the flags, between the two, a little back
+                  -- the basket's quad, seed > 50: wgTroughSD) */
+               { shape: 40, edge: 0.42, z: -0.6, tone: 0.96, keep: true, seed: 52.0, hM: 0.70, wM: 1.90 },
                /* (second pass: the kennel at your right shoulder is gone
                   again -- a frame-tall quad of the prop program, and the
                   kennels fight measured +2.3 ms over BASE with it) */

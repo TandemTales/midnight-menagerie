@@ -16573,7 +16573,7 @@ void main(){
       vec3 mass = mix(hayD, hay*(0.55 + 0.80*lit)*(0.88 + 0.24*ht), flank);
       /* (the gaps between the stalks are the straw's own deeper gold, not
          the floor: a mass, not a scatter) */
-      mass *= 0.90 + 0.18*stk*(0.6 + 0.4*stT) - 0.06*(1.0 - stk)*sRes;   // (round 41 graft: the stalks a texture of the mass, not a scribble)
+      mass *= 0.82 + 0.38*stk*(0.6 + 0.4*stT) - 0.14*(1.0 - stk)*sRes;   // (round 41 graft: the stalks a texture of the mass, not a scribble; round 47: a stop more of them, so a drift reads as STRAW and not a gold stain)
       mass = mix(mass, mass*vec3(1.10, 1.02, 0.86), 0.5*stT*stk);
       alb = mix(alb, mass, body*0.96);
       /* the rim: loose stalks lying out from it on the stone, and its shade */
@@ -24445,7 +24445,84 @@ float wgKnSD(vec2 q){
    stencilled; and a dog's LEAD dropped coiled on the flags, its brass clip
    catching the lantern. Dealt by hand only (a dealt basket's seed is under
    10). Metres from the foot of its axis. */
+/* ── ROUND 47 (RUTILE): THE FEEDING TROUGH AND THE BALE (the basket's quad,
+   40, seed > 50) ────────────────────────────────────────────────────────
+   Both survey-10 judges on the kennel range: "bring two kennels and a
+   feeding trough forward into the mid-floor"; "bowls ... and straw bales".
+   A deal trough on its splayed legs, its two boards bevelled, iron bands at
+   its ends, the meal in it; a bale of straw beside it bound in two twines,
+   its top ragged with stalks; a dog's enamel bowl on the flags in front.
+   Metres from the foot of the quad's axis, in a quad ~1.9 m by 0.7. */
+float wgTrBale(vec2 m){
+  vec2 c = m - vec2(0.56, 0.0);
+  float top = 0.43 + 0.018*sin(c.x*41.0) + 0.012*sin(c.x*97.0 + 1.3);
+  return max(mmBox(c - vec2(0.0, 0.215), vec2(0.33, 0.215), 0.035), c.y - top);
+}
+float wgTrBody(vec2 m){
+  vec2 t = m - vec2(-0.36, 0.0);
+  float hw = mix(0.47, 0.56, clamp((t.y - 0.15)/0.24, 0.0, 1.0));
+  return max(abs(t.x) - hw, max(0.15 - t.y, t.y - 0.39));
+}
+float wgTrLegs(vec2 m){
+  vec2 t = m - vec2(-0.36, 0.0);
+  float ax = abs(t.x);
+  return min(wgSeg(vec2(ax, t.y), vec2(0.40, 0.17), vec2(0.47, 0.0), 0.022),
+             wgSeg(vec2(ax, t.y), vec2(0.40, 0.17), vec2(0.33, 0.0), 0.018));
+}
+float wgTroughSD(vec2 m){
+  float bowl = min(wgEll(m - vec2(0.10, 0.060), vec2(0.130, 0.036)), mmBox(m - vec2(0.10, 0.030), vec2(0.110, 0.030), 0.010));
+  return min(min(wgTrBody(m), wgTrLegs(m)), min(wgTrBale(m), bowl));
+}
+vec3 wgTroughPaint(vec2 m, float seed, float px, float E, float kx, inout float ink){
+  vec3 col = vec3(0.3)*E;
+  /* the bale: old gold, lit on its top, its end in shade, fibre along it */
+  vec2 c = m - vec2(0.56, 0.0);
+  float bl = wgTrBale(m);
+  float onBl = clamp(0.5 - bl/px, 0.0, 1.0);
+  float fib = 0.5 + 0.5*sin(c.y*180.0 + 6.0*mmNoise(c*vec2(6.0, 30.0) + seed) + c.x*14.0);
+  vec3 hay = vec3(0.70, 0.53, 0.25)*E*1.35*(0.78 + 0.30*fib*mmLod(0.006, px))*(0.65 + 0.45*smoothstep(0.02, 0.40, c.y));
+  hay *= 0.82 + 0.30*smoothstep(-0.33, 0.33, kx*c.x);
+  float twine = (1.0 - smoothstep(0.012, 0.012 + px, abs(abs(c.x) - 0.15)))*step(c.y, 0.42);
+  hay = mix(hay, vec3(0.20, 0.14, 0.08)*E*1.2, twine*0.85);
+  col = mix(col, hay, onBl);
+  ink = max(ink, mmInkP(bl, px, 1.4)*0.95);
+  ink = max(ink, onBl*twine*0.25);
+  ink = max(ink, onBl*smoothstep(0.92, 1.0, fib)*0.20*mmLod(0.006, px)*step(c.y, 0.40));
+  /* the trough: two bevelled boards of dark deal, iron at its ends, meal in it */
+  vec2 t = m - vec2(-0.36, 0.0);
+  float bd = wgTrBody(m);
+  float onT = clamp(0.5 - bd/px, 0.0, 1.0);
+  float bI = step(0.27, t.y);
+  vec3 deal = vec3(0.33, 0.23, 0.14)*E*1.30*(0.82 + 0.25*mmHash11(bI*5.3 + seed))*(0.86 + 0.22*mmNoise(vec2(t.x*3.0, t.y*60.0) + seed));
+  float bfy = fract((t.y - 0.15)/0.12);
+  deal *= 1.0 + 0.30*smoothstep(0.82, 0.97, bfy) - 0.30*smoothstep(0.20, 0.02, bfy);
+  deal *= 0.80 + 0.32*smoothstep(-0.5, 0.5, kx*t.x);
+  float band = step(0.45, abs(t.x))*step(abs(t.x), 0.52)*onT;
+  deal = mix(deal, vec3(0.09, 0.09, 0.10)*E*1.3, band);
+  float meal = step(0.365, t.y)*step(abs(t.x), 0.52);
+  deal = mix(deal, vec3(0.58, 0.48, 0.32)*E*1.3*(0.85 + 0.2*mmNoise(t*40.0)), meal);
+  col = mix(col, deal, onT);
+  ink = max(ink, mmInkP(bd, px, 1.4)*0.95);
+  ink = max(ink, mmInkP(t.y - 0.27, px, 1.0)*onT*0.6);
+  ink = max(ink, mmInkP(t.y - 0.365, px, 1.0)*onT*0.6);
+  float lg = wgTrLegs(m);
+  float onLg = clamp(0.5 - lg/px, 0.0, 1.0)*(1.0 - onT);
+  col = mix(col, vec3(0.26, 0.18, 0.11)*E*1.2, onLg);
+  ink = max(ink, mmInkP(lg, px, 1.1)*0.85*(1.0 - onT));
+  /* the bowl, white enamel, a blue rim, water */
+  vec2 bq = m - vec2(0.10, 0.0);
+  float rim = wgEll(bq - vec2(0.0, 0.060), vec2(0.130, 0.036));
+  float bw = mmBox(bq - vec2(0.0, 0.030), vec2(0.110, 0.030), 0.010);
+  float onB = clamp(0.5 - min(rim, bw)/px, 0.0, 1.0);
+  col = mix(col, vec3(0.82, 0.83, 0.80)*E*1.4*(0.7 + 0.4*wgRound(clamp(bq.x/0.11, -1.0, 1.0))), onB);
+  col = mix(col, vec3(0.10, 0.18, 0.22)*E, step(wgEll(bq - vec2(0.0, 0.062), vec2(0.100, 0.024)), 0.0));
+  col = mix(col, vec3(0.20, 0.30, 0.62)*E*1.2, step(abs(rim), 0.010)*onB);
+  ink = max(ink, mmInkP(min(rim, bw), px, 1.0)*0.9);
+  col *= 1.0 - 0.30*smoothstep(0.04, 0.0, m.y);
+  return col;
+}
 float wgFeedSD(vec2 m, float seed){
+  if (seed > 50.0) return wgTroughSD(m);   // (round 47)
   vec2 b = m - vec2(-0.20, 0.0);
   float bin = mmBox(b - vec2(0.0, 0.29), vec2(0.36, 0.29), 0.008);
   /* the lid, propped open on its stay, seen edge-on above the back */
@@ -24462,6 +24539,7 @@ float wgFeedSD(vec2 m, float seed){
   return min(min(min(bin, lid), scoop), min(sack, lead));
 }
 vec3 wgFeedPaint(vec2 m, float seed, float px, float E, float kx, inout float ink){
+  if (seed > 50.0) return wgTroughPaint(m, seed, px, E, kx, ink);   // (round 47)
   vec3 col = vec3(0.3)*E;
   vec2 b = m - vec2(-0.20, 0.0);
   float bin = mmBox(b - vec2(0.0, 0.29), vec2(0.36, 0.29), 0.008);
@@ -26289,6 +26367,13 @@ vec3 wgPaint(vec2 m, vec2 msz, float shape, float seed, float px, float lum,
       col = mix(col, vec3(0.42, 0.19, 0.07)*E*1.5*(0.6 + 0.5*rr), rs*onBody*(bk < 0.5 ? 0.55 : 0.30));
       float chip = step(0.80, mmNoise(q*vec2(36.0, 30.0) + seed*2.0))*smoothstep(0.56, 0.64, q.y)*onBody;
       col = mix(col, vec3(0.03, 0.03, 0.035)*E, chip*0.85);
+      /* (round 47: and the glaze mirrors the hall as copper does, softer --
+         the dark floor in the belly under a bowed horizon, the lit hall
+         over it: "no enamel sheen", J2) */
+      float hzE = 0.40 + 0.05*(1.0 - xn*xn);
+      float belowE = smoothstep(hzE + 0.014 + qpx, hzE - 0.014 - qpx, q.y);
+      col *= mix(1.0, 0.58 + 0.20*rr, belowE*onBody);
+      emit += vec3(0.80, 0.88, 1.00)*0.05*rr*smoothstep(hzE + 0.08, hzE + 0.01, q.y)*(1.0 - belowE)*onBody*(bk < 0.5 ? 1.0 : 0.6);
     }
     if (bk > 1.5 && bk < 2.5) {
       /* (round 43) copper is a METAL: a dark core where the belly turns away,
