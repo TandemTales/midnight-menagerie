@@ -961,7 +961,12 @@ export const REGIONS = {
        frame is black". The gable's oculus is the room's moon: its light
        comes through it low and long, the window's ring and spokes thrown
        down the boards from the telescope's feet to yours (pal.win) */
-    win: { at: 'oculus', dir: [-0.02, -0.21, 1.0], k: 6.0, color: '#c6cad6', bar: 0.075 },
+    /* (round 47, RUTILE -- both survey-10 judges: "a purple moonlight smear
+       washes across the floor"; "one hard-edged window shaft on dark
+       boards". Steeper, so the oculus lands as ONE ring on the boards
+       between the telescope and the rug, not a lilac sheet to your feet;
+       cold, not lilac; and its edge hard, FLOOR_FRAG's winLit, RUGK 8) */
+    win: { at: 'oculus', dir: [-0.02, -0.33, 1.0], k: 5.2, color: '#a9bbdc', bar: 0.075 },
     room: { w: 13, d: 16, h: 2.4, side: 0.0, ceilPattern: 15, wallPad: 6.2 },
     cam: { y: 1.95, z: 8.6, look: 2.6, fov: 45 },
     deep: '#17152c', mid: '#2a2746', hi: '#433e69', accent: '#8592cd',
@@ -1644,8 +1649,13 @@ export const REGIONS = {
     nearFloor: { fall: 0.94, calm: 0.92, clean: 1, rug: { ahead: 3.9, hw: 1.05, hd: 0.52, dx: -0.4 },
                  /* (round 43: the lamp's pool a stride nearer and a third stronger,
                     4.2 / 2.2 -> 3.5 / 3.0, so the wet tiles at your feet are lit) */
-                 pool: { ahead: 3.5, across: 0.3, abs: true, rAlong: 2.6, rAcross: 3.4, k: 3.0, color: '#e8b070' },
-                 pool2: { ahead: 5.6, across: -3.4, abs: true, rAlong: 2.6, rAcross: 2.2, k: 1.5, color: '#7fb4dc' } },
+                 pool: { ahead: 3.5, across: 0.3, abs: true, rAlong: 2.6, rAcross: 4.2, k: 3.0, color: '#e8b070' },   // (round 47: wider, 3.4 -> 4.2, over the near left the second pool left)
+                 /* (round 47, RUTILE -- J1: "the right third and the lower
+                    foreground are black void"; "light the right side and the
+                    foreground". The near lamp's spill at the right on the wet
+                    tiles by the towel horse, warm, nearer and twice as
+                    strong -- the right third lit by a lamp the room has) */
+                 pool2: { ahead: 4.0, across: 5.0, abs: true, rAlong: 3.2, rAcross: 3.0, k: 4.0, color: '#e2aa68' } },
     cineFloor: 0.12,
     /* (round 39 graft, item 5: PERIDOT halved the fight's own warm pool on
        its pale cream tiles; on these dark glazes it is the light the fight's
@@ -1743,7 +1753,15 @@ export const REGIONS = {
                   range is fed from, the kennel man's corner -- the feed bin
                   with its lid propped on the meal, a sack slumped against it,
                   a dropped lead (the basket's quad, seed > 40: wgFeedSD) */
-               { shape: 40, edge: 0.72, z: 1.3, tone: 0.95, fore: 1, keep: true, seed: 45.0, hM: 0.82, wM: 1.30 },
+               { shape: 40, edge: 0.60, z: 1.7, tone: 0.95, fore: 1, keep: true, seed: 45.0, hM: 0.82, wM: 1.30 },   // (round 47: in from 0.72 / 1.3, clear of the kennel brought forward)
+               /* ROUND 47 (RUTILE), both survey-10 judges: "bring two kennels
+                  ... forward into the mid-floor". Two of the range's houses
+                  stood out on the flags, one each side of where the fight
+                  stands, each its own paint and its dog -- the hero object
+                  of the room met at the fighters' depth, not only along the
+                  back */
+               { shape: 39, edge: 0.31, z: 0.9, tone: 0.97, keep: true, seed: 2.2, scale: 1.05 },
+               { shape: 39, edge: 0.79, z: 0.5, tone: 0.97, keep: true, seed: 8.6, scale: 1.05 },
                /* (second pass: the kennel at your right shoulder is gone
                   again -- a frame-tall quad of the prop program, and the
                   kennels fight measured +2.3 ms over BASE with it) */
