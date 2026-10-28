@@ -3036,8 +3036,14 @@ export const ROOM_KINDS = {
               /* (round 43: the archive's moon comes through the skylight in
                  the roof's slope, its frame and its cross thrown on the
                  boards in front of the reading table) */
-              win: { at: 'skylight', x: 2.6, z: -8.6, y: 5.6, hw: 1.0, hl: 0.75, mx: 1.0, my: 0.75, bar: 0.035,
-                     dir: [-0.43, -0.43, 0.89], k: 8.0, color: '#c6cad6' },
+              /* (round 47 graft, J2 on the library: "its moon rectangle a
+                 hard shaft with mullion shadows on dark boards". The skylight
+                 a glazed light of four by four panes, its bars a hand thick,
+                 thrown hard on the boards (winLit, MM_RUGK 8); the moon a
+                 cold silver and a stop less of it, so the boards in it are
+                 lit wood and not a pale grey slab) */
+              win: { at: 'skylight', x: 2.6, z: -8.6, y: 5.6, hw: 1.0, hl: 0.75, mx: 0.5, my: 0.375, bar: 0.050,
+                     dir: [-0.43, -0.43, 0.89], k: 6.0, color: '#a9bbdc' },
               vantage: { at: 'along', off: 0.12, wall: 2.0, fwd: 1.4, yaw: 10, wide: 3 } }],
     names: [
       [/library|chart|archive|watcher/i, 1],
