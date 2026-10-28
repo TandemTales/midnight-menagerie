@@ -297,6 +297,22 @@ showing all 18 coins LOST 0 of 2 (crowded, unreadable) and is survey 9's
 again (pixel-identical); the piles bevel dropped. **Rule refined: on the
 HUD, legibility beats count -- more objects only win where they read.**
 NEXT: SURVEY 10, paired vs survey 9.
+**SURVEY 10 IS DONE (2026-10-23/27, `SURVEY-2026-10-23.md`):** paired vs
+survey 9, 11/1/21 and 10/0/23 (the one loss a capture-timing artifact).
+**ROUND 47 AND ITS GRAFT ARE MERGED AND PUSHED (2026-10-27):** RUTILE +1.01
+(`4c91190d`) + graft `6c6d8aa8`, paired 8 of 8 vs RUTILE and survey 10 --
+the Kennels, Hedge, Attic, Bathhouse. Open: the bales blocky and the near
+hedge urn oversized/cropped over the bench (both graft judges); frame times
+on kn-1/hm-1 not yet measured on a quiet GPU. **ROUND 48 IS BRIEFED, NOT
+COMMITTED, NOT RUN** (`BRIEF-r48.md`, `RUBRIC-r48.md`: rest, event,
+gameover, shop, the fight's floaters). **JOSH PAUSED THE LOOP 2026-10-27:
+"pause prior to running the next round" -- do not launch round 48 until he
+says so.** Another session is rebuilding the map (`state/floorplan.js`
+untracked, map/enemy/portrait files dirty in the main checkout): keep off
+them; the battery's seams and enemy-clips reds come from that work.
+**Release:** `tools/package_release.py` builds the depot; `docs/RELEASE.md`
+lists what Josh owns -- the App ID, the copyright holder, credits, the 32
+achievements, and 224 of 275 enemies still unpainted (grey stand-ins).
 
 **ROUND 33 AND ITS GRAFT ARE MERGED, VERIFIED AND PUSHED (2026-10-16):**
 graft `9d008119`. COBALT +1.59 (`531126e4`): no running line under 11 px at
