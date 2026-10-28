@@ -1430,7 +1430,7 @@ export const REGIONS = {
                        (FLOOR_FRAG's drifts) -- under the hand in a fight, so
                        the maze's frame, the closest to the line, pays nothing;
                        and the prop program does not grow: an urn it draws */
-                    { shape: 81, ahead: 2.7, across: 2.15, tone: 0.95, keep: true, still: true, hand: true, seed: 1.6, scale: 0.46 }] },
+                    { shape: 81, ahead: 2.4, across: 1.30, tone: 0.95, keep: true, still: true, hand: true, seed: 1.6, scale: 0.40 }] },
     /* ...and the moon laid on the walk and the turf in front of you, the
        foreground falling to nine-tenths and not two-fifths */
     /* (round 31 graft, judges 1 and 3: "lift the near path out of black with

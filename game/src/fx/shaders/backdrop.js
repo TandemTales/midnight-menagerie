@@ -25073,29 +25073,38 @@ vec3 ydBalesPaint(vec2 m, vec2 p, float seed, float px, float E, float kk, inout
     {
       float stR = mmLod(0.030, px);
       if (face < 1.5) {
-        vec2 cs = vec2(0.120, 0.034);
-        vec2 g = o/cs + (top ? vec2(0.5, 0.3) : vec2(0.0));
-        vec2 gi = floor(g);
-        vec2 hh = mmHash22(gi + seed*0.37 + (top ? 9.0 : 0.0));
-        vec2 c0 = (gi + 0.5 + 0.45*(hh - 0.5))*cs - (top ? vec2(0.5, 0.3)*cs : vec2(0.0));
-        float an = (hh.y - 0.5)*0.55;
-        vec2 dir = vec2(cos(an), sin(an));
-        vec2 v = o - c0;
-        float L = 0.045 + 0.050*hh.x;
-        float sd = length(v - dir*clamp(dot(v, dir), -L, L)) - 0.0085;
-        float on2 = clamp(0.5 - sd/max(px, 1e-5), 0.0, 1.0)*stR;
-        c = mix(c*mix(1.0, 0.55, stR), c*(1.60 + 0.40*hh.x), on2*0.92);
-        ink = max(ink, mmInkP(sd, px, 0.8)*0.40*stR*onX);
+        /* (two staggered layers of short strokes, each held inside its own
+           cell -- a stroke longer than its cell is cut at the cell's wall,
+           and a row of cut strokes reads as a woven zigzag, not straw) */
+        float onS = 0.0, hS = 0.5;
+        for (int l = 0; l < 2; l++){
+          vec2 cs = vec2(0.10, 0.028);
+          vec2 sh = float(l)*vec2(0.5, 0.5) + (top ? vec2(0.3, 0.2) : vec2(0.0));
+          vec2 g = o/cs + sh;
+          vec2 gi = floor(g);
+          vec2 hh = mmHash22(gi + seed*0.37 + float(l)*7.0 + (top ? 9.0 : 0.0));
+          vec2 c0 = (gi + 0.5 + 0.30*(hh - 0.5) - sh)*cs;
+          float an = (hh.y - 0.5)*0.50;
+          vec2 dir = vec2(cos(an), sin(an));
+          vec2 v = o - c0;
+          float L = 0.020 + 0.012*hh.x;
+          float sd = length(v - dir*clamp(dot(v, dir), -L, L)) - 0.0060;
+          float on2 = clamp(0.5 - sd/max(px, 1e-5), 0.0, 1.0)*step(0.25, hh.x + 0.3*hh.y);
+          if (on2 > onS) { onS = on2; hS = hh.x; }
+        }
+        onS *= stR;
+        c = mix(c*mix(1.0, 0.76, stR), c*(1.40 + 0.35*hS), onS*0.85);
       } else {
-        vec2 ge = o/0.036;
+        /* the cut end: the stalks' ends, a ragged stubble -- irregular,
+           half of them, never a dot grid */
+        vec2 ge = o/0.030 + vec2(0.37*floor(o.y/0.030), 0.0);
         vec2 gi = floor(ge);
         vec2 hh = mmHash22(gi + seed*0.71);
-        vec2 dv = (fract(ge) - 0.5 - 0.35*(hh - 0.5))*0.036;
-        float dot0 = length(dv) - 0.0105*(0.7 + 0.6*hh.x);
-        float onD = clamp(0.5 - dot0/max(px, 1e-5), 0.0, 1.0)*stR;
-        c = mix(c*mix(1.0, 0.70, stR), hay*1.05*(0.8 + 0.4*hh.y), onD*0.85);
-        ink = max(ink, mmInkP(dot0, px, 0.7)*0.35*stR*onX);
-        c *= 1.0 - 0.50*clamp(0.5 - (length(dv - vec2(0.002, -0.002)) - 0.0030)/max(px, 1e-5), 0.0, 1.0)*stR;
+        vec2 dv = (fract(ge) - 0.5 - 0.60*(hh - 0.5))*0.030;
+        float dot0 = length(dv*vec2(1.0, 1.0 + hh.y)) - 0.0060*(0.6 + 0.8*hh.x);
+        float onD = clamp(0.5 - dot0/max(px, 1e-5), 0.0, 1.0)*stR*step(0.45, hh.y + 0.4*hh.x);
+        c = mix(c, hay*0.85*(0.8 + 0.4*hh.y), onD*0.55);
+        c *= 1.0 - 0.25*onD*smoothstep(0.0, -0.004, dv.y);
       }
     }
     /* the top bale's shadow on the bottom one's top, and the bottom one's
