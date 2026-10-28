@@ -1016,7 +1016,16 @@ export const REGIONS = {
                     { shape: 36, edge: 0.19, z: 5.4, tone: 0.98, scale: 0.86, fore: 1, keep: true, seed: 6.5 },
                     { shape: 36, edge: 0.72, z: 4.9, tone: 0.98, scale: 1.02, fore: 1, keep: true, seed: 4.5 },
                     { shape: 37, edge: 0.80, z: 3.6, tone: 0.95, scale: 1.05, fore: 1, keep: true, seed: 0.3 },
-                    { shape: 37, edge: 0.93, z: 1.0, tone: 0.93, scale: 1.0, fore: 1, keep: true, seed: 0.7 }],
+                    { shape: 37, edge: 0.93, z: 1.0, tone: 0.93, scale: 1.0, fore: 1, keep: true, seed: 0.7 },
+                    /* ROUND 47 GRAFT (TANZANITE's near floor, both judges: the
+                       near boards below the rug dressed "from the room's own
+                       world (a hatbox, ... a rolled rug)"), redrawn in the pen
+                       (ahHatPaint, ahRugPaint): in the lamp's pool, under the
+                       hand in a fight -- the hatboxes with a summer hat on
+                       them between the two trunks at the left, a rug rolled
+                       and corded on the boards at the right */
+                    { shape: 36, ahead: 2.8, across: 0.75, tone: 0.98, keep: true, still: true, hand: true, seed: 45.0, hM: 1.00, wM: 0.62 },
+                    { shape: 36, ahead: 2.5, across: -0.85, tone: 0.98, keep: true, still: true, hand: true, seed: 66.0, hM: 0.36, wM: 1.85 }],
              trusses: { shape: 38, every: 3.4, first: 2.2 } },
     /* ...and the boards they stand on lit and calm: a lamp's pool at your
        left and the skylight's moon laid on the boards at your right, the
@@ -1413,7 +1422,15 @@ export const REGIONS = {
                        stood here -- J3 -- and measured +0.5 ms of the maze
                        fight's props, a frame-tall field of clipped yew; the
                        urn is back) */
-                    { shape: 81, edge: 0.88, z: 2.2, tone: 0.94, seed: 2.6, fore: 1, keep: true }] },
+                    { shape: 81, edge: 0.88, z: 2.2, tone: 0.94, seed: 2.6, fore: 1, keep: true },
+                    /* ROUND 47 GRAFT (TANZANITE's), both judges: "the urn on
+                       the near-left lawn" -- a second urn on the near turf by
+                       the seat's end, in the lanterns' pool and the moon's,
+                       the leaves banked round its foot and the walk's kerb
+                       (FLOOR_FRAG's drifts) -- under the hand in a fight, so
+                       the maze's frame, the closest to the line, pays nothing;
+                       and the prop program does not grow: an urn it draws */
+                    { shape: 81, ahead: 2.7, across: 2.15, tone: 0.95, keep: true, still: true, hand: true, seed: 1.6, scale: 0.46 }] },
     /* ...and the moon laid on the walk and the turf in front of you, the
        foreground falling to nine-tenths and not two-fifths */
     /* (round 31 graft, judges 1 and 3: "lift the near path out of black with
@@ -1630,6 +1647,15 @@ export const REGIONS = {
                   the head of the duckboard, under the hand in a fight */
                { shape: 32, ahead: 4.75, across: 0.35, tone: 0.97, keep: true, hand: true, seed: 24.0, hM: 1.00, wM: 1.50 },
                { shape: 32, edge: 0.88, z: -3.8, tone: 0.93, seed: 18.4, scale: 0.80 },
+               /* ROUND 47 GRAFT (TANZANITE's near floor, both judges: "the right
+                  third and the lower foreground are black void" -- "a stool,
+                  towels, a bucket"): on the near tiles in the lamp's pool, the
+                  stool stacked with towels and the pail with its brush
+                  (wgYardPaint's wash corner, seed > 80), and a second towel
+                  horse behind them toward the big copper -- under the hand in
+                  a fight */
+               { shape: 32, ahead: 2.9, across: 1.10, tone: 0.97, keep: true, still: true, hand: true, seed: 85.0, hM: 0.95, wM: 1.40 },
+               { shape: 32, ahead: 4.0, across: 1.95, tone: 0.97, keep: true, still: true, hand: true, seed: 43.0, hM: 1.25, wM: 1.90 },
                /* and two more down the hall, on the left and the middle,
                   where the files have room for them */
                { shape: 32, x: -3.4, z: -7.4, tone: 0.92, free: true, seed: 17.8, scale: 0.90 },
@@ -1769,7 +1795,21 @@ export const REGIONS = {
                /* (...and the range's FEEDING TROUGH with a straw bale beside
                   it and a bowl on the flags, between the two, a little back
                   -- the basket's quad, seed > 50: wgTroughSD) */
-               { shape: 40, edge: 0.42, z: -0.6, tone: 0.96, keep: true, hand: true, seed: 52.0, hM: 0.70, wM: 1.90 },
+               /* (round 47 graft: that spot the range's bedding now -- two
+                  bales stacked and bound, the loose straw at their foot,
+                  TANZANITE's (wgYardPaint, seed 70-75) -- and the trough the
+                  near floor's, below: one trough to the range, the better
+                  drawn) */
+               { shape: 40, edge: 0.42, z: -0.6, tone: 0.96, keep: true, hand: true, seed: 72.0, hM: 1.10, wM: 1.90 },
+               /* ROUND 47 GRAFT (TANZANITE's near floor, both judges: "a drawn
+                  object beats an empty floor"): on the near flags in the
+                  lantern's pool, the feeding trough on its trestles with its
+                  scoop and two bowls, and the bales the bedding is forked
+                  from, two stacked and bound, the fork stuck in the top one
+                  (wgYardPaint, seed 60-80) -- in the band the hand covers in
+                  a fight (`hand`), so the fight's frame pays nothing */
+               { shape: 40, ahead: 2.75, across: -0.6, tone: 0.97, keep: true, still: true, hand: true, seed: 63.0, hM: 0.72, wM: 2.45 },
+               { shape: 40, ahead: 2.5, across: 0.75, tone: 0.97, keep: true, still: true, hand: true, seed: 77.0, hM: 1.70, wM: 1.90 },
                /* (second pass: the kennel at your right shoulder is gone
                   again -- a frame-tall quad of the prop program, and the
                   kennels fight measured +2.3 ms over BASE with it) */
@@ -1798,7 +1838,10 @@ export const REGIONS = {
                  /* (round 41: the lantern's pool a stop up and wider, so the
                     near flags and the straw on them are lit, not an empty
                     dim mottle -- survey-7 judge 2) */
-                 pool: { ahead: 3.6, across: -0.8, rAlong: 3.2, rAcross: 3.6, k: 2.4, color: '#e2a862' },
+                 /* (round 47 graft, TANZANITE's: a stride nearer and longer,
+                    3.6 / 3.2 -> 3.0 / 3.6, so the trough and the bales stand
+                    in it) */
+                 pool: { ahead: 3.0, across: 0.1, rAlong: 3.6, rAcross: 4.2, k: 2.7, color: '#e2a862' },
                  /* (round 41: and the feeding lantern's on the corner by the
                     door at your right -- the feed bin and its sack in it) */
                  pool2: { ahead: 3.8, across: 2.4, abs: true, rAlong: 2.4, rAcross: 2.2, k: 3.2, color: '#e6b070' } },
@@ -2980,7 +3023,13 @@ export const ROOM_KINDS = {
                      { shape: 37, edge: 0.80, z: 3.2, tone: 0.95, scale: 1.0, fore: 1, keep: true, seed: 0.6 },
                      /* (round 43 graft, J3: "an object on the near-right floor" --
                         ZINCITE's blue-strapped trunk there, whole) */
-                     { shape: 36, edge: 0.66, z: 4.1, tone: 0.98, scale: 0.92, fore: 1, keep: true, seed: 4.5 }],
+                     { shape: 36, edge: 0.66, z: 4.1, tone: 0.98, scale: 0.92, fore: 1, keep: true, seed: 4.5 },
+                     /* (round 47 graft, TANZANITE's: and in the lamp's pool on
+                        the near boards, what else comes up an attic stair --
+                        a stack of hatboxes with a summer hat on it, a rolled
+                        rug -- under the hand in a fight) */
+                     { shape: 36, ahead: 3.3, across: 0.45, tone: 0.98, keep: true, still: true, hand: true, seed: 47.0, hM: 1.00, wM: 0.62 },
+                     { shape: 36, ahead: 3.15, across: 1.45, tone: 0.98, keep: true, still: true, hand: true, seed: 62.0, hM: 0.36, wM: 1.85 }],
               /* (round 43 graft: BENITOITE's -- the moon rug larger and nearer,
                  on the near boards, 7.4 / 1.6 x 1.0 -> 6.0 / 1.75 x 1.15) */
               rug: { ahead: 6.0, hw: 1.75, hd: 1.15 },
@@ -3099,13 +3148,20 @@ export const ROOM_KINDS = {
                { shape: 32, ahead: 5.4, across: 1.4, tone: 0.96, keep: true, seed: 43.0, hM: 1.25, wM: 1.90 },
                /* (round 39 graft: and the towel bench with its pail across
                   from the horse, under the hand in a fight) */
-               { shape: 32, ahead: 4.6, across: -1.7, tone: 0.97, keep: true, hand: true, seed: 26.0, hM: 1.00, wM: 1.50 }],
+               { shape: 32, ahead: 4.6, across: -1.7, tone: 0.97, keep: true, hand: true, seed: 26.0, hM: 1.00, wM: 1.50 },
+               /* (round 47 graft, TANZANITE's: and on the wet tiles at your
+                  feet, in the stove's red streak, the stool with its towels
+                  and the pail) */
+               { shape: 32, ahead: 2.7, across: 0.9, tone: 0.97, keep: true, still: true, hand: true, seed: 86.0, hM: 0.95, wM: 1.40 }],
         lampsView: [{ i: 1, x: 0.0, z: 0.86, y: 0.55, color: '#ff7a36', k: 0.50, radius: 3.6 }],
         /* (round 43: and the stove's red glow carried down the wet tiles to
            your feet -- the long streak a fire throws along a wet floor toward
            the eye -- so the near tiles are lit glaze and not a black field) */
         nearFloor: { pool: { ahead: 3.4, across: 0.0, rAlong: 4.2, rAcross: 1.4, k: 4.5, color: '#ec8a52' },
-                     pool2: { ahead: 2.0, across: 0.0, rAlong: 1.8, rAcross: 3.6, k: 1.6, color: '#7fb4dc' } },
+                     /* (round 47 graft, TANZANITE's: the cold of the high
+                        lights on the wet tiles at your feet a step up and
+                        nearer, so the stool and its pail stand on lit glaze) */
+                     pool2: { ahead: 2.4, across: 0.0, rAlong: 2.2, rAcross: 3.6, k: 2.6, color: '#7fb4dc' } },
         vantage: { at: 'among', low: 0.66, fwd: 1.4, pitch: 3.0, off: 0.06, wide: 3, frame: 'steam' } },
       /* THE INDOOR POOL -- round 14, both judges' first instruction: "a sunk
          rectangular basin with a proud stone coping, a clear step down to the
@@ -3131,13 +3187,20 @@ export const ROOM_KINDS = {
                   second towel horse with its stool and pail at the left
                   edge, in the lamp's light laid wider over them) */
                { shape: 32, ahead: 7.1, across: 1.5, tone: 0.97, keep: true, seed: 17.6, scale: 0.82 },
-               { shape: 32, ahead: 7.6, across: 5.5, tone: 0.97, keep: true, seed: 43.5, hM: 1.25, wM: 1.90 }],
+               { shape: 32, ahead: 7.6, across: 5.5, tone: 0.97, keep: true, seed: 43.5, hM: 1.25, wM: 1.90 },
+               /* (round 47 graft, TANZANITE's: and at the near rail on the
+                  apron's other side, which fell to black, the stool with its
+                  towels and the pail, in the gallery sconces' light, pool2) */
+               { shape: 32, ahead: 6.4, across: -2.6, tone: 0.97, keep: true, still: true, seed: 87.0, hM: 0.95, wM: 1.40 }],
         /* (round 39 graft, PERIDOT's pool: the near apron warm-lit across the
            frame, the bench in it, the cold light on the far side) */
         /* (round 43 graft: the warm pool nearer, wider and a step up, over
            the left edge too) */
         nearFloor: { pool: { ahead: 5.6, across: 3.9, rAlong: 3.0, rAcross: 3.9, k: 2.9, color: '#e8b070' },
-                     pool2: { ahead: 6.0, across: -3.8, rAlong: 2.4, rAcross: 2.6, k: 1.6, color: '#7fb4dc' } },
+                     /* (round 47 graft, TANZANITE's: that side of the apron lit
+                        by the gallery's sconces over it, a warm pool where the
+                        cold one barely read) */
+                     pool2: { ahead: 6.2, across: -3.2, rAlong: 2.6, rAcross: 3.4, k: 2.6, color: '#e2a868' } },
         room: { w: 1.10, d: 1.24 }, rail: 'iron', ceil: 4, ceilGain: 2.4,
         pool: { hw: 5.6, z0: -1.4, back: 3.4 },
         /* the hall's cold light stands over the far end of the water, which is
@@ -3370,7 +3433,16 @@ export const ROOM_KINDS = {
                         down mid-floor at the left, where the dogs are fed
                         after their wash) */
                      { shape: 42, edge: 0.64, z: 1.9, tone: 0.96, fore: 1, keep: true, scale: 1.05 },
-                     { shape: 40, edge: 0.40, z: 0.2, tone: 0.95, keep: true, seed: 53.0, hM: 0.70, wM: 1.90 }],
+                     /* (round 47 graft: TANZANITE's trough on its trestles,
+                        scoop and two bowls, where RUTILE's stood -- seed 60-70) */
+                     { shape: 40, edge: 0.40, z: 0.2, tone: 0.95, keep: true, seed: 62.0, hM: 0.72, wM: 2.45 },
+                     /* ROUND 47 GRAFT (TANZANITE's): the wash house's near
+                        floor, in the lamp's light -- the tin pail and its
+                        brush and the stool stacked with towels where the dogs
+                        are dried, and the bales for the beds (RUTILE's zinc
+                        tub stands for TANZANITE's: one tub forward, not two) */
+                     { shape: 40, ahead: 2.6, across: -0.3, tone: 0.97, keep: true, still: true, hand: true, seed: 84.0, hM: 0.95, wM: 1.40 },
+                     { shape: 40, ahead: 3.0, across: 1.75, tone: 0.97, keep: true, still: true, hand: true, seed: 71.0, hM: 0.85, wM: 1.70 }],
               /* (round 41 graft, J3: the wash house's "near-left corner pure
                  black" -- the range lantern's pool carried to the near left,
                  where the dog's bed waits by the door) */
