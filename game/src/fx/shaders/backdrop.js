@@ -5027,6 +5027,8 @@ float wLobes2(vec2 c, float jit, float sd, out float id, out vec2 off, out float
 float gYewI = 0.5;     // (round 29 graft, BOLUS's: the spray's own hash, for its colour)
 float gYewDome = 0.0;  // (round 34 graft: the upper face of a clump, for the moon on it)
 float gYewClW = 0.0;   // (round 47: how withered this pixel's clump is)
+float gYewCH = 0.5;    // (round 47 graft: this pixel's clump's own hash, for the dead patches to follow)
+float gHzW = 0.5, gHzW2 = 0.5;   // (round 47 graft: hzWither's two taps, handed out -- the walls' copy)
 /* ROUND 31 GRAFT (SAFFLOWER's, all three judges: "the fine, small-leaf
    clipped hedge texture ... reads as real topiary, not a scale or cobble
    tile -- take it wholesale"). A yew that has been sheared is not domes: it
@@ -5128,6 +5130,7 @@ float yewClipF(vec2 p, float px, float sd, out float tone, out float lit, out fl
   /* (round 47: one clump in five gone over -- withered to rust-brown whole,
      a dead patch with a clump's own edge, the brief's "dead brown patches") */
   gYewClW = clD*smoothstep(0.70, 0.84, fract(cid3*7.31 + 0.13));
+  gYewCH = mix(0.5, fract(cid3*7.31 + 0.13), clD);
   cidOut = n0;     // (the broad patch is the mass's own swell: no tap of its own)
   return (m0 - 0.45)*0.10 + a*0.022*l1 + b*0.008*l2 + 0.020*clB*clL;
 }
@@ -5164,6 +5167,7 @@ vec3 hzWither(vec2 p, float sd, float px, float holes, out float gap, out float 
   float w = 0.5 + (mmNoise(p*0.30 + sd*1.7) - 0.5)*0.80;
   float w2 = mmNoise(p*1.6 + sd*0.9);
   float footB = smoothstep(1.7, 0.1, p.y);
+  gHzW = w; gHzW2 = w2;   // (round 47 graft: for the dead patches, main's)
   /* (round 31 graft, SAFFLOWER's: the withering quieter and lower -- a
      yew dies from the FOOT up, so the rust lives in the lower half and goes
      to a dull brown, not a ginger; above it one deep green going olive in
@@ -5704,7 +5708,21 @@ float hedgeWallH(vec2 q, float qpx, out float occ){
      swallowing a statue niche) */
   /* (...and none in any hedge: judge 3's "black notches along the walk's
      left hedge top" were these, cut through the crown against the sky) */
-  vec3 yew = hzWither(vec2(u, q.y), sd, qpxL, 0.0, gapY, twigY)*(lum*2.6 + 0.020)*1.30;
+  /* ROUND 47 GRAFT (SPESSARTINE's, both judges: "clumped, gapped, withered
+     foliage"): GAPPED again -- a few small holes where a clump is dead
+     through, dark with its dead stems across them, under the crown, never
+     in the court and never at the foot */
+  vec3 yew = hzWither(vec2(u, q.y), sd, qpxL, 0.55*(1.0 - court)*smoothstep(top - 0.25, top - 0.70, q.y)*smoothstep(0.35, 0.80, q.y), gapY, twigY)*(lum*2.6 + 0.020)*1.30;
+  /* ...and SPESSARTINE's DEAD PATCHES laid onto RUTILE's clumps: where the
+     yew has died back it is a dry russet-brown a stride or two across, its
+     edge broken at a leaf's scale -- and each clump dies whole or not at
+     all at the patch's edge (its own hash shifts the threshold), so the
+     patch FOLLOWS the clumps' creases and never cuts across a clump */
+  {
+    float footW = smoothstep(1.7, 0.1, q.y);
+    float deadP = smoothstep(0.640, 0.665, 0.62*gHzW2 + 0.30*gHzW + 0.12*footW + 0.30*(gYewCH - 0.5));
+    yew = mix(yew, vec3(0.150, 0.094, 0.048)*(0.75 + 0.50*gHzW2)*(lum*2.6 + 0.020)*1.30, deadP*0.80*hedge*(1.0 - court));
+  }
   /* (round 29 GRAFT, BOLUS's, both judges: darker and more withered, the
      leaf in clusters. Each spray its own value and cast -- one in three
      turned toward the rust -- so no two lie side by side alike and the
@@ -5718,6 +5736,9 @@ float hedgeWallH(vec2 q, float qpx, out float occ){
   yew *= mix(0.24 + 1.25*tone, 1.0, gapY);
   yew *= mix(1.0, 0.30, foot);
   yew *= mix(0.18, 1.0, smoothstep(0.02, 0.16, q.y));   // (round 41 graft, ZIRCON's: the contact shadow, the turf's edge in the yew's shade)
+  /* (round 47 graft -- both judges: "a dark inked line where each hedge
+     meets the lawn": the pen along the yew's foot, a loaded line) */
+  gInk = max(gInk, mmInkP(q.y - 0.025, qpx, 1.8)*hedge);
   yew = mix(yew, mix(vec3(0.008, 0.008, 0.007), vec3(0.045, 0.036, 0.026)*(lum*2.6 + 0.020)*2.2, stem), hemB*(1.0 - inGap));
   /* (round 31 graft, SAFFLOWER's: a sheared hedge under the sky -- its upper
      face takes the night, its lower falls into its own shade toward the
