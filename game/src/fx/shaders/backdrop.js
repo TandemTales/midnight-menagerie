@@ -26384,11 +26384,17 @@ vec3 wgPaint(vec2 m, vec2 msz, float shape, float seed, float px, float lum,
     /* the boards: vertical on the front, weatherboard in the gable */
     float bdx = abs(fract((k.x + 0.6)/0.108) - 0.5)*0.108;
     float onBody = step(body, 0.0);
-    ink = max(ink, mmInkP(bdx, qpx, 1.0)*onBody*step(k.y, 0.855)*0.55);
+    /* (round 47 graft, J2 on fight-kennels: the doghouse behind the Kid
+       "smears into a soft flat-green mass" -- at fight scale its board joints
+       a loaded pen line, a pixel and a third and near-full weight, so each
+       board reads as a board across the room, and the joint's lit lip beside
+       it, SPESSARTINE's board edges) */
+    ink = max(ink, mmInkP(bdx, qpx, 1.3)*onBody*step(k.y, 0.855)*0.85);
+    col *= 1.0 + 0.22*onBody*step(k.y, 0.855)*clamp(1.0 - abs(bdx - 1.6*qpx - 0.004)/max(qpx, 1e-4), 0.0, 1.0)*step(0.0, kq*(fract((k.x + 0.6)/0.108) - 0.5));
     float wb = abs(fract((k.y - 0.855)/0.085) - 0.5)*0.085;
     float onGab = step(gable, 0.0);
     col *= 1.0 - 0.25*onGab*smoothstep(0.0, 0.042, fract((k.y - 0.855)/0.085)*0.085);
-    ink = max(ink, mmInkP(wb, qpx, 1.0)*onGab*0.55);
+    ink = max(ink, mmInkP(wb, qpx, 1.2)*onGab*0.80);   // (round 47 graft: the gable's weatherboards inked as the front's)
     /* the bargeboards and the roof's edge: trim, a band along each slope */
     float onRoof = step(roof, 0.0)*(1.0 - onGab);
     /* (round 47: the bargeboards a weathered bone, grained along their
