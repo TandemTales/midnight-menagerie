@@ -26331,7 +26331,22 @@ vec3 wgPaint(vec2 m, vec2 msz, float shape, float seed, float px, float lum,
                  + 0.25*mmNoise(vec2(k.x*40.0, k.y*6.0) + seed));
       /* (round 34 graft: worn through less -- at 0.75 the grey timber took
          most of a small kennel's paint at the Deck's distance) */
-      board = mix(board, vec3(0.30, 0.27, 0.23)*E*1.25*(0.8 + 0.3*wear), bare*0.55);
+      /* ROUND 47 GRAFT (SPESSARTINE's weathered doghouses, both judges:
+         "peeling paint over bare grey boards, worn edges" -- toned down,
+         "not camouflage blotches"). Where the paint is gone it is gone with
+         a crisp edge, in STRIPS along the grain -- narrow across a board,
+         long up it, never a round blot -- the grey deal under it grained,
+         a pale chipped lip round each, the pen at its edge; a third of the
+         round-28 wear's reach, so the kennel is still its colour at a
+         glance; and the board edges worn back to timber where a dog rubs */
+      float flk = 0.60*bare + 0.50*mmNoise(vec2(k.x*38.0, k.y*2.6) + seed*5.3) - 0.02;
+      float bEdge = 1.0 - smoothstep(0.0, 0.010, min(fract((k.x + 0.6)/0.108), 1.0 - fract((k.x + 0.6)/0.108))*0.108);
+      flk = max(flk, (0.50 + 0.30*wear)*bEdge*smoothstep(0.45, 0.10, k.y));
+      float onFl = clamp(0.5 + (flk - 0.66)/max(qpx*1.5, 1e-4), 0.0, 1.0);
+      vec3 tim = vec3(0.33, 0.31, 0.28)*E*1.30*(0.78 + 0.30*(0.5 + 0.5*sin(k.x*480.0 + 3.0*sin(k.y*5.0 + seed))));
+      board = mix(board, tim, onFl*0.92);
+      board = mix(board, board*1.30 + vec3(0.015)*E, clamp(1.0 - abs(flk - 0.645)/max(qpx*1.2, 1e-4), 0.0, 1.0)*0.45*(1.0 - onFl));
+      ink = max(ink, mmInkP((flk - 0.66)*0.05, qpx, 0.9)*0.50*step(k.y, 0.85)*mmLod(0.03, qpx));
       /* (round 41: and the grime of the yard up the foot of every board) */
       board *= 1.0 - 0.22*smoothstep(0.22, 0.0, k.y);
     }
@@ -26387,6 +26402,23 @@ vec3 wgPaint(vec2 m, vec2 msz, float shape, float seed, float px, float lum,
       /* its nail heads along it */
       float nl = fract((k.x*0.8 + k.y)/0.11);
       col *= 1.0 - 0.6*onRoof*step(abs(nl - 0.5), 0.05)*step(-roof, 0.04)*step(0.015, -roof);
+      /* ROUND 47 GRAFT (SPESSARTINE's and TANZANITE's "shingle roofs"): over
+         the bargeboard the BUTTS of the dark cedar shingles hang out past it
+         in a course, each its own grey, staggered, inked between, a moss in
+         one here and there -- the roof's edge a roof, not a cream band */
+      {
+        float rIn = -roof;
+        float onSh = onRoof*step(rIn, 0.026);
+        float ax = abs(k.x)*0.80 + k.y*0.55;
+        float sI = floor(ax/0.050);
+        float sj = abs(fract(ax/0.050) - 0.5)*0.050;
+        vec3 shB = vec3(0.22, 0.20, 0.18)*E*1.30*(0.62 + 0.48*mmHash11(sI*5.3 + step(0.0, k.x)*11.0 + seed));
+        shB = mix(shB, vec3(0.14, 0.20, 0.09)*E*1.3, step(0.82, mmHash11(sI*2.9 + seed + 3.0))*0.6);
+        shB *= 0.75 + 0.35*smoothstep(0.0, 0.026, rIn);
+        col = mix(col, shB, onSh);
+        ink = max(ink, mmInkP(sj, qpx, 1.0)*onSh*0.70);
+        ink = max(ink, mmInkP(rIn - 0.026, qpx, 1.0)*onRoof*step(rIn, 0.04)*0.70);
+      }
     }
     ink = max(ink, mmInkP(gable, qpx, 1.2)*0.9);
     /* (round 47) the eaves' shadow: the roof stands proud of the front, so
@@ -26416,7 +26448,7 @@ vec3 wgPaint(vec2 m, vec2 msz, float shape, float seed, float px, float lum,
       float scrs = floor(su*8.0);
       float ssj = abs(fract(sv*5.0 + 0.5*mod(scrs, 2.0)) - 0.5);
       float ssh = mmHash21(vec2(floor(sv*5.0 + 0.5*mod(scrs, 2.0)), scrs) + seed);
-      vec3 shin = vec3(0.30, 0.27, 0.24)*E*1.30*(0.70 + 0.42*ssh);
+      vec3 shin = vec3(0.22, 0.20, 0.18)*E*1.30*(0.66 + 0.46*ssh);   // (round 47 graft: darker, SPESSARTINE's -- old cedar gone to a weathered dark)
       shin = mix(shin, vec3(0.16, 0.22, 0.10)*E*1.3,
                  smoothstep(0.55, 0.85, mmNoise(vec2(sv*6.0, su*7.0) + seed*3.0))*smoothstep(0.5, 0.0, su)*0.8);
       shin *= 0.80 + 0.35*smoothstep(0.80, 1.0, su);
