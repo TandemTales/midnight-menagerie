@@ -302,8 +302,8 @@ survey 9, 11/1/21 and 10/0/23 (the one loss a capture-timing artifact).
 **ROUND 47 AND ITS GRAFT ARE MERGED AND PUSHED (2026-10-27):** RUTILE +1.01
 (`4c91190d`) + graft `6c6d8aa8`, paired 8 of 8 vs RUTILE and survey 10 --
 the Kennels, Hedge, Attic, Bathhouse. Open: the bales blocky and the near
-hedge urn oversized/cropped over the bench (both graft judges); frame times
-on kn-1/hm-1 not yet measured on a quiet GPU. **ROUND 48 IS BRIEFED BUT
+hedge urn oversized/cropped over the bench (both graft judges); kn-1 read
+14.19 -> 15.93 ms in the one pair before Unreal started (OVER 15.5): re-measure on a quiet GPU first. **ROUND 48 IS BRIEFED BUT
 NOT RUN** (`BRIEF-r48.md`, `RUBRIC-r48.md`: rest, event,
 gameover, shop, the fight's floaters). **JOSH PAUSED THE LOOP 2026-10-27:
 "pause prior to running the next round" -- do not launch round 48 until he
