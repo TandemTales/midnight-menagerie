@@ -303,8 +303,8 @@ survey 9, 11/1/21 and 10/0/23 (the one loss a capture-timing artifact).
 (`4c91190d`) + graft `6c6d8aa8`, paired 8 of 8 vs RUTILE and survey 10 --
 the Kennels, Hedge, Attic, Bathhouse. Open: the bales blocky and the near
 hedge urn oversized/cropped over the bench (both graft judges); frame times
-on kn-1/hm-1 not yet measured on a quiet GPU. **ROUND 48 IS BRIEFED, NOT
-COMMITTED, NOT RUN** (`BRIEF-r48.md`, `RUBRIC-r48.md`: rest, event,
+on kn-1/hm-1 not yet measured on a quiet GPU. **ROUND 48 IS BRIEFED BUT
+NOT RUN** (`BRIEF-r48.md`, `RUBRIC-r48.md`: rest, event,
 gameover, shop, the fight's floaters). **JOSH PAUSED THE LOOP 2026-10-27:
 "pause prior to running the next round" -- do not launch round 48 until he
 says so.** Another session is rebuilding the map (`state/floorplan.js`
