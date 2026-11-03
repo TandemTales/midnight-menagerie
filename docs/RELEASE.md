@@ -66,9 +66,11 @@ Foyer and then two the party chooses from the wings with enemy art (`DEMO_WINGS`
 is its own app, so its id comes from `shell/steam_appid_demo.txt`. `tests/demo/run.py`
 walks the offers on 200 seeds and checks the full game is unchanged without the flag.
 
-Kitchens and Greenhouse still have grey summons and parts (`docs/art/enemy-stills-checklist.md`
-lists 7 and 9): painting those, or taking those two wings out of `DEMO_WINGS`, is what is
-left to make a demo with no stand-ins at all.
+No blob stands in the demo's wings. 20 parts and summons there wear a relative's painting
+for now (`tools/prep_borrowed_stills.py`): the Hydra's heads are cut out of the Hydra, a Crust
+Beast is the Dough Blob baked brown. The Wardrobe's two doors are drawn as doors. All of them
+stay on `docs/art/enemy-stills-checklist.md` as wanted, and a painting under the same filename
+replaces the borrowed one (then `python tools/prep_sprites.py --enemies`).
 
 ### The exe
 

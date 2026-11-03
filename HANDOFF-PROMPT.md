@@ -1,26 +1,26 @@
 # Midnight Menagerie handoff · November 3, 2026
 
-**Co-op was rebuilt for a real wire on November 3, and round 56 is finished.** All of it is committed and pushed on `dev`. D: must be attached, because it holds the worktrees and evidence.
+**The demo is ready for Josh's App ID.** Co-op was rebuilt for a real wire on November 3, rounds 56 and 57 are in, and no blob stands in the demo's wings. All of it is committed and pushed on `dev`. D: must be attached, because it holds the worktrees and evidence.
 
 ## Steam demo: where it stands
 
 Read [the co-op notes](docs/notes/2026-11-03-co-op-on-a-real-wire.md) first. It has what was wrong, what the game does now, and what is unproven.
 
-**Green on this tree:** the whole battery bar the items below. Shell (fake Steam) 95, net 190, co-op 645, lobby 29, rejoin 25, latency 7 (a whole fight over a simulated 60-180 ms wire with both players acting at once; it fails within four cards with the agreed order off), demo 16, run gate 50/0.
+**Green on this tree:** the whole battery bar the items below. Shell (fake Steam) 95, net 190, co-op 645, lobby 29, rejoin 25, latency 7 (a whole fight over a simulated 60-180 ms wire with both players acting at once; it fails within four cards with the agreed order off), demo 19, run gate 50/0.
 
-**Known red, both looked at:** `tests/sprites/check.py` (the 7 HALO clips, a standing decision) and `tests/enemy-stills/check.py` (built stills `kitchen-imp` and `pantry-poltergeist` ship fine, but their source PNGs are gone from `animations/sprites/enemies/`, so they cannot be rebuilt). `tests/enemy-clips` went 984/1 once under load and 985/0 alone.
+**Known red, all looked at:** `tests/sprites/check.py` (the 7 HALO clips, a standing decision) and `tests/seams/check.py` (4 false positives: the floorplan's own local `Map`'s `run.get`/`run.set`). **Load flakes, green alone:** `tests/enemy-clips` (a clip's hand-back to idle, 984/1 in the battery, 985/0 alone) and `tests/sprites/clips.py` (dig, 26/2 in the battery, 28/0 alone).
 
 **Depots:** `tools/package_release.py --smoke` and `--demo --smoke` both build and boot, with exe icon and version strings. The demo is three painted wings (`DEMO_WINGS`) with its own ending.
 
 **Never run: anything against real Steam.** `shell/steam_appid.txt` (and `steam_appid_demo.txt`) are empty and only Josh can fill them (never 480). Then: `npx electron . --smoke` must say `steam:true`, re-package, and do a real two-machine test with a friend who has a key. Watch the overlay's `in-process-gpu` switch (`--no-steam-overlay` turns it off; it boots clean with those switches and no Steam), the Invite button (needs the overlay), and the one-round-trip lag on your own card over a relay.
 
-**Josh's to do:** App ID(s) and depot ids in `shell/steampipe/*.vdf`, the copyright holder, credits, registering the 32 achievements, the store page (`docs/RELEASE.md`). Kitchens and Greenhouse still have grey summons and parts inside the demo's wings; the checklist names them.
+**Josh's to do:** App ID(s) and depot ids in `shell/steampipe/*.vdf`, the copyright holder, credits, registering the 32 achievements, the store page (`docs/RELEASE.md`). 20 parts and summons in the demo's wings wear a relative's painting (`tools/prep_borrowed_stills.py`, recorded in `docs/art/borrowed-stills.json`); they stay on the checklist as wanted, and a real painting under the same filename wins. `kitchenImp.png` and `pantryPoltergeist.png` in `animations/sprites/enemies/` were restored from the build, because their deliveries had gone missing.
 
 ## The UI loop
 
-**Round 56 ONYX is applied and committed** (2 of 2 blind judges; 7.0 vs baseline 6.5, no screen reference-fit).
+**Round 57 JASPER and its graft are in** (2 of 2 judges; 6.52 vs baseline 5.53, no screen reference-fit; the graft won 16 of 20 paired votes, and lost all 4 on rest, where I had darkened the rug as the judges asked, so rest stayed JASPER's). See [the round](docs/ui-pass/ROUND-r57-2026-11-03.md).
 
-**Round 57** runs through `docs/ui-pass/round-workflow.js` (`round-57.args.json`), worktrees `D:/UILOOP/r57/wt/`, baseline SERPENTINE from `d71e9293`. Codex's `tmp/ui_round_setup.py` cannot cut a round any more: it assumes main equals the last winner, and main now carries co-op work on top. Keep 10% usage in reserve (`get_usage`). One browser/GPU capture at a time.
+**The loop is not needed to ship.** If it resumes, round 58 is next: `docs/ui-pass/round-workflow.js`, a hand-written `round-58.args.json` and brief, worktrees on `D:/UILOOP/`. Codex's `tmp/ui_round_setup.py` cannot cut a round any more: it assumes main equals the last winner, and main now carries co-op work on top. Keep 10% usage in reserve (`get_usage`). One browser/GPU capture at a time. Open from the judges: shop's large dark rules panels, floaters that hang with nothing holding them.
 
 The entries below are historical.
 

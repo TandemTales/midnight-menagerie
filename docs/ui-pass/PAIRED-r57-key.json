@@ -1,0 +1,66 @@
+{
+ "1": {
+  "rest": {
+   "graft_is_A": false
+  },
+  "rest-1280": {
+   "graft_is_A": true
+  },
+  "event": {
+   "graft_is_A": true
+  },
+  "event-1280": {
+   "graft_is_A": true
+  },
+  "gameover": {
+   "graft_is_A": true
+  },
+  "gameover-1280": {
+   "graft_is_A": true
+  },
+  "shop": {
+   "graft_is_A": false
+  },
+  "shop-1280": {
+   "graft_is_A": true
+  },
+  "combat-floaters": {
+   "graft_is_A": false
+  },
+  "combat-floaters-1280": {
+   "graft_is_A": true
+  }
+ },
+ "2": {
+  "rest": {
+   "graft_is_A": true
+  },
+  "rest-1280": {
+   "graft_is_A": false
+  },
+  "event": {
+   "graft_is_A": false
+  },
+  "event-1280": {
+   "graft_is_A": false
+  },
+  "gameover": {
+   "graft_is_A": false
+  },
+  "gameover-1280": {
+   "graft_is_A": false
+  },
+  "shop": {
+   "graft_is_A": true
+  },
+  "shop-1280": {
+   "graft_is_A": false
+  },
+  "combat-floaters": {
+   "graft_is_A": true
+  },
+  "combat-floaters-1280": {
+   "graft_is_A": false
+  }
+ }
+}
