@@ -49,7 +49,8 @@ def coin(name, seed, S=192):
     A = bronze[None, None] * (1 + .13 * f[..., None])
     # rubbed bright on the high places; black-green tarnish in the low ones
     low = smooth(1.2, -2.0, ndi.gaussian_filter(R, 2) - ndi.gaussian_filter(R, 10))
-    tarn = smooth(-.35, 1.1, fbm(S, S, 16, seed + 4)) * .62 + low * .5
+    # tarnish keeps off the middle of the face, where a numeral is struck over it
+    tarn = (smooth(-.35, 1.1, fbm(S, S, 16, seed + 4)) * .62 + low * .5) * (.28 + .72 * smooth(.3, .66, r))
     A = mix(A, np.array([.17, .19, .12])[None, None], np.clip(tarn, 0, .82))
     ch = smooth(.72, .75, r) * smooth(.84, .81, r)
     A = mix(A, np.array([.05, .03, .06])[None, None], ch * .9)
