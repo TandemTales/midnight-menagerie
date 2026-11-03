@@ -1297,3 +1297,6 @@
 .ev-painted-stand-r49 .ev-page[data-medal]::before { z-index: 3; }
 .ev-register .ev-prose p { color: var(--ink-900); }
 .ev-reading-r51 { background: linear-gradient(90deg, transparent 58%, color-mix(in srgb, var(--kit-parchment) 26%, transparent) 88%, transparent); }
+/* the numeral on the held slip brightens along its own rim; no blurred halo on the page */
+.ev-register .ev-opt:hover:not(:disabled)::before,
+.ev-register .ev-opt:focus-visible::before { filter: drop-shadow(0 0 .8px var(--kit-gold-hi)) drop-shadow(1px 3px 2px var(--kit-paper-ink)) brightness(1.22); }
