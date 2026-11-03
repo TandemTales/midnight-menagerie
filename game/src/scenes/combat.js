@@ -2009,11 +2009,22 @@ export class CombatScene extends Scene {
       }
       return a;
     };
-    inc.classList.remove('is-low');
-    const high = cover();
-    if (!high) return;
-    inc.classList.add('is-low');
-    if (cover() >= high) inc.classList.remove('is-low');
+    /* A crowded board (the Hydra and its three Heads) has a plate in both places, so
+       each has a narrower form that keeps to the Kid's side of the plate; and at the
+       Deck's size even that lands on a creature's Courage, where the last place is
+       over the Kid's own feet. */
+    const set = (place) => {
+      for (const c of ['is-low', 'is-tight', 'is-over']) inc.classList.toggle(c, place.includes(c));
+    };
+    const places = [[], ['is-low'], ['is-tight'], ['is-low', 'is-tight'], ['is-over']];
+    let best = places[0], least = Infinity;
+    for (const place of places) {
+      set(place);
+      const a = cover();
+      if (a < least) { least = a; best = place; }
+      if (!a) return;
+    }
+    set(best);
   }
 
   /* ══ engine wiring ══════════════════════════════════════════════════════ */

@@ -20,6 +20,7 @@ land on its enemy.
 Needs node (the registry is the game's own JS).
 """
 import argparse
+import hashlib
 import json
 import os
 import re
@@ -82,6 +83,16 @@ def main():
     reg = json.loads(raw)
     manifest = json.load(open(os.path.join(ROOT, "game", "assets", "sprites", "index.json")))
     painted = set((manifest.get("enemies") or {}).keys())
+    # A borrowed still (tools/prep_borrowed_stills.py) is on the board but is not this
+    # enemy's own painting, so it stays wanted until a different file is under its name.
+    borrowed = set()
+    record = os.path.join(ROOT, "docs", "art", "borrowed-stills.json")
+    if os.path.exists(record):
+        for eid, digest in json.load(open(record)).items():
+            src = os.path.join(ROOT, P.SRC_ENEMY_STILLS, suggested(eid))
+            if os.path.exists(src) and hashlib.sha256(open(src, "rb").read()).hexdigest() == digest:
+                borrowed.add(eid)
+    painted -= borrowed
     by_region = {}
     for d in reg["defs"]:
         by_region.setdefault(d["region"], []).append(d)
@@ -123,6 +134,9 @@ def main():
         "512 for Big Scares and every part or summon of one, 1024 for bosses. A part",
         "is drawn beside the body it belongs to — the Hydra's Heads stand next to the",
         "Hydra — so paint it on its own, not as a crop of the body.",
+        "",
+        "%d of the rows below have a borrowed painting on the board for now, cut or regraded" % len(borrowed),
+        "from a relative (`tools/prep_borrowed_stills.py`). Yours replaces it: same filename.",
         "",
     ]
     unknown_regions = [r for r in by_region if r not in reg["order"]]

@@ -116,6 +116,38 @@ async def main():
         check("end of the demo" in head, "and the ending says what happened", " ".join(head.split())[:120])
         await page.screenshot(path="shots/demo-ending.png")
 
+        # Every creature in the demo's wings has a painting on the board, its own or a
+        # relative's. The Wardrobe's two doors are drawn as doors, and read as doors.
+        unpainted = await page.evaluate("""async () => {
+          const { ENEMIES } = await import('/game/src/data/enemies/index.js');
+          const R = await import('/game/src/state/run.js');
+          const built = (await (await fetch('/game/assets/sprites/index.json')).json()).enemies;
+          const wings = new Set(['foyer', ...R.DEMO_WINGS.pool]);
+          return Object.values(ENEMIES).filter(d => wings.has(d.region) && !built[d.id]).map(d => d.id).sort();
+        }""")
+        check(unpainted == ["wardrobe-door-left", "wardrobe-door-right"],
+              "no blob stands in the demo's wings", ", ".join(unpainted))
+
+        # The crowded board: the readout may not lie over a creature's plate at either size.
+        for w, h in ((1600, 900), (1280, 800)):
+            crowd = await ctx.new_page()
+            crowd.on("pageerror", lambda e: errors.append(str(e)))
+            await crowd.set_viewport_size({"width": w, "height": h})
+            await crowd.goto("http://localhost:8777/game/index.html#scene=combat&seed=7&companion=bones&kid=maya"
+                             "&region=sleeping-quarters&encounter=sq-scare-hydra", wait_until="load", timeout=60000)
+            await crowd.wait_for_selector(".cb-incoming:not([hidden])", timeout=120000)
+            await crowd.wait_for_timeout(2500)
+            hit = await crowd.evaluate("""() => {
+              const r = document.querySelector('.cb-incoming').getBoundingClientRect();
+              return [...document.querySelectorAll('.cb-enemy__plate')].filter(e => {
+                const o = e.getBoundingClientRect();
+                return Math.min(r.right, o.right) > Math.max(r.left, o.left)
+                    && Math.min(r.bottom, o.bottom) > Math.max(r.top, o.top);
+              }).map(e => e.textContent.trim().slice(0, 30));
+            }""")
+            check(not hit, f"the incoming readout clears the Hydra's plates at {w}x{h}", "; ".join(hit))
+            await crowd.close()
+
         full = await ctx.new_page()
         full.on("pageerror", lambda e: errors.append(str(e)))
         await full.goto("http://localhost:8777/game/index.html", wait_until="load", timeout=60000)

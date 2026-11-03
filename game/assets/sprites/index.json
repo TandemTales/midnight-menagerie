@@ -492,6 +492,12 @@
    "h": 346,
    "source": "bedframeBeast.png"
   },
+  "binding-vine": {
+   "file": "binding-vine.webp",
+   "w": 220,
+   "h": 251,
+   "source": "bindingVine.png"
+  },
   "blanket-blob": {
    "file": "blanket-blob.webp",
    "w": 241,
@@ -510,6 +516,18 @@
    "h": 330,
    "source": "blanketHydra.png"
   },
+  "bloom-seed": {
+   "file": "bloom-seed.webp",
+   "w": 237,
+   "h": 243,
+   "source": "bloomSeed.png"
+  },
+  "brittle-candy-beast": {
+   "file": "brittle-candy-beast.webp",
+   "w": 233,
+   "h": 227,
+   "source": "brittleCandyBeast.png"
+  },
   "butler": {
    "file": "butler.webp",
    "w": 764,
@@ -522,6 +540,12 @@
    "h": 214,
    "source": "buttonBaby.png"
   },
+  "cake-thing": {
+   "file": "cake-thing.webp",
+   "w": 242,
+   "h": 237,
+   "source": "cakeThing.png"
+  },
   "calling-bell": {
    "file": "calling-bell.webp",
    "w": 234,
@@ -533,6 +557,12 @@
    "w": 233,
    "h": 227,
    "source": "candyClump.png"
+  },
+  "caramel-creeper": {
+   "file": "caramel-creeper.webp",
+   "w": 223,
+   "h": 236,
+   "source": "caramelCreeper.png"
   },
   "carnivorous-conservatory": {
    "file": "carnivorous-conservatory.webp",
@@ -564,6 +594,24 @@
    "h": 187,
    "source": "creepingIvy.png"
   },
+  "crust-beast": {
+   "file": "crust-beast.webp",
+   "w": 245,
+   "h": 189,
+   "source": "crustBeast.png"
+  },
+  "cutlery-devil": {
+   "file": "cutlery-devil.webp",
+   "w": 457,
+   "h": 383,
+   "source": "cutleryDevil.png"
+  },
+  "dish": {
+   "file": "dish.webp",
+   "w": 460,
+   "h": 386,
+   "source": "dish.png"
+  },
   "door-greeter": {
    "file": "door-greeter.webp",
    "w": 281,
@@ -576,11 +624,23 @@
    "h": 189,
    "source": "doughBlob.png"
   },
+  "doughling": {
+   "file": "doughling.webp",
+   "w": 245,
+   "h": 189,
+   "source": "doughling.png"
+  },
   "dust-bunny": {
    "file": "dust-bunny.webp",
    "w": 224,
    "h": 216,
    "source": "dustBunny.png"
+  },
+  "favorite-doll": {
+   "file": "favorite-doll.webp",
+   "w": 205,
+   "h": 214,
+   "source": "favoriteDoll.png"
   },
   "glassvine": {
    "file": "glassvine.webp",
@@ -600,6 +660,12 @@
    "h": 416,
    "source": "grandCoatcheck.png"
   },
+  "growth-patch": {
+   "file": "growth-patch.webp",
+   "w": 232,
+   "h": 102,
+   "source": "growthPatch.png"
+  },
   "head-gardener": {
    "file": "head-gardener.webp",
    "w": 458,
@@ -611,6 +677,24 @@
    "w": 448,
    "h": 369,
    "source": "houseBell.png"
+  },
+  "hydra-head-biting": {
+   "file": "hydra-head-biting.webp",
+   "w": 348,
+   "h": 354,
+   "source": "hydraHeadBiting.png"
+  },
+  "hydra-head-crying": {
+   "file": "hydra-head-crying.webp",
+   "w": 343,
+   "h": 298,
+   "source": "hydraHeadCrying.png"
+  },
+  "hydra-head-snoring": {
+   "file": "hydra-head-snoring.webp",
+   "w": 325,
+   "h": 293,
+   "source": "hydraHeadSnoring.png"
   },
   "jack-in-the-box": {
    "file": "jack-in-the-box.webp",
@@ -635,6 +719,12 @@
    "w": 224,
    "h": 216,
    "source": "lostLuggage.png"
+  },
+  "moon-bloom": {
+   "file": "moon-bloom.webp",
+   "w": 220,
+   "h": 251,
+   "source": "moonBloom.png"
   },
   "night-terror": {
    "file": "night-terror.webp",
@@ -714,6 +804,12 @@
    "h": 210,
    "source": "redCarpetRunner.png"
   },
+  "regrowth-node": {
+   "file": "regrowth-node.webp",
+   "w": 481,
+   "h": 379,
+   "source": "regrowthNode.png"
+  },
   "rising-batter": {
    "file": "rising-batter.webp",
    "w": 242,
@@ -725,6 +821,12 @@
    "w": 236,
    "h": 236,
    "source": "rockingHorse.png"
+  },
+  "seedling": {
+   "file": "seedling.webp",
+   "w": 182,
+   "h": 224,
+   "source": "seedling.png"
   },
   "slipper-skitter": {
    "file": "slipper-skitter.webp",
@@ -762,6 +864,18 @@
    "h": 408,
    "source": "thingBeneath.png"
   },
+  "thorn-bush": {
+   "file": "thorn-bush.webp",
+   "w": 232,
+   "h": 187,
+   "source": "thornBush.png"
+  },
+  "thorn-seed": {
+   "file": "thorn-seed.webp",
+   "w": 237,
+   "h": 243,
+   "source": "thornSeed.png"
+  },
   "topiary-beast": {
    "file": "topiary-beast.webp",
    "w": 488,
@@ -779,6 +893,12 @@
    "w": 426,
    "h": 499,
    "source": "unwelcomeGuest.png"
+  },
+  "vine-seed": {
+   "file": "vine-seed.webp",
+   "w": 237,
+   "h": 243,
+   "source": "vineSeed.png"
   },
   "wardrobe-guest": {
    "file": "wardrobe-guest.webp",

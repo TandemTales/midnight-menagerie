@@ -1830,6 +1830,8 @@
 /* …or level with the portrait's top, where a board that has a creature's plate
    in the high place has room (CombatScene#_placeIncoming measures both) */
 .cb-incoming.is-low { top: 6px; bottom: auto; }
+.cb-incoming.is-tight { left: calc(100% + 2px); max-width: 186px; padding-inline: 16px; }
+.cb-incoming.is-over { left: auto; right: -46px; bottom: calc(100% + 30px); max-width: 186px; padding-inline: 16px; }
 .cb-incoming[data-state="lethal"] { filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .85)) drop-shadow(0 0 8px color-mix(in srgb, var(--threat-300) 80%, transparent)); }
 .cb-incoming[data-state="safe"] { filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .85)) drop-shadow(0 0 5px color-mix(in srgb, var(--guard-300) 60%, transparent)); }
 .cb-inc__k {

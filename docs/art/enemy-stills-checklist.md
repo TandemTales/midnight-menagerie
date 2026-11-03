@@ -14,6 +14,9 @@ Sizes are what the art so far was delivered at: 256 for Scuffle creatures,
 is drawn beside the body it belongs to — the Hydra's Heads stand next to the
 Hydra — so paint it on its own, not as a crop of the body.
 
+20 of the rows below have a borrowed painting on the board for now, cut or regraded
+from a relative (`tools/prep_borrowed_stills.py`). Yours replaces it: same filename.
+
 ## foyer — 10 of 10 painted
 
 Every enemy in this wing is painted.
