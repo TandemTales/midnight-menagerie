@@ -57,13 +57,21 @@ notes whether it appears in your captures.
 
 ## Art, scope and proof requirements
 
-All of BRIEF-r56's "Art, scope and proof requirements" hold unchanged, including the
-non-negotiables it carries from BRIEF-r55, its runtime proof list, the corrected
-native timing protocol and the 10% usage reserve. New committed bitmap art stays under
-8MB, on versioned game/assets/ui/r57-CODE paths with own prep helper and
-tests/ui-r57-CODE. Use the imagegen skill for at least one materially new painted
-family this round, preferably the rest ground or the cost coins, unless a CSS-native
-painted surface is plainly better; say which in your notes.
+Painted surfaces are CSS, SVG and code-drawn textures in your own files, or crops and
+edits of art the repo already holds; keep new committed bitmaps under 8MB, on versioned
+game/assets/ui/r57-CODE paths. No baked text, no whole-scene generation, no unrelated art.
+Keep the non-negotiables from BRIEF-r55: larger text, global two-thirds animation speed,
+no seed in the top HUD, the complete memorial card, rules, caption, explanation, portrait
+lines and base, and all shop content.
+
+Prove it with `tests/chrome/run.py`, `tests/steam-deck/run.py`, `tests/gamepad/run.py`,
+`tests/events/check.py`, `tests/gameover-keeps/run.py`, `tests/combat-scene/seam.py`,
+`tests/scene-css/check.py` and `tests/css-tokens/check.py`, all run through
+`python tools/on_port.py PORT` so they hit your server and not :8777. If you touch condition
+plaques, run `tests/ui-r51-spinel/probe-queue.py` the same way. Fights stay under the 15.5 ms
+budget (`tools/gpuprof.py --settle 14`, on your port, one reading is noise). Take canonical
+captures only with `python D:/UILOOP/r57/capture.py <your worktree> <your port> <your code>`,
+which writes the ten PNGs the judges see. Then LOOK at all ten yourself.
 
 No engine, data, state, netcode, lobby, room, map, atlas, blueprint, actor, position,
 renderer, hand, run rail or hung-painting edits. Multiplayer work is landing in main

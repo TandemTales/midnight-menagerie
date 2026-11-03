@@ -1,0 +1,55 @@
+{
+  "round": "r57",
+  "maxBuilders": 3,
+  "briefs": [
+    "docs/ui-pass/BRIEF-r0.md",
+    "docs/ui-pass/BRIEF-r55.md",
+    "docs/ui-pass/BRIEF-r56.md",
+    "docs/ui-pass/BRIEF-r57.md"
+  ],
+  "rubrics": [
+    "docs/ui-pass/RUBRIC.md",
+    "docs/ui-pass/RUBRIC-r57.md"
+  ],
+  "samples": [
+    "UI/title.png",
+    "UI/mainMenu.png",
+    "UI/selectCompanion.png",
+    "UI/selectKid.png"
+  ],
+  "tracks": [
+    {
+      "key": "boards",
+      "name": "BOARDS",
+      "rule": "refine",
+      "screens": [
+        "rest",
+        "event",
+        "gameover",
+        "shop",
+        "combat-floaters"
+      ],
+      "baseline": "SERPENTINE",
+      "builders": [
+        {
+          "slot": "a",
+          "code": "JASPER",
+          "port": 9571,
+          "angle": "THE GROUND FIRST: start from rest's and event's rooms (items 3 and 4), make walls, floors and light read as painted places, then bring the objects into that light."
+        },
+        {
+          "slot": "b",
+          "code": "CITRINE",
+          "port": 9572,
+          "angle": "WORK THE LIST IN ORDER: items 1 to 5 exactly as written, gameover's rows first, finishing each before starting the next."
+        },
+        {
+          "slot": "c",
+          "code": "MALACHITE",
+          "port": 9573,
+          "angle": "THE TOUCHED METAL: every surface a hand has worn (cost disks and coins, rims, plaque lips, the red bookmark's fold, candle wax), then let the rooms catch up with them. Hand-painted irregularity over anything that repeats."
+        }
+      ]
+    }
+  ]
+}
