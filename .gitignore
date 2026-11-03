@@ -35,3 +35,4 @@ tmp/pdfs/
 tmp/__pycache__/
 docs/enemy-sprites-2026-10-27/**/*.zip
 docs/enemy-roster-2026-10-26/**/*.webp
+docs/enemy-roster-2026-10-26/animation-production/orientation-audit/legacy-derivatives/
