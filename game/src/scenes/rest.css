@@ -866,3 +866,29 @@
 .rs-door[data-opt="forge"] .kit-obj { --obj: url("../../assets/ui/r56-onyx/candle.webp") !important; }
 .rs-door__vig > i { filter: drop-shadow(1px 3px 1px var(--kit-void)); }
 .rs-door__read.kit-hw-plate { border-image-source: url("../../assets/ui/r56-onyx/enamel-plaque.webp"); }
+
+/* Round57 JASPER: the Safe Room's own wall, wainscot, boards and rug, lit by the
+   candles standing in it (tools/prep_r57_jasper.py). */
+.rm--rest .kit-ground { background: url("../../assets/ui/r57-jasper/rest-room.webp") 50% 100% / 100% 100% no-repeat, var(--kit-ground-0); }
+.rm--rest .kit-ground::before, .rm--rest .kit-ground__warm, .rm--rest .kit-ground__moon, .rm--rest .kit-dress__floor { display: none; }
+.rm--rest .rm-vig { background: linear-gradient(to bottom, transparent 82%, color-mix(in srgb, var(--kit-void) 34%, transparent) 100%); }
+@media (max-width: 1400px) {
+  .rm--rest .kit-ground { background-image: url("../../assets/ui/r57-jasper/rest-room-1280.webp"); }
+}
+/* The frame's ledge is the top of a low console that stands on the rug, so the
+   painting has a floor under it and throws its shadow on the wall behind. */
+.rs-shelf { isolation: isolate; }
+.rs-shelf::before {
+  content: ''; position: absolute; z-index: -1; pointer-events: none;
+  left: calc(-.72 * var(--candle-room)); right: calc(-.72 * var(--candle-room));
+  top: 26px; height: clamp(98px, 12.4vh, 112px);
+  background: url("../../assets/ui/r57-jasper/console.webp") 50% 0 / 100% 100% no-repeat;
+}
+.rs-art.kit-panel { box-shadow: 0 18px 22px -6px var(--kit-void), 14px 10px 26px -4px color-mix(in srgb, var(--kit-void) 80%, transparent), -14px 10px 26px -4px color-mix(in srgb, var(--kit-void) 80%, transparent); }
+/* A darker well behind the object of each choice and a lit rim on it, so the
+   pillow and the candle stand off their medallions at the Deck size too. */
+.rs-door__glyph.rs-door__vig { background: radial-gradient(ellipse 44% 40% at 50% 56%, var(--kit-void) 0 62%, transparent 100%), url("../../assets/ui/kit/socket-filigree.webp") center / 100% 100% no-repeat; }
+.rs-door__vig > i { filter: drop-shadow(0 0 .7px color-mix(in srgb, var(--kit-parchment) 85%, transparent)) drop-shadow(1px 3px 1px var(--kit-void)) brightness(1.08); }
+@media (max-width: 1400px) {
+  .rs-door__vig > i { filter: drop-shadow(0 0 .8px var(--kit-parchment)) drop-shadow(0 0 .8px color-mix(in srgb, var(--kit-parchment) 50%, transparent)) drop-shadow(1px 2px 1px var(--kit-void)) brightness(1.16); }
+}
