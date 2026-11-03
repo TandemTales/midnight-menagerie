@@ -83,7 +83,7 @@ class Room:
         s.add = np.zeros((H, W, 3))    # air: light seen in the room, not on a surface
 
     # ── the wall ──────────────────────────────────────────────────────────────
-    def wall(s, top, bottom):
+    def wall(s, top, bottom, base=(.165, .095, .215), hi=(.56, .39, .66), foxing=.85):
         W, H = s.W, s.H
         m = (s.yy < bottom)[..., None]
         P, tw, th = tile(KIT / 'damask.webp', int(W * .118), W, H)
@@ -98,13 +98,13 @@ class Room:
         stain = fbm(H, W, 150, s.seed + 2)
         drip = aniso(H, W, 70, 2.2, s.seed + 3)
         pat = P * smooth(-1.4, .4, wear + .4)
-        base = np.array([.165, .095, .215])
-        hi = np.array([.56, .39, .66])
+        base = np.array(base)
+        hi = np.array(hi)
         A = mix(base[None, None], hi[None, None], np.clip(pat * .78, 0, 1))
         A *= (1 + .16 * stain[..., None]) * (1 + .05 * drip[..., None])
         # warm foxing and the paper going dark in tide marks
         fox = smooth(1.1, 1.9, fbm(H, W, 34, s.seed + 4))
-        A = mix(A, A * np.array([.72, .55, .5]), fox * .85)
+        A = mix(A, A * np.array([.72, .55, .5]), fox * foxing)
         s.A = np.where(m, A, s.A)
         s.R += (P * 2.6 + .35 * fbm(H, W, 3, s.seed + 5)) * m[..., 0]
         # the seams
@@ -385,64 +385,47 @@ class Room:
 
 # ── moonlight: a real casement falling across the room ───────────────────────
 def casement(s, cx, top, w, h, floor_y, lean, wains_y0, wains_y1, seed):
-    """Painted light from one lancet. `lean` is +1 toward screen right. Returns nothing; adds to s."""
+    """One shaft from the sill to the flags, one shape all the way: the same lean, the same
+    width and the same mullion in the air, on the wainscot and on the floor, so the window,
+    its light and its pool read as one thing. `lean` is +1 toward screen right."""
     H, W = s.H, s.W
     x, y = s.xx, s.yy
-    y0 = top + h * .5
-    # the shaft in the air: bands parted by the mullion and leads, leaning in,
-    # widening a little, broken along its length by brushed noise
-    t = (y - y0)
-    wid = w * .5 * (1 + np.clip(t, 0, None) / (H * 1.3))
-    cxt = cx + lean * t * .52
-    wob = 5 * noise(H, W, 26, seed)
-    u = (x - cxt + wob) / wid          # -1..1 across the shaft
-    edge = smooth(1.06, .86, np.abs(u))
-    bars = 1 - .9 * smooth(.10, .05, np.abs(u))
-    streak = 1 + .36 * aniso(H, W, 50, 3, seed + 1) + .2 * aniso(H, W, 120, 9, seed + 2)
-    # streak along the lean, not along the screen's vertical
-    sh = np.round(lean * (y - y0) * .52).astype(int)
-    xi = np.mod((x - sh).astype(int), W)
-    yi = y.astype(int)
-    streak = streak[yi, xi]
-    fall = smooth(0, 60, t) * (1 - .55 * smooth(0, floor_y - y0, t))
-    air = np.clip(edge * bars * streak * fall, 0, 2) * .082
-    s.add += air[..., None] * MOON * (y < floor_y + 6)[..., None]
-
-    # the same light landing: on the wainscot's panels...
-    ws = (y >= wains_y0) & (y <= wains_y1)
-    u2 = (x - (cxt)) / wid
-    v2 = (y - wains_y0) / (wains_y1 - wains_y0)
-    b = smooth(1.03, .92, np.abs(u2 + .05 * noise(H, W, 8, seed + 3)))
-    b *= 1 - .92 * smooth(.11, .07, np.abs(u2))
-    b *= 1 - .9 * smooth(.07, .04, np.abs(((v2 * 2.0 + .5) % 1) - .5))
-    land = np.clip(b, 0, 1) * ws
-    # ...and on the floor, the casement thrown long toward the room, arch last
-    fy = floor_y
-    yy = (y - fy)
-    fx0 = cx + lean * (fy - y0) * .52
-    span = H - fy
-    near = yy / span
-    # cast: width grows as it comes toward us; it leans further in
-    fcx = fx0 + lean * near * span * 1.15
-    fw = w * .62 * (1 + near * 1.05)
-    uf = (x - fcx) / fw
-    arch_top = .02 + .24 * np.abs(uf) ** 2.2
-    inside = smooth(1.02, .9, np.abs(uf + .04 * noise(H, W, 7, seed + 4)))
-    inside *= smooth(arch_top, arch_top + .03, near) * smooth(1.0, .86, near)
-    cross = 1 - .92 * smooth(.09, .05, np.abs(uf))
-    cross *= 1 - .9 * smooth(.055, .03, np.abs(((near * 3.0 + .5) % 1) - .5))
-    fl = np.clip(inside * cross, 0, 1) * (y >= fy)
-    mask = np.clip(land * .66 + fl, 0, 1) * (1 + .12 * noise(H, W, 5, seed + 5))
-    s.lamp(float(cx), float(top), 240.0, MOON, 0.0, 400.0)  # keep brush seeded
+    y0 = top + h * .92
+    k = .40
+    run = np.clip(y - y0, 0, None)
+    onfloor = np.clip(y - floor_y, 0, None)
+    # it lies down on the floor: leans further and spreads toward us
+    centre = cx + lean * (k * np.minimum(run, floor_y - y0) + k * 1.5 * onfloor)
+    half = w * .5 * (1 + .14 * np.minimum(run, floor_y - y0) / (floor_y - y0) + .55 * onfloor / (H - floor_y))
+    edgewob = .05 * noise(H, W, 9, seed)
+    u = (x - centre) / half + edgewob
+    shape = smooth(1.02, .9, np.abs(u)) * smooth(0, 26, y - y0)
+    # the leads: one mullion down the middle, one cross-bar each pane's height along the run
+    along = (np.minimum(run, floor_y - y0) + onfloor * 1.9) / (h * .46)
+    mull = 1 - .9 * smooth(.085, .045, np.abs(u))
+    bar = 1 - .86 * smooth(.055, .028, np.abs((along % 1) - .5))
+    pane = np.clip(shape * mull * bar, 0, 1)
+    # broken along its length by the air and the glass, never a clean slab
+    glass = 1 + .24 * aniso(H, W, 34, 2.6, seed + 1) + .14 * fbm(H, W, 14, seed + 2)
+    sh = np.round(lean * run * k).astype(int)
+    glass = glass[y.astype(int), np.mod((x - sh).astype(int), W)]
+    # in the air, on the paper
+    air = pane * glass * (y < wains_y0) * (1 - .35 * smooth(0, wains_y0 - y0, run)) * .135
+    air += pane * glass * ((y >= wains_y0) & (y < floor_y)) * .05
+    s.add += air[..., None] * MOON
+    # on what it lands on: cold on the warm panels, and brightest on the flags
+    land = pane * glass * (((y >= wains_y0) & (y < floor_y)) * 1.0 + (y >= floor_y) * 1.3)
     dx, dy = lean * 40.0, -90.0
     ndl = np.clip((dx * s.nx + dy * s.ny + 90 * s.nz) / np.sqrt(dx * dx + dy * dy + 90 * 90), 0, 1)
-    s.L += (mask * ndl * 2.25 * s.brush)[..., None] * MOON
-    # dust, hanging in the shaft
+    s.L += (land * ndl * 2.9 * s.brush)[..., None] * MOON
+    # the warm candle gives way inside the shaft, so the cold reads as cold
+    s.L *= (1 - .34 * (land > .1) * ((y >= wains_y0)))[..., None]
+    # dust, hanging in it
     r = np.random.default_rng(seed + 6)
     dust = np.zeros((H, W))
-    for _ in range(int(h * .55)):
+    for _ in range(int(h * .6)):
         ty = r.uniform(30, floor_y - y0)
-        px = cx + lean * ty * .52 + r.uniform(-1, 1) * w * .5 * (1 + ty / (H * 1.3))
+        px = cx + lean * ty * k + r.uniform(-1, 1) * w * .5
         py = y0 + ty
         ix, iy = int(px), int(py)
         if 1 <= ix < W - 1 and 1 <= iy < H - 1:
@@ -455,7 +438,7 @@ def casement(s, cx, top, w, h, floor_y, lean, wains_y0, wains_y1, seed):
 
 def event_room(W, H, g, name, seed):
     s = Room(W, H, seed)
-    s.wall(int(H * .083), g['rail'])
+    s.wall(int(H * .083), g['rail'], base=(.128, .088, .205), hi=(.43, .345, .635), foxing=.45)
     s.wainscot(g['rail'], g['floor'], g['panel'])
     s.flags(g['floor'], g['depth'], W / 2, g['cell'])
     s.normals()

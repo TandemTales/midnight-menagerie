@@ -1269,34 +1269,37 @@
   .rm--event .kit-ground { background-image: url("../../assets/ui/r57-jasper/event-room-1280.webp"); }
 }
 
-/* Each choice is a slip of old card, torn by hand and scorched at the tear; its
-   shadow lies on the page. Held by the keys it is ringed in the clerk red, a
-   crisp line, never a glow. */
-.ev-register .ev-opt, .ev-register .ev-opt:first-child {
-  background: url("../../assets/ui/r57-jasper/slip-a.webp") 50% 50% / 100% 100% no-repeat;
-  filter: drop-shadow(1px 2px 1px color-mix(in srgb, var(--kit-paper-ink) 85%, transparent)) drop-shadow(3px 6px 4px color-mix(in srgb, var(--kit-paper-ink) 45%, transparent));
+/* Round57 graft, MALACHITE's: both judges named this sheet the best object in the round. A
+   handled leaf with torn sides, slips scorched in fibres with a real shadow on the page, and
+   the red ribbon as folded cloth. Held by the keys a slip is ringed in the clerk red. */
+.ev-painted-stand-r49 .ev-page.ev-register {
+ background: url("../../assets/ui/r57-malachite/parchment.webp") 0 0 / 100% 100% no-repeat;
+ background-blend-mode: normal; box-shadow: none;
+ border-color: transparent; border-image: none;
+ filter: none;
 }
-.ev-register .ev-opt:nth-child(2n) { background-image: url("../../assets/ui/r57-jasper/slip-b.webp"); }
-.ev-register .ev-opt:hover:not(:disabled), .ev-register .ev-opt:focus-visible {
-  background: radial-gradient(90% 120% at 22% 50%, color-mix(in srgb, var(--kit-parchment) 30%, transparent), transparent 70%), url("../../assets/ui/r57-jasper/slip-a.webp") 50% 50% / 100% 100% no-repeat;
-  filter: drop-shadow(2px 3px 1px color-mix(in srgb, var(--kit-paper-ink) 85%, transparent)) drop-shadow(4px 9px 5px color-mix(in srgb, var(--kit-paper-ink) 50%, transparent));
+.ev-register__fold { background: none; }
+.ev-painted-stand-r49 .ev-page.ev-register .ev-prose { --ink: #1c1009; color: #1c1009; }
+.ev-register .ev-opt,
+.ev-register .ev-opt:first-child {
+ background: url("../../assets/ui/r57-malachite/strip-a.webp") 50% 50% / 100% 100% no-repeat;
+ filter: drop-shadow(1px 2px 1px rgb(30 14 3 / .75)) drop-shadow(2px 5px 4px rgb(30 14 3 / .4));
 }
+.ev-register .ev-opt:nth-child(2) { background-image: url("../../assets/ui/r57-malachite/strip-b.webp"); }
+.ev-register .ev-opt:nth-child(3) { background-image: url("../../assets/ui/r57-malachite/strip-c.webp"); }
+.ev-register .ev-opt:hover:not(:disabled),
 .ev-register .ev-opt:focus-visible {
-  filter: drop-shadow(0 0 .6px var(--kit-ink-oxblood)) drop-shadow(0 0 .6px var(--kit-ink-oxblood)) drop-shadow(2px 4px 1px color-mix(in srgb, var(--kit-paper-ink) 85%, transparent)) drop-shadow(4px 9px 5px color-mix(in srgb, var(--kit-paper-ink) 50%, transparent));
+ background: radial-gradient(70% 120% at 22% 50%, rgb(255 206 128 / .34), transparent 70%), url("../../assets/ui/r57-malachite/strip-a.webp") 50% 50% / 100% 100% no-repeat;
+ filter: drop-shadow(2px 6px 4px rgb(30 14 3 / .7));
 }
-.ev-register .ev-opt.is-chosen { background: url("../../assets/ui/r57-jasper/slip-a.webp") 50% 50% / 100% 100% no-repeat; }
-/* The long edges of the leaf nibbled and browned; the paper goes on under the rail. */
-.ev-painted-stand-r49 .ev-page::after {
-  content: ''; position: absolute; inset: 0; z-index: 2; pointer-events: none;
-  border: 0 solid transparent;
-  border-image: url("../../assets/ui/r57-jasper/page-edge.webp") 64 / 22px 22px 0 22px round;
-  background: none; opacity: 1; filter: none; box-shadow: none;
+.ev-register .ev-opt:focus-visible { filter: drop-shadow(0 0 .6px var(--kit-ink-oxblood)) drop-shadow(0 0 .6px var(--kit-ink-oxblood)) drop-shadow(2px 6px 4px rgb(30 14 3 / .7)); }
+.ev-register .ev-opt.is-chosen { background: radial-gradient(80% 130% at 20% 50%, rgb(255 206 128 / .42), transparent 72%), url("../../assets/ui/r57-malachite/strip-a.webp") 50% 50% / 100% 100% no-repeat; }
+.ev-bookmark {
+ width: 42px; height: 111px; right: -7px; top: -15px; clip-path: none; box-shadow: none;
+ background: url("../../assets/ui/r57-malachite/bookmark.webp") 0 0 / 100% 100% no-repeat;
 }
-/* the moon medallion rides over the worn head of the leaf; the words keep their
-   full dark ink right to the end of a line, where the page browns */
+/* the moon medallion rides over the head of the leaf */
 .ev-painted-stand-r49 .ev-page[data-medal]::before { z-index: 3; }
-.ev-register .ev-prose p { color: var(--ink-900); }
-.ev-reading-r51 { background: linear-gradient(90deg, transparent 58%, color-mix(in srgb, var(--kit-parchment) 26%, transparent) 88%, transparent); }
 /* the numeral on the held slip brightens along its own rim; no blurred halo on the page */
 .ev-register .ev-opt:hover:not(:disabled)::before,
 .ev-register .ev-opt:focus-visible::before { filter: drop-shadow(0 0 .8px var(--kit-gold-hi)) drop-shadow(1px 3px 2px var(--kit-paper-ink)) brightness(1.22); }

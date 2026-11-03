@@ -3771,21 +3771,12 @@
 }
 .cb-fx-owner { border-image-source: url("../../assets/ui/r56-onyx/enamel-plaque.webp"); }
 
-/* Round57 JASPER: a condition word is lettered, not lit. Its colour stays its
-   meaning; the face browns toward the candle at the foot of each stroke and sits
-   on old lacquer in a warm gilt rim. A border image would paint over a clipped
-   text layer, so the same plate is drawn as background layers under it. Geometry,
-   packing and lifetime untouched: the padding box is the padding box it was. */
+/* Round57 graft, CITRINE's: both judges ranked JASPER's rectangular tags last here. The
+   condition words as paint on a warm base. Each word keeps its semantic colour and size; its
+   outline warms from ink to burnt umber, a gold lip stands under it in the same 1px the plaque
+   already reserves, and the face behind is umber lacquer over rubbed leaf. */
 .cb-num[data-actor-id]:not([data-actor-id=""]):is([data-kind="status"],[data-kind="buff"],[data-kind="debuff"],[data-kind="counter"],[data-kind="blocked"]) {
- border-image: none; padding: 1px 9px;
- background:
-   linear-gradient(180deg, color-mix(in srgb, currentColor 84%, var(--kit-parchment)) 14%, currentColor 52%, color-mix(in srgb, currentColor 74%, var(--kit-gold-hi)) 88%),
-   url("../../assets/ui/r57-jasper/plaque-l.webp") left center / auto 100% no-repeat,
-   url("../../assets/ui/r57-jasper/plaque-r.webp") right center / auto 100% no-repeat,
-   url("../../assets/ui/r57-jasper/plaque-m.webp") center / auto 100% repeat-x;
- -webkit-background-clip: text, border-box, border-box, content-box;
-         background-clip: text, border-box, border-box, border-box;
- -webkit-text-fill-color: transparent;
- -webkit-text-stroke: 0; text-shadow: none;
+ border-image-source: url("../../assets/ui/r57-citrine/cond-plaque.webp");
+ -webkit-text-stroke: 1px #2a1408; text-shadow: 0 1px 0 #7a5a2c, 1px 1px 0 #170b05;
 }
-.cb-fx-owner { border-image-source: url("../../assets/ui/r57-jasper/plaque.webp"); }
+.cb-fx-owner { border-image-source: url("../../assets/ui/r57-citrine/cond-plaque.webp"); }

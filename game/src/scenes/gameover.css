@@ -1629,32 +1629,45 @@
 @media (max-width: 1400px) {
   .go-ground.kit-ground { background-image: url("../../assets/ui/r57-jasper/gameover-room-1280.webp"); }
 }
-.go-wrap .go-altar.go-shrine::after {
-  -webkit-mask: url("../../assets/ui/r57-jasper/alcove-mask.webp") center / 100% 100% no-repeat;
-          mask: url("../../assets/ui/r57-jasper/alcove-mask.webp") center / 100% 100% no-repeat;
-  box-shadow: none;
-}
+/* Round57 graft, CITRINE's: rows in the plaque's cast rim with scrolled ends, four cuts of
+   velvet so no two neighbours repeat, and JASPER's worn gold coins on them. */
 .go-ledger[data-fold] .go-trick.go-trick {
-  border-image: url("../../assets/ui/r57-jasper/row-a.webp") 30 46 30 46 fill / 13px 20px stretch;
-  box-shadow: none; filter: drop-shadow(0 2px 2px var(--kit-void));
+ border: 0 solid transparent; border-image: url("../../assets/ui/r57-citrine/row-1.webp") 50 80 50 80 fill / 25px 40px / 0 stretch;
+ padding: 9px 34px 9px 24px; box-shadow: none; filter: drop-shadow(0 3px 2px color-mix(in srgb,var(--kit-void) 80%,transparent));
 }
-.go-ledger[data-fold] .go-trick.go-trick:nth-child(3n+2) { border-image-source: url("../../assets/ui/r57-jasper/row-b.webp"); }
-.go-ledger[data-fold] .go-trick.go-trick:nth-child(3n) { border-image-source: url("../../assets/ui/r57-jasper/row-c.webp"); }
+.go-ledger[data-fold] .go-trick.go-trick:nth-child(4n+2) { border-image-source: url("../../assets/ui/r57-citrine/row-2.webp"); }
+.go-ledger[data-fold] .go-trick.go-trick:nth-child(4n+3) { border-image-source: url("../../assets/ui/r57-citrine/row-3.webp"); }
+.go-ledger[data-fold] .go-trick.go-trick:nth-child(4n) { border-image-source: url("../../assets/ui/r57-citrine/row-4.webp"); }
 .go-ledger[data-fold] .go-trick.go-trick .go-trick__cost {
-  border: 0; border-radius: 50%; color: var(--ink-900);
+  --coin: 31px; border: 0; border-radius: 50%; color: var(--ink-900); padding-bottom: 1px; margin-left: -1px;
   background: url("../../assets/ui/r57-jasper/coin-a.webp") center / 100% 100% no-repeat;
   text-shadow: 0 1px 0 color-mix(in srgb, var(--kit-gold-hi) 62%, transparent);
-  box-shadow: 0 2px 3px var(--kit-void);
+  box-shadow: none; filter: drop-shadow(1px 2px 1px var(--kit-void));
 }
 .go-ledger[data-fold] .go-trick.go-trick:nth-child(3n+2) .go-trick__cost { background-image: url("../../assets/ui/r57-jasper/coin-b.webp"); }
 .go-ledger[data-fold] .go-trick.go-trick:nth-child(3n) .go-trick__cost { background-image: url("../../assets/ui/r57-jasper/coin-c.webp"); }
+.go-ledger[data-fold] .go-trick.go-trick .go-trick__n {
+ border-left: 0; padding-left: 10px;
+ background: linear-gradient(to right,color-mix(in srgb,var(--kit-gold-lo) 90%,transparent),var(--kit-void) 1px,transparent 3px) left center / 3px 76% no-repeat;
+}
+.go-ledger[data-fold] .go-trick.go-trick .go-trick__name { text-shadow: 0 1px 1px var(--kit-void), 0 0 3px color-mix(in srgb,var(--kit-void) 80%,transparent); }
+/* The alcove at the card's full height: carved columns that sink into shadow along a broken
+   line, and throw a cast shadow where a real niche would. */
+.go-wrap .go-altar.go-shrine::after {
+ background-image: url("../../assets/ui/r57-citrine/alcove.webp");
+ inset: -14px -12px -6px; box-shadow: none; filter: saturate(.86);
+}
+/* Leather depth in the featured card's rules well; its foil sweeps only the picture, so no
+   streak of light lies over the words. */
+.go-shrine .go-mvp__slot .mm-card__rules { background: url("../../assets/ui/r57-citrine/leather.webp") center / 100% 100% no-repeat; }
+.go-shrine .go-mvp__slot .mm-card__shimmer { -webkit-mask-image: linear-gradient(to bottom, black 24%, transparent 42%); mask-image: linear-gradient(to bottom, black 24%, transparent 42%); }
 .go-wrap .go-shrine .mm-card[data-rarity] .mm-card__cost {
   background: url("../../assets/ui/r57-jasper/coin-a.webp") center / 100% 100% no-repeat;
   text-shadow: 0 calc(1 * var(--u)) 0 color-mix(in srgb, var(--kit-gold-hi) 62%, transparent);
   box-shadow: 0 calc(3 * var(--u)) calc(4 * var(--u)) var(--kit-void);
 }
-/* the nameplate under the card wide enough that its letters clear the plate ends */
-.go-shrine .go-mvp__h { width: calc(100% + 84px); margin-inline: -42px; box-sizing: border-box; padding-inline: 26px; }
+/* The nameplate under the card wide enough that its letters clear the moulded ends. */
+.go-shrine .go-mvp__h.go-mvp__h { width: calc(100% + 84px); margin-inline: -42px; box-sizing: border-box; padding-inline: 40px; max-width: none; }
 .go-shrine .go-mvp__h .kit-plate__name { white-space: nowrap; }
 /* its candle glow no longer runs up into the scroller top, which cut it dead */
 .go-stage::before { top: 58%; width: 118%; aspect-ratio: 5 / 2; }

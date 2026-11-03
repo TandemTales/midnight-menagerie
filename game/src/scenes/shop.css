@@ -1526,12 +1526,9 @@
   text-shadow: 0 1px 0 color-mix(in srgb, var(--kit-gold-hi) 75%, transparent);
   filter: brightness(1.36) saturate(.95) drop-shadow(0 3px 3px var(--kit-void));
 }
-/* One continuous shelf behind the merchant, and his name hung from it on the curtain
-   below, clear of the edge, with room for both its lines inside the plate. */
+/* Round57 graft, CITRINE's: Mr. Moth stands on the shelf, mirror, then his plate, then a
+   clear lip of lit wood, so the plate is never cut off from him. */
+.scene--shop .sh-counter--cards .sh-keeper { top: 62px; }
+@media (max-width: 1400px) { .scene--shop .sh-counter--cards .sh-keeper { top: 88px; } }
 .scene--shop .sh-keeper::after { content: none; }
-.scene--shop .sh-counter--cards .sh-moth__name.kit-plate { padding-block: 5px 7px; translate: -50% 38px; }
-@media (max-width: 1400px) {
-  /* no curtain shows under the shelf at the Deck size: the plate is seated whole on its face */
-  .scene--shop .sh-counter--cards .sh-moth__name.kit-plate { translate: -50% 8px; }
-}
-
+.scene--shop .sh-keeper .sh-moth__name.sh-moth__name { top: calc(100% + 2px); padding-block: 5px 6px; filter: drop-shadow(0 4px 2px var(--kit-void)); }
