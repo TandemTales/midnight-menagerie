@@ -1256,3 +1256,47 @@
  background: linear-gradient(119deg,transparent 16%,color-mix(in srgb,var(--kit-paper-ink) 25%,transparent) 17% 19%,transparent 20% 63%,color-mix(in srgb,var(--kit-parchment) 65%,transparent) 64% 66%,transparent 67%) 0 0 / 31px 44px,linear-gradient(174deg,var(--kit-parchment),var(--kit-gold-hi) 31%,var(--kit-gold) 57%,var(--kit-gold-lo) 71%,var(--kit-gold-hi));
  background-clip: text; -webkit-background-clip: text;
 }
+
+/* Round57 JASPER: the hall itself is painted, its light raked across its own
+   mouldings and stones (tools/prep_r57_jasper.py), one painting per board size
+   because the sconces do not stay at one fraction of the screen. The moon is
+   IN that painting now, pane by pane, on the wainscot and the flags. */
+.rm--event .kit-ground { background: url("../../assets/ui/r57-jasper/event-room.webp") 50% 100% / 100% 100% no-repeat, var(--kit-ground-0); }
+.rm--event .kit-ground::before, .rm--event .kit-ground__warm, .rm--event .kit-ground__moon, .rm--event .kit-dress__floor { display: none; }
+.rm--event .rm-vig { background: linear-gradient(to bottom, transparent 82%, color-mix(in srgb, var(--kit-void) 34%, transparent) 100%); }
+.ev-hall__beam, .ev-hall__beam::before, .ev-hall__beam::after { background: none; }
+@media (max-width: 1400px) {
+  .rm--event .kit-ground { background-image: url("../../assets/ui/r57-jasper/event-room-1280.webp"); }
+}
+
+/* Each choice is a slip of old card, torn by hand and scorched at the tear; its
+   shadow lies on the page. Held by the keys it is ringed in the clerk red, a
+   crisp line, never a glow. */
+.ev-register .ev-opt, .ev-register .ev-opt:first-child {
+  background: url("../../assets/ui/r57-jasper/slip-a.webp") 50% 50% / 100% 100% no-repeat;
+  filter: drop-shadow(1px 2px 1px color-mix(in srgb, var(--kit-paper-ink) 85%, transparent)) drop-shadow(3px 6px 4px color-mix(in srgb, var(--kit-paper-ink) 45%, transparent));
+}
+.ev-register .ev-opt:nth-child(2n) { background-image: url("../../assets/ui/r57-jasper/slip-b.webp"); }
+.ev-register .ev-opt:hover:not(:disabled), .ev-register .ev-opt:focus-visible {
+  background: radial-gradient(90% 120% at 22% 50%, color-mix(in srgb, var(--kit-parchment) 30%, transparent), transparent 70%), url("../../assets/ui/r57-jasper/slip-a.webp") 50% 50% / 100% 100% no-repeat;
+  filter: drop-shadow(2px 3px 1px color-mix(in srgb, var(--kit-paper-ink) 85%, transparent)) drop-shadow(4px 9px 5px color-mix(in srgb, var(--kit-paper-ink) 50%, transparent));
+}
+.ev-register .ev-opt:focus-visible {
+  filter: drop-shadow(0 0 .6px var(--kit-ink-oxblood)) drop-shadow(0 0 .6px var(--kit-ink-oxblood)) drop-shadow(2px 4px 1px color-mix(in srgb, var(--kit-paper-ink) 85%, transparent)) drop-shadow(4px 9px 5px color-mix(in srgb, var(--kit-paper-ink) 50%, transparent));
+}
+.ev-register .ev-opt.is-chosen { background: url("../../assets/ui/r57-jasper/slip-a.webp") 50% 50% / 100% 100% no-repeat; }
+/* The long edges of the leaf nibbled and browned; the paper goes on under the rail. */
+.ev-painted-stand-r49 .ev-page::after {
+  content: ''; position: absolute; inset: 0; z-index: 2; pointer-events: none;
+  border: 0 solid transparent;
+  border-image: url("../../assets/ui/r57-jasper/page-edge.webp") 64 / 22px 22px 0 22px round;
+  background: none; opacity: 1; filter: none; box-shadow: none;
+}
+/* the moon medallion rides over the worn head of the leaf; the words keep their
+   full dark ink right to the end of a line, where the page browns */
+.ev-painted-stand-r49 .ev-page[data-medal]::before { z-index: 3; }
+.ev-register .ev-prose p { color: var(--ink-900); }
+.ev-reading-r51 { background: linear-gradient(90deg, transparent 58%, color-mix(in srgb, var(--kit-parchment) 26%, transparent) 88%, transparent); }
+/* the numeral on the held slip brightens along its own rim; no blurred halo on the page */
+.ev-register .ev-opt:hover:not(:disabled)::before,
+.ev-register .ev-opt:focus-visible::before { filter: drop-shadow(0 0 .8px var(--kit-gold-hi)) drop-shadow(1px 3px 2px var(--kit-paper-ink)) brightness(1.22); }

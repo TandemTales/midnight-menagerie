@@ -1504,3 +1504,34 @@
  background-blend-mode: normal,normal,soft-light,normal;
  box-shadow: inset calc(1 * var(--u)) calc(1 * var(--u)) 0 var(--frame-hi),inset calc(-3 * var(--u)) calc(-4 * var(--u)) calc(2 * var(--u)) var(--frame-deep),inset calc(3 * var(--u)) calc(3 * var(--u)) calc(1 * var(--u)) var(--frame-lo),0 calc(4 * var(--u)) calc(10 * var(--u)) var(--kit-void);
 }
+
+/* Round57 JASPER: the market ground painted, tarnished cast coins for prices of
+   Nerve on the merchandise only, and a ribbon whose letters can be read. */
+.rm--shop .kit-ground { background: url("../../assets/ui/r57-jasper/shop-room.webp") 50% 100% / 100% 100% no-repeat, var(--kit-ground-0); }
+.rm--shop .kit-ground::before, .rm--shop .kit-ground__warm, .rm--shop .kit-ground__moon, .rm--shop .kit-dress__floor { display: none; }
+.rm--shop .rm-vig { background: linear-gradient(to bottom, transparent 84%, color-mix(in srgb, var(--kit-void) 34%, transparent) 100%); }
+@media (max-width: 1400px) {
+  .rm--shop .kit-ground { background-image: url("../../assets/ui/r57-jasper/shop-room-1280.webp"); }
+}
+.scene--shop .sh-card .mm-card[data-rarity]:not(.is-cost-reduced):not(.is-cost-raised) .mm-card__cost {
+  background: url("../../assets/ui/r57-jasper/coin-a.webp") center / 100% 100% no-repeat;
+  color: var(--ink-900);
+  text-shadow: 0 calc(1 * var(--u)) 0 color-mix(in srgb, var(--kit-gold-hi) 62%, transparent);
+  box-shadow: 0 calc(3 * var(--u)) calc(4 * var(--u)) var(--kit-void);
+}
+.scene--shop .sh-card:nth-child(3n+2) .mm-card[data-rarity]:not(.is-cost-reduced):not(.is-cost-raised) .mm-card__cost { background-image: url("../../assets/ui/r57-jasper/coin-b.webp"); }
+.scene--shop .sh-card:nth-child(3n) .mm-card[data-rarity]:not(.is-cost-reduced):not(.is-cost-raised) .mm-card__cost { background-image: url("../../assets/ui/r57-jasper/coin-c.webp"); }
+.scene--shop .sh-h--cards.kit-heading {
+  color: var(--ink-900); -webkit-text-fill-color: currentColor; -webkit-text-stroke: .4px currentColor;
+  text-shadow: 0 1px 0 color-mix(in srgb, var(--kit-gold-hi) 75%, transparent);
+  filter: brightness(1.36) saturate(.95) drop-shadow(0 3px 3px var(--kit-void));
+}
+/* One continuous shelf behind the merchant, and his name hung from it on the curtain
+   below, clear of the edge, with room for both its lines inside the plate. */
+.scene--shop .sh-keeper::after { content: none; }
+.scene--shop .sh-counter--cards .sh-moth__name.kit-plate { padding-block: 5px 7px; translate: -50% 38px; }
+@media (max-width: 1400px) {
+  /* no curtain shows under the shelf at the Deck size: the plate is seated whole on its face */
+  .scene--shop .sh-counter--cards .sh-moth__name.kit-plate { translate: -50% 8px; }
+}
+

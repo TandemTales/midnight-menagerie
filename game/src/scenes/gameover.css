@@ -1618,3 +1618,43 @@
 
 /* Round56 ONYX: shallow enamel drawers; separate quantity bays stay clear. */
 .go-ledger[data-fold] .go-trick.go-trick { border-image-source: url("../../assets/ui/r56-onyx/enamel-plaque.webp"); }
+
+/* Round57 JASPER: the memorial hall is painted; the alcove rectangle falls
+   into it. Final Tricks rows are shallow crushed velvet lit from the left under a
+   firm gilt rim, three different pieces of cloth; their costs small cast coins
+   of the same bronze as the medallion on the featured card. */
+.go-ground.kit-ground { background: url("../../assets/ui/r57-jasper/gameover-room.webp") 50% 100% / 100% 100% no-repeat, var(--kit-ground-0); }
+.go-ground.kit-ground::before { display: none; }
+.scene--gameover .kit-dress__floor { display: none; }
+@media (max-width: 1400px) {
+  .go-ground.kit-ground { background-image: url("../../assets/ui/r57-jasper/gameover-room-1280.webp"); }
+}
+.go-wrap .go-altar.go-shrine::after {
+  -webkit-mask: url("../../assets/ui/r57-jasper/alcove-mask.webp") center / 100% 100% no-repeat;
+          mask: url("../../assets/ui/r57-jasper/alcove-mask.webp") center / 100% 100% no-repeat;
+  box-shadow: none;
+}
+.go-ledger[data-fold] .go-trick.go-trick {
+  border-image: url("../../assets/ui/r57-jasper/row-a.webp") 30 46 30 46 fill / 13px 20px stretch;
+  box-shadow: none; filter: drop-shadow(0 2px 2px var(--kit-void));
+}
+.go-ledger[data-fold] .go-trick.go-trick:nth-child(3n+2) { border-image-source: url("../../assets/ui/r57-jasper/row-b.webp"); }
+.go-ledger[data-fold] .go-trick.go-trick:nth-child(3n) { border-image-source: url("../../assets/ui/r57-jasper/row-c.webp"); }
+.go-ledger[data-fold] .go-trick.go-trick .go-trick__cost {
+  border: 0; border-radius: 50%; color: var(--ink-900);
+  background: url("../../assets/ui/r57-jasper/coin-a.webp") center / 100% 100% no-repeat;
+  text-shadow: 0 1px 0 color-mix(in srgb, var(--kit-gold-hi) 62%, transparent);
+  box-shadow: 0 2px 3px var(--kit-void);
+}
+.go-ledger[data-fold] .go-trick.go-trick:nth-child(3n+2) .go-trick__cost { background-image: url("../../assets/ui/r57-jasper/coin-b.webp"); }
+.go-ledger[data-fold] .go-trick.go-trick:nth-child(3n) .go-trick__cost { background-image: url("../../assets/ui/r57-jasper/coin-c.webp"); }
+.go-wrap .go-shrine .mm-card[data-rarity] .mm-card__cost {
+  background: url("../../assets/ui/r57-jasper/coin-a.webp") center / 100% 100% no-repeat;
+  text-shadow: 0 calc(1 * var(--u)) 0 color-mix(in srgb, var(--kit-gold-hi) 62%, transparent);
+  box-shadow: 0 calc(3 * var(--u)) calc(4 * var(--u)) var(--kit-void);
+}
+/* the nameplate under the card wide enough that its letters clear the plate ends */
+.go-shrine .go-mvp__h { width: calc(100% + 84px); margin-inline: -42px; box-sizing: border-box; padding-inline: 26px; }
+.go-shrine .go-mvp__h .kit-plate__name { white-space: nowrap; }
+/* its candle glow no longer runs up into the scroller top, which cut it dead */
+.go-stage::before { top: 58%; width: 118%; aspect-ratio: 5 / 2; }
